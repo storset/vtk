@@ -16,8 +16,8 @@ resourcetype person {
     visitingAddress : string multiple external:userMetadataLdapService,
     availableHours : string,
     room : string,
-    rssFeeds : json ( rssTitle : string, rssUrl : string ) multiple,
-    projects : json ( projectName : string, projectUrl : string ) multiple, 
+    rssFeeds : json (rssTitle:string, rssUrl:string) multiple,
+    projects : json (projectName:string, projectUrl:string) multiple, 
     tags : string multiple,
     content : html,
     getExternalScientificInformation : boolean,
@@ -154,7 +154,6 @@ resourcetype person {
                     <div class="narrow-box-borders">
                        [def thetitle json-attr feed "rssTitle"]
                        [def theurl json-attr feed "rssUrl"]
-                       
                      [if thetitle]  
                        [if theurl]
                          <h2><a href="[val theurl]">[val thetitle]</a></h2>
@@ -177,7 +176,6 @@ resourcetype person {
       [if img-uri]
         [def img resource img-uri]
         [def pixel-width resource-prop img-uri "pixelWidth"]
-        
         [if pixel-width]
           [def style concat "width:" pixel-width "px"]
         [endif]
@@ -202,15 +200,12 @@ resourcetype person {
             [def document structured-document]
             [def theprojects json-attr document "properties.projects"]
             [if theprojects]
-            
             <div class="narrow-box-borders">
               <h2>[localized "projects"]</h2>
                 <ul class="list">
                 [list theprojects aproject]
-                       
                        [def thename json-attr aproject "projectName"]
                        [def theurl json-attr aproject "projectUrl"]
-
                        [if thename]
                            [if theurl]
                              <li><a href="[val theurl]">[val thename]</a></li>
@@ -226,24 +221,24 @@ resourcetype person {
       ##
     }
     
-     projects-automatic {
-       ##
-       [resource-props "."]
-       [def query "uri = /* type IN jproject"]
-       [def result search query]
-       [if result]
-           <ul>
-            [list result res]
-              [def url view-url res]
-                  [if url]
-                     <li><a href="[val url]"></a></li>
-                  [else]
-                     <li>[val name]</li>
-                  [endif]
+    projects-automatic {
+      ##
+      [resource-props "."]
+      [def query "uri = /* type IN jproject"]
+      [def result search query]
+      [if result]
+        <ul>
+          [list result res]
+            [def url view-url res]
+              [if url]
+                <li><a href="[val url]"></a></li>
+              [else]
+                <li>[val name]</li>
+              [endif]
            [endlist]
-           </ul>
-       [endif]
-       ##
+         </ul>
+      [endif]
+      ##
     }
    
     scientific-info {
@@ -253,19 +248,15 @@ resourcetype person {
         <h2>[localized "fridaPublications"]</h2>
              <ul>     
              [def publications resource-prop "." "scientificInformation"]
-
              [list publications publication]
-
                [if publication]
                   <li>[val publication]</li>
                [endif]
-               
              [endlist]
              </ul>
         [endif]
       ##
     }
-    
   }
 
   view {

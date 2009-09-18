@@ -3,7 +3,7 @@
   <label for="${inputFieldName}">${title}</label>
   <div class="inputfield">
     <input size="${inputFieldSize}" type="text" name="${inputFieldName}" id="${inputFieldName}" value="${value}"/>
+	<div class="tooltip">${tooltip}</div>
   </div>
-  <div class="tooltip">${tooltip}</div>
 </div>
 </#macro>

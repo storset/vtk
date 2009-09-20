@@ -84,17 +84,21 @@ resourcetype structured-article : structured-document {
         [def document structured-document]
         [def boxes json-attr document "properties.box-list-side"]
         [list boxes box]
-           [def type json-attr box "type"]
-           [def title json-attr box "title"]
-           [def content json-attr box "boxcontent"]
-           [def url json-attr box "url"]
-           [def urlText json-attr box "urlText"]
+          [def type json-attr box "type"]
+          [def title json-attr box "title"]
+          [def content json-attr box "boxcontent"]
+          [def url json-attr box "url"]
+          [def urlText json-attr box "urlText"]
            
-           <div class="frontpage-box [val type]"> 
-            <h2><a href="[val url]">[val title]</a></h2>
-             [val content unescaped]
-             <a href="[val url]" class="more">[val urlText]</a>
-           </div>
+          <div class="frontpage-box [val type]"> 
+            [if title]
+              <h2><a href="[val url]">[val title]</a></h2>
+            [endif]
+            [val content unescaped]
+            [if url]
+              <a href="[val url]" class="more">[val urlText]</a>
+            [endif]
+          </div>
            
         [endlist]
       [endif]
@@ -114,9 +118,9 @@ resourcetype structured-article : structured-document {
         <title><comp:title /></title>
       </head>
       <body>
-      <div id="content">
-        <h1><comp:title /></h1>
-        <div id="left-content">
+        <div id="content">
+          <h1><comp:title /></h1>
+          <div id="left-content">
             <comp:introduction-image />
             <comp:introduction />
             <comp:media-refs />
@@ -126,10 +130,10 @@ resourcetype structured-article : structured-document {
             <json:field select="content" />
             <resource:tags />
             <resource:comments />
+          </div>
+          <div id="right-content">
+            <comp:box-list-side />
         </div>
-        <div id="right-content">
-           <comp:box-list-side />
-         </div>
       </body>
     </html>
     ##

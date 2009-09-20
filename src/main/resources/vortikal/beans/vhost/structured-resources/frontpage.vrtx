@@ -23,7 +23,7 @@ resourcetype frontpage {
            
            <div class="frontpage-box [val type]"> 
              [if title]
-                <h2><a href="[val url]">[val title]</a></h2>
+               <h2><a href="[val url]">[val title]</a></h2>
              [endif]
              [val content unescaped]
              [if url]
@@ -85,14 +85,13 @@ resourcetype frontpage {
       <body>
         <div id="content">
           <h1><comp:title /></h1>
-           <div id="left-content">        
-             <comp:box-list-main />
-           </div>
-           <div id="right-content">
-             <comp:box-list-side />
-           </div>
+          <div id="left-content">        
+            <comp:box-list-main />
+          </div>
+          <div id="right-content">
+            <comp:box-list-side />
+          </div>
         </div>
-
       </body>
     </html>
     ##

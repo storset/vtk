@@ -67,13 +67,13 @@ resourcetype person {
             [def emails resource-prop "." "email"]
             [if emails]
               <div class="box">
-                <div class="box-thirds">[localized "email"]:&nbsp;</div>
-                  <div class="box-two-thirds">
+                 <div class="box-thirds">[localized "email"]:&nbsp;</div>
+                 <div class="box-two-thirds">
                     [list emails theemail]            
                       [if theemail][val theemail]<br />[endif]
                     [endlist]
-                  </div>
                 </div>
+              </div>
               [endif]
             [endif]
             [if phone]
@@ -85,50 +85,50 @@ resourcetype person {
                     [list phones thephone]            
                       [if thephone][val thephone]<br />[endif]
                     [endlist]
-                   </div>
-                 </div>
+                  </div>
+               </div>
              [endif]
             [endif]
             [if visitingAddress]
              [def visitingAddresses resource-prop "." "visitingAddress"]
              [if visitingAddresses]
-              <div class="box">
-                  <div class="box-thirds">[localized "visitingAddress"]:&nbsp;</div>
-                  <div class="box-two-thirds">
-                    [list visitingAddresses thevisitingAddress]            
-                      [if thevisitingAddress][val thevisitingAddress]<br />[endif]
-                    [endlist]
-                   </div>
+               <div class="box">
+                 <div class="box-thirds">[localized "visitingAddress"]:&nbsp;</div>
+                 <div class="box-two-thirds">
+                   [list visitingAddresses thevisitingAddress]            
+                     [if thevisitingAddress][val thevisitingAddress]<br />[endif]
+                   [endlist]
                  </div>
+               </div>
              [endif]
             [endif]
             [if room]
               <div class="box">
-                  <div class="box-thirds">[localized "room"]:&nbsp;</div>
-                  <div class="box-two-thirds">      
+                 <div class="box-thirds">[localized "room"]:&nbsp;</div>
+                 <div class="box-two-thirds">      
                       [if room][val room][endif]
-                  </div>
+                 </div>
               </div>
             [endif]
             [if availableHours]
               <div class="box">
-                  <div class="box-thirds">[localized "availableHours"]:&nbsp;</div>
-                  <div class="box-two-thirds">      
+                <div class="box-thirds">[localized "availableHours"]:&nbsp;</div>
+                <div class="box-two-thirds">      
                       [if availableHours][val availableHours][endif]
-                  </div>
+                </div>
               </div>
             [endif]
             [if postalAddress]
               [def postalAddresses resource-prop "." "postalAddress"]
               [if postalAddresses]
-                 <div class="box">
+                <div class="box">
                   <div class="box-thirds">[localized "postalAddress"]:&nbsp;</div>
                   <div class="box-two-thirds">
                     [list postalAddresses thepostalAddress]            
                       [if thepostalAddress][val thepostalAddress]<br />[endif]
                     [endlist]
-                   </div>
-                 </div>
+                  </div>
+                </div>
               [endif]
             [endif]
           </div>  
@@ -144,16 +144,18 @@ resourcetype person {
             [if feeds]
                 [list feeds feed]
                     <div class="narrow-box-borders">
-                       [def thetitle json-attr feed "rssTitle"]
-                       [def theurl json-attr feed "rssUrl"]
-                     [if thetitle]  
-                       [if theurl]
-                         <h2><a href="[val theurl]">[val thetitle]</a></h2>
-                       [else]  
-                         <h2>[val thetitle]</h2>
-                       [endif]
-                     [endif]   
-                       [if theurl]TODO: invoke RSS component ... [val theurl][endif]  
+                      [def thetitle json-attr feed "rssTitle"]
+                      [def theurl json-attr feed "rssUrl"]
+                      [if thetitle]  
+                        [if theurl]
+                          <h2><a href="[val theurl]">[val thetitle]</a></h2>
+                        [else]  
+                          <h2>[val thetitle]</h2>
+                        [endif]
+                      [endif]   
+                      [if theurl]
+                        TODO: invoke RSS component ... [val theurl]
+                      [endif]  
                     </div>
                 [endlist]
             [endif]
@@ -192,22 +194,22 @@ resourcetype person {
             [def document structured-document]
             [def theprojects json-attr document "properties.projects"]
             [if theprojects]
-            <div class="narrow-box-borders">
-              <h2>[localized "projects"]</h2>
+              <div class="narrow-box-borders">
+                <h2>[localized "projects"]</h2>
                 <ul class="list">
                 [list theprojects aproject]
-                       [def thename json-attr aproject "projectName"]
-                       [def theurl json-attr aproject "projectUrl"]
-                       [if thename]
-                           [if theurl]
-                             <li><a href="[val theurl]">[val thename]</a></li>
-                           [else]
-                             <li>[val thename]</li>
-                           [endif]
-                       [endif]
+                  [def thename json-attr aproject "projectName"]
+                  [def theurl json-attr aproject "projectUrl"]
+                  [if thename]
+                    [if theurl]
+                      <li><a href="[val theurl]">[val thename]</a></li>
+                    [else]
+                      <li>[val thename]</li>
+                    [endif]
+                  [endif]
                 [endlist]
                 </ul>
-               </div>
+              </div>
             [endif]
         [endif]
       ##
@@ -222,13 +224,13 @@ resourcetype person {
         <ul>
           [list result res]
             [def url view-url res]
-              [if url]
-                <li><a href="[val url]"></a></li>
-              [else]
-                <li>[val name]</li>
-              [endif]
-           [endlist]
-         </ul>
+            [if url]
+              <li><a href="[val url]"></a></li>
+            [else]
+              <li>[val name]</li>
+            [endif]
+          [endlist]
+        </ul>
       [endif]
       ##
     }
@@ -237,16 +239,16 @@ resourcetype person {
       ##
         [resource-props "."]
         [if scientificInformation]
-        <h2>[localized "scientificInformation"]</h2>
-             <ul>     
-             [def publications resource-prop "." "scientificInformation"]
-             [list publications publication]
-               [if publication]
-                  [def thetitle json-attr publication "publicationTitle"]
-                  [if thetitle]<li>[val thetitle]</li>[endif]
-               [endif]
-             [endlist]
-             </ul>
+          <h2>[localized "scientificInformation"]</h2>
+          <ul>     
+          [def publications resource-prop "." "scientificInformation"]
+          [list publications publication]
+            [if publication]
+              [def thetitle json-attr publication "publicationTitle"]
+              [if thetitle]<li>[val thetitle]</li>[endif]
+            [endif]
+          [endlist]
+          </ul>
         [endif]
       ##
     }
@@ -264,23 +266,23 @@ resourcetype person {
       </head>
       <body>
       <div id="content">
-       <h1><comp:title /></h1>
-       <div id="left-content">
+        <h1><comp:title /></h1>
+        <div id="left-content">
           <div class="box">
-             <div class="box-thirds">
-                <comp:person-image />   
-             </div>
-             <div class="box-two-thirds">
-                <comp:contact-information />
-             </div>
+            <div class="box-thirds">
+              <comp:person-image />   
+            </div>
+            <div class="box-two-thirds">
+              <comp:contact-information />
+            </div>
           </div>
           <json:field select="content" />
           <resource:tags />
           <comp:scientific-info />
         </div>
         <div id="right-content">
-            <comp:box-feeds />  
-            <comp:projects />
+           <comp:box-feeds />  
+           <comp:projects />
         </div>
       </div>
       </body>

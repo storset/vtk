@@ -33,32 +33,32 @@ resourcetype structured-document {
         [if ! img]
           <img class="vrtx-introduction-image" src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
         [else]
-           [if caption]
-             <div class="vrtx-introduction-image" [if style]style="[val style]"[endif]>
-               <img src="[val img-uri]" alt="[val caption unescaped "flattened"]"/>
-                 <div class="vrtx-imagetext">
-                   <div class="vrtx-imagedescription">[val caption unescaped]</div>
-                     [if img-author]
-                       <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val img-author]
-                     [endif]
-                 </div>
-             </div>
-           [else]
-             [if img-author]
-               <div class="vrtx-introduction-image" [if style]style="[val style]"[endif]>
-               <img src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
-               <div class="vrtx-imagetext">
-                <span class="vrtx-photo">
+          [if caption]
+            <div class="vrtx-introduction-image" [if style]style="[val style]"[endif]>
+              <img src="[val img-uri]" alt="[val caption unescaped "flattened"]"/>
+              <div class="vrtx-imagetext">
+                <div class="vrtx-imagedescription">[val caption unescaped]</div>
+                [if img-author]
                   <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val img-author]
-                </span>
-               </div>
-             [else]
-               <img class="vrtx-introduction-image" src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
-             [endif]
-           [endif]
+                [endif]
+              </div>
+            </div>
+          [else]
+            [if img-author]
+              <div class="vrtx-introduction-image" [if style]style="[val style]"[endif]>
+                <img src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
+                <div class="vrtx-imagetext">
+                  <span class="vrtx-photo">
+                    <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val img-author]
+                  </span>
+                </div>
+              </div>
+            [else]
+              <img class="vrtx-introduction-image" src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
+            [endif]
+          [endif]
         [endif]
       [endif]
-      <br/>
       ##
     }
 

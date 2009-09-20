@@ -1,17 +1,17 @@
 resourcetype structured-project {
 
   properties {
-	name : string,
-	introduction : simple_html,
-	picture : image_ref,
-	status : string,
-	content : html,
-	tags : string multiple,
+    name : string,
+    introduction : simple_html,
+    picture : image_ref,
+    status : string,
+    content : html,
+    tags : string multiple,
     contactInfo : simple_html,
-	projectLeader : json ( participantName : string, participantUrl : string ),
-	participants : json ( participantName : string, participantUrl : string ) multiple,
-	homepage : string,
-	rssFeeds : json ( rssTitle : string, rssUrl : string ) multiple
+    projectLeader : json ( participantName : string, participantUrl : string ),
+    participants : json ( participantName : string, participantUrl : string ) multiple,
+    homepage : string,
+    rssFeeds : json ( rssTitle : string, rssUrl : string ) multiple
   }
   
   edit-rules {
@@ -20,7 +20,7 @@ resourcetype structured-project {
   }
 
   scripts {
-  	tags autocomplete (minChars : "1")
+    tags autocomplete (minChars : "1")
   }
     
   view-components {
@@ -45,11 +45,11 @@ resourcetype structured-project {
           [def style concat "width:" pixel-width "px"]
         [endif]
         <div class="vrtx-project-image">
-        [if !img]
-          <img class="vrtx-project-image" src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
-        [else]
-          <img class="vrtx-project-image" src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
-        [endif]
+          [if !img]
+            <img class="vrtx-project-image" src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
+          [else]
+            <img class="vrtx-project-image" src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
+          [endif]
         </div>
       [endif]
       ##
@@ -58,80 +58,79 @@ resourcetype structured-project {
     box-leader-participants {
       ##
       [resource-props "."]
-       [if participants]
-       <div class="narrow-box-borders">
-         <h2>[localized "participants"]</h2>
-         <ul id="vrtx-project-participants">
+      [if participants]
+        <div class="narrow-box-borders">
+          <h2>[localized "participants"]</h2>
+          <ul id="vrtx-project-participants">
          
-             [def document structured-document]
-             [def leader json-attr document "properties.projectLeader"]
-             [def participants json-attr document "properties.participants"]
+          [def document structured-document]
+          [def leader json-attr document "properties.projectLeader"]
+          [def participants json-attr document "properties.participants"]
+          [def theleadername json-attr leader "participantName"]
+          [def theleaderurl json-attr leader "participantUrl"]
              
-             [def theleadername json-attr leader "participantName"]
-             [def theleaderurl json-attr leader "participantUrl"]
-             
-             [if theleadername]
-                   [if theleaderurl]
-                     <li><a href="[val theleaderurl]">[val theleadername]</a>&nbsp;([localized "projectLeaderComp"])</li>
-                   [else]
-                     <li>[val theleadername]</li>
-                   [endif]
-             [endif]
+          [if theleadername]
+            [if theleaderurl]
+              <li><a href="[val theleaderurl]">[val theleadername]</a>&nbsp;([localized "projectLeaderComp"])</li>
+            [else]
+              <li>[val theleadername]</li>
+            [endif]
+          [endif]
 
-             [list participants participant]
-               [def thename json-attr participant "participantName"]
-               [def theurl json-attr participant "participantUrl"]
-               [if thename]
-                   [if theurl]
-                     <li><a href="[val theurl]">[val thename]</a></li>
-                   [else]
-                     <li>[val thename]</li>
-                   [endif]
-               [endif]
-             [endlist]
-         </ul>
-       </div>
-       [endif]
+          [list participants participant]
+            [def thename json-attr participant "participantName"]
+            [def theurl json-attr participant "participantUrl"]
+            [if thename]
+              [if theurl]
+                <li><a href="[val theurl]">[val thename]</a></li>
+              [else]
+                <li>[val thename]</li>
+              [endif]
+            [endif]
+          [endlist]
+          </ul>
+        </div>
+      [endif]
       ##
     }
     
     box-contact-info {
        ##
-        [resource-props "."]
-        [if contactInfo]
-             <div class="narrow-box-borders">
-                 <h2>[localized "contactInfo"]</h2>
-                 [val contactInfo unescaped]
-            </div>
-        [endif]
+       [resource-props "."]
+       [if contactInfo]
+         <div class="narrow-box-borders">
+           <h2>[localized "contactInfo"]</h2>
+           [val contactInfo unescaped]
+         </div>
+       [endif]
       ##
     }
     
     box-feeds {
       ##
-        [resource-props "."]
-        [if rssFeeds]
-            [def document structured-document]
-            [def feeds json-attr document "properties.rssFeeds"]
-            [if feeds]
-                [list feeds feed]
-                    <div class="narrow-box-borders">
-                     [def thetitle json-attr feed "rssTitle"]
-                     [def theurl json-attr feed "rssUrl"]
+      [resource-props "."]
+      [if rssFeeds]
+        [def document structured-document]
+        [def feeds json-attr document "properties.rssFeeds"]
+        [if feeds]
+          [list feeds feed]
+            <div class="narrow-box-borders">
+              [def thetitle json-attr feed "rssTitle"]
+              [def theurl json-attr feed "rssUrl"]
                        
-                     [if thetitle]  
-                       [if theurl]
-                         <h2><a href="[val theurl]">[val thetitle]</a></h2>
-                       [else]  
-                         <h2>[val thetitle]</h2>
-                       [endif]
-                     [endif]
+              [if thetitle]  
+                [if theurl]
+                  <h2><a href="[val theurl]">[val thetitle]</a></h2>
+                [else]  
+                  <h2>[val thetitle]</h2>
+                [endif]
+              [endif]
                      
-                     [if theurl]TODO: invoke RSS component ... [val theurl][endif]  
-                    </div>
-                [endlist]
-            [endif]
+              [if theurl]TODO: invoke RSS component ... [val theurl][endif]  
+            </div>
+          [endlist]
         [endif]
+      [endif]
       ##
     }
     
@@ -148,20 +147,20 @@ resourcetype structured-project {
         <title><json:field select="name" /></title>
       </head>
       <body>
-      <div id="content">
-       <h1><json:field select="name" /></h1>
-       <div id="left-content">
-          <comp:project-image />
-          <comp:introduction />
-          <json:field select="content" />
-          <resource:tags />
-        </div>
-        <div id="right-content">
+        <div id="content">
+          <h1><json:field select="name" /></h1>
+          <div id="left-content">
+            <comp:project-image />
+            <comp:introduction />
+            <json:field select="content" />
+            <resource:tags />
+          </div>
+          <div id="right-content">
             <comp:box-contact-info />
             <comp:box-leader-participants />
             <comp:box-feeds />
+          </div>
         </div>
-      </div>
       </body>
     </html>
     ##

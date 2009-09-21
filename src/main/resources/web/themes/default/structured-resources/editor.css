@@ -94,8 +94,6 @@
   width: auto;
   clear: none;  
   padding: 0;
-  position: relative;
-  overflow: visible;
 }
 
 #contents {
@@ -118,11 +116,10 @@ div.vrtx-multipleinputfield{
   padding:5px;
 }
 
+/* START Introduction image edit like the old one */
 
 .vrtx-grouped-vertical .image-caption {
   float:left;
-  top:55px;
-  position:absolute;
 }
 
 .vrtx-grouped-vertical .vrtx-image-ref.introduction-img div.vrtx-image-ref-browse {
@@ -139,8 +136,10 @@ div.vrtx-multipleinputfield{
 
 .vrtx-grouped-vertical .vrtx-image-ref.introduction-img div#introduction-img\.preview img {
   padding: 0;
+  position:absolute;
 }
 
+/* STOP Introduction image edit like the old one */
 	
 #media-ref {
   width: 370px;	

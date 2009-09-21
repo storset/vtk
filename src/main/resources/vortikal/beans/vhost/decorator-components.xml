@@ -169,6 +169,11 @@
   
   <bean id="decorating.timeAndPlaceComponent.view" parent="freemarkerView">
     <property name="url" value="layouts/time-and-place.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+      </list>
+    </property>
   </bean>
 
  <bean id="decorating.resourceTagsComponent" parent="requestLocalRepositoryAware"

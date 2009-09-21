@@ -53,6 +53,10 @@
     height: 300px;
 }
 
+.introduction iframe{
+    height: 150px;
+}
+
 .vrtx-simple-html-small textarea{
     height: 12.5ex;
     width: 350px;
@@ -63,7 +67,7 @@
 }
 
 .vrtx-simple-html-small iframe{
-  height: 100px;
+  height: 95px;
 }
 
 .vrtx-html {

@@ -86,17 +86,17 @@
  * 
  * @param resource The resource to evaluate dates from
 -->
-<#macro displayTimeAndPlace resource title>
+<#macro displayTimeAndPlace resource title prefix="">
 
-  <#local start = vrtx.propValue(resource, "start-date") />
-  <#local startiso8601 = vrtx.propValue(resource, "start-date", "iso-8601") />
-  <#local startshort = vrtx.propValue(resource, "start-date", "short") />
-  <#local end = vrtx.propValue(resource, "end-date") />
-  <#local endiso8601 = vrtx.propValue(resource, "end-date", "iso-8601") />
-  <#local endshort = vrtx.propValue(resource, "end-date", "short") />
-  <#local endhoursminutes = vrtx.propValue(resource, "end-date", "hours-minutes") />
-  <#local location = vrtx.propValue(resource, "location") />
-  <#local mapurl = vrtx.propValue(resource, "mapurl") />
+  <#local start = vrtx.propValue(resource, "start-date", "", prefix) />
+  <#local startiso8601 = vrtx.propValue(resource, "start-date", "iso-8601", prefix) />
+  <#local startshort = vrtx.propValue(resource, "start-date", "short", prefix) />
+  <#local end = vrtx.propValue(resource, "end-date", "", prefix) />
+  <#local endiso8601 = vrtx.propValue(resource, "end-date", "iso-8601", prefix) />
+  <#local endshort = vrtx.propValue(resource, "end-date", "short", prefix) />
+  <#local endhoursminutes = vrtx.propValue(resource, "end-date", "hours-minutes", prefix) />
+  <#local location = vrtx.propValue(resource, "location", "", prefix) />
+  <#local mapurl = vrtx.propValue(resource, "mapurl", "", prefix) />
   
   <#local isoendhour = "" />
   <#if endiso8601 != "" >

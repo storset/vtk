@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.BeanInitializationException;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
@@ -48,20 +49,16 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
 
-
 public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecoratorComponent {
-    private static final String DESCRIPTION = 
-        "Display the value(s) of a string property, with link(s) to search";
+    
+    private static final String DESCRIPTION = "Display the value(s) of a string property, with link(s) to search";
     private static final String PARAMETER_TITLE = "title";
     private static final String PARAMETER_TITLE_DESC = "Optional title (default is 'Tags')";
     private static final String PARAMETER_SERVICEURL = "service-url";
-    //private static final String PARAMETER_SERVICEURL_DESC = ""; // Settes dynamisk ved populering av output map
 
-    
     private String defaultURLpattern;
     private Repository repository;
     private PropertyTypeDefinition propertyTypeDefinition;
-
 
     private boolean forProcessing = true;
 
@@ -69,8 +66,8 @@ public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecorato
         this.repository = repository;
     }
 
-    protected void processModel(Map<Object, Object> model, DecoratorRequest request,
-                                DecoratorResponse response) throws Exception {
+    protected void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
+            throws Exception {
 
         String token = SecurityContext.getSecurityContext().getToken();
         Path uri = RequestContext.getRequestContext().getResourceURI();
@@ -79,23 +76,27 @@ public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecorato
         Property prop = resource.getProperty(this.propertyTypeDefinition);
 
         if (prop == null) {
+            prop = resource.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, this.propertyTypeDefinition.getName());
+        }
+
+        if (prop == null) {
             return;
         }
 
         String title = request.getStringParameter(PARAMETER_TITLE);
         model.put("title", title);
-        
+
         String serviceURL = request.getStringParameter(PARAMETER_SERVICEURL);
-        
+
         List<String> valueList = new ArrayList<String>();
         List<String> urlList = new ArrayList<String>();
 
         model.put("urls", urlList);
         model.put("values", valueList);
-            
+
         if (this.propertyTypeDefinition.isMultiple()) {
             Value[] values = prop.getValues();
-            for (Value value: values) {
+            for (Value value : values) {
                 String s = value.getStringValue();
                 valueList.add(s);
                 urlList.add(getUrl(s, serviceURL));
@@ -106,37 +107,31 @@ public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecorato
             valueList.add(value);
         }
     }
-    
 
     private String getUrl(String value, String serviceUrl) {
-        if(serviceUrl == null)
+        if (serviceUrl == null)
             return this.defaultURLpattern.replaceAll("%v", value);
         else
             return serviceUrl.replaceAll("%v", value);
     }
 
-    
     public void afterPropertiesSet() throws Exception {
         super.afterPropertiesSet();
 
         if (this.repository == null) {
-            throw new BeanInitializationException(
-                    "JavaBean property 'repository' not set");
+            throw new BeanInitializationException("JavaBean property 'repository' not set");
         }
         if (this.propertyTypeDefinition == null) {
-            throw new BeanInitializationException(
-            "JavaBean property 'propertyTypeDefinition' not set");
+            throw new BeanInitializationException("JavaBean property 'propertyTypeDefinition' not set");
         }
-        
+
         if (this.propertyTypeDefinition.getType() != PropertyType.Type.STRING) {
-            throw new BeanInitializationException(
-                "JavaBean property 'propertyTypeDefinition' not of required type "
-                + "PropertyType.Type.STRING");
+            throw new BeanInitializationException("JavaBean property 'propertyTypeDefinition' not of required type "
+                    + "PropertyType.Type.STRING");
         }
-        
+
         if (this.defaultURLpattern == null) {
-            throw new BeanInitializationException(
-            "JavaBean property 'defaultURLpattern' not set");
+            throw new BeanInitializationException("JavaBean property 'defaultURLpattern' not set");
         }
     }
 
@@ -155,8 +150,7 @@ public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecorato
         return map;
     }
 
-    public void setPropertyTypeDefinition(
-            PropertyTypeDefinition propertyTypeDefinition) {
+    public void setPropertyTypeDefinition(PropertyTypeDefinition propertyTypeDefinition) {
         this.propertyTypeDefinition = propertyTypeDefinition;
     }
 

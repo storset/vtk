@@ -69,7 +69,7 @@ resourcetype person {
               <div class="box">
                  <div class="box-thirds">[localized "email"]:&nbsp;</div>
                  <div class="box-two-thirds">
-                    [list emails theemail]            
+                    [list emails theemail]
                       [if theemail][val theemail]<br />[endif]
                     [endlist]
                 </div>
@@ -82,7 +82,7 @@ resourcetype person {
                <div class="box">
                   <div class="box-thirds">[localized "phone"]:&nbsp;</div>
                   <div class="box-two-thirds">
-                    [list phones thephone]            
+                    [list phones thephone]
                       [if thephone][val thephone]<br />[endif]
                     [endlist]
                   </div>
@@ -95,7 +95,7 @@ resourcetype person {
                <div class="box">
                  <div class="box-thirds">[localized "visitingAddress"]:&nbsp;</div>
                  <div class="box-two-thirds">
-                   [list visitingAddresses thevisitingAddress]            
+                   [list visitingAddresses thevisitingAddress]
                      [if thevisitingAddress][val thevisitingAddress]<br />[endif]
                    [endlist]
                  </div>
@@ -124,7 +124,7 @@ resourcetype person {
                 <div class="box">
                   <div class="box-thirds">[localized "postalAddress"]:&nbsp;</div>
                   <div class="box-two-thirds">
-                    [list postalAddresses thepostalAddress]            
+                    [list postalAddresses thepostalAddress]
                       [if thepostalAddress][val thepostalAddress]<br />[endif]
                     [endlist]
                   </div>
@@ -146,16 +146,16 @@ resourcetype person {
                     <div class="narrow-box-borders">
                       [def thetitle json-attr feed "rssTitle"]
                       [def theurl json-attr feed "rssUrl"]
-                      [if thetitle]  
+                      [if thetitle]
                         [if theurl]
                           <h2><a href="[val theurl]">[val thetitle]</a></h2>
-                        [else]  
+                        [else]
                           <h2>[val thetitle]</h2>
                         [endif]
-                      [endif]   
+                      [endif]
                       [if theurl]
                         TODO: invoke RSS component ... [val theurl]
-                      [endif]  
+                      [endif]
                     </div>
                 [endlist]
             [endif]

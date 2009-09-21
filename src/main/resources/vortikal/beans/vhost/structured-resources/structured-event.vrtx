@@ -35,8 +35,7 @@ resourcetype structured-event : structured-document {
              [endif]
              <abbr class="dtend" title="">[val end-date]</abbr>
            [endif]
-           [if location]
-             ,&nbsp;
+           [if location],&nbsp;
              <span class="location">
              [if map-url]
                <a href="[val map-url]" target="_parent">[val location]</a>
@@ -82,7 +81,9 @@ resourcetype structured-event : structured-document {
   }
   
   localization {
+    photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
     time-and-place : (en : "Time and place", no : "Tid og sted", nn : "Tid og stad"),
+    add-to-calendar : (en : "Add to calendar", no : "Legg til i kalender", nn : "Legg til i kalender"),
     start-date : (en : "Starts", no : "Starter", nn : "Byrjar"),
     end-date : (en : "Ends", no : "Slutter", nn : "Sluttar"),
     location : (en : "Location", no : "Sted", nn : "Stad"),

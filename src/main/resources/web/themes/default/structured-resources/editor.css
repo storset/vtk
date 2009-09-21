@@ -126,6 +126,10 @@ div.vrtx-multipleinputfield{
   margin-top:-105px;	
 }
 
+#media-ref {
+  width: 370px;	
+}
+
 .vrtx-string.title {
   width: 496px;
 }

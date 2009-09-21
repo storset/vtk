@@ -1,0 +1,14 @@
+#content {
+  width: 100%;
+  float: left;
+}
+
+#main-content {
+   float: left;
+   width:555px; /* for now */
+}
+
+#additional-content {
+  float: right;
+  width: 260px /* for now */
+}

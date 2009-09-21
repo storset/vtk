@@ -1,0 +1,34 @@
+@import url(default-layout.css);
+@import url(boxes.css);
+
+#contact-info {
+  float: left;
+  width: 100%;
+}
+
+#contact-info .box {
+  margin-bottom: 5px;	
+}
+
+/* Person bilde */
+div.vrtx-person-image {
+  float: left;
+  width: 100%;
+  margin: 0 0 15px 0;
+}
+
+div.vrtx-person-image img {
+  margin: 0 0 10px 0; /* margin to pressPhoto link */
+  max-width: 100%;
+}
+
+ul.list {
+  margin: 0;
+  padding: 0;	
+  list-style: none;
+}
+
+ul.list li {
+  margin: 0 0 10px 0;
+  padding: 0;
+}

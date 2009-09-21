@@ -1,0 +1,27 @@
+@import url(default-layout.css);
+@import url(boxes.css);
+
+/* Prosjekt bilde */
+div.vrtx-project-image {
+  float: left;
+  width: 100%;
+  margin: 0 0 15px 0;
+}
+
+div.vrtx-project-image img {
+  max-width: 100%;
+}
+
+ul#vrtx-project-participants {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+ul#vrtx-project-participants li {
+  margin:0 0 10px;
+}
+
+.vrtx-press-image-link {
+	
+}

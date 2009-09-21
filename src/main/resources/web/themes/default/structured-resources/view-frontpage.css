@@ -1,0 +1,7 @@
+@import url(default-layout.css);
+@import url(boxes.css);
+
+.more {
+  clear: both;
+  float: right;
+}

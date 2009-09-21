@@ -1,0 +1,71 @@
+.box, 
+.narrow-box-borders, 
+.wide-box-borders, 
+.ultra-wide-box-borders {
+  border:1px solid #AAAAAA;
+  clear:both;
+  float:left;
+  margin-bottom:15px;
+  padding:5px 10px 10px;
+}
+
+.narrow-box-borders {
+  width: 238px; /* for now */
+}
+
+.wide-box-borders {
+  width:533px; /* for now */
+}
+
+.ultra-wide-box-borders {
+  width:808px; /* for now */
+}
+
+.box {
+  width: 100%;
+  padding: 0;
+  border: none;
+}
+
+.box h2, 
+.narrow-box-borders h2, 
+.wide-box-borders h2, 
+.ultra-wide-box-borders h2 {
+  border-bottom:1px solid #AAAAAA;
+  font-size:1.1em;
+  margin:0 -10px 10px;
+  padding:0 10px 5px;
+}
+
+/* START BOXES Dividers */
+
+.box-twos,
+.box-thirds,
+.box-two-thirds,
+.box-fourths,
+.box-three-fourths {
+  float: left;
+  padding-right: 2%;
+}
+
+.box-twos {
+  width:48%;
+}
+
+.box-thirds {
+  width:31.3333%;
+}
+
+.box-two-thirds {
+  width:64.6666%;
+}
+
+.box-fourths {
+  width:23%;
+}
+
+.box-three-fourths {
+  width:73%;
+}
+
+/* STOP BOXES Dividers */

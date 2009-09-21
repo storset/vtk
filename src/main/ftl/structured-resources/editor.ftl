@@ -18,9 +18,6 @@
 <head>
   <title>Edit structured resource</title>
   
-  <link type="text/css" href="${themeBaseURL?html}/structured-resources/editor.css" rel="stylesheet" />
-  <link type="text/css" href="${webResources?html}/jquery-ui-1.7.1.custom/css/smoothness/jquery-ui-1.7.1.custom.css" rel="stylesheet" />
-  
   <@fckEditor.addFckScripts />
 <@vrtxJSONJavascript.script />
   
@@ -43,10 +40,10 @@
   </script>
   <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/imageref.js"></script>
   <!-- JQuery UI (used for datepicker) -->
-  
+  <link type="text/css" href="${webResources?html}/jquery-ui-1.7.1.custom/css/smoothness/jquery-ui-1.7.1.custom.css" rel="stylesheet" />
   <script type="text/javascript" src="${webResources?html}/jquery-ui-1.7.1.custom/js/jquery-ui-1.7.1.custom.min.js"></script>
   <script type="text/javascript" src="${jsBaseURL?html}/datepicker.js"></script>
-
+  <link type="text/css" href="${themeBaseURL?html}/structured-resources/editor.css" rel="stylesheet" />
   <#if form.resource.type.scripts?exists>
     <@scripts.includeScripts form.resource.type.scripts />
   </#if>

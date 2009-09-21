@@ -159,11 +159,11 @@
     </property>
   </bean>
   
-    <bean id="decorating.timeAndPlaceComponent"
+  <bean id="decorating.timeAndPlaceComponent"
         class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="time-and-place" />
-    <property name="description" value="Inserts time and place in an event document" />
+    <property name="description" value="Inserts time and place if it is an event document" />
     <property name="view" ref="decorating.timeAndPlaceComponent.view" />
   </bean>
   

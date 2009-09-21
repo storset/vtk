@@ -94,6 +94,7 @@
   width: auto;
   clear: none;  
   padding: 0;
+  position:relative;
 }
 
 #contents {
@@ -119,7 +120,8 @@ div.vrtx-multipleinputfield{
 /* START Introduction image edit like the old one */
 
 .vrtx-grouped-vertical .image-caption {
-  float:left;
+  position:absolute;
+  top:55px;
 }
 
 .vrtx-grouped-vertical .vrtx-image-ref.introduction-img div.vrtx-image-ref-browse {
@@ -132,11 +134,11 @@ div.vrtx-multipleinputfield{
 
 .vrtx-grouped-vertical .vrtx-image-ref.introduction-img div#introduction-img\.preview {
   margin:0 0 0 367px;
+  height:150px; /* same height as (label, input + image-caption) to avoid the absolute positioned image-caption to overflow into below fields */
 }
 
 .vrtx-grouped-vertical .vrtx-image-ref.introduction-img div#introduction-img\.preview img {
   padding: 0;
-  position:absolute;
 }
 
 /* STOP Introduction image edit like the old one */

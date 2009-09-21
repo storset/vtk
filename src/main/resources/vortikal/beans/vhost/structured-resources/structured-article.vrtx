@@ -2,8 +2,8 @@ resourcetype structured-article : structured-document {
 
   properties {
     author : string,
-    tags : string multiple,
     media-ref : media_ref,
+    tags : string multiple,
     show-additional-content : boolean,
     additional-content : html
   }

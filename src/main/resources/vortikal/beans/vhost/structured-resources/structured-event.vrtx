@@ -69,7 +69,7 @@ resourcetype structured-event : structured-document {
             <comp:introduction-image />
             <comp:introduction />
             <div class="vrtx-byline">
-              <comp:time-and-place />
+              <resource:time-and-place />
             </div>
             <json:field select="content" />
             <resource:tags />

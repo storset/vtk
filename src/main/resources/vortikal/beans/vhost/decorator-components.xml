@@ -157,7 +157,19 @@
         <!-- entry key="url" value="${decorating.tableOfContentsComponent.javascript}" / -->
       </map>
     </property>
-  </bean>  
+  </bean>
+  
+    <bean id="decorating.timeAndPlaceComponent"
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.resourceNamespace" />
+    <property name="name" value="time-and-place" />
+    <property name="description" value="Inserts time and place in an event document" />
+    <property name="view" ref="decorating.timeAndPlaceComponent.view" />
+  </bean>
+  
+  <bean id="decorating.timeAndPlaceComponent.view" parent="freemarkerView">
+    <property name="url" value="layouts/time-and-place.ftl" />
+  </bean>
 
  <bean id="decorating.resourceTagsComponent" parent="requestLocalRepositoryAware"
         class="org.vortikal.web.decorating.components.PropertyLinkedValueDecoratorComponent">

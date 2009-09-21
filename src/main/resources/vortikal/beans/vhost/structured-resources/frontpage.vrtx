@@ -102,7 +102,7 @@ resourcetype frontpage {
      title : (en : "Title", no : "Tittel", nn : "Tittel"),
      content : (en : "Content", no : "Innhold", nn : "Innhald"),
      box-list-main : (en : "Main-column", no : "Hovedspalte", nn : "Hovedspalte"),
-     box-list-additional : (en : "Side-column", no : "Sidespalte", nn : "Sidespalte"),
+     box-list-side : (en : "Side-column", no : "Sidespalte", nn : "Sidespalte"),
      boxTitle : (en : "Box title", no : "Bokstittel", nn : "Bokstittel"),
      boxType : (en : "Box type", no : "Bokstype", nn : "Bokstype"),
      boxContent : (en : "Box content", no : "Boksinnhold", nn : "Boksinnhold"),

@@ -78,6 +78,7 @@ public class FulltextSearchController implements Controller {
     private String redirectViewName;
     private int pageSize = 20;
     private String hostName;
+    private boolean servesWebRoot = true;
     
     
     public void setSearcher(FulltextSearcher searcher) {
@@ -125,8 +126,17 @@ public class FulltextSearchController implements Controller {
         Service currentService = RequestContext.getRequestContext().getService();
         Path resourceURI = RequestContext.getRequestContext().getResourceURI();
         
+        // Search service base URL
         URL searchURL = currentService.constructURL(resourceURI);
         searchModel.put("url", searchURL);
+
+        // Add URL to host/root scoped search if we are serving web root 
+        if (this.servesWebRoot) {
+            URL rootScopeSearchUrl = new URL(searchURL);
+            rootScopeSearchUrl.setPath(Path.ROOT);
+            if (query != null) rootScopeSearchUrl.addParameter("query", query);
+            searchModel.put("rootScopeSearchUrl", rootScopeSearchUrl);
+        }
 
         if (this.hostName != null) {
             searchModel.put("hostName", this.hostName);
@@ -239,6 +249,11 @@ public class FulltextSearchController implements Controller {
 
     public void setHostName(String hostName) {
         this.hostName = hostName;
+    }
+
+
+    public void setServesWebRoot(boolean servesWebRoot) {
+        this.servesWebRoot = servesWebRoot;
     }
 
 }

@@ -76,12 +76,12 @@
 
 .vrtx-grouped {
   /*XXX Temp border to indicate grouped props*/
-  border: 1px solid #a9a9a9;
+  /* border: 1px solid #a9a9a9; */
 }
 
 .vrtx-grouped-horizontal {
   /*XXX Temp border to indicate grouped props*/
-  border: 1px solid #a9a9a9;
+  /*border: 1px solid #a9a9a9; */
   clear: left;
   float: left;
   width:auto;
@@ -89,7 +89,7 @@
 
 .vrtx-grouped-vertical {
   /*XXX Temp border to indicate grouped props*/
-  border: 1px solid #a9a9a9;
+  /*border: 1px solid #a9a9a9;*/
   float:left;
   width: auto;
 }
@@ -114,7 +114,25 @@ div.vrtx-multipleinputfield{
        padding:5px;
 }
 
+.vrtx-image-ref.introduction-img div {
+  float: left;
+}
 
+.vrtx-image-ref.introduction-img div#introduction-img\.preview {
+  float: right;
+}
+
+.image-caption {
+  margin-top:-105px;	
+}
+
+.vrtx-string.title {
+  width: 496px;
+}
+
+.vrtx-string.title #title {
+  width: 496px;	
+}
 
 h2.vrtx-title{
 	clear:left;

@@ -65,7 +65,7 @@ resourcetype structured-event : structured-document {
       <body>
        <div id="content">
         <h1><comp:title /></h1>
-         <div id="left-content">
+         <div id="main-content">
             <comp:introduction-image />
             <comp:introduction />
             <div class="vrtx-byline">

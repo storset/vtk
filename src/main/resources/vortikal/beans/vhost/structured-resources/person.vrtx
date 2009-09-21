@@ -267,7 +267,7 @@ resourcetype person {
       <body>
       <div id="content">
         <h1><comp:title /></h1>
-        <div id="left-content">
+        <div id="main-content">
           <div class="box">
             <div class="box-thirds">
               <comp:person-image />   
@@ -280,7 +280,7 @@ resourcetype person {
           <resource:tags />
           <comp:scientific-info />
         </div>
-        <div id="right-content">
+        <div id="additional-content">
            <comp:box-feeds />  
            <comp:projects />
         </div>

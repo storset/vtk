@@ -149,13 +149,13 @@ resourcetype structured-project {
       <body>
         <div id="content">
           <h1><json:field select="name" /></h1>
-          <div id="left-content">
+          <div id="main-content">
             <comp:project-image />
             <comp:introduction />
             <json:field select="content" />
             <resource:tags />
           </div>
-          <div id="right-content">
+          <div id="additional-content">
             <comp:box-contact-info />
             <comp:box-leader-participants />
             <comp:box-feeds />

@@ -400,7 +400,7 @@
       <map>
         <entry key="cssURLs">
           <list>
-            <value>${themeBaseURL}/view-frontpage.css</value>
+            <value>${themeBaseURL}/structured-resources/view-frontpage.css</value>
             <value>${themeBaseURL}/view-container.css</value>
           </list>
         </entry>
@@ -422,7 +422,7 @@
       <map>
         <entry key="cssURLs">
           <list>
-            <value>${themeBaseURL}/view-person.css</value>
+            <value>${themeBaseURL}/structured-resources/view-person.css</value>
             <value>${themeBaseURL}/view-container.css</value>
           </list>
         </entry>
@@ -444,7 +444,7 @@
       <map>
         <entry key="cssURLs">
           <list>
-            <value>${themeBaseURL}/view-project.css</value>
+            <value>${themeBaseURL}/structured-resources/view-project.css</value>
             <value>${themeBaseURL}/view-container.css</value>
           </list>
         </entry>

@@ -93,9 +93,9 @@ resourcetype structured-document {
   
   localization {
     title : (en : "Title", no : "Tittel", nn : "Tittel"),
-    introduction : (en : "Introduction", no : "Ingress", nn : "Ingress"),
+    introduction : (en : "Introduction", no : "Innledning", nn : "Innledning"),
     introduction-img : (en: "Introduction image", no: "Ingressbilde", nn : "Ingressbilete"),
-    image-caption : (en : "Image caption", no : "Tittel på bilde", nn : "Tittel på bilete"),
+    image-caption : (en : "Image caption", no : "Bildetekst", nn : "Biletetekst"),
     content : (en : "Content", no : "Innhold", nn : "Innhald")
   }
 }

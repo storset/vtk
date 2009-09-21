@@ -57,6 +57,10 @@
     height: 150px;
 }
 
+.additional-content iframe {
+    height: 210px;	
+}
+
 .vrtx-simple-html-small textarea{
     height: 12.5ex;
     width: 350px;
@@ -114,16 +118,12 @@ div.vrtx-multipleinputfield{
        padding:5px;
 }
 
-.vrtx-image-ref.introduction-img div {
+.vrtx-image-ref.introduction-img div#vrtx-image-ref-browse {
   float: left;
 }
 
 .vrtx-image-ref.introduction-img div#introduction-img\.preview {
   float: right;
-}
-
-.image-caption {
-  margin-top:-105px;	
 }
 
 #media-ref {

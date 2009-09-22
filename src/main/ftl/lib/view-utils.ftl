@@ -88,10 +88,10 @@
 -->
 <#macro displayTimeAndPlace resource title prefix="">
 
-  <#local start = vrtx.propValue(resource, "start-date", "", prefix) />
+  <#local start = vrtx.propValue(resource, "start-date", "long", prefix) />
   <#local startiso8601 = vrtx.propValue(resource, "start-date", "iso-8601", prefix) />
   <#local startshort = vrtx.propValue(resource, "start-date", "short", prefix) />
-  <#local end = vrtx.propValue(resource, "end-date", "", prefix) />
+  <#local end = vrtx.propValue(resource, "end-date", "long", prefix) />
   <#local endiso8601 = vrtx.propValue(resource, "end-date", "iso-8601", prefix) />
   <#local endshort = vrtx.propValue(resource, "end-date", "short", prefix) />
   <#local endhoursminutes = vrtx.propValue(resource, "end-date", "hours-minutes", prefix) />
@@ -138,6 +138,7 @@
 </#macro>
 
 <#macro displayTimeAndPlaceAndNumberOfComments resource title hideLocation hideEndDate hideNumberOfComments >
+  
   <#local start = vrtx.propValue(resource, "start-date") />
   <#local startiso8601 = vrtx.propValue(resource, "start-date", "iso-8601") />
   <#local startshort = vrtx.propValue(resource, "start-date", "short") />

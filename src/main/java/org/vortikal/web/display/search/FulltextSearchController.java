@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2007, 2009 University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -77,6 +77,7 @@ public class FulltextSearchController implements Controller {
     private String viewName;
     private String redirectViewName;
     private int pageSize = 20;
+    private int maxResults = 500;
     private String hostName;
     private boolean servesWebRoot = true;
     
@@ -146,16 +147,23 @@ public class FulltextSearchController implements Controller {
             return new ModelAndView(this.viewName, model);
         }
 
-        int page = getPage(request.getParameter("page"));
-        int startIdx = page * this.pageSize;
+        // Note that page number is zero-based (so increment by 1 for view)
+        int currentPage = getPage(request.getParameter("page"));
+        int startIdx = currentPage * this.pageSize;
         int endIdx = startIdx + this.pageSize;
 
         ResultSet resultSet = searcher.execute(token, query, resourceURI);
+        List<PropertySet> results = resultSet.getAllResults();
+        if (results.size() > this.maxResults) {
+            results = results.subList(0, this.maxResults);
+        }
+        int resultSize = results.size();
+        searchModel.put("totalHits", resultSize);
+        searchModel.put("maxResults", (resultSize == this.maxResults));
 
         // Check if last result of the current page exists 
-        if (! resultSet.hasResult(endIdx-1)) {
-            // Position endIdx one beyond the very last result (endIdx is exclusive)
-            endIdx = resultSet.getAllResults().size();
+        if (endIdx > resultSize) {
+            endIdx = resultSize;
         }
 
         // Since endIdx might have been repositioned above, we need to make sure
@@ -169,40 +177,48 @@ public class FulltextSearchController implements Controller {
                 startIdx = endIdx - endIdx % this.pageSize;
             }
             // Update page counter
-            page = startIdx / this.pageSize;
+            currentPage = startIdx / this.pageSize;
         }
 
-        List<PropertySet> results = resultSet.getResults(startIdx, endIdx);
+        // The results to display on current page:
+        List<PropertySet> displayResults = results.subList(startIdx, endIdx);
+        searchModel.put("results", displayResults);
+        searchModel.put("currentPage", currentPage+1);
 
-        if (resultSet.hasResult(endIdx)) { // Check if there is another page of results
-            int nextPage = page + 1;
-            URL nextURL = currentService.constructURL(resourceURI);
-            nextURL.removeParameter("query");
-            nextURL.addParameter("query", query);
-            nextURL.removeParameter("page");
-            nextURL.addParameter("page", String.valueOf(nextPage + 1));
-            searchModel.put("next", nextURL);
-        }
-
-        if (page > 0) {
-            List<String> previousUrls = new ArrayList<String>();
-            int prevPage = page;
-
-            URL prevURL = currentService.constructURL(resourceURI);
-            prevURL.removeParameter("query");
-            prevURL.addParameter("query", query);
-            while (prevPage > 0) {
-                prevURL.removeParameter("page");
-                prevURL.addParameter("page", String.valueOf(prevPage));
-                previousUrls.add(0, prevURL.toString());
-                prevPage--;
+        // Generate links for paging (pager bar below results)
+        if (resultSize > this.pageSize) {
+            int numPages = resultSize / this.pageSize;
+            if (resultSize % this.pageSize > 0) {
+                ++numPages;
             }
-            searchModel.put("previousPages", previousUrls);
+            
+            if (currentPage > 0) {
+                int prevPage = currentPage - 1;
+                URL prevLink = currentService.constructURL(resourceURI);
+                prevLink.removeParameter("query"); prevLink.addParameter("query", query);
+                prevLink.removeParameter("page"); prevLink.addParameter("page", String.valueOf(prevPage+1));
+                searchModel.put("prevLink", prevLink);
+            }
+            
+            List<URL> pageLinks = new ArrayList<URL>();
+            for (int i=0; i<numPages; i++) {
+                URL pageLink = currentService.constructURL(resourceURI);
+                pageLink.removeParameter("query"); pageLink.addParameter("query", query);
+                pageLink.removeParameter("page"); pageLink.addParameter("page", String.valueOf(i+1));
+                pageLinks.add(pageLink);
+            }
+            searchModel.put("pageLinks", pageLinks);
+            
+            if (currentPage < numPages-1) {
+                int nextPage = currentPage + 1;
+                URL nextLink = currentService.constructURL(resourceURI);
+                nextLink.removeParameter("query"); nextLink.addParameter("query", query);
+                nextLink.removeParameter("page"); nextLink.addParameter("page", String.valueOf(nextPage+1));
+                searchModel.put("nextLink", nextLink);
+            }
         }
-
+        
         searchModel.put("query", query);
-        searchModel.put("results", results);
-        searchModel.put("totalHits", resultSet.getSize());
         searchModel.put("start", startIdx+1);
         searchModel.put("end", endIdx);
         
@@ -216,7 +232,7 @@ public class FulltextSearchController implements Controller {
      * Max page number can't be greater than
      * pageNum * pageSize + pageSize <= Integer.MAX_VALUE
      */
-    protected int getPage(String pageParam) {
+    int getPage(String pageParam) {
         if (pageParam == null) {
             return 0;
         }

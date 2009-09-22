@@ -116,6 +116,9 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
     private static final String PARAMETER_EXCLUDE_FOLDERS = "exclude-folders";
     private static final String PARAMETER_EXCLUDE_FOLDERS_DESC = "Commma-separated list with relative paths to folders which should not be displayed in the list";
 
+    private static final String PARAMETER_URI = "uri";
+    private static final String PARAMETER_URI_DESC = "The URI (path) to the selected folder.";
+
     private static final String PARAMETER_AS_CURRENT_USER = "authenticated";
     private static final String PARAMETER_AS_CURRENT_USER_DESC = "The default is that only resources readable for everyone is listed. "
             + "If this is set to 'true', the listing is done as the currently " + "logged in user (if any)";
@@ -357,6 +360,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
 
     private class MenuRequest {
         private Path currentCollectionUri;
+        private Path uri;
         private String title;
         private PropertyTypeDefinition sortProperty;
         private boolean ascendingSort = true;
@@ -429,11 +433,36 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
                 }
             }
 
-            if (request.getStringParameter(PARAMETER_DISPLAY_FROM_LEVEL) != null
-                    && !request.getStringParameter(PARAMETER_DISPLAY_FROM_LEVEL).trim().equals("")) {
+            String uri = request.getStringParameter(PARAMETER_URI);
+            String displayFromLevel = request.getStringParameter(PARAMETER_DISPLAY_FROM_LEVEL);
+
+            if ((uri == null || "".equals(uri)) && (displayFromLevel == null || "".equals(displayFromLevel))) {
+                throw new DecoratorComponentException("One of parameters '" + PARAMETER_URI + "' or '"
+                        + PARAMETER_DISPLAY_FROM_LEVEL + "' must be specified");
+            }
+            if ((uri != null && !"".equals(uri)) && (displayFromLevel != null && !"".equals(displayFromLevel))) {
+                throw new DecoratorComponentException("At most one of parameters '" + PARAMETER_URI + "' or '"
+                        + PARAMETER_DISPLAY_FROM_LEVEL + "' can be specified");
+            }
+
+            if (uri != null && !"".equals(uri)) {
                 try {
-                    this.displayFromLevel = Integer.parseInt(request.getStringParameter(PARAMETER_DISPLAY_FROM_LEVEL)
-                            .trim());
+
+                    if (uri != null && !"".equals(uri.trim())) {
+                        if (!"/".equals(uri) && uri.endsWith("/")) {
+                            uri = uri.substring(0, uri.length() - 1);
+                        }
+                        this.currentCollectionUri = Path.fromString(uri); // override
+                    }
+                } catch (Throwable t) {
+                    throw new DecoratorComponentException("Illegal value for parameter '" + PARAMETER_URI + "': "
+                            + request.getStringParameter(PARAMETER_URI));
+                }
+            }
+
+            if (displayFromLevel != null && !"".equals(displayFromLevel.trim())) {
+                try {
+                    this.displayFromLevel = Integer.parseInt(displayFromLevel);
                 } catch (Throwable t) {
                     throw new DecoratorComponentException("Illegal value for parameter '"
                             + PARAMETER_DISPLAY_FROM_LEVEL + "': "
@@ -446,9 +475,8 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
                             + ": must be a positive number between larger than 0");
                 }
 
-                if (this.displayFromLevel <= requestContext.getCurrentCollection().getPaths().size()) {
-                    this.currentCollectionUri = requestContext.getCurrentCollection().getPaths().get(
-                            this.displayFromLevel - 1);
+                if (this.displayFromLevel <= currentCollectionUri.getPaths().size()) {
+                    this.currentCollectionUri = currentCollectionUri.getPaths().get(this.displayFromLevel - 1);
                 }
             }
 
@@ -466,8 +494,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
                     if (this.currentCollectionUri.getDepth() > (this.freezeAtLevel - 1)) {
                         List<String> elements = this.currentCollectionUri.getElements();
 
-                        this.currentCollectionUri = requestContext.getCurrentCollection().getPaths().get(
-                                this.freezeAtLevel - 1);
+                        this.currentCollectionUri = currentCollectionUri.getPaths().get(this.freezeAtLevel - 1);
 
                     }
                 }
@@ -495,8 +522,8 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
                     ArrayList<Path> excludeUIRs = new ArrayList<Path>();
                     while (excludeFoldersTokenized.hasMoreTokens()) {
                         String excludedFolder = excludeFoldersTokenized.nextToken().trim();
-                        Path uri = this.currentCollectionUri.extend(excludedFolder);
-                        excludeUIRs.add(uri);
+                        Path theUri = this.currentCollectionUri.extend(excludedFolder);
+                        excludeUIRs.add(theUri);
                     }
                     this.excludeURIs = excludeUIRs;
                 } catch (Throwable t) {
@@ -725,6 +752,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         map.put(PARAMETER_RESULT_SETS, PARAMETER_RESULT_SETS_DESC);
         map.put(PARAMETER_GROUP_RESULT_SETS_BY, PARAMETER_GROUP_RESULT_SETS_BY_DESC);
         map.put(PARAMETER_DISPLAY_FROM_LEVEL, PARAMETER_DISPLAY_FROM_LEVEL_DESC);
+        map.put(PARAMETER_URI, PARAMETER_URI_DESC);
         map.put(PARAMETER_FREEZE_AT_LEVEL, PARAMETER_FREEZE_AT_LEVEL_DESC);
         map.put(PARAMETER_EXCLUDE_FOLDERS, PARAMETER_EXCLUDE_FOLDERS_DESC);
         map.put(PARAMETER_AS_CURRENT_USER, PARAMETER_AS_CURRENT_USER_DESC);

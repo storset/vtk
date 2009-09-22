@@ -54,6 +54,7 @@ import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
+import org.vortikal.repository.search.query.UriSetQuery;
 import org.vortikal.repository.search.query.UriTermQuery;
 import org.vortikal.repository.store.jcr.JcrDaoConstants;
 import org.vortikal.repository.store.jcr.JcrPathUtil;
@@ -248,6 +249,10 @@ public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
 
     public Object visit(PropertyRangeQuery prQuery, Object data) throws UnsupportedQueryException {
         throw new UnsupportedQueryException("PropertyRangeQuery not supported, yet");
+    }
+    
+    public Object visit(UriSetQuery usQuery, Object data) throws UnsupportedQueryException {
+        throw new UnsupportedQueryException("UriSetQuery not supported");
     }
 
     public Object visit(PropertyTermQuery ptQuery, Object data) throws UnsupportedQueryException {

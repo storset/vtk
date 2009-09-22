@@ -80,6 +80,17 @@ public class DumpQueryTreeVisitor implements QueryTreeVisitor {
         return buffer.toString();
     }
 
+    public Object visit(UriSetQuery uriSetQuery, Object data) {
+        if (data == null) data = "";
+        StringBuilder buf = new StringBuilder((String)data);
+        buf.append(uriSetQuery.getClass().getName()).append("\n");
+        
+        buf.append((String)data).append("URI set =").append(uriSetQuery.getUris()).append("\n");
+        buf.append(", operator = ").append(uriSetQuery.getOperator());
+        
+        return buf.toString();
+    }
+    
     /**
      * @param andQuery The <code>NamePrefixQuery</code> instance.
      * @param data A <code>String</code> with the base output prefix or <code>null</code>.

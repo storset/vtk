@@ -13,6 +13,8 @@ PARSER_BEGIN(QueryParserImpl)
 package org.vortikal.repository.search;
 
 import java.io.StringReader;
+import java.util.Set;
+import java.util.HashSet;
 
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -24,6 +26,7 @@ import org.vortikal.repository.search.query.PropertyExistsQuery;
 import org.vortikal.repository.search.query.PropertyPrefixQuery;
 import org.vortikal.repository.search.query.PropertyTermQuery;
 import org.vortikal.repository.search.query.Query;
+import org.vortikal.repository.search.query.UriSetQuery;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriDepthQuery;
@@ -74,6 +77,16 @@ public class QueryParserImpl implements QueryParser {
             throw new RuntimeException("Unknown property " + prefix + ":" + name);
 
         return new PropertyTermQuery(def, value, operator);
+    }
+    
+    private Query getUriSetQuery(String urisCsv, TermOperator op) {
+        String[] values = unescape(urisCsv).split(",");
+        Set uris = new HashSet();
+        for (String value: values) {
+            uris.add(value);
+        }
+        
+        return new UriSetQuery(uris, op);
     }
 
     private Query getPropPrefixQuery(String prefix, String name, String value, boolean inverted) {
@@ -269,7 +282,7 @@ Query UriQuery() :
     Query q;
 }
 {
-    (LOOKAHEAD(4) q=UriPrefixQuery() | q=UriTermQuery())
+    (LOOKAHEAD(4) q=UriPrefixQuery() | LOOKAHEAD(2) q=UriTermQuery() | LOOKAHEAD(2) q=UriSetQuery())
         { return q; }
 }
 
@@ -296,22 +309,36 @@ Query UriPrefixQuery() :
         }
 }
 
-Query UriTermQuery() : 
+Query UriSetQuery() :
 {
-    Token t, eq = null, ne = null, in = null, ni = null;
+    Token t, in = null, ni = null;
     TermOperator o;
 }
 {
-    <URI> (eq=<EQ> | ne=<NE> | in=<IN> | ni=<NI>) t=<VALUE>
+    <URI> (in=<IN> | ni=<NI>) t=<VALUE>
+     {
+        if (in != null) {
+          o = TermOperator.IN;
+        } else {
+          o = TermOperator.NI;
+        }
+        
+        return getUriSetQuery(t.image, o);
+     }
+}
+
+Query UriTermQuery() : 
+{
+    Token t, eq = null, ne = null;
+    TermOperator o;
+}
+{
+    <URI> (eq=<EQ> | ne=<NE>) t=<VALUE>
         {  
             if (eq != null) 
                 o = TermOperator.EQ;
-            else if (ne != null) 
+            else
                 o = TermOperator.NE;
-            else if (ni != null) 
-                o = TermOperator.NI;
-            else 
-                o = TermOperator.IN;
                 
             String value = unescape(t.image);
             return new UriTermQuery(value, o);

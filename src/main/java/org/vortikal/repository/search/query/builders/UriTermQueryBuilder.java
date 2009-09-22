@@ -31,10 +31,7 @@
 package org.vortikal.repository.search.query.builders;
 
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.ConstantScoreQuery;
-import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
 import org.vortikal.repository.index.mapping.FieldNameMapping;
@@ -73,29 +70,7 @@ public class UriTermQueryBuilder implements QueryBuilder {
             return new ConstantScoreQuery(new InversionFilter(new QueryWrapperFilter(tq)));
         }
         
-        if (TermOperator.IN.equals(operator)) {
-        	return getBooleanQuery(BooleanClause.Occur.SHOULD);
-        }
-        
-        if (TermOperator.NI.equals(operator)) {
-            BooleanQuery bq = getBooleanQuery(BooleanClause.Occur.MUST_NOT);
-            MatchAllDocsQuery alldocs = new MatchAllDocsQuery();
-            bq.add(alldocs, BooleanClause.Occur.MUST);
-            return bq;
-        }
-        
-
-        throw new QueryBuilderException("Operator '" + operator + "' not legal for uri queries.");
+        throw new QueryBuilderException("Operator '" + operator + "' not legal for UriTermQuery.");
     }
 
-    private BooleanQuery getBooleanQuery(BooleanClause.Occur occurence) {
-        String[] values = query.getUri().split(",");
-        BooleanQuery bq = new BooleanQuery();
-        for (String value : values) {
-            Term term = new Term(FieldNameMapping.URI_FIELD_NAME, value);
-            bq.add(new TermQuery(term), occurence);
-        }
-        return bq;
-    }
-    
 }

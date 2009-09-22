@@ -64,6 +64,8 @@ public interface QueryTreeVisitor {
     
     public Object visit(UriPrefixQuery upQuery, Object data);
     
+    public Object visit(UriSetQuery usQuery, Object data);
+    
     public Object visit(UriTermQuery utQuery, Object data);
     
     public Object visit(ACLExistsQuery aclQuery, Object data);

@@ -73,6 +73,17 @@ resourcetype structured-article : structured-document {
       ##
     }
     
+    additional-content {
+      ##
+      [resource-props "."]
+      [if additional-content]
+        <div id="additional-content">
+          [val additional-content unescaped]
+        </div>
+      [endif]
+      ##
+    }
+    
   }
 
   view {
@@ -100,9 +111,8 @@ resourcetype structured-article : structured-document {
             <resource:tags />
             <resource:comments />
           </div>
-          <div id="additional-content">
-            <json:field select="additional-content" />
-         </div>
+          <comp:additional-content />
+        </div>
       </body>
     </html>
     ##

@@ -10,9 +10,9 @@ resourcetype structured-article : structured-document {
 
   edit-rules {
     image-caption (size[small]),
-    group introImg (introduction-img, image-caption) (after introduction) vertical,
+    group introImageAndCaption (introduction-img, image-caption) (after introduction) vertical,
+    author (after introImageAndCaption),
     title (size[large]),
-    group timeAndAuthor (published-date, author) (after introImg) horizontal,
     tags tooltip (en : "(tag1, tag2, ...)", no : "(emneord1, emneord2, ...)", nn : "(emneord1, emneord2, ...)"),
     author tooltip (en : "(author1, author2, ...)", no : "(forfatter1, forfatter2, ...)", nn : "(forfatter1, forfatter2, ...)")
   }
@@ -72,15 +72,7 @@ resourcetype structured-article : structured-document {
       [endif]
       ##
     }
-
-    published-date {
-      ##
-      [def published-date resource-prop "." "published-date"]
-      [if published-date]
-        <span class="vrtx-published-date">[localized "published"]&nbsp;[val published]</span>
-      [endif]
-      ##
-    }
+    
   }
 
   view {
@@ -125,7 +117,7 @@ resourcetype structured-article : structured-document {
     author: (en : "Author", no : "Forfatter", nn : "Forfattar"),
     published-date: (en : "Publishing time", no : "Publiseringstidspunkt", nn : "Publiseringstidspunkt"),
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
-    show-additional-content : (en : "Show additional content", no : "Vis tilleggsinformasjon", nn : "Vis tilleggsinformasjon")
+    show-additional-content : (en : "Hide additional content", no : "Skjul tilleggsinformasjon", nn : "Skjul tilleggsinformasjon"),
     additional-content : (en : "Additional content", no : "Tilleggsinformasjon", nn : "Tilleggsinformasjon")
   }
 }

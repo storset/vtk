@@ -208,6 +208,8 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
                 Field indexedField = getIndexedFieldFromProperty(property, false);
                 doc.add(indexedField);
 
+            case JSON: // JSON values should only be stored   
+
                 // Create stored field(s) for value(s)
                 for (Field storedField: getStoredFieldsFromProperty(property)) {
                     doc.add(storedField);

@@ -16,40 +16,6 @@ resourcetype structured-event : structured-document {
     mapurl (size[small]),
     tags tooltip (en : "(tag1, tag2, ...)", no : "(emneord1, emneord2, ...)", nn : "(emneord1, emneord2, ...)")
   }
-    
-  view-components {
-  
-    time-and-place {
-      ##
-       [resource-props "."]
-       [if start-date]
-         <div class="vevent">
-           <span class="time-and-place">[localized "time-and-place"]:&nbsp;</span>
-           <span class="summary" style="display:none;">[val title]</span>
-           [if start-date]
-             <abbr class="dtstart" title="">[val start-date]</abbr>
-           [endif]
-           [if end-date]
-             [if start-date]
-              &nbsp;-&nbsp;
-             [endif]
-             <abbr class="dtend" title="">[val end-date]</abbr>
-           [endif]
-           [if location],&nbsp;
-             <span class="location">
-             [if map-url]
-               <a href="[val map-url]" target="_parent">[val location]</a>
-             [else]
-               [val location]
-             [endif]
-             </span>
-           [endif]
-         </div>
-       [endif]
-      ##
-    }
-    
-  }
 
   view {
     ##

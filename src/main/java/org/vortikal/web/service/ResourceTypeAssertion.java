@@ -30,21 +30,22 @@
  */
 package org.vortikal.web.service;
 
-
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.security.Principal;
 
 /**
- * Assertion for matching on whether the current resource has a given
- * resource type.
- *
- * <p>Configurable JavaBean properties:
+ * Assertion for matching on whether the current resource has a given resource
+ * type.
+ * 
+ * <p>
+ * Configurable JavaBean properties:
  * <ul>
- *   <li><code>resourceTypeDefinition</code> - the {@link
- *   ResourceTypeDefinition resource type} to match
- *   <li><code>invert</code> - whether to invert the assertion
- *   <li><code>exactMatch</code> - set to true for equals instead of ofType asserting
+ * <li><code>resourceTypeDefinition</code> - the {@link ResourceTypeDefinition
+ * resource type} to match
+ * <li><code>invert</code> - whether to invert the assertion
+ * <li><code>exactMatch</code> - set to true for equals instead of ofType
+ * asserting
  * </ul>
  */
 public class ResourceTypeAssertion extends AbstractRepositoryAssertion {
@@ -52,48 +53,56 @@ public class ResourceTypeAssertion extends AbstractRepositoryAssertion {
     private ResourceTypeDefinition resourceTypeDefinition;
     private boolean invert = false;
     private boolean exactMatch = false;
-    
+
+    private String resourceType;
+
     public void setResourceTypeDefinition(ResourceTypeDefinition resourceTypeDefinition) {
         this.resourceTypeDefinition = resourceTypeDefinition;
     }
-    
+
     public void setInvert(boolean invert) {
         this.invert = invert;
     }
 
+    public void setResourceType(String resourceType) {
+        this.resourceType = resourceType;
+    }
 
     public boolean conflicts(Assertion assertion) {
         // XXX: implement
         return false;
     }
 
-
     public boolean matches(Resource resource, Principal principal) {
 
         if (resource == null)
             return this.invert;
 
-        
-        
         boolean match = false;
 
         if (this.exactMatch) {
-            match = (resource.getResourceTypeDefinition().equals(this.resourceTypeDefinition));
+            if (this.resourceTypeDefinition != null) {
+                match = (resource.getResourceTypeDefinition().equals(this.resourceTypeDefinition));
+            } else {
+                match = resource.getResourceType().equals(this.resourceType);
+            }
         } else {
-            match = resource.isOfType(this.resourceTypeDefinition);
+            if (this.resourceTypeDefinition != null) {
+                match = resource.isOfType(this.resourceTypeDefinition);
+            } else {
+                match = resource.getResourceType().equals(this.resourceType);
+            }
         }
-        
+
         if (this.invert)
             return !match;
 
         return match;
     }
-    
-
 
     public String toString() {
         StringBuffer sb = new StringBuffer();
-		
+
         sb.append(super.toString());
         sb.append("; resourceType = ").append(this.resourceTypeDefinition);
         sb.append("; invert = ").append(this.invert);
@@ -103,6 +112,5 @@ public class ResourceTypeAssertion extends AbstractRepositoryAssertion {
     public void setExactMatch(boolean exactMatch) {
         this.exactMatch = exactMatch;
     }
-
 
 }

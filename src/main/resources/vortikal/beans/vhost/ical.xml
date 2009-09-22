@@ -13,6 +13,7 @@
           <property name="assertions">
             <list>
               <ref bean="isEventAssertion" />
+              <ref bean="resourceTypeIsStructuredEvent" />
               <ref bean="resourceIsEventListing" />
             </list>
           </property>
@@ -31,6 +32,10 @@
     <property name="endDatePropDef" ref="endDatePropDef" />
     <property name="locationPropDef" ref="locationPropDef" />
     <property name="introductionPropDef" ref="introductionPropDef" />
+  </bean>
+
+  <bean id="resourceTypeIsStructuredEvent" class="org.vortikal.web.service.ResourceTypeAssertion">
+    <property name="resourceType" value="structured-event" />
   </bean>
 
 </beans>

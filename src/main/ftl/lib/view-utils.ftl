@@ -125,9 +125,10 @@
   <#t />
   <#if location != "" && mapurl == "">, <span class="location">${location}</span>
   <#elseif location != "" && mapurl != "">, <span class="location"><a href="${mapurl}">${location}</a></span></#if>
+  
   <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />
   <#local currentDate = constructor("java.util.Date") />
-  <#local isValidStartDate = validateStartDate(resource, currentDate) />
+  <#local isValidStartDate = validateStartDate(resource, prefix, currentDate) />
   
   <#if isValidStartDate?string == "true">
     <span class="vrtx-add-event"><#-- XXX: remove hard-coded '?vrtx=ical' URL: -->
@@ -179,7 +180,7 @@
   
   <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />
   <#local currentDate = constructor("java.util.Date") />
-  <#local isValidStartDate = validateStartDate(resource, currentDate) />
+  <#local isValidStartDate = validateStartDate(resource, "", currentDate) />
   
   <#local numberOfComments = vrtx.prop(resource, "numberOfComments") />
   <#if numberOfComments?has_content || isValidStartDate?string == "true" >	
@@ -208,8 +209,8 @@
  * @param event The resource to evaluate start date for
  * @param currentDate The date to compare the events start date to
 -->
-<#function validateStartDate event currentDate>
-  <#local startDate = event.getPropertyByPrefix("", "start-date")?default("") />
+<#function validateStartDate event prefix currentDate>
+  <#local startDate = event.getPropertyByPrefix(prefix, "start-date")?default("") />
   <#if startDate != "">
     <#return startDate.getDateValue()?datetime &gt; currentDate?datetime />
   </#if>

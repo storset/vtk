@@ -18,7 +18,8 @@ resourcetype structured-article : structured-document {
   }
 
   scripts {
-    show-additional-content show-hide onclick (additional-content)    
+    show-additional-content show-hide onclick (additional-content),
+    tags autocomplete (minChars : "1")
   }
 
   view-components {

@@ -16,6 +16,10 @@ resourcetype structured-event : structured-document {
     mapurl (size[small]),
     tags tooltip (en : "(tag1, tag2, ...)", no : "(emneord1, emneord2, ...)", nn : "(emneord1, emneord2, ...)")
   }
+  
+  scripts {
+    tags autocomplete (minChars : "1")
+  }
 
   view {
     ##

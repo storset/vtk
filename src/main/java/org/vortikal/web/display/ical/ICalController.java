@@ -34,13 +34,12 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-    
-
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -50,22 +49,20 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.HtmlValueFormatter;
-import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.net.NetUtils;
 import org.vortikal.web.RequestContext;
-import org.joda.time.DateTimeZone;
 
 public class ICalController implements Controller {
 
     private Repository repository;
     private PropertyTypeDefinition startDatePropDef;
     private PropertyTypeDefinition endDatePropDef;
-    private PropertyTypeDefinition locationPropDef;    
-    
-    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response)
-            throws Exception {
+    private PropertyTypeDefinition locationPropDef;
+    private PropertyTypeDefinition introductionPropDef;
+
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         String token = SecurityContext.getSecurityContext().getToken();
         Path uri = RequestContext.getRequestContext().getResourceURI();
@@ -87,7 +84,6 @@ public class ICalController implements Controller {
         return null;
     }
 
-
     private String getICalFileName(Resource event) {
         String name = event.getName();
         if (name.contains(".")) {
@@ -96,14 +92,15 @@ public class ICalController implements Controller {
         return name;
     }
 
-
     private String createICal(Resource event) {
-        
-        //Spec: http://www.ietf.org/rfc/rfc2445.txt
-        // PRODID (4.7.3) & UID (4.8.4.7) added as recommended by spec. DTEND is not required.
-        // If DTEND not present, DTSTART will count for both start & end, as stated in spec (4.6.1).
-        
-        Property startDate = event.getProperty(startDatePropDef);
+
+        // Spec: http://www.ietf.org/rfc/rfc2445.txt
+        // PRODID (4.7.3) & UID (4.8.4.7) added as recommended by spec. DTEND is
+        // not required.
+        // If DTEND not present, DTSTART will count for both start & end, as
+        // stated in spec (4.6.1).
+
+        Property startDate = getProperty(event, startDatePropDef);
         // We don't create anything unless we have the startdate
         if (startDate == null) {
             return null;
@@ -118,18 +115,18 @@ public class ICalController implements Controller {
         sb.append("DTSTAMP:" + getDtstamp() + "\n");
         sb.append("UID:" + getUiD(Calendar.getInstance().getTime()) + "\n");
         sb.append("DTSTART:" + getICalDate(startDate.getDateValue()) + "Z\n");
-        
-        Property endDate = event.getProperty(endDatePropDef);
+
+        Property endDate = getProperty(event, endDatePropDef);
         if (endDate != null) {
             sb.append("DTEND:" + getICalDate(endDate.getDateValue()) + "Z\n");
         }
 
-        Property location = event.getProperty(locationPropDef);
+        Property location = getProperty(event, locationPropDef);
         if (location != null) {
             sb.append("LOCATION:" + location.getStringValue() + "\n");
         }
 
-        Property description = event.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.INTRODUCTION_PROP_NAME);
+        Property description = getProperty(event, introductionPropDef);
         if (description != null && StringUtils.isNotBlank(description.getStringValue())) {
             sb.append("DESCRIPTION:" + getDescription(description) + "\n");
         }
@@ -140,6 +137,13 @@ public class ICalController implements Controller {
         return sb.toString();
     }
 
+    private Property getProperty(Resource event, PropertyTypeDefinition propDef) {
+        Property prop = event.getProperty(propDef);
+        if (prop == null) {
+            prop = event.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, propDef.getName());
+        }
+        return prop;
+    }
 
     private String getDtstamp() {
         String dateFormat = "yyyyMMdd'T'HHmmss'Z'";
@@ -147,20 +151,18 @@ public class ICalController implements Controller {
         return sdf.format(Calendar.getInstance().getTime());
     }
 
-
     private String getUiD(Date currenttime) {
-        return getICalDate(currenttime) + "-" + Calendar.getInstance().getTimeInMillis() + "@" + NetUtils.guessHostName();
+        return getICalDate(currenttime) + "-" + Calendar.getInstance().getTimeInMillis() + "@"
+                + NetUtils.guessHostName();
     }
 
-
-    private String getICalDate(Date date) {  
+    private String getICalDate(Date date) {
         DateTimeZone zone = DateTimeZone.getDefault();
         Date UTCDate = new Date(zone.convertLocalToUTC(date.getTime(), true));
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         SimpleDateFormat timeFormat = new SimpleDateFormat("HHmmss");
         return dateFormat.format(UTCDate) + "T" + timeFormat.format(UTCDate);
     }
-
 
     private String getDescription(Property description) {
         String flattenedDescription = description.getFormattedValue(HtmlValueFormatter.FLATTENED_FORMAT, null);
@@ -171,28 +173,29 @@ public class ICalController implements Controller {
         return flattenedDescription;
     }
 
-
     @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
-    
-    
+
     @Required
     public void setStartDatePropDef(PropertyTypeDefinition startDatePropDef) {
         this.startDatePropDef = startDatePropDef;
     }
-    
-    
+
     @Required
     public void setEndDatePropDef(PropertyTypeDefinition endDatePropDef) {
         this.endDatePropDef = endDatePropDef;
     }
-    
-    
+
     @Required
     public void setLocationPropDef(PropertyTypeDefinition locationPropDef) {
         this.locationPropDef = locationPropDef;
+    }
+
+    @Required
+    public void setIntroductionPropDef(PropertyTypeDefinition introductionPropDef) {
+        this.introductionPropDef = introductionPropDef;
     }
 
 }

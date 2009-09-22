@@ -30,6 +30,7 @@
     <property name="startDatePropDef" ref="startDatePropDef" />
     <property name="endDatePropDef" ref="endDatePropDef" />
     <property name="locationPropDef" ref="locationPropDef" />
+    <property name="introductionPropDef" ref="introductionPropDef" />
   </bean>
 
 </beans>

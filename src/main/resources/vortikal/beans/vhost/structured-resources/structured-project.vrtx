@@ -4,9 +4,9 @@ resourcetype structured-project {
     name : string,
     status : boolean,
     introduction : simple_html,
-    picture : image_ref,
+    introduction-img : image_ref,
+    image-caption : simple_html,
     content : html,
-    projectLeader : json ( participantName : string, participantUrl : string ),
     participantsUsernames : json ( participantUsername : string ) multiple,
     participants : json ( participantName : string, participantUrl : string ) multiple,
     contactInfo : simple_html,
@@ -15,8 +15,10 @@ resourcetype structured-project {
   }
   
   edit-rules {
-    group introImage (introduction, picture) (after name) horizontal,
+    image-caption (size[small]),
     status (after name),
+    introduction (after status),
+    group introImageAndCaption (introduction-img, image-caption) (after introduction) vertical,
     tags tooltip (en : "(tag1, tag2, ...)", no : "(emneord1, emneord2, ...)", nn : "(emneord1, emneord2, ...)")
   }
 
@@ -35,23 +37,47 @@ resourcetype structured-project {
       ##
     }
     
-    project-image {
+    introduction-image {
       ##
-      [def img-uri resource-prop "." "picture"]
+      [def img-uri resource-prop "." "introduction-img"]
       [if img-uri]
         [def img resource img-uri]
+        [def caption resource-prop "." "image-caption"]
         [def pixel-width resource-prop img-uri "pixelWidth"]
+        [def img-author resource-prop img-uri "authorName"]
 
         [if pixel-width]
           [def style concat "width:" pixel-width "px"]
         [endif]
-        <div class="vrtx-project-image">
-          [if !img]
-            <img class="vrtx-project-image" src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
+
+        [if ! img]
+          <img class="vrtx-introduction-image" src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
+        [else]
+          [if caption]
+            <div class="vrtx-introduction-image" [if style]style="[val style]"[endif]>
+              <img src="[val img-uri]" alt="[val caption unescaped "flattened"]"/>
+              <div class="vrtx-imagetext">
+                <div class="vrtx-imagedescription">[val caption unescaped]</div>
+                [if img-author]
+                  <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val img-author]
+                [endif]
+              </div>
+            </div>
           [else]
-            <img class="vrtx-project-image" src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
+            [if img-author]
+              <div class="vrtx-introduction-image" [if style]style="[val style]"[endif]>
+                <img src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
+                <div class="vrtx-imagetext">
+                  <span class="vrtx-photo">
+                    <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val img-author]
+                  </span>
+                </div>
+              </div>
+            [else]
+              <img class="vrtx-introduction-image" src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
+            [endif]
           [endif]
-        </div>
+        [endif]
       [endif]
       ##
     }
@@ -65,18 +91,7 @@ resourcetype structured-project {
           <ul id="vrtx-project-participants">
          
           [def document structured-document]
-          [def leader json-attr document "properties.projectLeader"]
-          [def participants json-attr document "properties.participants"]
-          [def theleadername json-attr leader "participantName"]
-          [def theleaderurl json-attr leader "participantUrl"]
-             
-          [if theleadername]
-            [if theleaderurl]
-              <li><a href="[val theleaderurl]">[val theleadername]</a>&nbsp;([localized "projectLeaderComp"])</li>
-            [else]
-              <li>[val theleadername]</li>
-            [endif]
-          [endif]
+          [def participants json-attr document "properties.participants"]    
 
           [list participants participant]
             [def thename json-attr participant "participantName"]
@@ -151,7 +166,7 @@ resourcetype structured-project {
         <div id="content">
           <h1><json:field select="name" /></h1>
           <div id="main-content">
-            <comp:project-image />
+            <comp:introduction-image />
             <comp:introduction />
             <json:field select="content" />
             <resource:tags />
@@ -171,19 +186,17 @@ resourcetype structured-project {
     name : (en : "Name", no : "Navn", nn : "Navn"),
     introduction : (en : "Introduction",no : "Introduksjon", nn : "Introduksjon"),
     status : (en : "Status", no : "Status", nn : "Status"),
-    picture : (en : "Picture or logo", no : "Bilde eller logo", nn : "Bilde eller logo"),
-    projectLeaderComp : (en : "projectleader", no : "prosjektleder", nn : "prosjektleiar"),
-    projectLeader : (en : "Projectleader", no : "Prosjektleder", nn : "Prosjektleiar"),
+    introduction-img : (en: "Image", no: "Bilde", nn : "Bilete"),
+    image-caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
     participantsHeader : (en : "Participants", no : "Deltakere", nn : "Deltakarar"),
     participantsUsernames : (en : "Participants (with username at UiO)",no : "Deltakere (med brukernavn ved UiO)", nn :"Deltakarar (med brukernamn ved UiO)"),
     participantUsername : (en : "Username",no : "Brukernavn", nn :"Brukernamn"),
     participants : (en : "Participants (without username at UiO)", no : "Deltakere (uten brukernavn ved UiO)", nn : "Deltakarar (uten brukernamn ved UiO)"),
     participantName : (en : "Name",no : "Navn", nn :"Namn"),
-    participantUrl : (en : "Webaddress",no : "Web adresse", nn :"Web adresse"),
+    participantUrl : (en : "Webaddress",no : "Webadresse", nn :"Webadresse"),
     rssFeeds : (en : "Subscribe to RSS-feeds",no : "Abonner på RSS-strømmer", nn :"Abonner på RSS-strømmer"),
     rssTitle : (en : "Title",no : "Tittel", nn : "Tittel"),
-    rssUrl : (en : "Webaddress",no : "Web adresse", nn :"Webadresse"),
-    homepage : (en : "Homepage", no : "Hjemmeside", nn : "Hjemmeside"),
+    rssUrl : (en : "Webaddress",no : "Webadresse", nn :"Webadresse"),
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
     content : (en : "Content", no :"Innhold",nn : "Innhold"),
     contactInfo : (en : "Contact information", no : "Kontaktinformasjon", nn : "Kontaktinformasjon")

@@ -1,15 +1,43 @@
 @import url(default-layout.css);
 @import url(boxes.css);
 
-/* Prosjekt bilde */
-div.vrtx-project-image {
+/* Bilde uten bildetekst */
+/* Bilde med bildetekst */
+img.vrtx-introduction-image,
+div.vrtx-introduction-image {
   float: left;
-  width: 100%;
+  width: 100% !important;
   margin: 0 0 15px 0;
 }
 
-div.vrtx-project-image img {
-  max-width: 100%;
+div.vrtx-introduction-image img {
+  max-width: 100% !important;
+}
+
+div.vrtx-introduction-image div.vrtx-imagetext div.vrtx-imagedescription {
+   margin: 1em 0;
+   padding: 0;  
+}
+
+/* IE6 / IE7 margin tweak */
+div.vrtx-introduction-image div.vrtx-imagetext div.vrtx-imagedescription p {
+   margin: 0;
+}
+
+div.vrtx-introduction-image div.vrtx-imagetext span.vrtx-photo {
+   display: block; /* Make it same as vrtx-imagedescription */
+   margin: 1em 0;
+   padding: 0;
+   /* font-style: italic; */
+}
+
+div.vrtx-introduction-image div.vrtx-imagetext span.vrtx-photo span.vrtx-photo-prefix {
+   margin: 0;
+   padding: 0;  
+}
+
+div.vrtx-introduction-image div.vrtx-imagetext span.vrtx-imagetitle {
+    font-weight: bold;
 }
 
 ul#vrtx-project-participants {

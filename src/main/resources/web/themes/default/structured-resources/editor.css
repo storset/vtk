@@ -182,6 +182,8 @@ fieldset {
 	clear:left;
 	width:900px;
 	clear:left;
+    float:left;
+    margin:5px 0;
 }
 
 div.vrtx-json-element {

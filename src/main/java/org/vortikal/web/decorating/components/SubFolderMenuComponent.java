@@ -436,10 +436,6 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
             String uri = request.getStringParameter(PARAMETER_URI);
             String displayFromLevel = request.getStringParameter(PARAMETER_DISPLAY_FROM_LEVEL);
 
-            if ((uri == null || "".equals(uri)) && (displayFromLevel == null || "".equals(displayFromLevel))) {
-                throw new DecoratorComponentException("One of parameters '" + PARAMETER_URI + "' or '"
-                        + PARAMETER_DISPLAY_FROM_LEVEL + "' must be specified");
-            }
             if ((uri != null && !"".equals(uri)) && (displayFromLevel != null && !"".equals(displayFromLevel))) {
                 throw new DecoratorComponentException("At most one of parameters '" + PARAMETER_URI + "' or '"
                         + PARAMETER_DISPLAY_FROM_LEVEL + "' can be specified");
@@ -449,9 +445,15 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
                 try {
 
                     if (uri != null && !"".equals(uri.trim())) {
-                        if (!"/".equals(uri) && uri.endsWith("/")) {
-                            uri = uri.substring(0, uri.length() - 1);
+
+                        if (uri.startsWith("http://") || uri.startsWith("https://")) {
+
+                        } else {
+                            if (!"/".equals(uri) && uri.endsWith("/")) {
+                                uri = uri.substring(0, uri.length() - 1);
+                            }
                         }
+
                         this.currentCollectionUri = Path.fromString(uri); // override
                     }
                 } catch (Throwable t) {

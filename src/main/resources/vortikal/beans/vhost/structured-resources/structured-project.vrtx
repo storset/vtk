@@ -2,12 +2,12 @@ resourcetype structured-project {
 
   properties {
     name : string,
-    status : boolean,
+    title : derived (name) eval (name) overrides title,
     introduction : simple_html,
     introduction-img : image_ref,
     image-caption : simple_html,
     content : html,
-    participantsUsernames : json ( participantUsername : string ) multiple,
+    participantsUsernames : string multiple,
     participants : json ( participantName : string, participantUrl : string ) multiple,
     contactInfo : simple_html,
     tags : string multiple,
@@ -21,6 +21,7 @@ resourcetype structured-project {
   }
 
   scripts {
+  	participantsUsernames multipleinputfields,
     tags autocomplete (minChars : "1")
   }
     

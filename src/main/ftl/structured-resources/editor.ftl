@@ -60,8 +60,14 @@
       <#assign groupClass = groupClass + "-horizontal" />
     <#elseif elementBox.metaData['vertical']?exists>
       <#assign groupClass = groupClass + "-vertical" />
-    </#if>	
-    <div class=${groupClass}>
+    </#if>
+    <#if elementBox.name?exists>
+      <#assign groupName = elementBox["name"] />
+      <#assign groupClass = groupClass + " ${groupName?string}" />
+       <div class="${groupClass}">
+    <#else>
+       <div class="${groupClass}">
+    </#if>
   </#if>
 
   <#list elementBox.formElements as elem>

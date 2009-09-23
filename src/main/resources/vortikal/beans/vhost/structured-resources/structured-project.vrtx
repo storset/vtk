@@ -61,7 +61,7 @@ resourcetype structured-project {
       [resource-props "."]
       [if participants]
         <div class="narrow-box-borders">
-          <h2>[localized "participants"]</h2>
+          <h2>[localized "participantsHeader"]</h2>
           <ul id="vrtx-project-participants">
          
           [def document structured-document]
@@ -174,9 +174,10 @@ resourcetype structured-project {
     picture : (en : "Picture or logo", no : "Bilde eller logo", nn : "Bilde eller logo"),
     projectLeaderComp : (en : "projectleader", no : "prosjektleder", nn : "prosjektleiar"),
     projectLeader : (en : "Projectleader", no : "Prosjektleder", nn : "Prosjektleiar"),
-    participantsUsernames : (en : "Participants (with username at UiO)",no : "Deltakere (med brukernavn ved UiO)", nn :"Deltakare (med brukernamn ved UiO)"),
+    participantsHeader : (en : "Participants", no : "Deltakere", nn : "Deltakarar"),
+    participantsUsernames : (en : "Participants (with username at UiO)",no : "Deltakere (med brukernavn ved UiO)", nn :"Deltakarar (med brukernamn ved UiO)"),
     participantUsername : (en : "Username",no : "Brukernavn", nn :"Brukernamn"),
-    participants : (en : "Participants (without username at UiO)", no : "Deltakere (uten brukernavn ved UiO)", nn : "Deltakare (uten brukernamn ved UiO)"),
+    participants : (en : "Participants (without username at UiO)", no : "Deltakere (uten brukernavn ved UiO)", nn : "Deltakarar (uten brukernamn ved UiO)"),
     participantName : (en : "Name",no : "Navn", nn :"Namn"),
     participantUrl : (en : "Webaddress",no : "Web adresse", nn :"Web adresse"),
     rssFeeds : (en : "Subscribe to RSS-feeds",no : "Abonner på RSS-strømmer", nn :"Abonner på RSS-strømmer"),

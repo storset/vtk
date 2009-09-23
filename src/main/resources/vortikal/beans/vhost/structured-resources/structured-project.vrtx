@@ -3,6 +3,7 @@ resourcetype structured-project {
   properties {
     name : string,
     title : derived (name) eval (name) overrides title,
+    status : boolean,
     introduction : simple_html,
     introduction-img : image_ref,
     image-caption : simple_html,
@@ -189,7 +190,6 @@ resourcetype structured-project {
     image-caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
     participantsHeader : (en : "Participants", no : "Deltakere", nn : "Deltakarar"),
     participantsUsernames : (en : "Participants (with username at UiO)",no : "Deltakere (med brukernavn ved UiO)", nn :"Deltakarar (med brukernamn ved UiO)"),
-    participantUsername : (en : "Username",no : "Brukernavn", nn :"Brukernamn"),
     participants : (en : "Participants (without username at UiO)", no : "Deltakere (uten brukernavn ved UiO)", nn : "Deltakarar (uten brukernamn ved UiO)"),
     participantName : (en : "Name",no : "Navn", nn :"Namn"),
     participantUrl : (en : "Webaddress",no : "Webadresse", nn :"Webadresse"),

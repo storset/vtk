@@ -133,7 +133,7 @@ div.vrtx-multipleinputfield{
 }
 
 .vrtx-grouped-vertical .vrtx-image-ref.introduction-img div#introduction-img\.preview {
-  margin:0 0 0 367px;
+  margin:0 0 0 370px;
   height:150px; /* same height as (label, input + image-caption) to avoid the absolute positioned image-caption to overflow into below fields */
 }
 

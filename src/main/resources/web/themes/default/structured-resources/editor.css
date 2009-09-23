@@ -48,14 +48,6 @@
     height: 300px;
 }
 
-.introduction iframe{
-    height: 150px;
-}
-
-.additional-content iframe {
-    height: 210px;	
-}
-
 .vrtx-simple-html-small textarea{
     height: 12.5ex;
     width: 350px;
@@ -116,41 +108,6 @@ div.vrtx-multipleinputfield{
   padding:5px;
 }
 
-/* START Introduction image edit like the old one */
-
-.vrtx-grouped-vertical .image-caption {
-  position:absolute;
-  top:55px;
-  left: 0px;
-}
-
-.vrtx-grouped-vertical .vrtx-image-ref.introduction-img div.vrtx-image-ref-browse {
-  float: left;
-}
-
-.vrtx-grouped-vertical .vrtx-image-ref.introduction-img div.vrtx-image-ref-browse input#introduction-img {
-  width: 200px;
-}
-
-.vrtx-grouped-vertical .vrtx-image-ref.introduction-img div#introduction-img\.preview {
-  margin:0 0 0 370px;
-  height:150px; /* same height as (label, input + image-caption) to avoid the absolute positioned image-caption to overflow into below fields */
-}
-
-.vrtx-grouped-vertical .vrtx-image-ref.introduction-img div#introduction-img\.preview img {
-  padding: 0;
-}
-
-/* STOP Introduction image edit like the old one */
-	
-#media-ref {
-  width: 370px;	
-}
-
-.contactInfo iframe {
-  height: 200px;	
-}
-
 .vrtx-string.title {
   width: 496px;
 }
@@ -184,7 +141,7 @@ fieldset {
 	-moz-border-radius-topright:8px;
 	border:1px solid #DDDDDD;
 	clear:left;
-	width:489px;
+	width:auto;
     float:left;
     margin:5px 0;
 }
@@ -192,11 +149,12 @@ fieldset {
 div.vrtx-json-element {
 	background-color:#EEEEFF;
 	border:1px solid #CCCCCC;
-	margin:4px;
-	width:480px;
+	width:auto;
 	overflow:hidden;
     clear: left;
     float: left;
+    padding:5px 0 10px;
+    margin:5px 0;
 }
 
 .tooltip {
@@ -204,3 +162,54 @@ div.vrtx-json-element {
 	font-size:0.8em;	
 }
 	
+
+/* START Introduction image edit like the old one */
+
+.introImageAndCaption .image-caption {
+  position:absolute;
+  top:55px;
+  left: 0px;
+}
+
+.introImageAndCaption div.vrtx-image-ref-browse {
+  float: left;
+}
+
+.introImageAndCaption div.vrtx-image-ref-browse input#introduction-img {
+  width: 200px;
+}
+
+.introImageAndCaption div#introduction-img\.preview {
+  margin:0 0 0 370px;
+  height:150px; /* same height as (label, input + image-caption) to avoid the absolute positioned image-caption to overflow into below fields */
+}
+
+.introImageAndCaption div#introduction-img\.preview img {
+  padding: 0;
+}
+
+/* STOP Introduction image edit like the old one */
+
+.introduction iframe{
+    height: 150px;
+}
+
+.additional-content iframe {
+    height: 210px;  
+}
+
+#participants .vrtx-string {
+  clear: none;
+}
+
+#rssFeeds .vrtx-string {
+  clear: none;  
+}
+    
+#media-ref {
+  width: 370px; 
+}
+
+.contactInfo iframe {
+  height: 200px;    
+}

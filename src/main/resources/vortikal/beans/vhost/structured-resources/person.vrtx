@@ -234,7 +234,7 @@ resourcetype person {
       [endif]
       ##
     }
-   
+
     scientific-info {
       ##
         [resource-props "."]
@@ -252,6 +252,7 @@ resourcetype person {
         [endif]
       ##
     }
+
   }
 
   view {

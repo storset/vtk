@@ -162,7 +162,6 @@ div.vrtx-json-element {
 	font-size:0.8em;	
 }
 	
-
 /* START Introduction image edit like the old one */
 
 .introImageAndCaption .image-caption {
@@ -204,6 +203,17 @@ div.vrtx-json-element {
 
 #rssFeeds .vrtx-string {
   clear: none;  
+}
+
+#projects .vrtx-string {
+  clear: none;  
+}
+
+fieldset#box-list-main,
+fieldset#box-list-main div.vrtx-json-element,
+fieldset#box-list-side,
+fieldset#box-list-side div.vrtx-json-element {
+  width: 900px;
 }
     
 #media-ref {

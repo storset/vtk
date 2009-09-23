@@ -2,9 +2,9 @@ resourcetype structured-project {
 
   properties {
     name : string,
+    status : boolean,
     introduction : simple_html,
     picture : image_ref,
-    status : string,
     content : html,
     tags : string multiple,
     contactInfo : simple_html,
@@ -16,6 +16,7 @@ resourcetype structured-project {
   
   edit-rules {
     group introImage (introduction, picture) (after name) horizontal,
+    status (after name),
     tags tooltip (en : "(tag1, tag2, ...)", no : "(emneord1, emneord2, ...)", nn : "(emneord1, emneord2, ...)")
   }
 

@@ -147,6 +147,10 @@ div.vrtx-multipleinputfield{
   width: 370px;	
 }
 
+.contactInfo iframe {
+  height: 200px;	
+}
+
 .vrtx-string.title {
   width: 496px;
 }

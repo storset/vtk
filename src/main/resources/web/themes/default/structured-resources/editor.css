@@ -151,6 +151,10 @@ div.vrtx-multipleinputfield{
   height: 200px;	
 }
 
+.vrtx-simple-html.contactInfo {
+  width: 900px;	
+}
+
 .vrtx-string.title {
   width: 496px;
 }

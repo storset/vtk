@@ -151,10 +151,6 @@ div.vrtx-multipleinputfield{
   height: 200px;	
 }
 
-.vrtx-simple-html.contactInfo {
-  width: 900px;	
-}
-
 .vrtx-string.title {
   width: 496px;
 }
@@ -188,7 +184,7 @@ fieldset {
 	-moz-border-radius-topright:8px;
 	border:1px solid #DDDDDD;
 	clear:left;
-	width:900px;
+	width:489px;
     float:left;
     margin:5px 0;
 }
@@ -196,8 +192,8 @@ fieldset {
 div.vrtx-json-element {
 	background-color:#EEEEFF;
 	border:1px solid #CCCCCC;
-	margin:0.2em;
-	width:890px;
+	margin:4px;
+	width:480px;
 	overflow:hidden;
     clear: left;
     float: left;

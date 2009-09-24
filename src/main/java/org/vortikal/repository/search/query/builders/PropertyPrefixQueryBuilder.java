@@ -42,6 +42,7 @@ import org.vortikal.repository.search.query.PrefixTermFilter;
 import org.vortikal.repository.search.query.PropertyPrefixQuery;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
+import org.vortikal.repository.search.query.TermOperator;
 
 /**
  * 
@@ -61,22 +62,30 @@ public class PropertyPrefixQueryBuilder implements QueryBuilder {
         String term = this.ppq.getTerm();
         
         if (! (def.getType() == PropertyType.Type.PRINCIPAL ||
-               def.getType() == PropertyType.Type.STRING)) {
-            throw new QueryBuilderException("Prefix queries are only supported for "
-                + "property types '" + PropertyType.Type.STRING 
-                + "' and '" + PropertyType.Type.PRINCIPAL 
-                + "'. Use range queries for dates and numbers.");
+                def.getType() == PropertyType.Type.STRING ||
+                def.getType() == PropertyType.Type.HTML)) {
+             throw new QueryBuilderException("Prefix queries are only supported for "
+                 + "property types PRINCIPAL, STRING and HTML. "
+                 + "Use range queries for dates and numbers.");
+         }
+        
+        TermOperator op = ppq.getOperator();
+        
+        boolean inverted = (op == TermOperator.NE || op == TermOperator.NE_IGNORECASE);
+        boolean ignorecase = (op == TermOperator.NE_IGNORECASE || op == TermOperator.EQ_IGNORECASE);
+
+        if (ignorecase) {
+            term = term.toLowerCase();
         }
         
         Filter filter = new PrefixTermFilter(
-                                new Term(FieldNameMapping.getSearchFieldName(def, false), term));
-        
-        if (ppq.isInverted()) {
+                new Term(FieldNameMapping.getSearchFieldName(def, ignorecase), term));
+
+        if (inverted) {
             filter = new InversionFilter(filter);
         }
         
         return new ConstantScoreQuery(filter);
-        
         
     }
 

@@ -233,14 +233,14 @@ public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
         String propName = getJcrPropertyName(ppQuery.getPropertyDefinition());
         
         buffer.append(" ");
-        if (ppQuery.isInverted()) {
+        if (ppQuery.getOperator() == TermOperator.NE || ppQuery.getOperator() == TermOperator.NE_IGNORECASE) {
             buffer.append(SqlConstraintOperator.UNARY_NOT).append(" (");
         }
         buffer.append(propName).append(" ");
         buffer.append(SqlConstraintOperator.LIKE).append(" ");
         buffer.append("'").append(escapeLIKEValue(propValuePrefix)).append("%' ");
         buffer.append(SqlConstraintOperator.LIKE_ESCAPE).append(" '").append(SQL_LIKE_ESCAPE_CHAR).append("'");
-        if (ppQuery.isInverted()) {
+        if (ppQuery.getOperator() == TermOperator.NE || ppQuery.getOperator() == TermOperator.NE_IGNORECASE) {
             buffer.append(")");
         }
         

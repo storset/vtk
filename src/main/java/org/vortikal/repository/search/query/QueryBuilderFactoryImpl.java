@@ -56,6 +56,7 @@ import org.vortikal.repository.index.mapping.FieldNameMapping;
 import org.vortikal.repository.index.mapping.FieldValueMapper;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.repository.search.QueryException;
 import org.vortikal.repository.search.query.builders.ACLInheritedFromQueryBuilder;
 import org.vortikal.repository.search.query.builders.HierarchicalTermQueryBuilder;
 import org.vortikal.repository.search.query.builders.NamePrefixQueryBuilder;
@@ -86,6 +87,7 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
     
     private ResourceTypeTree resourceTypeTree;
     private FieldValueMapper fieldValueMapper;
+    private boolean allowWildcardQueries = false;
     
     public QueryBuilder getBuilder(Query query, IndexReader reader) throws QueryBuilderException {
         
@@ -223,7 +225,11 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
         }
         
         if (query instanceof PropertyWildcardQuery) {
-            return new PropertyWildcardQueryBuilder((PropertyWildcardQuery)query);
+            if (this.allowWildcardQueries) {
+                return new PropertyWildcardQueryBuilder((PropertyWildcardQuery)query);
+            } else {
+                throw new QueryBuilderException("Wildcard-queries are disabled.");
+            }
         }
         
         if (query instanceof PropertyExistsQuery) {
@@ -291,6 +297,10 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
     @Required
     public void setFieldValueMapper(FieldValueMapper fieldValueMapper) {
         this.fieldValueMapper = fieldValueMapper;
+    }
+
+    public void setAllowWildcardQueries(boolean allowWildcardQueries) {
+        this.allowWildcardQueries = allowWildcardQueries;
     }
 
 }

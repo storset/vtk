@@ -194,8 +194,8 @@ public class DumpQueryTreeVisitor implements QueryTreeVisitor {
         PropertyTypeDefinition def = ppQuery.getPropertyDefinition();
         
         buf.append((String)data).append("Property namespace = '").append(def.getNamespace());
-        buf.append("', name = '").append(def.getName()).append("', term = '");
-        buf.append(ppQuery.getTerm()).append("'\n");
+        buf.append("', name = '").append(def.getName()).append("', term = '").append(ppQuery.getTerm());
+        buf.append("', op = ").append(ppQuery.getOperator()).append('\n');
         
         return buf.toString();
     }
@@ -262,7 +262,7 @@ public class DumpQueryTreeVisitor implements QueryTreeVisitor {
         PropertyTypeDefinition def = pwQuery.getPropertyDefinition();
         
         buf.append((String)data).append("Property namespace = '").append(def.getNamespace());
-        buf.append("', name = '").append(def.getName()).append("', term = '");
+        buf.append("', name = '").append(def.getName()).append("', term ").append(pwQuery.getOperator()).append(" '");
         buf.append(pwQuery.getTerm()).append("'\n");
         
         return buf.toString();

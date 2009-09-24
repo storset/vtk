@@ -34,13 +34,14 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.WildcardTermEnum;
 import org.vortikal.repository.index.mapping.FieldNameMapping;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.search.query.InversionFilter;
 import org.vortikal.repository.search.query.PropertyWildcardQuery;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
+import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.WildcardTermFilter;
 
 /**
@@ -61,24 +62,26 @@ public class PropertyWildcardQueryBuilder implements QueryBuilder {
         PropertyTypeDefinition def = this.query.getPropertyDefinition();
         String wildcard = this.query.getTerm();
 
-        if (wildcard.indexOf(WildcardTermEnum.WILDCARD_CHAR) == -1
-                && wildcard.indexOf(WildcardTermEnum.WILDCARD_STRING) == -1) {
-            throw new QueryBuilderException("The search term '" 
-                    + wildcard + "' does not have any wildcard characters (?,*) !");
-        }
-        
         if (! (def.getType() == PropertyType.Type.PRINCIPAL ||
-               def.getType() == PropertyType.Type.STRING)) {
-            throw new QueryBuilderException("Wildcard queries are only supported for "
-                + "property types + '" + PropertyType.Type.STRING
-                + "' and '" + PropertyType.Type.PRINCIPAL + "'. "
-                + "Use range queries for dates and numbers.");
-        }
+                def.getType() == PropertyType.Type.STRING ||
+                def.getType() == PropertyType.Type.HTML)) {
+             throw new QueryBuilderException("Wildcard queries are only supported for "
+                 + "property types PRINCIPAL, STRING and HTML. "
+                 + "Use range queries for dates and numbers.");
+         }
+
+        TermOperator op = query.getOperator();
+
+        boolean ignorecase = (op == TermOperator.EQ_IGNORECASE || op == TermOperator.NE_IGNORECASE);
+        boolean invert = (op == TermOperator.NE || op == TermOperator.NE_IGNORECASE);
         
-        String fieldName = FieldNameMapping.getSearchFieldName(def, false);
-        Term wTerm = new Term(fieldName, wildcard);
+        String fieldName = FieldNameMapping.getSearchFieldName(def, ignorecase);
+        Term wTerm = new Term(fieldName, (ignorecase ? wildcard.toLowerCase() : wildcard));
 
         Filter filter = new WildcardTermFilter(wTerm);
+        if (invert) {
+            filter = new InversionFilter(filter);
+        }
         
         return new ConstantScoreQuery(filter);
     }

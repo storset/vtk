@@ -184,7 +184,7 @@ resourcetype structured-project {
   
   localization {
     name : (en : "Name", no : "Navn", nn : "Navn"),
-    introduction : (en : "Introduction",no : "Introduksjon", nn : "Introduksjon"),
+    introduction : (en : "Introduction",no : "Innledning", nn : "Innleiing"),
     status : (en : "Status", no : "Status", nn : "Status"),
     introduction-img : (en: "Image", no: "Bilde", nn : "Bilete"),
     image-caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),

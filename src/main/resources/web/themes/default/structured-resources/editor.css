@@ -199,12 +199,20 @@ fieldset .vrtx-string {
 
 /* STOP Introduction image edit like the old one */
 
+#media-ref {
+  width: 370px; 
+}
+
 .introduction iframe{
   height: 150px;
 }
 
 .additional-content iframe {
   height: 210px;  
+}
+
+.contactInfo iframe {
+  height: 200px;    
 }
 
 #participants .vrtx-string,
@@ -218,16 +226,4 @@ fieldset#box-list-main div.vrtx-json-element,
 fieldset#box-list-side,
 fieldset#box-list-side div.vrtx-json-element {
   width: 900px;
-}
-
-fieldset .vrtx-string {
-	
-}
-    
-#media-ref {
-  width: 370px; 
-}
-
-.contactInfo iframe {
-  height: 200px;    
 }

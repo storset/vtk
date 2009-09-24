@@ -423,12 +423,37 @@
         <entry key="cssURLs">
           <list>
             <value>${themeBaseURL}/structured-resources/view-person.css</value>
+            <value>${webResources.baseURL}/jquery-ui-tabs-customized/css/ui-lightness/jquery-ui-1.7.2.custom.css</value>
             <value>${themeBaseURL}/view-container.css</value>
           </list>
         </entry>
       </map>
     </property>
   </bean>
+  
+  <bean id="person.javascriptComponent"
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="person.componentNamespace" />
+    <property name="name" value="javascript" />
+    <property name="description" value="Inserts the default person javascript references" />
+    <property name="view" ref="person.javascriptView" />
+    <property name="exposeMvcModel" value="true" />
+  </bean>
+
+  <bean id="person.javascriptView" parent="freemarkerView">
+    <property name="url" value="system/javascript.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="jsURLs">
+          <list>
+            <value>${webResources.baseURL}/jquery/jquery-1.3.2.min.js</value>
+            <value>${webResources.baseURL}/jquery-ui-tabs-customized/js/jquery-ui-1.7.2.custom.min.js</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+  
 
   <bean id="project.cssComponent"
         class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">

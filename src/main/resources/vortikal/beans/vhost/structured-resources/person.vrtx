@@ -240,14 +240,35 @@ resourcetype person {
     scientific-info {
       ##
         [resource-props "."]
-        [if selectedPublications || scientificInformation]
+        [if (selectedPublications && selectedPublications != "") || (scientificInformation && scientificInformation != "")]
           <h2>[localized "scientificInformation"]</h2>
-          [if selectedPublications]
-            [val selectedPublications unescaped]
+          
+          [if (selectedPublications && selectedPublications != "") && (scientificInformation && scientificInformation != "")]
+            <div id="tabs">
+              <ul>
+                [if selectedPublications && selectedPublications != ""]
+                  <li><a href="#tabs-1">Utvalgte</a></li>
+                [endif]
+                [if scientificInformation && scientificInformation != ""]
+                  <li><a href="#tabs-2">Frida</a></li>
+                [endif]
+              </ul> 
+              <div id="tabs-1">
+                [val selectedPublications unescaped]
+              </div>
+              <div id="tabs-2">
+                &lt;external iterated and parsed JSON publications here&gt;
+              </div>
+            </div>
+          [else]
+          
+            [if (selectedPublications && selectedPublications != "")]
+              [val selectedPublications unescaped]
+            [else]
+              &lt;external iterated and parsed JSON publications here&gt;
+            [endif]
           [endif]
-          [if scientificInformation]
-            &lt;external iterated and parsed JSON publications here&gt;
-          [endif]
+          
         [endif]
       ##
     }
@@ -277,6 +298,15 @@ resourcetype person {
         <!-- begin css -->
         <person:css />
         <!-- end css -->
+        <!-- begin js -->
+        <person:javascript />
+        <!-- end js -->
+        <script type="text/javascript">
+            $(function(){
+                  // Tabs
+                  $('#tabs').tabs();
+            });
+        </script>
         <title><comp:title /></title>
       </head>
       <body>

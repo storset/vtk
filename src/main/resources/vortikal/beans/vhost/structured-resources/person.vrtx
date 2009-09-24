@@ -20,12 +20,16 @@ resourcetype person {
     tags : string multiple,
     selectedPublications: simple_html,
     getExternalScientificInformation : boolean,
+    getExternalProjects : boolean,
     projects : json (projectName:string, projectUrl:string) multiple,
     rssFeeds : json (rssTitle:string, rssUrl:string) multiple
   }
 
   edit-rules {
-	group images (picture, pressPhoto) (after availableHours) horizontal,
+    group personInformation (getExternalPersonInfo, firstName, surname, position, phone, email, postalAddress, visitingAddress, room, building, availableHours) (after username),
+	group images (picture, pressPhoto) (after personInformation) horizontal,
+	group combinedPublications (selectedPublications, getExternalScientificInformation) (after tags),
+	group combinedProjects (getExternalProjects, projects) (after combinedPublications),
 	username (size[8]),
 	content (after images),
 	tags (after content),
@@ -344,22 +348,29 @@ resourcetype person {
     phone : (en : "Phone", no : "Telefon", nn : "Telefon"),
     officeNumber : (en : "Office number", no : "Kontor", nn : "Kontor"),
     availableHours : (en : "Available hours", no : "Treffetider", nn : "Treffetider"),
-    picture : (en : "Picture", no : "Bilde", nn : "Bilete"),
+    picture : (en : "Webpage Image", no : "Nettsidebilde", nn : "Nettsidebilete"),
     getExternalScientificInformation : (en : "Show publications rapported in Frida", no : "Vis publikasjoner rapportert i Frida", nn : "Vis publikasjoner rapportert i Frida"),
     scientificInformation : (en : "Publications", no : "Publikasjoner", nn : "Publikasjoner"),
     selectedPublications : (en : "Selected publications", no : "Utvalgte publikasjoner", nn : "Utvalgte publikasjoner"),
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
     content : (en : "Content", no :"Innhold",nn:"Innhold"),
-    rssFeeds : (en : "Show content from RSS-streams", no : "Vis innhold fra RSS-strømmer", nn :"Vis innhald frå RSS-strømmar"),
-    rssTitle : (en : "Title",no : "Tittel", nn : "Tittel"),
-    rssUrl : (en : "RSS link", no : "RSS lenke", nn :"RSS lenke"),
+    getExternalProjects : (en : "Show projects published on UiO.no where your username is registrated as participant",
+                           no :"Vis prosjekter publisert på UiO.no hvor ditt brukernavn er registrert som deltager",
+                           nn:"Vis prosjekter publisert på UiO.no hvor ditt brukernavn er registrert som deltager"),
     projects : (en : "Other projects",no : "Andre prosjekter", nn :"Andre prosjektar"),
     projectName : (en : "Project name", no : "Prosjektnavn", nn :"Prosjektnamn"), 
     projectUrl : (en : "Project link", no : "Prosjektlenke", nn :"Prosjektlenke"),
+    rssFeeds : (en : "Show content from RSS-streams", no : "Vis innhold fra RSS-strømmer", nn :"Vis innhald frå RSS-strømmar"),
+    rssTitle : (en : "Title",no : "Tittel", nn : "Tittel"),
+    rssUrl : (en : "RSS link", no : "RSS lenke", nn :"RSS lenke"),
     pressPhoto : (en : "Press photo", no : "Pressebilde", nn : "Pressebilete"),
     room : (en : "Room", no : "Rom", nn : "Rom"),
     building : (en : "Building", no : "Bygning", nn : "Bygning"),
     publicationTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
-    publicationUrl : (en : "Publication link", no : "Publikasjonlenke", nn : "Publikasjonlenke")
+    publicationUrl : (en : "Publication link", no : "Publikasjonlenke", nn : "Publikasjonlenke"),
+    images : (en : "Images", no : "Bilder", nn : "Bilder"),
+    personInformation : (en : "Person information", no : "Personopplysninger", nn : "Personopplysningar"),
+    combinedPublications : (en : "Publications", no : "Publikasjoner", nn : "Publikasjoner"),
+    combinedProjects : (en : "Projects", no : "Prosjekter", nn : "Prosjekter")
   }
 }

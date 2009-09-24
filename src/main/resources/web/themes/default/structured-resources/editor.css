@@ -68,6 +68,9 @@
 .vrtx-grouped {
   /*XXX Temp border to indicate grouped props*/
   /* border: 1px solid #a9a9a9; */
+  margin-bottom: 15px;
+  clear:left;
+  float:left;
 }
 
 .vrtx-grouped-horizontal {
@@ -75,7 +78,7 @@
   /*border: 1px solid #a9a9a9; */
   clear: left;
   float: left;
-  width:auto;
+  width: auto;
 }
 
 .vrtx-grouped-vertical {
@@ -86,6 +89,34 @@
   clear: none;  
   padding: 0;
   position:relative;
+}
+
+/* Not grouped becomes bold and bigger */
+
+.vrtx-string > label,
+.vrtx-html > label,
+.vrtx-simple-html > label{
+    font-size: 1.1em;
+    font-weight: 900;
+    padding: 10px 0;
+    display: block;
+}
+
+/* And override for grouped sub-properties */
+
+.vrtx-grouped-horizontal * > label,
+.vrtx-grouped-vertical * > label,
+.vrtx-grouped * > label,
+.vrtx-json-element * > label{
+	font-size: 1em;
+	font-weight: 100;
+	padding: 0;
+}
+
+.header {
+  font-size: 1.1em;
+  font-weight: 900;
+  padding:10px;
 }
 
 #contents {
@@ -173,6 +204,10 @@ fieldset .vrtx-string {
 }
 	
 /* START Introduction image edit like the old one */
+
+.introImageAndCaption .header {
+  display: none; /* until propagated CSS fix */	
+}
 
 .introImageAndCaption .image-caption {
   position:absolute;

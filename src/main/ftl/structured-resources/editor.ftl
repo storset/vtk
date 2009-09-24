@@ -65,6 +65,8 @@
       <#assign groupName = elementBox["name"] />
       <#assign groupClass = groupClass + " ${groupName?string}" />
        <div class="${groupClass}">
+       <#assign localizedHeader = form.resource.getLocalizedMsg(elementBox.name, locale, null) />
+       <div class="header">${localizedHeader}</div>
     <#else>
        <div class="${groupClass}">
     </#if>

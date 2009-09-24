@@ -126,35 +126,45 @@ input.vrtx-add-button {
 	 clear:left;
 	 display:block;
 	 float:left;
-	 margin:10px;
+	 margin:10px 0 0 0;
 }
 
 input.vrtx-remove-button {
 	float:right;
-	margin:10px;
+	margin:25px 0 0 0;
 }
 
 fieldset {
-	-moz-border-radius-bottomleft:8px;
+  /*	-moz-border-radius-bottomleft:8px;
 	-moz-border-radius-bottomright:8px;
 	-moz-border-radius-topleft:8px;
 	-moz-border-radius-topright:8px;
-	border:1px solid #DDDDDD;
+	border:1px solid #DDDDDD; */
 	clear:left;
 	width:auto;
     float:left;
     margin:5px 0;
+    padding: 0 0 0 10px;
+}
+
+fieldset legend {
+  padding: 0;	
 }
 
 div.vrtx-json-element {
-	background-color:#EEEEFF;
-	border:1px solid #CCCCCC;
+	/* background-color:#EEEEFF;
+	border:1px solid #CCCCCC; */
 	width:auto;
 	overflow:hidden;
     clear: left;
     float: left;
-    padding:5px 0 10px;
-    margin:5px 0;
+   /* padding:5px 0 10px;
+    margin:5px 0; */
+}
+
+fieldset .vrtx-string {
+  padding-left: 0;
+  padding-right: 20px;
 }
 
 .tooltip {
@@ -190,11 +200,11 @@ div.vrtx-json-element {
 /* STOP Introduction image edit like the old one */
 
 .introduction iframe{
-    height: 150px;
+  height: 150px;
 }
 
 .additional-content iframe {
-    height: 210px;  
+  height: 210px;  
 }
 
 #participants .vrtx-string,
@@ -208,6 +218,10 @@ fieldset#box-list-main div.vrtx-json-element,
 fieldset#box-list-side,
 fieldset#box-list-side div.vrtx-json-element {
   width: 900px;
+}
+
+fieldset .vrtx-string {
+	
 }
     
 #media-ref {

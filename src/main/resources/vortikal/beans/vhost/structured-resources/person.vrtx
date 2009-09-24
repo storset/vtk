@@ -2,34 +2,32 @@ resourcetype person {
 
   properties {
     username : string required,
-    position : string external:userMetadataLdapService,
     getExternalPersonInfo : boolean,
     firstName : string external:userMetadataLdapService,
     surname : string external:userMetadataLdapService,
+    position : string external:userMetadataLdapService,
     postalAddress : string multiple external:userMetadataLdapService,
     phone : string multiple external:userMetadataLdapService,
     email : string multiple external:userMetadataLdapService,
+    visitingAddress : string multiple external:userMetadataLdapService,
     title : derived (firstName, surname) eval (firstName + " " + surname),
+    room : string,
+    building : string,
+    availableHours : string,
     picture : image_ref, 
     pressPhoto : image_ref,
-    visitingAddress : string multiple external:userMetadataLdapService,
-    availableHours : string,
-    room : string,
     content : html,
     tags : string multiple,
     selectedPublications: simple_html,
     getExternalScientificInformation : boolean,
-    scientificInformation: json (publicationTitle:string, publicationUrl:string) multiple external:fridaPublicationsService,
     projects : json (projectName:string, projectUrl:string) multiple,
     rssFeeds : json (rssTitle:string, rssUrl:string) multiple
   }
 
   edit-rules {
-	group images (picture, pressPhoto) (after email) horizontal,
-	group hoursRoom (availableHours, room) (after images) horizontal,
+	group images (picture, pressPhoto) (after availableHours) horizontal,
 	username (size[8]),
-	visitingAddress (after images),
-	content (after hoursRoom),
+	content (after images),
 	tags (after content),
 	tags tooltip (en : "(tag1, tag2, ...)", no : "(emneord1, emneord2, ...)", nn : "(emneord1, emneord2, ...)")
   }
@@ -60,78 +58,82 @@ resourcetype person {
 
     contact-information {
       ##
-        [resource-props "."]
-        <div id="contact-info">
-          [def document structured-document]
-          [if email]
-            [def emails resource-prop "." "email"]
-            [if emails]
-              <div class="box">
-                 <div class="box-thirds">[localized "email"]:&nbsp;</div>
-                 <div class="box-two-thirds">
-                    [list emails theemail]
-                      [if theemail][val theemail]<br />[endif]
-                    [endlist]
-                </div>
-              </div>
-              [endif]
-            [endif]
-            [if phone]
-             [def phones resource-prop "." "phone"]
-             [if phones]
-               <div class="box">
-                  <div class="box-thirds">[localized "phone"]:&nbsp;</div>
-                  <div class="box-two-thirds">
-                    [list phones thephone]
-                      [if thephone][val thephone]<br />[endif]
-                    [endlist]
-                  </div>
-               </div>
-             [endif]
-            [endif]
-            [if visitingAddress]
-             [def visitingAddresses resource-prop "." "visitingAddress"]
-             [if visitingAddresses]
-               <div class="box">
-                 <div class="box-thirds">[localized "visitingAddress"]:&nbsp;</div>
-                 <div class="box-two-thirds">
-                   [list visitingAddresses thevisitingAddress]
-                     [if thevisitingAddress][val thevisitingAddress]<br />[endif]
-                   [endlist]
-                 </div>
-               </div>
-             [endif]
-            [endif]
-            [if room]
-              <div class="box">
-                 <div class="box-thirds">[localized "room"]:&nbsp;</div>
-                 <div class="box-two-thirds">      
-                      [if room][val room][endif]
-                 </div>
-              </div>
-            [endif]
-            [if availableHours]
-              <div class="box">
-                <div class="box-thirds">[localized "availableHours"]:&nbsp;</div>
-                <div class="box-two-thirds">      
-                      [if availableHours][val availableHours][endif]
-                </div>
-              </div>
-            [endif]
-            [if postalAddress]
-              [def postalAddresses resource-prop "." "postalAddress"]
-              [if postalAddresses]
-                <div class="box">
-                  <div class="box-thirds">[localized "postalAddress"]:&nbsp;</div>
-                  <div class="box-two-thirds">
-                    [list postalAddresses thepostalAddress]
-                      [if thepostalAddress][val thepostalAddress]<br />[endif]
-                    [endlist]
-                  </div>
-                </div>
-              [endif]
-            [endif]
-          </div>  
+       [resource-props "."]
+       
+       <div class="box contactinfo">
+         <h4>[localized "visitingAddress"]</h4>
+         
+         [if visitingAddress]
+          [def visitingAddresses resource-prop "." "visitingAddress"]
+          [if visitingAddresses]
+            <ul class="list">
+              [list visitingAddresses theVisitingAddress]
+                [if theVisitingAddress]<li>[val theVisitingAddress]</li>[endif]
+              [endlist]
+            </ul>
+          [endif]
+         [endif]
+         
+         [if room || building || availableHours]
+           <ul class="list">
+         [endif]
+         
+         [if room]
+            <li>[localized "room"]:&nbsp;[val room]</li>
+         [endif]       
+         [if building]
+            <li>[localized "building"]:&nbsp;[val building]</li>
+         [endif]
+         [if availableHours]
+            <li>[localized "availableHours"]:&nbsp;[val availableHours]</li>
+         [endif]
+         
+         [if room || building || availableHours]
+           </ul>
+         [endif]
+         
+         <h4>[localized "postalAddress"]</h4>
+         
+         [if postalAddress]
+          [def postalAddresses resource-prop "." "postalAddress"]
+          [if postalAddresses]
+            <ul class="list">
+              [list postalAddresses thePostalAddress]
+                [if thePostalAddress]<li>[val thePostalAddress]</li>[endif]
+              [endlist]
+            </ul>
+          [endif]
+         [endif]
+         
+         <h4>[localized "phone"] og [localized "email"]</h4>
+        
+         [if phone || email]
+           <ul class="list">
+         [endif]
+        
+         [if phone]
+          [def phones resource-prop "." "phone"]
+          [if phones]
+              [list phones thephone]
+                [if thephone]<li>[val thephone]</li>[endif]
+              [endlist]
+          [endif]
+         [endif]
+        
+         [if email]
+          [def emails resource-prop "." "email"]
+          [if emails]
+            [list emails theemail]
+              [if theemail]<li><a href="mailto:[val theemail]">[val theemail]</a></li>[endif]
+            [endlist]
+          [endif]
+         [endif]
+         
+         [if phone || email]
+           </ul>
+         [endif]
+         
+       </div>
       ##
     }
     
@@ -238,17 +240,29 @@ resourcetype person {
     scientific-info {
       ##
         [resource-props "."]
-        [if scientificInformation]
+        [if selectedPublications || scientificInformation]
           <h2>[localized "scientificInformation"]</h2>
-          <ul>     
-          [def publications resource-prop "." "scientificInformation"]
-          [list publications publication]
-            [if publication]
-              [def thetitle json-attr publication "publicationTitle"]
-              [if thetitle]<li>[val thetitle]</li>[endif]
+          [if selectedPublications]
+            [val selectedPublications unescaped]
+          [endif]
+          [if scientificInformation]
+            &lt;external iterated and parsed JSON publications here&gt;
+          [endif]
+        [endif]
+      ##
+    }
+    
+    tags {
+      ##
+      [resource-props "."]
+        [if tags]
+          <h2>[localized "tags"]</h2>
+          [def thetags resource-prop "." "tags"]
+          [list thetags tag]
+            [if tag]
+              <a href="/?vrtx=tags&tag=[val tag]">[val tag]</a>,
             [endif]
           [endlist]
-          </ul>
         [endif]
       ##
     }
@@ -269,19 +283,15 @@ resourcetype person {
       <div id="content">
         <h1><comp:title /></h1>
         <div id="main-content">
-          <div class="box">
-            <div class="box-thirds">
+          <div class="box-image">
               <comp:person-image />   
-            </div>
-            <div class="box-two-thirds">
-              <comp:contact-information />
-            </div>
           </div>
           <json:field select="content" />
-          <resource:tags />
+          <comp:tags />
           <comp:scientific-info />
         </div>
         <div id="additional-content">
+           <comp:contact-information />
            <comp:box-feeds />  
            <comp:projects />
         </div>
@@ -293,7 +303,7 @@ resourcetype person {
   
   localization {
     username : (en : "Username", no : "Brukernavn", nn : "Brukarnamn"),
-    getExternalPersonInfo : (en : "Get external information (ldap)", no : "Hent ekstern informasjon (ldap)", nn : "Hent ekstern informasjon (ldap)"),
+    getExternalPersonInfo : (en : "Use personinformation registrated in UiO's payroll- and personalsystem", no : "Bruk personopplysninger registrert i UiO's lønns- og personalsystem", nn : "Bruk personopplysninger registrert i UiO's lønns- og personalsystem"),
     firstName : (en : "First name", no : "Fornavn", nn : "Fornamn"),
     surname : (en : "Surname", no : "Etternavn", nn : "Etternamn"),
     postalAddress : (en : "Address", no : "Adresse", nn : "Adresse"),
@@ -318,6 +328,7 @@ resourcetype person {
     projectUrl : (en : "Project link", no : "Prosjektlenke", nn :"Prosjektlenke"),
     pressPhoto : (en : "Press photo", no : "Pressebilde", nn : "Pressebilde"),
     room : (en : "Room", no : "Rom", nn : "Rom"),
+    building : (en : "Building", no : "Bygning", nn : "Bygning"),
     publicationTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
     publicationUrl : (en : "Publication link", no : "Publikasjonlenke", nn : "Publikasjonlenke")
   }

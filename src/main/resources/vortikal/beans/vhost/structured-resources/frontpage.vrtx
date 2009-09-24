@@ -22,7 +22,7 @@ resourcetype frontpage {
            [def urlText json-attr box "boxUrlText"]
            
            <div class="frontpage-box [val type]"> 
-             [if title]
+             [if (title) && (title != "")]
                <h2><a href="[val url]">[val title]</a></h2>
              [endif]
              [val content unescaped]
@@ -50,7 +50,7 @@ resourcetype frontpage {
            [def urlText json-attr box "boxUrlText"]
            
            <div class="frontpage-box [val type]"> 
-             [if title]
+             [if (title) && (title != "")]
                <h2><a href="[val url]">[val title]</a></h2>
              [endif]
              [val content unescaped]

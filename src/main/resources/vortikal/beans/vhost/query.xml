@@ -112,6 +112,7 @@
         class="org.vortikal.repository.search.query.QueryBuilderFactoryImpl">
     <property name="resourceTypeTree" ref="resourceTypeTree"/>
     <property name="fieldValueMapper" ref="fieldValueMapper"/>
+    <property name="allowWildcardQueries" value="${search.query.allowWildcardQueries}" />
   </bean>
 
   <!-- Searcher implementation (wrapped in throttler)-->

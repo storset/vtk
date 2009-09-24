@@ -148,10 +148,10 @@ public class URLTestCase extends TestCase {
         url.setPath(Path.fromString("/)"));
         assertEquals("/%29", url.getPathEncoded());
 
-        url = new URL("http", "foo.bar", Path.fromString("/¾¿Œ"));
-        assertEquals("/%C3%A6%C3%B8%C3%A5", url.getPathEncoded());
+        url = new URL("http", "foo.bar", Path.fromString("/ Ã¥"));
+        assertEquals("/%20%C3%A5", url.getPathEncoded());
         url.setCharacterEncoding("iso-8859-1");
-        assertEquals("/%E6%F8%E5", url.getPathEncoded());
+        assertEquals("/%20%E5", url.getPathEncoded());
         
         url = new URL("http", "foo.bar", Path.fromString("/%20"));
         assertEquals("http://foo.bar/%2520", url.toString());

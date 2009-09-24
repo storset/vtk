@@ -30,7 +30,10 @@
  */
 package org.vortikal.web.filter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -42,7 +45,10 @@ public class StandardRequestFilterTestCase {
     @Test
     public void testFilterRequest() {
 
-        RequestFilter filter = new StandardRequestFilter();
+        StandardRequestFilter filter = new StandardRequestFilter();
+        Map<String, String> replacements = new HashMap<String, String>();
+        replacements.put("%20", " ");
+        filter.setUrlReplacements(replacements);
         
         HttpServletRequest filtered = filter.filterRequest(new MockHttpServletRequest("GET", "/foo/bar"));
         assertEquals("/foo/bar", filtered.getRequestURI());

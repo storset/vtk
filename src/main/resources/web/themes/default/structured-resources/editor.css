@@ -197,16 +197,10 @@ div.vrtx-json-element {
     height: 210px;  
 }
 
-#participants .vrtx-string {
-  clear: none;
-}
-
+#participants .vrtx-string,
+#projects .vrtx-string,
 #rssFeeds .vrtx-string {
-  clear: none;  
-}
-
-#projects .vrtx-string {
-  clear: none;  
+  clear: none;
 }
 
 fieldset#box-list-main,

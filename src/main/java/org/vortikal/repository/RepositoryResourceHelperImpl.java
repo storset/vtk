@@ -119,6 +119,17 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         checkForDeadAndZombieProperties(ctx);
         return ctx.getNewResource();
     }
+    
+    public ResourceImpl publish(ResourceImpl originalResource, Principal principal,
+            ResourceImpl suppliedResource) throws AuthenticationException, AuthorizationException,
+            InternalRepositoryException, IOException {
+        Content content = getContent(originalResource);
+        PropertyEvaluationContext ctx = PropertyEvaluationContext.publishChangeContext(originalResource,
+                suppliedResource, principal, content);
+        recursiveTreeEvaluation(ctx, this.resourceTypeTree.getRoot());
+        checkForDeadAndZombieProperties(ctx);
+        return ctx.getNewResource();
+    }
 
     /**
      * XXX: This hard coded list must be replaced by standard prop handling

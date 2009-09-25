@@ -93,6 +93,7 @@ public final class PropertyType {
     public static final String THUMBNAIL_PROP_NAME = "thumbnail";
     public static final String NUMBER_OF_COMMENTS_PROP_NAME = "numberOfComments";
     public static final String PUBLISH_DATE_PROP_NAME = "publish-date";
+    public static final String PUBLISHED_PROP_NAME = "published";
     
     /*
      * Special properties

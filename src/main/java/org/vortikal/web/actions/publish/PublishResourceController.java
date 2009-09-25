@@ -30,15 +30,51 @@
  */
 package org.vortikal.web.actions.publish;
 
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.Controller;
+import org.vortikal.repository.Path;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.security.SecurityContext;
+import org.vortikal.web.RequestContext;
 
-public class PublishResourceController extends AbstractPublishController {
+public class PublishResourceController implements Controller {
 
-    @Override
-    protected void handlePublication(Resource resource, String token) throws IOException {
-        // XXX implement
+    protected Repository repository;
+    private String viewName;
+
+    private static final String ACTION_PARAM = "action";
+    private static final String PUBLISH_PARAM = "publish";
+
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Map<String, Object> model = new HashMap<String, Object>();
+
+        String token = SecurityContext.getSecurityContext().getToken();
+        Path resourceURI = RequestContext.getRequestContext().getResourceURI();
+        Resource resource = repository.retrieve(token, resourceURI, true);
+
+        String action = request.getParameter(ACTION_PARAM);
+        if (PUBLISH_PARAM.equals(action)) {
+            this.repository.publish(token, resource);
+        } else {
+            this.repository.publish(token, resource);
+        }
+
+        return new ModelAndView(this.viewName, model);
+    }
+
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
+
+    public void setViewName(String viewName) {
+        this.viewName = viewName;
     }
 
 }

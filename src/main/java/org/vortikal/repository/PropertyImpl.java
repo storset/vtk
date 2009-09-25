@@ -127,6 +127,8 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         case HTML:
         case IMAGE_REF:
             return this.value.getStringValue();
+        case BOOLEAN:
+            return String.valueOf(this.value.getBooleanValue());
             
         default:
             throw new IllegalOperationException("Property " + this + " not a string type");

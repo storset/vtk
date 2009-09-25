@@ -797,29 +797,23 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new RuntimeException("Unhandled IO exception", e);
         }
     }
-
-    // XXX: method contains temporary hacks
-//    private void updateNumberOfComments(ResourceImpl original, Integer numberOfComments) {
-//        try {
-//            // XXX: temporary
-//            ResourceImpl newResource = 
-//                this.resourceHelper.numberOfCommentsPropertyChange(original, numberOfComments);
-//            
-//            Path uri = newResource.getURI();
-//            
-//            // Store at DAO layer to avoid re-evaluation of everything, and to avoid ACL write check.
-//            this.dao.store(newResource);
-//            
-//            newResource = (ResourceImpl) this.dao.load(uri).clone();
-//            
-//            // Publish resource modification event (necessary to trigger re-indexing, since a prop is now modified)
-//            ResourceModificationEvent event = new ResourceModificationEvent(this, newResource, original);
-//            this.context.publishEvent(event);
-//            
-//        } catch (Exception e) {
-//            throw new RuntimeException("Could not update number of comments", e);
-//        }
-//    }
+    
+    public void publish(String token, Resource resource) throws IOException {
+        Principal principal = this.tokenManager.getPrincipal(token);
+        Path uri = resource.getURI();
+        this.authorizationManager.authorizeWrite(uri, principal);
+        try {
+            ResourceImpl original = this.dao.load(uri);
+            ResourceImpl originalClone = (ResourceImpl) original.clone();
+            ResourceImpl newResource = this.resourceHelper.publish(original, principal, (ResourceImpl) resource);
+            this.dao.store(newResource);
+            newResource = (ResourceImpl) this.dao.load(uri).clone();
+            ResourceModificationEvent event = new ResourceModificationEvent(this, newResource, originalClone);
+            this.context.publishEvent(event);
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException("Unhandled IO exception", e);
+        }
+    }
 
     private Resource create(String token, Path uri, boolean collection)
             throws AuthorizationException, AuthenticationException, IllegalOperationException,
@@ -859,10 +853,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             this.contentStore.createResource(newResource.getURI(), collection);
 
             newResource = this.dao.load(uri);
-
-//          parent.addChildURI(uri);
-//          parent = this.resourceHelper.contentModification(parent, principal);
-//          this.dao.store(parent); 
 
             newResource = (ResourceImpl) newResource.clone();
         } catch (CloneNotSupportedException e) {

@@ -61,12 +61,16 @@ public interface RepositoryResourceHelper {
     public ResourceImpl nameChange(ResourceImpl originalResource, 
             ResourceImpl resource, Principal principal) throws IOException;
 
+    
     public ResourceImpl commentsChange(ResourceImpl originalResource, 
             Principal principal, ResourceImpl suppliedResource) throws IOException;
 
-
+    
     public PropertySet getFixedCopyProperties(Resource resource, Principal principal, Path destUri)
             throws CloneNotSupportedException;
     
 
+    public ResourceImpl publish(ResourceImpl originalResource, 
+            Principal principal, ResourceImpl suppliedResource) throws IOException;
+    
 }

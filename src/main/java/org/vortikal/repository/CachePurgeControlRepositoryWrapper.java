@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -313,6 +314,10 @@ public class CachePurgeControlRepositoryWrapper implements Repository {
     @Required
     public void setWrappedRepository(Repository wrappedRepository) {
         this.wrappedRepository = wrappedRepository;
+    }
+
+    public void publish(String token, Resource resource) throws IOException {
+        this.wrappedRepository.publish(token, resource);
     }
 
 }

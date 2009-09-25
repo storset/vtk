@@ -336,7 +336,10 @@ public class RequestLocalRepository implements Repository {
         this.repository.setReadOnly(token, readOnly);
     }
 
-    public void init() throws Exception {
-        
+    public void init() throws Exception {    
+    }
+
+    public void publish(String token, Resource resource) throws IOException {
+        this.repository.publish(token, resource);
     }
 }

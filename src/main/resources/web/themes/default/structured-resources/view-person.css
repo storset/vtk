@@ -3,6 +3,8 @@
 
 .box.contactinfo h4 {
   margin-bottom: 5px;
+  clear: left;
+  float: left;
 }
 
 /* Person bilde */
@@ -26,6 +28,8 @@ ul.list {
   margin: 0;
   padding: 0;	
   list-style: none;
+  float: left;
+  clear: left;
 }
 
 ul.list li {

@@ -1,7 +1,7 @@
 <#macro vrtxRadio title tooltip classes options>
 <div class="vrtx-radio ${classes}">
   <div>${title}</div>
-  <div>${tooltip}</div>
+  <#if "${tooltip}" != ""><div>${tooltip}</div></#if>
   <div>
   <#list options as option>
     <div>

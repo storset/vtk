@@ -37,7 +37,7 @@ resourcetype person {
   }
 
   scripts {
-    getExternalPersonInfo show-hide onclick (firstName, surname, title, postalAddress, phone, email),
+    getExternalPersonInfo show-hide onclick (firstName, surname, position, title, postalAddress, phone, email),
     getExternalScientificInformation show-hide onclick (scientificInformation),
     tags autocomplete (minChars : "1"),
     email multipleinputfields,

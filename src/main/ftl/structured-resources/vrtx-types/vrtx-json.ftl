@@ -2,9 +2,9 @@
 <#macro printPropertyEditView title inputFieldName elem tooltip="" id="" inputFieldSize=20>
 
 <div class="vrtx-json">
-  <fieldset id="${id}">
-  <legend>${title}</legend>
-    <div class="tooltip">${tooltip}</div>
+  <div id="${id}" class="fieldset">
+  <div class="header">${title}</div>
+    <#if "${tooltip}" != ""><div class="tooltip">${tooltip}</div></#if>
     <#local counter = 0 />
     <#local locale = springMacroRequestContext.getLocale() />
 
@@ -41,8 +41,9 @@
         <#local counter = counter + 1 />
       </#list>
       </#if>
-</fieldset>
 
+</div>
+</div>
 </#macro>
 
 <#-- TODO: Duplicates some functionality in editor.ftl. Clean up later -->

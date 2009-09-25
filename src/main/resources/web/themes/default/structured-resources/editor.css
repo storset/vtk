@@ -91,11 +91,21 @@
   position:relative;
 }
 
+.header {
+  font-size: 1.1em;
+  font-weight: 900;
+  padding:10px;
+}
+
+.fieldset .header {
+  padding: 10px 0;
+}
+
 /* Not grouped becomes bold and bigger */
 
 .vrtx-string > label,
 .vrtx-html > label,
-.vrtx-simple-html > label{
+.vrtx-simple-html > label {
     font-size: 1.1em;
     font-weight: 900;
     padding: 10px 0;
@@ -107,16 +117,13 @@
 .vrtx-grouped-horizontal * > label,
 .vrtx-grouped-vertical * > label,
 .vrtx-grouped * > label,
-.vrtx-json-element * > label{
-	font-size: 1em;
-	font-weight: 100;
-	padding: 0;
-}
-
-.header {
-  font-size: 1.1em;
-  font-weight: 900;
-  padding:10px;
+.vrtx-grouped-horizontal * .header,
+.vrtx-grouped-vertical * .header,
+.vrtx-grouped * .header,
+.vrtx-json-element * > label {
+    font-size: 1em;
+    font-weight: 100;
+    padding: 0;
 }
 
 #contents {
@@ -165,7 +172,7 @@ input.vrtx-remove-button {
 	margin:25px 0 0 0;
 }
 
-fieldset {
+.fieldset {
   /*	-moz-border-radius-bottomleft:8px;
 	-moz-border-radius-bottomright:8px;
 	-moz-border-radius-topleft:8px;
@@ -178,7 +185,7 @@ fieldset {
     padding: 0 0 0 10px;
 }
 
-fieldset legend {
+.fieldset div.title {
   padding: 0;	
 }
 
@@ -193,7 +200,7 @@ div.vrtx-json-element {
     margin:5px 0; */
 }
 
-fieldset .vrtx-string {
+.fieldset .vrtx-string {
   padding-left: 0;
   padding-right: 20px;
 }
@@ -250,15 +257,19 @@ fieldset .vrtx-string {
   height: 200px;    
 }
 
+.vrtx-json {
+  float: left;	
+}
+
 #participants .vrtx-string,
 #projects .vrtx-string,
 #rssFeeds .vrtx-string {
   clear: none;
 }
 
-fieldset#box-list-main,
-fieldset#box-list-main div.vrtx-json-element,
-fieldset#box-list-side,
-fieldset#box-list-side div.vrtx-json-element {
+.fieldset#box-list-main,
+.fieldset#box-list-main div.vrtx-json-element,
+.fieldset#box-list-side,
+.fieldset#box-list-side div.vrtx-json-element {
   width: 900px;
 }

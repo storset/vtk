@@ -46,9 +46,8 @@ public interface ResourceTemplateLocator {
      * Locates templates under the given base URIs (recursively for each base URI).
      * 
      * @param token
-     * @param baseUri
-     * @param subfolders
-     * @param resourceType The resource type. May be <code>null</code> for any type. 
+     * @param baseUris
+     * @param types Find resources of these types. May be <code>null</code> for any type. 
      * @return A <code>List</code> of templates found.
      * 
      * @throws RepositoryException If an error occured while locating templates
@@ -56,7 +55,7 @@ public interface ResourceTemplateLocator {
      */
     public List<ResourceTemplate> findTemplates(String token,
                                                 Set<Path> baseUris, 
-                                                ResourceTypeDefinition type)
+                                                Set<ResourceTypeDefinition> types)
         throws RepositoryException;
     
     
@@ -65,9 +64,8 @@ public interface ResourceTemplateLocator {
      * resource directly below the base URIs of the requsted type are returned. 
      * 
      * @param token
-     * @param baseUri
-     * @param subfolders
-     * @param resourceType The resource type. May be <code>null</code> for any type. 
+     * @param baseUris
+     * @param types Find resources of these types. May be <code>null</code> for any type. 
      * @return A <code>List</code> of templates found.
      * 
      * @throws RepositoryException If an error occured while locating templates
@@ -75,6 +73,6 @@ public interface ResourceTemplateLocator {
      */
     public List<ResourceTemplate> findTemplatesNonRecursively(String token,
                                                               Set<Path> baseUris,
-                                                              ResourceTypeDefinition type)
+                                                              Set<ResourceTypeDefinition> types)
         throws RepositoryException;
 }

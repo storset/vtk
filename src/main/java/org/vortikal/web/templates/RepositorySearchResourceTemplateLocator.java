@@ -69,9 +69,9 @@ public class RepositorySearchResourceTemplateLocator implements ResourceTemplate
     
     public List<ResourceTemplate> findTemplates(String token, 
                                                 Set<Path> baseUris,
-                                                ResourceTypeDefinition resourceType) {
+                                                Set<ResourceTypeDefinition> resourceTypes) {
         
-        return findTemplatesInternal(token, baseUris, resourceType, true);
+        return findTemplatesInternal(token, baseUris, resourceTypes, true);
     }
     
     /**
@@ -79,9 +79,9 @@ public class RepositorySearchResourceTemplateLocator implements ResourceTemplate
      */
     public List<ResourceTemplate> findTemplatesNonRecursively(String token,
                                                       Set<Path> baseUris, 
-                                                      ResourceTypeDefinition resourceType) {
+                                                      Set<ResourceTypeDefinition> resourceTypes) {
         
-        return findTemplatesInternal(token, baseUris, resourceType, false);
+        return findTemplatesInternal(token, baseUris, resourceTypes, false);
         
     }
     
@@ -90,18 +90,16 @@ public class RepositorySearchResourceTemplateLocator implements ResourceTemplate
      */
     private List<ResourceTemplate> findTemplatesInternal(String token, 
                                                 Set<Path> baseUris,
-                                                ResourceTypeDefinition resourceType,
+                                                Set<ResourceTypeDefinition> resourceTypes,
                                                 boolean recursive) {
         
         List<ResourceTemplate> templates = new ArrayList<ResourceTemplate>();
         
         Search search = new Search();
         
-        Query query = getQuery(baseUris, resourceType, recursive);
+        Query query = getQuery(baseUris, resourceTypes, recursive);
         
         search.setQuery(query);
-        
-        
         
         // Restrict what properties are loaded from search index (optimization)
         ConfigurablePropertySelect select = new ConfigurablePropertySelect();
@@ -139,7 +137,7 @@ public class RepositorySearchResourceTemplateLocator implements ResourceTemplate
     }
     
     private Query getQuery(Set<Path> baseUris, 
-                           ResourceTypeDefinition resourceType, 
+                           Set<ResourceTypeDefinition> resourceTypes, 
                            boolean recursive) {
         
         if (baseUris == null || baseUris.isEmpty()) {
@@ -151,10 +149,14 @@ public class RepositorySearchResourceTemplateLocator implements ResourceTemplate
         // Add base URIs constraint
         query.add(getBaseUrisQueryNode(baseUris, recursive));
         
-        // Add type constraint
-        if (resourceType != null) {
-            query.add(new TypeTermQuery(resourceType.getName(), TermOperator.IN));
-        }
+        // Add types criteria
+        if (resourceTypes != null && resourceTypes.size() > 0) {
+            OrQuery typeCriteria = new OrQuery();
+            for (ResourceTypeDefinition def: resourceTypes) {
+                typeCriteria.add(new TypeTermQuery(def.getName(), TermOperator.IN));
+            }
+            query.add(typeCriteria);
+        }        
 
         return query;
     }

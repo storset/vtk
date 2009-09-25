@@ -57,15 +57,15 @@ public class ResourceTemplateManagerImpl implements ResourceTemplateManager {
     private Path documentTemplatesBaseUri;
     private PropertiesResource documentTemplatesConfiguration;
 
-    // Default resource type for document templates
-    private ResourceTypeDefinition documentTemplateResourceType;
+    // Default set of resource types for document templates
+    private Set<ResourceTypeDefinition> documentTemplateResourceTypes;
     
     // Configuration for folder templates
     private Path folderTemplatesBaseUri;
     private PropertiesResource folderTemplatesConfiguration;
 
-    // Default resource type for folder templates
-    private ResourceTypeDefinition folderTemplateResourceType;
+    // Default set of resource types for folder templates
+    private Set<ResourceTypeDefinition> folderTemplateResourceTypes;
     
     private Path documentTemplatesDefaultUri;
     private Path folderTemplatesDefaultUri;
@@ -77,7 +77,7 @@ public class ResourceTemplateManagerImpl implements ResourceTemplateManager {
 
     	Set <Path> baseUris = this.getDocumentTemplateBaseUris(uri);
     	
-    	return templateLocator.findTemplates(token, baseUris, documentTemplateResourceType);
+    	return templateLocator.findTemplates(token, baseUris, documentTemplateResourceTypes);
     	
     }
 
@@ -87,9 +87,9 @@ public class ResourceTemplateManagerImpl implements ResourceTemplateManager {
     public List<ResourceTemplate> getFolderTemplates(String token, Path uri) {
         
         Set<Path> baseUris = this.getFolderTemplateBaseUris(uri);
-        
+
         return templateLocator.findTemplatesNonRecursively(token, 
-                                    baseUris, this.folderTemplateResourceType);
+                                    baseUris, this.folderTemplateResourceTypes);
     }
     
     private Set<Path> getDocumentTemplateBaseUris(Path uri) {
@@ -164,8 +164,8 @@ public class ResourceTemplateManagerImpl implements ResourceTemplateManager {
     }
     
     @Required
-    public void setDocumentTemplatesResourceType(ResourceTypeDefinition def) {
-        this.documentTemplateResourceType = def;
+    public void setDocumentTemplatesResourceTypes(Set<ResourceTypeDefinition> def) {
+        this.documentTemplateResourceTypes = def;
     }
 
     // Folder templates below (not required, for now)
@@ -182,8 +182,8 @@ public class ResourceTemplateManagerImpl implements ResourceTemplateManager {
 
     @Required
     public void setFolderTemplateResourceType(
-            ResourceTypeDefinition folderTemplateResourceType) {
-        this.folderTemplateResourceType = folderTemplateResourceType;
+            Set<ResourceTypeDefinition> folderTemplateResourceTypes) {
+        this.folderTemplateResourceTypes = folderTemplateResourceTypes;
     }
 
     @Required

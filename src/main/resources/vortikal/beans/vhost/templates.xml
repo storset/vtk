@@ -38,16 +38,25 @@
     <!-- Default document uri -->
     <property name="documentTemplatesDefaultUri" value="${templates.defaultDocumentTemplatesCollection}" />
     
-    <!--  The required resource type for document templates: -->
-    <!--  (references resource type bean defined in resources/vortikal/beans/vhost/resource-types/text.xml -->
-    <property name="documentTemplatesResourceType" ref="textResourceTypeDefinition" />
+    <!--  The required resource type set for document templates: -->
+    <!--  (references resource type beans defined under resources/vortikal/beans/vhost/resource-types/.. -->
+    <property name="documentTemplatesResourceTypes">
+      <set>
+        <ref bean="textResourceTypeDefinition"/>
+        <ref bean="json.resourceType"/>
+      </set>
+    </property>
     
     <!-- Below only concerns folder templates  -->
     <property name="folderTemplatesBaseUri" value="${templates.folderTemplatesBaseUri}"/>
     <property name="folderTemplatesConfiguration" ref="templates.folderTemplatesConfiguration"/>
     <property name="folderTemplatesDefaultUri" value="${templates.defaultFolderTemplatesCollection}"/>
-    <property name="folderTemplateResourceType" ref="collectionResourceTypeDefinition" />
-    
+
+    <property name="folderTemplateResourceType">
+      <set>
+        <ref bean="collectionResourceTypeDefinition"/>
+      </set>
+    </property>
   </bean>
         
 

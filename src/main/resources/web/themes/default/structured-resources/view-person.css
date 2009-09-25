@@ -1,16 +1,42 @@
 @import url(default-layout.css);
 @import url(boxes.css);
 
+h1 {
+  margin-bottom: 10px;	
+}
+
+#position {
+  padding: 0 0 10px 0;
+}
+
+.box.contactinfo {
+  float: left;
+  width: 57%;
+  margin-right: 3%;	
+}
+
 .box.contactinfo h4 {
-  margin-bottom: 5px;
+  margin: 5px 0;
   clear: left;
   float: left;
+}
+
+ul.list h4 {
+  float: none !important;
+  clear: none !important;
+  display: inline;	
+}
+
+#contact-image {
+  float: left;
+  clear: left;
+  width: 100%;	
 }
 
 /* Person bilde */
 .box-image {
   max-width: 40%;
-  float: left;
+  float: right;
 }
 
 div.vrtx-person-image {
@@ -26,7 +52,7 @@ div.vrtx-person-image img {
 
 ul.list {
   margin: 0;
-  padding: 0;	
+  padding: 0 0 10px 0;
   list-style: none;
   float: left;
   clear: left;

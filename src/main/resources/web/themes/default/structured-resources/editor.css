@@ -258,7 +258,8 @@ div.vrtx-json-element {
 }
 
 .vrtx-json {
-  float: left;	
+  float: left;
+  clear: left;
 }
 
 #participants .vrtx-string,

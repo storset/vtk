@@ -6,11 +6,12 @@ resourcetype person {
     firstName : string external:userMetadataLdapService,
     surname : string external:userMetadataLdapService,
     position : string external:userMetadataLdapService,
-    phone : string multiple external:userMetadataLdapService,
-    email : string multiple external:userMetadataLdapService,
-    title : derived (firstName, surname) eval (firstName + " " + surname) overrides title,
-    postalAddress : string multiple external:userMetadataLdapService,
-    visitingAddress : string multiple external:userMetadataLdapService,
+    phone : string external:userMetadataLdapService,
+    email : string external:userMetadataLdapService,
+    postalAddress : string external:userMetadataLdapService,
+    visitingAddress : string external:userMetadataLdapService,
+    alternativeVisitingAddress : string,
+    title : derived (firstName, surname) eval (firstName + " " + surname),
     room : string,
     building : string,
     availableHours : string,
@@ -26,24 +27,21 @@ resourcetype person {
   }
 
   edit-rules {
-    group personInformation (getExternalPersonInfo, firstName, surname, position, phone, email, postalAddress, visitingAddress, room, building, availableHours) (after username),
-	group images (picture, pressPhoto) (after personInformation) horizontal,
-	group combinedPublications (selectedPublications, getExternalScientificInformation) (after tags),
-	group combinedProjects (getExternalProjects, projects) (after combinedPublications),
-	username (size[8]),
-	content (after images),
-	tags (after content),
-	tags tooltip (en : "(tag1, tag2, ...)", no : "(emneord1, emneord2, ...)", nn : "(emneord1, emneord2, ...)")
+    group contactInformation (getExternalPersonInfo, firstName, surname, position, phone, email, postalAddress, visitingAddress) (after username),
+    group additionalContactInformation (alternativeVisitingAddress, room, building, availableHours) (after contactInformation),
+    group images (picture, pressPhoto) (after additionalContactInformation) horizontal,
+    group combinedPublications (selectedPublications, getExternalScientificInformation) (after tags),
+    group combinedProjects (getExternalProjects, projects) (after combinedPublications),
+    username (size[8]),
+    content (after images),
+    tags (after content),
+    tags tooltip (en : "(tag1, tag2, ...)", no : "(emneord1, emneord2, ...)", nn : "(emneord1, emneord2, ...)")
   }
 
   scripts {
-    getExternalPersonInfo show-hide onclick (firstName, surname, position, title, postalAddress, phone, email),
+    getExternalPersonInfo show-hide onclick (firstName, surname, position, title, postalAddress, visitingAddress, phone, email),
     getExternalScientificInformation show-hide onclick (scientificInformation),
-    tags autocomplete (minChars : "1"),
-    email multipleinputfields,
-    phone multipleinputfields,
-    postalAddress multipleinputfields,
-    visitingAddress multipleinputfields
+    tags autocomplete (minChars : "1")
   }
   
   services {
@@ -65,17 +63,33 @@ resourcetype person {
        [resource-props "."]
        
        <div class="box contactinfo">
+       
+         [if phone || email]
+           <ul class="list">
+         [endif]
+         [if email]
+            <li><h4>[localized "email"]</h4>:&nbsp;<a href="mailto:[val email]">[val email]</a></li>
+         [endif]
+         [if phone]
+            <li><h4>[localized "phone"]</h4>:&nbsp;[val phone]</li>
+         [endif]
+         [if phone || email]
+           </ul>
+         [endif]
+       
          <h4>[localized "visitingAddress"]</h4>
          
-         [if visitingAddress]
-          [def visitingAddresses resource-prop "." "visitingAddress"]
-          [if visitingAddresses]
+         [if alternativeVisitingAddress && alternativeVisitingAddress != ""]
+           <ul class="list">
+             <li>[val alternativeVisitingAddress]</li>
+           </ul>
+         [else]
+           [if visitingAddress && visitingAddress != ""]
             <ul class="list">
-              [list visitingAddresses theVisitingAddress]
-                [if theVisitingAddress]<li>[val theVisitingAddress]</li>[endif]
-              [endlist]
+             <li>[val visitingAddress]</li>
+             <li>([localized "unitVisitingAddress"])</li>
             </ul>
-          [endif]
+           [endif]
          [endif]
          
          [if room || building || availableHours]
@@ -99,41 +113,8 @@ resourcetype person {
          <h4>[localized "postalAddress"]</h4>
          
          [if postalAddress]
-          [def postalAddresses resource-prop "." "postalAddress"]
-          [if postalAddresses]
-            <ul class="list">
-              [list postalAddresses thePostalAddress]
-                [if thePostalAddress]<li>[val thePostalAddress]</li>[endif]
-              [endlist]
-            </ul>
-          [endif]
-         [endif]
-         
-         <h4>[localized "phone"] og [localized "email"]</h4>
-        
-         [if phone || email]
            <ul class="list">
-         [endif]
-        
-         [if phone]
-          [def phones resource-prop "." "phone"]
-          [if phones]
-              [list phones thephone]
-                [if thephone]<li>[val thephone]</li>[endif]
-              [endlist]
-          [endif]
-         [endif]
-        
-         [if email]
-          [def emails resource-prop "." "email"]
-          [if emails]
-            [list emails theemail]
-              [if theemail]<li><a href="mailto:[val theemail]">[val theemail]</a></li>[endif]
-            [endlist]
-          [endif]
-         [endif]
-         
-         [if phone || email]
+            <li>[val postalAddress]</li>
            </ul>
          [endif]
          
@@ -291,6 +272,17 @@ resourcetype person {
         [endif]
       ##
     }
+    
+    position {
+      ##
+      [resource-props "."]
+        [if position]
+          <div id="position">
+            [val position]
+          </div>
+        [endif]
+      ##
+    }
 
   }
 
@@ -316,16 +308,19 @@ resourcetype person {
       <body>
       <div id="content">
         <h1><comp:title /></h1>
+        <comp:position />
         <div id="main-content">
-          <div class="box-image">
+          <div id="contact-image">
+            <comp:contact-information />
+            <div class="box-image">
               <comp:person-image />   
+            </div>
           </div>
           <json:field select="content" />
           <comp:tags />
           <comp:scientific-info />
         </div>
         <div id="additional-content">
-           <comp:contact-information />
            <comp:box-feeds />  
            <comp:projects />
         </div>
@@ -334,21 +329,15 @@ resourcetype person {
     </html>
     ##
   }
-  
-  vocabulary{
-  	getExternalPersonInfo {
-  	  en : ("true" = "Yes", "false" = "No"),
-  	  no : ("true" = "Ja", "false" = "Nei")
-  	}
-  } 
-  
+
   localization {
     username : (en : "Username", no : "Brukernavn", nn : "Brukarnamn"),
     getExternalPersonInfo : (en : "Use personinformation registrated in UiO's payroll- and personalsystem", no : "Bruk personopplysninger registrert i UiO's lønns- og personalsystem", nn : "Bruk personopplysninger registrert i UiO's lønns- og personalsystem"),
     firstName : (en : "First name", no : "Fornavn", nn : "Fornamn"),
     surname : (en : "Surname", no : "Etternavn", nn : "Etternamn"),
     postalAddress : (en : "Postal address", no : "Postadresse", nn : "Postadresse"),
-    visitingAddress : (en : "Your visiting address", no : "Din besøksadresse", nn : "Din besøksadresse"),
+    visitingAddress : (en : "Visiting address", no : "Besøksadresse", nn : "Besøksadresse"),
+    alternativeVisitingAddress: (en : "Alternative visiting address (overriding unit visiting address)", no : "Alternativ besøksadresse (overstyrer enhetens besøksadresse)", nn : "Alternativ besøksadresse (overstyrer enhetens besøksadresse)"),
     email : (en : "Email", no : "E-post", nn : "E-post"),
     position : (en : "Position", no : "Stillingstittel", nn : "Stillingstittel"), 
     webPage : (en : "Web page", no : "Webside", nn : "Webside"),
@@ -366,18 +355,20 @@ resourcetype person {
                            nn:"Vis prosjekter publisert på UiO.no hvor ditt brukernavn er registrert som deltager"),
     projects : (en : "Other projects",no : "Andre prosjekter", nn :"Andre prosjektar"),
     projectName : (en : "Project name", no : "Prosjektnavn", nn :"Prosjektnamn"), 
-    projectUrl : (en : "Project link", no : "Prosjektlenke", nn :"Prosjektlenke"),
+    projectUrl : (en : "Web address", no : "Webadresse", nn :"Webadresse"),
     rssFeeds : (en : "Show content from RSS-streams", no : "Vis innhold fra RSS-strømmer", nn :"Vis innhald frå RSS-strømmar"),
     rssTitle : (en : "Title",no : "Tittel", nn : "Tittel"),
-    rssUrl : (en : "RSS link", no : "RSS lenke", nn :"RSS lenke"),
+    rssUrl : (en : "Web address", no : "Webadresse", nn :"Webadresse"),
     pressPhoto : (en : "Press photo", no : "Pressebilde", nn : "Pressebilete"),
     room : (en : "Room", no : "Rom", nn : "Rom"),
     building : (en : "Building", no : "Bygning", nn : "Bygning"),
     publicationTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
     publicationUrl : (en : "Publication link", no : "Publikasjonlenke", nn : "Publikasjonlenke"),
     images : (en : "Images", no : "Bilder", nn : "Bilder"),
-    personInformation : (en : "Person information", no : "Personopplysninger", nn : "Personopplysningar"),
+    contactInformation : (en : "Primary contact information", no : "Primære kontaktopplysninger", nn : "Primære kontaktopplysningar"),
+    additionalContactInformation : (en : "Other contact information", no : "Andre kontaktopplysninger", nn : "Andre kontaktopplysningar"),
     combinedPublications : (en : "Publications", no : "Publikasjoner", nn : "Publikasjoner"),
-    combinedProjects : (en : "Projects", no : "Prosjekter", nn : "Prosjekter")
+    combinedProjects : (en : "Projects", no : "Prosjekter", nn : "Prosjekter"),
+    unitVisitingAddress : (en : "Unit visiting address", no : "Enhetens besøksadresse", nn : "Enhetens besøksadresse") 
   }
 }

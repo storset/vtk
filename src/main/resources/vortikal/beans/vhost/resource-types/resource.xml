@@ -1,25 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
 <beans>
 
   <!-- Resource - base resource type -->
-  
   <import resource="namespaces.xml" />
   <import resource="property-types.xml" />
   <import resource="mixins/content-description.xml" />
   <import resource="mixins/header-control.xml" />
   <import resource="mixins/scientific.xml" />
   
-  <bean id="resourceTypeTree"
-        class="org.vortikal.repository.ResourceTypeTreeImpl" >
-    <property name="typeLocalizationProvider" ref="typeLocalizationProvider"/>
+  <bean id="resourceTypeTree" class="org.vortikal.repository.ResourceTypeTreeImpl">
+    <property name="typeLocalizationProvider" ref="typeLocalizationProvider" />
     <property name="valueFactory" ref="valueFactory" />
     <property name="valueFormatterRegistry" ref="valueFormatterRegistry" />
-  </bean>    
-
+  </bean>
+  
   <bean id="resourceResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="resource"/>
+    <property name="name" value="resource" />
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="mixinTypeDefinitions">
       <list>
@@ -27,7 +24,7 @@
         <ref bean="headerControlMixinResourceTypeDef" />
         <ref bean="scientificDisciplinesMixinResourceTypeDef" />
       </list>
-    </property>    
+    </property>
     <property name="propertyTypeDefinitions">
       <list>
         <ref bean="ownerPropDef" />
@@ -44,18 +41,18 @@
         <ref bean="titlePropDef" />
         <ref bean="contentLocalePropDef" />
         <ref bean="numberOfCommentsPropDef" />
-        <!--  ref bean="publishedPropDef" />
+        <ref bean="publishedPropDef" />
         <ref bean="publishDatePropDef" />
-        <ref bean="unPublishDatePropDef" / -->
+        <ref bean="unPublishDatePropDef" />
       </list>
     </property>
   </bean>
   
   <bean id="numberOfCommentsPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
-        parent="abstractPropDef">
-    <property name="name" value="numberOfComments"/>
-    <property name="type" value="INT"/>
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE"/>
+    parent="abstractPropDef">
+    <property name="name" value="numberOfComments" />
+    <property name="type" value="INT" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="propertyEvaluator" ref="numberOfCommentsModifiedEvaluator" />
   </bean>
   
@@ -63,35 +60,38 @@
     <property name="commentDAO" ref="${repository.commentDao}" />
   </bean>
   
-  <bean id="titlePropDef" class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl" parent="abstractPropDef">
+  <bean id="titlePropDef" class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
     <property name="name" value="title" />
     <property name="type" value="HTML" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
     <property name="propertyEvaluator" ref="titleEvaluator" />
   </bean>
-
+  
   <bean id="titleEvaluator" class="org.vortikal.repository.resourcetype.property.DefaultTitleEvaluator">
     <property name="propertyDefinition" ref="userTitlePropDef" />
   </bean>
-
-  <bean id="userTitlePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  
+  <bean id="userTitlePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
     <property name="contentRelation" value="PRE_CONTENT" />
-    <property name="name" value="userTitle"/>
-    <property name="type" value="HTML"/>
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
-    <property name="mandatory" value="false"/>
+    <property name="name" value="userTitle" />
+    <property name="type" value="HTML" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
     <property name="valueFormatter" ref="htmlFormatter" />
   </bean>
-
-  <bean id="createdByPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  
+  <bean id="createdByPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
     <property name="name" value="createdBy" />
     <property name="type" value="PRINCIPAL" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ROLE_ADMIN" />
     <property name="mandatory" value="true" />
     <property name="propertyEvaluator" ref="ownerEvaluator" />
   </bean>
-
+  
   <bean id="ownerPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="owner" />
     <property name="type" value="PRINCIPAL" />
@@ -100,94 +100,101 @@
     <property name="propertyEvaluator" ref="ownerEvaluator" />
     <property name="validator" ref="ownerEvaluator" />
   </bean>
-
+  
   <bean id="ownerEvaluator" class="org.vortikal.repository.resourcetype.property.OwnerEvaluator">
     <property name="principalManager" ref="principalManager" />
     <property name="authorizationManager" ref="authorizationManager" />
   </bean>
   
-  <bean id="collectionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  <bean id="collectionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
     <property name="name" value="collection" />
     <property name="type" value="BOOLEAN" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
-    <property name="propertyEvaluator" ref="collectionEvaluator" /> 
+    <property name="propertyEvaluator" ref="collectionEvaluator" />
   </bean>
-
+  
   <bean id="collectionEvaluator" class="org.vortikal.repository.resourcetype.property.CollectionEvaluator" />
-
-  <bean id="creationTimePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  <bean id="creationTimePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
     <property name="name" value="creationTime" />
     <property name="type" value="TIMESTAMP" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ROLE_ADMIN" />
     <property name="mandatory" value="true" />
     <property name="propertyEvaluator" ref="creationTimeEvaluator" />
   </bean>
-
-  <bean id="creationTimeEvaluator" 
-        class="org.vortikal.repository.resourcetype.property.CreationTimeEvaluator" />
-
-  <bean id="contentLastModifiedPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  
+  <bean id="creationTimeEvaluator" class="org.vortikal.repository.resourcetype.property.CreationTimeEvaluator" />
+  
+  <bean id="contentLastModifiedPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
     <property name="name" value="contentLastModified" />
     <property name="type" value="TIMESTAMP" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ROLE_ADMIN" />
     <property name="mandatory" value="true" />
     <property name="propertyEvaluator" ref="contentLastModifiedEvaluator" />
   </bean>
-
+  
   <bean id="contentLastModifiedEvaluator" class="org.vortikal.repository.resourcetype.property.ContentLastModifiedEvaluator" />
   
-  <bean id="contentModifiedByPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  <bean id="contentModifiedByPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
     <property name="name" value="contentModifiedBy" />
     <property name="type" value="PRINCIPAL" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ROLE_ADMIN" />
     <property name="mandatory" value="true" />
     <property name="propertyEvaluator" ref="contentModifiedByEvaluator" />
   </bean>
-
+  
   <bean id="contentModifiedByEvaluator" class="org.vortikal.repository.resourcetype.property.ContentModifiedByEvaluator" />
   
-  <bean id="propertiesLastModifiedPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  <bean id="propertiesLastModifiedPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
     <property name="name" value="propertiesLastModified" />
     <property name="type" value="TIMESTAMP" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ROLE_ADMIN" />
     <property name="mandatory" value="true" />
     <property name="propertyEvaluator" ref="propertiesLastModifiedEvaluator" />
   </bean>
-
+  
   <bean id="propertiesLastModifiedEvaluator" class="org.vortikal.repository.resourcetype.property.PropertiesLastModifiedEvaluator" />
-
-  <bean id="propertiesModifiedByPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  
+  <bean id="propertiesModifiedByPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
     <property name="name" value="propertiesModifiedBy" />
     <property name="type" value="PRINCIPAL" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ROLE_ADMIN" />
     <property name="mandatory" value="true" />
     <property name="propertyEvaluator" ref="propertiesModifiedByEvaluator" />
   </bean>
-
+  
   <bean id="propertiesModifiedByEvaluator" class="org.vortikal.repository.resourcetype.property.PropertiesModifiedByEvaluator" />
   
-  <bean id="lastModifiedPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  <bean id="lastModifiedPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
     <property name="name" value="lastModified" />
     <property name="type" value="TIMESTAMP" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
     <property name="propertyEvaluator" ref="lastModifiedEvaluator" />
   </bean>
-
+  
   <bean id="lastModifiedEvaluator" class="org.vortikal.repository.resourcetype.property.LastModifiedEvaluator" />
-
-  <bean id="modifiedByPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  
+  <bean id="modifiedByPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
     <property name="name" value="modifiedBy" />
     <property name="type" value="PRINCIPAL" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
     <property name="propertyEvaluator" ref="lastModifiedByEvaluator" />
   </bean>
-
+  
   <bean id="lastModifiedByEvaluator" class="org.vortikal.repository.resourcetype.property.LastModifiedByEvaluator" />
-
-  <bean id="contentLocalePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  
+  <bean id="contentLocalePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
     <property name="name" value="contentLocale" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
@@ -218,8 +225,8 @@
     </property>
   </bean>
   
-  <bean id="publishedPropDef"
-    class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl" parent="abstractPropDef">
+  <bean id="publishedPropDef" class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
     <property name="name" value="published" />
     <property name="type" value="BOOLEAN" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -228,31 +235,33 @@
     <property name="propertyEvaluator" ref="publishEvaluator" />
   </bean>
   
-  <bean id="overriddenPublishedPropDef"
-    class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
+  <bean id="overriddenPublishedPropDef" class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
     <property name="overriddenPropDef" ref="publishedPropDef" />
     <property name="defaultValue" ref="VALUE_FALSE" />
-    <property name="propertyEvaluator" ref="publishOnRequestEvaluator" />
+    <property name="propertyEvaluator" ref="overriddenPublishEvaluator" />
   </bean>
   
-  <bean id="publishDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  <bean id="publishDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
     <property name="name" value="publish-date" />
     <property name="type" value="TIMESTAMP" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
   </bean>
   
-  <bean id="unPublishDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  <bean id="unPublishDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
     <property name="name" value="unpublish-date" />
     <property name="type" value="TIMESTAMP" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
   </bean>
   
-  <bean id="publishOnRequestEvaluator"
-    class="org.vortikal.repository.resourcetype.property.PublishOnRequestEvaluator">
+  <bean id="publishEvaluator" class="org.vortikal.repository.resourcetype.property.PublishEvaluator">
+    <property name="publishedPropDef" ref="publishedPropDef" />
+    <property name="publishDatePropDef" ref="publishDatePropDef" />
   </bean>
   
-  <bean id="publishEvaluator"
-    class="org.vortikal.repository.resourcetype.property.PublishEvaluator">
+  <bean id="overriddenPublishEvaluator" parent="publishEvaluator">
+    <property name="publishedPropDef" ref="overriddenPublishedPropDef" />
   </bean>
-
+  
 </beans>

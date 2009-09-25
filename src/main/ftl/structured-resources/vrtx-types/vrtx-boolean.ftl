@@ -4,9 +4,9 @@
   <div><label for="${inputFieldName}">${title}</label></div>
   <div>
       <input name="${inputFieldName}" id="${inputFieldName}-true" type="radio" value="true" <#if value == "true"> checked="checked" </#if> />
-      <label for="${inputFieldName}-true">${description.getVocabulary(locale,"true")}</label> 
+      <label for="${inputFieldName}-true">${description.getVocabularyValue(locale,"true")}</label> 
       <input name="${inputFieldName}" id="${inputFieldName}-false" type="radio" value="false" <#if value != "true"> checked="checked" </#if> />
-      <label for="${inputFieldName}-false">${description.getVocabulary(locale,"false")}</label> 
+      <label for="${inputFieldName}-false">${description.getVocabularyValue(locale,"false")}</label> 
   </div>
 </div>
 </#macro>

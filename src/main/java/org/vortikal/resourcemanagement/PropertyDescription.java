@@ -30,6 +30,10 @@
  */
 package org.vortikal.resourcemanagement;
 
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
 public abstract class PropertyDescription {
     
     private String name;
@@ -37,6 +41,8 @@ public abstract class PropertyDescription {
     private String overrides;
     private boolean noExtract;
     private boolean multiple;
+    
+    private Map<Locale, Map<String, String>> vocabulary = new HashMap<Locale, Map<String,String>>();
     
     public final void setName(String name) {
         this.name = name;
@@ -81,4 +87,26 @@ public abstract class PropertyDescription {
     public String toString() {
         return this.getClass().getName() + ": " + this.name;
     }
+
+    public void addVocabulary(Locale lang, String vocabularyKey, String vocabularyValue) {
+        Map<String,String> m = vocabulary.get(lang);
+        if(m == null){
+            m = new HashMap<String,String>();
+        }
+        m.put(vocabularyKey, vocabularyValue);
+        this.vocabulary.put(lang, m);
+    }
+    
+    public String getVocabularyValue(Locale lang, String vocabularyKey) {
+        Map<String,String> m = vocabulary.get(lang);
+        if(m == null){
+            return vocabularyKey;
+        }
+        String value = m.get(vocabularyKey);
+        if ( value != null){
+            return value;
+        }   
+        return vocabularyKey;
+    }
+
 }

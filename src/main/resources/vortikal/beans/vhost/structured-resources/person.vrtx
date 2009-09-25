@@ -8,9 +8,9 @@ resourcetype person {
     position : string external:userMetadataLdapService,
     phone : string multiple external:userMetadataLdapService,
     email : string multiple external:userMetadataLdapService,
+    title : derived (firstName, surname) eval (firstName + " " + surname) overrides title,
     postalAddress : string multiple external:userMetadataLdapService,
     visitingAddress : string multiple external:userMetadataLdapService,
-    title : derived (firstName, surname) eval (firstName + " " + surname),
     room : string,
     building : string,
     availableHours : string,
@@ -334,6 +334,13 @@ resourcetype person {
     </html>
     ##
   }
+  
+  vocabulary{
+  	getExternalPersonInfo {
+  	  en : ("true" = "Yes", "false" = "No"),
+  	  no : ("true" = "Ja", "false" = "Nei")
+  	}
+  } 
   
   localization {
     username : (en : "Username", no : "Brukernavn", nn : "Brukarnamn"),

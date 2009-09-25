@@ -295,7 +295,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
     private ListMenu<PropertySet> buildListMenu(ResultSet rs, MenuRequest menuRequest) {
 
         Map<Path, List<PropertySet>> childMap = new HashMap<Path, List<PropertySet>>();
-        List<PropertySet> toplevel = new ArrayList<PropertySet>();
+            List<PropertySet> toplevel = new ArrayList<PropertySet>();
         for (int i = 0; i < rs.getSize(); i++) {
             PropertySet resource = rs.getResult(i);
 

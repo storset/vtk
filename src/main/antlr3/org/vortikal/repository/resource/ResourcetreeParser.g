@@ -43,9 +43,32 @@ resourcedef
 		(services)?
 		(viewcomponents)?
 		(viewdefinition)?
+		(vocabulary)?
 		(localization)?
 	;
 
+vocabulary
+	:	VOCABULARY LCB
+		  (vocabularyentry (COMMA vocabularyentry)*)*
+		RCB
+		-> ^(VOCABULARY (vocabularyentry)*)
+	;
+
+vocabularyentry
+	:	NAME LCB (vocabularylangentry (COMMA vocabularylangentry)*)  RCB
+		-> ^(NAME (vocabularylangentry)*)
+	;
+	
+vocabularylangentry 
+	: NAME COLON LP (vocabularykeyvalue (COMMA vocabularykeyvalue)*) RP
+	-> ^(NAME (vocabularykeyvalue)*)
+	;
+	
+vocabularykeyvalue
+	: QTEXT EQ (QTEXT)*
+	-> ^(QTEXT (QTEXT)*)
+	;
+	
 localization
 	:	LOCALIZATION LCB
 		  (localizationentry (COMMA localizationentry)*)*
@@ -70,8 +93,8 @@ propertytypedef
 	;
 
 derivedpropertytypedef
-	:	NAME COLON derived (overrides)?
-		-> ^(NAME derived (overrides)?)
+	:	NAME COLON derived (overrides)? (MULTIPLE)? 
+		-> ^(NAME derived (overrides)? (MULTIPLE)?)
 	;
 
 derived	:	DERIVED LP fieldlist RP EVAL LP evallist RP (defaultprop)?

@@ -24,6 +24,7 @@ EDITRULES
 VIEWCOMPONENTS
 	:	'view-components';
 VIEW	:	'view';
+VOCABULARY	:	'vocabulary';
 LOCALIZATION
 	:	'localization';
 SCRIPTS	:	'scripts';
@@ -39,6 +40,7 @@ COLON	:	':';
 COMMA	:	',';
 PLUS	:	'+';
 DQ	:	'"';
+EQ	:	'=';
 
 PROPTYPE:	(STRING | HTML | SIMPLEHTML | BOOLEAN | INT | DATETIME | IMAGEREF | MEDIAREF);
 EDITHINT:	(SIZE LB (NUMBER | SMALL | LARGE) RB | TEXTFIELD | TEXTAREA | RADIO | DROPDOWN);

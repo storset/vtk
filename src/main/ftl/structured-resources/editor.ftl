@@ -131,7 +131,8 @@
           title=localizedTitle
           inputFieldName=elem.name 
           value=elem.value
-          classes=elem.name  
+          classes=elem.name
+          description=elem.description 
           tooltip=form.resource.getLocalizedTooltip(elem.name,locale)
           />
         <#break>

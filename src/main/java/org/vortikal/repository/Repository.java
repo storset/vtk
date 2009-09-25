@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -597,4 +598,12 @@ public interface Repository {
      */
     public String getId();
     
+    /**
+     * 
+     * Publish a resource
+     * 
+     * @param token The security token of the principal
+     * @param resource The resource to publish
+     */
+    public void publish(String token, Resource resource) throws IOException;
 }

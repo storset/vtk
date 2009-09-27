@@ -71,6 +71,7 @@ import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.resourcemanagement.StructuredResourceManager;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.text.JSONUtil;
+import org.vortikal.text.html.HtmlNodeFilter;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.text.tl.Argument;
@@ -113,6 +114,12 @@ public class StructuredResourceDisplayController implements Controller, Initiali
     private ValueFormatterRegistry valueFormatterRegistry;
 
     private Map<String, DirectiveNodeFactory> directiveHandlers;
+    
+    private List<HtmlNodeFilter> parseFilters;
+
+    public void setParseFilters(List<HtmlNodeFilter> parseFilters) {
+        this.parseFilters = parseFilters;
+    }
 
     // XXX: clean up this mess:
     private Map<StructuredResourceDescription, Map<String, TemplateLanguageDecoratorComponent>> 
@@ -157,7 +164,17 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         
         HtmlPageContent content = 
             renderInitialPage(res, model, request);
-        model.put("page", content.getHtmlContent());
+        
+        // XXX This is a most unwanted solution. We parse the entire document after 
+        // it's already been parsed once. This can cause recursive invocation of components,
+        // e.g. the first round of parsing results in output which contains a component
+        // definition, which is parsed and resolved during the second pass.
+        byte[] bytes = content.getHtmlContent().getStringRepresentation().getBytes();
+        ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+        HtmlPage page = this.htmlParser.parse(bais, encoding, this.parseFilters);
+        bais.close();
+        
+        model.put("page", page);
         return new ModelAndView(this.viewName, model);
     }
 

@@ -141,7 +141,7 @@ resourcetype person {
                         [endif]
                       [endif]
                       [if theurl]
-                        TODO: invoke RSS component ... [val theurl]
+                        ${include:feed url=\[[val theurl]\] feed-title=\[false\]}
                       [endif]
                     </div>
                 [endlist]

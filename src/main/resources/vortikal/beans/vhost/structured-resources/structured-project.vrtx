@@ -141,8 +141,7 @@ resourcetype structured-project {
                   <h2>[val thetitle]</h2>
                 [endif]
               [endif]
-                     
-              [if theurl]TODO: invoke RSS component ... [val theurl][endif]  
+              ${include:feed url=\[[val theurl]\]  feed-title=\[false\]}
             </div>
           [endlist]
         [endif]

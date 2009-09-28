@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,6 +45,9 @@ import org.apache.commons.logging.LogFactory;
 public class DollarSyntaxComponentParser implements TextualComponentParser {
 
     private static Log logger = LogFactory.getLog(DollarSyntaxComponentParser.class);
+    
+    private static final Pattern NAMESPACE_REGEX_PATTERN = Pattern.compile("[a-zA-Z]+");
+    private static final Pattern NAME_REGEX_PATTERN = Pattern.compile("[a-zA-Z]+(-[a-zA-Z]+)*");
 
     public ComponentInvocation[] parse(Reader reader) throws Exception {
         BufferedReader bufferedReader = new BufferedReader(reader);
@@ -167,7 +171,7 @@ public class DollarSyntaxComponentParser implements TextualComponentParser {
         }
 
         String namespace = s.substring(0, delimIdx);
-        if (!namespace.matches("[a-zA-Z]+")) {
+        if (!NAMESPACE_REGEX_PATTERN.matcher(namespace).matches()) {
             return null;
         }
         return namespace.trim();
@@ -183,7 +187,7 @@ public class DollarSyntaxComponentParser implements TextualComponentParser {
         if (name != null) {
             name = name.trim();
         }
-        if (!name.matches("[a-zA-Z]+(-[a-zA-Z]+)*")) {
+        if (!NAME_REGEX_PATTERN.matcher(name).matches()) {
             return null;
         }
         return name;

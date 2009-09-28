@@ -38,6 +38,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -146,7 +147,10 @@ public class ParsedHtmlDecoratorTemplate implements Template {
     }
     
     private class CompiledTemplate {
+        
         private Node root;
+        
+        private final Pattern ELEMENT_NAME_REGEX_PATTERN = Pattern.compile("[a-z-]+:[a-z-]+");
 
         public CompiledTemplate(HtmlPageParser htmlParser, 
                 TextualComponentParser componentParser,
@@ -182,31 +186,30 @@ public class ParsedHtmlDecoratorTemplate implements Template {
             userPage.getRootElement().setChildNodes(newRoot.getChildNodes());
             return userPage;
         }
-    }
-
-
-    private Node createNode(HtmlContent c, 
-            TextualComponentParser componentParser) {
-
-        if (c instanceof HtmlElement) {
-            HtmlElement e = (HtmlElement) c;
-            if (e.getName().matches("[a-z-]+:[a-z-]+")) {
-                return new VrtxComponentNode(e);
-            }
-            List<Node> children = new ArrayList<Node>();
-            for (HtmlContent child: e.getChildNodes()) {
-                children.add(createNode(child, componentParser));
-            }
-            return new ElementNode(e, children);
-        } 
         
-        if (c instanceof HtmlText) {
-            return new TextNode((HtmlText) c);
-        } 
-        if (c instanceof HtmlComment) {
-            return new CommentNode((HtmlComment) c);
-        } 
-        return new DefaultContentNode(c);
+        private Node createNode(HtmlContent c, 
+                TextualComponentParser componentParser) {
+
+            if (c instanceof HtmlElement) {
+                HtmlElement e = (HtmlElement) c;
+                if (ELEMENT_NAME_REGEX_PATTERN.matcher(e.getName()).matches()) {
+                    return new VrtxComponentNode(e);
+                }
+                List<Node> children = new ArrayList<Node>();
+                for (HtmlContent child: e.getChildNodes()) {
+                    children.add(createNode(child, componentParser));
+                }
+                return new ElementNode(e, children);
+            } 
+            
+            if (c instanceof HtmlText) {
+                return new TextNode((HtmlText) c);
+            } 
+            if (c instanceof HtmlComment) {
+                return new CommentNode((HtmlComment) c);
+            } 
+            return new DefaultContentNode(c);
+        }
     }
     
     private abstract class Node {
@@ -331,15 +334,19 @@ public class ParsedHtmlDecoratorTemplate implements Template {
      * regular element
      */
     private class ElementNode extends Node {
+        
         private Throwable error;
         private HtmlElement element;
         private String copyAttributesExpression;
         private String copyAttributesList;
         private Map<String, ComponentInvocation[]> attributesMap;
         private List<Node> children;
+        
+        private final Pattern ELEMENT_NAME_PATTERN_REGEX = Pattern.compile("[a-zA-Z0-9]+");
+        private final Pattern ATTRIBUTE_NAME_PATTERN_REGEX = Pattern.compile("[a-zA-Z0-9-_]+");
 
         public ElementNode(HtmlElement elem, List<Node> children) {
-            if (!elem.getName().matches("[a-zA-Z0-9]+")) {
+            if (!ELEMENT_NAME_PATTERN_REGEX.matcher(elem.getName()).matches()) {
                 this.error = new InvalidTemplateException(
                         "Invalid element name: " + elem.getName());
                 return;
@@ -357,7 +364,7 @@ public class ParsedHtmlDecoratorTemplate implements Template {
                     this.copyAttributesList = attr.getValue();
 
                 } else {
-                    if (name == null || !name.matches("[a-zA-Z0-9-_]+")) {
+                    if (name == null || !ATTRIBUTE_NAME_PATTERN_REGEX.matcher(name).matches()) {
                         this.error = new InvalidTemplateException("Invalid attribute name: " + name);
                         return;
                     }

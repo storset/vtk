@@ -105,7 +105,8 @@
 
 .vrtx-string > label,
 .vrtx-html > label,
-.vrtx-simple-html > label {
+.vrtx-simple-html > label,
+.vrtx-media-ref * > label {
     font-size: 1.1em;
     font-weight: 900;
     padding: 10px 0;
@@ -124,13 +125,6 @@
     font-size: 1em;
     font-weight: 100;
     padding: 0;
-}
-
-/* Special cases */
-
-.introImageAndCaption * > label {
-    font-size: 1.1em !important;
-    font-weight: 900 !important;
 }
 
 #contents {
@@ -217,7 +211,14 @@ div.vrtx-json-element {
 	font-size:0.8em;	
 }
 	
+/* SPECIAL CASES */
+
 /* START Introduction image edit like the old one */
+
+.introImageAndCaption * > label {
+    font-size: 1.1em !important;
+    font-weight: 900 !important;
+}
 
 .introImageAndCaption .vrtx-image-ref-label label {
   padding: 10px 0;
@@ -225,7 +226,7 @@ div.vrtx-json-element {
 }
 
 .introImageAndCaption .header {
-  display: none; /* until propagated CSS fix */	
+  display: none;
 }
 
 .introImageAndCaption .image-caption {
@@ -263,6 +264,14 @@ div.vrtx-json-element {
 
 .additional-content iframe {
   height: 210px;  
+}
+
+.additional-content {
+  width: 500px !important;	
+}
+
+.additional-content label {
+  display: none;	
 }
 
 .contactInfo iframe {

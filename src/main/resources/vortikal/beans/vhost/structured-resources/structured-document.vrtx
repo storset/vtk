@@ -13,7 +13,9 @@ resourcetype structured-document {
     title {
       ##
       [def v resource-prop "." "title"]
-      [val v]
+      [if v]
+        [val v]
+      [endif]
       ##
     }
 

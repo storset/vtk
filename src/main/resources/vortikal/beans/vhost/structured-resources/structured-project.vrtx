@@ -141,7 +141,7 @@ resourcetype structured-project {
                   <h2>[val thetitle]</h2>
                 [endif]
               [endif]
-              ${include:feed url=\[[val theurl]\]  feed-title=\[false\]}
+              ${include:feed url=\[[val theurl]\]  feed-title=\[false\] max-messages=\[3\]}
             </div>
           [endlist]
         [endif]

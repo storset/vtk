@@ -144,7 +144,7 @@ resourcetype person {
                         [endif]
                       [endif]
                       [if theurl]
-                        ${include:feed url=\[[val theurl]\] feed-title=\[false\]}
+                        ${include:feed url=\[[val theurl]\] feed-title=\[false\] max-messages=\[5\]}
                       [endif]
                     </div>
                 [endlist]

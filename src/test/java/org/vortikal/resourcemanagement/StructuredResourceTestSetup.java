@@ -38,7 +38,6 @@ import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFormatterRegistry;
 import org.vortikal.resourcemanagement.parser.StructuredResourceParser;
-import org.vortikal.web.service.JSONObjectSelectAssertion;
 
 public abstract class StructuredResourceTestSetup extends
         AbstractBeanContextTestIntegration {

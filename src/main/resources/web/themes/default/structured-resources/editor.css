@@ -101,13 +101,6 @@
   padding: 10px 0;
 }
 
-/* Special case */
-
-.introImageAndCaption * > label {
-    font-size: 1.1em !important;
-    font-weight: 900 !important;
-}
-
 /* Not grouped becomes bold and bigger */
 
 .vrtx-string > label,
@@ -131,6 +124,13 @@
     font-size: 1em;
     font-weight: 100;
     padding: 0;
+}
+
+/* Special cases */
+
+.introImageAndCaption * > label {
+    font-size: 1.1em !important;
+    font-weight: 900 !important;
 }
 
 #contents {
@@ -218,8 +218,10 @@ div.vrtx-json-element {
 }
 	
 /* START Introduction image edit like the old one */
-.introImageAndCaption {
-  margin-top: 20px;	
+
+.introImageAndCaption .vrtx-image-ref-label label {
+  padding: 10px 0;
+  display: block;	
 }
 
 .introImageAndCaption .header {
@@ -228,7 +230,7 @@ div.vrtx-json-element {
 
 .introImageAndCaption .image-caption {
   position:absolute;
-  top:55px;
+  top:75px;
   left: 0px;
 }
 

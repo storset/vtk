@@ -121,6 +121,9 @@
 .vrtx-grouped-horizontal * .header,
 .vrtx-grouped-vertical * .header,
 .vrtx-grouped * .header,
+.vrtx-grouped-horizontal * > .title,
+.vrtx-grouped-vertical * > .title,
+.vrtx-grouped * > .title,
 .vrtx-json-element * > label {
     font-size: 1em;
     font-weight: 100;

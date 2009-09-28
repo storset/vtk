@@ -329,6 +329,24 @@ resourcetype person {
     </html>
     ##
   }
+  
+  vocabulary {
+     getExternalPersonInfo {
+       en : ("true" = "Yes", "false" = "No"),
+       no : ("true" = "Ja", "false" = "Nei"),
+       nn : ("true" = "Ja", "false" = "Nei")
+     },
+     getExternalScientificInformation {
+       en : ("true" = "Yes", "false" = "No"),
+       no : ("true" = "Ja", "false" = "Nei"),
+       nn : ("true" = "Ja", "false" = "Nei")
+     },
+     getExternalProjects {
+       en : ("true" = "Yes", "false" = "No"),
+       no : ("true" = "Ja", "false" = "Nei"),
+       nn : ("true" = "Ja", "false" = "Nei")
+     }
+  }
 
   localization {
     username : (en : "Username", no : "Brukernavn", nn : "Brukarnamn"),

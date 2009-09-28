@@ -263,16 +263,13 @@ div.vrtx-json-element {
   height: 150px;
 }
 
-.selectedPublications {
+.selectedPublications,
+.additional-content {
   width: 98% !important;	
 }
 
 .additional-content iframe {
   height: 210px;  
-}
-
-.additional-content {
-  width: 500px !important;	
 }
 
 .additional-content label {

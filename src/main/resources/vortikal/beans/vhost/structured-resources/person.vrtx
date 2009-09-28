@@ -35,7 +35,10 @@ resourcetype person {
     username (size[8]),
     content (after images),
     tags (after content),
-    tags tooltip (en : "(tag1, tag2, ...)", no : "(emneord1, emneord2, ...)", nn : "(emneord1, emneord2, ...)")
+    tags tooltip (en : "(tag1, tag2, ...)", no : "(emneord1, emneord2, ...)", nn : "(emneord1, emneord2, ...)"),
+    postalAddress tooltip (en : "(streetaddress, postnumber place)", no : "(gateadresse, postnummer sted)", nn : "(gateadresse, postnummer sted)"),
+    visitingAddress tooltip (en : "(streetaddress, postnumber place)", no : "(gateadresse, postnummer sted)", nn : "(gateadresse, postnummer sted)"),
+    alternativeVisitingAddress tooltip (en : "(streetaddress, postnumber place)", no : "(gateadresse, postnummer sted)", nn : "(gateadresse, postnummer sted)")
   }
 
   scripts {

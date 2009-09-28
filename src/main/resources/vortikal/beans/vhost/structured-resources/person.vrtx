@@ -327,6 +327,7 @@ resourcetype person {
            <comp:projects />
         </div>
       </div>
+      ${resource:project-list}
       </body>
     </html>
     ##

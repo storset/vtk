@@ -56,7 +56,9 @@ resourcetype person {
     title {
       ##
         [def v resource-prop "." "title"]
-        [val v]
+        [if v]
+          [val v]
+        [endif]
       ##
     }
 
@@ -66,57 +68,52 @@ resourcetype person {
        
        <div class="box contactinfo">
        
-         [if phone || email]
+         [if (phone && phone != "") || (email && email != "")]
            <ul class="list">
-         [endif]
-         [if email]
-            <li><h4>[localized "email"]</h4>:&nbsp;<a href="mailto:[val email]">[val email]</a></li>
-         [endif]
-         [if phone]
-            <li><h4>[localized "phone"]</h4>:&nbsp;[val phone]</li>
-         [endif]
-         [if phone || email]
+             [if email && email != ""]
+               <li><h4>[localized "email"]</h4>:&nbsp;<a href="mailto:[val email]">[val email]</a></li>
+             [endif]
+             [if phone && phone != ""]
+               <li><h4>[localized "phone"]</h4>:&nbsp;[val phone]</li>
+             [endif]
            </ul>
          [endif]
        
-         <h4>[localized "visitingAddress"]</h4>
-         
-         [if alternativeVisitingAddress && alternativeVisitingAddress != ""]
-           <ul class="list">
-             <li>[val alternativeVisitingAddress]</li>
-           </ul>
-         [else]
-           [if visitingAddress && visitingAddress != ""]
-            <ul class="list">
-             <li>[val visitingAddress]</li>
-             <li>([localized "unitVisitingAddress"])</li>
-            </ul>
+         [if (alternativeVisitingAddress && alternativeVisitingAddress != "") || (visitingAddress && visitingAddress != "")] 
+          
+           [if alternativeVisitingAddress && alternativeVisitingAddress != ""]
+             <h4>[localized "userVisitingAddress"]</h4>
+             <ul class="list">
+               <li>[val alternativeVisitingAddress]</li>
+             </ul>
+           [else]
+             [if visitingAddress && visitingAddress != ""]
+               <h4>[localized "userVisitingAddress"]</h4>
+               <ul class="list">
+                 <li>[val visitingAddress]</li>
+               </ul>
+             [endif]
            [endif]
          [endif]
          
-         [if room || building || availableHours]
+         [if (room && room != "") || (building && building != "") || (availableHours && availableHours != "")]
            <ul class="list">
-         [endif]
-         
-         [if room]
-            <li>[localized "room"]:&nbsp;[val room]</li>
-         [endif]       
-         [if building]
-            <li>[localized "building"]:&nbsp;[val building]</li>
-         [endif]
-         [if availableHours]
-            <li>[localized "availableHours"]:&nbsp;[val availableHours]</li>
-         [endif]
-         
-         [if room || building || availableHours]
+             [if room && room != ""]
+               <li>[localized "room"]:&nbsp;[val room]</li>
+             [endif]       
+             [if building && building != ""]
+               <li>[localized "building"]:&nbsp;[val building]</li>
+             [endif]
+             [if availableHours && availableHours != ""]
+               <li>[localized "availableHours"]:&nbsp;[val availableHours]</li>
+             [endif]
            </ul>
          [endif]
          
-         <h4>[localized "postalAddress"]</h4>
-         
-         [if postalAddress]
+         [if postalAddress && postalAddress != ""]
+           <h4>[localized "postalAddress"]</h4>
            <ul class="list">
-            <li>[val postalAddress]</li>
+             <li>[val postalAddress]</li>
            </ul>
          [endif]
          
@@ -179,10 +176,10 @@ resourcetype person {
     projects {
       ##
         [resource-props "."]
-        [if projects]
+        [if projects && projects != ""]
             [def document structured-document]
             [def theprojects json-attr document "properties.projects"]
-            [if theprojects]
+            [if theprojects && theprojects != ""]
               <div class="narrow-box-borders">
                 <h2>[localized "projects"]</h2>
                 <ul class="list">
@@ -201,26 +198,6 @@ resourcetype person {
               </div>
             [endif]
         [endif]
-      ##
-    }
-    
-    projects-automatic {
-      ##
-      [resource-props "."]
-      [def query "uri = /* type IN jproject"]
-      [def result search query]
-      [if result]
-        <ul>
-          [list result res]
-            [def url view-url res]
-            [if url]
-              <li><a href="[val url]"></a></li>
-            [else]
-              <li>[val name]</li>
-            [endif]
-          [endlist]
-        </ul>
-      [endif]
       ##
     }
 
@@ -323,11 +300,10 @@ resourcetype person {
           <comp:scientific-info />
         </div>
         <div id="additional-content">
-           <comp:box-feeds />  
+           <comp:box-feeds />
+           ${resource:project-list}
            <comp:projects />
         </div>
-      </div>
-      ${resource:project-list}
       </body>
     </html>
     ##
@@ -357,7 +333,7 @@ resourcetype person {
     firstName : (en : "First name", no : "Fornavn", nn : "Fornamn"),
     surname : (en : "Surname", no : "Etternavn", nn : "Etternamn"),
     postalAddress : (en : "Postal address", no : "Postadresse", nn : "Postadresse"),
-    visitingAddress : (en : "Visiting address", no : "Besøksadresse", nn : "Besøksadresse"),
+    visitingAddress : (en : "Unit visiting address", no : "Enhetens besøksadresse", nn : "Enhetens besøksadresse"),
     alternativeVisitingAddress: (en : "Alternative visiting address (overriding unit visiting address)", no : "Alternativ besøksadresse (overstyrer enhetens besøksadresse)", nn : "Alternativ besøksadresse (overstyrer enhetens besøksadresse)"),
     email : (en : "Email", no : "E-post", nn : "E-post"),
     position : (en : "Position", no : "Stillingstittel", nn : "Stillingstittel"), 
@@ -390,6 +366,6 @@ resourcetype person {
     additionalContactInformation : (en : "Other contact information", no : "Andre kontaktopplysninger", nn : "Andre kontaktopplysningar"),
     combinedPublications : (en : "Publications", no : "Publikasjoner", nn : "Publikasjoner"),
     combinedProjects : (en : "Projects", no : "Prosjekter", nn : "Prosjekter"),
-    unitVisitingAddress : (en : "Unit visiting address", no : "Enhetens besøksadresse", nn : "Enhetens besøksadresse") 
+    userVisitingAddress : (en : "Visiting address", no : "Besøksadresse", nn : "Besøksadresse")
   }
 }

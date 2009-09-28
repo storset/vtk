@@ -3,7 +3,7 @@ resourcetype structured-project {
   properties {
     name : string,
     title : derived (name) eval (name) overrides title,
-    status : boolean,
+    status-ongoing : boolean,
     introduction : simple_html,
     introduction-img : image_ref,
     image-caption : simple_html,
@@ -183,7 +183,7 @@ resourcetype structured-project {
   }
   
   vocabulary {
-     status {
+     status-ongoing {
        en : ("true" = "Ongoing", "false" = "Finished"),
        no : ("true" = "Pågående", "false" = "Avsluttet"),
        nn : ("true" = "Pågående", "false" = "Avsluttet")
@@ -193,7 +193,7 @@ resourcetype structured-project {
   localization {
     name : (en : "Name", no : "Navn", nn : "Navn"),
     introduction : (en : "Introduction",no : "Innledning", nn : "Innleiing"),
-    status : (en : "Status", no : "Status", nn : "Status"),
+    status-ongoing : (en : "Status", no : "Status", nn : "Status"),
     introduction-img : (en: "Image", no: "Bilde", nn : "Bilete"),
     image-caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
     participantsHeader : (en : "Participants", no : "Deltakere", nn : "Deltakarar"),

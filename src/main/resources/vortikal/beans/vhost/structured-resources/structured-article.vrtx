@@ -4,14 +4,14 @@ resourcetype structured-article : structured-document {
     author : string,
     media-ref : media_ref,
     tags : string multiple,
-    showAdditionalContent : boolean,
+    hideAdditionalContent : boolean,
     additional-content : html
   }
 
   edit-rules {
     image-caption (size[small]),
     group introImageAndCaption (introduction-img, image-caption) (after introduction) vertical,
-    group additionalContent (showAdditionalContent, additional-content) (after tags),
+    group additionalContent (hideAdditionalContent, additional-content) (after tags),
     author (after introImageAndCaption),
     title (size[large]),
     tags tooltip (en : "(tag1, tag2, ...)", no : "(emneord1, emneord2, ...)", nn : "(emneord1, emneord2, ...)"),
@@ -19,7 +19,7 @@ resourcetype structured-article : structured-document {
   }
 
   scripts {
-    showAdditionalContent show-hide onclick (additional-content),
+    hideAdditionalContent show-hide onclick (additional-content),
     tags autocomplete (minChars : "1")
   }
 
@@ -69,7 +69,7 @@ resourcetype structured-article : structured-document {
     author {
       ##
       [def authors resource-prop "." "author"]
-      [if authors]
+      [if authors && authors != ""]
         <span class="vrtx-authors"><span class="vrtx-authors-prefix">[localized "by-line"]</span>&nbsp;[val authors]</span>
       [endif]
       ##
@@ -78,9 +78,13 @@ resourcetype structured-article : structured-document {
     additional-content {
       ##
       [resource-props "."]
-      [if additional-content]
+      [def document structured-document]
+      [def theHideAdditionalContent json-attr document "properties.hideAdditionalContent"]
+      [def theAdditional-content json-attr document "properties.additional-content"]
+      
+      [if (theHideAdditionalContent && theHideAdditionalContent != "true") && (theAdditional-content && theAdditional-content != "")]
         <div id="additional-content">
-          [val additional-content unescaped]
+          [val theAdditional-content unescaped]
         </div>
       [endif]
       ##
@@ -129,7 +133,7 @@ resourcetype structured-article : structured-document {
     author: (en : "Author", no : "Forfatter", nn : "Forfattar"),
     published-date: (en : "Publishing time", no : "Publiseringstidspunkt", nn : "Publiseringstidspunkt"),
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
-    showAdditionalContent : (en : "Hide additional content", no : "Skjul tilleggsinformasjon", nn : "Skjul tilleggsinformasjon"),
+    hideAdditionalContent : (en : "Hide additional content", no : "Skjul tilleggsinformasjon", nn : "Skjul tilleggsinformasjon"),
     additional-content : (en : "Additional content", no : "Tilleggsinformasjon", nn : "Tilleggsinformasjon"),
     additionalContent : (en : "Additional content", no : "Tilleggsinformasjon", nn : "Tilleggsinformasjon")
   }

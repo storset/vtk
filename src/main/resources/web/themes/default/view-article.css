@@ -1,5 +1,10 @@
 @import url(comments-component.css);
 
+/* For new documenttypes */
+@import url(structured-resources/default-layout.css);
+@import url(structured-resources/boxes.css);
+/* --------------------- */
+
 /* Ingress */
 div.vrtx-introduction {
 	margin: 0;

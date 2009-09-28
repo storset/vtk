@@ -101,6 +101,13 @@
   padding: 10px 0;
 }
 
+/* Special case */
+
+.introImageAndCaption * > label {
+    font-size: 1.1em !important;
+    font-weight: 900 !important;
+}
+
 /* Not grouped becomes bold and bigger */
 
 .vrtx-string > label,
@@ -211,6 +218,9 @@ div.vrtx-json-element {
 }
 	
 /* START Introduction image edit like the old one */
+.introImageAndCaption {
+  margin-top: 20px;	
+}
 
 .introImageAndCaption .header {
   display: none; /* until propagated CSS fix */	

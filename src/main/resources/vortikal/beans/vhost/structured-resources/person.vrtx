@@ -12,8 +12,8 @@ resourcetype person {
     visitingAddress : string external:userMetadataLdapService,
     alternativeVisitingAddress : string,
     title : derived (firstName, surname) eval (firstName + " " + surname),
-    room : string,
     building : string,
+    room : string,
     availableHours : string,
     picture : image_ref, 
     pressPhoto : image_ref,
@@ -28,7 +28,7 @@ resourcetype person {
 
   edit-rules {
     group contactInformation (getExternalPersonInfo, firstName, surname, position, phone, email, postalAddress, visitingAddress) (after username),
-    group additionalContactInformation (alternativeVisitingAddress, room, building, availableHours) (after contactInformation),
+    group additionalContactInformation (alternativeVisitingAddress, building, room, availableHours) (after contactInformation),
     group images (picture, pressPhoto) (after additionalContactInformation) horizontal,
     group combinedPublications (selectedPublications, getExternalScientificInformation) (after tags),
     group combinedProjects (getExternalProjects, projects) (after combinedPublications),
@@ -98,11 +98,11 @@ resourcetype person {
          
          [if (room && room != "") || (building && building != "") || (availableHours && availableHours != "")]
            <ul class="list">
-             [if room && room != ""]
-               <li>[localized "room"]:&nbsp;[val room]</li>
-             [endif]       
              [if building && building != ""]
                <li>[localized "building"]:&nbsp;[val building]</li>
+             [endif]
+             [if room && room != ""]
+               <li>[localized "room"]:&nbsp;[val room]</li>
              [endif]
              [if availableHours && availableHours != ""]
                <li>[localized "availableHours"]:&nbsp;[val availableHours]</li>

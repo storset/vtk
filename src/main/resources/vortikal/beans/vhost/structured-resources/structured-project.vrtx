@@ -181,6 +181,14 @@ resourcetype structured-project {
     ##
   }
   
+  vocabulary {
+     status {
+       en : ("true" = "Ongoing", "false" = "Finished"),
+       no : ("true" = "Pågående", "false" = "Avsluttet"),
+       nn : ("true" = "Pågående", "false" = "Avsluttet")
+     }
+  }
+  
   localization {
     name : (en : "Name", no : "Navn", nn : "Navn"),
     introduction : (en : "Introduction",no : "Innledning", nn : "Innleiing"),

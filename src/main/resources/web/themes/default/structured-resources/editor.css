@@ -272,8 +272,9 @@ div.vrtx-json-element {
   height: 210px;  
 }
 
-.additional-content label {
-  display: none;	
+.additional-content label,
+.visitingAddress {
+  display: none !important;
 }
 
 .contactInfo iframe {

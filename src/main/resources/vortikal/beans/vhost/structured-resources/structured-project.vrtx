@@ -176,6 +176,7 @@ resourcetype structured-project {
             <comp:box-feeds />
           </div>
         </div>
+        ${resource:person-list}
       </body>
     </html>
     ##

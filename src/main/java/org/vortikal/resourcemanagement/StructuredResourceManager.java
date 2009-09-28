@@ -63,7 +63,6 @@ import org.vortikal.resourcemanagement.DerivedPropertyDescription.EvalDescriptio
 import org.vortikal.resourcemanagement.parser.ParserConstants;
 import org.vortikal.resourcemanagement.service.ExternalServiceInvoker;
 import org.vortikal.text.JSONUtil;
-import org.vortikal.web.service.JSONObjectSelectAssertion;
 import org.vortikal.web.service.RepositoryAssertion;
 
 public class StructuredResourceManager {

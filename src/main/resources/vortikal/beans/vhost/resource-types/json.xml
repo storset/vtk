@@ -30,6 +30,13 @@
     <property name="parentTypeDefinition" ref="json.resourceType" />
     <property name="assertions">
       <list>
+        <!-- XXX Isn't 'json.validDocumentAssertion' enough here ?
+             It implicitly re-validates all aspects of the two assertions preceding it:
+               - It fails if content not parseable.
+               - It fails if missing 'resourcetype' prop...
+               
+                -->
+             
         <ref bean="json.objectParseableAssertion" />
         <ref bean="json.objectHasResourceTypeAssertion" />
         <ref bean="json.validDocumentAssertion" />
@@ -41,20 +48,20 @@
       </list>
     </property>
   </bean>
-  
-  <bean id="json.objectParseableAssertion" class="org.vortikal.web.service.JSONObjectParseableAssertion"
-    parent="requestLocalRepositoryAware">
-    <property name="token" ref="trustedToken" />
+
+  <bean id="json.objectParseableAssertion" class="org.vortikal.resourcemanagement.JSONObjectParseableAssertion">
+   <!-- parent="requestLocalRepositoryAware"> -->
+   <!--    <property name="token" ref="trustedToken" />-->
   </bean>
   
-  <bean id="json.objectHasResourceTypeAssertion" class="org.vortikal.web.service.JSONObjectSelectAssertion"
-    parent="requestLocalRepositoryAware">
-    <property name="token" ref="trustedToken" />
+  <bean id="json.objectHasResourceTypeAssertion" class="org.vortikal.resourcemanagement.JSONObjectSelectAssertion">
+<!--    parent="requestLocalRepositoryAware">-->
+<!--    <property name="token" ref="trustedToken" />-->
     <property name="expression" value="resourcetype" />
   </bean>
   
-  <bean id="json.validDocumentAssertion" class="org.vortikal.resourcemanagement.ValidDocumentAssertion"
-    parent="requestLocalRepositoryAware">
+  <bean id="json.validDocumentAssertion" class="org.vortikal.resourcemanagement.ValidDocumentAssertion">
+    <!-- parent="requestLocalRepositoryAware"> -->
     <property name="resourceManager" ref="structuredResources.resourceManager" />
   </bean>
   

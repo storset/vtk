@@ -28,10 +28,9 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.service;
+package org.vortikal.resourcemanagement;
 
 
-import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -39,16 +38,20 @@ import java.util.Set;
 import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.Repository;
+import org.vortikal.repository.RepositoryContentEvaluationAssertion;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.security.Principal;
 import org.vortikal.text.JSONUtil;
-import org.vortikal.util.io.StreamUtil;
 
-public class JSONObjectSelectAssertion extends AbstractRepositoryAssertion {
+/**
+ * XXX Not usable as web service assertion.
+ * 
+ */
+public class JSONObjectSelectAssertion implements RepositoryContentEvaluationAssertion {
 
-    private Repository repository;
-    private String token;
+//    private Repository repository;
+//    private String token;
     private String expression;
     private Set<String> expectedValues = new HashSet<String>();
 
@@ -66,26 +69,51 @@ public class JSONObjectSelectAssertion extends AbstractRepositoryAssertion {
     
     public JSONObjectSelectAssertion createAssertion(String expression, Set<String> expectedValues) {
         JSONObjectSelectAssertion assertion = new JSONObjectSelectAssertion();
-        assertion.setRepository(this.repository);
-        assertion.setToken(this.token);
+//        assertion.setRepository(this.repository);
+//        assertion.setToken(this.token);
         assertion.setExpression(expression);
         assertion.setExpectedValues(expectedValues);
         return assertion;
     }
     
     
-    @Override
+//    @Override
+//    public boolean matches(Resource resource, Principal principal) {
+//        if (resource.isCollection()) {
+//            return false;
+//        }
+//        try {
+//            InputStream inputStream = this.repository.getInputStream(
+//                this.token, resource.getURI(), true);
+//            byte[] buffer = StreamUtil.readInputStream(inputStream);
+//            String content = new String(buffer, "utf-8");
+//            JSONObject object = JSONObject.fromObject(content);
+//            
+//            Object o = JSONUtil.select(object, this.expression);
+//            if (this.expectedValues == null || this.expectedValues.isEmpty()) {
+//                return o != null;
+//            }
+//            if (o == null) {
+//                return false;
+//            }
+//            return this.expectedValues.contains(o.toString());
+//            
+//        } catch (Exception e) {
+//            return false;
+//        }
+//    }
+    
     public boolean matches(Resource resource, Principal principal) {
-        if (resource.isCollection()) {
-            return false;
-        }
+        return matches(resource, principal, null);
+    }
+    
+    public boolean matches(Resource resource, Principal principal, Content content) {
+        if (content == null) return false;
+        if (resource.isCollection()) return false;
+        
         try {
-            InputStream inputStream = this.repository.getInputStream(
-                this.token, resource.getURI(), true);
-            byte[] buffer = StreamUtil.readInputStream(inputStream);
-            String content = new String(buffer, "utf-8");
-            JSONObject object = JSONObject.fromObject(content);
-            
+            JSONObject object = (JSONObject) content.getContentRepresentation(net.sf.json.JSONObject.class);
+
             Object o = JSONUtil.select(object, this.expression);
             if (this.expectedValues == null || this.expectedValues.isEmpty()) {
                 return o != null;
@@ -94,24 +122,23 @@ public class JSONObjectSelectAssertion extends AbstractRepositoryAssertion {
                 return false;
             }
             return this.expectedValues.contains(o.toString());
-            
+
         } catch (Exception e) {
             return false;
-        }
-    }
-    
-
-    public boolean conflicts(Assertion assertion) {
-        return false;
+        }        
     }
 
-    @Required public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
+//    public boolean conflicts(Assertion assertion) {
+//        return false;
+//    }
 
-    @Required public void setToken(String token) {
-        this.token = token;
-    }
+//    @Required public void setRepository(Repository repository) {
+//        this.repository = repository;
+//    }
+//
+//    @Required public void setToken(String token) {
+//        this.token = token;
+//    }
 
     @Required public void setExpression(String expression) {
         this.expression = expression;

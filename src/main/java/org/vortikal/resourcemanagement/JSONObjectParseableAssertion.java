@@ -30,64 +30,40 @@
  */
 package org.vortikal.resourcemanagement;
 
-import net.sf.json.JSONObject;
-
-import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.RepositoryContentEvaluationAssertion;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.security.Principal;
-import org.vortikal.text.JSONUtil;
 
 /**
  * XXX Not usable as web service assertion.
  *
  */
-public class ValidDocumentAssertion implements RepositoryContentEvaluationAssertion {
+public class JSONObjectParseableAssertion implements RepositoryContentEvaluationAssertion {
 
-//	private Repository repository;
-	private StructuredResourceManager resourceManager;
-	
-//	@Override
+//    private Repository repository;
+//    private String token;
+
     public boolean matches(Resource resource, Principal principal) {
         return matches(resource, principal, null);
+//        if (resource.isCollection()) {
+//            return false;
+//        }
+//        try {
+//            InputStream inputStream = this.repository.getInputStream(
+//                this.token, resource.getURI(), true);
+//            byte[] buffer = StreamUtil.readInputStream(inputStream);
+//            String content = new String(buffer, "utf-8");
+//            JSONObject.fromObject(content);
+//            return true;
+//        } catch (Exception e) {
+//            return false;
+//        }
     }
 
-//	public boolean matches(Resource resource, Principal principal) {
-//		try {
-//			SecurityContext securityContext = SecurityContext.getSecurityContext();
-//			String token = securityContext.getToken();
-//
-//			InputStream inputStream = this.repository.getInputStream(
-//					token, resource.getURI(), true);
-//			byte[] buffer = StreamUtil.readInputStream(inputStream);
-//			String content = new String(buffer, "utf-8");
-//			JSONObject object = JSONObject.fromObject(content);
-//                
-//			Object o = JSONUtil.select(object, "resourcetype");
-//			if (o == null) {
-//				return false;
-//			}
-//			StructuredResourceDescription description = resourceManager.get(o.toString());
-//			if (description == null) {
-//				return false;
-//			}
-//			StructuredResource r = new StructuredResource(description);
-//			r.parse(content);
-//			return true;
-//		} catch(Throwable t) {
-//			return false;
-//		}
-//	}
-
-//	public boolean conflicts(Assertion assertion) {
-//		return false;
-//	}
-
-//
-//	public void setRepository(Repository repository) {
-//		this.repository = repository;
-//	}
+//    public boolean conflicts(Assertion assertion) {
+//        return false;
+//    }
 
     public boolean matches(Resource resource, Principal principal, Content content) {
         // Could fallback to Resource.getInputStream instead,but that will not work in all cases when
@@ -96,27 +72,18 @@ public class ValidDocumentAssertion implements RepositoryContentEvaluationAssert
         if (resource.isCollection()) return false;
         
         try {
-            JSONObject object = 
-                (JSONObject) content.getContentRepresentation(net.sf.json.JSONObject.class);
-
-            Object o = JSONUtil.select(object, "resourcetype");
-            if (o == null) {
-                return false;
-            }
-            StructuredResourceDescription description = resourceManager.get(o.toString());
-            if (description == null) {
-                return false;
-            }
-            StructuredResource r = new StructuredResource(description);
-            return r.isValidDocument(object);
-        } catch (Throwable t) {
+            content.getContentRepresentation(net.sf.json.JSONObject.class);
+            return true;
+        } catch (Exception e) {
             return false;
         }
-
     }
 
-    @Required
-    public void setResourceManager(StructuredResourceManager resourceManager) {
-        this.resourceManager = resourceManager;
-    }
+//    @Required public void setRepository(Repository repository) {
+//        this.repository = repository;
+//    }
+//
+//    @Required public void setToken(String token) {
+//        this.token = token;
+//    }
 }

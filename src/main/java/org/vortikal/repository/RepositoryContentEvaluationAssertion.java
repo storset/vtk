@@ -28,49 +28,22 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.service;
+package org.vortikal.repository;
 
-import java.io.InputStream;
-
-import net.sf.json.JSONObject;
-
-import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.Repository;
-import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.security.Principal;
-import org.vortikal.util.io.StreamUtil;
+import org.vortikal.web.service.RepositoryAssertion;
 
-public class JSONObjectParseableAssertion extends AbstractRepositoryAssertion {
+/**
+ * XXX  Hack/marker for class of assertions that require resource content for matching during evaluation.
+ *      The original interface works poorly when resource URI changes (e.g. for move), since
+ *      resource input-stream is not available for matching against (evaluation occurs before DAO-changes).
+ *      
+ * XXX  We need to fix this properly in evaluation framework later. Refactoring [web service] assertions
+ *      is potenially a fair amount of work.
+ */
+public interface RepositoryContentEvaluationAssertion extends RepositoryAssertion {
 
-    private Repository repository;
-    private String token;
+    public boolean matches(Resource resource, Principal principal, Content content);
 
-    @Override
-    public boolean matches(Resource resource, Principal principal) {
-        if (resource.isCollection()) {
-            return false;
-        }
-        try {
-            InputStream inputStream = this.repository.getInputStream(
-                this.token, resource.getURI(), true);
-            byte[] buffer = StreamUtil.readInputStream(inputStream);
-            String content = new String(buffer, "utf-8");
-            JSONObject.fromObject(content);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    public boolean conflicts(Assertion assertion) {
-        return false;
-    }
-
-    @Required public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
-    @Required public void setToken(String token) {
-        this.token = token;
-    }
 }

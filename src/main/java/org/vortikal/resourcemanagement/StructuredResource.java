@@ -58,7 +58,7 @@ public class StructuredResource {
     @SuppressWarnings("unchecked")
     public void parse(String source) {
         JSONObject json = JSONObject.fromObject(source);
-        ValidationResult validation = validate(json);
+        ValidationResult validation = validateInternal(json);
         if (!validation.isValid()) {
         	throw new RuntimeException("Invalid document: " + validation.getErrors());
         }
@@ -66,6 +66,15 @@ public class StructuredResource {
         for (Iterator<String> iter = object.keys(); iter.hasNext();) {
             String name = iter.next();
             this.properties.put(name, object.get(name));
+        }
+    }
+    
+    public boolean isValidDocument(JSONObject document) {
+        try {
+            ValidationResult validation = validateInternal(document);
+            return validation.isValid();
+        } catch (Exception e){
+            return false;
         }
     }
 
@@ -91,7 +100,7 @@ public class StructuredResource {
         return json;
     }
     
-    private ValidationResult validate(JSONObject json) {
+    private ValidationResult validateInternal(JSONObject json) {
         if (json == null) {
             throw new IllegalStateException("Input is NULL");
         }

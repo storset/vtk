@@ -230,7 +230,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
     throws IOException {
 
         // Check resource type assertions
-        if (!checkAssertions(rt, ctx.getNewResource(), ctx.getPrincipal())) {
+        if (!checkAssertions(rt, ctx)) {
             return false;
         }
 
@@ -429,8 +429,10 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
     /**
      * Checking that all resource type assertions match for resource
      */
-    private boolean checkAssertions(PrimaryResourceTypeDefinition rt, Resource resource,
-            Principal principal) {
+    private boolean checkAssertions(PrimaryResourceTypeDefinition rt, PropertyEvaluationContext ctx) {
+
+        Resource resource = ctx.getNewResource();
+        Principal principal = ctx.getPrincipal();
 
         RepositoryAssertion[] assertions = rt.getAssertions();
 
@@ -440,15 +442,30 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
                     logger.debug("Checking assertion " + assertions[i] + " for resource "
                             + resource);
                 }
-                if (!assertions[i].matches(resource, principal)) {
-
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Checking for type '" + rt.getName() + "', resource "
-                                + resource + " failed, unmatched assertion: " + assertions[i]);
+                
+                if (assertions[i] instanceof RepositoryContentEvaluationAssertion) {
+                    // XXX Hack for all assertions that implement this interface (they need content)
+                    RepositoryContentEvaluationAssertion cea = 
+                                                (RepositoryContentEvaluationAssertion) assertions[i];
+                    
+                    if (!cea.matches(resource, principal, ctx.getContent())) {
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("Checking for type '" + rt.getName() + "', resource "
+                                    + resource + " failed, unmatched content evaluation assertion: " + cea);
+                        }
+                        return false;
                     }
-                    return false;
+                } else {
+                    // Normal assertions that should not require content or resource input stream:
+                    if (!assertions[i].matches(resource, principal)) {
+    
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("Checking for type '" + rt.getName() + "', resource "
+                                    + resource + " failed, unmatched assertion: " + assertions[i]);
+                        }
+                        return false;
+                    }
                 }
-
             }
         }
         if (logger.isDebugEnabled()) {

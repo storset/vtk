@@ -105,8 +105,7 @@
 
 .vrtx-string > label,
 .vrtx-html > label,
-.vrtx-simple-html > label,
-.vrtx-radio > div.title > label {
+.vrtx-simple-html > label {
     font-size: 1.1em;
     font-weight: 900;
     padding: 10px 0;
@@ -121,9 +120,6 @@
 .vrtx-grouped-horizontal * .header,
 .vrtx-grouped-vertical * .header,
 .vrtx-grouped * .header,
-.vrtx-grouped-horizontal * > .title,
-.vrtx-grouped-vertical * > .title,
-.vrtx-grouped * > .title,
 .vrtx-json-element * > label {
     font-size: 1em;
     font-weight: 100;

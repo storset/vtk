@@ -3,8 +3,8 @@ resourcetype structured-document {
   properties {
     title : string overrides title,
     introduction : simple_html,
-    introduction-img : image_ref,
-    image-caption : simple_html,
+    picture : image_ref,
+    caption : simple_html,
     content : html noextract
   }
 
@@ -21,10 +21,10 @@ resourcetype structured-document {
 
     introduction-image {
       ##
-      [def img-uri resource-prop "." "introduction-img"]
+      [def img-uri resource-prop "." "picture"]
       [if img-uri]
         [def img resource img-uri]
-        [def caption resource-prop "." "image-caption"]
+        [def caption resource-prop "." "caption"]
         [def pixel-width resource-prop img-uri "pixelWidth"]
         [def img-author resource-prop img-uri "authorName"]
 
@@ -96,8 +96,8 @@ resourcetype structured-document {
   localization {
     title : (en : "Title", no : "Tittel", nn : "Tittel"),
     introduction : (en : "Introduction", no : "Innledning", nn : "Innleiing"),
-    introduction-img : (en: "Image", no: "Bilde", nn : "Bilete"),
-    image-caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
+    picture : (en: "Image", no: "Bilde", nn : "Bilete"),
+    caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
     content : (en : "Content", no : "Innhold", nn : "Innhald")
   }
 }

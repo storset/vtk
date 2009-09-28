@@ -9,8 +9,8 @@ resourcetype structured-event : structured-document {
   }
 
   edit-rules {
-    image-caption (size[small]),
-    group introImageAndCaption (introduction-img, image-caption) (after introduction) vertical,
+    caption (size[small]),
+    group introImageAndCaption (picture, caption) (after introduction) vertical,
     title (size[large]),
     group timeAndPlace (start-date, end-date, location, mapurl) (after introImageAndCaption) horizontal,
     location (size[small]),

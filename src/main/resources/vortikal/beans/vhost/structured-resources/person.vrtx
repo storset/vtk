@@ -132,7 +132,7 @@ resourcetype person {
                     <div class="narrow-box-borders">
                       [def thetitle json-attr feed "rssTitle"]
                       [def theurl json-attr feed "rssUrl"]
-                      [if thetitle]
+                      [if thetitle && thetitle != ""]
                         [if theurl]
                           <h2><a href="[val theurl]">[val thetitle]</a></h2>
                         [else]
@@ -140,7 +140,7 @@ resourcetype person {
                         [endif]
                       [endif]
                       [if theurl]
-                        ${include:feed url=\[[val theurl]\] feed-title=\[false\] max-messages=\[5\]}
+                        ${include:feed url=\[[val theurl]\] feed-title=\[false\] max-messages=\[5\]  include-if-empty=\[false\]}
                       [endif]
                     </div>
                 [endlist]
@@ -186,7 +186,7 @@ resourcetype person {
                 [list theprojects aproject]
                   [def thename json-attr aproject "projectName"]
                   [def theurl json-attr aproject "projectUrl"]
-                  [if thename]
+                  [if thename && thename != ""]
                     [if theurl]
                       <li><a href="[val theurl]">[val thename]</a></li>
                     [else]

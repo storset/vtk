@@ -105,7 +105,8 @@
 
 .vrtx-string > label,
 .vrtx-html > label,
-.vrtx-simple-html > label {
+.vrtx-simple-html > label,
+.vrtx-radio > div.title > label {
     font-size: 1.1em;
     font-weight: 900;
     padding: 10px 0;

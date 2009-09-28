@@ -38,6 +38,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 
@@ -50,7 +51,10 @@ public class ImageServiceImpl implements ImageService {
 
     private Repository repository;
 
-    
+    private static final Pattern REPO_IMAGE_REGEX_PATTERN = Pattern.compile("^(/)\\S*\\.(?i:png|gif|jp(e?)g)$");
+    private static final Pattern WEB_IMAGE_REGEX_PATTERN = Pattern
+            .compile("^(http(s?)\\:\\/\\/|www)\\S*\\.(?i:png|gif|jp(e?)g)$");
+
     public ScaledImage scaleImage(String path, String width, String height) throws Exception {
         BufferedImage originalImage = getImage(path);
         String format = path.substring(path.lastIndexOf(".") + 1);
@@ -62,7 +66,6 @@ public class ImageServiceImpl implements ImageService {
         BufferedImage scaledImage = getScaledInstance(image, scaleDimension.width, scaleDimension.height);
         return new ScaledImage(scaledImage, format);
     }
-
 
     private BufferedImage getImage(String path) throws Exception {
 
@@ -81,16 +84,13 @@ public class ImageServiceImpl implements ImageService {
         return originalImage;
     }
 
-
     private boolean isRepoImage(String path) {
-        return path.matches("^(/)\\S*\\.(?i:png|gif|jp(e?)g)$");
+        return REPO_IMAGE_REGEX_PATTERN.matcher(path).matches();
     }
-
 
     private boolean isWebImage(String path) {
-        return path.matches("^(http(s?)\\:\\/\\/|www)\\S*\\.(?i:png|gif|jp(e?)g)$");
+        return WEB_IMAGE_REGEX_PATTERN.matcher(path).matches();
     }
-
 
     private Dimension getDimension(String width, String height, BufferedImage originalImage) {
 
@@ -113,10 +113,9 @@ public class ImageServiceImpl implements ImageService {
 
     }
 
-
     // Algorithm courtesy of Chris Campbell from the Java2D team at sun
     public BufferedImage getScaledInstance(BufferedImage img, int targetWidth, int targetHeight) {
-        
+
         int type = (img.getTransparency() == Transparency.OPAQUE) ? BufferedImage.TYPE_INT_RGB
                 : BufferedImage.TYPE_INT_ARGB;
         BufferedImage ret = (BufferedImage) img;
@@ -148,9 +147,8 @@ public class ImageServiceImpl implements ImageService {
         } while (w != targetWidth || h != targetHeight);
 
         return ret;
-        
+
     }
-    
 
     public void setRepository(Repository repository) {
         this.repository = repository;

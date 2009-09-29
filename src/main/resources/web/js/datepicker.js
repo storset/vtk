@@ -86,6 +86,7 @@ function saveDateAndTimeFields(){
                 var minutes = $.find("#" + fieldName + "-minutes");
                 var date = $.find("#" + fieldName + "-date");
 
+                this.value = "";
                 if(date[0] != null && date[0].value.toString().length > 0){
                     this.value = date[0].value 
                     if(hours[0] != null && hours[0].value.toString().length > 0){

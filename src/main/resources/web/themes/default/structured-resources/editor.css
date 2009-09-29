@@ -149,6 +149,7 @@ form>div {
 }
 
 .vrtx-string.title,
+.vrtx-string.name,
 .vrtx-string.status-ongoing {
 	width: 98% !important; /* catch floating vertical box in IE7 */
 }

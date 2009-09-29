@@ -107,7 +107,8 @@ form > div {
 }
 
 .vrtx-html > div,
-.vrtx-simple-html > div {
+.vrtx-simple-html > div,
+.vrtx-radio {
   float: left;
   width: 100%;	
 }

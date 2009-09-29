@@ -69,8 +69,8 @@
 	   		}
 	   } 
 	   
-	   var deleteButton = "<input type=\"button\" class=\"vrtx-remove-button\" value=\"${vrtx.getMsg("editor.remove")}\" onClick=\"$('#vrtx-json-element-" + counter + "').remove()\" \/>"
-	   $("#" + j.name +" .vrtx-add-button").before("<div class=\"vrtx-json-element\" id=\"vrtx-json-element-" + counter + "\">" + deleteButton +  htmlTemplate + "<\/div>");
+	   var deleteButton = "<input type=\"button\" class=\"vrtx-remove-button\" value=\"${vrtx.getMsg("editor.remove")}\" onClick=\"$('#vrtx-json-element-" + j.name + "-" + counter + "').remove()\" \/>"
+	   $("#" + j.name +" .vrtx-add-button").before("<div class=\"vrtx-json-element\" id=\"vrtx-json-element-" + j.name + "-" + counter + "\">" + deleteButton +  htmlTemplate + "<\/div>");
 	   
 	   // Bootstrap f*@!ck.........
 	   

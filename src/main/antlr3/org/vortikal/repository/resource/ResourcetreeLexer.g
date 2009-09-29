@@ -24,7 +24,8 @@ EDITRULES
 VIEWCOMPONENTS
 	:	'view-components';
 VIEW	:	'view';
-VOCABULARY	:	'vocabulary';
+VOCABULARY
+	:	'vocabulary';
 LOCALIZATION
 	:	'localization';
 SCRIPTS	:	'scripts';

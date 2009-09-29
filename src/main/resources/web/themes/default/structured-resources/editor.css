@@ -38,6 +38,10 @@ iframe,
 	margin-left: .2em;
 }
 
+#ui-datepicker-div {
+	font-size: 10px;
+}
+
 .vrtx-grouped-horizontal > *  {
 	clear: none;
 	float: left;

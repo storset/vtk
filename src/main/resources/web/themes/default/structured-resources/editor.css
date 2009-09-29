@@ -1,7 +1,11 @@
+#contents {
+  background-color: #efefef;
+}
 
-.vrtx-grouped-vertical, .vrtx-media-ref, .vrtx-simple-html, .vrtx-media-ref, .vrtx-simple-html-small, 
-.vrtx-html,.vrtx-string,.vrtx-date,.vrtx-image-ref,.vrtx-checkbox,.vrtx-dropdownlist,.vrtx-radio {
-  padding: 5px 10px;
+.vrtx-grouped, .vrtx-grouped-vertical, .vrtx-grouped-horizontal, 
+.vrtx-media-ref, .vrtx-simple-html,.vrtx-media-ref,
+.vrtx-simple-html-small,.vrtx-html,.vrtx-string,
+.vrtx-date,.vrtx-image-ref,.vrtx-checkbox,.vrtx-dropdownlist,.vrtx-radio, .vrtx-json {
   clear: left;
   float: left;
 }
@@ -18,29 +22,20 @@
     margin-left: .2em;
 }
 
-.vrtx-grouped-horizontal .vrtx-media-ref, .vrtx-grouped-horizontal .vrtx-simple-html-small,
-.vrtx-grouped-horizontal .vrtx-simple-html, .vrtx-grouped-horizontal .vrtx-html, .vrtx-grouped-horizontal .vrtx-string,
-.vrtx-grouped-horizontal .vrtx-date, .vrtx-grouped-horizontal .vrtx-image-ref, .vrtx-grouped-horizontal .vrtx-checkbox,
-.vrtx-grouped-horizontal .vrtx-dropdownlist, .vrtx-grouped-horizontal .vrtx-radio {
+.vrtx-grouped-horizontal > * {
     clear: none; 
     float: left;
-    padding-right: 1em;
+    padding-right: 15px;
 }
 
-.vrtx-grouped-vertical .vrtx-media-ref, .vrtx-grouped-vertical .vrtx-simple-html-small,
-.vrtx-grouped-vertical .vrtx-simple-html, .vrtx-grouped-vertical .vrtx-html,.vrtx-grouped-vertical .vrtx-string,
-.vrtx-grouped-vertical .vrtx-date, .vrtx-grouped-vertical .vrtx-image-ref, .vrtx-grouped-vertical .vrtx-checkbox,
-.vrtx-grouped-vertical .vrtx-dropdownlist, .vrtx-grouped-vertical .vrtx-radio {
-    clear: left; 
-    float: left;
+/* START Set explisit widths and heights */
+
+.vrtx-simple-html {
+    width: 500px;
 }
 
 .vrtx-simple-html textarea{
     height: 22.5ex;
-    width: 500px;
-}
-
-.vrtx-simple-html {
     width: 500px;
 }
 
@@ -65,41 +60,38 @@
   width: 98% !important;
 }
 
-.vrtx-grouped {
-  /*XXX Temp border to indicate grouped props*/
-  /* border: 1px solid #a9a9a9; */
-  margin-bottom: 15px;
-  clear:left;
-  float:left;
+/* START Set explisit widths and heights */
+
+.vrtx-grouped,
+.vrtx-grouped-horizontal {
   width: 100%;
 }
 
-.vrtx-grouped-horizontal {
-  /*XXX Temp border to indicate grouped props*/
-  /*border: 1px solid #a9a9a9; */
+.vrtx-grouped > div,
+.vrtx-grouped-horizontal > div {
+  padding-bottom: 10px;	
+}
+
+div.vrtx-json-element {
   clear: left;
   float: left;
-  width: auto;
+  width: auto;	
 }
 
 .vrtx-grouped-vertical {
-  /*XXX Temp border to indicate grouped props*/
-  /*border: 1px solid #a9a9a9;*/
-  float:left;
-  width: auto;
   clear: none;  
-  padding: 0;
   position:relative;
 }
 
 .header {
   font-size: 1.1em;
   font-weight: 900;
-  padding:10px;
+  width:100%;
+  padding-bottom: 10px;
 }
 
-.fieldset .header {
-  padding: 10px 0;
+form > div {
+   padding-bottom: 15px;    
 }
 
 /* Not grouped becomes bold and bigger */
@@ -111,8 +103,8 @@
 .vrtx-radio > label {
     font-size: 1.1em;
     font-weight: 900;
-    padding: 10px 0;
     display: block;
+    padding-bottom:10px;
 }
 
 /* And override for grouped sub-properties */
@@ -129,28 +121,30 @@
     padding: 0;
 }
 
-#contents {
-  overflow: auto;
-  background-color: #efefef;
+.vrtx-json-element,
+.vrtx-multipleinputfield {
+  padding-bottom: 15px;	
+}
+
+.vrtx-json-element > div {
+  padding-right: 15px;	
+}
+
+.vrtx-json-element > div > label {
+  width: 100%;	
 }
 
 .submit {
-  padding: 10px;
   clear: left;
   display: block;
 }
 
-div.vrtx-multipleinputfield{
-  padding-bottom:5px;
-}
-
 .vrtx-image-ref img{
   max-height:150px;
-  padding:5px;
 }
 
 .vrtx-string.title {
-  width: 496px;
+  width:98% !important; /* catch floating vertical box in IE7 */
 }
 
 .vrtx-string.title #title {
@@ -164,48 +158,17 @@ h2.vrtx-title{
 }
 
 input.vrtx-add-button {
-	 clear:left;
-	 display:block;
-	 float:left;
-	 margin:10px 0 0 0;
+	clear:left;
+	display:block;
+	float:left;
 }
 
 input.vrtx-remove-button {
 	float:right;
-	margin:25px 0 0 0;
-}
-
-.fieldset {
-  /*	-moz-border-radius-bottomleft:8px;
-	-moz-border-radius-bottomright:8px;
-	-moz-border-radius-topleft:8px;
-	-moz-border-radius-topright:8px;
-	border:1px solid #DDDDDD; */
-	clear:left;
-	width:auto;
-    float:left;
-    margin:5px 0;
-    padding: 0 0 0 10px;
 }
 
 .fieldset div.title {
   padding: 0;	
-}
-
-div.vrtx-json-element {
-	/* background-color:#EEEEFF;
-	border:1px solid #CCCCCC; */
-	width:auto;
-	overflow:hidden;
-    clear: left;
-    float: left;
-   /* padding:5px 0 10px;
-    margin:5px 0; */
-}
-
-.fieldset .vrtx-string {
-  padding-left: 0;
-  padding-right: 20px;
 }
 
 .tooltip {
@@ -223,8 +186,8 @@ div.vrtx-json-element {
 }
 
 .introImageAndCaption .vrtx-image-ref-label label {
-  padding: 10px 0;
-  display: block;	
+  display: block;
+  padding-bottom: 10px;
 }
 
 .introImageAndCaption .header {
@@ -233,7 +196,7 @@ div.vrtx-json-element {
 
 .introImageAndCaption .caption {
   position:absolute;
-  top:75px;
+  top:65px;
   left: 0px;
 }
 
@@ -264,6 +227,10 @@ div.vrtx-json-element {
   font-weight: 900 !important;	
 }
 
+.introduction {
+  padding-right:15px;	
+}
+
 .introduction iframe{
   height: 150px;
 }
@@ -284,11 +251,6 @@ div.vrtx-json-element {
 
 .contactInfo iframe {
   height: 200px;    
-}
-
-.vrtx-json {
-  float: left;
-  clear: left;
 }
 
 #participants .vrtx-string,

@@ -1,5 +1,6 @@
 #contents {
   background-color: #efefef;
+  padding-left: 1.2em !important;
 }
 
 #contents h2 {
@@ -9,44 +10,41 @@
   margin-top:0;
 }
 
-input,
-iframe {
-  padding: 0;
-  margin: 0;
+.header {
+    font-size: 1.1em;
+    font-weight: 900;
+    width: 100%;
+    padding-bottom: 10px;
 }
 
-iframe,
-.fieldset {
-  float: left;
-  width: 100%;
+form > div {
+    padding-bottom: 15px;
+}
+
+.tooltip {
+    display: inline;
+    font-size: 0.8em;
 }
 
 .vrtx-grouped,.vrtx-grouped-vertical,.vrtx-grouped-horizontal,.vrtx-media-ref,.vrtx-simple-html,
 .vrtx-media-ref,.vrtx-simple-html-small,.vrtx-html,.vrtx-string,.vrtx-date,.vrtx-image-ref,
-.vrtx-checkbox,.vrtx-dropdownlist,.vrtx-radio,.vrtx-json
+.vrtx-checkbox,.vrtx-dropdownlist,.vrtx-radio,.vrtx-json, div.vrtx-json-element
 	{
   clear: left;
   float: left;
 }
 
-.vrtx-json {
-  width: 100%;
+.vrtx-grouped,.vrtx-grouped-horizontal {
+    width: 100%;
 }
 
-.vrtx-string .date {
-  margin-right: 1em;
+.vrtx-grouped > div,.vrtx-grouped-horizontal > div {
+    padding-bottom: 10px;
 }
 
-.vrtx-string .hours {
-  margin-right: .2em;
-}
-
-.vrtx-string .minutes {
-  margin-left: .2em;
-}
-
-#ui-datepicker-div {
-  font-size: 10px;
+.vrtx-grouped-vertical {
+    clear: none;
+    position: relative;
 }
 
 .vrtx-grouped-horizontal > *  {
@@ -55,7 +53,103 @@ iframe,
   padding-right: 15px;
 }
 
+.vrtx-html > div,.vrtx-simple-html >div,.vrtx-radio {
+    float: left;
+    width: 100%;
+}
+
+/* Not grouped becomes bold and bigger */
+.vrtx-string > label,
+.vrtx-html > label,
+.vrtx-simple-html > label,
+.vrtx-media-ref * > label,
+.vrtx-radio > label
+    {
+    font-size: 1.1em;
+    font-weight: 900;
+    display: block;
+    padding-bottom: 10px;
+}
+
+/* And override for grouped sub-properties */
+.vrtx-grouped-horizontal * > label,
+.vrtx-grouped-vertical * > label,
+.vrtx-grouped * > label,
+.vrtx-grouped-horizontal * .header,
+.vrtx-grouped-vertical * .header,
+.vrtx-grouped * .header,
+.vrtx-json-element * > label
+    {
+    font-size: 1em;
+    font-weight: 100;
+    padding: 0;
+}
+
+.vrtx-string .date {
+  margin-right: 1em;
+}
+.vrtx-string .hours {
+  margin-right: .2em;
+}
+.vrtx-string .minutes {
+  margin-left: .2em;
+}
+#ui-datepicker-div {
+  font-size: 10px;
+}
+
+input, iframe {
+  padding: 0;
+  margin: 0;
+}
+iframe, .fieldset {
+  float: left;
+  width: 100%;
+}
+
+.vrtx-json {
+  width: 100%;
+}
+.vrtx-json-element {
+    width: auto;
+}
+
+/* START JSON and multiple fields */
+
+.vrtx-grouped-horizontal .vrtx-json .header,
+.vrtx-grouped .vrtx-json .header {
+    padding-bottom: 5px;
+    font-weight:900 !important;
+}
+
+.vrtx-json-element, .vrtx-multipleinputfield {
+    padding-bottom: 15px;
+}
+
+.vrtx-json-element > div {
+    padding-right: 15px;
+    padding-bottom: 10px;
+}
+
+.vrtx-json-element > div > label {
+    width: 100%;
+}
+
+input.vrtx-add-button {
+    clear: left;
+    float: left;
+    display: block;
+}
+
+input.vrtx-remove-button {
+    float: left;
+    margin-top:18px;
+}
+
+/* END JSON and multiple fields */
+
 /* START Set explisit widths and heights */
+
 .vrtx-simple-html {
 	width: 500px;
 }
@@ -86,102 +180,60 @@ iframe,
 	width: 98% !important;
 }
 
-/* START Set explisit widths and heights */
-.vrtx-grouped,.vrtx-grouped-horizontal {
-	width: 100%;
+.vrtx-image-ref img {
+    max-height: 150px;
 }
 
-.vrtx-grouped > div,.vrtx-grouped-horizontal > div {
-	padding-bottom: 10px;
+.vrtx-string.title,
+.vrtx-string.name,
+.vrtx-string.status-ongoing {
+    width: 98% !important; /* catch floating vertical box in IE7 */
 }
 
-div.vrtx-json-element {
-	clear: left;
-	float: left;
-	width: auto;
+.vrtx-string.title #title {
+    width: 496px;
 }
 
-.vrtx-grouped-vertical {
-	clear: none;
-	position: relative;
+#media-ref {
+    width: 370px;
 }
 
-.header {
-	font-size: 1.1em;
-	font-weight: 900;
-	width: 100%;
-	padding-bottom: 10px;
+.introduction {
+    padding-right: 15px;
 }
 
-form > div {
-	padding-bottom: 15px;
+.introduction iframe {
+    height: 150px;
 }
 
-.vrtx-html > div,.vrtx-simple-html >div,.vrtx-radio {
-	float: left;
-	width: 100%;
+.selectedPublications,.additional-content {
+    width: 98% !important;
 }
 
-/* Not grouped becomes bold and bigger */
-.vrtx-string > label,
-.vrtx-html > label,
-.vrtx-simple-html > label,
-.vrtx-media-ref * > label,
-.vrtx-radio > label
-	{
-	font-size: 1.1em;
-	font-weight: 900;
-	display: block;
-	padding-bottom: 10px;
+.additional-content iframe {
+    height: 210px;
 }
 
-/* And override for grouped sub-properties */
-.vrtx-grouped-horizontal * > label,
-.vrtx-grouped-vertical * > label,
-.vrtx-grouped * > label,
-.vrtx-grouped-horizontal * .header,
-.vrtx-grouped-vertical * .header,
-.vrtx-grouped * .header,
-.vrtx-json-element * > label
-	{
-	font-size: 1em;
-	font-weight: 100;
-	padding: 0;
+.additional-content label,.visitingAddress {
+    display: none !important;
 }
 
-/* START JSON and multiple fields */
-
-.vrtx-grouped-horizontal .vrtx-json .header,
-.vrtx-grouped .vrtx-json .header {
-    padding-bottom: 5px;
-    font-weight:900 !important;
+.contactInfo iframe {
+    height: 200px;
 }
 
-.vrtx-json-element, .vrtx-multipleinputfield {
-	padding-bottom: 15px;
+#participants .vrtx-string,#projects .vrtx-string,#rssFeeds .vrtx-string
+    {
+    clear: none;
+    padding-bottom: 0;
 }
 
-.vrtx-json-element > div {
-	padding-right: 15px;
-	padding-bottom: 10px;
+.fieldset#box-list-main,.fieldset#box-list-main div.vrtx-json-element,.fieldset#box-list-side,.fieldset#box-list-side div.vrtx-json-element
+    {
+    width: 900px;
 }
 
-.vrtx-json-element > div > label {
-	width: 100%;
-}
-
-input.vrtx-add-button {
-    clear: left;
-    float: left;
-    display: block;
-}
-
-input.vrtx-remove-button {
-    float: left;
-    margin-top:18px;
-}
-
-/* END JSON and multiple fields */
+/* END Set explisit widths and heights */
 
 .submit {
 	clear: left;
@@ -197,13 +249,6 @@ h2.vrtx-title {
 .fieldset div.title {
 	padding: 0;
 }
-
-.tooltip {
-	display: inline;
-	font-size: 0.8em;
-}
-
-/* SPECIAL CASES */ 
 
 /* START Introduction image edit like the old one */
 
@@ -246,57 +291,3 @@ h2.vrtx-title {
 }
 
 /* STOP Introduction image edit like the old one */
-
-
-.vrtx-image-ref img {
-    max-height: 150px;
-}
-
-.vrtx-string.title,
-.vrtx-string.name,
-.vrtx-string.status-ongoing {
-    width: 98% !important; /* catch floating vertical box in IE7 */
-}
-
-.vrtx-string.title #title {
-    width: 496px;
-}
-
-#media-ref {
-	width: 370px;
-}
-
-.introduction {
-	padding-right: 15px;
-}
-
-.introduction iframe {
-	height: 150px;
-}
-
-.selectedPublications,.additional-content {
-	width: 98% !important;
-}
-
-.additional-content iframe {
-	height: 210px;
-}
-
-.additional-content label,.visitingAddress {
-	display: none !important;
-}
-
-.contactInfo iframe {
-	height: 200px;
-}
-
-#participants .vrtx-string,#projects .vrtx-string,#rssFeeds .vrtx-string
-	{
-	clear: none;
-	padding-bottom: 0;
-}
-
-.fieldset#box-list-main,.fieldset#box-list-main div.vrtx-json-element,.fieldset#box-list-side,.fieldset#box-list-side div.vrtx-json-element
-	{
-	width: 900px;
-}

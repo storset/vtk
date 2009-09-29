@@ -1,19 +1,22 @@
 #contents {
 	background-color: #efefef;
-	font-family: Arial, Helvetica, sans-serif;
 }
 
-input,iframe {
+input,
+iframe {
 	padding: 0;
 	margin: 0;
 }
 
-iframe,.fieldset {
+iframe,
+.fieldset {
 	float: left;
 	width: 100%;
 }
 
-.vrtx-grouped,.vrtx-grouped-vertical,.vrtx-grouped-horizontal,.vrtx-media-ref,.vrtx-simple-html,.vrtx-media-ref,.vrtx-simple-html-small,.vrtx-html,.vrtx-string,.vrtx-date,.vrtx-image-ref,.vrtx-checkbox,.vrtx-dropdownlist,.vrtx-radio,.vrtx-json
+.vrtx-grouped,.vrtx-grouped-vertical,.vrtx-grouped-horizontal,.vrtx-media-ref,.vrtx-simple-html,
+.vrtx-media-ref,.vrtx-simple-html-small,.vrtx-html,.vrtx-string,.vrtx-date,.vrtx-image-ref,
+.vrtx-checkbox,.vrtx-dropdownlist,.vrtx-radio,.vrtx-json
 	{
 	clear: left;
 	float: left;
@@ -35,7 +38,7 @@ iframe,.fieldset {
 	margin-left: .2em;
 }
 
-.vrtx-grouped-horizontal>* {
+.vrtx-grouped-horizontal > *  {
 	clear: none;
 	float: left;
 	padding-right: 15px;
@@ -77,7 +80,7 @@ iframe,.fieldset {
 	width: 100%;
 }
 
-.vrtx-grouped>div,.vrtx-grouped-horizontal>div {
+.vrtx-grouped > div,.vrtx-grouped-horizontal > div {
 	padding-bottom: 10px;
 }
 
@@ -103,13 +106,17 @@ form>div {
 	padding-bottom: 15px;
 }
 
-.vrtx-html>div,.vrtx-simple-html>div,.vrtx-radio {
+.vrtx-html > div,.vrtx-simple-html >div,.vrtx-radio {
 	float: left;
 	width: 100%;
 }
 
 /* Not grouped becomes bold and bigger */
-.vrtx-string>label,.vrtx-html>label,.vrtx-simple-html>label,.vrtx-media-ref *>label,.vrtx-radio>label
+.vrtx-string > label,
+.vrtx-html > label,
+.vrtx-simple-html > label,
+.vrtx-media-ref * > label,
+.vrtx-radio > label
 	{
 	font-size: 1.1em;
 	font-weight: 900;
@@ -118,7 +125,13 @@ form>div {
 }
 
 /* And override for grouped sub-properties */
-.vrtx-grouped-horizontal *>label,.vrtx-grouped-vertical *>label,.vrtx-grouped *>label,.vrtx-grouped-horizontal * .header,.vrtx-grouped-vertical * .header,.vrtx-grouped * .header,.vrtx-json-element *>label
+.vrtx-grouped-horizontal * > label,
+.vrtx-grouped-vertical * > label,
+.vrtx-grouped * > label,
+.vrtx-grouped-horizontal * .header,
+.vrtx-grouped-vertical * .header,
+.vrtx-grouped * .header,
+.vrtx-json-element * > label
 	{
 	font-size: 1em;
 	font-weight: 100;
@@ -126,52 +139,47 @@ form>div {
 }
 
 /* START JSON and multiple fields */
-.vrtx-json-element,.vrtx-multipleinputfield {
+
+.vrtx-grouped-horizontal .vrtx-json .header,
+.vrtx-grouped .vrtx-json .header {
+    padding-bottom: 5px;
+    font-weight:900 !important;
+}
+
+.vrtx-json-element, .vrtx-multipleinputfield {
 	padding-bottom: 15px;
 }
 
-.vrtx-json-element>div {
+.vrtx-json-element > div {
 	padding-right: 15px;
 }
 
-.vrtx-json-element>div>label {
+.vrtx-json-element > div > label {
 	width: 100%;
 }
 
+input.vrtx-add-button {
+    clear: left;
+    float: left;
+    display: block;
+}
+
+input.vrtx-remove-button {
+    float: left;
+    margin-top:18px;
+}
+
 /* END JSON and multiple fields */
+
 .submit {
 	clear: left;
 	display: block;
-}
-
-.vrtx-image-ref img {
-	max-height: 150px;
-}
-
-.vrtx-string.title,
-.vrtx-string.name,
-.vrtx-string.status-ongoing {
-	width: 98% !important; /* catch floating vertical box in IE7 */
-}
-
-.vrtx-string.title #title {
-	width: 496px;
 }
 
 h2.vrtx-title {
 	clear: left;
 	float: left;
 	overflow: hidden;
-}
-
-input.vrtx-add-button {
-	clear: left;
-	display: block;
-	float: left;
-}
-
-input.vrtx-remove-button {
-	float: right;
 }
 
 .fieldset div.title {
@@ -183,8 +191,11 @@ input.vrtx-remove-button {
 	font-size: 0.8em;
 }
 
-/* SPECIAL CASES */ /* START Introduction image edit like the old one */
-.introImageAndCaption *>label {
+/* SPECIAL CASES */ 
+
+/* START Introduction image edit like the old one */
+
+.introImageAndCaption * > label {
 	font-size: 1.1em !important;
 	font-weight: 900 !important;
 }
@@ -223,12 +234,24 @@ input.vrtx-remove-button {
 }
 
 /* STOP Introduction image edit like the old one */
-#media-ref {
-	width: 370px;
+
+
+.vrtx-image-ref img {
+    max-height: 150px;
 }
 
-#projects .header {
-	font-weight: 900 !important;
+.vrtx-string.title,
+.vrtx-string.name,
+.vrtx-string.status-ongoing {
+    width: 98% !important; /* catch floating vertical box in IE7 */
+}
+
+.vrtx-string.title #title {
+    width: 496px;
+}
+
+#media-ref {
+	width: 370px;
 }
 
 .introduction {

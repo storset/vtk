@@ -14,7 +14,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   fck.Config['CustomConfigurationsPath'] = baseUrl + '/custom-fckconfig.js';
 
   if (completeEditor) {
-    fck.ToolbarSet = 'Complete';
+    fck.ToolbarSet = 'Complete-article';
   } else if (withoutSubSuper) {
     fck.ToolbarSet = 'Inline-S';
   } else {
@@ -37,9 +37,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   fck.Config['FullPage'] = false;
   fck.Config['ToolbarCanCollapse'] = false;
   fck.Config['TabSpaces'] = 4;
-
   fck.Config['FontFormats'] = 'p;h2;h3;h4;h5;h6;pre';
-
   fck.Config.EMailProtection = 'none';
   fck.Config.DisableFFTableHandles = false;
   fck.Config.ForcePasteAsPlainText = false;
@@ -47,14 +45,19 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   fck.Config['SkinPath'] = fck.BasePath + 'editor/skins/silver/';
   fck.Config.BaseHref = baseDocumentUrl;
 
-  /* Fix for div contianer display in ie */
-  var browser = navigator.userAgent;
-  var ieversion = new Number(RegExp.$1)
-  if (browser.indexOf("MSIE") > -1 && ieversion <= 7) {
-    cssFileList[cssFileList.length - 1] = "/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css";
-  }
+  var cssFileList = new Array(
+          "/vrtx/__vrtx/static-resources/themes/default/editor-container.css",
+          "/vrtx/__vrtx/static-resources/themes/default/fck_editorarea.css");
 
-  fck.Config['EditorAreaCSS'] = cssFileList;
+      /* Fix for div contianer display in ie */
+      var browser = navigator.userAgent;
+      var ieversion = new Number(RegExp.$1)
+      if(browser.indexOf("MSIE") > -1 && ieversion <= 7){
+        cssFileList[cssFileList.length] = "/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css";
+      }
+
+      fck.Config['EditorAreaCSS'] = cssFileList;
+
   fck.ReplaceTextarea();
 }
 

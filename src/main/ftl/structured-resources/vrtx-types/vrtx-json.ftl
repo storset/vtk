@@ -27,7 +27,6 @@
     <#else>
       	<#list elem.value as map>
       	  <div class="vrtx-json-element" id="vrtx-json-element-${counter}">
-      	  	<input type="button" class="vrtx-remove-button" value="${vrtx.getMsg("editor.remove")}" onClick="$('#vrtx-json-element-${counter}').remove()" />
         	<#list elem.description.attributes as jsonAttr>
 	  		<#assign tmpName = inputFieldName + "." + jsonAttr + "." + counter />
 	  		  <#assign jsonAttrLocalizedTitle = form.resource.getLocalizedMsg(jsonAttr, locale, null) />
@@ -37,6 +36,7 @@
 	          	<@printJsonProperyEditView elem.description.getType(jsonAttr) jsonAttrLocalizedTitle tmpName "" elem />    
 	          </#if>
 	        </#list>
+	        <input type="button" class="vrtx-remove-button" value="${vrtx.getMsg("editor.remove")}" onClick="$('#vrtx-json-element-${counter}').remove()" />
         </div>
         <#local counter = counter + 1 />
       </#list>

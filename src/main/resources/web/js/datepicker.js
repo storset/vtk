@@ -7,14 +7,16 @@ $(document).ready(function() {
     );
     // TODO !spageti 
     initPropChange();
-    if($("#resource\\.start-date").length == 0 || $("#resource\\.end-date").length == 0){
+    
+    // specific for start- and enddate
+    if($("#start-date-date").length == 0 || $("#end-date-date").length == 0){
         return;
     }
-	var startDate = $("#resource\\.start-date").datepicker( 'getDate' );
+	var startDate = $("#start-date-date").datepicker( 'getDate' );
 	if(startDate != null){
 		setDefaultEndDate();
 	}
-	$("#resource\\.start-date").change(
+	$("#start-date-date").change(
 		function(){
 			setDefaultEndDate();					
 		}
@@ -44,10 +46,10 @@ function displayDateAsMultipleInputFields(name){
 }
 
 function setDefaultEndDate(){
-    var endDate = $("#resource\\.end-date").val();
-    var startDate = $("#resource\\.start-date").datepicker( 'getDate' );
+    var endDate = $("#end-date-date").val();
+    var startDate = $("#start-date-date").datepicker( 'getDate' );
     if(endDate == ""){
-        $("#resource\\.end-date").datepicker('option', 'defaultDate', startDate);
+        $("#end-date-date").datepicker('option', 'defaultDate', startDate);
     }               
 }
 

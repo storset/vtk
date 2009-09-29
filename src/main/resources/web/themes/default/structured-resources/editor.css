@@ -231,7 +231,7 @@ div.vrtx-json-element {
   display: none;
 }
 
-.introImageAndCaption .image-caption {
+.introImageAndCaption .caption {
   position:absolute;
   top:75px;
   left: 0px;
@@ -241,16 +241,16 @@ div.vrtx-json-element {
   float: left;
 }
 
-.introImageAndCaption div.vrtx-image-ref-browse input#introduction-img {
+.introImageAndCaption div.vrtx-image-ref-browse input#picture {
   width: 200px;
 }
 
-.introImageAndCaption div#introduction-img\.preview {
+.introImageAndCaption div#picture\.preview {
   margin:0 0 0 370px;
   height:150px; /* same height as (label, input + image-caption) to avoid the absolute positioned image-caption to overflow into below fields */
 }
 
-.introImageAndCaption div#introduction-img\.preview img {
+.introImageAndCaption div#picture\.preview img {
   padding: 0;
 }
 
@@ -258,6 +258,10 @@ div.vrtx-json-element {
 
 #media-ref {
   width: 370px; 
+}
+
+#projects .header {
+  font-weight: 900 !important;	
 }
 
 .introduction iframe{

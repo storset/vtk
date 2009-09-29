@@ -88,6 +88,10 @@
             <#assign fieldSize=elem.description.edithints['size'] />
           </#if>
         </#if>
+        <#assign dropdown = false />
+        <#if elem.description.edithints?exists && elem.description.edithints['dropdown']?exists >
+        	<#assign dropdown = true />
+        </#if>
        <@vrtxString.printPropertyEditView 
          title=localizedTitle 
          inputFieldName=elem.name 
@@ -95,6 +99,8 @@
          classes=elem.name
          inputFieldSize=fieldSize 
          tooltip=form.resource.getLocalizedTooltip(elem.name,locale)
+         valuemap=elem.description.getValuemap(locale)
+         dropdown=dropdown
          />
         <#break>
       <#case "simple_html">

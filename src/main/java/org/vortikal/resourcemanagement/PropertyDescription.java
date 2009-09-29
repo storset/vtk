@@ -30,7 +30,9 @@
  */
 package org.vortikal.resourcemanagement;
 
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -43,6 +45,7 @@ public abstract class PropertyDescription {
     private boolean multiple;
     
     private Map<Locale, Map<String, String>> vocabulary = new HashMap<Locale, Map<String,String>>();
+    
     
     public final void setName(String name) {
         this.name = name;
@@ -107,6 +110,11 @@ public abstract class PropertyDescription {
             return value;
         }   
         return vocabularyKey;
+    }
+
+    public Map<String,String> getValuemap(Locale local) {
+        Map<String,String> valuemap = vocabulary.get(local);
+        return valuemap;
     }
 
 }

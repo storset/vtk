@@ -113,7 +113,7 @@ div.vrtx-json-element {
 	padding-bottom: 10px;
 }
 
-form>div {
+form > div {
 	padding-bottom: 15px;
 }
 
@@ -163,6 +163,7 @@ form>div {
 
 .vrtx-json-element > div {
 	padding-right: 15px;
+	padding-bottom: 10px;
 }
 
 .vrtx-json-element > div > label {
@@ -292,6 +293,7 @@ h2.vrtx-title {
 #participants .vrtx-string,#projects .vrtx-string,#rssFeeds .vrtx-string
 	{
 	clear: none;
+	padding-bottom: 0;
 }
 
 .fieldset#box-list-main,.fieldset#box-list-main div.vrtx-json-element,.fieldset#box-list-side,.fieldset#box-list-side div.vrtx-json-element

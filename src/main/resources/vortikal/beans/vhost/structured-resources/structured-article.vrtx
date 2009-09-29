@@ -123,6 +123,14 @@ resourcetype structured-article : structured-document {
     </html>
     ##
   }
+  
+  vocabulary {
+    hideAdditionalContent {
+      en : ("true" = "Yes", "false" = "No"),
+      no : ("true" = "Ja", "false" = "Nei"),
+      nn : ("true" = "Ja", "false" = "Nei")
+    }
+  }
 
   localization {
     photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),

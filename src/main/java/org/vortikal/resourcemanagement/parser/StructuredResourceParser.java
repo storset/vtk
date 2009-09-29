@@ -170,8 +170,8 @@ public class StructuredResourceParser implements InitializingBean {
                 case ResourcetreeLexer.SERVICES:
                     this.serviceDefinitionParser.parseServices(srd, descriptionEntry.getChildren());
                     break;
-                case ResourcetreeLexer.VOCABULARY:  
-                    handleVocabulary(srd, descriptionEntry.getChildren());;
+                case ResourcetreeLexer.VOCABULARY:
+                    handleVocabulary(srd, descriptionEntry.getChildren());
                     break;
                 default:
                     throw new IllegalStateException("Unknown token type: " + descriptionEntry.getType());
@@ -182,35 +182,45 @@ public class StructuredResourceParser implements InitializingBean {
         return srd;
     }
 
-    private void handleVocabulary(StructuredResourceDescription srd,  List<CommonTree> propertyDescriptions){
-        if (hasContent(propertyDescriptions)) {
-            for (CommonTree propName : propertyDescriptions) {
-                for (CommonTree lang : (List<CommonTree>) propName.getChildren()) {
-                    for (CommonTree vocabularyName : (List<CommonTree>) lang.getChildren()) {
-                        for (CommonTree vocabularyValue : (List<CommonTree>) vocabularyName.getChildren()) {
-                            Locale locale = LocaleUtils.toLocale(lang.getText());
-                            PropertyDescription p = srd.getPropertyDescription(propName.getText());
-                            p.addVocabulary(locale, vocabularyName.getText(),vocabularyValue.getText());
-                            
+    private void handleVocabulary(StructuredResourceDescription srd, List<CommonTree> propertyDescriptions) {
+        if (!hasContent(propertyDescriptions)) {
+            return;
+        }
+        for (CommonTree propName : propertyDescriptions) {
+            for (CommonTree lang : (List<CommonTree>) propName.getChildren()) {
+                for (CommonTree vocabularyName : (List<CommonTree>) lang.getChildren()) {
+                    for (CommonTree vocabularyValue : (List<CommonTree>) vocabularyName.getChildren()) {
+                        Locale locale = LocaleUtils.toLocale(lang.getText());
+                        List<PropertyDescription> propDescs = srd.getPropertyDescriptions();
+                        PropertyDescription p = null;
+                        for (PropertyDescription propDesc : propDescs) {
+                            if (propDesc.getName().equals(propName.getText())) {
+                                p = propDesc;
+                            }
+                        }
+                        if (p != null) {
+                            p.addVocabulary(locale, vocabularyName.getText(), vocabularyValue.getText());
                         }
                     }
                 }
             }
         }
+
     }
-    
+
     private void handleLocalization(StructuredResourceDescription srd, List<CommonTree> propertyDescriptions) {
-        if (hasContent(propertyDescriptions)) {
-            for (CommonTree propDesc : propertyDescriptions) {
-                Map<Locale, String> localizationMap = new HashMap<Locale, String>();
-                for (CommonTree lang : (List<CommonTree>) propDesc.getChildren()) {
-                    for (CommonTree label : (List<CommonTree>) lang.getChildren()) {
-                        Locale locale = LocaleUtils.toLocale(lang.getText());
-                        localizationMap.put(locale, label.getText());
-                    }
+        if (!hasContent(propertyDescriptions)) {
+            return;
+        }
+        for (CommonTree propDesc : propertyDescriptions) {
+            Map<Locale, String> localizationMap = new HashMap<Locale, String>();
+            for (CommonTree lang : (List<CommonTree>) propDesc.getChildren()) {
+                for (CommonTree label : (List<CommonTree>) lang.getChildren()) {
+                    Locale locale = LocaleUtils.toLocale(lang.getText());
+                    localizationMap.put(locale, label.getText());
                 }
-                srd.addLocalization(propDesc.getText(), localizationMap);
             }
+            srd.addLocalization(propDesc.getText(), localizationMap);
         }
     }
 

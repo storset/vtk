@@ -2,6 +2,18 @@
   background-color: #efefef;
 }
 
+/* Clear default styling */
+
+input, iframe {
+  padding: 0;
+  margin: 0;
+}
+
+iframe {
+  float: left;
+  width: 100%;	
+}
+
 .vrtx-grouped, .vrtx-grouped-vertical, .vrtx-grouped-horizontal, 
 .vrtx-media-ref, .vrtx-simple-html,.vrtx-media-ref,
 .vrtx-simple-html-small,.vrtx-html,.vrtx-string,
@@ -69,7 +81,7 @@
 
 .vrtx-grouped > div,
 .vrtx-grouped-horizontal > div {
-  padding-bottom: 10px;	
+  padding-bottom: 10px;
 }
 
 div.vrtx-json-element {
@@ -91,7 +103,13 @@ div.vrtx-json-element {
 }
 
 form > div {
-   padding-bottom: 15px;    
+   padding-bottom: 15px;
+}
+
+.vrtx-html > div,
+.vrtx-simple-html > div {
+  float: left;
+  width: 100%;	
 }
 
 /* Not grouped becomes bold and bigger */
@@ -104,7 +122,7 @@ form > div {
     font-size: 1.1em;
     font-weight: 900;
     display: block;
-    padding-bottom:10px;
+    padding-bottom: 10px;
 }
 
 /* And override for grouped sub-properties */
@@ -121,6 +139,8 @@ form > div {
     padding: 0;
 }
 
+/* START JSON and multiple fields */
+
 .vrtx-json-element,
 .vrtx-multipleinputfield {
   padding-bottom: 15px;	
@@ -133,6 +153,8 @@ form > div {
 .vrtx-json-element > div > label {
   width: 100%;	
 }
+
+/* END JSON and multiple fields */
 
 .submit {
   clear: left;

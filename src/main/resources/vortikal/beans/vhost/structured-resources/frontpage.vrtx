@@ -107,6 +107,7 @@ resourcetype frontpage {
      boxType : (en : "Box type", no : "Bokstype", nn : "Bokstype"),
      boxContent : (en : "Box content", no : "Boksinnhold", nn : "Boksinnhold"),
      boxUrl : (en : "Link", no : "Lenke", nn : "Lenke"),
-     boxUrlText : (en : "Link text", no : "Lenke tekst", nn : "Lenke tekst")
+     boxUrlText : (en : "Link text", no : "Lenke tekst", nn : "Lenke tekst"),
+     header : (en : "Edit frontpage", no : "Rediger forside", nn : "Rediger forside")
   }
 }

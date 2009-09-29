@@ -182,6 +182,10 @@ resourcetype person {
             [if theprojects && theprojects != ""]
               <div class="narrow-box-borders">
                 <h2>[localized "projects"]</h2>
+                [def getTheExternalProjects json-attr document "properties.getExternalProjects"]
+                [if getTheExternalProjects != "false"]
+                  <resource:project-list />
+                [endif]
                 <ul class="list">
                 [list theprojects aproject]
                   [def thename json-attr aproject "projectName"]
@@ -301,7 +305,6 @@ resourcetype person {
         </div>
         <div id="additional-content">
            <comp:box-feeds />
-           ${resource:project-list}
            <comp:projects />
         </div>
       </body>
@@ -366,6 +369,7 @@ resourcetype person {
     additionalContactInformation : (en : "Other contact information", no : "Andre kontaktopplysninger", nn : "Andre kontaktopplysningar"),
     combinedPublications : (en : "Publications", no : "Publikasjoner", nn : "Publikasjoner"),
     combinedProjects : (en : "Projects", no : "Prosjekter", nn : "Prosjekter"),
-    userVisitingAddress : (en : "Visiting address", no : "Besøksadresse", nn : "Besøksadresse")
+    userVisitingAddress : (en : "Visiting address", no : "Besøksadresse", nn : "Besøksadresse"),
+    header : (en : "Edit person", no : "Rediger person", nn : "Rediger person") 
   }
 }

@@ -1,51 +1,58 @@
 #contents {
-	background-color: #efefef;
+  background-color: #efefef;
+}
+
+#contents h2 {
+  border-bottom:1px solid #AAAAAA;
+  font-size:1.3em;
+  margin-bottom:20px;
+  margin-top:0;
 }
 
 input,
 iframe {
-	padding: 0;
-	margin: 0;
+  padding: 0;
+  margin: 0;
 }
 
 iframe,
 .fieldset {
-	float: left;
-	width: 100%;
+  float: left;
+  width: 100%;
 }
 
 .vrtx-grouped,.vrtx-grouped-vertical,.vrtx-grouped-horizontal,.vrtx-media-ref,.vrtx-simple-html,
 .vrtx-media-ref,.vrtx-simple-html-small,.vrtx-html,.vrtx-string,.vrtx-date,.vrtx-image-ref,
 .vrtx-checkbox,.vrtx-dropdownlist,.vrtx-radio,.vrtx-json
 	{
-	clear: left;
-	float: left;
+  clear: left;
+  float: left;
 }
 
 .vrtx-json {
-	width: 100%;
+  width: 100%;
 }
 
 .vrtx-string .date {
-	margin-right: 1em;
+  margin-right: 1em;
 }
 
 .vrtx-string .hours {
-	margin-right: .2em;
+  margin-right: .2em;
 }
 
 .vrtx-string .minutes {
-	margin-left: .2em;
+  margin-left: .2em;
 }
 
 #ui-datepicker-div {
-	font-size: 10px;
+  font-size: 10px;
 }
 
 .vrtx-grouped-horizontal > *  {
-	clear: none;
-	float: left;
-	padding-right: 15px;
+  clear: none;
+  float: left;
+  padding-right: 15px;
 }
 
 /* START Set explisit widths and heights */

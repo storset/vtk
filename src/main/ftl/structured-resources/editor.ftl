@@ -49,8 +49,13 @@
   </#if>
 </head>
 <body>
-<form action="${form.submitURL?html}" method="post">
+
 <#assign locale = springMacroRequestContext.getLocale() />
+
+<#assign header = form.resource.getLocalizedMsg("header", locale, null) />
+<h2>${header}</h2>
+
+<form action="${form.submitURL?html}" method="post">
 
 <#list form.elements as elementBox>
 

@@ -143,6 +143,7 @@ resourcetype structured-article : structured-document {
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
     hideAdditionalContent : (en : "Hide additional content", no : "Skjul tilleggsinformasjon", nn : "Skjul tilleggsinformasjon"),
     additional-content : (en : "Additional content", no : "Tilleggsinformasjon", nn : "Tilleggsinformasjon"),
-    additionalContent : (en : "Additional content", no : "Tilleggsinformasjon", nn : "Tilleggsinformasjon")
+    additionalContent : (en : "Additional content", no : "Tilleggsinformasjon", nn : "Tilleggsinformasjon"),
+    header : (en : "Edit article", no : "Rediger artikkel", nn : "Rediger artikkel") 
   }
 }

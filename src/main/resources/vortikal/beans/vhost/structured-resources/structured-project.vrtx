@@ -172,7 +172,7 @@ resourcetype structured-project {
           </div>
           <div id="additional-content">
             <comp:box-contact-info />
-            ${resource:person-list}
+            <resource:person-list />
             <comp:box-participants />
             <comp:box-feeds />
           </div>
@@ -206,6 +206,7 @@ resourcetype structured-project {
     rssUrl : (en : "Webaddress",no : "Webadresse", nn :"Webadresse"),
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
     content : (en : "Content", no :"Innhold",nn : "Innhold"),
-    contactInfo : (en : "Contact information", no : "Kontaktinformasjon", nn : "Kontaktinformasjon")
+    contactInfo : (en : "Contact information", no : "Kontaktinformasjon", nn : "Kontaktinformasjon"),
+    header : (en : "Edit project", no : "Rediger prosjekt", nn : "Rediger prosjekt") 
   }
 }

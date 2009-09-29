@@ -1,15 +1,14 @@
 #contents {
   background-color: #efefef;
+  font-family:Arial,Helvetica,sans-serif;
 }
-
-/* Clear default styling */
 
 input, iframe {
   padding: 0;
   margin: 0;
 }
 
-iframe {
+iframe, .fieldset {
   float: left;
   width: 100%;	
 }
@@ -20,6 +19,10 @@ iframe {
 .vrtx-date,.vrtx-image-ref,.vrtx-checkbox,.vrtx-dropdownlist,.vrtx-radio, .vrtx-json {
   clear: left;
   float: left;
+}
+
+.vrtx-json {
+  width: 100%;	
 }
 
 .vrtx-string .date{

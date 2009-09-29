@@ -4,7 +4,7 @@ function setShowHide(name, parameters) {
   toggle(name, parameters);
   var objId = '[name=' + name + ']';
   $(objId).click( function() {
-    setShowHide(name, parameters);
+    toggle(name, parameters);
   });
 }
 

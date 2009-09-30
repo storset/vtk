@@ -5,13 +5,10 @@
 /* Bilde med bildetekst */
 img.vrtx-introduction-image,
 div.vrtx-introduction-image {
-  float: left;
-  width: 100% !important;
-  margin: 0 0 15px 0;
-}
-
-div.vrtx-introduction-image img {
-  max-width: 100% !important;
+    float: left;
+    margin: 0em 0em 1em 1em;
+    max-width:100%;
+    overflow:hidden;
 }
 
 div.vrtx-introduction-image div.vrtx-imagetext div.vrtx-imagedescription {

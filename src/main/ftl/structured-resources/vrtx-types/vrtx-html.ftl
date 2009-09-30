@@ -2,7 +2,7 @@
 	 <div class="${classes}"> 
         <label for="${inputFieldName}">${title}</label>
         <div>
-          <textarea name="${inputFieldName}" id="${inputFieldName}" rows="4" cols="20" >${value}</textarea>
+          <textarea name="${inputFieldName}" id="${inputFieldName}" rows="4" cols="20" >${value?html}</textarea>
         </div>
     </div>
 </#macro>

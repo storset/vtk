@@ -11,7 +11,7 @@ resourcetype person {
     postalAddress : string multiple external:userMetadataLdapService,
     visitingAddress : string multiple external:userMetadataLdapService,
     alternativeVisitingAddress : string multiple,
-    title : derived (firstName, surname) eval (firstName + " " + surname),
+    title : derived (firstName, surname) eval (firstName + " " + surname) overrides title,
     building : string,
     room : string,
     availableHours : string,
@@ -175,32 +175,10 @@ resourcetype person {
     projects {
       ##
         [resource-props "."]
-        [if projects && projects != ""]
-            [def document structured-document]
-            [def theprojects json-attr document "properties.projects"]
-            [if theprojects && theprojects != ""]
-              <div class="narrow-box-borders">
-                <h2>[localized "projects"]</h2>
-                [def getTheExternalProjects json-attr document "properties.getExternalProjects"]
-                [if getTheExternalProjects != "false"]
-                  <resource:project-list />
-                [endif]
-                <ul class="list">
-                [list theprojects aproject]
-                  [def thename json-attr aproject "projectName"]
-                  [def theurl json-attr aproject "projectUrl"]
-                  [if thename && thename != ""]
-                    [if theurl]
-                      <li><a href="[val theurl]">[val thename]</a></li>
-                    [else]
-                      <li>[val thename]</li>
-                    [endif]
-                  [endif]
-                [endlist]
-                </ul>
-              </div>
-            [endif]
-        [endif]
+      <div class="narrow-box-borders">
+        <h2>[localized "projects"]</h2>
+        ${resource:project-list}
+      </div>
       ##
     }
 
@@ -355,7 +333,7 @@ resourcetype person {
     getExternalProjects : (en : "Show projects published on UiO.no where your username is registrated as participant",
                            no :"Vis prosjekter publisert på UiO.no hvor ditt brukernavn er registrert som deltager",
                            nn:"Vis prosjekter publisert på UiO.no hvor ditt brukernavn er registrert som deltager"),
-    projects : (en : "Other projects",no : "Andre prosjekter", nn :"Andre prosjektar"),
+    projects : (en : "Projects",no : "Prosjekter", nn :"Prosjektar"),
     projectName : (en : "Project name", no : "Prosjektnavn", nn :"Prosjektnamn"), 
     projectUrl : (en : "Web address", no : "Webadresse", nn :"Webadresse"),
     rssFeeds : (en : "Show content from RSS-streams", no : "Vis innhold fra RSS-strømmer", nn :"Vis innhald frå RSS-strømmar"),

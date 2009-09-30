@@ -1,14 +1,24 @@
-#content {
+#content,
+#vrtx-content {
   width: 100%;
   float: left;
 }
 
-#main-content {
+#main-content,
+#vrtx-main-content-false,
+#vrtx-main-content-,
+#vrtx-main-content {
    float: left;
-   width:555px; /* for now */
+   width: 555px; /* for now */
 }
 
-#additional-content {
+#additional-content,
+#vrtx-related-content {
   float: right;
   width: 260px /* for now */
+}
+
+#vrtx-main-content-true{
+   float: left;
+   width: 100%; /* for now */
 }

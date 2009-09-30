@@ -70,38 +70,22 @@ resourcetype structured-article : structured-document {
       ##
       [def authors resource-prop "." "author"]
       [if authors && authors != ""]
+        Det vi trenger her er en beskrivelse for hvordan det skal vises..
         <span class="vrtx-authors"><span class="vrtx-authors-prefix">[localized "by-line"]</span>&nbsp;[val authors]</span>
       [endif]
       ##
     }
     
-    additional-content-check-css {
+    related-content {
       ##
       [resource-props "."]
       [def document structured-document]
       [def theHideAdditionalContent json-attr document "properties.hideAdditionalContent"]
       [def theAdditional-content json-attr document "properties.additional-content"]
       
-      [if (theHideAdditionalContent && theHideAdditionalContent != "true") && (theAdditional-content && theAdditional-content != "")]
+      [if (theHideAdditionalContent != "true")]
         
-      [else]
-        <style style="text/css">
-          div#main-content {width: 100% !important;}
-        </style>
-      [endif]
-      ##
-    }
-    
-    additional-content {
-      ##
-      [resource-props "."]
-      [def document structured-document]
-      [def theHideAdditionalContent json-attr document "properties.hideAdditionalContent"]
-      [def theAdditional-content json-attr document "properties.additional-content"]
-      
-      [if (theHideAdditionalContent && theHideAdditionalContent != "true") && (theAdditional-content && theAdditional-content != "")]
-        
-        <div id="additional-content">
+        <div id="vrtx-related-content">
           [val theAdditional-content unescaped]
         </div>
       [endif]
@@ -119,12 +103,11 @@ resourcetype structured-article : structured-document {
         <!-- begin css -->
         <article:css />
         <!-- end css -->
-        <comp:additional-content-check-css />
         <title><comp:title /></title>
       </head>
       <body>
-        <div id="content"> 
-          <div id="main-content">
+        <div id="vrtx-content"> 
+          <div id="vrtx-main-content-${resource:property id=[resource:hideAdditionalContent]}">
             <h1><comp:title /></h1>
             <comp:introduction-image />
             <comp:introduction />
@@ -136,7 +119,7 @@ resourcetype structured-article : structured-document {
             <resource:tags />
             <resource:comments />
           </div>
-          <comp:additional-content />
+          <comp:related-content />
         </div>
       </body>
     </html>
@@ -160,9 +143,9 @@ resourcetype structured-article : structured-document {
     author: (en : "Author", no : "Forfatter", nn : "Forfattar"),
     published-date: (en : "Publishing time", no : "Publiseringstidspunkt", nn : "Publiseringstidspunkt"),
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
-    hideAdditionalContent : (en : "Hide additional content", no : "Skjul tilleggsinformasjon", nn : "Skjul tilleggsinformasjon"),
-    additional-content : (en : "Additional content", no : "Tilleggsinformasjon", nn : "Tilleggsinformasjon"),
-    additionalContent : (en : "Additional content", no : "Tilleggsinformasjon", nn : "Tilleggsinformasjon"),
+    hideAdditionalContent : (en : "Hide related content", no : "Skjul relatert innhold", nn : "Skjul relatert innhold"),
+    additional-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold"),
+    additionalContent : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold"),
     header : (en : "Edit article", no : "Rediger artikkel", nn : "Rediger artikkel") 
   }
 }

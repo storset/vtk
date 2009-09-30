@@ -88,23 +88,7 @@ resourcetype structured-project {
       [if participants]
         <div class="narrow-box-borders">
           <h2>[localized "participantsHeader"]</h2>
-          <ul id="vrtx-project-participants">
-         
-          [def document structured-document]
-          [def participants json-attr document "properties.participants"]    
-
-          [list participants participant]
-            [def thename json-attr participant "participantName"]
-            [def theurl json-attr participant "participantUrl"]
-            [if thename]
-              [if theurl]
-                <li><a href="[val theurl]">[val thename]</a></li>
-              [else]
-                <li>[val thename]</li>
-              [endif]
-            [endif]
-          [endlist]
-          </ul>
+          ${resource:person-list}
         </div>
       [endif]
       ##
@@ -167,7 +151,6 @@ resourcetype structured-project {
           </div>
           <div id="vrtx-related-content">
             <comp:box-contact-info />
-            <resource:person-list />
             <comp:box-participants />
             <comp:box-feeds />
           </div>

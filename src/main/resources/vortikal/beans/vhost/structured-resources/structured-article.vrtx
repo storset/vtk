@@ -75,6 +75,23 @@ resourcetype structured-article : structured-document {
       ##
     }
     
+    additional-content-check-css {
+      ##
+      [resource-props "."]
+      [def document structured-document]
+      [def theHideAdditionalContent json-attr document "properties.hideAdditionalContent"]
+      [def theAdditional-content json-attr document "properties.additional-content"]
+      
+      [if (theHideAdditionalContent && theHideAdditionalContent != "true") && (theAdditional-content && theAdditional-content != "")]
+        
+      [else]
+        <style style="text/css">
+          div#main-content {width: 100% !important;}
+        </style>
+      [endif]
+      ##
+    }
+    
     additional-content {
       ##
       [resource-props "."]
@@ -83,6 +100,7 @@ resourcetype structured-article : structured-document {
       [def theAdditional-content json-attr document "properties.additional-content"]
       
       [if (theHideAdditionalContent && theHideAdditionalContent != "true") && (theAdditional-content && theAdditional-content != "")]
+        
         <div id="additional-content">
           [val theAdditional-content unescaped]
         </div>
@@ -101,12 +119,13 @@ resourcetype structured-article : structured-document {
         <!-- begin css -->
         <article:css />
         <!-- end css -->
+        <comp:additional-content-check-css />
         <title><comp:title /></title>
       </head>
       <body>
-        <div id="content">
-          <h1><comp:title /></h1>
+        <div id="content"> 
           <div id="main-content">
+            <h1><comp:title /></h1>
             <comp:introduction-image />
             <comp:introduction />
             <comp:media-refs />

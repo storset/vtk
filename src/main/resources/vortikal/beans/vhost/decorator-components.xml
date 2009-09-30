@@ -175,6 +175,39 @@
       </list>
     </property>
   </bean>
+  
+    <bean id="decorating.mediaComponent"
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.resourceNamespace" />
+    <property name="name" value="media-player" />
+    <property name="description" value="Inserts media player if it is an article document" />
+    <property name="view" ref="decorating.mediaComponent.view" />
+  </bean>
+  
+  <bean id="decorating.mediaComponent.view" parent="freemarkerView">
+    <property name="url" value="layouts/media-player.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+        <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
+          <property name="repository" ref="repository" />
+          <property name="uri" value="/" />
+          <property name="appendPath" value="${flash.baseURL}/audioplayer.swf" />
+          <property name="service" ref="viewService" />
+          <property name="modelName" value="flashPlayer" />
+          <property name="urlName" value="flashURL" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
+          <property name="repository" ref="repository" />
+          <property name="uri" value="/" />
+          <property name="appendPath" value="${jsBaseURL}/audio-player.js" />
+          <property name="service" ref="viewService" />
+          <property name="modelName" value="flashPlayer" />
+          <property name="urlName" value="jsURL" />
+        </bean>
+      </list>
+    </property>
+  </bean>
 
  <bean id="decorating.resourceTagsComponent" parent="requestLocalRepositoryAware"
         class="org.vortikal.web.decorating.components.PropertyLinkedValueDecoratorComponent">

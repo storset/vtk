@@ -327,8 +327,9 @@
 </#function>
 
 
-<#function propResource resource propName>
-  <#local prop = resource.getPropertyByPrefix("", propName)?default("") />
+<#function propResource resource propName prefix="">
+  <#local prop = resource.getPropertyByPrefix(prefix, propName)?default("") />
+  
   <#if prop != "">
     <#local def = prop.definition />
     <#local type = def.type />

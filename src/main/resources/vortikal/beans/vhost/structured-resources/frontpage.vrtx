@@ -83,7 +83,7 @@ resourcetype frontpage {
         <title><comp:title /></title>
       </head>
       <body>
-        <div id="content">
+        <div id="vrtx-content">
           <h1><comp:title /></h1>
           <div id="vrtx-main-content">        
             <comp:box-list-main />

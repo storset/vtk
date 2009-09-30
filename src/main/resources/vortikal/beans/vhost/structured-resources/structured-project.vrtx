@@ -178,6 +178,7 @@ resourcetype structured-project {
     status-ongoing : (en : "Status", no : "Status", nn : "Status"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
     caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
+    photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
     participantsHeader : (en : "Participants", no : "Deltakere", nn : "Deltakarar"),
     participantsUsernames : (en : "Participants (with username at UiO)",no : "Deltakere (med brukernavn ved UiO)", nn :"Deltakarar (med brukernamn ved UiO)"),
     participants : (en : "Participants (without username at UiO)", no : "Deltakere (uten brukernavn ved UiO)", nn : "Deltakarar (uten brukernamn ved UiO)"),

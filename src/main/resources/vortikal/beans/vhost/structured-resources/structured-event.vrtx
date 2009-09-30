@@ -86,7 +86,6 @@ resourcetype structured-event : structured-document {
   }
   
   localization {
-    photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
     time-and-place : (en : "Time and place", no : "Tid og sted", nn : "Tid og stad"),
     start-date : (en : "Starts", no : "Starter", nn : "Byrjar"),
     end-date : (en : "Ends", no : "Slutter", nn : "Sluttar"),

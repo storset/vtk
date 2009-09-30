@@ -2,7 +2,7 @@ resourcetype structured-article : structured-document {
 
   properties {
     author : string,
-    media-ref : media_ref,
+    media : media_ref,
     tags : string multiple,
     hideAdditionalContent : boolean,
     additional-content : html noextract
@@ -25,49 +25,6 @@ resourcetype structured-article : structured-document {
 
   view-components {
 
-    media-refs {
-      ##
-      [resource-props "."]
-      [if media-ref]
-        [def media resource media-ref]
-        [if media && media != ""]
-          [def type field media "resourceType"]
-          [if type = "audio"]
-            [def flashplayer-js-url config "flashPlayer" "jsURL"]
-            [def flashplayer-flash-url config "flashPlayer" "flashURL"]
-            <script type="text/javascript" language="JavaScript" src="[val flashplayer-js-url]/"></script>
-            <object type="application/x-shockwave-flash" data="[val flashplayer-flash-url]" id="audioplayer1" height="24" width="290">
-              <param name="movie" value="[val flashplayer-flash-url]"/>
-              <param name="FlashVars" value="playerID=1&amp;soundFile=[val media-ref]"/>
-              <param name="quality" value="high"/>
-              <param name="menu" value="false"/>
-              <param name="wmode" value="transparent"/>
-            </object>
-          [else]
-            [if type = "video"]
-              [def content-type resource-prop media-ref "contentType"]
-              [if content-type = "video/quicktime"]
-                <object id="videoplayer1" classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" width="320" height="255" codebase="http://www.apple.com/qtactivex/qtplugin.cab">
-                  <param name="src" value="[val media-ref]"/>
-                  <param name="autoplay" value="false"/>
-                  <param name="controller" value="true"/>
-                  <param name="loop" value="false"/>
-                  <param name="scale" value="aspect" />         
-                  <embed id="videoplayer1" src="[val media-ref]" width="320" height="255" autoplay="false" controller="true" loop="false" scale="aspect" pluginspage="http://www.apple.com/quicktime/download/">
-                  </embed>
-                </object>
-              [else]
-                <a class="vrtx-media" href="[val media-ref]">[localized "download-media-file"]</a>
-              [endif]
-            [endif]
-          [else]
-            <a class="vrtx-media" href="[val media-ref]">[localized "download-media-file"]</a>
-          [endif]
-        [endif]
-      [endif]
-      ##
-    }
-
     author {
       ##
       [def authors resource-prop "." "author"]
@@ -85,6 +42,7 @@ resourcetype structured-article : structured-document {
       [def theAdditional-content json-attr document "properties.additional-content"]
       
       [if (theHideAdditionalContent != "true")]
+        
         <div id="vrtx-related-content">
           [val theAdditional-content unescaped]
         </div>
@@ -124,6 +82,7 @@ resourcetype structured-article : structured-document {
         <!-- begin css -->
         <article:css />
         <!-- end css -->
+        
         <!-- begin javascript -->
         <article:javascript />
         <!-- end javascript -->
@@ -136,7 +95,7 @@ resourcetype structured-article : structured-document {
             <h1><comp:title /></h1>
             <comp:introduction-image />
             <comp:introduction />
-            <comp:media-refs />
+            <resource:media-player />
             <div class="vrtx-byline">
               <comp:author />
             </div>
@@ -164,11 +123,10 @@ resourcetype structured-article : structured-document {
   }
 
   localization {
-    photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
     by-line : (en : "By", no : "Av", nn : "Av"),
     published : (en : "Published", no : "Publisert", nn : "Publisert"),
     download-media-file : (en : "Download media file", no : "Last ned mediefil", nn : "Last ned mediefil"),
-    media-ref: (en : "Media file", no : "Mediefil", nn : "Mediefil"),
+    media: (en : "Media file", no : "Mediefil", nn : "Mediefil"),
     author: (en : "Author", no : "Forfatter", nn : "Forfattar"),
     published-date: (en : "Publishing time", no : "Publiseringstidspunkt", nn : "Publiseringstidspunkt"),
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),

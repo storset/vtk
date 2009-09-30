@@ -97,6 +97,7 @@ resourcetype structured-document {
     title : (en : "Title", no : "Tittel", nn : "Tittel"),
     introduction : (en : "Introduction", no : "Innledning", nn : "Innleiing"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
+    photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
     caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
     content : (en : "Content", no : "Innhold", nn : "Innhald")
   }

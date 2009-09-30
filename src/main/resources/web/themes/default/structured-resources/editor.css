@@ -19,6 +19,7 @@
 
 form > div {
     padding-bottom: 15px;
+    width: 100%;
 }
 
 .tooltip {
@@ -45,6 +46,16 @@ form > div {
 .vrtx-grouped-vertical {
     clear: none;
     position: relative;
+    width: auto;
+}
+
+.vrtx-html > div,.vrtx-simple-html >div,.vrtx-radio {
+    float: left;
+    width: 100%;
+}
+
+.vrtx-grouped .vrtx-string {
+	width: 100%;
 }
 
 .vrtx-grouped-horizontal > *  {
@@ -53,9 +64,8 @@ form > div {
   padding-right: 15px;
 }
 
-.vrtx-html > div,.vrtx-simple-html >div,.vrtx-radio {
-    float: left;
-    width: 100%;
+.vrtx-grouped .vrtx-string input {
+  float: left;	
 }
 
 /* Not grouped becomes bold and bigger */
@@ -116,6 +126,10 @@ iframe, .fieldset {
 
 /* START JSON and multiple fields */
 
+.fieldset div.title {
+    padding: 0;
+}
+
 .vrtx-grouped-horizontal .vrtx-json .header,
 .vrtx-grouped .vrtx-json .header {
     padding-bottom: 5px;
@@ -124,6 +138,10 @@ iframe, .fieldset {
 
 .vrtx-json-element, .vrtx-multipleinputfield {
     padding-bottom: 15px;
+}
+
+.vrtx-multipleinputfield input {
+	margin-right: 15px;
 }
 
 .vrtx-json-element > div {
@@ -226,6 +244,7 @@ input.vrtx-remove-button {
     {
     clear: none;
     padding-bottom: 0;
+    width:auto;
 }
 
 .fieldset#box-list-main,.fieldset#box-list-main div.vrtx-json-element,.fieldset#box-list-side,.fieldset#box-list-side div.vrtx-json-element
@@ -246,9 +265,7 @@ h2.vrtx-title {
 	overflow: hidden;
 }
 
-.fieldset div.title {
-	padding: 0;
-}
+
 
 /* START Introduction image edit like the old one */
 

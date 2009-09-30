@@ -30,7 +30,7 @@ resourcetype structured-article : structured-document {
       [def media-ref resource-prop "." "media-ref"]
       [if media-ref]
         [def media resource media-ref]
-        [if media]
+        [if media && media != ""]
           [def type field media "resourceType"]
           [if type = "audio"]
             [def flashplayer-js-url config "flashPlayer" "jsURL"]
@@ -57,9 +57,11 @@ resourcetype structured-article : structured-document {
                   </embed>
                 </object>
               [else]
-                <a class="vrtx-media" href="[val media-ref]">[localized 'download-media-file']</a>
+                <a class="vrtx-media" href="[val media-ref]">[localized "download-media-file"]</a>
               [endif]
             [endif]
+          [else]
+            <a class="vrtx-media" href="[val media-ref]">[localized "download-media-file"]</a>
           [endif]
         [endif]
       [endif]

@@ -8,9 +8,9 @@ resourcetype person {
     position : string external:userMetadataLdapService,
     phone : string external:userMetadataLdapService,
     email : string external:userMetadataLdapService,
-    postalAddress : string external:userMetadataLdapService,
-    visitingAddress : string external:userMetadataLdapService,
-    alternativeVisitingAddress : string,
+    postalAddress : string multiple external:userMetadataLdapService,
+    visitingAddress : string multiple external:userMetadataLdapService,
+    alternativeVisitingAddress : string multiple,
     title : derived (firstName, surname) eval (firstName + " " + surname),
     building : string,
     room : string,
@@ -83,13 +83,17 @@ resourcetype person {
            [if alternativeVisitingAddress && alternativeVisitingAddress != ""]
              <h4>[localized "userVisitingAddress"]</h4>
              <ul class="list">
-               <li>[val alternativeVisitingAddress]</li>
+               [list alternativeVisitingAddress alternativeVisitingAddressLine]
+                 [if alternativeVisitingAddressLine]<li>[val alternativeVisitingAddressLine]</li>[endif]
+               [endlist]
              </ul>
            [else]
              [if visitingAddress && visitingAddress != ""]
                <h4>[localized "userVisitingAddress"]</h4>
                <ul class="list">
-                 <li>[val visitingAddress]</li>
+                 [list visitingAddress visitingAddressLine]
+                   [if visitingAddressLine]<li>[val visitingAddressLine]</li>[endif]
+                 [endlist]
                </ul>
              [endif]
            [endif]
@@ -112,7 +116,9 @@ resourcetype person {
          [if postalAddress && postalAddress != ""]
            <h4>[localized "postalAddress"]</h4>
            <ul class="list">
-             <li>[val postalAddress]</li>
+             [list postalAddress postalAddressLine]
+               [if postalAddressLine]<li>[val postalAddressLine]</li>[endif]
+             [endlist]
            </ul>
          [endif]
          
@@ -128,7 +134,6 @@ resourcetype person {
             [def feeds json-attr document "properties.rssFeeds"]
             [if feeds]
                 [list feeds feed]
-                    <div class="narrow-box-borders">
                       [def thetitle json-attr feed "rssTitle"]
                       [def theurl json-attr feed "rssUrl"]
                       
@@ -137,7 +142,6 @@ resourcetype person {
                       [else]
                         ${include:feed url=\[[val theurl]\] feed-title=\[true\] max-messages=\[5\] include-if-empty=\[false\]}
                       [endif]
-                    </div>
                 [endlist]
             [endif]
         [endif]

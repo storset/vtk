@@ -9,7 +9,7 @@
     <#local locale = springMacroRequestContext.getLocale() />
 
     <#if !elem.value?exists>
-	  <div class="vrtx-json-element">
+	  <div class="vrtx-json-element" id="vrtx-json-element-${counter}">
       <#list elem.description.attributes as jsonAttr>
 		<#assign tmpName = inputFieldName + "." + jsonAttr + "." + counter />
 		<#assign jsonAttrLocalizedTitle = form.resource.getLocalizedMsg(jsonAttr, locale, null) />
@@ -17,7 +17,7 @@
       </#list>      
   	  </div>
     <#elseif !elem.valueIsList() >
-    	<div class="vrtx-json-element">
+    	<div class="vrtx-json-element" id="vrtx-json-element-${counter}">
         <#list elem.value?keys as jsonAttr >	
         	   <#assign tmpName = inputFieldName + "." + jsonAttr + "." + counter />
         	   <#assign jsonAttrLocalizedTitle = form.resource.getLocalizedMsg(jsonAttr, locale, null) />

@@ -2,8 +2,8 @@ resourcetype boxes {
 
   properties {
     title : string required overrides title,
-    box-list : json ( title : string, content : html ) multiple,
-    simplebox : json ( foo : string, bar : html) 
+    box-list : json (title : string, content : html) multiple noextract,
+    simplebox : json (foo : string, bar : html) noextract,
     nedtrekk : string 
   }
 	

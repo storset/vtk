@@ -7,10 +7,10 @@ resourcetype structured-project {
     introduction : simple_html,
     picture : image_ref,
     caption : simple_html,
-    content : html,
+    content : html noextract,
     participantsUsernames : string multiple,
-    participants : json ( participantName : string, participantUrl : string ) multiple,
-    contactInfo : simple_html,
+    participants : json (participantName : string, participantUrl : string) multiple,
+    contactInfo : simple_html noextract,
     tags : string multiple,
     rssFeeds : json ( rssTitle : string, rssUrl : string ) multiple
   }

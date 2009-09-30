@@ -5,7 +5,7 @@ resourcetype structured-article : structured-document {
     media-ref : media_ref,
     tags : string multiple,
     hideAdditionalContent : boolean,
-    additional-content : html
+    additional-content : html noextract
   }
 
   edit-rules {

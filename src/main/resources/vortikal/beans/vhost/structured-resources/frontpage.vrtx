@@ -2,8 +2,8 @@ resourcetype frontpage {
 
   properties {
     title : string required overrides title,
-    box-list-main : json ( boxTitle : string, boxType : string, boxContent : html, boxUrl : string, boxUrlText : string ) multiple,
-    box-list-side : json ( boxTitle : string, boxType : string, boxContent : html, boxUrl : string, boxUrlText : string ) multiple
+    box-list-main : json (boxTitle : string, boxType : string, boxContent : html, boxUrl : string, boxUrlText : string) multiple noextract,
+    box-list-side : json (boxTitle : string, boxType : string, boxContent : html, boxUrl : string, boxUrlText : string) multiple noextract
   }
 
   view-components {

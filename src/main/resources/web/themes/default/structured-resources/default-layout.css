@@ -10,6 +10,7 @@
 #vrtx-main-content {
    float: left;
    width: 555px; /* for now */
+   position: relative;
 }
 
 #additional-content,
@@ -21,4 +22,21 @@
 #vrtx-main-content-true{
    float: left;
    width: 100%; /* for now */
+}
+
+.social-components {
+  clear: left;
+  float: left;
+  width: 100%;
+  padding: 10px 0;
+  font-size: 0.9em;
+  text-align: right;
+  position: relative;
+}
+
+#share-component {
+  position: absolute;
+  bottom:-15px;
+  right:0;
+  text-align: left;
 }

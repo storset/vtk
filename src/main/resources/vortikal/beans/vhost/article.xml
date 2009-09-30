@@ -380,6 +380,30 @@
           <list>
             <value>${themeBaseURL}/view-article.css</value>
             <value>${themeBaseURL}/view-container.css</value>
+            <value>${themeBaseURL}/share.css</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+  
+  <bean id="article.javascriptComponent"
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="article.componentNamespace" />
+    <property name="name" value="javascript" />
+    <property name="description" value="Inserts the default article/event javascript references" />
+    <property name="view" ref="article.javascriptView" />
+    <property name="exposeMvcModel" value="true" />
+  </bean>
+
+  <bean id="article.javascriptView" parent="freemarkerView">
+    <property name="url" value="system/javascript.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="jsURLs">
+          <list>    
+            <value>${webResources.baseURL}/jquery/jquery-1.3.2.min.js</value>
+            <value>${webResources.baseURL}/js/share.js</value>
           </list>
         </entry>
       </map>
@@ -453,7 +477,6 @@
       </map>
     </property>
   </bean>
-  
 
   <bean id="project.cssComponent"
         class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">

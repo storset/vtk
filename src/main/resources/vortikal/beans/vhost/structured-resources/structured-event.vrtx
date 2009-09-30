@@ -21,6 +21,31 @@ resourcetype structured-event : structured-document {
   scripts {
     tags autocomplete (minChars : "1")
   }
+  
+  view-components {
+  
+   share {
+      ##
+      <a href="#share" id="share-link" onclick="share();" name="share">[localized "share-link"]</a>
+      <div id="share-component">
+        <div id="send-share">
+          <div class="send-inner">
+            <div class="share-top">
+              <h3>[localized "share-link"]</h3>
+              <span><a href="#share" class="close-toolbox-send-share" onclick="share();">[localized "share-close"]</a></span>
+            </div>
+            <ul>
+              <li><a href="http://www.facebook.com/share.php?u=${resource:property id=[uri] }" class="facebook">Facebook</a></li>
+              <li><a class="nettby" href="http://www.nettby.no/user/edit_link.php?name=${resource:property id=[title]}&amp;url=${resource:property id=[uri] }&amp;description=">Nettby</a></li>
+              <li><a id="uri" href="http://del.icio.us/post?url=${resource:property id=[uri] }&amp;title=${resource:property id=[title] }" class="delicious">del.icio.us</a></li>
+           </ul>
+         </div>
+        </div>
+      </div>
+      ##
+    }
+  
+  }
 
   view {
     ##
@@ -51,22 +76,7 @@ resourcetype structured-event : structured-document {
             <resource:tags />
             <div class="social-components"
               <resource:email-friend />
-              <a href="#share" id="share-link" onclick="share();" name="share">Del p&aring;...</a>
-              <div id="share-component">
-              <div id="send-share">
-                <div class="send-inner">
-                  <div class="share-top">
-                    <h3>Del p&aring;...</h3>
-                    <span><a href="#share" class="close-toolbox-send-share" onclick="share();">Lukk</a></span>
-                  </div>
-                  <ul>
-                    <li><a href="http://www.facebook.com/share.php?u=${resource:property id=[uri] }" class="facebook">Facebook</a></li>
-                    <li><a class="nettby" href="http://www.nettby.no/user/edit_link.php?name=${resource:property id=[title]}&amp;url=${resource:property id=[uri] }&amp;description=">Nettby</a></li>
-                    <li><a id="uri" href="http://del.icio.us/post?url=${resource:property id=[uri] }&amp;title=${resource:property id=[title] }" class="delicious">del.icio.us</a></li>
-                 </ul>
-               </div>
-              </div>
-             </div>
+              <comp:share />
             </div>
        </div>
       </body>
@@ -83,6 +93,8 @@ resourcetype structured-event : structured-document {
     mapurl : (en : "Link to map", no : "Lenke til kart", nn : "Lenke til kart"),
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
     timeAndPlace : (en : "Time and place", no : "Tid og sted", nn : "Tid og stad"),
-    header : (en : "Edit event", no : "Rediger arrangement", nn : "Rediger arrangement")  
+    header : (en : "Edit event", no : "Rediger arrangement", nn : "Rediger arrangement"),
+    share-link : (en : "Share at...", no : "Del på...", nn : "Del på..."),
+    share-close : (en : "Close", no : "Lukk", nn : "Lukk") 
   }
 }

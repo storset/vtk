@@ -25,7 +25,7 @@
         <param name="menu" value="false"/>
         <param name="wmode" value="transparent"/>
       </object>
-      <#elseif (mediaRes != "" && mediaRes.contentType == 'video/quicktime')>
+    <#elseif (mediaRes != "" && mediaRes.contentType == 'video/quicktime')>
       <object id="videoplayer1" classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" width="320" height="255" codebase="http://www.apple.com/qtactivex/qtplugin.cab">
         <param name="src" value="${media}"/>
         <param name="autoplay" value="false"/>

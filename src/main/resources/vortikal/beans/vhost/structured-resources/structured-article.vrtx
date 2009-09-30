@@ -70,7 +70,6 @@ resourcetype structured-article : structured-document {
       ##
       [def authors resource-prop "." "author"]
       [if authors && authors != ""]
-        Det vi trenger her er en beskrivelse for hvordan det skal vises..
         <span class="vrtx-authors"><span class="vrtx-authors-prefix">[localized "by-line"]</span>&nbsp;[val authors]</span>
       [endif]
       ##

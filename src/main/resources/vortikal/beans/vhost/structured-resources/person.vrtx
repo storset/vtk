@@ -130,22 +130,21 @@ resourcetype person {
       ##
         [resource-props "."]
         [if rssFeeds]
-            [def document structured-document]
-            [def feeds json-attr document "properties.rssFeeds"]
-            [if feeds]
-                [list feeds feed]
-                      [def thetitle json-attr feed "rssTitle"]
-                      [def theurl json-attr feed "rssUrl"]
-                      
-                      [if theurl && theurl != ""]
-                        [if thetitle && thetitle != ""]
-                          ${include:feed url=\[[val theurl]\] override-feed-title=\[[val thetitle]\] feed-title=\[true\] max-messages=\[5\] include-if-empty=\[false\]}
-                        [else]
-                          ${include:feed url=\[[val theurl]\] feed-title=\[true\] max-messages=\[5\] include-if-empty=\[false\]}
-                        [endif]
-                      [endif]
-                [endlist]
-            [endif]
+          [def document structured-document]
+          [def feeds json-attr document "properties.rssFeeds"]
+          [if feeds]
+            [list feeds feed]
+              [def thetitle json-attr feed "rssTitle"]
+              [def theurl json-attr feed "rssUrl"]
+              [if theurl && theurl != ""]
+                [if thetitle && thetitle != ""]
+                  ${include:feed url=\[[val theurl]\] override-feed-title=\[[val thetitle]\] feed-title=\[true\] max-messages=\[5\] include-if-empty=\[false\]}
+                [else]
+                  ${include:feed url=\[[val theurl]\] feed-title=\[true\] max-messages=\[5\] include-if-empty=\[false\]}
+                [endif]
+              [endif]
+            [endlist]
+          [endif]
         [endif]
       ##
     }
@@ -187,13 +186,14 @@ resourcetype person {
     scientific-info {
       ##
         [resource-props "."]
-        [if (selectedPublications && selectedPublications != "") || (scientificInformation && scientificInformation != "")]
+        [def document structured-document]
+        [def publications json-attr document "properties.selectedPublications"]
+        [if (publications && publications != "") || (scientificInformation && scientificInformation != "")]
           <h2>[localized "scientificInformation"]</h2>
-          
           [if (selectedPublications && selectedPublications != "") && (scientificInformation && scientificInformation != "")]
             <div id="tabs">
               <ul>
-                [if selectedPublications && selectedPublications != ""]
+                [if publications && publications != ""]
                   <li><a href="#tabs-1">Utvalgte</a></li>
                 [endif]
                 [if scientificInformation && scientificInformation != ""]
@@ -201,21 +201,19 @@ resourcetype person {
                 [endif]
               </ul> 
               <div id="tabs-1">
-                [val selectedPublications unescaped]
+                [val publications unescaped]
               </div>
               <div id="tabs-2">
                 &lt;external iterated and parsed JSON publications here&gt;
               </div>
             </div>
           [else]
-          
-            [if (selectedPublications && selectedPublications != "")]
-              [val selectedPublications unescaped]
+            [if (publications && publications != "")]
+              [val publications unescaped]
             [else]
               &lt;external iterated and parsed JSON publications here&gt;
             [endif]
           [endif]
-          
         [endif]
       ##
     }
@@ -331,7 +329,7 @@ resourcetype person {
     scientificInformation : (en : "Publications", no : "Publikasjoner", nn : "Publikasjoner"),
     selectedPublications : (en : "Selected publications", no : "Utvalgte publikasjoner", nn : "Utvalgte publikasjoner"),
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
-    content : (en : "Content", no :"Innhold",nn:"Innhold"),
+    content : (en : "Content", no :"Innhold", nn:"Innhold"),
     getExternalProjects : (en : "Show projects published on UiO.no where your username is registrated as participant",
                            no :"Vis prosjekter publisert på UiO.no hvor ditt brukernavn er registrert som deltager",
                            nn:"Vis prosjekter publisert på UiO.no hvor ditt brukernavn er registrert som deltager"),

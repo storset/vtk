@@ -9,24 +9,26 @@
     <#local locale = springMacroRequestContext.getLocale() />
 
     <#if !elem.value?exists>
-	  <div class="vrtx-json-element" id="vrtx-json-element-${counter}">
+	  <div class="vrtx-json-element" id="vrtx-json-element-${inputFieldName}-${counter}">
       <#list elem.description.attributes as jsonAttr>
 		<#assign tmpName = inputFieldName + "." + jsonAttr + "." + counter />
 		<#assign jsonAttrLocalizedTitle = form.resource.getLocalizedMsg(jsonAttr, locale, null) />
 		<@printJsonProperyEditView elem.description.getType(jsonAttr) jsonAttrLocalizedTitle tmpName "" elem />                              
-      </#list>      
+      </#list>
+      <input type="button" class="vrtx-remove-button" value="${vrtx.getMsg("editor.remove")}" onClick="$('#vrtx-json-element-${inputFieldName}-${counter}').remove()" />      
   	  </div>
     <#elseif !elem.valueIsList() >
-    	<div class="vrtx-json-element" id="vrtx-json-element-${counter}">
+    	<div class="vrtx-json-element" id="vrtx-json-element-${inputFieldName}-${counter}">
         <#list elem.value?keys as jsonAttr >	
         	   <#assign tmpName = inputFieldName + "." + jsonAttr + "." + counter />
         	   <#assign jsonAttrLocalizedTitle = form.resource.getLocalizedMsg(jsonAttr, locale, null) />
                <@printJsonProperyEditView elem.description.getType(jsonAttr) jsonAttrLocalizedTitle tmpName elem.value[jsonAttr] elem /> 
         </#list>
+        <input type="button" class="vrtx-remove-button" value="${vrtx.getMsg("editor.remove")}" onClick="$('#vrtx-json-element-${inputFieldName}-${counter}').remove()" />
       	</div>    
     <#else>
       	<#list elem.value as map>
-      	  <div class="vrtx-json-element" id="vrtx-json-element-${counter}">
+      	  <div class="vrtx-json-element" id="vrtx-json-element-${inputFieldName}-${counter}">
         	<#list elem.description.attributes as jsonAttr>
 	  		<#assign tmpName = inputFieldName + "." + jsonAttr + "." + counter />
 	  		  <#assign jsonAttrLocalizedTitle = form.resource.getLocalizedMsg(jsonAttr, locale, null) />
@@ -36,7 +38,7 @@
 	          	<@printJsonProperyEditView elem.description.getType(jsonAttr) jsonAttrLocalizedTitle tmpName "" elem />    
 	          </#if>
 	        </#list>
-	        <input type="button" class="vrtx-remove-button" value="${vrtx.getMsg("editor.remove")}" onClick="$('#vrtx-json-element-${counter}').remove()" />
+	        <input type="button" class="vrtx-remove-button" value="${vrtx.getMsg("editor.remove")}" onClick="$('#vrtx-json-element-${inputFieldName}-${counter}').remove()" />
         </div>
         <#local counter = counter + 1 />
       </#list>

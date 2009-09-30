@@ -78,6 +78,7 @@ resourcetype structured-event : structured-document {
               <resource:email-friend />
               <comp:share />
             </div>
+          </div>
        </div>
       </body>
     </html>

@@ -137,10 +137,12 @@ resourcetype person {
                       [def thetitle json-attr feed "rssTitle"]
                       [def theurl json-attr feed "rssUrl"]
                       
-                      [if thetitle && thetitle != ""]
-                        ${include:feed url=\[[val theurl]\] override-feed-title=\[[val thetitle]\] feed-title=\[true\] max-messages=\[5\] include-if-empty=\[false\]}
-                      [else]
-                        ${include:feed url=\[[val theurl]\] feed-title=\[true\] max-messages=\[5\] include-if-empty=\[false\]}
+                      [if theurl && theurl != ""]
+                        [if thetitle && thetitle != ""]
+                          ${include:feed url=\[[val theurl]\] override-feed-title=\[[val thetitle]\] feed-title=\[true\] max-messages=\[5\] include-if-empty=\[false\]}
+                        [else]
+                          ${include:feed url=\[[val theurl]\] feed-title=\[true\] max-messages=\[5\] include-if-empty=\[false\]}
+                        [endif]
                       [endif]
                 [endlist]
             [endif]
@@ -266,10 +268,10 @@ resourcetype person {
         <title><comp:title /></title>
       </head>
       <body>
-      <div id="content">
+      <div id="vrtx-content">
         <h1><comp:title /></h1>
         <comp:position />
-        <div id="main-content">
+        <div id="vrtx-main-content">
           <div id="contact-image">
             <comp:contact-information />
             <div class="box-image">
@@ -280,7 +282,7 @@ resourcetype person {
           <comp:tags />
           <comp:scientific-info />
         </div>
-        <div id="additional-content">
+        <div id="vrtx-related-content">
            <comp:box-feeds />
            <comp:projects />
         </div>

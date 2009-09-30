@@ -118,11 +118,13 @@ resourcetype structured-project {
           [list feeds feed]
               [def thetitle json-attr feed "rssTitle"]
               [def theurl json-attr feed "rssUrl"]
-                       
-              [if thetitle && thetitle != ""]
-                ${include:feed url=\[[val theurl]\] override-feed-title=\[[val thetitle]\] feed-title=\[true\] max-messages=\[3\] include-if-empty=\[false\]}
-              [else]
-                ${include:feed url=\[[val theurl]\] feed-title=\[true\] max-messages=\[3\] include-if-empty=\[false\]}
+              
+              [if theurl && theurl != ""]         
+                [if thetitle && thetitle != ""]
+                  ${include:feed url=\[[val theurl]\] override-feed-title=\[[val thetitle]\] feed-title=\[true\] max-messages=\[3\] include-if-empty=\[false\]}
+                [else]
+                  ${include:feed url=\[[val theurl]\] feed-title=\[true\] max-messages=\[3\] include-if-empty=\[false\]}
+                [endif]
               [endif]
           [endlist]
         [endif]
@@ -144,8 +146,8 @@ resourcetype structured-project {
       </head>
       <body>
         <div id="vrtx-content">
-          <h1><json:field select="name" /></h1>
           <div id="vrtx-main-content">
+            <h1><json:field select="name" /></h1>
             <comp:introduction-image />
             <comp:introduction />
             <json:field select="content" />

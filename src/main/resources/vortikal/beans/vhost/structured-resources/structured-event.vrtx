@@ -36,7 +36,7 @@ resourcetype structured-event : structured-document {
             </div>
             <ul>
               <li><a href="http://www.facebook.com/share.php?u=${resource:property id=\[uri\] }" class="facebook">Facebook</a></li>
-              <li><a class="nettby" href="http://www.nettby.no/user/edit_link.php?name=${resource:property id=[title]}&amp;url=${resource:property id=\[uri\] }&amp;description=">Nettby</a></li>
+              <li><a class="nettby" href="http://www.nettby.no/user/edit_link.php?name=${resource:property id=\[title\]}&amp;url=${resource:property id=\[uri\] }&amp;description=">Nettby</a></li>
               <li><a id="uri" href="http://del.icio.us/post?url=${resource:property id=\[uri\] }&amp;title=${resource:property id=\[title\] }" class="delicious">del.icio.us</a></li>
            </ul>
          </div>

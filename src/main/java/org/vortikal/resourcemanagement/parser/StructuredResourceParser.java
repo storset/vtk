@@ -253,7 +253,7 @@ public class StructuredResourceParser implements InitializingBean {
 
     private ResourcetreeParser createParser(String filename) throws IOException {
         InputStream in = getResourceTypeDefinitionAsStream(filename);
-        ResourcetreeLexer lexer = new ResourcetreeLexer(new ANTLRInputStream(in));
+        ResourcetreeLexer lexer = new ResourcetreeLexer(new ANTLRInputStream(in, "UTF-8"));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         ResourcetreeParser parser = new ResourcetreeParser(tokens);
         return parser;

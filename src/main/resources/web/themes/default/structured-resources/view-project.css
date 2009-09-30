@@ -6,7 +6,7 @@
 img.vrtx-introduction-image,
 div.vrtx-introduction-image {
     float: left;
-    margin: 0em 0em 1em 1em;
+    margin: 0em 1em 1em 0em;
     max-width:100%;
     overflow:hidden;
 }

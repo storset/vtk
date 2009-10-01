@@ -1,3 +1,5 @@
+.vrtx-projects,
+.vrtx-project-participants,
 #vrtx-related-content .vrtx-feed {
   border:1px solid #AAAAAA;
   clear:both;
@@ -24,6 +26,8 @@
   border: none;
 }
 
+.vrtx-projects h2,
+.vrtx-project-participants h2,
 #vrtx-related-content .vrtx-feed a.feed-title {
   border-bottom:1px solid #AAAAAA;
   font-size:1.1em;

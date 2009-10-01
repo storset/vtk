@@ -65,3 +65,15 @@ h1 {
   margin: 0; /* margin to pressPhoto link */
   max-width: 100%;
 }
+
+.vrtx-projects ul.vrtx-projects-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  float: left;
+  width: 100%;
+}
+
+.vrtx-projects  ul.vrtx-projects-list li.vrtx-project {
+  margin:0 0 10px;
+}

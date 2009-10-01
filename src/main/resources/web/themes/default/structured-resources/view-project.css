@@ -37,12 +37,14 @@ div.vrtx-introduction-image div.vrtx-imagetext span.vrtx-imagetitle {
     font-weight: bold;
 }
 
-ul#vrtx-project-participants {
+.vrtx-project-participants ul.vrtx-project-participants-list {
   margin: 0;
   padding: 0;
   list-style: none;
+  float: left;
+  width: 100%;
 }
 
-ul#vrtx-project-participants li {
+.vrtx-project-participants ul.vrtx-project-participants-list li.vrtx-project-participants {
   margin:0 0 10px;
 }

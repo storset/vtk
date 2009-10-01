@@ -33,6 +33,7 @@ form > div {
 .tooltip {
     display: inline;
     font-size: 0.75em;
+    padding-left:0.1em;
 }
 
 .vrtx-grouped,.vrtx-grouped-vertical,.vrtx-grouped-horizontal,.vrtx-media-ref,.vrtx-simple-html,

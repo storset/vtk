@@ -64,7 +64,7 @@ resourcetype person {
       ##
        [resource-props "."]
        
-       <div class="box contactinfo">
+       <div class="vrtx-person-contactinfo box">
        
          [if (phone && phone != "") || (email && email != "")]
            <ul class="list">
@@ -154,7 +154,6 @@ resourcetype person {
       [def img-press-uri resource-prop "." "pressPhoto"]
       [if img-uri]
         [def img resource img-uri]
-        <div class="vrtx-person-image">
         [if img]
           [def pixel-width resource-prop img-uri "pixelWidth"]
         
@@ -168,9 +167,8 @@ resourcetype person {
           <img class="vrtx-person-image" src="[val img-uri]" alt="[localized "picture-alt"]" />
         [endif]
         [if img-press-uri]
-          (<a id="vrtx-press-image-link" href="[val img-press-uri]">[localized "pressPhoto"]</a>)
+          (<a id="vrtx-press-photo-link" href="[val img-press-uri]">[localized "pressPhoto"]</a>)
         [endif]
-        </div>
       [endif]
       ##
     }
@@ -193,7 +191,7 @@ resourcetype person {
         [if (publications && publications != "") || (scientificInformation && scientificInformation != "")]
           <h2>[localized "scientificInformation"]</h2>
           [if (selectedPublications && selectedPublications != "") && (scientificInformation && scientificInformation != "")]
-            <div id="tabs">
+            <div id="tabs" class="vrtx-person-publications">
               <ul>
                 [if publications && publications != ""]
                   <li><a href="#tabs-1">Utvalgte</a></li>
@@ -239,7 +237,7 @@ resourcetype person {
       ##
       [resource-props "."]
         [if position]
-          <div id="position">
+          <div id="vrtx-person-position">
             [val position]
           </div>
         [endif]
@@ -272,9 +270,9 @@ resourcetype person {
         <h1><comp:title /></h1>
         <comp:position />
         <div id="vrtx-main-content">
-          <div id="contact-image">
+          <div id="vrtx-person-contactinfo-image-wrapper">
             <comp:contact-information />
-            <div class="box-image">
+            <div class="vrtx-person-image-pressphoto-wrapper">
               <comp:person-image />   
             </div>
           </div>

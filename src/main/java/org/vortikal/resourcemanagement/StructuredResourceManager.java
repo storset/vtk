@@ -67,8 +67,7 @@ import org.vortikal.web.service.RepositoryAssertion;
 
 public class StructuredResourceManager {
 
-
-	private static final Map<String, PropertyType.Type> PROPTYPE_MAP = new HashMap<String, PropertyType.Type>();
+    private static final Map<String, PropertyType.Type> PROPTYPE_MAP = new HashMap<String, PropertyType.Type>();
     static {
         PROPTYPE_MAP.put(ParserConstants.PROPTYPE_STRING, PropertyType.Type.STRING);
         PROPTYPE_MAP.put(ParserConstants.PROPTYPE_HTML, PropertyType.Type.HTML);
@@ -258,7 +257,7 @@ public class StructuredResourceManager {
         if (propertyDescription instanceof DerivedPropertyDescription) {
             def.setType(PropertyType.Type.STRING);
         } else if (propertyDescription instanceof JSONPropertyDescription) {
-        	def.setType(PropertyType.Type.JSON);
+            def.setType(PropertyType.Type.JSON);
         } else {
             def.setType(mapType(propertyDescription));
         }
@@ -288,24 +287,22 @@ public class StructuredResourceManager {
         if (desc instanceof SimplePropertyDescription) {
             return createSimplePropertyEvaluator((SimplePropertyDescription) desc, resourceDesc);
         } else if (desc instanceof JSONPropertyDescription) {
-        	return createJSONPropertyEvaluator((JSONPropertyDescription) desc, resourceDesc);
+            return createJSONPropertyEvaluator((JSONPropertyDescription) desc, resourceDesc);
         }
         return createDerivedPropertyEvaluator((DerivedPropertyDescription) desc, resourceDesc);
     }
 
-	private PropertyEvaluator createSimplePropertyEvaluator(final SimplePropertyDescription desc,
+    private PropertyEvaluator createSimplePropertyEvaluator(final SimplePropertyDescription desc,
             final StructuredResourceDescription resourceDesc) {
 
         return new JSONPropertyEvaluator(resourceDesc, desc);
     }
 
-    private PropertyEvaluator createJSONPropertyEvaluator(
-			JSONPropertyDescription desc,
-			StructuredResourceDescription resourceDesc) {
+    private PropertyEvaluator createJSONPropertyEvaluator(JSONPropertyDescription desc,
+            StructuredResourceDescription resourceDesc) {
         return new JSONPropertyEvaluator(resourceDesc, desc);
-	}
+    }
 
-	
     private PropertyEvaluator createDerivedPropertyEvaluator(final DerivedPropertyDescription desc,
             final StructuredResourceDescription resourceDesc) {
 
@@ -327,15 +324,15 @@ public class StructuredResourceManager {
     private void setPropValue(Property property, Object value) {
 
         if (!property.getDefinition().isMultiple()) {
-        	// If value is collection, pick first element
-        	if (value instanceof Collection<?>) {
-        		Collection<?> c = (Collection<?>) value;
-        		if (c.isEmpty()) {
-        			value = null;
-        		} else {
-        			value = c.toArray()[0];
-        		}
-        	}
+            // If value is collection, pick first element
+            if (value instanceof Collection<?>) {
+                Collection<?> c = (Collection<?>) value;
+                if (c.isEmpty()) {
+                    value = null;
+                } else {
+                    value = c.toArray()[0];
+                }
+            }
             Value v = property.getDefinition().getValueFormatter().stringToValue(value.toString(), null, null);
             property.setValue(v);
 
@@ -409,163 +406,153 @@ public class StructuredResourceManager {
     public void setNamespace(Namespace namespace) {
         this.namespace = namespace;
     }
-    
 
-    private class JSONPropertyEvaluator implements
-    PropertyEvaluator {
-    	private final StructuredResourceDescription resourceDesc;
-    	private final PropertyDescription propertyDesc;
+    private class JSONPropertyEvaluator implements PropertyEvaluator {
+        private final StructuredResourceDescription resourceDesc;
+        private final PropertyDescription propertyDesc;
 
-    	private JSONPropertyEvaluator(
-    			StructuredResourceDescription resourceDesc,
-    			PropertyDescription desc) {
-    		this.resourceDesc = resourceDesc;
-    		this.propertyDesc = desc;
-    	}
+        private JSONPropertyEvaluator(StructuredResourceDescription resourceDesc, PropertyDescription desc) {
+            this.resourceDesc = resourceDesc;
+            this.propertyDesc = desc;
+        }
 
-    	public String toString() {
-    		return getClass().getName() + ": " + propertyDesc.getName();
-    	}
+        public String toString() {
+            return getClass().getName() + ": " + propertyDesc.getName();
+        }
 
-    	public boolean evaluate(Property property, PropertyEvaluationContext ctx)
-    	throws PropertyEvaluationException {
+        public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
 
-    		if (ctx.getEvaluationType() == PropertyEvaluationContext.Type.Create) {
-    			return false;
-    		}
+            if (ctx.getEvaluationType() == PropertyEvaluationContext.Type.Create) {
+                return false;
+            }
 
-    		Object value = null;
-    		if (propertyDesc instanceof SimplePropertyDescription) {
-    			SimplePropertyDescription simpleDesc = (SimplePropertyDescription) propertyDesc;
-    			if (simpleDesc.hasExternalService()) {
-    				Object o = ctx.getEvaluationAttribute(simpleDesc.getExternalService());
-    				if (o != null) {
-    					@SuppressWarnings("unchecked") 
-    					Map<String, Object> map = (Map<String, Object>) o;
-    					value = map.get(property.getDefinition().getName());
-    				}
-    			}
-    		}
-    		if (value != null) {
-    			setPropValue(property, value);
-    		} else {
-    			JSONObject json;
-    			try {
-    				json = (JSONObject) ctx.getContent().getContentRepresentation(JSONObject.class);
-    			} catch (Exception e) {
-    				throw new PropertyEvaluationException("Unable to get JSON representation of content", e);
-    			}
-    			String expression = "properties." + property.getDefinition().getName();
-    			value = JSONUtil.select(json, expression);
-    			if (emptyValue(value)) {
-    			    // XXX Don't allow an overriding property to be empty
-    			    // NB NB!!! This is not a solution!!! A temp fix only
-    			    // look at fallback solution of previous evaluation scheme
-    			    if (propertyDesc.isOverrides()) {
-    			        Property overriddenProp = ctx.getNewResource().getProperty(Namespace.DEFAULT_NAMESPACE, 
-    			                propertyDesc.getOverrides());
-    			        if (overriddenProp == null) {
-    			            ctx.getNewResource().getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE,
+            Object value = null;
+            if (propertyDesc instanceof SimplePropertyDescription) {
+                SimplePropertyDescription simpleDesc = (SimplePropertyDescription) propertyDesc;
+                if (simpleDesc.hasExternalService()) {
+                    Object o = ctx.getEvaluationAttribute(simpleDesc.getExternalService());
+                    if (o != null) {
+                        @SuppressWarnings("unchecked")
+                        Map<String, Object> map = (Map<String, Object>) o;
+                        value = map.get(property.getDefinition().getName());
+                    }
+                }
+            }
+            if (value != null) {
+                setPropValue(property, value);
+            } else {
+                JSONObject json;
+                try {
+                    json = (JSONObject) ctx.getContent().getContentRepresentation(JSONObject.class);
+                } catch (Exception e) {
+                    throw new PropertyEvaluationException("Unable to get JSON representation of content", e);
+                }
+                String expression = "properties." + property.getDefinition().getName();
+                value = JSONUtil.select(json, expression);
+                if (emptyValue(value)) {
+                    // XXX Don't allow an overriding property to be empty
+                    // NB NB!!! This is not a solution!!! A temp fix only
+                    // look at fallback solution of previous evaluation scheme
+                    if (propertyDesc.isOverrides()) {
+                        Property overriddenProp = ctx.getNewResource().getProperty(Namespace.DEFAULT_NAMESPACE,
+                                propertyDesc.getOverrides());
+                        if (overriddenProp == null) {
+                            ctx.getNewResource().getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE,
                                     propertyDesc.getOverrides());
-    			        }
-    			        if (overriddenProp != null) {
-    			            setPropValue(property, overriddenProp.getValue());
-    			            return true;
-    			        }
-    			    }
-    			    return false;
-    			}
-    			setPropValue(property, value);
-    		}
-    		invokeService(property, ctx, propertyDesc, resourceDesc);
-    		return true;
-    	}
+                        }
+                        if (overriddenProp != null) {
+                            setPropValue(property, overriddenProp.getValue());
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+                setPropValue(property, value);
+            }
+            invokeService(property, ctx, propertyDesc, resourceDesc);
+            return true;
+        }
     }
 
     private boolean emptyValue(Object value) {
-		if (value == null) {
-			return true;
-		}
-		if (value.toString().trim().equals("")) {
-			return true;
-		}
-		if ((value instanceof Collection<?>) && ((Collection<?>) value).isEmpty()) {
-			return true;
-		}
-		if (value instanceof Collection<?>) {
-			@SuppressWarnings("unchecked")
-			Collection<Object> coll = (Collection<Object>) value;
-			for (Object object : coll) {
-				if (object == null || "".equals(object.toString().trim())) {
-					return true;
-				}
-			}
-		}
-		return false;
+        if (value == null) {
+            return true;
+        }
+        if (value.toString().trim().equals("")) {
+            return true;
+        }
+        if ((value instanceof Collection<?>) && ((Collection<?>) value).isEmpty()) {
+            return true;
+        }
+        if (value instanceof Collection<?>) {
+            @SuppressWarnings("unchecked")
+            Collection<Object> coll = (Collection<Object>) value;
+            for (Object object : coll) {
+                if (object == null || "".equals(object.toString().trim())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
-    
-    private class DerivedPropertyEvaluator implements
-    PropertyEvaluator {
-    	private final DerivedPropertyDescription desc;
-    	private final StructuredResourceDescription resourceDesc;
 
-    	private DerivedPropertyEvaluator(
-    			DerivedPropertyDescription desc,
-    			StructuredResourceDescription resourceDesc) {
-    		this.desc = desc;
-    		this.resourceDesc = resourceDesc;
-    	}
+    private class DerivedPropertyEvaluator implements PropertyEvaluator {
+        private final DerivedPropertyDescription desc;
+        private final StructuredResourceDescription resourceDesc;
 
-    	public boolean evaluate(Property property, PropertyEvaluationContext ctx)
-    	throws PropertyEvaluationException {
+        private DerivedPropertyEvaluator(DerivedPropertyDescription desc, StructuredResourceDescription resourceDesc) {
+            this.desc = desc;
+            this.resourceDesc = resourceDesc;
+        }
 
-    		if (ctx.getEvaluationType() == PropertyEvaluationContext.Type.Create) {
-    			return false;
-    		}
-    		if (ctx.getEvaluationType() != PropertyEvaluationContext.Type.ContentChange) {
-    			return ctx.getOriginalResource().getProperty(property.getDefinition()) != null;
-    		}
+        public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
 
-    		try {
-    			StringBuilder value = new StringBuilder();
-    			for (EvalDescription evalDescription : desc.getEvalDescriptions()) {
-    				if (evalDescription.isString()) {
-    					value.append(evalDescription.getValue());
-    					continue;
-    				}
-    				String propName = evalDescription.getValue();
-    				Property p = ctx.getNewResource()
-    				.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, propName);
-    				if (p == null) {
-    					p = ctx.getNewResource().getProperty(Namespace.DEFAULT_NAMESPACE, propName);
-    				}
-    				if (p == null) {
-    					continue;
-    				}
-    				value.append(p.getValue().toString());
-    			}
-				if (!emptyValue(value)) {
-					setPropValue(property, value);
-				} else {
-					String defaultProp = desc.getDefaultProperty();
-					Resource r = ctx.getNewResource();
-					if (defaultProp != null) {
-						Property dependentProperty = 
-							r.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, defaultProp);
-						if (dependentProperty == null) {
-							dependentProperty = r.getProperty(Namespace.DEFAULT_NAMESPACE, defaultProp); 
-						}
-						if (dependentProperty == null) {
-							return false;
-						}
-						property.setValue(dependentProperty.getValue());
-					}
-				}
-    			invokeService(property, ctx, desc, resourceDesc);
-    			return true;
-    		} catch (Exception e) {
-    			return false;
-    		}
-    	}
+            if (ctx.getEvaluationType() == PropertyEvaluationContext.Type.Create) {
+                return false;
+            }
+            if (ctx.getEvaluationType() != PropertyEvaluationContext.Type.ContentChange) {
+                return ctx.getOriginalResource().getProperty(property.getDefinition()) != null;
+            }
+
+            try {
+                StringBuilder value = new StringBuilder();
+                for (EvalDescription evalDescription : desc.getEvalDescriptions()) {
+                    if (evalDescription.isString()) {
+                        value.append(evalDescription.getValue());
+                        continue;
+                    }
+                    String propName = evalDescription.getValue();
+                    Property p = ctx.getNewResource().getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, propName);
+                    if (p == null) {
+                        p = ctx.getNewResource().getProperty(Namespace.DEFAULT_NAMESPACE, propName);
+                    }
+                    if (p == null) {
+                        continue;
+                    }
+                    value.append(p.getValue().toString());
+                }
+                if (!emptyValue(value)) {
+                    setPropValue(property, value);
+                } else {
+                    String defaultProp = desc.getDefaultProperty();
+                    Resource r = ctx.getNewResource();
+                    if (defaultProp != null) {
+                        Property dependentProperty = r
+                                .getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, defaultProp);
+                        if (dependentProperty == null) {
+                            dependentProperty = r.getProperty(Namespace.DEFAULT_NAMESPACE, defaultProp);
+                        }
+                        if (dependentProperty == null) {
+                            return false;
+                        }
+                        property.setValue(dependentProperty.getValue());
+                    }
+                }
+                invokeService(property, ctx, desc, resourceDesc);
+                return true;
+            } catch (Exception e) {
+                return false;
+            }
+        }
     }
 }

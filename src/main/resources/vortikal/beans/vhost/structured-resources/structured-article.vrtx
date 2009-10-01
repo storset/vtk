@@ -80,11 +80,11 @@ resourcetype structured-article : structured-document {
       <head>
         <resource:comments-feed-link />
         <!-- begin css -->
-        <article:css />
+        <structured-article:css />
         <!-- end css -->
         
         <!-- begin javascript -->
-        <article:javascript />
+        <structured-article:javascript />
         <!-- end javascript -->
         
         <title><comp:title /></title>

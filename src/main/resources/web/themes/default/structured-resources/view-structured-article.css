@@ -1,4 +1,9 @@
-@import url(comments-component.css);
+@import url(structured-comments-component.css);
+
+/* For new documenttypes */
+@import url(default-layout.css);
+@import url(boxes.css);
+/* --------------------- */
 
 /* Ingress */
 div.vrtx-introduction {

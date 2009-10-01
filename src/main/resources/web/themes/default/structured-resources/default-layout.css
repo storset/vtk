@@ -24,7 +24,7 @@
    width: 100%; /* for now */
 }
 
-.social-components {
+.vrtx-social-components {
   clear: left;
   float: left;
   width: 100%;
@@ -34,7 +34,7 @@
   position: relative;
 }
 
-#share-component {
+#vrtx-share-component {
   position: absolute;
   bottom:-15px;
   right:0;

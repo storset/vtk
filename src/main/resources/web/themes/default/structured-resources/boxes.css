@@ -1,7 +1,3 @@
-.box, 
-.narrow-box-borders, 
-.wide-box-borders, 
-.ultra-wide-box-borders,
 #vrtx-related-content .vrtx-feed {
   border:1px solid #AAAAAA;
   clear:both;
@@ -10,7 +6,6 @@
   padding:5px 10px 10px;
 }
 
-.narrow-box-borders,
 #vrtx-related-content .vrtx-feed {
   width: 238px; /* for now */
 }
@@ -23,16 +18,12 @@
   width:808px; /* for now */
 }
 
-.box {
+.vrtx-box {
   width: 100%;
   padding: 0;
   border: none;
 }
 
-.box h2, 
-.narrow-box-borders h2, 
-.wide-box-borders h2, 
-.ultra-wide-box-borders h2,
 #vrtx-related-content .vrtx-feed a.feed-title {
   border-bottom:1px solid #AAAAAA;
   font-size:1.1em;

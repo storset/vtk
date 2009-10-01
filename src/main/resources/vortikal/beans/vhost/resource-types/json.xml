@@ -39,11 +39,6 @@
         <ref bean="json.validDocumentAssertion" />
       </list>
     </property>
-    <property name="mixinTypeDefinitions">
-      <list>
-        <ref bean="introductionMixinResourceTypeDef" />
-      </list>
-    </property>
   </bean>
 
   <bean id="json.objectParseableAssertion" class="org.vortikal.resourcemanagement.JSONObjectParseableAssertion">
@@ -58,7 +53,6 @@
   </bean>
   
   <bean id="json.validDocumentAssertion" class="org.vortikal.resourcemanagement.ValidDocumentAssertion">
-    <!-- parent="requestLocalRepositoryAware"> -->
     <property name="resourceManager" ref="structuredResources.resourceManager" />
   </bean>
   

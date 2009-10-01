@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <bean id="structuredResources.resourceManager" class="org.vortikal.resourcemanagement.StructuredResourceManager">
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="baseType" ref="json.managedObjectResourceType" />
+    <property name="valueFactory" ref="valueFactory" />
+    <property name="valueFormatterRegistry" ref="valueFormatterRegistry" />
+    <property name="assertion" ref="json.objectHasResourceTypeAssertion" />
+    <property name="serviceInvoker" ref="externalServiceInvoker" />
+  </bean>
+
+  <bean id="structuredResource.parser" class="org.vortikal.resourcemanagement.parser.StructuredResourceParser">
+    <property name="defaultResourceTypeDefinitions" value="classpath:/vortikal/beans/vhost/structured-resources.vrtx" />
+    <property name="structuredResourceManager" ref="structuredResources.resourceManager" />
+  </bean>
+
+  <bean id="externalServiceInvoker" class="org.vortikal.resourcemanagement.service.ExternalServiceInvoker" />
+  
+</beans>

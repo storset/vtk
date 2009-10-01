@@ -31,49 +31,20 @@
 package org.vortikal.resourcemanagement;
 
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.io.ClassPathResource;
 import org.vortikal.repository.AbstractBeanContextTestIntegration;
-import org.vortikal.repository.ResourceTypeTree;
-import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
-import org.vortikal.repository.resourcetype.ValueFactory;
-import org.vortikal.repository.resourcetype.ValueFormatterRegistry;
 import org.vortikal.resourcemanagement.parser.StructuredResourceParser;
 
-public abstract class StructuredResourceTestSetup extends
-        AbstractBeanContextTestIntegration {
+public abstract class StructuredResourceTestSetup extends AbstractBeanContextTestIntegration {
 
     protected StructuredResourceParser srdp;
-    protected StructuredResourceManager srm;
 
     protected void setUp() throws Exception {
         super.setUp();
 
-        ApplicationContext ctx = getApplicationContext(false,
-                "resource-types/resource.xml", "resource-types/json.xml",
-                "resource-types/file.xml", "repository.xml");
+        ApplicationContext ctx = getApplicationContext(false, "resource-types/resource.xml", "resource-types/file.xml",
+                "repository.xml", "structured-resources-management.xml", "resource-types/json.xml");
 
-        srdp = new StructuredResourceParser();
-        srdp.setDefaultResourceTypeDefinitions(new ClassPathResource(
-                "org/vortikal/structured-resources/resources.vrtx"));
-
-        srm = new StructuredResourceManager();
-        JSONObjectSelectAssertion assertion = (JSONObjectSelectAssertion) ctx
-                .getBean("json.objectHasResourceTypeAssertion");
-        srm.setAssertion(assertion);
-        PrimaryResourceTypeDefinition baseType = (PrimaryResourceTypeDefinition) ctx
-                .getBean("json.managedObjectResourceType");
-        srm.setBaseType(baseType);
-        ResourceTypeTree resourceTypeTree = (ResourceTypeTree) ctx
-                .getBean("resourceTypeTree");
-        srm.setResourceTypeTree(resourceTypeTree);
-        ValueFactory valueFactory = (ValueFactory) ctx.getBean("valueFactory");
-        srm.setValueFactory(valueFactory);
-        ValueFormatterRegistry valueFormatterRegistry = (ValueFormatterRegistry) ctx
-                .getBean("valueFormatterRegistry");
-        srm.setValueFormatterRegistry(valueFormatterRegistry);
-        srdp.setStructuredResourceManager(srm);
-
-        srdp.afterPropertiesSet();
+        srdp = (StructuredResourceParser) ctx.getBean("structuredResource.parser");
     }
 
 }

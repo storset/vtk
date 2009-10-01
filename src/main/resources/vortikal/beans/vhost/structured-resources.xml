@@ -31,7 +31,6 @@
     <property name="handler" ref="previewIframeHandler" />
   </bean>
 
-
   <bean id="structuredResources.editService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
     <property name="order" value="-9800" />
@@ -58,15 +57,6 @@
     <property name="handler" ref="structuredResources.editHandler" />
   </bean>
   
-  <bean id="structuredResources.resourceManager" class="org.vortikal.resourcemanagement.StructuredResourceManager">
-    <property name="resourceTypeTree" ref="resourceTypeTree" />
-    <property name="baseType" ref="json.managedObjectResourceType" />
-    <property name="valueFactory" ref="valueFactory" />
-    <property name="valueFormatterRegistry" ref="valueFormatterRegistry" />
-    <property name="assertion" ref="json.objectHasResourceTypeAssertion" />
-    <property name="serviceInvoker" ref="externalServiceInvoker" />
-  </bean>
-
   <bean id="structuredResources.displayHandler"
         class="org.vortikal.resourcemanagement.view.StructuredResourceDisplayController"
     parent="requestLocalRepositoryAware"
@@ -115,11 +105,9 @@
     <property name="componentParser" ref="decorating.dollarSyntaxTemplateParser" />
   </bean>
 
-
   <bean id="structuredResources.componentNamespace" class="java.lang.String">
     <constructor-arg type="java.lang.String" value="json" />
   </bean>
-
 
   <bean id="structuredResources.fieldSelectComponent"
         class="org.vortikal.resourcemanagement.view.StructuredResourceFieldComponent">
@@ -193,17 +181,6 @@
       </list>
     </property>
   </bean>
-  
-  <bean id="structuredResource.parser"
-        class="org.vortikal.resourcemanagement.parser.StructuredResourceParser">
-    <property name="defaultResourceTypeDefinitions"
-              value="classpath:/vortikal/beans/vhost/structured-resources.vrtx" />
-    <property name="structuredResourceManager"
-              ref="structuredResources.resourceManager" />
-  </bean>
-  
-  <bean id="externalServiceInvoker"
-        class="org.vortikal.resourcemanagement.service.ExternalServiceInvoker"/>
         
   <!-- Head components for CSS and JavaScript -->     
         

@@ -1,4 +1,5 @@
 resourcetype person : article {
+  
   properties {
     username : string required external:ldap,
     firstname : string external:ldap,
@@ -7,6 +8,7 @@ resourcetype person : article {
     tags : string multiple,
     publications : json ( publicationsTitle : string, publicationsUrl : string ) multiple
   }
+  
   edit-rules {
     username (size[8]),
     tags (before fetchExternal) (size[24]),
@@ -14,15 +16,56 @@ resourcetype person : article {
     group name (firstname, surname)
     group description (name, content) (after username)
   }
+  
   scripts {
     tags autocomplete (width : "200", minChars : "0"),
     tags multipleinputfields
   }
+  
   services {
     fetchExternal ldap requires(username)
   }
+  
+  view-components {
+    title {
+      ##
+        [def v resource-prop "." "title"]
+        [if v]
+          [val v]
+        [endif]
+      ##
+    } 
+  }
+  
+  view {
+    ##    
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <person:css />
+        <person:javascript />
+        <title><comp:title /></title>
+      </head>
+      <body>
+      <div id="vrtx-content">
+        <h1><comp:title /></h1>
+      </div>
+      </body>
+    </html>
+    ##
+  }
+  
+  vocabulary {
+    fetchExternal {
+      en : ("true" = "Yes", "false" = "No"),
+      no : ("true" = "Ja", "false" = "Nei"),
+      nn : ("true" = "Ja", "false" = "Nei")
+    }
+  }
+  
   localization {
     username : (en : "Username", no : "Brukernavn", nn : "Brukernamn"),
     publicationsTitle : (en : "Title", no : "Tittel", nn : "Tittel")
   }
+  
 }

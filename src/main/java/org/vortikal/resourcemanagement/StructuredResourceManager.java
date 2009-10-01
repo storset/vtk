@@ -420,6 +420,7 @@ public class StructuredResourceManager {
             return getClass().getName() + ": " + propertyDesc.getName();
         }
 
+        @SuppressWarnings("unchecked")
         public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
 
             if (ctx.getEvaluationType() == PropertyEvaluationContext.Type.Create) {
@@ -432,9 +433,12 @@ public class StructuredResourceManager {
                 if (simpleDesc.hasExternalService()) {
                     Object o = ctx.getEvaluationAttribute(simpleDesc.getExternalService());
                     if (o != null) {
-                        @SuppressWarnings("unchecked")
                         Map<String, Object> map = (Map<String, Object>) o;
                         value = map.get(property.getDefinition().getName());
+                        // No value was found for this prop, don't show anything
+                        if (value == null) {
+                            return false;
+                        }
                     }
                 }
             }

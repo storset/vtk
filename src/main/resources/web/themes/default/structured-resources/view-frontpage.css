@@ -1,7 +1,7 @@
 @import url(default-layout.css);
 @import url(boxes.css);
 
-.more {
+.vrtx-frontpage-box .more {
   clear: both;
   float: right;
 }

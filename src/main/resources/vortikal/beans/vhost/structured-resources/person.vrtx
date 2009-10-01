@@ -233,6 +233,12 @@ resourcetype person {
         [endif]
       ##
     }
+    
+    project-list {
+      ##
+       ${resource:project-list}
+      ##
+    }
 
   }
 
@@ -272,7 +278,7 @@ resourcetype person {
         </div>
         <div id="vrtx-related-content">
            <comp:box-feeds />
-           ${resource:project-list}
+           <comp:project-list />
         </div>
       </body>
     </html>

@@ -154,15 +154,18 @@ resourcetype person {
       [def img-press-uri resource-prop "." "pressPhoto"]
       [if img-uri]
         [def img resource img-uri]
-        [def pixel-width resource-prop img-uri "pixelWidth"]
-        [if pixel-width]
-          [def style concat "width:" pixel-width "px"]
-        [endif]
         <div class="vrtx-person-image">
-        [if ! img]
-          <img class="vrtx-person-image" src="#" alt="[localized "introduction-image-alt"]" />
+        [if img]
+          [def pixel-width resource-prop img-uri "pixelWidth"]
+        
+          [if pixel-width]
+            [def style concat "width:" pixel-width "px"]
+            <img class="vrtx-person-image" src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
+          [else]
+            <img class="vrtx-person-image" src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
+          [endif]
         [else]
-          <img class="vrtx-person-image" src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
+          <img class="vrtx-person-image" src="/" alt="[localized "introduction-image-alt"]" />
         [endif]
         [if img-press-uri]
           (<a id="vrtx-press-image-link" href="[val img-press-uri]">[localized "pressPhoto"]</a>)

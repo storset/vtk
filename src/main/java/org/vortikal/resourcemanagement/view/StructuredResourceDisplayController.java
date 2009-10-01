@@ -57,6 +57,7 @@ import org.vortikal.repository.PropertyImpl;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.repository.resourcetype.ValueFormatterRegistry;
@@ -96,11 +97,10 @@ import org.vortikal.web.decorating.TemplateManager;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
 
-
 public class StructuredResourceDisplayController implements Controller, InitializingBean {
 
     private static final String MVC_MODEL_KEY = "__mvc_model__";
-    
+
     private Repository repository;
     private QueryParserFactory queryParserFactory;
     private Searcher searcher;
@@ -114,38 +114,38 @@ public class StructuredResourceDisplayController implements Controller, Initiali
     private ValueFormatterRegistry valueFormatterRegistry;
 
     private Map<String, DirectiveNodeFactory> directiveHandlers;
-    
+
     private List<HtmlNodeFilter> parseFilters;
+
 
     public void setParseFilters(List<HtmlNodeFilter> parseFilters) {
         this.parseFilters = parseFilters;
     }
 
     // XXX: clean up this mess:
-    private Map<StructuredResourceDescription, Map<String, TemplateLanguageDecoratorComponent>> 
-        components = new ConcurrentHashMap<StructuredResourceDescription, Map<String, TemplateLanguageDecoratorComponent>>();
-    
-    public ModelAndView handleRequest(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
+    private Map<StructuredResourceDescription, Map<String, TemplateLanguageDecoratorComponent>> components = new ConcurrentHashMap<StructuredResourceDescription, Map<String, TemplateLanguageDecoratorComponent>>();
+
+
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         Path uri = RequestContext.getRequestContext().getResourceURI();
         String token = SecurityContext.getSecurityContext().getToken();
         Resource r = this.repository.retrieve(token, uri, true);
-        
+
         InputStream stream = this.repository.getInputStream(token, uri, true);
         byte[] buff = StreamUtil.readInputStream(stream);
         String encoding = r.getCharacterEncoding();
         if (encoding == null) encoding = "utf-8";
         String source = new String(buff, encoding);
-        
+
         StructuredResourceDescription desc = this.resourceManager.get(r.getResourceType());
         if (desc == null) {
-        	throw new IllegalStateException("Unable to find description '" + r.getResourceType() + "' for resource " + r.getURI());
+            throw new IllegalStateException("Unable to find description '" + r.getResourceType() + "' for resource "
+                    + r.getURI());
         }
         if (!desc.getComponentDefinitions().isEmpty() && !this.components.containsKey(desc)) {
             initComponentDefs(desc);
         }
-        
 
         Map<String, Object> model = new HashMap<String, Object>();
         StructuredResource res = new StructuredResource(desc);
@@ -161,11 +161,10 @@ public class StructuredResourceDisplayController implements Controller, Initiali
             }
             model.put("config", config);
         }
-        
-        HtmlPageContent content = 
-            renderInitialPage(res, model, request);
-        
-        // XXX This is a most unwanted solution. We parse the entire document after 
+
+        HtmlPageContent content = renderInitialPage(res, model, request);
+
+        // XXX This is a most unwanted solution. We parse the entire document after
         // it's already been parsed once. This can cause recursive invocation of components,
         // e.g. the first round of parsing results in output which contains a component
         // definition, which is parsed and resolved during the second pass.
@@ -173,24 +172,30 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
         HtmlPage page = this.htmlParser.parse(bais, encoding, this.parseFilters);
         bais.close();
-        
+
         model.put("page", page);
         return new ModelAndView(this.viewName, model);
     }
 
+
     @SuppressWarnings("unchecked")
-    public HtmlPageContent renderInitialPage(StructuredResource res, Map model, HttpServletRequest request) throws Exception {
+    public HtmlPageContent renderInitialPage(StructuredResource res, Map model, HttpServletRequest request)
+            throws Exception {
         String html = "<html><head><title></title></head><body></body></html>";
         ByteArrayInputStream in = new ByteArrayInputStream(html.getBytes("utf-8"));
         final HtmlPage dummy = this.htmlParser.parse(in, "utf-8");
-        
+
         HtmlPageContent content = new HtmlPageContent() {
             public HtmlPage getHtmlContent() {
                 return dummy;
             }
+
+
             public String getContent() {
                 return dummy.getStringRepresentation();
             }
+
+
             public String getOriginalCharacterEncoding() {
                 return dummy.getCharacterEncoding();
             }
@@ -198,23 +203,23 @@ public class StructuredResourceDisplayController implements Controller, Initiali
 
         String templateRef = res.getType().getName();
         Template t = this.templateManager.getTemplate(templateRef);
-        
+
         if (!(t instanceof ParsedHtmlDecoratorTemplate)) {
-            throw new IllegalStateException("Template must be of class " 
-                    + ParsedHtmlDecoratorTemplate.class.getName());
+            throw new IllegalStateException("Template must be of class " + ParsedHtmlDecoratorTemplate.class.getName());
         }
         ParsedHtmlDecoratorTemplate template = (ParsedHtmlDecoratorTemplate) t;
-        ParsedHtmlDecoratorTemplate.Execution execution = 
-            (ParsedHtmlDecoratorTemplate.Execution) template.newTemplateExecution(content, request, model);
+        ParsedHtmlDecoratorTemplate.Execution execution = (ParsedHtmlDecoratorTemplate.Execution) template
+                .newTemplateExecution(content, request, model);
 
         final ComponentResolver resolver = execution.getComponentResolver();
-        final Map<String, TemplateLanguageDecoratorComponent> components = 
-            this.components.get(res.getType());
-        
+        final Map<String, TemplateLanguageDecoratorComponent> components = this.components.get(res.getType());
+
         execution.setComponentResolver(new ComponentResolver() {
             public List<DecoratorComponent> listComponents() {
                 return null;
             }
+
+
             public DecoratorComponent resolveComponent(String namespace, String name) {
                 if ("comp".equals(namespace)) {
                     if (components == null) {
@@ -229,24 +234,23 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         return content;
     }
 
+
     private void initComponentDefs(StructuredResourceDescription desc) throws Exception {
         // XXX: "concurrent initialization":
 
-        Map<String, TemplateLanguageDecoratorComponent> comps = 
-            new HashMap<String, TemplateLanguageDecoratorComponent>();
+        Map<String, TemplateLanguageDecoratorComponent> comps = new HashMap<String, TemplateLanguageDecoratorComponent>();
 
         List<ComponentDefinition> defs = desc.getAllComponentDefinitions();
         for (ComponentDefinition def : defs) {
             String name = def.getName();
-            TemplateLanguageDecoratorComponent comp = 
-                new TemplateLanguageDecoratorComponent(
-                        def, MVC_MODEL_KEY, this.directiveHandlers, 
-                        this.htmlParser);
+            TemplateLanguageDecoratorComponent comp = new TemplateLanguageDecoratorComponent(def, MVC_MODEL_KEY,
+                    this.directiveHandlers, this.htmlParser);
             comps.put(name, comp);
         }
         this.components.put(desc, comps);
     }
-    
+
+
     public void afterPropertiesSet() {
         Map<String, DirectiveNodeFactory> directiveHandlers = new HashMap<String, DirectiveNodeFactory>();
         directiveHandlers.put("if", new IfNodeFactory());
@@ -268,70 +272,82 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         def.addValueProvider("search", new SearchResultValueProvider());
         def.addValueProvider("view-url", new ViewURLValueProvider());
         directiveHandlers.put("def", def);
-        
+
         directiveHandlers.put("localized", new LocalizationNodeFactory());
 
         this.directiveHandlers = directiveHandlers;
-        
-        List<StructuredResourceDescription> allDescriptions = 
-            this.resourceManager.list();
 
-        for (StructuredResourceDescription desc: allDescriptions) {
+        List<StructuredResourceDescription> allDescriptions = this.resourceManager.list();
+
+        for (StructuredResourceDescription desc : allDescriptions) {
             try {
                 initComponentDefs(desc);
             } catch (Exception e) {
-                throw new BeanInitializationException(
-                        "Unable to initialize component definitions "
+                throw new BeanInitializationException("Unable to initialize component definitions "
                         + "for resource type " + desc, e);
             }
         }
     }
 
+
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
+
     public void setQueryParserFactory(QueryParserFactory queryParserFactory) {
-		this.queryParserFactory = queryParserFactory;
-	}
+        this.queryParserFactory = queryParserFactory;
+    }
+
 
     public void setSearcher(Searcher searcher) {
-		this.searcher = searcher;
-	}
+        this.searcher = searcher;
+    }
 
-	public void setViewName(String viewName) {
+
+    public void setViewName(String viewName) {
         this.viewName = viewName;
     }
+
 
     public void setResourceManager(StructuredResourceManager resourceManager) {
         this.resourceManager = resourceManager;
     }
-    
-    public void setViewService(Service viewService) {
-		this.viewService = viewService;
-	}
 
-	@Required public void setTemplateManager(TemplateManager templateManager) {
+
+    public void setViewService(Service viewService) {
+        this.viewService = viewService;
+    }
+
+
+    @Required
+    public void setTemplateManager(TemplateManager templateManager) {
         this.templateManager = templateManager;
     }
 
-    @Required public void setHtmlParser(HtmlPageParser htmlParser) {
+
+    @Required
+    public void setHtmlParser(HtmlPageParser htmlParser) {
         this.htmlParser = htmlParser;
     }
 
-    @Required public void setResourceModelKey(String resourceModelKey) {
+
+    @Required
+    public void setResourceModelKey(String resourceModelKey) {
         this.resourceModelKey = resourceModelKey;
     }
+
 
     public void setConfigProviders(List<ReferenceDataProvider> configProviders) {
         this.configProviders = configProviders;
     }
 
-    @Required public void setValueFormatterRegistry(ValueFormatterRegistry valueFormatterRegistry) {
+
+    @Required
+    public void setValueFormatterRegistry(ValueFormatterRegistry valueFormatterRegistry) {
         this.valueFormatterRegistry = valueFormatterRegistry;
     }
 
-    
     private class ResourcePropsNodeFactory implements DirectiveNodeFactory {
 
         public Node create(DirectiveParseContext ctx) throws Exception {
@@ -386,21 +402,20 @@ public class StructuredResourceDisplayController implements Controller, Initiali
 
     private class SearchResultValueProvider implements DefineNodeFactory.ValueProvider {
 
-    	public Object create(List<Argument> tokens, Context ctx)
-    	throws Exception {
+        public Object create(List<Argument> tokens, Context ctx) throws Exception {
             if (tokens.size() != 1) {
-            	throw new Exception("Illegal number of arguments");
+                throw new Exception("Illegal number of arguments");
             }
             Argument arg = tokens.get(0);
             String queryString;
             if (arg instanceof Symbol) {
-            	Object o = ((Symbol) arg).resolve(ctx);
-            	if (o == null) {
-            		throw new Exception("Unable to resolve: " + arg.getRawValue());
-            	}
-            	queryString = o.toString();
+                Object o = ((Symbol) arg).resolve(ctx);
+                if (o == null) {
+                    throw new Exception("Unable to resolve: " + arg.getRawValue());
+                }
+                queryString = o.toString();
             } else {
-            	queryString = ((Literal) arg).getValue().toString();
+                queryString = ((Literal) arg).getValue().toString();
             }
             String token = SecurityContext.getSecurityContext().getToken();
             Query query = queryParserFactory.getParser().parse(queryString);
@@ -408,41 +423,39 @@ public class StructuredResourceDisplayController implements Controller, Initiali
             search.setQuery(query);
             ResultSet resultSet = searcher.execute(token, search);
             return resultSet.iterator();
-    	}
+        }
     }
-    
+
     private class ViewURLValueProvider implements DefineNodeFactory.ValueProvider {
 
-		public Object create(List<Argument> tokens, Context ctx)
-				throws Exception {
+        public Object create(List<Argument> tokens, Context ctx) throws Exception {
             if (tokens.size() != 1) {
-            	throw new Exception("Illegal number of arguments");
+                throw new Exception("Illegal number of arguments");
             }
             Argument arg = tokens.get(0);
             if (!(arg instanceof Symbol)) {
-            	throw new Exception("Argument must be a resource object: " + arg.getRawValue());
+                throw new Exception("Argument must be a resource object: " + arg.getRawValue());
             }
             Object o = ((Symbol) arg).resolve(ctx);
             if (o == null) {
-            	throw new Exception("Unable to resolve argument: " + arg.getRawValue());
+                throw new Exception("Unable to resolve argument: " + arg.getRawValue());
             }
             if (!(o instanceof PropertySet)) {
-            	throw new Exception("Argument must be a resource object: " + arg.getRawValue());
+                throw new Exception("Argument must be a resource object: " + arg.getRawValue());
             }
             return viewService.constructLink(((PropertySet) o).getURI());
-		}
-    	
+        }
+
     }
-    
+
     private class ResourcePropHandler implements DefineNodeFactory.ValueProvider {
 
         // Supported constructions:
         // "/foo/bar/" <propname>
         // "." <propname>
         // <var> <propname>
-        
-        public Object create(List<Argument> tokens, Context ctx)
-        throws Exception {
+
+        public Object create(List<Argument> tokens, Context ctx) throws Exception {
 
             if (tokens.size() != 2) {
                 throw new RuntimeException("Wrong number of arguments");
@@ -455,31 +468,31 @@ public class StructuredResourceDisplayController implements Controller, Initiali
             if (arg1 instanceof Symbol) {
                 Object o = ((Symbol) arg1).resolve(ctx);
                 if (o instanceof PropertySet) {
-                	resource = (PropertySet) o;
+                    resource = (PropertySet) o;
                 } else {
-                	if (o == null) {
-                		throw new Exception("Unable to resolve: " + arg1.getRawValue());
-                	}
-                	ref = o.toString();
+                    if (o == null) {
+                        throw new Exception("Unable to resolve: " + arg1.getRawValue());
+                    }
+                    ref = o.toString();
                 }
             } else {
                 ref = ((Literal) arg1).getValue().toString();
             }
 
             if (resource == null) {
-            	if (ref.equals(".")) {
-            		Object o = ctx.get(MVC_MODEL_KEY);
-            		if (o == null) {
-            			throw new Exception("Unable to access MVC model: " + MVC_MODEL_KEY);
-            		}
-            		@SuppressWarnings("unchecked")
-            		Map<String, Object> model = (Map<String, Object>) o;
-            		resource = (Resource) model.get("resource");
-            	} else {
-            		Path uri = Path.fromString(ref);
-            		String token = SecurityContext.getSecurityContext().getToken();
-            		resource = repository.retrieve(token, uri, true);
-            	}
+                if (ref.equals(".")) {
+                    Object o = ctx.get(MVC_MODEL_KEY);
+                    if (o == null) {
+                        throw new Exception("Unable to access MVC model: " + MVC_MODEL_KEY);
+                    }
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> model = (Map<String, Object>) o;
+                    resource = (Resource) model.get("resource");
+                } else {
+                    Path uri = Path.fromString(ref);
+                    String token = SecurityContext.getSecurityContext().getToken();
+                    resource = repository.retrieve(token, uri, true);
+                }
             }
             String propName;
             if (arg2 instanceof Symbol) {
@@ -496,7 +509,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
                 property = resource.getProperty(Namespace.DEFAULT_NAMESPACE, propName);
             }
             if (property == null) {
-                for (Property prop: resource.getProperties()) {
+                for (Property prop : resource.getProperties()) {
                     if (propName.equals(prop.getDefinition().getName())) {
                         property = prop;
                     }
@@ -515,46 +528,44 @@ public class StructuredResourceDisplayController implements Controller, Initiali
 
     private class JSONDocumentProvider implements DefineNodeFactory.ValueProvider {
 
-		public Object create(List<Argument> tokens, Context ctx)
-				throws Exception {
+        public Object create(List<Argument> tokens, Context ctx) throws Exception {
             if (tokens.size() != 0) {
                 throw new Exception("Wrong number of arguments");
             }
             Object o = ctx.get(MVC_MODEL_KEY);
             if (o == null) {
-            	throw new Exception("Unable to access MVC model");
+                throw new Exception("Unable to access MVC model");
             }
             @SuppressWarnings("unchecked")
             Map<String, Object> model = (Map<String, Object>) o;
             StructuredResource res = (StructuredResource) model.get("structured-resource");
-			if (res == null) {
-				throw new Exception("No structured resource found in MVC model");
-			}
-			return res.toJSON();
-		}
+            if (res == null) {
+                throw new Exception("No structured resource found in MVC model");
+            }
+            return res.toJSON();
+        }
     }
 
     private class JSONAttributeHandler implements DefineNodeFactory.ValueProvider {
 
-    	// Supported constructions:
-    	// object "expression"
-    	// object expression (from variable)
-		public Object create(List<Argument> tokens, Context ctx)
-				throws Exception {
+        // Supported constructions:
+        // object "expression"
+        // object expression (from variable)
+        public Object create(List<Argument> tokens, Context ctx) throws Exception {
             if (tokens.size() != 2) {
                 throw new Exception("Wrong number of arguments");
             }
-            
+
             final Argument arg1 = tokens.get(0);
             Object object;
             if (!(arg1 instanceof Symbol)) {
-            	throw new Exception("First argument must be a symbol");
+                throw new Exception("First argument must be a symbol");
             }
             object = ((Symbol) arg1).resolve(ctx);
             if (object == null) {
-            	throw new Exception("Unable to resolve: " + arg1.getRawValue());
+                throw new Exception("Unable to resolve: " + arg1.getRawValue());
             }
-            
+
             final Argument arg2 = tokens.get(1);
             String expression;
             if (arg2 instanceof Symbol) {
@@ -566,27 +577,26 @@ public class StructuredResourceDisplayController implements Controller, Initiali
             } else {
                 expression = ((Literal) arg2).getValue().toString();
             }
-	
-			if (! (object instanceof JSONObject)) {
-				throw new Exception("Cannot apply expression '" + expression 
-						+ "' on object: not JSON data: " + object.getClass());
-			}
-			
-			JSONObject json = (JSONObject) object;
-			return JSONUtil.select(json, expression);
-		}
+
+            if (!(object instanceof JSONObject)) {
+                throw new Exception("Cannot apply expression '" + expression + "' on object: not JSON data: "
+                        + object.getClass());
+            }
+
+            JSONObject json = (JSONObject) object;
+            return JSONUtil.select(json, expression);
+        }
     }
-    
+
     private class ModelConfigHandler implements DefineNodeFactory.ValueProvider {
 
         @SuppressWarnings("unchecked")
-        public Object create(List<Argument> tokens, Context ctx)
-        throws Exception {
+        public Object create(List<Argument> tokens, Context ctx) throws Exception {
             if (tokens.size() < 1) {
                 throw new RuntimeException("Expected at least one argument");
             }
             List<String> keys = new ArrayList<String>();
-            for (Argument arg: tokens) {
+            for (Argument arg : tokens) {
                 String key;
                 if (arg instanceof Symbol) {
                     Object o = ((Symbol) arg).resolve(ctx);
@@ -607,7 +617,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
             if (!model.containsKey("config")) {
                 throw new RuntimeException("No 'config' element present in model");
             }
-            
+
             Map<String, Object> config = (Map<String, Object>) model.get("config");
             Map<String, Object> map = config;
             for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
@@ -617,7 +627,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
                     throw new RuntimeException("Unable to find value for " + keys);
                 }
                 if (iterator.hasNext()) {
-                    if (! (obj instanceof Map<?, ?>)) {
+                    if (!(obj instanceof Map<?, ?>)) {
                         throw new RuntimeException("Unable to find value for " + keys);
                     }
                     map = (Map) obj;
@@ -634,9 +644,8 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         // resource "/foo/bar"
         // resource "."
         // resource <var>
-        
-        public Object create(List<Argument> tokens, Context ctx)
-        throws Exception {
+
+        public Object create(List<Argument> tokens, Context ctx) throws Exception {
 
             if (tokens.size() != 1) {
                 throw new RuntimeException("Wrong number of arguments");
@@ -676,13 +685,15 @@ public class StructuredResourceDisplayController implements Controller, Initiali
             } else {
                 Path uri = Path.fromString(ref);
                 String token = SecurityContext.getSecurityContext().getToken();
-                resource = repository.retrieve(token, uri, true);
+                try {
+                    resource = repository.retrieve(token, uri, true);
+                } catch (ResourceNotFoundException rnfe) {
+                    return null;
+                }
             }
             return resource;
         }
-
     }
-    
 
     private class PropertyValueFormatHandler implements ValNodeFactory.ValueFormatHandler {
 
@@ -715,7 +726,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
             }
         }
     }
-    
+
     private class LocalizationNodeFactory implements DirectiveNodeFactory {
 
         public Node create(DirectiveParseContext ctx) throws Exception {
@@ -725,7 +736,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
             }
             final Argument code = args.remove(0);
             final List<Argument> rest = new ArrayList<Argument>(args);
-            
+
             return new Node() {
                 public void render(Context ctx, Writer out) throws Exception {
                     String key;
@@ -751,20 +762,18 @@ public class StructuredResourceDisplayController implements Controller, Initiali
                             localizationArgs[i] = ((Literal) a).getValue();
                         }
                     }
-                    
+
                     @SuppressWarnings("unchecked")
                     Map<String, Object> model = (Map<String, Object>) o;
                     StructuredResource resource = (StructuredResource) model.get(resourceModelKey);
                     if (resource == null) {
-                        throw new RuntimeException("Unable to localize string: " 
-                                + key + ": no resource found in model");
+                        throw new RuntimeException("Unable to localize string: " + key + ": no resource found in model");
                     }
-                    String localizedMsg = resource.getType().
-                        getLocalizedMsg(key, ctx.getLocale(), localizationArgs);
+                    String localizedMsg = resource.getType().getLocalizedMsg(key, ctx.getLocale(), localizationArgs);
                     out.write(ctx.htmlEscape(localizedMsg));
                 }
             };
         }
     }
-    
+
 }

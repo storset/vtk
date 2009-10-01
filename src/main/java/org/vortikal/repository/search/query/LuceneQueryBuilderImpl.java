@@ -46,6 +46,13 @@ import org.apache.lucene.document.FieldSelectorResult;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanFilter;
+import org.apache.lucene.search.CachingWrapperFilter;
+import org.apache.lucene.search.Filter;
+import org.apache.lucene.search.FilterClause;
+import org.apache.lucene.search.TermsFilter;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.HierarchicalVocabulary;
 import org.vortikal.repository.Path;
@@ -56,7 +63,9 @@ import org.vortikal.repository.index.mapping.FieldNameMapping;
 import org.vortikal.repository.index.mapping.FieldValueMapper;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.repository.search.QueryException;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
+import org.vortikal.repository.search.Search;
+import org.vortikal.repository.search.Sorting;
 import org.vortikal.repository.search.query.builders.ACLInheritedFromQueryBuilder;
 import org.vortikal.repository.search.query.builders.HierarchicalTermQueryBuilder;
 import org.vortikal.repository.search.query.builders.NamePrefixQueryBuilder;
@@ -74,6 +83,7 @@ import org.vortikal.repository.search.query.builders.UriDepthQueryBuilder;
 import org.vortikal.repository.search.query.builders.UriPrefixQueryBuilder;
 import org.vortikal.repository.search.query.builders.UriSetQueryBuilder;
 import org.vortikal.repository.search.query.builders.UriTermQueryBuilder;
+import org.vortikal.repository.search.query.security.QueryAuthorizationFilterFactory;
 
 /**
  * Factory that helps in building different Lucene queries 
@@ -81,15 +91,31 @@ import org.vortikal.repository.search.query.builders.UriTermQueryBuilder;
  * 
  * @author oyviste
  */
-public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
+public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, InitializingBean {
 
-    Log logger = LogFactory.getLog(QueryBuilderFactoryImpl.class);
+    Log logger = LogFactory.getLog(LuceneQueryBuilderImpl.class);
     
     private ResourceTypeTree resourceTypeTree;
     private FieldValueMapper fieldValueMapper;
     private boolean allowWildcardQueries = false;
+    private QueryAuthorizationFilterFactory queryAuthorizationFilterFactory;
+    private Filter onlyPublishedFilter;
+    private PropertyTypeDefinition publishedPropDef;
+
+    public void afterPropertiesSet() {
+        // Setup filter for published resources
+        TermsFilter tf = new TermsFilter();
+        String searchFieldName = FieldNameMapping.getSearchFieldName(this.publishedPropDef, false);
+        String searchFieldValue = this.fieldValueMapper.encodeIndexFieldValue("true", Type.BOOLEAN, false);
+        Term publishedTrueTerm = new Term(searchFieldName, searchFieldValue);
+        tf.addTerm(publishedTrueTerm);
+        this.onlyPublishedFilter = new CachingWrapperFilter(tf);
+    }
     
-    public QueryBuilder getBuilder(Query query, IndexReader reader) throws QueryBuilderException {
+    /* (non-Javadoc)
+     * @see org.vortikal.repository.search.query.LuceneQueryBuilder#buildQuery(org.vortikal.repository.search.query.Query, org.apache.lucene.index.IndexReader)
+     */
+    public org.apache.lucene.search.Query buildQuery(Query query, IndexReader reader) throws QueryBuilderException {
         
         QueryBuilder builder = null;
 
@@ -168,7 +194,7 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
                                             + query.getClass().getName());
         }
         
-        return builder;
+        return builder.buildQuery();
     }
     
     private QueryBuilder getACLQueryBuilder(Query query, IndexReader reader) {
@@ -289,6 +315,54 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
         }
     }
     
+    /* (non-Javadoc)
+     * @see org.vortikal.repository.search.query.LuceneQueryBuilder#buildSearchFilter(org.vortikal.repository.search.Search, org.apache.lucene.index.IndexReader)
+     */
+    public Filter buildSearchFilter(String token, Search search, IndexReader reader)
+            throws QueryBuilderException {
+        
+        Filter filter = null;
+        
+        // Get ACL filter
+        Filter aclFilter = 
+            this.queryAuthorizationFilterFactory.authorizationQueryFilter(token, reader);
+        if (logger.isDebugEnabled()){
+            if (aclFilter == null) {
+                logger.debug("ACL filter null for token: " + token);
+            } else {
+                logger.debug("ACL filter: " +  aclFilter + " for token " + token);
+            }
+        }
+        
+        // Set filter to ACL filter initially
+        filter = aclFilter;
+        
+        // Add published-filter if requested
+        if (search.isOnlyPublishedResources()) {
+            if (filter != null) {
+                BooleanFilter bf = new BooleanFilter();
+                bf.add(new FilterClause(filter, BooleanClause.Occur.MUST));
+                bf.add(new FilterClause(this.onlyPublishedFilter, BooleanClause.Occur.MUST));
+                filter = bf;
+            } else {
+                filter = this.onlyPublishedFilter;
+            }
+        }
+
+        return filter;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.vortikal.repository.search.query.LuceneQueryBuilder#buildSort(org.vortikal.repository.search.Sorting)
+     */
+    public org.apache.lucene.search.Sort buildSort(Sorting sort) {
+        if (sort != null) {
+            return new SortBuilderImpl().buildSort(sort);
+        }
+        
+        return null;
+    }
+
     @Required
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
@@ -301,6 +375,17 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
 
     public void setAllowWildcardQueries(boolean allowWildcardQueries) {
         this.allowWildcardQueries = allowWildcardQueries;
+    }
+
+    @Required
+    public void setQueryAuthorizationFilterFactory(
+            QueryAuthorizationFilterFactory queryAuthorizationFilterFactory) {
+        this.queryAuthorizationFilterFactory = queryAuthorizationFilterFactory;
+    }
+
+    @Required
+    public void setPublishedPropDef(PropertyTypeDefinition publishedPropDef) {
+        this.publishedPropDef = publishedPropDef;
     }
 
 }

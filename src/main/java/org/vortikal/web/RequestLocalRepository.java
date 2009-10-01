@@ -49,6 +49,9 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.ResourceOverwriteException;
+import org.vortikal.repository.search.QueryException;
+import org.vortikal.repository.search.ResultSet;
+import org.vortikal.repository.search.Search;
 import org.vortikal.security.AuthenticationException;
 
 
@@ -342,4 +345,9 @@ public class RequestLocalRepository implements Repository {
     public void publish(String token, Resource resource) throws IOException {
         this.repository.publish(token, resource);
     }
+
+    public ResultSet search(String token, Search search) throws QueryException {
+        return this.repository.search(token, search);
+    }
+    
 }

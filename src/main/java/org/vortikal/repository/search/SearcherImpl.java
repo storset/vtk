@@ -36,10 +36,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.FieldSelector;
-import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.TopDocs;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Required;
@@ -47,32 +45,26 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.index.LuceneIndexManager;
 import org.vortikal.repository.index.mapping.DocumentMapper;
 import org.vortikal.repository.search.query.DumpQueryTreeVisitor;
+import org.vortikal.repository.search.query.LuceneQueryBuilder;
 import org.vortikal.repository.search.query.Query;
-import org.vortikal.repository.search.query.QueryBuilderFactory;
-import org.vortikal.repository.search.query.SortBuilder;
-import org.vortikal.repository.search.query.SortBuilderImpl;
-import org.vortikal.repository.search.query.security.QueryAuthorizationFilterFactory;
 
 /**
- * 
- *
+ * Implementation of {@link org.vortikal.repository.search.Searcher} based on Lucene.
  */
-public class SearcherImplACL implements Searcher {
+public class SearcherImpl implements Searcher {
 
-    private final Log logger = LogFactory.getLog(SearcherImplACL.class);
+    private final Log logger = LogFactory.getLog(SearcherImpl.class);
 
     private LuceneIndexManager indexAccessor;
     private DocumentMapper documentMapper;
-    private QueryBuilderFactory queryBuilderFactory;
-    private QueryAuthorizationFilterFactory queryAuthorizationFilterFactory;
-    private final SortBuilder sortBuilder = new SortBuilderImpl();
+    private LuceneQueryBuilder queryBuilder;
     
     private long totalQueryTimeWarnThreshold = 15000; // Warning threshold in milliseconds
     
     /**
      * The internal maximum number of hits allowed for any
-     * query <em>before</em> processing of the results by layers above Lucene.
-     * This limit includes unauthorized hits that are <em>not</em> supplied to client.
+     * query <em>before</em> processing of the results by layers above Lucene. A result set will
+     * never be larger than this.
      */
     private int luceneSearchLimit = 60000;
     
@@ -95,11 +87,15 @@ public class SearcherImplACL implements Searcher {
         try {
             searcher = this.indexAccessor.getIndexSearcher();
 
-            org.apache.lucene.search.Query luceneQuery = this.queryBuilderFactory
-                    .getBuilder(query, searcher.getIndexReader()).buildQuery();
+            org.apache.lucene.search.Query luceneQuery =
+                this.queryBuilder.buildQuery(query, searcher.getIndexReader());
 
-            Sort luceneSort = sorting != null ? this.sortBuilder
-                    .buildSort(sorting) : null;
+            // Should include ACL filter combined with any other necessary filters ..
+            org.apache.lucene.search.Filter luceneFilter = 
+                this.queryBuilder.buildSearchFilter(token, search, searcher.getIndexReader());
+
+            org.apache.lucene.search.Sort luceneSort = 
+                this.queryBuilder.buildSort(sorting);
 
             FieldSelector selector = selectedProperties != null ? this.documentMapper
                     .getDocumentFieldSelector(selectedProperties)
@@ -112,6 +108,8 @@ public class SearcherImplACL implements Searcher {
 
                 logger.debug("Built Lucene sorting '" + luceneSort
                         + "' from sorting '" + sorting + "'");
+                
+                logger.debug("Built Lucene filter: " + luceneFilter);
             }
 
             int need = clientCursor + clientLimit;
@@ -120,12 +118,12 @@ public class SearcherImplACL implements Searcher {
             int searchLimit = Math.min(this.luceneSearchLimit, need);
 
             long startTime = System.currentTimeMillis();
-            TopDocs topDocs = doACLFilteredTopDocsQuery(searcher, luceneQuery, 
-                                             searchLimit, luceneSort, token);
+            TopDocs topDocs = doTopDocsQuery(searcher, luceneQuery, 
+                                             luceneFilter, luceneSort, searchLimit);
             long endTime = System.currentTimeMillis();
             
             if (logger.isDebugEnabled()){
-                logger.debug("ACL filtered lucene query took " + (endTime-startTime) + "ms");
+                logger.debug("Filtered lucene query took " + (endTime-startTime) + "ms");
             }
             
             totalTime += (endTime - startTime);
@@ -179,30 +177,18 @@ public class SearcherImplACL implements Searcher {
         }
     }
     
-    private TopDocs doACLFilteredTopDocsQuery(IndexSearcher searcher, 
-                                              org.apache.lucene.search.Query query,
-                                              int limit,
-                                              Sort sort,
-                                              String token)
+    private TopDocs doTopDocsQuery(IndexSearcher searcher, 
+                                   org.apache.lucene.search.Query query,
+                                   org.apache.lucene.search.Filter filter,
+                                   org.apache.lucene.search.Sort sort,
+                                   int limit)
         throws IOException {
 
-        Filter aclFilter = 
-            this.queryAuthorizationFilterFactory.authorizationQueryFilter(token, 
-                                                       searcher.getIndexReader());
-        
-        if (logger.isDebugEnabled()){
-            if (aclFilter == null) {
-                logger.debug("ACL filter null for token: " + token);
-            } else {
-                logger.debug("ACL filter: " +  aclFilter + " (token = " + token + ")");
-            }
-        }
-        
         if (sort != null) {
-            return searcher.search(query, aclFilter, limit, sort);
+            return searcher.search(query, filter, limit, sort);
         } 
 
-        return searcher.search(query, aclFilter, limit);
+        return searcher.search(query, filter, limit);
     }
 
     @Required
@@ -216,19 +202,10 @@ public class SearcherImplACL implements Searcher {
     }
 
     @Required
-    public void setQueryBuilderFactory(QueryBuilderFactory queryBuilderFactory) {
-        this.queryBuilderFactory = queryBuilderFactory;
+    public void setQueryBuilder(LuceneQueryBuilder queryBuilder) {
+        this.queryBuilder = queryBuilder;
     }
     
-    @Required
-    public void setQueryAuthorizationFilterFactory(QueryAuthorizationFilterFactory factory) {
-        this.queryAuthorizationFilterFactory = factory;
-    }
-    
-    public int getLuceneSearchLimit() {
-        return luceneSearchLimit;
-    }
-
     public void setLuceneSearchLimit(int luceneSearchLimit) {
         this.luceneSearchLimit = luceneSearchLimit;
     }

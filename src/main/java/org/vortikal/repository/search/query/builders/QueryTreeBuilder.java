@@ -41,16 +41,16 @@ import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.QueryBuilder;
-import org.vortikal.repository.search.query.QueryBuilderFactory;
+import org.vortikal.repository.search.query.LuceneQueryBuilder;
 
 
 public class QueryTreeBuilder implements QueryBuilder {
 
     private AbstractMultipleQuery query;
-    private QueryBuilderFactory factory;
+    private LuceneQueryBuilder factory;
     private IndexReader reader;
     
-    public QueryTreeBuilder(QueryBuilderFactory factory, 
+    public QueryTreeBuilder(LuceneQueryBuilder factory, 
             IndexReader reader, AbstractMultipleQuery query) {
         this.query = query;
         this.factory = factory;
@@ -69,7 +69,7 @@ public class QueryTreeBuilder implements QueryBuilder {
         } else if (query instanceof OrQuery) {
             occur = BooleanClause.Occur.SHOULD;
         } else {
-            return this.factory.getBuilder(query, reader).buildQuery();
+            return this.factory.buildQuery(query, reader);
         }
 
         AbstractMultipleQuery multipleQuery = (AbstractMultipleQuery)query;

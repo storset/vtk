@@ -31,15 +31,44 @@
 package org.vortikal.repository.search.query;
 
 import org.apache.lucene.index.IndexReader;
+import org.vortikal.repository.search.Search;
+import org.vortikal.repository.search.Sorting;
 
 
 /**
- * 
- * @author oyviste
+ * Build instances of {@link org.apache.lucene.search.Query} and
+ * {@link org.apache.lucene.search.Filter} from our own query types.
  */
-public interface QueryBuilderFactory {
+public interface LuceneQueryBuilder {
 
-    public QueryBuilder getBuilder(Query query, IndexReader reader) 
+    /**
+     * Build a Lucene {@link org.apache.lucene.search.Query} 
+     * for a given <code>{@link org.vortikal.repository.search.query.Query}</code>.
+     * 
+     * @param query
+     * @param reader
+     * @return
+     * @throws QueryBuilderException
+     */
+    public org.apache.lucene.search.Query buildQuery(Query query, IndexReader reader) 
         throws QueryBuilderException;
     
+    /**
+     * Build a {@link org.apache.lucene.search.Filter} that should be applied for the given
+     * search and query.
+     * 
+     * May return <code>null</code> if no filter should be applied for the given search.  
+     */
+    public org.apache.lucene.search.Filter buildSearchFilter(String token, Search search, IndexReader reader)
+        throws QueryBuilderException;
+
+    /**
+     * Build a {@link org.apache.lucene.search.Sort} from given 
+     * {@link org.vortikal.repository.search.Sorting}.
+     * 
+     * @param sort
+     * @return
+     */
+    public org.apache.lucene.search.Sort buildSort(Sorting sort);
+
 }

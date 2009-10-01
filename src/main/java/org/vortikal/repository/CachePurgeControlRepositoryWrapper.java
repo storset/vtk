@@ -38,6 +38,9 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.search.QueryException;
+import org.vortikal.repository.search.ResultSet;
+import org.vortikal.repository.search.Search;
 import org.vortikal.repository.store.Cache;
 import org.vortikal.security.AuthenticationException;
 
@@ -318,6 +321,10 @@ public class CachePurgeControlRepositoryWrapper implements Repository {
 
     public void publish(String token, Resource resource) throws IOException {
         this.wrappedRepository.publish(token, resource);
+    }
+
+    public ResultSet search(String token, Search search) throws QueryException {
+        return this.wrappedRepository.search(token, search);
     }
 
 }

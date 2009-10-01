@@ -54,6 +54,10 @@ import org.vortikal.repository.event.ContentModificationEvent;
 import org.vortikal.repository.event.ResourceCreationEvent;
 import org.vortikal.repository.event.ResourceDeletionEvent;
 import org.vortikal.repository.event.ResourceModificationEvent;
+import org.vortikal.repository.search.QueryException;
+import org.vortikal.repository.search.ResultSet;
+import org.vortikal.repository.search.Search;
+import org.vortikal.repository.search.Searcher;
 import org.vortikal.repository.store.CommentDAO;
 import org.vortikal.repository.store.ContentStore;
 import org.vortikal.repository.store.DataAccessor;
@@ -84,6 +88,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     private RepositoryResourceHelper resourceHelper;
     private AuthorizationManager authorizationManager;
     private PrincipalManager principalManager;
+    private Searcher searcher;
     private URIValidator uriValidator = new URIValidator();
     private File tempDir = new File(System.getProperty("java.io.tmpdir"));
     private String id;
@@ -1068,6 +1073,23 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             }
             periodicLogger.info("Terminating refresh thread");
         }
+    }
+
+    
+    public ResultSet search(String token, Search search) throws QueryException {
+        if (this.searcher != null) {
+            // Enforce searching in published resources only when going through
+            // Repository.search(String,Search)
+            search.setOnlyPublishedResources(true);
+            return this.search(token, search);
+        } else {
+            throw new QueryException("No repository searcher has been configured.");
+        }
+    }
+
+
+    public void setSearcher(Searcher searcher) {
+        this.searcher = searcher;
     }
 
 }

@@ -66,7 +66,6 @@
          initialized (because it modifies the resource type tree)
      -->
     <property name="resourceTypeTree" ref="resourceTypeTree"/>
-    <!--property name="contextManager" ref="contextManager" /-->
     <property name="fieldValueMapper" ref="fieldValueMapper"/>
   </bean>
 
@@ -108,11 +107,23 @@
   </bean>
   
   <!-- Factory for building Lucene queries. -->
-  <bean id="queryBuilderFactory"
-        class="org.vortikal.repository.search.query.QueryBuilderFactoryImpl">
+  <bean id="queryBuilder"
+        class="org.vortikal.repository.search.query.LuceneQueryBuilderImpl">
     <property name="resourceTypeTree" ref="resourceTypeTree"/>
     <property name="fieldValueMapper" ref="fieldValueMapper"/>
     <property name="allowWildcardQueries" value="${search.query.allowWildcardQueries}" />
+    <property name="queryAuthorizationFilterFactory" ref="queryAuthorizationFilterFactory"/>
+    
+    <!-- XXX: ref this from proper place, when it's ready: -->
+    <property name="publishedPropDef">
+      <bean class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        <property name="name" value="published"/>
+        <property name="namespace" ref="DEFAULT_NAMESPACE"/>
+        <property name="type" value="BOOLEAN"/>
+        <property name="valueFactory" ref="valueFactory" />
+        <property name="valueFormatterRegistry" ref="valueFormatterRegistry" />
+      </bean>
+    </property>
   </bean>
 
   <!-- Searcher implementation (wrapped in throttler)-->
@@ -120,11 +131,10 @@
         class="org.vortikal.repository.search.ThrottlingSearcherWrapper">
     <property name="maxConcurrentQueries" value="8" />
     <property name="searcher">
-      <bean class="org.vortikal.repository.search.SearcherImplACL">
+      <bean class="org.vortikal.repository.search.SearcherImpl">
         <property name="indexAccessor" ref="systemIndexAccessor"/>
         <property name="documentMapper" ref="documentMapper"/>
-        <property name="queryBuilderFactory" ref="queryBuilderFactory"/>
-        <property name="queryAuthorizationFilterFactory" ref="queryAuthorizationFilterFactory"/>
+        <property name="queryBuilder" ref="queryBuilder"/>
       </bean>
     </property>
   </bean>

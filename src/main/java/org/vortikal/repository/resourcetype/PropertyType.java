@@ -55,7 +55,6 @@ public final class PropertyType {
         JSON;
     }
     
-    
     /*
      *  Protection levels
      */

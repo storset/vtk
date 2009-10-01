@@ -34,11 +34,8 @@ package org.vortikal.repository.search.query;
 /**
  * Interface for implementations that build different Lucene queries from
  * our own query types.
- * 
- * @author oyviste
- *
  */
-public interface  QueryBuilder {
+public interface QueryBuilder {
 
     public org.apache.lucene.search.Query buildQuery() throws QueryBuilderException;
     

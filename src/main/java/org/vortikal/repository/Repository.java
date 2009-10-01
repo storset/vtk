@@ -34,6 +34,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import org.vortikal.repository.search.QueryException;
+import org.vortikal.repository.search.ResultSet;
+import org.vortikal.repository.search.Search;
 import org.vortikal.security.AuthenticationException;
 
 
@@ -606,4 +609,17 @@ public interface Repository {
      * @param resource The resource to publish
      */
     public void publish(String token, Resource resource) throws IOException;
+    
+    /**
+     * Execute a repository search (higher-level access to search API). 
+     * Searching through this method will enforce that all search results
+     * are published resources.
+     * 
+     * @param token
+     * @param search
+     * @return
+     * @throws QueryException
+     */
+    public ResultSet search(String token, Search search) throws QueryException;
+    
 }

@@ -35,8 +35,8 @@ import org.vortikal.repository.search.query.DumpQueryTreeVisitor;
 import org.vortikal.repository.search.query.Query;
 
 /**
- * Executes a query on repository resources with a hard limit on how
- * many results that should be returned, in addition to a cursor. 
+ * Specifies a search on repository resources with a hard limit on how
+ * many results that should be returned, in addition to a cursor.
  * 
  * At any given time, the <code>Query</code> alone will produce a complete result
  * set. The <code>cursor</code> and <code>maxResults</code> parameters
@@ -70,6 +70,7 @@ public final class Search {
     private PropertySelect propertySelect = new WildcardPropertySelect();
     private Query query;
     private Sorting sorting;
+    private boolean onlyPublishedResources = false;
     private int limit = MAX_LIMIT;
     private int cursor = 0;
     
@@ -144,6 +145,14 @@ public final class Search {
         sb.append(", limit=").append(this.limit);
         sb.append(", cursor=").append(this.cursor).append("]");
         return sb.toString();
+    }
+
+    public boolean isOnlyPublishedResources() {
+        return this.onlyPublishedResources;
+    }
+
+    public void setOnlyPublishedResources(boolean onlyPublishedResources) {
+        this.onlyPublishedResources = onlyPublishedResources;
     }
     
 }

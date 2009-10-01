@@ -50,27 +50,6 @@ resourcetype structured-article : structured-document {
       ##
     }
     
-    share {
-      ##
-      <a href="#share" id="share-link" onclick="share();" name="share">[localized "share-link"]</a>
-      <div id="share-component">
-        <div id="send-share">
-          <div class="send-inner">
-            <div class="share-top">
-              <h3>[localized "share-link"]</h3>
-              <span><a href="#share" class="close-toolbox-send-share" onclick="share();">[localized "share-close"]</a></span>
-            </div>
-            <ul>
-              <li><a href="http://www.facebook.com/share.php?u=http://www.jus2.uio.no${resource:property id=\[uri\] }" class="facebook">Facebook</a></li>
-              <li><a class="nettby" href="http://www.nettby.no/user/edit_link.php?name=${resource:property id=\[title\]}&amp;url=http://www.jus2.uio.no${resource:property id=\[uri\] }&amp;description=">Nettby</a></li>
-              <li><a id="uri" href="http://del.icio.us/post?url=http://www.jus2.uio.no${resource:property id=\[uri\] }&amp;title=${resource:property id=\[title\] }" class="delicious">del.icio.us</a></li>
-           </ul>
-         </div>
-        </div>
-      </div>
-      ##
-    }
-    
   }
 
   view {
@@ -102,7 +81,7 @@ resourcetype structured-article : structured-document {
             <json:field select="content" />
             <resource:tags />
             <resource:comments />
-            <div class="social-components"
+            <div class="vrtx-social-components"
               <resource:email-friend />
               <comp:share />
             </div>

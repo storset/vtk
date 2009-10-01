@@ -172,16 +172,6 @@ resourcetype person {
       [endif]
       ##
     }
-    
-    projects {
-      ##
-        [resource-props "."]
-      <div class="narrow-box-borders">
-        <h2>[localized "projects"]</h2>
-        ${resource:project-list}
-      </div>
-      ##
-    }
 
     scientific-info {
       ##
@@ -282,7 +272,7 @@ resourcetype person {
         </div>
         <div id="vrtx-related-content">
            <comp:box-feeds />
-           <comp:projects />
+           ${resource:project-list}
         </div>
       </body>
     </html>

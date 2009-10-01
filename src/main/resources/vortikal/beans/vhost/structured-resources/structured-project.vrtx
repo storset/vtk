@@ -86,18 +86,6 @@ resourcetype structured-project {
       ##
     }
     
-    box-participants {
-      ##
-      [resource-props "."]
-      [if participants]
-        <div class="narrow-box-borders">
-          <h2>[localized "participantsHeader"]</h2>
-          ${resource:person-list}
-        </div>
-      [endif]
-      ##
-    }
-    
     box-contact-info {
        ##
        [resource-props "."]
@@ -159,7 +147,7 @@ resourcetype structured-project {
           </div>
           <div id="vrtx-related-content">
             <comp:box-contact-info />
-            <comp:box-participants />
+            ${resource:person-list}
             <comp:box-feeds />
           </div>
         </div>

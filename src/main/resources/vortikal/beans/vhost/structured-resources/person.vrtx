@@ -12,7 +12,6 @@ resourcetype person {
     visitingAddress : string multiple external:userMetadataLdapService,
     alternativeVisitingAddress : string multiple,
     title : derived (firstName, surname) eval (firstName + " " + surname) overrides title,
-    building : string,
     room : string,
     availableHours : string,
     picture : image_ref, 
@@ -36,7 +35,7 @@ resourcetype person {
     content (after images),
     tags tooltip (en : "(tag1, tag2, ...)", no : "(emneord1, emneord2, ...)", nn : "(emneord1, emneord2, ...)"),
     postalAddress tooltip (en : "(postbox / streetaddress, postnumber place)", no : "(postboks / gateadresse, postnummer sted)", nn : "(postboks / gateadresse, postnummer sted)"),
-    alternativeVisitingAddress tooltip (en : "(streetaddress, postnumber place)", no : "(gateadresse, postnummer sted)", nn : "(gateadresse, postnummer sted)")
+    alternativeVisitingAddress tooltip (en : "(building, streetaddress, postnumber place)", no : "(bygning, gateadresse, postnummer sted)", nn : "(bygning, gateadresse, postnummer sted)")
   }
 
   scripts {
@@ -160,7 +159,7 @@ resourcetype person {
           [def style concat "width:" pixel-width "px"]
         [endif]
         <div class="vrtx-person-image">
-        [if !img]
+        [if ! img]
           <img class="vrtx-person-image" src="#" alt="[localized "introduction-image-alt"]" />
         [else]
           <img class="vrtx-person-image" src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
@@ -341,7 +340,6 @@ resourcetype person {
     rssUrl : (en : "Web address", no : "Webadresse", nn :"Webadresse"),
     pressPhoto : (en : "Press photo", no : "Pressebilde", nn : "Pressebilete"),
     room : (en : "Room", no : "Rom", nn : "Rom"),
-    building : (en : "Building", no : "Bygning", nn : "Bygning"),
     publicationTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
     publicationUrl : (en : "Publication link", no : "Publikasjonlenke", nn : "Publikasjonlenke"),
     images : (en : "Images", no : "Bilder", nn : "Bilder"),

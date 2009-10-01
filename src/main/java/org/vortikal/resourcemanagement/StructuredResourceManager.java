@@ -458,7 +458,22 @@ public class StructuredResourceManager {
     			String expression = "properties." + property.getDefinition().getName();
     			value = JSONUtil.select(json, expression);
     			if (emptyValue(value)) {
-    				return false;
+    			    // XXX Don't allow an overriding property to be empty
+    			    // NB NB!!! This is not a solution!!! A temp fix only
+    			    // look at fallback solution of previous evaluation scheme
+    			    if (propertyDesc.isOverrides()) {
+    			        Property overriddenProp = ctx.getNewResource().getProperty(Namespace.DEFAULT_NAMESPACE, 
+    			                propertyDesc.getOverrides());
+    			        if (overriddenProp == null) {
+    			            ctx.getNewResource().getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE,
+                                    propertyDesc.getOverrides());
+    			        }
+    			        if (overriddenProp != null) {
+    			            setPropValue(property, overriddenProp.getValue());
+    			            return true;
+    			        }
+    			    }
+    			    return false;
     			}
     			setPropValue(property, value);
     		}

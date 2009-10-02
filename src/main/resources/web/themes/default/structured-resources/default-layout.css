@@ -10,10 +10,10 @@
 #vrtx-main-content-false,
 #vrtx-main-content-,
 #vrtx-main-content {
-   float: left;
-   width: 63%;
-   position: relative;
-   margin-right: 3%;
+  float: left;
+  width: 63%;
+  position: relative;
+  margin-right: 3%;
 }
 
 #vrtx-related-content {
@@ -22,8 +22,8 @@
 }
 
 #vrtx-main-content-true {
-   float: left;
-   width: 100%;
+  float: left;
+  width: 100%;
 }
 
 .vrtx-social-components {

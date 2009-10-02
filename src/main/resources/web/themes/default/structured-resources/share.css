@@ -1,137 +1,139 @@
 @charset "UTF-8";
 
 #send-share div {
-	display: none;
+  display: none;
 }
 
 #send-share {
-	display: block;
-	right: 226px;
-	position: absolute;
-	top: -23px;
-	z-index: 999;
+  display:block;
+  right:226px;
+  position:absolute;
+  top:-23px;
+  z-index: 999;
 }
 
 * html #send-share {
-	right: 235px;
-	top: -26px;
+  right:235px;
+  top:-26px;
+
 }
 
-* :first-child+html #send-share {
-	top: -26px;
+*:first-child+html #send-share {
+  top:-26px;
 }
 
 #send-share div.send-inner {
-	background: #fff none repeat scroll 0 0;
-	border: 2px solid #ccc;
-	padding-bottom: 5px;
-	position: absolute;
-	width: 222px;
-	z-index: 999;
+  background:#fff none repeat scroll 0 0;
+  border:2px solid #ccc;
+  padding-bottom:5px;
+  position:absolute;
+  width:222px;
+  z-index: 999;
 }
 
-* :first-child+html #send-share div.send-inner {
-	padding-bottom: 10px;
+*:first-child+html #send-share div.send-inner {
+  padding-bottom:10px;
 }
 
 * html #send-share div.send-inner {
-	padding-bottom: 10px;
+  padding-bottom:10px;
 }
 
 * html #send-share div {
-	height: 1%;
+  height: 1%;
 }
 
+
 #send-share .share-top {
-	background: #E5E4E5 none repeat scroll 0 0;
-	float: left;
-	margin-bottom: 10px;
-	width: 222px;
+  background:#E5E4E5 none repeat scroll 0 0;
+  float:left;
+  margin-bottom:10px;
+  width:222px;
 }
 
 * html #send-share .share-top {
-	
+  
 }
 
 #send-share .share-top h3 {
-	display: block;
-	float: left;
-	margin: 0.15em 0.15em 0.15em 10px;
-	padding: 0;
-	font-size: 16px;
+  display: block;
+  float: left;
+  margin: 0.15em 0.15em 0.15em 10px; 
+  padding: 0;
+  font-size: 16px;
 }
 
 * html #send-share .share-top h3 {
-	margin-left: 5px;
+  margin-left: 5px;
 }
 
 #send-share .share-top span {
-	float: right;
-	font-size: 1em;
-	margin: 5px 7px 0 0;
-	text-align: right;
+  float:right;
+  font-size:1em;
+  margin:5px 7px 0 0;
+  text-align:right;
 }
 
-#send-share .share-top span a:hover {
-	text-decoration: underline;
+#send-share .share-top span a:hover{
+  text-decoration: underline;
 }
 
 * html #send-share .share-top span {
-	margin-right: 3px;
+  margin-right: 3px;
 }
 
 #send-share .share-top span {
-	display: block;
+  display:block;
 }
 
 #send-share .share-top span a {
-	color: #333333;
-	font-weight: bold;
-	text-decoration: none;
-	font-size: 11px;
+  color:#333333;
+  font-weight:bold;
+  text-decoration: none;
+  font-size: 11px;
 }
-
 #send-share .send-inner ul {
-	padding: 0;
-	margin: 0;
+  padding: 0;
+  margin: 0;
 }
 
 #send-share .send-inner ul li {
-	float: left;
-	margin-left: 10px;
-	width: 206px;
-	padding: 0 : 
-   position :   relative;
+  float:left;
+  margin-left:10px;
+  width:206px;
+  padding: 0:
+  position: relative;
 }
 
 * html #send-share .send-inner ul li {
-	margin-left: 5px;
+  margin-left: 5px;
 }
 
 #send-share ul li {
-	border-top-style: dotted;
-	border-top-width: 1px;
-	margin-bottom: 5px;
-	padding-top: 5px;
-	border-color: #999999;
+  border-top-style:dotted;
+  border-top-width:1px;
+  margin-bottom:5px;
+  padding-top:5px;
+  border-color:#999999;
 }
 
 #send-share ul li {
-	list-style-type: none;
+  list-style-type:none;
 }
 
-#send-share ul li a { /* padding-left:20px; */
-	display: block;
-	height: 16px;
-	font-size: 11px;
-	/* color:#005689; */
-	text-decoration: none;
-	margin: 0;
-	background-repeat: no-repeat;
-	background-position: center left;
-	line-height: 16px;
+#send-share ul li a {
+  /* padding-left:20px; */
+  display: block;
+  height: 16px;
+  font-size: 11px;
+  /* color:#005689; */
+  text-decoration: none;
+  margin: 0;
+  background-repeat: no-repeat;
+  background-position: center left;
+  line-height: 16px;
 }
 
 #send-share ul li a:hover {
-	text-decoration: underline;
+  text-decoration: underline;
 }

@@ -3,7 +3,8 @@
 @import url(default-layout.css);
 
 .vrtx-frontpage-box .more {
-	clear: both;
-	float: right;
+  clear: both;
+  float: right;
 }
+
 /* main "boxes" CSS comes here */

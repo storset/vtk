@@ -11,19 +11,19 @@
 #vrtx-main-content-,
 #vrtx-main-content {
    float: left;
-   width: 63%; /* for now */
+   width: 63%;
    position: relative;
    margin-right: 3%;
 }
 
 #vrtx-related-content {
   float: left;
-  width: 33% /* for now */
+  width: 33%;
 }
 
 #vrtx-main-content-true {
    float: left;
-   width: 100%; /* for now */
+   width: 100%;
 }
 
 .vrtx-social-components {

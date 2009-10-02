@@ -1,53 +1,64 @@
 @charset "UTF-8";
 
-#vrtx-related-content .vrtx-projects,#vrtx-related-content .vrtx-project-participants,#vrtx-related-content .vrtx-project-contactinfo,#vrtx-related-content .vrtx-feed
-	{
-	border: 1px solid #AAAAAA;
-	clear: both;
-	float: left;
-	margin-bottom: 15px;
-	padding: 5px 4% 10px;
-	width: 92%; /* for now */
+#vrtx-related-content .vrtx-projects,
+#vrtx-related-content .vrtx-project-participants,
+#vrtx-related-content .vrtx-project-contactinfo,
+#vrtx-related-content .vrtx-feed
+ {
+  border:1px solid #AAAAAA;
+  clear:both;
+  float:left;
+  margin-bottom:15px;
+  padding: 5px 4% 10px;
+  width: 92%; /* for now */
 }
 
 .vrtx-box {
-	width: 100%;
-	padding: 0;
-	border: none;
+  width: 100%;
+  padding: 0;
+  border: none;
 }
 
-#vrtx-related-content .vrtx-projects h2,#vrtx-related-content .vrtx-project-participants h2,#vrtx-related-content .vrtx-project-contactinfo h2,#vrtx-related-content .vrtx-feed a.feed-title
-	{
-	border-bottom: 1px solid #AAAAAA;
-	font-size: 1.1em;
-	margin: 0 -4% 10px;
-	padding: 0 4% 5px;
-	display: block;
+#vrtx-related-content .vrtx-projects h2,
+#vrtx-related-content .vrtx-project-participants h2,
+#vrtx-related-content .vrtx-project-contactinfo h2,
+#vrtx-related-content .vrtx-feed a.feed-title {
+  border-bottom:1px solid #AAAAAA;
+  font-size:1.1em;
+  margin:0 -4% 10px;
+  padding:0 4% 5px;
+  display: block;
 }
 
 /* START BOXES Dividers */
-.box-twos,.box-thirds,.box-two-thirds,.box-fourths,.box-three-fourths {
-	float: left;
-	padding-right: 2%;
+
+.box-twos,
+.box-thirds,
+.box-two-thirds,
+.box-fourths,
+.box-three-fourths {
+  float: left;
+  padding-right: 2%;
 }
 
 .box-twos {
-	width: 48%;
+  width:48%;
 }
 
 .box-thirds {
-	width: 31.3333%;
+  width:31.3333%;
 }
 
 .box-two-thirds {
-	width: 64.6666%;
+  width:64.6666%;
 }
 
 .box-fourths {
-	width: 23%;
+  width:23%;
 }
 
 .box-three-fourths {
-	width: 73%;
+  width:73%;
 }
+
 /* STOP BOXES Dividers */

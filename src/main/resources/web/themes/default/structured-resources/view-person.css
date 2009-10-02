@@ -3,84 +3,84 @@
 @import url(default-layout.css);
 
 h1 {
-	margin-bottom: 10px;
+  margin-bottom: 10px;	
 }
 
 #vrtx-person-position {
-	padding: 0 0 10px 0;
-	font-size: 1.3em;
-	font-weight: 900;
+  padding: 0 0 10px 0;
+  font-size:1.3em;
+  font-weight:900;
 }
 
 /* Person contactinfo og bilde wrapper */
 #vrtx-person-contactinfo-image-wrapper {
-	float: left;
-	clear: left;
-	width: 100%;
+  float: left;
+  clear: left;
+  width: 100%;  
 }
 
 /* Person bilde og pressebilde wrapper */
 .vrtx-person-image-pressphoto-wrapper {
-	max-width: 40%;
-	float: right;
+  max-width: 40%;
+  float: right;
 }
 
 .vrtx-person-contactinfo {
-	float: left;
-	width: 57%;
-	margin-right: 3%;
+  float: left;
+  width: 57%;
+  margin-right: 3%;	
 }
 
 .vrtx-person-contactinfo ul.list {
-	margin: 0;
-	padding: 0 0 10px 0;
-	list-style: none;
-	float: left;
-	clear: left;
+  margin: 0;
+  padding: 0 0 10px 0;
+  list-style: none;
+  float: left;
+  clear: left;
 }
 
 .vrtx-person-contactinfo ul.list li {
-	margin: 0 0 5px 0;
-	padding: 0;
+  margin: 0 0 5px 0;
+  padding: 0;
 }
 
 .vrtx-person-contactinfo h3 {
-	margin: 5px 0;
-	clear: left;
-	float: left;
+  margin: 5px 0;
+  clear: left;
+  float: left;
 }
 
 .vrtx-person-contactinfo ul.list h3 {
-	float: none !important;
-	clear: none !important;
-	display: inline;
+  float: none !important;
+  clear: none !important;
+  display: inline;  
 }
 
 .vrtx-person-image {
-	float: left;
-	max-width: 100%;
-	margin: 0 0 15px 0;
+  float: left;
+  max-width:100%;
+  margin: 0 0 15px 0;
 }
 
 .vrtx-person-image img {
-	margin: 0; /* margin to pressPhoto link */
-	max-width: 100%;
+  margin: 0; /* margin to pressPhoto link */
+  max-width: 100%;
 }
 
 #vrtx-press-photo-link {
-	clear: left;
-	float: left;
-	display: block;
+  clear: left;
+  float: left;
+  display:block;	
 }
 
 .vrtx-projects ul.vrtx-projects-list {
-	margin: 0;
-	padding: 0;
-	list-style: none;
-	float: left;
-	width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  float: left;
+  width: 100%;
 }
 
 .vrtx-projects  ul.vrtx-projects-list li.vrtx-project {
-	margin: 0 0 10px;
+  margin:0 0 10px;
 }

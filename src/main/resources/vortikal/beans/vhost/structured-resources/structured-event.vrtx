@@ -68,8 +68,6 @@ resourcetype structured-event : structured-document {
     mapurl : (en : "Link to map", no : "Lenke til kart", nn : "Lenke til kart"),
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
     timeAndPlace : (en : "Time and place", no : "Tid og sted", nn : "Tid og stad"),
-    header : (en : "Edit event", no : "Rediger arrangement", nn : "Rediger arrangement"),
-    share-link : (en : "Share at...", no : "Del på...", nn : "Del på..."),
-    share-close : (en : "Close", no : "Lukk", nn : "Lukk") 
+    header : (en : "Edit event", no : "Rediger arrangement", nn : "Rediger arrangement")
   }
 }

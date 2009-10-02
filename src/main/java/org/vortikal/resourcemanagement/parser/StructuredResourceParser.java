@@ -77,7 +77,7 @@ public class StructuredResourceParser implements InitializingBean {
         this.registerStructuredResources();
     }
 
-    public void registerStructuredResources() throws Exception {
+    private void registerStructuredResources() throws Exception {
         ResourcetreeParser parser = createParser(null);
         parseResourceTypeDefinition(parser);
 

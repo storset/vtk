@@ -2,13 +2,13 @@ resourcetype frontpage {
 
   properties {
     title : string required overrides title,
-    box-list-main : json (boxTitle : string, boxType : string, boxContent : html, boxUrl : string, boxUrlText : string) multiple noextract,
-    box-list-side : json (boxTitle : string, boxType : string, boxContent : html, boxUrl : string, boxUrlText : string) multiple noextract
+    main-content : json (boxTitle : string, boxType : string, boxContent : html, boxUrl : string, boxUrlText : string) multiple noextract,
+    related-content : json (boxTitle : string, boxType : string, boxContent : html, boxUrl : string, boxUrlText : string) multiple noextract
   }
 
   view-components {
   
-    box-list-main {
+    main-content {
       ##
       [resource-props "."]
       [if box-list-main]
@@ -36,7 +36,7 @@ resourcetype frontpage {
       ##
     }
     
-    box-list-side {
+    related-content {
       ##
       [resource-props "."]
       [if box-list-side]
@@ -101,8 +101,8 @@ resourcetype frontpage {
   localization {
      title : (en : "Title", no : "Tittel", nn : "Tittel"),
      content : (en : "Content", no : "Innhold", nn : "Innhald"),
-     box-list-main : (en : "Main-column", no : "Hovedspalte", nn : "Hovedspalte"),
-     box-list-side : (en : "Side-column", no : "Sidespalte", nn : "Sidespalte"),
+     main-content : (en : "Main content", no : "Hovedinnhold", nn : "Hovedinnhold"),
+     related-content : (en : "Related content (default as right-column)", no : "Relatert innhold (default som høyrespalte)", nn : "Relatert innhold (default som høyrespalte)"),
      boxTitle : (en : "Box title", no : "Bokstittel", nn : "Bokstittel"),
      boxType : (en : "Box type", no : "Bokstype", nn : "Bokstype"),
      boxContent : (en : "Box content", no : "Boksinnhold", nn : "Boksinnhold"),

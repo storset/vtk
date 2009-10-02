@@ -7,13 +7,14 @@
 #vrtx-main-content-,
 #vrtx-main-content {
    float: left;
-   width: 66%; /* for now */
+   width: 63%; /* for now */
    position: relative;
+   margin-right: 3%;
 }
 
 #vrtx-related-content {
   float: left;
-  width: 260px /* for now */
+  width: 33% /* for now */
 }
 
 #vrtx-main-content-true {

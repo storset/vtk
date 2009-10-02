@@ -171,7 +171,7 @@ resourcetype person {
           <img class="vrtx-person-image" src="[val img-uri]" alt="[localized 'picture-alt']" />
         [endif]
         [if img-press-uri]
-          (<a id="vrtx-press-photo-link" href="[val img-press-uri]">[localized "pressPhoto"]</a>)
+          <a id="vrtx-press-photo-link" href="[val img-press-uri]">([localized "pressPhoto"])</a>
         [endif]
       [endif]
       ##

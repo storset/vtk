@@ -1,9 +1,7 @@
-@import url(structured-comments-component.css);
+@charset "UTF-8";
 
-/* For new documenttypes */
+@import url(structured-comments-component.css);
 @import url(default-layout.css);
-@import url(boxes.css);
-/* --------------------- */
 
 /* Ingress */
 div.vrtx-introduction {

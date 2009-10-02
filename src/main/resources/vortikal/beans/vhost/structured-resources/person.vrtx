@@ -338,7 +338,7 @@ resourcetype person {
     getRelatedProjects : (en : "Show projects published on UiO.no where your username is registrated as participant",
                            no :"Vis prosjekter publisert på UiO.no hvor ditt brukernavn er registrert som deltager",
                            nn:"Vis prosjekter publisert på UiO.no hvor ditt brukernavn er registrert som deltager"),
-    projects : (en : "Projects",no : "Prosjekter", nn :"Prosjektar"),
+    projects : (en : "Other projects",no : "Andre prosjekter", nn :"Andre prosjektar"),
     projectName : (en : "Project name", no : "Prosjektnavn", nn :"Prosjektnamn"), 
     projectUrl : (en : "Web address", no : "Webadresse", nn :"Webadresse"),
     rssFeeds : (en : "Show content from RSS-streams", no : "Vis innhold fra RSS-strømmer", nn :"Vis innhald frå RSS-strømmar"),

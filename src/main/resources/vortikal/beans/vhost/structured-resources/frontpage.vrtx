@@ -11,9 +11,9 @@ resourcetype frontpage {
     main-content {
       ##
       [resource-props "."]
-      [if box-list-main]
+      [if main-content]
         [def document structured-document]
-        [def boxes json-attr document "properties.box-list-main"]
+        [def boxes json-attr document "properties.main-content"]
         [list boxes box]
            [def type json-attr box "boxType"]
            [def title json-attr box "boxTitle"]
@@ -39,9 +39,9 @@ resourcetype frontpage {
     related-content {
       ##
       [resource-props "."]
-      [if box-list-side]
+      [if related-content]
         [def document structured-document]
-        [def boxes json-attr document "properties.box-list-side"]
+        [def boxes json-attr document "properties.related-content"]
         [list boxes box]
            [def type json-attr box "boxType"]
            [def title json-attr box "boxTitle"]
@@ -86,10 +86,10 @@ resourcetype frontpage {
         <div id="vrtx-content">
           <h1><comp:title /></h1>
           <div id="vrtx-main-content">        
-            <comp:box-list-main />
+            <comp:main-content />
           </div>
           <div id="vrtx-related-content">
-            <comp:box-list-side />
+            <comp:related-content />
           </div>
         </div>
       </body>

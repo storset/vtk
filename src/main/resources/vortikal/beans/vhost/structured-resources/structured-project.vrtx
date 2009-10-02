@@ -54,7 +54,7 @@ resourcetype structured-project {
         
             [if caption]
               <div class="vrtx-introduction-image" [if style]style="[val style]"[endif]>
-                <img src="[val img-uri]" alt="[val caption unescaped "flattened"]"/>
+                <img src="[val img-uri]" alt="[val caption unescaped 'flattened']"/>
                 <div class="vrtx-imagetext">
                   <div class="vrtx-imagedescription">[val caption unescaped]</div>
                   [if img-author]
@@ -65,7 +65,7 @@ resourcetype structured-project {
             [else]
               [if img-author]
                 <div class="vrtx-introduction-image" [if style]style="[val style]"[endif]>
-                  <img src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
+                  <img src="[val img-uri]" alt="[localized 'introduction-image-alt']" />
                   <div class="vrtx-imagetext">
                     <span class="vrtx-photo">
                       <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val img-author]
@@ -73,14 +73,14 @@ resourcetype structured-project {
                   </div>
                 </div>
               [else]
-                <img class="vrtx-introduction-image" src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
+                <img class="vrtx-introduction-image" src="[val img-uri]" alt="[localized 'introduction-image-alt']" />
               [endif]
             [endif]
           [else]
-            <img class="vrtx-introduction-image" src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
+            <img class="vrtx-introduction-image" src="[val img-uri]" alt="[localized 'introduction-image-alt']" />
           [endif]
         [else]
-          <img class="vrtx-introduction-image" src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
+          <img class="vrtx-introduction-image" src="[val img-uri]" alt="[localized 'introduction-image-alt']" />
         [endif]
       [endif]
       ##

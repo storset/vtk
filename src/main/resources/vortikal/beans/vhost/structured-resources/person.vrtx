@@ -68,10 +68,10 @@ resourcetype person {
          [if (phone && phone != "") || (email && email != "")]
            <ul class="list">
              [if email && email != ""]
-               <li><h4>[localized "email"]</h4>:&nbsp;<a href="mailto:[val email]">[val email]</a></li>
+               <li><h3>[localized "email"]</h3>:&nbsp;<a href="mailto:[val email]">[val email]</a></li>
              [endif]
              [if phone && phone != ""]
-               <li><h4>[localized "phone"]</h4>:&nbsp;[val phone]</li>
+               <li><h3>[localized "phone"]</h3>:&nbsp;[val phone]</li>
              [endif]
            </ul>
          [endif]
@@ -79,7 +79,7 @@ resourcetype person {
          [if (alternativeVisitingAddress && alternativeVisitingAddress != "") || (visitingAddress && visitingAddress != "")] 
           
            [if alternativeVisitingAddress && alternativeVisitingAddress != ""]
-             <h4>[localized "userVisitingAddress"]</h4>
+             <h3>[localized "userVisitingAddress"]</h3>
              <ul class="list">
                [list alternativeVisitingAddress alternativeVisitingAddressLine]
                  [if alternativeVisitingAddressLine]<li>[val alternativeVisitingAddressLine]</li>[endif]
@@ -87,7 +87,7 @@ resourcetype person {
              </ul>
            [else]
              [if visitingAddress && visitingAddress != ""]
-               <h4>[localized "userVisitingAddress"]</h4>
+               <h3>[localized "userVisitingAddress"]</h3>
                <ul class="list">
                  [list visitingAddress visitingAddressLine]
                    [if visitingAddressLine]<li>[val visitingAddressLine]</li>[endif]
@@ -112,7 +112,7 @@ resourcetype person {
          [endif]
          
          [if postalAddress && postalAddress != ""]
-           <h4>[localized "postalAddress"]</h4>
+           <h3>[localized "postalAddress"]</h3>
            <ul class="list">
              [list postalAddress postalAddressLine]
                [if postalAddressLine]<li>[val postalAddressLine]</li>[endif]
@@ -124,7 +124,7 @@ resourcetype person {
       ##
     }
     
-    box-feeds {
+    feeds {
       ##
         [resource-props "."]
         [if rssFeeds]
@@ -281,7 +281,7 @@ resourcetype person {
           <comp:scientific-info />
         </div>
         <div id="vrtx-related-content">
-           <comp:box-feeds />
+           <comp:feeds />
            <comp:project-list />
         </div>
       </body>

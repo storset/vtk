@@ -86,13 +86,13 @@ resourcetype structured-project {
       ##
     }
     
-    box-contact-info {
+    contact-info {
        ##
        [resource-props "."]
        [def document structured-document]
        [def contactinfo json-attr document "properties.contactInfo"]   
        [if contactinfo]
-         <div class="narrow-box-borders">
+         <div class="vrtx-project-contactinfo">
            <h2>[localized "contactInfo"]</h2>
             [val contactinfo unescaped]
          </div>
@@ -100,7 +100,7 @@ resourcetype structured-project {
       ##
     }
     
-    box-feeds {
+    feeds {
       ##
       [resource-props "."]
       [if rssFeeds]
@@ -152,9 +152,9 @@ resourcetype structured-project {
             <resource:tags />
           </div>
           <div id="vrtx-related-content">
-            <comp:box-contact-info />
+            <comp:contact-info />
             <comp:person-list />
-            <comp:box-feeds />
+            <comp:feeds />
           </div>
         </div>
       </body>

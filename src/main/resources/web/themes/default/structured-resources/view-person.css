@@ -43,13 +43,13 @@ h1 {
   padding: 0;
 }
 
-.vrtx-person-contactinfo h4 {
+.vrtx-person-contactinfo h3 {
   margin: 5px 0;
   clear: left;
   float: left;
 }
 
-.vrtx-person-contactinfo ul.list h4 {
+.vrtx-person-contactinfo ul.list h3 {
   float: none !important;
   clear: none !important;
   display: inline;  

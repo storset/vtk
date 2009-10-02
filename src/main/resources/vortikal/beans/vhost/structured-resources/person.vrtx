@@ -304,7 +304,7 @@ resourcetype person {
 
   localization {
     username : (en : "Username", no : "Brukernavn", nn : "Brukarnamn"),
-    getExternalPersonInfo : (en : "Use personinformation registrated in UiO's payroll- and personalsystem", no : "Bruk personopplysninger registrert i UiO's lønns- og personalsystem", nn : "Bruk personopplysninger registrert i UiO's lønns- og personalsystem"),
+    getExternalPersonInfo : (en : "Use personinformation registrated in UiO's payroll- and personalsystem", no : "Bruk personopplysninger registrert i UiOs lønns- og personalsystem", nn : "Bruk personopplysninger registrert i UiOs lønns- og personalsystem"),
     firstName : (en : "First name", no : "Fornavn", nn : "Fornamn"),
     surname : (en : "Surname", no : "Etternavn", nn : "Etternamn"),
     postalAddress : (en : "Postal address", no : "Postadresse", nn : "Postadresse"),

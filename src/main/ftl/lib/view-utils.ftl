@@ -86,7 +86,7 @@
  * 
  * @param resource The resource to evaluate dates from
 -->
-<#macro displayTimeAndPlace resource title prefix="">
+<#macro displayTimeAndPlace resource title prefix="" timeAlone="">
 
   <#local start = vrtx.propValue(resource, "start-date", "long", prefix) />
   <#local startiso8601 = vrtx.propValue(resource, "start-date", "iso-8601", prefix) />
@@ -103,7 +103,12 @@
     <#local isoendhour = endiso8601?substring(11, 16) />
   </#if>
   
-  <span class="time-and-place"><@vrtx.msg code="article.time-and-place" />:</span>
+  <#if timeAlone == "on" && location == "">
+    <span class="time-and-place"><@vrtx.msg code="article.time" />:</span> 
+  <#else>
+    <span class="time-and-place"><@vrtx.msg code="article.time-and-place" />:</span>
+  </#if>
+  
   <span class="summary" style="display:none;">${title}</span>
   <#if start != "">
     <abbr class="dtstart" title="${startiso8601}">${start}</abbr><#rt />

@@ -15,4 +15,4 @@
 
 <#assign title = vrtx.propValue(resource, "title", "", "resource") />
 
-<@viewutils.displayTimeAndPlace resource title "resource" />
+<@viewutils.displayTimeAndPlace resource title "resource" "on" />

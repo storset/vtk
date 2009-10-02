@@ -57,13 +57,19 @@ h1 {
 
 .vrtx-person-image {
   float: left;
-  width: 100%;
+  max-width:100%;
   margin: 0 0 15px 0;
 }
 
 .vrtx-person-image img {
   margin: 0; /* margin to pressPhoto link */
   max-width: 100%;
+}
+
+#vrtx-press-photo-link {
+  clear: left;
+  float: left;
+  display:block;	
 }
 
 .vrtx-projects ul.vrtx-projects-list {

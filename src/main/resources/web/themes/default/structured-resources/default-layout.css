@@ -1,21 +1,18 @@
-#content,
 #vrtx-content {
   width: 100%;
   float: left;
 }
 
-#main-content,
 #vrtx-main-content-false,
 #vrtx-main-content-,
 #vrtx-main-content {
    float: left;
-   width: 555px; /* for now */
+   width: 66%; /* for now */
    position: relative;
 }
 
-#additional-content,
 #vrtx-related-content {
-  float: right;
+  float: left;
   width: 260px /* for now */
 }
 

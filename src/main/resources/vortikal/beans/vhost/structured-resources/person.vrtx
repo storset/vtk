@@ -63,7 +63,7 @@ resourcetype person {
       ##
        [resource-props "."]
        
-       <div class="vrtx-person-contactinfo box">
+       <div class="vrtx-person-contactinfo">
        
          [if (phone && phone != "") || (email && email != "")]
            <ul class="list">

@@ -51,7 +51,7 @@ div.vrtx-introduction-image div.vrtx-imagetext span.vrtx-photo {
    display: block; /* Make it same as vrtx-imagedescription */
    margin: 1em 0;
    padding: 0;
-   /* font-style: italic; */
+   font-style: italic;
 }
 
 div.vrtx-introduction-image div.vrtx-imagetext span.vrtx-photo span.vrtx-photo-prefix {

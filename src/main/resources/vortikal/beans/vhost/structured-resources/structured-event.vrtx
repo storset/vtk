@@ -28,13 +28,14 @@ resourcetype structured-event : structured-document {
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
         <resource:comments-feed-link />
-        <!-- begin css -->
-        <structured-article:css />
-        <!-- end css -->
         
-        <!-- begin javascript -->
+        <!-- begin article css -->
+        <structured-article:css />
+        <!-- end article css -->
+        
+        <!-- begin article js -->
         <structured-article:javascript />
-        <!-- end javascript -->
+        <!-- end article js -->
         
         <title><comp:title /></title>
       </head>

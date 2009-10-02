@@ -1,23 +1,12 @@
-.vrtx-projects,
-.vrtx-project-participants,
+#vrtx-related-content .vrtx-projects,
+#vrtx-related-content .vrtx-project-participants,
 #vrtx-related-content .vrtx-feed {
   border:1px solid #AAAAAA;
   clear:both;
   float:left;
   margin-bottom:15px;
   padding:5px 10px 10px;
-}
-
-#vrtx-related-content .vrtx-feed {
-  width: 238px; /* for now */
-}
-
-.wide-box-borders {
-  width:533px; /* for now */
-}
-
-.ultra-wide-box-borders {
-  width:808px; /* for now */
+  width:238px; /* for now */
 }
 
 .vrtx-box {
@@ -26,8 +15,8 @@
   border: none;
 }
 
-.vrtx-projects h2,
-.vrtx-project-participants h2,
+#vrtx-related-content .vrtx-projects h2,
+#vrtx-related-content .vrtx-project-participants h2,
 #vrtx-related-content .vrtx-feed a.feed-title {
   border-bottom:1px solid #AAAAAA;
   font-size:1.1em;

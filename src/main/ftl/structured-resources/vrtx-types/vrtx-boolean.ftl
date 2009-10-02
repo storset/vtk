@@ -3,7 +3,7 @@
 <div class="vrtx-radio ${classes}">
   <label for="${inputFieldName}">${title}</label>
   <div>
-      <input name="${inputFieldName}" id="${inputFieldName}-true" type="radio" value="true" <#if value == "true"> checked="checked" </#if> />
+      <input name="${inputFieldName}" id="${inputFieldName}-true" type="radio" value="true" <#if value == "true" || value == ""> checked="checked" </#if> />
       <label for="${inputFieldName}-true">${description.getVocabularyValue(locale,"true")}</label> 
       <input name="${inputFieldName}" id="${inputFieldName}-false" type="radio" value="false" <#if value != "true"> checked="checked" </#if> />
       <label for="${inputFieldName}-false">${description.getVocabularyValue(locale,"false")}</label> 

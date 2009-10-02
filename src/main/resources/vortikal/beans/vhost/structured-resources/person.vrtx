@@ -17,10 +17,9 @@ resourcetype person {
     picture : image_ref, 
     pressPhoto : image_ref,
     content : html noextract,
-    tags : string multiple,
     selectedPublications : html noextract,
     getExternalScientificInformation : boolean,
-    getExternalProjects : boolean,
+    getRelatedProjects : boolean,
     projects : json (projectName:string, projectUrl:string) multiple,
     rssFeeds : json (rssTitle:string, rssUrl:string) multiple
   }
@@ -30,7 +29,7 @@ resourcetype person {
     group additionalContactInformation (alternativeVisitingAddress, building, room, availableHours) (after contactInformation),
     group images (picture, pressPhoto) (after additionalContactInformation) horizontal,
     group combinedPublications (selectedPublications, getExternalScientificInformation) (after tags),
-    group combinedProjects (getExternalProjects, projects) (after combinedPublications),
+    group combinedProjects (getRelatedProjects, projects) (after combinedPublications),
     username (size[8]),
     content (after images),
     tags tooltip (en : "(tag1, tag2, ...)", no : "(emneord1, emneord2, ...)", nn : "(emneord1, emneord2, ...)"),
@@ -296,7 +295,7 @@ resourcetype person {
        no : ("true" = "Ja", "false" = "Nei"),
        nn : ("true" = "Ja", "false" = "Nei")
      },
-     getExternalProjects {
+     getRelatedProjects {
        en : ("true" = "Yes", "false" = "No"),
        no : ("true" = "Ja", "false" = "Nei"),
        nn : ("true" = "Ja", "false" = "Nei")
@@ -327,7 +326,7 @@ resourcetype person {
     selectedPublications : (en : "Selected publications", no : "Utvalgte publikasjoner", nn : "Utvalgte publikasjoner"),
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
     content : (en : "Content", no :"Innhold", nn:"Innhold"),
-    getExternalProjects : (en : "Show projects published on UiO.no where your username is registrated as participant",
+    getRelatedProjects : (en : "Show projects published on UiO.no where your username is registrated as participant",
                            no :"Vis prosjekter publisert på UiO.no hvor ditt brukernavn er registrert som deltager",
                            nn:"Vis prosjekter publisert på UiO.no hvor ditt brukernavn er registrert som deltager"),
     projects : (en : "Projects",no : "Prosjekter", nn :"Prosjektar"),

@@ -267,9 +267,9 @@ resourcetype person {
       </head>
       <body>
       <div id="vrtx-content">
-        <h1><comp:title /></h1>
-        <comp:position />
         <div id="vrtx-main-content">
+          <h1><comp:title /></h1>
+          <comp:position />
           <div id="vrtx-person-contactinfo-image-wrapper">
             <comp:contact-information />
             <div class="vrtx-person-image-pressphoto-wrapper">

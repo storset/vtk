@@ -40,8 +40,8 @@ resourcetype structured-event : structured-document {
       </head>
       <body>
        <div id="vrtx-content">
-        <h1><comp:title /></h1>
          <div id="vrtx-main-content-true">
+            <h1><comp:title /></h1>
             <comp:introduction-image />
             <comp:introduction />
             <div class="vrtx-byline">

@@ -84,7 +84,7 @@ resourcetype structured-article : structured-document {
             <resource:comments />
             <div class="vrtx-social-components"
               <resource:email-friend />
-              <comp:share />
+              <resource:share-at />
             </div>
           </div>
           <comp:related-content />

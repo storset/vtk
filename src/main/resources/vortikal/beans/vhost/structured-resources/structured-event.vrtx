@@ -52,7 +52,7 @@ resourcetype structured-event : structured-document {
             <resource:tags />
             <div class="vrtx-social-components"
               <resource:email-friend />
-              <comp:share />
+              <resource:share-at />
             </div>
           </div>
        </div>

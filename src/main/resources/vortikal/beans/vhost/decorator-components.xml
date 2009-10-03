@@ -154,7 +154,8 @@
     <property name="attributes">
       <map>
 	   <entry key="url" value="${jsBaseURL}/toc.js" /> 
-        <!-- entry key="url" value="${decorating.tableOfContentsComponent.javascript}" / -->
+        <!-- entry key="url" value="${decorating.tableOfContentsComponent.javascript}" /
+-->
       </map>
     </property>
   </bean>
@@ -235,7 +236,23 @@
     <property name="tagElementsProvider" ref="tags.tagElementsProvider" />
   </bean>
 
+  <bean id="decorating.shareAtComponent"
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.resourceNamespace" />
+    <property name="name" value="share-at" />
+    <property name="description" value="Inserts share component" />
+    <property name="view" ref="decorating.shareAtComponent.view" />
+  </bean>
 
+  <bean name="decorating.shareAtComponent.view" parent="freemarkerView">
+    <property name="url" value="layouts/share-at.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+      </list>
+    </property>
+  </bean>
+  
   <bean id="decorating.resourcePropertyComponent" parent="requestLocalRepositoryAware"
         class="org.vortikal.web.decorating.components.ResourcePropertiesDecoratorComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />

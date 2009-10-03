@@ -143,7 +143,7 @@ resourcetype structured-project {
         
         <title><json:field select="name" /></title>
       </head>
-      <body>
+      <body class="vrtx-structured-project">
         <div id="vrtx-content">
           <div id="vrtx-main-content">
             <h1><json:field select="name" /></h1>

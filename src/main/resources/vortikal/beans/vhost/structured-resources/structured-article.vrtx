@@ -69,7 +69,7 @@ resourcetype structured-article : structured-document {
         
         <title><comp:title /></title>
       </head>
-      <body>
+      <body class="vrtx-structured-article">
         <div id="vrtx-content"> 
           <div id="vrtx-main-content-${resource:property id=[resource:hideAdditionalContent]}">
             <h1><comp:title /></h1>

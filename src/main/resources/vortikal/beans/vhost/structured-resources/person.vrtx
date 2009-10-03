@@ -267,7 +267,7 @@ resourcetype person {
         
         <title><comp:title /></title>
       </head>
-      <body>
+      <body class="vrtx-person">
       <div id="vrtx-content">
         <div id="vrtx-main-content">
           <h1><comp:title /></h1>

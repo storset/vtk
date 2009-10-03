@@ -2,7 +2,7 @@
 <#--
   - File: share-at.ftl
   - 
-  - Description: Share article and event on social websites
+  - Description: Share document on social websites
   - 
   - Required model data:
   -   resource

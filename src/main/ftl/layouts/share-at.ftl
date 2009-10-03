@@ -34,9 +34,9 @@
         <span><a href="#share" class="close-toolbox-send-share" onclick="share();"><@vrtx.msg code="decorating.shareAtComponent.close" default="Close" /></a></span>
       </div>
       <ul>
-        <li><a href="http://www.facebook.com/share.php?u=${currentURI}" class="facebook">Facebook</a></li>
-        <li><a class="nettby" href="http://www.nettby.no/user/edit_link.php?name=${title}&amp;url=${currentURI}&amp;description=${description}">Nettby</a></li>
-        <li><a id="uri" href="http://del.icio.us/post?url=${currentURI}&amp;title=${title}" class="delicious">del.icio.us</a></li>
+        <li><a href="http://www.facebook.com/share.php?u=http://${repositoryId}${currentURI}" class="facebook">Facebook</a></li>
+        <li><a class="nettby" href="http://www.nettby.no/user/edit_link.php?name=${title}&amp;url=http://${repositoryId}${currentURI}&amp;description=${description}">Nettby</a></li>
+        <li><a id="uri" href="http://del.icio.us/post?url=http://${repositoryId}${currentURI}&amp;title=${title}" class="delicious">del.icio.us</a></li>
      </ul>
    </div>
   </div>

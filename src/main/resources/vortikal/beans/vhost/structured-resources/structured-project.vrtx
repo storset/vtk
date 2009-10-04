@@ -93,7 +93,7 @@ resourcetype structured-project {
        [def contactinfo json-attr document "properties.contactInfo"]   
        [if contactinfo]
          <div class="vrtx-project-contactinfo">
-           <h2>[localized "contactInfo"]</h2>
+           <h2>[localized "contactInfoView"]</h2>
             [val contactinfo unescaped]
          </div>
        [endif]
@@ -184,12 +184,13 @@ resourcetype structured-project {
     participants : (en : "Participants (without username at UiO)", no : "Deltakere (uten brukernavn ved UiO)", nn : "Deltakarar (uten brukernamn ved UiO)"),
     participantName : (en : "Name",no : "Navn", nn :"Namn"),
     participantUrl : (en : "Webaddress",no : "Webadresse", nn :"Webadresse"),
-    rssFeeds : (en : "Subscribe to RSS-feeds",no : "Abonner på RSS-strømmer", nn :"Abonner på RSS-strømmer"),
+    rssFeeds : (en : "Subscribe to RSS-feeds",no : "Abonner på RSS-strømmer", nn :"Abonner på RSS-strømmar"),
     rssTitle : (en : "Title",no : "Tittel", nn : "Tittel"),
     rssUrl : (en : "Webaddress",no : "Webadresse", nn :"Webadresse"),
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
     content : (en : "Content", no :"Innhold",nn : "Innhold"),
     contactInfo : (en : "Contact information", no : "Kontaktinformasjon", nn : "Kontaktinformasjon"),
+    contactInfoView : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
     header : (en : "Edit project", no : "Rediger prosjekt", nn : "Rediger prosjekt") 
   }
 }

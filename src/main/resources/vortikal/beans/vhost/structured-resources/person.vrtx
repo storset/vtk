@@ -17,8 +17,8 @@ resourcetype person {
     picture : image_ref, 
     pressPhoto : image_ref,
     content : html noextract,
-    selectedPublications : html noextract,
     getExternalScientificInformation : boolean,
+    selectedPublications : html noextract,
     getRelatedProjects : boolean,
     projects : json (projectName:string, projectUrl:string) multiple,
     rssFeeds : json (rssTitle:string, rssUrl:string) multiple
@@ -28,7 +28,7 @@ resourcetype person {
     group contactInformation (getExternalPersonInfo, firstName, surname, position, phone, email, postalAddress, visitingAddress) (after username),
     group additionalContactInformation (alternativeVisitingAddress, building, room, availableHours) (after contactInformation),
     group images (picture, pressPhoto) (after additionalContactInformation) horizontal,
-    group combinedPublications (selectedPublications, getExternalScientificInformation) (after tags),
+    group combinedPublications (getExternalScientificInformation, selectedPublications) (after tags),
     group combinedProjects (getRelatedProjects, projects) (after combinedPublications),
     username (size[8]),
     content (after images),
@@ -158,9 +158,10 @@ resourcetype person {
         
           [if pixel-width]
             [def style concat "width:" pixel-width "px"]
-            [def person-name resource-prop "." "firstName"]
-            [if person-name]
-              <img class="vrtx-person-image" src="[val img-uri]" alt="[localized 'picture-alt-found']&nbsp;[val person-name]" />
+            [def person-firstname resource-prop "." "firstName"]
+            [def person-surname resource-prop "." "surname"]
+            [if person-firstname || person-surname]
+              <img class="vrtx-person-image" src="[val img-uri]" alt="[localized 'picture-alt-found']&nbsp;[if person-firstname][val person-firstname][endif]&nbsp;[if person-surname][val person-surname][endif]" />
             [else]
               <img class="vrtx-person-image" src="[val img-uri]" alt="[localized 'picture-alt-found']&nbsp;[localized 'picture-alt-unknown-person']" />
             [endif]
@@ -329,7 +330,7 @@ resourcetype person {
     picture : (en : "Webpage image", no : "Nettsidebilde", nn : "Nettsidebilete"),
     picture-alt : (en : "Image", no : "Bilde", nn : "Bilde"),
     picture-alt-found : (en : "Image of", no : "Bilde av", nn : "Bilete av"),
-    picture-alt-unknown-person : (en : "unknown", no : "ukjent", nn : "ukjend"),
+    picture-alt-unknown-person : (en : "person", no : "person", nn : "person"),
     getExternalScientificInformation : (en : "Show publications rapported in Frida", no : "Vis publikasjoner rapportert i Frida", nn : "Vis publikasjoner rapportert i Frida"),
     scientificInformation : (en : "Publications", no : "Publikasjoner", nn : "Publikasjoner"),
     selectedPublications : (en : "Selected publications", no : "Utvalgte publikasjoner", nn : "Utvalgte publikasjoner"),
@@ -341,7 +342,7 @@ resourcetype person {
     projects : (en : "Other projects",no : "Andre prosjekter", nn :"Andre prosjektar"),
     projectName : (en : "Project name", no : "Prosjektnavn", nn :"Prosjektnamn"), 
     projectUrl : (en : "Web address", no : "Webadresse", nn :"Webadresse"),
-    rssFeeds : (en : "Show content from RSS-streams", no : "Vis innhold fra RSS-strømmer", nn :"Vis innhald frå RSS-strømmar"),
+    rssFeeds : (en : "Show content from RSS-streams (from blog, Twitter or alike)", no : "Vis innhold fra RSS-strømmer (fra blogg, Twitter e.l.)", nn :"Vis innhald frå RSS-strømmar (frå blogg, Twitter e.l.)"),
     rssTitle : (en : "Title",no : "Tittel", nn : "Tittel"),
     rssUrl : (en : "Web address", no : "Webadresse", nn :"Webadresse"),
     pressPhoto : (en : "Press photo", no : "Pressebilde", nn : "Pressebilete"),

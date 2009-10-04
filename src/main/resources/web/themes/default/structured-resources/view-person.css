@@ -48,6 +48,7 @@ h1 {
   margin: 5px 0;
   clear: left;
   float: left;
+  white-space: nowrap;
 }
 
 .vrtx-person-contactinfo ul.list h3 {

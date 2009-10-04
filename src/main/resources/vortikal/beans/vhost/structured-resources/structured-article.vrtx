@@ -106,7 +106,7 @@ resourcetype structured-article : structured-document {
     by-line : (en : "By", no : "Av", nn : "Av"),
     published : (en : "Published", no : "Publisert", nn : "Publisert"),
     download-media-file : (en : "Download media file", no : "Last ned mediefil", nn : "Last ned mediefil"),
-    media: (en : "Media file", no : "Mediefil", nn : "Mediefil"),
+    media: (en : "Mediafile (audio or video)", no : "Mediefil (lyd eller video)", nn : "Mediefil (lyd eller video)"),
     author: (en : "Author", no : "Forfatter", nn : "Forfattar"),
     published-date: (en : "Publishing time", no : "Publiseringstidspunkt", nn : "Publiseringstidspunkt"),
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),

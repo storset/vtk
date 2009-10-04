@@ -33,9 +33,14 @@ form > div {
 }
 
 .tooltip {
-    display: inline;
+    float: left;
     font-size: 0.75em;
     padding-left:0.1em;
+    line-height:1.7em;
+}
+
+.vrtx-string input {
+  float: left;	
 }
 
 .vrtx-grouped,.vrtx-grouped-vertical,.vrtx-grouped-horizontal,.vrtx-media-ref,.vrtx-simple-html,

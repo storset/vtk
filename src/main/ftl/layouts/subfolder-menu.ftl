@@ -61,7 +61,7 @@
     </#list>
   </ul>
   
-  <#if currentCount == subFolderMenu.resultSets?size>
+  <#if subFolderMenu.groupResultSetsBy?exists && subFolderMenu.groupResultSetsBy?number &gt; 0 && currentCount == subFolderMenu.resultSets?size>
      </div>
   </#if>
 </#macro>

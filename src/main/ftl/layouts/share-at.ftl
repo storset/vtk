@@ -17,8 +17,8 @@
 <#assign title = vrtx.propValue(resource, "title", "") />
 <#assign introduction = vrtx.propValue(resource, "introduction", "", "resource") />
 
-<#if introduction?string?length &gt; 100>
-  <#assign introduction = introduction?substring(0, 100) + "..." />  
+<#if introduction?string?length &gt; 250>
+  <#assign introduction = introduction?substring(0, 250) + "..." />  
 </#if>
 
 <#assign description>

@@ -242,7 +242,8 @@ input.vrtx-remove-button {
     width: 98% !important;
 }
 
-.additional-content iframe {
+.additional-content iframe,
+.selectedPublications iframe {
     height: 210px;
 }
 

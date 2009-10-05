@@ -7,8 +7,6 @@
   float: left;
 }
 
-#vrtx-main-content-false,
-#vrtx-main-content-,
 #vrtx-main-content {
   float: left;
   width: 63%;
@@ -16,14 +14,13 @@
   margin-right: 3%;
 }
 
-#vrtx-related-content {
-  float: left;
-  width: 33%;
+#vrtx-main-content.vrtx-hide-additional-content-true {
+  width: 100%;
 }
 
-#vrtx-main-content-true {
+#vrtx-additonal-content {
   float: left;
-  width: 100%;
+  width: 33%;
 }
 
 .vrtx-social-components {

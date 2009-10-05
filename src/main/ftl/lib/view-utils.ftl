@@ -108,10 +108,19 @@
   <#else>
     <span class="time-and-place"><@vrtx.msg code="article.time-and-place" />:</span>
   </#if>
-  
+
   <span class="summary" style="display:none;">${title}</span>
   <#if start != "">
-    <abbr class="dtstart" title="${startiso8601}">${start}</abbr><#rt />
+    <#if prefix = "resource"> <#-- Fix for new documenttypes -->
+      <#if start?string?last_index_of("00:00") == -1>
+        <abbr class="dtstart" title="${startiso8601}">${start}</abbr><#rt />
+      <#else>
+        <#local start = start?string?split("00:00")[0] />
+        <abbr class="dtstart" title="${startiso8601}">${start?trim}</abbr><#rt />
+      </#if>
+    <#else>
+      <abbr class="dtstart" title="${startiso8601}">${start}</abbr><#rt />
+    </#if>
   </#if>
   <#if end != "">
     <#if startshort == endshort>

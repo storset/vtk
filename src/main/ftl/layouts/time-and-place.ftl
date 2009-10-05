@@ -13,6 +13,13 @@
 
 <#assign resource = resourceContext.currentResource />
 
+<#assign start = vrtx.propValue(resource, "start-date", "long", "resource") />
+<#assign end = vrtx.propValue(resource, "end-date", "long", "resource") />
+<#assign location = vrtx.propValue(resource, "location", "", "resource") />
 <#assign title = vrtx.propValue(resource, "title", "", "resource") />
 
-<@viewutils.displayTimeAndPlace resource title "resource" "on" />
+<#if start != "" || end != "" || location != "">
+  <div class="vevent">
+    <#t /><@viewutils.displayTimeAndPlace resource title "resource" "on" />
+  </div>
+</#if>

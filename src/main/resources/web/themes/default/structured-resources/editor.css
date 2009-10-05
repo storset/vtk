@@ -12,6 +12,13 @@
   margin-top: 0;
 }
 
+#contents h2 #help-link {
+  float:right;
+  font-size:0.7em;
+  font-weight:100;
+  padding-top:0.5em;
+}
+
 .header {
   font-size: 1em;
   width: 100%;

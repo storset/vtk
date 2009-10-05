@@ -53,7 +53,7 @@
 <#assign locale = springMacroRequestContext.getLocale() />
 
 <#assign header = form.resource.getLocalizedMsg("header", locale, null) />
-<h2>${header}</h2>
+<h2>${header}<a id="help-link" href="#">Hjelp til webredigering</a></h2>
 
 <form action="${form.submitURL?html}" method="post">
 

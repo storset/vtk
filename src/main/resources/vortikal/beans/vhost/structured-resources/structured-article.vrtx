@@ -4,14 +4,14 @@ resourcetype structured-article : structured-document {
     author : string,
     media : media_ref,
     tags : string multiple overrides tags,
-    hideAdditionalContent : boolean,
-    additional-content : html noextract
+    additional-content : html noextract,
+    hideAdditionalContent : boolean
   }
 
   edit-rules {
     caption (size[small]),
     group introImageAndCaption (picture, caption) (after introduction) vertical,
-    group additionalContent (hideAdditionalContent, additional-content) (after tags),
+    group additionalContent (additional-content, hideAdditionalContent) (after tags),
     author (after introImageAndCaption),
     title (size[large]),
     tags tooltip (en : "(tag1, tag2, ...)", no : "(emneord1, emneord2, ...)", nn : "(emneord1, emneord2, ...)"),
@@ -19,7 +19,6 @@ resourcetype structured-article : structured-document {
   }
 
   scripts {
-    hideAdditionalContent show-hide onclick (additional-content),
     tags autocomplete (minChars : "1")
   }
 
@@ -42,10 +41,15 @@ resourcetype structured-article : structured-document {
       [def theAdditional-content json-attr document "properties.additional-content"]
       
       [if (theHideAdditionalContent != "true")]
-        
         <div id="vrtx-related-content">
-          [val theAdditional-content unescaped]
+          [if theAdditional-content]
+            [val theAdditional-content unescaped]
+          [endif]
         </div>
+      [else]
+        [if theAdditional-content]
+          [val theAdditional-content unescaped]
+        [endif]
       [endif]
       ##
     }
@@ -110,7 +114,7 @@ resourcetype structured-article : structured-document {
     author: (en : "Author", no : "Forfatter", nn : "Forfattar"),
     published-date: (en : "Publishing time", no : "Publiseringstidspunkt", nn : "Publiseringstidspunkt"),
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
-    hideAdditionalContent : (en : "Hide related content", no : "Skjul relatert innhold", nn : "Skjul relatert innhold"),
+    hideAdditionalContent : (en : "Hide right-column", no : "Skjul høyre kolonne", nn : "Skjul høyre kolonne"),
     additional-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold"),
     additionalContent : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold"),
     header : (en : "Edit article", no : "Rediger artikkel", nn : "Rediger artikkel")

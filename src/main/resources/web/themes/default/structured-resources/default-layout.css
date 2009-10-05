@@ -35,12 +35,21 @@
   padding: 10px 0;
   font-size: 0.9em;
   text-align: left;
+}
+
+.vrtx-social-components a.vrtx-email-friend {
+  float:left;
+  padding:0 5px 0 0;
+}
+
+#vrtx-share-component-wrapper {
   position: relative;
+  display: inline;
 }
 
 #vrtx-share-component {
   position: absolute;
-  bottom:-15px;
+  bottom:-2em;
   right:0;
   text-align: left;
 }

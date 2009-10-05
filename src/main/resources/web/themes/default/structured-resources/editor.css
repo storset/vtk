@@ -10,13 +10,15 @@
   font-size: 1.1em;
   margin-bottom: 20px;
   margin-top: 0;
+  position: relative;
 }
 
 #contents h2 #help-link {
-  float:right;
   font-size:0.7em;
   font-weight:100;
-  padding-top:0.5em;
+  position:absolute;
+  right:0;
+  top:2.5em;
 }
 
 .header {

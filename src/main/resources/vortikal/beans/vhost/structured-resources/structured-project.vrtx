@@ -152,7 +152,7 @@ resourcetype structured-project {
             <json:field select="content" />
             <resource:tags />
           </div>
-          <div id="vrtx-related-content">
+          <div id="vrtx-additional-content">
             <comp:contact-info />
             <comp:person-list />
             <comp:feeds />

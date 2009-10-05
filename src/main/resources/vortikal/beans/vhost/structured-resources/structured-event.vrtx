@@ -41,7 +41,7 @@ resourcetype structured-event : structured-document {
       </head>
       <body class="vrtx-structured-event">
        <div id="vrtx-content">
-         <div id="vrtx-main-content-true">
+         <div id="vrtx-main-content">
             <h1><comp:title /></h1>
             <comp:introduction-image />
             <comp:introduction />

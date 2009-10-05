@@ -89,7 +89,7 @@ resourcetype frontpage {
           <div id="vrtx-main-content">        
             <comp:main-content />
           </div>
-          <div id="vrtx-related-content">
+          <div id="vrtx-additional-content">
             <comp:related-content />
           </div>
         </div>

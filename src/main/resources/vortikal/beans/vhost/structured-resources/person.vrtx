@@ -283,7 +283,7 @@ resourcetype person {
           <comp:tags />
           <comp:scientific-info />
         </div>
-        <div id="vrtx-related-content">
+        <div id="vrtx-additional-content">
            <comp:feeds />
            <comp:project-list />
         </div>

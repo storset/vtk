@@ -4,14 +4,14 @@ resourcetype structured-article : structured-document {
     author : string,
     media : media_ref,
     tags : string multiple overrides tags,
-    additional-content : html noextract,
+    related-content : html noextract,
     hideAdditionalContent : boolean
   }
 
   edit-rules {
     caption (size[small]),
     group introImageAndCaption (picture, caption) (after introduction) vertical,
-    group additionalContent (additional-content, hideAdditionalContent) (after tags),
+    group relatedContent (related-content, hideAdditionalContent) (after tags),
     author (after introImageAndCaption),
     title (size[large]),
     tags tooltip (en : "(tag1, tag2, ...)", no : "(emneord1, emneord2, ...)", nn : "(emneord1, emneord2, ...)"),
@@ -37,19 +37,23 @@ resourcetype structured-article : structured-document {
       ##
       [resource-props "."]
       [def document structured-document]
-      [def theHideAdditionalContent json-attr document "properties.hideAdditionalContent"]
-      [def theAdditional-content json-attr document "properties.additional-content"]
+      [def thehideAdditionalContent json-attr document "properties.hideAdditionalContent"]
+      [def theRelated-content json-attr document "properties.related-content"]
       
-      [if (theHideAdditionalContent != "true")]
-        <div id="vrtx-related-content">
-          [if theAdditional-content]
-            [val theAdditional-content unescaped]
+      [if (thehideAdditionalContent != "true")]
+        <div id="vrtx-additional-content">
+          [if theRelated-content]
+            <div id="vrtx-related-content">
+              [val theRelated-content unescaped]
+            </div>
           [endif]
-        </div>
+        </div> 
       [else]
-        [if theAdditional-content]
-          [val theAdditional-content unescaped]
-        [endif]
+          [if theRelated-content]
+            <div id="vrtx-related-content">
+              [val theRelated-content unescaped]
+            </div>
+          [endif]
       [endif]
       ##
     }
@@ -75,7 +79,7 @@ resourcetype structured-article : structured-document {
       </head>
       <body class="vrtx-structured-article">
         <div id="vrtx-content"> 
-          <div id="vrtx-main-content-${resource:property id=[resource:hideAdditionalContent]}">
+          <div id="vrtx-main-content" class="vrtx-hide-additional-content-${resource:property id=[resource:hideAdditionalContent]}">
             <h1><comp:title /></h1>
             <comp:introduction-image />
             <comp:introduction />
@@ -115,8 +119,8 @@ resourcetype structured-article : structured-document {
     published-date: (en : "Publishing time", no : "Publiseringstidspunkt", nn : "Publiseringstidspunkt"),
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
     hideAdditionalContent : (en : "Hide right-column", no : "Skjul høyre kolonne", nn : "Skjul høyre kolonne"),
-    additional-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold"),
-    additionalContent : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold"),
+    related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold"),
+    relatedContent : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold"),
     header : (en : "Edit article", no : "Rediger artikkel", nn : "Rediger artikkel")
   }
 }

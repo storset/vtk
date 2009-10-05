@@ -246,12 +246,12 @@ input.vrtx-remove-button {
     width: 98% !important;
 }
 
-.additional-content iframe,
+.related-content iframe,
 .selectedPublications iframe {
     height: 210px;
 }
 
-.additional-content label,.visitingAddress {
+.related-content label,.visitingAddress {
     display: none !important;
 }
 

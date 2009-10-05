@@ -136,7 +136,6 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
             	locale = this.defaultLocale;
             }
         } catch (Throwable t) { 
-            locale = this.defaultLocale;
             return this.defaultLocale;
         }
 

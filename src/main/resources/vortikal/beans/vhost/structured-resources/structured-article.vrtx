@@ -90,12 +90,12 @@ resourcetype structured-article : structured-document {
             <json:field select="content" />
             <resource:tags />
             <resource:comments />
-            <div class="vrtx-social-components"
-              <resource:email-friend />
-              <resource:share-at />
-            </div>
           </div>
           <comp:related-content />
+          <div class="vrtx-social-components"
+             <resource:email-friend />
+             <resource:share-at />
+          </div>
         </div>
       </body>
     </html>

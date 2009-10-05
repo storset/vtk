@@ -133,7 +133,17 @@
       <#else>
         - 
       </#if>
-      <#t /><abbr class="dtend" title="${endiso8601}">${end}</abbr><#rt />
+      
+      <#if prefix = "resource"> <#-- Fix for new documenttypes -->
+        <#if end?string?last_index_of("00:00") == -1>
+          <abbr class="dtstart" title="${endiso8601}">${end}</abbr><#rt />
+        <#else>
+          <#local end = end?string?split("00:00")[0] />
+          <abbr class="dtstart" title="${endiso8601}">${end?trim}</abbr><#rt />
+        </#if>
+      <#else>
+        <#t /><abbr class="dtend" title="${endiso8601}">${end}</abbr><#rt />
+      </#if>
     </#if>
   </#if>
   <#t />

@@ -37,12 +37,12 @@ import org.vortikal.repository.Path;
 /**
  * Generic auto-complete data provider/query interface of sorts.
  * 
+ * XXX Really generic?
  */
 public interface VocabularyDataProvider<T> {
 
     /**
-     * Get list of prefix completions (complete words starting with prefix) for
-     * something.
+     * Get list of prefix completions (complete words starting with prefix) for something.
      * 
      * @param contextUri
      * @param prefix
@@ -50,6 +50,7 @@ public interface VocabularyDataProvider<T> {
      * @return
      */
     public List<T> getPrefixCompletions(String prefix, Path contextUri, String token);
+
 
     /**
      * Get list of all words

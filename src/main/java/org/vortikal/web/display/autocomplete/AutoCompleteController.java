@@ -39,26 +39,27 @@ import org.vortikal.repository.Path;
 import org.vortikal.security.SecurityContext;
 
 public abstract class AutoCompleteController implements Controller {
-    
+
     protected final static String SUGGESTION_DELIMITER = "\n";
     protected final static String SUGGESTION_SEPERATOR = ";";
-    private final static String PREFIX_PARAM = "q";
-    
-    protected abstract String getAutoCompleteSuggestions(String prefix, Path contextUri, String securityToken);
+    private final static String QUERY_PARAM = "q";
 
-    public ModelAndView handleRequest(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
+
+    protected abstract String getAutoCompleteSuggestions(String query, Path contextUri, String securityToken);
+
+
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         String token = SecurityContext.getSecurityContext().getToken();
 
-        String prefix = request.getParameter(PREFIX_PARAM);
-        if (prefix == null) {
+        String query = request.getParameter(QUERY_PARAM);
+        if (query == null) {
             return null;
         }
-        
-        String autoCompleteSuggestions = this.getAutoCompleteSuggestions(prefix, null, token);
+
+        String autoCompleteSuggestions = this.getAutoCompleteSuggestions(query, null, token);
         autoCompleteSuggestions = autoCompleteSuggestions == null ? "" : autoCompleteSuggestions;
-        
+
         response.setContentType("text/plain;charset=utf-8");
         response.getWriter().print(autoCompleteSuggestions);
 

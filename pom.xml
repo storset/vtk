@@ -154,8 +154,8 @@
                 </includes>
             </resource>
             <resource>
-                <directory>src/main/ext/FCKeditor/fckeditor-build-2.6.4.1</directory>
-                <targetPath>web/fckeditor-build-2.6.4.1</targetPath>
+                <directory>src/main/ext/FCKeditor/fckeditor-build-2.6.5</directory>
+                <targetPath>web/fckeditor-build-2.6.5</targetPath>
             </resource>
         </resources>
         <testResources>

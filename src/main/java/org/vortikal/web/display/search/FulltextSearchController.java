@@ -30,7 +30,6 @@
  */
 package org.vortikal.web.display.search;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,24 +51,24 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
-
 /**
- * Controller that performs a fulltext search and returns a
- * configurable view name.
- *
- * <p>Configurable properties:
+ * Controller that performs a fulltext search and returns a configurable view name.
+ * 
+ * <p>
+ * Configurable properties:
  * <ul>
- *   <li><code>viewName</code> - the name of the view to return
- *   <li><code>searcher</code> - the {@link Searcher}
- *   <li><code>redirectViewName</code> - the name of an optional redirect view
- *   <li><code>hostName</code> - optional name for the root node (to be displayed in the title)
+ * <li><code>viewName</code> - the name of the view to return
+ * <li><code>searcher</code> - the {@link Searcher}
+ * <li><code>redirectViewName</code> - the name of an optional redirect view
+ * <li><code>hostName</code> - optional name for the root node (to be displayed in the title)
  * </ul>
- *
- * <p>Model data provided:
+ * 
+ * <p>
+ * Model data provided:
  * <ul>
- *   <li><code>search</code>
+ * <li><code>search</code>
  * </ul>
- *
+ * 
  */
 public class FulltextSearchController implements Controller {
 
@@ -80,12 +79,12 @@ public class FulltextSearchController implements Controller {
     private int maxResults = 500;
     private String hostName;
     private boolean servesWebRoot = true;
-    
-    
+
+
     public void setSearcher(FulltextSearcher searcher) {
         this.searcher = searcher;
     }
-    
+
 
     public void setViewName(String viewName) {
         this.viewName = viewName;
@@ -95,11 +94,10 @@ public class FulltextSearchController implements Controller {
     public void setPageSize(int pageSize) {
         this.pageSize = pageSize;
     }
-    
 
-    public ModelAndView handleRequest(HttpServletRequest request,
-                                      HttpServletResponse response) throws Exception {
-        
+
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
         Map<String, Object> model = new HashMap<String, Object>();
 
         String token = SecurityContext.getSecurityContext().getToken();
@@ -108,8 +106,8 @@ public class FulltextSearchController implements Controller {
             if (token == null) {
                 // The user wants to login
                 throw new AuthenticationException();
-            } 
-            
+            }
+
             if (this.redirectViewName != null) {
                 // Should send redirect without login parameter
                 URL url = URL.create(request);
@@ -118,31 +116,34 @@ public class FulltextSearchController implements Controller {
                 return new ModelAndView(this.redirectViewName, model);
             }
         }
-        
+
         Map<String, Object> searchModel = new HashMap<String, Object>();
         model.put("search", searchModel);
-        
+
         String query = request.getParameter("query");
+
+        System.out.println("Forespørsel: " + query);
 
         Service currentService = RequestContext.getRequestContext().getService();
         Path resourceURI = RequestContext.getRequestContext().getResourceURI();
-        
+
         // Search service base URL
         URL searchURL = currentService.constructURL(resourceURI);
         searchModel.put("url", searchURL);
 
-        // Add URL to host/root scoped search if we are serving web root 
+        // Add URL to host/root scoped search if we are serving web root
         if (this.servesWebRoot) {
             URL rootScopeSearchUrl = new URL(searchURL);
             rootScopeSearchUrl.setPath(Path.ROOT);
-            if (query != null) rootScopeSearchUrl.addParameter("query", query);
+            if (query != null)
+                rootScopeSearchUrl.addParameter("query", query);
             searchModel.put("rootScopeSearchUrl", rootScopeSearchUrl);
         }
 
         if (this.hostName != null) {
             searchModel.put("hostName", this.hostName);
         }
-        
+
         if (query == null || query.length() == 0) {
             return new ModelAndView(this.viewName, model);
         }
@@ -161,7 +162,7 @@ public class FulltextSearchController implements Controller {
         searchModel.put("totalHits", resultSize);
         searchModel.put("maxResults", (resultSize == this.maxResults));
 
-        // Check if last result of the current page exists 
+        // Check if last result of the current page exists
         if (endIdx > resultSize) {
             endIdx = resultSize;
         }
@@ -169,7 +170,7 @@ public class FulltextSearchController implements Controller {
         // Since endIdx might have been repositioned above, we need to make sure
         // startIdx and page is sane.
         if (startIdx >= endIdx) {
-            // In case of insane page number, don't roll back startIdx a 
+            // In case of insane page number, don't roll back startIdx a
             // whole page, just roll back to start of the last result page.
             if (endIdx % this.pageSize == 0) {
                 startIdx = Math.max(endIdx - this.pageSize, 0);
@@ -183,7 +184,7 @@ public class FulltextSearchController implements Controller {
         // The results to display on current page:
         List<PropertySet> displayResults = results.subList(startIdx, endIdx);
         searchModel.put("results", displayResults);
-        searchModel.put("currentPage", currentPage+1);
+        searchModel.put("currentPage", currentPage + 1);
 
         // Generate links for paging (pager bar below results)
         if (resultSize > this.pageSize) {
@@ -191,46 +192,50 @@ public class FulltextSearchController implements Controller {
             if (resultSize % this.pageSize > 0) {
                 ++numPages;
             }
-            
+
             if (currentPage > 0) {
                 int prevPage = currentPage - 1;
                 URL prevLink = currentService.constructURL(resourceURI);
-                prevLink.removeParameter("query"); prevLink.addParameter("query", query);
-                prevLink.removeParameter("page"); prevLink.addParameter("page", String.valueOf(prevPage+1));
+                prevLink.removeParameter("query");
+                prevLink.addParameter("query", query);
+                prevLink.removeParameter("page");
+                prevLink.addParameter("page", String.valueOf(prevPage + 1));
                 searchModel.put("prevLink", prevLink);
             }
-            
+
             List<URL> pageLinks = new ArrayList<URL>();
-            for (int i=0; i<numPages; i++) {
+            for (int i = 0; i < numPages; i++) {
                 URL pageLink = currentService.constructURL(resourceURI);
-                pageLink.removeParameter("query"); pageLink.addParameter("query", query);
-                pageLink.removeParameter("page"); pageLink.addParameter("page", String.valueOf(i+1));
+                pageLink.removeParameter("query");
+                pageLink.addParameter("query", query);
+                pageLink.removeParameter("page");
+                pageLink.addParameter("page", String.valueOf(i + 1));
                 pageLinks.add(pageLink);
             }
             searchModel.put("pageLinks", pageLinks);
-            
-            if (currentPage < numPages-1) {
+
+            if (currentPage < numPages - 1) {
                 int nextPage = currentPage + 1;
                 URL nextLink = currentService.constructURL(resourceURI);
-                nextLink.removeParameter("query"); nextLink.addParameter("query", query);
-                nextLink.removeParameter("page"); nextLink.addParameter("page", String.valueOf(nextPage+1));
+                nextLink.removeParameter("query");
+                nextLink.addParameter("query", query);
+                nextLink.removeParameter("page");
+                nextLink.addParameter("page", String.valueOf(nextPage + 1));
                 searchModel.put("nextLink", nextLink);
             }
         }
-        
+
         searchModel.put("query", query);
-        searchModel.put("start", startIdx+1);
+        searchModel.put("start", startIdx + 1);
         searchModel.put("end", endIdx);
-        
+
         return new ModelAndView(this.viewName, model);
     }
 
 
-
     /**
-     * Page number must be 0 or greater.
-     * Max page number can't be greater than
-     * pageNum * pageSize + pageSize <= Integer.MAX_VALUE
+     * Page number must be 0 or greater. Max page number can't be greater than pageNum * pageSize + pageSize <=
+     * Integer.MAX_VALUE
      */
     int getPage(String pageParam) {
         if (pageParam == null) {
@@ -241,19 +246,19 @@ public class FulltextSearchController implements Controller {
         try {
             page = Integer.parseInt(pageParam);
             page--;
-        } catch (NumberFormatException e) { 
+        } catch (NumberFormatException e) {
             return 0;
         }
-                
+
         if (page < 0) {
             return 0;
         }
 
-        int maxPages = (Integer.MAX_VALUE - this.pageSize)/ this.pageSize;
+        int maxPages = (Integer.MAX_VALUE - this.pageSize) / this.pageSize;
         if (page > maxPages) {
             return maxPages;
         }
-        
+
         return page;
     }
 

@@ -1,21 +1,18 @@
-FCKConfig.AutoDetectLanguage = false;
+FCKConfig.AutoDetectLanguage = true;
 FCKConfig.ForcePasteAsPlainText = true;
 FCKConfig.AutoDetectPasteFromWord = false;
 FCKConfig.ToolbarCanCollapse = false;
 FCKConfig.FirefoxSpellChecker = true;
 
 FCKConfig.ToolbarSets['Complete'] = [
-            ['Source','PasteText','PasteWord','-','Undo','Redo','-','Replace','RemoveFormat','-','Link','Unlink','Anchor','Image','MoviePlayer','Table','Rule','SpecialChar'],
+            ['Source','PasteText','-','Undo','Redo','-','Replace','RemoveFormat','-','Link','Unlink','Anchor','Image','MoviePlayer','Table','Rule','SpecialChar'],
             ['FontFormat','-','Bold','Italic','Underline','StrikeThrough','Subscript','Superscript','OrderedList','UnorderedList','Outdent','Indent','JustifyLeft','JustifyCenter','JustifyRight','TextColor','FitWindow']
 ] ;
 
 FCKConfig.ToolbarSets['Complete-article'] = [
-            ['Source','PasteText','PasteWord','-','Undo','Redo','-','Replace','RemoveFormat','-','Link','Unlink','Anchor','Image','CreateDiv','MoviePlayer','Table','Rule','SpecialChar'],
+            ['Source','PasteText','-','Undo','Redo','-','Replace','RemoveFormat','-','Link','Unlink','Anchor','Image','CreateDiv','MoviePlayer','Table','Rule','SpecialChar'],
             ['FontFormat','-','Bold','Italic','Underline','StrikeThrough','Subscript','Superscript','OrderedList','UnorderedList','Outdent','Indent','JustifyLeft','JustifyCenter','JustifyRight','TextColor','FitWindow']
 ] ;
-
-
-
 
 FCKConfig.ToolbarSets['Inline'] = [
             ['Source','PasteText','Link','Unlink', 'Bold','Italic','Underline','StrikeThrough','Subscript','Superscript']
@@ -26,7 +23,7 @@ FCKConfig.ToolbarSets['Inline-S'] = [
 ] ;
 
 FCKConfig.ToolbarSets['Vortikal'] = [
-            ['Save','-','PasteText','PasteWord','-','Undo','Redo','-','Replace','RemoveFormat','-','Link','Unlink','Anchor','Image','MoviePlayer','Table','Rule','SpecialChar'],
+            ['Save','-','PasteText','-','Undo','Redo','-','Replace','RemoveFormat','-','Link','Unlink','Anchor','Image','MoviePlayer','Table','Rule','SpecialChar'],
  	    '/',
             ['FontFormat','-','Bold','Italic','Underline','StrikeThrough','Subscript','Superscript','OrderedList','UnorderedList','Outdent','Indent','JustifyLeft','JustifyCenter','JustifyRight','TextColor','FitWindow'],
  	    '/'

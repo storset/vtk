@@ -338,7 +338,7 @@ public class StructuredResourceManager {
 
         } else {
             List<Object> values = new ArrayList<Object>();
-            if (value instanceof Collection<?>) {
+            if (value instanceof Collection<?> || value instanceof Value[]) {
                 values.addAll((Collection<?>) value);
             } else {
                 values.add(value);
@@ -454,18 +454,20 @@ public class StructuredResourceManager {
                 String expression = "properties." + property.getDefinition().getName();
                 value = JSONUtil.select(json, expression);
                 if (emptyValue(value)) {
-                    // XXX Don't allow an overriding property to be empty
-                    // NB NB!!! This is not a solution!!! A temp fix only
-                    // look at fallback solution of previous evaluation scheme
                     if (propertyDesc.isOverrides()) {
-                        Property overriddenProp = ctx.getNewResource().getProperty(Namespace.DEFAULT_NAMESPACE,
-                                propertyDesc.getOverrides());
-                        if (overriddenProp == null) {
-                            ctx.getNewResource().getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE,
+                        if (!property.getDefinition().isMandatory()) {
+                            ctx.getNewResource().removeProperty(Namespace.DEFAULT_NAMESPACE,
                                     propertyDesc.getOverrides());
-                        }
-                        if (overriddenProp != null) {
-                            setPropValue(property, overriddenProp.getValue());
+                        } else {
+                            Property overriddenProp = ctx.getNewResource().getProperty(Namespace.DEFAULT_NAMESPACE,
+                                    propertyDesc.getOverrides());
+                            if (overriddenProp != null) {
+                                if (overriddenProp.getDefinition().isMultiple()) {
+                                    setPropValue(property, overriddenProp.getValues());
+                                } else {
+                                    setPropValue(property, overriddenProp.getValue());
+                                }
+                            }
                             return true;
                         }
                     }

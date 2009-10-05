@@ -26,7 +26,7 @@ resourcetype person {
   }
 
   edit-rules {
-    group contactInformation (getExternalPersonInfo, firstName, surname, position, phone, fax, email, postalAddress, visitingAddress) (after username),
+    group contactInformation (getExternalPersonInfo, firstName, surname, position, phone,fax, email, postalAddress, visitingAddress) (after username),
     group additionalContactInformation (alternativeVisitingAddress, building, room, availableHours) (after contactInformation),
     group images (picture, pressPhoto) (after additionalContactInformation) horizontal,
     group combinedPublications (getExternalScientificInformation, selectedPublications) (after tags),
@@ -39,7 +39,7 @@ resourcetype person {
   }
 
   scripts {
-    getExternalPersonInfo show-hide onclick (firstName, surname, position, title, postalAddress, visitingAddress, phone, email),
+    getExternalPersonInfo show-hide onclick (firstName, surname, position, title, postalAddress, visitingAddress, phone, fax, email),
     getExternalScientificInformation show-hide onclick (scientificInformation),
     tags autocomplete (minChars : "1")
   }
@@ -358,6 +358,7 @@ resourcetype person {
     combinedPublications : (en : "Publications", no : "Publikasjoner", nn : "Publikasjoner"),
     combinedProjects : (en : "Projects", no : "Prosjekter", nn : "Prosjekter"),
     userVisitingAddress : (en : "Visiting address", no : "Besøksadresse", nn : "Besøksadresse"),
-    header : (en : "Edit person", no : "Rediger person", nn : "Rediger person") 
+    header : (en : "Edit person", no : "Rediger person", nn : "Rediger person"),
+    fax : (en : "Fax", no : "Faks", nn : "Faks")
   }
 }

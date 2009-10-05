@@ -7,6 +7,7 @@ resourcetype person {
     surname : string external:userMetadataLdapService,
     position : string external:userMetadataLdapService,
     phone : string external:userMetadataLdapService,
+    fax : string external:userMetadataLdapService,
     email : string external:userMetadataLdapService,
     postalAddress : string multiple external:userMetadataLdapService,
     visitingAddress : string multiple external:userMetadataLdapService,
@@ -25,7 +26,7 @@ resourcetype person {
   }
 
   edit-rules {
-    group contactInformation (getExternalPersonInfo, firstName, surname, position, phone, email, postalAddress, visitingAddress) (after username),
+    group contactInformation (getExternalPersonInfo, firstName, surname, position, phone, fax, email, postalAddress, visitingAddress) (after username),
     group additionalContactInformation (alternativeVisitingAddress, building, room, availableHours) (after contactInformation),
     group images (picture, pressPhoto) (after additionalContactInformation) horizontal,
     group combinedPublications (getExternalScientificInformation, selectedPublications) (after tags),
@@ -72,6 +73,9 @@ resourcetype person {
              [endif]
              [if phone && phone != ""]
                <li><h3>[localized "phone"]</h3>:&nbsp;[val phone]</li>
+             [endif]
+             [if fax && fax != ""]
+               <li><h3>[localized "fax"]</h3>:&nbsp;[val fax]</li>
              [endif]
            </ul>
          [endif]
@@ -325,6 +329,7 @@ resourcetype person {
     position : (en : "Position", no : "Stillingstittel", nn : "Stillingstittel"), 
     webPage : (en : "Web page", no : "Webside", nn : "Webside"),
     phone : (en : "Phone", no : "Telefon", nn : "Telefon"),
+    fax : (en : "Fax", no : "Faks", nn : "Faks"), 
     officeNumber : (en : "Office number", no : "Kontor", nn : "Kontor"),
     availableHours : (en : "Available hours", no : "Treffetider", nn : "Treffetider"),
     picture : (en : "Webpage image", no : "Nettsidebilde", nn : "Nettsidebilete"),
@@ -347,8 +352,6 @@ resourcetype person {
     rssUrl : (en : "Web address", no : "Webadresse", nn :"Webadresse"),
     pressPhoto : (en : "Press photo", no : "Pressebilde", nn : "Pressebilete"),
     room : (en : "Room", no : "Rom", nn : "Rom"),
-    publicationTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
-    publicationUrl : (en : "Publication link", no : "Publikasjonlenke", nn : "Publikasjonlenke"),
     images : (en : "Images", no : "Bilder", nn : "Bilder"),
     contactInformation : (en : "Primary contact information", no : "Primære kontaktopplysninger", nn : "Primære kontaktopplysningar"),
     additionalContactInformation : (en : "Other contact information", no : "Andre kontaktopplysninger", nn : "Andre kontaktopplysningar"),

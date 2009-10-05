@@ -42,13 +42,12 @@ public class FormElement {
     private ValidationError error;
     private Object value;
 
-    public FormElement(EditablePropertyDescription description, ValidationError error,
-            Object value) {
+    public FormElement(EditablePropertyDescription description, ValidationError error, Object value) {
         this.description = description;
         this.error = error;
         this.value = value;
     }
-    
+
     public String getName() {
         return this.description.getName();
     }
@@ -71,20 +70,23 @@ public class FormElement {
 
     public void setValue(Object value) throws Exception {
         if (this.description.isMultiple() && (value instanceof String)) {
-        	String[] a = value.toString().split(",");
-        	ArrayList<String> b = new ArrayList<String>();
-        	for (int i = 0; i < a.length; i++) {
-        		b.add(a[i].trim());
-        	}
-        	setValueInternal(b);
+            String[] splitValue = value.toString().split(",");
+            ArrayList<String> b = new ArrayList<String>();
+            for (String val : splitValue) {
+                val = val.trim();
+                if (!"".equals(val)) {
+                    b.add(val);
+                }
+            }
+            setValueInternal(b);
         } else {
-        	setValueInternal(value);
+            setValueInternal(value);
         }
     }
-    
+
     private void setValueInternal(Object value) {
-    	// XXX: check for JSON
-    	this.value = value;
+        // XXX: check for JSON
+        this.value = value;
     }
 
     public Object getValue() {
@@ -106,8 +108,8 @@ public class FormElement {
         }
         return value;
     }
-    
-    public boolean valueIsList(){
+
+    public boolean valueIsList() {
         return this.value instanceof List;
     }
 

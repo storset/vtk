@@ -3,7 +3,7 @@ resourcetype structured-article : structured-document {
   properties {
     author : string,
     media : media_ref,
-    tags : string multiple,
+    tags : string multiple overrides tags,
     hideAdditionalContent : boolean,
     additional-content : html noextract
   }

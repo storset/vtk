@@ -5,7 +5,7 @@ resourcetype structured-event : structured-document {
     end-date : datetime,
     location : string,
     mapurl : string,
-    tags : string multiple
+    tags : string multiple overrides tags
   }
 
   edit-rules {

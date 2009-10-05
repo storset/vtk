@@ -100,9 +100,11 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
         }
 
         RequestContext requestContext = RequestContext.getRequestContext();
+        SecurityContext securityContext = SecurityContext.getSecurityContext();
         Path uri = requestContext.getResourceURI();
+        String token = securityContext.getToken();
         
-        Locale locale = resolveResourceLocale(request, uri);
+        Locale locale = resolveResourceLocale(token, uri);
         
         // Cache locale as request attribute, if request is available.
         // Better to use thread-local attribute ? Request is not always provided to this method.
@@ -113,12 +115,11 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
         return locale;
     }
 
-    public Locale resolveResourceLocale(HttpServletRequest request, Path uri) {
+    public Locale resolveResourceLocale(String providedToken, Path uri) {
 		
-    	SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = this.trustedToken;
         if (token == null) {
-            token = securityContext.getToken();
+            token = providedToken;
         }
         
         Locale locale = null;

@@ -1,9 +1,9 @@
 @charset "UTF-8";
 
-#vrtx-related-content .vrtx-projects,
-#vrtx-related-content .vrtx-project-participants,
-#vrtx-related-content .vrtx-project-contactinfo,
-#vrtx-related-content .vrtx-feed
+#vrtx-additional-content .vrtx-projects,
+#vrtx-additional-content .vrtx-project-participants,
+#vrtx-additional-content .vrtx-project-contactinfo,
+#vrtx-additional-content .vrtx-feed
  {
   border:1px solid #AAAAAA;
   clear:both;
@@ -19,10 +19,10 @@
   border: none;
 }
 
-#vrtx-related-content .vrtx-projects h2,
-#vrtx-related-content .vrtx-project-participants h2,
-#vrtx-related-content .vrtx-project-contactinfo h2,
-#vrtx-related-content .vrtx-feed a.feed-title {
+#vrtx-additional-content .vrtx-projects h2,
+#vrtx-additional-content .vrtx-project-participants h2,
+#vrtx-additional-content .vrtx-project-contactinfo h2,
+#vrtx-additional-content .vrtx-feed a.feed-title {
   border-bottom:1px solid #AAAAAA;
   font-size:1.1em;
   margin:0 -4% 10px;

@@ -18,9 +18,14 @@
   width: 100%;
 }
 
-#vrtx-additonal-content {
+#vrtx-additional-content {
   float: left;
   width: 33%;
+}
+
+#vrtx-related-content {
+  float: left;
+  width: 100%;	
 }
 
 .vrtx-social-components {

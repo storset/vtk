@@ -218,21 +218,6 @@ resourcetype person {
       ##
     }
     
-    tags {
-      ##
-      [resource-props "."]
-        [if tags]
-          <h2>[localized "tags"]</h2>
-          [def thetags resource-prop "." "tags"]
-          [list thetags tag]
-            [if tag]
-              <a href="/?vrtx=tags&tag=[val tag]">[val tag]</a>,
-            [endif]
-          [endlist]
-        [endif]
-      ##
-    }
-    
     position {
       ##
       [resource-props "."]
@@ -285,7 +270,7 @@ resourcetype person {
             </div>
           </div>
           <json:field select="content" />
-          <comp:tags />
+          <resource:tags />
           <comp:scientific-info />
         </div>
         <div id="vrtx-additional-content">

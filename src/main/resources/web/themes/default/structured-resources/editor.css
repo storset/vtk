@@ -284,6 +284,10 @@ h2.vrtx-title {
   font-size: 1em;	
 }
 
+.vrtx-grouped-horizontal .vrtx-string input {
+  float: none;	
+}
+
 
 /* START Introduction image edit like the old one */
 

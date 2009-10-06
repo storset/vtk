@@ -44,14 +44,15 @@ DQ	:	'"';
 EQ	:	'=';
 
 PROPTYPE:	(STRING | HTML | SIMPLEHTML | BOOLEAN | INT | DATETIME | IMAGEREF | MEDIAREF);
+DERIVED	:	'derived';
+JSON	:	'json';
+BINARY	:	'binary';
 EDITHINT:	(SIZE LB (NUMBER | SMALL | LARGE) RB | TEXTFIELD | TEXTAREA | RADIO | DROPDOWN);
 EXTERNAL:	'external';
-DERIVED	:	'derived';
 EVAL	:	'eval';
 DEFAULTPROP
 	:	'default';
 MULTIPLE:	'multiple';
-JSON	:	'json';
 SHOWHIDE:	'show-hide';
 MULTIPLEINPUTFIELDS
 	:	'multipleinputfields';

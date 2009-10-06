@@ -61,13 +61,11 @@ vocabularyentry
 	
 vocabularylangentry 
 	: NAME COLON LP (vocabularykeyvalue (COMMA vocabularykeyvalue)*) RP
-	-> ^(NAME (vocabularykeyvalue)*)
+	  -> ^(NAME (vocabularykeyvalue)*)
 	;
 	
 vocabularykeyvalue
-	: QTEXT EQ (QTEXT)*
-	-> ^(QTEXT (QTEXT)*)
-	;
+	: QTEXT EQ (QTEXT)* -> ^(QTEXT (QTEXT)*);
 	
 localization
 	:	LOCALIZATION LCB
@@ -89,7 +87,7 @@ resourceprops
 	;
 
 propertytypedef
-	:	(derivedpropertytypedef | jsonpropertytypedef | plainpropertytypedef)
+	:	(derivedpropertytypedef | jsonpropertytypedef | plainpropertytypedef | binarypropertytypedef)
 	;
 
 derivedpropertytypedef
@@ -102,9 +100,7 @@ derived	:	DERIVED LP fieldlist RP EVAL LP evallist RP (defaultprop)?
 	;
 
 fieldlist
-    :   NAME (COMMA NAME)*
-        ->  NAME+
-    ;
+	:	NAME (COMMA NAME)* ->  NAME+;
 
 evallist:	nameorqtext (PLUS nameorqtext)* -> nameorqtext+;
 
@@ -114,28 +110,20 @@ nameorqtext
 	;
     
 defaultprop
-    :   DEFAULTPROP NAME
-    ;
+	:	DEFAULTPROP NAME;
 
 jsonpropertytypedef
 	:	NAME COLON JSON jsonspec (MULTIPLE)? (NOEXTRACT)? (external)?
 		-> ^(NAME ^(JSON jsonspec) (MULTIPLE)? (NOEXTRACT)? (external)?)
 	;
 
-jsonspec
-    : LP jsonpropspeclist RP
-        -> jsonpropspeclist
-    ;
+jsonspec:	LP jsonpropspeclist RP -> jsonpropspeclist;
 
 jsonpropspeclist
-    :   jsonpropspec (COMMA jsonpropspec)*
-        -> jsonpropspec+
-    ;
+	:	jsonpropspec (COMMA jsonpropspec)* -> jsonpropspec+;
 
 jsonpropspec
-    :  NAME COLON PROPTYPE
-        -> ^(NAME PROPTYPE)
-    ;
+	:	NAME COLON PROPTYPE -> ^(NAME PROPTYPE);
 
 plainpropertytypedef
 	:	NAME COLON PROPTYPE (MULTIPLE)? (REQUIRED)? (NOEXTRACT)? (overrides)?
@@ -143,6 +131,9 @@ plainpropertytypedef
 		-> ^(NAME PROPTYPE (MULTIPLE)? (REQUIRED)? (NOEXTRACT)? (overrides)?
 			(external)?)
 	;
+
+binarypropertytypedef
+	:	NAME COLON BINARY (external)? -> ^(NAME BINARY (external)?);
 
 
 external

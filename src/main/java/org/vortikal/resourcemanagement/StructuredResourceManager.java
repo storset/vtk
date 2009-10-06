@@ -77,6 +77,7 @@ public class StructuredResourceManager {
         PROPTYPE_MAP.put(ParserConstants.PROPTYPE_DATETIME, PropertyType.Type.TIMESTAMP);
         PROPTYPE_MAP.put(ParserConstants.PROPTYPE_IMAGEREF, PropertyType.Type.IMAGE_REF);
         PROPTYPE_MAP.put(ParserConstants.PROPTYPE_MEDIAREF, PropertyType.Type.IMAGE_REF);
+        PROPTYPE_MAP.put(ParserConstants.PROPTYPE_BINARY, PropertyType.Type.BINARY);
         PROPTYPE_MAP.put(ParserConstants.PROPTYPE_JSON, PropertyType.Type.JSON);
     }
     private ResourceTypeTree resourceTypeTree;
@@ -255,9 +256,9 @@ public class StructuredResourceManager {
         def.setName(propertyDescription.getName());
         def.setNamespace(this.namespace);
         if (propertyDescription instanceof DerivedPropertyDescription) {
-            def.setType(PropertyType.Type.STRING);
+            def.setType(Type.STRING);
         } else if (propertyDescription instanceof JSONPropertyDescription) {
-            def.setType(PropertyType.Type.JSON);
+            def.setType(Type.JSON);
         } else {
             def.setType(mapType(propertyDescription));
         }
@@ -288,13 +289,14 @@ public class StructuredResourceManager {
             return createSimplePropertyEvaluator((SimplePropertyDescription) desc, resourceDesc);
         } else if (desc instanceof JSONPropertyDescription) {
             return createJSONPropertyEvaluator((JSONPropertyDescription) desc, resourceDesc);
+        } else if (desc instanceof BinaryPropertyDescription) {
+            return new BinaryPropertyEvaluator(desc);
         }
         return createDerivedPropertyEvaluator((DerivedPropertyDescription) desc, resourceDesc);
     }
 
     private PropertyEvaluator createSimplePropertyEvaluator(final SimplePropertyDescription desc,
             final StructuredResourceDescription resourceDesc) {
-
         return new JSONPropertyEvaluator(resourceDesc, desc);
     }
 
@@ -305,7 +307,6 @@ public class StructuredResourceManager {
 
     private PropertyEvaluator createDerivedPropertyEvaluator(final DerivedPropertyDescription desc,
             final StructuredResourceDescription resourceDesc) {
-
         return new DerivedPropertyEvaluator(desc, resourceDesc);
     }
 
@@ -323,7 +324,10 @@ public class StructuredResourceManager {
 
     private void setPropValue(Property property, Object value) {
 
-        if (!property.getDefinition().isMultiple()) {
+        if (property.getType() == Type.BINARY) {
+            // Store the value of the property
+            property.setBinaryValue(value.toString().getBytes(), "application/json");
+        } else if (!property.getDefinition().isMultiple()) {
             // If value is collection, pick first element
             if (value instanceof Collection<?>) {
                 Collection<?> c = (Collection<?>) value;
@@ -353,7 +357,7 @@ public class StructuredResourceManager {
         }
     }
 
-    private PropertyType.Type mapType(PropertyDescription d) {
+    private Type mapType(PropertyDescription d) {
         String type = d.getType();
         Type result = PROPTYPE_MAP.get(type);
         if (result == null) {
@@ -408,6 +412,7 @@ public class StructuredResourceManager {
     }
 
     private class JSONPropertyEvaluator implements PropertyEvaluator {
+
         private final StructuredResourceDescription resourceDesc;
         private final PropertyDescription propertyDesc;
 
@@ -503,6 +508,7 @@ public class StructuredResourceManager {
     }
 
     private class DerivedPropertyEvaluator implements PropertyEvaluator {
+
         private final DerivedPropertyDescription desc;
         private final StructuredResourceDescription resourceDesc;
 
@@ -559,6 +565,45 @@ public class StructuredResourceManager {
             } catch (Exception e) {
                 return false;
             }
+        }
+    }
+
+    private class BinaryPropertyEvaluator implements PropertyEvaluator {
+
+        private final PropertyDescription propertyDesc;
+
+        private BinaryPropertyEvaluator(PropertyDescription desc) {
+            this.propertyDesc = desc;
+        }
+
+        public String toString() {
+            return getClass().getName() + ": " + propertyDesc.getName();
+        }
+
+        @SuppressWarnings("unchecked")
+        public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
+
+            if (ctx.getEvaluationType() == PropertyEvaluationContext.Type.Create) {
+                return false;
+            }
+
+            Object value = null;
+            if (this.propertyDesc.hasExternalService()) {
+                Object o = ctx.getEvaluationAttribute(this.propertyDesc.getExternalService());
+                if (o != null) {
+                    Map<String, Object> map = (Map<String, Object>) o;
+                    value = map.get(property.getDefinition().getName());
+                    // No value was found for this prop, don't show anything
+                    if (value == null) {
+                        return false;
+                    }
+                }
+            }
+            if (value != null) {
+                setPropValue(property, value);
+                return true;
+            }
+            return false;
         }
     }
 }

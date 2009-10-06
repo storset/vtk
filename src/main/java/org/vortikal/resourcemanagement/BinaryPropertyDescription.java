@@ -30,22 +30,6 @@
  */
 package org.vortikal.resourcemanagement;
 
-import java.util.HashMap;
-import java.util.Map;
-
-public abstract class EditablePropertyDescription extends PropertyDescription {
-
-    private Map<String, Object> edithints;
-
-    public Map<String, Object> getEdithints() {
-        return edithints;
-    }
-
-    public void addEdithint(String key, Object value) {
-        if (edithints == null) {
-            edithints = new HashMap<String, Object>();
-        }
-        edithints.put(key, value);
-    }
+public class BinaryPropertyDescription extends PropertyDescription {
 
 }

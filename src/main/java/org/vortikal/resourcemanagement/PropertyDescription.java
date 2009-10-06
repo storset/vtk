@@ -41,6 +41,7 @@ public abstract class PropertyDescription {
     private String overrides;
     private boolean noExtract;
     private boolean multiple;
+    private String externalService;
 
     private Map<Locale, Map<String, String>> vocabulary = new HashMap<Locale, Map<String, String>>();
 
@@ -116,6 +117,18 @@ public abstract class PropertyDescription {
     public Map<String, String> getValuemap(Locale local) {
         Map<String, String> valuemap = vocabulary.get(local);
         return valuemap;
+    }
+
+    public String getExternalService() {
+        return externalService;
+    }
+
+    public void setExternalService(String externalService) {
+        this.externalService = externalService;
+    }
+
+    public boolean hasExternalService() {
+        return this.externalService != null;
     }
 
 }

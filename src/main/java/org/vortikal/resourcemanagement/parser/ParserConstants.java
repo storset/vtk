@@ -40,6 +40,7 @@ public interface ParserConstants {
     public static final String PROPTYPE_DATETIME = "datetime";
     public static final String PROPTYPE_IMAGEREF = "image_ref";
     public static final String PROPTYPE_MEDIAREF = "media_ref";
+    public static final String PROPTYPE_BINARY = "binary";
     public static final String PROPTYPE_JSON = "json";
 
 }

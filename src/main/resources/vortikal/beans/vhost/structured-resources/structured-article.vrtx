@@ -33,14 +33,14 @@ resourcetype structured-article : structured-document {
       ##
     }
     
-    related-content {
+    related-content-in-additional-column {
       ##
       [resource-props "."]
       [def document structured-document]
       [def thehideAdditionalContent json-attr document "properties.hideAdditionalContent"]
       [def theRelated-content json-attr document "properties.related-content"]
       
-      [if (thehideAdditionalContent != "true")]
+      [if (thehideAdditionalContent = "false")]
         <div id="vrtx-additional-content">
           [if theRelated-content]
             <div id="vrtx-related-content">
@@ -48,7 +48,18 @@ resourcetype structured-article : structured-document {
             </div>
           [endif]
         </div> 
-      [else]
+      [endif]
+      ##
+    }
+    
+  related-content-in-main-column {
+      ##
+      [resource-props "."]
+      [def document structured-document]
+      [def thehideAdditionalContent json-attr document "properties.hideAdditionalContent"]
+      [def theRelated-content json-attr document "properties.related-content"]
+      
+      [if (thehideAdditionalContent = "true")]
           [if theRelated-content]
             <div id="vrtx-related-content">
               [val theRelated-content unescaped]
@@ -59,6 +70,7 @@ resourcetype structured-article : structured-document {
     }
     
   }
+
 
   view {
     ##
@@ -88,14 +100,16 @@ resourcetype structured-article : structured-document {
               <comp:author />
             </div>
             <json:field select="content" />
+            <comp:related-content-in-main-column />
             <resource:tags />
-            <resource:comments />
+            <div class="vrtx-social-components"
+            	 <resource:email-friend />
+             	<resource:share-at />
+          	</div>
+          	<resource:comments />
           </div>
-          <comp:related-content />
-          <div class="vrtx-social-components"
-             <resource:email-friend />
-             <resource:share-at />
-          </div>
+          <comp:related-content-in-additional-column  />
+ 
         </div>
       </body>
     </html>

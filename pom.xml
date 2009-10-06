@@ -122,6 +122,10 @@
             <name>Apache Incubating Repository</name>
             <url>http://people.apache.org/repo/m2-incubating-repository/</url>
         </repository>
+        <repository>
+            <id>download.java.net</id>
+            <url>http://download.java.net/maven/2/</url>
+        </repository>
     </repositories>
 
     <properties>
@@ -518,7 +522,7 @@
         <dependency>
             <groupId>rome</groupId>
             <artifactId>rome</artifactId>
-            <version>0.9</version>
+            <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>jtidy</groupId>

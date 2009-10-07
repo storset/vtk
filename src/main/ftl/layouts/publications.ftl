@@ -6,8 +6,12 @@
   -
   -->
 
-<#list publications as publication>
+<#if publications?exists && publications?size &gt; 0>
   <div class="vrtx-frida-publications">
-    <p><b>${publication.publicationTitle}</b>, ${publication.researchers} (${publication.id})</p>
+  <#list publications as publication>
+    <div class="vrtx-frida-publication">
+      <p><b>${publication.publicationTitle}</b>, ${publication.researchers} (${publication.id})</p>
+    </div>
+  </#list>
   </div>
-</#list>
+</#if>

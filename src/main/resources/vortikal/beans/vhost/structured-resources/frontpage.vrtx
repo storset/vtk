@@ -2,8 +2,8 @@ resourcetype frontpage {
 
   properties {
     title : string required overrides title,
-    main-content : json (boxTitle : string, boxType : string, boxContent : html, boxUrl : string, boxUrlText : string) multiple noextract,
-    related-content : json (boxTitle : string, boxType : string, boxContent : html, boxUrl : string, boxUrlText : string) multiple noextract
+    main-content : json (boxTitle : string, boxType : string, boxContent : html, boxUrlText : string, boxUrl : string) multiple noextract,
+    additional-content : json (boxTitle : string, boxType : string, boxContent : html, boxUrlText : string,  boxUrl : string) multiple noextract
   }
 
   view-components {
@@ -36,12 +36,12 @@ resourcetype frontpage {
       ##
     }
     
-    related-content {
+    additional-content {
       ##
       [resource-props "."]
-      [if related-content]
+      [if additional-content]
         [def document structured-document]
-        [def boxes json-attr document "properties.related-content"]
+        [def boxes json-attr document "properties.additional-content"]
         [list boxes box]
            [def type json-attr box "boxType"]
            [def title json-attr box "boxTitle"]
@@ -90,7 +90,7 @@ resourcetype frontpage {
             <comp:main-content />
           </div>
           <div id="vrtx-additional-content">
-            <comp:related-content />
+            <comp:additional-content />
           </div>
         </div>
       </body>
@@ -100,15 +100,14 @@ resourcetype frontpage {
   
   
   localization {
-     title : (en : "Title", no : "Tittel", nn : "Tittel"),
-     content : (en : "Content", no : "Innhold", nn : "Innhald"),
+     title : (en : "Box", no : "Boks", nn : "Boks"),
      main-content : (en : "Main content", no : "Hovedinnhold", nn : "Hovedinnhold"),
-     related-content : (en : "Related content (default as right-column)", no : "Relatert innhold (default som høyrespalte)", nn : "Relatert innhold (default som høyrespalte)"),
-     boxTitle : (en : "Box title", no : "Bokstittel", nn : "Bokstittel"),
-     boxType : (en : "Box type", no : "Bokstype", nn : "Bokstype"),
-     boxContent : (en : "Box content", no : "Boksinnhold", nn : "Boksinnhold"),
-     boxUrl : (en : "Link", no : "Lenke", nn : "Lenke"),
-     boxUrlText : (en : "Link text", no : "Lenke tekst", nn : "Lenke tekst"),
+     additional-content : (en : "Additional content (default as right-column)", no : "Relatert innhold (default som høyrespalte)", nn : "Relatert innhald (default som høyrespalte)"),
+     boxTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
+     boxType : (en : "Type", no : "Type", nn : "Type"),
+     boxContent : (en : "Content", no : "Innhold", nn : "Innhald"),
+     boxUrlText : (en : "Link text", no : "Lenketekst", nn : "Lenketekst"),
+     boxUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
      header : (en : "Edit frontpage", no : "Rediger forside", nn : "Rediger forside")
   }
 }

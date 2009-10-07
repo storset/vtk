@@ -2,6 +2,13 @@
 
 @import url(default-layout.css);
 
+/* default - 100% relative to parent (main or right column) */
+.vrtx-frontpage-box {
+  float: left;
+  clear: left;
+  width: 100%;	
+}
+
 .vrtx-frontpage-box .more {
   clear: both;
   float: right;

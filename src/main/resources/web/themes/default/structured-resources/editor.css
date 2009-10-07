@@ -184,6 +184,12 @@ input.vrtx-remove-button {
     margin-top:18px;
 }
 
+.vrtx-json #main-content .vrtx-json-element,
+.vrtx-json #additional-content .vrtx-json-element,
+.vrtx-json #cases .vrtx-json-element {
+   width: 100%;	
+}
+
 /* END JSON and multiple fields */
 
 /* START Set explisit widths and heights */
@@ -292,6 +298,10 @@ h2.vrtx-title {
 
 .vrtx-grouped-horizontal .vrtx-string input {
   float: none;	
+}
+
+input.date, input.hours, input.minutes {
+  float: none;  
 }
 
 

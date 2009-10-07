@@ -4,6 +4,8 @@
   - 
   - Description: List publications from Frida
   -
+  - Required model data:
+  -
   -->
   
 <#assign counter = 1>
@@ -94,7 +96,7 @@
                   <#if publication.isbn != "">&nbsp;ISBN&nbsp;${publication.isbn}.</#if>
                   <#if publication.chapter != "">&nbsp;${publication.chapter}.</#if>
                   <#if publication.pageFrom != "">&nbsp;s&nbsp;${publication.pageFrom}
-                    <#if publication.pageTo != "">&nbsp;-&nbsp;${publication.pageTo}</#if>
+                    <#if publication.pageTo != "">-&nbsp;${publication.pageTo}</#if>
                   </#if>
                 </li></ul>
              <#else>
@@ -109,8 +111,8 @@
                     <#if publication.volume != ""><em>&nbsp;vol.&nbsp;${publication.volume}</em></#if>
                     <#if publication.hefte != "">&nbsp;(${publication.hefte})</#if>
                     <#if publication.pageFrom != "">
-                      <#if publication.volume != "" || publication.hefte != "">,</#if>&nbsp;s&nbsp;${publication.pageFrom}               
-                      <#if publication.pageTo != "">&nbsp;-&nbsp;${publication.pageTo}</#if>
+                      <#if publication.volume != "" || publication.hefte != "">,</#if>&nbsp;s&nbsp;${publication.pageFrom}     
+                      <#if publication.pageTo != "">-&nbsp;${publication.pageTo}</#if>
                     </#if>
                   </li></ul
                 </#if>

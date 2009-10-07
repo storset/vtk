@@ -52,24 +52,22 @@ import org.vortikal.util.repository.LocaleHelper;
 /**
  * 
  * XXX: Handling of child URI list should be improved/done differently.
- *      Currently fragile and ugly (there are too many hidden
- *      assumptions).
+ * Currently fragile and ugly (there are too many hidden assumptions).
  */
 public class ResourceImpl extends PropertySetImpl implements Resource {
-    
+
     private Acl acl;
     private Lock lock = null;
     private List<Path> childURIs = null;
-    
+
     private AuthorizationManager authorizationManager;
     private ResourceTypeTree resourceTypeTree;
-    
+
     public ResourceImpl() {
         super();
     }
-    
-    public ResourceImpl(Path uri, ResourceTypeTree resourceTypeTree, 
-            AuthorizationManager authorizationManager) {
+
+    public ResourceImpl(Path uri, ResourceTypeTree resourceTypeTree, AuthorizationManager authorizationManager) {
         super();
         this.uri = uri;
         this.resourceTypeTree = resourceTypeTree;
@@ -79,15 +77,12 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
     public PrimaryResourceTypeDefinition getResourceTypeDefinition() {
         return (PrimaryResourceTypeDefinition) this.resourceTypeTree.getResourceTypeDefinitionByName(this.resourceType);
     }
-    
 
     public boolean isOfType(ResourceTypeDefinition type) {
         return this.resourceTypeTree.isContainedType(type, this.resourceType);
     }
-    
 
-    public boolean isAuthorized(RepositoryAction action, Principal principal) 
-    throws IOException {
+    public boolean isAuthorized(RepositoryAction action, Principal principal) throws IOException {
         try {
             this.authorizationManager.authorizeAction(this.uri, action, principal);
             return true;
@@ -99,8 +94,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
     }
 
     public Property createProperty(Namespace namespace, String name) {
-        PropertyTypeDefinition propDef = 
-            this.resourceTypeTree.getPropertyTypeDefinition(namespace, name);
+        PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyTypeDefinition(namespace, name);
         return createProperty(propDef);
     }
 
@@ -109,41 +103,38 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         addProperty(prop);
         return prop;
     }
-    
+
     /**
-     * Creates and adds a property with a given namespace, name
-     * and value. The type is set according to its {@link
-     * PropertyTypeDefinition property definition}, or {@link
-     * PropertyType.TYPE_STRING} if it has no definition
-     *
-     * @param namespace the namespace
-     * @param name the name
+     * Creates and adds a property with a given namespace, name and value. The
+     * type is set according to its {@link PropertyTypeDefinition property
+     * definition}, or {@link PropertyType.TYPE_STRING} if it has no definition
+     * 
+     * @param namespace
+     *            the namespace
+     * @param name
+     *            the name
      * @return a property instance
-     * @throws ValueFormatException if the supplied value's type does
-     * not match that of the property definition
+     * @throws ValueFormatException
+     *             if the supplied value's type does not match that of the
+     *             property definition
      */
-    public Property createProperty(Namespace namespace, String name,
-            Object value) throws ValueFormatException {
-        PropertyTypeDefinition propDef = 
-            this.resourceTypeTree.getPropertyTypeDefinition(namespace, name);
+    public Property createProperty(Namespace namespace, String name, Object value) throws ValueFormatException {
+        PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyTypeDefinition(namespace, name);
         Property prop = propDef.createProperty(value);
         addProperty(prop);
         return prop;
     }
 
-    public Property createProperty(String namespaceUrl, String name, 
-            String[] stringValues) {
+    public Property createProperty(String namespaceUrl, String name, String[] stringValues) {
         Namespace namespace = this.resourceTypeTree.getNamespace(namespaceUrl);
-        PropertyTypeDefinition propDef = 
-            this.resourceTypeTree.getPropertyTypeDefinition(namespace, name);
+        PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyTypeDefinition(namespace, name);
         Property prop = propDef.createProperty(stringValues);
         addProperty(prop);
         return prop;
     }
 
     public Property createProperty(String prefix, String name, List<String> values) {
-        PropertyTypeDefinition propDef = 
-            this.resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
+        PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
         if (propDef == null) {
             return null;
         }
@@ -151,27 +142,29 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         addProperty(prop);
         return prop;
     }
-    
+
     public void removeProperty(Namespace namespace, String name) {
         Map<String, Property> props = this.propertyMap.get(namespace);
-        
-        if (props == null) return;
-        
+
+        if (props == null)
+            return;
+
         Property prop = props.get(name);
-        
-        if (prop == null) return;
+
+        if (prop == null)
+            return;
 
         PropertyTypeDefinition def = prop.getDefinition();
-        
+
         if (def != null && def.isMandatory())
-            throw new ConstraintViolationException("Property is mandatory"); 
+            throw new ConstraintViolationException("Property is mandatory");
 
         props.remove(name);
     }
-    
+
     public void removeProperty(PropertyTypeDefinition propDef) {
         removeProperty(propDef.getNamespace(), propDef.getName());
-    }    
+    }
 
     public String getContentLanguage() {
         return getPropValue(PropertyType.CONTENTLOCALE_PROP_NAME);
@@ -180,13 +173,14 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
     public void setChildURIs(List<Path> childURIs) {
         this.childURIs = childURIs;
     }
-    
+
     public List<Path> getChildURIs() {
         if (this.childURIs != null) {
             return Collections.unmodifiableList(this.childURIs);
         }
-            
-        return null; // Not a collection (external client code expects this, and it is stated in Resource interface).
+
+        return null; // Not a collection (external client code expects this, and
+                     // it is stated in Resource interface).
     }
 
     public Acl getAcl() {
@@ -206,19 +200,17 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
     }
 
     public String getSerial() {
-        String serial = getURI().toString() 
-                            + getContentLastModified()
-                            + getPropertiesLastModified()
-                            + getContentLength();
+        String serial = getURI().toString() + getContentLastModified() + getPropertiesLastModified()
+                + getContentLength();
         serial = MD5.md5sum(serial);
         serial = "vortex-" + serial;
         return serial;
     }
-    
+
     public String getEtag() {
         return "\"" + getSerial() + "\"";
     }
-    
+
     public Principal getOwner() {
         return getPrincipalPropValue(PropertyType.OWNER_PROP_NAME);
     }
@@ -272,12 +264,11 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
     }
 
     /**
-     * Gets the date of this resource's last modification. The date
-     * returned is either that of the
-     * <code>getContentLastModified()</code> or the
-     * <code>getPropertiesLastModified()</code> method, depending on
-     * which one is the most recent.
-     *
+     * Gets the date of this resource's last modification. The date returned is
+     * either that of the <code>getContentLastModified()</code> or the
+     * <code>getPropertiesLastModified()</code> method, depending on which one
+     * is the most recent.
+     * 
      * @return the time of last modification
      */
     public Date getLastModified() {
@@ -285,8 +276,8 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
     }
 
     /**
-     * Gets the name of the principal that last modified either the
-     * content or the properties of this resource.
+     * Gets the name of the principal that last modified either the content or
+     * the properties of this resource.
      */
     public Principal getModifiedBy() {
         return getPrincipalPropValue(PropertyType.MODIFIEDBY_PROP_NAME);
@@ -295,64 +286,55 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
     public long getContentLength() {
         return getLongPropValue(PropertyType.CONTENTLENGTH_PROP_NAME);
     }
-    
+
     public Locale getContentLocale() {
         return LocaleHelper.getLocale(this.getContentLanguage());
     }
 
     public void setUserSpecifiedCharacterEncoding(String characterEncoding) {
-        setProperty(Namespace.DEFAULT_NAMESPACE, 
-                    PropertyType.CHARACTERENCODING_USER_SPECIFIED_PROP_NAME, characterEncoding);
+        setProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CHARACTERENCODING_USER_SPECIFIED_PROP_NAME,
+                characterEncoding);
 
     }
-    
+
     public void setContentLocale(String locale) {
-        setProperty(Namespace.DEFAULT_NAMESPACE, 
-                PropertyType.CONTENTLOCALE_PROP_NAME, locale);
+        setProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLOCALE_PROP_NAME, locale);
     }
 
     public void setContentType(String contentType) {
-        setProperty(Namespace.DEFAULT_NAMESPACE, 
-                PropertyType.CONTENTTYPE_PROP_NAME, contentType);
+        setProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTTYPE_PROP_NAME, contentType);
     }
 
     public void setOwner(Principal principal) {
-        Property prop = getProperty(Namespace.DEFAULT_NAMESPACE, 
-                PropertyType.OWNER_PROP_NAME);
+        Property prop = getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.OWNER_PROP_NAME);
         prop.setPrincipalValue(principal);
     }
 
     public Object clone() throws CloneNotSupportedException {
-        ResourceImpl clone = cloneWithoutProperties(); 
-        for (Property prop: getProperties()) {
+        ResourceImpl clone = cloneWithoutProperties();
+        for (Property prop : getProperties()) {
             clone.addProperty((Property) prop.clone());
         }
         return clone;
     }
 
-    
     public ResourceImpl createCopy(Path newUri) {
-        ResourceImpl resource = new ResourceImpl(newUri, this.resourceTypeTree,
-                                                 this.authorizationManager);
+        ResourceImpl resource = new ResourceImpl(newUri, this.resourceTypeTree, this.authorizationManager);
         resource.setResourceType(getResourceType());
-        for (Property prop: getProperties()) {
+        for (Property prop : getProperties()) {
             resource.addProperty(prop);
         }
         resource.setAcl(new AclImpl());
         return resource;
     }
-    
-
-
 
     /**
-     * Temp. way of getting a "clean" resource clone
-     * XXX: Should be renamed to something other than "cloneXyz", like
-     *      createCopyWithoutProperties. Clone implies identical, as defined by equals(), and
-     *      a "clone" without props is not identical. 
+     * Temp. way of getting a "clean" resource clone XXX: Should be renamed to
+     * something other than "cloneXyz", like createCopyWithoutProperties. Clone
+     * implies identical, as defined by equals(), and a "clone" without props is
+     * not identical.
      */
-    public ResourceImpl cloneWithoutProperties() 
-        throws CloneNotSupportedException {
+    public ResourceImpl cloneWithoutProperties() throws CloneNotSupportedException {
 
         LockImpl lock = null;
         if (this.lock != null)
@@ -372,22 +354,25 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         clone.setResourceType(super.resourceType);
         return clone;
     }
-    
+
     private String getPropValue(String name) {
         Property prop = this.propertyMap.get(Namespace.DEFAULT_NAMESPACE).get(name);
-        if (prop == null) return null;
+        if (prop == null)
+            return null;
         return prop.getStringValue();
     }
 
     private Date getDatePropValue(String name) {
         Property prop = this.propertyMap.get(Namespace.DEFAULT_NAMESPACE).get(name);
-        if (prop == null) return null;
+        if (prop == null)
+            return null;
         return prop.getDateValue();
     }
 
     private long getLongPropValue(String name) {
         Property prop = this.propertyMap.get(Namespace.DEFAULT_NAMESPACE).get(name);
-        if (prop == null) return -1;
+        if (prop == null)
+            return -1;
         return prop.getLongValue();
     }
 
@@ -402,7 +387,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
     }
 
     private void setProperty(Namespace namespace, String name, String value) {
-        if (value == null) { 
+        if (value == null) {
             removeProperty(namespace, name);
             return;
         }
@@ -412,105 +397,77 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         }
         prop.setStringValue(value);
     }
-    
-    /**
-     * Adds a URI to the child URI list.
-     *
-     * @param childURI a <code>String</code> value
-     */
-//    public synchronized void addChildURI(Path childURI) {
-//            Path[] newChildren = new Path[this.childURIs.length + 1];
-//            
-//            System.arraycopy(this.childURIs, 0, 
-//                             newChildren,    0,
-//                             this.childURIs.length);
-//            
-//            newChildren[this.childURIs.length] = childURI;
-//            
-//            this.childURIs = newChildren;
-//    }
-   
-    // Mumble mumble. this.childURIs should never be null if this method is called.
-    // However, this method is only called from RepositoryImpl.create*(). Keeping old behaviour for now.
+
+    // Mumble mumble. this.childURIs should never be null if this method is
+    // called.
+    // However, this method is only called from RepositoryImpl.create*().
+    // Keeping old behaviour for now.
     public synchronized void addChildURI(Path childURI) {
         if (this.childURIs == null) {
             this.childURIs = new ArrayList<Path>();
         }
 
         // Don't modify current child URI list, create copy and replace instead.
-        // This is because the current list might be read simultaneously out there in the wild 
+        // This is because the current list might be read simultaneously out
+        // there in the wild
         ArrayList<Path> copy = new ArrayList<Path>(this.childURIs);
         copy.add(childURI);
         this.childURIs = copy;
     }
-    
-    // Mumble mumble. this.childURIs should never be null if this method is called.
-    // However, this method is only called from RepositoryImpl.delete(). Keeping old behaviour for now.
+
+    // Mumble mumble. this.childURIs should never be null if this method is
+    // called.
+    // However, this method is only called from RepositoryImpl.delete(). Keeping
+    // old behaviour for now.
     public synchronized void removeChildURI(Path childURI) {
         if (this.childURIs == null) { // 
-            this.childURIs = new ArrayList<Path>(); 
+            this.childURIs = new ArrayList<Path>();
             return;
         }
-        
+
         // Don't modify current child URI list, create copy and replace instead.
-        // This is because the current list might be read simultaneously out there in the wild 
+        // This is because the current list might be read simultaneously out
+        // there in the wild
         ArrayList<Path> copy = new ArrayList<Path>(this.childURIs);
         copy.remove(childURI);
         this.childURIs = copy;
     }
-    
-    /**
-     * Remove a URI from the child URI list.
-     * 
-     * @param childURI
-     */
-//    public synchronized void removeChildURI(Path childURI) {
-//        for (int i=0; i<this.childURIs.length; i++) {
-//            if (this.childURIs[i].equals(childURI)) {
-//                Path[] newChildren = new Path[this.childURIs.length-1];
-//                
-//                if (i > 0) {
-//                    System.arraycopy(this.childURIs, 0, newChildren, 0, i);
-//                }
-//                
-//                if (i+1 < this.childURIs.length) {
-//                    System.arraycopy(this.childURIs, i+1, newChildren, i, 
-//                                                (this.childURIs.length-i-1));
-//                }
-//                
-//                this.childURIs = newChildren;
-//                return;
-//            }
-//        }
-//    }
 
     public boolean equals(Object obj) {
-        if (!(obj instanceof ResourceImpl)) return false;
-        if (!super.equals(obj)) return false;
+        if (!(obj instanceof ResourceImpl))
+            return false;
+        if (!super.equals(obj))
+            return false;
         ResourceImpl other = (ResourceImpl) obj;
-        if (!this.acl.equals(other.acl)) return false;
-        if (this.lock == null && other.lock != null) return false;
-        if (this.lock != null && other.lock == null) return false;
-        if (this.lock != null && !this.lock.equals(other.lock)) return false;
-        
-        // Copy refs to current child URI list objects, because 'this.childURIs' is not a stable reference.
+        if (!this.acl.equals(other.acl))
+            return false;
+        if (this.lock == null && other.lock != null)
+            return false;
+        if (this.lock != null && other.lock == null)
+            return false;
+        if (this.lock != null && !this.lock.equals(other.lock))
+            return false;
+
+        // Copy refs to current child URI list objects, because 'this.childURIs'
+        // is not a stable reference.
         // It might be swapped to new list while this method is executing.
-        List<Path> thisChildURIs = this.childURIs; 
+        List<Path> thisChildURIs = this.childURIs;
         List<Path> otherChildURIs = other.childURIs;
-        
-        if ((thisChildURIs == null && otherChildURIs != null) 
-                ||  (thisChildURIs != null && otherChildURIs == null)) return false;
-        
+
+        if ((thisChildURIs == null && otherChildURIs != null) || (thisChildURIs != null && otherChildURIs == null))
+            return false;
+
         if (thisChildURIs != null && otherChildURIs != null) {
-            if (thisChildURIs.size() != otherChildURIs.size()) return false;
+            if (thisChildURIs.size() != otherChildURIs.size())
+                return false;
             for (int i = 0; i < thisChildURIs.size(); i++) {
-                if (!thisChildURIs.get(i).equals(otherChildURIs.get(i))) return false;
+                if (!thisChildURIs.get(i).equals(otherChildURIs.get(i)))
+                    return false;
             }
         }
-        
+
         return true;
     }
-
 
     public String toString() {
         StringBuilder sb = new StringBuilder();

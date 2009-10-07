@@ -37,40 +37,23 @@ import org.vortikal.security.Principal;
 
 /**
  * XXX Not usable as web service assertion.
- *
+ * 
  */
 public class JSONObjectParseableAssertion implements RepositoryContentEvaluationAssertion {
 
-//    private Repository repository;
-//    private String token;
-
     public boolean matches(Resource resource, Principal principal) {
         return matches(resource, principal, null);
-//        if (resource.isCollection()) {
-//            return false;
-//        }
-//        try {
-//            InputStream inputStream = this.repository.getInputStream(
-//                this.token, resource.getURI(), true);
-//            byte[] buffer = StreamUtil.readInputStream(inputStream);
-//            String content = new String(buffer, "utf-8");
-//            JSONObject.fromObject(content);
-//            return true;
-//        } catch (Exception e) {
-//            return false;
-//        }
     }
 
-//    public boolean conflicts(Assertion assertion) {
-//        return false;
-//    }
-
     public boolean matches(Resource resource, Principal principal, Content content) {
-        // Could fallback to Resource.getInputStream instead,but that will not work in all cases when
+        // Could fallback to Resource.getInputStream instead,but that will not
+        // work in all cases when
         // this assertion is called from evaluation framework.
-        if (content == null) return false;
-        if (resource.isCollection()) return false;
-        
+        if (content == null)
+            return false;
+        if (resource.isCollection())
+            return false;
+
         try {
             content.getContentRepresentation(net.sf.json.JSONObject.class);
             return true;
@@ -78,12 +61,4 @@ public class JSONObjectParseableAssertion implements RepositoryContentEvaluation
             return false;
         }
     }
-
-//    @Required public void setRepository(Repository repository) {
-//        this.repository = repository;
-//    }
-//
-//    @Required public void setToken(String token) {
-//        this.token = token;
-//    }
 }

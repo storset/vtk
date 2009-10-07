@@ -20,7 +20,7 @@ resourcetype person {
     content : html noextract,
     getExternalScientificInformation : boolean,
     externalScientificInformation : binary external:fridaPublicationsService,
-    selectedPublications : html noextract,
+    selectedPublications : html,
     getRelatedProjects : boolean,
     projects : json (projectName:string, projectUrl:string) multiple,
     rssFeeds : json (rssTitle:string, rssUrl:string) multiple,

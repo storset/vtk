@@ -122,7 +122,7 @@ public class FridaPublicationsProvider implements ReferenceDataProvider {
         }
 
         if (prop2 != null) {
-            model.put("selectedPublications", "here comes the selectedPublications");
+            model.put("selectedPublications", prop2.getStringValue());
         } else {
             model.put("selectedPublications", null);
         }

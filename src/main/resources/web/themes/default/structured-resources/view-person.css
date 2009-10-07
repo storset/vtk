@@ -85,3 +85,14 @@ h1 {
 .vrtx-projects  ul.vrtx-projects-list li.vrtx-project {
   margin:0 0 10px;
 }
+
+ul.vrtx-frida-publications {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+ul.vrtx-frida-publications li.vrtx-frida-publication {
+  margin: 0;
+  padding: 0 0 5px 0;
+}

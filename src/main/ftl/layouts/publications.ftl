@@ -25,8 +25,6 @@
    <#assign tab4 = counter>
 </#if>
 
-
-
 <ul>
     <#if tab1 != 0>
       <li><a href="#tabs-${tab1}">Utvalgte</a></li>
@@ -55,9 +53,13 @@
 <#macro listPublications tabNumber publications>
   <#if tabNumber != 0>
     <div id="tabs-${tabNumber}">
-      <ul class="vrtx-frida-publication">
+      <ul class="vrtx-frida-publications">
+        <#assign publicationNr = 0 />
         <#list publications as publication>
-          <li>${publication.researchers}&nbsp;(${publication.year}). ${publication.title}</li>
+          <#assign publicationNr = publicationNr +1 />
+          <li id="vrtx-frida-publication-${publicationNr}" class="vrtx-frida-publication">
+             ${publication.researchers}&nbsp;(${publication.year}). ${publication.title}
+          </li>
         </#list>
       </ul>
     </div>

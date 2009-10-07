@@ -193,22 +193,15 @@ resourcetype person {
           <h2>[localized "scientificInformation"]</h2>
           [if (publications && publications != "") && (externalPublications && externalPublications != "")]
             <div id="tabs" class="vrtx-person-publications">
-              <ul>
-                  <li><a href="#tabs-1">Utvalgte</a></li>
-                  <li><a href="#tabs-2">Frida</a></li>
-              </ul> 
-                <div id="tabs-1">
-                  [val publications unescaped]
-                </div>
-                <div id="tabs-2">
-                  ${resource:publications}
-                </div>
+                ${resource:publications}
             </div>
           [else]
             [if (publications && publications != "")]
               [val publications unescaped]
             [else]
-              ${resource:publications}
+              <div id="tabs" class="vrtx-person-publications">   
+                ${resource:publications}
+              </div>
             [endif]
           [endif]
         [endif]

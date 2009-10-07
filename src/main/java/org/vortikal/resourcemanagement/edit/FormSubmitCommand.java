@@ -31,6 +31,7 @@
 package org.vortikal.resourcemanagement.edit;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -177,11 +178,15 @@ public class FormSubmitCommand extends UpdateCancelCommand {
                 FormElement elem = findElement(name);
                 Object value = elem.getValue();
                 this.resource.removeProperty(name);
-                if (value != null) {
+                if (!isEmpty(value)) {
                     this.resource.addProperty(name, value);
                 }
             }
         }
+    }
+
+    private boolean isEmpty(Object value) {
+        return (value == null) || (value instanceof Collection<?>) && ((Collection<?>) value).isEmpty();
     }
 
 }

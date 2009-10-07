@@ -8,7 +8,7 @@
     <#local counter = 0 />
     <#local locale = springMacroRequestContext.getLocale() />
 
-    <#if elem.value?exists && elem.value?size = 0>
+    <#if !elem.value?exists>
 	  <div class="vrtx-json-element" id="vrtx-json-element-${inputFieldName}-${counter}">
       <#list elem.description.attributes as jsonAttr>
 		<#assign tmpName = inputFieldName + "." + jsonAttr + "." + counter />

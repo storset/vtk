@@ -60,15 +60,23 @@
           <li id="vrtx-frida-publication-${publicationNr}" class="vrtx-frida-publication">
              <#if publication.url != "">
                <#if publication.mainCategoryCode == "BOK">
-                 ${publication.researchers}&nbsp;(${publication.year}). <em><a href="${publication.url}">${publication.title}</a></em>
+                 ${publication.researchers}&nbsp;(${publication.year}).&nbsp;<em><a href="${publication.url}">${publication.title}</a></em>
                <#else>
-                 ${publication.researchers}&nbsp;(${publication.year}). <a href="${publication.url}">${publication.title}</a>
+                 <#if publication.mainCategoryCode == "BOKRAPPORTDEL">
+                   ${publication.researchers};&nbsp;${publication.researchersPartOf}&nbsp;(${publication.year}). <a href="${publication.url}">${publication.title}</a>
+                 <#else>
+                   ${publication.researchers}&nbsp;(${publication.year}).&nbsp;<a href="${publication.url}">${publication.title}</a>
+                 </#if>
                </#if>
              <#else>
                <#if publication.mainCategoryCode == "BOK">
                  ${publication.researchers}&nbsp;(${publication.year}). <em>${publication.title}</em>
                <#else>
-                 ${publication.researchers}&nbsp;(${publication.year}). ${publication.title}
+                 <#if publication.mainCategoryCode == "BOKRAPPORTDEL">
+                   ${publication.researchers};&nbsp;${publication.researchersPartOf}&nbsp;(${publication.year}).&nbsp;${publication.title}
+                 <#else>
+                   ${publication.researchers}&nbsp;(${publication.year}).&nbsp;${publication.title}
+                 </#if>
                </#if>
              </#if>
              
@@ -84,6 +92,7 @@
                   <#if publication.titlePartOf != ""><em>${publication.titlePartOf}</em>,&nbsp;</#if>
                   <#if publication.publisherName != "">${publication.publisherName}.</#if>
                   <#if publication.isbn != "">&nbsp;ISBN&nbsp;${publication.isbn}.</#if>
+                  <#if publication.chapter != "">&nbsp;${publication.chapter}.</#if>
                   <#if publication.pageFrom != "">&nbsp;s&nbsp;${publication.pageFrom}
                     <#if publication.pageTo != "">&nbsp;-&nbsp;${publication.pageTo}</#if>
                   </#if>

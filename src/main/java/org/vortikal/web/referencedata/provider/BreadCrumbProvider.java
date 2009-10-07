@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, 2008, University of Oslo, Norway
+ /* Copyright (c) 2004, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -238,7 +238,7 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
                     		breadCrumb.add(new BreadcrumbElement(url, title));
                     		breadCrumb.add(serviceNameCrumb);
                     	} else {
-                    		breadCrumb.add(new BreadcrumbElement(null, title, null));
+                    		breadCrumb.add(new BreadcrumbElement(url, title, null));
                     	}
                     } else {
                     	breadCrumb.add(new BreadcrumbElement(url, title));

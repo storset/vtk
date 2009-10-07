@@ -368,6 +368,19 @@
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="safeHtmlFilter" ref="safeHtml.filter" />
   </bean>
+  
+  <bean id="decorating.breadcrumbMenuComponent" class="org.vortikal.web.decorating.components.BreadcrumbMenuComponent" parent="requestLocalRepositoryAware">
+    <property name="namespace" ref="decorating.includeNamespace" />
+    <property name="name" value="breadcrumb-menu" />
+    <property name="service" ref="viewService"/>
+    <property name="view" ref="decorating.breadcrumbMenuComponent.view" />
+    <property name="navigationTitlePropDef" ref="navigationTitlePropDef" />
+  </bean>
+  
+  <bean name="decorating.breadcrumbMenuComponent.view" parent="freemarkerView">
+    <property name="url" value="layouts/breadcrumb-menu.ftl" />
+  </bean>
+  
 
   <bean id="decorating.listMenuComponent"
         class="org.vortikal.web.decorating.components.ListMenuComponent">

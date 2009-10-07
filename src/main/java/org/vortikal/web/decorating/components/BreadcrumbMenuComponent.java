@@ -71,8 +71,8 @@ public class BreadcrumbMenuComponent extends ViewRenderingDecoratorComponent {
         model.put("markedurl", markedUrl);
     }
     
+    @SuppressWarnings("unchecked")
     private List<BreadcrumbElement> getBreadcrumbElements() throws Exception{
-        List<BreadcrumbElement> list = new ArrayList<BreadcrumbElement>();
         String breadcrumbName = "breadcrumb"; 
         BreadCrumbProvider p = new BreadCrumbProvider();
         p.setService(service);
@@ -80,13 +80,9 @@ public class BreadcrumbMenuComponent extends ViewRenderingDecoratorComponent {
         p.setBreadcrumbName(breadcrumbName);
         p.setSkipIndexFile(true);
         p.afterPropertiesSet();
-        HashMap map = new HashMap();
+        Map<String,Object> map = new HashMap<String,Object>();
         p.referenceData(map, RequestContext.getRequestContext().getServletRequest());
-        BreadcrumbElement[] l = (BreadcrumbElement[]) map.get(breadcrumbName);
-        for(int i = 0;i < l.length;i++){
-            list.add(l[i]);
-        }
-        return list;
+        return (List<BreadcrumbElement>) map.get(breadcrumbName);
     }
 
     private Map<String, String> generateChildElements(List<Path> children, Principal principal) throws Exception {

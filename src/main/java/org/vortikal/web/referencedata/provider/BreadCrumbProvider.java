@@ -189,7 +189,7 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
         
         List<BreadcrumbElement> breadCrumb = 
             generateBreadcrumb(token, principal, uri, skipLastElement, requestContext.isIndexFile(), serviceName);
-        model.put(this.breadcrumbName, breadCrumb.toArray(new BreadcrumbElement[breadCrumb.size()]));
+        model.put(this.breadcrumbName, breadCrumb);
     }
 
 

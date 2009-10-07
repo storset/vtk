@@ -5,6 +5,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.jcr.nodetype.PropertyDefinition;
+
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
@@ -33,6 +35,7 @@ public class BreadcrumbMenuComponent extends ViewRenderingDecoratorComponent {
     private int displayFromLevel = -1;
     private String token;
     private PropertyTypeDefinition navigationTitlePropDef;
+    private PropertyTypeDefinition titlePropDef;
 
     public void processModel(Map<Object, Object> model,DecoratorRequest request, DecoratorResponse response) throws Exception {
         initRequestParameters(request);
@@ -76,6 +79,9 @@ public class BreadcrumbMenuComponent extends ViewRenderingDecoratorComponent {
         p.setRepository(repository);
         p.setBreadcrumbName(breadcrumbName);
         p.setSkipIndexFile(true);
+        PropertyTypeDefinition titleProp[] = new PropertyTypeDefinition[1];
+        titleProp[0] = titlePropDef;
+        p.setTitleOverrideProperties(titleProp);
         p.afterPropertiesSet();
         Map<String,List<BreadcrumbElement>> map = new HashMap<String,List<BreadcrumbElement>>();
         p.referenceData(map, RequestContext.getRequestContext().getServletRequest());
@@ -143,5 +149,13 @@ public class BreadcrumbMenuComponent extends ViewRenderingDecoratorComponent {
 
     public PropertyTypeDefinition getNavigationTitlePropDef() {
         return navigationTitlePropDef;
+    }
+
+    public void setTitlePropDef(PropertyTypeDefinition titlePropDef) {
+        this.titlePropDef = titlePropDef;
+    }
+
+    public PropertyTypeDefinition getTitlePropDef() {
+        return titlePropDef;
     }
 }

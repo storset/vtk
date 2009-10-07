@@ -375,6 +375,7 @@
     <property name="service" ref="viewService"/>
     <property name="view" ref="decorating.breadcrumbMenuComponent.view" />
     <property name="navigationTitlePropDef" ref="navigationTitlePropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
   </bean>
   
   <bean name="decorating.breadcrumbMenuComponent.view" parent="freemarkerView">

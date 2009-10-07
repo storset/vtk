@@ -281,7 +281,7 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
             }
         }
         if (resource.getName().equals("/")) return this.repository.getId();
-        return resource.getTitle();
+        return resource.getName();
     }
     
     private String getNavigationTitle(Resource resource) {

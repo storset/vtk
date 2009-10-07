@@ -10,10 +10,6 @@
   
 <#import "/lib/vortikal.ftl" as vrtx />
 
-<#assign resource = resourceContext.currentResource />
-
-<#assign selectedPublications = vrtx.propValue(resourceContext.currentResource, "selectedPublications", "", "resource") />
-  
 <#assign counter = 1>
 <#assign tab1 = 0><#assign tab2 = 0><#assign tab3 = 0><#assign tab4 = 0>
 

@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
 
 import org.vortikal.repository.ContentStream;
 import org.vortikal.repository.Namespace;
@@ -47,6 +48,8 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.text.JSONUtil;
+import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 
@@ -54,11 +57,9 @@ public class FridaPublicationsProvider implements ReferenceDataProvider {
 
     private Repository repository = null;
 
-
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
-
 
     @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
@@ -66,14 +67,13 @@ public class FridaPublicationsProvider implements ReferenceDataProvider {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
 
-        Resource resource = this.repository
-                .retrieve(securityContext.getToken(), requestContext.getResourceURI(), false);
+        Resource resource = this.repository.retrieve(securityContext.getToken(), requestContext.getResourceURI(), true);
 
-        Property prop = (Property) resource.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE,
+        Property fridaPublicationsProp = (Property) resource.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE,
                 "externalScientificInformation");
 
-        if (prop != null) {
-            ContentStream cs = prop.getBinaryStream();
+        if (fridaPublicationsProp != null) {
+            ContentStream cs = fridaPublicationsProp.getBinaryStream();
             InputStream is = cs.getStream();
 
             InputStreamReader isr = new InputStreamReader(is);
@@ -117,6 +117,17 @@ public class FridaPublicationsProvider implements ReferenceDataProvider {
             model.put("pOther", pOther);
 
         }
+
+        // XXX Do we have any utility stuff for doing this?
+        // i.e. fetching content from the json doc?
+        InputStream stream = this.repository.getInputStream(securityContext.getToken(),
+                requestContext.getResourceURI(), true);
+        String encoding = resource.getCharacterEncoding();
+        encoding = encoding == null ? "utf-8" : encoding;
+        byte[] bytes = StreamUtil.readInputStream(stream);
+        JSONObject jsonObject = (JSONObject) JSONSerializer.toJSON(new String(bytes, encoding));
+        Object selectedPublications = JSONUtil.select(jsonObject, "properties.selectedPublications");
+        model.put("selectedPublications", selectedPublications);
 
     }
 }

@@ -1,7 +1,7 @@
 resourcetype frontpage {
 
   properties {
-    title : string required overrides title,
+    title : string overrides title,
     main-content : json (boxTitle : string, boxType : string, boxContent : html, boxUrlText : string, boxUrl : string) multiple noextract,
     additional-content : json (boxTitle : string, boxType : string, boxContent : html, boxUrlText : string,  boxUrl : string) multiple noextract
   }

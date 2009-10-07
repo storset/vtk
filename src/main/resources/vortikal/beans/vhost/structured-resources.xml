@@ -308,6 +308,7 @@
           <list>
             <value>${webResources.baseURL}/jquery/jquery-1.3.2.min.js</value>
             <value>${webResources.baseURL}/jquery-ui-tabs-customized/js/jquery-ui-1.7.2.custom.min.js</value>
+            <value>${webResources.baseURL}/js/tabs.js</value>
           </list>
         </entry>
       </map>

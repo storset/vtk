@@ -245,12 +245,6 @@ resourcetype person {
         
         <!-- begin person js -->
         <person:javascript />
-        <script type="text/javascript">
-            $(function(){
-                  // Tabs
-                  $('#tabs').tabs();
-            });
-        </script>
         <!-- end person js -->
         
         <title><comp:title /></title>

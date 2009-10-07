@@ -201,12 +201,16 @@ resourcetype person {
                   <li><a href="#tabs-2">Frida</a></li>
                 [endif]
               </ul> 
-              <div id="tabs-1">
-                [val publications unescaped]
-              </div>
-              <div id="tabs-2">
-                TODO: Convert binary to html [val externalPublications]
-              </div>
+              [if publications && publications != ""]
+                <div id="tabs-1">
+                  [val publications unescaped]
+                </div>
+              [endif]
+              [if externalPublications && externalPublications != ""]
+                <div id="tabs-2">
+                  TODO: Convert binary to html [val externalPublications]
+                </div>
+              [endif]
             </div>
           [else]
             [if (publications && publications != "")]

@@ -191,26 +191,18 @@ resourcetype person {
         [def publications json-attr document "properties.selectedPublications"]
         [if (publications && publications != "") || (externalPublications && externalPublications != "")]
           <h2>[localized "scientificInformation"]</h2>
-          [if (selectedPublications && selectedPublications != "") && (externalPublications && externalPublications != "")]
+          [if (publications && publications != "") && (externalPublications && externalPublications != "")]
             <div id="tabs" class="vrtx-person-publications">
               <ul>
-                [if publications && publications != ""]
                   <li><a href="#tabs-1">Utvalgte</a></li>
-                [endif]
-                [if externalPublications && externalPublications != ""]
                   <li><a href="#tabs-2">Frida</a></li>
-                [endif]
               </ul> 
-              [if publications && publications != ""]
                 <div id="tabs-1">
                   [val publications unescaped]
                 </div>
-              [endif]
-              [if externalPublications && externalPublications != ""]
                 <div id="tabs-2">
                   TODO: Convert binary to html [val externalPublications]
                 </div>
-              [endif]
             </div>
           [else]
             [if (publications && publications != "")]

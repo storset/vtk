@@ -314,7 +314,30 @@
       </map>
     </property>
   </bean>
+  
+  <bean id="decorating.publicationsComponent"
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.resourceNamespace" />
+    <property name="name" value="publications" />
+    <property name="description" value="List publications from Frida" />
+    <property name="view" ref="decorating.publicationsComponent.view" />
+  </bean>
 
+  <bean id="decorating.publicationsComponent.view" parent="freemarkerView">
+    <property name="url" value="layouts/publications.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+        <ref bean="decorating.publicationsComponent.publicationsProvider" />
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="decorating.publicationsComponent.publicationsProvider"
+        class="org.vortikal.web.referencedata.provider.FridaPublicationsProvider"
+        parent="requestLocalRepositoryAware">
+  </bean>
+  
   <bean id="project.cssComponent"
         class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="project.componentNamespace" />

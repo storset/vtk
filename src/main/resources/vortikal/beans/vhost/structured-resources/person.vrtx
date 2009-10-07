@@ -201,6 +201,7 @@ resourcetype person {
                   [val publications unescaped]
                 </div>
                 <div id="tabs-2">
+                  ${resource:publications}
                   TODO: Convert binary to html [val externalPublications]
                 </div>
             </div>
@@ -208,6 +209,7 @@ resourcetype person {
             [if (publications && publications != "")]
               [val publications unescaped]
             [else]
+              ${resource:publications}
               TODO: Convert binary to html [val externalPublications]
             [endif]
           [endif]

@@ -3,14 +3,11 @@
   - File: publications.ftl
   - 
   - Description: List publications from Frida
-  - 
-  - Required model data:
-  -   resource
   -
   -->
-<#import "/lib/vortikal.ftl" as vrtx />
-<#import "/lib/view-utils.ftl" as viewutils />
 
-<#assign resource = resourceContext.currentResource />
-
-${publications}
+<#list publications as publication>
+  <div class="vrtx-frida-publications">
+    <p><b>${publication.publicationTitle}</b>, ${publication.researchers} (${publication.id})</p>
+  </div>
+</#list>

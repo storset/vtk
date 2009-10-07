@@ -14,7 +14,3 @@
 <#assign resource = resourceContext.currentResource />
 
 ${publications}
-
-<ul>
-  <li>Frida publications is coming here.. TODO: convert binary to html (in dataprovider?)</li>
-</ul>

@@ -28,7 +28,7 @@ resourcetype person {
   }
 
   edit-rules {
-    group contactInformation (getExternalPersonInfo, firstName, surname, position, phone,fax, email, postalAddress, visitingAddress) (after username),
+    group contactInformation (getExternalPersonInfo, firstName, surname, position, phone, fax, email, postalAddress, visitingAddress) (after username),
     group additionalContactInformation (alternativeVisitingAddress, building, room, availableHours) (after contactInformation),
     group images (picture, pressPhoto) (after additionalContactInformation) horizontal,
     group combinedPublications (getExternalScientificInformation, selectedPublications) (after tags),
@@ -202,7 +202,6 @@ resourcetype person {
                 </div>
                 <div id="tabs-2">
                   ${resource:publications}
-                  TODO: Convert binary to html [val externalPublications]
                 </div>
             </div>
           [else]
@@ -210,7 +209,6 @@ resourcetype person {
               [val publications unescaped]
             [else]
               ${resource:publications}
-              TODO: Convert binary to html [val externalPublications]
             [endif]
           [endif]
         [endif]

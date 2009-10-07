@@ -1,6 +1,5 @@
 package org.vortikal.web.decorating.components;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -11,7 +10,6 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.search.Searcher;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
@@ -71,7 +69,6 @@ public class BreadcrumbMenuComponent extends ViewRenderingDecoratorComponent {
         model.put("markedurl", markedUrl);
     }
     
-    @SuppressWarnings("unchecked")
     private List<BreadcrumbElement> getBreadcrumbElements() throws Exception{
         String breadcrumbName = "breadcrumb"; 
         BreadCrumbProvider p = new BreadCrumbProvider();
@@ -80,9 +77,9 @@ public class BreadcrumbMenuComponent extends ViewRenderingDecoratorComponent {
         p.setBreadcrumbName(breadcrumbName);
         p.setSkipIndexFile(true);
         p.afterPropertiesSet();
-        Map<String,Object> map = new HashMap<String,Object>();
+        Map<String,List<BreadcrumbElement>> map = new HashMap<String,List<BreadcrumbElement>>();
         p.referenceData(map, RequestContext.getRequestContext().getServletRequest());
-        return (List<BreadcrumbElement>) map.get(breadcrumbName);
+        return map.get(breadcrumbName);
     }
 
     private Map<String, String> generateChildElements(List<Path> children, Principal principal) throws Exception {

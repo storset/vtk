@@ -58,7 +58,54 @@
         <#list publications as publication>
           <#assign publicationNr = publicationNr +1 />
           <li id="vrtx-frida-publication-${publicationNr}" class="vrtx-frida-publication">
-             ${publication.researchers}&nbsp;(${publication.year}). ${publication.title}
+             <#if publication.url != "">
+               <#if publication.mainCategoryCode == "BOK">
+                 ${publication.researchers}&nbsp;(${publication.year}). <em><a href="${publication.url}">${publication.title}</a></em>
+               <#else>
+                 ${publication.researchers}&nbsp;(${publication.year}). <a href="${publication.url}">${publication.title}</a>
+               </#if>
+             <#else>
+               <#if publication.mainCategoryCode == "BOK">
+                 ${publication.researchers}&nbsp;(${publication.year}). <em>${publication.title}</em>
+               <#else>
+                 ${publication.researchers}&nbsp;(${publication.year}). ${publication.title}
+               </#if>
+             </#if>
+             
+             <#-- Add additional data if exists - logic and markup ported from SV-faculty JavaScript -->
+             <#if publication.mainCategoryCode == "BOK">
+                <ul><li>
+                  <#if publication.publisherName != "">${publication.publisherName}.</#if>
+                  <#if publication.isbn != "">&nbsp;ISBN&nbsp;${publication.isbn}.</#if>
+                  <#if publication.numberOfPages != "">&nbsp;${publication.numberOfPages}&nbsp;s.</#if>
+                </li></ul>
+             <#elseif publication.mainCategoryCode == "BOKRAPPORTDEL">
+                <ul><li>
+                  <#if publication.titlePartOf != ""><em>${publication.titlePartOf}</em>,&nbsp;</#if>
+                  <#if publication.publisherName != "">${publication.publisherName}.</#if>
+                  <#if publication.isbn != "">&nbsp;ISBN&nbsp;${publication.isbn}.</#if>
+                  <#if publication.pageFrom != "">&nbsp;s&nbsp;${publication.pageFrom}
+                    <#if publication.pageTo != "">&nbsp;-&nbsp;${publication.pageTo}</#if>
+                  </#if>
+                </li></ul>
+             <#else>
+                <#if publication.mainCategoryCode == "TIDSSKRIFTPUBL">
+                  <ul><li>
+                    <#if publication.publisherUrl != "">
+                      <em><a href="${publication.publisherUrl}">${publication.name}</a></em>. 
+                    <#else>
+                      <em>${publication.name}</em>.
+                    </#if>
+                    <#if publication.issn != "">&nbsp;ISBN&nbsp;${publication.issn}.</#if>
+                    <#if publication.volume != ""><em>&nbsp;vol.&nbsp;${publication.volume}</em></#if>
+                    <#if publication.hefte != "">&nbsp;(${publication.hefte})</#if>
+                    <#if publication.pageFrom != "">
+                      <#if publication.volume != "" || publication.hefte != "">,</#if>&nbsp;s&nbsp;${publication.pageFrom}               
+                      <#if publication.pageTo != "">&nbsp;-&nbsp;${publication.pageTo}</#if>
+                    </#if>
+                  </li></ul
+                </#if>
+             </#if>
           </li>
         </#list>
       </ul>

@@ -78,9 +78,7 @@ public class FormElement {
                     valueList.add(val);
                 }
             }
-            if (!valueList.isEmpty()) {
-                setValueInternal(valueList);
-            }
+            setValueInternal(valueList);
         } else {
             setValueInternal(value);
         }
@@ -102,7 +100,7 @@ public class FormElement {
             List<String> l = (List<String>) value;
             for (int i = 0; i < l.size(); i++) {
                 if (i > 0) {
-                    result += ",";
+                    result += ", ";
                 }
                 result += l.get(i);
             }

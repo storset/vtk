@@ -7,73 +7,59 @@
   -->
   
 <#assign counter = 1>
-<#assign t1 = 0><#assign t2 = 0><#assign t3 = 0><#assign t4 = 0>
+<#assign tab1 = 0><#assign tab2 = 0><#assign tab3 = 0><#assign tab4 = 0>
 
 <#if selectedPublications?exists && selectedPublications != "">
-   <#assign t1 = counter>
+   <#assign tab1 = counter>
    <#assign counter = counter +1>
 </#if>
 <#if pBooks?exists && pBooks?size &gt; 0>
-   <#assign t2 = counter>
+   <#assign tab2 = counter>
    <#assign counter = counter +1>
 </#if>
 <#if pSciArtBookChapters?exists && pSciArtBookChapters?size &gt; 0>
-   <#assign t3 = counter>
+   <#assign tab3 = counter>
    <#assign counter = counter +1>
 </#if>
 <#if pOther?exists && pOther?size &gt; 0>
-   <#assign t4 = counter>
+   <#assign tab4 = counter>
 </#if>
 
 
 
 <ul>
-    <#if t1 != 0>
-      <li><a href="#tabs-${t1}">Utvalgte</a></li>
+    <#if tab1 != 0>
+      <li><a href="#tabs-${tab1}">Utvalgte</a></li>
     </#if>
-    <#if t2 != 0>
-      <li><a href="#tabs-${t2}">Bøker</a></li>
+    <#if tab2 != 0>
+      <li><a href="#tabs-${tab2}">Bøker</a></li>
     </#if>
-    <#if t3 != 0>
-      <li><a href="#tabs-${t3}">Vitenskapelige artikler og bokkapitler</a></li>
+    <#if tab3 != 0>
+      <li><a href="#tabs-${tab3}">Vitenskapelige artikler og bokkapitler</a></li>
     </#if>
-    <#if t4 != 0>
-      <li><a href="#tabs-${t4}">Andre arbeider</a></li>
+    <#if tab4 != 0>
+      <li><a href="#tabs-${tab4}">Andre arbeider</a></li>
     </#if>
 </ul> 
 
-<#if t1 != 0>
-  <div id="tabs-${t1}">
+<#if tab1 != 0>
+  <div id="tabs-${tab1}">
     ${selectedPublications}
   </div>
 </#if>
 
-<#if t2 != 0>
-  <div id="tabs-${t2}">
-    <ul class="vrtx-frida-publication">
-      <#list pBooks as publication>
-        <li>${publication.researchers}&nbsp;(${publication.year}). ${publication.title}</li>
-      </#list>
-    </ul>
-  </div>
-</#if>
+<@listPublications tab2 pBooks />
+<@listPublications tab3 pSciArtBookChapters />
+<@listPublications tab4 pOther />
 
-<#if t3 != 0>
-  <div id="tabs-${t3}">
-    <ul class="vrtx-frida-publication">
-      <#list pSciArtBookChapters as publication>
-        <li>${publication.researchers}&nbsp;(${publication.year}). ${publication.title}</li>
-      </#list>
-    </ul>
-  </div>
-</#if>
-
-<#if t4 != 0>
-  <div id="tabs-${t4}">
-    <ul class="vrtx-frida-publication">
-      <#list pOther as publication>
-        <li>${publication.researchers}&nbsp;(${publication.year}). ${publication.title}</li>
-      </#list>
-    </ul>
-  </div>
-</#if>
+<#macro listPublications tabNumber publications>
+  <#if tabNumber != 0>
+    <div id="tabs-${tabNumber}">
+      <ul class="vrtx-frida-publication">
+        <#list publications as publication>
+          <li>${publication.researchers}&nbsp;(${publication.year}). ${publication.title}</li>
+        </#list>
+      </ul>
+    </div>
+  </#if> 
+</#macro>

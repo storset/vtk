@@ -32,7 +32,7 @@
         	<#list elem.description.attributes as jsonAttr>
 	  		<#assign tmpName = inputFieldName + "." + jsonAttr + "." + counter />
 	  		  <#assign jsonAttrLocalizedTitle = form.resource.getLocalizedMsg(jsonAttr, locale, null) />
-	          <#if map[jsonAttr]?exists >
+	          <#if map?is_collection && map[jsonAttr]?exists >
 				<@printJsonProperyEditView elem.description.getType(jsonAttr) jsonAttrLocalizedTitle tmpName map[jsonAttr] elem />          
 	          <#else>
 	          	<@printJsonProperyEditView elem.description.getType(jsonAttr) jsonAttrLocalizedTitle tmpName "" elem />    

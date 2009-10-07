@@ -72,9 +72,6 @@ public class FridaPublicationsProvider implements ReferenceDataProvider {
         Property prop = (Property) resource.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE,
                 "externalScientificInformation");
 
-        Property prop2 = (Property) resource.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE,
-                "selectedPublications");
-
         if (prop != null) {
             ContentStream cs = prop.getBinaryStream();
             InputStream is = cs.getStream();
@@ -119,12 +116,6 @@ public class FridaPublicationsProvider implements ReferenceDataProvider {
             model.put("pSciArtBookChapters", pSciArtBookChapters);
             model.put("pOther", pOther);
 
-        }
-
-        if (prop2 != null) {
-            model.put("selectedPublications", prop2.getStringValue());
-        } else {
-            model.put("selectedPublications", null);
         }
 
     }

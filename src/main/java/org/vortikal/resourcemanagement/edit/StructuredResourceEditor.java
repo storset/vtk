@@ -168,9 +168,14 @@ public class StructuredResourceEditor extends SimpleFormController {
                                 JSONObject obj = new JSONObject();
                                 for (String attr : jsonDesc.getAttributes()) {
                                     String input = desc.getName() + "." + attr + "." + i;
-                                    obj.put(attr, request.getParameter(input));
+                                    String posted = request.getParameter(input);
+                                    if (posted != null && !"".equals(posted.trim())) {
+                                        obj.put(attr, posted);
+                                    }
                                 }
-                                resultList.add(obj);
+                                if (!obj.isEmpty()) {
+                                    resultList.add(obj);
+                                }
                             }
                             try {
                                 form.bind(desc.getName(), resultList);
@@ -183,7 +188,7 @@ public class StructuredResourceEditor extends SimpleFormController {
                             for (String attr : jsonDesc.getAttributes()) {
                                 String param = desc.getName() + "." + attr + ".0";
                                 String posted = request.getParameter(param);
-                                if (posted != null) {
+                                if (posted != null && !"".equals(posted.trim())) {
                                     obj.put(attr, posted);
                                 }
                             }

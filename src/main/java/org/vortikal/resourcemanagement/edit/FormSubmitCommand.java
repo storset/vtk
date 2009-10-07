@@ -57,8 +57,7 @@ public class FormSubmitCommand extends UpdateCancelCommand {
             if (def instanceof EditablePropertyDescription) {
                 EditablePropertyDescription editable = (EditablePropertyDescription) def;
                 FormElementBox elementBox = new FormElementBox(def.getName());
-                elementBox.addFormElement(new FormElement(editable, null, resource.getProperty(def
-                    .getName())));
+                elementBox.addFormElement(new FormElement(editable, null, resource.getProperty(def.getName())));
                 this.elements.add(elementBox);
             }
         }
@@ -105,15 +104,12 @@ public class FormSubmitCommand extends UpdateCancelCommand {
                 indexToMoveToo = i;
             }
         }
-        if (indexOfpropToMove != -1 && indexToMoveToo != -1
-                && indexOfpropToMove != indexToMoveToo) {
+        if (indexOfpropToMove != -1 && indexToMoveToo != -1 && indexOfpropToMove != indexToMoveToo) {
             int rotation = EditRuleType.POSITION_BEFORE.equals(ruleType) ? 0 : 1;
             if (indexToMoveToo < indexOfpropToMove) {
-                Collections.rotate(elements.subList(indexToMoveToo + rotation,
-                        indexOfpropToMove + 1), 1);
+                Collections.rotate(elements.subList(indexToMoveToo + rotation, indexOfpropToMove + 1), 1);
             } else {
-                Collections.rotate(elements.subList(indexOfpropToMove, indexToMoveToo
-                        + rotation), -1);
+                Collections.rotate(elements.subList(indexOfpropToMove, indexToMoveToo + rotation), -1);
             }
         }
     }
@@ -121,15 +117,12 @@ public class FormSubmitCommand extends UpdateCancelCommand {
     private void setEditHints(EditRule editRule) {
         for (FormElementBox elementBox : elements) {
             if (elementBox.getName().equals(editRule.getName())) {
-                elementBox.addMetaData(editRule.getEditHintKey(), editRule
-                        .getEditHintValue());
+                elementBox.addMetaData(editRule.getEditHintKey(), editRule.getEditHintValue());
             }
             for (FormElement formElement : elementBox.getFormElements()) {
                 EditablePropertyDescription pd = formElement.getDescription();
                 if (pd.getName().equals(editRule.getName())) {
-                    pd
-                            .addEdithint(editRule.getEditHintKey(), editRule
-                                    .getEditHintValue());
+                    pd.addEdithint(editRule.getEditHintKey(), editRule.getEditHintValue());
                 }
             }
         }
@@ -177,8 +170,7 @@ public class FormSubmitCommand extends UpdateCancelCommand {
     }
 
     public void sync() {
-        List<PropertyDescription> descriptions = this.resource.getType()
-                .getAllPropertyDescriptions();
+        List<PropertyDescription> descriptions = this.resource.getType().getAllPropertyDescriptions();
         for (PropertyDescription desc : descriptions) {
             if (desc instanceof EditablePropertyDescription) {
                 String name = desc.getName();

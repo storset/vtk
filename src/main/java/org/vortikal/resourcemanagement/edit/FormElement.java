@@ -71,14 +71,16 @@ public class FormElement {
     public void setValue(Object value) throws Exception {
         if (this.description.isMultiple() && (value instanceof String)) {
             String[] splitValue = value.toString().split(",");
-            ArrayList<String> b = new ArrayList<String>();
+            ArrayList<String> valueList = new ArrayList<String>();
             for (String val : splitValue) {
                 val = val.trim();
                 if (!"".equals(val)) {
-                    b.add(val);
+                    valueList.add(val);
                 }
             }
-            setValueInternal(b);
+            if (!valueList.isEmpty()) {
+                setValueInternal(valueList);
+            }
         } else {
             setValueInternal(value);
         }

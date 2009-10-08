@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.decorating.components;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -110,9 +111,14 @@ public class BreadcrumbMenuComponent extends ViewRenderingDecoratorComponent {
         titleProp[0] = titlePropDef;
         p.setTitleOverrideProperties(titleProp);
         p.afterPropertiesSet();
-        Map<String, List<BreadcrumbElement>> map = new HashMap<String, List<BreadcrumbElement>>();
+        Map<String, BreadcrumbElement[]> map = new HashMap<String, BreadcrumbElement[]>();
         p.referenceData(map, RequestContext.getRequestContext().getServletRequest());
-        return map.get(breadcrumbName);
+        BreadcrumbElement[] list = map.get(breadcrumbName);
+        List<BreadcrumbElement> result = new ArrayList<BreadcrumbElement>();
+        for(int i = 0; i < list.length;i++){
+            result.add(list[i]);
+        }
+        return result;
     }
 
     private Map<String, String> generateChildElements(List<Path> children, Principal principal) throws Exception {

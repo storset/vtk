@@ -2,9 +2,17 @@
   <ul class="vrtx-breadcrumb-menu">
 		<#list breadcrumb as elem >
 			<#if (elem_has_next) >
-				<li class="vrtx-ancestor"> <a <#if (elem.URL = markedurl) >class="vrtx-marked"</#if> href="${elem.URL}">${elem.title}</a> </li>
+				<#if (elem.URL?exists)  >
+					<li class="vrtx-ancestor"> <a href="${elem.URL}">${elem.title}</a> </li>
+				<#else>
+					<li class="vrtx-ancestor"> <a class="vrtx-marked" href="">${elem.title}</a> </li>
+				</#if>
 			<#else>
-				<li class="vrtx-parent" ><a <#if (elem.URL = markedurl) >class="vrtx-marked"</#if> href="${elem.URL}">${elem.title}</a>
+				<#if (elem.URL?exists)  >
+					<li class="vrtx-parent" ><a href="${elem.URL}">${elem.title}</a>
+				<#else>
+					<li class="vrtx-parent" ><a class="vrtx-marked" href="">${elem.title}</a>
+				</#if>
 			</#if>
 		</#list>
       <ul>

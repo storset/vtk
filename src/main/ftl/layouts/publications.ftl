@@ -54,6 +54,10 @@
 <@listPublications tab3 pSciArtBookChapters />
 <@listPublications tab4 pOther />
 
+
+
+<p>
+
 <#macro listPublications tabNumber publications>
   <#if tabNumber != 0>
     <div id="tabs-${tabNumber}">
@@ -114,6 +118,7 @@
           </li>
         </#list>
       </ul>
+      <p><a href="${publicationsUrl}">Se alle ${totalNumberOfPublications} publikasjoner</a><p>
     </div>
   </#if> 
 </#macro>

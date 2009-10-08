@@ -57,9 +57,11 @@ public class FridaPublicationsProvider implements ReferenceDataProvider {
 
     private Repository repository = null;
 
+
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
+
 
     @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
@@ -97,19 +99,34 @@ public class FridaPublicationsProvider implements ReferenceDataProvider {
             JSONArray pSciArtBookChapters = new JSONArray();
             JSONArray pOther = new JSONArray();
 
-            while (it.hasNext()) {
-                JSONObject publication = (JSONObject) it.next();
-                String mainCategory = (String) publication.get("mainCategoryCode");
-                String subCategory = (String) publication.get("subCategoryNO");
+            if (publications.size() > 2) {
 
-                if (mainCategory.equals("BOK")) {
-                    pBooks.add(publication);
-                } else if (subCategory.equals("Vitenskapelig artikkel")
-                        || subCategory.equals("Populærvitenskapelig artikkel") || mainCategory.equals("BOKRAPPORTDEL")) {
-                    pSciArtBookChapters.add(publication);
-                } else {
-                    pOther.add(publication);
+                for (int i = 0; i < (publications.size() - 2); i++) {
+                    JSONObject publication = (JSONObject) publications.get(i);
+
+                    String mainCategory = (String) publication.get("mainCategoryCode");
+                    String subCategory = (String) publication.get("subCategoryNO");
+
+                    if (mainCategory.equals("BOK")) {
+                        pBooks.add(publication);
+                    } else if (subCategory.equals("Vitenskapelig artikkel")
+                            || subCategory.equals("Populærvitenskapelig artikkel")
+                            || mainCategory.equals("BOKRAPPORTDEL")) {
+                        pSciArtBookChapters.add(publication);
+                    } else {
+                        pOther.add(publication);
+                    }
                 }
+            }
+
+            if (publications.size() >= 2) {
+
+                JSONObject publication = (JSONObject) publications.get(publications.size() - 2);
+                model.put("publicationsUrl", publication.get("publicationsUrl"));
+
+                publication = (JSONObject) publications.get(publications.size() - 1);
+                model.put("totalNumberOfPublications", publication.get("totalNumberOfPublications"));
+
             }
 
             model.put("pBooks", pBooks);
@@ -123,7 +140,7 @@ public class FridaPublicationsProvider implements ReferenceDataProvider {
         InputStream stream = this.repository.getInputStream(securityContext.getToken(),
                 requestContext.getResourceURI(), true);
         String encoding = resource.getCharacterEncoding();
-        encoding = encoding == null ? "utf-8" : encoding;
+        encoding = encoding == null ? "utf-8": encoding;
         byte[] bytes = StreamUtil.readInputStream(stream);
         JSONObject jsonObject = (JSONObject) JSONSerializer.toJSON(new String(bytes, encoding));
         Object selectedPublications = JSONUtil.select(jsonObject, "properties.selectedPublications");

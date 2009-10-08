@@ -66,21 +66,13 @@
                <#if publication.mainCategoryCode == "BOK">
                  ${publication.researchers}&nbsp;(${publication.year}).&nbsp;<em><a href="${publication.url}">${publication.title}</a></em>
                <#else>
-                 <#if publication.mainCategoryCode == "BOKRAPPORTDEL">
-                   ${publication.researchers};&nbsp;${publication.researchersPartOf}&nbsp;(${publication.year}). <a href="${publication.url}">${publication.title}</a>
-                 <#else>
-                   ${publication.researchers}&nbsp;(${publication.year}).&nbsp;<a href="${publication.url}">${publication.title}</a>
-                 </#if>
+                 ${publication.researchers}&nbsp;(${publication.year}).&nbsp;<a href="${publication.url}">${publication.title}</a>
                </#if>
              <#else>
                <#if publication.mainCategoryCode == "BOK">
                  ${publication.researchers}&nbsp;(${publication.year}). <em>${publication.title}</em>
                <#else>
-                 <#if publication.mainCategoryCode == "BOKRAPPORTDEL">
-                   ${publication.researchers};&nbsp;${publication.researchersPartOf}&nbsp;(${publication.year}).&nbsp;${publication.title}
-                 <#else>
-                   ${publication.researchers}&nbsp;(${publication.year}).&nbsp;${publication.title}
-                 </#if>
+                 ${publication.researchers}&nbsp;(${publication.year}).&nbsp;${publication.title}
                </#if>
              </#if>
              

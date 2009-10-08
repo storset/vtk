@@ -4,6 +4,7 @@ div.vrtx-search-results .result h2 {font-size: 130%;margin-bottom: 0.25em;}
 div.vrtx-search-results .result .footer {margin-top: 0.25em; color: green; font-size: 90%;}
 .vrtx-search-login {padding-bottom:1em;}
 .vrtx-search-paging {white-space: nowrap; padding-top: 1em;}
+.vrtx-search-paging #vrtx-search-current-page { display: inline; font-weight: bold; }
 
 .vrtx-search-contact {
   border: solid 1px #aaa; 

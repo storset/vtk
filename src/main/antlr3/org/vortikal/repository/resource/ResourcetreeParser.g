@@ -91,12 +91,12 @@ propertytypedef
 	;
 
 derivedpropertytypedef
-	:	NAME COLON derived (overrides)? (MULTIPLE)? 
-		-> ^(NAME derived (overrides)? (MULTIPLE)?)
+	:	NAME COLON derived (overrides)? (MULTIPLE)? (defaultprop)? 
+		-> ^(NAME derived (overrides)? (MULTIPLE)? (defaultprop)?)
 	;
 
-derived	:	DERIVED LP fieldlist RP EVAL LP evallist RP (defaultprop)?
-		-> ^(DERIVED ^(FIELDS fieldlist) ^(EVAL evallist) (defaultprop)?)
+derived	:	DERIVED LP fieldlist RP EVAL LP evallist RP
+		-> ^(DERIVED ^(FIELDS fieldlist) ^(EVAL evallist))
 	;
 
 fieldlist
@@ -110,7 +110,7 @@ nameorqtext
 	;
     
 defaultprop
-	:	DEFAULTPROP NAME;
+	:	DEFAULTPROP NAME -> ^(DEFAULTPROP NAME);
 
 jsonpropertytypedef
 	:	NAME COLON JSON jsonspec (MULTIPLE)? (NOEXTRACT)? (external)?

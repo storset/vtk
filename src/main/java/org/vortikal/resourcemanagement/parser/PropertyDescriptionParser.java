@@ -159,6 +159,9 @@ public class PropertyDescriptionParser {
             case ResourcetreeLexer.MULTIPLE:
                 p.setMultiple(true);
                 break;
+            case ResourcetreeLexer.DEFAULTPROP:
+                p.setDefaultProperty(descEntry.getChild(0).getText());
+                break;
             default:
                 throw new IllegalStateException("Unknown token type for derived property description: "
                         + descEntry.getType());
@@ -196,13 +199,6 @@ public class PropertyDescriptionParser {
             String value = eval.getChild(i).getText();
             EvalDescription desc = new EvalDescription(quote, value);
             evalDescriptions.add(desc);
-        }
-
-        if (descEntry.getChildCount() > 3) {
-            Tree defaultProp = descEntry.getChild(2);
-            if (ResourcetreeLexer.DEFAULTPROP == defaultProp.getType()) {
-                p.setDefaultProperty(descEntry.getChild(3).getText());
-            }
         }
 
         p.setDependentProperties(dependentFields);

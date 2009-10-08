@@ -447,7 +447,8 @@ public class StructuredResourceManager {
                     }
                 }
             }
-            if (value != null) {
+
+            if (!emptyValue(value)) {
                 setPropValue(property, value);
             } else {
                 JSONObject json;
@@ -527,33 +528,14 @@ public class StructuredResourceManager {
             }
 
             try {
-                StringBuilder value = new StringBuilder();
-                for (EvalDescription evalDescription : desc.getEvalDescriptions()) {
-                    if (evalDescription.isString()) {
-                        value.append(evalDescription.getValue());
-                        continue;
-                    }
-                    String propName = evalDescription.getValue();
-                    Property p = ctx.getNewResource().getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, propName);
-                    if (p == null) {
-                        p = ctx.getNewResource().getProperty(Namespace.DEFAULT_NAMESPACE, propName);
-                    }
-                    if (p == null) {
-                        continue;
-                    }
-                    value.append(p.getValue().toString());
-                }
+
+                String value = getEvaluatedValue(desc.getEvalDescriptions(), ctx);
                 if (!emptyValue(value)) {
                     setPropValue(property, value);
                 } else {
                     String defaultProp = desc.getDefaultProperty();
-                    Resource r = ctx.getNewResource();
                     if (defaultProp != null) {
-                        Property dependentProperty = r
-                                .getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, defaultProp);
-                        if (dependentProperty == null) {
-                            dependentProperty = r.getProperty(Namespace.DEFAULT_NAMESPACE, defaultProp);
-                        }
+                        Property dependentProperty = getProperty(ctx.getNewResource(), defaultProp);
                         if (dependentProperty == null) {
                             return false;
                         }
@@ -565,6 +547,23 @@ public class StructuredResourceManager {
             } catch (Exception e) {
                 return false;
             }
+        }
+
+        private String getEvaluatedValue(List<EvalDescription> evalDescriptions, PropertyEvaluationContext ctx) {
+            StringBuilder value = new StringBuilder();
+            for (EvalDescription evalDescription : desc.getEvalDescriptions()) {
+                if (evalDescription.isString()) {
+                    value.append(evalDescription.getValue());
+                    continue;
+                }
+                String propName = evalDescription.getValue();
+                Property prop = getProperty(ctx.getNewResource(), propName);
+                if (prop == null) {
+                    continue;
+                }
+                value.append(prop.getValue().toString());
+            }
+            return value.toString();
         }
     }
 
@@ -583,7 +582,8 @@ public class StructuredResourceManager {
         @SuppressWarnings("unchecked")
         public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
 
-            if (ctx.getEvaluationType() == PropertyEvaluationContext.Type.Create) {
+            if (ctx.getEvaluationType() == PropertyEvaluationContext.Type.Create
+                    || ctx.getEvaluationType() != PropertyEvaluationContext.Type.ContentChange) {
                 return false;
             }
 
@@ -605,5 +605,13 @@ public class StructuredResourceManager {
             }
             return false;
         }
+    }
+
+    private Property getProperty(Resource resource, String propName) {
+        Property prop = resource.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, propName);
+        if (prop == null) {
+            prop = resource.getProperty(Namespace.DEFAULT_NAMESPACE, propName);
+        }
+        return prop;
     }
 }

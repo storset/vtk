@@ -12,7 +12,8 @@ resourcetype person {
     postalAddress : string multiple external:userMetadataLdapService,
     visitingAddress : string multiple external:userMetadataLdapService,
     alternativeVisitingAddress : string multiple,
-    title : derived (firstName, surname) eval (firstName + " " + surname) overrides title,
+    title : derived (firstName, surname) eval (firstName + " " + surname)
+      overrides title default username,
     room : string,
     availableHours : string,
     picture : image_ref, 
@@ -54,9 +55,9 @@ resourcetype person {
   
     title {
       ##
-        [def v resource-prop "." "title"]
-        [if v]
-          [val v]
+        [def titleValue resource-prop "." "title"]
+        [if titleValue]
+          [val titleValue]
         [endif]
       ##
     }

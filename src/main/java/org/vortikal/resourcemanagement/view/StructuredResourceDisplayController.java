@@ -117,14 +117,12 @@ public class StructuredResourceDisplayController implements Controller, Initiali
 
     private List<HtmlNodeFilter> parseFilters;
 
-
     public void setParseFilters(List<HtmlNodeFilter> parseFilters) {
         this.parseFilters = parseFilters;
     }
 
     // XXX: clean up this mess:
     private Map<StructuredResourceDescription, Map<String, TemplateLanguageDecoratorComponent>> components = new ConcurrentHashMap<StructuredResourceDescription, Map<String, TemplateLanguageDecoratorComponent>>();
-
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
@@ -135,7 +133,8 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         InputStream stream = this.repository.getInputStream(token, uri, true);
         byte[] buff = StreamUtil.readInputStream(stream);
         String encoding = r.getCharacterEncoding();
-        if (encoding == null) encoding = "utf-8";
+        if (encoding == null)
+            encoding = "utf-8";
         String source = new String(buff, encoding);
 
         StructuredResourceDescription desc = this.resourceManager.get(r.getResourceType());
@@ -164,9 +163,12 @@ public class StructuredResourceDisplayController implements Controller, Initiali
 
         HtmlPageContent content = renderInitialPage(res, model, request);
 
-        // XXX This is a most unwanted solution. We parse the entire document after
-        // it's already been parsed once. This can cause recursive invocation of components,
-        // e.g. the first round of parsing results in output which contains a component
+        // XXX This is a most unwanted solution. We parse the entire document
+        // after
+        // it's already been parsed once. This can cause recursive invocation of
+        // components,
+        // e.g. the first round of parsing results in output which contains a
+        // component
         // definition, which is parsed and resolved during the second pass.
         byte[] bytes = content.getHtmlContent().getStringRepresentation().getBytes();
         ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
@@ -176,7 +178,6 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         model.put("page", page);
         return new ModelAndView(this.viewName, model);
     }
-
 
     @SuppressWarnings("unchecked")
     public HtmlPageContent renderInitialPage(StructuredResource res, Map model, HttpServletRequest request)
@@ -190,11 +191,9 @@ public class StructuredResourceDisplayController implements Controller, Initiali
                 return dummy;
             }
 
-
             public String getContent() {
                 return dummy.getStringRepresentation();
             }
-
 
             public String getOriginalCharacterEncoding() {
                 return dummy.getCharacterEncoding();
@@ -219,7 +218,6 @@ public class StructuredResourceDisplayController implements Controller, Initiali
                 return null;
             }
 
-
             public DecoratorComponent resolveComponent(String namespace, String name) {
                 if ("comp".equals(namespace)) {
                     if (components == null) {
@@ -233,7 +231,6 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         content = (HtmlPageContent) execution.render();
         return content;
     }
-
 
     private void initComponentDefs(StructuredResourceDescription desc) throws Exception {
         // XXX: "concurrent initialization":
@@ -249,7 +246,6 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         }
         this.components.put(desc, comps);
     }
-
 
     public void afterPropertiesSet() {
         Map<String, DirectiveNodeFactory> directiveHandlers = new HashMap<String, DirectiveNodeFactory>();
@@ -289,59 +285,48 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         }
     }
 
-
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
-
 
     public void setQueryParserFactory(QueryParserFactory queryParserFactory) {
         this.queryParserFactory = queryParserFactory;
     }
 
-
     public void setSearcher(Searcher searcher) {
         this.searcher = searcher;
     }
-
 
     public void setViewName(String viewName) {
         this.viewName = viewName;
     }
 
-
     public void setResourceManager(StructuredResourceManager resourceManager) {
         this.resourceManager = resourceManager;
     }
 
-
     public void setViewService(Service viewService) {
         this.viewService = viewService;
     }
-
 
     @Required
     public void setTemplateManager(TemplateManager templateManager) {
         this.templateManager = templateManager;
     }
 
-
     @Required
     public void setHtmlParser(HtmlPageParser htmlParser) {
         this.htmlParser = htmlParser;
     }
-
 
     @Required
     public void setResourceModelKey(String resourceModelKey) {
         this.resourceModelKey = resourceModelKey;
     }
 
-
     public void setConfigProviders(List<ReferenceDataProvider> configProviders) {
         this.configProviders = configProviders;
     }
-
 
     @Required
     public void setValueFormatterRegistry(ValueFormatterRegistry valueFormatterRegistry) {

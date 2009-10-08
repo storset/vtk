@@ -4,9 +4,12 @@ resourcetype person : article {
     username : string required external:ldap,
     firstname : string external:ldap,
     surname : string external:ldap,
+    title : derived (firstName, surname) eval (firstName + " " + surname)
+      overrides title default username,
     fetchExternal : boolean,
     tags : string multiple,
-    publications : json ( publicationsTitle : string, publicationsUrl : string ) multiple
+    publications : json (publicationsTitle:string, publicationsUrl:string) multiple,
+    externalPublications : binary external:getExternalPublications
   }
   
   edit-rules {

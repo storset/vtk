@@ -1,50 +1,54 @@
-
 <#macro printPropertyEditView title inputFieldName elem tooltip="" id="" inputFieldSize=20>
-
 <div class="vrtx-json">
-  <div id="${id}" class="fieldset">
-  <div class="header">${title}</div>
-    <#if "${tooltip}" != ""><div class="tooltip">${tooltip}</div></#if>
-    <#local counter = 0 />
-    <#local locale = springMacroRequestContext.getLocale() />
-
-    <#if !elem.value?exists>
-	  <div class="vrtx-json-element" id="vrtx-json-element-${inputFieldName}-${counter}">
-      <#list elem.description.attributes as jsonAttr>
-		<#assign tmpName = inputFieldName + "." + jsonAttr + "." + counter />
-		<#assign jsonAttrLocalizedTitle = form.resource.getLocalizedMsg(jsonAttr, locale, null) />
-		<@printJsonProperyEditView elem.description.getType(jsonAttr) jsonAttrLocalizedTitle tmpName "" elem />                              
-      </#list>
-      <input type="button" class="vrtx-remove-button" value="${vrtx.getMsg("editor.remove")}" onClick="$('#vrtx-json-element-${inputFieldName}-${counter}').remove()" />      
-  	  </div>
-    <#elseif !elem.valueIsList() >
-    	<div class="vrtx-json-element" id="vrtx-json-element-${inputFieldName}-${counter}">
-        <#list elem.value?keys as jsonAttr >	
-        	   <#assign tmpName = inputFieldName + "." + jsonAttr + "." + counter />
-        	   <#assign jsonAttrLocalizedTitle = form.resource.getLocalizedMsg(jsonAttr, locale, null) />
-               <@printJsonProperyEditView elem.description.getType(jsonAttr) jsonAttrLocalizedTitle tmpName elem.value[jsonAttr] elem /> 
-        </#list>
-        <input type="button" class="vrtx-remove-button" value="${vrtx.getMsg("editor.remove")}" onClick="$('#vrtx-json-element-${inputFieldName}-${counter}').remove()" />
-      	</div>    
-    <#else>
-      	<#list elem.value as map>
-      	  <div class="vrtx-json-element" id="vrtx-json-element-${inputFieldName}-${counter}">
-        	<#list elem.description.attributes as jsonAttr>
-	  		<#assign tmpName = inputFieldName + "." + jsonAttr + "." + counter />
-	  		  <#assign jsonAttrLocalizedTitle = form.resource.getLocalizedMsg(jsonAttr, locale, null) />
-	          <#if map?is_collection && map[jsonAttr]?exists >
+  	<div id="${id}" class="fieldset">
+  	<div class="header">${title}</div>
+	<#if "${tooltip}" != ""><div class="tooltip">${tooltip}</div></#if>
+	<#local counter = 0 />
+	<#local locale = springMacroRequestContext.getLocale() />
+	
+	<#-- Json property that has no value. We need to crate empty fields. -->
+	<#if !elem.value?exists > 
+	 	<div class="vrtx-json-element" id="vrtx-json-element-${inputFieldName}-${counter}">
+	  	<#list elem.description.attributes as jsonAttr>
+			<#assign tmpName = inputFieldName + "." + jsonAttr + "." + counter />
+			<#assign jsonAttrLocalizedTitle = form.resource.getLocalizedMsg(jsonAttr, locale, null) />
+			<@printJsonProperyEditView elem.description.getType(jsonAttr) jsonAttrLocalizedTitle tmpName "" elem />                              
+	  	</#list>
+	  	<input type="button" class="vrtx-remove-button" value="${vrtx.getMsg("editor.remove")}" onClick="$('#vrtx-json-element-${inputFieldName}-${counter}').remove()" />      
+	  	</div> 
+	</#if>
+	
+    <#-- There is a value and the property is a list/multiple property. -->
+    <#if elem.value?exists && elem.value?is_enumerable>
+    	<#list elem.value as map> 	
+	    <div class="vrtx-json-element" id="vrtx-json-element-${inputFieldName}-${counter}">
+	    	<#list elem.description.attributes as jsonAttr>
+		  	<#assign tmpName = inputFieldName + "." + jsonAttr + "." + counter />
+		  	<#assign jsonAttrLocalizedTitle = form.resource.getLocalizedMsg(jsonAttr, locale, null) />
+		    <#if  map[jsonAttr]?exists >
 				<@printJsonProperyEditView elem.description.getType(jsonAttr) jsonAttrLocalizedTitle tmpName map[jsonAttr] elem />          
-	          <#else>
-	          	<@printJsonProperyEditView elem.description.getType(jsonAttr) jsonAttrLocalizedTitle tmpName "" elem />    
+		    <#else>
+		    	<@printJsonProperyEditView elem.description.getType(jsonAttr) jsonAttrLocalizedTitle tmpName "" elem />    
+		    </#if>
+		</#list>
+		<input type="button" class="vrtx-remove-button" value="${vrtx.getMsg("editor.remove")}" onClick="$('#vrtx-json-element-${inputFieldName}-${counter}').remove()" />
+	    </div>
+	    <#local counter = counter + 1 />
+	    </#list>
+	</#if>
+    
+	<#-- There is at least one value and the property is not a list/multiple -->
+	<#if elem.value?exists && elem.value?is_hash >
+		<#list elem.description.attributes as key>
+			<#assign tmpName = inputFieldName + "." + key + "." + counter />
+			<#if elem.value[key]?exists >
+				<@printJsonProperyEditView elem.description.getType(key) jsonAttrLocalizedTitle tmpName elem.value[key] elem />  
+	  		<#else>
+	  			<@printJsonProperyEditView elem.description.getType(key) jsonAttrLocalizedTitle tmpName "" elem />  
 	          </#if>
-	        </#list>
-	        <input type="button" class="vrtx-remove-button" value="${vrtx.getMsg("editor.remove")}" onClick="$('#vrtx-json-element-${inputFieldName}-${counter}').remove()" />
-        </div>
-        <#local counter = counter + 1 />
-      </#list>
-      </#if>
-
-</div>
+		</#list>			
+	</#if>
+  </div>
 </div>
 </#macro>
 

@@ -12,7 +12,7 @@
 <#list form.elements as elementBox>	
   <#assign j = 0 />
   <#list elementBox.formElements as elem>
-      <#if elem.description.type == "json" && elem.valueIsList()  >
+      <#if elem.description.type == "json" && elem.description.isMultiple() >
 			LIST_OF_JSON_ELEMENTS[${i}] = new Object();
 			LIST_OF_JSON_ELEMENTS[${i}].name = "${elem.name}";
 			LIST_OF_JSON_ELEMENTS[${i}].type = "${elem.description.type}";
@@ -30,7 +30,7 @@
  	 </#list>
   </#list>	
 		for(i in LIST_OF_JSON_ELEMENTS){
-  			$("#" + LIST_OF_JSON_ELEMENTS[i].name).append("<input type=\"button\" class=\"vrtx-add-button\" onClick=\"addNewJsonShit(LIST_OF_JSON_ELEMENTS[" + i + "])\" value=\"${vrtx.getMsg("editor.add")}\" />");  		
+  			$("#" + LIST_OF_JSON_ELEMENTS[i].name).append("<input type=\"button\" class=\"vrtx-add-button\" onClick=\"addNewJsonElement(LIST_OF_JSON_ELEMENTS[" + i + "])\" value=\"${vrtx.getMsg("editor.add")}\" />");  		
   		}		
   	});
   	
@@ -42,7 +42,7 @@
   		return i;
   	}
   	
-	function addNewJsonShit(j){
+	function addNewJsonElement(j){
 	
 	   var counter = getCounterForJson(j.name,j.a[0].name);
 	   
@@ -72,7 +72,7 @@
 	   var deleteButton = "<input type=\"button\" class=\"vrtx-remove-button\" value=\"${vrtx.getMsg("editor.remove")}\" onClick=\"$('#vrtx-json-element-" + j.name + "-" + counter + "').remove()\" \/>"
 	   $("#" + j.name +" .vrtx-add-button").before("<div class=\"vrtx-json-element\" id=\"vrtx-json-element-" + j.name + "-" + counter + "\">" +  htmlTemplate + deleteButton + "<\/div>");
 	   
-	   // Bootstrap f*@!ck.........
+	   // Fck.........
 	   
 	   for(i in j.a){
 	   	var inputFieldName = j.name + "." + j.a[i].name + "." + counter;

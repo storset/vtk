@@ -31,16 +31,16 @@
 
 <ul>
     <#if tab1 != 0>
-      <li><a href="#tabs-${tab1}">Utvalgte</a></li>
+      <li><a href="#tabs-${tab1}"><@vrtx.msg code="frida.publications.selected" default="Selected"/></a></li>
     </#if>
     <#if tab2 != 0>
-      <li><a href="#tabs-${tab2}">Bøker</a></li>
+      <li><a href="#tabs-${tab2}"><@vrtx.msg code="frida.publications.books" default="Books"/></a></li>
     </#if>
     <#if tab3 != 0>
-      <li><a href="#tabs-${tab3}">Vitenskapelige artikler og bokkapitler</a></li>
+      <li><a href="#tabs-${tab3}"><@vrtx.msg code="frida.publications.sciartbookchapters" default="Scientific articles and bookchapters"/></a></li>
     </#if>
     <#if tab4 != 0>
-      <li><a href="#tabs-${tab4}">Andre arbeider</a></li>
+      <li><a href="#tabs-${tab4}"><@vrtx.msg code="frida.publications.other" default="Other works"/></a></li>
     </#if>
 </ul> 
 
@@ -114,7 +114,7 @@
           </li>
         </#list>
       </ul>
-      <p><a href="${publicationsUrl}">Se alle ${totalNumberOfPublications} publikasjoner</a></p>
+      <p><a href="${publicationsUrl}"><@vrtx.msg code="frida.publications.url" default="View all publications" args=[totalNumberOfPublications] /></a></p>
     </div>
   </#if> 
 </#macro>

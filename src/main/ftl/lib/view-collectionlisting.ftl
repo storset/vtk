@@ -179,7 +179,7 @@
          
             <#if introImg?has_content && collectionListing.hasDisplayPropDef(introImg.definition.name)>
                <#local src = vrtx.propValue(resource, 'picture', 'thumbnail') />
-               <a class="vrtx-image" href="${collectionListing.urls[r.URI]?html}">
+               <a class="vrtx-image" href="${collectionListing.urls[resource.URI]?html}">
                  <#if caption != ''>
                     <img src="${src?html}" alt="${captionFlattened}" />
                   <#else>

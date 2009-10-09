@@ -98,15 +98,26 @@
   <#local location = vrtx.propValue(resource, "location") />
   <#local mapurl = vrtx.propValue(resource, "mapurl") />
   
+  <#local isostarthour = "" />
+  <#if startiso8601 != "" >
+    <#local isostarthour = startiso8601?substring(11, 16) />
+  </#if>
+  
   <#local isoendhour = "" />
   <#if endiso8601 != "" >
     <#local isoendhour = endiso8601?substring(11, 16) />
   </#if>
-  
+
   <span class="time-and-place"><@vrtx.msg code="article.time-and-place" />:</span>
   <span class="summary" style="display:none;">${title}</span>
   <#if start != "">
-    <abbr class="dtstart" title="${startiso8601}">${start}</abbr><#rt />
+    <abbr class="dtstart" title="${startiso8601}">
+    <#if isostarthour != "00:00">
+      ${start}
+    <#else>
+      ${startshort}
+    </#if>
+    </abbr>
   </#if>
   <#if end != "" && !hideEndDate>
     <#if startshort == endshort>
@@ -119,11 +130,16 @@
       <#else>
         - 
       </#if>
-      <#t /><abbr class="dtend" title="${endiso8601}">${end}</abbr><#rt />
+      <abbr class="dtend" title="${endiso8601}">
+      <#if isoendhour != "00:00">
+        ${end}
+      <#else>
+        ${endshort}
+      </#if>
+      </abbr>
     </#if>
   </#if>
-  <#t />
-  <#if location != ""><#t>,
+  <#if location != ""><#t />,
     <span class="location">
     <#if mapurl == "">
       ${location}

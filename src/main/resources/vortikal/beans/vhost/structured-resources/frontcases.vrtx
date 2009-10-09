@@ -10,8 +10,9 @@ resourcetype frontcases {
     render-cases {
       ##
       [resource-props "."]
-        [def document structured-document]
-        [def thecases json-attr document "properties.cases"]
+      [def document structured-document]
+      [def thecases json-attr document "properties.cases"]
+      [if thecases]
         [list thecases case]
            [def sticktitle json-attr case "caseStickTitle"]
            [def thetitle json-attr case "caseTitle"]
@@ -54,6 +55,7 @@ resourcetype frontcases {
              </div>
            </div>
         [endlist]
+      [endif]
       ##
     }
     

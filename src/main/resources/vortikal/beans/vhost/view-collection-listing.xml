@@ -96,7 +96,7 @@
     <property name="recursivePropDef" ref="collection.recursiveListingPropDef" />
     <property name="sortPropDef" ref="collection.sortingPropDef" />
     <property name="query">
-      <value>uri = {$currentFolder}/* AND type IN file</value>
+      <value>(uri = {$currentFolder}/*) AND (type IN file OR type IN json-resource)</value>
     </property>
     <property name="queryParser" ref="searchParser" />
     <property name="defaultSortPropDef" ref="titlePropDef" />

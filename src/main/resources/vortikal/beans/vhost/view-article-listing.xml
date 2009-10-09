@@ -93,7 +93,10 @@
     <property name="recursivePropDef" ref="articleListing.recursiveListingPropDef" />
     <property name="sortPropDef" ref="articleListing.sortingPropDef" />
     <property name="query">
-      <value>uri = {$currentFolder}/* AND uri NOT IN {$featuredArticles} AND type IN article AND published-date &lt;= {$currentTime}</value>
+      <value>(uri = {$currentFolder}/* AND uri NOT IN {$featuredArticles}) 
+            AND ((type IN article AND published-date &lt;= {$currentTime})
+            OR (type IN structured-article))
+      </value>
     </property>
     <property name="queryParser" ref="searchParser" />
     <property name="defaultSortPropDef" ref="publishedDatePropDef" />
@@ -145,7 +148,9 @@
       </bean>
     </property>
     <property name="query">
-      <value>uri IN {$featuredArticles} AND type IN article AND published-date &lt;= {$currentTime}</value>
+      <value>(uri IN {$featuredArticles}) 
+             AND (( type IN article AND published-date &lt;= {$currentTime})
+                    OR (type IN structured-article)) </value>
     </property>
   </bean>
 
@@ -153,7 +158,9 @@
   <bean id="articleListing.subfoldersSearchComponent" parent="articleListing.searchComponent">
     <property name="name" value="articleListing.subfolderArticles" />
     <property name="query">
-      <value>uri IN {$subfolders}* AND uri NOT IN {$featuredArticles} AND type IN article AND published-date &lt;= {$currentTime}</value>
+      <value>(uri IN {$subfolders}* AND uri NOT IN {$featuredArticles}) 
+            AND ((type IN article AND published-date &lt;= {$currentTime}) 
+                  OR (type IN structured-article))</value>
     </property>
   </bean>
 

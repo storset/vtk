@@ -102,7 +102,7 @@
           
           <div id="vrtx-result-${i}" class="vrtx-resource ${articleType}"> 
             <#local src = vrtx.propValue(r, 'picture', 'thumbnail') />
-            <#if introImg?has_content && articles.displayPropDefs?seq_contains(introImg.definition)>
+            <#if introImg?has_content && articles.hasDisplayPropDef(introImg.definition.name)>
                <a class="vrtx-image" href="${articles.urls[r.URI]?html}">        
                  <#if caption != ''>
                     <img src="${src?html}" alt="${captionFlattened}" />
@@ -113,7 +113,7 @@
             </#if>
             <div class="vrtx-title">
             <a class="vrtx-title" href="${articles.urls[r.URI]?html}">${title?html}</a></div>
-            <#if publishedDate?has_content && articles.displayPropDefs?seq_contains(publishedDate.definition)> 
+            <#if publishedDate?has_content && articles.hasDisplayPropDef(publishedDate.definition.name)> 
           	
               <div class="published-date">
                 <span class="published-date-prefix"><@vrtx.localizeMessage code="viewCollectionListing.publishedDate" default="" args=[] locale=locale /></span>${publishedDate.getFormattedValue('long', locale)}                
@@ -128,7 +128,7 @@
                  </div>
                </#if>
           	</#if>
-            <#if intro?has_content && articles.displayPropDefs?seq_contains(intro.definition)>
+            <#if intro?has_content && articles.hasDisplayPropDef(intro.definition.name)>
               <div class="description introduction">${intro.value}</div>
             </#if>
 			

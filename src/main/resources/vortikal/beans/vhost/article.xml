@@ -344,7 +344,7 @@
   </bean>
 
   <bean id="article.eventInfoView" parent="freemarkerView">
-    <property name="url" value="article/event-info.ftl" />
+    <property name="url" value="layouts/time-and-place.ftl" />
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />

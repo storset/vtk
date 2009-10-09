@@ -11,9 +11,9 @@ resourcetype frontpage {
     main-content {
       ##
       [resource-props "."]
-      [if main-content]
-        [def document structured-document]
-        [def boxes json-attr document "properties.main-content"]
+      [def document structured-document]
+      [def boxes json-attr document "properties.main-content"]
+      [if boxes]
         [list boxes box]
            [def type json-attr box "boxType"]
            [def title json-attr box "boxTitle"]
@@ -39,9 +39,9 @@ resourcetype frontpage {
     additional-content {
       ##
       [resource-props "."]
-      [if additional-content]
-        [def document structured-document]
-        [def boxes json-attr document "properties.additional-content"]
+      [def document structured-document]
+      [def boxes json-attr document "properties.additional-content"]
+      [if boxes]
         [list boxes box]
            [def type json-attr box "boxType"]
            [def title json-attr box "boxTitle"]
@@ -58,7 +58,6 @@ resourcetype frontpage {
                <a href="[val url]" class="more">[val urlText]</a>
              [endif]
            </div>
-           
         [endlist]
       [endif]
       ##

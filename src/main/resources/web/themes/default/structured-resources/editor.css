@@ -302,6 +302,12 @@ h2.vrtx-title {
   clear: none;
 }
 
+#additional-content input.vrtx-remove-button,
+#main-content input.vrtx-remove-button,
+#cases input.vrtx-remove-button {
+  float: none;	
+}
+
 .vrtx-grouped-horizontal .vrtx-string input {
   float: none;	
 }

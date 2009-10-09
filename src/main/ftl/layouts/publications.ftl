@@ -103,9 +103,9 @@
                     </#if>
                     <#if publication.issn != "">&nbsp;ISBN&nbsp;${publication.issn}.</#if>
                     <#if publication.volume != ""><em>&nbsp;vol.&nbsp;${publication.volume}</em></#if>
-                    <#t><#if publication.hefte != "">&nbsp;(${publication.hefte})</#if>
-                    <#t><#if publication.pageFrom != "">
-                      <#t><#if publication.volume != "" || publication.hefte != "">&#44;</#if>&nbsp;s&nbsp;${publication.pageFrom}
+                    <#t /><#if publication.hefte != "">&nbsp;(${publication.hefte})</#if>
+                    <#t /><#if publication.pageFrom != "">
+                      <#t /><#if publication.volume != "" || publication.hefte != "">&#44;</#if>&nbsp;s&nbsp;${publication.pageFrom}
                       <#if publication.pageTo != "">-&nbsp;${publication.pageTo}</#if>
                     </#if>
                   </li></ul
@@ -114,7 +114,9 @@
           </li>
         </#list>
       </ul>
-      <p><a href="${publicationsUrl}"><@vrtx.msg code="frida.publications.url" default="View all publications" args=[totalNumberOfPublications] /></a></p>
+      <#if publicationsUrl?exists && totalNumberOfPublications?exists>
+        <p><a href="${publicationsUrl}"><@vrtx.msg code="frida.publications.url" default="View all publications" args=[totalNumberOfPublications] /></a></p>
+      </#if>
     </div>
   </#if> 
 </#macro>

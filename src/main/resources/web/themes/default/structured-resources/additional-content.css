@@ -3,7 +3,8 @@
 #vrtx-additional-content .vrtx-projects,
 #vrtx-additional-content .vrtx-project-participants,
 #vrtx-additional-content .vrtx-project-contactinfo,
-#vrtx-additional-content .vrtx-feed
+#vrtx-additional-content .vrtx-feed,
+#vrtx-additional-content .vrtx-frontpage-box	
  {
   border:1px solid #AAAAAA;
   clear:both;
@@ -22,7 +23,8 @@
 #vrtx-additional-content .vrtx-projects h2,
 #vrtx-additional-content .vrtx-project-participants h2,
 #vrtx-additional-content .vrtx-project-contactinfo h2,
-#vrtx-additional-content .vrtx-feed a.feed-title {
+#vrtx-additional-content .vrtx-feed a.feed-title,
+#vrtx-additional-content .vrtx-frontpage-box h2 {
   border-bottom:1px solid #AAAAAA;
   font-size:1.1em;
   margin:0 -4% 10px;

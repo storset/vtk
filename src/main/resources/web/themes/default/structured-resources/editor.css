@@ -296,6 +296,12 @@ h2.vrtx-title {
   font-size: 1em;	
 }
 
+#additional-content div.vrtx-string,
+#main-content div.vrtx-string,
+#cases div.vrtx-string {
+  clear: none;
+}
+
 .vrtx-grouped-horizontal .vrtx-string input {
   float: none;	
 }

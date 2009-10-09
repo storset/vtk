@@ -86,17 +86,17 @@
  * 
  * @param resource The resource to evaluate dates from
 -->
-<#macro displayTimeAndPlace resource title prefix="" timeAlone="">
+<#macro displayTimeAndPlace resource title timeAlone="" dummyWhileIThinkOfABetterSolutionFullRetard="">
 
-  <#local start = vrtx.propValue(resource, "start-date", "long", prefix) />
-  <#local startiso8601 = vrtx.propValue(resource, "start-date", "iso-8601", prefix) />
-  <#local startshort = vrtx.propValue(resource, "start-date", "short", prefix) />
-  <#local end = vrtx.propValue(resource, "end-date", "long", prefix) />
-  <#local endiso8601 = vrtx.propValue(resource, "end-date", "iso-8601", prefix) />
-  <#local endshort = vrtx.propValue(resource, "end-date", "short", prefix) />
-  <#local endhoursminutes = vrtx.propValue(resource, "end-date", "hours-minutes", prefix) />
-  <#local location = vrtx.propValue(resource, "location", "", prefix) />
-  <#local mapurl = vrtx.propValue(resource, "mapurl", "", prefix) />
+  <#local start = vrtx.propValue(resource, "start-date") />
+  <#local startiso8601 = vrtx.propValue(resource, "start-date", "iso-8601") />
+  <#local startshort = vrtx.propValue(resource, "start-date", "short") />
+  <#local end = vrtx.propValue(resource, "end-date") />
+  <#local endiso8601 = vrtx.propValue(resource, "end-date", "iso-8601") />
+  <#local endshort = vrtx.propValue(resource, "end-date", "short") />
+  <#local endhoursminutes = vrtx.propValue(resource, "end-date", "hours-minutes") />
+  <#local location = vrtx.propValue(resource, "location") />
+  <#local mapurl = vrtx.propValue(resource, "mapurl") />
   
   <#local isoendhour = "" />
   <#if endiso8601 != "" >
@@ -111,7 +111,7 @@
 
   <span class="summary" style="display:none;">${title}</span>
   <#if start != "">
-    <#if prefix = "resource"> <#-- Fix for new documenttypes -->
+    <#if dummyWhileIThinkOfABetterSolutionFullRetard != ""> <#-- Fix for new documenttypes -->
       <#if start?string?last_index_of("00:00") == -1>
         <abbr class="dtstart" title="${startiso8601}">${start}</abbr><#rt />
       <#else>
@@ -134,7 +134,7 @@
         - 
       </#if>
       
-      <#if prefix = "resource"> <#-- Fix for new documenttypes -->
+      <#if dummyWhileIThinkOfABetterSolutionFullRetard != ""> <#-- Fix for new documenttypes -->
         <#if end?string?last_index_of("00:00") == -1>
           <abbr class="dtend" title="${endiso8601}">${end}</abbr><#rt />
         <#else>
@@ -152,7 +152,7 @@
   
   <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />
   <#local currentDate = constructor("java.util.Date") />
-  <#local isValidStartDate = validateStartDate(resource, prefix, currentDate) />
+  <#local isValidStartDate = validateStartDate(resource, currentDate) />
   
   <#if isValidStartDate?string == "true">
     <span class="vrtx-add-event"><#-- XXX: remove hard-coded '?vrtx=ical' URL: -->
@@ -204,7 +204,7 @@
   
   <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />
   <#local currentDate = constructor("java.util.Date") />
-  <#local isValidStartDate = validateStartDate(resource, "", currentDate) />
+  <#local isValidStartDate = validateStartDate(resource, currentDate) />
   
   <#local numberOfComments = vrtx.prop(resource, "numberOfComments") />
   <#if numberOfComments?has_content || isValidStartDate?string == "true" >	
@@ -233,8 +233,11 @@
  * @param event The resource to evaluate start date for
  * @param currentDate The date to compare the events start date to
 -->
-<#function validateStartDate event prefix currentDate>
-  <#local startDate = event.getPropertyByPrefix(prefix, "start-date")?default("") />
+<#function validateStartDate event currentDate>
+  <#local startDate = event.getPropertyByPrefix(nullArg, "start-date")?default("") />
+  <#if !startDate?has_content>
+    <#local startDate = event.getPropertyByPrefix('resource', "start-date")?default("") />
+  </#if>
   <#if startDate != "">
     <#return startDate.getDateValue()?datetime &gt; currentDate?datetime />
   </#if>

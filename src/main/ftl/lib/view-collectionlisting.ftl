@@ -165,14 +165,15 @@
     </#if>
     <#local locale = springMacroRequestContext.getLocale() />
     <#list resources as r>
+      
       <#local title = vrtx.propValue(r, 'title') />
       <#local introImg = vrtx.prop(r, 'picture')  />
       <#local intro = vrtx.prop(r, 'introduction')  />
       <#local location  = vrtx.prop(r, 'location')  />
       <#local caption = vrtx.propValue(r, 'caption')  />
       <#local endDate = vrtx.prop(r, 'end-date') />
-      <#local hideLocation = !location?has_content || !collectionListing.displayPropDefs?seq_contains(location.definition) />
-      <#local hideEndDate = !endDate?has_content || !collectionListing.displayPropDefs?seq_contains(endDate.definition) />
+      <#local hideLocation = !location?has_content || !collectionListing.hasDisplayPropDef(location.definition.name) />
+      <#local hideEndDate = !endDate?has_content || !collectionListing.hasDisplayPropDef(endDate.definition.name) />
  
 
       <#-- Flattened caption for alt-tag in image -->
@@ -181,7 +182,7 @@
       </#local>
       <div class="vrtx-resource vevent">
          
-            <#if introImg?has_content && collectionListing.displayPropDefs?seq_contains(introImg.definition)>
+            <#if introImg?has_content && collectionListing.hasDisplayPropDef(introImg.definition.name)>
                <#local src = vrtx.propValue(r, 'picture', 'thumbnail') />
                <a class="vrtx-image" href="${collectionListing.urls[r.URI]?html}">
                  <#if caption != ''>
@@ -199,7 +200,7 @@
           <@viewutils.displayTimeAndPlaceAndNumberOfComments r title hideLocation hideEndDate hideNumberOfComments />
         </div>
 
-        <#if intro?has_content && collectionListing.displayPropDefs?seq_contains(intro.definition)>
+        <#if intro?has_content && collectionListing.hasDisplayPropDef(intro.definition.name)>
         <div class="description introduction">${intro.value}</div>
         </#if>
 

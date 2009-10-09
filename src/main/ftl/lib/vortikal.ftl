@@ -260,9 +260,15 @@
     <#return name />
 </#function>
 
+<#function prop resource propName prefix=''>
+  <#local prop = getProp(resource, propName, prefix)>
+  <#if !prop?has_content>
+    <#local prop = getProp(resource, propName, 'resource')>
+  </#if>
+  <#return prop />
+</#function>
 
-
-<#function prop resource name prefix=''>
+<#function getProp resource name prefix=''>
   <#local def = '' />
   <#if VRTX_RESOURCE_TYPE_TREE?exists>
     <#if prefix == "">
@@ -270,7 +276,7 @@
         <#local def = VRTX_RESOURCE_TYPE_TREE.getPropertyDefinitionByPrefix(nullArg, name) />
       </#if>
     <#else>
-      <#if VRTX_RESOURCE_TYPE_TREE.getPropertyDefinitionByPrefix(prefix, name)??>
+      <#if VRTX_RESOURCE_TYPE_TREE.getPropertyDefinitionByPrefix(prefix, name)?exists>
         <#local def = VRTX_RESOURCE_TYPE_TREE.getPropertyDefinitionByPrefix(prefix, name) />
       </#if>
     </#if>
@@ -281,6 +287,14 @@
 </#function>
 
 <#function propValue resource name format='long' prefix=''>
+  <#local propVal = getPropValue(resource, name, format, prefix) />
+  <#if !propVal?has_content>
+    <#local propVal = getPropValue(resource, name, format, 'resource') />
+  </#if>
+  <#return propVal />
+</#function>
+
+<#function getPropValue resource name format='long' prefix=''>
   <#local def = '' />
   <#if VRTX_RESOURCE_TYPE_TREE?exists>
     <#if prefix == "">

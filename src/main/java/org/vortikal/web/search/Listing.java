@@ -41,6 +41,7 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.service.URL;
 
 public class Listing {
+    
     private ResourceWrapper resource;
     private String title;
     private String name;
@@ -50,7 +51,6 @@ public class Listing {
     private Map<String, URL> urls = new HashMap<String, URL>();
     private List<PropertyTypeDefinition> displayPropDefs = new ArrayList<PropertyTypeDefinition>();
 
-
     public Listing(ResourceWrapper resource, String title, String name, int offset) {
         this.resource = resource;
         this.title = title;
@@ -58,76 +58,71 @@ public class Listing {
         this.offset = offset;
     }
 
-
     public ResourceWrapper getResource() {
         return resource;
     }
-
 
     public String getTitle() {
         return title;
     }
 
-
     public String getName() {
         return name;
     }
-
 
     public int getOffset() {
         return this.offset;
     }
 
-
     public void setFiles(List<PropertySet> files) {
         this.files = files;
     }
-
 
     public List<PropertySet> getFiles() {
         return files;
     }
 
-
     public int size() {
         return this.files.size();
     }
-
 
     public void setUrls(Map<String, URL> urls) {
         this.urls = urls;
     }
 
-
     public Map<String, URL> getUrls() {
         return urls;
     }
-
 
     public void setDisplayPropDefs(List<PropertyTypeDefinition> displayPropDefs) {
         this.displayPropDefs = displayPropDefs;
     }
 
-
     public List<PropertyTypeDefinition> getDisplayPropDefs() {
         return displayPropDefs;
     }
 
+    // Need this because of structured resource namespace
+    // God damn it....
+    public boolean hasDisplayPropDef(String propDefName) {
+        for (PropertyTypeDefinition def : this.displayPropDefs) {
+            if (def.getName().equals(propDefName))
+                return true;
+        }
+        return false;
+    }
 
     public void setMore(boolean more) {
         this.more = more;
     }
 
-
     public boolean hasMoreResults() {
         return more;
     }
 
-
     public boolean hasContent() {
         return getFiles() != null && getFiles().size() > 0;
     }
-
 
     @Override
     public String toString() {

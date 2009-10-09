@@ -86,66 +86,7 @@
  * 
  * @param resource The resource to evaluate dates from
 -->
-<#macro displayTimeAndPlace resource title>
-
-  <#local start = vrtx.propValue(resource, "start-date") />
-  <#local startiso8601 = vrtx.propValue(resource, "start-date", "iso-8601") />
-  <#local startshort = vrtx.propValue(resource, "start-date", "short") />
-  <#local end = vrtx.propValue(resource, "end-date") />
-  <#local endiso8601 = vrtx.propValue(resource, "end-date", "iso-8601") />
-  <#local endshort = vrtx.propValue(resource, "end-date", "short") />
-  <#local endhoursminutes = vrtx.propValue(resource, "end-date", "hours-minutes") />
-  <#local location = vrtx.propValue(resource, "location") />
-  <#local mapurl = vrtx.propValue(resource, "mapurl") />
-  
-  <#local isoendhour = "" />
-  <#if endiso8601 != "" >
-    <#local isoendhour = endiso8601?substring(11, 16) />
-  </#if>
-  
-  <span class="time-and-place"><@vrtx.msg code="article.time-and-place" />:</span>
-  <span class="summary" style="display:none;">${title}</span>
-  <#if start != "">
-    <abbr class="dtstart" title="${startiso8601}">${start}</abbr><#rt />
-  </#if>
-  <#if end != "">
-    <#if startshort == endshort>
-      <#if isoendhour != "00:00">
-        <#t /> - <abbr class="dtend" title="${endiso8601}">${endhoursminutes}</abbr><#rt />
-      </#if>
-    <#else>
-      <#if start == "">
-        (<@vrtx.msg code="event.ends" />) 
-      <#else>
-        - 
-      </#if>
-        <#t /><abbr class="dtend" title="${endiso8601}">${end}</abbr><#rt />
-    </#if>
-  </#if>
-  <#t />
-  <#if location != ""><#t>,
-    <span class="location">
-    <#if mapurl == "">
-      ${location}
-    <#else>
-      <a href="${mapurl}">${location}</a>
-    </#if>
-    </span>
-  </#if>
-  
-  <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />
-  <#local currentDate = constructor("java.util.Date") />
-  <#local isValidStartDate = validateStartDate(resource, currentDate) />
-  
-  <#if isValidStartDate?string == "true">
-    <span class="vrtx-add-event"><#-- XXX: remove hard-coded '?vrtx=ical' URL: -->
-      <a class="vrtx-ical" href='${resource.URI}?vrtx=ical'><@vrtx.msg code="event.add-to-calendar" /></a><a class="vrtx-ical-help" href="${vrtx.getMsg("event.add-to-calendar.help-url")}"></a>
-    </span>
-  </#if>
-	
-</#macro>
-
-<#macro displayTimeAndPlaceAndNumberOfComments resource title hideEndDate hideNumberOfComments >
+<#macro displayTimeAndPlace resource title hideEndDate=false hideNumberOfComments=false >
   
   <#local start = vrtx.propValue(resource, "start-date") />
   <#local startiso8601 = vrtx.propValue(resource, "start-date", "iso-8601") />
@@ -197,19 +138,21 @@
   <#local isValidStartDate = validateStartDate(resource, currentDate) />
   
   <#local numberOfComments = vrtx.prop(resource, "numberOfComments") />
-  <#if numberOfComments?has_content || isValidStartDate?string == "true" >	
-  <div class="vrtx-number-of-comments-add-event-container">
+  <#if numberOfComments?has_content || isValidStartDate>	
+    <div class="vrtx-number-of-comments-add-event-container">
   </#if>
-  <#if hideNumberOfComments?exists && !hideNumberOfComments >
+  <#if !hideNumberOfComments >
     <#local locale = springMacroRequestContext.getLocale() />
     <@displayNumberOfComments resource locale />
   </#if>
-  <#if isValidStartDate?string == "true">
-    <span class="vrtx-add-event"><#-- XXX: remove hard-coded '?vrtx=ical' URL: -->
+  
+  <#if isValidStartDate>
+    <span class="vrtx-add-event">
       <a class="vrtx-ical" href='${resource.URI}?vrtx=ical'><@vrtx.msg code="event.add-to-calendar" /></a><a class="vrtx-ical-help" href="${vrtx.getMsg("event.add-to-calendar.help-url")}"></a>
     </span>
   </#if>
-  <#if numberOfComments?has_content || isValidStartDate?string == "true" >
+  
+  <#if numberOfComments?has_content || isValidStartDate>
     </div>
   </#if>
 	
@@ -235,15 +178,15 @@
 </#function>
 
 <#macro displayNumberOfComments resource locale  >
- <#local numberOfComments = vrtx.prop(resource, "numberOfComments") />
-  <#if numberOfComments?has_content >		
-    		<a href="${resource.URI}#comments" class="vrtx-number-of-comments">
-    	    <#if numberOfComments.intValue?number &gt; 1>
-		      <@vrtx.localizeMessage code="viewCollectionListing.numberOfComments" default="" args=[numberOfComments.intValue] locale=locale />
-		    <#else>
-		      <@vrtx.localizeMessage code="viewCollectionListing.numberOfCommentsSingle" default="" args=[] locale=locale />
-		    </#if>
-			</a>
+  <#local numberOfComments = vrtx.prop(resource, "numberOfComments") />
+  <#if numberOfComments?has_content >
+    <a href="${resource.URI}#comments" class="vrtx-number-of-comments">
+    <#if numberOfComments.intValue?number &gt; 1>
+      <@vrtx.localizeMessage code="viewCollectionListing.numberOfComments" default="" args=[numberOfComments.intValue] locale=locale />
+    <#else>
+      <@vrtx.localizeMessage code="viewCollectionListing.numberOfCommentsSingle" default="" args=[] locale=locale />
+    </#if>
+    </a>
   </#if>
 </#macro>
 

@@ -141,16 +141,12 @@
             </div>
             </#if>
             
-            
-            
           </div>
           <#assign i = i + 1 />
         </#list>
-        
       </#if>
     </#list>
     </div>
-
   </#if>
 
 </#macro>
@@ -196,7 +192,7 @@
 			</div>
 
         <div class="time-and-place"> 
-          <@viewutils.displayTimeAndPlaceAndNumberOfComments resource title hideEndDate hideNumberOfComments />
+          <@viewutils.displayTimeAndPlace resource title hideEndDate hideNumberOfComments />
         </div>
 
         <#if intro?has_content && collectionListing.hasDisplayPropDef(intro.definition.name)>

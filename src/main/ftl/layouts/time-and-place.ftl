@@ -20,6 +20,6 @@
 
 <#if start != "" || end != "" || location != "">
   <div class="vevent">
-    <#t /><@viewutils.displayTimeAndPlace resource title "on" "never_go_full_retard"/>
+    <#t /><@viewutils.displayTimeAndPlace resource title/>
   </div>
 </#if>

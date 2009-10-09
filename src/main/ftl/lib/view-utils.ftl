@@ -86,7 +86,7 @@
  * 
  * @param resource The resource to evaluate dates from
 -->
-<#macro displayTimeAndPlace resource title timeAlone="" dummyWhileIThinkOfABetterSolutionFullRetard="">
+<#macro displayTimeAndPlace resource title>
 
   <#local start = vrtx.propValue(resource, "start-date") />
   <#local startiso8601 = vrtx.propValue(resource, "start-date", "iso-8601") />
@@ -103,24 +103,10 @@
     <#local isoendhour = endiso8601?substring(11, 16) />
   </#if>
   
-  <#if timeAlone == "on" && location == "">
-    <span class="time-and-place"><@vrtx.msg code="article.time" />:</span> 
-  <#else>
-    <span class="time-and-place"><@vrtx.msg code="article.time-and-place" />:</span>
-  </#if>
-
+  <span class="time-and-place"><@vrtx.msg code="article.time-and-place" />:</span>
   <span class="summary" style="display:none;">${title}</span>
   <#if start != "">
-    <#if dummyWhileIThinkOfABetterSolutionFullRetard != ""> <#-- Fix for new documenttypes -->
-      <#if start?string?last_index_of("00:00") == -1>
-        <abbr class="dtstart" title="${startiso8601}">${start}</abbr><#rt />
-      <#else>
-        <#local start = start?string?split("00:00")[0] />
-        <abbr class="dtstart" title="${startiso8601}">${start?trim}</abbr><#rt />
-      </#if>
-    <#else>
-      <abbr class="dtstart" title="${startiso8601}">${start}</abbr><#rt />
-    </#if>
+    <abbr class="dtstart" title="${startiso8601}">${start}</abbr><#rt />
   </#if>
   <#if end != "">
     <#if startshort == endshort>
@@ -133,22 +119,19 @@
       <#else>
         - 
       </#if>
-      
-      <#if dummyWhileIThinkOfABetterSolutionFullRetard != ""> <#-- Fix for new documenttypes -->
-        <#if end?string?last_index_of("00:00") == -1>
-          <abbr class="dtend" title="${endiso8601}">${end}</abbr><#rt />
-        <#else>
-          <#local end = end?string?split("00:00")[0] />
-          <abbr class="dtend" title="${endiso8601}">${end?trim}</abbr><#rt />
-        </#if>
-      <#else>
         <#t /><abbr class="dtend" title="${endiso8601}">${end}</abbr><#rt />
-      </#if>
     </#if>
   </#if>
   <#t />
-  <#if location != "" && mapurl == "">, <span class="location">${location}</span>
-  <#elseif location != "" && mapurl != "">, <span class="location"><a href="${mapurl}">${location}</a></span></#if>
+  <#if location != ""><#t>,
+    <span class="location">
+    <#if mapurl == "">
+      ${location}
+    <#else>
+      <a href="${mapurl}">${location}</a>
+    </#if>
+    </span>
+  </#if>
   
   <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />
   <#local currentDate = constructor("java.util.Date") />
@@ -199,8 +182,15 @@
     </#if>
   </#if>
   <#t />
-  <#if location != "" && !hideLocation && mapurl == "">, <span class="location">${location}</span>
-  <#elseif location != "" && !hideLocation && mapurl != "">, <span class="location"><a href="${mapurl}">${location}</a></span></#if>
+  <#if location != ""><#t>,
+    <span class="location">
+    <#if mapurl == "">
+      ${location}
+    <#else>
+      <a href="${mapurl}">${location}</a>
+    </#if>
+    </span>
+  </#if>
   
   <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />
   <#local currentDate = constructor("java.util.Date") />

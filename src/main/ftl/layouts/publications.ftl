@@ -97,15 +97,15 @@
                 <#if publication.mainCategoryCode == "TIDSSKRIFTPUBL">
                   <ul><li>
                     <#if publication.publisherUrl != "">
-                      <em><a href="${publication.publisherUrl}">${publication.name}</a></em>. 
+                      <em><a href="${publication.publisherUrl}">${publication.name}</a></em>.
                     <#else>
                       <em>${publication.name}</em>.
                     </#if>
                     <#if publication.issn != "">&nbsp;ISBN&nbsp;${publication.issn}.</#if>
                     <#if publication.volume != ""><em>&nbsp;vol.&nbsp;${publication.volume}</em></#if>
-                    <#if publication.hefte != "">&nbsp;(${publication.hefte})</#if>
-                    <#if publication.pageFrom != "">
-                      <#if publication.volume != "" || publication.hefte != "">,</#if>&nbsp;s&nbsp;${publication.pageFrom}     
+                    <#t><#if publication.hefte != "">&nbsp;(${publication.hefte})</#if>
+                    <#t><#if publication.pageFrom != "">
+                      <#t><#if publication.volume != "" || publication.hefte != "">&#44;</#if>&nbsp;s&nbsp;${publication.pageFrom}
                       <#if publication.pageTo != "">-&nbsp;${publication.pageTo}</#if>
                     </#if>
                   </li></ul

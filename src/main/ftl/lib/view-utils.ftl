@@ -145,7 +145,7 @@
 	
 </#macro>
 
-<#macro displayTimeAndPlaceAndNumberOfComments resource title hideLocation hideEndDate hideNumberOfComments >
+<#macro displayTimeAndPlaceAndNumberOfComments resource title hideEndDate hideNumberOfComments >
   
   <#local start = vrtx.propValue(resource, "start-date") />
   <#local startiso8601 = vrtx.propValue(resource, "start-date", "iso-8601") />

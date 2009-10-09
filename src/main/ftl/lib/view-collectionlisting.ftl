@@ -164,15 +164,14 @@
       <h2>${collectionListing.title?html}</h2> 
     </#if>
     <#local locale = springMacroRequestContext.getLocale() />
-    <#list resources as r>
+    <#list resources as resource>
       
-      <#local title = vrtx.propValue(r, 'title') />
-      <#local introImg = vrtx.prop(r, 'picture')  />
-      <#local intro = vrtx.prop(r, 'introduction')  />
-      <#local location  = vrtx.prop(r, 'location')  />
-      <#local caption = vrtx.propValue(r, 'caption')  />
-      <#local endDate = vrtx.prop(r, 'end-date') />
-      <#local hideLocation = !location?has_content || !collectionListing.hasDisplayPropDef(location.definition.name) />
+      <#local title = vrtx.propValue(resource, 'title') />
+      <#local introImg = vrtx.prop(resource, 'picture')  />
+      <#local intro = vrtx.prop(resource, 'introduction')  />
+      <#local location  = vrtx.prop(resource, 'location')  />
+      <#local caption = vrtx.propValue(resource, 'caption')  />
+      <#local endDate = vrtx.prop(resource, 'end-date') />
       <#local hideEndDate = !endDate?has_content || !collectionListing.hasDisplayPropDef(endDate.definition.name) />
  
 
@@ -183,7 +182,7 @@
       <div class="vrtx-resource vevent">
          
             <#if introImg?has_content && collectionListing.hasDisplayPropDef(introImg.definition.name)>
-               <#local src = vrtx.propValue(r, 'picture', 'thumbnail') />
+               <#local src = vrtx.propValue(resource, 'picture', 'thumbnail') />
                <a class="vrtx-image" href="${collectionListing.urls[r.URI]?html}">
                  <#if caption != ''>
                     <img src="${src?html}" alt="${captionFlattened}" />
@@ -193,22 +192,22 @@
                </a>
             </#if>
             <div class="vrtx-title">
-            <a class="vrtx-title summary" href="${collectionListing.urls[r.URI]?html}">${title?html}</a>
+            <a class="vrtx-title summary" href="${collectionListing.urls[resource.URI]?html}">${title?html}</a>
 			</div>
 
         <div class="time-and-place"> 
-          <@viewutils.displayTimeAndPlaceAndNumberOfComments r title hideLocation hideEndDate hideNumberOfComments />
+          <@viewutils.displayTimeAndPlaceAndNumberOfComments resource title hideEndDate hideNumberOfComments />
         </div>
 
         <#if intro?has_content && collectionListing.hasDisplayPropDef(intro.definition.name)>
         <div class="description introduction">${intro.value}</div>
         </#if>
 
-        <#local hasBody = vrtx.propValue(r, 'hasBodyContent') == 'true' />
+        <#local hasBody = vrtx.propValue(resource, 'hasBodyContent') == 'true' />
 
         <#if displayMoreURLs && hasBody>
         <div class="vrtx-read-more">
-          <a href="${collectionListing.urls[r.URI]?html}" class="more" title="${title?html}">
+          <a href="${collectionListing.urls[resource.URI]?html}" class="more" title="${title?html}">
             <@vrtx.msg code="viewCollectionListing.readMore" />
           </a>
           </div>

@@ -132,11 +132,11 @@
       </#if>
       <abbr class="dtend" title="${endiso8601}">
       <#if isoendhour != "00:00">
-        ${end}
+        ${end}<#t/>
       <#else>
-        ${endshort}
+        ${endshort}<#t/>
       </#if>
-      </abbr>
+      </abbr><#t/>
     </#if>
   </#if>
   <#if location != ""><#t />,
@@ -151,7 +151,7 @@
   
   <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />
   <#local currentDate = constructor("java.util.Date") />
-  <#local isValidStartDate = validateStartDate(resource, currentDate) />
+  <#local isValidStartDate = validateStartDate(resource, currentDate)?string == 'true' />
   
   <#local numberOfComments = vrtx.prop(resource, "numberOfComments") />
   <#if numberOfComments?has_content || isValidStartDate>	

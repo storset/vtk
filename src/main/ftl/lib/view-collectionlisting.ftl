@@ -169,6 +169,7 @@
       <#local caption = vrtx.propValue(resource, 'caption')  />
       <#local endDate = vrtx.prop(resource, 'end-date') />
       <#local hideEndDate = !endDate?has_content || !collectionListing.hasDisplayPropDef(endDate.definition.name) />
+      <#local hideLocation = !location?has_content || !collectionListing.hasDisplayPropDef(location.definition.name) />
  
 
       <#-- Flattened caption for alt-tag in image -->
@@ -192,7 +193,7 @@
 			</div>
 
         <div class="time-and-place"> 
-          <@viewutils.displayTimeAndPlace resource title hideEndDate hideNumberOfComments />
+          <@viewutils.displayTimeAndPlace resource title hideEndDate hideLocation hideNumberOfComments />
         </div>
 
         <#if intro?has_content && collectionListing.hasDisplayPropDef(intro.definition.name)>

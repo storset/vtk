@@ -2,6 +2,8 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
+  <import resource="mixins/structured-resource-mixin.xml"/>
+
   <bean id="json.resourceType" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
     <property name="name" value="json-resource" />
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
@@ -28,32 +30,19 @@
     <property name="parentTypeDefinition" ref="json.resourceType" />
     <property name="assertions">
       <list>
-        <!-- XXX Isn't 'json.validDocumentAssertion' enough here ?
-             It implicitly re-validates all aspects of the two assertions preceding it:
-               - It fails if content not parseable.
-               - It fails if missing 'resourcetype' prop...
-               
-                -->
-<!--        <ref bean="json.objectParseableAssertion" />-->
-<!--        <ref bean="json.objectHasResourceTypeAssertion" />-->
         <ref bean="json.validDocumentAssertion" />
       </list>
     </property>
     <property name="mixinTypeDefinitions">
       <list>
-        <ref bean="introductionMixinResourceTypeDef" />
+        <ref bean="structuredResourceMixinResourceTypeDef" />
       </list>
     </property>
   </bean>
 
-  <bean id="json.objectParseableAssertion" class="org.vortikal.resourcemanagement.JSONObjectParseableAssertion">
-   <!-- parent="requestLocalRepositoryAware"> -->
-   <!--    <property name="token" ref="trustedToken" />-->
-  </bean>
+  <bean id="json.objectParseableAssertion" class="org.vortikal.resourcemanagement.JSONObjectParseableAssertion" />
   
   <bean id="json.objectHasResourceTypeAssertion" class="org.vortikal.resourcemanagement.JSONObjectSelectAssertion">
-<!--    parent="requestLocalRepositoryAware">-->
-<!--    <property name="token" ref="trustedToken" />-->
     <property name="expression" value="resourcetype" />
   </bean>
   

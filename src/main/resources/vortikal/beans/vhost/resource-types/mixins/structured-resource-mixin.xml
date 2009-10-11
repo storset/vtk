@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <bean id="structuredResourceMixinResourceTypeDef" class="org.vortikal.repository.resourcetype.MixinResourceTypeDefinitionImpl">
+    <property name="name" value="introduction-mixin" />
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="tagsPropDef" />
+        <ref bean="htmlHasBodyContentPropDef" />
+      </list>
+    </property>
+  </bean>
+  
+</beans>

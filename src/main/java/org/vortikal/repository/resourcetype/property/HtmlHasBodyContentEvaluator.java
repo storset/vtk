@@ -20,8 +20,11 @@ public class HtmlHasBodyContentEvaluator implements PropertyEvaluator {
 
         property.setBooleanValue(false);
         try {
-            String encoding = ctx.getNewResource().getProperty(
-                    this.characterEncodingPropDef).getStringValue();
+            String encoding = "utf-8";
+            Property encodingProp = ctx.getNewResource().getProperty(this.characterEncodingPropDef);
+            if (encodingProp != null) {
+                encoding = encodingProp.getStringValue();
+            }
             InputStream in = ctx.getContent().getContentInputStream();
             HtmlPage page = this.htmlUtil.parse(in, encoding);
             HtmlElement body = page.selectSingleElement("html.body");
@@ -32,17 +35,19 @@ public class HtmlHasBodyContentEvaluator implements PropertyEvaluator {
                 }
             }
         } catch (Exception e) {
-            // Unable to parse HTML document, 
-            // assume no body. 
+            // Unable to parse HTML document,
+            // assume no body.
         }
         return true;
     }
-    
-    @Required public void setHtmlUtil(HtmlUtil htmlUtil) {
+
+    @Required
+    public void setHtmlUtil(HtmlUtil htmlUtil) {
         this.htmlUtil = htmlUtil;
     }
-    
-    @Required public void setCharacterEncodingPropDef(PropertyTypeDefinition characterEncodingPropDef) {
+
+    @Required
+    public void setCharacterEncodingPropDef(PropertyTypeDefinition characterEncodingPropDef) {
         this.characterEncodingPropDef = characterEncodingPropDef;
     }
 

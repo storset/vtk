@@ -164,12 +164,10 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         HtmlPageContent content = renderInitialPage(res, model, request);
 
         // XXX This is a most unwanted solution. We parse the entire document
-        // after
-        // it's already been parsed once. This can cause recursive invocation of
-        // components,
-        // e.g. the first round of parsing results in output which contains a
-        // component
-        // definition, which is parsed and resolved during the second pass.
+        // after it's already been parsed once. This can cause recursive
+        // invocation of components, e.g. the first round of parsing results in
+        // output which contains a component definition, which is parsed and
+        // resolved during the second pass.
         byte[] bytes = content.getHtmlContent().getStringRepresentation().getBytes();
         ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
         HtmlPage page = this.htmlParser.parse(bais, encoding, this.parseFilters);

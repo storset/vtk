@@ -30,55 +30,40 @@
  */
 package org.vortikal.repository.resourcetype.property;
 
-import java.util.Calendar;
-
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.PropertyEvaluationContext.Type;
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
-public class PublishEvaluator implements PropertyEvaluator {
+public class DefaultPublishEvaluator implements PropertyEvaluator {
 
     private PropertyTypeDefinition publishedPropDef;
     private PropertyTypeDefinition publishDatePropDef;
+    private PropertyTypeDefinition creationTimePropDef;
 
     public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
 
+        Property creationTimeProp = ctx.getNewResource().getProperty(this.creationTimePropDef);
+
+        if (creationTimeProp == null) {
+            throw new PropertyEvaluationException("creationTimePropDef needed for evaluation");
+        }
+
         if (ctx.getEvaluationType() == Type.Create) {
-            
-            // XXX implement
-            
-        }
 
-        if (ctx.getEvaluationType() == Type.NameChange || ctx.getEvaluationType() == Type.ContentChange
-                || ctx.getEvaluationType() == Type.PropertiesChange) {
+            // Make sure every newly created resource is published
 
-            // XXX implement
-
-        }
-
-        if (ctx.getEvaluationType() == Type.PublishChange) {
-
-            // XXX review
-
-            Property published = ctx.getOriginalResource().getProperty(this.publishedPropDef);
-            Property publishDateProp = ctx.getOriginalResource().getProperty(this.publishDatePropDef);
-
-            if (published == null || published.getBooleanValue() == false) {
-                property.setBooleanValue(true);
-                if (publishDateProp == null) {
-                    publishDateProp = ctx.getNewResource().createProperty(this.publishDatePropDef);
-                }
-                publishDateProp.setDateValue(Calendar.getInstance().getTime());
-            } else {
-                property.setBooleanValue(false);
-                if (publishDateProp != null) {
-                    ctx.getNewResource().removeProperty(publishDateProp.getDefinition());
-                }
-            }
+            Property publishDateProp = ctx.getNewResource().createProperty(this.publishDatePropDef);
+            publishDateProp.setDateValue(creationTimeProp.getDateValue());
 
             return true;
+        }
+
+        if (ctx.getEvaluationType() == Type.NameChange) {
+
+            // XXX implement
+
         }
 
         return false;
@@ -90,6 +75,10 @@ public class PublishEvaluator implements PropertyEvaluator {
 
     public void setPublishDatePropDef(PropertyTypeDefinition publishDatePropDef) {
         this.publishDatePropDef = publishDatePropDef;
+    }
+
+    public void setCreationTimePropDef(PropertyTypeDefinition creationTimePropDef) {
+        this.creationTimePropDef = creationTimePropDef;
     }
 
 }

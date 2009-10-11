@@ -49,22 +49,13 @@ public class PublishResourceController implements Controller {
     protected Repository repository;
     private String viewName;
 
-    private static final String ACTION_PARAM = "action";
-    private static final String PUBLISH_PARAM = "publish";
-
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
 
         String token = SecurityContext.getSecurityContext().getToken();
         Path resourceURI = RequestContext.getRequestContext().getResourceURI();
         Resource resource = repository.retrieve(token, resourceURI, true);
-
-        String action = request.getParameter(ACTION_PARAM);
-        if (PUBLISH_PARAM.equals(action)) {
-            this.repository.publish(token, resource);
-        } else {
-            this.repository.publish(token, resource);
-        }
+        this.repository.publish(token, resource);
 
         return new ModelAndView(this.viewName, model);
     }

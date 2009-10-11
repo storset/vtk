@@ -232,13 +232,13 @@
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
     <property name="defaultValue" ref="VALUE_TRUE" />
-    <property name="propertyEvaluator" ref="publishEvaluator" />
+    <property name="propertyEvaluator" ref="defaultPublishEvaluator" />
   </bean>
   
   <bean id="overriddenPublishedPropDef" class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
     <property name="overriddenPropDef" ref="publishedPropDef" />
     <property name="defaultValue" ref="VALUE_FALSE" />
-    <property name="propertyEvaluator" ref="overriddenPublishEvaluator" />
+    <property name="propertyEvaluator" ref="publishEvaluator" />
   </bean>
   
   <bean id="publishDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
@@ -255,12 +255,13 @@
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
   </bean>
   
-  <bean id="publishEvaluator" class="org.vortikal.repository.resourcetype.property.PublishEvaluator">
+  <bean id="defaultPublishEvaluator" class="org.vortikal.repository.resourcetype.property.DefaultPublishEvaluator">
     <property name="publishedPropDef" ref="publishedPropDef" />
     <property name="publishDatePropDef" ref="publishDatePropDef" />
+    <property name="creationTimePropDef" ref="creationTimePropDef" />
   </bean>
   
-  <bean id="overriddenPublishEvaluator" parent="publishEvaluator">
+  <bean id="publishEvaluator" class="org.vortikal.repository.resourcetype.property.PublishEvaluator">
     <property name="publishedPropDef" ref="overriddenPublishedPropDef" />
   </bean>
   

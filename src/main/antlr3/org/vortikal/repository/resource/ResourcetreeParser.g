@@ -102,7 +102,8 @@ derived	:	DERIVED LP fieldlist RP EVAL LP evallist RP
 fieldlist
 	:	NAME (COMMA NAME)* ->  NAME+;
 
-evallist:	nameorqtext (PLUS nameorqtext)* -> nameorqtext+;
+evallist:	nameorqtext (PLUS nameorqtext)* -> nameorqtext+
+	|	NAME QUESTION EXISTS -> ^(NAME EXISTS);
 
 nameorqtext
 	:	NAME -> NAME

@@ -42,6 +42,7 @@ COMMA	:	',';
 PLUS	:	'+';
 DQ	:	'"';
 EQ	:	'=';
+QUESTION:	'?';
 
 PROPTYPE:	(STRING | HTML | SIMPLEHTML | BOOLEAN | INT | DATETIME | IMAGEREF | MEDIAREF);
 DERIVED	:	'derived';
@@ -53,6 +54,7 @@ EVAL	:	'eval';
 DEFAULTPROP
 	:	'default';
 MULTIPLE:	'multiple';
+EXISTS	:	'exists';
 SHOWHIDE:	'show-hide';
 MULTIPLEINPUTFIELDS
 	:	'multipleinputfields';

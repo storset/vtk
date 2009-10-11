@@ -33,7 +33,6 @@ package org.vortikal.web.referencedata.provider;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -57,11 +56,9 @@ public class FridaPublicationsProvider implements ReferenceDataProvider {
 
     private Repository repository = null;
 
-
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
-
 
     @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
@@ -91,8 +88,6 @@ public class FridaPublicationsProvider implements ReferenceDataProvider {
             is.close();
 
             JSONArray publications = JSONArray.fromObject(sb.toString());
-
-            Iterator it = publications.listIterator();
 
             // Differantiate
             JSONArray pBooks = new JSONArray();
@@ -140,7 +135,7 @@ public class FridaPublicationsProvider implements ReferenceDataProvider {
         InputStream stream = this.repository.getInputStream(securityContext.getToken(),
                 requestContext.getResourceURI(), true);
         String encoding = resource.getCharacterEncoding();
-        encoding = encoding == null ? "utf-8": encoding;
+        encoding = encoding == null ? "utf-8" : encoding;
         byte[] bytes = StreamUtil.readInputStream(stream);
         JSONObject jsonObject = (JSONObject) JSONSerializer.toJSON(new String(bytes, encoding));
         Object selectedPublications = JSONUtil.select(jsonObject, "properties.selectedPublications");

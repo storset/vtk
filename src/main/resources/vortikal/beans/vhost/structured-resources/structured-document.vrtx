@@ -5,7 +5,8 @@ resourcetype structured-document {
     introduction : simple_html,
     picture : image_ref,
     caption : simple_html,
-    content : html noextract
+    content : html noextract,
+    hasBodyContent : derived (content) eval (content?exists) overrides hasBodyContent
   }
 
   view-components {

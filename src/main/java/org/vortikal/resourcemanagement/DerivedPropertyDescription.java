@@ -30,13 +30,15 @@
  */
 package org.vortikal.resourcemanagement;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DerivedPropertyDescription extends PropertyDescription {
 
     private List<String> dependentProperties;
     private List<EvalDescription> evalDescriptions;
-	private String defaultProperty;
+    private String defaultProperty;
 
     public void setDependentProperties(List<String> dependentProperties) {
         this.dependentProperties = dependentProperties;
@@ -45,16 +47,16 @@ public class DerivedPropertyDescription extends PropertyDescription {
     public List<String> getDependentProperties() {
         return this.dependentProperties;
     }
-    
-	public void setDefaultProperty(String defaultProperty) {
-		this.defaultProperty = defaultProperty;
-	}
-	
-	public String getDefaultProperty() {
-		return this.defaultProperty;
-	}
 
-	public void setEvalDescriptions(List<EvalDescription> evalDescriptions) {
+    public void setDefaultProperty(String defaultProperty) {
+        this.defaultProperty = defaultProperty;
+    }
+
+    public String getDefaultProperty() {
+        return this.defaultProperty;
+    }
+
+    public void setEvalDescriptions(List<EvalDescription> evalDescriptions) {
         this.evalDescriptions = evalDescriptions;
     }
 
@@ -62,13 +64,30 @@ public class DerivedPropertyDescription extends PropertyDescription {
         return evalDescriptions;
     }
 
+    // XXX Reconsider this evaluation description setup. Should be a single
+    // EvalDescription holding a list of property names to consider if the
+    // evaluation requires concatenation of values. Otherwise, it should contain
+    // a given evalCondition describing how the effecting property should be
+    // evaluated based on the dependent property and the evaluation condition.
     public static class EvalDescription {
+
         private boolean string;
         private String value;
+        private EvalCondition evalCondition;
 
-        public EvalDescription(boolean string, String value) {
+        public enum EvalCondition {
+            EXISTS
+        }
+
+        private static final Map<String, EvalCondition> EVALCONDITION = new HashMap<String, EvalCondition>();
+        static {
+            EVALCONDITION.put("exists", EvalCondition.EXISTS);
+        }
+
+        public EvalDescription(boolean string, String value, EvalCondition evalCondition) {
             this.string = string;
             this.value = value;
+            this.evalCondition = evalCondition;
         }
 
         public boolean isString() {
@@ -78,5 +97,18 @@ public class DerivedPropertyDescription extends PropertyDescription {
         public String getValue() {
             return value;
         }
+
+        public EvalCondition getEvalCondition() {
+            return this.evalCondition;
+        }
+
+        public boolean hasEvalCondition() {
+            return this.evalCondition != null;
+        }
+
+        public static EvalCondition mapEvalConditionFromDescription(String evalDescription) {
+            return EVALCONDITION.get(evalDescription);
+        }
+
     }
 }

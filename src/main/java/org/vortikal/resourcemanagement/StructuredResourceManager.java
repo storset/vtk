@@ -529,7 +529,7 @@ public class StructuredResourceManager {
 
             try {
 
-                String value = getEvaluatedValue(desc.getEvalDescriptions(), ctx);
+                Object value = getEvaluatedValue(desc.getEvalDescriptions(), ctx);
                 if (!emptyValue(value)) {
                     setPropValue(property, value);
                 } else {
@@ -549,21 +549,46 @@ public class StructuredResourceManager {
             }
         }
 
-        private String getEvaluatedValue(List<EvalDescription> evalDescriptions, PropertyEvaluationContext ctx) {
+        // XXX This should be reconsidered, see
+        // DerivedPropertyDescription.EvalDescription
+        private Object getEvaluatedValue(List<EvalDescription> evalDescriptions, PropertyEvaluationContext ctx) {
             StringBuilder value = new StringBuilder();
             for (EvalDescription evalDescription : desc.getEvalDescriptions()) {
-                if (evalDescription.isString()) {
+                String propName = evalDescription.getValue();
+                if (evalDescription.hasEvalCondition()) {
+                    // XXX Conditional derived properties are applicable to only
+                    // one dependent property, just return the value (no list of
+                    // dependent properties or concatenation)
+                    return getEvaluatedConditionalValue(ctx, propName);
+                } else if (evalDescription.isString()) {
                     value.append(evalDescription.getValue());
                     continue;
+                } else {
+                    Property prop = getProperty(ctx.getNewResource(), propName);
+                    if (prop == null) {
+                        continue;
+                    }
+                    value.append(prop.getValue().toString());
                 }
-                String propName = evalDescription.getValue();
-                Property prop = getProperty(ctx.getNewResource(), propName);
-                if (prop == null) {
-                    continue;
-                }
-                value.append(prop.getValue().toString());
             }
             return value.toString();
+        }
+
+        private Object getEvaluatedConditionalValue(PropertyEvaluationContext ctx, String propName) {
+            Property prop = getProperty(ctx.getNewResource(), propName);
+            if (prop != null) {
+                return new Boolean(true);
+            } else {
+                JSONObject json;
+                try {
+                    json = (JSONObject) ctx.getContent().getContentRepresentation(JSONObject.class);
+                } catch (Exception e) {
+                    throw new PropertyEvaluationException("Unable to get JSON representation of content", e);
+                }
+                String expression = "properties." + propName;
+                Object jsonObject = JSONUtil.select(json, expression);
+                return new Boolean(jsonObject != null);
+            }
         }
     }
 

@@ -190,14 +190,25 @@ public class PropertyDescriptionParser {
 
         Tree eval = descEntry.getChild(1);
         boolean quote = false;
+        
+        // XXX This should be reconsidered, see
+        // DerivedPropertyDescription.EvalDescription
         List<EvalDescription> evalDescriptions = new ArrayList<EvalDescription>();
         for (int i = 0; i < eval.getChildCount(); i++) {
-            if (ResourcetreeLexer.DQ == eval.getChild(i).getType()) {
+            Tree evalDesc = eval.getChild(i);
+            if (ResourcetreeLexer.DQ == evalDesc.getType()) {
                 quote = !quote;
                 continue;
             }
-            String value = eval.getChild(i).getText();
-            EvalDescription desc = new EvalDescription(quote, value);
+            String value = evalDesc.getText();
+
+            String evalDescription = null;
+            Tree condition = evalDesc.getChild(0);
+            if (condition != null) {
+                evalDescription = condition.getText();
+            }
+            EvalDescription desc = new EvalDescription(quote, value, EvalDescription
+                    .mapEvalConditionFromDescription(evalDescription));
             evalDescriptions.add(desc);
         }
 

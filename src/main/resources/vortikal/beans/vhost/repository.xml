@@ -195,4 +195,12 @@
     <property name="dao" ref="${repositoryBackend}" />
   </bean>
 
+  <bean id="repository.archiver" class="org.vortikal.util.repository.ResourceArchiver">
+    <property name="repository" ref="repository" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="tempDir" value="${repository.tempDir}" />
+    <property name="principalFactory" ref="principalFactory" />
+    <property name="principalManager" ref="principalManager" />
+  </bean>
+	
 </beans>

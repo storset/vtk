@@ -11,7 +11,7 @@ getUsage() {
 void execute(context, args, out) {
     repo = context.get("context").getBean("repository");
     token = context.get("context").getBean("writeAllToken");
-    archiver = context.get("context").getBean("manage.archiver");
+    archiver = context.get("context").getBean("repository.archiver");
     
     file = args.get("file");
     uri = args.get("uri");

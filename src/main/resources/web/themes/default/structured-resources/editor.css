@@ -41,8 +41,8 @@ form > div {
 .tooltip {
     float: left;
     font-size: 0.75em;
-    padding-left:0.1em;
-    line-height:1.7em;
+    padding-left:0.35em;
+    line-height:1.85em;
 }
 
 .vrtx-string input {

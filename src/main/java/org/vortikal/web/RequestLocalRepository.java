@@ -342,10 +342,6 @@ public class RequestLocalRepository implements Repository {
     public void init() throws Exception {    
     }
 
-    public void publish(String token, Resource resource) throws IOException {
-        this.repository.publish(token, resource);
-    }
-
     public ResultSet search(String token, Search search) throws QueryException {
         return this.repository.search(token, search);
     }

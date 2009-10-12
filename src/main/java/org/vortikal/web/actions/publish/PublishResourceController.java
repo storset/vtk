@@ -55,7 +55,8 @@ public class PublishResourceController implements Controller {
         String token = SecurityContext.getSecurityContext().getToken();
         Path resourceURI = RequestContext.getRequestContext().getResourceURI();
         Resource resource = repository.retrieve(token, resourceURI, true);
-        this.repository.publish(token, resource);
+        
+        // XXX toggle publishedPropDef based on publisDatePropDef and store resource
 
         return new ModelAndView(this.viewName, model);
     }

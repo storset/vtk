@@ -802,23 +802,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new RuntimeException("Unhandled IO exception", e);
         }
     }
-    
-    public void publish(String token, Resource resource) throws IOException {
-        Principal principal = this.tokenManager.getPrincipal(token);
-        Path uri = resource.getURI();
-        this.authorizationManager.authorizeWrite(uri, principal);
-        try {
-            ResourceImpl original = this.dao.load(uri);
-            ResourceImpl originalClone = (ResourceImpl) original.clone();
-            ResourceImpl newResource = this.resourceHelper.publish(original, principal, (ResourceImpl) resource);
-            this.dao.store(newResource);
-            newResource = (ResourceImpl) this.dao.load(uri).clone();
-            ResourceModificationEvent event = new ResourceModificationEvent(this, newResource, originalClone);
-            this.context.publishEvent(event);
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException("Unhandled IO exception", e);
-        }
-    }
 
     private Resource create(String token, Path uri, boolean collection)
             throws AuthorizationException, AuthenticationException, IllegalOperationException,

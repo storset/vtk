@@ -40,7 +40,7 @@ import org.vortikal.security.Principal;
 public class PropertyEvaluationContext {
 
     public enum Type {
-        Create, ContentChange, PropertiesChange, NameChange, CommentsChange, PublishChange
+        Create, ContentChange, PropertiesChange, NameChange, CommentsChange
     }
 
     private Type evaluationType;
@@ -89,14 +89,6 @@ public class PropertyEvaluationContext {
             ResourceImpl suppliedResource, Principal principal, Content content) throws InternalRepositoryException {
         PropertyEvaluationContext ctx = new PropertyEvaluationContext(originalResource,
                 originalResource.isCollection(), principal, content, Type.CommentsChange);
-        ctx.suppliedResource = suppliedResource;
-        return ctx;
-    }
-    
-    public static PropertyEvaluationContext publishChangeContext(ResourceImpl originalResource,
-            ResourceImpl suppliedResource, Principal principal, Content content) throws InternalRepositoryException {
-        PropertyEvaluationContext ctx = new PropertyEvaluationContext(originalResource,
-                originalResource.isCollection(), principal, content, Type.PublishChange);
         ctx.suppliedResource = suppliedResource;
         return ctx;
     }

@@ -55,6 +55,10 @@ public class DerivedPropertyDescription extends PropertyDescription {
     public String getDefaultProperty() {
         return this.defaultProperty;
     }
+    
+    public boolean hasDefaultProperty() {
+        return this.defaultProperty != null;
+    }
 
     public void setEvalDescriptions(List<EvalDescription> evalDescriptions) {
         this.evalDescriptions = evalDescriptions;

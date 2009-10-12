@@ -106,6 +106,10 @@ span.vrtx-add-event a.vrtx-ical-help {
   zoom: 1; /* IE hack to get background image to display. Too be fixed. */
 }
 
+.vrtx-number-of-comments-add-event-container{
+  display: inline;  
+}
+
 span.vrtx-authors {
  display:block;
 } 

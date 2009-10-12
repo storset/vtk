@@ -1,3 +1,4 @@
+
 <#--
   - File: view-utils.ftl
   - 
@@ -86,7 +87,7 @@
  * 
  * @param resource The resource to evaluate dates from
 -->
-<#macro displayTimeAndPlace resource title hideEndDate=false hideLocation=false hideNumberOfComments=false >
+<#macro displayTimeAndPlace resource title hideEndDate=false hideLocation=false hideNumberOfComments=false>
   
   <#local start = vrtx.propValue(resource, "start-date") />
   <#local startiso8601 = vrtx.propValue(resource, "start-date", "iso-8601") />
@@ -107,8 +108,11 @@
   <#if endiso8601 != "" >
     <#local isoendhour = endiso8601?substring(11, 16) />
   </#if>
-
-  <span class="time-and-place"><@vrtx.msg code="article.time-and-place" />:</span>
+  <#local locationMsgCode = "article.time" />
+  <#if location != "" && !hideLocation><#t/>
+    <#local locationMsgCode = "article.time-and-place" />
+  </#if>
+  <span class="time-and-place"><@vrtx.msg code=locationMsgCode />:</span>
   <span class="summary" style="display:none;">${title}</span>
   <#if start != "">
     <abbr class="dtstart" title="${startiso8601}">

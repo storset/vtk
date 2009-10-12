@@ -32,23 +32,23 @@ package org.vortikal.repository.resourcetype.property;
 
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
+import org.vortikal.repository.PropertyEvaluationContext.Type;
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
 public class PublishEvaluator implements PropertyEvaluator {
 
-    private PropertyTypeDefinition publishedPropDef;
     private PropertyTypeDefinition publishDatePropDef;
 
     public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
 
-        // XXX implement
+        if (ctx.getEvaluationType() == Type.Create) {
+            // Make sure there's no publish date on creation
+            ctx.getNewResource().removeProperty(this.publishDatePropDef);
+            return true;
+        }
 
         return false;
-    }
-
-    public void setPublishedPropDef(PropertyTypeDefinition publishedPropDef) {
-        this.publishedPropDef = publishedPropDef;
     }
 
     public void setPublishDatePropDef(PropertyTypeDefinition publishDatePropDef) {

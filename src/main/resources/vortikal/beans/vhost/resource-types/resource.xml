@@ -41,9 +41,9 @@
         <ref bean="titlePropDef" />
         <ref bean="contentLocalePropDef" />
         <ref bean="numberOfCommentsPropDef" />
-        <!--  ref bean="publishedPropDef" />
+        <ref bean="publishedPropDef" />
         <ref bean="publishDatePropDef" />
-        <ref bean="unPublishDatePropDef" / -->
+        <ref bean="unPublishDatePropDef" />
       </list>
     </property>
   </bean>
@@ -256,13 +256,12 @@
   </bean>
   
   <bean id="defaultPublishEvaluator" class="org.vortikal.repository.resourcetype.property.DefaultPublishEvaluator">
-    <property name="publishedPropDef" ref="publishedPropDef" />
     <property name="publishDatePropDef" ref="publishDatePropDef" />
     <property name="creationTimePropDef" ref="creationTimePropDef" />
   </bean>
   
   <bean id="publishEvaluator" class="org.vortikal.repository.resourcetype.property.PublishEvaluator">
-    <property name="publishedPropDef" ref="overriddenPublishedPropDef" />
+    <property name="publishDatePropDef" ref="publishDatePropDef" />
   </bean>
   
 </beans>

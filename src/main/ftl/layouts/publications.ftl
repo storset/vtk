@@ -97,8 +97,8 @@
                   <#if publication.isbn != "">&nbsp;ISBN&nbsp;${publication.isbn}.</#if>
                   <#if publication.numberOfPages != "">&nbsp;${publication.numberOfPages}&nbsp;s.</#if>
              <#elseif publication.mainCategoryCode == "BOKRAPPORTDEL">
-            <#t /><#if publication.titlePartOf != "">&#44;&nbsp;I:&nbsp;
-                  <#if publication.researchersPartOf != "">${publication.researchersPartOf}&nbsp;(red.),&nbsp;</#if>
+            <#t /><#if publication.titlePartOf != "">&#44;&nbsp;<#if publication.sprak == "EN">In<#else>I:</#if>&nbsp;
+                  <#t /><#if publication.researchersPartOf != "">${publication.researchersPartOf}&nbsp;<#if publication.sprak == "NO">(red.)<#else>(ed.)</#if>,&nbsp;</#if>
                     <em>${publication.titlePartOf}</em>.&nbsp;
                   <#else>
                   .&nbsp;
@@ -117,15 +117,15 @@
                       <em>${publication.name}</em>.
                     </#if>
                     <#if publication.issn != "">&nbsp;ISSN&nbsp;${publication.issn}.</#if>
-                    <#t /><#if publication.volume != ""><em>&nbsp;vol.&nbsp;${publication.volume}</em></#if>
-                    <#t /><#if publication.hefte != "">&nbsp;(${publication.hefte})</#if>
+                    <#t /><#if publication.volume != ""><em>&nbsp;${publication.volume}</em></#if>
+                    <#t /><#if publication.hefte != ""><#if publication.volume == "">&nbsp;</#if>(${publication.hefte})</#if>
                     <#t /><#if publication.pageFrom != "">
                       <#t /><#if publication.volume != "" || publication.hefte != "">&#44;</#if>&nbsp;s&nbsp;${publication.pageFrom}
                       <#t /><#if publication.pageTo != "">-&nbsp;${publication.pageTo}</#if>
                     <#t /></#if>
                     <#t /><#if publication.doi != "">
                       .&nbsp;doi:<#if !publication.doi?string?starts_with("http")>
-                        <a href="http://dx.doi.org/${publication.doi}">${publication.doi}</a>
+                        <a href="http://dx.doi.org/${publication.doi}">${publication.doi}</a><#-- DOI lookup -->
                       <#else>
                         <a href="${publication.doi}">${publication.doi}</a>
                       </#if>
@@ -133,6 +133,11 @@
                 <#elseif publication.mainCategoryCode == "MEDIEBIDRAG">
                   <#if publication.mediumtype != "" && publication.mediumtype != "Avis">[${publication.mediumtype}].</#if>
                   <#if publication.medium != "">&nbsp;${publication.medium}.</#if>
+                <#elseif publication.mainCategoryCode == "PRODUKT">
+                  <#if publication.produkttype != "" || publication.produktformat != "">
+                    [<#if publication.produkttype != "">${publication.produkttype}<#if publication.produktformat != "">&nbsp;/&nbsp;</#if>
+                    </#if><#if publication.produktformat != "">${publication.produktformat}</#if>].
+                  </#if>
                 </#if>
              </#if>
           </li>

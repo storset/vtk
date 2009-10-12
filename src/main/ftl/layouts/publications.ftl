@@ -67,12 +67,14 @@
                  ${publication.researchers}&nbsp;(${publication.year}).&nbsp;<em><a href="${publication.url}">${publication.title}</a></em>.
                <#else>
                  ${publication.researchers}&nbsp;(${publication.year}).&nbsp;<a href="${publication.url}">${publication.title}</a>
+                 <#if publication.mainCategoryCode != "BOKRAPPORTDEL">.</#if>
                </#if>
              <#else>
                <#if publication.mainCategoryCode == "BOK">
                  ${publication.researchers}&nbsp;(${publication.year}).&nbsp;<em>${publication.title}</em>.
                <#else>
                  <#t />${publication.researchers}&nbsp;(${publication.year}).&nbsp;${publication.title}
+                 <#t /><#if publication.mainCategoryCode != "BOKRAPPORTDEL">.</#if>
                </#if>
              </#if>
              <#t />
@@ -108,7 +110,13 @@
                       <#t /><#if publication.volume != "" || publication.hefte != "">&#44;</#if>&nbsp;s&nbsp;${publication.pageFrom}
                       <#t /><#if publication.pageTo != "">-&nbsp;${publication.pageTo}</#if>
                     <#t /></#if>
-                    <#t /><#if publication.doi != "">.&nbsp;doi:<a href="${publication.doi}">${publication.doi}</a></#if>
+                    <#t /><#if publication.doi != "">
+                      .&nbsp;doi:<#if !publication.doi?string?starts_with("http")>
+                        <a href="http://dx.doi.org/${publication.doi}">${publication.doi}</a>
+                      <#else>
+                        <a href="${publication.doi}">${publication.doi}</a
+                      </#if>
+                    </#if>
                 </#if>
              </#if>
           </li>

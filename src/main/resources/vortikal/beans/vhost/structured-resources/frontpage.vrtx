@@ -21,7 +21,7 @@ resourcetype frontpage {
            [def url json-attr box "boxUrl"]
            [def urlText json-attr box "boxUrlText"]
            
-           <div class="vrtx-frontpage-box [val type]"> 
+           <div class="vrtx-frontpage-box [val type]" id="vrtx-frontpage-box-[val :index]"> 
              [if title && title != ""]
                <h2><a href="[val url]">[val title]</a></h2>
              [endif]
@@ -49,7 +49,7 @@ resourcetype frontpage {
            [def url json-attr box "boxUrl"]
            [def urlText json-attr box "boxUrlText"]
            
-           <div class="vrtx-frontpage-box [val type]"> 
+           <div class="vrtx-frontpage-box [val type]" id="vrtx-frontpage-box-[val :index]"> 
              [if title && title != ""]
                <h2><a href="[val url]">[val title]</a></h2>
              [endif]

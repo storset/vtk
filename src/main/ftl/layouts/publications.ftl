@@ -70,45 +70,43 @@
                </#if>
              <#else>
                <#if publication.mainCategoryCode == "BOK">
-                 ${publication.researchers}&nbsp;(${publication.year}). <em>${publication.title}</em>
+                 ${publication.researchers}&nbsp;(${publication.year}).&nbsp;<em>${publication.title}</em>
                <#else>
-                 ${publication.researchers}&nbsp;(${publication.year}).&nbsp;${publication.title}
+                 <#t />${publication.researchers}&nbsp;(${publication.year}).&nbsp;${publication.title}
                </#if>
              </#if>
-             
+             <#t />
              <#-- Add additional data if exists - logic and markup ported from SV-faculty JavaScript -->
              <#if publication.mainCategoryCode == "BOK">
-                <ul><li>
-                  <#if publication.publisherName != "">${publication.publisherName}.</#if>
+                  <#if publication.publisherName != "">${publication.publisherName}.<#else></#if>
                   <#if publication.isbn != "">&nbsp;ISBN&nbsp;${publication.isbn}.</#if>
                   <#if publication.numberOfPages != "">&nbsp;${publication.numberOfPages}&nbsp;s.</#if>
-                </li></ul>
              <#elseif publication.mainCategoryCode == "BOKRAPPORTDEL">
-                <ul><li>
-                  <#if publication.titlePartOf != ""><em>${publication.titlePartOf}</em>,&nbsp;</#if>
+             <#t /><#if publication.titlePartOf != "">&#44;&nbsp;I:&nbsp;
+                    <#if publication.researchersPartOf != "">${publication.researchersPartOf}&nbsp;(red.),&nbsp;</#if>
+                    <em>${publication.titlePartOf}</em>,&nbsp;
+                  </#if>
                   <#if publication.publisherName != "">${publication.publisherName}.</#if>
                   <#if publication.isbn != "">&nbsp;ISBN&nbsp;${publication.isbn}.</#if>
                   <#if publication.chapter != "">&nbsp;${publication.chapter}.</#if>
                   <#if publication.pageFrom != "">&nbsp;s&nbsp;${publication.pageFrom}
                     <#if publication.pageTo != "">-&nbsp;${publication.pageTo}</#if>
                   </#if>
-                </li></ul>
              <#else>
                 <#if publication.mainCategoryCode == "TIDSSKRIFTPUBL">
-                  <ul><li>
                     <#if publication.publisherUrl != "">
                       <em><a href="${publication.publisherUrl}">${publication.name}</a></em>.
                     <#else>
                       <em>${publication.name}</em>.
                     </#if>
-                    <#if publication.issn != "">&nbsp;ISBN&nbsp;${publication.issn}.</#if>
-                    <#if publication.volume != ""><em>&nbsp;vol.&nbsp;${publication.volume}</em></#if>
+                    <#if publication.issn != "">&nbsp;ISSN&nbsp;${publication.issn}.</#if>
+                    <#t /><#if publication.volume != ""><em>&nbsp;vol.&nbsp;${publication.volume}</em></#if>
                     <#t /><#if publication.hefte != "">&nbsp;(${publication.hefte})</#if>
                     <#t /><#if publication.pageFrom != "">
                       <#t /><#if publication.volume != "" || publication.hefte != "">&#44;</#if>&nbsp;s&nbsp;${publication.pageFrom}
-                      <#if publication.pageTo != "">-&nbsp;${publication.pageTo}</#if>
-                    </#if>
-                  </li></ul
+                      <#t /><#if publication.pageTo != "">-&nbsp;${publication.pageTo}</#if>
+                    <#t /></#if>
+                    <#t /><#if publication.doi != "">.&nbsp;doi:<a href="${publication.doi}">${publication.doi}</a></#if>
                 </#if>
              </#if>
           </li>

@@ -89,16 +89,11 @@ h1 {
 ul.vrtx-frida-publications {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 0 0 0 2em;
 }
 
 ul.vrtx-frida-publications li.vrtx-frida-publication {
   margin: 0;
   padding: 0 0 5px 0;
-}
-
-ul.vrtx-frida-publications li.vrtx-frida-publication ul {
-  list-style: none;
-  margin: 0;
-  padding: 0 0 0 2em;
-}
+  text-indent:-2em;
+} 

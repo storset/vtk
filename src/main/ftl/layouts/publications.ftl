@@ -64,13 +64,13 @@
           <li id="vrtx-frida-publication-${publicationNr}" class="vrtx-frida-publication">
              <#if publication.url != "">
                <#if publication.mainCategoryCode == "BOK">
-                 ${publication.researchers}&nbsp;(${publication.year}).&nbsp;<em><a href="${publication.url}">${publication.title}</a></em>
+                 ${publication.researchers}&nbsp;(${publication.year}).&nbsp;<em><a href="${publication.url}">${publication.title}</a></em>.
                <#else>
                  ${publication.researchers}&nbsp;(${publication.year}).&nbsp;<a href="${publication.url}">${publication.title}</a>
                </#if>
              <#else>
                <#if publication.mainCategoryCode == "BOK">
-                 ${publication.researchers}&nbsp;(${publication.year}).&nbsp;<em>${publication.title}</em>
+                 ${publication.researchers}&nbsp;(${publication.year}).&nbsp;<em>${publication.title}</em>.
                <#else>
                  <#t />${publication.researchers}&nbsp;(${publication.year}).&nbsp;${publication.title}
                </#if>
@@ -82,9 +82,11 @@
                   <#if publication.isbn != "">&nbsp;ISBN&nbsp;${publication.isbn}.</#if>
                   <#if publication.numberOfPages != "">&nbsp;${publication.numberOfPages}&nbsp;s.</#if>
              <#elseif publication.mainCategoryCode == "BOKRAPPORTDEL">
-             <#t /><#if publication.titlePartOf != "">&#44;&nbsp;I:&nbsp;
-                    <#if publication.researchersPartOf != "">${publication.researchersPartOf}&nbsp;(red.),&nbsp;</#if>
-                    <em>${publication.titlePartOf}</em>,&nbsp;
+            <#t /><#if publication.titlePartOf != "">&#44;&nbsp;I:&nbsp;
+                  <#if publication.researchersPartOf != "">${publication.researchersPartOf}&nbsp;(red.),&nbsp;</#if>
+                    <em>${publication.titlePartOf}</em>.&nbsp;
+                  <#else>
+                  .&nbsp;
                   </#if>
                   <#if publication.publisherName != "">${publication.publisherName}.</#if>
                   <#if publication.isbn != "">&nbsp;ISBN&nbsp;${publication.isbn}.</#if>

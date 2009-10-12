@@ -461,7 +461,9 @@ public class StructuredResourceManager {
                 value = JSONUtil.select(json, expression);
                 if (emptyValue(value)) {
                     if (propertyDesc.isOverrides()) {
+                        // XXX Consider the order of how this is done
                         if (!property.getDefinition().isMandatory()) {
+                            // XXX What about structured namespace?
                             ctx.getNewResource().removeProperty(Namespace.DEFAULT_NAMESPACE,
                                     propertyDesc.getOverrides());
                         } else {
@@ -529,7 +531,14 @@ public class StructuredResourceManager {
 
             try {
 
+                // XXX Consider order of how this is done
                 Object value = getEvaluatedValue(desc.getEvalDescriptions(), ctx);
+                if (emptyValue(value)) {
+                    Property prop = getProperty(ctx.getNewResource(), property.getDefinition().getName());
+                    if (prop != null) {
+                        value = prop.getDefinition().isMultiple() ? prop.getValues() : prop.getValue();
+                    }
+                }
                 if (!emptyValue(value)) {
                     setPropValue(property, value);
                 } else {
@@ -537,6 +546,7 @@ public class StructuredResourceManager {
                     if (defaultProp != null) {
                         Property dependentProperty = getProperty(ctx.getNewResource(), defaultProp);
                         if (dependentProperty == null) {
+                            // XXX Should remove the property if it's not mandatory
                             return false;
                         }
                         property.setValue(dependentProperty.getValue());

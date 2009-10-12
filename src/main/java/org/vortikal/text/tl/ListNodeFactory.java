@@ -31,26 +31,32 @@
 package org.vortikal.text.tl;
 
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.vortikal.repository.resourcetype.Value;
-
 public class ListNodeFactory implements DirectiveNodeFactory {
 
     private static final Set<String> LIST_TERM = new HashSet<String>(Arrays.asList("endlist"));
 
     /**
-     * [list x varname] .. do stuff with varname .. [endlist]
+     * [list x varname] 
+     *    .. do stuff with varname: [val varname] 
+     *    [if :first] first element [endif]
+     *    [if :last] last element [endif]
+     *    index: [val :index]
+     *    size: [val :size]
+     * [endlist]
      * 
      */
     public Node create(DirectiveParseContext ctx) throws Exception {
         List<Argument> args = ctx.getArguments();
         if (args.size() != 2) {
-            throw new RuntimeException("List directive: " + ctx.getNodeText() + ": wrong number of arguments");
+            throw new RuntimeException("List directive: " + ctx.getNodeText() 
+            		+ ": wrong number of arguments");
         }
 
         Argument arg1 = args.remove(0);
@@ -85,34 +91,50 @@ public class ListNodeFactory implements DirectiveNodeFactory {
         public void render(Context ctx, Writer out) throws Exception {
             Object var = this.listVar.resolve(ctx);
             if (var == null) {
-                throw new RuntimeException("List: No such variable: " + this.listVar);
+                throw new RuntimeException("List: No such variable: " 
+                		+ this.listVar);
             }
-
-            if (!(var instanceof List<?>) && !(var instanceof Iterator<?>) && !(var instanceof Value[])) {
-                throw new RuntimeException("List: Cannot iterate variable: " + this.listVar + ": not a list");
-            }
-            if (var instanceof List<?>) {
-                List<?> list = (List<?>) var;
-                for (Object o : list) {
-                    executeBody(o, ctx, out);
+            List<Object> elements = new ArrayList<Object>();
+            if (var instanceof Iterable<?>) {
+            	Iterable<?> iterable = (Iterable<?>) var;
+            	for (Object o : iterable) {
+            		elements.add(o);
+            	}
+            } else if (var instanceof Iterator<?>) {
+            	Iterator<?> iter = (Iterator<?>) var;
+            	while (iter.hasNext()) {
+            		elements.add(iter.next());
+            	}
+            } else if (var instanceof Object[]) {
+                for (Object o : (Object[]) var) {
+            		elements.add(o);
                 }
-            } else if (var instanceof Value[]) {
-                Value[] vals = (Value[]) var;
-                for (Value val : vals) {
-                    executeBody(val, ctx, out);
-                }
+            } else {
+                throw new RuntimeException(
+                		"List: Cannot iterate variable: " 
+                		+ this.listVar + ": not a list");
             }
+            execute(elements, ctx, out);
         }
+        
+        private void execute(List<Object> elements, Context ctx, Writer out) throws Exception {
+        	int size = elements.size();
 
-        private void executeBody(Object o, Context ctx, Writer out) throws Exception {
-            ctx.push();
-            ctx.define(this.defVar.getSymbol(), o, false);
-            this.nodeList.render(ctx, out);
-            ctx.pop();
+        	for (int i = 0; i < size; i++) {
+				Object object = elements.get(i);
+                ctx.push();
+                ctx.define(this.defVar.getSymbol(), object, false);
+                ctx.define(":size", size, false);
+                ctx.define(":index", i, false);
+                ctx.define(":first", (i == 0), false);
+                ctx.define(":last", (i == size - 1), false);
+                this.nodeList.render(ctx, out);
+                ctx.pop();
+			}
         }
-
+        
         public String toString() {
-            return "[list-node]";
+            return "[list]";
         }
     }
 }

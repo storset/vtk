@@ -530,30 +530,28 @@ public class StructuredResourceManager {
             }
 
             try {
-
-                // XXX Consider order of how this is done
                 Object value = getEvaluatedValue(desc.getEvalDescriptions(), ctx);
                 if (emptyValue(value)) {
-                    Property prop = getProperty(ctx.getNewResource(), property.getDefinition().getName());
+                    // Evaluated value returned empty, check any default
+                    // value that might exist, than finally check for any
+                    // overridden value
+                    Property prop = null;
+                    if (desc.hasDefaultProperty()) {
+                        prop = getProperty(ctx.getNewResource(), desc.getDefaultProperty());
+                    }
+                    if (prop == null) {
+                        prop = getProperty(ctx.getNewResource(), property.getDefinition().getName());
+                    }
                     if (prop != null) {
                         value = prop.getDefinition().isMultiple() ? prop.getValues() : prop.getValue();
                     }
                 }
                 if (!emptyValue(value)) {
                     setPropValue(property, value);
-                } else {
-                    String defaultProp = desc.getDefaultProperty();
-                    if (defaultProp != null) {
-                        Property dependentProperty = getProperty(ctx.getNewResource(), defaultProp);
-                        if (dependentProperty == null) {
-                            // XXX Should remove the property if it's not mandatory
-                            return false;
-                        }
-                        property.setValue(dependentProperty.getValue());
-                    }
+                    invokeService(property, ctx, desc, resourceDesc);
+                    return true;
                 }
-                invokeService(property, ctx, desc, resourceDesc);
-                return true;
+                return false;
             } catch (Exception e) {
                 return false;
             }

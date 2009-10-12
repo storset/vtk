@@ -30,40 +30,66 @@
  */
 package org.vortikal.resourcemanagement;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class DerivedPropertyDescription extends PropertyDescription {
+public class DerivedPropertyEvaluationDescription {
 
-    private List<String> dependentProperties;
-    private DerivedPropertyEvaluationDescription evaluationDesciption;
-    private String defaultProperty;
-
-    public void setDependentProperties(List<String> dependentProperties) {
-        this.dependentProperties = dependentProperties;
+    public enum EvaluationCondition {
+        EXISTS
     }
 
-    public List<String> getDependentProperties() {
-        return this.dependentProperties;
+    private static final Map<String, EvaluationCondition> EVALUATION_CONDITION = new HashMap<String, EvaluationCondition>();
+    static {
+        EVALUATION_CONDITION.put("exists", EvaluationCondition.EXISTS);
     }
 
-    public void setDefaultProperty(String defaultProperty) {
-        this.defaultProperty = defaultProperty;
+    private List<EvaluationElement> evaluationElements;
+    private EvaluationCondition evaluationCondition;
+    
+    public void addEvaluationElement(EvaluationElement evaluationElement) {
+        if (this.evaluationElements == null) {
+            this.evaluationElements = new ArrayList<EvaluationElement>();
+        }
+        this.evaluationElements.add(evaluationElement);
+    }
+    
+    public void setEvaluationCondition(EvaluationCondition evaluationCondition) {
+        this.evaluationCondition = evaluationCondition;
     }
 
-    public String getDefaultProperty() {
-        return this.defaultProperty;
+    public List<EvaluationElement> getEvaluationElements() {
+        return this.evaluationElements;
     }
 
-    public boolean hasDefaultProperty() {
-        return this.defaultProperty != null;
+    public EvaluationCondition getEvaluationCondition() {
+        return this.evaluationCondition;
     }
 
-    public void setEvaluationDescription(DerivedPropertyEvaluationDescription evaluationDesciption) {
-        this.evaluationDesciption = evaluationDesciption;
+    public static EvaluationCondition mapEvalConditionFromDescription(String evalDescription) {
+        return EVALUATION_CONDITION.get(evalDescription);
     }
 
-    public DerivedPropertyEvaluationDescription getEvaluationDescription() {
-        return this.evaluationDesciption;
+    public static class EvaluationElement {
+
+        private boolean string;
+        private String value;
+
+        public EvaluationElement(boolean string, String value) {
+            this.string = string;
+            this.value = value;
+        }
+
+        public boolean isString() {
+            return string;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
     }
 
 }

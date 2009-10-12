@@ -38,7 +38,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.vortikal.resourcemanagement.DerivedPropertyDescription.EvalDescription;
+import org.vortikal.resourcemanagement.DerivedPropertyEvaluationDescription.EvaluationElement;
 
 public final class StructuredResourceDescription {
 
@@ -162,11 +162,10 @@ public final class StructuredResourceDescription {
         this.displayTemplate = displayTemplate;
     }
 
-
     public void addTooltips(String name, Map<Locale, String> m) {
         tooltips.put(name, (HashMap<Locale, String>) m);
     }
-    
+
     public Map<String, HashMap<Locale, String>> getAllLocalizedTooltips() {
         Map<String, HashMap<Locale, String>> locales = new HashMap<String, HashMap<Locale, String>>();
         if (this.inheritsFrom != null) {
@@ -176,8 +175,8 @@ public final class StructuredResourceDescription {
         locales.putAll(this.tooltips);
         return locales;
     }
-    
-    public String getLocalizedTooltip(String key, Locale locale){
+
+    public String getLocalizedTooltip(String key, Locale locale) {
         HashMap<Locale, String> tooltipMap = this.getAllLocalizedTooltips().get(key);
         if (tooltipMap == null) {
             return "";
@@ -185,12 +184,11 @@ public final class StructuredResourceDescription {
         String localizedMessage = tooltipMap.get(new Locale(locale.getLanguage()));
         return localizedMessage != null ? localizedMessage : "";
     }
-    
+
     public void addLocalization(String name, Map<Locale, String> m) {
         localization.put(name, (HashMap<Locale, String>) m);
     }
-    
-    
+
     public Map<String, HashMap<Locale, String>> getAllLocalization() {
         Map<String, HashMap<Locale, String>> locales = new HashMap<String, HashMap<Locale, String>>();
         if (this.inheritsFrom != null) {
@@ -200,7 +198,6 @@ public final class StructuredResourceDescription {
         locales.putAll(this.localization);
         return locales;
     }
-
 
     // XXX: handle parameters
     public String getLocalizedMsg(String key, Locale locale, @SuppressWarnings("unused") Object[] param) {
@@ -282,17 +279,17 @@ public final class StructuredResourceDescription {
                 }
                 // Verify that derived properties evaluate using only
                 // declared properties:
-                for (EvalDescription eval : derived.getEvalDescriptions()) {
-                    if (!eval.isString()) {
+                for (EvaluationElement evaluationElement : derived.getEvaluationDescription().getEvaluationElements()) {
+                    if (!evaluationElement.isString()) {
                         boolean found = false;
                         for (String propName : derived.getDependentProperties()) {
-                            if (propName.equals(eval.getValue())) {
+                            if (propName.equals(evaluationElement.getValue())) {
                                 found = true;
                             }
                         }
                         if (!found) {
                             throw new IllegalStateException("Property definition '" + d.getName()
-                                    + "' is declared to evaluate using property '" + eval.getValue()
+                                    + "' is declared to evaluate using property '" + evaluationElement.getValue()
                                     + "', which is not listed in the derives clause");
                         }
                     }

@@ -59,7 +59,7 @@ import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.repository.resourcetype.ValueFormatterRegistry;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.property.PropertyEvaluationException;
-import org.vortikal.resourcemanagement.DerivedPropertyDescription.EvalDescription;
+import org.vortikal.resourcemanagement.DerivedPropertyEvaluationDescription.EvaluationElement;
 import org.vortikal.resourcemanagement.parser.ParserConstants;
 import org.vortikal.resourcemanagement.service.ExternalServiceInvoker;
 import org.vortikal.text.JSONUtil;
@@ -530,7 +530,7 @@ public class StructuredResourceManager {
             }
 
             try {
-                Object value = getEvaluatedValue(desc.getEvalDescriptions(), ctx);
+                Object value = getEvaluatedValue(desc.getEvaluationDescription(), ctx);
                 if (emptyValue(value)) {
                     // Evaluated value returned empty, check any default
                     // value that might exist, than finally check for any
@@ -557,19 +557,19 @@ public class StructuredResourceManager {
             }
         }
 
-        // XXX This should be reconsidered, see
-        // DerivedPropertyDescription.EvalDescription
-        private Object getEvaluatedValue(List<EvalDescription> evalDescriptions, PropertyEvaluationContext ctx) {
+        private Object getEvaluatedValue(DerivedPropertyEvaluationDescription evaluationDescription,
+                PropertyEvaluationContext ctx) {
+
+            if (evaluationDescription.getEvaluationCondition() != null) {
+                String propName = evaluationDescription.getEvaluationElements().get(0).getValue();
+                return getEvaluatedConditionalValue(ctx, propName);
+            }
+
             StringBuilder value = new StringBuilder();
-            for (EvalDescription evalDescription : desc.getEvalDescriptions()) {
-                String propName = evalDescription.getValue();
-                if (evalDescription.hasEvalCondition()) {
-                    // XXX Conditional derived properties are applicable to only
-                    // one dependent property, just return the value (no list of
-                    // dependent properties or concatenation)
-                    return getEvaluatedConditionalValue(ctx, propName);
-                } else if (evalDescription.isString()) {
-                    value.append(evalDescription.getValue());
+            for (EvaluationElement evaluationElement : evaluationDescription.getEvaluationElements()) {
+                String propName = evaluationElement.getValue();
+                if (evaluationElement.isString()) {
+                    value.append(evaluationElement.getValue());
                     continue;
                 } else {
                     Property prop = getProperty(ctx.getNewResource(), propName);

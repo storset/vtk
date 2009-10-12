@@ -39,11 +39,12 @@ import org.antlr.runtime.tree.Tree;
 import org.vortikal.repository.resource.ResourcetreeLexer;
 import org.vortikal.resourcemanagement.BinaryPropertyDescription;
 import org.vortikal.resourcemanagement.DerivedPropertyDescription;
+import org.vortikal.resourcemanagement.DerivedPropertyEvaluationDescription;
 import org.vortikal.resourcemanagement.JSONPropertyDescription;
 import org.vortikal.resourcemanagement.PropertyDescription;
 import org.vortikal.resourcemanagement.SimplePropertyDescription;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
-import org.vortikal.resourcemanagement.DerivedPropertyDescription.EvalDescription;
+import org.vortikal.resourcemanagement.DerivedPropertyEvaluationDescription.EvaluationElement;
 
 public class PropertyDescriptionParser {
 
@@ -189,11 +190,9 @@ public class PropertyDescriptionParser {
         }
 
         Tree eval = descEntry.getChild(1);
+
+        DerivedPropertyEvaluationDescription evaluationDescription = new DerivedPropertyEvaluationDescription();
         boolean quote = false;
-        
-        // XXX This should be reconsidered, see
-        // DerivedPropertyDescription.EvalDescription
-        List<EvalDescription> evalDescriptions = new ArrayList<EvalDescription>();
         for (int i = 0; i < eval.getChildCount(); i++) {
             Tree evalDesc = eval.getChild(i);
             if (ResourcetreeLexer.DQ == evalDesc.getType()) {
@@ -201,18 +200,17 @@ public class PropertyDescriptionParser {
                 continue;
             }
             String value = evalDesc.getText();
+            EvaluationElement evaluationElement = new EvaluationElement(quote, value);
+            evaluationDescription.addEvaluationElement(evaluationElement);
 
-            String evalDescription = null;
             Tree condition = evalDesc.getChild(0);
             if (condition != null) {
-                evalDescription = condition.getText();
+                evaluationDescription.setEvaluationCondition(DerivedPropertyEvaluationDescription
+                        .mapEvalConditionFromDescription(condition.getText()));
             }
-            EvalDescription desc = new EvalDescription(quote, value, EvalDescription
-                    .mapEvalConditionFromDescription(evalDescription));
-            evalDescriptions.add(desc);
         }
 
         p.setDependentProperties(dependentFields);
-        p.setEvalDescriptions(evalDescriptions);
+        p.setEvaluationDescription(evaluationDescription);
     }
 }

@@ -42,6 +42,8 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.vortikal.text.html.HtmlAttribute;
 import org.vortikal.text.html.HtmlComment;
 import org.vortikal.text.html.HtmlContent;
@@ -58,6 +60,8 @@ import org.vortikal.text.html.HtmlText;
  */
 public class ParsedHtmlDecoratorTemplate implements Template {
 
+	private static Log logger = LogFactory.getLog(ParsedHtmlDecoratorTemplate.class);
+	
     private HtmlPageParser htmlParser;
     private TextualComponentParser componentParser;
     private ComponentResolver componentResolver;
@@ -136,14 +140,20 @@ public class ParsedHtmlDecoratorTemplate implements Template {
     }
     
     private synchronized void compile() throws Exception {
-        if (this.compiledTemplate != null && 
+    	try {
+    	if (this.compiledTemplate != null && 
                 this.lastModified == this.templateSource.getLastModified()) {
             return;
         }
+    	logger.info("Compiling template " + this.templateSource.getID());
         this.compiledTemplate = new CompiledTemplate(
                 this.htmlParser, this.componentParser, 
                 this.templateSource);
         this.lastModified = this.templateSource.getLastModified();
+    	} catch (Exception e) {
+    		logger.warn("Error compiling template " + this.templateSource.getID(), e);
+    		throw e;
+    	}
     }
     
     private class CompiledTemplate {

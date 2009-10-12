@@ -142,9 +142,9 @@ resourcetype person {
               [def theurl json-attr feed "rssUrl"]
               [if theurl && theurl != ""]
                 [if thetitle && thetitle != ""]
-                  ${include:feed url=\[[val theurl]\] override-feed-title=\[[val thetitle]\] feed-title=\[true\] max-messages=\[5\] include-if-empty=\[false\]}
+                  ${include:feed url=\[[val theurl]\] override-feed-title=\[[val thetitle]\] feed-title=\[true\] max-messages=\[3\] include-if-empty=\[false\]}
                 [else]
-                  ${include:feed url=\[[val theurl]\] feed-title=\[true\] max-messages=\[5\] include-if-empty=\[false\]}
+                  ${include:feed url=\[[val theurl]\] feed-title=\[true\] max-messages=\[3\] include-if-empty=\[false\]}
                 [endif]
               [endif]
             [endlist]

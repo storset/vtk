@@ -10,23 +10,23 @@
   
 <#import "/lib/vortikal.ftl" as vrtx />
 
-<#assign counter = 1>
-<#assign tab1 = 0><#assign tab2 = 0><#assign tab3 = 0><#assign tab4 = 0>
+<#assign counter = 1 />
+<#assign tab1 = 0 /><#assign tab2 = 0 /><#assign tab3 = 0 /><#assign tab4 = 0 />
 
 <#if selectedPublications?exists && selectedPublications != "">
-   <#assign tab1 = counter>
-   <#assign counter = counter +1>
+   <#assign tab1 = counter />
+   <#assign counter = counter +1 />
 </#if>
 <#if pBooks?exists && pBooks?size &gt; 0>
-   <#assign tab2 = counter>
-   <#assign counter = counter +1>
+   <#assign tab2 = counter />
+   <#assign counter = counter +1 />
 </#if>
 <#if pSciArtBookChapters?exists && pSciArtBookChapters?size &gt; 0>
-   <#assign tab3 = counter>
-   <#assign counter = counter +1>
+   <#assign tab3 = counter />
+   <#assign counter = counter +1 />
 </#if>
 <#if pOther?exists && pOther?size &gt; 0>
-   <#assign tab4 = counter>
+   <#assign tab4 = counter />
 </#if>
 
 <ul>
@@ -62,18 +62,31 @@
         <#list publications as publication>
           <#assign publicationNr = publicationNr +1 />
           <li id="vrtx-frida-publication-${publicationNr}" class="vrtx-frida-publication">
+          
+            <#assign date = "" />
+            <#if publication.mainCategoryCode == "MEDIEBIDRAG" && publication.dato != "">
+              <#assign date = parseDate(publication.dato) />
+            </#if>
              <#if publication.url != "">
                <#if publication.mainCategoryCode == "BOK">
                  ${publication.researchers}&nbsp;(${publication.year}).&nbsp;<em><a href="${publication.url}">${publication.title}</a></em>.
                <#else>
-                 ${publication.researchers}&nbsp;(${publication.year}).&nbsp;<a href="${publication.url}">${publication.title}</a>
+                 <#if date != "">
+                   ${publication.researchers}&nbsp;(${publication.year}&#44;&nbsp;${date}).&nbsp;<a href="${publication.url}">${publication.title}</a>
+                 <#else>
+                   ${publication.researchers}&nbsp;(${publication.year}).&nbsp;<a href="${publication.url}">${publication.title}</a>
+                 </#if>
                  <#if publication.mainCategoryCode != "BOKRAPPORTDEL">.</#if>
                </#if>
              <#else>
                <#if publication.mainCategoryCode == "BOK">
                  ${publication.researchers}&nbsp;(${publication.year}).&nbsp;<em>${publication.title}</em>.
                <#else>
-                 <#t />${publication.researchers}&nbsp;(${publication.year}).&nbsp;${publication.title}
+                 <#if date != "">
+                   <#t />${publication.researchers}&nbsp;(${publication.year}&#44;&nbsp;${date}).&nbsp;${publication.title}
+                 <#else>
+                   <#t />${publication.researchers}&nbsp;(${publication.year}).&nbsp;${publication.title}
+                 </#if>
                  <#t /><#if publication.mainCategoryCode != "BOKRAPPORTDEL">.</#if>
                </#if>
              </#if>
@@ -114,9 +127,12 @@
                       .&nbsp;doi:<#if !publication.doi?string?starts_with("http")>
                         <a href="http://dx.doi.org/${publication.doi}">${publication.doi}</a>
                       <#else>
-                        <a href="${publication.doi}">${publication.doi}</a
+                        <a href="${publication.doi}">${publication.doi}</a>
                       </#if>
                     </#if>
+                <#elseif publication.mainCategoryCode == "MEDIEBIDRAG">
+                  <#if publication.mediumtype != "" && publication.mediumtype != "Avis">[${publication.mediumtype}].</#if>
+                  <#if publication.medium != "">&nbsp;${publication.medium}.</#if>
                 </#if>
              </#if>
           </li>
@@ -128,3 +144,23 @@
     </div>
   </#if> 
 </#macro>
+
+<#function parseDate date>
+  <#assign month = "" />
+  <#switch date?string?split("-")[1]>
+    <#case "01"><#assign month = "januar" /><#break>
+    <#case "02"><#assign month = "februar" /><#break>
+    <#case "03"><#assign month = "mars" /><#break>
+    <#case "04"><#assign month = "april" /><#break>
+    <#case "05"><#assign month = "mai" /><#break>
+    <#case "06"><#assign month = "juni" /><#break>
+    <#case "07"><#assign month = "juli" /><#break>
+    <#case "08"><#assign month = "august" /><#break>
+    <#case "09"><#assign month = "september" /><#break>
+    <#case "10"><#assign month = "oktober" /><#break>
+    <#case "11"><#assign month = "november" /><#break>
+    <#case "12"><#assign month = "desember" /><#break>
+    <#default><#assign month = "" />
+  </#switch>
+  <#return date?string?split("-")[2] + ". " + month />
+</#function>

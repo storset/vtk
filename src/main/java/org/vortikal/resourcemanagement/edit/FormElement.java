@@ -110,7 +110,7 @@ public class FormElement {
     }
 
     public boolean valueIsList() {
-        return this.value instanceof List;
+        return this.value instanceof List<?>;
     }
 
 }

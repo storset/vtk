@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <bean id="projectListing.viewService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="collectionListing.viewService" />
+    <property name="order" value="0" />
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsProjectListing" />
+      </list>
+    </property>
+    <property name="handlerInterceptors">
+      <list>
+        <ref bean="noCacheViewHandlerInterceptor" />
+      </list>
+    </property>
+    <property name="handler" ref="projectListing.handler" />
+    <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
+  </bean>
+
+  <bean id="projectListing.handler" class="org.vortikal.web.display.collection.CollectionListingController"
+    parent="collectionListing.handler">
+    <property name="searchComponents">
+      <list>
+        <ref bean="projectListing.searchComponent" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="projectListing.searchComponent" class="org.vortikal.web.search.QueryStringSearchComponent"
+    parent="collectionListing.searchComponent">
+    <property name="name" value="projectListing.defaultListing" />
+    <property name="defaultRecursive" value="true" />
+    <property name="query">
+      <value>(uri = {$currentFolder}/*) AND (type IN structured-project) </value>
+    </property>
+  </bean>
+
+</beans>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <bean id="projectListingResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="project-listing" />
+    <property name="namespace" ref="PROJECT_LISTING_NAMESPACE" />
+    <property name="parentTypeDefinition" ref="collectionResourceTypeDefinition" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
+          <property name="namespace" ref="DEFAULT_NAMESPACE" />
+          <property name="name" value="collection-type" />
+          <property name="value" value="project-listing" />
+          <property name="checkExistenceOnly" value="false" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="resourceIsProjectListing" class="org.vortikal.web.service.ResourceTypeAssertion">
+    <property name="resourceTypeDefinition" ref="projectListingResourceTypeDefinition" />
+    <property name="exactMatch" value="true" />
+  </bean>
+  
+</beans>

@@ -24,6 +24,7 @@
 <#import "/lib/dump.ftl" as dumper>
 <#import "/lib/view-utils.ftl" as viewutils />
 <#import "/lib/collections/view-project-listing.ftl" as projects />
+<#import "/lib/collections/view-person-listing.ftl" as persons />
 
 <#assign resource = collection />
 
@@ -130,12 +131,12 @@
      <#if searchComponents?has_content>
        <#if collection.resourceType = 'article-listing'>
          <@coll.displayArticles page=page collectionListings=searchComponents hideNumberOfComments=hideNumberOfComments displayMoreURLs=true />
-       <#elseif collection.resourceType = 'person-listing'>
-       	 <@coll.displayPersons page=page collectionListings=searchComponents displayMoreURLs=true />
        <#else>
          <#list searchComponents as searchComponent>
            <#if collection.resourceType = 'event-listing'>
              <@coll.displayEvents collectionListing=searchComponent hideNumberOfComments=hideNumberOfComments displayMoreURLs=true  />
+           <#elseif collection.resourceType = 'person-listing'>
+             <@persons.displayPersons searchComponent />
            <#elseif collection.resourceType = 'project-listing'>
              <@projects.displayProjects searchComponent />
            <#else>

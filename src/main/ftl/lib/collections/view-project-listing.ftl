@@ -10,9 +10,13 @@
     </#if>
     
     <#list projects as project>
-      <div class="vrtx-resource">
-        <div class="vrtx-title">
-          <a class="vrtx-title" href="${projectListing.urls[project.URI]?html}">${vrtx.propValue(project, "title", "", "")?html}</a>
+      
+      <#local title = vrtx.propValue(project, 'title') />
+      <#local picture = vrtx.propValue(project, 'picture')  />
+      
+      <div class="vrtx-project">
+        <div class="vrtx-project-title">
+          <a class="vrtx-project-title-anchor" href="${projectListing.urls[project.URI]?html}">${title?html}</a>
         </div>
       </div>
     </#list>

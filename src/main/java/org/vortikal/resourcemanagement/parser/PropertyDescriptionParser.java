@@ -184,7 +184,7 @@ public class PropertyDescriptionParser {
         }
         p.setAttributes(attributes);
     }
-    
+
     @SuppressWarnings("unchecked")
     private void handleIndexableJSONAttributes(JSONPropertyDescription p, CommonTree descEntry) {
         List<CommonTree> indexableAttributes = descEntry.getChildren();
@@ -219,6 +219,10 @@ public class PropertyDescriptionParser {
 
             Tree condition = evalDesc.getChild(0);
             if (condition != null) {
+                // XXX Description contains an explicit condition -> currently
+                // only applicable to one property, so no point in iterating a
+                // list and checking for quotes. This must be reconsidered.
+                // Perhaps a separate ConditionalDerivedPropertyEvaluationDescription?
                 evaluationDescription.setEvaluationCondition(DerivedPropertyEvaluationDescription
                         .mapEvalConditionFromDescription(condition.getText()));
             }

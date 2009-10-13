@@ -64,14 +64,6 @@
       <#local frontpageClass = "vrtx-resources-frontpage" />
     </#if>
     
-    <#--
-      First of all, there is more than one searchcomponent, hence the list.
-      Second, the searchcomponents aren't necessarily named "articleListing.searchComponent",
-        but we wanna show the contents of them all in one common div.
-      Thirdly, we don't know if there's any styling "out there" that uses this particular
-        id. So we keep it...
-    -->
-    
     <table id="personListing.searchComponent" class="vrtx-resources articleListing.searchComponent ${frontpageClass}">
     	<tr>
 	    	<th>Navn</th>
@@ -113,6 +105,7 @@
             	<td>${phone?html}</td>
             	<td><a href="mailto:${email?html}">${email?html}</a></td>
             	<td>
+            		<#-- Get list from property - don't split -->
             		<#list tags?split(",") as tag>
             			<a href="?vrtx=tags&tag=${tag}">${tag}</a>
             		</#list>

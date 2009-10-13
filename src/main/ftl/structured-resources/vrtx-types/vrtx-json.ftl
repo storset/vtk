@@ -22,7 +22,6 @@
     <#if elem.value?exists && elem.value?is_enumerable>
     	<#list elem.value as map> 	
 	    <div class="vrtx-json-element" id="vrtx-json-element-${inputFieldName}-${counter}">
-	        <div class="subheader">Boks</div>
 	    	<#list elem.description.attributes as jsonAttr>
 		  	<#assign tmpName = inputFieldName + "." + jsonAttr + "." + counter />
 		  	<#assign jsonAttrLocalizedTitle = form.resource.getLocalizedMsg(jsonAttr, locale, null) />

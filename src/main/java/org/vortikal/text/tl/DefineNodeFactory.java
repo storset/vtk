@@ -45,6 +45,7 @@ public final class DefineNodeFactory implements DirectiveNodeFactory {
         = new HashMap<String, ValueProvider>();
 
     public DefineNodeFactory() {
+        addValueProvider("expr", new ExpressionEvaluator());
         addValueProvider("field", new JavaBeanFieldRetriever());
         addValueProvider("concat", new ConcatHandler());
     }
@@ -111,6 +112,15 @@ public final class DefineNodeFactory implements DirectiveNodeFactory {
 
         public String toString() {
             return "[def: " + this.variable + "=" + this.value + "]";
+        }
+    }
+
+    private class ExpressionEvaluator implements ValueProvider {
+
+        public Object create(List<Argument> tokens, Context ctx)
+                throws Exception {
+            Expression expr = new Expression(tokens);
+            return expr.evaluate(ctx);
         }
     }
     

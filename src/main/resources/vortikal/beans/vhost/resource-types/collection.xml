@@ -76,12 +76,16 @@
                 <value>person-listing</value>
               </constructor-arg>
             </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>project-listing</value>
+              </constructor-arg>
+            </bean>
           </list>
         </property>
       </bean>
     </property>
   </bean>
-
 
   <bean id="collectionTitlePropDef"
         class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl"
@@ -229,7 +233,6 @@
     </property>
   </bean>
 
-
   <bean id="collection.hideLastModifiedPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="hide-last-modified" />
     <property name="type" value="BOOLEAN" />
@@ -254,7 +257,6 @@
       </map>
     </property>
   </bean>
-
 
   <bean id="collection.hideIntroductionPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
@@ -282,7 +284,7 @@
     </property>
   </bean>
   
-    <bean id="collection.hideNumberOfComments"
+  <bean id="collection.hideNumberOfComments"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="hide-number-of-comments" />
     <property name="type" value="BOOLEAN" />

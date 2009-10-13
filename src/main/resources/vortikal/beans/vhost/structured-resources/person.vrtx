@@ -38,7 +38,8 @@ resourcetype person {
     content (after images),
     tags tooltip (en : "(tag1, tag2, ...)", no : "(emneord1, emneord2, ...)", nn : "(emneord1, emneord2, ...)"),
     postalAddress tooltip (en : "(postbox / streetaddress, postnumber place)", no : "(postboks / gateadresse, postnummer sted)", nn : "(postboks / gateadresse, postnummer sted)"),
-    alternativeVisitingAddress tooltip (en : "(building, streetaddress, postnumber place)", no : "(bygning, gateadresse, postnummer sted)", nn : "(bygning, gateadresse, postnummer sted)")
+    alternativeVisitingAddress tooltip (en : "(building, streetaddress, postnumber place)", no : "(bygning, gateadresse, postnummer sted)", nn : "(bygning, gateadresse, postnummer sted)"),
+	rssFeeds (after combinedProjects)
   }
 
   scripts {

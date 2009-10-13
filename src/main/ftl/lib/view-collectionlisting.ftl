@@ -101,7 +101,7 @@
                <a class="vrtx-image" href="${articles.urls[r.URI]?html}"><img src="${src?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" width="30px" /></a>
                </td>
             </#if>
-           		<td>${title?html}</a><span>${position?html}</span></td>
+           		<td> <a href="${articles.urls[r.URI]?html}">${title?html}</a><span>${position?html}</span></td>
             	<td>${phone?html}</td>
             	<td><a href="mailto:${email?html}">${email?html}</a></td>
             	<td>

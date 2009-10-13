@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
 <beans>
 
   <bean id="collectionListing.viewService" class="org.vortikal.web.service.ServiceImpl">
@@ -19,9 +18,9 @@
     <property name="handler" ref="collectionListing.handler" />
     <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
   </bean>
-  
-  <bean id="collectionListing.viewService.serviceNameProvider"
-      class="org.vortikal.web.service.provider.CollectionListingViewServiceNameProvider" />
+
+  <bean id="collectionListing.viewService.serviceNameProvider" 
+    class="org.vortikal.web.service.provider.CollectionListingViewServiceNameProvider" />
   
   <bean id="collectionListing.atomService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="viewService" />
@@ -35,10 +34,8 @@
     <property name="handler" ref="collectionListing.atomHandler" />
   </bean>
   
-  
-  <bean id="collectionListing.handler" 
-        class="org.vortikal.web.display.collection.CollectionListingController"
-        parent="requestLocalRepositoryAware">
+  <bean id="collectionListing.handler" class="org.vortikal.web.display.collection.CollectionListingController"
+    parent="requestLocalRepositoryAware">
     <property name="collectionSearcher" ref="systemIndexSearcher" />
     <property name="resourceManager" ref="resourceManager" />
     <property name="sortPropDefs">
@@ -72,10 +69,8 @@
       </map>
     </property>
   </bean>
-
   
-  <bean id="collectionListing.atomHandler" 
-    class="org.vortikal.web.display.collection.CollectionListingAsAtomFeed"
+  <bean id="collectionListing.atomHandler" class="org.vortikal.web.display.collection.CollectionListingAsAtomFeed"
     parent="requestLocalRepositoryAware">
     <property name="viewService" ref="viewService" />
     <property name="abdera" ref="abdera" />
@@ -84,10 +79,7 @@
     <property name="authorPropDef" ref="createdByPropDef" />
   </bean>
   
-
-
-  <bean id="collectionListing.searchComponent"
-        class="org.vortikal.web.search.QueryStringSearchComponent">
+  <bean id="collectionListing.searchComponent" class="org.vortikal.web.search.QueryStringSearchComponent">
     <property name="name" value="collectionListing.searchComponent" />
     <property name="viewService" ref="webService" />
     <property name="searcher" ref="systemIndexSearcher" />
@@ -125,22 +117,20 @@
       </list>
     </property>
   </bean>
-
-
+  
   <bean id="collectionListing.viewResolver" parent="decoratorViewResolver">
     <property name="views">
       <map>
-        <entry key="collectionListing.view"  value-ref="collectionListing.view" />
+        <entry key="collectionListing.view" value-ref="collectionListing.view" />
       </map>
     </property>
   </bean>
-
+  
   <bean id="collectionListing.view" parent="freemarkerView">
     <property name="url" value="pages/view-collectionlisting.ftl" />
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
-        <!--ref bean="collectionListingFeedURLProvider" /-->
       </list>
     </property>
     <property name="attributesMap">
@@ -150,7 +140,7 @@
             <value>${themeBaseURL}/view-collectionlisting.css</value>
           </list>
         </entry>
-         <entry key="printCssURLs">
+        <entry key="printCssURLs">
           <list>
             <value>${themeBaseURL}/view-collectionlisting-print.css</value>
           </list>
@@ -158,5 +148,5 @@
       </map>
     </property>
   </bean>
-
+  
 </beans>

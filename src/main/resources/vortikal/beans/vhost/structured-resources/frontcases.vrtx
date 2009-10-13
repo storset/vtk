@@ -20,8 +20,9 @@ resourcetype frontcases {
            [def picture json-attr case "casePicture"]
            [def content json-attr case "caseContent"]
            [def webaddress json-attr case "caseWebaddress"]
+           [def number expr :index + 1]
            
-           <div class="vrtx-item" id="vrtx-item-[val :index]">
+           <div class="vrtx-item" id="vrtx-item-[val number]">
              [if picture && picture != ""]
                [if thetitle && thetitle != ""]
                  <img src="[val picture]" alt="[localized 'casePictureAlt']&nbsp;[val thetitle]" />

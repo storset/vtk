@@ -187,9 +187,25 @@ input.vrtx-remove-button {
 .vrtx-json #main-content .vrtx-json-element,
 .vrtx-json #additional-content .vrtx-json-element,
 .vrtx-json #cases .vrtx-json-element {
-   width: 100%;	
+   width: 80%;
+   min-width: 500px;
+   padding: 10px 130px 10px 10px;
+   border: 1px solid #aaa;
+   position: relative;
+   margin-bottom:15px;
 }
 
+.vrtx-json #main-content .vrtx-json-element input.vrtx-remove-button,
+.vrtx-json #additional-content .vrtx-json-element input.vrtx-remove-button,
+.vrtx-json #cases .vrtx-json-element input.vrtx-remove-button {
+  position: absolute;
+  right: 10px;
+}
+.vrtx-json #main-content .header,
+.vrtx-json #additional-content .header,
+.vrtx-json #cases .header {
+  padding-bottom:10px !important;
+}
 /* END JSON and multiple fields */
 
 /* START Set explisit widths and heights */
@@ -297,25 +313,17 @@ h2.vrtx-title {
 }
 
 #additional-content div.vrtx-string,
-#main-content div.vrtx-string,
-#cases div.vrtx-string {
+#main-content div.vrtx-string {
   clear: none;
 }
 
 #additional-content input.vrtx-remove-button,
 #main-content input.vrtx-remove-button,
-#cases input.vrtx-remove-button {
+#cases input.vrtx-remove-button,
+.vrtx-grouped-horizontal .vrtx-string input,
+input.date, input.hours, input.minutes {	
   float: none;	
 }
-
-.vrtx-grouped-horizontal .vrtx-string input {
-  float: none;	
-}
-
-input.date, input.hours, input.minutes {
-  float: none;  
-}
-
 
 /* START Introduction image edit like the old one */
 

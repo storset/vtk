@@ -36,8 +36,9 @@
   <import resource="structured-resources.xml" />
   <import resource="view-collection-listing.xml" />
   <import resource="view-article-listing.xml" />
-  <import resource="view-person-listing.xml" />
   <import resource="view-event-listing.xml" />
+  <import resource="view-person-listing.xml" />
+  <import resource="view-project-listing.xml" />
   <import resource="manage.xml" />
   <import resource="commenting.xml" />
   <import resource="root-management.xml" />

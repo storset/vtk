@@ -9,10 +9,10 @@ resourcetype structured-project {
     caption : simple_html,
     content : html noextract,
     participantsUsernames : string multiple,
-    participants : json (participantName : string, participantUrl : string) multiple,
+    participants : json (participantName:string, participantUrl:string) multiple,
     contactInfo : html noextract,
     tags : string multiple overrides tags,
-    rssFeeds : json ( rssTitle : string, rssUrl : string ) multiple
+    rssFeeds : json (rssTitle:string, rssUrl:string) multiple
   }
   
   edit-rules {

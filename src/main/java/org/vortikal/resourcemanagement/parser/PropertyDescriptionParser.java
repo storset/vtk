@@ -141,7 +141,7 @@ public class PropertyDescriptionParser {
                 p.setExternalService(descEntry.getChild(0).getText());
                 break;
             case ResourcetreeLexer.INDEX:
-                // XXX implement
+                handleIndexableJSONAttributes(p, descEntry);
                 break;
             default:
                 throw new IllegalStateException("Unknown token type for derived property description: "
@@ -183,6 +183,17 @@ public class PropertyDescriptionParser {
             attributes.put(attr, type);
         }
         p.setAttributes(attributes);
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void handleIndexableJSONAttributes(JSONPropertyDescription p, CommonTree descEntry) {
+        List<CommonTree> indexableAttributes = descEntry.getChildren();
+        for (CommonTree indexableAttribute : indexableAttributes) {
+            String indexableAttributeName = indexableAttribute.getText();
+            if (p.getAttributes().contains(indexableAttributeName)) {
+                p.addIndexableAttribute(indexableAttributeName);
+            }
+        }
     }
 
     private void handleDerivedProperty(DerivedPropertyDescription p, CommonTree descEntry) {

@@ -36,27 +36,39 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-
 public class JSONPropertyDescription extends EditablePropertyDescription {
-	private Map<String, String> attributes;
-	
-	public JSONPropertyDescription() {
-		super();
-	}
-	
-	public void setAttributes(LinkedHashMap<String, String> attributes) {
-		this.attributes = Collections.unmodifiableMap(attributes);
-	}
-	
-	public List<String> getAttributes() {
-		List<String> result = new ArrayList<String>();
-		for (String attr : this.attributes.keySet()) {
-			result.add(attr);
-		}
-		return result;
-	}
-	
-	public String getType(String attribute) {
-		return this.attributes.get(attribute);
-	}
+
+    private Map<String, String> attributes;
+    private List<String> indexableAttributes;
+
+    public JSONPropertyDescription() {
+        super();
+    }
+
+    public void setAttributes(LinkedHashMap<String, String> attributes) {
+        this.attributes = Collections.unmodifiableMap(attributes);
+    }
+
+    public List<String> getAttributes() {
+        List<String> result = new ArrayList<String>();
+        for (String attr : this.attributes.keySet()) {
+            result.add(attr);
+        }
+        return result;
+    }
+
+    public void addIndexableAttribute(String attribute) {
+        if (this.indexableAttributes == null) {
+            this.indexableAttributes = new ArrayList<String>();
+        }
+        this.indexableAttributes.add(attribute);
+    }
+
+    public List<String> getIndexableAttributes() {
+        return this.indexableAttributes;
+    }
+
+    public String getType(String attribute) {
+        return this.attributes.get(attribute);
+    }
 }

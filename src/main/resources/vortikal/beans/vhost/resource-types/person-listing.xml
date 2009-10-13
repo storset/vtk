@@ -1,39 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
 <beans>
 
-  <bean id="personListingResourceTypeDefinition"
-    class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="person-listing"/>
-    <property name="namespace" ref="PERSON_LISTING_NAMESPACE"/>
+  <bean id="personListingResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="person-listing" />
+    <property name="namespace" ref="PERSON_LISTING_NAMESPACE" />
     <property name="parentTypeDefinition" ref="collectionResourceTypeDefinition" />
     <property name="assertions">
       <list>
         <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
           <property name="namespace" ref="DEFAULT_NAMESPACE" />
-          <property name="name" value="collection-type" />    
+          <property name="name" value="collection-type" />
           <property name="value" value="person-listing" />
           <property name="checkExistenceOnly" value="false" />
         </bean>
       </list>
     </property>
-    <!--  <property name="propertyTypeDefinitions">
-      <list>
-        <ref bean="articleListing.featuredArticlesPropDef"/>
-        <ref bean="articleListing.recursiveListingPropDef" />
-        <ref bean="articleListing.recursiveListingSubfoldersPropDef"/>
-        <ref bean="articleListing.sortingPropDef" />
-        <ref bean="articleListing.hidePublishedDatePropDef" />
-        <ref bean="articleListing.hideIntroductionPropDef" />
-        <ref bean="articleListing.hideIntroductionImagePropDef" />
-        <ref bean="articleListing.hideNumberOfComments" />
-      </list> 
-    </property> -->  
   </bean>
-   
-  <bean id="resourceIsPersonListing"
-        class="org.vortikal.web.service.ResourceTypeAssertion">
+  
+  <bean id="resourceIsPersonListing" class="org.vortikal.web.service.ResourceTypeAssertion">
     <property name="resourceTypeDefinition" ref="personListingResourceTypeDefinition" />
     <property name="exactMatch" value="true" />
   </bean>

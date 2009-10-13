@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
 <beans>
 
   <bean id="personListing.viewService" class="org.vortikal.web.service.ServiceImpl">
@@ -9,7 +8,7 @@
     <property name="assertions">
       <list>
         <ref bean="resourceIsPersonListing" />
-      </list>   
+      </list>
     </property>
     <property name="handlerInterceptors">
       <list>
@@ -20,116 +19,40 @@
     <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
   </bean>
 
- <!--  <bean id="personListing.atomService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="collectionListing.atomService" />
-    <property name="order" value="-2" />
-    <property name="assertions">
+  <bean id="personListing.handler" class="org.vortikal.web.display.collection.CollectionListingController"
+    parent="collectionListing.handler">
+    <property name="searchComponents">
       <list>
-        <ref bean="resourceIsPersonListing" />
+        <ref bean="personListing.searchComponent" />
       </list>
     </property>
-    <property name="handler" ref="personListing.atomHandler" />
-  </bean>  -->
-  
-
-  <bean id="personListing.handler" 
-        class="org.vortikal.web.display.collection.PersonListingController"
-        parent="requestLocalRepositoryAware">
-    <property name="collectionSearcher" ref="systemIndexSearcher" />
-    <property name="resourceManager" ref="resourceManager" />
-    <property name="sortPropDefs">
-      <list>
-        <ref bean="importancePropDef" />
-        <ref bean="navigationTitlePropDef" />
-        <ref bean="titlePropDef" />        
-      </list>
-    </property>
-    <property name="overridingSortPropDefs">
-      <map>
-        <entry key-ref="navigationTitlePropDef">
-          <list>
-            <ref bean="titlePropDef" />
-          </list>
-        </entry>
-      </map>
-    </property>
-    <property name="hiddenPropDef" ref="hiddenPropDef" />
-    <property name="pageLimitPropDef" ref="collection.pageLimitPropDef" />
-    <property name="hideNumberOfComments" ref="collection.hideNumberOfComments" />
-    <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
     <property name="viewName" value="personListing.view" />
-    <property name="searcher" ref="personListing.searchComponent"  />
-    <property name="alternativeRepresentations">
-      <map>
-      </map>
-    </property> 
   </bean>
 
- <!-- <bean id="personListing.atomHandler" class="org.vortikal.web.display.collection.ArticleListingAsFeedController"
-    parent="requestLocalRepositoryAware">
-    <property name="viewService" ref="viewService" />
-    <property name="abdera" ref="abdera" />
-    <property name="searcher" ref="articleListingSearcher" />
-    <property name="publishedDatePropDef" ref="publishedDatePropDef" />
-    <property name="authorPropDef" ref="authorsPropDef" />
-  </bean>  -->
-  
-  <!--  <bean id="personListingSearcher" class="org.vortikal.web.display.article.PersonListingSearcher">
-    <property name="defaultSearch" ref="personListing.searchComponent" />
-  </bean>  -->
-
-  <bean id="personListing.searchComponent" class="org.vortikal.web.search.QueryStringSearchComponent">
+  <bean id="personListing.searchComponent" class="org.vortikal.web.search.QueryStringSearchComponent"
+    parent="collectionListing.searchComponent">
     <property name="name" value="personListing.defaultPerson" />
-    <property name="viewService" ref="webService" />
-    <property name="searcher" ref="systemIndexSearcher" />
-    <property name="resourceManager" ref="resourceManager" />
     <property name="defaultRecursive" value="true" />
-    <!-- <property name="recursivePropDef" ref="personListing.recursiveListingPropDef" />
-    <property name="sortPropDef" ref="personListing.sortingPropDef" />  -->
     <property name="query">
-      <value>(uri = {$currentFolder}/*) AND (type IN person)
-      </value>
+      <value>(uri = {$currentFolder}/*) AND (type IN person) </value>
     </property>
-    <property name="queryParser" ref="searchParser" />
-    <property name="defaultSortPropDef" ref="publishedDatePropDef" />
-    <property name="defaultSortOrder" ref="SORT_ORDER.DESC" />
-    <property name="sortPropertyMapping">
-      <map>
-        <entry key="title" value-ref="titlePropDef" />
-      </map>
-    </property>
-    <property name="sortOrderMapping">
-      <map>
-        <entry key="publishedDate" value-ref="SORT_ORDER.DESC" />
-        <entry key="title" value-ref="SORT_ORDER.ASC" />
-      </map>
-    </property>
-     <property name="listableProperties">
-      <list>
-      </list>
-    </property>  
   </bean>
   
   <bean id="personListing.viewResolver" parent="decoratorViewResolver">
     <property name="views">
       <map>
-        <entry key="personListing.view"  value-ref="personListing.view" />
+        <entry key="personListing.view" value-ref="personListing.view" />
       </map>
     </property>
   </bean>
-
-  <bean id="personListing.view" parent="freemarkerView">
-    <property name="url" value="pages/view-collectionlisting.ftl" />
-    <property name="referenceDataProviders">
-      <list>
-        <ref bean="resourceContextProvider" />
-      </list>
-    </property>
+  
+  <bean id="personListing.view" parent="collectionListing.view">
     <property name="attributesMap">
       <map>
         <entry key="cssURLs">
           <list>
             <value>${themeBaseURL}/view-collectionlisting.css</value>
+            <value>${themeBaseURL}/view-person-listing.css</value>
           </list>
         </entry>
         <entry key="printCssURLs">
@@ -140,6 +63,5 @@
       </map>
     </property>
   </bean>
-
 
 </beans>

@@ -25,6 +25,12 @@
     <constructor-arg value="http://www.uio.no/resource-types/article-listing" />
   </bean>
 
+
+  <bean id="PERSON_LISTING_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="pl" />
+    <constructor-arg value="http://www.uio.no/resource-types/person-listing" />
+  </bean>
+
   <bean id="EVENT_LISTING_NAMESPACE" class="org.vortikal.repository.Namespace">
     <constructor-arg value="el" />
     <constructor-arg value="http://www.uio.no/resource-types/event-listing" />

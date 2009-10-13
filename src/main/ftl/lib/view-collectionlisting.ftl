@@ -55,6 +55,78 @@
   
 </#macro>
 
+<#macro displayPersons page collectionListings displayMoreURLs=false >
+  <#if collectionListings?size &gt; 0>
+    <#assign i = 1 />
+    
+    <#local frontpageClass = "" />
+    <#if page = 1>
+      <#local frontpageClass = "vrtx-resources-frontpage" />
+    </#if>
+    
+    <#--
+      First of all, there is more than one searchcomponent, hence the list.
+      Second, the searchcomponents aren't necessarily named "articleListing.searchComponent",
+        but we wanna show the contents of them all in one common div.
+      Thirdly, we don't know if there's any styling "out there" that uses this particular
+        id. So we keep it...
+    -->
+    
+    <table id="personListing.searchComponent" class="vrtx-resources articleListing.searchComponent ${frontpageClass}">
+    	<tr>
+	    	<th>Navn</th>
+	    	<th>Telefon</th>
+	    	<th>E-post</th>
+	    	<th>Emneord</th>
+    	</tr>
+    <#list collectionListings as articles>
+      <#local resources=articles.files />
+      <#if resources?size &gt; 0>
+        <#list resources as r>
+        
+          <#local locale = springMacroRequestContext.getLocale() />
+          <#if r.contentLocale?has_content>
+            <#local locale = r.contentLocale />
+          </#if>
+          
+          <#local title = vrtx.propValue(r, 'title') />
+          <#local introImg  = vrtx.propValue(r, 'picture')  />
+          <#local position  = vrtx.propValue(r, 'position')  />
+          <#local phone  = vrtx.propValue(r, 'phone')  />
+          <#local email = vrtx.propValue(r, 'email')  />
+          <#local tags = vrtx.propValue(r, 'tags') />
+          
+          <#local articleType = "vrtx-default-article" />
+          <#if articles.name == "articleListing.featuredArticles">
+            <#local articleType = "vrtx-featured-article" />
+          </#if>
+          
+          <tr> 
+          
+            <#local src = vrtx.propValue(r, 'picture', 'thumbnail') />
+            <#if introImg?has_content && articles.hasDisplayPropDef(introImg.definition.name)>
+               <td>
+               <a class="vrtx-image" href="${articles.urls[r.URI]?html}"><img src="${src?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" width="30px" /></a>
+               </td>
+            </#if>
+           		<td>${title?html}</a><span>${position?html}</span></td>
+            	<td>${phone?html}</td>
+            	<td><a href="mailto:${email?html}">${email?html}</a></td>
+            	<td>
+            		<#list tags?split(",") as tag>
+            			<a href="?vrtx=tags&tag=${tag}">${tag}</a>
+            		</#list>
+            	</td>
+           </tr>
+          <#assign i = i + 1 />
+        </#list>
+      </#if>
+    </#list>
+    </table>
+  </#if>
+
+</#macro>
+
 <#macro displayArticles page collectionListings hideNumberOfComments displayMoreURLs=false >
 
   <#if collectionListings?size &gt; 0>

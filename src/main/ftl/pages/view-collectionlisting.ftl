@@ -125,9 +125,12 @@
 
 
      <#-- List resources: -->
+   
      <#if searchComponents?has_content>
        <#if collection.resourceType = 'article-listing'>
          <@coll.displayArticles page=page collectionListings=searchComponents hideNumberOfComments=hideNumberOfComments displayMoreURLs=true />
+       <#elseif collection.resourceType = 'person-listing'>
+       	<@coll.displayPersons page=page collectionListings=searchComponents displayMoreURLs=true />
        <#else>
          <#list searchComponents as searchComponent>
            <#if collection.resourceType = 'event-listing'>

@@ -98,7 +98,7 @@
                   <#if publication.numberOfPages != "">&nbsp;${publication.numberOfPages}&nbsp;s.</#if>
              <#elseif publication.mainCategoryCode == "BOKRAPPORTDEL">
             <#t /><#if publication.titlePartOf != "">&#44;&nbsp;<#if publication.sprak == "EN">In<#else>I:</#if>&nbsp;
-                  <#t /><#if publication.researchersPartOf != "">${publication.researchersPartOf}&nbsp;<#if publication.sprak == "NO">(red.)<#else>(ed.)</#if>,&nbsp;</#if>
+                  <#t /><#if publication.researchersPartOf != "">${publication.researchersPartOf}&nbsp;<#if publication.sprak == "EN">(ed.)<#else>(red.)</#if>,&nbsp;</#if>
                     <em>${publication.titlePartOf}</em>.&nbsp;
                   <#else>
                   .&nbsp;

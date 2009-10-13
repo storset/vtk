@@ -24,6 +24,7 @@
         </div>
       </div>
     </#list>
+    </div>
   </#if>
 
 </#macro>

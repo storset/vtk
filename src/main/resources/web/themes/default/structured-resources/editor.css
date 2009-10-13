@@ -199,6 +199,7 @@ input.vrtx-remove-button {
 .vrtx-json #additional-content .vrtx-json-element input.vrtx-remove-button,
 .vrtx-json #cases .vrtx-json-element input.vrtx-remove-button {
   position: absolute;
+  margin-top: 0;
   right: 10px;
 }
 .vrtx-json #main-content .header,
@@ -206,6 +207,19 @@ input.vrtx-remove-button {
 .vrtx-json #cases .header {
   padding-bottom:10px !important;
 }
+
+.vrtx-json * .subheader {
+  display: none;
+}
+
+/*
+.vrtx-json #main-content .subheader,
+.vrtx-json #additional-content .subheader,
+.vrtx-json #cases .subheader {
+  display: block;
+  font-style: italic;
+} */
+
 /* END JSON and multiple fields */
 
 /* START Set explisit widths and heights */

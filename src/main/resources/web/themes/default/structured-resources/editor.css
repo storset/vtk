@@ -212,13 +212,12 @@ input.vrtx-remove-button {
   display: none;
 }
 
-/*
 .vrtx-json #main-content .subheader,
 .vrtx-json #additional-content .subheader,
 .vrtx-json #cases .subheader {
   display: block;
   font-style: italic;
-} */
+}
 
 /* END JSON and multiple fields */
 

@@ -140,6 +140,9 @@ public class PropertyDescriptionParser {
             case ResourcetreeLexer.EXTERNAL:
                 p.setExternalService(descEntry.getChild(0).getText());
                 break;
+            case ResourcetreeLexer.INDEX:
+                // XXX implement
+                break;
             default:
                 throw new IllegalStateException("Unknown token type for derived property description: "
                         + descEntry.getType());

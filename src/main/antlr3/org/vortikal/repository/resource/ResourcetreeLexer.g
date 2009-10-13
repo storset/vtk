@@ -55,6 +55,7 @@ DEFAULTPROP
 	:	'default';
 MULTIPLE:	'multiple';
 EXISTS	:	'exists';
+INDEX	:	'index';
 SHOWHIDE:	'show-hide';
 MULTIPLEINPUTFIELDS
 	:	'multipleinputfields';

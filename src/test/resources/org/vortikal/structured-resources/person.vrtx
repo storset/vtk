@@ -8,8 +8,9 @@ resourcetype person : article {
       overrides title default username,
     fetchExternal : boolean,
     tags : string multiple,
-    publications : json (publicationsTitle:string, publicationsUrl:string) multiple,
+    publications : json (publicationsTitle:string, publicationsUrl:string) multiple index(publicationsTitle, publicationsUrl),
     externalPublications : binary external:getExternalPublications
+    hasContent : derived (surname) eval (surname?exists)
   }
   
   edit-rules {

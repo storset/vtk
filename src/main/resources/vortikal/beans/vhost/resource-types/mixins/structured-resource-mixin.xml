@@ -8,7 +8,6 @@
     <property name="propertyTypeDefinitions">
       <list>
         <ref bean="tagsPropDef" />
-        <ref bean="htmlHasBodyContentPropDef" />
       </list>
     </property>
   </bean>

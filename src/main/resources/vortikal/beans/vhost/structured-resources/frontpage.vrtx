@@ -101,7 +101,7 @@ resourcetype frontpage {
   
   
   localization {
-     title : (en : "Box", no : "Boks", nn : "Boks"),
+     title : (en : "Title", no : "Tittel", nn : "Tittel"),
      main-content : (en : "Main content", no : "Hovedinnhold", nn : "Hovedinnhold"),
      additional-content : (en : "Additional content (default as right-column)", no : "Relatert innhold (default som høyrespalte)", nn : "Relatert innhald (default som høyrespalte)"),
      boxTitle : (en : "Title", no : "Tittel", nn : "Tittel"),

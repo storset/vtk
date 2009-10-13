@@ -54,8 +54,8 @@ import org.vortikal.web.Message;
 import org.vortikal.web.RequestContext;
 
 /**
- * A controller that copies (or moves) resources from one folder to another based on a set of resources stored in a
- * session variable
+ * A controller that copies (or moves) resources from one folder to another
+ * based on a set of resources stored in a session variable
  * 
  * <p>
  * Description:
@@ -71,7 +71,8 @@ import org.vortikal.web.RequestContext;
  * Model data published:
  * <ul>
  * <li><code>createErrorMessage</code>: errormessage
- * <li><code>errorItems</code>: an array of repository items which the errormessage relates to
+ * <li><code>errorItems</code>: an array of repository items which the
+ * errormessage relates to
  * </ul>
  */
 
@@ -80,18 +81,16 @@ public class CopyMoveToSelectedFolderController implements Controller {
     private static Log logger = LogFactory.getLog(CopyMoveToSelectedFolderController.class);
     static final String COPYMOVE_SESSION_ATTRIBUTE = "copymovesession";
     private String viewName = "DEFAULT_VIEW_NAME";
-    private Repository repository = null;
-
+    private Repository repository;
+    private static final Pattern COPY_POSTFIX_PATTERN = Pattern.compile("\\(\\d+\\)$");
 
     public void setViewName(String viewName) {
         this.viewName = viewName;
     }
 
-
     public final void setRepository(final Repository newRepository) {
         this.repository = newRepository;
     }
-
 
     @SuppressWarnings("unchecked")
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -218,7 +217,6 @@ public class CopyMoveToSelectedFolderController implements Controller {
         return new ModelAndView(this.viewName, model);
     }
 
-
     protected Path appendCopySuffix(Path newUri, int number) {
         String extension = "";
         String dot = "";
@@ -233,14 +231,13 @@ public class CopyMoveToSelectedFolderController implements Controller {
             name = name.substring(0, name.lastIndexOf("."));
         }
 
-        Pattern pattern = Pattern.compile("\\(\\d\\)$");
-        Matcher matcher = pattern.matcher(name);
+        Matcher matcher = COPY_POSTFIX_PATTERN.matcher(name);
         if (matcher.find()) {
             String count = matcher.group();
             count = count.substring(1, count.length() - 1);
             try {
                 number = Integer.parseInt(count) + 1;
-                name = pattern.split(name)[0];
+                name = COPY_POSTFIX_PATTERN.split(name)[0];
             } catch (Exception e) {
             }
         }

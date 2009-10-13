@@ -30,6 +30,10 @@ public class CopyMoveToSelectedFolderControllerTest extends TestCase {
         Path parenthesisName = Path.fromString("/test/te(3)st.xml");
         Path copiedParenthesis = controller.appendCopySuffix(parenthesisName, 3);
         assertEquals(copiedParenthesis, Path.fromString("/test/te(3)st(3).xml"));
+        
+        Path copyToDoubleDigit = Path.fromString("/foo(9).html");
+        Path firstToDoubleDigitCopy = controller.appendCopySuffix(copyToDoubleDigit, 1);
+        assertEquals(firstToDoubleDigitCopy, Path.fromString("/foo(10).html"));
     }
     
 }

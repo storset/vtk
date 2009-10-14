@@ -61,6 +61,7 @@
   <bean id="publishResourceHandler" class="org.vortikal.web.actions.publish.PublishResourceController"
     parent="requestLocalRepositoryAware">
     <property name="viewName" value="redirectToManage" />
+    <property name="publishDatePropDef" ref="publishDatePropDef" />
   </bean>
 
   <bean id="resourceIsNotPublishedAssertion" class="org.vortikal.web.service.ResourcePropertyAssertion">

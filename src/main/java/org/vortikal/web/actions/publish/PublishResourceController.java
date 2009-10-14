@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.actions.publish;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,8 +40,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 
@@ -48,6 +51,11 @@ public class PublishResourceController implements Controller {
 
     protected Repository repository;
     private String viewName;
+    private PropertyTypeDefinition publishDatePropDef;
+    
+    private static final String ACTION_PARAM = "action";
+    private static final String PUBLISH_PARAM = "publish";
+    private static final String UNPUBLISH_PARAM = "unpublish";
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
@@ -56,8 +64,19 @@ public class PublishResourceController implements Controller {
         Path resourceURI = RequestContext.getRequestContext().getResourceURI();
         Resource resource = repository.retrieve(token, resourceURI, true);
         
-        // XXX toggle publishedPropDef based on publisDatePropDef and store resource
-
+        String action = request.getParameter(ACTION_PARAM);
+        if (PUBLISH_PARAM.equals(action)) {
+            Property publishDateProp = resource.getProperty(this.publishDatePropDef);
+            if (publishDateProp == null) {
+                publishDateProp = resource.createProperty(this.publishDatePropDef);
+            }
+            publishDateProp.setDateValue(Calendar.getInstance().getTime());
+        } else if (UNPUBLISH_PARAM.equals(action)) {
+            resource.removeProperty(this.publishDatePropDef);
+        }
+        
+        this.repository.store(token, resource);
+        
         return new ModelAndView(this.viewName, model);
     }
 
@@ -67,6 +86,10 @@ public class PublishResourceController implements Controller {
 
     public void setViewName(String viewName) {
         this.viewName = viewName;
+    }
+    
+    public void setPublishDatePropDef(PropertyTypeDefinition publishDatePropDef) {
+        this.publishDatePropDef = publishDatePropDef;
     }
 
 }

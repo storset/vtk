@@ -30,6 +30,9 @@
  */
 package org.vortikal.repository.resourcetype.property;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.PropertyEvaluationContext.Type;
@@ -48,7 +51,18 @@ public class PublishEvaluator implements PropertyEvaluator {
             return true;
         }
 
+        Property publishDateProp = ctx.getNewResource().getProperty(this.publishDatePropDef);
+        Date now = Calendar.getInstance().getTime();
+        if (publishDateProp != null && publishDateProp.getDateValue().compareTo(now) <= 0) {
+            property.setBooleanValue(true);
+            return true;
+        } else if (property.getBooleanValue()) {
+            property.setBooleanValue(false);
+            return true;
+        }
+
         return false;
+
     }
 
     public void setPublishDatePropDef(PropertyTypeDefinition publishDatePropDef) {

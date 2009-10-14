@@ -53,7 +53,7 @@ public class Parser {
     private void illegalCharacter(int c, StringBuilder context) {
         throw new RuntimeException(
                 "Illegal character '" + (char) c + "' at line " 
-                + (int) (this.reader.getLineNumber() + 1) + ": " 
+                + (this.reader.getLineNumber() + 1) + ": " 
                 + context + (char) c);
     }
     
@@ -150,7 +150,9 @@ public class Parser {
         if (state == State.Directive) {
             token.type = Token.Type.Directive;
             if (token.value.trim().length() == 0) {
-                throw new IllegalStateException("Empty directive encountered");
+                throw new IllegalStateException(
+                        "Empty directive encountered at line " 
+                        + (this.reader.getLineNumber() + 1));
             }
         }
         return token;

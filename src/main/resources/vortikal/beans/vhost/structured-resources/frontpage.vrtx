@@ -22,14 +22,16 @@ resourcetype frontpage {
            [def urlText json-attr box "boxUrlText"]
            [def number expr :index + 1]
            
-           <div class="vrtx-frontpage-box [val type]" id="vrtx-frontpage-box-[val number]"> 
+           <div class="vrtx-frontpage-box [val type]" id="vrtx-main-content-[val number]"> 
              [if title && title != ""]
                <h2><a href="[val url]">[val title]</a></h2>
              [endif]
-             [val content unescaped]
-             [if url]
-               <a href="[val url]" class="more">[val urlText]</a>
-             [endif]
+             <div class="vrtx-box-content">
+               [val content unescaped]
+               [if url]
+                 <a href="[val url]" class="more">[val urlText]</a>
+               [endif]
+             </div>
            </div>
            
         [endlist]
@@ -51,14 +53,16 @@ resourcetype frontpage {
            [def urlText json-attr box "boxUrlText"]
            [def number expr :index + 1]
            
-           <div class="vrtx-frontpage-box [val type]" id="vrtx-frontpage-box-[val number]"> 
+           <div class="vrtx-frontpage-box [val type]" id="vrtx-additional-content-[val number]"> 
              [if title && title != ""]
                <h2><a href="[val url]">[val title]</a></h2>
              [endif]
-             [val content unescaped]
-             [if url]
-               <a href="[val url]" class="more">[val urlText]</a>
-             [endif]
+             <div class="vrtx-box-content">
+               [val content unescaped]
+               [if url]
+                 <a href="[val url]" class="more">[val urlText]</a>
+               [endif]
+             </div>
            </div>
         [endlist]
       [endif]

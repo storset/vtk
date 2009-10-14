@@ -51,7 +51,7 @@ resourcetype featured-content {
                  <div class="vrtx-date">[val date]</div>
                [endif]
                [if content && content != ""]
-                 <div class="vrtx-content">[val content unescaped]</div>
+                 <div class="vrtx-featured-item-content">[val content unescaped]</div>
                [endif]
              </div>
            </div>
@@ -84,7 +84,6 @@ resourcetype featured-content {
     ##
   }
   
-  
   localization {
      title : (en : "Title", no : "Tittel", nn : "Tittel"),
      featured-items : (en : "Featured items", no : "Fremhevede saker", nn : "Fremhevede saker"),
@@ -95,6 +94,6 @@ resourcetype featured-content {
      featuredPictureAlt : (en : "Picture to", no : "Bilde til", nn : "Bilete til"),
      featuredContent : (en : "Content", no : "Innhold", nn : "Innhald"),
      featuredWebaddress : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
-     header : (en : "Edit featured content", no : "Rediger fremhevet innhold", nn : "Rediger fremhevet innhold")
+     header : (en : "Edit featured content", no : "Rediger fremhevet innhold", nn : "Rediger fremhevet innhald")
   }
 }

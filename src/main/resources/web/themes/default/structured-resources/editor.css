@@ -206,9 +206,9 @@ input.vrtx-remove-button {
   width:70px;
 }
 
-.vrtx-json #main-content .vrtx-json-element .vrtx-simple-html iframe,
-.vrtx-json #additional-content .vrtx-json-element .vrtx-simple-html iframe,
-.vrtx-json #featured-items .vrtx-json-element .vrtx-simple-html iframe {
+.vrtx-json #main-content .vrtx-json-element .vrtx-html iframe,
+.vrtx-json #additional-content .vrtx-json-element .vrtx-html iframe,
+.vrtx-json #featured-items .vrtx-json-element .vrtx-html iframe {
   height: 210px;	
 }
 

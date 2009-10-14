@@ -201,6 +201,7 @@ input.vrtx-remove-button {
   position: absolute;
   margin-top: 0;
   right: 10px;
+  top: 0px;
   float: none;
   width:70px;
 }

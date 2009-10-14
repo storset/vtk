@@ -57,18 +57,18 @@ public class PrincipalDataProvider implements VocabularyDataProvider<Principal> 
         return null;
     }
 
-    public List<Principal> getPrefixCompletions(String prefix, Path contextUri, String token) {
+    public List<Principal> getCompletions(String input, Path contextUri, String token) {
 
         Set<Principal> result = new HashSet<Principal>(0);
 
         try {
             if (Type.USER.equals(type)) {
-                Principal singleUser = this.principalFactory.getPrincipal(prefix, type);
+                Principal singleUser = this.principalFactory.getPrincipal(input, type);
                 if (this.principalManager.validatePrincipal(singleUser)) {
                     result.add(singleUser);
                 }
             }
-            List<Principal> searchResult = principalFactory.search(prefix, type);
+            List<Principal> searchResult = principalFactory.search(input, type);
             if (searchResult != null && searchResult.size() > 0) {
                 result.addAll(searchResult);
             }

@@ -42,10 +42,10 @@ public class PrincipalAutoCompleteController extends AutoCompleteController {
     private boolean invert;
 
     @Override
-    protected String getAutoCompleteSuggestions(String prefix, Path contextUri,
+    protected String getAutoCompleteSuggestions(String input, Path contextUri,
             String securityToken) {
 
-        List<Principal> completions = this.dataProvider.getPrefixCompletions(prefix,
+        List<Principal> completions = this.dataProvider.getCompletions(input,
                 contextUri, securityToken);
 
         StringBuilder result = new StringBuilder();

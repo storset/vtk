@@ -31,6 +31,8 @@
 package org.vortikal.web.display.autocomplete;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -44,10 +46,8 @@ import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.web.reporting.TagsReportingComponent;
 import org.vortikal.web.tags.Tag;
 
-
 /**
  * Provide keywords completion data from repository.
- *
  */
 public class RepositoryTagsDataProvider implements
         VocabularyDataProvider<Tag> {
@@ -56,33 +56,33 @@ public class RepositoryTagsDataProvider implements
     
     private TagsReportingComponent tagsReporter;
 
-    /**
-     * @see VocabularyDataProvider#getPrefixCompletions(String, String)
+    /* (non-Javadoc)
+     * @see org.vortikal.web.display.autocomplete.VocabularyDataProvider#getCompletions(java.lang.String, org.vortikal.repository.Path, java.lang.String)
      */
-    public List<Tag> getPrefixCompletions(String prefix, 
-                                             Path contextUri, 
-                                             String token) {
+    public List<Tag> getCompletions(String prefix, 
+                                    Path contextUri, 
+                                    String token) {
         
-        List<Tag> repositoryTags = getCompletions(contextUri, token);
+        List<Tag> tags = getCompletions(contextUri, token);
         
-        filterByPrefix(prefix, repositoryTags);
+        filterTagListByPrefix(prefix, tags);
 
-        return repositoryTags;
+        return tags;
     }
     
-    // Fetch list of all existing unique repository tagss, sorted
-    // by frequency, with most frequent on top.
-    public List<Tag> getCompletions(Path scopeUri, String token) {
+    /* (non-Javadoc)
+     * @see org.vortikal.web.display.autocomplete.VocabularyDataProvider#getCompletions(org.vortikal.repository.Path, java.lang.String)
+     */
+    public List<Tag> getCompletions(Path contextUri, String token) {
      
-        // TODO might consider adding limit on number of unique tags that are 
-        //  fetched.
+        // TODO might consider adding limit on number of unique tags that are fetched.
         try {
             PropertyValueFrequencyQueryResult pfqResult =
-                tagsReporter.getTags(scopeUri, -1, -1, token);
+                tagsReporter.getTags(contextUri, -1, -1, token);
                 
             List<Pair<Value, Integer>> pfqList = pfqResult.getValueFrequencyList();
 
-            List<Tag> result = new ArrayList<Tag>(pfqList.size());
+            List<Tag> result = new LinkedList<Tag>();
             
             for (Pair<Value, Integer> pair: pfqList) {
                 result.add(new Tag(pair.first().getStringValue()));
@@ -96,18 +96,17 @@ public class RepositoryTagsDataProvider implements
             return new ArrayList<Tag>(0);
         }
     }
-    
+
     // Filter *case-insensitively* by prefix
-    private void filterByPrefix(String prefix, List<Tag> list) {
-        List<Tag> filteredKeywords = new ArrayList<Tag>();
-        for (Tag tag : list) {
-            String keyword = tag.getText();
-            if (!(prefix.length() <= keyword.length()
-                    && keyword.substring(0, prefix.length()).equalsIgnoreCase(prefix))) {
-                filteredKeywords.add(tag);
+    private void filterTagListByPrefix(String prefix, List<Tag> list) {
+        Iterator<Tag> i = list.iterator();
+        while (i.hasNext()) {
+            String tagText = i.next().getText();
+            if (!(prefix.length() <= tagText.length() 
+                    && tagText.substring(0, prefix.length()).equalsIgnoreCase(prefix))) {
+                i.remove();
             }
         }
-        list.removeAll(filteredKeywords);
     }
 
     @Required

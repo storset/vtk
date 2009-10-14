@@ -25,15 +25,15 @@ resourcetype featured-content {
            <div class="vrtx-featured-item" id="vrtx-featured-item-[val number]">
              [if picture && picture != ""]
                [if thetitle && thetitle != ""]
-                 <img src="[val picture]" alt="[localized 'featuredPictureAlt']&nbsp;[val thetitle]" />
+                 <img src="[val picture]" alt="[localized 'featuredPictureAlt'] [val thetitle]" />
                [else]
-                 <img src="[val picture]" alt="[localized 'featuredPictureAlt']&nbsp;" />
+                 <img src="[val picture]" alt="[localized 'featuredPictureAlt']" />
                [endif]
              [else]
                [if thetitle && thetitle != ""]
-                 <img src="#" alt="[localized 'featuredPictureAlt'] [val thetitle]" />
+                 <img src="/" alt="[localized 'featuredPictureAlt'] [val thetitle]" />
                [else]
-                 <img src="#" alt="[localized 'featuredPictureAlt']" />
+                 <img src="/" alt="[localized 'featuredPictureAlt']" />
                [endif]
              [endif]
              <div class="vrtx-box-content">

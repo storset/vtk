@@ -5,7 +5,7 @@ resourcetype frontpage {
     main-content : json (boxTitle : string, boxType : string, boxContent : html, boxUrlText : string, boxUrl : string) multiple noextract,
     additional-content : json (boxTitle : string, boxType : string, boxContent : html, boxUrlText : string,  boxUrl : string) multiple noextract
   }
-
+  
   view-components {
   
     main-content {
@@ -33,7 +33,7 @@ resourcetype frontpage {
                [endif]
              </div>
            </div>
-           
+
         [endlist]
       [endif]
       ##
@@ -64,6 +64,7 @@ resourcetype frontpage {
                [endif]
              </div>
            </div>
+           
         [endlist]
       [endif]
       ##
@@ -102,8 +103,7 @@ resourcetype frontpage {
     </html>
     ##
   }
-  
-  
+
   localization {
      title : (en : "Title", no : "Tittel", nn : "Tittel"),
      main-content : (en : "Main content", no : "Hovedinnhold", nn : "Hovedinnhold"),

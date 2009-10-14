@@ -324,9 +324,15 @@ h2.vrtx-title {
   font-size: 1em;	
 }
 
-#additional-content div.vrtx-string,
-#main-content div.vrtx-string {
+.vrtx-json #additional-content .vrtx-string,
+.vrtx-json #main-content .vrtx-string {
   clear: none;
+}
+
+/* IE7 fix */
+.vrtx-json #main-content .vrtx-json-element .vrtx-html,
+.vrtx-json #additional-content .vrtx-json-element .vrtx-html {
+  float: none;
 }
 
 .vrtx-grouped-horizontal .vrtx-string input,

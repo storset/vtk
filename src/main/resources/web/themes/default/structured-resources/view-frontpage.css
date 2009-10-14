@@ -32,3 +32,9 @@
   padding:0 4% 5px;
   display: block;
 }
+
+#vrtx-main-content .vrtx-box-content,
+#vrtx-additional-content .vrtx-box-content {
+  float: left;
+  width: 100%;
+}

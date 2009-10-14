@@ -1,3 +1,4 @@
+<#if breadcrumb?exists>
 <div class="menu-component">
   <ul class="vrtx-breadcrumb-menu">
 		<#list breadcrumb as elem >
@@ -23,3 +24,4 @@
     </li>
   </ul>
 </div>
+</#if>

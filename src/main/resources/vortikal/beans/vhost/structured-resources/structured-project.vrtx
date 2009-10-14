@@ -124,7 +124,7 @@ resourcetype structured-project {
       ##
     }
     
-  } // End of view components
+  }
 
   view {
     ##    

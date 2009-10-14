@@ -124,13 +124,7 @@ resourcetype structured-project {
       ##
     }
     
-    person-list {
-      ##
-       ${resource:person-list}
-      ##
-    }
-    
-  }
+  } // End of view components
 
   view {
     ##    
@@ -154,7 +148,7 @@ resourcetype structured-project {
           </div>
           <div id="vrtx-additional-content">
             <comp:contact-info />
-            <comp:person-list />
+            <resource:person-list />
             <comp:feeds />
           </div>
         </div>

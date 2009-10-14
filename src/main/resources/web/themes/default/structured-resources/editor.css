@@ -335,6 +335,11 @@ h2.vrtx-title {
   float: none;
 }
 
+.vrtx-json #main-content .vrtx-json-element .vrtx-html > div,
+.vrtx-json #additional-content .vrtx-json-element .vrtx-html > div {
+  padding-bottom: 10px;	
+}
+
 .vrtx-grouped-horizontal .vrtx-string input,
 input.date, input.hours, input.minutes {	
   float: none;	

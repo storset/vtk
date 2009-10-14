@@ -65,10 +65,11 @@ public class JSONPropertyDescription extends EditablePropertyDescription {
     }
 
     public List<String> getIndexableAttributes() {
-        return Collections.unmodifiableList(this.indexableAttributes);
+        return this.indexableAttributes != null ? Collections.unmodifiableList(this.indexableAttributes) : null;
     }
 
     public String getType(String attribute) {
         return this.attributes.get(attribute);
     }
+
 }

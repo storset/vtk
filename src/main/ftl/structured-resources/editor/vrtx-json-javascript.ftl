@@ -141,7 +141,7 @@
 		htmlTemplate += '<div>';
 		htmlTemplate += '<label for=\"{inputFieldName}\">{title}<\/label>';
 		htmlTemplate += '<\/div><div>';
-	  	htmlTemplate += '<input type=\"text\" id=\"{inputFieldName}\" name=\"{inputFieldName}\" value=\"{value?html}\" onblur=\"previewImage({inputFieldName});\" size=\"30\" \/>';
+	  	htmlTemplate += '<input type=\"text\" id=\"{inputFieldName}\" name=\"{inputFieldName}\" value=\"\" onblur=\"previewImage({inputFieldName});\" size=\"30\" \/>';
       	htmlTemplate += '<button type=\"button\" onclick=\"browseServer(\'{inputFieldName}\', \'${fckeditorBase.url}\', \'${resourceContext.parentURI}\',\'${fckBrowse.url.pathRepresentation}\');\"><@vrtx.msg code="editor.browseImages" /><\/button>';
 		htmlTemplate += '<\/div>';
 		htmlTemplate += '<div id=\"{inputFieldName}.preview\">';

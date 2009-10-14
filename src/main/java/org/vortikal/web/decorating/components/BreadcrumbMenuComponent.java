@@ -74,7 +74,7 @@ public class BreadcrumbMenuComponent extends ViewRenderingDecoratorComponent {
             return;
         }
         for (int i = 0; i < displayFromLevel; i++) {
-            breadCrumbElements.remove(i);
+            breadCrumbElements.remove(0);
         }
 
         Resource currentResource = repository.retrieve(token, uri, false);

@@ -201,6 +201,8 @@ input.vrtx-remove-button {
   position: absolute;
   margin-top: 0;
   right: 10px;
+  float: none;
+  width:70px;
 }
 .vrtx-json #main-content .header,
 .vrtx-json #additional-content .header,
@@ -319,9 +321,6 @@ h2.vrtx-title {
   clear: none;
 }
 
-#additional-content input.vrtx-remove-button,
-#main-content input.vrtx-remove-button,
-#featured-items input.vrtx-remove-button,
 .vrtx-grouped-horizontal .vrtx-string input,
 input.date, input.hours, input.minutes {	
   float: none;	

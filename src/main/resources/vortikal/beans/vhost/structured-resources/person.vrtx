@@ -30,7 +30,7 @@ resourcetype person {
   }
 
   edit-rules {
-    group contactInformation (getExternalPersonInfo, firstName, surname, position, phone, fax, email, postalAddress, visitingAddress) (after username),
+    group contactInformation (getExternalPersonInfo, firstName, surname, position, phone, mobile, fax, email, postalAddress, visitingAddress) (after username),
     group additionalContactInformation (alternativeVisitingAddress, building, room, availableHours) (after contactInformation),
     group images (picture, pressPhoto) (after additionalContactInformation) horizontal,
     group combinedPublications (getExternalScientificInformation, selectedPublications) (after tags),
@@ -70,13 +70,16 @@ resourcetype person {
        
        <div class="vrtx-person-contactinfo">
        
-         [if (phone && phone != "") || (email && email != "")]
+         [if (phone && phone != "") || (email && email != "") || (mobile && mobile != "")]
            <ul class="list">
              [if email && email != ""]
                <li><h3>[localized "email"]</h3>:&nbsp;<a href="mailto:[val email]">[val email]</a></li>
              [endif]
              [if phone && phone != ""]
                <li><h3>[localized "phone"]</h3>:&nbsp;[val phone]</li>
+             [endif]
+             [if mobile && mobile != ""]
+               <li><h3>[localized "mobile"]</h3>:&nbsp;[val mobile]</li>
              [endif]
              [if fax && fax != ""]
                <li><h3>[localized "fax"]</h3>:&nbsp;[val fax]</li>
@@ -302,6 +305,7 @@ resourcetype person {
     position : (en : "Position", no : "Stillingstittel", nn : "Stillingstittel"), 
     webPage : (en : "Web page", no : "Webside", nn : "Webside"),
     phone : (en : "Phone", no : "Telefon", nn : "Telefon"),
+    mobile : (en : "Mobile phone", no : "Mobiltelefon", nn : "Mobiltelefon"),
     fax : (en : "Fax", no : "Faks", nn : "Faks"), 
     officeNumber : (en : "Office number", no : "Kontor", nn : "Kontor"),
     availableHours : (en : "Available hours", no : "Treffetider", nn : "Treffetider"),

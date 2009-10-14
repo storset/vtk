@@ -54,7 +54,9 @@ public class StructuredResourceTestIntegration extends StructuredResourceTestSet
         if (propertyDescriptions != null) {
             System.out.println("\tProperties:");
             for (PropertyDescription d : propertyDescriptions) {
-                if (d instanceof DerivedPropertyDescription) {
+                if (d instanceof BinaryPropertyDescription) {
+                    System.out.println("\t\t" + d.getName() + ": " + d.getType());
+                } else if (d instanceof DerivedPropertyDescription) {
                     DerivedPropertyDescription dp = (DerivedPropertyDescription) d;
                     System.out.println("\t\t" + dp.getName() + ": " + dp.getType() + " " + dp.isMultiple()
                             + " derived from: " + dp.getDependentProperties() + " " + dp.getOverrides());

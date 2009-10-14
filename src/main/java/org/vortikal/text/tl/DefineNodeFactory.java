@@ -102,11 +102,7 @@ public final class DefineNodeFactory implements DirectiveNodeFactory {
 
         public void render(Context ctx, Writer out) throws Exception {
             Object result;
-            if (this.value instanceof Symbol) {
-                result = ((Symbol) this.value).resolve(ctx);
-            } else {
-                result = ((Literal) this.value).getValue();
-            }
+            result = this.value.getValue(ctx);
             ctx.define(this.variable, result, true);
         }
 
@@ -129,12 +125,7 @@ public final class DefineNodeFactory implements DirectiveNodeFactory {
         public Object create(List<Argument> tokens, Context ctx) {
             StringBuilder result = new StringBuilder();
             for (Argument arg: tokens) {
-                Object o;
-                if (arg instanceof Symbol) {
-                    o = ((Symbol) arg).resolve(ctx);
-                } else {
-                    o = ((Literal) arg).getValue();
-                }
+                Object o = arg.getValue(ctx);
                 result.append(o);
             }
             return result.toString();
@@ -150,22 +141,13 @@ public final class DefineNodeFactory implements DirectiveNodeFactory {
             
             Object target;
             Argument arg1 = tokens.get(0);
-            if (arg1 instanceof Symbol) {
-                target = ((Symbol) arg1).resolve(ctx);
-            } else {
-                target = ((Literal) arg1).getValue();
-            }
+            target = arg1.getValue(ctx);
             if (target == null) {
                 throw new RuntimeException("Object " + arg1.getRawValue() + " not found");
             }
             
-            Object o;
             Argument arg2 = tokens.get(1);
-            if (arg2 instanceof Symbol) {
-                o = ((Symbol) arg2).resolve(ctx);
-            } else {
-                o = ((Literal) arg2).getValue();
-            }
+            Object o = arg2.getValue(ctx);
             if (o == null) {
                 throw new RuntimeException("Object " + arg2.getRawValue() + " not found");
             }

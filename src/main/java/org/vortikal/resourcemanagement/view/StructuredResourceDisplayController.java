@@ -345,13 +345,13 @@ public class StructuredResourceDisplayController implements Controller, Initiali
                     Resource resource;
                     String ref;
                     if (arg1 instanceof Symbol) {
-                        Object o = ((Symbol) arg1).resolve(ctx);
+                        Object o = ((Symbol) arg1).getValue(ctx);
                         if (o == null) {
                             throw new Exception("Unable to resolve: " + arg1.getRawValue());
                         }
                         ref = o.toString();
                     } else {
-                        ref = ((Literal) arg1).getValue().toString();
+                        ref = arg1.getValue(ctx).toString();
                     }
 
                     if (ref.equals(".")) {
@@ -392,13 +392,13 @@ public class StructuredResourceDisplayController implements Controller, Initiali
             Argument arg = tokens.get(0);
             String queryString;
             if (arg instanceof Symbol) {
-                Object o = ((Symbol) arg).resolve(ctx);
+                Object o = ((Symbol) arg).getValue(ctx);
                 if (o == null) {
                     throw new Exception("Unable to resolve: " + arg.getRawValue());
                 }
                 queryString = o.toString();
             } else {
-                queryString = ((Literal) arg).getValue().toString();
+                queryString = arg.getValue(ctx).toString();
             }
             String token = SecurityContext.getSecurityContext().getToken();
             Query query = queryParserFactory.getParser().parse(queryString);
@@ -419,7 +419,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
             if (!(arg instanceof Symbol)) {
                 throw new Exception("Argument must be a resource object: " + arg.getRawValue());
             }
-            Object o = ((Symbol) arg).resolve(ctx);
+            Object o = arg.getValue(ctx);
             if (o == null) {
                 throw new Exception("Unable to resolve argument: " + arg.getRawValue());
             }
@@ -449,7 +449,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
             PropertySet resource = null;
             String ref = null;
             if (arg1 instanceof Symbol) {
-                Object o = ((Symbol) arg1).resolve(ctx);
+                Object o = arg1.getValue(ctx);
                 if (o instanceof PropertySet) {
                     resource = (PropertySet) o;
                 } else {
@@ -459,7 +459,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
                     ref = o.toString();
                 }
             } else {
-                ref = ((Literal) arg1).getValue().toString();
+                ref = arg1.getValue(ctx).toString();
             }
 
             if (resource == null) {
@@ -479,13 +479,13 @@ public class StructuredResourceDisplayController implements Controller, Initiali
             }
             String propName;
             if (arg2 instanceof Symbol) {
-                Object o = ((Symbol) arg2).resolve(ctx);
+                Object o = arg2.getValue(ctx);
                 if (o == null) {
                     throw new Exception("Unable to resolve: " + arg2.getRawValue());
                 }
                 propName = o.toString();
             } else {
-                propName = ((Literal) arg2).getValue().toString();
+                propName = arg2.getValue(ctx).toString();
             }
             Property property = resource.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, propName);
             if (property == null) {
@@ -544,7 +544,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
             if (!(arg1 instanceof Symbol)) {
                 throw new Exception("First argument must be a symbol");
             }
-            object = ((Symbol) arg1).resolve(ctx);
+            object = arg1.getValue(ctx);
             if (object == null) {
                 throw new Exception("Unable to resolve: " + arg1.getRawValue());
             }
@@ -552,13 +552,13 @@ public class StructuredResourceDisplayController implements Controller, Initiali
             final Argument arg2 = tokens.get(1);
             String expression;
             if (arg2 instanceof Symbol) {
-                Object o = ((Symbol) arg2).resolve(ctx);
+                Object o = arg2.getValue(ctx);
                 if (o == null) {
                     throw new Exception("Unable to resolve: " + arg2.getRawValue());
                 }
                 expression = o.toString();
             } else {
-                expression = ((Literal) arg2).getValue().toString();
+                expression = arg2.getValue(ctx).toString();
             }
 
             if (!(object instanceof JSONObject)) {
@@ -582,7 +582,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
             for (Argument arg : tokens) {
                 String key;
                 if (arg instanceof Symbol) {
-                    Object o = ((Symbol) arg).resolve(ctx);
+                    Object o = arg.getValue(ctx);
                     if (o == null) {
                         throw new RuntimeException("Unable to resolve symbol: " + arg);
                     }
@@ -639,13 +639,13 @@ public class StructuredResourceDisplayController implements Controller, Initiali
 
             String ref;
             if (arg instanceof Symbol) {
-                Object o = ((Symbol) arg).resolve(ctx);
+                Object o = arg.getValue(ctx);
                 if (o == null) {
                     throw new RuntimeException("Unable to resolve: " + arg.getRawValue());
                 }
                 ref = o.toString();
             } else {
-                ref = ((Literal) arg).getValue().toString();
+                ref = arg.getValue(ctx).toString();
             }
 
             if (ref.equals(".")) {
@@ -724,7 +724,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
                 public void render(Context ctx, Writer out) throws Exception {
                     String key;
                     if (code instanceof Symbol) {
-                        Object o = ((Symbol) code).resolve(ctx);
+                        Object o = code.getValue(ctx);
                         if (o == null) {
                             throw new RuntimeException("Unable to resolve symbol: " + code);
                         }
@@ -739,11 +739,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
                     Object[] localizationArgs = new Object[rest.size()];
                     for (int i = 0; i < rest.size(); i++) {
                         Argument a = rest.get(i);
-                        if (a instanceof Symbol) {
-                            localizationArgs[i] = ((Symbol) a).resolve(ctx);
-                        } else {
-                            localizationArgs[i] = ((Literal) a).getValue();
-                        }
+                        localizationArgs[i] = a.getValue(ctx);
                     }
 
                     @SuppressWarnings("unchecked")

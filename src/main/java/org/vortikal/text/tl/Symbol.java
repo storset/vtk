@@ -52,7 +52,7 @@ public class Symbol implements Argument {
         return this.value;
     }
     
-    public Object resolve(Context ctx) {
+    public Object getValue(Context ctx) {
         return ctx.get(this.value);
     }
     

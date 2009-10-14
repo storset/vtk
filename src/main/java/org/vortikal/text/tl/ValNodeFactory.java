@@ -82,20 +82,10 @@ public class ValNodeFactory implements DirectiveNodeFactory {
         }
 
         public void render(Context ctx, Writer out) throws Exception {
-            Object val;
-            if (this.variable instanceof Symbol) {
-                val = ((Symbol) this.variable).resolve(ctx);
-            } else {
-                val = ((Literal) this.variable).getValue();
-            }
+            Object val = this.variable.getValue(ctx);
             String format = null;
             if (this.format != null) {
-                Object o;
-                if (this.format instanceof Symbol) {
-                    o = ((Symbol) this.format).resolve(ctx);
-                } else {
-                    o = ((Literal) this.format).getValue();
-                }
+                Object o = this.format.getValue(ctx);
                 if (o != null) {
                     format = o.toString();
                 }

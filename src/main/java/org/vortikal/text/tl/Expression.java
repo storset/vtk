@@ -217,12 +217,12 @@ public class Expression {
         Stack<Object> stack = new Stack<Object>();
         for (Argument arg : this.postfix) {
             if (arg instanceof Literal) {
-                stack.push(((Literal) arg).getValue());
+                stack.push(arg.getValue(ctx));
             } else {
                 Symbol s = (Symbol) arg;
                 Operator op = operators.get(s);
                 if (op == null) {
-                    Object val = s.resolve(ctx);
+                    Object val = s.getValue(ctx);
                     stack.push(val);
                 } else {
                     try {

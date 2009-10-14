@@ -31,5 +31,17 @@
 package org.vortikal.text.tl;
 
 public interface Argument {
+
+    /**
+     * Gets the raw value as provided by the parser.
+     */
     public String getRawValue();
+    
+    /**
+     * Gets the "runtime" value (a literal value or 
+     * a value resolved by the context in case of 
+     * this argument being a symbol)
+     */
+    public Object getValue(Context ctx);
+    
 }

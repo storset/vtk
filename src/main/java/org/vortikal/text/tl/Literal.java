@@ -67,7 +67,7 @@ public class Literal implements Argument {
         return this.rawValue;
     }
     
-    public Object getValue() {
+    public Object getValue(Context ctx) {
         return this.value;
     }
     

@@ -122,8 +122,6 @@ public class FulltextSearchController implements Controller {
 
         String query = request.getParameter("query");
 
-        System.out.println("Forespørsel: " + query);
-
         Service currentService = RequestContext.getRequestContext().getService();
         Path resourceURI = RequestContext.getRequestContext().getResourceURI();
 

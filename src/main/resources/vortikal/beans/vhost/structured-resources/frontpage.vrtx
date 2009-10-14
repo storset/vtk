@@ -38,8 +38,12 @@ resourcetype frontpage {
                [if content && content != ""]
                  [val content unescaped]
                [endif]
-               [if url && url != ""]
-                 <a href="[val url]" class="more">[val urlText]</a>
+               [if urlText && urlText != ""]
+                 [if url && url != ""]
+                   <a href="[val url]" class="more">[val urlText]</a>
+                 [else]
+                   [val urlText]
+                 [endif]
                [endif]
              </div>
            </div>
@@ -79,8 +83,12 @@ resourcetype frontpage {
                [if content && content != ""]
                  [val content unescaped]
                [endif]
-               [if url && url != ""]
-                 <a href="[val url]" class="more">[val urlText]</a>
+               [if urlText && urlText != ""]
+                 [if url && url != ""]
+                   <a href="[val url]" class="more">[val urlText]</a>
+                 [else]
+                   [val urlText]
+                 [endif]
                [endif]
              </div>
            </div>

@@ -138,19 +138,11 @@ public final class DefineNodeFactory implements DirectiveNodeFactory {
             if (tokens.size() != 2) {
                 throw new RuntimeException("Wrong number of arguments: expected <object> <fieldname>");
             }
-            
-            Object target;
             Argument arg1 = tokens.get(0);
-            target = arg1.getValue(ctx);
-            if (target == null) {
-                throw new RuntimeException("Object " + arg1.getRawValue() + " not found");
-            }
+            Object target = arg1.getValue(ctx);
             
             Argument arg2 = tokens.get(1);
             Object o = arg2.getValue(ctx);
-            if (o == null) {
-                throw new RuntimeException("Object " + arg2.getRawValue() + " not found");
-            }
             String field = o.toString();
             BeanInfo beanInfo = Introspector.getBeanInfo(target.getClass());
             PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();

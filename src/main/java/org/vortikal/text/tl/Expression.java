@@ -222,8 +222,16 @@ public class Expression {
                 Symbol s = (Symbol) arg;
                 Operator op = operators.get(s);
                 if (op == null) {
-                    Object val = s.getValue(ctx);
-                    stack.push(val);
+                    // XXX: in case a symbol is undefined, 
+                    // we push NULL onto the stack. This means 
+                    // that undefined symbols in expressions 
+                    // will not necessarily be treated as errors:
+                    if (s.isDefined(ctx)) {
+                        Object val = s.getValue(ctx);
+                        stack.push(val);
+                    } else {
+                        stack.push(null);
+                    }
                 } else {
                     try {
                         Object val = op.eval(stack);

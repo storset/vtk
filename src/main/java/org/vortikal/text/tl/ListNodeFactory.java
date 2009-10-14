@@ -90,10 +90,6 @@ public class ListNodeFactory implements DirectiveNodeFactory {
 
         public void render(Context ctx, Writer out) throws Exception {
             Object var = this.listVar.getValue(ctx);
-            if (var == null) {
-                throw new RuntimeException("List: No such variable: " 
-                		+ this.listVar);
-            }
             List<Object> elements = new ArrayList<Object>();
             if (var instanceof Iterable<?>) {
             	Iterable<?> iterable = (Iterable<?>) var;

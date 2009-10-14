@@ -52,8 +52,17 @@ public class Symbol implements Argument {
         return this.value;
     }
     
+    public boolean isDefined(Context ctx) {
+        return ctx.get(this.value) != null;
+    }
+    
     public Object getValue(Context ctx) {
-        return ctx.get(this.value);
+        Object val = ctx.get(this.value);
+        if (val == null) {
+            throw new RuntimeException(
+                    "Symbol '" + this.value + "' not defined");
+        }
+        return val;
     }
     
     public String toString() {

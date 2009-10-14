@@ -82,7 +82,6 @@ import org.vortikal.text.tl.DirectiveNodeFactory;
 import org.vortikal.text.tl.DirectiveParseContext;
 import org.vortikal.text.tl.IfNodeFactory;
 import org.vortikal.text.tl.ListNodeFactory;
-import org.vortikal.text.tl.Literal;
 import org.vortikal.text.tl.Node;
 import org.vortikal.text.tl.Symbol;
 import org.vortikal.text.tl.ValNodeFactory;
@@ -343,16 +342,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
             return new Node() {
                 public void render(Context ctx, Writer out) throws Exception {
                     Resource resource;
-                    String ref;
-                    if (arg1 instanceof Symbol) {
-                        Object o = ((Symbol) arg1).getValue(ctx);
-                        if (o == null) {
-                            throw new Exception("Unable to resolve: " + arg1.getRawValue());
-                        }
-                        ref = o.toString();
-                    } else {
-                        ref = arg1.getValue(ctx).toString();
-                    }
+                    String ref = arg1.getValue(ctx).toString();
 
                     if (ref.equals(".")) {
                         Object o = ctx.get(MVC_MODEL_KEY);
@@ -390,16 +380,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
                 throw new Exception("Illegal number of arguments");
             }
             Argument arg = tokens.get(0);
-            String queryString;
-            if (arg instanceof Symbol) {
-                Object o = ((Symbol) arg).getValue(ctx);
-                if (o == null) {
-                    throw new Exception("Unable to resolve: " + arg.getRawValue());
-                }
-                queryString = o.toString();
-            } else {
-                queryString = arg.getValue(ctx).toString();
-            }
+            String queryString = arg.getValue(ctx).toString();
             String token = SecurityContext.getSecurityContext().getToken();
             Query query = queryParserFactory.getParser().parse(queryString);
             Search search = new Search();
@@ -420,9 +401,6 @@ public class StructuredResourceDisplayController implements Controller, Initiali
                 throw new Exception("Argument must be a resource object: " + arg.getRawValue());
             }
             Object o = arg.getValue(ctx);
-            if (o == null) {
-                throw new Exception("Unable to resolve argument: " + arg.getRawValue());
-            }
             if (!(o instanceof PropertySet)) {
                 throw new Exception("Argument must be a resource object: " + arg.getRawValue());
             }
@@ -453,9 +431,6 @@ public class StructuredResourceDisplayController implements Controller, Initiali
                 if (o instanceof PropertySet) {
                     resource = (PropertySet) o;
                 } else {
-                    if (o == null) {
-                        throw new Exception("Unable to resolve: " + arg1.getRawValue());
-                    }
                     ref = o.toString();
                 }
             } else {
@@ -545,24 +520,13 @@ public class StructuredResourceDisplayController implements Controller, Initiali
                 throw new Exception("First argument must be a symbol");
             }
             object = arg1.getValue(ctx);
-            if (object == null) {
-                throw new Exception("Unable to resolve: " + arg1.getRawValue());
-            }
 
             final Argument arg2 = tokens.get(1);
-            String expression;
-            if (arg2 instanceof Symbol) {
-                Object o = arg2.getValue(ctx);
-                if (o == null) {
-                    throw new Exception("Unable to resolve: " + arg2.getRawValue());
-                }
-                expression = o.toString();
-            } else {
-                expression = arg2.getValue(ctx).toString();
-            }
+            String expression = arg2.getValue(ctx).toString();
 
             if (!(object instanceof JSONObject)) {
-                throw new Exception("Cannot apply expression '" + expression + "' on object: not JSON data: "
+                throw new Exception("Cannot apply expression '" 
+                        + expression + "' on object: not JSON data: "
                         + object.getClass());
             }
 
@@ -580,16 +544,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
             }
             List<String> keys = new ArrayList<String>();
             for (Argument arg : tokens) {
-                String key;
-                if (arg instanceof Symbol) {
-                    Object o = arg.getValue(ctx);
-                    if (o == null) {
-                        throw new RuntimeException("Unable to resolve symbol: " + arg);
-                    }
-                    key = o.toString();
-                } else {
-                    key = ((Literal) arg).getStringValue();
-                }
+                String key = arg.getValue(ctx).toString();
                 keys.add(key);
             }
             Object o = ctx.get(MVC_MODEL_KEY);
@@ -637,16 +592,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
 
             Resource resource;
 
-            String ref;
-            if (arg instanceof Symbol) {
-                Object o = arg.getValue(ctx);
-                if (o == null) {
-                    throw new RuntimeException("Unable to resolve: " + arg.getRawValue());
-                }
-                ref = o.toString();
-            } else {
-                ref = arg.getValue(ctx).toString();
-            }
+            String ref = arg.getValue(ctx).toString();
 
             if (ref.equals(".")) {
                 Object o = ctx.get(MVC_MODEL_KEY);
@@ -722,16 +668,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
 
             return new Node() {
                 public void render(Context ctx, Writer out) throws Exception {
-                    String key;
-                    if (code instanceof Symbol) {
-                        Object o = code.getValue(ctx);
-                        if (o == null) {
-                            throw new RuntimeException("Unable to resolve symbol: " + code);
-                        }
-                        key = o.toString();
-                    } else {
-                        key = ((Literal) code).getStringValue();
-                    }
+                    String key = code.getValue(ctx).toString();
                     Object o = ctx.get(MVC_MODEL_KEY);
                     if (o == null) {
                         throw new RuntimeException("Unable to locate resource: no model: " + MVC_MODEL_KEY);

@@ -86,9 +86,7 @@ public class ValNodeFactory implements DirectiveNodeFactory {
             String format = null;
             if (this.format != null) {
                 Object o = this.format.getValue(ctx);
-                if (o != null) {
-                    format = o.toString();
-                }
+                format = o.toString();
             }
 
             if (val != null) {

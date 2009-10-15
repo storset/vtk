@@ -64,18 +64,24 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         Principal principal = SecurityContext.getSecurityContext().getPrincipal();
 
         List<BreadcrumbElement> breadCrumbElements = getBreadcrumbElements();
-        if (displayFromLevel > breadCrumbElements.size()) {
-            return;
-        }
-        for (int i = 0; i < displayFromLevel; i++) {
-            breadCrumbElements.remove(0);
-        }
         Resource currentResource = null;
         try {
             currentResource = repository.retrieve(token, uri, false);
         } catch (Exception e) {
             return; // no access to current resource - can't create menu
         }
+        if ((!currentResource.isCollection() && (displayFromLevel + 1) > breadCrumbElements.size())
+                || (displayFromLevel > breadCrumbElements.size())) {
+            return;
+        }
+        for (int i = 0; i < displayFromLevel; i++) {
+            breadCrumbElements.remove(0);
+        }
+        // if(!currentResource.isCollection() && breadCrumbElements.size() ==
+        // 0){
+        // return;
+        // }
+
         if (!currentResource.isCollection()) {
             try {
                 currentResource = repository.retrieve(token, uri.getParent(), false);
@@ -114,7 +120,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         p.setService(viewService);
         p.setRepository(repository);
         p.setBreadcrumbName(breadcrumbName);
-        p.setSkipIndexFile(true);
+        p.setSkipIndexFile(false);
         PropertyTypeDefinition titleProp[] = new PropertyTypeDefinition[1];
         titleProp[0] = titlePropDef;
         p.setTitleOverrideProperties(titleProp);
@@ -142,7 +148,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
             if (!childResource.isCollection()) {
                 continue;
             }
-            if(childResource.getProperty(this.hiddenPropDef) != null){
+            if (childResource.getProperty(this.hiddenPropDef) != null) {
                 continue; // hidden
             }
             items.add(buildItem(childResource));

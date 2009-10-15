@@ -48,6 +48,24 @@
     </property>
     <property name="handler" ref="editor.collectionEditHandler" />
   </bean>
+  
+  <bean id="editor.personListingEditService" parent="editor.collectionEditService">
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsPersonListing" />
+      </list>
+    </property>
+    <property name="handler" ref="editor.collectionEditHandler" />
+  </bean>
+  
+  <bean id="editor.projectListingEditService" parent="editor.collectionEditService">
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsProjectListing" />
+      </list>
+    </property>
+    <property name="handler" ref="editor.collectionEditHandler" />
+  </bean>
 
   <bean id="editor.articleListingEditService" parent="editor.abstractEditService">
     <property name="assertions">

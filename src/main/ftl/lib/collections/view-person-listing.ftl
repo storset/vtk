@@ -3,12 +3,7 @@
 <#macro displayPersons personListing>
 
   <#local persons=personListing.files />
-  <#if persons?size &gt; 0>
-    <div id="${personListing.name}" class="vrtx-resources ${personListing.name}">
-    <#if personListing.title?exists && collectionListing.offset == 0>
-      <h2>${personListing.title?html}</h2>
-    </#if>
-    
+  <#if (persons?size > 0)>  
    <table>
     	<tr>
 	    	<th>${vrtx.getMsg("person-listing.name")}</th>
@@ -29,8 +24,8 @@
 	
 	   <tr>      
        <#if introImg?has_content>
-         <td>
-           <a class="vrtx-image" href="${articles.urls[r.URI]?html}"><img src="${src?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" width="30px" /></a>
+         <td> <#-- fiks feil -->
+           <a class="vrtx-image" href="${articles.urls[r.URI]?html}"><img src="${src?html}" alt="${vrtx.getMsg("article.introductionImageAlt")?html}" width="30px" /></a>
          </td>
          </#if>
          <td> <a href="${personListing.urls[person.URI]?html}">${title?html}</a><span>${position?html}</span></td>
@@ -39,7 +34,7 @@
          <td>
          	<#-- Get list from property - don't split -->
             <#list tags?split(",") as tag>
-            	<a href="?vrtx=tags&tag=${tag?trim?html}">${tag?trim?html}</a>
+            	<a href="${"?vrtx=tags&tag="?html}${tag?trim?html}">${tag?trim?html}</a>
            	</#list>
             </td>
          </tr>

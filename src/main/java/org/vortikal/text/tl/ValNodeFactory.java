@@ -46,7 +46,7 @@ public class ValNodeFactory implements DirectiveNodeFactory {
     
         // [val obj ["unescaped"]? [format]?]
         List<Argument> args = ctx.getArguments();
-        if (args.size() == 0 || args.size() < 1) {
+        if (args.size() < 1) {
             throw new RuntimeException("Wrong number of arguments: " + ctx.getNodeText());
         }
         Argument variable = args.remove(0);

@@ -43,6 +43,7 @@ import org.springframework.web.servlet.LocaleResolver;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.web.RequestContext;
 
@@ -111,15 +112,19 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
             }
         }
         
+        String token = this.trustedToken;
+        if (token == null) {
+            token = SecurityContext.getSecurityContext().getToken();
+        }
         Locale locale = null;
         
         try {
-            Resource resource = this.repository.retrieve(this.trustedToken, uri, true);
+            Resource resource = this.repository.retrieve(token, uri, true);
             locale = LocaleHelper.getLocale(resource.getContentLanguage());
 
             if (locale == null) {
                 // Check for the nearest ancestor that has a locale set and use it
-                locale = getNearestAncestorLocale(this.trustedToken, resource);
+                locale = getNearestAncestorLocale(token, resource);
             }
             if (locale == null) {
                 // If no ancestor has a locale set, use the default of the host

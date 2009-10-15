@@ -46,6 +46,10 @@ import org.vortikal.repository.resourcetype.PropertyType.Type;
  */
 public interface PropertyTypeDefinition {
 
+    /**
+     * Used by old resource editor framework.
+     * @deprecated
+     */
     public enum ContentRelation {
         PRE_CONTENT,
         POST_CONTENT

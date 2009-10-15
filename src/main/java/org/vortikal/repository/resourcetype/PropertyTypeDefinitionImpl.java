@@ -34,11 +34,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyImpl;
@@ -74,14 +76,13 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     private Value[] allowedValues;
 
     private Vocabulary<Value> vocabulary;
-
     private ValueFactory valueFactory;
     private ValueFormatterRegistry valueFormatterRegistry;
-    
     private ContentRelation contentRelation;
-
     private TypeLocalizationProvider typeLocalizationProvider = null;
 
+    private List<String> indexableAttributes;
+    
     public void setContentRelation(ContentRelation contentRelation) {
             this.contentRelation = contentRelation;
     }
@@ -337,6 +338,21 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     @Required 
     public void setValueFormatterRegistry(ValueFormatterRegistry valueFormatterRegistry) {
         this.valueFormatterRegistry = valueFormatterRegistry;
+    }
+
+    public List<String> getIndexableAttributes() throws IllegalOperationException {
+        if (this.type != Type.JSON) {
+            throw new IllegalOperationException("Only applicable on properties of type JSON");
+        }
+        return this.indexableAttributes;
+    }
+    
+    /**
+     * Set a list of names for attributes that are to be indexed
+     * Only valid for json properties
+     */
+    public void setIndexableAttributes(final List<String> indexableAttributes) {
+        this.indexableAttributes = indexableAttributes;
     }
 
 }

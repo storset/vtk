@@ -259,6 +259,7 @@ public class StructuredResourceManager {
             def.setType(Type.STRING);
         } else if (propertyDescription instanceof JSONPropertyDescription) {
             def.setType(Type.JSON);
+            def.setIndexableAttributes(((JSONPropertyDescription) propertyDescription).getIndexableAttributes());
         } else {
             def.setType(mapType(propertyDescription));
         }

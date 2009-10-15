@@ -32,6 +32,7 @@ package org.vortikal.repository.resourcetype;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -186,6 +187,10 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridableProperty
         StringBuilder sb = new StringBuilder(this.getClass().getName());
         sb.append(": [name=").append(getName()).append("]");
         return sb.toString();
+    }
+
+    public List<String> getIndexableAttributes() {
+        return this.overriddenPropDef.getIndexableAttributes();
     }
 
 }

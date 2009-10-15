@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.resourcetype;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -121,5 +122,12 @@ public interface PropertyTypeDefinition {
      * Create a {@link Property} instance.
      */
     public Property createProperty();
+    
+    /**
+     * 
+     * @return a list of names for attributes of a json-property that are to be indexed
+     */
+    public List<String> getIndexableAttributes();
+    
     
 }

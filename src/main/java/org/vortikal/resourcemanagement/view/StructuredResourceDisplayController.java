@@ -259,6 +259,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         DefineNodeFactory def = new DefineNodeFactory();
         def.addValueProvider("resource", new RetrieveHandler());
         def.addValueProvider("resource-prop", new ResourcePropHandler());
+        def.addValueProvider("resource-prop-obj-val", new ResourcePropObjectValueHandler()); // Hmm, better solution ?
         def.addValueProvider("config", new ModelConfigHandler());
         def.addValueProvider("structured-document", new JSONDocumentProvider());
         def.addValueProvider("json-attr", new JSONAttributeHandler());
@@ -407,6 +408,23 @@ public class StructuredResourceDisplayController implements Controller, Initiali
             return viewService.constructLink(((PropertySet) o).getURI());
         }
 
+    }
+
+    // Extends ResourcePropHandler to provide *object value* of property Value
+    private class ResourcePropObjectValueHandler extends ResourcePropHandler {
+        // Supported constructions:
+        // "/foo/bar/" <propname>
+        // "." <propname>
+        // <var> <propname>
+
+        public Object create(List<Argument> tokens, Context ctx) throws Exception {
+            Value value = (Value) super.create(tokens, ctx);
+            if (value != null) {
+                return value.getObjectValue();
+            } else {
+                return null;
+            }
+        }
     }
 
     private class ResourcePropHandler implements DefineNodeFactory.ValueProvider {

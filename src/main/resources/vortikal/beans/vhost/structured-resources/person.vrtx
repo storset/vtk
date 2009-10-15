@@ -227,7 +227,10 @@ resourcetype person {
     
     project-list {
       ##
-       ${resource:project-list}
+      [def showProjectList resource-prop-obj-val "." "getRelatedProjects"]
+      [if  showProjectList]
+        ${resource:project-list}
+      [endif]
       ##
     }
 

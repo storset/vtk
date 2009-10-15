@@ -246,11 +246,24 @@
 
   <bean name="decorating.shareAtComponent.view" parent="freemarkerView">
     <property name="url" value="layouts/share-at.ftl" />
+    
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
+        <ref bean="socialWebsiteProvider" parent="requestLocalRepositoryAware" /> 
       </list>
     </property>
+  </bean>
+  
+  <bean id="socialWebsiteProvider" class="org.vortikal.web.referencedata.provider.SocialWebsitesProvider" parent="requestLocalRepositoryAware">
+     <property name="socialWebsites">
+      <list>
+        <bean class="org.vortikal.web.referencedata.provider.Facebook" />
+        <bean class="org.vortikal.web.referencedata.provider.Nettby" />
+        <bean class="org.vortikal.web.referencedata.provider.Delicious" />
+      </list>
+    </property>
+    <property name="htmlUtil" ref="htmlUtil" />
   </bean>
   
   <bean id="decorating.resourcePropertyComponent" parent="requestLocalRepositoryAware"

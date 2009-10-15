@@ -30,7 +30,9 @@
  */
 package org.vortikal.web.servlet;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -41,7 +43,6 @@ import org.springframework.web.servlet.LocaleResolver;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.web.RequestContext;
 
@@ -62,7 +63,7 @@ import org.vortikal.web.RequestContext;
  */
 public class ResourceAwareLocaleResolver implements LocaleResolver {
     
-    protected static final String LOCALE_REQUEST_ATTRIBUTE_NAME =
+    protected static final String LOCALE_CACHE_REQUEST_ATTRIBUTE_NAME =
         ResourceAwareLocaleResolver.class.getName() + ".RequestAttribute";
     
     private Locale defaultLocale;
@@ -91,41 +92,29 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
     }
     
     public Locale resolveLocale(HttpServletRequest request) {
-
-        if (request != null) {
-            Locale locale = (Locale) request.getAttribute(LOCALE_REQUEST_ATTRIBUTE_NAME);
-            if (locale != null) {
-                return locale;
-            }
-        }
-
+        
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        Path uri = requestContext.getResourceURI();
-        String token = securityContext.getToken();
-        
-        Locale locale = resolveResourceLocale(token, uri);
-        
-        // Cache locale as request attribute, if request is available.
-        // Better to use thread-local attribute ? Request is not always provided to this method.
-        if (request != null) {
-            request.setAttribute(LOCALE_REQUEST_ATTRIBUTE_NAME, locale);
-        }
-        
-        return locale;
+        return resolveResourceLocale(request, requestContext.getResourceURI());
     }
 
-    public Locale resolveResourceLocale(String providedToken, Path uri) {
+    @SuppressWarnings("unchecked")
+    public Locale resolveResourceLocale(HttpServletRequest request, Path uri) {
 		
-        String token = this.trustedToken;
-        if (token == null) {
-            token = providedToken;
+        if (request != null) {
+            Map<Path,Locale> localeCache = (Map<Path,Locale>) request.getAttribute(
+                                                              LOCALE_CACHE_REQUEST_ATTRIBUTE_NAME);
+            if (localeCache != null) {
+                Locale locale = localeCache.get(uri);
+                if (locale != null) {
+                    return locale;
+                }
+            }
         }
         
         Locale locale = null;
         
         try {
-            Resource resource = this.repository.retrieve(token, uri, true);
+            Resource resource = this.repository.retrieve(this.trustedToken, uri, true);
             locale = LocaleHelper.getLocale(resource.getContentLanguage());
 
             if (locale == null) {
@@ -137,9 +126,21 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
             	locale = this.defaultLocale;
             }
         } catch (Throwable t) { 
+            // Don't cache value if something goes terribly wrong. Just return default.
             return this.defaultLocale;
         }
 
+        // Cache locale for given path
+        if (request != null) {
+            Map<Path, Locale> localeCache = (Map<Path,Locale>) request.getAttribute(
+                                                               LOCALE_CACHE_REQUEST_ATTRIBUTE_NAME);
+            if (localeCache == null) {
+                localeCache = new HashMap<Path,Locale>();
+                request.setAttribute(LOCALE_CACHE_REQUEST_ATTRIBUTE_NAME, localeCache);
+            }
+            localeCache.put(uri, locale);            
+        }
+        
         return locale;
     }
     

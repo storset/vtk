@@ -77,10 +77,6 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         for (int i = 0; i < displayFromLevel; i++) {
             breadCrumbElements.remove(0);
         }
-        // if(!currentResource.isCollection() && breadCrumbElements.size() ==
-        // 0){
-        // return;
-        // }
 
         if (!currentResource.isCollection()) {
             try {

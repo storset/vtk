@@ -418,12 +418,21 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         // <var> <propname>
 
         public Object create(List<Argument> tokens, Context ctx) throws Exception {
-            Value value = (Value) super.create(tokens, ctx);
-            if (value != null) {
-                return value.getObjectValue();
-            } else {
-                return null;
+            Object obj = super.create(tokens, ctx);
+            
+            if (obj instanceof Value) 
+                return ((Value)obj).getObjectValue();
+            
+            if (obj instanceof Value[]) {
+                Value[] values = (Value[])obj;
+                Object[] objValues = new Object[values.length];
+                for (int i=0; i<values.length; i++) {
+                    objValues[i] = values[i].getObjectValue();
+                }
+                return objValues;
             }
+
+            return obj; // Unknown type or null, just pass-through
         }
     }
 

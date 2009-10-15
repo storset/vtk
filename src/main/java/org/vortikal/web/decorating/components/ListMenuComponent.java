@@ -135,12 +135,12 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     private static final String PARAMETER_DISPLAY_FROM_LEVEL_DESC = "Defines the starting URI level for the menu (cannot be used with the '"
             + PARAMETER_URI + "' parameter)";
 
-    private Service viewService;
-    private PropertyTypeDefinition titlePropDef;
-    private PropertyTypeDefinition hiddenPropDef;
-    private PropertyTypeDefinition importancePropdef;
+    protected Service viewService;
+    protected PropertyTypeDefinition titlePropDef;
+    protected PropertyTypeDefinition hiddenPropDef;
+    protected PropertyTypeDefinition importancePropdef;
     private ResourceTypeDefinition collectionResourceType;
-    private PropertyTypeDefinition navigationTitlePropDef;
+    protected PropertyTypeDefinition navigationTitlePropDef;
     private String modelName = "menu";
     private int searchLimit = DEFAULT_SEARCH_LIMIT;
     private Searcher searcher;
@@ -401,7 +401,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     }
 
 
-    private List<MenuItem<PropertySet>> sortDefaultOrder(List<MenuItem<PropertySet>> items, Locale locale) {
+    protected List<MenuItem<PropertySet>> sortDefaultOrder(List<MenuItem<PropertySet>> items, Locale locale) {
         Collections.sort(items, new ListMenuComparator(locale, this.importancePropdef, this.navigationTitlePropDef));
         return items;
     }
@@ -473,7 +473,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     }
 
 
-    private MenuItem<PropertySet> buildItem(PropertySet resource) {
+    protected MenuItem<PropertySet> buildItem(PropertySet resource) {
         MenuItem<PropertySet> item = new MenuItem<PropertySet>(resource);
 
         // Url
@@ -751,8 +751,6 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         this.importancePropdef = importancePropDef;
     }
 
-
-    @Required
     public void setCollectionResourceType(ResourceTypeDefinition collectionResourceType) {
         this.collectionResourceType = collectionResourceType;
     }
@@ -763,8 +761,6 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         this.navigationTitlePropDef = navigationTitlePropDef;
     }
 
-
-    @Required
     public void setSearcher(Searcher searcher) {
         this.searcher = searcher;
     }

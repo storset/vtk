@@ -32,12 +32,12 @@ package org.vortikal.web.decorating.components;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -48,61 +48,50 @@ import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
 import org.vortikal.web.referencedata.provider.BreadCrumbProvider;
 import org.vortikal.web.referencedata.provider.BreadcrumbElement;
-import org.vortikal.web.service.Service;
+import org.vortikal.web.view.components.menu.MenuItem;
 
-public class BreadcrumbMenuComponent extends ViewRenderingDecoratorComponent {
-
+public class BreadcrumbMenuComponent extends ListMenuComponent {
     private static final String PARAMETER_AUTENTICATED = "authenticated";
     private static final String PARAMETER_DISPLAY_FROM_LEVEL = "display-from-level";
-
     private Repository repository;
-    private Service service;
     private int displayFromLevel = -1;
     private String token;
-    private PropertyTypeDefinition navigationTitlePropDef;
-    private PropertyTypeDefinition titlePropDef;
 
     public void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
         initRequestParameters(request);
         Path uri = RequestContext.getRequestContext().getResourceURI();
         Principal principal = SecurityContext.getSecurityContext().getPrincipal();
-        boolean isIndexFile = RequestContext.getRequestContext().isIndexFile();
 
         List<BreadcrumbElement> breadCrumbElements = getBreadcrumbElements();
         if (displayFromLevel > breadCrumbElements.size()) {
             return;
         }
-        for (int i = 0; i < displayFromLevel; i++) {    
+        for (int i = 0; i < displayFromLevel; i++) {
             breadCrumbElements.remove(0);
         }
-        Resource currentResource = null; 
-        try{
+        Resource currentResource = null;
+        try {
             currentResource = repository.retrieve(token, uri, false);
-        }catch(Exception e){
+        } catch (Exception e) {
             return; // no access to current resource - can't create menu
         }
         if (!currentResource.isCollection()) {
-            try{
+            try {
                 currentResource = repository.retrieve(token, uri.getParent(), false);
-            }catch(Exception e){
+            } catch (Exception e) {
                 return; // no access to current resource - can't create menu
             }
-            if (!isIndexFile) { // Files that are not index files shall not be
-                                // displayed in the menu.
-                if(breadCrumbElements.size() > 1){
-                    breadCrumbElements.remove(breadCrumbElements.size() - 1);
-                }
+            if (breadCrumbElements.size() > 0) {
+                breadCrumbElements.remove(breadCrumbElements.size() - 1);
             }
         }
-        
-        String markedUrl = this.service.constructLink(currentResource, principal, false);
-        breadCrumbElements.add(new BreadcrumbElement(null,getMenuTitle(currentResource)));
-        
-        Map<String, String> childElements = null;
-              
+        String markedUrl = this.viewService.constructLink(currentResource, principal, false);
+        breadCrumbElements.add(new BreadcrumbElement(null, getMenuTitle(currentResource)));
+
+        List<MenuItem<PropertySet>> childElements = null;
         childElements = generateChildElements(currentResource.getChildURIs(), principal);
-        
+
         // If there is no children of the current resource, then we shall
         // instead display the children of the parent node.
         if (childElements != null && childElements.size() == 0) {
@@ -110,6 +99,9 @@ public class BreadcrumbMenuComponent extends ViewRenderingDecoratorComponent {
             childElements = generateChildElements(childResource.getChildURIs(), principal);
             breadCrumbElements.remove(breadCrumbElements.size() - 1);
         }
+
+        childElements = sortDefaultOrder(childElements, request.getLocale());
+
         model.put("breadcrumb", breadCrumbElements);
         model.put("children", childElements);
         model.put("markedurl", markedUrl);
@@ -119,7 +111,7 @@ public class BreadcrumbMenuComponent extends ViewRenderingDecoratorComponent {
         String breadcrumbName = "breadcrumb";
         BreadCrumbProvider p = new BreadCrumbProvider();
         p.setSkipCurrentResource(true);
-        p.setService(service);
+        p.setService(viewService);
         p.setRepository(repository);
         p.setBreadcrumbName(breadcrumbName);
         p.setSkipIndexFile(true);
@@ -131,28 +123,31 @@ public class BreadcrumbMenuComponent extends ViewRenderingDecoratorComponent {
         p.referenceData(map, RequestContext.getRequestContext().getServletRequest());
         BreadcrumbElement[] list = map.get(breadcrumbName);
         List<BreadcrumbElement> result = new ArrayList<BreadcrumbElement>();
-        for(int i = 0; i < list.length;i++){
+        for (int i = 0; i < list.length; i++) {
             result.add(list[i]);
         }
         return result;
     }
 
-    private Map<String, String> generateChildElements(List<Path> children, Principal principal) throws Exception {
-        Map<String, String> childElements = new LinkedHashMap<String, String>();
+    private List<MenuItem<PropertySet>> generateChildElements(List<Path> children, Principal principal)
+            throws Exception {
+        List<MenuItem<PropertySet>> items = new ArrayList<MenuItem<PropertySet>>();
         for (Path childPath : children) {
             Resource childResource = null;
-            try{
+            try {
                 childResource = repository.retrieve(token, childPath, false);
-            }catch(Exception e){
+            } catch (Exception e) {
                 continue; // can't access resource - not displayed in menu
             }
             if (!childResource.isCollection()) {
                 continue;
             }
-            String url = this.service.constructLink(childResource, principal, false);
-            childElements.put(url, getMenuTitle(childResource));
+            if(childResource.getProperty(this.hiddenPropDef) != null){
+                continue; // hidden
+            }
+            items.add(buildItem(childResource));
         }
-        return childElements;
+        return items;
     }
 
     private String getMenuTitle(Resource resource) {
@@ -188,27 +183,4 @@ public class BreadcrumbMenuComponent extends ViewRenderingDecoratorComponent {
         return repository;
     }
 
-    public void setService(Service service) {
-        this.service = service;
-    }
-
-    public Service getService() {
-        return service;
-    }
-
-    public void setNavigationTitlePropDef(PropertyTypeDefinition navigationTitlePropDef) {
-        this.navigationTitlePropDef = navigationTitlePropDef;
-    }
-
-    public PropertyTypeDefinition getNavigationTitlePropDef() {
-        return navigationTitlePropDef;
-    }
-
-    public void setTitlePropDef(PropertyTypeDefinition titlePropDef) {
-        this.titlePropDef = titlePropDef;
-    }
-
-    public PropertyTypeDefinition getTitlePropDef() {
-        return titlePropDef;
-    }
 }

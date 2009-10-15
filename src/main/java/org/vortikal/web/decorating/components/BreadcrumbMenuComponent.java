@@ -73,24 +73,39 @@ public class BreadcrumbMenuComponent extends ViewRenderingDecoratorComponent {
         if (displayFromLevel > breadCrumbElements.size()) {
             return;
         }
-        for (int i = 0; i < displayFromLevel; i++) {
+        for (int i = 0; i < displayFromLevel; i++) {    
             breadCrumbElements.remove(0);
         }
-
-        Resource currentResource = repository.retrieve(token, uri, false);
+        Resource currentResource = null; 
+        try{
+            currentResource = repository.retrieve(token, uri, false);
+        }catch(Exception e){
+            return; // no access to current resource - can't create menu
+        }
         if (!currentResource.isCollection()) {
-            currentResource = repository.retrieve(token, uri.getParent(), false);
+            try{
+                currentResource = repository.retrieve(token, uri.getParent(), false);
+            }catch(Exception e){
+                return; // no access to current resource - can't create menu
+            }
             if (!isIndexFile) { // Files that are not index files shall not be
                                 // displayed in the menu.
-                breadCrumbElements.remove(breadCrumbElements.size() - 1);
+                if(breadCrumbElements.size() > 1){
+                    breadCrumbElements.remove(breadCrumbElements.size() - 1);
+                }
             }
         }
+        
         String markedUrl = this.service.constructLink(currentResource, principal, false);
-
-        Map<String, String> childElements = generateChildElements(currentResource.getChildURIs(), principal);
+        breadCrumbElements.add(new BreadcrumbElement(null,getMenuTitle(currentResource)));
+        
+        Map<String, String> childElements = null;
+              
+        childElements = generateChildElements(currentResource.getChildURIs(), principal);
+        
         // If there is no children of the current resource, then we shall
         // instead display the children of the parent node.
-        if (childElements.size() == 0) {
+        if (childElements != null && childElements.size() == 0) {
             Resource childResource = repository.retrieve(token, currentResource.getURI().getParent(), false);
             childElements = generateChildElements(childResource.getChildURIs(), principal);
             breadCrumbElements.remove(breadCrumbElements.size() - 1);
@@ -103,6 +118,7 @@ public class BreadcrumbMenuComponent extends ViewRenderingDecoratorComponent {
     private List<BreadcrumbElement> getBreadcrumbElements() throws Exception {
         String breadcrumbName = "breadcrumb";
         BreadCrumbProvider p = new BreadCrumbProvider();
+        p.setSkipCurrentResource(true);
         p.setService(service);
         p.setRepository(repository);
         p.setBreadcrumbName(breadcrumbName);
@@ -124,7 +140,12 @@ public class BreadcrumbMenuComponent extends ViewRenderingDecoratorComponent {
     private Map<String, String> generateChildElements(List<Path> children, Principal principal) throws Exception {
         Map<String, String> childElements = new LinkedHashMap<String, String>();
         for (Path childPath : children) {
-            Resource childResource = repository.retrieve(token, childPath, false);
+            Resource childResource = null;
+            try{
+                childResource = repository.retrieve(token, childPath, false);
+            }catch(Exception e){
+                continue; // can't access resource - not displayed in menu
+            }
             if (!childResource.isCollection()) {
                 continue;
             }

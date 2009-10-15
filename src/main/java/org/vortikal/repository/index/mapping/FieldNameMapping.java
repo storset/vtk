@@ -47,6 +47,7 @@ public final class FieldNameMapping {
 
     /* Special field characters and prefixes */
     public static final String FIELD_NAMESPACEPREFIX_NAME_SEPARATOR = ":";
+    public static final String JSON_FIELD_SEPARATOR = "@";
     public static final String LOWERCASE_FIELD_PREFIX = "l_";
     public static final String STORED_BINARY_FIELD_PREFIX = "b_";
     
@@ -137,6 +138,27 @@ public final class FieldNameMapping {
         return fieldName.toString();
     }
     
+    public static String getJSONSearchFieldName(Property prop, String jsonFieldKey, boolean lowercase) {
+        StringBuilder fieldName = new StringBuilder(getSearchFieldName(prop, lowercase));
+        fieldName.append(JSON_FIELD_SEPARATOR).append(jsonFieldKey);
+        return fieldName.toString();
+    }
+    
+    public static String getJSONSearchFieldName(PropertyTypeDefinition def, String jsonFieldKey, 
+                                                                             boolean lowercase) {
+        StringBuilder fieldName = new StringBuilder(getSearchFieldName(def, lowercase));
+        fieldName.append(JSON_FIELD_SEPARATOR).append(jsonFieldKey);
+        return fieldName.toString();
+    }
+    
+    protected static String getJSONSearchFieldName(String propName, String propPrefix, 
+                                                        String jsonFieldKey, boolean lowercase) {
+        StringBuilder fieldName = 
+                        new StringBuilder(getSearchFieldName(propName, propPrefix, lowercase));
+        fieldName.append(JSON_FIELD_SEPARATOR).append(jsonFieldKey);
+        return fieldName.toString();
+    }
+
     public static String getStoredFieldName(PropertyTypeDefinition def) {
         StringBuilder name = new StringBuilder(STORED_BINARY_FIELD_PREFIX);
         String nsPrefix = def.getNamespace().getPrefix();

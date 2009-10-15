@@ -5,18 +5,8 @@ function visualizeDeadLink(that, doExternalLink, e) {
 
 	if (filteredURL != "") {
 
-		var cssRedBlinkingLink = {
-			'color' :'red',
-			'text-decoration' : 'blink'
-		}
-		
 		var cssRedLink = {
 			'color' :'red'
-		}
-
-		var cssGreenBlinkingLink = {
-			'color' :'green',
-			'text-decoration' : 'blink'
 		}
 		
 		var cssGreenLink = {
@@ -30,11 +20,11 @@ function visualizeDeadLink(that, doExternalLink, e) {
 				url :filteredURL,
 				complete : function(xhr, textStatus) {
 					if (xhr.status == "404") {
-						$(that).append(" - BRUTT (404)").css(cssRedBlinkingLink); //broken
+						$(that).append(" - BRUTT (404)").css(cssRedLink); //broken
 					} 
 					/* If we want to vizualize other responses
 					else if(xhr.status == "500" || xhr.status == "503") { 
-						$(that).append(" - TJENESTE NEDE / UTILGJENGELIG").css(cssRedBlinkingLink); //internal service error or service unavailable
+						$(that).append(" - TJENESTE NEDE / UTILGJENGELIG").css(cssRedLink); //internal service error or service unavailable
 					} else if (xhr.status == "401" || xhr.status == "403") {
 						$(that).append(" - ADGANGSBEGRENSET / FORBUDT").css(cssRedLink); //unauthorized or forbidden (Opera) - visRestrictedResources
 					} else if(xhr.status == "301") {
@@ -52,7 +42,7 @@ function visualizeDeadLink(that, doExternalLink, e) {
 			$.getJSON(url, function(json) {
 				// returns nothing in JSON-object if 404
 					if (typeof json.status_code == "undefined") {
-						$(that).append(" - BRUTT (404) - EXT").css(cssDeadLink);
+						$(that).append(" - BRUTT (404) - EXT").css(cssRedLink);
 					}
 				});
 		}

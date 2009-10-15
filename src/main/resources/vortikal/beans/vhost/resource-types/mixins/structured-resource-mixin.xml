@@ -3,7 +3,7 @@
 <beans>
 
   <bean id="structuredResourceMixinResourceTypeDef" class="org.vortikal.repository.resourcetype.MixinResourceTypeDefinitionImpl">
-    <property name="name" value="introduction-mixin" />
+    <property name="name" value="structured-resource-mixin" />
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="propertyTypeDefinitions">
       <list>

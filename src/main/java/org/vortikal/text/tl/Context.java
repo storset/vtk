@@ -34,9 +34,15 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class Context {
+    
+    private static final Pattern VALID_NAME_PATTERN = 
+        Pattern.compile("[a-zA-Z_]([a-zA-Z0-9\\-_]*[a-zA-Z0-9_])?");
+    
 
     private Locale locale = Locale.getDefault();
     private Stack<Map<String, Object>> stack = new Stack<Map<String, Object>>();
@@ -76,6 +82,9 @@ public class Context {
 
     // Defines a binding in the top context
     public void define(String name, Object value, boolean global) {
+        if (!validateSymbol(name)) {
+            throw new IllegalArgumentException("Illegal name: '" + name + "'");
+        }
         if (!global) {
             Map<String, Object> ctx = this.stack.peek();
             ctx.put(name, value);
@@ -142,4 +151,14 @@ public class Context {
     public String toString() {
         return this.stack.toString();
     }
+    
+    private boolean validateSymbol(String symbol) {
+        if (symbol == null) {
+            return false;
+        }
+        Matcher m = VALID_NAME_PATTERN.matcher(symbol);
+        return m.matches();
+    }
+    
+    
 }

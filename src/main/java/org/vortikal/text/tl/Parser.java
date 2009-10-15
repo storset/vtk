@@ -57,7 +57,7 @@ public class Parser {
                 + context + (char) c);
     }
     
-    private Token nextToken() throws Exception {
+    private ParseNode nextToken() throws Exception {
 
         State state = State.Init;
         boolean escape = false;
@@ -141,14 +141,14 @@ public class Parser {
         if (state == State.Init) {
             return null;
         }
-        Token token = new Token();
+        ParseNode token = new ParseNode();
         token.value = buffer.toString();
 
         if (state == State.Text) {
-            token.type = Token.Type.Text;
+            token.type = ParseNode.Type.Text;
         }
         if (state == State.Directive) {
-            token.type = Token.Type.Directive;
+            token.type = ParseNode.Type.Directive;
             if (token.value.trim().length() == 0) {
                 throw new IllegalStateException(
                         "Empty directive encountered at line " 
@@ -161,7 +161,7 @@ public class Parser {
     public ParseResult parse(Set<String> terminators) throws Exception {
         NodeList list = new NodeList();
         while (true) {
-            Token token = nextToken();
+            ParseNode token = nextToken();
             if (token == null) {
                 break;
             }

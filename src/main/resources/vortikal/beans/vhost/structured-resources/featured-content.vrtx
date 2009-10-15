@@ -20,7 +20,7 @@ resourcetype featured-content {
            [def picture json-attr item "featuredPicture"]
            [def content json-attr item "featuredContent"]
            [def webaddress json-attr item "featuredWebaddress"]
-           [def number expr :index + 1]
+           [def number expr _index + 1]
            
            <div class="vrtx-featured-item" id="vrtx-featured-item-[val number]">
              [if picture && picture != ""]

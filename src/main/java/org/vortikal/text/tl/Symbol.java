@@ -30,6 +30,7 @@
  */
 package org.vortikal.text.tl;
 
+
 public class Symbol implements Argument {
 
     private String value;

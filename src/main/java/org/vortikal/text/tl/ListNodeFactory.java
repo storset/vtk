@@ -45,10 +45,10 @@ public class ListNodeFactory implements DirectiveNodeFactory {
     /**
      * [list x varname] 
      *    .. do stuff with varname: [val varname] 
-     *    [if :first] first element [endif]
-     *    [if :last] last element [endif]
-     *    index: [val :index]
-     *    size: [val :size]
+     *    [if _first] first element [endif]
+     *    [if _last] last element [endif]
+     *    index: [val _index]
+     *    size: [val _size]
      * [endlist]
      * 
      */
@@ -120,10 +120,10 @@ public class ListNodeFactory implements DirectiveNodeFactory {
 				Object object = elements.get(i);
                 ctx.push();
                 ctx.define(this.defVar.getSymbol(), object, false);
-                ctx.define(":size", size, false);
-                ctx.define(":index", i, false);
-                ctx.define(":first", (i == 0), false);
-                ctx.define(":last", (i == size - 1), false);
+                ctx.define("_size", size, false);
+                ctx.define("_index", i, false);
+                ctx.define("_first", (i == 0), false);
+                ctx.define("_last", (i == size - 1), false);
                 this.nodeList.render(ctx, out);
                 ctx.pop();
 			}

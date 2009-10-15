@@ -46,7 +46,7 @@ public final class DefineNodeFactory implements DirectiveNodeFactory {
 
     public DefineNodeFactory() {
         addValueProvider("expr", new ExpressionEvaluator());
-        addValueProvider("field", new JavaBeanFieldRetriever());
+        //addValueProvider("field", new JavaBeanFieldRetriever());
         addValueProvider("concat", new ConcatHandler());
     }
 
@@ -57,6 +57,11 @@ public final class DefineNodeFactory implements DirectiveNodeFactory {
     public interface ValueProvider {
         public Object create(List<Argument> tokens, Context ctx) throws Exception;
     }
+
+    private static final Symbol LB = new Symbol("{");
+    private static final Symbol RB = new Symbol("}");
+    private static final Symbol COLON = new Symbol(":");
+    private static final Symbol COMMA = new Symbol(",");
     
     public Node create(DirectiveParseContext ctx) throws Exception {
         List<Argument> args = ctx.getArguments();
@@ -68,19 +73,47 @@ public final class DefineNodeFactory implements DirectiveNodeFactory {
             throw new RuntimeException("Expected symbol: " + arg1.getRawValue());
         }
         final String variable = ((Symbol) arg1).getSymbol();
-        
-        Argument firstToken = args.remove(0);
-        if (firstToken instanceof Literal) {
-            if (!args.isEmpty()) {
+
+        // Simple literal definition (e.g. "def x 22")
+        if (args.get(0) instanceof Literal) {
+            if (args.size() > 1) {
                 throw new RuntimeException("Extra arguments after value: " + ctx.getNodeText());
             }
-            return new DefNode(variable, firstToken);
+            final Argument val = args.get(0);
+            return new Node() {
+                public void render(Context ctx, Writer out) throws Exception {
+                    Object result;
+                    result = val.getValue(ctx);
+                    ctx.define(variable, result, true);
+                }
+            };
         }
         
+        // Map definition (e.g. "def x {a:b, c:d}")
+        if (LB.equals(args.get(0)) && RB.equals(args.get(args.size() - 1))) {
+
+            final Map<Argument, Argument> argMap = getMapDefinition(args);
+            return new Node() {
+                public void render(Context ctx, Writer out) throws Exception {
+                    Map<Object, Object> result = new HashMap<Object, Object>();
+                    for (Argument keyArg: argMap.keySet()) {
+                        Argument valArg = argMap.get(keyArg);
+                        Object key = keyArg.getValue(ctx);
+                        Object val = valArg.getValue(ctx);
+                        result.put(key, val);
+                    }
+                    ctx.define(variable, result, true);
+                }
+            };
+        }
+
+        // Definition handled by value provider:
+        Argument firstToken = args.remove(0);
         String identifier = ((Symbol) firstToken).getSymbol();
+
         final ValueProvider handler = this.valueProviderMap.get(identifier);
         if (handler == null) {
-            throw new RuntimeException("Unknown definition type: " + identifier);
+            throw new RuntimeException("Unknown definition type: " + identifier + ": " + args);
         }
         final List<Argument> tokens = args;
         return new Node() {
@@ -91,24 +124,44 @@ public final class DefineNodeFactory implements DirectiveNodeFactory {
         };
     }
 
-    private class DefNode extends Node {
-        private String variable;
-        private Argument value;
-
-        public DefNode(String variable, Argument value) {
-            this.variable = variable;
-            this.value = value;
+    private Map<Argument, Argument> getMapDefinition(List<Argument> args) {
+        
+        if (args.size() < 2) {
+            throw new IllegalArgumentException("Malformed map definition");
         }
-
-        public void render(Context ctx, Writer out) throws Exception {
-            Object result;
-            result = this.value.getValue(ctx);
-            ctx.define(this.variable, result, true);
+        if (!LB.equals(args.get(0)) && !RB.equals(args.get(args.size() - 1))) {
+            throw new IllegalArgumentException("Malformed map definition");
         }
+        args.remove(0);
+        args.remove(args.size() - 1);
 
-        public String toString() {
-            return "[def: " + this.variable + "=" + this.value + "]";
+        Map<Argument, Argument> map = new HashMap<Argument, Argument>();
+        while (true) {
+            if (args.isEmpty()) {
+                break;
+            }
+            Argument key = args.remove(0);
+            if (args.isEmpty()) {
+                throw new RuntimeException("Malformed map definition");
+            }
+            Argument colon = args.remove(0);
+            if (!COLON.equals(colon)) {
+                throw new RuntimeException("Expected ':' in map definition");
+            }
+            if (args.isEmpty()) {
+                throw new RuntimeException("Malformed map definition");
+            }
+            Argument value = args.remove(0);
+            map.put(key, value);
+            if (args.isEmpty()) {
+                break;
+            }
+            Argument comma = args.remove(0);
+            if (!COMMA.equals(comma)) {
+                throw new RuntimeException("Entries must be comma-separated");
+            }
         }
+        return map;
     }
 
     private class ExpressionEvaluator implements ValueProvider {
@@ -132,6 +185,7 @@ public final class DefineNodeFactory implements DirectiveNodeFactory {
         }
     }
     
+    @SuppressWarnings("unused")
     private class JavaBeanFieldRetriever implements ValueProvider {
 
         public Object create(List<Argument> tokens, Context ctx) throws Exception {

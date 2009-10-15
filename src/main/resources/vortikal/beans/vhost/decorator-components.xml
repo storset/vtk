@@ -372,10 +372,12 @@
   <bean id="decorating.breadcrumbMenuComponent" class="org.vortikal.web.decorating.components.BreadcrumbMenuComponent" parent="requestLocalRepositoryAware">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="breadcrumb-menu" />
-    <property name="service" ref="viewService"/>
+    <property name="viewService" ref="viewService"/>
     <property name="view" ref="decorating.breadcrumbMenuComponent.view" />
     <property name="navigationTitlePropDef" ref="navigationTitlePropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
+    <property name="importancePropDef" ref="importancePropDef" />
+    <property name="hiddenPropDef" ref="hiddenPropDef" />
   </bean>
   
   <bean name="decorating.breadcrumbMenuComponent.view" parent="freemarkerView">

@@ -17,8 +17,8 @@
 			</#if>
 		</#list>
       <ul>
-      	<#list children?keys as url>
-			<li class="vrtx-child"  ><a <#if (url = markedurl) >class="vrtx-marked"</#if> href="${url}">${children[url]}</a></li>
+      	<#list children as c>
+			<li class="vrtx-child"  ><a <#if (c.url?string = markedurl) >class="vrtx-marked"</#if> href="${c.url?html}">${c.title?html}</a></li>
 		</#list>
       </ul>
     </li>

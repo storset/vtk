@@ -29,7 +29,7 @@
       </map>
     </property>
   </bean>
-  
+
   <bean id="publish.unpublishResourceService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
     <property name="assertions">
@@ -57,27 +57,65 @@
       </map>
     </property>
   </bean>
-
+  
   <bean id="publishResourceHandler" class="org.vortikal.web.actions.publish.PublishResourceController"
     parent="requestLocalRepositoryAware">
     <property name="viewName" value="redirectToManage" />
     <property name="publishDatePropDef" ref="publishDatePropDef" />
   </bean>
-
+  
   <bean id="resourceIsNotPublishedAssertion" class="org.vortikal.web.service.ResourcePropertyAssertion">
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="name" value="published" />
     <property name="value" value="false" />
   </bean>
-
+  
   <bean id="resourceIsPublishedAssertion" class="org.vortikal.web.service.ResourcePropertyAssertion">
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="name" value="published" />
     <property name="value" value="true" />
   </bean>
-    
+  
   <bean id="jsonResourceTypeAssertion" class="org.vortikal.web.service.ResourceTypeAssertion">
     <property name="resourceTypeDefinition" ref="json.resourceType" />
+  </bean>
+  
+  <bean id="displayUnpublishedResourceService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="viewService" />
+    <property name="order" value="-100" />
+    <property name="assertions">
+      <list>
+        <ref bean="displayUnpublishedPageAssertion" />
+      </list>
+    </property>
+    <property name="handler" ref="displayUnpublishedResourceHandler" />
+  </bean>
+  
+  <bean id="displayUnpublishedResourceHandler" class="org.vortikal.web.display.file.DisplayResourceController"
+    parent="requestLocalRepositoryAware">
+    <property name="viewName" value="displayUnpublishedPage.view" />
+    <property name="displayProcessed" value="true" />
+  </bean>
+  
+  <bean id="displayUnpublishedPage.viewResolver" parent="decoratorViewResolver">
+    <property name="views">
+      <map>
+        <entry key="displayUnpublishedPage.view" value-ref="displayUnpublishedPage.view" />
+      </map>
+    </property>
+  </bean>
+  
+  <bean id="displayUnpublishedPage.view" parent="freemarkerView">
+    <property name="url" value="pages/unpublished-view.ftl" />
+  </bean>
+  
+  <bean id="displayUnpublishedPageAssertion" class="org.vortikal.web.service.AndAssertion">
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsNotPublishedAssertion" />
+        <ref bean="jsonResourceTypeAssertion" />
+      </list>
+    </property>
   </bean>
   
 </beans>

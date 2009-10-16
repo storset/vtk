@@ -75,7 +75,6 @@ public class TemplateLanguageDecoratorComponent extends AbstractDecoratorCompone
     }
     
     public List<HtmlContent> render(DecoratorRequest request) throws Exception {
-    	try {
     	Context ctx = new Context(request.getLocale());
         if (this.modelKey != null) { 
             ctx.define(this.modelKey, request.getMvcModel(), true);
@@ -88,11 +87,6 @@ public class TemplateLanguageDecoratorComponent extends AbstractDecoratorCompone
         this.nodeList.render(ctx, writer);
         HtmlFragment fragment = this.htmlParser.parseFragment(writer.getBuffer().toString());
         return fragment.getContent();
-    	} catch(Exception t) {
-    		System.out.println("__t: " + t);
-    		t.printStackTrace();
-    		throw t;
-    	}
     }
 
     public void render(DecoratorRequest request, DecoratorResponse response)

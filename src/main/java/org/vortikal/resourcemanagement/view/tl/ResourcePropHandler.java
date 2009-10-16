@@ -110,7 +110,7 @@ public class ResourcePropHandler implements DefineNodeFactory.ValueProvider {
             propName = arg2.getValue(ctx).toString();
         }
         if ("uri".equals(propName)) {
-            return resource.getURI().toString();
+            return resource.getURI();
         }
         
         Property property = resource.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, propName);

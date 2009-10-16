@@ -152,9 +152,11 @@ public class Value implements Cloneable, Comparable<Value> {
         case STRING:
         case HTML:
         case IMAGE_REF:
+            return this.stringValue;
+            
         case JSON:
             return JSONSerializer.toJSON(this.stringValue);
-
+            
         case PRINCIPAL:
             return this.principalValue;
         }

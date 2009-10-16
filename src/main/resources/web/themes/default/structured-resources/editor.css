@@ -160,6 +160,10 @@ iframe, .fieldset {
     padding-bottom: 15px;
 }
 
+#cssUrls .vrtx-json-element {
+    padding-bottom: 0;	
+}
+
 .vrtx-multipleinputfield input {
 	margin-right: 15px;
 }

@@ -21,7 +21,7 @@
 	   <tr>      
          <td> 
   			<#if src?has_content>
-           		<a class="vrtx-image" href="${personListing.urls[person.URI]?html}"><img src="${src?html}" alt="" width="30px" /></a>
+           		<a class="vrtx-image" href="${personListing.urls[person.URI]?html}"><img src="${src?html}" alt="" /></a>
            	</#if>
          	<a href="${personListing.urls[person.URI]?html}">${title?html}</a>
          	<div>${position?html}</div>

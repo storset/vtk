@@ -16,17 +16,38 @@ resourcetype boxes {
   }
 
   view-components {
+
+    test-include-feed (url) {
+      ##
+      [def params {"url" : url}]
+      [call-component "include:feed" params]
+      ##
+    }
+
+    test-search (query) {
+      ##
+      [def results search query]
+      <p>Results for [val query]:</p>
+      <ul>
+      [list results resource]
+        [def url view-url resource]
+        [def title resource-prop resource "title"]
+        <li><a href="[val url]">[val title]</a></li>
+      [endlist]
+      </ul>
+      ##
+    }
+
+
     box-list (first-param, second-param) {
       ##
-      Param 1: [val first-param]<br />
-      Param 2: [val second-param]<br />
       [resource-props "."]
-
-      [if box-list]
+      [def document structured-document]
+      [def boxes json-attr document "properties.box-list"]
+      [if boxes]
         [def document structured-document]
         [def boxes json-attr document "properties.box-list"]
         [list boxes box]
-           JSON: [val box]
            [def title json-attr box "title"]
            [def content json-attr box "content"]
            <div style="border:1px solid black;margin:20px;">
@@ -46,9 +67,11 @@ resourcetype boxes {
       <head>
         <title><resource:property id="title" /></title>
       </head>
-      <body>
+      <body class="foo">
         <h1><resource:property id="title" /></h1>
         <comp:box-list first-param="component-param1" second-param="component-param2" />
+        <comp:test-include-feed url="http://www.usit.uio.no/saus/blogg/?vrtx=feed" />
+        <comp:test-search  query="type IN file" />
       </body>
     </html>
     ##

@@ -29,8 +29,7 @@
     <property name="viewName" value="personListing.view" />
   </bean>
 
-  <bean id="personListing.searchComponent" class="org.vortikal.web.search.QueryStringSearchComponent"
-    parent="collectionListing.searchComponent">
+  <bean id="personListing.searchComponent" parent="collectionListing.searchComponent">
     <property name="name" value="personListing.defaultPerson" />
     <property name="defaultRecursive" value="true" />
     <property name="query">
@@ -62,6 +61,21 @@
         </entry>
       </map>
     </property>
+  </bean>
+  
+  <bean id="personListing.feedService" parent="collectionListing.atomService">
+    <property name="order" value="-2" />
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsPersonListing" />
+        <ref bean="feedParameterSetAssertion" />
+      </list>
+    </property>
+    <property name="handler" ref="personListing.feedHandler" />
+  </bean>
+
+  <bean id="personListing.feedHandler" parent="collectionListing.atomHandler">
+    <property name="searchComponent" ref="personListing.searchComponent" />
   </bean>
 
 </beans>

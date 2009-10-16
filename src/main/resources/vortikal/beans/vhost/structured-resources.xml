@@ -70,7 +70,7 @@
     <property name="templateManager" ref="structuredResources.templateManager" />
     <property name="resourceModelKey" value="structured-resource" />
     <property name="valueFormatterRegistry" ref="valueFormatterRegistry" />
-    <property name="parseFilters" ref="decorating.nodeFilters" />
+    <property name="postFilter" ref="decorating.ssiNodeFilter" />
     <property name="configProviders">
       <list>
         <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">

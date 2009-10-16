@@ -32,10 +32,7 @@ package org.vortikal.resourcemanagement.view;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.io.Writer;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,52 +40,47 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.json.JSONObject;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
-import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
-import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyImpl;
-import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.repository.resourcetype.ValueFormatterRegistry;
 import org.vortikal.repository.search.QueryParserFactory;
-import org.vortikal.repository.search.ResultSet;
-import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
-import org.vortikal.repository.search.query.Query;
 import org.vortikal.resourcemanagement.ComponentDefinition;
 import org.vortikal.resourcemanagement.StructuredResource;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.resourcemanagement.StructuredResourceManager;
+import org.vortikal.resourcemanagement.view.tl.ComponentInvokerNodeFactory;
+import org.vortikal.resourcemanagement.view.tl.JSONAttributeHandler;
+import org.vortikal.resourcemanagement.view.tl.JSONDocumentProvider;
+import org.vortikal.resourcemanagement.view.tl.LocalizationNodeFactory;
+import org.vortikal.resourcemanagement.view.tl.ModelConfigHandler;
+import org.vortikal.resourcemanagement.view.tl.PropertyValueFormatHandler;
+import org.vortikal.resourcemanagement.view.tl.ResourcePropHandler;
+import org.vortikal.resourcemanagement.view.tl.ResourcePropObjectValueHandler;
+import org.vortikal.resourcemanagement.view.tl.ResourcePropsNodeFactory;
+import org.vortikal.resourcemanagement.view.tl.RetrieveHandler;
+import org.vortikal.resourcemanagement.view.tl.SearchResultValueProvider;
+import org.vortikal.resourcemanagement.view.tl.ViewURLValueProvider;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.text.JSONUtil;
-import org.vortikal.text.html.HtmlNodeFilter;
 import org.vortikal.text.html.HtmlPage;
+import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.text.html.HtmlPageParser;
-import org.vortikal.text.tl.Argument;
-import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.DefineNodeFactory;
 import org.vortikal.text.tl.DirectiveNodeFactory;
-import org.vortikal.text.tl.DirectiveParseContext;
 import org.vortikal.text.tl.IfNodeFactory;
 import org.vortikal.text.tl.ListNodeFactory;
-import org.vortikal.text.tl.Node;
-import org.vortikal.text.tl.Symbol;
 import org.vortikal.text.tl.ValNodeFactory;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.ComponentResolver;
-import org.vortikal.web.decorating.DecoratorComponent;
 import org.vortikal.web.decorating.HtmlPageContent;
 import org.vortikal.web.decorating.ParsedHtmlDecoratorTemplate;
 import org.vortikal.web.decorating.Template;
@@ -98,8 +90,9 @@ import org.vortikal.web.service.Service;
 
 public class StructuredResourceDisplayController implements Controller, InitializingBean {
 
-    private static final String MVC_MODEL_KEY = "__mvc_model__";
-
+    public static final String MVC_MODEL_KEY = "__mvc_model__";
+    public static final String TEMPLATE_EXECUTION_REQ_ATTR = "__template_execution_";
+    
     private Repository repository;
     private QueryParserFactory queryParserFactory;
     private Searcher searcher;
@@ -114,11 +107,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
 
     private Map<String, DirectiveNodeFactory> directiveHandlers;
 
-    private List<HtmlNodeFilter> parseFilters;
-
-    public void setParseFilters(List<HtmlNodeFilter> parseFilters) {
-        this.parseFilters = parseFilters;
-    }
+    private HtmlPageFilter postFilter;
 
     // XXX: clean up this mess:
     private Map<StructuredResourceDescription, Map<String, TemplateLanguageDecoratorComponent>> components = new ConcurrentHashMap<StructuredResourceDescription, Map<String, TemplateLanguageDecoratorComponent>>();
@@ -131,9 +120,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
 
         InputStream stream = this.repository.getInputStream(token, uri, true);
         byte[] buff = StreamUtil.readInputStream(stream);
-        String encoding = r.getCharacterEncoding();
-        if (encoding == null)
-            encoding = "utf-8";
+        String encoding = "utf-8";
         String source = new String(buff, encoding);
 
         StructuredResourceDescription desc = this.resourceManager.get(r.getResourceType());
@@ -161,25 +148,23 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         }
 
         HtmlPageContent content = renderInitialPage(res, model, request);
-
-        // XXX This is a most unwanted solution. We parse the entire document
-        // after it's already been parsed once. This can cause recursive
-        // invocation of components, e.g. the first round of parsing results in
-        // output which contains a component definition, which is parsed and
-        // resolved during the second pass.
-        byte[] bytes = content.getHtmlContent().getStringRepresentation().getBytes();
-        ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-        HtmlPage page = this.htmlParser.parse(bais, encoding, this.parseFilters);
-        bais.close();
-
-        model.put("page", page);
+        
+        HtmlPage page = content.getHtmlContent();
+        if (this.postFilter != null) {
+            page.filter(this.postFilter);
+        }
+        
+        model.put("page", content.getHtmlContent());
         return new ModelAndView(this.viewName, model);
     }
 
     @SuppressWarnings("unchecked")
     public HtmlPageContent renderInitialPage(StructuredResource res, Map model, HttpServletRequest request)
             throws Exception {
-        String html = "<html><head><title></title></head><body></body></html>";
+
+        String html = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";
+        html += "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n";
+        html += "<head><title></title></head><body></body></html>";
         ByteArrayInputStream in = new ByteArrayInputStream(html.getBytes("utf-8"));
         final HtmlPage dummy = this.htmlParser.parse(in, "utf-8");
 
@@ -207,24 +192,11 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         ParsedHtmlDecoratorTemplate.Execution execution = (ParsedHtmlDecoratorTemplate.Execution) template
                 .newTemplateExecution(content, request, model);
 
-        final ComponentResolver resolver = execution.getComponentResolver();
-        final Map<String, TemplateLanguageDecoratorComponent> components = this.components.get(res.getType());
+        ComponentResolver resolver = execution.getComponentResolver();
+        Map<String, TemplateLanguageDecoratorComponent> components = this.components.get(res.getType());
 
-        execution.setComponentResolver(new ComponentResolver() {
-            public List<DecoratorComponent> listComponents() {
-                return null;
-            }
-
-            public DecoratorComponent resolveComponent(String namespace, String name) {
-                if ("comp".equals(namespace)) {
-                    if (components == null) {
-                        return null;
-                    }
-                    return components.get(name);
-                }
-                return resolver.resolveComponent(namespace, name);
-            }
-        });
+        execution.setComponentResolver(new DynamicComponentResolver(resolver, components));
+        request.setAttribute(TEMPLATE_EXECUTION_REQ_ATTR, execution);
         content = (HtmlPageContent) execution.render();
         return content;
     }
@@ -245,30 +217,35 @@ public class StructuredResourceDisplayController implements Controller, Initiali
     }
 
     public void afterPropertiesSet() {
+
+        // TODO: inject directive handlers instead of 
+        // initializing all of them here:
+
         Map<String, DirectiveNodeFactory> directiveHandlers = new HashMap<String, DirectiveNodeFactory>();
         directiveHandlers.put("if", new IfNodeFactory());
 
         ValNodeFactory val = new ValNodeFactory();
-        val.addValueFormatHandler(PropertyImpl.class, new PropertyValueFormatHandler());
-        val.addValueFormatHandler(Value.class, new PropertyValueFormatHandler());
-        val.addValueFormatHandler(Value[].class, new PropertyValueFormatHandler());
+        val.addValueFormatHandler(PropertyImpl.class, new PropertyValueFormatHandler(this.valueFormatterRegistry));
+        val.addValueFormatHandler(Value.class, new PropertyValueFormatHandler(this.valueFormatterRegistry));
+        val.addValueFormatHandler(Value[].class, new PropertyValueFormatHandler(this.valueFormatterRegistry));
         directiveHandlers.put("val", val);
 
         directiveHandlers.put("list", new ListNodeFactory());
-        directiveHandlers.put("resource-props", new ResourcePropsNodeFactory());
+        directiveHandlers.put("resource-props", new ResourcePropsNodeFactory(this.repository));
         DefineNodeFactory def = new DefineNodeFactory();
-        def.addValueProvider("resource", new RetrieveHandler());
-        def.addValueProvider("resource-prop", new ResourcePropHandler());
-        def.addValueProvider("resource-prop-obj-val", new ResourcePropObjectValueHandler()); // Hmm, better solution ?
+        def.addValueProvider("resource", new RetrieveHandler(this.repository));
+        def.addValueProvider("resource-prop", new ResourcePropHandler(this.repository));
+        def.addValueProvider("resource-prop-obj-val", new ResourcePropObjectValueHandler(this.repository)); // Hmm, better solution ?
         def.addValueProvider("config", new ModelConfigHandler());
         def.addValueProvider("structured-document", new JSONDocumentProvider());
         def.addValueProvider("json-attr", new JSONAttributeHandler());
-        def.addValueProvider("search", new SearchResultValueProvider());
-        def.addValueProvider("view-url", new ViewURLValueProvider());
+        def.addValueProvider("search", new SearchResultValueProvider(this.queryParserFactory, this.searcher));
+        def.addValueProvider("view-url", new ViewURLValueProvider(this.viewService));
         directiveHandlers.put("def", def);
 
-        directiveHandlers.put("localized", new LocalizationNodeFactory());
-
+        directiveHandlers.put("localized", new LocalizationNodeFactory(this.resourceModelKey));
+        directiveHandlers.put("call-component", new ComponentInvokerNodeFactory(this.htmlParser));
+        
         this.directiveHandlers = directiveHandlers;
 
         List<StructuredResourceDescription> allDescriptions = this.resourceManager.list();
@@ -331,392 +308,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         this.valueFormatterRegistry = valueFormatterRegistry;
     }
 
-    private class ResourcePropsNodeFactory implements DirectiveNodeFactory {
-
-        public Node create(DirectiveParseContext ctx) throws Exception {
-            List<Argument> tokens = ctx.getArguments();
-            if (tokens.size() != 1) {
-                throw new Exception("Wrong number of arguments");
-            }
-            final Argument arg1 = tokens.get(0);
-
-            return new Node() {
-                public void render(Context ctx, Writer out) throws Exception {
-                    Resource resource;
-                    String ref = arg1.getValue(ctx).toString();
-
-                    if (ref.equals(".")) {
-                        Object o = ctx.get(MVC_MODEL_KEY);
-                        if (o == null) {
-                            throw new Exception("Unable to locate resource: no model: " + MVC_MODEL_KEY);
-                        }
-                        @SuppressWarnings("unchecked")
-                        Map<String, Object> model = (Map<String, Object>) o;
-                        resource = (Resource) model.get("resource");
-                    } else {
-                        Path uri = Path.fromString(ref);
-                        String token = SecurityContext.getSecurityContext().getToken();
-                        resource = repository.retrieve(token, uri, true);
-                    }
-                    if (resource == null) {
-                        throw new RuntimeException("Unable to resolve resource");
-                    }
-                    for (Property prop : resource.getProperties()) {
-                        if (prop.getDefinition().isMultiple()) {
-                            ctx.define(prop.getDefinition().getName(), prop.getValues(), false);
-                        } else {
-                            ctx.define(prop.getDefinition().getName(), prop.getValue(), false);
-                        }
-                    }
-                }
-            };
-        }
-
+    public void setPostFilter(HtmlPageFilter postFilter) {
+        this.postFilter = postFilter;
     }
-
-    private class SearchResultValueProvider implements DefineNodeFactory.ValueProvider {
-
-        public Object create(List<Argument> tokens, Context ctx) throws Exception {
-            if (tokens.size() != 1) {
-                throw new Exception("Illegal number of arguments");
-            }
-            Argument arg = tokens.get(0);
-            String queryString = arg.getValue(ctx).toString();
-            String token = SecurityContext.getSecurityContext().getToken();
-            Query query = queryParserFactory.getParser().parse(queryString);
-            Search search = new Search();
-            search.setQuery(query);
-            ResultSet resultSet = searcher.execute(token, search);
-            return resultSet.iterator();
-        }
-    }
-
-    private class ViewURLValueProvider implements DefineNodeFactory.ValueProvider {
-
-        public Object create(List<Argument> tokens, Context ctx) throws Exception {
-            if (tokens.size() != 1) {
-                throw new Exception("Illegal number of arguments");
-            }
-            Argument arg = tokens.get(0);
-            if (!(arg instanceof Symbol)) {
-                throw new Exception("Argument must be a resource object: " + arg.getRawValue());
-            }
-            Object o = arg.getValue(ctx);
-            if (!(o instanceof PropertySet)) {
-                throw new Exception("Argument must be a resource object: " + arg.getRawValue());
-            }
-            return viewService.constructLink(((PropertySet) o).getURI());
-        }
-
-    }
-
-    // Extends ResourcePropHandler to provide *object value* of property Value
-    private class ResourcePropObjectValueHandler extends ResourcePropHandler {
-        // Supported constructions:
-        // "/foo/bar/" <propname>
-        // "." <propname>
-        // <var> <propname>
-
-        public Object create(List<Argument> tokens, Context ctx) throws Exception {
-            Object obj = super.create(tokens, ctx);
-            
-            if (obj instanceof Value) 
-                return ((Value)obj).getObjectValue();
-            
-            if (obj instanceof Value[]) {
-                Value[] values = (Value[])obj;
-                Object[] objValues = new Object[values.length];
-                for (int i=0; i<values.length; i++) {
-                    objValues[i] = values[i].getObjectValue();
-                }
-                return objValues;
-            }
-
-            return obj; // Unknown type or null, just pass-through
-        }
-    }
-
-    private class ResourcePropHandler implements DefineNodeFactory.ValueProvider {
-
-        // Supported constructions:
-        // "/foo/bar/" <propname>
-        // "." <propname>
-        // <var> <propname>
-
-        public Object create(List<Argument> tokens, Context ctx) throws Exception {
-
-            if (tokens.size() != 2) {
-                throw new RuntimeException("Wrong number of arguments");
-            }
-            final Argument arg1 = tokens.get(0);
-            final Argument arg2 = tokens.get(1);
-
-            PropertySet resource = null;
-            String ref = null;
-            if (arg1 instanceof Symbol) {
-                Object o = arg1.getValue(ctx);
-                if (o instanceof PropertySet) {
-                    resource = (PropertySet) o;
-                } else {
-                    ref = o.toString();
-                }
-            } else {
-                ref = arg1.getValue(ctx).toString();
-            }
-
-            if (resource == null) {
-                if (ref.equals(".")) {
-                    Object o = ctx.get(MVC_MODEL_KEY);
-                    if (o == null) {
-                        throw new Exception("Unable to access MVC model: " + MVC_MODEL_KEY);
-                    }
-                    @SuppressWarnings("unchecked")
-                    Map<String, Object> model = (Map<String, Object>) o;
-                    resource = (Resource) model.get("resource");
-                } else {
-                    Path uri = Path.fromString(ref);
-                    String token = SecurityContext.getSecurityContext().getToken();
-                    resource = repository.retrieve(token, uri, true);
-                }
-            }
-            String propName;
-            if (arg2 instanceof Symbol) {
-                Object o = arg2.getValue(ctx);
-                if (o == null) {
-                    throw new Exception("Unable to resolve: " + arg2.getRawValue());
-                }
-                propName = o.toString();
-            } else {
-                propName = arg2.getValue(ctx).toString();
-            }
-            Property property = resource.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, propName);
-            if (property == null) {
-                property = resource.getProperty(Namespace.DEFAULT_NAMESPACE, propName);
-            }
-            if (property == null) {
-                for (Property prop : resource.getProperties()) {
-                    if (propName.equals(prop.getDefinition().getName())) {
-                        property = prop;
-                    }
-                }
-            }
-            if (property == null) {
-                return null;
-            }
-            if (property.getDefinition().isMultiple()) {
-                return property.getValues();
-            } else {
-                return property.getValue();
-            }
-        }
-    }
-
-    private class JSONDocumentProvider implements DefineNodeFactory.ValueProvider {
-
-        public Object create(List<Argument> tokens, Context ctx) throws Exception {
-            if (tokens.size() != 0) {
-                throw new Exception("Wrong number of arguments");
-            }
-            Object o = ctx.get(MVC_MODEL_KEY);
-            if (o == null) {
-                throw new Exception("Unable to access MVC model");
-            }
-            @SuppressWarnings("unchecked")
-            Map<String, Object> model = (Map<String, Object>) o;
-            StructuredResource res = (StructuredResource) model.get("structured-resource");
-            if (res == null) {
-                throw new Exception("No structured resource found in MVC model");
-            }
-            return res.toJSON();
-        }
-    }
-
-    private class JSONAttributeHandler implements DefineNodeFactory.ValueProvider {
-
-        // Supported constructions:
-        // object "expression"
-        // object expression (from variable)
-        public Object create(List<Argument> tokens, Context ctx) throws Exception {
-            if (tokens.size() != 2) {
-                throw new Exception("Wrong number of arguments");
-            }
-
-            final Argument arg1 = tokens.get(0);
-            Object object;
-            if (!(arg1 instanceof Symbol)) {
-                throw new Exception("First argument must be a symbol");
-            }
-            object = arg1.getValue(ctx);
-
-            final Argument arg2 = tokens.get(1);
-            String expression = arg2.getValue(ctx).toString();
-
-            if (!(object instanceof JSONObject)) {
-                throw new Exception("Cannot apply expression '" 
-                        + expression + "' on object: not JSON data: "
-                        + object.getClass());
-            }
-
-            JSONObject json = (JSONObject) object;
-            return JSONUtil.select(json, expression);
-        }
-    }
-
-    private class ModelConfigHandler implements DefineNodeFactory.ValueProvider {
-
-        @SuppressWarnings("unchecked")
-        public Object create(List<Argument> tokens, Context ctx) throws Exception {
-            if (tokens.size() < 1) {
-                throw new RuntimeException("Expected at least one argument");
-            }
-            List<String> keys = new ArrayList<String>();
-            for (Argument arg : tokens) {
-                String key = arg.getValue(ctx).toString();
-                keys.add(key);
-            }
-            Object o = ctx.get(MVC_MODEL_KEY);
-            if (o == null) {
-                throw new RuntimeException("Unable to locate resource: no model: " + MVC_MODEL_KEY);
-            }
-            Map<String, Object> model = (Map<String, Object>) o;
-            if (!model.containsKey("config")) {
-                throw new RuntimeException("No 'config' element present in model");
-            }
-
-            Map<String, Object> config = (Map<String, Object>) model.get("config");
-            Map<String, Object> map = config;
-            for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
-                String key = iterator.next();
-                Object obj = map.get(key);
-                if (obj == null) {
-                    throw new RuntimeException("Unable to find value for " + keys);
-                }
-                if (iterator.hasNext()) {
-                    if (!(obj instanceof Map<?, ?>)) {
-                        throw new RuntimeException("Unable to find value for " + keys);
-                    }
-                    map = (Map) obj;
-                } else {
-                    return obj;
-                }
-            }
-            throw new RuntimeException("Unable to find value for " + keys);
-        }
-    }
-
-    private class RetrieveHandler implements DefineNodeFactory.ValueProvider {
-
-        // resource "/foo/bar"
-        // resource "."
-        // resource <var>
-
-        public Object create(List<Argument> tokens, Context ctx) throws Exception {
-
-            if (tokens.size() != 1) {
-                throw new RuntimeException("Wrong number of arguments");
-            }
-            final Argument arg = tokens.get(0);
-
-            Resource resource;
-
-            String ref = arg.getValue(ctx).toString();
-
-            if (ref.equals(".")) {
-                Object o = ctx.get(MVC_MODEL_KEY);
-                if (o == null) {
-                    return null;
-                }
-                @SuppressWarnings("unchecked")
-                Map<String, Object> model = (Map<String, Object>) o;
-                resource = (Resource) model.get("resource");
-            } else if (!ref.startsWith("/")) {
-                Object o = ctx.get(ref);
-                if (o == null) {
-                    return null;
-                }
-                String s = o.toString();
-                Path uri = Path.fromString(s);
-                String token = SecurityContext.getSecurityContext().getToken();
-                resource = repository.retrieve(token, uri, true);
-            } else {
-                Path uri = Path.fromString(ref);
-                String token = SecurityContext.getSecurityContext().getToken();
-                try {
-                    resource = repository.retrieve(token, uri, true);
-                } catch (ResourceNotFoundException rnfe) {
-                    return null;
-                }
-            }
-            return resource;
-        }
-    }
-
-    private class PropertyValueFormatHandler implements ValNodeFactory.ValueFormatHandler {
-
-        public Object handleValue(Object val, String format, Context ctx) {
-            if (val instanceof Value[]) {
-                StringBuilder sb = new StringBuilder();
-                Value[] values = (Value[]) val;
-                for (int i = 0; i < values.length; i++) {
-                    ValueFormatter vf = valueFormatterRegistry.getValueFormatter(values[i].getType());
-                    sb.append(vf.valueToString(values[i], format, ctx.getLocale()));
-                    if (i < values.length - 1) {
-                        sb.append(", ");
-                    }
-                }
-                return sb.toString();
-            } else {
-                Value value;
-                if (val instanceof Property) {
-                    value = ((Property) val).getValue();
-                } else if (val instanceof Value) {
-                    value = (Value) val;
-                } else {
-                    throw new RuntimeException("Unknown type: " + val.getClass());
-                }
-                ValueFormatter vf = valueFormatterRegistry.getValueFormatter(value.getType());
-                if (vf == null) {
-                    throw new RuntimeException("Unable to find value formatter for value " + value);
-                }
-                return vf.valueToString(value, format, ctx.getLocale());
-            }
-        }
-    }
-
-    private class LocalizationNodeFactory implements DirectiveNodeFactory {
-
-        public Node create(DirectiveParseContext ctx) throws Exception {
-            List<Argument> args = ctx.getArguments();
-            if (args.size() == 0) {
-                throw new RuntimeException("Missing arguments: " + ctx.getNodeText());
-            }
-            final Argument code = args.remove(0);
-            final List<Argument> rest = new ArrayList<Argument>(args);
-
-            return new Node() {
-                public void render(Context ctx, Writer out) throws Exception {
-                    String key = code.getValue(ctx).toString();
-                    Object o = ctx.get(MVC_MODEL_KEY);
-                    if (o == null) {
-                        throw new RuntimeException("Unable to locate resource: no model: " + MVC_MODEL_KEY);
-                    }
-                    Object[] localizationArgs = new Object[rest.size()];
-                    for (int i = 0; i < rest.size(); i++) {
-                        Argument a = rest.get(i);
-                        localizationArgs[i] = a.getValue(ctx);
-                    }
-
-                    @SuppressWarnings("unchecked")
-                    Map<String, Object> model = (Map<String, Object>) o;
-                    StructuredResource resource = (StructuredResource) model.get(resourceModelKey);
-                    if (resource == null) {
-                        throw new RuntimeException("Unable to localize string: " + key + ": no resource found in model");
-                    }
-                    String localizedMsg = resource.getType().getLocalizedMsg(key, ctx.getLocale(), localizationArgs);
-                    out.write(ctx.htmlEscape(localizedMsg));
-                }
-            };
-        }
-    }
-
 }

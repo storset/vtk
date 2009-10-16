@@ -49,11 +49,12 @@ import org.vortikal.text.html.HtmlComment;
 import org.vortikal.text.html.HtmlContent;
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlNodeFilter;
+import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.text.html.HtmlText;
 import org.vortikal.web.RequestContext;
 
 
-public class ComponentInvokingNodeFilter implements HtmlNodeFilter, InitializingBean {
+public class ComponentInvokingNodeFilter implements HtmlNodeFilter, HtmlPageFilter, InitializingBean {
     
     private static final Pattern SSI_DIRECTIVE_REGEXP = Pattern.compile(
             "#([a-zA-Z]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
@@ -111,7 +112,21 @@ public class ComponentInvokingNodeFilter implements HtmlNodeFilter, Initializing
         }
     }
     
+    // HtmlPageFilter.filter() (invoked after parsing)
+    public NodeResult filter(HtmlContent node) {
+        if (node instanceof HtmlElement) {
+            HtmlElement element = (HtmlElement) node;
+            HtmlContent[] childNodes = element.getChildNodes();
+            for (int i = 0; i < childNodes.length; i++) {
+                childNodes[i] = filterNode(childNodes[i]);
+            }
+            element.setChildNodes(childNodes);
+        }
+        return NodeResult.keep;
+    }
+    
 
+    // HtmlNodeFilter.filter() (invoked during parsing)
     public HtmlContent filterNode(HtmlContent node) {
         if (node instanceof HtmlComment) {
             ComponentInvocation ssiInvocation = buildSsiComponentInvocation(node);
@@ -238,10 +253,10 @@ public class ComponentInvokingNodeFilter implements HtmlNodeFilter, Initializing
         StringBuilder sb = new StringBuilder();
 
         for (ComponentInvocation invocation: componentInvocations) {
-		    if (invocation instanceof StaticTextFragment) {
-		    	sb.append(((StaticTextFragment) invocation).buffer);
-		    	continue;
-		    }
+            if (invocation instanceof StaticTextFragment) {
+                sb.append(((StaticTextFragment) invocation).buffer);
+                continue;
+            }
             Map<String, Object> parameters = invocation.getParameters();
             DecoratorRequest decoratorRequest = new DecoratorRequestImpl(
                 null, servletRequest, new HashMap<Object, Object>(), 
@@ -252,6 +267,11 @@ public class ComponentInvokingNodeFilter implements HtmlNodeFilter, Initializing
             try {
                 DecoratorComponent component = this.componentResolver.resolveComponent(
                         invocation.getNamespace(), invocation.getName());
+                if (component == null) {
+                    sb.append("Invalid component reference: " + invocation.getNamespace()
+                    + ":" + invocation.getName());
+                    continue;
+                }
                 boolean render = true;
                 if (component.getNamespace() != null) {
                 	if (!this.availableComponentNamespaces.contains(component.getNamespace()) 
@@ -285,5 +305,5 @@ public class ComponentInvokingNodeFilter implements HtmlNodeFilter, Initializing
         }
         return sb.toString();
     }
-    
+
 }

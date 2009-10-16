@@ -38,11 +38,14 @@ import org.vortikal.web.decorating.DecoratorComponent;
 
 public class DynamicComponentResolver implements ComponentResolver {
 
+    private String namespace;
     private ComponentResolver mainResolver;
     private Map<String, TemplateLanguageDecoratorComponent> components;
 
-    public DynamicComponentResolver(ComponentResolver mainResolver,
+    public DynamicComponentResolver(String namespace,
+            ComponentResolver mainResolver,
             Map<String, TemplateLanguageDecoratorComponent> components) {
+        this.namespace = namespace;
         this.mainResolver = mainResolver;
         this.components = components;
     }
@@ -52,7 +55,7 @@ public class DynamicComponentResolver implements ComponentResolver {
     }
 
     public DecoratorComponent resolveComponent(String namespace, String name) {
-        if ("comp".equals(namespace)) {
+        if (this.namespace.equals(namespace)) {
             if (this.components == null) {
                 return null;
             }

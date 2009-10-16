@@ -32,6 +32,7 @@ package org.vortikal.resourcemanagement.view;
 
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -54,14 +55,17 @@ import org.vortikal.web.decorating.components.AbstractDecoratorComponent;
 public class TemplateLanguageDecoratorComponent extends AbstractDecoratorComponent
         implements HtmlDecoratorComponent {
 
+    private String namespace;
     private ComponentDefinition definition;
     private String modelKey;
     private NodeList nodeList;
     private HtmlPageParser htmlParser;
     
-    public TemplateLanguageDecoratorComponent(ComponentDefinition definition, 
+    public TemplateLanguageDecoratorComponent(String namespace, 
+            ComponentDefinition definition, 
             String modelKey, Map<String, DirectiveNodeFactory> directiveHandlers, 
             HtmlPageParser htmlParser) throws Exception {
+        this.namespace = namespace;
         this.definition = definition;
         this.modelKey = modelKey;
         Parser parser = new Parser(new StringReader(definition.getDefinition()), directiveHandlers);
@@ -71,7 +75,8 @@ public class TemplateLanguageDecoratorComponent extends AbstractDecoratorCompone
     }
     
     public List<HtmlContent> render(DecoratorRequest request) throws Exception {
-        Context ctx = new Context(request.getLocale());
+    	try {
+    	Context ctx = new Context(request.getLocale());
         if (this.modelKey != null) { 
             ctx.define(this.modelKey, request.getMvcModel(), true);
         }
@@ -83,6 +88,11 @@ public class TemplateLanguageDecoratorComponent extends AbstractDecoratorCompone
         this.nodeList.render(ctx, writer);
         HtmlFragment fragment = this.htmlParser.parseFragment(writer.getBuffer().toString());
         return fragment.getContent();
+    	} catch(Exception t) {
+    		System.out.println("__t: " + t);
+    		t.printStackTrace();
+    		throw t;
+    	}
     }
 
     public void render(DecoratorRequest request, DecoratorResponse response)
@@ -91,7 +101,10 @@ public class TemplateLanguageDecoratorComponent extends AbstractDecoratorCompone
         if (this.modelKey != null) { 
             ctx.define(this.modelKey, request.getMvcModel(), true);
         }
-        this.nodeList.render(ctx, response.getWriter());
+        Writer writer = response.getWriter();
+        this.nodeList.render(ctx, writer);
+        writer.flush();
+        writer.close();
     }
 
     @Override
@@ -115,6 +128,6 @@ public class TemplateLanguageDecoratorComponent extends AbstractDecoratorCompone
     
     @Override
     public String getNamespace() {
-        return "#namespace#";
+        return this.namespace;
     }
 }

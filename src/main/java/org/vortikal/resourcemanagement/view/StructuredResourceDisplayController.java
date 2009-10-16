@@ -92,6 +92,8 @@ public class StructuredResourceDisplayController implements Controller, Initiali
 
     public static final String MVC_MODEL_KEY = "__mvc_model__";
     public static final String TEMPLATE_EXECUTION_REQ_ATTR = "__template_execution_";
+
+    private static final String COMPONENT_NS = "comp";
     
     private Repository repository;
     private QueryParserFactory queryParserFactory;
@@ -195,7 +197,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         ComponentResolver resolver = execution.getComponentResolver();
         Map<String, TemplateLanguageDecoratorComponent> components = this.components.get(res.getType());
 
-        execution.setComponentResolver(new DynamicComponentResolver(resolver, components));
+        execution.setComponentResolver(new DynamicComponentResolver(COMPONENT_NS, resolver, components));
         request.setAttribute(TEMPLATE_EXECUTION_REQ_ATTR, execution);
         content = (HtmlPageContent) execution.render();
         return content;
@@ -209,8 +211,9 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         List<ComponentDefinition> defs = desc.getAllComponentDefinitions();
         for (ComponentDefinition def : defs) {
             String name = def.getName();
-            TemplateLanguageDecoratorComponent comp = new TemplateLanguageDecoratorComponent(def, MVC_MODEL_KEY,
-                    this.directiveHandlers, this.htmlParser);
+            TemplateLanguageDecoratorComponent comp = 
+                new TemplateLanguageDecoratorComponent(COMPONENT_NS, def, MVC_MODEL_KEY,
+                        this.directiveHandlers, this.htmlParser);
             comps.put(name, comp);
         }
         this.components.put(desc, comps);

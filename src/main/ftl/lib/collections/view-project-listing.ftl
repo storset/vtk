@@ -2,7 +2,7 @@
 
 <#macro displayProjects projectListing>
   <#local projects=projectListing.files />
-  <#if projects?size &gt; 0>
+  <#if (projects?size > 0) >
     <div id="${projectListing.name}" class="vrtx-projects ${projectListing.name}">
     <#if projectListing.title?exists && projectListing.offset == 0>
       <h2>${projectListing.title?html}</h2> 

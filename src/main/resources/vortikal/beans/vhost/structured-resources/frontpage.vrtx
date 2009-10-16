@@ -2,7 +2,8 @@ resourcetype frontpage {
 
   properties {
     title : string overrides title,
-    main-content : json (boxTitle : string, boxType : string, boxContent : html, boxUrlText : string, boxUrl : string) multiple noextract,
+    cssUrls : json (cssUrl : string) multiple,
+    main-content : json (boxTitle : string, boxType : string, boxContent : html, boxUrlText : string, boxUrl : string, boxCss : string) multiple noextract,
     additional-content : json (boxTitle : string, boxType : string, boxContent : html, boxUrlText : string,  boxUrl : string) multiple noextract
   }
   
@@ -98,6 +99,20 @@ resourcetype frontpage {
       ##
     }
     
+    css-links {
+      ##
+      [resource-props "."]
+      [def document structured-document]
+      [def urls json-attr document "properties.cssUrls"]
+      [if urls]
+        [list urls url]
+          [def theurl json-attr url "cssUrl"]
+          <link rel="stylesheet" href="[val theurl]" type="text/css" />
+        [endlist]
+      [endif]
+      ##  
+    }
+    
     title {
       ##
       [def v resource-prop "." "title"]
@@ -111,6 +126,7 @@ resourcetype frontpage {
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
+        <comp:css-links />
         <!-- begin frontpage css -->
         <frontpage:css />
         <!-- end frontpage css -->
@@ -141,6 +157,8 @@ resourcetype frontpage {
      boxContent : (en : "Content", no : "Innhold", nn : "Innhald"),
      boxUrlText : (en : "Link text", no : "Lenketekst", nn : "Lenketekst"),
      boxUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
-     header : (en : "Edit frontpage", no : "Rediger forside", nn : "Rediger forside")
+     header : (en : "Edit frontpage", no : "Rediger forside", nn : "Rediger forside"),
+     cssUrls : (en : "Include CSS", no : "Inkluder CSS", nn : "Inkluder CSS"),
+     cssUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse")
   }
 }

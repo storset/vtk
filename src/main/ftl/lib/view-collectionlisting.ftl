@@ -55,7 +55,7 @@
   
 </#macro>
 
-<#macro displayArticles page collectionListings hideNumberOfComments displayMoreURLs=false >
+<#macro displayArticles page collectionListings hideNumberOfComments=false displayMoreURLs=false >
 
   <#if collectionListings?size &gt; 0>
     <#assign i = 1 />
@@ -151,7 +151,7 @@
 
 </#macro>
 
-<#macro displayEvents collectionListing hideNumberOfComments displayMoreURLs=false>
+<#macro displayEvents collectionListing hideNumberOfComments=false displayMoreURLs=false>
   <#local resources=collectionListing.files />
   <#if resources?size &gt; 0>
 

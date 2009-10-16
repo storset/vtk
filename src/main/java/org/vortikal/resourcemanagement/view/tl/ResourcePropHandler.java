@@ -109,6 +109,10 @@ public class ResourcePropHandler implements DefineNodeFactory.ValueProvider {
         } else {
             propName = arg2.getValue(ctx).toString();
         }
+        if ("uri".equals(propName)) {
+            return resource.getURI().toString();
+        }
+        
         Property property = resource.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, propName);
         if (property == null) {
             property = resource.getProperty(Namespace.DEFAULT_NAMESPACE, propName);

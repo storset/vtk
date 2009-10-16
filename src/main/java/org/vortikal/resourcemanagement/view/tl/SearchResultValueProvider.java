@@ -62,6 +62,7 @@ public class SearchResultValueProvider implements DefineNodeFactory.ValueProvide
         String token = SecurityContext.getSecurityContext().getToken();
         Query query = queryParserFactory.getParser().parse(queryString);
         Search search = new Search();
+        search.setLimit(100);
         search.setQuery(query);
         ResultSet resultSet = searcher.execute(token, search);
         return resultSet.iterator();

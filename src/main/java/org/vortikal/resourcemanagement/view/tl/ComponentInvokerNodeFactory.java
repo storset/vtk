@@ -81,17 +81,19 @@ public class ComponentInvokerNodeFactory implements DirectiveNodeFactory {
                 if (!(componentRef instanceof String)) {
                     throw new RuntimeException("First argument must be a string");
                 }
-                if (!(parameterMap instanceof Map<?, ?>)) {
-                    throw new RuntimeException("Second argument must be a map");
-                }
-                for (Map.Entry<?, ?> entry : ((Map<?, ?>) parameterMap).entrySet()) {
-                    if (entry.getKey() == null || entry.getValue() == null) {
-                        throw new RuntimeException("NULL values not allowed in parametermap");
+                if (parameterMap != null) {
+                    if (!(parameterMap instanceof Map<?, ?>)) {
+                        throw new RuntimeException("Second argument must be a map");
                     }
-                    
-                    if (!(entry.getKey() instanceof String)
-                            || !(entry.getValue() instanceof String)) {
-                        throw new RuntimeException("Parameter map values must be strings");
+                    for (Map.Entry<?, ?> entry : ((Map<?, ?>) parameterMap).entrySet()) {
+                        if (entry.getKey() == null || entry.getValue() == null) {
+                            throw new RuntimeException("NULL values not allowed in parametermap");
+                        }
+                        
+                        if (!(entry.getKey() instanceof String)
+                                || !(entry.getValue() instanceof String)) {
+                            throw new RuntimeException("Parameter map values must be strings");
+                        }
                     }
                 }
                 String namespace = null;

@@ -259,6 +259,7 @@
      <property name="socialWebsites">
       <list>
         <bean class="org.vortikal.web.referencedata.provider.socialwebsites.Facebook" />
+        <bean class="org.vortikal.web.referencedata.provider.socialwebsites.Twitter" />
         <bean class="org.vortikal.web.referencedata.provider.socialwebsites.Nettby" />
         <bean class="org.vortikal.web.referencedata.provider.socialwebsites.Delicious" />
       </list>

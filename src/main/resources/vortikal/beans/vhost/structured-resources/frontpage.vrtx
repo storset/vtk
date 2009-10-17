@@ -3,7 +3,7 @@ resourcetype frontpage {
   properties {
     title : string overrides title,
     cssUrls : json (cssUrl : string) multiple,
-    main-content : json (boxTitle : string, boxType : string, boxContent : html, boxUrlText : string, boxUrl : string, boxCss : string) multiple noextract,
+    main-content : json (boxTitle : string, boxType : string, boxContent : html, boxUrlText : string, boxUrl : string) multiple noextract,
     additional-content : json (boxTitle : string, boxType : string, boxContent : html, boxUrlText : string,  boxUrl : string) multiple noextract
   }
   

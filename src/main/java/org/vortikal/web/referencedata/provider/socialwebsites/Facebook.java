@@ -33,8 +33,7 @@ package org.vortikal.web.referencedata.provider.socialwebsites;
 public class Facebook extends SocialWebsite {
 
     @Override
-    public void generateLink(String url, String title, String description, String name) {
+    public void generateLink(String url, String title, String description) {
         super.setLink("http://www.facebook.com/share.php?u=" + url + "&ampt=" + title);
-        super.setName(name);
     }
 }

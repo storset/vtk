@@ -33,9 +33,8 @@ package org.vortikal.web.referencedata.provider.socialwebsites;
 public class Digg extends SocialWebsite {
 
     @Override
-    public void generateLink(String url, String title, String description, String name) {
+    public void generateLink(String url, String title, String description) {
         super.setLink("http://digg.com/submit?url=" + url + "&amp;title=" + title + "&amp;bodytext=" + description);
-        super.setName(name);
     }
 
 }

@@ -36,7 +36,7 @@ public abstract class SocialWebsite {
     private String name;
 
 
-    public abstract void generateLink(String url, String title, String description, String name);
+    public abstract void generateLink(String url, String title, String description);
 
 
     public String getLink() {

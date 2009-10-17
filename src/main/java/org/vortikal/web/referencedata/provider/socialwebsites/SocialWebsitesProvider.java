@@ -85,7 +85,8 @@ public class SocialWebsitesProvider implements ReferenceDataProvider {
                 }
             }
 
-            sw.generateLink(request.getRequestURL().toString(), resource.getTitle(), introduction, name);
+            sw.generateLink(request.getRequestURL().toString(), resource.getTitle(), introduction);
+            sw.setName(name);
 
         }
 

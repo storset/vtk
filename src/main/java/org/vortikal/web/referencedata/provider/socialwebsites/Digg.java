@@ -30,35 +30,11 @@
  */
 package org.vortikal.web.referencedata.provider.socialwebsites;
 
-public class Digg implements SocialWebsite {
-
-    private String link;
-    private String name;
-
+public class Digg extends SocialWebsite {
 
     public void generateLink(String url, String title, String description, String name) {
-        this.link = "http://digg.com/submit?url=" + url + "&amp;title=" + title + "&amp;bodytext=" + description;
-        this.name = name;
-    }
-
-
-    public String getLink() {
-        return link;
-    }
-
-
-    public String getName() {
-        return name;
-    }
-
-
-    public void setLink(String link) {
-        this.link = link;
-    }
-
-
-    public void setName(String name) {
-        this.name = name;
+        super.setLink("http://digg.com/submit?url=" + url + "&amp;title=" + title + "&amp;bodytext=" + description);
+        super.setName(name);
     }
 
 }

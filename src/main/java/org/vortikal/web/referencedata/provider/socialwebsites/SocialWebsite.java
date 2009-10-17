@@ -30,20 +30,32 @@
  */
 package org.vortikal.web.referencedata.provider.socialwebsites;
 
-public interface SocialWebsite {
+public abstract class SocialWebsite {
 
-    public void generateLink(String url, String title, String description, String name);
-
-
-    public String getLink();
+    private String link;
+    private String name;
 
 
-    public void setLink(String link);
+    public abstract void generateLink(String url, String title, String description, String name);
 
 
-    public String getName();
+    public String getLink() {
+        return link;
+    }
 
 
-    public void setName(String name);
+    public void setLink(String link) {
+        this.link = link;
+    }
+
+
+    public String getName() {
+        return name;
+    }
+
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
 }

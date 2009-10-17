@@ -30,35 +30,11 @@
  */
 package org.vortikal.web.referencedata.provider.socialwebsites;
 
-public class Twitter implements SocialWebsite {
+public class Twitter extends SocialWebsite {
 
-    private String link;
-    private String name;
-
-
+    @Override
     public void generateLink(String url, String title, String description, String name) {
-        this.link = "http://twitter.com/home?status=" + url;
-        this.name = name;
+        super.setLink("http://twitter.com/home?status=" + url);
+        super.setName(name);
     }
-
-
-    public String getLink() {
-        return link;
-    }
-
-
-    public String getName() {
-        return name;
-    }
-
-
-    public void setLink(String link) {
-        this.link = link;
-    }
-
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
 }

@@ -30,35 +30,12 @@
  */
 package org.vortikal.web.referencedata.provider.socialwebsites;
 
-public class LinkedIn implements SocialWebsite {
+public class LinkedIn extends SocialWebsite {
 
-    private String link;
-    private String name;
-
-
+    @Override
     public void generateLink(String url, String title, String description, String name) {
-        this.link = "http://www.linkedin.com/shareArticle?mini=true&amp;url=" + url + "&amp;title=" + title;
-        this.name = name;
-    }
-
-
-    public String getLink() {
-        return link;
-    }
-
-
-    public String getName() {
-        return name;
-    }
-
-
-    public void setLink(String link) {
-        this.link = link;
-    }
-
-
-    public void setName(String name) {
-        this.name = name;
+        super.setLink("http://www.linkedin.com/shareArticle?mini=true&amp;url=" + url + "&amp;title=" + title);
+        super.setName(name);
     }
 
 }

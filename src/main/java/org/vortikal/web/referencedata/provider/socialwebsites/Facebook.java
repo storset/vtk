@@ -34,6 +34,6 @@ public class Facebook extends SocialWebsite {
 
     @Override
     public void generateLink(String url, String title, String description) {
-        super.setLink("http://www.facebook.com/share.php?u=" + url + "&ampt=" + title);
+        super.setLink("http://www.facebook.com/share.php?u=" + url + "&amp;t=" + title);
     }
 }

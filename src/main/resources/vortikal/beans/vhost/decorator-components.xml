@@ -250,17 +250,17 @@
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
-        <ref bean="socialWebsiteProvider" parent="requestLocalRepositoryAware" /> 
+        <ref bean="socialWebsitesProvider" parent="requestLocalRepositoryAware" /> 
       </list>
     </property>
   </bean>
   
-  <bean id="socialWebsiteProvider" class="org.vortikal.web.referencedata.provider.SocialWebsitesProvider" parent="requestLocalRepositoryAware">
+  <bean id="socialWebsitesProvider" class="org.vortikal.web.referencedata.provider.socialwebsites.SocialWebsitesProvider" parent="requestLocalRepositoryAware">
      <property name="socialWebsites">
       <list>
-        <bean class="org.vortikal.web.referencedata.provider.Facebook" />
-        <bean class="org.vortikal.web.referencedata.provider.Nettby" />
-        <bean class="org.vortikal.web.referencedata.provider.Delicious" />
+        <bean class="org.vortikal.web.referencedata.provider.socialwebsites.Facebook" />
+        <bean class="org.vortikal.web.referencedata.provider.socialwebsites.Nettby" />
+        <bean class="org.vortikal.web.referencedata.provider.socialwebsites.Delicious" />
       </list>
     </property>
     <property name="htmlUtil" ref="htmlUtil" />

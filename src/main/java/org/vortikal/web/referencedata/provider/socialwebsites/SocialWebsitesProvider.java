@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.referencedata.provider;
+package org.vortikal.web.referencedata.provider.socialwebsites;
 
 import java.util.List;
 import java.util.ListIterator;
@@ -78,14 +78,14 @@ public class SocialWebsitesProvider implements ReferenceDataProvider {
             Property propIntroduction = resource.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, "introduction");
 
             if (propIntroduction != null) {
-                introduction = propIntroduction.getStringValue();
+                introduction = (propIntroduction.getStringValue() != "") ? introduction = htmlUtil
+                        .flatten(propIntroduction.getStringValue()): "";
                 if (introduction.length() > 250) {
                     introduction = introduction.substring(0, 250) + "...";
                 }
             }
 
-            sw.generateLink(request.getRequestURL().toString(), resource.getTitle(), htmlUtil.flatten(introduction),
-                    name);
+            sw.generateLink(request.getRequestURL().toString(), resource.getTitle(), introduction, name);
 
         }
 

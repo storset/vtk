@@ -31,16 +31,16 @@
 
 <ul>
     <#if tab1 != 0>
-      <li><a href="#tabs-${tab1}"><@vrtx.msg code="frida.publications.selected" default="Selected"/></a></li>
+      <li><a href="#tabs-${tab1}"><@vrtx.msg code="decorating.frida.publications.selected" default="Selected"/></a></li>
     </#if>
     <#if tab2 != 0>
-      <li><a href="#tabs-${tab2}"><@vrtx.msg code="frida.publications.books" default="Books"/></a></li>
+      <li><a href="#tabs-${tab2}"><@vrtx.msg code="decorating.frida.publications.books" default="Books"/></a></li>
     </#if>
     <#if tab3 != 0>
-      <li><a href="#tabs-${tab3}"><@vrtx.msg code="frida.publications.sciartbookchapters" default="Scientific articles and bookchapters"/></a></li>
+      <li><a href="#tabs-${tab3}"><@vrtx.msg code="decorating.frida.publications.sciartbookchapters" default="Scientific articles and bookchapters"/></a></li>
     </#if>
     <#if tab4 != 0>
-      <li><a href="#tabs-${tab4}"><@vrtx.msg code="frida.publications.other" default="Other works"/></a></li>
+      <li><a href="#tabs-${tab4}"><@vrtx.msg code="decorating.frida.publications.other" default="Other works"/></a></li>
     </#if>
 </ul> 
 
@@ -98,7 +98,8 @@
                   <#if publication.numberOfPages != "">&nbsp;${publication.numberOfPages}&nbsp;s.</#if>
              <#elseif publication.mainCategoryCode == "BOKRAPPORTDEL">
             <#t /><#if publication.titlePartOf != "">&#44;&nbsp;<#if publication.sprak == "EN">In<#else>I:</#if>&nbsp;
-                  <#t /><#if publication.researchersPartOf != "">${publication.researchersPartOf}&nbsp;<#if publication.sprak == "EN">(ed.)<#else>(red.)</#if>,&nbsp;</#if>
+                  <#t /><#if publication.researchersPartOf != "">${publication.researchersPartOf}&nbsp;
+                  <#t /><#if publication.sprak == "EN">(ed.)<#else>(red.)</#if>,&nbsp;</#if>
                     <em>${publication.titlePartOf}</em>.&nbsp;
                   <#else>
                   .&nbsp;
@@ -144,7 +145,7 @@
         </#list>
       </ul>
       <#if publicationsUrl?exists && totalNumberOfPublications?exists>
-        <p><a href="${publicationsUrl}"><@vrtx.msg code="frida.publications.url" default="View all publications" args=[totalNumberOfPublications] /></a></p>
+        <p><a href="${publicationsUrl}"><@vrtx.msg code="decorating.frida.publications.url" default="View all publications" args=[totalNumberOfPublications] /></a></p>
       </#if>
     </div>
   </#if> 

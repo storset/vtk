@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.referencedata.provider.socialwebsites;
 
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -78,14 +79,16 @@ public class SocialWebsitesProvider implements ReferenceDataProvider {
             Property propIntroduction = resource.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, "introduction");
 
             if (propIntroduction != null) {
-                introduction = (propIntroduction.getStringValue() != "") ? introduction = htmlUtil
-                        .flatten(propIntroduction.getStringValue()): "";
+                introduction = (propIntroduction.getStringValue() != "") ? URLEncoder.encode(htmlUtil
+                        .flatten(propIntroduction.getStringValue()), "utf-8"): "";
                 if (introduction.length() > 250) {
                     introduction = introduction.substring(0, 250) + "...";
                 }
             }
 
-            sw.generateLink(request.getRequestURL().toString(), resource.getTitle(), introduction);
+            String title = URLEncoder.encode(resource.getTitle(), "utf-8");
+
+            sw.generateLink(request.getRequestURL().toString(), title, introduction);
             sw.setName(name);
 
         }

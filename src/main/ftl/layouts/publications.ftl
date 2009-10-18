@@ -58,10 +58,8 @@
   <#if tabNumber != 0>
     <div id="tabs-${tabNumber}">
       <ul class="vrtx-frida-publications">
-        <#assign publicationNr = 0 />
         <#list publications as publication>
-          <#assign publicationNr = publicationNr +1 />
-          <li id="vrtx-frida-publication-${publicationNr}" class="vrtx-frida-publication">
+          <li id="vrtx-frida-publication-${publication.id}" class="vrtx-frida-publication">
           
             <#assign date = "" />
             <#if publication.mainCategoryCode == "MEDIEBIDRAG" && publication.dato != "">

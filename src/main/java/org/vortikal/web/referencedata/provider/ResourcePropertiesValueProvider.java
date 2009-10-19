@@ -352,7 +352,7 @@ public class ResourcePropertiesValueProvider
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer(this.getClass().getName());
+        StringBuilder sb = new StringBuilder(this.getClass().getName());
         sb.append(" [ ");
         sb.append("modelNames = ").append(this.modelNames);
         sb.append(" ]");

@@ -52,6 +52,9 @@ import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 
+/**
+ * TODO This class is UiO-specific and should be moved to Vortex.
+ */
 public class FridaPublicationsProvider implements ReferenceDataProvider {
 
     private Repository repository = null;

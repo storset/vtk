@@ -10,15 +10,14 @@
   -->
 <#import "/lib/vortikal.ftl" as vrtx />
 
-<div id="vrtx-share-component-wrapper">
-  <a href="#share" id="share-link" class="vrtx-share-link" onclick="share();" name="share">
+<div id="vrtx-share-component">
+  <a href="#share" id="vrtx-share-link" class="vrtx-share-link" onclick="share();" name="share">
   <@vrtx.msg code="decorating.shareAtComponent.title" default="Share at" />...</a>
-  <div id="vrtx-share-component">
-    <div id="send-share">
-      <div class="send-inner">
-        <div class="share-top">
-          <h3><@vrtx.msg code="decorating.shareAtComponent.title" default="Share at" />...</h3>
-          <span><a href="#share" class="close-toolbox-send-share" onclick="share();">
+    <div id="vrtx-send-share">
+      <div class="vrtx-send-inner">
+        <div class="vrtx-share-top">
+          <div class="vrtx-share-title"><@vrtx.msg code="decorating.shareAtComponent.title" default="Share at" />...</div>
+          <span><a href="#share" class="vrtx-close-toolbox-send-share" onclick="share();">
           <@vrtx.msg code="decorating.shareAtComponent.close" default="Close" /></a></span>
         </div>
         <ul>
@@ -29,5 +28,4 @@
         </ul>
      </div>
     </div>
-  </div>
 </div>

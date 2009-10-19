@@ -42,14 +42,7 @@
   padding:0 5px 0 0;
 }
 
-#vrtx-share-component-wrapper {
+#vrtx-share-component {
   position: relative;
   display: inline;
-}
-
-#vrtx-share-component {
-  position: absolute;
-  bottom:-2em;
-  right:0;
-  text-align: left;
 }

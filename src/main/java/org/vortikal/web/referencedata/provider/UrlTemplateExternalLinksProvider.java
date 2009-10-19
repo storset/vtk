@@ -33,7 +33,7 @@ package org.vortikal.web.referencedata.provider;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -249,7 +249,7 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
     
     @Required
     public void setUrlTemplates(Map<String, String> urlTemplates) {
-        this.urlTemplates = new HashMap<String, UrlTemplate>(urlTemplates.size());
+        this.urlTemplates = new LinkedHashMap<String, UrlTemplate>(urlTemplates.size());
         for (String name: urlTemplates.keySet()) {
             String templateValue = urlTemplates.get(name);
             if (templateValue != null) {

@@ -1,7 +1,7 @@
 function share() {
-  if ($("#send-share div").is(":hidden")) {
-    $("#send-share div").slideDown("fast");
+  if ($("#vrtx-send-share div").is(":hidden")) {
+    $("#vrtx-send-share div").slideDown("fast");
   } else {
-    $("#send-share div").hide();
+    $("#vrtx-send-share div").hide();
   }
 }

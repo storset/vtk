@@ -28,34 +28,27 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.referencedata.provider.socialwebsites;
+package org.vortikal.web.referencedata.provider;
 
-public abstract class SocialWebsite {
+public class ExternalLink {
 
-    private String link;
+    private String url;
     private String name;
-
-
-    public abstract void generateLink(String url, String title, String description);
-
-
-    public String getLink() {
-        return link;
+    
+    public String getUrl() {
+        return this.url;
     }
-
-
-    public void setLink(String link) {
-        this.link = link;
-    }
-
-
+    
     public String getName() {
-        return name;
+        return this.name;
     }
 
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
     public void setName(String name) {
         this.name = name;
     }
-
+    
 }

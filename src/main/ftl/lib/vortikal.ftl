@@ -36,7 +36,7 @@
     VRTX_MESSAGE_SOURCE is a springframework.*.ResourceBundleMessageSource. It requires
     resourcebundles to be suffixed with the locale used to fetch messages. Therefore, 
     our current solution won't work for nynorsk because we add the contentlocale "*_NY" 
-    to these resources and we have no resourcebundle with the postfix "_ny". Hence we 
+    to these resources and we have no resourcebundle with the suffix "_ny". Hence we 
     hack a fix like so:
 
     XXX: the mapping  ny:nn should be done in Java code

@@ -249,22 +249,27 @@
     
     <property name="referenceDataProviders">
       <list>
-        <ref bean="resourceContextProvider" />
-        <ref bean="socialWebsitesProvider" parent="requestLocalRepositoryAware" /> 
+<!--        <ref bean="resourceContextProvider" />-->
+        <ref bean="socialWebsitesProvider" /> 
       </list>
     </property>
   </bean>
   
-  <bean id="socialWebsitesProvider" class="org.vortikal.web.referencedata.provider.socialwebsites.SocialWebsitesProvider" parent="requestLocalRepositoryAware">
-     <property name="socialWebsites">
-      <list>
-        <bean class="org.vortikal.web.referencedata.provider.socialwebsites.Facebook" />
-        <bean class="org.vortikal.web.referencedata.provider.socialwebsites.Twitter" />
-        <bean class="org.vortikal.web.referencedata.provider.socialwebsites.Nettby" />
-        <bean class="org.vortikal.web.referencedata.provider.socialwebsites.Delicious" />
-      </list>
-    </property>
-    <property name="htmlUtil" ref="htmlUtil" />
+  <bean id="socialWebsitesProvider" class="org.vortikal.web.referencedata.provider.UrlTemplateExternalLinksProvider"
+    parent="requestLocalRepositoryAware">
+    <property name="modelKey" value="socialWebsites" />
+     <property name="urlTemplates">
+        <map>
+            <entry key="Facebook" value="http://www.facebook.com/share.php?u=%{url}&amp;t=%{title}" />
+            <entry key="Twitter" value="http://twitter.com/home?status=%{url}" />
+            <entry key="Nettby" value="http://www.nettby.no/user/edit_link.php?name=%{title}&amp;url=%{url}&amp;description=%{resource:introduction}" />
+            <entry key="Delicious" value="http://del.icio.us/post?url=%{url}&amp;title=%{title}" />
+            <!-- 
+            <entry key="Digg" value="http://digg.com/submit?url=%{url}&amp;title=%{title}&amp;bodytext=%{resource:introduction}" />            
+            <entry key="LinkedIn" value="http://www.linkedin.com/shareArticle?mini=true&amp;url=%{url}&amp;title=%{title}" />
+            -->
+        </map>
+      </property>
   </bean>
   
   <bean id="decorating.resourcePropertyComponent" parent="requestLocalRepositoryAware"

@@ -23,7 +23,7 @@
         </div>
         <ul>
         <#list socialWebsites as socialWebsite>
-          <li><a href="${socialWebsite.link}" target="_blank" class="${socialWebsite.name?lower_case}">
+          <li><a href="${socialWebsite.url}" target="_blank" class="${socialWebsite.name?lower_case}">
           <@vrtx.msg code="decorating.shareAtComponent.${socialWebsite.name?lower_case}" default="${socialWebsite.name}" /></a></li>
         </#list>
         </ul>

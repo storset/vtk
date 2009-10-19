@@ -1,8 +1,9 @@
-FCKConfig.AutoDetectLanguage = false;
+FCKConfig.AutoDetectLanguage = true;
 FCKConfig.ForcePasteAsPlainText = true;
 FCKConfig.AutoDetectPasteFromWord = false;
 FCKConfig.ToolbarCanCollapse = false;
 FCKConfig.FirefoxSpellChecker = true;
+FCKConfig.BrowserContextMenuOnCtrl = true;
 
 FCKConfig.ToolbarSets['Complete'] = [
             ['Source','PasteText','-','Undo','Redo','-','Replace','RemoveFormat','-','Link','Unlink','Anchor','Image','MoviePlayer','Table','Rule','SpecialChar'],
@@ -13,9 +14,6 @@ FCKConfig.ToolbarSets['Complete-article'] = [
             ['Source','PasteText','-','Undo','Redo','-','Replace','RemoveFormat','-','Link','Unlink','Anchor','Image','CreateDiv','MoviePlayer','Table','Rule','SpecialChar'],
             ['FontFormat','-','Bold','Italic','Underline','StrikeThrough','Subscript','Superscript','OrderedList','UnorderedList','Outdent','Indent','JustifyLeft','JustifyCenter','JustifyRight','TextColor','FitWindow']
 ] ;
-
-
-
 
 FCKConfig.ToolbarSets['Inline'] = [
             ['Source','PasteText','Link','Unlink', 'Bold','Italic','Underline','StrikeThrough','Subscript','Superscript']

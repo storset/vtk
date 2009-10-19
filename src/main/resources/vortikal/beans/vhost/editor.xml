@@ -49,22 +49,22 @@
     <property name="handler" ref="editor.collectionEditHandler" />
   </bean>
   
-  <bean id="editor.personListingEditService" parent="editor.collectionEditService">
+  <bean id="editor.personListingEditService" parent="editor.abstractEditService">
     <property name="assertions">
       <list>
         <ref bean="resourceIsPersonListing" />
       </list>
     </property>
-    <property name="handler" ref="editor.collectionEditHandler" />
+    <property name="handler" ref="editor.personEditHandler" />
   </bean>
   
-  <bean id="editor.projectListingEditService" parent="editor.collectionEditService">
+  <bean id="editor.projectListingEditService" parent="editor.abstractEditService">
     <property name="assertions">
       <list>
         <ref bean="resourceIsProjectListing" />
       </list>
     </property>
-    <property name="handler" ref="editor.collectionEditHandler" />
+    <property name="handler" ref="editor.projectEditHandler" />
   </bean>
 
   <bean id="editor.articleListingEditService" parent="editor.abstractEditService">
@@ -280,6 +280,21 @@
     <property name="successView" value="redirectToManage" />
   </bean>
 
+  <bean id="editor.personEditHandler"
+        class="org.vortikal.edit.editor.ResourceEditController">
+    <property name="resourceManager" ref="editor.personResourceManager" />
+    <property name="formView" value="editor.editView" />
+    <property name="successView" value="redirectToManage" />
+  </bean>
+  
+  <bean id="editor.projectEditHandler"
+        class="org.vortikal.edit.editor.ResourceEditController">
+    <property name="resourceManager" ref="editor.projectResourceManager" />
+    <property name="formView" value="editor.editView" />
+    <property name="successView" value="redirectToManage" />
+  </bean>
+  
+
   <bean id="editor.articleListingEditHandler"
         class="org.vortikal.edit.editor.ResourceEditController">
     <property name="resourceManager" ref="editor.articleListingResourceManager" />
@@ -347,9 +362,63 @@
             <ref bean="hiddenPropDef" />
             
             <ref bean="collection.pageLimitPropDef" />
-            <ref bean="collection.sortingPropDef" />
+           <ref bean="collection.sortingPropDef" />
             <ref bean="collection.hideLastModifiedPropDef" />
             <ref bean="collection.hideIntroductionPropDef" />
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="editor.personResourceManager"
+        class="org.vortikal.edit.editor.ResourceWrapperManager"
+        parent="requestLocalRepositoryAware">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
+    <property name="contentResourceType" ref="documentResourceTypeDefinition" />
+    <property name="editPropertyProvider">
+      <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
+        <property name="preContentProperties">
+          <list>
+            <ref bean="userTitlePropDef" /> 
+            <ref bean="introductionPropDef" />
+            <ref bean="introductionImagePropDef" />
+            <ref bean="introductionImageCaptionPropDef" />
+            <!-- Navigation -->
+            <ref bean="navigationTitlePropDef" />
+            <ref bean="importancePropDef" />
+            <ref bean="hiddenPropDef" />
+            
+            <ref bean="collection.pageLimitPropDef" />
+           <!--  <ref bean="collection.sortingPropDef" /> -->
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="editor.projectResourceManager"
+        class="org.vortikal.edit.editor.ResourceWrapperManager"
+        parent="requestLocalRepositoryAware">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
+    <property name="contentResourceType" ref="documentResourceTypeDefinition" />
+    <property name="editPropertyProvider">
+      <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
+        <property name="preContentProperties">
+          <list>
+            <ref bean="userTitlePropDef" /> 
+            <ref bean="introductionPropDef" />
+            <ref bean="introductionImagePropDef" />
+            <ref bean="introductionImageCaptionPropDef" />
+            <!-- Navigation -->
+            <ref bean="navigationTitlePropDef" />
+            <ref bean="importancePropDef" />
+            <ref bean="hiddenPropDef" />
+            
+            <ref bean="collection.pageLimitPropDef" />
+           <!--  <ref bean="collection.sortingPropDef" /> -->
           </list>
         </property>
       </bean>

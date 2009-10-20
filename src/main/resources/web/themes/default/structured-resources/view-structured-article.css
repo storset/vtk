@@ -121,3 +121,22 @@ a.vrtx-media {
 	margin-bottom: 1em;
 	display: block;
 }
+
+.vrtx-social-components {
+  clear: left;
+  float: left;
+  width: 100%;
+  padding: 10px 0;
+  font-size: 0.9em;
+  text-align: left;
+}
+
+.vrtx-social-components a.vrtx-email-friend {
+  float:left;
+  padding:0 5px 0 0;
+}
+
+#vrtx-share-component {
+  position: relative;
+  display: inline;
+}

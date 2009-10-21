@@ -67,7 +67,7 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
     private static final String URL_ENCODING_CHARSET = "utf-8";
 
     private int fieldValueSizeLimit = 250;
-    private String fieldValueTruncationIndiciator = "...";
+    private String fieldValueTruncationIndicator = "...";
     private Map<String, UrlTemplate> urlTemplates;
     private Repository repository;
     private String modelKey = "externalLinks";
@@ -159,6 +159,7 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
         return new UrlEncodingWrapper(node);
     }
     
+    @SuppressWarnings("unused")
     private class RenderContext {
         Resource resource;
         Principal principal;
@@ -240,7 +241,7 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
             String retVal = this.wrappedNode.render(ctx);
             if (retVal.length() > UrlTemplateExternalLinksProvider.this.fieldValueSizeLimit) {
                 retVal = retVal.substring(0, UrlTemplateExternalLinksProvider.this.fieldValueSizeLimit);
-                retVal = retVal + UrlTemplateExternalLinksProvider.this.fieldValueTruncationIndiciator;
+                retVal = retVal + UrlTemplateExternalLinksProvider.this.fieldValueTruncationIndicator;
             }
             return retVal;
         }
@@ -271,8 +272,8 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
         this.fieldValueSizeLimit = fieldValueSizeLimit;
     }
 
-    public void setFieldValueTruncationIndiciator(String fieldValueTruncationIndiciator) {
-        this.fieldValueTruncationIndiciator = fieldValueTruncationIndiciator;
+    public void setFieldValueTruncationIndicator(String fieldValueTruncationIndicator) {
+        this.fieldValueTruncationIndicator = fieldValueTruncationIndicator;
     }
 
 }

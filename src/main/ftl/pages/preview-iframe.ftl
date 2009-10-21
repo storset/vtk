@@ -16,6 +16,8 @@
   -
   -->
 
+<#import "/lib/vortikal.ftl" as vrtx />
+
 <#if !resourceReference?exists>
   <#stop "Unable to render model: required submodel
   'resourceReference' missing">
@@ -51,13 +53,19 @@
     </#if>
 
     <#assign constructor = "freemarker.template.utility.ObjectConstructor"?new() />
-    <#assign dateStr = constructor("java.util.Date")?string("yyyymmddhhmmss") />    
+    <#assign dateStr = constructor("java.util.Date")?string("yyyymmddhhmmss") />
 
     <#assign url = resourceReference />
     <#if url?contains("?")>
       <#assign url = url + "&amp;" + previewRefreshParameter + "=" + dateStr />
     <#else>
-        <#assign url = url + "?" + previewRefreshParameter + "=" + dateStr />
+      <#assign url = url + "?" + previewRefreshParameter + "=" + dateStr />
+    </#if>
+    
+    <#if previewUnpublished?exists && previewUnpublished>
+      <div class="vrtx-preview-unpublished-message">
+        <@vrtx.msg code="publish.unpublished.view.msg" default="Unpublished resource" />
+      </div>
     </#if>
 
     <iframe class="preview" name="previewIframe" id="previewIframe" src="${url}" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0" vspace="0" hspace="0" style="overflow:visible; width:100%; ">

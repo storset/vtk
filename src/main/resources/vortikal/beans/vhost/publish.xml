@@ -103,5 +103,31 @@
   <bean id="displayUnpublishedPage.view" parent="freemarkerView">
     <property name="url" value="pages/unpublished-view.ftl" />
   </bean>
+  
+  <!-- ### view of unpublished resources ### -->
+  <bean id="viewUnpublishedResourceService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="structuredResources.displayService" />
+    <property name="order" value="-1" />
+    <property name="assertions">
+      <list>
+        <ref bean="viewUnpublishedResourceAssertion" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="viewUnpublishedAssertion" class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="view" />
+    <property name="parameterValue" value="unpublished" />
+  </bean>
+
+  <bean id="viewUnpublishedResourceAssertion" class="org.vortikal.web.service.AndAssertion">
+    <property name="assertions">
+      <list>
+        <ref bean="viewUnpublishedAssertion" />
+        <ref bean="requiresWritePermissionAssertion" />        
+        <ref bean="resourceIsNotPublishedAssertion" />
+      </list>
+    </property>
+  </bean>
 
 </beans>

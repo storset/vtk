@@ -53,6 +53,7 @@
     <property name="repositoryResourceHelper" ref="repositoryResourceHelper" />
     <property name="tempDir" value="${repository.tempDir}" />
     <property name="maxResourceChildren" value="${repository.maxResourceChildren}" />
+    <property name="searcher" ref="systemIndexSearcher" />
   </bean>
   
   <!--  Repository cache purge control wrapper hack -->

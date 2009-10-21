@@ -12,7 +12,7 @@ resourcetype structured-article : structured-document {
     caption (size[small]),
     group introImageAndCaption (picture, caption) (after introduction) vertical,
     group relatedContent (related-content, hideAdditionalContent) (after tags),
-    authors (after introImageAndCaption),
+    author (after introImageAndCaption),
     title (size[large]),
     tags tooltip (en : "(tag1, tag2, ...)", no : "(emneord1, emneord2, ...)", nn : "(emneord1, emneord2, ...)"),
     author tooltip (en : "(author1, author2, ...)", no : "(forfatter1, forfatter2, ...)", nn : "(forfatter1, forfatter2, ...)")

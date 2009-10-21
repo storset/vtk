@@ -32,8 +32,6 @@ package org.vortikal.web.search;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.search.QueryParser;
@@ -46,9 +44,6 @@ public class QueryStringSearchComponent extends QuerySearchComponent {
     private String query;
     private QueryParser queryParser;
 
-    protected final Log logger = LogFactory.getLog(this.getClass());
-
-
     protected Query getQuery(Resource collection, HttpServletRequest request, boolean recursive) {
         Query query = this.queryParser.parse(this.query);
         if (!recursive) {
@@ -60,12 +55,10 @@ public class QueryStringSearchComponent extends QuerySearchComponent {
         return query;
     }
 
-
     @Required
     public void setQuery(String query) {
         this.query = query;
     }
-
 
     @Required
     public void setQueryParser(QueryParser queryParser) {

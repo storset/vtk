@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
 <beans>
 
   <bean id="tags.viewService" class="org.vortikal.web.service.ServiceImpl">
@@ -24,11 +23,11 @@
     </property>
     <property name="serviceNameProvider" ref="tags.viewService.serviceNameProvider" />
   </bean>
-  
-  <bean id="tags.viewService.serviceNameProvider" class="org.vortikal.web.service.provider.TagsViewServiceNameProvider" >
+
+  <bean id="tags.viewService.serviceNameProvider" class="org.vortikal.web.service.provider.TagsViewServiceNameProvider">
     <property name="repositoryId" value="${repositoryID}" />
   </bean>
-  
+
   <bean id="tags.atomService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="tags.viewService" />
     <property name="assertions">
@@ -39,16 +38,13 @@
     <property name="handler" ref="tags.atomHandler" />
     <property name="serviceNameProvider" ref="tags.viewService.serviceNameProvider" />
   </bean>
-    
-  <bean id="feedViewParameterAssertion" 
-    class="org.vortikal.web.service.RequestParameterAssertion">
+
+  <bean id="feedViewParameterAssertion" class="org.vortikal.web.service.RequestParameterAssertion">
     <property name="parameterName" value="view" />
     <property name="parameterValue" value="feed" />
   </bean>
-  
-  <bean id="tags.handler" 
-        class="org.vortikal.web.display.tags.TagsController"
-        parent="requestLocalRepositoryAware">
+
+  <bean id="tags.handler" class="org.vortikal.web.display.tags.TagsController" parent="requestLocalRepositoryAware">
     <property name="viewName" value="tags.tags" />
     <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
     <property name="searchComponent" ref="tags.searchComponent" />
@@ -66,29 +62,22 @@
     <property name="servesRoot" value="${servesWebRoot}" />
   </bean>
 
-  <bean id="tags.atomHandler" 
-    class="org.vortikal.web.display.tags.TagsAsFeedController"
-    parent="requestLocalRepositoryAware">
+  <bean id="tags.atomHandler" class="org.vortikal.web.display.tags.TagsAsFeedController" parent="requestLocalRepositoryAware">
     <property name="viewService" ref="viewService" />
     <property name="abdera" ref="abdera" />
     <property name="searchComponent" ref="tags.searchComponent" />
-    
     <!--
-    We use creationTimePropDef as publishedDatePropDef because the
-    controller fetches resources independent of type.
-    creationTimePropDef is used because it's common to all resources.
+      We use creationTimePropDef as publishedDatePropDef because the controller fetches resources independent
+      of type. creationTimePropDef is used because it's common to all resources.
     -->
     <property name="publishedDatePropDef" ref="creationTimePropDef" />
-    
     <property name="authorPropDef" ref="createdByPropDef" />
   </bean>
 
-
-  <bean id="tags.searchComponent"
-        class="org.vortikal.web.search.QueryPartsSearchComponent">
+  <bean id="tags.searchComponent" class="org.vortikal.web.search.QueryPartsSearchComponent"
+    parent="requestLocalRepositoryAware">
     <property name="name" value="tags.searchComponent" />
     <property name="viewService" ref="webService" />
-    <property name="searcher" ref="systemIndexSearcher" />
     <property name="resourceManager" ref="resourceManager" />
     <property name="defaultRecursive" value="true" />
     <property name="defaultSortPropDef" ref="lastModifiedPropDef" />
@@ -124,33 +113,27 @@
           <property name="propertyTypeDefinition" ref="tagsPropDef" />
         </bean>
         <bean class="org.vortikal.web.search.ParsedQueryBuilder">
-          <property name="queryString" 
-                    value="(type IN article AND published-date &lt;= {$currentTime}) OR type NOT IN article" />
+          <property name="queryString"
+            value="(type IN article AND published-date &lt;= {$currentTime}) OR type NOT IN article" />
           <property name="queryParser" ref="searchParser" />
         </bean>
       </list>
     </property>
   </bean>
 
-
   <bean id="tags.viewResolver" parent="decoratorViewResolver">
     <property name="views">
       <map>
-        <entry key="tags.tags"  value-ref="tags.tagsview" />
+        <entry key="tags.tags" value-ref="tags.tagsview" />
       </map>
     </property>
   </bean>
 
-
   <bean id="tags.tagsview" parent="freemarkerView">
-  <!-- 
-    <property name="url" value="pages/view-tags-collectionlisting.ftl" />
-     -->
     <property name="url" value="pages/tags.ftl" />
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
-        <!--ref bean="collectionListingFeedURLProvider" /-->
       </list>
     </property>
     <property name="attributesMap">

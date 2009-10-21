@@ -30,7 +30,6 @@
     </property>
     <property name="handler" ref="eventListing.atomHandler" />
   </bean>
-  
 
   <bean id="eventListing.handler" 
         class="org.vortikal.web.display.collection.EventListingController"
@@ -76,16 +75,14 @@
     <property name="publishedDatePropDef" ref="startDatePropDef" />
   </bean>
 
-  <bean id="eventListing.upcomingEventsSearchComponent" 
-        class="org.vortikal.web.search.QueryStringSearchComponent">
+  <bean id="eventListing.upcomingEventsSearchComponent" class="org.vortikal.web.search.QueryStringSearchComponent"
+    parent="requestLocalRepositoryAware">
     <property name="name" value="eventListing.upcomingEventsSearchComponent" />
     <property name="titleLocalizationKey" value="eventListing.upcomingEvents" />
     <property name="viewService" ref="webService" />
-    <property name="searcher" ref="systemIndexSearcher" />
     <property name="resourceManager" ref="resourceManager" />
     <property name="defaultRecursive" value="true" />
     <property name="recursivePropDef" ref="eventListing.recursiveListingPropDef" />
-
     <property name="query">
       <value>
         ((uri = {$currentFolder}/* AND type IN event) AND (start-date &gt; {$currentDate} OR end-date &gt; {$currentDate}))
@@ -93,24 +90,19 @@
       </value>
     </property>
     <property name="queryParser" ref="searchParser" />
-
     <property name="defaultSortPropDef" ref="startDatePropDef" />
     <property name="defaultSortOrder" ref="SORT_ORDER.ASC" />
     <property name="listableProperties" ref="eventListing.listableProperties" />
-
   </bean>
 
-
-  <bean id="eventListing.previousEventsSearchComponent" 
-        class="org.vortikal.web.search.QueryStringSearchComponent">
+  <bean id="eventListing.previousEventsSearchComponent" class="org.vortikal.web.search.QueryStringSearchComponent"
+    parent="requestLocalRepositoryAware">
     <property name="name" value="eventListing.previousEventsSearchComponent" />
     <property name="titleLocalizationKey" value="eventListing.previousEvents" />
     <property name="viewService" ref="webService" />
-    <property name="searcher" ref="systemIndexSearcher" />
     <property name="resourceManager" ref="resourceManager" />
     <property name="defaultRecursive" value="true" />
     <property name="recursivePropDef" ref="eventListing.recursiveListingPropDef" />
-
     <property name="query">
       <value>
         ((uri = {$currentFolder}/* AND type IN event) AND (end-date &lt; {$currentDate} OR (end-date not exists AND start-date &lt; {$currentDate})))
@@ -118,12 +110,10 @@
       </value>
     </property>
     <property name="queryParser" ref="searchParser" />
-
     <property name="defaultSortPropDef" ref="startDatePropDef" />
     <property name="defaultSortOrder" ref="SORT_ORDER.DESC" />
     <property name="listableProperties" ref="eventListing.listableProperties" />
   </bean>
-
 
   <bean id="eventListing.listableProperties" class="java.util.ArrayList">
     <constructor-arg>
@@ -150,8 +140,6 @@
       </list>
     </constructor-arg>
   </bean>
-
-
 
   <bean id="eventListing.viewResolver" parent="decoratorViewResolver">
     <property name="views">
@@ -183,6 +171,5 @@
       </map>
     </property>
   </bean>
-
 
 </beans>

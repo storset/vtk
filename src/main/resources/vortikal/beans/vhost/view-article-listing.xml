@@ -84,10 +84,10 @@
     <property name="featuredArticlesPropDef" ref="articleListing.featuredArticlesPropDef" />
   </bean>
 
-  <bean id="articleListing.searchComponent" class="org.vortikal.web.search.QueryStringSearchComponent">
+  <bean id="articleListing.searchComponent" class="org.vortikal.web.search.QueryStringSearchComponent"
+    parent="requestLocalRepositoryAware">
     <property name="name" value="articleListing.defaultArticles" />
     <property name="viewService" ref="webService" />
-    <property name="searcher" ref="systemIndexSearcher" />
     <property name="resourceManager" ref="resourceManager" />
     <property name="defaultRecursive" value="true" />
     <property name="recursivePropDef" ref="articleListing.recursiveListingPropDef" />

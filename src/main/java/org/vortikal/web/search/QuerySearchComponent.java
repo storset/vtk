@@ -41,13 +41,13 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.edit.editor.ResourceWrapperManager;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceWrapper;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.PropertySortField;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
-import org.vortikal.repository.search.Searcher;
 import org.vortikal.repository.search.SortField;
 import org.vortikal.repository.search.SortFieldDirection;
 import org.vortikal.repository.search.SortingImpl;
@@ -58,26 +58,19 @@ import org.vortikal.web.service.URL;
 
 public abstract class QuerySearchComponent implements SearchComponent {
 
-    protected String name;
-    protected String titleLocalizationKey;
-
-    protected boolean defaultRecursive = false;
-
-    protected Searcher searcher;
-    protected ResourceWrapperManager resourceManager;
-    protected Service viewService;
-
-    protected PropertyTypeDefinition defaultSortPropDef;
-    protected Map<String, PropertyTypeDefinition> sortPropertyMapping;
-
-    protected SortFieldDirection defaultSortOrder;
-    protected Map<String, SortFieldDirection> sortOrderMapping;
-
-    protected PropertyTypeDefinition recursivePropDef;
-    protected PropertyTypeDefinition sortPropDef;
-
-    protected List<PropertyDisplayConfig> listableProperties;
-
+    private String name;
+    private String titleLocalizationKey;
+    private boolean defaultRecursive = false;
+    private ResourceWrapperManager resourceManager;
+    private Service viewService;
+    private PropertyTypeDefinition defaultSortPropDef;
+    private Map<String, PropertyTypeDefinition> sortPropertyMapping;
+    private SortFieldDirection defaultSortOrder;
+    private Map<String, SortFieldDirection> sortOrderMapping;
+    private PropertyTypeDefinition recursivePropDef;
+    private PropertyTypeDefinition sortPropDef;
+    private List<PropertyDisplayConfig> listableProperties;    
+    private Repository repository;
 
     protected abstract Query getQuery(Resource collection, HttpServletRequest request,
             boolean recursive);
@@ -123,7 +116,7 @@ public abstract class QuerySearchComponent implements SearchComponent {
         sortFields.add(new PropertySortField(sortProp, sortFieldDirection));
         search.setSorting(new SortingImpl(sortFields));
 
-        ResultSet result = this.searcher.execute(token, search);
+        ResultSet result = this.repository.search(token, search);
 
         boolean more = result.getSize() == pageLimit + 1;
         int num = result.getSize();
@@ -178,12 +171,6 @@ public abstract class QuerySearchComponent implements SearchComponent {
 
     public String getName() {
         return this.name;
-    }
-
-
-    @Required
-    public void setSearcher(Searcher searcher) {
-        this.searcher = searcher;
     }
 
 
@@ -249,6 +236,12 @@ public abstract class QuerySearchComponent implements SearchComponent {
 
     public void setDefaultRecursive(boolean defaultRecursive) {
         this.defaultRecursive = defaultRecursive;
+    }
+
+
+    @Required
+    public void setRepository(Repository repository) {
+        this.repository = repository;
     }
 
 }

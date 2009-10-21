@@ -79,10 +79,10 @@
     <property name="authorPropDef" ref="createdByPropDef" />
   </bean>
   
-  <bean id="collectionListing.searchComponent" class="org.vortikal.web.search.QueryStringSearchComponent">
+  <bean id="collectionListing.searchComponent" class="org.vortikal.web.search.QueryStringSearchComponent"
+    parent="requestLocalRepositoryAware">
     <property name="name" value="collectionListing.searchComponent" />
     <property name="viewService" ref="webService" />
-    <property name="searcher" ref="systemIndexSearcher" />
     <property name="resourceManager" ref="resourceManager" />
     <property name="defaultRecursive" value="false" />
     <property name="recursivePropDef" ref="collection.recursiveListingPropDef" />

@@ -34,8 +34,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.search.query.AndQuery;
@@ -45,9 +43,6 @@ import org.vortikal.repository.search.query.UriDepthQuery;
 public class QueryPartsSearchComponent extends QuerySearchComponent {
 
     private List<QueryBuilder> queryBuilders;
-
-    protected final Log logger = LogFactory.getLog(this.getClass());
-
 
     protected Query getQuery(Resource collection, HttpServletRequest request, boolean recursive) {
         AndQuery query = new AndQuery();
@@ -64,7 +59,6 @@ public class QueryPartsSearchComponent extends QuerySearchComponent {
         }
         return query;
     }
-
 
     @Required
     public void setQueryBuilders(List<QueryBuilder> queryBuilders) {

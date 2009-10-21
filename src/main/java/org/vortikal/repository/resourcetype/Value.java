@@ -32,8 +32,6 @@ package org.vortikal.repository.resourcetype;
 
 import java.util.Date;
 
-import net.sf.json.JSONSerializer;
-
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.security.Principal;
 
@@ -152,16 +150,14 @@ public class Value implements Cloneable, Comparable<Value> {
         case STRING:
         case HTML:
         case IMAGE_REF:
-            return this.stringValue;
-            
         case JSON:
-            return JSONSerializer.toJSON(this.stringValue);
+            return this.stringValue;
             
         case PRINCIPAL:
             return this.principalValue;
         }
 
-        throw new IllegalStateException("Unable to return value: Illeal type: " + this.type);
+        throw new IllegalStateException("Unable to create object value: Illegal type: " + this.type);
     }
 
     public boolean equals(Object obj) {
@@ -259,36 +255,32 @@ public class Value implements Cloneable, Comparable<Value> {
     }
 
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-
         switch (this.type) {
         case STRING:
         case HTML:
         case IMAGE_REF:
         case JSON:
-            sb.append(this.stringValue);
-            break;
+            return this.stringValue;
+
         case INT:
-            sb.append(this.intValue);
-            break;
+            return String.valueOf(this.intValue);
+
         case LONG:
-            sb.append(this.longValue);
-            break;
+            return String.valueOf(this.longValue);
+
         case DATE:
         case TIMESTAMP:
-            sb.append(this.dateValue);
-            break;
+            return String.valueOf(this.dateValue);
+
         case BOOLEAN:
-            sb.append(this.booleanValue);
-            break;
+            return String.valueOf(this.booleanValue);
+
         case PRINCIPAL:
-            sb.append(this.principalValue);
-            break;
+            return String.valueOf(this.principalValue);
+
         default:
-            sb.append(this.stringValue);
-            break;
+            return this.stringValue;
         }
-        return sb.toString();
     }
 
     public String getNativeStringRepresentation() {

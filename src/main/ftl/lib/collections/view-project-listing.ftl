@@ -38,6 +38,11 @@
         	<#if intro?has_content && projectListing.hasDisplayPropDef(intro.definition.name)>
         	  <div class="description introduction">${intro.value}</div>
             </#if>
+             <div class="vrtx-read-more">
+              <a href="${projectListing.urls[project.URI]?html}" class="more">
+                <@vrtx.localizeMessage code="viewCollectionListing.readMore" default="" args=[] locale=locale />
+              </a>
+            </div>
       </div>
     </#list>
    </div>

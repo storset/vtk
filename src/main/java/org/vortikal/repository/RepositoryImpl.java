@@ -1062,9 +1062,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     public ResultSet search(String token, Search search) throws QueryException {
         if (this.searcher != null) {
             // Enforce searching in published resources only when going through
-            // Repository.search(String,Search)
+            // Repository.search(String, Search)
             search.setOnlyPublishedResources(true);
-            return this.search(token, search);
+            return this.searcher.execute(token, search);
         } else {
             throw new QueryException("No repository searcher has been configured.");
         }

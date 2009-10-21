@@ -59,7 +59,7 @@ import org.vortikal.util.cache.ReusableObjectCache;
  */
 public final class FieldValueMapper {
 
-    private static final String STRING_VALUE_ENCODING = "UTF-8";
+    private static final String STRING_VALUE_ENCODING = "utf-8";
 
     // Note that order (complex towards simpler format) is important here.
     private static final String[] SUPPORTED_DATE_FORMATS = { "yyyy-MM-dd HH:mm:ss Z",
@@ -80,7 +80,6 @@ public final class FieldValueMapper {
     public static final char MULTI_VALUE_FIELD_SEPARATOR = ';';
 
     private ValueFactory valueFactory;
-
 
     // No encoding (un-typed)
     public Field getKeywordField(String name, int value) {
@@ -133,8 +132,7 @@ public final class FieldValueMapper {
         field.setOmitTf(true);
         return field;
     }
-
-
+    
     /**
      * Create indexed (but not stored) <code>Field</code> from single
      * <code>Value</code>.
@@ -149,6 +147,23 @@ public final class FieldValueMapper {
     }
 
 
+    /**
+     * Create indexed (but not stored) <code>Field</code> from array of Object. No special encoding
+     * of value is applied, tokenization is done per object value, optionally applying lowercasing.
+     *  
+     * @param name
+     * @param values
+     * @param lowercase
+     * @return
+     */
+    public Field getUnencodedMultiValueFieldfFromObjects(String name, Object[] values, boolean lowercase) {
+        String[] strValues = new String[values.length];
+        for (int i=0; i<values.length; i++) {
+            strValues[i] = lowercase ? values[i].toString().toLowerCase() : values[i].toString();
+        }
+        return getUnencodedMultiValueFieldFromStrings(name, strValues);
+    }
+    
     /**
      * Used for generating ancestor ids field. We don't bother to encode it
      * because of its system-specific nature, and that it should never be used

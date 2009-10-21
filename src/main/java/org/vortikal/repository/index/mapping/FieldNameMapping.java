@@ -35,9 +35,7 @@ import java.util.Set;
 
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.resourcetype.PropertyType.Type;
 
 /**
  * 
@@ -47,7 +45,7 @@ public final class FieldNameMapping {
 
     /* Special field characters and prefixes */
     public static final String FIELD_NAMESPACEPREFIX_NAME_SEPARATOR = ":";
-    public static final String JSON_FIELD_SEPARATOR = "@";
+    public static final String JSON_ATTRIBUTE_SEPARATOR = "@";
     public static final String LOWERCASE_FIELD_PREFIX = "l_";
     public static final String STORED_BINARY_FIELD_PREFIX = "b_";
     
@@ -91,20 +89,21 @@ public final class FieldNameMapping {
     }
     
     public static String getSearchFieldName(Property prop, boolean lowercase) {
-        
-        return getSearchFieldName(prop.getDefinition().getName(), 
-                prop.getDefinition().getNamespace().getPrefix(), lowercase);
+        return getSearchFieldName(prop.getDefinition(), lowercase);
     }
 
+    
     public static String getSearchFieldName(PropertyTypeDefinition def, boolean lowercase) {
+        switch (def.getType()) {
+        case STRING:
+        case HTML:
+        case JSON:
+            break;
         
-        Type type = def.getType();
-        if (type != PropertyType.Type.STRING && type != PropertyType.Type.HTML) {
-            // No lowercase-support for the type, make sure we return
-            // the normal index search field name, instead.
-            lowercase = false;
+        default:
+            lowercase = false; // No lowercasing-support for type
         }
-        
+
         return getSearchFieldName(def.getName(), def.getNamespace().getPrefix(), lowercase);
     }
 
@@ -138,24 +137,24 @@ public final class FieldNameMapping {
         return fieldName.toString();
     }
     
-    public static String getJSONSearchFieldName(Property prop, String jsonFieldKey, boolean lowercase) {
+    public static String getJSONSearchFieldName(Property prop, String jsonAttrKey, boolean lowercase) {
         StringBuilder fieldName = new StringBuilder(getSearchFieldName(prop, lowercase));
-        fieldName.append(JSON_FIELD_SEPARATOR).append(jsonFieldKey);
+        fieldName.append(JSON_ATTRIBUTE_SEPARATOR).append(jsonAttrKey);
         return fieldName.toString();
     }
     
-    public static String getJSONSearchFieldName(PropertyTypeDefinition def, String jsonFieldKey, 
+    public static String getJSONSearchFieldName(PropertyTypeDefinition def, String jsonAttrKey, 
                                                                              boolean lowercase) {
         StringBuilder fieldName = new StringBuilder(getSearchFieldName(def, lowercase));
-        fieldName.append(JSON_FIELD_SEPARATOR).append(jsonFieldKey);
+        fieldName.append(JSON_ATTRIBUTE_SEPARATOR).append(jsonAttrKey);
         return fieldName.toString();
     }
     
     protected static String getJSONSearchFieldName(String propName, String propPrefix, 
-                                                        String jsonFieldKey, boolean lowercase) {
+                                                        String jsonAttrKey, boolean lowercase) {
         StringBuilder fieldName = 
                         new StringBuilder(getSearchFieldName(propName, propPrefix, lowercase));
-        fieldName.append(JSON_FIELD_SEPARATOR).append(jsonFieldKey);
+        fieldName.append(JSON_ATTRIBUTE_SEPARATOR).append(jsonAttrKey);
         return fieldName.toString();
     }
 

@@ -30,6 +30,9 @@
  */
 package org.vortikal.repository.index.mapping;
 
+import static org.vortikal.repository.resourcetype.PropertyType.Type.BINARY;
+import static org.vortikal.repository.resourcetype.PropertyType.Type.JSON;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -37,6 +40,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
+import net.sf.json.JSONObject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -60,6 +67,7 @@ import org.vortikal.repository.search.PropertySelect;
 import org.vortikal.repository.search.WildcardPropertySelect;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
+import org.vortikal.text.JSONUtil;
 
 /**
  * Simple mapping from Lucene {@link org.apache.lucene.document.Document} to
@@ -109,6 +117,7 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
     
     /**
      * Map <code>PropertySetImpl</code> to Lucene <code>Document</code>.
+     * Used when indexing.
      */
     public Document getDocument(PropertySetImpl propSet, Set<Principal> aclReadPrincipals) 
         throws DocumentMappingException {
@@ -130,7 +139,6 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
         Field nameField = this.fieldValueMapper.getStoredKeywordField(
                 FieldNameMapping.NAME_FIELD_NAME, propSet.getName());
         doc.add(nameField);
-
         // name (lowercased, indexed, but not stored)
         Field nameFieldLc = this.fieldValueMapper.getKeywordField(
                 FieldNameMapping.NAME_LC_FIELD_NAME, propSet.getName().toLowerCase());
@@ -189,17 +197,27 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
         //   3) Is of type that is sensible to index for searching.
         // Store *all* properties, except those of type BINARY.
         for (PropertyTypeDefinition propDef : propDefs) {
-            
             Property property = propSet.getProperty(propDef);
             
             if (property == null) continue;
             
+            // Create indexed fields
             switch (property.getType()) {
             case BINARY: continue; // Don't index or store BINARY property values
+
+            case JSON:
+                // Add any indexable JSON value attributes (both as lowercase and regular)
+                for (Field jsonAttrField: getIndexedFieldsFromJSONProperty(property, false)) {
+                    doc.add(jsonAttrField);
+                }
+                for (Field jsonAttrFieldLc: getIndexedFieldsFromJSONProperty(property, true)) {
+                    doc.add(jsonAttrFieldLc);
+                }
+                break;
             
             case STRING:
             case HTML:
-                // Add lowercase version of search field for STRING and HTML types only
+                // Add lowercase version of search field for STRING and HTML types
                 Field lowercaseIndexedField = getIndexedFieldFromProperty(property, true);
                 doc.add(lowercaseIndexedField);
             
@@ -207,14 +225,15 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
                 // Create regular searchable index field of value(s)
                 Field indexedField = getIndexedFieldFromProperty(property, false);
                 doc.add(indexedField);
+            }
 
-            case JSON: // JSON values should only be stored   
-
-                // Create stored field(s) for value(s)
+            // Create stored field-value(s) for all types except BINARY
+            if (property.getType() != BINARY) {
                 for (Field storedField: getStoredFieldsFromProperty(property)) {
                     doc.add(storedField);
                 }
             }
+
         }
         
         return doc;
@@ -264,6 +283,8 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
      * Map from Lucene <code>Document</code> instance to a repository
      * <code>PropertySetImpl</code> instance.
      * 
+     * Used when searching.
+     * 
      * This method is heavily used when generating query results and is critical
      * for general query performance. Emphasis should be placed on optimizing it
      * as much as possible. Preferably use
@@ -308,7 +329,7 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
             if (FieldNameMapping.isReservedField(fieldName)) continue;
             
             if (currentName == null) {
-                currentName = fieldName;
+                currentName = fieldName; 
             }
             
             if (fieldName == currentName) {
@@ -435,11 +456,69 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
         return field;
     }
 
+    @SuppressWarnings("unchecked")
+    private Field[] getIndexedFieldsFromJSONProperty(Property prop, boolean lowercase) {
+        
+        PropertyTypeDefinition def = prop.getDefinition();
+        if (def == null || def.getType() != JSON) {        
+            throw new DocumentMappingException(
+                    "Cannot create indexed JSON fields for property with no definition or non-JSON type");
+        }
+
+        List<String> jsonAttrKeys = def.getIndexableAttributes();
+        if (jsonAttrKeys == null || jsonAttrKeys.size() == 0) {
+            return new Field[0]; // Nothing to index for this JSON prop
+        }
+        
+        List<Field> fields = new ArrayList<Field>();
+        Value[] jsonPropValues = null;
+        if (def.isMultiple()) {
+            jsonPropValues = prop.getValues();
+        } else {
+            jsonPropValues = new Value[1];
+            jsonPropValues[0] = prop.getValue();
+        }
+        
+        try {
+            for (String jsonAttrKey : jsonAttrKeys) {
+                List<Object> fieldValues = new ArrayList<Object>();
+                
+                // Gather up values for current field
+                for (Value jsonValue : jsonPropValues) {
+                    JSONObject json = JSONObject.fromObject(jsonValue.getObjectValue());
+                    Object selection = JSONUtil.select(json, jsonAttrKey);
+                    // Selection can be of type JSONArray, in which case we index it as multi-value
+                    if (selection instanceof JSONArray) {
+                        for (Iterator iter = ((JSONArray) selection).iterator(); iter.hasNext();) {
+                            fieldValues.add(iter.next());
+                        }
+                    } else {
+                        fieldValues.add(selection);
+                    }
+                }
+                
+                String fieldName = FieldNameMapping.getJSONSearchFieldName(def, jsonAttrKey, lowercase);
+                Field field = 
+                    this.fieldValueMapper.getUnencodedMultiValueFieldfFromObjects(fieldName, 
+                                                                                  fieldValues.toArray(),
+                                                                                  lowercase);
+                fields.add(field);                
+            }
+        } catch (JSONException je) {
+            logger.warn("JSON property " 
+                    + prop 
+                    + " has a value containing invalid JSON data: "
+                    + je.getMessage() 
+                    + ", will not index any of this property's JSON values.");
+            // Don't index any JSON attributes of this prop, since some data apparently is broken.
+            return new Field[0];
+        }
+        
+        return fields.toArray(new Field[]{});
+    }
 
     /**
-     * Creates a stored (binary) <code>Field</code> from a <code>Property</code>
-     * .
-     * 
+     * Creates a stored (binary) <code>Field</code> array from a <code>Property</code>.
      */
     private Field[] getStoredFieldsFromProperty(Property property)
             throws FieldValueMappingException {

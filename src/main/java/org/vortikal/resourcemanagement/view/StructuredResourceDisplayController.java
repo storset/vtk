@@ -112,7 +112,9 @@ public class StructuredResourceDisplayController implements Controller, Initiali
     private HtmlPageFilter postFilter;
 
     // XXX: clean up this mess:
-    private Map<StructuredResourceDescription, Map<String, TemplateLanguageDecoratorComponent>> components = new ConcurrentHashMap<StructuredResourceDescription, Map<String, TemplateLanguageDecoratorComponent>>();
+    private Map<StructuredResourceDescription,
+                Map<String, TemplateLanguageDecoratorComponent>> components = 
+                      new ConcurrentHashMap<StructuredResourceDescription, Map<String, TemplateLanguageDecoratorComponent>>();
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 

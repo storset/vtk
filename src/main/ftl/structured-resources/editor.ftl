@@ -17,10 +17,8 @@
 <html>
 <head>
   <title>Edit structured resource</title>
-  
   <@fckEditor.addFckScripts />
-<@vrtxJSONJavascript.script />
-  
+  <@vrtxJSONJavascript.script />
   <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/admin-prop-change.js"></script>
   <script language="Javascript" type="text/javascript"><!--
     window.onbeforeunload = checkPropChange;

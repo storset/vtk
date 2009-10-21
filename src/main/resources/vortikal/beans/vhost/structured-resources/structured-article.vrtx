@@ -1,7 +1,7 @@
 resourcetype structured-article : structured-document {
 
   properties {
-    author : string,
+    author : string multiple,
     media : media_ref,
     tags : string multiple overrides tags,
     related-content : html noextract,

@@ -12,7 +12,7 @@ resourcetype structured-article : structured-document {
     caption (size[small]),
     group introImageAndCaption (picture, caption) (after introduction) vertical,
     group relatedContent (related-content, hideAdditionalContent) (after tags),
-    author (after introImageAndCaption),
+    authors (after introImageAndCaption),
     title (size[large]),
     tags tooltip (en : "(tag1, tag2, ...)", no : "(emneord1, emneord2, ...)", nn : "(emneord1, emneord2, ...)"),
     author tooltip (en : "(author1, author2, ...)", no : "(forfatter1, forfatter2, ...)", nn : "(forfatter1, forfatter2, ...)")
@@ -28,7 +28,15 @@ resourcetype structured-article : structured-document {
       ##
       [def authors resource-prop "." "author"]
       [if authors && authors != ""]
-        <span class="vrtx-authors"><span class="vrtx-authors-prefix">[localized "by-line"]</span>&nbsp;[val authors]</span>
+        <span class="vrtx-authors"><span class="vrtx-authors-prefix">[localized "by-line"]</span>&nbsp;
+        [list authors author]
+          [if _first]
+          [else]
+            [if _last]&nbsp;[localized "authorsAnd"]&nbsp;[else],&nbsp;[endif]
+          [endif]
+        [val author]  
+        [endlist]
+        </span>
       [endif]
       ##
     }
@@ -135,6 +143,7 @@ resourcetype structured-article : structured-document {
     hideAdditionalContent : (en : "Hide right-column", no : "Skjul høyre kolonne", nn : "Skjul høyre kolonne"),
     related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold"),
     relatedContent : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold"),
-    header : (en : "Edit article", no : "Rediger artikkel", nn : "Rediger artikkel")
+    header : (en : "Edit article", no : "Rediger artikkel", nn : "Rediger artikkel"),
+    authorsAnd : (en : "and", no : "og", nn : "og")
   }
 }

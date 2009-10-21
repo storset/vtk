@@ -6,7 +6,7 @@
 <#assign actionURL = item.url />
 <#assign method = "post" />
 <#if resourcesDisclosed?exists>
-  <#assign actionURL =  warningDialogURL + '&showAsHtml=true&height=80&width=230' />
+  <#assign actionURL =  warningDialogURL + '&showAsHtml=true&height=110&width=250' />
   <#assign method = "get" />
 </#if>
 

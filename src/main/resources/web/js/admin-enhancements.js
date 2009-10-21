@@ -83,13 +83,13 @@ function copyMoveButtonsAsLinks() {
        var url = move.attr('action');
        var btn = move.children('button');
        btn.hide();
-
+       
        if (method == 'get') {
-          btn.after('(&nbsp;<a title="' + btn.title + '" id="vrtx-move-to-selected-folder.link" href="' + url + '">' + $.trim(btn.text()) + '</a>&nbsp;)');
+          btn.after('(&nbsp;<a title="' + btn.attr("title") + '" id="vrtx-move-to-selected-folder.link" href="' + url + '">' + $.trim(btn.text()) + '</a>&nbsp;)');
           btn.addClass('thickbox');
           tb_init('#vrtx-move-to-selected-folder\\.link');
        } else {
-          btn.after('(&nbsp;<a title="' + btn.title + '" id="vrtx-move-to-selected-folder.link" href="javascript:void(0);">' + $.trim(btn.text()) + '</a>&nbsp;)');
+          btn.after('(&nbsp;<a title="' + btn.attr("title") + '" id="vrtx-move-to-selected-folder.link" href="javascript:void(0);">' + $.trim(btn.text()) + '</a>&nbsp;)');
           $('#vrtx-move-to-selected-folder\\.link').click(function() {
               btn.click();
               return false;
@@ -102,14 +102,15 @@ function copyMoveButtonsAsLinks() {
        var method = copy.attr('method');
        var url = copy.attr('action');
        var btn = copy.children('button');
+       var title = $('#vrtx-move-to-selected-folder button').attr("title");
        btn.hide();
 
        if (method == 'get') {
-           btn.after('(&nbsp;<a title="' + btn.title + '" id="vrtx-copy-to-selected-folder.link" href="' + url + '">' + $.trim(btn.text()) + '</a>&nbsp;)');
+           btn.after('(&nbsp;<a title="' + btn.attr("title") + '" id="vrtx-copy-to-selected-folder.link" href="' + url + '">' + $.trim(btn.text()) + '</a>&nbsp;)');
            btn.addClass('thickbox');
            tb_init('#vrtx-copy-to-selected-folder\\.link');
        } else {
-           btn.after('(&nbsp;<a title="' + btn.title + '" id="vrtx-copy-to-selected-folder.link" href="javascript:void(0);">' + $.trim(btn.text()) + '</a>&nbsp;)');
+           btn.after('(&nbsp;<a title="' + btn.attr("title") + '" id="vrtx-copy-to-selected-folder.link" href="javascript:void(0);">' + $.trim(btn.text()) + '</a>&nbsp;)');
            $('#vrtx-copy-to-selected-folder\\.link').click(function() {
                btn.click();
                return false;

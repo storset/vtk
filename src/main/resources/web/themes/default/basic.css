@@ -922,8 +922,8 @@ div.vrtx-confirm-delete-msg {
 }
 
 #TB_ajaxContent form {
-  padding-top: 1em;
-  padding-left: 5em;
+	padding-left:6em;
+	padding-top:1.5em;
 }
 
 #TB_ajaxWindowTitle {
@@ -936,6 +936,10 @@ div.vrtx-confirm-delete-msg {
   border-color: #999999 #CCCCCC #AAAAAA;
   border-style: solid;
   border-width: 1px 0px;
+}
+
+#TB_ajaxWindowTitle {
+	font-weight:bold;
 }
 
 #TB_window {

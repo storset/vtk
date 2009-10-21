@@ -958,3 +958,7 @@ form#vrtx-admin-ownership-form {
   font-size: 100%; 
 }
 
+div.vrtx-preview-unpublished-message {
+  background-color: #FF4040;
+  padding: 5px;
+}

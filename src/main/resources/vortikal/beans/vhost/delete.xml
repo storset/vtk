@@ -7,8 +7,8 @@
     <property name="parent" ref="manageService" />
     <property name="assertions">
       <list>
-        <ref local="resourceNotRootAssertion" />
-        <ref local="deleteResourcePermissionAssertion" />
+        <ref bean="resourceNotRootAssertion" />
+        <ref bean="deleteResourcePermissionAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="confirm-delete-from-resource-menu" />
@@ -39,8 +39,8 @@
     <property name="parent" ref="manageService" />
     <property name="assertions">
       <list>
-        <ref local="resourceNotRootAssertion" />
-        <ref local="deleteResourcePermissionAssertion" />
+        <ref bean="resourceNotRootAssertion" />
+        <ref bean="deleteResourcePermissionAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="confirm-delete" />
@@ -93,19 +93,18 @@
     </property>
   </bean>
 
-  
   <bean id="deleteResourceService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
     <property name="order" value="0" />
     <property name="assertions">
       <list>
         <ref bean="manage.postRequestAssertion" />
-        <ref local="resourceNotRootAssertion" />
+        <ref bean="resourceNotRootAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="delete" />
         </bean>
-        <ref local="deleteResourcePermissionAssertion" />
+        <ref bean="deleteResourcePermissionAssertion" />
       </list>
     </property>
     <property name="handlerInterceptors">
@@ -123,13 +122,13 @@
     <property name="assertions">
       <list>
         <ref bean="manage.postRequestAssertion" />
-        <ref local="resourceNotRootAssertion" />
-        <ref local="adminVrtxParameterRule" />
+        <ref bean="resourceNotRootAssertion" />
+        <ref bean="adminVrtxParameterRule" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="delete-from-resource-menu" />
         </bean>
-        <ref local="deleteResourcePermissionAssertion" />
+        <ref bean="deleteResourcePermissionAssertion" />
       </list>
     </property>
     <property name="handlerInterceptors">
@@ -151,24 +150,6 @@
         parent="requestLocalRepositoryAware">
     <property name="viewName" value="redirectToManage" />
     <property name="requestFromResourceMenu" value="true" />
-  </bean>
+  </bean>  
 
-  
-  <bean id="adminVrtxParameterRule" class="org.vortikal.web.service.RequestParameterAssertion">
-    <property name="parameterName" value="vrtx" />
-    <property name="parameterValue" value="admin" />
-  </bean>
-  
-  
-  <bean id="deleteResourcePermissionAssertion"
-        parent="abstractResourcePrincipalPermissionAssertion">
-    <property name="permission" ref="ACTION_DELETE" />
-    <property name="requiresAuthentication" value="true" />
-  </bean>
-  
-  <bean id="resourceNotRootAssertion" 
-        class="org.vortikal.web.service.ResourceURIAssertion">
-    <property name="uri" value="/" />
-    <property name="inverted" value="true" />
-  </bean>
 </beans>

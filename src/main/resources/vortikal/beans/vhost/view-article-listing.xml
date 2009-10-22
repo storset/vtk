@@ -35,7 +35,6 @@
   <bean id="articleListing.handler" 
         class="org.vortikal.web.display.collection.ArticleListingController"
         parent="requestLocalRepositoryAware">
-    <property name="collectionSearcher" ref="systemIndexSearcher" />
     <property name="resourceManager" ref="resourceManager" />
     <property name="sortPropDefs">
       <list>

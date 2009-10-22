@@ -34,7 +34,6 @@
   <bean id="eventListing.handler" 
         class="org.vortikal.web.display.collection.EventListingController"
         parent="requestLocalRepositoryAware">
-    <property name="collectionSearcher" ref="systemIndexSearcher" />
     <property name="resourceManager" ref="resourceManager" />
     <property name="sortPropDefs">
       <list>

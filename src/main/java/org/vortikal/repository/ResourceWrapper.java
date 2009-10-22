@@ -287,7 +287,10 @@ public class ResourceWrapper implements Resource {
     
     public Object clone() throws CloneNotSupportedException {
         return this.resource.clone();
-        
+    }
+    
+    public boolean isReadRestricted() {
+        return this.resource.isReadRestricted();
     }
 
 }

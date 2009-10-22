@@ -291,6 +291,12 @@ public interface Resource extends PropertySet, Cloneable {
     public void setOwner(Principal principal);
 
     public Object clone() throws CloneNotSupportedException;
-
+    
+    /**
+     * @return Boolean indicating if resource has entries in acl concerning 
+     * read permissions on the resource, i.e. if the resource in some way
+     * is read restricted.
+     */
+    public boolean isReadRestricted();
 
 }

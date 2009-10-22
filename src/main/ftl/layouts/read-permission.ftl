@@ -10,11 +10,10 @@
   -   readPermission
   -
   -->
-<#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
 
 <#assign readPermission=""/>
-<#if resourceContext.readPermission?exists && resourceContext.readPermission == "readPermissionRestricted">
+<#if resourceContext.currentResource?exists && resourceContext.currentResource.isReadRestricted()>
   <#assign readPermission="readPermissionRestricted" />
 </#if>
 

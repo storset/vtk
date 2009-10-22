@@ -40,12 +40,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.edit.editor.ResourceWrapperManager;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceWrapper;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
@@ -150,8 +148,6 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
         Resource resource = null;
         Path parent = null;
 
-        String readPermission = null;
-
         if (model != null && this.getResourceFromModel) {
             resource = (Resource) model.get(this.resourceFromModelKey);
         }
@@ -166,13 +162,6 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
         }
         if (resource != null) {
             parent = resource.getURI().getParent();
-
-            if (!resource.getAcl().hasPrivilege(RepositoryAction.READ, PrincipalFactory.ALL)
-                    && !resource.getAcl().hasPrivilege(RepositoryAction.READ_PROCESSED, PrincipalFactory.ALL)) {
-                readPermission = "readPermissionRestricted";
-            } else {
-                readPermission = "";
-            }
         }
 
         if (this.resourceWrapperManager != null && resource != null) {
@@ -189,7 +178,6 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
         resourceContextModel.put("repositoryId", this.repository.getId());
         resourceContextModel.put("requestContext", requestContext);
         resourceContextModel.put("repositoryReadOnly", this.repository.isReadOnly());
-        resourceContextModel.put("readPermission", readPermission);
 
         model.put(this.modelName, resourceContextModel);
     }

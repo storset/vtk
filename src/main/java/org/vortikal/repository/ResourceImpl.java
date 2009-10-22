@@ -46,6 +46,7 @@ import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.ValueFormatException;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalFactory;
 import org.vortikal.util.codec.MD5;
 import org.vortikal.util.repository.LocaleHelper;
 
@@ -180,7 +181,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         }
 
         return null; // Not a collection (external client code expects this, and
-                     // it is stated in Resource interface).
+        // it is stated in Resource interface).
     }
 
     public Acl getAcl() {
@@ -467,6 +468,11 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         }
 
         return true;
+    }
+
+    public boolean isReadRestricted() {
+        return !this.getAcl().hasPrivilege(RepositoryAction.READ, PrincipalFactory.ALL)
+                && !this.getAcl().hasPrivilege(RepositoryAction.READ_PROCESSED, PrincipalFactory.ALL);
     }
 
     public String toString() {

@@ -116,11 +116,7 @@
       </#if>
       <#local restricted = "" />
       <#if item = "permissions">
-        <#local principal_all = statics["org.vortikal.security.PrincipalFactory"].ALL />
-        <#local read_action = statics["org.vortikal.repository.RepositoryAction"].READ />
-        <#local read_processed_action = statics["org.vortikal.repository.RepositoryAction"].READ_PROCESSED />
-        <#if !(child.getAcl().hasPrivilege(read_action, principal_all) 
-             || child.getAcl().hasPrivilege(read_processed_action, principal_all)) >
+        <#if child.isReadRestricted() >
           <#assign class = class + " restricted" />
           <#local restricted = "restricted">
         </#if>

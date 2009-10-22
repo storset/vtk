@@ -55,7 +55,6 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
-import org.vortikal.repository.search.Searcher;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.PropertyExistsQuery;
 import org.vortikal.repository.search.query.TermOperator;
@@ -72,7 +71,6 @@ import org.vortikal.web.service.URL;
 public abstract class AbstractCollectionListingController implements Controller {
 
     private Repository repository;
-    protected Searcher searcher;
     protected ResourceWrapperManager resourceManager;
     protected PropertyTypeDefinition hiddenPropDef;
     protected int defaultPageLimit = 20;
@@ -188,7 +186,7 @@ public abstract class AbstractCollectionListingController implements Controller 
         search.setLimit(this.collectionDisplayLimit);
         search.setQuery(query);
         
-        ResultSet result = this.searcher.execute(token, search);
+        ResultSet result = this.repository.search(token, search);
         return result.getAllResults();        
     }
     
@@ -270,11 +268,6 @@ public abstract class AbstractCollectionListingController implements Controller 
     @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
-    }
-
-    @Required
-    public void setCollectionSearcher(Searcher searcher) {
-        this.searcher = searcher;
     }
     
     @Required

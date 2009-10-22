@@ -41,20 +41,22 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.View;
+import org.vortikal.repository.Repository;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.servlet.BufferedResponse;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
 
-
 public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent {
-    
+
     private View view;
     private Set<String> exposedParameters = new HashSet<String>();
     private boolean exposeMvcModel = false;
+    protected Repository repository;
 
-    @Required public void setView(View view) {
+    @Required
+    public void setView(View view) {
         this.view = view;
     }
 
@@ -66,8 +68,7 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
         this.exposeMvcModel = exposeMvcModel;
     }
 
-    public final void render(DecoratorRequest request, DecoratorResponse response)
-        throws Exception {
+    public final void render(DecoratorRequest request, DecoratorResponse response) throws Exception {
         Map<Object, Object> model = new HashMap<Object, Object>();
         if (this.exposeMvcModel) {
             model.putAll(request.getMvcModel());
@@ -75,38 +76,37 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
         processModel(model, request, response);
         renderView(model, request, response);
     }
-    
-    
+
     /**
-     * Process the model prior to view rendering. The default
-     * implementation performs the following steps:
+     * Process the model prior to view rendering. The default implementation
+     * performs the following steps:
      * <ol>
-     *   <li>Gather all reference data providers (using
-     *     <code>getReferenceDataProviders()</code>) and invoke them
-     *     in order
-     *   </li>
-     *   <li>If <code>exposeComponentParameters</code> is set, add an
-     *     entry in the model under the name determined by
-     *     <code>exposedParametersModelName</code>, containing either 
-     *     the full set of component parameters or a specified set, 
-     *     depending on whether the config parameter <code>exposedParameters</code>
-     *     is specified.
-     *   <li>
+     * <li>Gather all reference data providers (using
+     * <code>getReferenceDataProviders()</code>) and invoke them in order</li>
+     * <li>If <code>exposeComponentParameters</code> is set, add an entry in the
+     * model under the name determined by
+     * <code>exposedParametersModelName</code>, containing either the full set
+     * of component parameters or a specified set, depending on whether the
+     * config parameter <code>exposedParameters</code> is specified.
+     * <li>
      * </ol>
-     *
-     * @param model the MVC model
-     * @param request the decorator request
-     * @param response the decorator response
-     * @exception Exception if an error occurs
+     * 
+     * @param model
+     *            the MVC model
+     * @param request
+     *            the decorator request
+     * @param response
+     *            the decorator response
+     * @exception Exception
+     *                if an error occurs
      */
-    protected void processModel(Map<Object, Object> model, DecoratorRequest request,
-                                DecoratorResponse response) throws Exception {
+    protected void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
+            throws Exception {
 
         if (this.exposedParameters != null) {
             for (Iterator<String> i = request.getRequestParameterNames(); i.hasNext();) {
                 String name = i.next();
-                if (!this.exposedParameters.isEmpty() 
-                        && !this.exposedParameters.contains(name)) {
+                if (!this.exposedParameters.isEmpty() && !this.exposedParameters.contains(name)) {
                     continue;
                 }
                 Object value = request.getParameter(name);
@@ -115,20 +115,17 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
         }
 
         if (this.view instanceof ReferenceDataProviding) {
-            ReferenceDataProvider[] providers =
-                ((ReferenceDataProviding) this.view).getReferenceDataProviders();
+            ReferenceDataProvider[] providers = ((ReferenceDataProviding) this.view).getReferenceDataProviders();
             if (providers != null) {
-                for (ReferenceDataProvider provider: providers) {
+                for (ReferenceDataProvider provider : providers) {
                     provider.referenceData(model, request.getServletRequest());
                 }
             }
         }
     }
-    
 
     @SuppressWarnings("unchecked")
-    private void renderView(Map model, DecoratorRequest request, DecoratorResponse response)
-        throws Exception {
+    private void renderView(Map model, DecoratorRequest request, DecoratorResponse response) throws Exception {
         HttpServletRequest servletRequest = request.getServletRequest();
         BufferedResponse bufferedResponse = new BufferedResponse();
         this.view.render(model, servletRequest, bufferedResponse);
@@ -137,7 +134,6 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
         out.write(bufferedResponse.getContentBuffer());
         out.close();
     }
-    
 
     public String toString() {
         StringBuffer sb = new StringBuffer();
@@ -146,13 +142,17 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
         return sb.toString();
     }
 
-
     protected String getDescriptionInternal() {
         return null;
     }
 
-
     protected Map<String, String> getParameterDescriptionsInternal() {
         return null;
     }
+    
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
+
+    
 }

@@ -51,7 +51,6 @@ import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.search.ConfigurablePropertySelect;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
-import org.vortikal.repository.search.Searcher;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.NameTermQuery;
 import org.vortikal.repository.search.query.OrQuery;
@@ -76,8 +75,10 @@ import org.vortikal.web.view.components.menu.MenuItem;
  * <ul>
  * <li>uri - the collection uri to create a menu from</li>
  * <li>include-children - if specified, only these child names is search for</li>
- * <li>exclude-children - alternative to include-children, exclude named children</li>
- * <li>depth - if greater than one and current resource is <b>below</b> uri, build sub menus</li>
+ * <li>exclude-children - alternative to include-children, exclude named
+ * children</li>
+ * <li>depth - if greater than one and current resource is <b>below</b> uri,
+ * build sub menus</li>
  * <li>include-parent-folder - include uri collection first in menu</li>
  * <li>authenticated - default is listing only read-for-all resources</li>
  * </ul>
@@ -138,13 +139,11 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     protected Service viewService;
     protected PropertyTypeDefinition titlePropDef;
     protected PropertyTypeDefinition hiddenPropDef;
-    protected PropertyTypeDefinition importancePropdef;
-    private ResourceTypeDefinition collectionResourceType;
+    protected PropertyTypeDefinition importancePropDef;
+    protected ResourceTypeDefinition collectionResourceType;
     protected PropertyTypeDefinition navigationTitlePropDef;
-    private String modelName = "menu";
-    private int searchLimit = DEFAULT_SEARCH_LIMIT;
-    private Searcher searcher;
-
+    protected String modelName = "menu";
+    protected int searchLimit = DEFAULT_SEARCH_LIMIT;
 
     public void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
@@ -172,7 +171,6 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
 
         model.put(this.modelName, menu);
     }
-
 
     private ListMenu<PropertySet> buildMainMenu(MenuRequest menuRequest) {
 
@@ -249,7 +247,6 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         return menu;
     }
 
-
     private Query buildMainSearch(MenuRequest menuRequest) {
         Path uri = menuRequest.getURI();
         int startDepth = uri.getDepth() + 1;
@@ -280,7 +277,6 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         return query;
     }
 
-
     private Query getRequestedChildren(Path uri, String[] childNames) {
 
         if (childNames.length == 1) {
@@ -298,7 +294,6 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
 
     }
 
-
     private Query getUriQuery(Path uri, String name) {
         if (name.indexOf("/") != -1) {
             throw new DecoratorComponentException("Invalid child name: '" + name + "'");
@@ -306,7 +301,6 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         String childURI = uri.extend(name.trim()).toString();
         return new UriTermQuery(childURI, TermOperator.EQ);
     }
-
 
     private Query getExcludedChildrenQuery(String[] excludedChildren) {
         AndQuery query = new AndQuery();
@@ -322,7 +316,6 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         return query;
     }
 
-
     // List all children based on depth:
     private Query getChildrenQuery(Path uri, int depth) {
         AndQuery q = new AndQuery();
@@ -334,7 +327,6 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         q.add(new UriDepthQuery(depth));
         return q;
     }
-
 
     private ResultSet doSubSearch(MenuRequest menuRequest) {
 
@@ -353,7 +345,6 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         return search(menuRequest.getToken(), orQuery);
     }
 
-
     private ResultSet search(String token, Query query) {
 
         // We are searching for collections
@@ -367,8 +358,8 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         if (this.hiddenPropDef != null) {
             select.addPropertyDefinition(this.hiddenPropDef);
         }
-        if (this.importancePropdef != null) {
-            select.addPropertyDefinition(this.importancePropdef);
+        if (this.importancePropDef != null) {
+            select.addPropertyDefinition(this.importancePropDef);
         }
 
         Search search = new Search();
@@ -377,14 +368,12 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         search.setLimit(this.searchLimit);
         search.setPropertySelect(select);
 
-        return this.searcher.execute(token, search);
+        return this.repository.search(token, search);
     }
-
 
     private boolean isActive(Path currentURI, Path uri) {
         return currentURI.equals(uri) || uri.isAncestorOf(currentURI);
     }
-
 
     private List<MenuItem<PropertySet>> sortSpecifiedOrder(String[] childNames,
             Map<String, MenuItem<PropertySet>> nameItemMap) {
@@ -400,12 +389,10 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         return result;
     }
 
-
     protected List<MenuItem<PropertySet>> sortDefaultOrder(List<MenuItem<PropertySet>> items, Locale locale) {
-        Collections.sort(items, new ListMenuComparator(locale, this.importancePropdef, this.navigationTitlePropDef));
+        Collections.sort(items, new ListMenuComparator(locale, this.importancePropDef, this.navigationTitlePropDef));
         return items;
     }
-
 
     /**
      * Add sub menu if current uri is below uri
@@ -445,7 +432,6 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         return buildSubItems(rootUri, childMap, menuRequest);
     }
 
-
     private ListMenu<PropertySet> buildSubItems(Path childrenKey, Map<Path, List<PropertySet>> childMap,
             MenuRequest menuRequest) {
 
@@ -472,7 +458,6 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         return submenu;
     }
 
-
     protected MenuItem<PropertySet> buildItem(PropertySet resource) {
         MenuItem<PropertySet> item = new MenuItem<PropertySet>(resource);
 
@@ -498,7 +483,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         }
         if (title == null) {
             Property titleProperty = resource.getProperty(this.titlePropDef);
-            title = (titleProperty != null) ? titleProperty.getStringValue(): label;
+            title = (titleProperty != null) ? titleProperty.getStringValue() : label;
         }
         item.setTitle(title);
 
@@ -518,7 +503,6 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         private Locale locale;
         private String token;
         private String[] excludedChildren;
-
 
         public MenuRequest(DecoratorRequest request) {
             RequestContext requestContext = RequestContext.getRequestContext();
@@ -618,61 +602,49 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             }
         }
 
-
         public String[] getExcludedChildren() {
             return this.excludedChildren;
         }
-
 
         public Path getURI() {
             return this.uri;
         }
 
-
         public int getDisplayFromLevel() {
             return this.displayFromLevel;
         }
-
 
         public Path getCurrentURI() {
             return this.currentURI;
         }
 
-
         public Path getCurrentFolder() {
             return this.currentFolder;
         }
-
 
         public boolean isParentIncluded() {
             return this.parentIncluded;
         }
 
-
         public String getParentTitle() {
             return this.parentTitle;
         }
-
 
         public String[] getChildNames() {
             return this.childNames;
         }
 
-
         public String getStyle() {
             return this.style;
         }
-
 
         public int getDepth() {
             return this.depth;
         }
 
-
         public Locale getLocale() {
             return this.locale;
         }
-
 
         public String getToken() {
             return token;
@@ -685,14 +657,12 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         private PropertyTypeDefinition importancePropertyDef;
         private PropertyTypeDefinition navigationTitlePropDef;
 
-
         public ListMenuComparator(Locale locale, PropertyTypeDefinition importancePropertyDef,
                 PropertyTypeDefinition navigationTitlePropDef) {
             this.collator = Collator.getInstance(locale);
             this.importancePropertyDef = importancePropertyDef;
             this.navigationTitlePropDef = navigationTitlePropDef;
         }
-
 
         public int compare(MenuItem<PropertySet> i1, MenuItem<PropertySet> i2) {
             if (this.importancePropertyDef != null) {
@@ -729,47 +699,36 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         }
     }
 
-
     @Required
     public void setViewService(Service viewService) {
         this.viewService = viewService;
     }
-
 
     @Required
     public void setTitlePropDef(PropertyTypeDefinition titlePropDef) {
         this.titlePropDef = titlePropDef;
     }
 
-
     public void setHiddenPropDef(PropertyTypeDefinition hiddenPropDef) {
         this.hiddenPropDef = hiddenPropDef;
     }
 
-
     public void setImportancePropDef(PropertyTypeDefinition importancePropDef) {
-        this.importancePropdef = importancePropDef;
+        this.importancePropDef = importancePropDef;
     }
 
     public void setCollectionResourceType(ResourceTypeDefinition collectionResourceType) {
         this.collectionResourceType = collectionResourceType;
     }
 
-
     @Required
     public void setNavigationTitlePropDef(PropertyTypeDefinition navigationTitlePropDef) {
         this.navigationTitlePropDef = navigationTitlePropDef;
     }
 
-    public void setSearcher(Searcher searcher) {
-        this.searcher = searcher;
-    }
-
-
     public void setModelName(String modelName) {
         this.modelName = modelName;
     }
-
 
     public void setSearchLimit(int searchLimit) {
         if (searchLimit <= 0) {
@@ -778,11 +737,9 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         this.searchLimit = searchLimit;
     }
 
-
     protected String getDescriptionInternal() {
         return "Displays a menu based on the subfolders of a specified folder (path)";
     }
-
 
     protected Map<String, String> getParameterDescriptionsInternal() {
         Map<String, String> map = new LinkedHashMap<String, String>();

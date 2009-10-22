@@ -51,9 +51,9 @@ import org.vortikal.web.referencedata.provider.BreadcrumbElement;
 import org.vortikal.web.view.components.menu.MenuItem;
 
 public class BreadcrumbMenuComponent extends ListMenuComponent {
+
     private static final String PARAMETER_AUTENTICATED = "authenticated";
     private static final String PARAMETER_DISPLAY_FROM_LEVEL = "display-from-level";
-    private Repository repository;
     private int displayFromLevel = -1;
     private String token;
 

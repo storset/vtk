@@ -49,11 +49,9 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
-import org.vortikal.repository.search.Searcher;
 import org.vortikal.repository.search.WildcardPropertySelect;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.OrQuery;
@@ -65,7 +63,6 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
-import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 import org.vortikal.web.view.components.menu.ListMenu;
 import org.vortikal.web.view.components.menu.MenuItem;
@@ -81,14 +78,13 @@ import org.vortikal.web.view.components.menu.MenuItem;
  * <li>result-sets - the number of &lt;ul&gt; lists to split the result into</li>
  * <li>group-result-sets-by - the number of results-sets in grouping divs</li>
  * <li>freeze-at-level - at which level the subfolder-listing should freeze</li>
- * <li>exclude-folders - comma-separated list with relative paths to folders which should be excluded</li>
+ * <li>exclude-folders - comma-separated list with relative paths to folders
+ * which should be excluded</li>
  * <li>authenticated - default is listing only read-for-all resources</li>
  * <li>depth - specifies number of levels to retrieve subfolders from</li>
  * </ul>
  */
-public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
-
-    private static final int DEFAULT_SEARCH_LIMIT = 250;
+public class SubFolderMenuComponent extends ListMenuComponent {
 
     private static final String DESCRIPTION = "Lists the child folders of the current folder";
 
@@ -131,17 +127,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
 
     private static Log logger = LogFactory.getLog(SubFolderMenuComponent.class);
 
-    private Service viewService;
-    private PropertyTypeDefinition titlePropDef;
-    private PropertyTypeDefinition hiddenPropDef;
-    private PropertyTypeDefinition importancePropDef;
-    private ResourceTypeDefinition collectionResourceType;
-    private PropertyTypeDefinition navigationTitlePropDef;
-    private String modelName = "menu";
-    private int searchLimit = DEFAULT_SEARCH_LIMIT;
-    private Searcher searcher;
     private ResourceTypeTree resourceTypeTree;
-
 
     public void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
@@ -157,7 +143,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
 
         Search search = buildSearch(menuRequest);
         String token = menuRequest.getToken();
-        ResultSet rs = this.searcher.execute(token, search);
+        ResultSet rs = this.repository.search(token, search);
         if (logger.isDebugEnabled()) {
             logger.debug("Executed search: " + search + ", hits: " + rs.getSize());
         }
@@ -168,7 +154,6 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
             logger.debug("Built model: " + model + " from menu: " + menu);
         }
     }
-
 
     private Map<String, Object> buildMenuModel(ListMenu<PropertySet> menu, MenuRequest menuRequest) {
         List<ListMenu<PropertySet>> resultList = new ArrayList<ListMenu<PropertySet>>();
@@ -196,8 +181,8 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
             int endIdx = startIdx + itemsPerResultSet;
 
             /*
-             * Old code for remainder, places them last if (i == resultSets - 1 && remainder > 0) { endIdx += remainder;
-             * }
+             * Old code for remainder, places them last if (i == resultSets - 1
+             * && remainder > 0) { endIdx += remainder; }
              */
 
             if (endIdx > allItems.size()) {
@@ -248,7 +233,6 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         return model;
     }
 
-
     private Search buildSearch(MenuRequest menuRequest) {
 
         Path uri = menuRequest.getCurrentCollectionUri();
@@ -260,7 +244,8 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
 
         if (menuRequest.getDepth() > 1) {
             // Needs search support for this:
-            // query.add(new UriDepthTermQuery).append(menuRequest.getDepth(), TermOperator.GT);
+            // query.add(new UriDepthTermQuery).append(menuRequest.getDepth(),
+            // TermOperator.GT);
             OrQuery depthQuery = new OrQuery();
             for (int i = 0; i < menuRequest.getDepth(); i++) {
                 depthQuery.add(new UriDepthQuery(depth + i));
@@ -271,7 +256,8 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         }
 
         /**
-         * TODO: Maybe add inversion filter for whole set rather than and'ing a ton of inverted queries?
+         * TODO: Maybe add inversion filter for whole set rather than and'ing a
+         * ton of inverted queries?
          */
         if (menuRequest.getExcludeURIs() != null && !menuRequest.getExcludeURIs().isEmpty()) {
             for (Iterator<Path> i = menuRequest.getExcludeURIs().iterator(); i.hasNext();) {
@@ -291,11 +277,10 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         return search;
     }
 
-
     private ListMenu<PropertySet> buildListMenu(ResultSet rs, MenuRequest menuRequest) {
 
         Map<Path, List<PropertySet>> childMap = new HashMap<Path, List<PropertySet>>();
-            List<PropertySet> toplevel = new ArrayList<PropertySet>();
+        List<PropertySet> toplevel = new ArrayList<PropertySet>();
         for (int i = 0; i < rs.getSize(); i++) {
             PropertySet resource = rs.getResult(i);
 
@@ -329,7 +314,6 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         return menu;
     }
 
-
     private MenuItem<PropertySet> buildItem(PropertySet resource, Map<Path, List<PropertySet>> childMap,
             MenuRequest menuRequest) {
         Path uri = resource.getURI();
@@ -337,8 +321,8 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         url.setCollection(true);
 
         Property titleProperty = resource.getProperty(this.navigationTitlePropDef);
-        titleProperty = titleProperty == null ? resource.getProperty(this.titlePropDef): titleProperty;
-        Value title = titleProperty != null ? titleProperty.getValue(): new Value(resource.getName());
+        titleProperty = titleProperty == null ? resource.getProperty(this.titlePropDef) : titleProperty;
+        Value title = titleProperty != null ? titleProperty.getValue() : new Value(resource.getName());
 
         MenuItem<PropertySet> item = new MenuItem<PropertySet>(resource);
         item.setUrl(url);
@@ -359,8 +343,8 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
     }
 
     private class MenuRequest {
+
         private Path currentCollectionUri;
-        private Path uri;
         private String title;
         private PropertyTypeDefinition sortProperty;
         private boolean ascendingSort = true;
@@ -372,7 +356,6 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         private ArrayList<Path> excludeURIs;
         private Locale locale;
         private String token;
-
 
         public MenuRequest(DecoratorRequest request) {
 
@@ -441,21 +424,17 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
                         + PARAMETER_DISPLAY_FROM_LEVEL + "' can be specified");
             }
 
-            if (uri != null && !"".equals(uri)) {
+            if (uri != null && !"".equals(uri.trim())) {
                 try {
+                    if (uri.startsWith("http://") || uri.startsWith("https://")) {
 
-                    if (uri != null && !"".equals(uri.trim())) {
-
-                        if (uri.startsWith("http://") || uri.startsWith("https://")) {
-
-                        } else {
-                            if (!"/".equals(uri) && uri.endsWith("/")) {
-                                uri = uri.substring(0, uri.length() - 1);
-                            }
+                    } else {
+                        if (!"/".equals(uri) && uri.endsWith("/")) {
+                            uri = uri.substring(0, uri.length() - 1);
                         }
-
-                        this.currentCollectionUri = Path.fromString(uri); // override
                     }
+
+                    this.currentCollectionUri = Path.fromString(uri); // override
                 } catch (Throwable t) {
                     throw new DecoratorComponentException("Illegal value for parameter '" + PARAMETER_URI + "': "
                             + request.getStringParameter(PARAMETER_URI));
@@ -494,10 +473,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
                             + "': " + this.freezeAtLevel + ": must be a positive number larger than 0");
                 } else {
                     if (this.currentCollectionUri.getDepth() > (this.freezeAtLevel - 1)) {
-                        List<String> elements = this.currentCollectionUri.getElements();
-
                         this.currentCollectionUri = currentCollectionUri.getPaths().get(this.freezeAtLevel - 1);
-
                     }
                 }
             }
@@ -537,71 +513,57 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
             this.locale = request.getLocale();
         }
 
-
         public Path getCurrentCollectionUri() {
             return this.currentCollectionUri;
         }
-
 
         public String getTitle() {
             return this.title;
         }
 
-
         public PropertyTypeDefinition getSortProperty() {
             return this.sortProperty;
         }
-
 
         public PropertyTypeDefinition getImportancePropDef() {
             return importancePropDef;
         }
 
-
         public boolean isAscendingSort() {
             return this.ascendingSort;
         }
-
 
         public int getResultSets() {
             return this.resultSets;
         }
 
-
         public int getGroupResultSetsBy() {
             return this.groupResultSetsBy;
         }
-
 
         public int getDisplayFromLevel() {
             return this.displayFromLevel;
         }
 
-
         public int getFreezeAtLevel() {
             return this.freezeAtLevel;
         }
-
 
         public Locale getLocale() {
             return this.locale;
         }
 
-
         public String getToken() {
             return this.token;
         }
-
 
         public int getDepth() {
             return this.depth;
         }
 
-
         public ArrayList<Path> getExcludeURIs() {
             return excludeURIs;
         }
-
 
         private void initSortField(DecoratorRequest request) {
             String sortFieldParam = "title";
@@ -639,7 +601,6 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         private PropertyTypeDefinition importancePropDef;
         private PropertyTypeDefinition navigationTitlePropDef;
 
-
         public SubFolderMenuComparator(MenuRequest menuRequest, PropertyTypeDefinition navigationTitlePropDef) {
             this.ascending = menuRequest.isAscendingSort();
             this.collator = Collator.getInstance(menuRequest.getLocale());
@@ -647,7 +608,6 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
             this.importancePropDef = menuRequest.getImportancePropDef();
             this.navigationTitlePropDef = navigationTitlePropDef;
         }
-
 
         public int compare(MenuItem<PropertySet> item1, MenuItem<PropertySet> item2) {
             if (this.importancePropDef != null) {
@@ -690,61 +650,21 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         }
     }
 
-
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
     }
-
-
-    public void setViewService(Service viewService) {
-        this.viewService = viewService;
-    }
-
-
-    public void setTitlePropDef(PropertyTypeDefinition titlePropDef) {
-        this.titlePropDef = titlePropDef;
-    }
-
-
-    public void setHiddenPropDef(PropertyTypeDefinition hiddenPropDef) {
-        this.hiddenPropDef = hiddenPropDef;
-    }
-
 
     public void setImportancePropDef(PropertyTypeDefinition importancePropDef) {
         this.importancePropDef = importancePropDef;
     }
 
-
-    public void setCollectionResourceType(ResourceTypeDefinition collectionResourceType) {
-        this.collectionResourceType = collectionResourceType;
-    }
-
-
-    public void setNavigationTitlePropDef(PropertyTypeDefinition navigationTitlePropDef) {
-        this.navigationTitlePropDef = navigationTitlePropDef;
-    }
-
-
-    public void setModelName(String modelName) {
-        this.modelName = modelName;
-    }
-
-
-    public void setSearcher(Searcher searcher) {
-        this.searcher = searcher;
-    }
-
-
     public void setSearchLimit(int searchLimit) {
         this.searchLimit = searchLimit;
     }
 
-
     protected String getDescriptionInternal() {
         return DESCRIPTION;
     }
-
 
     protected Map<String, String> getParameterDescriptionsInternal() {
         Map<String, String> map = new LinkedHashMap<String, String>();
@@ -762,15 +682,11 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         return map;
     }
 
-
     public void afterPropertiesSet() throws Exception {
         super.afterPropertiesSet();
 
         if (this.viewService == null) {
             throw new BeanInitializationException("JavaBean property 'viewService set");
-        }
-        if (this.searcher == null) {
-            throw new BeanInitializationException("JavaBean property 'searcher' not set");
         }
         if (this.resourceTypeTree == null) {
             throw new BeanInitializationException("JavaBean property 'resourceTypeTree' not set");

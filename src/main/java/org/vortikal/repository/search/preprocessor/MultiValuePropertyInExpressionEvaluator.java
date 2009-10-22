@@ -96,7 +96,7 @@ public abstract class MultiValuePropertyInExpressionEvaluator implements Express
                 return multiValueList.toString();
             } catch (Throwable t) {
                 if (this.logger.isDebugEnabled()) {
-                    this.logger.debug("Unable to get featured arrticles for collection " + uri.toString(), t);
+                    this.logger.debug("Unable to get multi value list for collection " + uri.toString(), t);
                 }
             }
         }

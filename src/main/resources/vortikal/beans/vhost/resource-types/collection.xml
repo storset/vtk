@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
 <beans>
 
   <!-- Resource type 'collection' -->
-  <bean id="collectionResourceTypeDefinition"
-    class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+  <bean id="collectionResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
     <property name="name" value="collection" />
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="assertions">
@@ -28,25 +26,25 @@
         <ref bean="navigationTitlePropDef" />
         <ref bean="collection.typePropDef" />
         <ref bean="collection.recursiveListingPropDef" />
-        <ref bean="collection.pageLimitPropDef" />
+        <ref bean="pageLimitPropDef" />
         <ref bean="collection.sortingPropDef" />
         <ref bean="collection.hideLastModifiedPropDef" />
         <ref bean="collection.hideIntroductionPropDef" />
-        <ref bean="collection.hideNumberOfComments" />
+        <ref bean="hideNumberOfCommentsPropDef" />
       </list>
     </property>
   </bean>
   
-  <bean id="navigationTitlePropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  <bean id="navigationTitlePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
     <property name="contentRelation" value="PRE_CONTENT" />
     <property name="name" value="navigationTitle" />
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
   </bean>
-
-  <bean id="collection.typePropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  
+  <bean id="collection.typePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
     <property name="name" value="collection-type" />
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
@@ -86,32 +84,30 @@
       </bean>
     </property>
   </bean>
-
-  <bean id="collectionTitlePropDef"
-        class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl"
-        parent="abstractPropDef">
+  
+  <bean id="collectionTitlePropDef" class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
     <property name="name" value="collectionTitle" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
     <property name="propertyEvaluator" ref="collectionTitlePropertyEvaluator" />
   </bean>
-
+  
   <bean id="collectionTitlePropertyEvaluator" parent="titleEvaluator">
     <property name="capitalizeResourceNames" value="true" />
   </bean>
-
-  <bean id="collectionOverriddenTitlePropDef"
-        class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
+  
+  <bean id="collectionOverriddenTitlePropDef" class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
     <property name="overriddenPropDef" ref="titlePropDef" />
     <property name="propertyEvaluator" ref="collectionOverriddenTitlePropertyEvaluator" />
   </bean>
-
+  
   <bean id="collectionOverriddenTitlePropertyEvaluator" parent="titleEvaluator">
-    <property name="fallbackTitlePropDef" ref="collectionTitlePropDef"/>
+    <property name="fallbackTitlePropDef" ref="collectionTitlePropDef" />
   </bean>
-
-  <bean id="collection.recursiveListingPropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  
+  <bean id="collection.recursiveListingPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
     <property name="name" value="recursive-listing" />
     <property name="type" value="BOOLEAN" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
@@ -132,12 +128,12 @@
             <entry key="radio" value="true" />
           </map>
         </entry>
-        <!--entry key="editingHints" value="radio" /-->
       </map>
     </property>
   </bean>
-
-  <bean id="collection.pageLimitPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  
+  <bean id="pageLimitPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
     <property name="name" value="page-limit" />
     <property name="type" value="INT" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
@@ -197,8 +193,9 @@
       </bean>
     </property>
   </bean>
-
-  <bean id="collection.sortingPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  
+  <bean id="collection.sortingPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
     <property name="name" value="sorting" />
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
@@ -232,8 +229,9 @@
       </map>
     </property>
   </bean>
-
-  <bean id="collection.hideLastModifiedPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  
+  <bean id="collection.hideLastModifiedPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
     <property name="name" value="hide-last-modified" />
     <property name="type" value="BOOLEAN" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
@@ -257,9 +255,9 @@
       </map>
     </property>
   </bean>
-
-  <bean id="collection.hideIntroductionPropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  
+  <bean id="collection.hideIntroductionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
     <property name="name" value="hide-introduction" />
     <property name="type" value="BOOLEAN" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
@@ -284,8 +282,8 @@
     </property>
   </bean>
   
-  <bean id="collection.hideNumberOfComments"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  <bean id="hideNumberOfCommentsPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
     <property name="name" value="hide-number-of-comments" />
     <property name="type" value="BOOLEAN" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
@@ -309,17 +307,14 @@
       </map>
     </property>
   </bean>
-
-
-  <bean id="resourceInCollection"
-        class="org.vortikal.web.service.ResourceTypeAssertion">
+  
+  <bean id="resourceInCollection" class="org.vortikal.web.service.ResourceTypeAssertion">
     <property name="resourceTypeDefinition" ref="collectionResourceTypeDefinition" />
   </bean>
-
-  <bean id="resourceIsCollection"
-        class="org.vortikal.web.service.ResourceTypeAssertion">
+  
+  <bean id="resourceIsCollection" class="org.vortikal.web.service.ResourceTypeAssertion">
     <property name="resourceTypeDefinition" ref="collectionResourceTypeDefinition" />
     <property name="exactMatch" value="true" />
   </bean>
-
+  
 </beans>

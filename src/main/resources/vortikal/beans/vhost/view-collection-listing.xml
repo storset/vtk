@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
 <beans>
 
   <bean id="collectionListing.viewService" class="org.vortikal.web.service.ServiceImpl">
@@ -55,7 +56,7 @@
     </property>
     <property name="hiddenPropDef" ref="hiddenPropDef" />
     <property name="viewName" value="collectionListing.view" />
-    <property name="pageLimitPropDef" ref="collection.pageLimitPropDef" />
+    <property name="pageLimitPropDef" ref="pageLimitPropDef" />
     <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
     <property name="searchComponents">
       <list>

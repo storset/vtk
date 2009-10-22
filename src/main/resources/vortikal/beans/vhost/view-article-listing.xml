@@ -53,8 +53,8 @@
       </map>
     </property>
     <property name="hiddenPropDef" ref="hiddenPropDef" />
-    <property name="pageLimitPropDef" ref="collection.pageLimitPropDef" />
-    <property name="hideNumberOfComments" ref="collection.hideNumberOfComments" />
+    <property name="pageLimitPropDef" ref="pageLimitPropDef" />
+    <property name="hideNumberOfComments" ref="hideNumberOfCommentsPropDef" />
     <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
     <property name="viewName" value="articleListing.view" />
     <property name="searcher" ref="articleListingSearcher" />
@@ -148,8 +148,7 @@
     </property>
     <property name="query">
       <value>(uri IN {$featuredArticles}) 
-             AND (( type IN article AND published-date &lt;= {$currentTime})
-                    OR (type IN structured-article)) </value>
+              AND (( type IN article AND published-date &lt;= {$currentTime}) OR (type IN structured-article)) </value>
     </property>
   </bean>
 
@@ -158,8 +157,7 @@
     <property name="name" value="articleListing.subfolderArticles" />
     <property name="query">
       <value>(uri IN {$subfolders}* AND uri NOT IN {$featuredArticles}) 
-            AND ((type IN article AND published-date &lt;= {$currentTime}) 
-                  OR (type IN structured-article))</value>
+              AND ((type IN article AND published-date &lt;= {$currentTime}) OR (type IN structured-article))</value>
     </property>
   </bean>
 
@@ -171,28 +169,6 @@
     </property>
   </bean>
 
-  <bean id="articleListing.view" parent="freemarkerView">
-    <property name="url" value="pages/view-collectionlisting.ftl" />
-    <property name="referenceDataProviders">
-      <list>
-        <ref bean="resourceContextProvider" />
-      </list>
-    </property>
-    <property name="attributesMap">
-      <map>
-        <entry key="cssURLs">
-          <list>
-            <value>${themeBaseURL}/view-collectionlisting.css</value>
-          </list>
-        </entry>
-        <entry key="printCssURLs">
-          <list>
-            <value>${themeBaseURL}/view-collectionlisting-print.css</value>
-          </list>
-        </entry>
-      </map>
-    </property>
-  </bean>
-
+  <bean id="articleListing.view" parent="collectionListing.view" />
 
 </beans>

@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
 <beans>
 
-  <bean id="articleListingResourceTypeDefinition"
-    class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="article-listing"/>
-    <property name="namespace" ref="ARTICLE_LISTING_NAMESPACE"/>
+  <bean id="articleListingResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="article-listing" />
+    <property name="namespace" ref="ARTICLE_LISTING_NAMESPACE" />
     <property name="parentTypeDefinition" ref="collectionResourceTypeDefinition" />
     <property name="assertions">
       <list>
         <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
           <property name="namespace" ref="DEFAULT_NAMESPACE" />
-          <property name="name" value="collection-type" />    
+          <property name="name" value="collection-type" />
           <property name="value" value="article-listing" />
           <property name="checkExistenceOnly" value="false" />
         </bean>
@@ -20,32 +18,27 @@
     </property>
     <property name="propertyTypeDefinitions">
       <list>
-        <ref bean="articleListing.featuredArticlesPropDef"/>
+        <ref bean="articleListing.featuredArticlesPropDef" />
         <ref bean="articleListing.recursiveListingPropDef" />
-        <ref bean="articleListing.recursiveListingSubfoldersPropDef"/>
+        <ref bean="articleListing.recursiveListingSubfoldersPropDef" />
         <ref bean="articleListing.sortingPropDef" />
         <ref bean="articleListing.hidePublishedDatePropDef" />
         <ref bean="articleListing.hideIntroductionPropDef" />
         <ref bean="articleListing.hideIntroductionImagePropDef" />
-        <ref bean="articleListing.hideNumberOfComments" />
       </list>
     </property>
   </bean>
-  
-  <bean id="articleListing.featuredArticlesPropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="name" value="featured-articles" /> 
+
+  <bean id="articleListing.featuredArticlesPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="name" value="featured-articles" />
     <property name="type" value="STRING" />
     <property name="multiple" value="true" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
   </bean>
-
-  <bean id="articleListing.recursiveListingPropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="name" value="recursive-listing" />
-    <property name="type" value="BOOLEAN" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
-    <property name="mandatory" value="false" />
+  
+  <bean id="articleListing.recursiveListingPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="collection.recursiveListingPropDef">
     <property name="valueFormatter">
       <bean class="org.vortikal.repository.resourcetype.MessageSourceValueFormatter">
         <constructor-arg value="vortikal.beans.vhost.resource-types.properties.article-listing-recursive-listing" />
@@ -61,20 +54,11 @@
         </property>
       </bean>
     </property>
-    <property name="metadata">
-      <map>
-        <entry key="editingHints">
-          <map>
-            <entry key="radio" value="true" />
-          </map>
-        </entry>
-      </map>
-    </property>
   </bean>
   
-  <bean id="articleListing.recursiveListingSubfoldersPropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="name" value="recursive-listing-subfolders" /> 
+  <bean id="articleListing.recursiveListingSubfoldersPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="name" value="recursive-listing-subfolders" />
     <property name="type" value="STRING" />
     <property name="multiple" value="true" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
@@ -88,10 +72,9 @@
       </map>
     </property>
   </bean>
-
-
-  <bean id="articleListing.sortingPropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  
+  <bean id="articleListing.sortingPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
     <property name="name" value="sorting" />
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
@@ -125,9 +108,9 @@
       </map>
     </property>
   </bean>
-
-
-  <bean id="articleListing.hidePublishedDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  
+  <bean id="articleListing.hidePublishedDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
     <property name="name" value="hide-published-date" />
     <property name="type" value="BOOLEAN" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
@@ -151,9 +134,9 @@
       </map>
     </property>
   </bean>
-
-
-  <bean id="articleListing.hideIntroductionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  
+  <bean id="articleListing.hideIntroductionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
     <property name="name" value="hide-introduction" />
     <property name="type" value="BOOLEAN" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
@@ -177,10 +160,9 @@
       </map>
     </property>
   </bean>
-
-
-
-  <bean id="articleListing.hideIntroductionImagePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  
+  <bean id="articleListing.hideIntroductionImagePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
     <property name="name" value="hide-introduction-image" />
     <property name="type" value="BOOLEAN" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
@@ -205,36 +187,9 @@
     </property>
   </bean>
   
-    <bean id="articleListing.hideNumberOfComments" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="name" value="hide-number-of-comments" />
-    <property name="type" value="BOOLEAN" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
-    <property name="mandatory" value="false" />
-    <property name="vocabulary">
-      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
-        <property name="values">
-          <list>
-            <ref bean="VALUE_TRUE" />
-          </list>
-        </property>
-      </bean>
-    </property>
-    <property name="metadata">
-      <map>
-        <entry key="editingHints">
-          <map>
-            <entry key="hideLabel" value="true" />
-          </map>
-        </entry>
-      </map>
-    </property>
-  </bean>
-  
-  <bean id="resourceIsArticleListing"
-        class="org.vortikal.web.service.ResourceTypeAssertion">
+  <bean id="resourceIsArticleListing" class="org.vortikal.web.service.ResourceTypeAssertion">
     <property name="resourceTypeDefinition" ref="articleListingResourceTypeDefinition" />
     <property name="exactMatch" value="true" />
   </bean>
-
-
+  
 </beans>

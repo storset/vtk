@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
 "http://www.springframework.org/dtd/spring-beans.dtd">
-
 <beans>
-  
+
   <bean id="editor.service" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
     <property name="order" value="-9800" />
@@ -15,8 +14,7 @@
       </list>
     </property>
   </bean>
-
-
+  
   <bean id="editor.abstractEditService" class="org.vortikal.web.service.ServiceImpl" abstract="true">
     <property name="parent" ref="editor.service" />
     <property name="order" value="-9800" />
@@ -26,20 +24,23 @@
       </set>
     </property>
     <property name="attributes">
-      <map><entry key="tabOrder"><value type="java.lang.Integer">152</value></entry></map>
+      <map>
+        <entry key="tabOrder">
+          <value type="java.lang.Integer">152</value>
+        </entry>
+      </map>
     </property>
   </bean>
-
+  
   <bean id="editor.unstructuredXhtmlEditService" parent="editor.abstractEditService">
     <property name="assertions">
       <list>
         <ref bean="resourceTypeInHtml" />
-        <ref bean="resourceTypeIsNotDocument" /> 
+        <ref bean="resourceTypeIsNotDocument" />
       </list>
     </property>
     <property name="handler" ref="editor.unstructuredXhtmlEditHandler" />
   </bean>
-
   <bean id="editor.collectionEditService" parent="editor.abstractEditService">
     <property name="assertions">
       <list>
@@ -66,7 +67,7 @@
     </property>
     <property name="handler" ref="editor.projectEditHandler" />
   </bean>
-
+  
   <bean id="editor.articleListingEditService" parent="editor.abstractEditService">
     <property name="assertions">
       <list>
@@ -75,7 +76,7 @@
     </property>
     <property name="handler" ref="editor.articleListingEditHandler" />
   </bean>
-
+  
   <bean id="editor.eventListingEditService" parent="editor.abstractEditService">
     <property name="assertions">
       <list>
@@ -84,7 +85,7 @@
     </property>
     <property name="handler" ref="editor.eventListingEditHandler" />
   </bean>
-
+  
   <bean id="editor.documentEditService" parent="editor.abstractEditService">
     <property name="assertions">
       <list>
@@ -93,7 +94,7 @@
     </property>
     <property name="handler" ref="editor.editHandler" />
   </bean>
-
+  
   <bean id="editor.browseService" class="org.vortikal.web.service.ServiceImpl">
     <property name="order" value="-999" />
     <property name="assertions">
@@ -108,45 +109,39 @@
       </list>
     </property>
     <property name="handler">
-      <bean class="org.vortikal.edit.fckeditor.FCKeditorConnector"
-            parent="requestLocalRepositoryAware">
+      <bean class="org.vortikal.edit.fckeditor.FCKeditorConnector" parent="requestLocalRepositoryAware">
         <property name="viewService" ref="viewService" />
         <property name="browseViewName" value="editor.browseView" />
         <property name="uploadStatusViewName" value="editor.uploadStatusView" />
       </bean>
     </property>
   </bean>
-
-  <bean id="editor.getSourceStripHeadersInterceptor"
-        class="org.vortikal.web.interceptors.HeaderControlHandlerInterceptor"
-        parent="requestLocalRepositoryAware">
+  
+  <bean id="editor.getSourceStripHeadersInterceptor" class="org.vortikal.web.interceptors.HeaderControlHandlerInterceptor"
+    parent="requestLocalRepositoryAware">
     <property name="includeLastModifiedHeader" value="false" />
     <property name="includeEtagHeader" value="false" />
   </bean>
-
-  <bean id="editor.browseUriAssertion"
-        class="org.vortikal.web.service.RequestURIRegexpAssertion">
+  
+  <bean id="editor.browseUriAssertion" class="org.vortikal.web.service.RequestURIRegexpAssertion">
     <property name="pattern" value="${editor.fck.browseURL}" />
   </bean>
-
-  <bean id="editor.modeParameterAssertion"
-        class="org.vortikal.web.service.RequestParameterAssertion">
+  
+  <bean id="editor.modeParameterAssertion" class="org.vortikal.web.service.RequestParameterAssertion">
     <property name="parameterName" value="mode" />
     <property name="parameterValue" value="editor" />
   </bean>
-
-  <bean id="editor.parameterEqualsEdit"
-        class="org.vortikal.web.service.RequestParameterAssertion">
+  
+  <bean id="editor.parameterEqualsEdit" class="org.vortikal.web.service.RequestParameterAssertion">
     <property name="parameterName" value="action" />
     <property name="parameterValue" value="edit" />
   </bean>
-
-  <bean id="editor.parameterEqualsBrowse"
-        class="org.vortikal.web.service.RequestParameterAssertion">
+  
+  <bean id="editor.parameterEqualsBrowse" class="org.vortikal.web.service.RequestParameterAssertion">
     <property name="parameterName" value="action" />
     <property name="parameterValue" value="browse" />
   </bean>
-
+  
   <bean id="editor.wrappingViewResolver" parent="adminViewResolver">
     <property name="views">
       <map>
@@ -155,7 +150,7 @@
       </map>
     </property>
   </bean>
-
+  
   <bean id="editor.plainViewResolver" class="org.vortikal.web.decorating.MappingViewResolver">
     <property name="views">
       <map>
@@ -164,18 +159,14 @@
       </map>
     </property>
   </bean>
-
-
+  
   <bean id="editor.editView" parent="freemarkerView">
     <property name="url" value="editor/editor.ftl" />
     <property name="referenceDataProviders">
       <list>
-
         <ref bean="resourceContextProvider" />
-
         <ref bean="manage.refreshLockURLProvider" />
         <ref bean="manage.unlockURLProvider" />
-
         <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
           <property name="repository" ref="repository" />
           <property name="service" ref="staticResourceService" />
@@ -184,20 +175,17 @@
           <property name="modelName" value="fckeditorBase" />
           <property name="urlName" value="url" />
         </bean>
-
         <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
           <property name="repository" ref="repository" />
           <property name="service" ref="viewService" />
           <property name="modelName" value="fckeditorBase" />
           <property name="urlName" value="documentURL" />
         </bean>
-
         <bean class="org.vortikal.web.referencedata.provider.StaticURIServiceURLProvider">
           <property name="service" ref="editor.browseService" />
           <property name="path" value="${editor.fck.browseURL}" />
           <property name="modelName" value="fckBrowse" />
         </bean>
-
         <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
           <property name="repository" ref="repository" />
           <property name="service" ref="staticResourceService" />
@@ -206,7 +194,6 @@
           <property name="modelName" value="yuiBase" />
           <property name="urlName" value="url" />
         </bean>
-
         <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
           <property name="modelDataMap">
             <map>
@@ -222,9 +209,7 @@
     </property>
   </bean>
   
-  <bean id="editor.collectionEditView" parent="editor.editView">
-    <!-- property name="url" value="editor/collection-editor.ftl" / -->
-  </bean>
+  <bean id="editor.collectionEditView" parent="editor.editView" />
 
   <bean id="editor.browseView" parent="freemarkerView">
     <property name="url" value="fckeditor/browse.ftl" />
@@ -265,69 +250,57 @@
   </bean>
 
   <!-- Editor main controllers -->
-  
-  <bean id="editor.unstructuredXhtmlEditHandler"
-        class="org.vortikal.edit.editor.UnstructuredXHtmlEditController">
+  <bean id="editor.unstructuredXhtmlEditHandler" class="org.vortikal.edit.editor.UnstructuredXHtmlEditController">
     <property name="resourceManager" ref="editor.unstructuredXhtmlResourceManager" />
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToManage" />
   </bean>
 
-  <bean id="editor.collectionEditHandler"
-        class="org.vortikal.edit.editor.ResourceEditController">
+  <bean id="editor.collectionEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
     <property name="resourceManager" ref="editor.collectionResourceManager" />
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToManage" />
   </bean>
 
-  <bean id="editor.personEditHandler"
-        class="org.vortikal.edit.editor.ResourceEditController">
+  <bean id="editor.personEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
     <property name="resourceManager" ref="editor.personResourceManager" />
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToManage" />
   </bean>
   
-  <bean id="editor.projectEditHandler"
-        class="org.vortikal.edit.editor.ResourceEditController">
+  <bean id="editor.projectEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
     <property name="resourceManager" ref="editor.projectResourceManager" />
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToManage" />
   </bean>
-  
 
-  <bean id="editor.articleListingEditHandler"
-        class="org.vortikal.edit.editor.ResourceEditController">
+  <bean id="editor.articleListingEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
     <property name="resourceManager" ref="editor.articleListingResourceManager" />
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToManage" />
   </bean>
-
-  <bean id="editor.eventListingEditHandler"
-        class="org.vortikal.edit.editor.ResourceEditController">
+  
+  <bean id="editor.eventListingEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
     <property name="resourceManager" ref="editor.eventListingResourceManager" />
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToManage" />
   </bean>
-
-  <bean id="editor.editHandler"
-        class="org.vortikal.edit.editor.ResourceEditController">
+  
+  <bean id="editor.editHandler" class="org.vortikal.edit.editor.ResourceEditController">
     <property name="resourceManager" ref="resourceManager" />
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToManage" />
-    <property name="propertyEditPreprocessors" >
+    <property name="propertyEditPreprocessors">
       <map>
         <entry key-ref="tagsPropDef" value-ref="editor.propertyEditPreprocessors" />
       </map>
     </property>
   </bean>
   
-  <bean id="editor.propertyEditPreprocessors"
-        class="org.vortikal.edit.editor.TagsEditPreprocessor">
-   </bean>
-
-  <bean id="editor.unstructuredXhtmlResourceManager"
-        class="org.vortikal.edit.editor.ResourceWrapperManager"
-        parent="requestLocalRepositoryAware">
+  <bean id="editor.propertyEditPreprocessors" class="org.vortikal.edit.editor.TagsEditPreprocessor" />
+  
+  <bean id="editor.unstructuredXhtmlResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager"
+    parent="requestLocalRepositoryAware">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
     <property name="contentResourceType" ref="htmlResourceTypeDefinition" />
@@ -341,10 +314,9 @@
       </bean>
     </property>
   </bean>
-
-  <bean id="editor.collectionResourceManager"
-        class="org.vortikal.edit.editor.ResourceWrapperManager"
-        parent="requestLocalRepositoryAware">
+  
+  <bean id="editor.collectionResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager"
+    parent="requestLocalRepositoryAware">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
     <property name="contentResourceType" ref="documentResourceTypeDefinition" />
@@ -352,7 +324,7 @@
       <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
         <property name="preContentProperties">
           <list>
-            <ref bean="userTitlePropDef" /> 
+            <ref bean="userTitlePropDef" />
             <ref bean="introductionPropDef" />
             <ref bean="introductionImagePropDef" />
             <ref bean="introductionImageCaptionPropDef" />
@@ -360,9 +332,8 @@
             <ref bean="navigationTitlePropDef" />
             <ref bean="importancePropDef" />
             <ref bean="hiddenPropDef" />
-            
-            <ref bean="collection.pageLimitPropDef" />
-           <ref bean="collection.sortingPropDef" />
+            <ref bean="pageLimitPropDef" />
+            <ref bean="collection.sortingPropDef" />
             <ref bean="collection.hideLastModifiedPropDef" />
             <ref bean="collection.hideIntroductionPropDef" />
           </list>
@@ -370,64 +341,8 @@
       </bean>
     </property>
   </bean>
-
-  <bean id="editor.personResourceManager"
-        class="org.vortikal.edit.editor.ResourceWrapperManager"
-        parent="requestLocalRepositoryAware">
-    <property name="htmlParser" ref="decorating.htmlParser" />
-    <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
-    <property name="contentResourceType" ref="documentResourceTypeDefinition" />
-    <property name="editPropertyProvider">
-      <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
-        <property name="preContentProperties">
-          <list>
-            <ref bean="userTitlePropDef" /> 
-            <ref bean="introductionPropDef" />
-            <ref bean="introductionImagePropDef" />
-            <ref bean="introductionImageCaptionPropDef" />
-            <!-- Navigation -->
-            <ref bean="navigationTitlePropDef" />
-            <ref bean="importancePropDef" />
-            <ref bean="hiddenPropDef" />
-            
-            <ref bean="collection.pageLimitPropDef" />
-           <!--  <ref bean="collection.sortingPropDef" /> -->
-          </list>
-        </property>
-      </bean>
-    </property>
-  </bean>
-
-  <bean id="editor.projectResourceManager"
-        class="org.vortikal.edit.editor.ResourceWrapperManager"
-        parent="requestLocalRepositoryAware">
-    <property name="htmlParser" ref="decorating.htmlParser" />
-    <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
-    <property name="contentResourceType" ref="documentResourceTypeDefinition" />
-    <property name="editPropertyProvider">
-      <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
-        <property name="preContentProperties">
-          <list>
-            <ref bean="userTitlePropDef" /> 
-            <ref bean="introductionPropDef" />
-            <ref bean="introductionImagePropDef" />
-            <ref bean="introductionImageCaptionPropDef" />
-            <!-- Navigation -->
-            <ref bean="navigationTitlePropDef" />
-            <ref bean="importancePropDef" />
-            <ref bean="hiddenPropDef" />
-            
-            <ref bean="collection.pageLimitPropDef" />
-           <!--  <ref bean="collection.sortingPropDef" /> -->
-          </list>
-        </property>
-      </bean>
-    </property>
-  </bean>
-
-  <bean id="editor.articleListingResourceManager"
-        class="org.vortikal.edit.editor.ResourceWrapperManager"
-        parent="requestLocalRepositoryAware">
+  
+  <bean id="editor.personResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager" parent="requestLocalRepositoryAware">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
     <property name="contentResourceType" ref="documentResourceTypeDefinition" />
@@ -439,31 +354,72 @@
             <ref bean="introductionPropDef" />
             <ref bean="introductionImagePropDef" />
             <ref bean="introductionImageCaptionPropDef" />
-            
-            <!-- Navigation -->
             <ref bean="navigationTitlePropDef" />
             <ref bean="importancePropDef" />
             <ref bean="hiddenPropDef" />
-            
-            <ref bean="collection.pageLimitPropDef" />
-            <ref bean="articleListing.featuredArticlesPropDef"/>
+            <ref bean="pageLimitPropDef" />
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="editor.projectResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager"
+    parent="requestLocalRepositoryAware">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
+    <property name="contentResourceType" ref="documentResourceTypeDefinition" />
+    <property name="editPropertyProvider">
+      <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
+        <property name="preContentProperties">
+          <list>
+            <ref bean="userTitlePropDef" />
+            <ref bean="introductionPropDef" />
+            <ref bean="introductionImagePropDef" />
+            <ref bean="introductionImageCaptionPropDef" />
+            <ref bean="navigationTitlePropDef" />
+            <ref bean="importancePropDef" />
+            <ref bean="hiddenPropDef" />
+            <ref bean="pageLimitPropDef" />
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+  
+  <bean id="editor.articleListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager"
+    parent="requestLocalRepositoryAware">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
+    <property name="contentResourceType" ref="documentResourceTypeDefinition" />
+    <property name="editPropertyProvider">
+      <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
+        <property name="preContentProperties">
+          <list>
+            <ref bean="userTitlePropDef" />
+            <ref bean="introductionPropDef" />
+            <ref bean="introductionImagePropDef" />
+            <ref bean="introductionImageCaptionPropDef" />
+            <ref bean="navigationTitlePropDef" />
+            <ref bean="importancePropDef" />
+            <ref bean="hiddenPropDef" />
+            <ref bean="pageLimitPropDef" />
+            <ref bean="articleListing.featuredArticlesPropDef" />
             <ref bean="articleListing.recursiveListingPropDef" />
-            <ref bean="articleListing.recursiveListingSubfoldersPropDef"/>
+            <ref bean="articleListing.recursiveListingSubfoldersPropDef" />
             <ref bean="articleListing.sortingPropDef" />
             <ref bean="articleListing.hidePublishedDatePropDef" />
             <ref bean="articleListing.hideIntroductionPropDef" />
             <ref bean="articleListing.hideIntroductionImagePropDef" />
-            <ref bean="collection.hideNumberOfComments" />
+            <ref bean="hideNumberOfCommentsPropDef" />
           </list>
         </property>
       </bean>
     </property>
   </bean>
 
-
-  <bean id="editor.eventListingResourceManager"
-        class="org.vortikal.edit.editor.ResourceWrapperManager"
-        parent="requestLocalRepositoryAware">
+  <bean id="editor.eventListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager"
+    parent="requestLocalRepositoryAware">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
     <property name="contentResourceType" ref="documentResourceTypeDefinition" />
@@ -475,46 +431,20 @@
             <ref bean="introductionPropDef" />
             <ref bean="introductionImagePropDef" />
             <ref bean="introductionImageCaptionPropDef" />
-            
-            <!-- Navigation -->
             <ref bean="navigationTitlePropDef" />
             <ref bean="importancePropDef" />
             <ref bean="hiddenPropDef" />
-            
-            <ref bean="collection.pageLimitPropDef" />
+            <ref bean="pageLimitPropDef" />
             <ref bean="eventListing.recursiveListingPropDef" />
             <ref bean="eventListing.hideEndDatePropDef" />
             <ref bean="eventListing.hideLocationPropDef" />
             <ref bean="articleListing.hideIntroductionPropDef" />
             <ref bean="articleListing.hideIntroductionImagePropDef" />
-            <ref bean="collection.hideNumberOfComments" />
+            <ref bean="hideNumberOfCommentsPropDef" />
           </list>
-        </property>        
+        </property>
       </bean>
     </property>
   </bean>
-
-
-  <!-- Experimental "structured XHTML editor" (with managed title and h1:
-
-  <bean id="editor.structuredXhtmlEditService" parent="editor.abstractEditService">
-    <property name="assertions">
-      <list>
-        <ref bean="resourceTypeIsXhtmlTrans" />
-      </list>
-    </property>
-    <property name="handler" ref="editor.structuredXhtmlEditHandler" />
-  </bean>
-  <bean id="editor.structuredXhtmlEditHandler"
-        class="org.vortikal.edit.editor.StructuredXHtmlEditController">
-    <property name="resourceManager" ref="resourceManager" />
-    <property name="formView" value="editor.structuredXhtmlView" />
-    <property name="successView" value="redirectToManage" />
-  </bean>
-
-  <bean id="editor.structuredXhtmlView" parent="editor.editView">
-    <property name="url" value="editor/structured-xhtml-editor.ftl" />
-  </bean>
-  -->
-
+  
 </beans>

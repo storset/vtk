@@ -30,7 +30,7 @@
  */
 package org.vortikal.web.filter;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -53,7 +53,7 @@ public class StandardRequestFilter extends AbstractRequestFilter {
     private Map<Pattern, String> urlReplacements;
     
     public void setUrlReplacements(Map<String, String> urlReplacements) {
-		this.urlReplacements = new HashMap<Pattern, String>();
+		this.urlReplacements = new LinkedHashMap<Pattern, String>();
 		for (String key : urlReplacements.keySet()) {
 			Pattern pattern = Pattern.compile(key);
 			String replacement = urlReplacements.get(key);

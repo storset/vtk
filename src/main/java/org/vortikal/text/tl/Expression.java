@@ -55,6 +55,8 @@ public class Expression {
 
     public static final Symbol EQ = new Symbol("=");
     public static final Symbol NEQ = new Symbol("!=");
+    public static final Symbol GT = new Symbol(">");
+    public static final Symbol LT = new Symbol("<");
     public static final Symbol AND = new Symbol("&&");
     public static final Symbol OR = new Symbol("||");
     public static final Symbol NOT = new Symbol("!");
@@ -71,16 +73,20 @@ public class Expression {
         Map<Symbol, Operator> ops = new HashMap<Symbol, Operator>();
 
         // Unary
-        ops.put(NOT, new Not(NOT, Presedence.EIGHT));
+        ops.put(NOT, new Not(NOT, Presedence.TEN));
 
         // Multiplicative
-        ops.put(DIVIDE, new Divide(DIVIDE, Presedence.SEVEN));
-        ops.put(MULTIPLY, new Multiply(MULTIPLY, Presedence.SIX));
+        ops.put(DIVIDE, new Divide(DIVIDE, Presedence.NINE));
+        ops.put(MULTIPLY, new Multiply(MULTIPLY, Presedence.EIGHT));
 
         // Additive
-        ops.put(PLUS, new Plus(PLUS, Presedence.FIVE));
-        ops.put(MINUS, new Minus(MINUS, Presedence.FOUR));
+        ops.put(PLUS, new Plus(PLUS, Presedence.SEVEN));
+        ops.put(MINUS, new Minus(MINUS, Presedence.SIX));
 
+        // Greater/less than
+        ops.put(GT, new Gt(GT, Presedence.FIVE));
+        ops.put(LT, new Lt(LT, Presedence.FOUR));
+        
         // Equality
         ops.put(EQ, new Eq(EQ, Presedence.THREE));
         ops.put(NEQ, new Neq(NEQ, Presedence.TWO));
@@ -104,7 +110,9 @@ public class Expression {
         FIVE(5),
         SIX(6),
         SEVEN(7),
-        EIGHT(8);
+        EIGHT(8),
+        NINE(9),
+        TEN(10);
         private int n;
         private Presedence(int n) {
             this.n = n;
@@ -282,6 +290,59 @@ public class Expression {
             return this.symbol.getSymbol();
         }
         public abstract Object eval(Stack<Object> stack);
+    }
+    
+    public static class Gt extends AbstractOperator {
+        public Gt(Symbol symbol, Presedence presedence) {
+            super(symbol, presedence);
+        }
+        @SuppressWarnings("unchecked")
+		public Object eval(Stack<Object> stack) {
+            Object o2 = stack.pop();
+            Object o1 = stack.pop();
+            if (o1 == null) {
+                throw new IllegalArgumentException("Compare:" + getSymbol() + " first argument is NULL");
+            }
+            if (o2 == null) {
+                throw new IllegalArgumentException("Compare:" + getSymbol() + " second argument is NULL");
+            }
+            if (o1.getClass() != o2.getClass()) {
+            	throw new IllegalArgumentException("Compare: " + o1 + " " + getSymbol() + " " + o2 + ": not comparable");
+            }
+            if (!(o1 instanceof Comparable<?>)) {
+            	throw new IllegalArgumentException("Compare: " + o1 + " " + getSymbol() + " " + o2 + ": not comparable");
+            }
+            Comparable<Object> c1 = (Comparable<Object>) o1;
+            Comparable<Object> c2 = (Comparable<Object>) o2;
+            return Boolean.valueOf(c1.compareTo(c2) > 0);
+        }
+    }
+    
+    public static class Lt extends AbstractOperator {
+        public Lt(Symbol symbol, Presedence presedence) {
+            super(symbol, presedence);
+        }
+        @SuppressWarnings("unchecked")
+		public Object eval(Stack<Object> stack) {
+            Object o2 = stack.pop();
+            Object o1 = stack.pop();
+            if (o1 == null) {
+                throw new IllegalArgumentException("Compare:" + getSymbol() + " first argument is NULL");
+            }
+            if (o2 == null) {
+                throw new IllegalArgumentException("Compare:" + getSymbol() + " second argument is NULL");
+            }
+            if (o1.getClass() != o2.getClass()) {
+            	throw new IllegalArgumentException("Compare: " + o1 + " " + getSymbol() + o2 + ": not comparable");
+            }
+            if (!(o1 instanceof Comparable<?>)) {
+            	throw new IllegalArgumentException("Compare: " + o1 + " " + getSymbol() + o2 + ": not comparable");
+            }
+            Comparable<Object> c1 = (Comparable<Object>) o1;
+            Comparable<Object> c2 = (Comparable<Object>) o2;
+            return Boolean.valueOf(c1.compareTo(c2) < 0);
+        }
+    	
     }
 
     public static class Eq extends AbstractOperator {

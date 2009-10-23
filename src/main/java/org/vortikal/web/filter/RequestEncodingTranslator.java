@@ -31,6 +31,12 @@
 package org.vortikal.web.filter;
 
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -42,21 +48,26 @@ import org.springframework.beans.factory.InitializingBean;
 
 
 /**
- * Request URI processor that translates the URI from one encoding to
- * another.
+ * Request URI processor that translates the URI (and optionally headers)
+ * from one encoding to another.
  *
  * <p>Configurable JavaBean properties:
  * <ul>
- *   <li><code>fromEncoding</code> - the encoding to translate from
- *   <li><code>toEncoding</code> - the encoding to translate to
+ *   <li><code>fromEncoding</code> - the encoding to translate from</li>
+ *   <li><code>toEncoding</code> - the encoding to translate to</li>
+ *   <li><code>translatedHeaders</code> - a set of header names. 
+ *     If <code>*</code> is included in the set, all headers will 
+ *     be translated</li>
  * </ul>
+ * </p>
  */
-public class RequestURIEncodingTranslator extends AbstractRequestFilter
+public class RequestEncodingTranslator extends AbstractRequestFilter
   implements InitializingBean {
 
     private String fromEncoding;
     private String toEncoding;
-    private static Log logger = LogFactory.getLog(RequestURIEncodingTranslator.class);
+    private Set<String> translatedHeaders = new HashSet<String>();
+    private static Log logger = LogFactory.getLog(RequestEncodingTranslator.class);
     
 
     public void setFromEncoding(String fromEncoding) {
@@ -65,6 +76,10 @@ public class RequestURIEncodingTranslator extends AbstractRequestFilter
 
     public void setToEncoding(String toEncoding) {
         this.toEncoding = toEncoding;
+    }
+    
+    public void setTranslatedHeaders(Set<String> translatedHeaders) {
+        this.translatedHeaders = translatedHeaders;
     }
 
     public void afterPropertiesSet() throws Exception {
@@ -111,6 +126,57 @@ public class RequestURIEncodingTranslator extends AbstractRequestFilter
         	return this.uri;
         }
         
+        @Override
+        public String getHeader(String name) {
+            String header = super.getHeader(name);
+            if (!translatedHeaders.contains(name) 
+                    && !translatedHeaders.contains("*")) {
+                return header;
+            }
+            if (header == null) {
+                return null;
+            }
+            try {
+                header = new String(header.getBytes(fromEncoding), toEncoding);
+            } catch (Exception e) {
+                logger.warn("Unable to translate header: " + header, e);
+            }
+            return header;
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public Enumeration getHeaders(String name) {
+            Enumeration e = super.getHeaders(name);
+            if (!translatedHeaders.contains(name) 
+                    && !translatedHeaders.contains("*")) {
+                return e;
+            }
+            List<String> headers = new ArrayList<String>();
+            while (e.hasMoreElements()) {
+                String header = (String) e.nextElement();
+                try {
+                    header = new String(header.getBytes(fromEncoding), toEncoding);
+                } catch (Exception ex) {
+                    logger.warn("Unable to translate header: " + header, ex);
+                }
+                headers.add(header);
+            }
+            final List<String> result = headers;
+            return new Enumeration() {
+                int i = 0;
+                public boolean hasMoreElements() {
+                    return i < result.size() - 1;
+                }
+                public Object nextElement() {
+                    if (hasMoreElements()) {
+                        return result.get(i++);
+                    }
+                    throw new NoSuchElementException();
+                }
+            };
+        }
+
         public String toString() {
             StringBuilder sb = new StringBuilder(this.getClass().getName());
             sb.append(": ").append(this.uri);

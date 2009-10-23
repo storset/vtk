@@ -166,7 +166,7 @@ public class RequestEncodingTranslator extends AbstractRequestFilter
             return new Enumeration() {
                 int i = 0;
                 public boolean hasMoreElements() {
-                    return i < result.size() - 1;
+                    return i < result.size();
                 }
                 public Object nextElement() {
                     if (hasMoreElements()) {

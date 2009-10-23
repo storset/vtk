@@ -124,6 +124,20 @@ resourcetype structured-project {
       ##
     }
     
+     vrtx-date-info{
+    	##
+    	[resource-props "."]
+    	[if publish-date]
+	    	<div class="vrtx-date-info">
+	    	<span class="published-date-label">[localized "publishedDate"]</span> <span class="published-date">[val publish-date] </span>
+	    	[if publish-date < contentLastModified]
+	    		- <span class="last-modified-date">[localized "contentLastModifiedDate"]</span> <span class="last-modified-date">[val contentLastModified]</span>
+	    	[endif]
+	    	</div>
+    	[endif]
+    	##
+    }
+    
   }
 
   view {
@@ -186,6 +200,8 @@ resourcetype structured-project {
     content : (en : "Content", no :"Innhold",nn : "Innhold"),
     contactInfo : (en : "Contact information", no : "Kontaktinformasjon", nn : "Kontaktinformasjon"),
     contactInfoView : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
-    header : (en : "Edit project", no : "Rediger prosjekt", nn : "Rediger prosjekt") 
+    header : (en : "Edit project", no : "Rediger prosjekt", nn : "Rediger prosjekt"),
+    publishedDate : (en : "Published", no :"Publisert", nn:"Publisert"),
+    contentLastModifiedDate : (en : "Last modified", no : "Sist endret", nn : "Sist endra")
   }
 }

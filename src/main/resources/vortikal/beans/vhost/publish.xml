@@ -130,4 +130,42 @@
     </property>
   </bean>
 
+  <bean id="publish.editPublishingService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="categories">
+      <set>
+        <value>tabMenu</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="tabOrder"><value type="java.lang.Integer">200</value></entry>
+      </map>
+    </property>
+    <property name="assertions">
+      <list>
+        <ref bean="writeACLPermissionAssertion" />
+        <ref bean="structuredResources.typeAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="mode" />
+          <property name="parameterValue" value="publishing" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="publishingHandler" />
+  </bean>
+
+  <bean id="publishingHandler" 
+    class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController"
+    parent="requestLocalRepositoryAware">
+    <property name="viewName" value="publishing" />
+  </bean>
+
+  <bean id="publishingView" parent="freemarkerView">
+    <property name="url" value="pages/publishing.ftl" />
+    <property name="referenceDataProviders">
+      <ref bean="resourceContextProvider" />
+    </property>
+  </bean>
+
 </beans>

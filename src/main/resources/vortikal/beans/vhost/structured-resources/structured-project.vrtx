@@ -151,6 +151,7 @@ resourcetype structured-project {
             <resource:person-list />
             <comp:feeds />
           </div>
+          <comp:vrtx-date-info />
         </div>
       </body>
     </html>

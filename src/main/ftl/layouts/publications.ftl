@@ -31,21 +31,21 @@
 
 <ul>
     <#if tab1 != 0>
-      <li><a href="#tabs-${tab1}"><@vrtx.msg code="decorating.frida.publications.selected" default="Selected"/></a></li>
+      <li><a href="#vrtx-publication-tab-${tab1}"><@vrtx.msg code="decorating.frida.publications.selected" default="Selected"/></a></li>
     </#if>
     <#if tab2 != 0>
-      <li><a href="#tabs-${tab2}"><@vrtx.msg code="decorating.frida.publications.books" default="Books"/></a></li>
+      <li><a href="#vrtx-publication-tab-${tab2}"><@vrtx.msg code="decorating.frida.publications.books" default="Books"/></a></li>
     </#if>
     <#if tab3 != 0>
-      <li><a href="#tabs-${tab3}"><@vrtx.msg code="decorating.frida.publications.sciartbookchapters" default="Scientific articles and bookchapters"/></a></li>
+      <li><a href="#vrtx-publication-tab-${tab3}"><@vrtx.msg code="decorating.frida.publications.sciartbookchapters" default="Scientific articles and bookchapters"/></a></li>
     </#if>
     <#if tab4 != 0>
-      <li><a href="#tabs-${tab4}"><@vrtx.msg code="decorating.frida.publications.other" default="Other works"/></a></li>
+      <li><a href="#vrtx-publication-tab-${tab4}"><@vrtx.msg code="decorating.frida.publications.other" default="Other works"/></a></li>
     </#if>
 </ul> 
 
 <#if tab1 != 0>
-  <div id="tabs-${tab1}">
+  <div id="vrtx-publication-tab-${tab1}">
     ${selectedPublications}
   </div>
 </#if>
@@ -56,7 +56,7 @@
 
 <#macro listPublications tabNumber publications>
   <#if tabNumber != 0>
-    <div id="tabs-${tabNumber}">
+    <div id="vrtx-publication-tab-${tabNumber}">
       <ul class="vrtx-frida-publications">
         <#list publications as publication>
           <li id="vrtx-frida-publication-${publication.id}" class="vrtx-frida-publication">

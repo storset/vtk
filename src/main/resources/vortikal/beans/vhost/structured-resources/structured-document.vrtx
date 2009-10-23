@@ -78,6 +78,20 @@ resourcetype structured-document {
       ##
     }
     
+    vrtx-date-info{
+    	##
+    	[resource-props "."]
+    	[if publish-date]
+	    	<div class="vrtx-date-info">
+	    	<span class="published-date-label">[localized "publishedDate"]</span> <span class="published-date">[val publish-date] </span>
+	    	[if publish-date < contentLastModified]
+	    		- <span class="last-modified-date">[localized "contentLastModifiedDate"]</span> <span class="last-modified-date">[val contentLastModified]</span>
+	    	[endif]
+	    	</div>
+    	[endif]
+    	##
+    }
+    
   }
 
   view {
@@ -108,6 +122,8 @@ resourcetype structured-document {
     caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
     content : (en : "Content", no : "Innhold", nn : "Innhald"),
     share-link : (en : "Share at...", no : "Del på...", nn : "Del på..."),
-    share-close : (en : "Close", no : "Lukk", nn : "Lukk")
+    share-close : (en : "Close", no : "Lukk", nn : "Lukk"),
+    publishedDate : (en : "Published", no :"Publisert", nn:"Publisert"),
+    contentLastModifiedDate : (en : "Last modified", no : "Sist endret", nn : "Sist endra")
   }
 }

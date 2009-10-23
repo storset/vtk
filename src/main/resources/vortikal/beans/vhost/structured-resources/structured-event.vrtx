@@ -56,8 +56,8 @@ resourcetype structured-event : structured-document {
             </div>
             <resource:comments />
           </div>
+          <comp:vrtx-date-info />
        </div>
-       
       </body>
     </html>
     ##

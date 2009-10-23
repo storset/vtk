@@ -117,7 +117,7 @@ resourcetype structured-article : structured-document {
           	<resource:comments />
           </div>
           <comp:related-content-in-additional-column  />
- 
+ 		  <comp:vrtx-date-info />
         </div>
       </body>
     </html>

@@ -39,7 +39,7 @@ import org.vortikal.repository.index.mapping.FieldNameMapping;
 import org.vortikal.repository.search.query.NameWildcardQuery;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
-import org.vortikal.repository.search.query.WildcardTermFilter;
+import org.vortikal.repository.search.query.filter.WildcardTermFilter;
 
 /**
  * 

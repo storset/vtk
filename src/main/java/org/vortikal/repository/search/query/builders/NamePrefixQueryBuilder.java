@@ -35,11 +35,11 @@ import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
 import org.vortikal.repository.index.mapping.FieldNameMapping;
-import org.vortikal.repository.search.query.InversionFilter;
 import org.vortikal.repository.search.query.NamePrefixQuery;
-import org.vortikal.repository.search.query.PrefixTermFilter;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
+import org.vortikal.repository.search.query.filter.InversionFilter;
+import org.vortikal.repository.search.query.filter.PrefixTermFilter;
 
 /**
  * XXX: Somewhat experimental, as it uses a constant-score query with a filter

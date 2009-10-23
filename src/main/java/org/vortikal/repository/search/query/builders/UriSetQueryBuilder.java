@@ -6,10 +6,10 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.TermsFilter;
 import org.vortikal.repository.index.mapping.FieldNameMapping;
-import org.vortikal.repository.search.query.InversionFilter;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
 import org.vortikal.repository.search.query.UriSetQuery;
+import org.vortikal.repository.search.query.filter.InversionFilter;
 
 public class UriSetQueryBuilder implements QueryBuilder {
 

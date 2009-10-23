@@ -36,9 +36,9 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
 import org.vortikal.repository.index.mapping.FieldNameMapping;
-import org.vortikal.repository.search.query.InversionFilter;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
+import org.vortikal.repository.search.query.filter.InversionFilter;
 
 /**
  * Used both for building ACLExistsQuery and ACLInheritedFromQuery.

@@ -37,12 +37,12 @@ import org.apache.lucene.search.Query;
 import org.vortikal.repository.index.mapping.FieldNameMapping;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.search.query.InversionFilter;
 import org.vortikal.repository.search.query.PropertyWildcardQuery;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
 import org.vortikal.repository.search.query.TermOperator;
-import org.vortikal.repository.search.query.WildcardTermFilter;
+import org.vortikal.repository.search.query.filter.InversionFilter;
+import org.vortikal.repository.search.query.filter.WildcardTermFilter;
 
 /**
  * 

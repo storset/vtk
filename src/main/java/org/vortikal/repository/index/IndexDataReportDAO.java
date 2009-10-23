@@ -68,7 +68,7 @@ import org.vortikal.repository.reporting.ValueFrequencyPairComparator;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.search.ConfigurablePropertySelect;
-import org.vortikal.repository.search.query.TermExistsFilter;
+import org.vortikal.repository.search.query.filter.TermExistsFilter;
 import org.vortikal.repository.search.query.security.QueryAuthorizationFilterFactory;
 import org.vortikal.repository.store.DataReportDAO;
 

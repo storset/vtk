@@ -49,30 +49,30 @@ import org.apache.commons.logging.LogFactory;
 public class StandardRequestFilter extends AbstractRequestFilter {
 
     private static Log logger = LogFactory.getLog(StandardRequestFilter.class);
-    
-    private Map<Pattern, String> urlReplacements;
-    
-    public void setUrlReplacements(Map<String, String> urlReplacements) {
-		this.urlReplacements = new LinkedHashMap<Pattern, String>();
-		for (String key : urlReplacements.keySet()) {
-			Pattern pattern = Pattern.compile(key);
-			String replacement = urlReplacements.get(key);
-			this.urlReplacements.put(pattern, replacement);
-		}
-	}
 
-	public HttpServletRequest filterRequest(HttpServletRequest request) {
+    private Map<Pattern, String> urlReplacements;
+
+    public void setUrlReplacements(Map<String, String> urlReplacements) {
+        this.urlReplacements = new LinkedHashMap<Pattern, String>();
+        for (String key : urlReplacements.keySet()) {
+            Pattern pattern = Pattern.compile(key);
+            String replacement = urlReplacements.get(key);
+            this.urlReplacements.put(pattern, replacement);
+        }
+    }
+
+    public HttpServletRequest filterRequest(HttpServletRequest request) {
         return new StandardRequestWrapper(request);
     }
-    
+
     private class StandardRequestWrapper extends HttpServletRequestWrapper {
 
         private String uri;
-        
+
         public StandardRequestWrapper(HttpServletRequest request) {
 
             super(request);
-            
+
             String requestURI = request.getRequestURI();
             this.uri = translateUri(requestURI);
 
@@ -80,11 +80,11 @@ public class StandardRequestFilter extends AbstractRequestFilter {
                 logger.debug("Translated uri: from '" + requestURI + "' to '" + this.uri + "'");
             }
         }
-        
+
         public String getRequestURI() {
             return this.uri;
         }
-        
+
         private String translateUri(String requestURI) {
             if (requestURI == null 
                     || "".equals(requestURI)
@@ -93,16 +93,16 @@ public class StandardRequestFilter extends AbstractRequestFilter {
             }
 
             if (urlReplacements != null) {
-            	for (Pattern pattern : urlReplacements.keySet()) {
-            		String replacement = urlReplacements.get(pattern);
-            		requestURI = pattern.matcher(requestURI).replaceAll(replacement);
-            	}
+                for (Pattern pattern : urlReplacements.keySet()) {
+                    String replacement = urlReplacements.get(pattern);
+                    requestURI = pattern.matcher(requestURI).replaceAll(replacement);
+                }
             }
             return requestURI;
         }
     }
 
 }
-    
+
 
 

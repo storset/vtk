@@ -50,22 +50,20 @@ public class ArticleListingSearcher {
     private SearchComponent defaultSearch;
     private SearchComponent featuredArticlesSearch;
     private SearchComponent subfoldersSearch;
-    
+
     private PropertyTypeDefinition subfolderPropDef;
     private PropertyTypeDefinition recursiveListingPropDef;
     private PropertyTypeDefinition featuredArticlesPropDef;
 
-    public Listing getDefaultArticles(HttpServletRequest request, Resource collection, int page,
-            int pageLimit, int offset) throws Exception {
+    public Listing getDefaultArticles(HttpServletRequest request, Resource collection, int page, int pageLimit,
+            int offset) throws Exception {
         return this.defaultSearch.execute(request, collection, page, pageLimit, offset);
     }
 
+    public Listing getFeaturedArticles(HttpServletRequest request, Resource collection, int page, int pageLimit,
+            int offset) throws Exception {
 
-    public Listing getFeaturedArticles(HttpServletRequest request, Resource collection, int page,
-            int pageLimit, int offset) throws Exception {
-
-        Listing result = this.featuredArticlesSearch.execute(request, collection, page, pageLimit,
-                offset);
+        Listing result = this.featuredArticlesSearch.execute(request, collection, page, pageLimit, offset);
         if (result.size() > 1) {
             Property featuredArticlesProp = collection.getProperty(featuredArticlesPropDef);
             sortFeaturedArticles(result, featuredArticlesProp);
@@ -74,15 +72,8 @@ public class ArticleListingSearcher {
         return result;
     }
 
-
-    public Listing getSubfoldersArticles(HttpServletRequest request, Resource collection, int page,
-            int pageLimit, int offset) throws Exception {
-        return this.subfoldersSearch.execute(request, collection, page, pageLimit, offset);
-    }
-
-
-    public Listing getArticles(HttpServletRequest request, Resource collection, int page,
-            int pageLimit, int offset) throws Exception {
+    public Listing getArticles(HttpServletRequest request, Resource collection, int page, int pageLimit, int offset)
+            throws Exception {
 
         Property recursiveListing = collection.getProperty(recursiveListingPropDef);
         Property subfolders = collection.getProperty(subfolderPropDef);
@@ -93,7 +84,6 @@ public class ArticleListingSearcher {
 
         return this.subfoldersSearch.execute(request, collection, page, pageLimit, offset);
     }
-
 
     // Sort the featured articles listing according to the propdef
     private void sortFeaturedArticles(Listing result, Property featuredArticlesProp) {
@@ -110,39 +100,33 @@ public class ArticleListingSearcher {
         result.setFiles(sortedFiles);
     }
 
-
     @Required
     public void setDefaultSearch(SearchComponent defaultSearch) {
         this.defaultSearch = defaultSearch;
     }
-
 
     @Required
     public void setFeaturedArticlesSearch(SearchComponent featuredArticlesSearch) {
         this.featuredArticlesSearch = featuredArticlesSearch;
     }
 
-
     @Required
     public void setSubfoldersSearch(SearchComponent subfoldersSearch) {
         this.subfoldersSearch = subfoldersSearch;
     }
-    
 
     public void setSubfolderPropDef(PropertyTypeDefinition subfolderPropDef) {
         this.subfolderPropDef = subfolderPropDef;
     }
 
-
     public void setRecursiveListingPropDef(PropertyTypeDefinition recursiveListingPropDef) {
         this.recursiveListingPropDef = recursiveListingPropDef;
     }
 
-
     public void setFeaturedArticlesPropDef(PropertyTypeDefinition featuredArticlesPropDef) {
         this.featuredArticlesPropDef = featuredArticlesPropDef;
     }
-    
+
     public PropertyTypeDefinition getFeaturedArticlesPropDef() {
         return this.featuredArticlesPropDef;
     }

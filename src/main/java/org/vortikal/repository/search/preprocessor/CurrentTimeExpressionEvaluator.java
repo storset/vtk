@@ -31,22 +31,20 @@
 package org.vortikal.repository.search.preprocessor;
 
 import java.util.Calendar;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.vortikal.repository.search.QueryException;
 
-
 public class CurrentTimeExpressionEvaluator implements ExpressionEvaluator {
-    
+
     private String variableName = "currentTime";
     private Pattern pattern = compilePattern();
-    
+
     private Pattern compilePattern() {
-        return Pattern.compile(
-            "(" + this.variableName + ")" + "(([+-])(\\d+[ymwdhMs](\\d+[ymwdhMs])*))?");
+        return Pattern.compile("(" + this.variableName + ")" + "(([+-])(\\d+[ymwdhMs](\\d+[ymwdhMs])*))?");
     }
-    
+
     public void setVariableName(String variableName) {
         this.variableName = variableName;
         this.pattern = compilePattern();
@@ -56,11 +54,11 @@ public class CurrentTimeExpressionEvaluator implements ExpressionEvaluator {
         Matcher m = this.pattern.matcher(token);
         return m.matches();
     }
-    
+
     protected Calendar getCalendar() {
         return Calendar.getInstance();
     }
-    
+
     public String evaluate(String token) throws QueryException {
         Matcher m = this.pattern.matcher(token);
         if (!m.matches()) {
@@ -75,11 +73,10 @@ public class CurrentTimeExpressionEvaluator implements ExpressionEvaluator {
             String qtyString = m.group(4);
             processQuantityString(calendar, "+".equals(operator), qtyString);
         }
-//         return currentDate.getTime().toString();
-// XXX: temporary format, just for getting stuff up and running:
+        // return currentDate.getTime().toString();
+        // XXX: temporary format, just for getting stuff up and running:
         return String.valueOf(calendar.getTimeInMillis());
     }
-
 
     private void processQuantityString(Calendar currentDate, boolean add, String params) {
         Integer years = findNamedQuantity(params, "y", add);
@@ -89,17 +86,23 @@ public class CurrentTimeExpressionEvaluator implements ExpressionEvaluator {
         Integer hours = findNamedQuantity(params, "h", add);
         Integer minutes = findNamedQuantity(params, "M", add);
         Integer seconds = findNamedQuantity(params, "s", add);
-        
-        if (years != null) currentDate.add(Calendar.YEAR, years.intValue());
-        if (months != null) currentDate.add(Calendar.MONTH, months.intValue());
-        if (weeks != null) currentDate.add(Calendar.DAY_OF_YEAR, weeks.intValue() * 7);
-        if (days != null) currentDate.add(Calendar.DAY_OF_YEAR, days.intValue());
-        if (hours != null) currentDate.add(Calendar.HOUR, hours.intValue());
-        if (minutes != null) currentDate.add(Calendar.MINUTE, minutes.intValue());
-        if (seconds != null) currentDate.add(Calendar.SECOND, seconds.intValue());
+
+        if (years != null)
+            currentDate.add(Calendar.YEAR, years.intValue());
+        if (months != null)
+            currentDate.add(Calendar.MONTH, months.intValue());
+        if (weeks != null)
+            currentDate.add(Calendar.DAY_OF_YEAR, weeks.intValue() * 7);
+        if (days != null)
+            currentDate.add(Calendar.DAY_OF_YEAR, days.intValue());
+        if (hours != null)
+            currentDate.add(Calendar.HOUR, hours.intValue());
+        if (minutes != null)
+            currentDate.add(Calendar.MINUTE, minutes.intValue());
+        if (seconds != null)
+            currentDate.add(Calendar.SECOND, seconds.intValue());
 
     }
-    
 
     private Integer findNamedQuantity(String params, String identifier, boolean add) {
         // pattern: \\d+<identifier>(EOL|\\d)
@@ -120,7 +123,7 @@ public class CurrentTimeExpressionEvaluator implements ExpressionEvaluator {
             }
         }
 
-        StringBuffer num = new StringBuffer();
+        StringBuilder num = new StringBuilder();
         int numIdx = idx;
         while (numIdx > 0) {
             char c = params.charAt(numIdx - 1);
@@ -142,4 +145,3 @@ public class CurrentTimeExpressionEvaluator implements ExpressionEvaluator {
     }
 
 }
-

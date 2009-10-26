@@ -35,24 +35,27 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.web.servlet.support.RequestContext;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Assertion;
 
 /**
- * A reference data provider that puts a message in the model, based on published status and read-permission.
+ * A reference data provider that puts a message in the model, based on
+ * published status and read-permission.
  * 
  * <p>
  * Configurable JavaBean properties:
  * <ul>
- * <li><code>localizationKey</code> - the localization key to use when looking up the message to display in the model.
- * The resource's name is used as a parameter.
- * <li><code>modelName</code> - the name to use for the sub-model in the main model.
+ * <li><code>localizationKey</code> - the localization key to use when looking
+ * up the message to display in the model. The resource's name is used as a
+ * parameter.
+ * <li><code>modelName</code> - the name to use for the sub-model in the main
+ * model.
  * <li><code>repository</code> - the repository.
  * <li><code>assertion</code> - assertion for when resource is unpublished.
  * </ul>
@@ -60,8 +63,8 @@ import org.vortikal.web.service.Assertion;
  * <p>
  * Model data provided:
  * <ul>
- * <li>the localized message (in a sub-model whose name is configurable trough the <code>modelName</code> JavaBean
- * property)
+ * <li>the localized message (in a sub-model whose name is configurable trough
+ * the <code>modelName</code> JavaBean property)
  * </ul>
  * 
  */
@@ -72,30 +75,25 @@ public class PublishPermissionMessageProvider implements ReferenceDataProvider {
     private Repository repository;
     private Assertion assertion;
 
-
     @Required
     public void setLocalizationKey(String localizationKey) {
         this.localizationKey = localizationKey;
     }
-
 
     @Required
     public void setModelName(String modelName) {
         this.modelName = modelName;
     }
 
-
     // TODO: this whole file is kinda muddy. but wanted as a tabMessage..
     @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
-
-        RequestContext context = RequestContext.getRequestContext();
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Principal principal = securityContext.getPrincipal();
         String token = securityContext.getToken();
 
-        Path uri = RequestContext.getRequestContext().getResourceURI();
+        Path uri = org.vortikal.web.RequestContext.getRequestContext().getResourceURI();
         Resource resource = this.repository.retrieve(token, uri, false);
 
         String permission = ".allowed";
@@ -103,8 +101,7 @@ public class PublishPermissionMessageProvider implements ReferenceDataProvider {
             permission = ".restricted";
         }
 
-        org.springframework.web.servlet.support.RequestContext springContext = new org.springframework.web.servlet.support.RequestContext(
-                request);
+        RequestContext springContext = new RequestContext(request);
         String messagePermission = springContext.getMessage(this.localizationKey + permission, new Object[] {},
                 this.localizationKey);
 
@@ -127,7 +124,6 @@ public class PublishPermissionMessageProvider implements ReferenceDataProvider {
         model.put(this.modelName + "ResourceType", resource.getResourceType());
     }
 
-
     public String toString() {
         StringBuffer sb = new StringBuffer(this.getClass().getName());
         sb.append(" [ ");
@@ -137,21 +133,17 @@ public class PublishPermissionMessageProvider implements ReferenceDataProvider {
         return sb.toString();
     }
 
-
     public Repository getRepository() {
         return repository;
     }
-
 
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
-
     public Assertion getAssertion() {
         return assertion;
     }
-
 
     public void setAssertion(Assertion assertion) {
         this.assertion = assertion;

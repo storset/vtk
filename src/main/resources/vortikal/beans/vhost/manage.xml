@@ -143,7 +143,7 @@
       <ref bean="resourceInCollection" />
     </property>
     <property name="handler" ref="manageCollectionListingHandler" />
-    <property name="handlerInterceptors" ref="previewServiceInterceptor" />
+    <property name="handlerInterceptors" ref="publishPermissionInterceptor" />
   </bean>
 
   <bean id="lockResourceService" class="org.vortikal.web.service.ServiceImpl">
@@ -539,7 +539,6 @@
       </list>
     </property>
     <property name="handler" ref="previewFallbackHandler" />
-    <property name="handlerInterceptors" ref="previewServiceInterceptor" />
   </bean>
 
   <bean id="previewHTMLService" class="org.vortikal.web.service.ServiceImpl">
@@ -550,6 +549,7 @@
       </list>
     </property>
     <property name="handler" ref="previewIframeHandler" />
+    <property name="handlerInterceptors" ref="publishPermissionInterceptor" />
   </bean>
 
   <bean id="previewImageService" class="org.vortikal.web.service.ServiceImpl">
@@ -610,7 +610,7 @@
     </property>
   </bean>
   
-  <bean id="previewServiceInterceptor" class="org.vortikal.web.ReferenceDataProvidingHandlerInterceptor">
+  <bean id="publishPermissionInterceptor" class="org.vortikal.web.ReferenceDataProvidingHandlerInterceptor">
     <property name="providers" ref="publishPermissionMessageProvider" />
   </bean>
 

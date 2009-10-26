@@ -29,7 +29,12 @@
       </list>
     </property>
     <property name="handler" ref="previewIframeHandler" />
-    <property name="handlerInterceptors" ref="previewUnpublishedServiceInterceptor" />
+    <property name="handlerInterceptors">
+      <list> 
+        <ref bean="previewUnpublishedServiceInterceptor" />
+        <ref bean="publishPermissionInterceptor" />    
+      </list>
+    </property>
   </bean>
 
   <bean id="previewUnpublishedServiceInterceptor"

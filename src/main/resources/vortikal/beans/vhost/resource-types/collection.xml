@@ -25,6 +25,7 @@
         <ref bean="collectionOverriddenTitlePropDef" />
         <ref bean="navigationTitlePropDef" />
         <ref bean="collection.typePropDef" />
+        <ref bean="aggregationPropDef" />
         <ref bean="collection.recursiveListingPropDef" />
         <ref bean="pageLimitPropDef" />
         <ref bean="collection.sortingPropDef" />
@@ -33,6 +34,14 @@
         <ref bean="hideNumberOfCommentsPropDef" />
       </list>
     </property>
+  </bean>
+
+  <bean id="aggregationPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="name" value="aggregation" />
+    <property name="type" value="STRING" />
+    <property name="multiple" value="true" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
   </bean>
   
   <bean id="navigationTitlePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"

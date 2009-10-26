@@ -122,6 +122,9 @@ public class PublishPermissionMessageProvider implements ReferenceDataProvider {
         model.put(this.modelName + "State", messagePublishState);
         model.put(this.modelName + "Publish", messagePublish);
         model.put(this.modelName + "Permission", messagePermission);
+
+        // even more hmm..
+        model.put(this.modelName + "ResourceType", resource.getResourceType());
     }
 
 

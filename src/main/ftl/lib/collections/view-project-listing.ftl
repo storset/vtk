@@ -21,7 +21,7 @@
       <#local captionFlattened>
       <@vrtx.flattenHtml value=caption escape=true />
       </#local>
-      <div class="vrtx-project vevent">
+      <div class="vrtx-project">
             <#if introImg?has_content >
             <#local src = vrtx.propValue(project, 'picture', 'thumbnail') />
             	<a class="vrtx-image" href="${projectListing.urls[project.URI]?html}">

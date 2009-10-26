@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
 <beans>
-
   <bean id="articleListing.viewService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="collectionListing.viewService" />
     <property name="order" value="0" />
     <property name="assertions">
       <list>
         <ref bean="resourceIsArticleListing" />
-      </list>   
+      </list>
     </property>
     <property name="handlerInterceptors">
       <list>
@@ -30,17 +28,15 @@
     </property>
     <property name="handler" ref="articleListing.atomHandler" />
   </bean>
-  
 
-  <bean id="articleListing.handler" 
-        class="org.vortikal.web.display.collection.ArticleListingController"
-        parent="requestLocalRepositoryAware">
+  <bean id="articleListing.handler" class="org.vortikal.web.display.collection.ArticleListingController"
+    parent="requestLocalRepositoryAware">
     <property name="resourceManager" ref="resourceManager" />
     <property name="sortPropDefs">
       <list>
         <ref bean="importancePropDef" />
         <ref bean="navigationTitlePropDef" />
-        <ref bean="titlePropDef" />        
+        <ref bean="titlePropDef" />
       </list>
     </property>
     <property name="overridingSortPropDefs">
@@ -73,7 +69,7 @@
     <property name="publishedDatePropDef" ref="publishedDatePropDef" />
     <property name="authorPropDef" ref="authorsPropDef" />
   </bean>
-  
+
   <bean id="articleListingSearcher" class="org.vortikal.web.display.article.ArticleListingSearcher">
     <property name="defaultSearch" ref="articleListing.searchComponent" />
     <property name="featuredArticlesSearch" ref="articleListing.featuredArticlesSearchComponent" />
@@ -92,9 +88,9 @@
     <property name="recursivePropDef" ref="articleListing.recursiveListingPropDef" />
     <property name="sortPropDef" ref="articleListing.sortingPropDef" />
     <property name="query">
-      <value>(uri = {$currentFolder}/* AND uri NOT IN {$featuredArticles}) 
-            AND ((type IN article AND published-date &lt;= {$currentTime})
-            OR (type IN structured-article))
+      <value>
+        (uri = {$currentFolder}/* AND uri NOT IN {$featuredArticles}) 
+          AND ((type IN article AND published-date &lt;= {$currentTime}) OR (type IN structured-article))
       </value>
     </property>
     <property name="queryParser" ref="searchParser" />
@@ -147,8 +143,9 @@
       </bean>
     </property>
     <property name="query">
-      <value>(uri IN {$featuredArticles}) 
-              AND (( type IN article AND published-date &lt;= {$currentTime}) OR (type IN structured-article)) </value>
+      <value>
+        (uri IN {$featuredArticles}) AND (( type IN article AND published-date &lt;= {$currentTime}) OR (type IN structured-article))
+      </value>
     </property>
   </bean>
 
@@ -156,8 +153,10 @@
   <bean id="articleListing.subfoldersSearchComponent" parent="articleListing.searchComponent">
     <property name="name" value="articleListing.subfolderArticles" />
     <property name="query">
-      <value>(uri IN {$subfolders}* AND uri NOT IN {$featuredArticles}) 
-              AND ((type IN article AND published-date &lt;= {$currentTime}) OR (type IN structured-article))</value>
+      <value>
+        (uri IN {$subfolders}* AND uri NOT IN {$featuredArticles}) 
+          AND ((type IN article AND published-date &lt;= {$currentTime}) OR (type IN structured-article))
+      </value>
     </property>
   </bean>
 

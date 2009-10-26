@@ -100,6 +100,8 @@ resourcetype structured-article : structured-document {
             <json:field select="content" />
             <comp:related-content-in-main-column />
             <resource:tags />
+            <comp:author />
+ 		    <comp:vrtx-date-info />
             <div class="vrtx-social-components"
             	 <resource:email-friend />
              	<resource:share-at />
@@ -107,8 +109,6 @@ resourcetype structured-article : structured-document {
           	<resource:comments />
           </div>
           <comp:related-content-in-additional-column  />
-          <comp:author />
- 		  <comp:vrtx-date-info />
         </div>
       </body>
     </html>

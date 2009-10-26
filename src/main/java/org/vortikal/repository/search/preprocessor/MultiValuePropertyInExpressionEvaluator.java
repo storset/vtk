@@ -44,17 +44,17 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 
 public abstract class MultiValuePropertyInExpressionEvaluator implements ExpressionEvaluator {
-	
+
     private Log logger = LogFactory.getLog(MultiValuePropertyInExpressionEvaluator.class);
     private Repository repository;
-    
+
     protected abstract String getVariableName();
-    
+
     protected abstract Property getMultiValueProperty(Resource resource);
 
-	public String evaluate(String token) throws QueryException {
-        
-		if (!matches(token)) {
+    public String evaluate(String token) throws QueryException {
+
+        if (!matches(token)) {
             throw new QueryException("Unknown query token: '" + token + "'");
         }
 
@@ -67,32 +67,32 @@ public abstract class MultiValuePropertyInExpressionEvaluator implements Express
 
             try {
                 Resource resource = this.repository.retrieve(securityToken, uri, true);
-                
+
                 if (!resource.isCollection()) {
-                	if (this.logger.isDebugEnabled()) {
+                    if (this.logger.isDebugEnabled()) {
                         this.logger.debug("Resource is not a collection");
                     }
                     return token;
                 }
-                
+
                 Property multiValueProp = getMultiValueProperty(resource);
-                
-                 if (multiValueProp == null) {
-                	if (this.logger.isDebugEnabled()) {
+
+                if (multiValueProp == null) {
+                    if (this.logger.isDebugEnabled()) {
                         this.logger.debug("Collection " + uri.toString() + " has no values for " + getVariableName());
                     }
-                	return token;
+                    return token;
                 }
-                
+
                 Value[] values = multiValueProp.getValues();
                 StringBuilder multiValueList = new StringBuilder();
-                for (Value value: values) {
-                	if (StringUtils.isNotBlank(multiValueList.toString())) {
-                		multiValueList.append(",");
-                	}
-                	multiValueList.append(value.getStringValue());
-				}
- 
+                for (Value value : values) {
+                    if (StringUtils.isNotBlank(multiValueList.toString())) {
+                        multiValueList.append(",");
+                    }
+                    multiValueList.append(value.getStringValue());
+                }
+
                 return multiValueList.toString();
             } catch (Throwable t) {
                 if (this.logger.isDebugEnabled()) {
@@ -100,15 +100,15 @@ public abstract class MultiValuePropertyInExpressionEvaluator implements Express
                 }
             }
         }
-		return token;
-	}
+        return token;
+    }
 
-	public boolean matches(String token) {
-		return getVariableName().equals(token);
-	}
-	
+    public boolean matches(String token) {
+        return getVariableName().equals(token);
+    }
+
     @Required
-	public void setRepository(Repository repository) {
+    public void setRepository(Repository repository) {
         this.repository = repository;
     }
 

@@ -69,21 +69,18 @@ public abstract class QuerySearchComponent implements SearchComponent {
     private Map<String, SortFieldDirection> sortOrderMapping;
     private PropertyTypeDefinition recursivePropDef;
     private PropertyTypeDefinition sortPropDef;
-    private List<PropertyDisplayConfig> listableProperties;    
+    private List<PropertyDisplayConfig> listableProperties;
     private Repository repository;
 
-    protected abstract Query getQuery(Resource collection, HttpServletRequest request,
-            boolean recursive);
+    protected abstract Query getQuery(Resource collection, HttpServletRequest request, boolean recursive);
 
-
-    public Listing execute(HttpServletRequest request, Resource collection, int page,
-            int pageLimit, int baseOffset) throws Exception {
+    public Listing execute(HttpServletRequest request, Resource collection, int page, int pageLimit, int baseOffset)
+            throws Exception {
         return execute(request, collection, page, pageLimit, baseOffset, this.defaultRecursive);
     }
 
-
-    public Listing execute(HttpServletRequest request, Resource collection, int page,
-            int pageLimit, int baseOffset, boolean recursive) throws Exception {
+    public Listing execute(HttpServletRequest request, Resource collection, int page, int pageLimit, int baseOffset,
+            boolean recursive) throws Exception {
 
         if (this.recursivePropDef != null && collection.getProperty(this.recursivePropDef) != null) {
             recursive = collection.getProperty(this.recursivePropDef).getBooleanValue();
@@ -162,82 +159,67 @@ public abstract class QuerySearchComponent implements SearchComponent {
         return listing;
     }
 
-
     @Required
     public void setName(String name) {
         this.name = name;
     }
 
-
     public String getName() {
         return this.name;
     }
-
 
     @Required
     public void setViewService(Service viewService) {
         this.viewService = viewService;
     }
 
-
     @Required
     public void setResourceManager(ResourceWrapperManager resourceManager) {
         this.resourceManager = resourceManager;
     }
 
-
     public void setRecursivePropDef(PropertyTypeDefinition recursivePropDef) {
         this.recursivePropDef = recursivePropDef;
     }
 
-
     public void setSortPropDef(PropertyTypeDefinition sortPropDef) {
         this.sortPropDef = sortPropDef;
     }
-
 
     @Required
     public void setDefaultSortPropDef(PropertyTypeDefinition defaultSortPropDef) {
         this.defaultSortPropDef = defaultSortPropDef;
     }
 
-
     @Required
     public void setListableProperties(List<PropertyDisplayConfig> listableProperties) {
         this.listableProperties = listableProperties;
     }
 
-
     public void setSortPropertyMapping(Map<String, PropertyTypeDefinition> sortPropertyMapping) {
         this.sortPropertyMapping = sortPropertyMapping;
     }
-
 
     @Required
     public void setDefaultSortOrder(SortFieldDirection defaultSortOrder) {
         this.defaultSortOrder = defaultSortOrder;
     }
 
-
     public void setSortOrderMapping(Map<String, SortFieldDirection> sortOrderMapping) {
         this.sortOrderMapping = sortOrderMapping;
     }
-
 
     public void setTitleLocalizationKey(String titleLocalizationKey) {
         this.titleLocalizationKey = titleLocalizationKey;
     }
 
-
     public String getTitleLocalizationKey() {
         return titleLocalizationKey;
     }
 
-
     public void setDefaultRecursive(boolean defaultRecursive) {
         this.defaultRecursive = defaultRecursive;
     }
-
 
     @Required
     public void setRepository(Repository repository) {

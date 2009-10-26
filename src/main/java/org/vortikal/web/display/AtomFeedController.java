@@ -32,7 +32,9 @@ package org.vortikal.web.display;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
@@ -44,7 +46,6 @@ import org.apache.abdera.model.Feed;
 import org.apache.abdera.model.Link;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.util.URIUtil;
-import org.apache.commons.lang.StringUtils;
 import org.openxri.IRIUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
@@ -67,6 +68,7 @@ public abstract class AtomFeedController implements Controller {
 
     private static final String TAG_PREFIX = "tag:";
     protected static final Namespace NS = Namespace.DEFAULT_NAMESPACE;
+    protected static final Namespace SRNS = Namespace.STRUCTURED_RESOURCE_NAMESPACE;
 
     protected Repository repository;
     protected Service viewService;
@@ -75,13 +77,10 @@ public abstract class AtomFeedController implements Controller {
     protected PropertyTypeDefinition authorPropDef;
     protected PropertyTypeDefinition publishedDatePropDef;
 
+    protected abstract Feed createFeed(HttpServletRequest request, HttpServletResponse response, String token)
+            throws Exception;
 
-    protected abstract Feed createFeed(HttpServletRequest request, HttpServletResponse response,
-            String token) throws Exception;
-
-
-    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response)
-            throws Exception {
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         String token = SecurityContext.getSecurityContext().getToken();
 
@@ -95,8 +94,7 @@ public abstract class AtomFeedController implements Controller {
         return null;
 
     }
-    
-    
+
     protected String getTitle(Resource collection) {
         String feedTitle = collection.getTitle();
         if (Path.ROOT.equals(collection.getURI())) {
@@ -105,15 +103,14 @@ public abstract class AtomFeedController implements Controller {
         return feedTitle;
     }
 
-
-    protected Feed populateFeed(Resource collection, String feedTitle) throws IOException,
-            URIException, UnsupportedEncodingException {
+    protected Feed populateFeed(Resource collection, String feedTitle) throws IOException, URIException,
+            UnsupportedEncodingException {
 
         Feed feed = abdera.newFeed();
         Property published = collection.getProperty(NS, PropertyType.CREATIONTIME_PROP_NAME);
         feed.setId(getId(collection.getURI(), published, getFeedPrefix()));
         feed.addLink(viewService.constructLink(collection.getURI()), "alternate");
-        
+
         feed.setTitle(feedTitle);
 
         String subTitle = getIntroduction(collection);
@@ -139,24 +136,25 @@ public abstract class AtomFeedController implements Controller {
         return feed;
     }
 
-
-    protected void populateEntry(String token, PropertySet result, Entry entry)
-            throws URIException, UnsupportedEncodingException {
-
-        String id = getId(result.getURI(), result.getProperty(NS,
-                PropertyType.CREATIONTIME_PROP_NAME), null);
+    protected void populateEntry(String token, PropertySet result, Entry entry) throws URIException,
+            UnsupportedEncodingException {
+        
+        String id = getId(result.getURI(), result.getProperty(NS, PropertyType.CREATIONTIME_PROP_NAME), null);
         entry.setId(id);
         entry.addCategory(result.getResourceType());
 
         Property prop = result.getProperty(NS, PropertyType.TITLE_PROP_NAME);
         entry.setTitle(prop.getFormattedValue());
 
-        Property type = result.getProperty(NS, PropertyType.XHTML_PROP_NAME);
+        String type = result.getResourceType();
         // Add introduction and/or pic as xhtml if resource is event or
         // article...
         if (type != null
-                && (StringUtils.equals(type.getStringValue(), "event") || StringUtils.equals(type
-                        .getStringValue(), "article"))) {
+                && (type.equals("event") 
+                        || type.equals("article")
+                        || type.equals("structured-article")
+                        || type.equals("structured-event") 
+                        || type.equals("structured-project"))) {
 
             String summary = prepareSummary(result);
             entry.setSummaryAsXhtml(summary);
@@ -215,15 +213,16 @@ public abstract class AtomFeedController implements Controller {
         }
     }
 
-
     protected String prepareSummary(PropertySet resource) {
         StringBuilder sb = new StringBuilder();
         String summary = getIntroduction(resource);
         Property pic = resource.getProperty(NS, PropertyType.PICTURE_PROP_NAME);
+        if (pic == null) {
+            pic = resource.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, PropertyType.PICTURE_PROP_NAME);
+        }
         if (pic != null) {
             String imageRef = pic.getStringValue();
-            if (!imageRef.startsWith("/") && !imageRef.startsWith("https://")
-                    && !imageRef.startsWith("https://")) {
+            if (!imageRef.startsWith("/") && !imageRef.startsWith("https://") && !imageRef.startsWith("https://")) {
                 try {
                     imageRef = resource.getURI().getParent().expand(imageRef).toString();
                     pic.setValue(new Value(imageRef));
@@ -240,20 +239,19 @@ public abstract class AtomFeedController implements Controller {
         return sb.toString();
     }
 
-
     protected String getIntroduction(PropertySet resource) {
         Property prop = resource.getProperty(NS, PropertyType.INTRODUCTION_PROP_NAME);
+        if (prop == null) {
+            prop = resource.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, PropertyType.INTRODUCTION_PROP_NAME);
+        }
         return prop != null ? prop.getFormattedValue() : null;
     }
-
 
     protected String getDescription(PropertySet resource) {
         Namespace NS_CONTENT = Namespace.getNamespace("http://www.uio.no/content");
         Property prop = resource.getProperty(NS_CONTENT, PropertyType.DESCRIPTION_PROP_NAME);
-        return prop != null ? prop.getFormattedValue(HtmlValueFormatter.FLATTENED_FORMAT, null)
-                : null;
+        return prop != null ? prop.getFormattedValue(HtmlValueFormatter.FLATTENED_FORMAT, null) : null;
     }
-
 
     protected Path getPropRef(PropertySet resource, String val) {
         if (val.startsWith("/")) {
@@ -262,9 +260,8 @@ public abstract class AtomFeedController implements Controller {
         return resource.getURI().extend(val);
     }
 
-
-    protected String getId(Path resourceUri, Property published, String prefix)
-            throws URIException, UnsupportedEncodingException {
+    protected String getId(Path resourceUri, Property published, String prefix) throws URIException,
+            UnsupportedEncodingException {
         String host = viewService.constructURL(resourceUri).getHost();
         StringBuilder sb = new StringBuilder(TAG_PREFIX);
         sb.append(host + ",");
@@ -284,26 +281,21 @@ public abstract class AtomFeedController implements Controller {
         return sb.toString();
     }
 
-
     protected String getFeedPrefix() {
         return null;
     }
-
 
     protected Date getLastModified(Resource collection) {
         return collection.getLastModified();
     }
 
-
     protected Property getPicture(Resource collection) {
         return collection.getProperty(NS, PropertyType.PICTURE_PROP_NAME);
     }
 
-
     private String removeInvalid(String s) {
         return s.replaceAll("[#%?\\[\\] ]", "");
     }
-
 
     private String getImageAlt(String imgPath) {
         try {
@@ -314,29 +306,24 @@ public abstract class AtomFeedController implements Controller {
         }
     }
 
-
     @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
-
 
     @Required
     public void setViewService(Service viewService) {
         this.viewService = viewService;
     }
 
-
     @Required
     public void setAbdera(Abdera abdera) {
         this.abdera = abdera;
     }
 
-
     public void setAuthorPropDef(PropertyTypeDefinition authorPropDef) {
         this.authorPropDef = authorPropDef;
     }
-
 
     public void setPublishedDatePropDef(PropertyTypeDefinition publishedDatePropDef) {
         this.publishedDatePropDef = publishedDatePropDef;

@@ -24,17 +24,13 @@ resourcetype featured-content {
            
            <div class="vrtx-featured-item" id="vrtx-featured-item-[val number]">
              [if picture && picture != ""]
+               <div class="vrtx-featured-item-picture">
                [if thetitle && thetitle != ""]
                  <img src="[val picture]" alt="[localized 'featuredPictureAlt'] [val thetitle]" />
                [else]
                  <img src="[val picture]" alt="[localized 'featuredPictureAlt']" />
                [endif]
-             [else]
-               [if thetitle && thetitle != ""]
-                 <img src="/" alt="[localized 'featuredPictureAlt'] [val thetitle]" />
-               [else]
-                 <img src="/" alt="[localized 'featuredPictureAlt']" />
-               [endif]
+               </div>
              [endif]
              <div class="vrtx-box-content">
                [if sticktitle && sticktitle != ""]
@@ -77,7 +73,7 @@ resourcetype featured-content {
       <head>
         <title><comp:title /></title>
       </head>
-      <body class="vrtx-featured-content">
+      <body id="vrtx-featured-content">
          <comp:featured-items />
       </body>
     </html>
@@ -91,7 +87,7 @@ resourcetype featured-content {
      featuredTitle : (en : "Title", no : "Tittel", nn : "Tittel"), 
      featuredDate : (en : "Date", no : "Dato", nn : "Dato"),
      featuredPicture : (en : "Picture", no : "Bilde", nn : "Bilete"),
-     featuredPictureAlt : (en : "Picture to", no : "Bilde til", nn : "Bilete til"),
+     featuredPictureAlt : (en : "Picture to ", no : "Bilde til ", nn : "Bilete til "),
      featuredContent : (en : "Content", no : "Innhold", nn : "Innhald"),
      featuredWebaddress : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
      header : (en : "Edit featured content", no : "Rediger fremhevet innhold", nn : "Rediger fremhevet innhald")

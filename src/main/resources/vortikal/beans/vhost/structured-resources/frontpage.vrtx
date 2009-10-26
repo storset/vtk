@@ -38,15 +38,17 @@ resourcetype frontpage {
              <div class="vrtx-box-content">
                [if content && content != ""]
                  [val content unescaped]
-               [endif]
-               [if urlText && urlText != ""]
-                 [if url && url != ""]
-                   <a href="[val url]" class="more">[val urlText]</a>
-                 [else]
-                   [val urlText]
-                 [endif]
-               [endif]
+               [endif]             
              </div>
+             <div class="vrtx-more">
+             [if urlText && urlText != ""]
+                [if url && url != ""]
+                  <span><a href="[val url]">[val urlText]</a></span>
+                [else]
+                  <span>[val urlText]</span>
+                [endif]
+              [endif]
+              </div>
            </div>
 
         [endlist]
@@ -126,7 +128,7 @@ resourcetype frontpage {
         <comp:css-link />   
         <title><comp:title /></title>
       </head>
-      <body class="vrtx-frontpage">
+      <body id="vrtx-frontpage">
         <div id="vrtx-content">
           <h1><comp:title /></h1>
           <div id="vrtx-main-content">        

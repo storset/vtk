@@ -28,26 +28,19 @@ resourcetype structured-event : structured-document {
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
         <resource:comments-feed-link />
-        
-        <!-- begin article css -->
         <structured-article:css />
-        <!-- end article css -->
-        
-        <!-- begin article js -->
         <structured-article:javascript />
-        <!-- end article js -->
-        
         <title><comp:title /></title>
       </head>
-      <body class="vrtx-structured-event">
+      <body id="vrtx-structured-event">
        <div id="vrtx-content">
          <div id="vrtx-main-content">
             <h1><comp:title /></h1>
-            <comp:introduction-image />
             <comp:introduction />
             <div class="vrtx-byline">
               <resource:time-and-place />
             </div>
+            <comp:introduction-image />
             <json:field select="content" />
             <resource:tags />
             <div class="vrtx-social-components"

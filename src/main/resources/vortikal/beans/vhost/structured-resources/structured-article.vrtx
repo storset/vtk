@@ -28,11 +28,11 @@ resourcetype structured-article : structured-document {
       ##
       [def authors resource-prop "." "author"]
       [if authors && authors != ""]
-        <span class="vrtx-authors"><span class="vrtx-authors-prefix">[localized "by-line"]</span>&nbsp;
+        <span class="vrtx-authors"><span class="vrtx-authors-prefix">[localized "by-line"]</span> 
         [list authors author]
           [if _first]
           [else]
-            [if _last]&nbsp;[localized "authorsAnd"]&nbsp;[else],&nbsp;[endif]
+            [if _last] [localized "authorsAnd"] [else], [endif]
           [endif]
         [val author]  
         [endlist]
@@ -86,27 +86,17 @@ resourcetype structured-article : structured-document {
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
         <resource:comments-feed-link />
-        
-        <!-- begin article css -->
         <structured-article:css />
-        <!-- end article css -->
-        
-        <!-- begin article js -->
         <structured-article:javascript />
-        <!-- end article js -->
-        
         <title><comp:title /></title>
       </head>
-      <body class="vrtx-structured-article">
+      <body id="vrtx-structured-article">
         <div id="vrtx-content"> 
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-${resource:property id=[resource:hideAdditionalContent]}">
             <h1><comp:title /></h1>
-            <comp:introduction-image />
             <comp:introduction />
+            <comp:introduction-image />
             <resource:media-player />
-            <div class="vrtx-byline">
-              <comp:author />
-            </div>
             <json:field select="content" />
             <comp:related-content-in-main-column />
             <resource:tags />
@@ -117,6 +107,7 @@ resourcetype structured-article : structured-document {
           	<resource:comments />
           </div>
           <comp:related-content-in-additional-column  />
+          <comp:author />
  		  <comp:vrtx-date-info />
         </div>
       </body>

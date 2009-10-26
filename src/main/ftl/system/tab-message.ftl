@@ -11,8 +11,8 @@
      t == 'structured-article' || t == 'structured-event' ||
      t == 'structured-project' || t == 'person' || t == 'structured-document' ||
      t == 'frontpage' || t == 'featured-content'> <#-- only show published on a chosen "few" -->
-       ${tabMessagePublishPermissionState?html}:&nbsp;
-       <span id="vrtx-${tabMessagePublishPermissionPublish?html?lower_case}-message">${tabMessagePublishPermissionPublish?html}</span>
+       ${tabMessagePublishPermissionState?html}:
+       <span id="vrtx-${tabMessagePublishPermissionPublish?html?lower_case}-message">${tabMessagePublishPermissionPublish?html}</span>&nbsp;
      </#if>
      ${tabMessagePublishPermissionPermission?html}
   </div>

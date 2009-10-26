@@ -96,7 +96,7 @@ implements ServletContextAware {
         + "from the root element to the desired element: for example, the expression "
         + "'html.body.h1' selects the (first) h1 element in the HTML body.";
 
-    private static final String INCLUDE_ATTRIBUTE_NAME =
+    static final String INCLUDE_ATTRIBUTE_NAME =
         IncludeComponent.class.getName() + ".IncludeRequestAttribute";
 
     private static final Pattern PATH_LEVEL_PATTERN = 

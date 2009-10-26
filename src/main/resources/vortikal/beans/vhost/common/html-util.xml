@@ -214,6 +214,7 @@
   <bean id="decorating.htmlParser.compositeTags" class="org.springframework.beans.factory.config.SetFactoryBean">
     <property name="sourceSet">
       <set>
+        <value>button</value>
         <value>pre</value>
         <value>b</value>
         <value>address</value>

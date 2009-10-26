@@ -41,6 +41,7 @@ public final class DefaultHtmlTagConfiguration {
     private static final Set<String> emptyTags = new HashSet<String>();
     
     static {
+        compositeTags.add("button");
         compositeTags.add("pre");
         compositeTags.add("b");
         compositeTags.add("address");

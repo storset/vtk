@@ -61,25 +61,6 @@
     <#else>
       <#assign url = url + "?" + previewRefreshParameter + "=" + dateStr />
     </#if>
-    
-    <#assign readPermission=""/>
-    <#if resourceContext.currentResource?exists && resourceContext.currentResource.isReadRestricted()>
-      <#assign readPermission="readPermissionRestricted" />
-    </#if>
-
-    <div class="vrtx-preview-message">
-      <#if (resource.resourceType != 'event-listing' &&
-         resource.resourceType != 'article-listing' && resource.resourceType != 'person-listing' 
-         && resource.resourceType != 'project-listing' && resource.resourceType != 'collection')>
-        <@vrtx.msg code="publish.view.state" default="State" />:&nbsp;
-        <#if previewUnpublished?exists && previewUnpublished>
-          <span id="vrtx-preview-unpublished-message"><@vrtx.msg code="publish.unpublished.view.msg" default="Unpublished resource" /></span>
-        <#else>
-          <span id="vrtx-preview-published-message"><@vrtx.msg code="publish.published.view.msg" default="Published resource" /></span>
-        </#if>
-      </#if>
-      <span id="vrtx-read-permission"><@vrtx.msg code="readPermission${readPermission}" default="Allowed for all" /></span>
-    </div>
 
     <iframe class="preview" name="previewIframe" id="previewIframe" src="${url}" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0" vspace="0" hspace="0" style="overflow:visible; width:100%; ">
       [Your user agent does not support frames or is currently configured

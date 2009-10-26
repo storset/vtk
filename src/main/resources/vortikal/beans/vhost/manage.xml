@@ -143,6 +143,7 @@
       <ref bean="resourceInCollection" />
     </property>
     <property name="handler" ref="manageCollectionListingHandler" />
+    <property name="handlerInterceptors" ref="previewServiceInterceptor" />
   </bean>
 
   <bean id="lockResourceService" class="org.vortikal.web.service.ServiceImpl">
@@ -538,6 +539,7 @@
       </list>
     </property>
     <property name="handler" ref="previewFallbackHandler" />
+    <property name="handlerInterceptors" ref="previewServiceInterceptor" />
   </bean>
 
   <bean id="previewHTMLService" class="org.vortikal.web.service.ServiceImpl">
@@ -600,14 +602,30 @@
   </bean>
 
   <bean id="previewCollectionListingServiceInterceptor" class="org.vortikal.web.ReferenceDataProvidingHandlerInterceptor">
-    <property name="providers" ref="indexFileMessageProvider" />
+    <property name="providers">
+     <list>
+       <ref bean="indexFileMessageProvider" />
+       <ref bean="publishPermissionMessageProvider" />
+     </list>
+    </property>
+  </bean>
+  
+  <bean id="previewServiceInterceptor" class="org.vortikal.web.ReferenceDataProvidingHandlerInterceptor">
+    <property name="providers" ref="publishPermissionMessageProvider" />
   </bean>
 
   <bean id="indexFileMessageProvider" class="org.vortikal.web.referencedata.provider.IndexFileMessageProvider">
     <property name="modelName" value="tabMessage" />
     <property name="localizationKey" value="preview.folderWithIndexFile.tabMessage" />
   </bean>
-
+  
+  <bean id="publishPermissionMessageProvider" class="org.vortikal.web.referencedata.provider.PublishPermissionMessageProvider"
+    parent="requestLocalRepositoryAware">
+    <property name="modelName" value="tabMessagePublishPermission" />
+    <property name="localizationKey" value="publish.permission" />
+    <property name="assertion" ref="mayPreviewUnpublishedResourceAssertion" />
+  </bean>
+  
   <!-- MANAGE controllers -->
   <bean id="aboutResourceHandler" class="org.vortikal.web.actions.properties.PropertyEditController"
     parent="requestLocalRepositoryAware">

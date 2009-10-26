@@ -340,6 +340,7 @@ div.activeTab {
 /* TabMenu1 */
 ul.tabMenu1 {
   float: left;
+  margin-right:34px;
 }
 
 ul.tabMenu1 li.navigateToParentService {
@@ -946,24 +947,22 @@ form#vrtx-admin-ownership-form {
   font-size: 100%; 
 }
 
-div.vrtx-preview-message {
-  background:#EEEEEE none repeat scroll 0 0;
-  border-bottom:1px dotted #CCCCCC;
-  margin: -0.75em -0.75em 0.75em;
-  padding:0 15px 0.5em;
+div.tabMessagePublishPermission {
+  float: left; 
+  width: auto;
 }
 
-#vrtx-preview-published-message,
-#vrtx-preview-unpublished-message {
+#vrtx-published-message,
+#vrtx-unpublished-message {
   padding-right: 10px;
   margin-right: 6px;
   border-right: 1px solid #aaa;	
 }
 
-#vrtx-preview-published-message {
+#vrtx-published-message {
   color: green;
 }
 
-#vrtx-preview-unpublished-message {
+#vrtx-unpublished-message {
   color: red;
 }

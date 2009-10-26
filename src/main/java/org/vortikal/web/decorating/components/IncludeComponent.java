@@ -37,6 +37,8 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -94,9 +96,13 @@ implements ServletContextAware {
         + "from the root element to the desired element: for example, the expression "
         + "'html.body.h1' selects the (first) h1 element in the HTML body.";
 
-    static final String INCLUDE_ATTRIBUTE_NAME =
+    private static final String INCLUDE_ATTRIBUTE_NAME =
         IncludeComponent.class.getName() + ".IncludeRequestAttribute";
 
+    private static final Pattern PATH_LEVEL_PATTERN = 
+    	Pattern.compile("(\\$path\\((\\d+)\\))");
+
+    
     private ServletContext servletContext;
 
     private ContentCache<String, String> httpIncludeCache;
@@ -128,13 +134,38 @@ implements ServletContextAware {
     throws Exception {
 
         String uri = request.getStringParameter(PARAMETER_FILE);
-
+        boolean ignoreNotFound = false;
         if (uri != null) {
+            // Support for expanding $path(level):
+            Matcher m = PATH_LEVEL_PATTERN.matcher(uri);
+            Path currentURI = RequestContext.getRequestContext().getResourceURI();
+            StringBuffer sb = new StringBuffer();
+            if (m.find()) {
+                do {
+                    String s = m.group(2);
+                    try {
+                        int level = Integer.parseInt(s);
+                        if (level < 0 || level > currentURI.getDepth()) {
+                            throw new DecoratorComponentException(
+                                    "Invalid level for current URI: " + currentURI + ": " + level);
+                        }
+                        String replacement = currentURI.getElements().get(level);
+                        m.appendReplacement(sb, replacement);
+                        ignoreNotFound = true;
+                    } catch (NumberFormatException e) {
+                        throw new DecoratorComponentException(
+                                "Unable to parse integer: " + s);
+                    }
+                } while (m.find());
+                
+                m.appendTail(sb);
+                uri = sb.toString();
+            }
             if (!uri.startsWith("/")) {
                 Path currentCollection = RequestContext.getRequestContext().getCurrentCollection();
                 uri = currentCollection.expand(uri).toString();
-            }
-            handleDirectInclude(uri, request, response);
+            } 
+            handleDirectInclude(uri, request, response, ignoreNotFound);
             return;
         }
 
@@ -163,7 +194,7 @@ implements ServletContextAware {
 
 
     private void handleDirectInclude(String address, DecoratorRequest request,
-            DecoratorResponse response) throws Exception {
+            DecoratorResponse response, boolean ignoreNotFound) throws Exception {
         String token = null;
 
         boolean asCurrentPrincipal = "true".equals(request.getStringParameter(
@@ -176,6 +207,9 @@ implements ServletContextAware {
         try {
             r = this.repository.retrieve(token, uri, false);
         } catch (ResourceNotFoundException e) {
+        	if (ignoreNotFound) {
+        		return;
+        	}
             throw new DecoratorComponentException(
                     "Resource '" + address + "' not found");
         } catch (AuthenticationException e) {

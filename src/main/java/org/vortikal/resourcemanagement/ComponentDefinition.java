@@ -32,36 +32,55 @@ package org.vortikal.resourcemanagement;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class ComponentDefinition {
     private String name;
     private String definition;
     private List<String> parameters = new ArrayList<String>();
-    
+    private Date lastModified;
+
     public ComponentDefinition(String name, String definition) {
+        if (name == null) {
+            throw new IllegalArgumentException("name cannot be NULL");
+        }
+        if (definition == null) {
+            throw new IllegalArgumentException("definition cannot be NULL");
+        }
         this.name = name;
         this.definition = definition;
+        this.lastModified = new Date();
     }
-    
+
     public String getName() {
         return this.name;
+    }
+
+    public void setDefinition(String definition) {
+        this.definition = definition;
+        this.lastModified = new Date();
     }
     
     public String getDefinition() {
         return this.definition;
     }
+
+    public void setParameters(List<String> parameters) {
+        this.parameters = new ArrayList<String>();
+        this.parameters.addAll(parameters);
+        this.lastModified = new Date();
+    }
+
+    public List<String> getParameters() {
+        return Collections.unmodifiableList(this.parameters);
+    }
     
-	public void setParameters(List<String> parameters) {
-		this.parameters = new ArrayList<String>();
-		this.parameters.addAll(parameters);
-	}
+    public Date getLastModified() {
+        return this.lastModified;
+    }
 
-	public List<String> getParameters() {
-		return Collections.unmodifiableList(this.parameters);
-	}
-
-	public String toString() {
+    public String toString() {
         return this.getClass().getName() + ":" + this.name;
     }
 }

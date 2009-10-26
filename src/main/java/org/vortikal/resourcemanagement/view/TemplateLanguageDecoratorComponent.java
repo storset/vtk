@@ -33,6 +33,7 @@ package org.vortikal.resourcemanagement.view;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -53,14 +54,17 @@ import org.vortikal.web.decorating.HtmlDecoratorComponent;
 import org.vortikal.web.decorating.components.AbstractDecoratorComponent;
 
 public class TemplateLanguageDecoratorComponent extends AbstractDecoratorComponent
-        implements HtmlDecoratorComponent {
+implements HtmlDecoratorComponent {
 
     private String namespace;
     private ComponentDefinition definition;
     private String modelKey;
     private NodeList nodeList;
     private HtmlPageParser htmlParser;
-    
+    private Map<String, DirectiveNodeFactory> directiveHandlers;
+
+    private Date compileTime;
+
     public TemplateLanguageDecoratorComponent(String namespace, 
             ComponentDefinition definition, 
             String modelKey, Map<String, DirectiveNodeFactory> directiveHandlers, 
@@ -68,21 +72,34 @@ public class TemplateLanguageDecoratorComponent extends AbstractDecoratorCompone
         this.namespace = namespace;
         this.definition = definition;
         this.modelKey = modelKey;
-        Parser parser = new Parser(new StringReader(definition.getDefinition()), directiveHandlers);
-        ParseResult result = parser.parse(new HashSet<String>());
-        this.nodeList = result.getNodeList();
         this.htmlParser = htmlParser;
+        this.directiveHandlers = directiveHandlers;
+        compile();
     }
-    
+
+    private void compile() throws Exception {
+        if (this.compileTime == null || 
+                this.compileTime.getTime() < this.definition.getLastModified().getTime()) {
+            Parser parser = new Parser(
+                    new StringReader(definition.getDefinition()), 
+                    this.directiveHandlers);
+            ParseResult result = parser.parse(new HashSet<String>());
+            this.nodeList = result.getNodeList();
+
+            this.compileTime = new Date();
+        }
+    }
+
     public List<HtmlContent> render(DecoratorRequest request) throws Exception {
-    	Context ctx = new Context(request.getLocale());
+        compile();
+        Context ctx = new Context(request.getLocale());
         if (this.modelKey != null) { 
             ctx.define(this.modelKey, request.getMvcModel(), true);
         }
-    	for (String param : this.definition.getParameters()) {
-    		Object value = request.getParameter(param);
-    		ctx.define(param, value, true);
-    	}
+        for (String param : this.definition.getParameters()) {
+            Object value = request.getParameter(param);
+            ctx.define(param, value, true);
+        }
         StringWriter writer = new StringWriter();
         this.nodeList.render(ctx, writer);
         HtmlFragment fragment = this.htmlParser.parseFragment(writer.getBuffer().toString());
@@ -90,7 +107,8 @@ public class TemplateLanguageDecoratorComponent extends AbstractDecoratorCompone
     }
 
     public void render(DecoratorRequest request, DecoratorResponse response)
-            throws Exception {
+    throws Exception {
+        compile();
         Context ctx = new Context(request.getLocale());
         if (this.modelKey != null) { 
             ctx.define(this.modelKey, request.getMvcModel(), true);
@@ -108,18 +126,18 @@ public class TemplateLanguageDecoratorComponent extends AbstractDecoratorCompone
 
     @Override
     protected Map<String, String> getParameterDescriptionsInternal() {
-    	Map<String, String> result = new HashMap<String, String>();
-    	for (String param : this.definition.getParameters()) {
-			result.put(param, "#parameter");
-		}
-    	return result;
+        Map<String, String> result = new HashMap<String, String>();
+        for (String param : this.definition.getParameters()) {
+            result.put(param, "#parameter");
+        }
+        return result;
     }
-    
+
     @Override
     public String getName() {
         return this.definition.getName();
     }
-    
+
     @Override
     public String getNamespace() {
         return this.namespace;

@@ -38,6 +38,12 @@ public class DisplayTemplate {
     
     public DisplayTemplate(String content) {
         this.content = content;
+        this.lastModified = new Date();
+    }
+    
+    public void setContent(String content) {
+        this.content = content;
+        this.lastModified = new Date();
     }
     
     public String getTemplate() {

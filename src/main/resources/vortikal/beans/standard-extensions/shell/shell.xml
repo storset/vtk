@@ -7,8 +7,8 @@
       <description>
          A shell-like management console, reading commands from stdin. 
       </description>
-      <property name="initFilesCSV" value="${shell.InitFiles}" />
-      <property name="runEvalLoop" value="${shell.RunEvalLoop}" />
+      <property name="initFilesCSV" value="${shell.initFiles}" />
+      <property name="runEvalLoop" value="${shell.runEvalLoop}" />
       <property name="consoleHandler">
         <bean class="org.vortikal.shell.SocketHandlerThread">
           <property name="port" value="${shell.listenPort}" />

@@ -4,8 +4,8 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-2.0.xsd">
 
    <bean id="vshell.console" class="org.vortikal.shell.vshell.VShell">
-      <property name="initFilesCSV" value="${vshell.InitFiles}" />
-      <property name="runEvalLoop" value="${vshell.RunEvalLoop}" />
+      <property name="initFilesCSV" value="${vshell.initFiles}" />
+      <property name="runEvalLoop" value="${vshell.runEvalLoop}" />
       <property name="consoleHandler">
         <bean class="org.vortikal.shell.SocketHandlerThread">
           <property name="port" value="${vshell.listenPort}" />

@@ -54,8 +54,7 @@ public class DecoratorTemplateManager extends AbstractCachingTemplateManager {
             description = this.resourceManager.get(parent);
             displayTemplate = description.getDisplayTemplate();
         }
-        final String template = displayTemplate.getTemplate();
-        final long lastMod = displayTemplate.getLastModified().getTime();
+        final DisplayTemplate result = displayTemplate;
         return new TemplateSource() {
             public String getCharacterEncoding() throws Exception {
                 return "utf-8";
@@ -65,11 +64,11 @@ public class DecoratorTemplateManager extends AbstractCachingTemplateManager {
             }
 
             public InputStream getInputStream() throws Exception {
-                return new ByteArrayInputStream(template.getBytes("utf-8"));
+                return new ByteArrayInputStream(result.getTemplate().getBytes("utf-8"));
             }
 
             public long getLastModified() throws Exception {
-                return lastMod;
+                return result.getLastModified().getTime();
             }
         };
     }

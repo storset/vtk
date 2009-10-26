@@ -66,7 +66,6 @@ public class PreviewUnpublishedConditionProvider implements ReferenceDataProvide
         if (assertion.matches(request, resource, principal)) {
             URL url = viewUnpublishedResourceService.constructURL(uri);
             model.put("resourceReference", url.toString());
-            model.put("previewUnpublished", true);
         }
 
     }

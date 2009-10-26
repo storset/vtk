@@ -23,6 +23,15 @@
 <body>
   <#assign copyTitle = vrtx.getMsg("tabMenu2.copyResourcesService") />
   <#assign moveTitle = vrtx.getMsg("tabMenu2.moveResourcesService") />
+  
+    <#assign readPermission=""/>
+    <#if resourceContext.currentResource?exists && resourceContext.currentResource.isReadRestricted()>
+      <#assign readPermission="readPermissionRestricted" />
+    </#if>
+
+    <div class="vrtx-preview-message">
+      <span id="vrtx-read-permission"><@vrtx.msg code="readPermission${readPermission}" default="Allowed for all" /></span>
+    </div>
 
   <@col.listCollection
      withForm=true

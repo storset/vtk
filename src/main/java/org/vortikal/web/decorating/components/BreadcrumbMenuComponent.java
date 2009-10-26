@@ -89,7 +89,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
             }
         }
         String markedUrl = this.viewService.constructLink(currentResource, principal, false);
-        breadCrumbElements.add(new BreadcrumbElement(null, getMenuTitle(currentResource)));
+        breadCrumbElements.add(new BreadcrumbElement(markedUrl, getMenuTitle(currentResource)));
 
         List<MenuItem<PropertySet>> childElements = null;
         childElements = generateChildElements(currentResource.getChildURIs(), principal);

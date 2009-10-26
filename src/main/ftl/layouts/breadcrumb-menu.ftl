@@ -4,10 +4,10 @@
 		<#if (elem_has_next) >
 			<li class="vrtx-ancestor"> <a href="${elem.URL}"><span>${elem.title}</span></a> </li>
 		<#else>
-			<#if (elem.URL?exists)  >
-				<li class="vrtx-parent" ><a href="${elem.URL}"><span>${elem.title}</span></a>
+			<#if (elem.URL?string = markedurl)  >
+				<li class="vrtx-parent" ><a class="vrtx-marked" href="${elem.URL}"><span>${elem.title}</span></a>
 			<#else>
-				<li class="vrtx-parent" ><a class="vrtx-marked" href=""><span>${elem.title}</span></a>
+				<li class="vrtx-parent" ><a href="${elem.URL}"><span>${elem.title}</span></a>
 			</#if>
 		</#if>
 	</#list>

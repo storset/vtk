@@ -1,9 +1,5 @@
 <#ftl strip_whitespace=true>
 
-<#if tabMessage?exists> <#-- the general one -->
-  <div class="tabMessage">${tabMessage?html}</div>
-</#if>
-
 <#if tabMessagePublishPermissionState?exists>
   <div class="tabMessagePublishPermission">
      <#assign t = tabMessagePublishPermissionResourceType />
@@ -15,4 +11,8 @@
      </#if>
      ${tabMessagePublishPermissionPermission?html}
   </div>
+</#if>
+
+<#if tabMessage?exists> <#-- the general one -->
+  <div class="tabMessage">${tabMessage?html}</div>
 </#if>

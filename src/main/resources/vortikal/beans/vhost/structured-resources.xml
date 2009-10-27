@@ -260,7 +260,6 @@
       <map>
         <entry key="jsURLs">
           <list>    
-            <value>${webResources.baseURL}/jquery/jquery-1.3.2.min.js</value>
             <value>${webResources.baseURL}/js/share.js</value>
           </list>
         </entry>
@@ -305,7 +304,6 @@
         <entry key="cssURLs">
           <list>
             <value>${themeBaseURL}/structured-resources/view-person.css</value>
-            <value>${webResources.baseURL}/jquery-ui-tabs-customized/css/ui-lightness/jquery-ui-1.7.2.custom.css</value>
             <value>${themeBaseURL}/view-container.css</value>
           </list>
         </entry>
@@ -328,8 +326,6 @@
       <map>
         <entry key="jsURLs">
           <list>
-            <value>${webResources.baseURL}/jquery/jquery-1.3.2.min.js</value>
-            <value>${webResources.baseURL}/jquery-ui-tabs-customized/js/jquery-ui-1.7.2.custom.min.js</value>
             <value>${webResources.baseURL}/js/tabs.js</value>
           </list>
         </entry>

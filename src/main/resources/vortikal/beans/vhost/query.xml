@@ -51,6 +51,7 @@
         </bean>
 
         <bean class="org.vortikal.repository.search.preprocessor.CurrentTimeExpressionEvaluator" />
+        
         <bean class="org.vortikal.repository.search.preprocessor.CurrentDateExpressionEvaluator">
            <property name="variableName" value="currentDate" />
         </bean>
@@ -113,17 +114,7 @@
     <property name="fieldValueMapper" ref="fieldValueMapper"/>
     <property name="allowWildcardQueries" value="${search.query.allowWildcardQueries}" />
     <property name="queryAuthorizationFilterFactory" ref="queryAuthorizationFilterFactory"/>
-    
-    <!-- XXX: ref this from proper place, when it's ready: -->
-    <property name="publishedPropDef">
-      <bean class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-        <property name="name" value="published"/>
-        <property name="namespace" ref="DEFAULT_NAMESPACE"/>
-        <property name="type" value="BOOLEAN"/>
-        <property name="valueFactory" ref="valueFactory" />
-        <property name="valueFormatterRegistry" ref="valueFormatterRegistry" />
-      </bean>
-    </property>
+    <property name="publishedPropDef" ref="publishedPropDef" />
   </bean>
 
   <!-- Searcher implementation (wrapped in throttler)-->

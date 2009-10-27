@@ -43,7 +43,6 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.preprocessor.QueryStringPreProcessor;
 import org.vortikal.repository.search.query.Query;
 
-
 public class ParserImpl implements Parser, InitializingBean {
 
     private QueryParserFactory parserFactory;
@@ -54,10 +53,10 @@ public class ParserImpl implements Parser, InitializingBean {
         this.parserFactory = parserFactory;
     }
 
-    public void setQueryStringPreProcessor(QueryStringPreProcessor queryStringPreProcessor)  {
+    public void setQueryStringPreProcessor(QueryStringPreProcessor queryStringPreProcessor) {
         this.queryStringPreProcessor = queryStringPreProcessor;
     }
-    
+
     public void afterPropertiesSet() throws Exception {
         if (this.resourceTypeTree == null) {
             throw new BeanInitializationException("JavaBean property 'resourceTypeTree' not set");
@@ -67,7 +66,7 @@ public class ParserImpl implements Parser, InitializingBean {
         }
         if (this.queryStringPreProcessor == null) {
             throw new BeanInitializationException(
-                "JavaBean property 'queryStringPreProcessorImpl' not set");
+                    "JavaBean property 'queryStringPreProcessorImpl' not set");
         }
 
     }
@@ -94,7 +93,7 @@ public class ParserImpl implements Parser, InitializingBean {
         if (sortString == null || "".equals(sortString.trim())) {
             return null;
         }
-    
+
         String[] fields = sortString.split(",");
         List<SortField> result = new ArrayList<SortField>();
         Set<String> referencedFields = new HashSet<String>();
@@ -107,7 +106,7 @@ public class ParserImpl implements Parser, InitializingBean {
             String[] pair = specifier.split("\\s+");
             if (pair.length == 2) {
                 field = pair[0];
-                if ("descending".startsWith(pair[1])) {
+                if ("descending".startsWith(pair[1]) || "DESCENDING".startsWith(pair[1])) {
                     direction = SortFieldDirection.DESC;
                 }
             } else if (pair.length == 1) {
@@ -116,38 +115,48 @@ public class ParserImpl implements Parser, InitializingBean {
                 throw new QueryException("Invalid sort field: '" + specifier + "'");
             }
             SortField sortField = null;
-            
+
             if (referencedFields.contains(field)) {
                 throw new QueryException(
-                    "Sort field '" + field + "' occurs more than once");
+                        "Sort field '" + field + "' occurs more than once");
             }
 
             if (PropertySet.URI_IDENTIFIER.equals(field)) {
                 uriDirection = direction;
                 break;
-            } 
+            }
 
-            if (PropertySet.TYPE_IDENTIFIER.equals(field) || 
+            if (PropertySet.TYPE_IDENTIFIER.equals(field) ||
                     PropertySet.NAME_IDENTIFIER.equals(field)) {
                 sortField = new TypedSortField(field, direction);
             } else {
                 String prefix = null;
-                String name = null;
+                String nameAndCvaSpec = null;
 
                 String[] components = field.split(":");
                 if (components.length == 2) {
                     prefix = components[0];
-                    name = components[1];
+                    nameAndCvaSpec = components[1];
                 } else if (components.length == 1) {
-                    name = components[0];
+                    nameAndCvaSpec = components[0];
                 } else {
                     throw new QueryException("Unknown sort field: '" + field + "'");
                 }
+                String name = nameAndCvaSpec;
+                String cvaSpec = null;
+                int cvaIdx = nameAndCvaSpec.indexOf('@');
+                if (cvaIdx > 0 && cvaIdx < nameAndCvaSpec.length() - 1) {
+                    name = nameAndCvaSpec.substring(0, cvaIdx);
+                    cvaSpec = nameAndCvaSpec.substring(cvaIdx + 1);
+                }
+
                 PropertyTypeDefinition def =
-                    resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
-                sortField = new PropertySortField(def, direction);
+                        resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
+                PropertySortField propSortField = new PropertySortField(def, direction);
+                propSortField.setComplexValueAttributeSpecifier(cvaSpec);
+                sortField = propSortField;
             }
-            
+
             referencedFields.add(field);
             result.add(sortField);
         }
@@ -160,5 +169,4 @@ public class ParserImpl implements Parser, InitializingBean {
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
     }
-
 }

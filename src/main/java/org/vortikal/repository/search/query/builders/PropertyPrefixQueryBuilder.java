@@ -35,7 +35,7 @@ import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
 import org.vortikal.repository.index.mapping.FieldNameMapping;
-import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.query.PropertyPrefixQuery;
 import org.vortikal.repository.search.query.QueryBuilder;
@@ -61,25 +61,31 @@ public class PropertyPrefixQueryBuilder implements QueryBuilder {
         PropertyTypeDefinition def = this.ppq.getPropertyDefinition();
         String term = this.ppq.getTerm();
         
-        if (! (def.getType() == PropertyType.Type.PRINCIPAL ||
-                def.getType() == PropertyType.Type.STRING ||
-                def.getType() == PropertyType.Type.HTML)) {
-             throw new QueryBuilderException("Prefix queries are only supported for "
-                 + "property types PRINCIPAL, STRING and HTML. "
-                 + "Use range queries for dates and numbers.");
-         }
-        
+        if (!(def.getType() == Type.PRINCIPAL ||
+                def.getType() == Type.STRING ||
+                def.getType() == Type.HTML ||
+                def.getType() == Type.JSON)) {
+            throw new QueryBuilderException("Prefix queries are only supported for "
+                    + "property types PRINCIPAL, STRING, HTML and JSON w/attribute specifier."
+                    + "Use range queries for dates and numbers.");
+        }
+
         TermOperator op = ppq.getOperator();
-        
+
         boolean inverted = (op == TermOperator.NE || op == TermOperator.NE_IGNORECASE);
         boolean ignorecase = (op == TermOperator.NE_IGNORECASE || op == TermOperator.EQ_IGNORECASE);
 
         if (ignorecase) {
             term = term.toLowerCase();
         }
-        
-        Filter filter = new PrefixTermFilter(
-                new Term(FieldNameMapping.getSearchFieldName(def, ignorecase), term));
+
+        String fieldName = FieldNameMapping.getSearchFieldName(def, ignorecase);
+        if (def.getType() == Type.JSON && this.ppq.getComplexValueAttributeSpecifier() != null) {
+            fieldName = FieldNameMapping.getJSONSearchFieldName(
+                    def, ppq.getComplexValueAttributeSpecifier(), ignorecase);
+        }
+
+        Filter filter = new PrefixTermFilter(new Term(fieldName, term));
 
         if (inverted) {
             filter = new InversionFilter(filter);

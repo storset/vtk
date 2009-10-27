@@ -34,8 +34,9 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
+
 import org.vortikal.repository.index.mapping.FieldNameMapping;
-import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.query.PropertyWildcardQuery;
 import org.vortikal.repository.search.query.QueryBuilder;
@@ -62,11 +63,12 @@ public class PropertyWildcardQueryBuilder implements QueryBuilder {
         PropertyTypeDefinition def = this.query.getPropertyDefinition();
         String wildcard = this.query.getTerm();
 
-        if (! (def.getType() == PropertyType.Type.PRINCIPAL ||
-                def.getType() == PropertyType.Type.STRING ||
-                def.getType() == PropertyType.Type.HTML)) {
+        if (! (def.getType() == Type.PRINCIPAL ||
+                def.getType() == Type.STRING ||
+                def.getType() == Type.HTML ||
+                def.getType() == Type.JSON)) {
              throw new QueryBuilderException("Wildcard queries are only supported for "
-                 + "property types PRINCIPAL, STRING and HTML. "
+                 + "property types PRINCIPAL, STRING, HTML and JSON w/attribute specifier. "
                  + "Use range queries for dates and numbers.");
          }
 
@@ -76,6 +78,11 @@ public class PropertyWildcardQueryBuilder implements QueryBuilder {
         boolean invert = (op == TermOperator.NE || op == TermOperator.NE_IGNORECASE);
         
         String fieldName = FieldNameMapping.getSearchFieldName(def, ignorecase);
+        if (def.getType() == Type.JSON && query.getComplexValueAttributeSpecifier() != null) {
+            fieldName = FieldNameMapping.getJSONSearchFieldName(def,
+                    query.getComplexValueAttributeSpecifier(), ignorecase);
+        }
+
         Term wTerm = new Term(fieldName, (ignorecase ? wildcard.toLowerCase() : wildcard));
 
         Filter filter = new WildcardTermFilter(wTerm);

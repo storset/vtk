@@ -61,15 +61,18 @@ public class PropertyRangeQueryBuilder implements QueryBuilder {
         
         String fromEncoded = this.fieldValueMapper.encodeIndexFieldValue(from, def.getType(), false);
         String toEncoded = this.fieldValueMapper.encodeIndexFieldValue(to, def.getType(), false);
-        
+
         String fieldName = FieldNameMapping.getSearchFieldName(def, false);
-        
+        if (this.prq.getComplexValueAttributeSpecifier() != null) {
+            fieldName = FieldNameMapping.getJSONSearchFieldName(def,
+                    this.prq.getComplexValueAttributeSpecifier(), false);
+        }
+
         ConstantScoreRangeQuery csrq = new ConstantScoreRangeQuery(fieldName, 
                 fromEncoded, toEncoded, this.prq.isInclusive(), this.prq.isInclusive());
         
         return csrq;
-        
-        
+
     }
 
 }

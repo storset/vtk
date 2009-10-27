@@ -35,6 +35,7 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 public class PropertySortField extends AbstractSortField {
 
     private PropertyTypeDefinition definition;
+    private String complexValueAttributeSpecifier;
     
     public PropertySortField(PropertyTypeDefinition def) {
         this.definition = def;
@@ -53,7 +54,21 @@ public class PropertySortField extends AbstractSortField {
     }
 
     public String toString() {
-        return this.definition.getName() + " " + getDirection().toString();
+        if (this.complexValueAttributeSpecifier != null){
+            return this.definition.getName() + "@"
+                    + this.complexValueAttributeSpecifier
+                    + " " + getDirection().toString();
+        } else {
+            return this.definition.getName() + " " + getDirection().toString();
+        }
+    }
+
+    public String getComplexValueAttributeSpecifier() {
+        return complexValueAttributeSpecifier;
+    }
+
+    public void setComplexValueAttributeSpecifier(String complexValueAttributeSpecifier) {
+        this.complexValueAttributeSpecifier = complexValueAttributeSpecifier;
     }
     
 }

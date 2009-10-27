@@ -219,11 +219,22 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
     private QueryBuilder getAbstractPropertyQueryBuilder(Query query)
         throws QueryBuilderException {
 
+        AbstractPropertyQuery apq = (AbstractPropertyQuery)query;
+        String cva = apq.getComplexValueAttributeSpecifier();
+        Type type = apq.getPropertyDefinition().getType();
+        if (!(cva == null ^ type == Type.JSON)) {
+            throw new QueryBuilderException("Attribute specifier (..@attr) is required for JSON-property queries and forbidden for other types.");
+        }
+
         if (query instanceof PropertyTermQuery) {
             PropertyTermQuery ptq = (PropertyTermQuery) query;
             PropertyTypeDefinition propDef = ptq.getPropertyDefinition();
 
             if (ptq.getOperator() == TermOperator.IN || ptq.getOperator() == TermOperator.NI) {
+                if (type == Type.JSON) {
+                    throw new QueryBuilderException("Operators IN or NI not supported for properties of type JSON");
+                }
+
                 Vocabulary<Value> vocabulary = propDef.getVocabulary();
                 if (vocabulary == null || !(vocabulary instanceof HierarchicalVocabulary<?>)) {
                     throw new QueryBuilderException("Property type doesn't have a hierachical vocabulary: " + propDef);
@@ -237,9 +248,15 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
             
             TermOperator op = ptq.getOperator();
             boolean lowercase = (op == TermOperator.EQ_IGNORECASE || op == TermOperator.NE_IGNORECASE);
-            String fieldName = FieldNameMapping.getSearchFieldName(propDef, lowercase);
-            String fieldValue = this.fieldValueMapper.encodeIndexFieldValue(ptq.getTerm(), propDef.getType(), lowercase);
-            return new PropertyTermQueryBuilder(op, fieldName, fieldValue);
+            if (cva != null) {
+                String fieldName = FieldNameMapping.getJSONSearchFieldName(propDef, cva, lowercase);
+                String fieldValue = lowercase ? ptq.getTerm().toLowerCase() : ptq.getTerm();
+                return new PropertyTermQueryBuilder(op, fieldName, fieldValue);
+            } else {
+                String fieldName = FieldNameMapping.getSearchFieldName(propDef, lowercase);
+                String fieldValue = this.fieldValueMapper.encodeIndexFieldValue(ptq.getTerm(), propDef.getType(), lowercase);
+                return new PropertyTermQueryBuilder(op, fieldName, fieldValue);
+            }
         }
         
         if (query instanceof PropertyPrefixQuery) {

@@ -74,9 +74,8 @@ public class SearcherImpl implements Searcher {
              "Property 'luceneHitLimit' must be an integer greater than zero.");
         }
     }
-    
-    public ResultSet execute(String token, Search search) throws QueryException {
 
+    public ResultSet execute(String token, Search search) throws QueryException {
         Query query = search.getQuery();
         Sorting sorting = search.getSorting();
         int clientLimit = search.getLimit();
@@ -176,7 +175,7 @@ public class SearcherImpl implements Searcher {
             }
         }
     }
-    
+
     private TopDocs doTopDocsQuery(IndexSearcher searcher, 
                                    org.apache.lucene.search.Query query,
                                    org.apache.lucene.search.Filter filter,

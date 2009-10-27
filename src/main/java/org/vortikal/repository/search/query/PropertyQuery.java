@@ -34,6 +34,22 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
 public interface PropertyQuery extends Query {
 
+    /**
+     * Get the definition of the property on which to perform the query.
+     */
     public PropertyTypeDefinition getPropertyDefinition();
-
+    
+    /**
+     * Specifies a query on an attribute/part of a complex property value (e.g. part of JSON structure), and
+     * not the complete value as a whole.
+     *  
+     * The format of this string is value type specific and is typically a field selector 
+     * for JSON values. This only makes sense for property types that can have complex values, and
+     * support for this is up to query implementation.
+     *
+     * @return A <code>String</code>, which is a value/type specific attribute/part selector or
+     *         <code>null</code> if no specific value-attribute should be queried.
+     */
+    public String getComplexValueAttributeSpecifier();
+    
 }

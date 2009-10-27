@@ -46,7 +46,7 @@ public class PropertyWildcardQuery extends AbstractPropertyQuery {
     public String getTerm() {
         return this.term;
     }
-    
+
     public TermOperator getOperator() {
         return this.op;
     }

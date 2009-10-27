@@ -34,14 +34,23 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
 public abstract class AbstractPropertyQuery implements PropertyQuery {
 
-    private PropertyTypeDefinition propertyDefinition;
+    private PropertyTypeDefinition propDef;
+    private String complexValueAttributeSpecifier;
 
-    public AbstractPropertyQuery(PropertyTypeDefinition propertyDefinition) {
-        this.propertyDefinition = propertyDefinition;
+    public AbstractPropertyQuery(PropertyTypeDefinition propDef) {
+        this.propDef = propDef;
     }
     
     public PropertyTypeDefinition getPropertyDefinition() {
-        return this.propertyDefinition;
+        return this.propDef;
+    }
+
+    public String getComplexValueAttributeSpecifier() {
+        return this.complexValueAttributeSpecifier;
+    }
+
+    public void setComplexValueAttributeSpecifier(String specifier) {
+        this.complexValueAttributeSpecifier = specifier;
     }
 
 }

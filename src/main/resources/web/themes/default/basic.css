@@ -950,19 +950,24 @@ div.tabMessagePublishPermission {
   float: left; 
   width: auto;
   padding-right: 15px;
+  font-size: 0.8em;
 }
 
 #vrtx-published-message,
-#vrtx-unpublished-message {
+#vrtx-unpublished-message,
+#vrtx-publisert-message,
+#vrtx-upublisert-message {
   padding-right: 10px;
   margin-right: 6px;
   border-right: 1px solid #aaa;	
 }
 
-#vrtx-published-message {
+#vrtx-published-message,
+#vrtx-publisert-message {
   color: green;
 }
 
-#vrtx-unpublished-message {
+#vrtx-unpublished-message,
+#vrtx-upublisert-message {
   color: red;
 }

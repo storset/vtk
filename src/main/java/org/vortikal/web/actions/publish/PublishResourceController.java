@@ -45,6 +45,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.web.Message;
 import org.vortikal.web.RequestContext;
 
 public class PublishResourceController implements Controller {
@@ -52,10 +53,11 @@ public class PublishResourceController implements Controller {
     protected Repository repository;
     private String viewName;
     private PropertyTypeDefinition publishDatePropDef;
-    
+
     private static final String ACTION_PARAM = "action";
     private static final String PUBLISH_PARAM = "publish";
     private static final String UNPUBLISH_PARAM = "unpublish";
+
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
@@ -63,7 +65,9 @@ public class PublishResourceController implements Controller {
         String token = SecurityContext.getSecurityContext().getToken();
         Path resourceURI = RequestContext.getRequestContext().getResourceURI();
         Resource resource = repository.retrieve(token, resourceURI, true);
-        
+
+        String msgCode = "publish.permission.";
+
         String action = request.getParameter(ACTION_PARAM);
         if (PUBLISH_PARAM.equals(action)) {
             Property publishDateProp = resource.getProperty(this.publishDatePropDef);
@@ -71,23 +75,30 @@ public class PublishResourceController implements Controller {
                 publishDateProp = resource.createProperty(this.publishDatePropDef);
             }
             publishDateProp.setDateValue(Calendar.getInstance().getTime());
+            msgCode += "publish";
         } else if (UNPUBLISH_PARAM.equals(action)) {
             resource.removeProperty(this.publishDatePropDef);
+            msgCode += "unpublish";
         }
-        
+
         this.repository.store(token, resource);
-        
+
+        RequestContext.getRequestContext().addInfoMessage(new Message(msgCode));
+
         return new ModelAndView(this.viewName, model);
     }
+
 
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
+
     public void setViewName(String viewName) {
         this.viewName = viewName;
     }
-    
+
+
     public void setPublishDatePropDef(PropertyTypeDefinition publishDatePropDef) {
         this.publishDatePropDef = publishDatePropDef;
     }

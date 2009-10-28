@@ -216,7 +216,7 @@ public class ACLEditCommand extends UpdateCancelCommand {
     }
 
     public void addUserNameEntry(String userNameEntry) {
-        this.userNameEntries.add(userNameEntry);
+        this.userNameEntries.add(userNameEntry.toLowerCase());
     }
 
 }

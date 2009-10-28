@@ -54,8 +54,8 @@ import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
 
 /**
- * Provides external links/URLs by use of template/pattern and dynamic values.
- * Supported fields: "%{url}" (service URL) and "%{foo:bar}" (property values of current resource).
+ * Provides external links/URLs by use of template/pattern and dynamic values. Supported fields: "%{url}" (service URL)
+ * and "%{foo:bar}" (property values of current resource).
  * 
  * Example: http://www.foo.com/share?url=%{url}
  * 
@@ -71,14 +71,15 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
     private Map<String, UrlTemplate> urlTemplates;
     private Repository repository;
     private String modelKey = "externalLinks";
-    
+
+
     @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
-        
+
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
-        
+
         RenderContext ctx = new RenderContext();
         ctx.resource = this.repository.retrieve(token, requestContext.getResourceURI(), true);
         ctx.principal = securityContext.getPrincipal();
@@ -86,7 +87,7 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
         ctx.request = request;
 
         List<ExternalLink> links = new ArrayList<ExternalLink>();
-        for (String externalLinkName: this.urlTemplates.keySet()) {
+        for (String externalLinkName : this.urlTemplates.keySet()) {
             UrlTemplate template = this.urlTemplates.get(externalLinkName);
             String encodedUrl = template.renderEncodedUrl(ctx);
             ExternalLink link = new ExternalLink();
@@ -94,48 +95,55 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
             link.setUrl(encodedUrl);
             links.add(link);
         }
-        
+
         model.put(this.modelKey, links);
     }
-    
+
     private class UrlTemplate {
         private List<TemplateNode> templateNodes;
-        
+
+
         UrlTemplate(String urlTemplate) {
             List<TemplateNode> templateNodes = new ArrayList<TemplateNode>();
+
+            // tmp fix, encode it instead in the encoding node?
+            urlTemplate = urlTemplate.replace("&", "&amp;");
+
             Matcher fieldPatternMatcher = FIELD_PATTERN.matcher(urlTemplate);
-            
+
             int pos = 0;
             while (fieldPatternMatcher.find()) {
                 int fieldStart = fieldPatternMatcher.start(1);
                 int fieldEnd = fieldPatternMatcher.end(1);
-                
+
                 if (fieldStart > pos) {
                     templateNodes.add(new StaticEncodedText(urlTemplate.substring(pos, fieldStart)));
                 }
-                
-                String fieldId = urlTemplate.substring(fieldStart+2, fieldEnd-1);
+
+                String fieldId = urlTemplate.substring(fieldStart + 2, fieldEnd - 1);
                 templateNodes.add(dynamicNode(fieldId));
-                
+
                 pos = fieldEnd;
             }
-            
+
             if (pos < urlTemplate.length()) {
                 templateNodes.add(new StaticEncodedText(urlTemplate.substring(pos, urlTemplate.length())));
             }
-            
+
             this.templateNodes = templateNodes;
         }
-        
+
+
         String renderEncodedUrl(RenderContext ctx) {
             StringBuilder url = new StringBuilder();
-            for (TemplateNode node: this.templateNodes) {
+            for (TemplateNode node : this.templateNodes) {
                 url.append(node.render(ctx));
             }
             return url.toString();
         }
     }
-    
+
+
     // Factory method for dynamic node renderers. Might consider making this configurable (only if need arises).
     private TemplateNode dynamicNode(String field) {
         TemplateNode node;
@@ -148,17 +156,17 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
             int idx = field.indexOf(":");
             if (idx != -1) {
                 prefix = field.substring(0, idx);
-                name = field.substring(idx+1);
+                name = field.substring(idx + 1);
             } else {
                 name = field;
             }
-            
+
             node = new TruncatingWrapper(new ResourcePropertyValue(prefix, name));
         }
-        
+
         return new UrlEncodingWrapper(node);
     }
-    
+
     @SuppressWarnings("unused")
     private class RenderContext {
         Resource resource;
@@ -166,42 +174,48 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
         Service service;
         HttpServletRequest request;
     }
-    
+
     private interface TemplateNode {
         String render(RenderContext ctx);
     }
-    
+
     private class StaticEncodedText implements TemplateNode {
         private String text;
+
+
         StaticEncodedText(String text) {
             this.text = text;
         }
-        
+
+
         public String render(RenderContext ctx) {
             return this.text;
         }
-        
+
     }
-    
+
     private class ServiceUrl implements TemplateNode {
         public String render(RenderContext ctx) {
-            return ctx.service.constructLink(ctx.resource, ctx.principal); 
+            return ctx.service.constructLink(ctx.resource, ctx.principal);
         }
-        
+
     }
-    
+
     private class ResourcePropertyValue implements TemplateNode {
         private String prefix;
         private String name;
+
+
         ResourcePropertyValue(String prefix, String name) {
             this.prefix = prefix;
             this.name = name;
         }
-        
+
+
         public String render(RenderContext ctx) {
             String retVal = "";
             Property prop = ctx.resource.getPropertyByPrefix(this.prefix, this.name);
-            if (prop !=  null) {
+            if (prop != null) {
                 PropertyTypeDefinition def = prop.getDefinition();
                 if (def != null) {
                     if (def.getType() == PropertyType.Type.HTML) {
@@ -214,29 +228,37 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
 
             return retVal;
         }
-        
+
     }
-    
+
     private class UrlEncodingWrapper implements TemplateNode {
         private TemplateNode wrappedNode;
+
+
         UrlEncodingWrapper(TemplateNode wrapped) {
             this.wrappedNode = wrapped;
         }
-        
+
+
         public String render(RenderContext ctx) {
             try {
                 return URLEncoder.encode(this.wrappedNode.render(ctx), URL_ENCODING_CHARSET);
-            } catch (UnsupportedEncodingException ue) { return "";}                    
+            } catch (UnsupportedEncodingException ue) {
+                return "";
+            }
         }
-        
+
     }
-    
+
     private class TruncatingWrapper implements TemplateNode {
         private TemplateNode wrappedNode;
+
+
         TruncatingWrapper(TemplateNode wrapped) {
             this.wrappedNode = wrapped;
         }
-     
+
+
         public String render(RenderContext ctx) {
             String retVal = this.wrappedNode.render(ctx);
             if (retVal.length() > UrlTemplateExternalLinksProvider.this.fieldValueSizeLimit) {
@@ -245,32 +267,37 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
             }
             return retVal;
         }
-        
+
     }
-    
+
+
     @Required
     public void setUrlTemplates(Map<String, String> urlTemplates) {
         this.urlTemplates = new LinkedHashMap<String, UrlTemplate>(urlTemplates.size());
-        for (String name: urlTemplates.keySet()) {
+        for (String name : urlTemplates.keySet()) {
             String templateValue = urlTemplates.get(name);
             if (templateValue != null) {
                 this.urlTemplates.put(name, new UrlTemplate(templateValue));
             }
         }
     }
-    
+
+
     @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
+
     public void setModelKey(String modelKey) {
         this.modelKey = modelKey;
     }
 
+
     public void setFieldValueSizeLimit(int fieldValueSizeLimit) {
         this.fieldValueSizeLimit = fieldValueSizeLimit;
     }
+
 
     public void setFieldValueTruncationIndicator(String fieldValueTruncationIndicator) {
         this.fieldValueTruncationIndicator = fieldValueTruncationIndicator;

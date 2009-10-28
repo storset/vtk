@@ -339,7 +339,6 @@ div.activeTab {
 /* TabMenu1 */
 ul.tabMenu1 {
   float: left;
-  margin-right:34px;
 }
 
 ul.tabMenu1 li.navigateToParentService {
@@ -949,7 +948,7 @@ form#vrtx-admin-ownership-form {
 div.tabMessagePublishPermission {
   float: left; 
   width: auto;
-  padding-right: 15px;
+  padding: 0 15px 0 0;
   font-size: 0.8em;
 }
 
@@ -957,7 +956,7 @@ div.tabMessagePublishPermission {
 #vrtx-unpublished-message,
 #vrtx-publisert-message,
 #vrtx-upublisert-message {
-  padding-right: 10px;
+  padding: 0 10px 0 0;
   margin-right: 3px;
   border-right: 1px solid #aaa;	
 }
@@ -970,4 +969,18 @@ div.tabMessagePublishPermission {
 #vrtx-unpublished-message,
 #vrtx-upublisert-message {
   color: red;
+}
+
+/* Hack for tabMessagePublishPermission->Permission when different languages on collections - CSS 2.1 */
+ul.tabMenu1 + div.tabMessagePublishPermission #vrtx-no-permission,
+ul.tabMenu1 + div.tabMessagePublishPermission #vrtx-nn-permission {
+  margin-left: 71px;
+}
+ul.tabMenu1 + div.tabMessagePublishPermission #vrtx-en-permission {
+  margin-left: 34px;
+}
+
+/* Align when tab-menu */
+ul.tabMenu1 + div.tabMessagePublishPermission {
+  padding: 3px 15px 0 0; 
 }

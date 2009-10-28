@@ -1,5 +1,7 @@
 <#ftl strip_whitespace=true>
 
+<#assign locale = springMacroRequestContext.getLocale() />
+
 <#if tabMessagePublishPermissionState?exists>
   <div class="tabMessagePublishPermission">
      <#assign t = tabMessagePublishPermissionResourceType />
@@ -9,7 +11,7 @@
        ${tabMessagePublishPermissionState?html}:
        <span id="vrtx-${tabMessagePublishPermissionPublish?html?lower_case}-message">${tabMessagePublishPermissionPublish?html}</span>&nbsp;
      </#if>
-     ${tabMessagePublishPermissionPermission?html}
+     <span id="vrtx-${locale?html?lower_case}-permission">${tabMessagePublishPermissionPermission?html}</span>
   </div>
 </#if>
 

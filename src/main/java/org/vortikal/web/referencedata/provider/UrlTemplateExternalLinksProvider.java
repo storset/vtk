@@ -106,7 +106,8 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
         UrlTemplate(String urlTemplate) {
             List<TemplateNode> templateNodes = new ArrayList<TemplateNode>();
 
-            // tmp fix, encode it instead in the encoding node?
+            // fix, encode it instead in the encoding node, or do some Spring magic
+            // to preserve the ampersands from there?
             urlTemplate = urlTemplate.replace("&", "&amp;");
 
             Matcher fieldPatternMatcher = FIELD_PATTERN.matcher(urlTemplate);

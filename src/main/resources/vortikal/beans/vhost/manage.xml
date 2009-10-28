@@ -605,7 +605,6 @@
     <property name="providers">
      <list>
        <ref bean="indexFileMessageProvider" />
-       <ref bean="publishPermissionMessageProvider" />
      </list>
     </property>
   </bean>

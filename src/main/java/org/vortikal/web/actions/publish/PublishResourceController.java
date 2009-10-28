@@ -37,55 +37,93 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
+import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.Message;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.service.Service;
 
-public class PublishResourceController implements Controller {
+public class PublishResourceController extends SimpleFormController implements InitializingBean {
 
     protected Repository repository;
     private String viewName;
     private PropertyTypeDefinition publishDatePropDef;
-
     private static final String ACTION_PARAM = "action";
-    private static final String PUBLISH_PARAM = "publish";
-    private static final String UNPUBLISH_PARAM = "unpublish";
+    private static final String PUBLISH_PARAM = "publish-confirmed";
+    private static final String UNPUBLISH_PARAM = "unpublish-confirmed";
 
 
-    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void afterPropertiesSet() throws Exception {
+        if (this.viewName == null) throw new BeanInitializationException("Property 'viewName' must be set");
+    }
+
+
+    protected Object formBackingObject(HttpServletRequest request) throws Exception {
+        RequestContext requestContext = RequestContext.getRequestContext();
+        SecurityContext securityContext = SecurityContext.getSecurityContext();
+        Service service = requestContext.getService();
+
+        Path uri = requestContext.getResourceURI();
+        String token = securityContext.getToken();
+        Principal principal = securityContext.getPrincipal();
+
+        Resource resource = this.repository.retrieve(token, uri, false);
+        String url = service.constructLink(resource, principal);
+
+        return new PublishResourceCommand(url);
+    }
+
+
+    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
+            BindException errors) throws Exception {
+
         Map<String, Object> model = new HashMap<String, Object>();
 
         String token = SecurityContext.getSecurityContext().getToken();
+
         Path resourceURI = RequestContext.getRequestContext().getResourceURI();
         Resource resource = repository.retrieve(token, resourceURI, true);
 
-        String msgCode = "publish.permission.";
+        PublishResourceCommand publishResourceCommand = (PublishResourceCommand) command;
 
         String action = request.getParameter(ACTION_PARAM);
-        if (PUBLISH_PARAM.equals(action)) {
-            Property publishDateProp = resource.getProperty(this.publishDatePropDef);
-            if (publishDateProp == null) {
-                publishDateProp = resource.createProperty(this.publishDatePropDef);
+
+        if (publishResourceCommand.getPublishResourceAction() == null) {
+
+        } else {
+
+            String msgCode = "publish.permission.";
+
+            if (PUBLISH_PARAM.equals(action)) {
+                Property publishDateProp = resource.getProperty(this.publishDatePropDef);
+                if (publishDateProp == null) {
+                    publishDateProp = resource.createProperty(this.publishDatePropDef);
+                }
+                publishDateProp.setDateValue(Calendar.getInstance().getTime());
+                msgCode += "publish";
+            } else if (UNPUBLISH_PARAM.equals(action)) {
+                resource.removeProperty(this.publishDatePropDef);
+                msgCode += "unpublish";
             }
-            publishDateProp.setDateValue(Calendar.getInstance().getTime());
-            msgCode += "publish";
-        } else if (UNPUBLISH_PARAM.equals(action)) {
-            resource.removeProperty(this.publishDatePropDef);
-            msgCode += "unpublish";
+
+            this.repository.store(token, resource);
+
+            RequestContext.getRequestContext().addInfoMessage(new Message(msgCode));
+
         }
 
-        this.repository.store(token, resource);
-
-        RequestContext.getRequestContext().addInfoMessage(new Message(msgCode));
-
         return new ModelAndView(this.viewName, model);
+
     }
 
 

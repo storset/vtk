@@ -17,7 +17,6 @@
 <html>
 <head>
   <title>Edit structured resource</title>
-  <link type="text/css" href="${themeBaseURL?html}/structured-resources/editor.css" rel="stylesheet" />
   <@fckEditor.addFckScripts />
   <@vrtxJSONJavascript.script />
   <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/admin-prop-change.js"></script>

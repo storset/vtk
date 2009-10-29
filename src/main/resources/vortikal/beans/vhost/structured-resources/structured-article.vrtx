@@ -86,7 +86,6 @@ resourcetype structured-article : structured-document {
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
         <resource:comments-feed-link />
-        <structured-article:css />
         <structured-article:javascript />
         <title><comp:title /></title>
       </head>

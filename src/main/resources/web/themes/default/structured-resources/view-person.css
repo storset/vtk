@@ -22,7 +22,7 @@ h1 {
 
 .vrtx-person-contactinfo {
   float: left;
-  width:70%;
+  width: 65%;
 }
 
 #vrtx-person-contact-info-extras {
@@ -63,7 +63,7 @@ h1 {
   display:block;
   float:left;
   clear:left;
-  width:140px;
+  width:110px;
 }
 
 .vrtx-person-contact-info-line .vrtx-value {

@@ -87,11 +87,11 @@ resourcetype person {
            <div class="vrtx-person-contact-info-line vrtx-available-hours"><span class="vrtx-label">[localized "availableHours"]</span> <span class="vrtx-value">[val availableHours]</span></div>
          [endif]
 		 [if alternativeVisitingAddress && alternativeVisitingAddress != ""]
-		     <div class="vrtx-person-visiting-address">[localized "userVisitingAddress"]
-		       [list alternativeVisitingAddress alternativeVisitingAddressLine]
-		          <div class="vrtx-address-line">[if alternativeVisitingAddressLine] [val alternativeVisitingAddressLine][endif]</div>
-		       [endlist]
-		       </div>
+             <div class="vrtx-person-visiting-address"><span class="vrtx-label">[localized "userVisitingAddress"]</span>
+               [list alternativeVisitingAddress alternativeVisitingAddressLine]
+                  <span class="vrtx-address-line">[if alternativeVisitingAddressLine][val alternativeVisitingAddressLine][endif]</span>
+               [endlist]
+             </div>
 		 [else]
 		 	[if visitingAddress && visitingAddress != ""]
 		    <div class="vrtx-person-visiting-address"><span class="vrtx-label">[localized "userVisitingAddress"]</span>

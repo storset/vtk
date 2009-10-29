@@ -40,15 +40,15 @@ resourcetype frontpage {
                  [val content unescaped]
                [endif]             
              </div>
-             <div class="vrtx-more">
              [if urlText && urlText != ""]
+             <div class="vrtx-more">
                 [if url && url != ""]
                   <span><a href="[val url]">[val urlText]</a></span>
                 [else]
                   <span>[val urlText]</span>
                 [endif]
-              [endif]
               </div>
+              [endif]
            </div>
 
         [endlist]

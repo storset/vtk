@@ -514,7 +514,7 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
             return new Field[0];
         }
         
-        return fields.toArray(new Field[]{});
+        return fields.toArray(new Field[fields.size()]);
     }
 
     /**

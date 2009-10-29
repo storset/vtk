@@ -354,7 +354,7 @@ class PropertySetRowHandler implements RowHandler {
             Namespace namespace = this.resourceTypeTree.getNamespace(holder.namespaceUri);
             PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyTypeDefinition(
                     namespace, holder.name);
-            Property property = propDef.createProperty(holder.values.toArray(new String[]{}));
+            Property property = propDef.createProperty(holder.values.toArray(new String[holder.values.size()]));
             propertySet.addProperty(property);
         }
 

@@ -90,11 +90,11 @@
     <property name="query">
       <value>
         (uri = {$currentFolder}/* AND uri NOT IN {$featuredArticles}) 
-          AND (type IN article AND published-date &lt;= {$currentTime}) 
+          AND (type IN structured-article)
       </value>
     </property>
     <property name="queryParser" ref="searchParser" /> 
-    <property name="defaultSortOrderPropDefName" value="published-date" />
+    <property name="defaultSortOrderPropDefName" value="publish-date" />
     <property name="defaultSortOrderPropNsPrefix" ><null /></property>
     <property name="resourceTypeTree"  ref ="resourceTypeTree" />   
     <property name="defaultSortOrder" ref="SORT_ORDER.DESC" />
@@ -105,7 +105,7 @@
     </property>
     <property name="sortOrderMapping">
       <map>
-        <entry key="publishedDate" value-ref="SORT_ORDER.DESC" />
+        <entry key="publish-date" value-ref="SORT_ORDER.DESC" />
         <entry key="title" value-ref="SORT_ORDER.ASC" />
       </map>
     </property>
@@ -146,7 +146,7 @@
     </property>
     <property name="query">
       <value>
-        (uri IN {$featuredArticles}) AND ( type IN article AND published-date &lt;= {$currentTime})
+        (uri IN {$featuredArticles}) AND (type IN structured-article)
       </value>
     </property>
   </bean>
@@ -157,7 +157,7 @@
     <property name="query">
       <value>
         (uri IN {$subfolders}* AND uri NOT IN {$featuredArticles}) 
-          AND (type IN article AND published-date &lt;= {$currentTime})
+          AND (type IN structured-article)
       </value>
     </property>
   </bean>

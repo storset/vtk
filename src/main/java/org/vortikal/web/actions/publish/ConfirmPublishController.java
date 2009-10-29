@@ -68,6 +68,7 @@ public class ConfirmPublishController implements Controller {
 
         model.put("url", url);
         model.put("name", item.getName());
+        model.put("type", publishService.getName());
 
         return new ModelAndView(this.viewName, model);
     }

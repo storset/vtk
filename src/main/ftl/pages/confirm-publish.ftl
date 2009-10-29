@@ -18,8 +18,13 @@
 <head>
 <body>
 <div class="vrtx-confirm-publish-msg">
-${vrtx.getMsg("confirm-publish.confirmation.publish")} <span class="vrtx-confirm-publish-name"> ${name}</span>? 
-</div>   
+<#if type = "publish.unpublishResourceConfirmedService">
+${vrtx.getMsg("confirm-publish.confirmation.unpublish")}
+<#else>
+${vrtx.getMsg("confirm-publish.confirmation.publish")}
+</#if>
+&nbsp;<span class="vrtx-confirm-publish-name"> ${name}</span>? 
+</div>
 
 <form name="vrtx-publish-resource" id="vrtx-publish-resource" action="${url}" method="post">
   <button tabindex="1" type="submit" value="ok" id="publishResourceAction" name="publishResourceAction">

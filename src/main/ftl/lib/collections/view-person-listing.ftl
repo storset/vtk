@@ -33,31 +33,31 @@
          </td>
          <td class="vrtx-person-listing-phone">
             <#if phonenumbers != "" >
-            <#list phonenumbers?split(",") as phone>
-         	<span>${phone?html}</span>
-         	</#list>
+              <#list phonenumbers?split(",") as phone>
+         	    <span>${phone?html}</span>
+         	  </#list>
          	</#if>
             <#if mobilenumbers != "" >
-         	<#list mobilenumbers?split(",") as mobile>
-            <span>${mobile?html}</span>
-            </#list>
+         	  <#list mobilenumbers?split(",") as mobile>
+                <span>${mobile?html}</span>
+              </#list>
             </#if>
          </td>
          <td class="vrtx-person-listing-email">
             <#if emails != "" >
-         	<#list emails?split(",") as email >
-         	<a href="mailto:${email?html}">${email?html}</a>
-         	</#list>
+         	  <#list emails?split(",") as email >
+         	    <a href="mailto:${email?html}">${email?html}</a>
+         	  </#list>
          	</#if>
          </td>
          <td class="vrtx-person-listing-tags">
             <#assign tagsList = tags?split(",")>
             <#assign nr = 0 />
             <#if tags != "">
-            <#list tagsList as tag>
-            <#assign nr = nr+1 />
-            <a href="${"?vrtx=tags&tag="?html}${tag?trim?html}">${tag?trim?html}</a><#if tagsList?size != nr>,</#if> 
-           	</#list>
+              <#list tagsList as tag>
+                <#assign nr = nr+1 />
+                <a href="${"?vrtx=tags&tag="?html}${tag?trim?html}">${tag?trim?html}</a><#if tagsList?size != nr>,</#if> 
+           	  </#list>
            	</#if>
          </td>
        </tr>

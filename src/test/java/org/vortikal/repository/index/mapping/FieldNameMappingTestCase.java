@@ -37,6 +37,7 @@ import junit.framework.TestCase;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.resourcetype.IllegalValueTypeException;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatter;
@@ -51,7 +52,7 @@ public class FieldNameMappingTestCase extends TestCase {
 
             public Value stringToValue(String string, String format,
                     Locale locale) {
-                return new Value(string);
+                return new Value(string, PropertyType.Type.STRING);
             }
 
             public String valueToString(Value value, String format,

@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 
@@ -32,7 +33,7 @@ public class SubfoldersExpressionEvaluator extends MultiValuePropertyInExpressio
 				subfolder = parent + subfolder;
 			}
 			subfolder = subfolder.endsWith("/") ? subfolder : subfolder + "/";
-			values.add(new Value(subfolder));
+			values.add(new Value(subfolder, PropertyType.Type.STRING));
 		}
 		subfolders.setValues(values.toArray(new Value[values.size()]));
 		

@@ -63,6 +63,7 @@
       <bean class="org.vortikal.repository.resourcetype.Value">
         <constructor-arg type="java.lang.String"
                          value="${defaultXHtml10TransitionalResourceCharacterEncoding}" />
+        <constructor-arg ref="TYPE_STRING" />
       </bean>
     </property>
   </bean>
@@ -145,11 +146,13 @@
               <constructor-arg type="java.lang.String">
                 <value>article</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>event</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
           </list>
         </property>

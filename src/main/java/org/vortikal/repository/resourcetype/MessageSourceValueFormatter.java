@@ -96,7 +96,7 @@ public class MessageSourceValueFormatter implements ValueFormatter {
             return new Value(Integer.parseInt(stringValue));
 
         default:
-            return new Value(stringValue);
+            return new Value(stringValue, PropertyType.Type.STRING);
         }
     }
     

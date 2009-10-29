@@ -51,15 +51,19 @@ public class Value implements Cloneable, Comparable<Value> {
     private long longValue;
     private Principal principalValue;
 
-    public Value(String stringValue) {
+    public Value(String stringValue, Type type) {
         if (stringValue == null || stringValue.equals(""))
             throw new IllegalArgumentException("Value object cannot be null or empty");
         if (stringValue.length() > MAX_LENGTH) {
             throw new ValueFormatException("String value too large: " + stringValue.length() + " (max size = "
                     + MAX_LENGTH + ")");
         }
+        if (type != Type.STRING && type != Type.HTML && 
+                type != Type.IMAGE_REF && type != Type.JSON) {
+            throw new IllegalArgumentException("Invalid type for this constructor: " + type);
+        }
 
-        this.type = PropertyType.Type.STRING;
+        this.type = type;
         this.stringValue = stringValue;
     }
 
@@ -229,7 +233,7 @@ public class Value implements Cloneable, Comparable<Value> {
         case PRINCIPAL:
             return new Value(this.principalValue);
         default:
-            return new Value(this.stringValue);
+            return new Value(this.stringValue, this.type);
         }
     }
 

@@ -48,6 +48,7 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.ResourceTypeTree;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.search.ResultSet;
@@ -322,7 +323,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
 
         Property titleProperty = resource.getProperty(this.navigationTitlePropDef);
         titleProperty = titleProperty == null ? resource.getProperty(this.titlePropDef) : titleProperty;
-        Value title = titleProperty != null ? titleProperty.getValue() : new Value(resource.getName());
+        Value title = titleProperty != null ? titleProperty.getValue() : new Value(resource.getName(), PropertyType.Type.STRING);
 
         MenuItem<PropertySet> item = new MenuItem<PropertySet>(resource);
         item.setUrl(url);

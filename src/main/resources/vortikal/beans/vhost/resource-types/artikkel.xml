@@ -50,6 +50,7 @@
                 <constructor-arg type="java.lang.String">
                     <value>ingen tittel</value>
                 </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
         </property>
         <property name="propertyEvaluator" ref="artikkelTittelEvaluator" />

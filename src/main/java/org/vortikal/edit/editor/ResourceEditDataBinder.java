@@ -182,7 +182,7 @@ public class ResourceEditDataBinder extends ServletRequestDataBinder {
             try {
                 HtmlFragment fragment = this.htmlParser.parseFragment(valueString);
                 fragment.filter(this.htmlPropsFilter);
-                Value value = new Value(fragment.getStringRepresentation());
+                Value value = new Value(fragment.getStringRepresentation(), PropertyType.Type.HTML);
                 prop.setValue(value);
             } catch (Throwable t) {
                 throw new IllegalArgumentException(t);

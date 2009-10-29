@@ -51,7 +51,7 @@ public class ImageRefValueFormatter implements ValueFormatter, ApplicationContex
     private ApplicationContext applicationContext;
     
     public Value stringToValue(String string, String format, Locale locale) {
-        return new Value(string);
+        return new Value(string, PropertyType.Type.STRING);
     }
 
     public String valueToString(Value value, String format, Locale locale)

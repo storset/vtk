@@ -59,10 +59,10 @@ public class HtmlValueFormatter implements ValueFormatter {
 
     public Value stringToValue(String string, String format, Locale locale) {
         if (ESCAPED_FORMAT.equals(format)) {
-            return new Value(HtmlUtil.unescapeHtmlString(string));
+            return new Value(HtmlUtil.unescapeHtmlString(string), PropertyType.Type.HTML);
         } 
         
-        return new Value(string);
+        return new Value(string, PropertyType.Type.HTML);
     }
 
     @Required

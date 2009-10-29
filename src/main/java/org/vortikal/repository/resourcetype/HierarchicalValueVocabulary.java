@@ -88,7 +88,7 @@ public class HierarchicalValueVocabulary implements HierarchicalVocabulary<Value
 
     private HierarchicalNode<Value> buildNode(HierarchicalNode<String> stringNode) {
         HierarchicalNode<Value> node = new HierarchicalNode<Value>();
-        node.setEntry(new Value(stringNode.getEntry()));
+        node.setEntry(new Value(stringNode.getEntry(), this.type));
 
         List<HierarchicalNode<String>> stringChildren = stringNode.getChildren();
         

@@ -105,7 +105,8 @@ public class ValueFactoryImpl implements ValueFactory {
             if (stringValue.length() == 0) {
                 throw new ValueFormatException("Illegal string value: empty");
             }
-            return new Value(stringValue);
+            return new Value(stringValue, type);
+            
 
         case BOOLEAN:
             return new Value("true".equalsIgnoreCase(stringValue));
@@ -118,8 +119,8 @@ public class ValueFactoryImpl implements ValueFactory {
             // January 1, 1970, 00:00:00 GMT
             // Dates are represented as described in the configuration for this
             // bean in the List stringFormats
-            Date date2 = getDateFromStringValue(stringValue);
-            return new Value(date2, false);
+            Date timestamp = getDateFromStringValue(stringValue);
+            return new Value(timestamp, false);
 
         case INT:
             try {

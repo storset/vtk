@@ -53,6 +53,7 @@
                 <constructor-arg type="java.lang.String">
                     <value>muv-artikkel</value>
                 </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
         </property>
         <property name="propertyEvaluator" ref="muvArtikkelTittelEvaluator" />

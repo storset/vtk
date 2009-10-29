@@ -76,282 +76,338 @@
               <constructor-arg type="java.lang.String">
                 <value>uio</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>hf</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>jf</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>mn</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>mf</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>od</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>sv</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>tf</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>uv</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>fa</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>ia</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>opa</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>sadm</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>sta</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>ta</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>usit</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>oepa</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>samfmed</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>iakh</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>bio</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>ifikk</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>geo</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>kjemi</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>helseledelse</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>ilos</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>ifk</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>ikos</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>iln</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>ils</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>imk</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>basalmed</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>imv</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>ior</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>ifp</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>psykiatri</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>astro</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>math</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>psyk</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>ima</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>biotek</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>sosiologi</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>istv</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>ish</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>econ</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>tik</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>afin</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>nifs</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>imr</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>eouroparett</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>matrvit</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>iri</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>aker</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>fakdivahus</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>fakdivdnr</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>fakdivrh</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>ulleval</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
           </list>
         </property>
@@ -372,86 +428,103 @@
               <constructor-arg type="java.lang.String">
                 <value>studier</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>forskning</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>omuio</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>it</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>studentliv</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>foransatte</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>bibliotek</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>publikum</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>tavle</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>omhf</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>omjus</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>ommn</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>ommed</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>omodont</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>omsv</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>omtf</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>omuv</value>
               </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
             </bean>
           </list>
         </property>

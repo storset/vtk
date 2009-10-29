@@ -66,6 +66,7 @@ public class Namespace {
     
     public static Namespace getNamespace(String uri) {
         if (uri == null) return DEFAULT_NAMESPACE;
+        if (uri.equals(STRUCTURED_RESOURCE_NAMESPACE.getUri())) return STRUCTURED_RESOURCE_NAMESPACE;
         if (uri.equals(CUSTOM_NAMESPACE_URI)) return CUSTOM_NAMESPACE;
         
         return new Namespace(uri);
@@ -74,8 +75,10 @@ public class Namespace {
     public static Namespace getNamespaceFromPrefix(String prefix) {
         if (prefix == null) {
             return DEFAULT_NAMESPACE;
-        } 
-        
+        }
+        if ("resource".equals(prefix)) {
+            return STRUCTURED_RESOURCE_NAMESPACE;
+        }
         if ("custom".equals(prefix)) {
             return CUSTOM_NAMESPACE;
         }

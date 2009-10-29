@@ -61,6 +61,7 @@ import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.Vocabulary;
 import org.vortikal.repository.index.mapping.FieldNameMapping;
 import org.vortikal.repository.index.mapping.FieldValueMapper;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
@@ -243,7 +244,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
                 
                 String fieldName = FieldNameMapping.getSearchFieldName(propDef, false);
                 String fieldValue = this.fieldValueMapper.encodeIndexFieldValue(ptq.getTerm(), propDef.getType(), false);
-                return new HierarchicalTermQueryBuilder<Value>(hv , ptq.getOperator(), fieldName, new Value(fieldValue));
+                return new HierarchicalTermQueryBuilder<Value>(hv , ptq.getOperator(), fieldName, new Value(fieldValue, PropertyType.Type.STRING));
             }
             
             TermOperator op = ptq.getOperator();

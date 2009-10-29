@@ -43,7 +43,7 @@ public class StringValueFormatter implements ValueFormatter {
     }
 
     public Value stringToValue(String string, String format, Locale locale) {
-        return new Value(string);
+        return new Value(string, PropertyType.Type.STRING);
     }
 
 }

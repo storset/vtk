@@ -137,7 +137,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
 
     public void setStringValue(String stringValue) throws ValueFormatException {
-        Value v = new Value(stringValue);
+        Value v = new Value(stringValue, PropertyType.Type.STRING);
         setValue(v);
     }
     

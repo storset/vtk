@@ -32,9 +32,7 @@ package org.vortikal.web.display;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
@@ -225,7 +223,7 @@ public abstract class AtomFeedController implements Controller {
             if (!imageRef.startsWith("/") && !imageRef.startsWith("https://") && !imageRef.startsWith("https://")) {
                 try {
                     imageRef = resource.getURI().getParent().expand(imageRef).toString();
-                    pic.setValue(new Value(imageRef));
+                    pic.setValue(new Value(imageRef, PropertyType.Type.STRING));
                 } catch (Throwable t) {
                 }
             }

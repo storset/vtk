@@ -73,6 +73,7 @@
       <bean class="org.vortikal.repository.resourcetype.Value">
         <constructor-arg type="java.lang.String"
                          value="${defaultHtmlResourceCharacterEncoding}" />
+        <constructor-arg ref="TYPE_STRING" />
       </bean>
     </property>
   </bean>

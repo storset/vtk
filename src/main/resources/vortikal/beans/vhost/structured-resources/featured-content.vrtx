@@ -2,7 +2,7 @@ resourcetype featured-content {
 
   properties {
     title : string overrides title,
-    featured-items : json (featuredStickTitle : string, featuredTitle : string, featuredDate : datetime, featuredPicture : image_ref, featuredContent : html, featuredWebaddress : string) multiple noextract
+    featured-items : json (featuredStickTitle : string, featuredTitle : string, featuredDate : datetime, featuredPicture : image_ref, featuredContent : html, featuredWebaddressText : string, featuredWebaddress : string) multiple noextract
   }
   
   view-components {
@@ -20,6 +20,7 @@ resourcetype featured-content {
            [def picture json-attr item "featuredPicture"]
            [def content json-attr item "featuredContent"]
            [def webaddress json-attr item "featuredWebaddress"]
+           [def urlText json-attr item "featuredWebaddressText" ]
            [def number expr _index + 1]
            
            <div class="vrtx-featured-item" id="vrtx-featured-item-[val number]">
@@ -48,8 +49,17 @@ resourcetype featured-content {
                [endif]
                [if content && content != ""]
                  <div class="vrtx-box-sub-content">[val content unescaped]</div>
-               [endif]
+               [endif]  
              </div>
+             [if urlText && urlText != ""]
+             <div class="vrtx-more">
+                [if webaddress && webaddress != ""]
+                  <span><a href="[val webaddress]">[val urlText]</a></span>
+                [else]
+                  <span>[val urlText]</span>
+                [endif]
+              </div>
+              [endif]
            </div>
         [endlist]
       [endif]
@@ -90,6 +100,7 @@ resourcetype featured-content {
      featuredPictureAlt : (en : "Picture to ", no : "Bilde til ", nn : "Bilete til "),
      featuredContent : (en : "Content", no : "Innhold", nn : "Innhald"),
      featuredWebaddress : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
+     featuredWebaddressText : (en : "Link text", no : "Lenketekst", nn : "Lenketekst"),
      header : (en : "Edit featured content", no : "Rediger fremhevet innhold", nn : "Rediger fremhevet innhald")
   }
 }

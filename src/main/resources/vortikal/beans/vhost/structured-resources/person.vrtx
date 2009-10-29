@@ -284,6 +284,7 @@ resourcetype person {
               <comp:person-image />   
               <comp:contact-information />
               <comp:contact-extras />
+              <div class="vrtx-person-contact-info-wrapper-end"></div>
           </div>
           <json:field select="content" />
           <resource:tags />

@@ -54,7 +54,7 @@ resourcetype structured-project {
         
             [if caption]
               <div class="vrtx-introduction-image" [if style]style="[val style]"[endif]>
-                <img src="[val img-uri]" alt="[val caption]"/>
+                <img src="[val img-uri]" alt="[val caption unescaped 'flattened']"/>
                 <div class="vrtx-imagetext">
                   <div class="vrtx-imagedescription">[val caption unescaped]</div>
                   [if img-author]

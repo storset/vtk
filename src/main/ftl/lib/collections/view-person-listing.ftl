@@ -5,10 +5,10 @@
   <#if (persons?size > 0)>  
    <table class="vrtx-person-listing">
     	<tr id="vrtx-person-listing-header">
-	    	<th>${vrtx.getMsg("person-listing.name")}</th>
-	    	<th>${vrtx.getMsg("person-listing.phone")}</th>
-	    	<th>${vrtx.getMsg("person-listing.email")}</th>
-	    	<th>${vrtx.getMsg("person-listing.tags")}</th>
+	    	<th class="vrtx-person-listing-name">${vrtx.getMsg("person-listing.name")}</th>
+	    	<th class="vrtx-person-listing-phone">${vrtx.getMsg("person-listing.phone")}</th>
+	    	<th class="vrtx-person-listing-email">${vrtx.getMsg("person-listing.email")}</th>
+	    	<th class="vrtx-person-listing-tags">${vrtx.getMsg("person-listing.tags")}</th>
     	</tr>
     <#list persons as person>
       <#local title = vrtx.propValue(person, 'title') />

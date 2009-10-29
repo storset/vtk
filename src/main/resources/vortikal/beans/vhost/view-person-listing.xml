@@ -33,10 +33,10 @@
     <property name="name" value="personListing.defaultPerson" />
     <property name="defaultRecursive" value="true" />
     <property name="query">
-      <value>(uri = {$currentFolder}/*) AND (type IN person) </value>
+      <value>(uri = {$currentFolder}/*) AND (type IN person)</value>
     </property>
   </bean>
-  
+
   <bean id="personListing.viewResolver" parent="decoratorViewResolver">
     <property name="views">
       <map>
@@ -44,7 +44,7 @@
       </map>
     </property>
   </bean>
-  
+
   <bean id="personListing.view" parent="collectionListing.view">
     <property name="attributesMap">
       <map>
@@ -62,7 +62,7 @@
       </map>
     </property>
   </bean>
-  
+
   <bean id="personListing.feedService" parent="collectionListing.atomService">
     <property name="order" value="-2" />
     <property name="assertions">

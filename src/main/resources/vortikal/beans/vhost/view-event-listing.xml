@@ -93,6 +93,7 @@
     <property name="resourceTypeTree"  ref ="resourceTypeTree" />
     <property name="defaultSortOrder" ref="SORT_ORDER.ASC" />
     <property name="listableProperties" ref="eventListing.listableProperties" />
+    <property name="aggregationResolver" ref="aggregationResolver" />
   </bean>
 
   <bean id="eventListing.previousEventsSearchComponent" class="org.vortikal.web.search.QueryStringSearchComponent"
@@ -114,6 +115,7 @@
     <property name="resourceTypeTree"  ref ="resourceTypeTree" />
     <property name="defaultSortOrder" ref="SORT_ORDER.DESC" />
     <property name="listableProperties" ref="eventListing.listableProperties" />
+    <property name="aggregationResolver" ref="aggregationResolver" />
   </bean>
 
   <bean id="eventListing.listableProperties" class="java.util.ArrayList">

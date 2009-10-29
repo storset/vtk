@@ -55,6 +55,7 @@ import org.vortikal.repository.search.SortFieldDirection;
 import org.vortikal.repository.search.SortingImpl;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.web.display.collection.aggregation.CollectionListingAggregationResolver;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
@@ -77,6 +78,12 @@ public abstract class QuerySearchComponent implements SearchComponent, Initializ
     private String defaultSortOrderPropDefName;
     private String defaultSortOrderPropNsPrefix;
     
+    protected CollectionListingAggregationResolver aggregationResolver;
+
+    public void setAggregationResolver(CollectionListingAggregationResolver aggregationResolver) {
+        this.aggregationResolver = aggregationResolver;
+    }
+
     protected abstract Query getQuery(Resource collection, HttpServletRequest request, boolean recursive);
 
     public Listing execute(HttpServletRequest request, Resource collection, int page, int pageLimit, int baseOffset)

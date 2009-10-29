@@ -118,8 +118,9 @@
         </bean>
       </list>
     </property>
+    <property name="aggregationResolver" ref="aggregationResolver" />
   </bean>
-  
+
   <bean id="collectionListing.viewResolver" parent="decoratorViewResolver">
     <property name="views">
       <map>

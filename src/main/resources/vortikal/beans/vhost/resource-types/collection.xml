@@ -44,6 +44,11 @@
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
   </bean>
   
+  <bean id="aggregationResolver" class="org.vortikal.web.display.collection.aggregation.CollectionListingAggregationResolver"
+    parent="requestLocalRepositoryAware">
+    <property name="aggregationPropDef" ref="aggregationPropDef" />
+  </bean>
+  
   <bean id="navigationTitlePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
     parent="abstractPropDef">
     <property name="contentRelation" value="PRE_CONTENT" />

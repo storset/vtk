@@ -125,6 +125,7 @@
         </bean>
       </list>
     </property>
+    <property name="aggregationResolver" ref="aggregationResolver" />
   </bean>
   
   <!-- Fetch specifically specified articles, aka 'featured articles' -->

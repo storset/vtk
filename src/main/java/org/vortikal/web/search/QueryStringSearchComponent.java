@@ -52,6 +52,11 @@ public class QueryStringSearchComponent extends QuerySearchComponent {
             andQuery.add(new UriDepthQuery(collection.getURI().getDepth() + 1));
             query = andQuery;
         }
+        
+        if (this.aggregationResolver != null) {
+            query = this.aggregationResolver.extend(query, collection);
+        }
+        
         return query;
     }
 

@@ -13,6 +13,7 @@
     	</tr>
        </thead>
        <tbody>
+       <#assign personNr = 1 />
     <#list persons as person>
       <#local title = vrtx.propValue(person, 'title') />
       <#local picture = vrtx.propValue(person, 'picture')  />
@@ -22,7 +23,7 @@
       <#local emails = vrtx.propValue(person, 'email')  />
       <#local tags = vrtx.propValue(person, 'tags') />  
       <#local src = vrtx.propValue(person, 'picture', 'thumbnail') />
-	   <tr>      
+	   <tr class="vrtx-person-${personNr}">      
          <td class="vrtx-person-listing-name"> 
   			<#if src?has_content>
            		<a class="vrtx-image" href="${personListing.urls[person.URI]?html}"><img src="${src?html}" alt="" /></a>
@@ -31,27 +32,36 @@
          	<span>${position?html}</span>
          </td>
          <td class="vrtx-person-listing-phone">
-         	<#list phonenumbers?split(",") as phone>
+            <#if phonenumbers != "" >
+            <#list phonenumbers?split(",") as phone>
          	<span>${phone?html}</span>
          	</#list>
+         	</#if>
+            <#if mobilenumbers != "" >
          	<#list mobilenumbers?split(",") as mobile>
             <span>${mobile?html}</span>
             </#list>
+            </#if>
          </td>
          <td class="vrtx-person-listing-email">
+            <#if emails != "" >
          	<#list emails?split(",") as email >
          	<a href="mailto:${email?html}">${email?html}</a>
          	</#list>
+         	</#if>
          </td>
          <td class="vrtx-person-listing-tags">
             <#assign tagsList = tags?split(",")>
             <#assign nr = 0 />
+            <#if tags != "">
             <#list tagsList as tag>
             <#assign nr = nr+1 />
             <a href="${"?vrtx=tags&tag="?html}${tag?trim?html}">${tag?trim?html}</a><#if tagsList?size != nr>,</#if> 
            	</#list>
+           	</#if>
          </td>
-         </tr>
+       </tr>
+       <#assign personNr = personNr+1 />
     </#list>
     </tbody>
   </table>

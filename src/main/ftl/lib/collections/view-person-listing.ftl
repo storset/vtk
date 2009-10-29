@@ -3,8 +3,8 @@
 <#macro displayPersons personListing>
   <#local persons=personListing.files />
   <#if (persons?size > 0)>  
-   <table>
-    	<tr>
+   <table class="vrtx-person-listing">
+    	<tr id="vrtx-person-listing-header">
 	    	<th>${vrtx.getMsg("person-listing.name")}</th>
 	    	<th>${vrtx.getMsg("person-listing.phone")}</th>
 	    	<th>${vrtx.getMsg("person-listing.email")}</th>
@@ -18,7 +18,7 @@
       <#local emails = vrtx.propValue(person, 'email')  />
       <#local tags = vrtx.propValue(person, 'tags') />  
       <#local src = vrtx.propValue(person, 'picture', 'thumbnail') />
-	   <tr>      
+	   <tr class="vrtx-person-listing-row">      
          <td> 
   			<#if src?has_content>
            		<a class="vrtx-image" href="${personListing.urls[person.URI]?html}"><img src="${src?html}" alt="" /></a>
@@ -38,7 +38,7 @@
          </td>
          <td>
             <#list tags?split(",") as tag>
-            	<a href="${"?vrtx=tags&tag="?html}${tag?trim?html}">${tag?trim?html}</a>
+            	<a href="${"?vrtx=tags&tag="?html}${tag?trim?html}">${tag?trim?html}</a>,&nbsp;
            	</#list>
             </td>
          </tr>

@@ -1,4 +1,27 @@
+.vrtx-person-listing {
+  width: 100%;
+  background-color: #fff;
+}
+
 a.vrtx-image img{
-	width:50px;
-	border-width:0;
+  max-height:50px;
+  border-width:0;
+}
+
+a.vrtx-image {
+  float: left;
+  margin-right:10px;	
+}
+
+.vrtx-person-listing tr#vrtx-person-listing-header th {
+  text-align: left;
+  padding: 0 15px;
+}
+.vrtx-person-listing .vrtx-person-listing-row {
+  border-bottom: 1px dotted #ccc;	
+}
+
+.vrtx-person-listing .vrtx-person-listing-row td {
+  padding: 15px;
+  border-bottom: 1px dotted #ccc;
 }

@@ -1,7 +1,7 @@
 <#ftl strip_whitespace=true>
 
 <#--
-  - File: confirm-delete.ftl
+  - File: confirm-publish.ftl
   - 
   - Description: Displays a publish confirmation dialog
   - 

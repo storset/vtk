@@ -986,7 +986,6 @@
       <map>
         <entry key="cssURLs">
           <list>
-            <value>${themeBaseURL}/admin.css</value>
             <value>${themeBaseURL}/basic.css</value>
             <value>${themeBaseURL}/tabs.css</value>
             <value>${themeBaseURL}/view-container.css</value>

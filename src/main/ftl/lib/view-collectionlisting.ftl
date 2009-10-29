@@ -82,8 +82,6 @@
           <#local locale = springMacroRequestContext.getLocale() />
           <#if r.contentLocale?has_content>
             <#local locale = r.contentLocale />
-          <#elseif r.resourceType = 'structured-article'>
-            <#local locale = resourceLocaleResolver.resolveResourceLocale(null, r.URI)>
           </#if>
           
           <#local title = vrtx.propValue(r, 'title') />

@@ -143,7 +143,7 @@
         </#list>
       </ul>
       <#if publicationsUrl?exists && totalNumberOfPublications?exists>
-        <p><a href="${publicationsUrl}"><@vrtx.msg code="decorating.frida.publications.url" default="View all publications" args=[totalNumberOfPublications] /></a></p>
+        <p class="vrtx-more-frida-publications"><a href="${publicationsUrl}"><@vrtx.msg code="decorating.frida.publications.url" default="View all publications" args=[totalNumberOfPublications] /></a></p>
       </#if>
     </div>
   </#if> 

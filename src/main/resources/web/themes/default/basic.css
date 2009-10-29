@@ -977,7 +977,7 @@ div.tabMessagePublishPermission {
 
 /* Hack for tabMessagePublishPermission->Permission when different languages on collections - CSS 2.1 */
 ul.tabMenu1 + div.tabMessagePublishPermission #vrtx-no-permission {
-  margin-left: 78px;	
+  margin-left: 80px;	
 }
 ul.tabMenu1 + div.tabMessagePublishPermission #vrtx-nn-permission {
   margin-left: 71px;

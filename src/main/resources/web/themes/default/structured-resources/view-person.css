@@ -118,3 +118,8 @@ ul.vrtx-frida-publications li.vrtx-frida-publication {
   padding: 0 0 5px 0;
   text-indent:-2em;
 } 
+
+.vrtx-person-contact-info-wrapper-end{
+	clear:left;
+	height:0;
+}

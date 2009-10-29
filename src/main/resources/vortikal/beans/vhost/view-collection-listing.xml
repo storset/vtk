@@ -80,7 +80,7 @@
   </bean>
   
   <bean id="collectionListing.searchComponent" class="org.vortikal.web.search.QueryStringSearchComponent"
-    parent="requestLocalRepositoryAware">
+    parent="requestLocalRepositoryAware" depends-on="resourceTypeTree">
     <property name="name" value="collectionListing.searchComponent" />
     <property name="viewService" ref="webService" />
     <property name="resourceManager" ref="resourceManager" />
@@ -88,10 +88,12 @@
     <property name="recursivePropDef" ref="collection.recursiveListingPropDef" />
     <property name="sortPropDef" ref="collection.sortingPropDef" />
     <property name="query">
-      <value>(uri = {$currentFolder}/*) AND (type IN file OR type IN json-resource)</value>
+      <value>(uri = {$currentFolder}/*) AND (type IN file)</value>
     </property>
     <property name="queryParser" ref="searchParser" />
-    <property name="defaultSortPropDef" ref="titlePropDef" />
+    <property name="defaultSortOrderPropDefName" value="title" />
+    <property name="defaultSortOrderPropNsPrefix" ><null /></property>
+    <property name="resourceTypeTree"  ref ="resourceTypeTree" />
     <property name="defaultSortOrder" ref="SORT_ORDER.ASC" />
     <property name="sortPropertyMapping">
       <map>

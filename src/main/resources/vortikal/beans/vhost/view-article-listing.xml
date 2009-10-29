@@ -80,7 +80,7 @@
   </bean>
 
   <bean id="articleListing.searchComponent" class="org.vortikal.web.search.QueryStringSearchComponent"
-    parent="requestLocalRepositoryAware">
+    parent="requestLocalRepositoryAware" depends-on="resourceTypeTree">
     <property name="name" value="articleListing.defaultArticles" />
     <property name="viewService" ref="webService" />
     <property name="resourceManager" ref="resourceManager" />
@@ -90,11 +90,13 @@
     <property name="query">
       <value>
         (uri = {$currentFolder}/* AND uri NOT IN {$featuredArticles}) 
-          AND ((type IN article AND published-date &lt;= {$currentTime}) OR (type IN structured-article))
+          AND (type IN article AND published-date &lt;= {$currentTime}) 
       </value>
     </property>
-    <property name="queryParser" ref="searchParser" />
-    <property name="defaultSortPropDef" ref="publishedDatePropDef" />
+    <property name="queryParser" ref="searchParser" /> 
+    <property name="defaultSortOrderPropDefName" value="published-date" />
+    <property name="defaultSortOrderPropNsPrefix" ><null /></property>
+    <property name="resourceTypeTree"  ref ="resourceTypeTree" />   
     <property name="defaultSortOrder" ref="SORT_ORDER.DESC" />
     <property name="sortPropertyMapping">
       <map>
@@ -144,7 +146,7 @@
     </property>
     <property name="query">
       <value>
-        (uri IN {$featuredArticles}) AND (( type IN article AND published-date &lt;= {$currentTime}) OR (type IN structured-article))
+        (uri IN {$featuredArticles}) AND ( type IN article AND published-date &lt;= {$currentTime})
       </value>
     </property>
   </bean>
@@ -155,7 +157,7 @@
     <property name="query">
       <value>
         (uri IN {$subfolders}* AND uri NOT IN {$featuredArticles}) 
-          AND ((type IN article AND published-date &lt;= {$currentTime}) OR (type IN structured-article))
+          AND (type IN article AND published-date &lt;= {$currentTime})
       </value>
     </property>
   </bean>

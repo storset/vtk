@@ -37,12 +37,14 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.edit.editor.ResourceWrapperManager;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.ResourceWrapper;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.PropertySortField;
@@ -56,7 +58,7 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
-public abstract class QuerySearchComponent implements SearchComponent {
+public abstract class QuerySearchComponent implements SearchComponent, InitializingBean {
 
     private String name;
     private String titleLocalizationKey;
@@ -71,7 +73,10 @@ public abstract class QuerySearchComponent implements SearchComponent {
     private PropertyTypeDefinition sortPropDef;
     private List<PropertyDisplayConfig> listableProperties;
     private Repository repository;
-
+    private ResourceTypeTree resourceTypeTree;
+    private String defaultSortOrderPropDefName;
+    private String defaultSortOrderPropNsPrefix;
+    
     protected abstract Query getQuery(Resource collection, HttpServletRequest request, boolean recursive);
 
     public Listing execute(HttpServletRequest request, Resource collection, int page, int pageLimit, int baseOffset)
@@ -158,6 +163,13 @@ public abstract class QuerySearchComponent implements SearchComponent {
 
         return listing;
     }
+   
+    public void afterPropertiesSet(){
+        if(defaultSortOrderPropDefName != null && resourceTypeTree != null ){
+            this.defaultSortPropDef = resourceTypeTree.getPropertyDefinitionByPrefix(defaultSortOrderPropNsPrefix,
+                    defaultSortOrderPropDefName);
+        }
+    }
 
     @Required
     public void setName(String name) {
@@ -184,11 +196,6 @@ public abstract class QuerySearchComponent implements SearchComponent {
 
     public void setSortPropDef(PropertyTypeDefinition sortPropDef) {
         this.sortPropDef = sortPropDef;
-    }
-
-    @Required
-    public void setDefaultSortPropDef(PropertyTypeDefinition defaultSortPropDef) {
-        this.defaultSortPropDef = defaultSortPropDef;
     }
 
     @Required
@@ -224,6 +231,20 @@ public abstract class QuerySearchComponent implements SearchComponent {
     @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
+    }
+    
+    @Required
+    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+        this.resourceTypeTree = resourceTypeTree;
+    }
+    
+    @Required
+    public void setDefaultSortOrderPropDefName(String defaultSortOrderPropDefName) {
+        this.defaultSortOrderPropDefName = defaultSortOrderPropDefName;
+    }
+
+    public void setDefaultSortOrderPropNsPrefix(String defaultSortOrderPropNsPrefix) {
+        this.defaultSortOrderPropNsPrefix = defaultSortOrderPropNsPrefix;
     }
 
 }

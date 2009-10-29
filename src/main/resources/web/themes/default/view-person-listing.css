@@ -13,15 +13,42 @@ a.vrtx-image {
   margin-right:10px;	
 }
 
-.vrtx-person-listing tr#vrtx-person-listing-header th {
+.vrtx-person-listing tr th {
   text-align: left;
   padding: 0 15px;
 }
-.vrtx-person-listing .vrtx-person-listing-row {
-  border-bottom: 1px dotted #ccc;	
-}
 
-.vrtx-person-listing .vrtx-person-listing-row td {
+.vrtx-person-listing tbody tr td {
   padding: 15px;
   border-bottom: 1px dotted #ccc;
+}
+
+.vrtx-person-listing thead tr th.vrtx-person-listing-name {
+  width: 40%;
+}
+	
+.vrtx-person-listing thead tr th.vrtx-person-listing-phone {
+  width: 1%;
+}
+	
+.vrtx-person-listing thead tr th.vrtx-person-listing-email {
+  width: 1%;	
+}
+	
+.vrtx-person-listing thead tr th.vrtx-person-listing-tags {
+  width: 50%;	
+}
+
+.vrtx-person-listing-tags a {
+  white-space: nowrap;	
+}
+
+.vrtx-person-listing .vrtx-person-listing-email a {
+  white-space: nowrap;  
+}
+
+.vrtx-person-listing .vrtx-person-listing-name span,
+.vrtx-person-listing .vrtx-person-listing-phone span {
+  display: block;
+  white-space: nowrap;
 }

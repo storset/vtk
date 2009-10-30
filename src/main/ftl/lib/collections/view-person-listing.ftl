@@ -15,6 +15,8 @@
        <tbody>
        <#assign personNr = 1 />
     <#list persons as person>
+      <#local firstName = vrtx.propValue(person, 'firstName') />
+      <#local surname = vrtx.propValue(person, 'surname') />
       <#local title = vrtx.propValue(person, 'title') />
       <#local picture = vrtx.propValue(person, 'picture')  />
       <#local position = vrtx.propValue(person, 'position')  />
@@ -28,7 +30,11 @@
   			<#if src?has_content>
            		<a class="vrtx-image" href="${personListing.urls[person.URI]?html}"><img src="${src?html}" alt="" /></a>
            	</#if>
-         	<a href="${personListing.urls[person.URI]?html}">${title?html}</a>
+           	<#if surname?has_content >
+         		<a href="${personListing.urls[person.URI]?html}">${surname}<#if firstName?has_content && surname?has_content>, </#if>${firstName?html}</a>
+         	<#else>
+         		<a href="${personListing.urls[person.URI]?html}">${title?html}</a>
+         	</#if>
          	<span>${position?html}</span>
          </td>
          <td class="vrtx-person-listing-phone">

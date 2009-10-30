@@ -262,6 +262,12 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
                               "This is an invalid collection name");
        }
        name = fixCollectionName(name);
+       if (name.isEmpty()) {
+           errors.rejectValue("name",
+                   "manage.create.collection.invalid.name",
+                   "This is an invalid collection name");
+           return;
+       }
        Path newURI = uri.extend(name);
 
        boolean exists = this.repository.exists(token, newURI);

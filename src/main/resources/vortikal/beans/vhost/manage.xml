@@ -728,10 +728,11 @@
     <property name="templateManager" ref="templates.resourceTemplateManager" />
     <property name="replaceNameChars">
       <map>
-        <entry key=" +" value="-" />
+        <entry key="\+" value="-" />
         <entry key="æ" value="ae" />
         <entry key="ø" value="oe" />
         <entry key="å" value="aa" />
+        <entry key="\?" value="" />
       </map>
     </property>
   </bean>

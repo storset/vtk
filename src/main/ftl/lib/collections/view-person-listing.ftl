@@ -13,7 +13,7 @@
     	</tr>
        </thead>
        <tbody>
-       <#assign personNr = 1 />
+       <#local personNr = 1 />
     <#list persons as person>
       <#local firstName = vrtx.propValue(person, 'firstName') />
       <#local surname = vrtx.propValue(person, 'surname') />
@@ -57,17 +57,17 @@
          	</#if>
          </td>
          <td class="vrtx-person-listing-tags">
-            <#assign tagsList = tags?split(",")>
-            <#assign tagsNr = 0 />
+            <#local tagsList = tags?split(",")>
+            <#local tagsNr = 0 />
             <#if tags != "">
               <#list tagsList as tag>
-                <#assign tagsNr = tagsNr+1 />
+                <#local tagsNr = tagsNr+1 />
                 <a href="${"?vrtx=tags&tag="?html}${tag?trim?html}">${tag?trim?html}</a><#if tagsList?size != tagsNr>,</#if> 
            	  </#list>
            	</#if>
          </td>
        </tr>
-       <#assign personNr = personNr+1 />
+       <#local personNr = personNr+1 />
     </#list>
     </tbody>
   </table>

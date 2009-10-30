@@ -1,0 +1,115 @@
+import org.vortikal.repository.*;
+import org.vortikal.repository.resourcetype.*;
+import org.vortikal.repository.event.*;
+
+getDescription() {
+    return "Re-evaluates resources for a given query";
+}
+
+getUsage() {
+    return "repo evaluate <query:string> [<logfile:string>]";
+}
+
+void execute(context, args, out) {
+
+    beanContext = context.get("context");
+
+    repo = beanContext.getBean("repository");
+    token = beanContext.getBean("writeAllToken");
+    tm = beanContext.getBean("repository.transactionManager");
+    searcher = beanContext.getBean("systemIndexSearcher");
+    parser = beanContext.getBean("searchParser");
+    dao = beanContext.getBean("repository.cache");
+    helper = beanContext.getBean("repositoryResourceHelper");
+
+    query = parser.parse(args.get("query"));
+
+    log = out;
+    logFile = args.get("logfile");
+    if (logFile != null) {
+        log = new PrintWriter(new FileOutputStream("/tmp/property-eval-" + repo.getId() + ".log"));
+        out.println("Log file: " + logFile);
+    }
+
+    before = System.currentTimeMillis();
+    search = new org.vortikal.repository.search.Search();
+    search.setQuery(query);
+
+    results = searcher.execute(token, search);
+    duration = System.currentTimeMillis() - before;
+    log.println("-- query: " + results.getSize() + " results, " + duration + " ms");
+
+    before = System.currentTimeMillis();
+
+    iter = results.iterator();
+    while (iter.hasNext()) {
+
+        propset = iter.next();
+
+        orig = repo.retrieve(token, propset.getURI(), true);
+        origClone = orig.clone();
+
+        log.println(propset.getURI().toString());
+
+        evaluated = helper.contentModification(orig, orig.getOwner());
+        
+        prop = orig.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.LASTMODIFIED_PROP_NAME);
+        if (prop != null) evaluated.addProperty((Property) prop.clone());
+        prop = orig.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.MODIFIEDBY_PROP_NAME);
+        if (prop != null) evaluated.addProperty((Property) prop.clone());
+        prop = orig.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLASTMODIFIED_PROP_NAME);
+        if (prop != null) evaluated.addProperty((Property) prop.clone());
+        prop = orig.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTMODIFIEDBY_PROP_NAME);
+        if (prop != null) evaluated.addProperty((Property) prop.clone());
+
+
+        for (Property prop: evaluated.getProperties()) {
+            ns = prop.getDefinition().getNamespace();
+            prefix = ns.getPrefix() == null ? "" : ns.getPrefix();
+            name = prop.getDefinition().getName();
+            multi = prop.getDefinition().isMultiple();
+            old = origClone.getProperty(ns, name);
+            
+            if (prop.getDefinition() != null) {
+                if (old == null) {
+                    curVal = multi ? Arrays.asList(prop.getValues()) : prop.getValue();
+                    log.println("   + " + ns.getPrefix() + ":" + name + ": '" + curVal + "'");
+                } else if (!old.equals(prop)) {
+                    prevVal = old.getDefinition().isMultiple() ? Arrays.asList(old.getValues()) : old.getValue();
+                    curVal = multi ? Arrays.asList(prop.getValues()) : prop.getValue();
+                    log.println("   m " + ns.getPrefix()  + ":" + name 
+                                + ": '" + prevVal + "' --> '" + curVal + "'");
+                }
+            }
+        }
+
+
+        // store directly to DAO layer:
+
+        status = tm.getTransaction(null);
+        try {
+            //tm.startTransaction();
+            dao.store(evaluated);
+            tm.commit(status);
+        } catch (Throwable t) {
+            tm.rollback(status);
+        } finally {
+            //tm.endTransaction();
+        }
+
+        // trigger re-indexing:
+        event = new ResourceModificationEvent(repo, evaluated, origClone);
+        beanContext.publishEvent(event);
+
+        log.flush();
+
+        //    Thread.sleep(1000);
+    }
+
+    duration = System.currentTimeMillis() - before;
+    log.println("-- iteration done in " + duration / 1000 + " s");
+    log.flush();
+    if (logFile != null) {
+        log.close();
+    }
+}

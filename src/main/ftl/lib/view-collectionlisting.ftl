@@ -87,6 +87,7 @@
           <#local title = vrtx.propValue(r, 'title') />
           <#local introImg  = vrtx.prop(r, 'picture')  />
           <#local publishedDate  = vrtx.prop(r, 'published-date')  />
+          <#local publishDate = vrtx.propValue(r, 'publish-date') />
           <#local intro  = vrtx.prop(r, 'introduction')  />
           <#local caption = vrtx.propValue(r, 'caption')  />
           
@@ -113,10 +114,14 @@
             </#if>
             <div class="vrtx-title">
             <a class="vrtx-title" href="${articles.urls[r.URI]?html}">${title?html}</a></div>
-            <#if publishedDate?has_content && articles.hasDisplayPropDef(publishedDate.definition.name)> 
-          	
+            
+            <#if publishedDate?has_content && articles.hasDisplayPropDef(publishedDate.definition.name)>   	
               <div class="published-date">
-                <span class="published-date-prefix"><@vrtx.localizeMessage code="viewCollectionListing.publishedDate" default="" args=[] locale=locale /></span>${publishedDate.getFormattedValue('long', locale)}                
+                <span class="published-date-prefix"><@vrtx.localizeMessage code="viewCollectionListing.publishedDate" default="" args=[] locale=locale /></span>${publishedDate}                
+              </div>
+            <#elseif publishDate?has_content>
+              <div class="published-date">
+                <span class="published-date-prefix"><@vrtx.localizeMessage code="viewCollectionListing.publishedDate" default="" args=[] locale=locale /></span>${publishDate}                
               </div>
             </#if>
             

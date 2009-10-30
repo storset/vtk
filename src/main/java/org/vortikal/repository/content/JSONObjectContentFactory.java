@@ -41,14 +41,18 @@ import org.vortikal.util.io.StreamUtil;
  */
 public class JSONObjectContentFactory implements ContentFactory {
 
-    private int maxLength = 100000;
+    private int maxLength = 1000000;
     
     public Class<?>[] getRepresentationClasses() {
         return new Class[] {JSONObject.class};
     }
     
     public Object getContentRepresentation(Class<?> clazz,  InputStream content) throws Exception {
-        byte[] buffer = StreamUtil.readInputStream(content, this.maxLength);
+        byte[] buffer = StreamUtil.readInputStream(content, this.maxLength + 1);
+        if (buffer.length > this.maxLength) {
+            throw new Exception("Unable to parse content: maximum size exceeded: " 
+                    + this.maxLength);
+        }
         String s = new String(buffer, "utf-8");    
         return JSONObject.fromObject(s);
     }

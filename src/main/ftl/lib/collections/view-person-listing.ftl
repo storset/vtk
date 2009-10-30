@@ -58,11 +58,11 @@
          </td>
          <td class="vrtx-person-listing-tags">
             <#assign tagsList = tags?split(",")>
-            <#assign nr = 0 />
+            <#assign tagsNr = 0 />
             <#if tags != "">
               <#list tagsList as tag>
-                <#assign nr = nr+1 />
-                <a href="${"?vrtx=tags&tag="?html}${tag?trim?html}">${tag?trim?html}</a><#if tagsList?size != nr>,</#if> 
+                <#assign tagsNr = tagsNr+1 />
+                <a href="${"?vrtx=tags&tag="?html}${tag?trim?html}">${tag?trim?html}</a><#if tagsList?size != tagsNr>,</#if> 
            	  </#list>
            	</#if>
          </td>

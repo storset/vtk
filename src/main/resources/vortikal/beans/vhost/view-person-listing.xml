@@ -48,21 +48,12 @@
     </property>
   </bean>
 
-  <bean id="personListing.view" parent="collectionListing.view">
-    <property name="attributesMap">
-      <map>
-        <entry key="cssURLs">
-          <list>
-            <value>${themeBaseURL}/view-collectionlisting.css</value>
-            <value>${themeBaseURL}/view-person-listing.css</value>
-          </list>
-        </entry>
-        <entry key="printCssURLs">
-          <list>
-            <value>${themeBaseURL}/view-collectionlisting-print.css</value>
-          </list>
-        </entry>
-      </map>
+  <bean id="personListing.view"  parent="freemarkerView">
+    <property name="url" value="pages/view-collectionlisting.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+      </list>
     </property>
   </bean>
 

@@ -152,6 +152,13 @@
     </property>
   </bean>
 
-  <bean id="eventListing.view" parent="collectionListing.view" />
+  <bean id="eventListing.view" parent="freemarkerView">
+    <property name="url" value="pages/view-collectionlisting.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+      </list>
+    </property>
+  </bean>
 
 </beans>

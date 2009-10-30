@@ -46,7 +46,7 @@
   </bean>
   
   <bean id="projectListing.view" parent="collectionListing.view">
-    <property name="attributesMap">
+  <!--   <property name="attributesMap">
       <map>
         <entry key="cssURLs">
           <list>
@@ -60,7 +60,7 @@
           </list>
         </entry>
       </map>
-    </property>
+    </property> -->
   </bean>
 
   <bean id="projectListing.feedService" parent="collectionListing.atomService">

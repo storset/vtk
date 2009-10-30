@@ -132,7 +132,7 @@ public class CollectionListingAggregationResolver implements AggregationReslover
     private boolean isExtendableUriPrefixQuery(Query query) {
         if (query instanceof UriPrefixQuery) {
             UriPrefixQuery uriPrefixQuery = (UriPrefixQuery) query;
-            if (uriPrefixQuery.getOperator() == TermOperator.EQ) {
+            if (uriPrefixQuery.getOperator() == null || uriPrefixQuery.getOperator() == TermOperator.EQ) {
                 return true;
             }
         }

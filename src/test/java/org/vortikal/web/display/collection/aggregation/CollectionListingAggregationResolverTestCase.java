@@ -67,6 +67,12 @@ public class CollectionListingAggregationResolverTestCase extends TestCase {
         runTest(getNestedQuery(), true, true);
     }
 
+    public void testNullTermOperator() {
+        AndQuery query = new AndQuery();
+        query.add(new UriPrefixQuery("/someuri", null, false));
+        runTest(query, true, true);
+    }
+
     public void testNotExtended() {
         runTest(getAndQuery(), false, false);
         OrQuery original = new OrQuery();

@@ -57,6 +57,11 @@ public class QueryPartsSearchComponent extends QuerySearchComponent {
         if (!recursive) {
             query.add(new UriDepthQuery(collection.getURI().getDepth() + 1));
         }
+        
+        if (this.aggregationResolver != null) {
+            return this.aggregationResolver.extend(query, collection);
+        }
+        
         return query;
     }
 

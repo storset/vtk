@@ -57,34 +57,34 @@ import org.vortikal.web.view.freemarker.MessageLocalizer;
 public class TemplateBasedCreateCollectionController extends SimpleFormController {
 
     private static final String NORMAL_FOLDER_IDENTIFIER = "NORMAL_FOLDER";
-	
-	private ResourceTemplateManager templateManager;
-	
+
+    private ResourceTemplateManager templateManager;
+
     private Repository repository = null;
-    
+
     private PropertyTypeDefinition userTitlePropDef;
     private boolean downcaseCollectionNames = false;
     private Map<String, String> replaceNameChars; 
-    
+
     public boolean isDowncaseCollectionNames() {
-		return downcaseCollectionNames;
-	}
+        return downcaseCollectionNames;
+    }
 
-	public void setDowncaseCollectionNames(boolean downcaseCollectionNames) {
-		this.downcaseCollectionNames = downcaseCollectionNames;
-	}
+    public void setDowncaseCollectionNames(boolean downcaseCollectionNames) {
+        this.downcaseCollectionNames = downcaseCollectionNames;
+    }
 
-	public Map<String, String> getReplaceNameChars() {
-		return replaceNameChars;
-	}
+    public Map<String, String> getReplaceNameChars() {
+        return replaceNameChars;
+    }
 
-	public void setReplaceNameChars(Map<String, String> replaceNameChars) {
-		this.replaceNameChars = replaceNameChars;
-	}
+    public void setReplaceNameChars(Map<String, String> replaceNameChars) {
+        this.replaceNameChars = replaceNameChars;
+    }
 
-	@Required public void setUserTitlePropDef(PropertyTypeDefinition userTitlePropDef) {
-		this.userTitlePropDef = userTitlePropDef;
-	}
+    @Required public void setUserTitlePropDef(PropertyTypeDefinition userTitlePropDef) {
+        this.userTitlePropDef = userTitlePropDef;
+    }
 
     @Required public void setRepository(Repository repository) {
         this.repository = repository;
@@ -94,68 +94,68 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
-        
+
         Resource resource = this.repository.retrieve(securityContext.getToken(),
-                                                requestContext.getResourceURI(), false);
+                requestContext.getResourceURI(), false);
         String url = service.constructLink(resource, securityContext.getPrincipal());
-        
+
         CreateCollectionCommand command = new CreateCollectionCommand(url);
-        
+
         Path uri = requestContext.getResourceURI();
-		String token = SecurityContext.getSecurityContext().getToken();
-        
+        String token = SecurityContext.getSecurityContext().getToken();
+
         List <ResourceTemplate> templates = templateManager.getFolderTemplates(token, uri);        
-        
+
         // Set first available template as the selected 
         if (!templates.isEmpty()) {
-        	command.setSourceURI(NORMAL_FOLDER_IDENTIFIER);
+            command.setSourceURI(NORMAL_FOLDER_IDENTIFIER);
         } 
-        
+
         return command;
     }
 
 
     @SuppressWarnings("unchecked")
     protected Map referenceData(HttpServletRequest request) throws Exception {
-        
+
         RequestContext requestContext = RequestContext.getRequestContext();        
         SecurityContext securityContext = SecurityContext.getSecurityContext();
-    	
-    	Map<String, Object> model = new HashMap<String, Object>();
-    	
+
+        Map<String, Object> model = new HashMap<String, Object>();
+
         Path uri = requestContext.getResourceURI();
-		String token = securityContext.getToken();
-				
-	    List <ResourceTemplate> templates = templateManager.getFolderTemplates(token, uri);
-	    
-	    HttpServletRequest servletRequest = requestContext.getServletRequest();
-	    org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(servletRequest);
-	    Map <String, String> tmp = new LinkedHashMap <String, String>();
+        String token = securityContext.getToken();
 
-	    String standardCollectionName = 
-	        new MessageLocalizer("property.standardCollectionName", "Standard collection", null, springRequestContext).get(null).toString();
+        List <ResourceTemplate> templates = templateManager.getFolderTemplates(token, uri);
 
-	    // puts normal folder lexicographically correct
-	    for (ResourceTemplate t: templates) {
-        	if(standardCollectionName.compareTo(t.getTitle()) < 1){  
-        		tmp.put(NORMAL_FOLDER_IDENTIFIER, standardCollectionName);
-        	}
-        	tmp.put(t.getUri().toString(), t.getTitle());
-	    }
-       
-        if(!tmp.containsKey(NORMAL_FOLDER_IDENTIFIER) && !tmp.isEmpty()){ // if normal folder is lexicographically last
-        	tmp.put(NORMAL_FOLDER_IDENTIFIER, standardCollectionName);
+        HttpServletRequest servletRequest = requestContext.getServletRequest();
+        org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(servletRequest);
+        Map <String, String> tmp = new LinkedHashMap <String, String>();
+
+        String standardCollectionName = 
+            new MessageLocalizer("property.standardCollectionName", "Standard collection", null, springRequestContext).get(null).toString();
+
+        // puts normal folder lexicographically correct
+        for (ResourceTemplate t: templates) {
+            if(standardCollectionName.compareTo(t.getTitle()) < 1){  
+                tmp.put(NORMAL_FOLDER_IDENTIFIER, standardCollectionName);
+            }
+            tmp.put(t.getUri().toString(), t.getTitle());
         }
-		       
+
+        if(!tmp.containsKey(NORMAL_FOLDER_IDENTIFIER) && !tmp.isEmpty()){ // if normal folder is lexicographically last
+            tmp.put(NORMAL_FOLDER_IDENTIFIER, standardCollectionName);
+        }
+
         model.put("templates", tmp); 
         return model;
     }
-    
+
 
     protected void doSubmitAction(Object command) throws Exception {        
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
-        
+
         CreateCollectionCommand createFolderCommand =
             (CreateCollectionCommand) command;
         if (createFolderCommand.getCancelAction() != null) {
@@ -169,7 +169,7 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         String source = createFolderCommand.getSourceURI();
         if (source== null || source.equals(NORMAL_FOLDER_IDENTIFIER)) { 
             // Just create a new folder if no "folder-template" is selected
-        	createNewFolder(command, uri, token);
+            createNewFolder(command, uri, token);
             createFolderCommand.setDone(true);            
             return;
         }
@@ -177,7 +177,7 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
 
         String title = createFolderCommand.getName();
         String name = fixCollectionName(title);
-        
+
         // Setting the destination to the current folder/uri
         Path destinationURI = uri.extend(name);
 
@@ -195,14 +195,14 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
 
 
         this.repository.store(token, dest);
-        
+
         createFolderCommand.setDone(true);
-        
+
     }
-    
+
     private void createNewFolder(Object command, Path uri, String token) throws Exception{
-    	CreateCollectionCommand createCollectionCommand = (CreateCollectionCommand) command;
-    	
+        CreateCollectionCommand createCollectionCommand = (CreateCollectionCommand) command;
+
         String title = createCollectionCommand.getName();
         String name = fixCollectionName(title);
         Path newURI = uri.extend(name);
@@ -216,11 +216,11 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         }
     }
 
-	public void setTemplateManager(ResourceTemplateManager templateManager) {
-		this.templateManager = templateManager;
-	}
+    public void setTemplateManager(ResourceTemplateManager templateManager) {
+        this.templateManager = templateManager;
+    }
 
-   private String fixCollectionName(String name) {
+    private String fixCollectionName(String name) {
         if (this.downcaseCollectionNames) {
             name = name.toLowerCase();
         }
@@ -232,57 +232,57 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         }
         return name;
     }
-   
-   @Override
-   protected void onBindAndValidate(HttpServletRequest request,
-           Object command, BindException errors) throws Exception {
-       super.onBindAndValidate(request, command, errors);
-       RequestContext requestContext = RequestContext.getRequestContext();
-       SecurityContext securityContext = SecurityContext.getSecurityContext();
-       
-       CreateCollectionCommand createCollectionCommand =
-           (CreateCollectionCommand) command;
-       if (createCollectionCommand.getCancelAction() != null) {
-           return;
-       }
-       Path uri = requestContext.getResourceURI();
-       String token = securityContext.getToken();
 
-       String name = createCollectionCommand.getName();       
-       if (null == name || "".equals(name.trim())) {
-           errors.rejectValue("name",
-                              "manage.create.collection.missing.name",
-                              "A name must be provided for the collection");
-           return;
-       }
+    @Override
+    protected void onBindAndValidate(HttpServletRequest request,
+            Object command, BindException errors) throws Exception {
+        super.onBindAndValidate(request, command, errors);
+        RequestContext requestContext = RequestContext.getRequestContext();
+        SecurityContext securityContext = SecurityContext.getSecurityContext();
 
-       if (name.indexOf("/") >= 0) {
-           errors.rejectValue("name",
-                              "manage.create.collection.invalid.name",
-                              "This is an invalid collection name");
-       }
-       name = fixCollectionName(name);
-       if (name.isEmpty()) {
-           errors.rejectValue("name",
-                   "manage.create.collection.invalid.name",
-                   "This is an invalid collection name");
-           return;
-       }
-       Path newURI = uri.extend(name);
+        CreateCollectionCommand createCollectionCommand =
+            (CreateCollectionCommand) command;
+        if (createCollectionCommand.getCancelAction() != null) {
+            return;
+        }
+        Path uri = requestContext.getResourceURI();
+        String token = securityContext.getToken();
 
-       boolean exists = this.repository.exists(token, newURI);
-       if (exists) {
-           errors.rejectValue("name",
-                   "manage.create.collection.exists",
-           "A collection with this name already exists");
-       }
+        String name = createCollectionCommand.getName();       
+        if (null == name || "".equals(name.trim())) {
+            errors.rejectValue("name",
+                    "manage.create.collection.missing.name",
+            "A name must be provided for the collection");
+            return;
+        }
 
-       if (newURI.isAncestorOf(uri)) {
-           errors.rejectValue("name",
-                   "manage.create.collection.invalid.destination",
-                   "Cannot copy a collection into itself");
-       }
-   }
+        if (name.indexOf("/") >= 0) {
+            errors.rejectValue("name",
+                    "manage.create.collection.invalid.name",
+            "This is an invalid collection name");
+        }
+        name = fixCollectionName(name);
+        if (name.isEmpty()) {
+            errors.rejectValue("name",
+                    "manage.create.collection.invalid.name",
+            "This is an invalid collection name");
+            return;
+        }
+        Path newURI = uri.extend(name);
+
+        boolean exists = this.repository.exists(token, newURI);
+        if (exists) {
+            errors.rejectValue("name",
+                    "manage.create.collection.exists",
+            "A collection with this name already exists");
+        }
+
+        if (newURI.isAncestorOf(uri)) {
+            errors.rejectValue("name",
+                    "manage.create.collection.invalid.destination",
+            "Cannot copy a collection into itself");
+        }
+    }
 
 }
 

@@ -52,40 +52,40 @@ import org.vortikal.web.templates.ResourceTemplateManager;
 
 public class TemplateBasedCreateController extends SimpleFormController {
 
-	private ResourceTemplateManager templateManager;
-	
+    private ResourceTemplateManager templateManager;
+
     private Repository repository;
-    
+
     @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
     } 
 
-    
+
     protected Object formBackingObject(HttpServletRequest request)
-        throws Exception {
+    throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
-        
+
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
-        
+
         Path uri = requestContext.getResourceURI();
-		String token = SecurityContext.getSecurityContext().getToken();
+        String token = SecurityContext.getSecurityContext().getToken();
 
         Resource resource = this.repository.retrieve(securityContext.getToken(),
                 requestContext.getResourceURI(), false);
-        
+
         String url = service.constructLink(resource, securityContext.getPrincipal());
 
         CreateDocumentCommand command = new CreateDocumentCommand(url);
-				
+
         List <ResourceTemplate> l = templateManager.getDocumentTemplates(token, uri);        
-        
+
         // Set first available template as the selected 
         if (!l.isEmpty()) {
-        	command.setSourceURI(l.get(0).getUri().toString());
+            command.setSourceURI(l.get(0).getUri().toString());
         }
-              
+
         return command;
     }
 
@@ -94,27 +94,27 @@ public class TemplateBasedCreateController extends SimpleFormController {
     protected Map referenceData(HttpServletRequest request) throws Exception {       
         RequestContext requestContext = RequestContext.getRequestContext();        
         SecurityContext securityContext = SecurityContext.getSecurityContext();
-    	
-    	Map<String, Object> model = new HashMap<String, Object>();
-    	
+
+        Map<String, Object> model = new HashMap<String, Object>();
+
         Path uri = requestContext.getResourceURI();
-		String token = securityContext.getToken();
-				
-	    List <ResourceTemplate> l = templateManager.getDocumentTemplates(token, uri);
-	    
-	    Map <String, String> tmp = new LinkedHashMap <String, String>();
+        String token = securityContext.getToken();
+
+        List <ResourceTemplate> l = templateManager.getDocumentTemplates(token, uri);
+
+        Map <String, String> tmp = new LinkedHashMap <String, String>();
         for (ResourceTemplate t: l) {
-        	tmp.put(t.getUri().toString(),t.getName());
-	    }
+            tmp.put(t.getUri().toString(),t.getName());
+        }
 
         model.put("templates", tmp);		    	
         return model;
     }
-    
+
     protected void doSubmitAction(Object command) throws Exception {        
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
-        
+
         CreateDocumentCommand createDocumentCommand =
             (CreateDocumentCommand) command;
         if (createDocumentCommand.getCancelAction() != null) {
@@ -128,16 +128,16 @@ public class TemplateBasedCreateController extends SimpleFormController {
         Path sourceURI = Path.fromString(createDocumentCommand.getSourceURI());
 
         Path destinationURI = uri.extend(createDocumentCommand.getName());
-        
+
         this.repository.copy(token, sourceURI, destinationURI, Depth.ZERO, false, false);
         createDocumentCommand.setDone(true);
-        
-    }
-    
 
-	public void setTemplateManager(ResourceTemplateManager templateManager) {
-		this.templateManager = templateManager;
-	}
+    }
+
+
+    public void setTemplateManager(ResourceTemplateManager templateManager) {
+        this.templateManager = templateManager;
+    }
 
 }
 

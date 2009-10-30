@@ -165,6 +165,13 @@
     </property>
   </bean>
 
-  <bean id="articleListing.view" parent="collectionListing.view" />
+  <bean id="articleListing.view" parent="freemarkerView">
+    <property name="url" value="pages/view-collectionlisting.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+      </list>
+    </property> 
+  </bean>
 
 </beans>

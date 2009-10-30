@@ -26,6 +26,7 @@
         <ref bean="navigationTitlePropDef" />
         <ref bean="collection.typePropDef" />
         <ref bean="aggregationPropDef" />
+        <ref bean="recursiveAggregationPropDef" />
         <ref bean="collection.recursiveListingPropDef" />
         <ref bean="pageLimitPropDef" />
         <ref bean="collection.sortingPropDef" />
@@ -44,9 +45,35 @@
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
   </bean>
   
+  <bean id="recursiveAggregationPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="name" value="recursiveAggregation" />
+    <property name="type" value="BOOLEAN" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="values">
+          <list>
+            <ref bean="VALUE_TRUE" />
+          </list>
+        </property>
+      </bean>
+    </property>
+    <property name="metadata">
+      <map>
+        <entry key="editingHints">
+          <map>
+            <entry key="hideLabel" value="true" />
+          </map>
+        </entry>
+      </map>
+    </property>
+  </bean>
+  
   <bean id="aggregationResolver" class="org.vortikal.web.display.collection.aggregation.CollectionListingAggregationResolver"
     parent="requestLocalRepositoryAware">
     <property name="aggregationPropDef" ref="aggregationPropDef" />
+    <property name="recursiveAggregationPropDef" ref="recursiveAggregationPropDef" />
   </bean>
   
   <bean id="navigationTitlePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"

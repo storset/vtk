@@ -46,6 +46,7 @@ public class CollectionListingAggregationResolver implements AggregationReslover
 
     private Repository repository;
     private PropertyTypeDefinition aggregationPropDef;
+    private PropertyTypeDefinition recursiveAggregationPropDef;
 
     public Query extend(Query query, Resource collection) throws IllegalArgumentException {
 
@@ -58,11 +59,14 @@ public class CollectionListingAggregationResolver implements AggregationReslover
 
         Property aggregationProp = collection.getProperty(this.aggregationPropDef);
         if (aggregationProp != null) {
-
+            
+            Property recursiveAggregationProp = collection.getProperty(this.recursiveAggregationPropDef);
             OrQuery aggregatedFoldersQuery = new OrQuery();
             for (Value value : aggregationProp.getValues()) {
-
-                // XXX handle recursive aggregation, limit, max depth etc...
+                
+                if (recursiveAggregationProp != null && recursiveAggregationProp.getBooleanValue()) {
+                    // XXX handle recursive aggregation
+                }
 
                 aggregatedFoldersQuery.add(new UriPrefixQuery(value.toString(), TermOperator.EQ, false));
             }
@@ -145,6 +149,10 @@ public class CollectionListingAggregationResolver implements AggregationReslover
 
     public void setAggregationPropDef(PropertyTypeDefinition aggregationPropDef) {
         this.aggregationPropDef = aggregationPropDef;
+    }
+
+    public void setRecursiveAggregationPropDef(PropertyTypeDefinition recursiveAggregationPropDef) {
+        this.recursiveAggregationPropDef = recursiveAggregationPropDef;
     }
 
 }

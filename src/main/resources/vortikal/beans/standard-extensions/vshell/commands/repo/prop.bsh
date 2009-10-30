@@ -49,6 +49,7 @@ void execute(context, args, out) {
             out.println(new String(buf, "utf-8"));
         }
     } else {
+        out.println("Type: " + p.getType());
         out.println(p.getFormattedValue());
     }
 }

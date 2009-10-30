@@ -900,7 +900,8 @@ div.contextual-help a {
   display: none;
 }
 
-span.vrtx-confirm-delete-name {
+span.vrtx-confirm-delete-name,
+span.vrtx-confirm-publish-name {
   font-weight: bold;
 }
 

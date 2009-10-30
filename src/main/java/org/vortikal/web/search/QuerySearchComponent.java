@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.edit.editor.ResourceWrapperManager;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
@@ -80,10 +81,6 @@ public abstract class QuerySearchComponent implements SearchComponent, Initializ
     
     protected CollectionListingAggregationResolver aggregationResolver;
 
-    public void setAggregationResolver(CollectionListingAggregationResolver aggregationResolver) {
-        this.aggregationResolver = aggregationResolver;
-    }
-
     protected abstract Query getQuery(Resource collection, HttpServletRequest request, boolean recursive);
 
     public Listing execute(HttpServletRequest request, Resource collection, int page, int pageLimit, int baseOffset)
@@ -98,17 +95,22 @@ public abstract class QuerySearchComponent implements SearchComponent, Initializ
             recursive = collection.getProperty(this.recursivePropDef).getBooleanValue();
         }
 
-        PropertyTypeDefinition sortProp = this.defaultSortPropDef;
+        PropertyTypeDefinition sortProp = null;
         SortFieldDirection sortFieldDirection = this.defaultSortOrder;
 
         if (this.sortPropDef != null && collection.getProperty(this.sortPropDef) != null) {
             String sortString = collection.getProperty(this.sortPropDef).getStringValue();
-            if (this.sortPropertyMapping.containsKey(sortString)) {
-                sortProp = this.sortPropertyMapping.get(sortString);
+            sortProp = resourceTypeTree.getPropertyTypeDefinition(Namespace.DEFAULT_NAMESPACE, sortString);
+            if(sortProp == null){
+                sortProp = resourceTypeTree.getPropertyTypeDefinition(Namespace.STRUCTURED_RESOURCE_NAMESPACE, sortString);
             }
             if (this.sortOrderMapping != null && this.sortOrderMapping.containsKey(sortString)) {
                 sortFieldDirection = this.sortOrderMapping.get(sortString);
             }
+        }
+        
+        if(sortProp == null){
+            sortProp = this.defaultSortPropDef;
         }
 
         Search search = new Search();
@@ -254,4 +256,8 @@ public abstract class QuerySearchComponent implements SearchComponent, Initializ
         this.defaultSortOrderPropNsPrefix = defaultSortOrderPropNsPrefix;
     }
 
+    public void setAggregationResolver(CollectionListingAggregationResolver aggregationResolver) {
+        this.aggregationResolver = aggregationResolver;
+    }
+    
 }

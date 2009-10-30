@@ -98,11 +98,6 @@
     <property name="defaultSortOrderPropNsPrefix" ><null /></property>
     <property name="resourceTypeTree"  ref ="resourceTypeTree" />   
     <property name="defaultSortOrder" ref="SORT_ORDER.DESC" />
-    <property name="sortPropertyMapping">
-      <map>
-        <entry key="title" value-ref="titlePropDef" />
-      </map>
-    </property>
     <property name="sortOrderMapping">
       <map>
         <entry key="title" value-ref="SORT_ORDER.ASC" />

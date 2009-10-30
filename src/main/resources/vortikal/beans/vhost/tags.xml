@@ -91,11 +91,6 @@
     </property>
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="defaultSortOrder" ref="SORT_ORDER.DESC" />
-    <property name="sortPropertyMapping">
-      <map>
-        <entry key="lastModified" value-ref="lastModifiedPropDef" />
-      </map>
-    </property>
     <property name="sortOrderMapping">
       <map>
         <entry key="lastModified" value-ref="SORT_ORDER.DESC" />

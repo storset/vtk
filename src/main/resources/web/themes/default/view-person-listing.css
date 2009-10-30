@@ -24,7 +24,7 @@ a.vrtx-image {
 }
 
 .vrtx-person-listing thead tr th.vrtx-person-listing-name {
-  width: 40%;
+  width: 48%;
 }
 	
 .vrtx-person-listing thead tr th.vrtx-person-listing-phone {
@@ -36,7 +36,7 @@ a.vrtx-image {
 }
 	
 .vrtx-person-listing thead tr th.vrtx-person-listing-tags {
-  width: 50%;	
+  width: 40%;	
 }
 
 .vrtx-person-listing-tags a {

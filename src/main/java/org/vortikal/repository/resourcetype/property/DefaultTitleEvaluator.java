@@ -34,7 +34,9 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatException;
 
 /**
@@ -51,9 +53,9 @@ public class DefaultTitleEvaluator implements PropertyEvaluator {
 
         Property prop = ctx.getNewResource().getProperty(this.propertyDefinition);
         if (prop != null) {
-            property.setStringValue(prop.getStringValue());
+            property.setValue(new Value(prop.getStringValue(), PropertyType.Type.HTML));
         } else {
-            property.setStringValue(getFallback(ctx.getNewResource()));
+            property.setValue(new Value(getFallback(ctx.getNewResource()), PropertyType.Type.HTML));
         }
         return true;
     }

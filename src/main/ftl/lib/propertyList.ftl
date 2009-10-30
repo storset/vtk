@@ -484,7 +484,7 @@
               <#local label><@vrtx.msg code="${localizedValueLookupKeyPrefix}.value.${alternative}" default="${alternative}" /></#local>
               <input id="${alternative}" type="radio" name="value" value="${alternative}"
                          <#if form.value?has_content && form.value = alternative>checked</#if>>
-                <label for="${alternative}">${label}</label>
+               <label for="${alternative}">${label}</label>
             <#else>
               <#local defaultNotSet><@vrtx.msg code="resource.property.unset" default="Not set" /></#local>
               <#local label><@vrtx.msg code="${localizedValueLookupKeyPrefix}.unset" default="${defaultNotSet}" /></#local>
@@ -503,7 +503,7 @@
           <#list form.possibleValues as alternative>
             <#if alternative?has_content>
               <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />    
-              <#local label>${item.definition.valueFormatter.valueToString(constructor("org.vortikal.repository.resourcetype.Value", alternative), "localized", springMacroRequestContext.locale)}</#local>
+              <#local label>${item.definition.valueFormatter.valueToString(constructor("org.vortikal.repository.resourcetype.Value", alternative, item.definition.type), "localized", springMacroRequestContext.locale)}</#local>
               <option value="${alternative}" <#if form.value?has_content && form.value = alternative>selected="true"</#if> label="${label}">${label}</option>
             <#else>
               <#local defaultNotSet><@vrtx.msg code="resource.property.unset" default="Not set" /></#local>

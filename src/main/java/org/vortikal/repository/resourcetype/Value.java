@@ -67,11 +67,6 @@ public class Value implements Cloneable, Comparable<Value> {
         this.stringValue = stringValue;
     }
 
-    // XXX: temporary hack fix for construction of Value-instances from Freemarker
-    public Value(String stringValue) {
-        this(stringValue, Type.STRING);
-    }
-
     public Value(boolean booleanValue) {
         this.type = PropertyType.Type.BOOLEAN;
         this.booleanValue = booleanValue;

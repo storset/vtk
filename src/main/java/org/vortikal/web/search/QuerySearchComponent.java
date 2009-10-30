@@ -68,7 +68,6 @@ public abstract class QuerySearchComponent implements SearchComponent, Initializ
     private ResourceWrapperManager resourceManager;
     private Service viewService;
     private PropertyTypeDefinition defaultSortPropDef;
-    private Map<String, PropertyTypeDefinition> sortPropertyMapping;
     private SortFieldDirection defaultSortOrder;
     private Map<String, SortFieldDirection> sortOrderMapping;
     private PropertyTypeDefinition recursivePropDef;
@@ -210,10 +209,6 @@ public abstract class QuerySearchComponent implements SearchComponent, Initializ
     @Required
     public void setListableProperties(List<PropertyDisplayConfig> listableProperties) {
         this.listableProperties = listableProperties;
-    }
-
-    public void setSortPropertyMapping(Map<String, PropertyTypeDefinition> sortPropertyMapping) {
-        this.sortPropertyMapping = sortPropertyMapping;
     }
 
     @Required

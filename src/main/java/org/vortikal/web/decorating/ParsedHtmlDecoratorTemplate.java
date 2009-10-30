@@ -60,16 +60,16 @@ import org.vortikal.text.html.HtmlText;
  */
 public class ParsedHtmlDecoratorTemplate implements Template {
 
-	private static Log logger = LogFactory.getLog(ParsedHtmlDecoratorTemplate.class);
-	
+    private static Log logger = LogFactory.getLog(ParsedHtmlDecoratorTemplate.class);
+
     private HtmlPageParser htmlParser;
     private TextualComponentParser componentParser;
     private ComponentResolver componentResolver;
     private TemplateSource templateSource;
-    
+
     private CompiledTemplate compiledTemplate;
     private long lastModified = -1;
-    
+
     public ParsedHtmlDecoratorTemplate(HtmlPageParser htmlParser, 
             TextualComponentParser componentParser,
             ComponentResolver componentResolver,
@@ -103,9 +103,9 @@ public class ParsedHtmlDecoratorTemplate implements Template {
         }
         return new Execution(this.compiledTemplate, this.componentResolver, html, request, model);
     }
-    
+
     public class Execution implements TemplateExecution {
-        
+
         private CompiledTemplate compiledTemplate;
         private ComponentResolver componentResolver;
         private HtmlPageContent html;
@@ -121,11 +121,11 @@ public class ParsedHtmlDecoratorTemplate implements Template {
             this.request = request;
             this.model = model;
         }
-        
+
         public ComponentResolver getComponentResolver() {
             return this.componentResolver;
         }
-        
+
         public void setComponentResolver(ComponentResolver componentResolver) {
             this.componentResolver = componentResolver;
         }
@@ -138,28 +138,28 @@ public class ParsedHtmlDecoratorTemplate implements Template {
                     resultPage);
         }
     }
-    
+
     private synchronized void compile() throws Exception {
-    	try {
-    	if (this.compiledTemplate != null && 
-                this.lastModified == this.templateSource.getLastModified()) {
-            return;
+        try {
+            if (this.compiledTemplate != null && 
+                    this.lastModified == this.templateSource.getLastModified()) {
+                return;
+            }
+            logger.info("Compiling template " + this.templateSource.getID());
+            this.compiledTemplate = new CompiledTemplate(
+                    this.htmlParser, this.componentParser, 
+                    this.templateSource);
+            this.lastModified = this.templateSource.getLastModified();
+        } catch (Exception e) {
+            logger.warn("Error compiling template " + this.templateSource.getID(), e);
+            throw e;
         }
-    	logger.info("Compiling template " + this.templateSource.getID());
-        this.compiledTemplate = new CompiledTemplate(
-                this.htmlParser, this.componentParser, 
-                this.templateSource);
-        this.lastModified = this.templateSource.getLastModified();
-    	} catch (Exception e) {
-    		logger.warn("Error compiling template " + this.templateSource.getID(), e);
-    		throw e;
-    	}
     }
-    
+
     private class CompiledTemplate {
-        
+
         private Node root;
-        
+
         private final Pattern ELEMENT_NAME_REGEX_PATTERN = Pattern.compile("[a-z-]+:[a-z-]+");
 
         public CompiledTemplate(HtmlPageParser htmlParser, 
@@ -185,7 +185,7 @@ public class ParsedHtmlDecoratorTemplate implements Template {
             if (transformedContent.size() != 1) {
                 throw new IllegalStateException("Invalid HTML result: " + transformedContent);
             }
-            
+
             Object firstElem = transformedContent.get(0);
             if (!(firstElem instanceof HtmlElement)) {
                 throw new IllegalStateException("Invalid HTML result: expected element, found " 
@@ -196,7 +196,7 @@ public class ParsedHtmlDecoratorTemplate implements Template {
             userPage.getRootElement().setChildNodes(newRoot.getChildNodes());
             return userPage;
         }
-        
+
         private Node createNode(HtmlContent c, 
                 TextualComponentParser componentParser) {
 
@@ -211,7 +211,7 @@ public class ParsedHtmlDecoratorTemplate implements Template {
                 }
                 return new ElementNode(e, children);
             } 
-            
+
             if (c instanceof HtmlText) {
                 return new TextNode((HtmlText) c);
             } 
@@ -221,7 +221,7 @@ public class ParsedHtmlDecoratorTemplate implements Template {
             return new DefaultContentNode(c);
         }
     }
-    
+
     private abstract class Node {
 
         public abstract List<HtmlContent> generate(HtmlPage userPage, 
@@ -232,10 +232,10 @@ public class ParsedHtmlDecoratorTemplate implements Template {
         protected List<HtmlContent> renderComponentAsHtml(DecoratorComponent c, DecoratorRequest request) {
             if (c instanceof HtmlDecoratorComponent) {
                 try {
-                   return ((HtmlDecoratorComponent) c).render(request);
+                    return ((HtmlDecoratorComponent) c).render(request);
                 } catch (Throwable t) {
                     final String msg = c.getNamespace() + ":" 
-                        + c.getName() + ": " + t.getMessage();
+                    + c.getName() + ": " + t.getMessage();
                     HtmlContent err = new HtmlText() {
                         public String getContent() {
                             return msg;
@@ -257,7 +257,7 @@ public class ParsedHtmlDecoratorTemplate implements Template {
                 return Collections.singletonList(err);
             }
         }
-        
+
         protected String renderComponentAsString(DecoratorComponent c, 
                 DecoratorRequest request) {
 
@@ -276,17 +276,17 @@ public class ParsedHtmlDecoratorTemplate implements Template {
             }
             return result;
         }
-        
+
     }
-    
-    
+
+
     /**
      * Component node
      */
     private class VrtxComponentNode extends Node {
         private Throwable error;
         private ComponentInvocation elementComponent;
-        
+
         public VrtxComponentNode(HtmlElement elem) {
             String componentRef = elem.getName();
             int separatorIdx = componentRef.indexOf(":");
@@ -299,15 +299,15 @@ public class ParsedHtmlDecoratorTemplate implements Template {
 
             String namespace = componentRef.substring(0, separatorIdx);
             String name = componentRef.substring(separatorIdx + 1);
-            
-            
+
+
             Map<String, Object> parameters = new HashMap<String, Object>();
             for (HtmlAttribute attr: elem.getAttributes()) {
                 parameters.put(attr.getName(), attr.getValue());    
             }
             this.elementComponent = new ComponentInvocationImpl(namespace, name, parameters);
         }
-        
+
         public List<HtmlContent> generate(HtmlPage userPage, ComponentResolver componentResolver, HttpServletRequest req, 
                 Map<Object, Object> model) throws Exception {
             List<HtmlContent> result = new ArrayList<HtmlContent>();
@@ -321,7 +321,7 @@ public class ParsedHtmlDecoratorTemplate implements Template {
 
                 String namespace = this.elementComponent.getNamespace();
                 String name = this.elementComponent.getName();
-                
+
                 DecoratorComponent component = 
                     componentResolver.resolveComponent(namespace, name);
                 if (component == null) {
@@ -339,19 +339,19 @@ public class ParsedHtmlDecoratorTemplate implements Template {
             return result;
         }
     }
-    
+
     /**
      * regular element
      */
     private class ElementNode extends Node {
-        
+
         private Throwable error;
         private HtmlElement element;
         private String copyAttributesExpression;
         private String copyAttributesList;
         private Map<String, ComponentInvocation[]> attributesMap;
         private List<Node> children;
-        
+
         private final Pattern ELEMENT_NAME_PATTERN_REGEX = Pattern.compile("[a-zA-Z0-9]+");
         private final Pattern ATTRIBUTE_NAME_PATTERN_REGEX = Pattern.compile("[a-zA-Z0-9-_]+");
 
@@ -394,7 +394,7 @@ public class ParsedHtmlDecoratorTemplate implements Template {
                 }
             }
         }
-        
+
         public List<HtmlContent> generate(HtmlPage userPage, ComponentResolver componentResolver, HttpServletRequest req, 
                 Map<Object, Object> model) throws Exception {
             List<HtmlContent> result = new ArrayList<HtmlContent>();
@@ -438,10 +438,10 @@ public class ParsedHtmlDecoratorTemplate implements Template {
                             } else {
                                 DecoratorRequest decoratorRequest = new DecoratorRequestImpl(
                                         userPage, req, model, inv.getParameters(), userPage.getDoctype(), locale);
-                                
+
                                 String compNamespace = inv.getNamespace();
                                 String compName = inv.getName();
-                                
+
                                 DecoratorComponent component = 
                                     componentResolver.resolveComponent(compNamespace, compName);
                                 if (component == null) {
@@ -469,54 +469,54 @@ public class ParsedHtmlDecoratorTemplate implements Template {
             return result;
         }
     }
-    
+
     /**
      * text node
      */
     private class TextNode extends Node {
         private Throwable error;
         private ComponentInvocation[] parsedContent;
-        
+
         public TextNode(HtmlText text) {
             try {
                 this.parsedContent = componentParser.parse(
-                    new java.io.StringReader(text.getContent()));
+                        new java.io.StringReader(text.getContent()));
             } catch (Throwable t) {
                 this.error = t;
             }
         }
-        
+
         public List<HtmlContent> generate(HtmlPage userPage, ComponentResolver componentResolver, HttpServletRequest req, 
                 Map<Object, Object> model) throws Exception {
             List<HtmlContent> result = new ArrayList<HtmlContent>();
             if (this.error != null) {
                 result.add(userPage.createTextNode(this.error.getMessage()));
             } else {
-              StringBuilder sb = new StringBuilder();
-              for (ComponentInvocation inv: this.parsedContent) {
-                  if (inv instanceof StaticTextFragment) {
-                      sb.append(((StaticTextFragment) inv).buffer);
-                  } else {
-                  
-                      Locale locale = 
-                          new org.springframework.web.servlet.support.RequestContext(req).getLocale();
-                      DecoratorRequest decoratorRequest = new DecoratorRequestImpl(
-                              userPage, req, model, inv.getParameters(), userPage.getDoctype(), locale);
+                StringBuilder sb = new StringBuilder();
+                for (ComponentInvocation inv: this.parsedContent) {
+                    if (inv instanceof StaticTextFragment) {
+                        sb.append(((StaticTextFragment) inv).buffer);
+                    } else {
 
-                      String compNamespace = inv.getNamespace();
-                      String compName = inv.getName();
+                        Locale locale = 
+                            new org.springframework.web.servlet.support.RequestContext(req).getLocale();
+                        DecoratorRequest decoratorRequest = new DecoratorRequestImpl(
+                                userPage, req, model, inv.getParameters(), userPage.getDoctype(), locale);
 
-                      DecoratorComponent component = 
-                          componentResolver.resolveComponent(compNamespace, compName);
-                      if (component == null) {
-                          sb.append("Unknown component: " + compNamespace + ":" + compName);
-                      } else {
-                          sb.append(renderComponentAsString(component, decoratorRequest));
-                      }
-                  }
-              }
-              HtmlText newText = userPage.createTextNode(sb.toString());
-              result.add(newText);
+                        String compNamespace = inv.getNamespace();
+                        String compName = inv.getName();
+
+                        DecoratorComponent component = 
+                            componentResolver.resolveComponent(compNamespace, compName);
+                        if (component == null) {
+                            sb.append("Unknown component: " + compNamespace + ":" + compName);
+                        } else {
+                            sb.append(renderComponentAsString(component, decoratorRequest));
+                        }
+                    }
+                }
+                HtmlText newText = userPage.createTextNode(sb.toString());
+                result.add(newText);
             }
             return result;
         }
@@ -527,7 +527,7 @@ public class ParsedHtmlDecoratorTemplate implements Template {
      */
     private class CommentNode extends Node {
         private String comment;
-        
+
         public CommentNode(HtmlComment comment) {
             this.comment = comment.getContent();
         }
@@ -549,7 +549,7 @@ public class ParsedHtmlDecoratorTemplate implements Template {
         public DefaultContentNode(HtmlContent c) {
             this.content = c.getContent();
         }
-        
+
         public List<HtmlContent> generate(HtmlPage userPage, ComponentResolver componentResolver, HttpServletRequest req, 
                 Map<Object, Object> model) throws Exception {
             List<HtmlContent> result = new ArrayList<HtmlContent>();
@@ -558,7 +558,7 @@ public class ParsedHtmlDecoratorTemplate implements Template {
         }
     }
 
-    
+
     public String toString() {
         return this.getClass().getName() + ": " + this.templateSource;
     }

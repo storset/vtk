@@ -58,6 +58,8 @@ public class CollectionListingAggregationResolverTestCase extends TestCase {
         this.aggregationReslover = new CollectionListingAggregationResolver();
         ((CollectionListingAggregationResolver) this.aggregationReslover)
                 .setAggregationPropDef(getAggregatedPropTypeDef());
+        ((CollectionListingAggregationResolver) this.aggregationReslover)
+                .setRecursiveAggregationPropDef(getRecursiveAggregatedPropDef());
 
     }
 
@@ -130,13 +132,21 @@ public class CollectionListingAggregationResolverTestCase extends TestCase {
     }
 
     private PropertyTypeDefinition getAggregatedPropTypeDef() {
-        PropertyTypeDefinitionImpl aggregatedFoldersPropDef = new PropertyTypeDefinitionImpl();
-        aggregatedFoldersPropDef.setNamespace(Namespace.DEFAULT_NAMESPACE);
-        aggregatedFoldersPropDef.setName("aggregation");
-        aggregatedFoldersPropDef.setType(Type.STRING);
-        aggregatedFoldersPropDef.setMultiple(true);
-        aggregatedFoldersPropDef.setValueFactory(new ValueFactoryImpl());
-        return aggregatedFoldersPropDef;
+        return getPropDef("aggregation", Type.STRING, true);
+    }
+
+    private PropertyTypeDefinition getRecursiveAggregatedPropDef() {
+        return getPropDef("recursiveAggregation", Type.BOOLEAN, false);
+    }
+
+    private PropertyTypeDefinition getPropDef(String name, Type type, boolean multiple) {
+        PropertyTypeDefinitionImpl propDef = new PropertyTypeDefinitionImpl();
+        propDef.setNamespace(Namespace.DEFAULT_NAMESPACE);
+        propDef.setName(name);
+        propDef.setType(type);
+        propDef.setMultiple(multiple);
+        propDef.setValueFactory(new ValueFactoryImpl());
+        return propDef;
     }
 
 }

@@ -976,7 +976,7 @@ div.tabMessagePublishPermission {
   color: red;
 }
 
-/* Hack for tabMessagePublishPermission->Permission when different languages on collections - CSS 2.1 */
+/* Hack for tabMessagePublishPermission->Permission when different languages on collections */
 #vrtx-manage-collectionlisting div.tabMessagePublishPermission #vrtx-no-permission {
   margin-left: 80px;	
 }
@@ -987,7 +987,7 @@ div.tabMessagePublishPermission {
   margin-left: 36px;
 }
 
-/* Align when tab-menu */
+/* Align with tab-menu */
 #vrtx-manage-collectionlisting div.tabMessagePublishPermission {
   padding: 3px 15px 0 0; 
 }

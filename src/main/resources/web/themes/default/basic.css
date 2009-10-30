@@ -977,17 +977,17 @@ div.tabMessagePublishPermission {
 }
 
 /* Hack for tabMessagePublishPermission->Permission when different languages on collections - CSS 2.1 */
-ul.tabMenu1 + div.tabMessagePublishPermission #vrtx-no-permission {
+#vrtx-manage-collectionlisting div.tabMessagePublishPermission #vrtx-no-permission {
   margin-left: 80px;	
 }
-ul.tabMenu1 + div.tabMessagePublishPermission #vrtx-nn-permission {
+#vrtx-manage-collectionlisting div.tabMessagePublishPermission #vrtx-nn-permission {
   margin-left: 71px;
 }
-ul.tabMenu1 + div.tabMessagePublishPermission #vrtx-en-permission {
+#vrtx-manage-collectionlisting div.tabMessagePublishPermission #vrtx-en-permission {
   margin-left: 36px;
 }
 
 /* Align when tab-menu */
-ul.tabMenu1 + div.tabMessagePublishPermission {
+#vrtx-manage-collectionlisting div.tabMessagePublishPermission {
   padding: 3px 15px 0 0; 
 }

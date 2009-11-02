@@ -345,7 +345,8 @@ h2.vrtx-title {
 }
 
 .vrtx-json #main-content .vrtx-json-element .vrtx-html > div,
-.vrtx-json #additional-content .vrtx-json-element .vrtx-html > div {
+.vrtx-json #additional-content .vrtx-json-element .vrtx-html > div,
+.vrtx-json #featured-items .vrtx-json-element .vrtx-html > div {
   padding-bottom: 10px;	
 }
 

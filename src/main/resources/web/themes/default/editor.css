@@ -73,6 +73,19 @@ div.recursive-listing-subfolders {
   margin-left: 20px;
 }
 
+#vrtx-resource\.recursiveAggregation {
+  margin-top: -10px;	
+}
+
+#resource\.recursiveAggregation\.true {
+  margin-left: 20px;
+  display: inline;
+}
+
+.resource\.recursiveAggregation {
+  display: inline;	
+}
+
 #vrtx-featured-articles-remove,#vrtx-featured-articles-browse {
   margin-left: 4px;
 }

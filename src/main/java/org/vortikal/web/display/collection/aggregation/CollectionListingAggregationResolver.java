@@ -30,6 +30,8 @@
  */
 package org.vortikal.web.display.collection.aggregation;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -44,9 +46,25 @@ import org.vortikal.repository.search.query.UriPrefixQuery;
 
 public class CollectionListingAggregationResolver implements AggregationReslover {
 
+    private static Log logger = LogFactory.getLog(CollectionListingAggregationResolver.class);
+
     private Repository repository;
     private PropertyTypeDefinition aggregationPropDef;
     private PropertyTypeDefinition recursiveAggregationPropDef;
+
+    private final static int DEFAULT_LIMIT = 5;
+    private final static int DEFAULT_RECURSIVE_DEPTH = 2;
+
+    /**
+     * Limit the number of folders to aggregate from
+     */
+    private int limit = DEFAULT_LIMIT;
+
+    /**
+     * Limit depth of the aggregation, in cases where a folder to aggregate from
+     * has it's own defined aggregation
+     */
+    private int maxRecursiveDepth = DEFAULT_RECURSIVE_DEPTH;
 
     public Query extend(Query query, Resource collection) throws IllegalArgumentException {
 
@@ -59,12 +77,18 @@ public class CollectionListingAggregationResolver implements AggregationReslover
 
         Property aggregationProp = collection.getProperty(this.aggregationPropDef);
         if (aggregationProp != null) {
-            
+
             Property recursiveAggregationProp = collection.getProperty(this.recursiveAggregationPropDef);
+            boolean handleRecursion = recursiveAggregationProp != null && recursiveAggregationProp.getBooleanValue();
+
             OrQuery aggregatedFoldersQuery = new OrQuery();
-            for (Value value : aggregationProp.getValues()) {
-                
-                if (recursiveAggregationProp != null && recursiveAggregationProp.getBooleanValue()) {
+            Value[] values = aggregationProp.getValues();
+            int aggregationLimit = values.length > limit ? limit : values.length;
+            for (int i = 0; i < aggregationLimit; i++) {
+
+                Value value = values[i];
+
+                if (handleRecursion) {
                     // XXX handle recursive aggregation
                 }
 
@@ -153,6 +177,22 @@ public class CollectionListingAggregationResolver implements AggregationReslover
 
     public void setRecursiveAggregationPropDef(PropertyTypeDefinition recursiveAggregationPropDef) {
         this.recursiveAggregationPropDef = recursiveAggregationPropDef;
+    }
+
+    public void setLimit(int limit) {
+        if (limit < 1) {
+            logger.warn("Limit must be > 0, defaulting to " + DEFAULT_LIMIT);
+            limit = DEFAULT_LIMIT;
+        }
+        this.limit = limit;
+    }
+
+    public void setMaxRecursiveDepth(int maxRecursiveDepth) {
+        if (maxRecursiveDepth < 1) {
+            logger.warn("Maximum depth for recursion must be > 0, defaulting to " + DEFAULT_RECURSIVE_DEPTH);
+            maxRecursiveDepth = DEFAULT_RECURSIVE_DEPTH;
+        }
+        this.maxRecursiveDepth = maxRecursiveDepth;
     }
 
 }

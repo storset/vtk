@@ -74,6 +74,8 @@
     parent="requestLocalRepositoryAware">
     <property name="aggregationPropDef" ref="aggregationPropDef" />
     <property name="recursiveAggregationPropDef" ref="recursiveAggregationPropDef" />
+    <property name="limit" value="${aggregation.limit}"/>
+    <property name="maxRecursiveDepth" value="${aggregation.maxRecursiveDepth}" />
   </bean>
   
   <bean id="navigationTitlePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"

@@ -222,6 +222,10 @@ input.vrtx-remove-button {
   padding-bottom:10px !important;
 }
 
+.vrtx-json .vrtx-json-element div.vrtx-string.featuredWebaddress {
+  clear: none;
+}
+
 /* END JSON and multiple fields */
 
 /* START Set explisit widths and heights */

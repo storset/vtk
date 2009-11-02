@@ -12,7 +12,7 @@
 	  	<#list elem.description.attributes as jsonAttr>
 			<#assign tmpName = inputFieldName + "." + jsonAttr + "." + counter />
 			<#assign jsonAttrLocalizedTitle = form.resource.getLocalizedMsg(jsonAttr, locale, null) />
-			<@printJsonProperyEditView elem.description.getType(jsonAttr) jsonAttrLocalizedTitle tmpName "" elem />                              
+			<@printJsonProperyEditView elem.description.getType(jsonAttr) jsonAttrLocalizedTitle tmpName "" elem jsonAttr />                              
 	  	</#list>
 	  	<input type="button" class="vrtx-remove-button" value="${vrtx.getMsg("editor.remove")}" onClick="$('#vrtx-json-element-${inputFieldName}-${counter}').remove()" />      
 	  	</div> 
@@ -26,9 +26,9 @@
 		  	<#assign tmpName = inputFieldName + "." + jsonAttr + "." + counter />
 		  	<#assign jsonAttrLocalizedTitle = form.resource.getLocalizedMsg(jsonAttr, locale, null) />
 		    <#if map[jsonAttr]?exists >
-				<@printJsonProperyEditView elem.description.getType(jsonAttr) jsonAttrLocalizedTitle tmpName map[jsonAttr] elem />          
+				<@printJsonProperyEditView elem.description.getType(jsonAttr) jsonAttrLocalizedTitle tmpName map[jsonAttr] elem jsonAttr />          
 		    <#else>
-		    	<@printJsonProperyEditView elem.description.getType(jsonAttr) jsonAttrLocalizedTitle tmpName "" elem />    
+		    	<@printJsonProperyEditView elem.description.getType(jsonAttr) jsonAttrLocalizedTitle tmpName "" elem jsonAttr />    
 		    </#if>
 		</#list>
 		<input type="button" class="vrtx-remove-button" value="${vrtx.getMsg("editor.remove")}" onClick="$('#vrtx-json-element-${inputFieldName}-${counter}').remove()" />
@@ -42,9 +42,9 @@
 		<#list elem.description.attributes as key>
 			<#assign tmpName = inputFieldName + "." + key + "." + counter />
 			<#if elem.value[key]?exists >
-				<@printJsonProperyEditView elem.description.getType(key) jsonAttrLocalizedTitle tmpName elem.value[key] elem />  
+				<@printJsonProperyEditView elem.description.getType(key) jsonAttrLocalizedTitle tmpName elem.value[key] elem key />  
 	  		<#else>
-	  			<@printJsonProperyEditView elem.description.getType(key) jsonAttrLocalizedTitle tmpName "" elem />  
+	  			<@printJsonProperyEditView elem.description.getType(key) jsonAttrLocalizedTitle tmpName "" elem key />  
 	          </#if>
 		</#list>			
 	</#if>
@@ -53,7 +53,7 @@
 </#macro>
 
 <#-- TODO: Duplicates some functionality in editor.ftl. Clean up later -->
-<#macro printJsonProperyEditView type jsonAttr tmpName value elem >
+<#macro printJsonProperyEditView type jsonAttr tmpName value elem key>
 	<#switch type >
 	 <#case "string">
         <#assign fieldSize="40" />
@@ -70,7 +70,7 @@
          title=jsonAttr 
          inputFieldName=tmpName
          value=value
-         classes=""
+         classes=key
          inputFieldSize=fieldSize />
         <#break>
       <#case "simple_html">

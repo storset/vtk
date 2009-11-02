@@ -100,7 +100,7 @@
 		htmlTemplate +=	'<div class=\"tooltip\">{tooltip}<\/div>';
 		htmlTemplate +=	'<\/div>';
 		
-		return processHtmlTemplate(elem.title,"vrtx-string",htmlTemplate,inputFieldName);
+		return processHtmlTemplate(elem.title,"vrtx-string" + " " + elem.name,htmlTemplate,inputFieldName);
 	}
 	
 	function addHtmlField(elem,inputFieldName,counter){

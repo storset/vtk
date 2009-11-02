@@ -376,7 +376,7 @@
         && (resource.resourceType = 'event-listing' || resource.resourceType = 'article-listing' || resource.resourceType = 'collection')>
   
         <#if name == 'navigationTitle'>
-               <a class="show-tooltip" href="#" title="<@vrtx.msg code='editor.tooltip.navigation-title'/>">____</a>
+               <a class="show-tooltip" href="#" title="<@vrtx.msg code='editor.tooltip.navigation-title'/>">__</a>
         </#if>
 
         <#if value = '' && name='userTitle'>

@@ -144,6 +144,7 @@
         (uri IN {$featuredArticles}) AND (type IN structured-article)
       </value>
     </property>
+    <property name="aggregationResolver"><null/></property>
   </bean>
 
   <!-- Fetch articles from explicitly specified subfolders -->
@@ -155,6 +156,7 @@
           AND (type IN structured-article)
       </value>
     </property>
+    <property name="aggregationResolver"><null/></property>
   </bean>
 
   <bean id="articleListing.viewResolver" parent="decoratorViewResolver">

@@ -339,7 +339,8 @@ h2.vrtx-title {
 
 /* IE7 fix */
 .vrtx-json #main-content .vrtx-json-element .vrtx-html,
-.vrtx-json #additional-content .vrtx-json-element .vrtx-html {
+.vrtx-json #additional-content .vrtx-json-element .vrtx-html,
+.vrtx-json #featured-items .vrtx-json-element .vrtx-html {
   float: none;
 }
 

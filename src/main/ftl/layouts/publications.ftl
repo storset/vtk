@@ -17,11 +17,11 @@
    <#assign tab1 = counter />
    <#assign counter = counter +1 />
 </#if>
-<#if pBooks?exists && pBooks?size &gt; 0>
+<#if pSciArtBookChapters?exists && pSciArtBookChapters?size &gt; 0>
    <#assign tab2 = counter />
    <#assign counter = counter +1 />
 </#if>
-<#if pSciArtBookChapters?exists && pSciArtBookChapters?size &gt; 0>
+<#if pBooks?exists && pBooks?size &gt; 0>
    <#assign tab3 = counter />
    <#assign counter = counter +1 />
 </#if>
@@ -34,10 +34,10 @@
       <li><a href="#vrtx-publication-tab-${tab1}"><@vrtx.msg code="decorating.frida.publications.selected" default="Selected"/></a></li>
     </#if>
     <#if tab2 != 0>
-      <li><a href="#vrtx-publication-tab-${tab2}"><@vrtx.msg code="decorating.frida.publications.books" default="Books"/></a></li>
+      <li><a href="#vrtx-publication-tab-${tab2}"><@vrtx.msg code="decorating.frida.publications.sciartbookchapters" default="Scientific articles and bookchapters"/></a></li>
     </#if>
     <#if tab3 != 0>
-      <li><a href="#vrtx-publication-tab-${tab3}"><@vrtx.msg code="decorating.frida.publications.sciartbookchapters" default="Scientific articles and bookchapters"/></a></li>
+      <li><a href="#vrtx-publication-tab-${tab3}"><@vrtx.msg code="decorating.frida.publications.books" default="Books"/></a></li>
     </#if>
     <#if tab4 != 0>
       <li><a href="#vrtx-publication-tab-${tab4}"><@vrtx.msg code="decorating.frida.publications.other" default="Other works"/></a></li>
@@ -50,8 +50,8 @@
   </div>
 </#if>
 
-<@listPublications tab2 pBooks />
-<@listPublications tab3 pSciArtBookChapters />
+<@listPublications tab2 pSciArtBookChapters />
+<@listPublications tab3 pBooks />
 <@listPublications tab4 pOther />
 
 <#macro listPublications tabNumber publications>

@@ -115,8 +115,6 @@ public class CollectionListingAggregationResolver implements AggregationReslover
 
         String token = SecurityContext.getSecurityContext().getToken();
         // XXX handle recursive aggregation
-        
-        System.out.println("XXX " + paths);
 
         OrQuery aggregatedFoldersQuery = new OrQuery();
         for (Path path : paths) {

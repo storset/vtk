@@ -140,8 +140,7 @@ public class ACLEditCommandValidator implements Validator {
                             uid = matches.get(0).getName();
                         }
                     } catch (Exception e) {
-                        errors
-                                .rejectValue("userNames", "permissions.exception",
+                        errors.rejectValue("userNames", "permissions.exception",
                                         new Object[] { userName }, "Cannot find user "
                                                 + userName);
                         continue;

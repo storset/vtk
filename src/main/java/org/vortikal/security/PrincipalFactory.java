@@ -79,12 +79,13 @@ public class PrincipalFactory {
         if (principal.getType() == Type.USER) {
             if (this.principalMetadataDao != null) {
                 
-                // Set description (full name)
+                // Set metadata for principal, if we can get any.
                 try {
                     PrincipalMetadata metadata = this.principalMetadataDao.getMetadata(principal);
                     if (metadata != null) {
-                        principal.setDescription(metadata.getDescription());
-                        principal.setURL(metadata.getUrl());
+                        principal.setDescription((String)metadata.getValue("description"));
+                        principal.setURL((String)metadata.getValue("url"));
+                        principal.setMetadata(metadata);
                     }
                 } catch (UnsupportedPrincipalDomainException d) {
                     // Ignore
@@ -98,24 +99,28 @@ public class PrincipalFactory {
         return principal;
     }
     
-    /**
-     * XXX: Use this, or use {@link PrincipalMetadataDAO#search(String, Type)} directly ?
-     *      Difference is, this factory creates real Principal instances, while PrincipalMetadataDAO
-     *      creates PrincipalMetadata-instances. 
-     * 
-     */
-    public List<Principal> search(String filter, Type type) throws RepositoryException {
+    public List<Principal> search(final String filter, final Type type) throws RepositoryException {
         List<Principal> retval = null;
         if (this.principalMetadataDao != null) {
-            List<PrincipalMetadata> results = this.principalMetadataDao.search(filter, type);
+
+            PrincipalMetadataDAO.Search search = new PrincipalMetadataDAO.Search() {
+                public Principal.Type getPrincipalType() {
+                    return type;
+                }
+                public String getSearchString() {
+                    return filter;
+                }
+            };
+
+            List<PrincipalMetadata> results = this.principalMetadataDao.search(search);
             if (results != null) {
                 retval = new ArrayList<Principal>(results.size());
                 for (PrincipalMetadata metadata: results) {
                     PrincipalImpl principal = new PrincipalImpl(metadata.getQualifiedName());
                     principal.setType(type);
-                    principal.setDescription(metadata.getDescription());
-                    principal.setURL(metadata.getUrl());
-                    
+                    principal.setDescription((String)metadata.getValue("description"));
+                    principal.setURL((String)metadata.getValue("url"));
+                    principal.setMetadata(metadata);
                     retval.add(principal);
                 }
             }

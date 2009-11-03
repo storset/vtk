@@ -47,8 +47,6 @@ public class PrincipalMetadataImpl implements PrincipalMetadata {
     // Maps attribute name to list of values.
     private Map<String, List<Object>> attributes = new HashMap<String,List<Object>>();
     private String qualifiedName;
-    private String description;
-    private String url;
     
     public PrincipalMetadataImpl(String qualifiedName) {
         if (qualifiedName == null) {
@@ -101,43 +99,25 @@ public class PrincipalMetadataImpl implements PrincipalMetadata {
         return Collections.unmodifiableSet(this.attributes.keySet());
     }
 
-    public String getDescription() {
-        return this.description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getUrl() {
-        return this.url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-    
     public String getQualifiedName() {
         return this.qualifiedName;
     }
     
+    @Override
     public String toString() {
         StringBuilder buffer = new StringBuilder(getClass().getName());
-        buffer.append("[qualifiedName=").append(qualifiedName);
-        buffer.append(", description=").append(this.description);
-        if (this.url != null) {
-            buffer.append(", URL=").append(this.url);
-        }
-        buffer.append("]");
+        buffer.append("[qualifiedName=").append(qualifiedName).append(']');
         return buffer.toString();
     }
     
+    @Override
     public boolean equals(Object other) {
         if (! (other instanceof PrincipalMetadataImpl)) return false;
-        
+
         return this.qualifiedName.equals(((PrincipalMetadataImpl)other).qualifiedName);
     }
     
+    @Override
     public int hashCode() {
         return this.qualifiedName.hashCode();
     }

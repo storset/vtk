@@ -30,6 +30,8 @@
  */
 package org.vortikal.security;
 
+import org.vortikal.repository.store.PrincipalMetadata;
+
 
 
 /**
@@ -66,6 +68,15 @@ public interface Principal extends Comparable<Principal>, java.io.Serializable {
     public String getUnqualifiedName();
 
     /**
+     * Returns metadata-instance for this principal.
+     * @see PrincipalMetadata
+     *
+     * @return An instance of <code>PrincipalMetadata</code> or null if no
+     *         metadata has been retrieved for this principal.
+     */
+    public PrincipalMetadata getMetadata();
+
+    /**
      * Gets the domain of the principal. May be <code>null</code>.
      *
      * @return the domain of the principal, or <code>null</code> if it
@@ -74,16 +85,17 @@ public interface Principal extends Comparable<Principal>, java.io.Serializable {
     public String getDomain();
     
     public String getURL();
-    
+
     public boolean isUser();
 
     public Type getType();
 
     public String getDescription();
-    
+
     /**
      * @return XXX: see the current implementation!
      */
+    @Override
     public String toString();
     
 

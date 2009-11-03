@@ -171,7 +171,7 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean 
             return isMemberCached(principal, group);
         }
         
-        public boolean isMemberUncached(Principal principal, Principal group)
+        private boolean isMemberUncached(Principal principal, Principal group)
             throws AuthenticationProcessingException {
 
             for (GroupStore manager: this.managers) {
@@ -184,7 +184,7 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean 
         }
 
 
-        public boolean isMemberCached(Principal principal, Principal group)
+        private boolean isMemberCached(Principal principal, Principal group)
             throws AuthenticationProcessingException {
 
             String groupName = group.getQualifiedName();

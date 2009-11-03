@@ -32,6 +32,7 @@ package org.vortikal.repository.store;
 
 import java.util.List;
 
+import java.util.Map;
 import org.vortikal.security.Principal;
 import org.vortikal.security.Principal.Type;
 
@@ -41,6 +42,11 @@ import org.vortikal.security.Principal.Type;
  *
  */
 public interface PrincipalMetadataDAO {
+
+    static interface Search {
+        Principal.Type getPrincipalType();
+        String getSearchString();
+    }
 
     /**
      * Get metadata instance for principal with the given
@@ -52,7 +58,7 @@ public interface PrincipalMetadataDAO {
      *         or <code>null</code> if no metadata could be found.
      * 
      */
-    public PrincipalMetadata getMetadata(String qualifiedName);
+    PrincipalMetadata getMetadata(String qualifiedName);
     
     /**
      * Get metadata instance for given principal instance.
@@ -61,20 +67,14 @@ public interface PrincipalMetadataDAO {
      * @return A <code>PrincipalMetadata</code> instance or <code>null</code> if none found.
      * 
      */
-    public PrincipalMetadata getMetadata(Principal principal);
-    
+    PrincipalMetadata getMetadata(Principal principal);
+
     /**
-     * Searches for principals which satisfy the supplied search criteria, represented as an 
-     * implementation-specific <code>String</code>.
-     * 
-     * @param searchString String to use in search
-     * @param type Type of {@link org.vortikal.security.Principal} to search for.
-     * @see org.vortikal.security.Principal.Type
+     * Searches for principals which satisfy the supplied search criteria.
      * 
      * @return List of metadata-instances (<code>PrincipalMetadata</code>) 
      *         for each principal that satisfies the search criteria.
      */
-    public List<PrincipalMetadata> search(String searchString, Type type);
-
+    List<PrincipalMetadata> search(Search search);
 
 }

@@ -63,24 +63,6 @@ public interface PrincipalMetadata {
     public String getQualifiedName();
 
     /**
-     * Get description for a principal.
-     * 
-     * @see org.vortikal.security.Principal#getDescription()
-     * 
-     * @return The description of the principal. May be <code>null</code>.
-     */
-    public String getDescription();
-    
-    /**
-     * Get URL for a principal.
-     * 
-     * @see org.vortikal.security.Principal#getURL()
-     * 
-     * @return The URL of the principal. May be <code>null</code>.
-     */
-    public String getUrl();
-    
-    /**
      * Get value of attribute with the given name. If
      * the attribute has multiple values, then the first
      * value is returned. 

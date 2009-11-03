@@ -1,21 +1,21 @@
 /* Copyright (c) 2008, University of Oslo, Norway
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  *  * Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
- * 
+ *
  *  * Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 
+ *
  *  * Neither the name of the University of Oslo nor the names of its
  *    contributors may be used to endorse or promote products derived from
  *    this software without specific prior written permission.
- *      
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
  * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
  * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -30,6 +30,7 @@
  */
 package org.vortikal.security;
 
+import org.vortikal.repository.store.PrincipalMetadata;
 
 public class PrincipalImpl implements Principal {
 
@@ -46,8 +47,8 @@ public class PrincipalImpl implements Principal {
     private String url;
     private Type type;
     private String description;
-    
-    
+    private PrincipalMetadata metadata;
+
     PrincipalImpl(String name) {
         this.name = name;
         this.qualifiedName = name;
@@ -82,8 +83,8 @@ public class PrincipalImpl implements Principal {
          * matching a setup "without" domains: */
         this.name = id;
         this.qualifiedName = id;
-        
-        String defDomain = 
+
+        String defDomain =
             (type == Principal.Type.GROUP) ? DEFAULT_GROUP_DOMAIN : DEFAULT_DOMAIN;
 
         if (id.indexOf(DOMAIN_DELIMITER) > 0) {
@@ -91,13 +92,13 @@ public class PrincipalImpl implements Principal {
             /* id is a fully qualified principal with a domain part: */
             this.domain = id.substring(id.indexOf(DOMAIN_DELIMITER) + 1);
 
-            
+
             if (defDomain != null && defDomain.equals(domain)) {
                 /* In cases where domain equals default domain, strip
                  * the domain part off the name: */
                 name = id.substring(0, id.indexOf(DOMAIN_DELIMITER));
-            } 
-                        
+            }
+
         } else if (defDomain != null) {
 
             /* id is not a fully qualified principal, but since we
@@ -107,22 +108,22 @@ public class PrincipalImpl implements Principal {
         }
 
     }
-    
+
+    @Override
     public boolean equals(Object another) {
         if (another instanceof Principal) {
             String anotherName = ((Principal)another).getQualifiedName();
             if (getQualifiedName().equals(anotherName)) {
                 return true;
             }
-        }   
+        }
         return false;
     }
-    
 
+    @Override
     public int hashCode() {
         return this.qualifiedName.hashCode();
     }
-    
 
     /**
      * Gets the name of the principal. Cannot be <code>null</code>.
@@ -136,7 +137,7 @@ public class PrincipalImpl implements Principal {
     /**
      * Gets the fully qualified name of the principal. If domain is
      * null, just the user name, otherwise 'user@domain'
-     * 
+     *
      * @return the fully qualified name of the principal
      */
     public String getQualifiedName() {
@@ -152,11 +153,10 @@ public class PrincipalImpl implements Principal {
     public String getDomain() {
         return this.domain;
     }
-    
+
     public String getURL() {
         return this.url;
     }
-    
 
     public String toString() {
         return this.qualifiedName;
@@ -164,7 +164,7 @@ public class PrincipalImpl implements Principal {
 
     /**
      * Gets the unqualified name of the principal, stripped of domain
-     * 
+     *
      * @return the unqualified name of the principal
      */
     public String getUnqualifiedName() {
@@ -173,11 +173,9 @@ public class PrincipalImpl implements Principal {
         return this.qualifiedName.substring(0, this.qualifiedName.indexOf("@"));
     }
 
-
     public boolean isUser() {
         return this.type == Principal.Type.USER;
     }
-
 
     public Type getType() {
         return this.type;
@@ -212,4 +210,19 @@ public class PrincipalImpl implements Principal {
     public void setURL(String url) {
         this.url = url;
     }
+
+    /**
+     * @return the metadata
+     */
+    public PrincipalMetadata getMetadata() {
+        return metadata;
+    }
+
+    /**
+     * @param metadata the metadata to set
+     */
+    public void setMetadata(PrincipalMetadata metadata) {
+        this.metadata = metadata;
+    }
+
 }

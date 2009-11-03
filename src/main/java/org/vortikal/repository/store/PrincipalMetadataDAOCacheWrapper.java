@@ -32,6 +32,7 @@ package org.vortikal.repository.store;
 
 import java.util.List;
 
+import java.util.Map;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.security.Principal;
@@ -49,13 +50,13 @@ public class PrincipalMetadataDAOCacheWrapper implements PrincipalMetadataDAO,
 
     private PrincipalMetadataDAO wrappedDao;
     private SimpleCache<String, CacheItem> cache;
-    private int timeoutSeconds = 100; 
+    private int timeoutSeconds = 60;
     
     public void afterPropertiesSet() throws Exception {
-        SimpleCacheImpl<String, CacheItem> cache 
+        SimpleCacheImpl<String, CacheItem> cacheImpl
                 = new SimpleCacheImpl<String, CacheItem>(this.timeoutSeconds);
-        cache.setRefreshTimestampOnGet(false);
-        this.cache = cache;
+        cacheImpl.setRefreshTimestampOnGet(false);
+        this.cache = cacheImpl;
     }
     
     /* (non-Javadoc)
@@ -93,17 +94,16 @@ public class PrincipalMetadataDAOCacheWrapper implements PrincipalMetadataDAO,
     }
     
     /* (non-Javadoc)
-     * @see org.vortikal.repository.store.PrincipalMetadataDAO#search(java.lang.String, org.vortikal.security.Principal.Type)
+     * @see org.vortikal.repository.store.PrincipalMetadataDAO#search(PrincipalMetadataDAO.Search)
      */
-    public List<PrincipalMetadata> search(String searchString, Type type) {
-        // We don't cache these queries
-        return this.wrappedDao.search(searchString, type);
+    public List<PrincipalMetadata> search(PrincipalMetadataDAO.Search search) {
+        return this.wrappedDao.search(search);
     }
     
     private static final class CacheItem {
         PrincipalMetadata value;
         
-        public CacheItem(PrincipalMetadata value) {
+        CacheItem(PrincipalMetadata value) {
             this.value = value;
         }
     }
@@ -116,7 +116,7 @@ public class PrincipalMetadataDAOCacheWrapper implements PrincipalMetadataDAO,
     /**
      * Default cache item expiry time in seconds. 
      * 
-     * Default value is 100. Increase if wrapped data source is slow. 
+     * Default value is 60. Increase if wrapped data source is slow (LDAP is NOT slow).
      */
     public void setTimeoutSeconds(int timeoutSeconds) {
         if (timeoutSeconds < 1) {

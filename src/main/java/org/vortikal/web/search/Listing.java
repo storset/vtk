@@ -50,7 +50,7 @@ public class Listing {
     private List<PropertySet> files = new ArrayList<PropertySet>();
     private Map<String, URL> urls = new HashMap<String, URL>();
     private List<PropertyTypeDefinition> displayPropDefs = new ArrayList<PropertyTypeDefinition>();
-    private int totalHits; /* Regardless of number of files (total its in full search) */
+    private int totalHits; /* Regardless of number of files ( files.size() ) */
 
     public Listing(ResourceWrapper resource, String title, String name, int offset) {
         this.resource = resource;

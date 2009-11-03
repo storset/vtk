@@ -52,6 +52,7 @@ public class CollectionListingController extends AbstractCollectionListingContro
         int page = getPage(request, UPCOMING_PAGE_PARAM);
         int offset = (page - 1) * pageLimit;
         int limit = pageLimit;
+        int totalHits = 0;
         
         URL nextURL = null;
         URL prevURL = null;
@@ -59,6 +60,7 @@ public class CollectionListingController extends AbstractCollectionListingContro
         List<Listing> results = new ArrayList<Listing>();
         for (SearchComponent component : this.searchComponents) {
             Listing listing = component.execute(request, collection, page, limit, 0);
+            totalHits += listing.getTotalHits();
             // Add the listing to the results
             if (listing.getFiles().size() > 0) {
                 results.add(listing);
@@ -105,6 +107,8 @@ public class CollectionListingController extends AbstractCollectionListingContro
             }
         }
         
+        List<URL> urls = generatePageThroughUrls(totalHits, pageLimit, 0, URL.create(request));
+        model.put("pageThroughUrls", urls);
         model.put("nextURL", nextURL);
         model.put("prevURL", prevURL);
         

@@ -143,7 +143,6 @@ public class ArticleListingController extends AbstractCollectionListingControlle
                 nextURL.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(defaultArticlesPage));
             }
         }else{
-            /* We need the total number of hits, damn! */
             Listing defaultArticles = this.searcher.getArticles(request, collection, defaultArticlesPage, pageLimit, 0);
             totalHits += defaultArticles.getTotalHits();
             defaultArticles = null;
@@ -163,9 +162,8 @@ public class ArticleListingController extends AbstractCollectionListingControlle
             prevURL.setParameter(USER_DISPLAY_PAGE, String.valueOf(userDisplayPage -1));
         }
         
-        List<URL> urls = generatePageThroughUrls(totalHits, pageLimit, featuredArticlesTotalHits, URL.create(request));
-        
-        model.put("urls", urls);
+        List<URL> urls = generatePageThroughUrls(totalHits, pageLimit, featuredArticlesTotalHits, URL.create(request)); 
+        model.put("pageThroughUrls", urls);
 
         model.put("nextURL", nextURL);
         model.put("prevURL", prevURL);

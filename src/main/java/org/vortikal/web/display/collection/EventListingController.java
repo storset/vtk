@@ -171,11 +171,9 @@ public class EventListingController extends AbstractCollectionListingController 
         if (prevURL != null && userDisplayPage > 2) {
             prevURL.setParameter(USER_DISPLAY_PAGE, String.valueOf(userDisplayPage - 1));
         }
-
+        
         List<URL> urls = generatePageThroughUrls(totalHits, pageLimit, totalUpcomingHits, URL.create(request));
-
-        model.put("urls", urls);
-
+        model.put("pageThroughUrls", urls);
         model.put("nextURL", nextURL);
         model.put("prevURL", prevURL);
         model.put("currentDate", Calendar.getInstance().getTime());

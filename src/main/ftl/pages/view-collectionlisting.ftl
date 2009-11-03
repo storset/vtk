@@ -149,8 +149,8 @@
          <a class="vrtx-previous" href="${prevURL?html}"><@vrtx.msg code="viewCollectionListing.previous" /></a>
        </#if>
        
-       <#if urls?exists>
-	       <#list urls as url>
+       <#if pageThroughUrls?exists>
+	       <#list pageThroughUrls as url>
 	       		<a href="${url?html}" class="vrtx-page-number <#if (url_index+1) = page>vrtx-marked</#if>">${(url_index+1)}</a>
 	       </#list>
        </#if>

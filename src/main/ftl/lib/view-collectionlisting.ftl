@@ -100,10 +100,9 @@
           <#if articles.name == "articleListing.featuredArticles">
             <#local articleType = "vrtx-featured-article" />
           </#if>
-          
           <div id="vrtx-result-${i}" class="vrtx-resource ${articleType}"> 
             <#local src = vrtx.propValue(r, 'picture', 'thumbnail') />
-            <#if introImg?has_content && articles.hasDisplayPropDef(introImg.definition.name)>
+            <#if introImg?has_content && articles.hasDisplayPropDef(introImg.definition.name)>            
                <a class="vrtx-image" href="${articles.urls[r.URI]?html}">        
                  <#if caption != ''>
                     <img src="${src?html}" alt="${captionFlattened}" />
@@ -119,7 +118,7 @@
               <div class="published-date">
                 <span class="published-date-prefix"><@vrtx.localizeMessage code="viewCollectionListing.publishedDate" default="" args=[] locale=locale /></span>${publishedDate}                
               </div>
-            <#elseif publishDate?has_content>
+            <#elseif publishDate?has_content && articles.hasDisplayPropDef("published-date")>
               <div class="published-date">
                 <span class="published-date-prefix"><@vrtx.localizeMessage code="viewCollectionListing.publishedDate" default="" args=[] locale=locale /></span>${publishDate}                
               </div>
@@ -140,7 +139,7 @@
             <#local hasBody = vrtx.propValue(r, 'hasBodyContent') == 'true' />
             <#if displayMoreURLs && hasBody>
             <div class="vrtx-read-more">
-              <a href="${articles.urls[r.URI]?html}" class="more">
+              <a href="${articles.urls[r.URI]?html}" class="more">	
                 <@vrtx.localizeMessage code="viewCollectionListing.readMore" default="" args=[] locale=locale />
               </a>
             </div>

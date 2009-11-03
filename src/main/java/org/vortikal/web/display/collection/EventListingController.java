@@ -44,27 +44,28 @@ import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.service.URL;
 
 /**
- * A controller for displaying event listings (a 
- * collection subtype).
+ * A controller for displaying event listings (a collection subtype).
  * 
- * XXX: Refactor this class. Should have a "front page" 
- * displaying a number of upcoming and previous events,
- * and a separate paging mode for each category. The way it 
- * is done now (a single paging mode) is just painful.
+ * XXX: Refactor this class. Should have a "front page" displaying a number of
+ * upcoming and previous events, and a separate paging mode for each category.
+ * The way it is done now (a single paging mode) is just painful.
  */
 public class EventListingController extends AbstractCollectionListingController {
 
     private SearchComponent upcomingEventsSearch;
     private SearchComponent previousEventsSearch;
 
-    protected void runSearch(HttpServletRequest request, Resource collection,
-    		Map<String, Object> model, int pageLimit) throws Exception {
+    protected void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
+            throws Exception {
 
-    	int upcomingEventPage = getPage(request, UPCOMING_PAGE_PARAM);
+        int upcomingEventPage = getPage(request, UPCOMING_PAGE_PARAM);
         int prevEventPage = getPage(request, PREVIOUS_PAGE_PARAM);
 
         int userDisplayPage = upcomingEventPage;
-        
+
+        int totalHits = 0;
+        int totalUpcomingHits = 0;
+
         URL nextURL = null;
         URL prevURL = null;
 
@@ -74,10 +75,11 @@ public class EventListingController extends AbstractCollectionListingController 
         Listing upcoming = null;
         if (request.getParameter(PREVIOUS_PAGE_PARAM) == null) {
             // Search upcoming events
-            upcoming = this.upcomingEventsSearch.execute(
-                    request, collection, upcomingEventPage, pageLimit, 0);
+            upcoming = this.upcomingEventsSearch.execute(request, collection, upcomingEventPage, pageLimit, 0);
+            totalHits += upcoming.getTotalHits();
+            totalUpcomingHits = upcoming.getTotalHits();
             if (upcoming.size() > 0) {
-            	results.add(upcoming);
+                results.add(upcoming);
                 if (upcomingEventPage > 1) {
                     prevURL = createURL(request, PREVIOUS_PAGE_PARAM, PREV_BASE_OFFSET_PARAM);
                     prevURL.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(upcomingEventPage - 1));
@@ -90,19 +92,25 @@ public class EventListingController extends AbstractCollectionListingController 
                 nextURL = URL.create(request);
                 nextURL.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(upcomingEventPage));
             }
+        } else {
+            upcoming = this.upcomingEventsSearch.execute(request, collection, upcomingEventPage, pageLimit, 0);
+            totalHits += upcoming.getTotalHits();
+            totalUpcomingHits = upcoming.getTotalHits();
+            upcoming = null;
         }
 
-        
         if (upcoming == null || upcoming.size() == 0) {
             // Searching only in previous events
             int upcomingOffset = getIntParameter(request, PREV_BASE_OFFSET_PARAM, 0);
-            if (upcomingOffset > pageLimit) upcomingOffset = 0;
-            Listing previous = this.previousEventsSearch.execute(
-                    request, collection, prevEventPage, pageLimit, upcomingOffset);
+            if (upcomingOffset > pageLimit)
+                upcomingOffset = 0;
+            Listing previous = this.previousEventsSearch.execute(request, collection, prevEventPage, pageLimit,
+                    upcomingOffset);
+            totalHits += previous.getTotalHits();
             if (previous.size() > 0) {
-            	results.add(previous);
+                results.add(previous);
             }
-            
+
             if (prevEventPage > 1) {
                 prevURL = URL.create(request);
                 prevURL.setParameter(PREV_BASE_OFFSET_PARAM, String.valueOf(upcomingOffset));
@@ -127,44 +135,53 @@ public class EventListingController extends AbstractCollectionListingController 
         } else if (upcoming.size() < pageLimit) {
             // Fill up the rest of the page with previous events
             int upcomingOffset = pageLimit - upcoming.size();
-            Listing previous = this.previousEventsSearch.execute(
-                    request, collection, 1, upcomingOffset, 0);
+            Listing previous = this.previousEventsSearch.execute(request, collection, 1, upcomingOffset, 0);
+            totalHits += previous.getTotalHits();
+
             if (previous.size() > 0) {
-            	results.add(previous);
+                results.add(previous);
             }
-            
+
             if (upcomingEventPage > 1) {
                 prevURL = createURL(request, PREVIOUS_PAGE_PARAM, PREV_BASE_OFFSET_PARAM);
                 prevURL.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(upcomingEventPage - 1));
             }
-            
+
             if (previous.hasMoreResults()) {
                 nextURL = URL.create(request);
                 nextURL.setParameter(PREV_BASE_OFFSET_PARAM, String.valueOf(upcomingOffset));
                 nextURL.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(prevEventPage));
             }
+        }else{
+            Listing previous = this.previousEventsSearch.execute(request, collection, 1, 0, 0);
+            totalHits += previous.getTotalHits(); 
+            previous = null;
         }
-        
+
         model.put("searchComponents", results);
         model.put("page", userDisplayPage);
         model.put("hideNumberOfComments", getHideNumberOfComments(collection));
 
         cleanURL(nextURL);
         cleanURL(prevURL);
-        
+
         if (nextURL != null) {
             nextURL.setParameter(USER_DISPLAY_PAGE, String.valueOf(userDisplayPage + 1));
         }
         if (prevURL != null && userDisplayPage > 2) {
-            prevURL.setParameter(USER_DISPLAY_PAGE, String.valueOf(userDisplayPage -1));
+            prevURL.setParameter(USER_DISPLAY_PAGE, String.valueOf(userDisplayPage - 1));
         }
+
+        List<URL> urls = generatePageThroughUrls(totalHits, pageLimit, totalUpcomingHits, URL.create(request));
+
+        model.put("urls", urls);
 
         model.put("nextURL", nextURL);
         model.put("prevURL", prevURL);
         model.put("currentDate", Calendar.getInstance().getTime());
-        
+
     }
-    
+
     @Required
     public void setUpcomingEventsSearch(SearchComponent upcomingEventsSearch) {
         this.upcomingEventsSearch = upcomingEventsSearch;
@@ -174,7 +191,5 @@ public class EventListingController extends AbstractCollectionListingController 
     public void setPreviousEventsSearch(SearchComponent previousEventsSearch) {
         this.previousEventsSearch = previousEventsSearch;
     }
-
-
 
 }

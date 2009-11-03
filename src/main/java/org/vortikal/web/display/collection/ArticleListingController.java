@@ -51,7 +51,8 @@ public class ArticleListingController extends AbstractCollectionListingControlle
     	        
         int featuredArticlesPage = getPage(request, UPCOMING_PAGE_PARAM);
         int defaultArticlesPage = getPage(request, PREVIOUS_PAGE_PARAM);
-
+        int totalHits = 0;
+        int featuredArticlesTotalHits = 0;
         int userDisplayPage = featuredArticlesPage;
         
         URL nextURL = null;
@@ -67,6 +68,8 @@ public class ArticleListingController extends AbstractCollectionListingControlle
         if (request.getParameter(PREVIOUS_PAGE_PARAM) == null) {
             // Search featured articles
         	featuredArticles = this.searcher.getFeaturedArticles(request, collection, featuredArticlesPage, pageLimit, 0);
+        	totalHits += featuredArticles.getTotalHits();
+        	featuredArticlesTotalHits = featuredArticles.getTotalHits();
             if (featuredArticles.size() > 0) {
             	results.add(featuredArticles);
                 if (featuredArticlesPage > 1) {
@@ -81,6 +84,11 @@ public class ArticleListingController extends AbstractCollectionListingControlle
                 nextURL = URL.create(request);
                 nextURL.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(featuredArticlesPage));
             }
+        }else{
+            featuredArticles = this.searcher.getFeaturedArticles(request, collection, featuredArticlesPage, pageLimit, 0);
+            totalHits += featuredArticles.getTotalHits();
+            featuredArticlesTotalHits = featuredArticles.getTotalHits();
+            featuredArticles = null;
         }
 
         
@@ -89,6 +97,7 @@ public class ArticleListingController extends AbstractCollectionListingControlle
             int upcomingOffset = getIntParameter(request, PREV_BASE_OFFSET_PARAM, 0);
             if (upcomingOffset > pageLimit) upcomingOffset = 0;
             Listing defaultArticles = this.searcher.getArticles(request, collection, defaultArticlesPage, pageLimit, upcomingOffset);
+            totalHits += defaultArticles.getTotalHits();
             if (defaultArticles.size() > 0) {
             	results.add(defaultArticles);
             }
@@ -118,6 +127,7 @@ public class ArticleListingController extends AbstractCollectionListingControlle
             // Fill up the rest of the page with default articles
             int upcomingOffset = pageLimit - featuredArticles.size();
             Listing defaultArticles = this.searcher.getArticles(request, collection, 1, upcomingOffset, 0);
+            totalHits += defaultArticles.getTotalHits();
             if (defaultArticles.size() > 0) {
             	results.add(defaultArticles);
             }
@@ -132,6 +142,11 @@ public class ArticleListingController extends AbstractCollectionListingControlle
                 nextURL.setParameter(PREV_BASE_OFFSET_PARAM, String.valueOf(upcomingOffset));
                 nextURL.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(defaultArticlesPage));
             }
+        }else{
+            /* We need the total number of hits, damn! */
+            Listing defaultArticles = this.searcher.getArticles(request, collection, defaultArticlesPage, pageLimit, 0);
+            totalHits += defaultArticles.getTotalHits();
+            defaultArticles = null;
         }
         
         model.put("searchComponents", results);
@@ -147,6 +162,10 @@ public class ArticleListingController extends AbstractCollectionListingControlle
         if (prevURL != null && userDisplayPage > 2) {
             prevURL.setParameter(USER_DISPLAY_PAGE, String.valueOf(userDisplayPage -1));
         }
+        
+        List<URL> urls = generatePageThroughUrls(totalHits, pageLimit, featuredArticlesTotalHits, URL.create(request));
+        
+        model.put("urls", urls);
 
         model.put("nextURL", nextURL);
         model.put("prevURL", prevURL);

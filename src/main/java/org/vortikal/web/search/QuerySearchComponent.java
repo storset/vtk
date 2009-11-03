@@ -168,7 +168,7 @@ public abstract class QuerySearchComponent implements SearchComponent, Initializ
         listing.setFiles(files);
         listing.setUrls(urls);
         listing.setDisplayPropDefs(displayPropDefs);
-
+        listing.setTotalHits(result.getTotalHits());
         return listing;
     }
    

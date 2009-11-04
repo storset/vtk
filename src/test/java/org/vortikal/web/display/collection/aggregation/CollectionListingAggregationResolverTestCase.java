@@ -30,9 +30,8 @@
  */
 package org.vortikal.web.display.collection.aggregation;
 
-import junit.framework.TestCase;
-
 import org.vortikal.repository.Namespace;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceImpl;
@@ -47,44 +46,52 @@ import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
+import org.vortikal.web.AbstractControllerTest;
 
-public class CollectionListingAggregationResolverTestCase extends TestCase {
+public class CollectionListingAggregationResolverTestCase extends AbstractControllerTest {
 
-    private AggregationReslover aggregationReslover;
+    private CollectionListingAggregationResolver aggregationReslover;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         this.aggregationReslover = new CollectionListingAggregationResolver();
-        ((CollectionListingAggregationResolver) this.aggregationReslover)
-                .setAggregationPropDef(getAggregatedPropTypeDef());
-        ((CollectionListingAggregationResolver) this.aggregationReslover)
-                .setRecursiveAggregationPropDef(getRecursiveAggregatedPropDef());
+        this.aggregationReslover.setAggregationPropDef(getAggregatedPropTypeDef());
+        this.aggregationReslover.setRecursiveAggregationPropDef(getRecursiveAggregatedPropDef());
+        this.aggregationReslover.setRepository(mockRepository);
+    }
 
+    public void testRecursiveAggregation() throws Exception {
+
+        // XXX god damn it, all the mocking to do a simple test...
+
+        // runTest(getAndQuery(), true, true, true);
     }
 
     public void testExtend() {
-        runTest(new UriPrefixQuery("/someuri/", TermOperator.EQ, false), true, true);
-        runTest(getAndQuery(), true, true);
-        runTest(getNestedQuery(), true, true);
+        runTest(new UriPrefixQuery("/someuri/", TermOperator.EQ, false), true, false, true);
+        runTest(getAndQuery(), true, false, true);
+        runTest(getNestedQuery(), true, false, true);
     }
 
     public void testNullTermOperator() {
         AndQuery query = new AndQuery();
         query.add(new UriPrefixQuery("/someuri", null, false));
-        runTest(query, true, true);
+        runTest(query, true, false, true);
     }
 
     public void testNotExtended() {
-        runTest(getAndQuery(), false, false);
+        runTest(getAndQuery(), false, false, false);
         OrQuery original = new OrQuery();
         original.add(new TypeTermQuery("someterm", TermOperator.IN));
         original.add(new TypeTermQuery("someotherterm", TermOperator.IN));
-        runTest(original, true, false);
+        runTest(original, true, false, false);
     }
 
-    private void runTest(Query original, boolean withAggregationProp, boolean expectExtended) {
-        Query extended = this.aggregationReslover.extend(original, getCollection(withAggregationProp));
+    private void runTest(Query original, boolean withAggregationProp, boolean withRecursiveAggregationProp,
+            boolean expectExtended) {
+        Query extended = this.aggregationReslover.extend(original, getCollection(withAggregationProp,
+                withRecursiveAggregationProp));
         assertNotNull(extended);
         if (expectExtended) {
             assertNotSame(extended.toString(), original.toString());
@@ -119,13 +126,19 @@ public class CollectionListingAggregationResolverTestCase extends TestCase {
         return nestedQuery;
     }
 
-    private Resource getCollection(boolean withAggregationProp) {
+    private Resource getCollection(boolean withAggregationProp, boolean withRecursiveAggregationProp) {
         ResourceImpl collection = new ResourceImpl();
+        collection.setUri(Path.fromString("/rootCollection"));
 
         if (withAggregationProp) {
-            String[] values = { "/barfolder/", "/foo/bar/" };
+            String[] values = { "/barfolder", "/foo/bar" };
             Property aggregatedProp = getAggregatedPropTypeDef().createProperty(values);
             collection.addProperty(aggregatedProp);
+        }
+
+        if (withRecursiveAggregationProp) {
+            Property recursiveAggregationProp = getRecursiveAggregatedPropDef().createProperty(Boolean.TRUE);
+            collection.addProperty(recursiveAggregationProp);
         }
 
         return collection;
@@ -147,6 +160,11 @@ public class CollectionListingAggregationResolverTestCase extends TestCase {
         propDef.setMultiple(multiple);
         propDef.setValueFactory(new ValueFactoryImpl());
         return propDef;
+    }
+
+    @Override
+    protected Path getRequestPath() {
+        return null;
     }
 
 }

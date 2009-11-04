@@ -175,6 +175,8 @@ public abstract class AtomFeedController implements Controller {
             } else {
                 entry.addAuthor(author.getFormattedValue("name", null));
             }
+        }else{
+            entry.addAuthor("");
         }
 
         Property mediaRef = getMediaRef(result);

@@ -79,18 +79,13 @@ public abstract class AtomFeedController implements Controller {
             throws Exception;
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-
         String token = SecurityContext.getSecurityContext().getToken();
-
         Feed feed = createFeed(request, response, token);
-
         if (feed != null) {
             response.setContentType("application/atom+xml;charset=utf-8");
             feed.writeTo("prettyxml", response.getWriter());
         }
-
         return null;
-
     }
 
     protected String getTitle(Resource collection) {
@@ -136,24 +131,20 @@ public abstract class AtomFeedController implements Controller {
 
     protected void populateEntry(String token, PropertySet result, Entry entry) throws URIException,
             UnsupportedEncodingException {
-        
         String id = getId(result.getURI(), result.getProperty(NS, PropertyType.CREATIONTIME_PROP_NAME), null);
         entry.setId(id);
         entry.addCategory(result.getResourceType());
 
-        Property prop = result.getProperty(NS, PropertyType.TITLE_PROP_NAME);
-        entry.setTitle(prop.getFormattedValue());
-
+        Property title = getTitle(result);
+        if (title != null) {
+            entry.setTitle(title.getFormattedValue());
+        }
         String type = result.getResourceType();
         // Add introduction and/or pic as xhtml if resource is event or
         // article...
         if (type != null
-                && (type.equals("event") 
-                        || type.equals("article")
-                        || type.equals("structured-article")
-                        || type.equals("structured-event") 
-                        || type.equals("structured-project"))) {
-
+                && (type.equals("event") || type.equals("article") || type.equals("structured-article")
+                        || type.equals("structured-event") || type.equals("structured-project"))) {
             String summary = prepareSummary(result);
             entry.setSummaryAsXhtml(summary);
             // ...add description as plain text else
@@ -164,35 +155,33 @@ public abstract class AtomFeedController implements Controller {
             }
         }
 
-        if (this.publishedDatePropDef != null) {
-            prop = result.getProperty(this.publishedDatePropDef);
-            if (prop != null) {
-                entry.setPublished(prop.getDateValue());
-            }
+        Property publishDate = getPublishDate(result, type);
+        if (publishDate != null) {
+            entry.setPublished(publishDate.getDateValue());
         }
 
-        prop = result.getProperty(NS, PropertyType.LASTMODIFIED_PROP_NAME);
-        entry.setUpdated(prop.getDateValue());
+        Property updated = getLastModified(result);
+        if (updated != null) {
+            entry.setUpdated(updated.getDateValue());
+        }
 
-        if (this.authorPropDef != null) {
-            prop = result.getProperty(this.authorPropDef);
-            if (prop != null) {
-                ValueFormatter vf = prop.getDefinition().getValueFormatter();
-                if (prop.getDefinition().isMultiple()) {
-                    for (Value v : prop.getValues()) {
-                        entry.addAuthor(vf.valueToString(v, "name", null));
-                    }
-                } else {
-                    entry.addAuthor(prop.getFormattedValue("name", null));
+        Property author = getAuthor(result);
+        if (author != null) {
+            ValueFormatter vf = author.getDefinition().getValueFormatter();
+            if (author.getDefinition().isMultiple()) {
+                for (Value v : author.getValues()) {
+                    entry.addAuthor(vf.valueToString(v, "name", null));
                 }
+            } else {
+                entry.addAuthor(author.getFormattedValue("name", null));
             }
         }
 
-        prop = result.getProperty(NS, PropertyType.MEDIA_PROP_NAME);
-        if (prop != null) {
+        Property mediaRef = getMediaRef(result);
+        if (mediaRef != null) {
             try {
                 Link link = abdera.getFactory().newLink();
-                Path propRef = getPropRef(result, prop.getStringValue());
+                Path propRef = getPropRef(result, mediaRef.getStringValue());
                 link.setHref(viewService.constructLink(propRef));
                 link.setRel("enclosure");
                 Resource mediaResource = repository.retrieve(token, propRef, true);
@@ -235,6 +224,47 @@ public abstract class AtomFeedController implements Controller {
             sb.append(summary);
         }
         return sb.toString();
+    }
+
+    private Property getTitle(PropertySet result) {
+        return result.getProperty(NS, PropertyType.TITLE_PROP_NAME);
+    }
+
+    private Property getLastModified(PropertySet result) {
+        return result.getProperty(NS, PropertyType.LASTMODIFIED_PROP_NAME);
+    }
+
+    private Property getMediaRef(PropertySet result) {
+        Property mediaRef = null;
+        mediaRef = result.getProperty(NS, PropertyType.MEDIA_PROP_NAME);
+        if (mediaRef == null) {
+            mediaRef = result.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, PropertyType.MEDIA_PROP_NAME);
+        }
+        return mediaRef;
+    }
+
+    private Property getPublishDate(PropertySet result, String type) {
+        Property publishDate = null;
+        if (this.publishedDatePropDef != null) {
+            publishDate = result.getProperty(this.publishedDatePropDef);
+        }      
+        if (publishDate == null && type.equals("structured-event")) {
+            publishDate = result.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, "start-date");
+        }else if (publishDate == null){
+            publishDate = result.getProperty(NS, "publish-date");
+        }
+        return publishDate;
+    }
+
+    private Property getAuthor(PropertySet result) {
+        Property author = null;
+        if (this.authorPropDef != null) {
+            author = result.getProperty(this.authorPropDef);
+        } 
+        if(author == null){
+            author = result.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, "author");
+        }
+        return author;
     }
 
     protected String getIntroduction(PropertySet resource) {

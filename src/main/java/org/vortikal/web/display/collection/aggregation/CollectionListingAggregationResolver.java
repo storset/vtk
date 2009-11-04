@@ -121,7 +121,7 @@ public class CollectionListingAggregationResolver implements AggregationReslover
         resolveAggregatedFolderPaths(aggregationProp, paths, resolvedCollectionPaths);
 
         String token = SecurityContext.getSecurityContext().getToken();
-        handleRecursiveAggregation(collection, token, paths, resolvedCollectionPaths);
+        handleRecursiveAggregation(collection, token, paths, resolvedCollectionPaths, 0);
 
         OrQuery aggregatedFoldersQuery = new OrQuery();
         for (Path path : paths) {
@@ -144,9 +144,8 @@ public class CollectionListingAggregationResolver implements AggregationReslover
 
     /**
      * validate a value from an aggregationProp (pathValue); a pathValue is
-     * considered valid to aggregate from if: (1) it's a valid Path object, (2)
-     * not a path to an actual collection along the aggregation path, (3) not
-     * already among the set of paths to aggregate from, (4) not a sub path of
+     * considered valid to aggregate from if: (1) it's a valid Path object,(2)
+     * not already among the set of paths to aggregate from, (3) not a path to
      * any actual collection along the aggregation path
      */
     private boolean isValidPath(String pathValue, List<Path> paths, List<Path> resolvedCollectionPaths) {
@@ -160,7 +159,7 @@ public class CollectionListingAggregationResolver implements AggregationReslover
     }
 
     private void handleRecursiveAggregation(Resource collection, String token, List<Path> paths,
-            List<Path> resolvedCollectionPaths) {
+            List<Path> resolvedCollectionPaths, int depthCount) {
         List<Path> pathList = new ArrayList<Path>(paths);
         Property recursiveAggregationProp = collection.getProperty(this.recursiveAggregationPropDef);
         boolean handleRecursion = recursiveAggregationProp != null && recursiveAggregationProp.getBooleanValue();
@@ -175,10 +174,13 @@ public class CollectionListingAggregationResolver implements AggregationReslover
                         continue;
                     }
                     resolvedCollectionPaths.add(resource.getURI());
+
+                    System.out.println("Aggregating " + resource.getURI() + " with count " + depthCount);
+
                     Property aggregationProp = resource.getProperty(this.aggregationPropDef);
                     if (aggregationProp != null) {
                         resolveAggregatedFolderPaths(aggregationProp, paths, resolvedCollectionPaths);
-                        handleRecursiveAggregation(resource, token, paths, resolvedCollectionPaths);
+                        handleRecursiveAggregation(resource, token, paths, resolvedCollectionPaths, depthCount += 1);
                     }
 
                 } catch (Exception e) {

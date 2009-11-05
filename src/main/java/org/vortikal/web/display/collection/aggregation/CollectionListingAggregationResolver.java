@@ -133,23 +133,37 @@ public class CollectionListingAggregationResolver implements AggregationReslover
                 && depth < this.maxRecursiveDepth) {
             depth += 1;
             for (Path path : addedPaths) {
-                try {
-                    Resource resource = this.repository.retrieve(token, path, false);
-                    if (!resource.isCollection()) {
-                        paths.remove(path);
-                        continue;
-                    }
-                    handleRecursiveAggregation(paths, resource, token, depth);
-                } catch (ResourceNotFoundException rnfe) {
+                Resource resource = getResource(token, path);
+                if (resource == null) {
                     paths.remove(path);
-                } catch (Exception e) {
-                    logger.warn("An error occured while resolving recursive aggregation: " + e.getMessage());
+                    continue;
                 }
+                handleRecursiveAggregation(paths, resource, token, depth);
             }
         } else {
-            // XXX handle missing resources & invalid paths for when not
-            // following paths recursively
+            for (Path path : addedPaths) {
+                Resource resource = getResource(token, path);
+                if (resource == null) {
+                    paths.remove(path);
+                    continue;
+                }
+            }
         }
+    }
+
+    private Resource getResource(String token, Path path) {
+        try {
+            Resource resource = this.repository.retrieve(token, path, false);
+            if (!resource.isCollection()) {
+                return null;
+            }
+            return resource;
+        } catch (ResourceNotFoundException rnfe) {
+            // resource doesn'n exist, ignore
+        } catch (Exception e) {
+            logger.warn("An error occured while resolving recursive aggregation: " + e.getMessage());
+        }
+        return null;
     }
 
     private List<Path> addToPaths(Resource collection, List<Path> paths) {

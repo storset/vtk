@@ -86,14 +86,16 @@ resourcetype frontpage {
                [if content && content != ""]
                  [val content unescaped]
                [endif]
-               [if urlText && urlText != ""]
-                 [if url && url != ""]
-                   <a href="[val url]" class="more">[val urlText]</a>
-                 [else]
-                   [val urlText]
-                 [endif]
-               [endif]
              </div>
+             [if urlText && urlText != ""]
+             <div class="vrtx-more">
+                [if url && url != ""]
+                  <span><a href="[val url]">[val urlText]</a></span>
+                [else]
+                  <span>[val urlText]</span>
+                [endif]
+              </div>
+              [endif]
            </div>
            
         [endlist]

@@ -96,8 +96,7 @@ resourcetype frontpage {
                 [endif]
               </div>
               [endif]
-           </div>
-           
+           </div>      
         [endlist]
       [endif]
       ##

@@ -46,6 +46,7 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.web.display.collection.aggregation.AggregationResolver;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.service.Service;
@@ -62,15 +63,14 @@ public class TagsController implements Controller {
     private String viewName;
     private SearchComponent searchComponent;
     private Map<String, Service> alternativeRepresentations;
-
     private RepositoryTagElementsDataProvider tagElementsProvider;
+    private AggregationResolver aggregationResolver;
 
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response)
-            throws Exception {
-    	
-    	// XXX Should set the service title here, not in tags.ftl (service.getLocalizedName())
-    	
+        // XXX Should set the service title here, not in tags.ftl
+        // (service.getLocalizedName())
+
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
 
@@ -86,9 +86,7 @@ public class TagsController implements Controller {
         return handleSingleTag(request, tag, scope);
     }
 
-
-    private ModelAndView handleSingleTag(HttpServletRequest request, String tag, Resource scope)
-            throws Exception {
+    private ModelAndView handleSingleTag(HttpServletRequest request, String tag, Resource scope) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
 
         model.put("scope", scope);
@@ -102,16 +100,14 @@ public class TagsController implements Controller {
         int limit = pageInfo.getLimit();
         int offset = pageInfo.getOffset();
 
-        Listing listing = this.searchComponent.execute(request, scope, page, limit, 0,
-                defaultRecursive);
+        Listing listing = this.searchComponent.execute(request, scope, page, limit, 0, defaultRecursive);
         model.put("listing", listing);
 
         // Check previous result (by redoing the previous search),
         // to see if we need to adjust the offset.
         // XXX: is there a better way?
         if (listing.getFiles().size() == 0 && offset > 0) {
-            Listing prevListing = this.searchComponent.execute(request, scope, page - 1, limit, 0,
-                    defaultRecursive);
+            Listing prevListing = this.searchComponent.execute(request, scope, page - 1, limit, 0, defaultRecursive);
             if (prevListing.getFiles().size() > 0 && !prevListing.hasMoreResults()) {
                 offset -= prevListing.getFiles().size();
             }
@@ -156,8 +152,7 @@ public class TagsController implements Controller {
                 String title = service.getName();
                 org.springframework.web.servlet.support.RequestContext rc = new org.springframework.web.servlet.support.RequestContext(
                         request);
-                title = rc.getMessage(service.getName(), new Object[] { scope.getTitle() }, service
-                        .getName());
+                title = rc.getMessage(service.getName(), new Object[] { scope.getTitle() }, service.getName());
 
                 m.put("title", title);
                 m.put("url", url);
@@ -171,39 +166,41 @@ public class TagsController implements Controller {
         return new ModelAndView(this.viewName, model);
     }
 
-
     private ModelAndView handleAllTags(String token, Resource scope) {
 
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("scope", scope);
 
         Path scopeUri = scope.getURI();
-
-        List<TagElement> tagElements = tagElementsProvider.getTagElements(scopeUri, token, 1, 1,
+        List<TagElement> tagElements = this.tagElementsProvider.getTagElements(scopeUri, token, 1, 1,
                 Integer.MAX_VALUE, 1);
+        List<Path> aggregationPaths = this.aggregationResolver.getAggregationPaths(scopeUri);
+        if (aggregationPaths != null && aggregationPaths.size() > 0) {
+            for (Path aggregatedPath : aggregationPaths) {
+                tagElements.addAll(this.tagElementsProvider.getTagElements(aggregatedPath, token, 1, 1,
+                        Integer.MAX_VALUE, 1));
+            }
+        }
 
         model.put("tagElements", tagElements);
 
         return new ModelAndView(this.viewName, model);
     }
 
-
     private Resource getScope(String token, HttpServletRequest request) throws Exception {
         Path requestedScope = TagsHelper.getScopePath(request);
         Resource scopedResource = null;
-            scopedResource = this.repository.retrieve(token, requestedScope, true);
+        scopedResource = this.repository.retrieve(token, requestedScope, true);
         if (!scopedResource.isCollection()) {
             throw new IllegalArgumentException("Scope resource isn't a collection");
         }
         return scopedResource;
     }
 
-
     @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
-
 
     public void setDefaultPageLimit(int defaultPageLimit) {
         if (defaultPageLimit <= 0)
@@ -211,26 +208,26 @@ public class TagsController implements Controller {
         this.defaultPageLimit = defaultPageLimit;
     }
 
-
     @Required
     public void setSearchComponent(SearchComponent searchComponent) {
         this.searchComponent = searchComponent;
     }
-
 
     @Required
     public void setViewName(String viewName) {
         this.viewName = viewName;
     }
 
-
     public void setAlternativeRepresentations(Map<String, Service> alternativeRepresentations) {
         this.alternativeRepresentations = alternativeRepresentations;
     }
 
-
     public void setTagElementsProvider(RepositoryTagElementsDataProvider tagElementsProvider) {
         this.tagElementsProvider = tagElementsProvider;
+    }
+
+    public void setAggregationResolver(AggregationResolver aggregationReslover) {
+        this.aggregationResolver = aggregationReslover;
     }
 
 }

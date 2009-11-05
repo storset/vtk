@@ -54,10 +54,8 @@ public class TagsAsFeedController extends AtomFeedController {
 
     private SearchComponent searchComponent;
 
-
     @Override
-    protected Feed createFeed(HttpServletRequest request, HttpServletResponse response, String token)
-            throws Exception {
+    protected Feed createFeed(HttpServletRequest request, HttpServletResponse response, String token) throws Exception {
 
         Resource scope = getScope(token, request);
 
@@ -68,7 +66,7 @@ public class TagsAsFeedController extends AtomFeedController {
         }
 
         RequestContext rc = RequestContext.getRequestContext();
-    	Service service = rc.getService();
+        Service service = rc.getService();
         String feedTitle = service.getLocalizedName(scope, request);
         Feed feed = populateFeed(scope, feedTitle);
 
@@ -82,24 +80,20 @@ public class TagsAsFeedController extends AtomFeedController {
 
     }
 
-
     @Override
     protected String getFeedPrefix() {
         return "tags:";
     }
-
 
     @Override
     protected Date getLastModified(Resource collection) {
         return new Date();
     }
 
-
     @Override
     protected Property getPicture(Resource collection) {
         return null;
     }
-
 
     // Duplicated from TagsController :(
     private Resource getScope(String token, HttpServletRequest request) throws Exception {
@@ -118,7 +112,6 @@ public class TagsAsFeedController extends AtomFeedController {
         }
         return scopedResource;
     }
-
 
     @Required
     public void setSearchComponent(SearchComponent searchComponent) {

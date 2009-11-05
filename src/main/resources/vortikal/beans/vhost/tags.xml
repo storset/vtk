@@ -51,6 +51,7 @@
     <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
     <property name="searchComponent" ref="tags.searchComponent" />
     <property name="tagElementsProvider" ref="tags.tagElementsProvider" />
+    <property name="aggregationResolver" ref="aggregationResolver" />
     <property name="alternativeRepresentations">
       <map>
         <entry key="application/atom+xml" value-ref="tags.atomService" />

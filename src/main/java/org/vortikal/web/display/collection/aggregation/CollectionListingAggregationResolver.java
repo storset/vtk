@@ -39,6 +39,7 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.search.query.AbstractMultipleQuery;
@@ -93,8 +94,7 @@ public class CollectionListingAggregationResolver implements AggregationReslover
                     return aggregatedFoldersQuery;
                 } else {
                     // iterate the original query and build a new one, extending
-                    // any
-                    // UriPrefixQuery you encounter
+                    // any UriPrefixQuery you encounter
                     AbstractMultipleQuery extendableQuery = getExtendableQuery(query);
                     for (Query q : ((AbstractMultipleQuery) query).getQueries()) {
                         q = extend(q, aggregatedFoldersQuery, null);
@@ -114,14 +114,10 @@ public class CollectionListingAggregationResolver implements AggregationReslover
         // used to create an OrQuery to extend the original query with
         List<Path> paths = new ArrayList<Path>();
 
-        // list of collections that have already been resolved for aggregation,
-        // used to avoid loop in aggregation
-        List<Path> resolvedCollectionPaths = new ArrayList<Path>();
-        resolvedCollectionPaths.add(collection.getURI());
-        resolveAggregatedFolderPaths(aggregationProp, paths, resolvedCollectionPaths);
-
+        paths.add(collection.getURI());
         String token = SecurityContext.getSecurityContext().getToken();
-        handleRecursiveAggregation(collection, token, paths, resolvedCollectionPaths);
+        handleRecursiveAggregation(paths, collection, token, 0);
+        paths.remove(collection.getURI());
 
         OrQuery aggregatedFoldersQuery = new OrQuery();
         for (Path path : paths) {
@@ -130,61 +126,59 @@ public class CollectionListingAggregationResolver implements AggregationReslover
         return aggregatedFoldersQuery;
     }
 
-    private void resolveAggregatedFolderPaths(Property aggregationProp, List<Path> paths,
-            List<Path> resolvedCollectionPaths) {
-        Value[] values = aggregationProp.getValues();
-        int aggregationLimit = values.length > limit ? limit : values.length;
-        for (int i = 0; i < aggregationLimit; i++) {
-            String pathValue = values[i].getStringValue();
-            if (isValidPath(pathValue, paths, resolvedCollectionPaths)) {
-                paths.add(Path.fromString(pathValue));
-            }
-        }
-    }
-
-    /**
-     * validate a value from an aggregationProp (pathValue); a pathValue is
-     * considered valid to aggregate from if: (1) it's a valid Path object,(2)
-     * not already among the set of paths to aggregate from, (3) not a path to
-     * any actual collection along the aggregation path
-     */
-    private boolean isValidPath(String pathValue, List<Path> paths, List<Path> resolvedCollectionPaths) {
-        try {
-            Path path = Path.fromString(pathValue);
-            return !resolvedCollectionPaths.contains(path) && !paths.contains(path);
-        } catch (IllegalArgumentException e) {
-            // Don't do anything, the path is invalid, just ignore it
-            return false;
-        }
-    }
-
-    private void handleRecursiveAggregation(Resource collection, String token, List<Path> paths,
-            List<Path> resolvedCollectionPaths) {
-        List<Path> pathList = new ArrayList<Path>(paths);
+    private void handleRecursiveAggregation(List<Path> paths, Resource collection, String token, int depth) {
+        List<Path> addedPaths = addToPaths(collection, paths);
         Property recursiveAggregationProp = collection.getProperty(this.recursiveAggregationPropDef);
-        boolean handleRecursion = recursiveAggregationProp != null && recursiveAggregationProp.getBooleanValue();
-        if (handleRecursion) {
-            for (Path path : pathList) {
+        if ((recursiveAggregationProp != null && recursiveAggregationProp.getBooleanValue())
+                && depth < this.maxRecursiveDepth) {
+            depth += 1;
+            for (Path path : addedPaths) {
                 try {
-                    if (resolvedCollectionPaths.contains(path)) {
-                        continue;
-                    }
                     Resource resource = this.repository.retrieve(token, path, false);
                     if (!resource.isCollection()) {
+                        paths.remove(path);
                         continue;
                     }
-                    resolvedCollectionPaths.add(resource.getURI());
-                    Property aggregationProp = resource.getProperty(this.aggregationPropDef);
-                    if (aggregationProp != null) {
-                        resolveAggregatedFolderPaths(aggregationProp, paths, resolvedCollectionPaths);
-                        handleRecursiveAggregation(resource, token, paths, resolvedCollectionPaths);
-                    }
-
+                    handleRecursiveAggregation(paths, resource, token, depth);
+                } catch (ResourceNotFoundException rnfe) {
+                    paths.remove(path);
                 } catch (Exception e) {
-                    logger.error("An error occured while resolving recursive aggregation: " + e.getMessage());
+                    logger.warn("An error occured while resolving recursive aggregation: " + e.getMessage());
+                }
+            }
+        } else {
+            // XXX handle missing resources & invalid paths for when not
+            // following paths recursively
+        }
+    }
+
+    private List<Path> addToPaths(Resource collection, List<Path> paths) {
+        if (!paths.contains(collection.getURI())) {
+            paths.add(collection.getURI());
+        }
+        List<Path> addedPaths = new ArrayList<Path>();
+        Property aggregationProp = collection.getProperty(this.aggregationPropDef);
+        if (aggregationProp != null) {
+            Value[] values = aggregationProp.getValues();
+            int aggregationLimit = values.length > this.limit ? this.limit : values.length;
+            for (int i = 0; i < aggregationLimit; i++) {
+                Path path = getValidPath(values[i].getStringValue(), paths);
+                if (path != null && !paths.contains(path)) {
+                    paths.add(path);
+                    addedPaths.add(path);
                 }
             }
         }
+        return addedPaths;
+    }
+
+    private Path getValidPath(String pathValue, List<Path> paths) {
+        try {
+            return Path.fromString(pathValue);
+        } catch (IllegalArgumentException e) {
+            // Don't do anything, the path is invalid, just ignore it
+        }
+        return null;
     }
 
     private Query extend(Query query, OrQuery aggregatedFoldersQuery, AbstractMultipleQuery extendable) {
@@ -251,6 +245,7 @@ public class CollectionListingAggregationResolver implements AggregationReslover
     public void setLimit(int limit) {
         if (limit < 1) {
             logger.warn("Limit must be > 0, defaulting to " + DEFAULT_LIMIT);
+            return;
         }
         this.limit = limit;
     }
@@ -258,6 +253,7 @@ public class CollectionListingAggregationResolver implements AggregationReslover
     public void setMaxRecursiveDepth(int maxRecursiveDepth) {
         if (maxRecursiveDepth < 1) {
             logger.warn("Maximum depth for recursion must be > 0, defaulting to " + DEFAULT_RECURSIVE_DEPTH);
+            return;
         }
         this.maxRecursiveDepth = maxRecursiveDepth;
     }

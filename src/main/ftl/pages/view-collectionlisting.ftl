@@ -144,30 +144,36 @@
            </#if>
          </#list>
        </#if>
-       <#-- Previous/next URLs: -->
-       <#if prevURL?exists>
-         <a class="vrtx-previous" href="${prevURL?html}"><@vrtx.msg code="viewCollectionListing.previous" /></a>
-       </#if>
        
-       <#if pageThroughUrls?exists && pageThroughUrls?size &gt; 1>
-	       <#list pageThroughUrls as url>
-	       		<a href="${url?html}" class="vrtx-page-number <#if (url_index+1) = page>vrtx-marked</#if>">${(url_index+1)}</a>
-	       </#list>
-       </#if>
+       <span class="vrtx-paging-wrapper">
        
-       <#if nextURL?exists>
-         <a class="vrtx-next" href="${nextURL?html}"><@vrtx.msg code="viewCollectionListing.next" /></a>
-       </#if>
-     </#if>
-
-    <#-- XXX: display first link with content type = atom: -->
-    <#list alternativeRepresentations as alt>
-      <#if alt.contentType = 'application/atom+xml'>
-        <div class="vrtx-feed-link">
-          <a id="vrtx-feed-link" href="${alt.url?html}"><@vrtx.msg code="viewCollectionListing.feed.fromThis" /></a>
-        </div>
-        <#break />
-      </#if>
-    </#list>
+           <#-- Previous/next URLs: -->
+           <#if prevURL?exists>
+             <a class="vrtx-previous" href="${prevURL?html}"><@vrtx.msg code="viewCollectionListing.previous" /></a>
+           </#if>
+           
+           <#if pageThroughUrls?exists && pageThroughUrls?size &gt; 1>
+    	       <#list pageThroughUrls as url>
+    	       		<a href="${url?html}" class="vrtx-page-number <#if (url_index+1) = page>vrtx-marked</#if>">${(url_index+1)}</a>
+    	       </#list>
+           </#if>
+           
+           <#if nextURL?exists>
+             <a class="vrtx-next" href="${nextURL?html}"><@vrtx.msg code="viewCollectionListing.next" /></a>
+           </#if>
+         </#if>
+    
+        <#-- XXX: display first link with content type = atom: -->
+        <#list alternativeRepresentations as alt>
+          <#if alt.contentType = 'application/atom+xml'>
+            <div class="vrtx-feed-link">
+              <a id="vrtx-feed-link" href="${alt.url?html}"><@vrtx.msg code="viewCollectionListing.feed.fromThis" /></a>
+            </div>
+            <#break />
+          </#if>
+        </#list>
+    
+     </span>
+    
   </body>
 </html>

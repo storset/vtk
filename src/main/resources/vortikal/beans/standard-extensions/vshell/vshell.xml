@@ -84,6 +84,12 @@
              script-interfaces="org.vortikal.shell.vshell.VCommand">
    </lang:bsh>
 
+   <lang:bsh id="vshell.repo.move"
+             refresh-check-delay="1000"
+             script-source="${vshell.commandsLocation}/repo/move.bsh"
+             script-interfaces="org.vortikal.shell.vshell.VCommand">
+   </lang:bsh>
+
    <lang:bsh id="vshell.repo.acl-discover"
              refresh-check-delay="1000"
              script-source="${vshell.commandsLocation}/repo/acl-discover.bsh"

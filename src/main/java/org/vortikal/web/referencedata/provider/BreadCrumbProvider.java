@@ -104,6 +104,7 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
     private boolean skipCurrentResource;
     private boolean skipIndexFile;
     private PropertyTypeDefinition navigationTitlePropDef;
+    private int displayFromLevel = 0;
     
     private final Logger logger = Logger.getLogger(BreadCrumbProvider.class);
 
@@ -167,6 +168,11 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
         RequestContext requestContext = RequestContext.getRequestContext();
         Path uri = requestContext.getResourceURI();
 
+        try{
+            displayFromLevel = Integer.parseInt((String) model.get("display-from-level"))-1;
+        }catch (NumberFormatException e) {
+            displayFromLevel = 0;
+        }
         boolean skipLastElement = this.skipCurrentResource;
         Object includeLast = model.get("include-last-element");
         if (includeLast != null 
@@ -218,6 +224,9 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
         }
 
         for (int i = 0; i < length; i++) {
+            if(i < displayFromLevel){
+                continue;
+            }
             try {
                 Resource r = this.repository.retrieve(token, incrementalPath.get(i), true);
 

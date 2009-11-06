@@ -30,9 +30,17 @@
       <#assign name = name?lower_case/>
     </#if>
     <#if elem.URL?exists>
-      <span class="vrtx-breadcrumb-level-${counter?html}"><a href="${elem.URL?html}">${name?html}</a>  <span class="vrtx-breadcrumb-delimiter">${elem.delimiter?if_exists?html}</span></span>
+      <span class="vrtx-breadcrumb-level-${counter?html}"><a href="${elem.URL?html}">${name?html}</a>
+      <#if elem.delimiter?exists>
+      	<span class="vrtx-breadcrumb-delimiter">${elem.delimiter?html}</span>
+      </#if>
+      </span>
     <#else>
-      <span class="vrtx-breadcrumb-level-${counter?html}">${name?html} <span class="vrtx-breadcrumb-delimiter">${elem.delimiter?if_exists?html}</span></span>
+      <span class="vrtx-breadcrumb-level-${counter?html}">${name?html}
+      <#if elem.delimiter?exists>
+      	<span class="vrtx-breadcrumb-delimiter">${elem.delimiter?html}</span>
+      </#if>
+      </span>
     </#if>
     <#if counter = stopLevel>
        <#break>

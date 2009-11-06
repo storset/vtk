@@ -35,6 +35,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.vortikal.web.service.URL;
+
 /**
  * Bean representing a simple menu.
  * 
@@ -53,7 +55,7 @@ public class ListMenu<T> {
     private List<MenuItem<T>> items = new ArrayList<MenuItem<T>>();
     private MenuItem<T> activeItem;
     private Comparator<MenuItem<T>> comparator;
-    
+    private URL moreUrl;
 
     public String getTitle() {
         return this.title;
@@ -112,7 +114,16 @@ public class ListMenu<T> {
         sb.append(", label=").append(this.label);
         sb.append(", activeItem=").append(this.activeItem);
         sb.append(", items=").append(this.items);
+        sb.append(", moreurl=").append(this.moreUrl);
         sb.append("]");
         return sb.toString();
+    }
+
+    public void setMoreUrl(URL moreUrl) {
+        this.moreUrl = moreUrl;
+    }
+
+    public URL getMoreUrl() {
+        return moreUrl;
     }
 }

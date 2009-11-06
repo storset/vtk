@@ -126,6 +126,9 @@ public class SubFolderMenuComponent extends ListMenuComponent {
     private static final String PARAMETER_DISPLAY_FROM_LEVEL = "display-from-level";
     private static final String PARAMETER_DISPLAY_FROM_LEVEL_DESC = "Defines the starting URI level for the subfolder-menu";
 
+    private static final String PARAMETER_MAX_NUMBER_OF_CHILDREN = "max-number-of-children";
+    private static final String PARAMETER_MAX_NUMBER_OF_CHILDREN_DESC = "Defines the maximum number of children displayed for each element";
+    
     private static Log logger = LogFactory.getLog(SubFolderMenuComponent.class);
 
     private ResourceTypeTree resourceTypeTree;
@@ -279,7 +282,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
     }
 
     private ListMenu<PropertySet> buildListMenu(ResultSet rs, MenuRequest menuRequest) {
-
+        ListMenu<PropertySet> menu = new ListMenu<PropertySet>();
         Map<Path, List<PropertySet>> childMap = new HashMap<Path, List<PropertySet>>();
         List<PropertySet> toplevel = new ArrayList<PropertySet>();
         for (int i = 0; i < rs.getSize(); i++) {
@@ -289,25 +292,31 @@ public class SubFolderMenuComponent extends ListMenuComponent {
             if (this.hiddenPropDef != null && resource.getProperty(this.hiddenPropDef) != null) {
                 continue;
             }
-
+            
             Path parentURI = resource.getURI().getParent();
             if (parentURI.equals(menuRequest.getCurrentCollectionUri())) {
                 toplevel.add(resource);
             }
             List<PropertySet> childList = childMap.get(parentURI);
+            
             if (childList == null) {
                 childList = new ArrayList<PropertySet>();
                 childMap.put(parentURI, childList);
             }
-            childList.add(resource);
+            if(childList.size() < menuRequest.getMaxNumberOfChildren()){
+                childList.add(resource);
+            }
+            
         }
 
+        menu.setMoreUrl(URL.parse("http://localhost/"));
+        
         List<MenuItem<PropertySet>> toplevelItems = new ArrayList<MenuItem<PropertySet>>();
+
         for (PropertySet resource : toplevel) {
             toplevelItems.add(buildItem(resource, childMap, menuRequest));
         }
-
-        ListMenu<PropertySet> menu = new ListMenu<PropertySet>();
+        
         menu.setComparator(new SubFolderMenuComparator(menuRequest, this.navigationTitlePropDef));
         menu.addAllItems(toplevelItems);
         menu.setTitle(menuRequest.getTitle());
@@ -334,6 +343,10 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         List<PropertySet> children = childMap.get(resource.getURI());
         if (children != null) {
             ListMenu<PropertySet> subMenu = new ListMenu<PropertySet>();
+            if(children.size() == menuRequest.getMaxNumberOfChildren()){
+                URL moreUrl = this.viewService.constructURL(resource.getURI());
+                subMenu.setMoreUrl(moreUrl);
+            }
             subMenu.setComparator(new SubFolderMenuComparator(menuRequest, this.navigationTitlePropDef));
             for (PropertySet child : children) {
                 subMenu.addItem(buildItem(child, childMap, menuRequest));
@@ -354,10 +367,12 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         private int freezeAtLevel = 0;
         private int depth = 1;
         private int displayFromLevel = -1;
+        private int maxNumberOfChildren = Integer.MAX_VALUE;
         private ArrayList<Path> excludeURIs;
         private Locale locale;
         private String token;
-
+        
+        
         public MenuRequest(DecoratorRequest request) {
 
             RequestContext requestContext = RequestContext.getRequestContext();
@@ -440,6 +455,12 @@ public class SubFolderMenuComponent extends ListMenuComponent {
                     throw new DecoratorComponentException("Illegal value for parameter '" + PARAMETER_URI + "': "
                             + request.getStringParameter(PARAMETER_URI));
                 }
+            }
+
+            try {
+                setMaxNumberOfChildren(Integer.parseInt(request.getStringParameter(PARAMETER_MAX_NUMBER_OF_CHILDREN)));
+            } catch (NumberFormatException e) {
+                // Not a required parameter
             }
 
             if (displayFromLevel != null && !"".equals(displayFromLevel.trim())) {
@@ -592,6 +613,14 @@ public class SubFolderMenuComponent extends ListMenuComponent {
                         + "': '" + sortDirectionParam + "' (must be one of 'asc', 'desc')");
             }
         }
+
+        public void setMaxNumberOfChildren(int maxNumberOfChildren) {
+            this.maxNumberOfChildren = maxNumberOfChildren;
+        }
+
+        public int getMaxNumberOfChildren() {
+            return maxNumberOfChildren;
+        }
     }
 
     private class SubFolderMenuComparator implements Comparator<MenuItem<PropertySet>> {
@@ -680,6 +709,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         map.put(PARAMETER_EXCLUDE_FOLDERS, PARAMETER_EXCLUDE_FOLDERS_DESC);
         map.put(PARAMETER_AS_CURRENT_USER, PARAMETER_AS_CURRENT_USER_DESC);
         map.put(PARAMETER_DEPTH, PARAMETER_DEPTH_DESC);
+        map.put(PARAMETER_MAX_NUMBER_OF_CHILDREN,PARAMETER_MAX_NUMBER_OF_CHILDREN_DESC);
         return map;
     }
 

@@ -7,7 +7,7 @@
   -   subFolderMenu
   -
   -->
-  
+  <#import "../lib/vortikal.ftl" as vrtx />
  <#-- RECURSIVE MENU BUILD --> 
  <#if subFolderMenu?exists>
     <#if subFolderMenu.size &gt; 0>
@@ -69,9 +69,14 @@
 <#macro displaySubMenu menu>
   <ul>
     <#list menu.itemsSorted as item>
-      <li> 
+      <li>   
         <@displayItem item=item />
       </li>
     </#list>
+	<#if menu.moreUrl?exists >
+	    <li class="vrtx-more">   
+			<a href="${menu.moreUrl?html}"><@vrtx.msg code="subfolder.morelinkTitle" /></a>
+		</li>
+	</#if>
   </ul>
 </#macro>

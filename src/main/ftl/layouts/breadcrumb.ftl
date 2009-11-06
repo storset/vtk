@@ -32,5 +32,11 @@
 <#if .vars['stop-at-level']?exists>
   <#assign stop = .vars['stop-at-level']?number />
 </#if>
-
-<@brdcrmb.breadCrumb crumbs=breadcrumb downcase=downcaseElements hidePrefix=hide stopLevel=stop />
+<#assign start = 1 />
+<#if .vars['display-from-level']?exists>
+  <#assign start = .vars['display-from-level']?number />
+</#if>
+<#if (start < 1)>
+	<#assign start = 1 />
+</#if>
+<@brdcrmb.breadCrumb crumbs=breadcrumb downcase=downcaseElements hidePrefix=hide stopLevel=stop startLevel=start />

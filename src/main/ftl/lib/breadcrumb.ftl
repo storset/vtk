@@ -11,7 +11,7 @@
   -->
 <#import "vortikal.ftl" as vrtx />
   
-<#macro breadCrumb crumbs downcase=false hidePrefix=false stopLevel=0>
+<#macro breadCrumb crumbs downcase=false hidePrefix=false stopLevel=0 startLevel=1>
 
 <#if !crumbs?exists>
   <#stop "Unable to render model: required submodel
@@ -23,7 +23,7 @@
   <#if !hidePrefix>
       <span class="breadcrumb-prefix"><@vrtx.msg code="breadcrumb.locationTitle" default="You are here"/>:</span>
   </#if>
-  <#assign "counter" = 1>
+  <#assign counter = startLevel>
   <#list crumbs as elem>
     <#assign name = elem.title/>
     <#if downcase>

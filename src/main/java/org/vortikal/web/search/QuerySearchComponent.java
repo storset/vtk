@@ -67,7 +67,6 @@ public abstract class QuerySearchComponent implements SearchComponent, Initializ
     private boolean defaultRecursive = false;
     private ResourceWrapperManager resourceManager;
     private Service viewService;
-    private PropertyTypeDefinition defaultSortPropDef;
     private SortFieldDirection defaultSortOrder;
     private Map<String, SortFieldDirection> sortOrderMapping;
     private PropertyTypeDefinition recursivePropDef;
@@ -75,9 +74,10 @@ public abstract class QuerySearchComponent implements SearchComponent, Initializ
     private List<PropertyDisplayConfig> listableProperties;
     private Repository repository;
     private ResourceTypeTree resourceTypeTree;
-    private String defaultSortOrderPropDefName;
-    private String defaultSortOrderPropNsPrefix;
-    
+
+    private List<String> sortOrderPropDefPointers;
+    private List<PropertyTypeDefinition> sortOrderPropDefs;
+
     protected CollectionListingAggregationResolver aggregationResolver;
 
     protected abstract Query getQuery(Resource collection, HttpServletRequest request, boolean recursive);
@@ -100,16 +100,13 @@ public abstract class QuerySearchComponent implements SearchComponent, Initializ
         if (this.sortPropDef != null && collection.getProperty(this.sortPropDef) != null) {
             String sortString = collection.getProperty(this.sortPropDef).getStringValue();
             sortProp = resourceTypeTree.getPropertyTypeDefinition(Namespace.DEFAULT_NAMESPACE, sortString);
-            if(sortProp == null){
-                sortProp = resourceTypeTree.getPropertyTypeDefinition(Namespace.STRUCTURED_RESOURCE_NAMESPACE, sortString);
+            if (sortProp == null) {
+                sortProp = resourceTypeTree.getPropertyTypeDefinition(Namespace.STRUCTURED_RESOURCE_NAMESPACE,
+                        sortString);
             }
             if (this.sortOrderMapping != null && this.sortOrderMapping.containsKey(sortString)) {
                 sortFieldDirection = this.sortOrderMapping.get(sortString);
             }
-        }
-        
-        if(sortProp == null){
-            sortProp = this.defaultSortPropDef;
         }
 
         Search search = new Search();
@@ -123,7 +120,16 @@ public abstract class QuerySearchComponent implements SearchComponent, Initializ
 
         String token = SecurityContext.getSecurityContext().getToken();
         List<SortField> sortFields = new ArrayList<SortField>();
-        sortFields.add(new PropertySortField(sortProp, sortFieldDirection));
+
+        if(sortProp != null){
+            sortFields.add(new PropertySortField(sortProp, sortFieldDirection));
+        }else{
+            if (sortOrderPropDefs != null) {
+                for (PropertyTypeDefinition p : sortOrderPropDefs) {
+                    sortFields.add(new PropertySortField(p, sortFieldDirection));
+                }
+            }
+        }
         search.setSorting(new SortingImpl(sortFields));
 
         ResultSet result = this.repository.search(token, search);
@@ -171,11 +177,26 @@ public abstract class QuerySearchComponent implements SearchComponent, Initializ
         listing.setTotalHits(result.getTotalHits());
         return listing;
     }
-   
-    public void afterPropertiesSet(){
-        if(defaultSortOrderPropDefName != null && resourceTypeTree != null ){
-            this.defaultSortPropDef = resourceTypeTree.getPropertyDefinitionByPrefix(defaultSortOrderPropNsPrefix,
-                    defaultSortOrderPropDefName);
+
+    public void afterPropertiesSet() {
+        if (sortOrderPropDefPointers != null) {
+            for (String pointer : sortOrderPropDefPointers) {
+                String prefix = null;
+                String name = null;
+                if (pointer.indexOf(":") > 0) {
+                    prefix = pointer.substring(0, pointer.indexOf(":"));
+                    name = pointer.substring(pointer.indexOf(":") + 1, pointer.length());
+                } else {
+                    name = pointer;
+                }
+                PropertyTypeDefinition prop = resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
+                if (sortOrderPropDefs == null) {
+                    sortOrderPropDefs = new ArrayList<PropertyTypeDefinition>();
+                }
+                if (prop != null) {
+                    sortOrderPropDefs.add(prop);
+                }
+            }
         }
     }
 
@@ -236,23 +257,23 @@ public abstract class QuerySearchComponent implements SearchComponent, Initializ
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
-    
+
     @Required
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
-    }
-    
-    @Required
-    public void setDefaultSortOrderPropDefName(String defaultSortOrderPropDefName) {
-        this.defaultSortOrderPropDefName = defaultSortOrderPropDefName;
-    }
-
-    public void setDefaultSortOrderPropNsPrefix(String defaultSortOrderPropNsPrefix) {
-        this.defaultSortOrderPropNsPrefix = defaultSortOrderPropNsPrefix;
     }
 
     public void setAggregationResolver(CollectionListingAggregationResolver aggregationResolver) {
         this.aggregationResolver = aggregationResolver;
     }
-    
+
+    public void setSortOrderPropDefPointers(List<String> sortOrderPropDefPointers) {
+        this.sortOrderPropDefPointers = sortOrderPropDefPointers;
+    }
+
+    public List<String> getSortOrderPropDefPointers() {
+        return sortOrderPropDefPointers;
+    }
+
+
 }

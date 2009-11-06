@@ -86,9 +86,10 @@
     <property name="viewService" ref="webService" />
     <property name="resourceManager" ref="resourceManager" />
     <property name="defaultRecursive" value="true" />
-    <property name="defaultSortOrderPropDefName" value="lastModified" />
-    <property name="defaultSortOrderPropNsPrefix">
-      <null />
+    <property name="sortOrderPropDefPointers">
+      <list>
+        <value>lastModified</value>
+      </list>
     </property>
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="defaultSortOrder" ref="SORT_ORDER.DESC" />

@@ -91,8 +91,13 @@
       <value>(uri = {$currentFolder}/*) AND (type IN file)</value>
     </property>
     <property name="queryParser" ref="searchParser" />
-    <property name="defaultSortOrderPropDefName" value="title" />
-    <property name="defaultSortOrderPropNsPrefix" ><null /></property>
+    
+    <property name="sortOrderPropDefPointers">
+      <list>
+        <value>title</value>
+      </list>
+    </property>
+    
     <property name="resourceTypeTree"  ref ="resourceTypeTree" />
     <property name="defaultSortOrder" ref="SORT_ORDER.ASC" />
     <property name="sortOrderMapping">

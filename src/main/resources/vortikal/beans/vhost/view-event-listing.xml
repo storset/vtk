@@ -88,8 +88,11 @@
       </value>
     </property>
     <property name="queryParser" ref="searchParser" />
-    <property name="defaultSortOrderPropDefName" value="start-date" />
-    <property name="defaultSortOrderPropNsPrefix" value="resource" />
+    <property name="sortOrderPropDefPointers">
+      <list>
+        <value>resource:start-date</value>
+      </list>
+    </property>
     <property name="resourceTypeTree"  ref ="resourceTypeTree" />
     <property name="defaultSortOrder" ref="SORT_ORDER.ASC" />
     <property name="listableProperties" ref="eventListing.listableProperties" />
@@ -109,9 +112,12 @@
         (uri = {$currentFolder}/* AND type IN structured-event) AND (resource:end-date &lt; {$currentDate} OR (resource:end-date not exists AND resource:start-date &lt; {$currentDate}))
       </value>
     </property>
-    <property name="queryParser" ref="searchParser" /> 
-    <property name="defaultSortOrderPropDefName" value="start-date" />
-    <property name="defaultSortOrderPropNsPrefix" value="resource" />
+    <property name="queryParser" ref="searchParser" />
+    <property name="sortOrderPropDefPointers">
+      <list>
+        <value>resource:start-date</value>
+      </list>
+    </property>
     <property name="resourceTypeTree"  ref ="resourceTypeTree" />
     <property name="defaultSortOrder" ref="SORT_ORDER.DESC" />
     <property name="listableProperties" ref="eventListing.listableProperties" />

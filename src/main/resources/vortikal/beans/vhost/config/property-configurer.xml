@@ -9,9 +9,9 @@
 			<list>
 				<value>classpath:/vortikal/beans/vortikal.properties</value>
 				<value>classpath:vortikal-custom.properties</value>
-				<value>file://${user.home}/vortikal.properties</value>
-				<value>file://${user.home}/vrtx.properties</value>
-				<value>file://${user.home}/.vrtx.properties</value>
+				<value>file://${user.home}/*vortikal.properties</value>
+				<value>file://${user.home}/*vrtx.properties</value>
+				<value>file://${user.home}/*.vrtx.properties</value>
 			</list>
 		</property>
 	</bean>

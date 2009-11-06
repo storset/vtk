@@ -188,7 +188,7 @@
 
 
 <#--
- * html
+ * flattenHtml
  *
  * Flattens an HTML string.
  * Example: <@vrtx.flattenHtml value='<div>foo</div>' /> (produces 'foo')
@@ -209,6 +209,22 @@
       Undefined
     </#if>
   </#compress>
+</#macro>
+
+
+<#--
+ * invokeComponentRefs
+ *
+ * Invokes decorating components in an HTML string
+ * Example: <@vrtx.invokeComponents value='<div>${include:file uri=[/foo.txt]}</div>' />
+ *
+ * @param html the HTML string
+ *
+-->
+<#macro invokeComponentRefs html>
+  <#local frag = VRTX_HTML_UTIL.parseFragment(html) />
+  ${frag.filter(VRTX_DECORATING_NODE_FILTER)}
+  ${frag.stringRepresentation}
 </#macro>
 
 
@@ -287,7 +303,7 @@
 </#function>
 
 <#function propValue resource name format='long' prefix=''>
-  <#local propVal = getPropValue(resource, name, format, prefix) />
+in  <#local propVal = getPropValue(resource, name, format, prefix) />
   <#if !propVal?has_content>
     <#local propVal = getPropValue(resource, name, format, 'resource') />
   </#if>

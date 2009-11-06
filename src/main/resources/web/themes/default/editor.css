@@ -278,6 +278,27 @@ span.input-description {
   font-size: .8em;
 }
 
+div.additionalContent {
+  clear: left;
+  float: left;
+  width: 500px;
+  margin-right: 1.2em;
+  margin-bottom: 1em; /*1em;*/
+}
+
+div.additionalContent textarea {
+  height: 22.5ex; /* Used when fck-editor is disabled */
+  width: 500px;
+}
+
+#resource\.additionalContent___Frame {
+  height: 133px;
+}
+
+* html #resource\.additionalContent___Frame {
+  height: 133px;
+}
+
 div.introduction {
   clear: left;
   float: left;

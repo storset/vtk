@@ -81,6 +81,12 @@
      </#if>
      </#if>
 
+     <#-- XXX: "additional content" (for person listing) -->
+     <#assign additionalContent = vrtx.propValue(resource, "additionalContent", "", "pl") />
+     <#if additionalContent?has_content>
+       <@vrtx.invokeComponentRefs additionalContent />
+     </#if>
+
      <#-- List collections: -->
      <#if page == 1>
      

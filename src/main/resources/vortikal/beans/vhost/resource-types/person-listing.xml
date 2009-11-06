@@ -16,6 +16,11 @@
         </bean>
       </list>
     </property>
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="personListing.additionalContentPropDef" />
+      </list>
+    </property>
   </bean>
   
   <bean id="resourceIsPersonListing" class="org.vortikal.web.service.ResourceTypeAssertion">
@@ -23,4 +28,13 @@
     <property name="exactMatch" value="true" />
   </bean>
   
+
+  <bean id="personListing.additionalContentPropDef" 
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="additionalContent"/>
+    <property name="type" value="HTML"/>
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
+    <property name="mandatory" value="false"/>
+  </bean>
+
 </beans>

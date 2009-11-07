@@ -45,6 +45,9 @@ public class HtmlUtil {
         return this.htmlParser.parse(in, encoding);
     }
 
+    public HtmlFragment parseFragment(String html) throws Exception {
+        return this.htmlParser.parseFragment(html);
+    }
 
     public String flatten(String html) {
         try {

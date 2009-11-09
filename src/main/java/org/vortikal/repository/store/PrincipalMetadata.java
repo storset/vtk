@@ -38,20 +38,15 @@ import java.util.Set;
  * Simplistic and generic interface for accessing principal metadata
  * as "attribute -> list of values"-mappings.
  * 
- * Not a permanent solution, as almost nothing is well defined (including
- * what type generic attribute values have). Intepretation of values are thus
- * up to the client code and actual types depend on data source implementing
- * the {@link PrincipalMetadataDAO} interface.
- * 
- * XXX: extend Principal interface, or provide this data through Principal interface itself ?
- * Right now, Principal metadata is something very separate to Principals.
- * 
  * This will typically be used by {@link org.vortikal.security.PrincipalFactory}
  * when creating {@link org.vortikal.security.Principal} instances.
  * 
  */
 public interface PrincipalMetadata {
-    
+
+    public static final String DESCRIPTION_ATTRIBUTE = "description";
+    public static final String URL_ATTRIBUTE = "url";
+
     /**
      * Get the qualified name of the principal to which this instance's
      * metadata applies.

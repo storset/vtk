@@ -85,8 +85,8 @@ public class PrincipalFactory {
                 try {
                     PrincipalMetadata metadata = this.principalMetadataDao.getMetadata(principal);
                     if (metadata != null) {
-                        principal.setDescription((String)metadata.getValue("description"));
-                        principal.setURL((String)metadata.getValue("url"));
+                        principal.setDescription((String)metadata.getValue(PrincipalMetadata.DESCRIPTION_ATTRIBUTE));
+                        principal.setURL((String)metadata.getValue(PrincipalMetadata.URL_ATTRIBUTE));
                         principal.setMetadata(metadata);
                     }
                 } catch (UnsupportedPrincipalDomainException d) {
@@ -113,8 +113,8 @@ public class PrincipalFactory {
                 for (PrincipalMetadata metadata: results) {
                     PrincipalImpl principal = new PrincipalImpl(metadata.getQualifiedName());
                     principal.setType(type);
-                    principal.setDescription((String)metadata.getValue("description"));
-                    principal.setURL((String)metadata.getValue("url"));
+                    principal.setDescription((String)metadata.getValue(PrincipalMetadata.DESCRIPTION_ATTRIBUTE));
+                    principal.setURL((String)metadata.getValue(PrincipalMetadata.URL_ATTRIBUTE));
                     principal.setMetadata(metadata);
                     retval.add(principal);
                 }

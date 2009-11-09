@@ -216,7 +216,7 @@ public class CollectionListingAggregationResolver implements AggregationResolver
             }
             for (Query q : ((AbstractMultipleQuery) query).getQueries()) {
                 if (isExtendableUriPrefixQuery(q)) {
-                    q = getAggregatedUriQuery(q, aggregatedFoldersQuery);
+                    q = aggregatedFoldersQuery;
                 } else if (q instanceof AbstractMultipleQuery) {
                     q = extend(q, aggregatedFoldersQuery, getExtendableQuery(q));
                 }
@@ -224,7 +224,7 @@ public class CollectionListingAggregationResolver implements AggregationResolver
             }
             return extendable;
         } else if (isExtendableUriPrefixQuery(query)) {
-            query = getAggregatedUriQuery(query, aggregatedFoldersQuery);
+            query = aggregatedFoldersQuery;
         }
 
         return query;
@@ -236,15 +236,6 @@ public class CollectionListingAggregationResolver implements AggregationResolver
             return new AndQuery();
         }
         return new OrQuery();
-    }
-
-    private Query getAggregatedUriQuery(Query query, OrQuery aggregatedFoldersQuery) {
-        OrQuery aggregatedUriQuery = new OrQuery();
-        aggregatedUriQuery.add(query);
-        for (Query q : aggregatedFoldersQuery.getQueries()) {
-            aggregatedUriQuery.add(q);
-        }
-        return aggregatedUriQuery;
     }
 
     private boolean isExtendableUriPrefixQuery(Query query) {

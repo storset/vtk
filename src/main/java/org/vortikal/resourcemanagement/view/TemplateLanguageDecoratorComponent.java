@@ -39,6 +39,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.vortikal.resourcemanagement.ComponentDefinition;
 import org.vortikal.text.html.HtmlContent;
 import org.vortikal.text.html.HtmlFragment;
@@ -52,6 +54,7 @@ import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
 import org.vortikal.web.decorating.HtmlDecoratorComponent;
 import org.vortikal.web.decorating.components.AbstractDecoratorComponent;
+import org.vortikal.web.decorating.components.DecoratorComponentException;
 
 public class TemplateLanguageDecoratorComponent extends AbstractDecoratorComponent
 implements HtmlDecoratorComponent {
@@ -62,6 +65,7 @@ implements HtmlDecoratorComponent {
     private NodeList nodeList;
     private HtmlPageParser htmlParser;
     private Map<String, DirectiveNodeFactory> directiveHandlers;
+    private static Log logger = LogFactory.getLog(TemplateLanguageDecoratorComponent.class); 
 
     private Date compileTime;
 
@@ -91,7 +95,39 @@ implements HtmlDecoratorComponent {
     }
 
     public List<HtmlContent> render(DecoratorRequest request) throws Exception {
-        compile();
+        try {
+            compile();
+            Context ctx = createContext(request);
+            StringWriter writer = new StringWriter();
+            this.nodeList.render(ctx, writer);
+            HtmlFragment fragment = this.htmlParser.parseFragment(writer.getBuffer().toString());
+            return fragment.getContent();
+        } catch (Throwable t) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Error rendering component " + getName(), t);
+            }
+            throw new DecoratorComponentException(t.getMessage(), t);
+        }
+    }
+
+    public void render(DecoratorRequest request, DecoratorResponse response)
+    throws Exception {
+        try {
+            compile();
+            Context ctx = createContext(request);
+            Writer writer = response.getWriter();
+            this.nodeList.render(ctx, writer);
+            writer.flush();
+            writer.close();
+        } catch (Throwable t) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Error rendering component " + getName(), t);
+            }
+            throw new DecoratorComponentException(t.getMessage(), t);
+        }
+    }
+    
+    private Context createContext(DecoratorRequest request) {
         Context ctx = new Context(request.getLocale());
         if (this.modelKey != null) { 
             ctx.define(this.modelKey, request.getMvcModel(), true);
@@ -100,23 +136,7 @@ implements HtmlDecoratorComponent {
             Object value = request.getParameter(param);
             ctx.define(param, value, true);
         }
-        StringWriter writer = new StringWriter();
-        this.nodeList.render(ctx, writer);
-        HtmlFragment fragment = this.htmlParser.parseFragment(writer.getBuffer().toString());
-        return fragment.getContent();
-    }
-
-    public void render(DecoratorRequest request, DecoratorResponse response)
-    throws Exception {
-        compile();
-        Context ctx = new Context(request.getLocale());
-        if (this.modelKey != null) { 
-            ctx.define(this.modelKey, request.getMvcModel(), true);
-        }
-        Writer writer = response.getWriter();
-        this.nodeList.render(ctx, writer);
-        writer.flush();
-        writer.close();
+        return ctx;
     }
 
     @Override

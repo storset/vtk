@@ -2,7 +2,12 @@
 
 <#macro displayPersons personListing>
   <#local persons=personListing.files />
-  <#if (persons?size > 0)>  
+  <#if (persons?size > 0)>
+  <div class="vrtx-number-of-records">
+  	${vrtx.getMsg("person-listing.persons")} ${numberOfRecords["elementsOnPreviousPages"]} -
+  	${numberOfRecords["elementsIncludingThisPage"]} ${vrtx.getMsg("person-listing.of")} 
+  	${personListing.totalHits?string}
+  </div>
    <table class="vrtx-person-listing">
        <thead>
     	 <tr>

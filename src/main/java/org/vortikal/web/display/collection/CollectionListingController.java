@@ -31,6 +31,7 @@
 package org.vortikal.web.display.collection;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -88,7 +89,10 @@ public class CollectionListingController extends AbstractCollectionListingContro
         }
         model.put("searchComponents", results);
         model.put("page", page);
-
+        if(results.get(0) != null){
+            model.put("numberOfRecords", getNumberOfRecords(page, pageLimit, results.get(0).size()));
+        }
+        
         if (results.size() > 0) {
             Listing last = results.get(results.size() - 1);
             if (last.hasMoreResults()) {
@@ -114,6 +118,15 @@ public class CollectionListingController extends AbstractCollectionListingContro
         
     }
 
+    private Map<String,Integer> getNumberOfRecords(int page, int pageLimit,int resultSize){
+         Map<String,Integer> numbers = new HashMap<String,Integer>();
+         int numberShownElements = ((page-1)*pageLimit)+1;
+         int includingThisPage = ((page-1)*pageLimit)+resultSize;
+         numbers.put("elementsOnPreviousPages", numberShownElements);
+         numbers.put("elementsIncludingThisPage", includingThisPage);
+         return numbers;
+    }
+    
     @Required
     public void setSearchComponents(List<SearchComponent> searchComponents) {
         this.searchComponents = searchComponents;

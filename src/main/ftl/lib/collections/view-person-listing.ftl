@@ -67,7 +67,7 @@
             <#if tags != "">
               <#list tagsList as tag>
                 <#local tagsNr = tagsNr+1 />
-                <a href="${"?vrtx=tags&tag="?html}${tag?trim?html}">${tag?trim?html}</a><#if tagsList?size != tagsNr>,</#if> 
+                <a href="${"?vrtx=tags&tag="?html}${tag?trim?html}&amp;documenttype=${person.getResourceType()?html}">${tag?trim?html}</a><#if tagsList?size != tagsNr>,</#if> 
            	  </#list>
            	</#if>
          </td>

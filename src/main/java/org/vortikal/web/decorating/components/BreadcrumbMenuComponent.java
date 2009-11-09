@@ -32,6 +32,7 @@ package org.vortikal.web.decorating.components;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -52,8 +53,12 @@ import org.vortikal.web.view.components.menu.MenuItem;
 
 public class BreadcrumbMenuComponent extends ListMenuComponent {
 
-    private static final String PARAMETER_AUTENTICATED = "authenticated";
-    private static final String PARAMETER_DISPLAY_FROM_LEVEL = "display-from-level";
+    private static final String PARAMETER_MAX_NUMBER_OF_SIBLINGS = "max-number-of-siblings";
+    private static final String PARAMETER_MAX_NUMBER_OF_SIBLINGS_DESC = "Defines the maximum number of siblings. When this limit is"
+            + " reached no siblings are going to be displayed. Default limit is: " + Integer.MAX_VALUE;
+    protected static final String PARAMETER_DISPLAY_FROM_LEVEL_DESC = "Defines the starting URI level for the menu";
+
+    private int maxSiblings = Integer.MAX_VALUE;
     private int displayFromLevel = -1;
     private String token;
 
@@ -100,6 +105,10 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
             Resource childResource = repository.retrieve(token, currentResource.getURI().getParent(), false);
             childElements = generateChildElements(childResource.getChildURIs(), principal);
             breadCrumbElements.remove(breadCrumbElements.size() - 1);
+            if (childElements.size() > maxSiblings) {
+                childElements = new ArrayList<MenuItem<PropertySet>>();
+                childElements.add(buildItem(currentResource));
+            }
         }
 
         childElements = sortDefaultOrder(childElements, request.getLocale());
@@ -164,17 +173,30 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         String displayFromLevel = request.getStringParameter(PARAMETER_DISPLAY_FROM_LEVEL);
         if (displayFromLevel != null && !"".equals(displayFromLevel.trim())) {
             int level = Integer.parseInt(displayFromLevel);
-            if (level <= 0) {
-                throw new DecoratorComponentException("Parameter '" + PARAMETER_DISPLAY_FROM_LEVEL
-                        + "' must be an integer > 0");
+            if (level < 1) {
+                intergerMustBeHigherThenZeroException(PARAMETER_DISPLAY_FROM_LEVEL);
             }
             this.displayFromLevel = level;
         }
+
         boolean authenticated = "true".equals(request.getStringParameter(PARAMETER_AUTENTICATED));
         if (authenticated) {
             SecurityContext securityContext = SecurityContext.getSecurityContext();
             this.token = securityContext.getToken();
         }
+
+        try {
+            maxSiblings = Integer.parseInt((String) request.getStringParameter(PARAMETER_MAX_NUMBER_OF_SIBLINGS));
+            if (maxSiblings < 1)
+                intergerMustBeHigherThenZeroException(PARAMETER_MAX_NUMBER_OF_SIBLINGS);
+        } catch (NumberFormatException e) {
+            if (request.getParameter(PARAMETER_MAX_NUMBER_OF_SIBLINGS) != null)
+                intergerMustBeHigherThenZeroException(PARAMETER_MAX_NUMBER_OF_SIBLINGS);
+        }
+    }
+
+    private void intergerMustBeHigherThenZeroException(String prameter) {
+        throw new DecoratorComponentException("Parameter '" + prameter + "' must be an integer > 0");
     }
 
     public void setRepository(Repository repository) {
@@ -183,6 +205,14 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
 
     public Repository getRepository() {
         return repository;
+    }
+
+    protected Map<String, String> getParameterDescriptionsInternal() {
+        Map<String, String> map = new LinkedHashMap<String, String>();
+        map.put(PARAMETER_AUTENTICATED, PARAMETER_AUTENTICATED_DESC);
+        map.put(PARAMETER_DISPLAY_FROM_LEVEL, PARAMETER_DISPLAY_FROM_LEVEL_DESC);
+        map.put(PARAMETER_MAX_NUMBER_OF_SIBLINGS, PARAMETER_MAX_NUMBER_OF_SIBLINGS_DESC);
+        return map;
     }
 
 }

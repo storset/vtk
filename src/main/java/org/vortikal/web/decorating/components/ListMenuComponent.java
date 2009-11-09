@@ -125,15 +125,15 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     private static final String PARAMETER_URI = "uri";
     private static final String PARAMETER_URI_DESC = "The URI (path) to the selected folder.";
 
-    private static final String PARAMETER_AUTENTICATED = "authenticated";
-    private static final String PARAMETER_AUTENTICATED_DESC = "The default is that only resources readable for everyone is listed. "
+    protected static final String PARAMETER_AUTENTICATED = "authenticated";
+    protected static final String PARAMETER_AUTENTICATED_DESC = "The default is that only resources readable for everyone is listed. "
             + "If this is set to 'true', the listing is done as the currently " + "logged in user (if any).";
 
     private static final String PARAMETER_DEPTH = "depth";
     private static final String PARAMETER_DEPTH_DESC = "Specifies the number of levels to retrieve subfolders for. The default value is '1', which retrieves the top level.";
 
-    private static final String PARAMETER_DISPLAY_FROM_LEVEL = "display-from-level";
-    private static final String PARAMETER_DISPLAY_FROM_LEVEL_DESC = "Defines the starting URI level for the menu (cannot be used with the '"
+    protected static final String PARAMETER_DISPLAY_FROM_LEVEL = "display-from-level";
+    protected static final String PARAMETER_DISPLAY_FROM_LEVEL_DESC = "Defines the starting URI level for the menu (cannot be used with the '"
             + PARAMETER_URI + "' parameter)";
 
     protected Service viewService;

@@ -171,7 +171,7 @@ resourcetype person {
             [def style concat("width:", concat(pixel-width, "px"))]
             [def person-firstname resource-prop(".", "firstName")]
             [def person-surname resource-prop(".", "surname")]
-            [if person-firstname != null || person-surname]
+            [if person-firstname != null || person-surname != null]
               <img class="vrtx-person-image" src="[val img-uri]" alt="[localized 'picture-alt-found']&nbsp;[if person-firstname != null][val person-firstname][endif]&nbsp;[if person-surname != null][val person-surname][endif]" />
             [else]
               <img class="vrtx-person-image" src="[val img-uri]" alt="[localized 'picture-alt-found']&nbsp;[localized 'picture-alt-unknown-person']" />

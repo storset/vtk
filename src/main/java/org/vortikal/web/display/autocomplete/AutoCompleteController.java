@@ -41,7 +41,7 @@ import org.vortikal.security.SecurityContext;
 public abstract class AutoCompleteController implements Controller {
 
     protected final static String SUGGESTION_DELIMITER = "\n";
-    protected final static String SUGGESTION_SEPERATOR = ";";
+    protected final static String FIELD_SEPARATOR = ";";
     private final static String QUERY_PARAM = "q";
 
 

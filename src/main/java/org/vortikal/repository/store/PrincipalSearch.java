@@ -1,21 +1,21 @@
-/* Copyright (c) 2008, University of Oslo, Norway
+/* Copyright (c) 2009, University of Oslo, Norway
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  *  * Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
- * 
+ *
  *  * Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 
+ *
  *  * Neither the name of the University of Oslo nor the names of its
  *    contributors may be used to endorse or promote products derived from
  *    this software without specific prior written permission.
- *      
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
  * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
  * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -30,53 +30,21 @@
  */
 package org.vortikal.repository.store;
 
-import java.util.List;
-
-import java.util.Set;
 import org.vortikal.security.Principal;
 
 /**
- * This interface contains methods for acquiring metadata about a system's 
- * principals. Methods should return <code>null</code> if nothing is found
- * for a search or lookup.
- *
+ * Defines a basic principal search.
  */
-public interface PrincipalMetadataDAO {
+public interface PrincipalSearch {
 
     /**
-     * Get metadata instance for principal with the given
-     * fully qualified name (username/id+domain).
-     * 
-     * 
-     * @param qualifiedName The fully qualified name of the principal to get the description for.
-     * @return A <code>PrincipalMetadata</code> instance with description
-     *         or <code>null</code> if no metadata could be found.
-     * 
+     * Principal type for the search (GROUP or USER).
      */
-    PrincipalMetadata getMetadata(String qualifiedName);
-    
-    /**
-     * Get metadata instance for given principal instance.
-     * 
-     * @param principal The <code>Principal</code> instance to get the description for.
-     * @return A <code>PrincipalMetadata</code> instance or <code>null</code> if none found.
-     * 
-     */
-    PrincipalMetadata getMetadata(Principal principal);
+    Principal.Type getPrincipalType();
 
     /**
-     * Searches for principals which satisfy the supplied search criteria.
-     * 
-     * @return List of metadata-instances (<code>PrincipalMetadata</code>) 
-     *         for each principal that satisfies the search criteria
-     *         or <code>null</code> if nothing suitable was found.
+     * Free-form search string.
      */
-    List<PrincipalMetadata> search(PrincipalSearch search);
+    String getSearchString();
 
-
-    /**
-     * Return set of supported principal domains for this DAO.
-     */
-    Set<String> getSupportedPrincipalDomains();
-    
 }

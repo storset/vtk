@@ -33,6 +33,7 @@ package org.vortikal.repository.store;
 import java.util.List;
 
 import java.util.Map;
+import java.util.Set;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.security.Principal;
@@ -96,8 +97,12 @@ public class PrincipalMetadataDAOCacheWrapper implements PrincipalMetadataDAO,
     /* (non-Javadoc)
      * @see org.vortikal.repository.store.PrincipalMetadataDAO#search(PrincipalMetadataDAO.Search)
      */
-    public List<PrincipalMetadata> search(PrincipalMetadataDAO.Search search) {
+    public List<PrincipalMetadata> search(PrincipalSearch search) {
         return this.wrappedDao.search(search);
+    }
+
+    public Set<String> getSupportedPrincipalDomains() {
+        return this.wrappedDao.getSupportedPrincipalDomains();
     }
     
     private static final class CacheItem {

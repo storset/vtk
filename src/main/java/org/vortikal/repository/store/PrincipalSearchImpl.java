@@ -1,21 +1,21 @@
 /* Copyright (c) 2009, University of Oslo, Norway
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  *  * Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
- * 
+ *
  *  * Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 
+ *
  *  * Neither the name of the University of Oslo nor the names of its
  *    contributors may be used to endorse or promote products derived from
  *    this software without specific prior written permission.
- *      
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
  * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
  * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -28,48 +28,69 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.display.autocomplete;
 
-import java.util.List;
+package org.vortikal.repository.store;
 
-import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.Path;
 import org.vortikal.security.Principal;
+import org.vortikal.security.Principal.Type;
 
-public class PrincipalAutoCompleteController extends AutoCompleteController {
+/**
+ * Generic principal search.
+ */
+public class PrincipalSearchImpl implements PrincipalSearch {
 
-    private VocabularyDataProvider<Principal> dataProvider;
-    private boolean invert;
+    protected String searchString;
+    protected Principal.Type principalType;
+
+    public PrincipalSearchImpl(String searchString) {
+        this(Principal.Type.USER, searchString);
+    }
+
+    public PrincipalSearchImpl(Principal.Type type, String searchString) {
+        this.principalType = type;
+        this.searchString = searchString;
+    }
+
+    public Type getPrincipalType() {
+        return this.principalType;
+    }
+
+    public String getSearchString() {
+        return this.searchString;
+    }
 
     @Override
-    protected String getAutoCompleteSuggestions(String input, Path contextUri,
-            String securityToken) {
+    public int hashCode() {
+        int code = 7;
 
-        List<Principal> completions = this.dataProvider.getCompletions(input,
-                contextUri, securityToken);
+        code = 31 * code + this.principalType.hashCode();
 
-        StringBuilder result = new StringBuilder();
-
-        for (Principal principal : completions) {
-            if (invert) {
-                result.append(principal.getUnqualifiedName() + FIELD_SEPARATOR
-                        + principal.getDescription() + SUGGESTION_DELIMITER);
-            } else {
-                result.append(principal.getDescription() + FIELD_SEPARATOR
-                        + principal.getUnqualifiedName() + SUGGESTION_DELIMITER);
-            }
+        if (this.searchString != null) {
+            code = 31 * code + this.searchString.hashCode();
         }
 
-        return result.toString();
+        return code;
     }
 
-    @Required
-    public void setDataProvider(VocabularyDataProvider<Principal> dataProvider) {
-        this.dataProvider = dataProvider;
-    }
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
 
-    public void setInvert(boolean invert) {
-        this.invert = invert;
-    }
+        if (other == null || (this.getClass() != other.getClass())) {
+            return false;
+        }
 
+        PrincipalSearchImpl po = (PrincipalSearchImpl)other;
+
+        if (this.principalType != po.principalType) return false;
+
+        if (this.searchString == null) {
+            return (po.searchString == null);
+        } else {
+            return this.searchString.equals(po.searchString);
+        }
+    }
+    
 }

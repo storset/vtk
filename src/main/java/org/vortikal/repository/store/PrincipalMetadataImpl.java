@@ -112,7 +112,11 @@ public class PrincipalMetadataImpl implements PrincipalMetadata {
     
     @Override
     public boolean equals(Object other) {
-        if (! (other instanceof PrincipalMetadataImpl)) return false;
+        if (this == other) return true;
+
+        if (other == null || (this.getClass() != other.getClass())) {
+            return false;
+        }
 
         return this.qualifiedName.equals(((PrincipalMetadataImpl)other).qualifiedName);
     }

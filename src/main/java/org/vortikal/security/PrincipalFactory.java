@@ -38,6 +38,8 @@ import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.store.PrincipalMetadata;
 import org.vortikal.repository.store.PrincipalMetadataDAO;
+import org.vortikal.repository.store.PrincipalSearch;
+import org.vortikal.repository.store.PrincipalSearchImpl;
 import org.vortikal.repository.store.UnsupportedPrincipalDomainException;
 import org.vortikal.security.Principal.Type;
 
@@ -103,14 +105,7 @@ public class PrincipalFactory {
         List<Principal> retval = null;
         if (this.principalMetadataDao != null) {
 
-            PrincipalMetadataDAO.Search search = new PrincipalMetadataDAO.Search() {
-                public Principal.Type getPrincipalType() {
-                    return type;
-                }
-                public String getSearchString() {
-                    return filter;
-                }
-            };
+            PrincipalSearch search = new PrincipalSearchImpl(type, filter);
 
             List<PrincipalMetadata> results = this.principalMetadataDao.search(search);
             if (results != null) {

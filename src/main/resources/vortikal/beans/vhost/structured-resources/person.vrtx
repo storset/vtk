@@ -69,22 +69,47 @@ resourcetype person {
        [resource-props "."] 
        <div class="vrtx-person-contactinfo">
          [if email && email != ""]
-         	<div class="vrtx-person-contact-info-line vrtx-email"><span class="vrtx-label">[localized "email"]</span> <a class="vrtx-value" href="mailto:[val email]">[val email]</a></div>
+         	<div class="vrtx-person-contact-info-line vrtx-email"><span class="vrtx-label">[localized "email"]</span>
+         		[list email emailLine]
+         			<a class="vrtx-value" href="mailto:[val emailLine]">[val emailLine]</a>
+         		[endlist]
+         	</div>
          [endif]      
          [if phone && phone != ""]
-           <div class="vrtx-person-contact-info-line vrtx-phone"><span class="vrtx-label">[localized "phone"]</span> <span class="vrtx-value">[val phone]</span></div>
+           <div class="vrtx-person-contact-info-line vrtx-phone">
+           	<span class="vrtx-label">[localized "phone"]</span> 
+           	[list phone phoneLine]
+         	  <span class="vrtx-value">[val phoneLine]</span>
+         	[endlist]
+         </div>
          [endif]
          [if mobile && mobile != ""]
-           <div class="vrtx-person-contact-info-line vrtx-mobile"><span class="vrtx-label">[localized "mobile"]</span> <span class="vrtx-value">[val mobile]</span></div>
+           <div class="vrtx-person-contact-info-line vrtx-mobile">
+           	<span class="vrtx-label">[localized "mobile"]</span> 
+           	[list mobile mobileLine]
+           		<span class="vrtx-value">[val mobileLine]</span>
+           	[endlist]
+           </div>
          [endif]
          [if fax && fax != ""]
-           <div class="vrtx-person-contact-info-line vrtx-fax"><span class="vrtx-label">[localized "fax"]</span> <span class="vrtx-value">[val fax]</span></div>
+           <div class="vrtx-person-contact-info-line vrtx-fax">
+           	<span class="vrtx-label">[localized "fax"]</span> 
+           	[list fax faxLine]
+           		<span class="vrtx-value">[val faxLine]</span>
+           	[endlist]
+           </div>
          [endif]
          [if room && room != ""]
-          <div class="vrtx-person-contact-info-line vrtx-room"><span class="vrtx-label">[localized "room"]</span> <span class="vrtx-value">[val room]</span></div>
+          <div class="vrtx-person-contact-info-line vrtx-room">
+          	<span class="vrtx-label">[localized "room"]</span>
+          	<span class="vrtx-value">[val room]</span>
+          </div>
          [endif]
          [if availableHours && availableHours != ""]
-           <div class="vrtx-person-contact-info-line vrtx-available-hours"><span class="vrtx-label">[localized "availableHours"]</span> <span class="vrtx-value">[val availableHours]</span></div>
+           <div class="vrtx-person-contact-info-line vrtx-available-hours">
+           	<span class="vrtx-label">[localized "availableHours"]</span> 
+           	<span class="vrtx-value">[val availableHours]</span>
+           </div>
          [endif]
 		 [if alternativeVisitingAddress && alternativeVisitingAddress != ""]
              <div class="vrtx-person-visiting-address"><span class="vrtx-label">[localized "userVisitingAddress"]</span>

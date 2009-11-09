@@ -28,38 +28,29 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.resourcemanagement.view.tl;
+package org.vortikal.text.tl.expr;
 
-import org.vortikal.repository.Repository;
-import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Symbol;
 
-/**
- *  Extends ResourcePropHandler to provide *object value* of property Value
- */
-public class ResourcePropObjectValueHandler extends ResourcePropHandler {
+public class Concat extends Function {
 
-    public ResourcePropObjectValueHandler(Symbol symbol, Repository repository) {
-        super(symbol, repository);
+    public Concat(Symbol symbol) {
+        super(symbol, 2);
+    }
+
+    @Override
+    public Object eval(Context ctx, Object...args) {
+        System.out.println("__concat: " + java.util.Arrays.asList(args));
+        Object o1 = args[0];
+        Object o2 = args[1];
+        if (o1 == null) {
+            throw new IllegalArgumentException("Concat: first argument is NULL");
+        }
+        if (o2 == null) {
+            throw new IllegalArgumentException("Concat: second argument is NULL");
+        }
+        return o1.toString() + o2.toString();
     }
     
-    @Override
-    public Object eval(Context ctx, Object... args) throws Exception {
-        Object obj = super.eval(ctx, args);
-        
-        if (obj instanceof Value) 
-            return ((Value)obj).getObjectValue();
-        
-        if (obj instanceof Value[]) {
-            Value[] values = (Value[])obj;
-            Object[] objValues = new Object[values.length];
-            for (int i=0; i<values.length; i++) {
-                objValues[i] = values[i].getObjectValue();
-            }
-            return objValues;
-        }
-        return obj; // Unknown type or null, just pass-through
-    }
 }
-

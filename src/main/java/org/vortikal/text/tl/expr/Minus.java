@@ -28,38 +28,21 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.resourcemanagement.view.tl;
+package org.vortikal.text.tl.expr;
 
-import org.vortikal.repository.Repository;
-import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.text.tl.Context;
+import java.math.BigDecimal;
+
 import org.vortikal.text.tl.Symbol;
 
-/**
- *  Extends ResourcePropHandler to provide *object value* of property Value
- */
-public class ResourcePropObjectValueHandler extends ResourcePropHandler {
+public class Minus extends NumericOperator {
 
-    public ResourcePropObjectValueHandler(Symbol symbol, Repository repository) {
-        super(symbol, repository);
+    public Minus(Symbol symbol, Notation notation, Precedence precedence) {
+        super(symbol, notation, precedence);
     }
-    
+
     @Override
-    public Object eval(Context ctx, Object... args) throws Exception {
-        Object obj = super.eval(ctx, args);
-        
-        if (obj instanceof Value) 
-            return ((Value)obj).getObjectValue();
-        
-        if (obj instanceof Value[]) {
-            Value[] values = (Value[])obj;
-            Object[] objValues = new Object[values.length];
-            for (int i=0; i<values.length; i++) {
-                objValues[i] = values[i].getObjectValue();
-            }
-            return objValues;
-        }
-        return obj; // Unknown type or null, just pass-through
+    protected Object evalNumeric(BigDecimal n1, BigDecimal n2) {
+        return n1.subtract(n2);
     }
 }
 

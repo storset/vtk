@@ -38,6 +38,8 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.resourcemanagement.view.StructuredResourceDisplayController;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.text.tl.Argument;
@@ -83,12 +85,23 @@ public class ResourcePropsNodeFactory implements DirectiveNodeFactory {
                 if (resource == null) {
                     throw new RuntimeException("Unable to resolve resource");
                 }
-                for (Property prop : resource.getProperties()) {
-                    if (prop.getDefinition().isMultiple()) {
-                        ctx.define(prop.getDefinition().getName(), prop.getValues(), false);
-                    } else {
-                        ctx.define(prop.getDefinition().getName(), prop.getValue(), false);
+                
+                PrimaryResourceTypeDefinition resourceType = resource.getResourceTypeDefinition();
+                while (resourceType != null) {
+                    PropertyTypeDefinition[] propDefs = resourceType.getPropertyTypeDefinitions();
+                    for (PropertyTypeDefinition propDef : propDefs) {
+                        Property prop = resource.getProperty(propDef);
+                        if (prop == null) {
+                            ctx.define(propDef.getName(), null, false);
+                        } else {
+                            if (propDef.isMultiple()) {
+                                ctx.define(propDef.getName(), prop.getValues(), false);
+                            } else {
+                                ctx.define(propDef.getName(), prop.getValue(), false);
+                            }
+                        }
                     }
+                    resourceType = resourceType.getParentTypeDefinition();
                 }
             }
         };

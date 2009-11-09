@@ -12,37 +12,37 @@ resourcetype frontpage {
     main-content {
       ##
       [resource-props "."]
-      [def document structured-document]
-      [def boxes json-attr document "properties.main-content"]
-      [if boxes]
+      [def document structured-document()]
+      [def boxes json-attr(document, "properties.main-content")]
+      [if boxes != null]
         [list boxes box]
-           [def type json-attr box "boxType"]
-           [def title json-attr box "boxTitle"]
-           [def content json-attr box "boxContent"]
-           [def url json-attr box "boxUrl"]
-           [def urlText json-attr box "boxUrlText"]
-           [def number expr _index + 1]
+           [def type json-attr(box, "boxType")]
+           [def title json-attr(box, "boxTitle")]
+           [def content json-attr(box, "boxContent")]
+           [def url json-attr(box, "boxUrl")]
+           [def urlText json-attr(box, "boxUrlText")]
+           [def number _index + 1]
            
-           [if type && type != ""]
+           [if type != null && type != ""]
            <div class="vrtx-frontpage-box [val type]" id="vrtx-main-content-[val number]">
            [else]
            <div class="vrtx-frontpage-box" id="vrtx-main-content-[val number]">
            [endif]
-             [if title && title != ""]
-               [if url && url != ""]
+             [if title != null && title != ""]
+               [if url != null && url != ""]
                  <h2><a href="[val url]">[val title]</a></h2>
                [else]
                  <h2>[val title]</h2>
                [endif]
              [endif]
              <div class="vrtx-box-content">
-               [if content && content != ""]
+               [if content != null && content != ""]
                  [val content unescaped]
                [endif]             
              </div>
-             [if urlText && urlText != ""]
+             [if urlText != null && urlText != ""]
              <div class="vrtx-more">
-                [if url && url != ""]
+                [if url != null && url != ""]
                   <span><a href="[val url]">[val urlText]</a></span>
                 [else]
                   <span>[val urlText]</span>
@@ -59,37 +59,37 @@ resourcetype frontpage {
     additional-content {
       ##
       [resource-props "."]
-      [def document structured-document]
-      [def boxes json-attr document "properties.additional-content"]
-      [if boxes]
+      [def document structured-document()]
+      [def boxes json-attr(document, "properties.additional-content")]
+      [if boxes != null]
         [list boxes box]
-           [def type json-attr box "boxType"]
-           [def title json-attr box "boxTitle"]
-           [def content json-attr box "boxContent"]
-           [def url json-attr box "boxUrl"]
-           [def urlText json-attr box "boxUrlText"]
-           [def number expr _index + 1]
+           [def type json-attr(box, "boxType")]
+           [def title json-attr(box, "boxTitle")]
+           [def content json-attr(box, "boxContent")]
+           [def url json-attr(box, "boxUrl")]
+           [def urlText json-attr(box, "boxUrlText")]
+           [def number _index + 1]
            
-           [if type && type != ""]
+           [if type != null && type != ""]
            <div class="vrtx-frontpage-box [val type]" id="vrtx-additional-content-[val number]">
            [else]
            <div class="vrtx-frontpage-box" id="vrtx-additional-content-[val number]">
            [endif] 
-             [if title && title != ""]
-               [if url && url != ""]
+             [if title != null && title != ""]
+               [if url != null && url != ""]
                  <h2><a href="[val url]">[val title]</a></h2>
                [else]
                  <h2>[val title]</h2>
                [endif]
              [endif]
              <div class="vrtx-box-content">
-               [if content && content != ""]
+               [if content != null && content != ""]
                  [val content unescaped]
                [endif]
              </div>
-             [if urlText && urlText != ""]
+             [if urlText != null && urlText != ""]
              <div class="vrtx-more">
-                [if url && url != ""]
+                [if url != null && url != ""]
                   <span><a href="[val url]">[val urlText]</a></span>
                 [else]
                   <span>[val urlText]</span>
@@ -105,7 +105,7 @@ resourcetype frontpage {
     css-link {
       ##
       [resource-props "."]
-      [if cssUrl && cssUrl != ""]
+      [if cssUrl != null && cssUrl != ""]
          <!-- begin custom frontpage css -->
          <link rel="stylesheet" href="[val cssUrl]" type="text/css" media="screen" />
          <!-- end custom frontpage css -->
@@ -115,7 +115,7 @@ resourcetype frontpage {
     
     title {
       ##
-      [def v resource-prop "." "title"]
+      [def v resource-prop(".", "title")]
       [val v]
       ##
     }

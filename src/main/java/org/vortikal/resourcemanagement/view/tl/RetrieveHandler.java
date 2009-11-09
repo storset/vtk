@@ -30,7 +30,6 @@
  */
 package org.vortikal.resourcemanagement.view.tl;
 
-import java.util.List;
 import java.util.Map;
 
 import org.vortikal.repository.Path;
@@ -39,33 +38,25 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.resourcemanagement.view.StructuredResourceDisplayController;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.text.tl.Argument;
 import org.vortikal.text.tl.Context;
-import org.vortikal.text.tl.DefineNodeFactory;
+import org.vortikal.text.tl.Symbol;
+import org.vortikal.text.tl.expr.Function;
 
-public class RetrieveHandler implements DefineNodeFactory.ValueProvider {
+public class RetrieveHandler extends Function {
 
     private Repository repository;
     
-    public RetrieveHandler(Repository repository) {
+    public RetrieveHandler(Symbol symbol, Repository repository) {
+        super(symbol, 1);
         this.repository = repository;
     }
 
-    /**
-     * resource "/foo/bar"
-     * resource "."
-     * resource <var>
-     */
-    public Object create(List<Argument> tokens, Context ctx) throws Exception {
-
-        if (tokens.size() != 1) {
-            throw new RuntimeException("Wrong number of arguments");
-        }
-        final Argument arg = tokens.get(0);
-
+    @Override
+    public Object eval(Context ctx, Object... args) throws Exception {
+        
+        Object arg = args[0];
         Resource resource;
-
-        String ref = arg.getValue(ctx).toString();
+        String ref = arg.toString();
 
         if (ref.equals(".")) {
             Object o = ctx.get(StructuredResourceDisplayController.MVC_MODEL_KEY);
@@ -95,4 +86,5 @@ public class RetrieveHandler implements DefineNodeFactory.ValueProvider {
         }
         return resource;
     }
+
 }

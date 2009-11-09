@@ -89,7 +89,9 @@ public class ValNodeFactory implements DirectiveNodeFactory {
                 format = o.toString();
             }
 
-            if (val != null) {
+            if (val == null) {
+                out.write("null");
+            } else {
                 if (valueFormatHandlers.containsKey(val.getClass())) {
                     ValueFormatHandler handler = valueFormatHandlers.get(val.getClass());
                     val = handler.handleValue(val, format, ctx);

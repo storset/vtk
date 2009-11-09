@@ -30,43 +30,36 @@
  */
 package org.vortikal.resourcemanagement.view.tl;
 
-import java.util.List;
-
 import net.sf.json.JSONObject;
 
 import org.vortikal.text.JSONUtil;
-import org.vortikal.text.tl.Argument;
 import org.vortikal.text.tl.Context;
-import org.vortikal.text.tl.DefineNodeFactory;
 import org.vortikal.text.tl.Symbol;
+import org.vortikal.text.tl.expr.Function;
 
-public class JSONAttributeHandler implements DefineNodeFactory.ValueProvider {
+public class JSONAttributeHandler extends Function {
 
-    // Supported constructions:
-    // object "expression"
-    // object expression (from variable)
-    public Object create(List<Argument> tokens, Context ctx) throws Exception {
-        if (tokens.size() != 2) {
-            throw new Exception("Wrong number of arguments");
+    public JSONAttributeHandler(Symbol symbol) {
+        super(symbol, 2);
+    }
+
+    @Override
+    public Object eval(Context ctx, Object... args) {
+        Object arg1 = args[0];
+        Object arg2 = args[1];
+
+        if (!(arg2 instanceof String)) {
+            throw new RuntimeException("Invalid expression: " + arg2);
         }
-
-        final Argument arg1 = tokens.get(0);
-        Object object;
-        if (!(arg1 instanceof Symbol)) {
-            throw new Exception("First argument must be a symbol");
-        }
-        object = arg1.getValue(ctx);
-
-        final Argument arg2 = tokens.get(1);
-        String expression = arg2.getValue(ctx).toString();
-
-        if (!(object instanceof JSONObject)) {
-            throw new Exception("Cannot apply expression '" 
+        String expression = (String) arg2;
+        
+        if (!(arg1 instanceof JSONObject)) {
+            throw new RuntimeException("Cannot evaluate expression '" 
                     + expression + "' on object: not JSON data: "
-                    + object.getClass());
+                    + arg1.getClass());
         }
 
-        JSONObject json = (JSONObject) object;
+        JSONObject json = (JSONObject) arg1;
         return JSONUtil.select(json, expression);
     }
 }

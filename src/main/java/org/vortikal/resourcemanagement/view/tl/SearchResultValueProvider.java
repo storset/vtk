@@ -30,35 +30,33 @@
  */
 package org.vortikal.resourcemanagement.view.tl;
 
-import java.util.List;
-
 import org.vortikal.repository.search.QueryParserFactory;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.text.tl.Argument;
 import org.vortikal.text.tl.Context;
-import org.vortikal.text.tl.DefineNodeFactory;
+import org.vortikal.text.tl.Symbol;
+import org.vortikal.text.tl.expr.Function;
 
-public class SearchResultValueProvider implements DefineNodeFactory.ValueProvider {
+public class SearchResultValueProvider extends Function {
 
     private QueryParserFactory queryParserFactory;
     private Searcher searcher;
     
-    public SearchResultValueProvider(QueryParserFactory queryParserFactory,
+    public SearchResultValueProvider(Symbol symbol, 
+            QueryParserFactory queryParserFactory,
             Searcher searcher) {
+        super(symbol, 1);
         this.queryParserFactory = queryParserFactory;
         this.searcher = searcher;
     }
 
-    public Object create(List<Argument> tokens, Context ctx) throws Exception {
-        if (tokens.size() != 1) {
-            throw new Exception("Illegal number of arguments");
-        }
-        Argument arg = tokens.get(0);
-        String queryString = arg.getValue(ctx).toString();
+    @Override
+    public Object eval(Context ctx, Object... args) throws Exception {
+        Object arg = args[0];
+        String queryString = arg.toString();
         String token = SecurityContext.getSecurityContext().getToken();
         Query query = queryParserFactory.getParser().parse(queryString);
         Search search = new Search();
@@ -67,4 +65,5 @@ public class SearchResultValueProvider implements DefineNodeFactory.ValueProvide
         ResultSet resultSet = searcher.execute(token, search);
         return resultSet.iterator();
     }
+
 }

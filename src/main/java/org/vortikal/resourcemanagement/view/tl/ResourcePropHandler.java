@@ -30,7 +30,6 @@
  */
 package org.vortikal.resourcemanagement.view.tl;
 
-import java.util.List;
 import java.util.Map;
 
 import org.vortikal.repository.Namespace;
@@ -41,53 +40,37 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.resourcemanagement.view.StructuredResourceDisplayController;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.text.tl.Argument;
 import org.vortikal.text.tl.Context;
-import org.vortikal.text.tl.DefineNodeFactory;
 import org.vortikal.text.tl.Symbol;
+import org.vortikal.text.tl.expr.Function;
 
-public class ResourcePropHandler implements DefineNodeFactory.ValueProvider {
+public class ResourcePropHandler extends Function {
 
     private Repository repository;
     
-    public ResourcePropHandler(Repository repository) {
+    public ResourcePropHandler(Symbol symbol, Repository repository) {
+        super(symbol, 2);
         this.repository = repository;
     }
 
-    /**
-     * Supported constructions:
-     * <code>
-     * "/foo/bar/" propname
-     * "." propname
-     * var propname
-     * </code>
-     */
-    public Object create(List<Argument> tokens, Context ctx) throws Exception {
-
-        if (tokens.size() != 2) {
-            throw new RuntimeException("Wrong number of arguments");
-        }
-        final Argument arg1 = tokens.get(0);
-        final Argument arg2 = tokens.get(1);
-
+    @Override
+    public Object eval(Context ctx, Object... args) throws Exception {
+        final Object arg1 = args[0];
+        final Object arg2 = args[1];
         PropertySet resource = null;
         String ref = null;
-        if (arg1 instanceof Symbol) {
-            Object o = arg1.getValue(ctx);
-            if (o instanceof PropertySet) {
-                resource = (PropertySet) o;
-            } else {
-                ref = o.toString();
-            }
-        } else {
-            ref = arg1.getValue(ctx).toString();
-        }
 
+        if (arg1 instanceof PropertySet) {
+            resource = (PropertySet) arg1;
+        } else {
+            ref = arg1.toString();
+        }
+        
         if (resource == null) {
             if (ref.equals(".")) {
                 Object o = ctx.get(StructuredResourceDisplayController.MVC_MODEL_KEY);
                 if (o == null) {
-                    throw new Exception("Unable to access MVC model: " 
+                    throw new RuntimeException("Unable to access MVC model: " 
                             + StructuredResourceDisplayController.MVC_MODEL_KEY);
                 }
                 @SuppressWarnings("unchecked")
@@ -96,19 +79,11 @@ public class ResourcePropHandler implements DefineNodeFactory.ValueProvider {
             } else {
                 Path uri = Path.fromString(ref);
                 String token = SecurityContext.getSecurityContext().getToken();
-                resource = repository.retrieve(token, uri, true);
+                resource = this.repository.retrieve(token, uri, true);
             }
         }
-        String propName;
-        if (arg2 instanceof Symbol) {
-            Object o = arg2.getValue(ctx);
-            if (o == null) {
-                throw new Exception("Unable to resolve: " + arg2.getRawValue());
-            }
-            propName = o.toString();
-        } else {
-            propName = arg2.getValue(ctx).toString();
-        }
+System.out.println("__arg2: " + arg2);        
+        String propName = arg2.toString();
         if ("uri".equals(propName)) {
             return resource.getURI();
         }
@@ -133,4 +108,5 @@ public class ResourcePropHandler implements DefineNodeFactory.ValueProvider {
             return property.getValue();
         }
     }
+
 }

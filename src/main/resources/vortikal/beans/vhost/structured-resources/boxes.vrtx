@@ -4,7 +4,7 @@ resourcetype boxes {
     title : string required overrides title,
     box-list : json (title : string, content : html) multiple noextract,
     simplebox : json (foo : string, bar : html) noextract,
-    nedtrekk : string 
+    nedtrekk : string
   }
 	
 	
@@ -26,12 +26,12 @@ resourcetype boxes {
 
     test-search (query) {
       ##
-      [def results search query]
+      [def results search(query)]
       <p>Results for [val query]:</p>
       <ul>
-      [list results resource]
-        [def url view-url resource]
-        [def title resource-prop resource "title"]
+      [list results result]
+        [def url view-url(result)]
+        [def title resource-prop(result, "title")]
         <li><a href="[val url]">[val title]</a></li>
       [endlist]
       </ul>
@@ -42,17 +42,17 @@ resourcetype boxes {
     box-list (first-param, second-param) {
       ##
       [resource-props "."]
-      [def document structured-document]
-      [def boxes json-attr document "properties.box-list"]
-      [if boxes]
-        [def document structured-document]
-        [def boxes json-attr document "properties.box-list"]
+      [def document structured-document()]
+      [def boxes json-attr(document, "properties.box-list")]
+      [if boxes != null]
+        [def document structured-document()]
+        [def boxes json-attr(document, "properties.box-list")]
         [list boxes box]
-           [def title json-attr box "title"]
-           [def content json-attr box "content"]
+           [def title json-attr(box, "title")]
+           [def content json-attr(box, "content")]
            <div style="border:1px solid black;margin:20px;">
-             [if title]<b>[val title]</b>[endif]
-             [if content][val content unescaped][endif]
+             [if title != null]<b>[val title]</b>[endif]
+             [if content != null][val content unescaped][endif]
            </div>
         [endlist]
       [endif]
@@ -70,8 +70,10 @@ resourcetype boxes {
       <body class="foo">
         <h1><resource:property id="title" /></h1>
         <comp:box-list first-param="component-param1" second-param="component-param2" />
+        <!--
         <comp:test-include-feed url="http://www.usit.uio.no/saus/blogg/?vrtx=feed" />
         <comp:test-search  query="type IN file" />
+        -->
       </body>
     </html>
     ##

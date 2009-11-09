@@ -30,30 +30,31 @@
  */
 package org.vortikal.resourcemanagement.view.tl;
 
-import java.util.List;
 import java.util.Map;
 
 import org.vortikal.resourcemanagement.StructuredResource;
 import org.vortikal.resourcemanagement.view.StructuredResourceDisplayController;
-import org.vortikal.text.tl.Argument;
 import org.vortikal.text.tl.Context;
-import org.vortikal.text.tl.DefineNodeFactory;
+import org.vortikal.text.tl.Symbol;
+import org.vortikal.text.tl.expr.Function;
 
-public class JSONDocumentProvider implements DefineNodeFactory.ValueProvider {
+public class JSONDocumentProvider extends Function {
 
-    public Object create(List<Argument> tokens, Context ctx) throws Exception {
-        if (tokens.size() != 0) {
-            throw new Exception("Wrong number of arguments");
-        }
+    public JSONDocumentProvider(Symbol symbol) {
+        super(symbol, 0);
+    }
+
+    @Override
+    public Object eval(Context ctx, Object... args) {
         Object o = ctx.get(StructuredResourceDisplayController.MVC_MODEL_KEY);
         if (o == null) {
-            throw new Exception("Unable to access MVC model");
+            throw new RuntimeException("Unable to access MVC model");
         }
         @SuppressWarnings("unchecked")
         Map<String, Object> model = (Map<String, Object>) o;
         StructuredResource res = (StructuredResource) model.get("structured-resource");
         if (res == null) {
-            throw new Exception("No structured resource found in MVC model");
+            throw new RuntimeException("No structured resource found in MVC model");
         }
         return res.toJSON();
     }

@@ -28,38 +28,37 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.resourcemanagement.view.tl;
+package org.vortikal.text.tl.expr;
 
-import org.vortikal.repository.Repository;
-import org.vortikal.repository.resourcetype.Value;
+import java.util.Stack;
+
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Symbol;
 
-/**
- *  Extends ResourcePropHandler to provide *object value* of property Value
- */
-public class ResourcePropObjectValueHandler extends ResourcePropHandler {
+public class Gt extends Operator {
 
-    public ResourcePropObjectValueHandler(Symbol symbol, Repository repository) {
-        super(symbol, repository);
+    public Gt(Symbol symbol, Notation notation, Precedence precedence) {
+        super(symbol, notation, precedence);
     }
     
-    @Override
-    public Object eval(Context ctx, Object... args) throws Exception {
-        Object obj = super.eval(ctx, args);
-        
-        if (obj instanceof Value) 
-            return ((Value)obj).getObjectValue();
-        
-        if (obj instanceof Value[]) {
-            Value[] values = (Value[])obj;
-            Object[] objValues = new Object[values.length];
-            for (int i=0; i<values.length; i++) {
-                objValues[i] = values[i].getObjectValue();
-            }
-            return objValues;
+    @SuppressWarnings("unchecked")
+    public Object eval(Context ctx, Stack<Object> stack) {
+        Object o2 = stack.pop();
+        Object o1 = stack.pop();
+        if (o1 == null) {
+            throw new IllegalArgumentException("Compare:" + getSymbol() + " first argument is NULL");
         }
-        return obj; // Unknown type or null, just pass-through
+        if (o2 == null) {
+            throw new IllegalArgumentException("Compare:" + getSymbol() + " second argument is NULL");
+        }
+        if (o1.getClass() != o2.getClass()) {
+            throw new IllegalArgumentException("Compare: " + o1 + " " + getSymbol() + " " + o2 + ": not comparable");
+        }
+        if (!(o1 instanceof Comparable<?>)) {
+            throw new IllegalArgumentException("Compare: " + o1 + " " + getSymbol() + " " + o2 + ": not comparable");
+        }
+        Comparable<Object> c1 = (Comparable<Object>) o1;
+        Comparable<Object> c2 = (Comparable<Object>) o2;
+        return Boolean.valueOf(c1.compareTo(c2) > 0);
     }
 }
-

@@ -30,36 +30,27 @@
  */
 package org.vortikal.resourcemanagement.view.tl;
 
-import java.util.List;
-
 import org.vortikal.repository.PropertySet;
-import org.vortikal.text.tl.Argument;
 import org.vortikal.text.tl.Context;
-import org.vortikal.text.tl.DefineNodeFactory;
 import org.vortikal.text.tl.Symbol;
+import org.vortikal.text.tl.expr.Function;
 import org.vortikal.web.service.Service;
 
-public class ViewURLValueProvider implements DefineNodeFactory.ValueProvider {
+public class ViewURLValueProvider extends Function {
 
     private Service viewService;
-    
-    public ViewURLValueProvider(Service viewService) {
+
+    public ViewURLValueProvider(Symbol symbol, Service viewService) {
+        super(symbol, 1);
         this.viewService = viewService;
     }
 
-    public Object create(List<Argument> tokens, Context ctx) throws Exception {
-        if (tokens.size() != 1) {
-            throw new Exception("Illegal number of arguments");
+    @Override
+    public Object eval(Context ctx, Object... args) throws Exception {
+        Object arg = args[0];
+        if (!(arg instanceof PropertySet)) {
+            throw new Exception("Argument must be a resource object: " + arg);
         }
-        Argument arg = tokens.get(0);
-        if (!(arg instanceof Symbol)) {
-            throw new Exception("Argument must be a resource object: " + arg.getRawValue());
-        }
-        Object o = arg.getValue(ctx);
-        if (!(o instanceof PropertySet)) {
-            throw new Exception("Argument must be a resource object: " + arg.getRawValue());
-        }
-        return this.viewService.constructLink(((PropertySet) o).getURI());
+        return this.viewService.constructLink(((PropertySet) arg).getURI());
     }
-
 }

@@ -30,34 +30,24 @@
  */
 package org.vortikal.text.tl;
 
-import java.beans.BeanInfo;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
 import java.io.Writer;
-import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import org.vortikal.text.tl.expr.Expression;
+import org.vortikal.text.tl.expr.Function;
 
 public final class DefineNodeFactory implements DirectiveNodeFactory {
 
-    private Map<String, ValueProvider> valueProviderMap 
-        = new HashMap<String, ValueProvider>();
-
-    public DefineNodeFactory() {
-        addValueProvider("expr", new ExpressionEvaluator());
-        //addValueProvider("field", new JavaBeanFieldRetriever());
-        addValueProvider("concat", new ConcatHandler());
-    }
-
-    public void addValueProvider(String identifier, ValueProvider valueProvider) {
-        this.valueProviderMap.put(identifier, valueProvider);
+    private Set<Function> functions = new HashSet<Function>();
+    
+    public void addFunction(Function function) {
+        this.functions.add(function);
     }
     
-    public interface ValueProvider {
-        public Object create(List<Argument> tokens, Context ctx) throws Exception;
-    }
-
     private static final Symbol LB = new Symbol("{");
     private static final Symbol RB = new Symbol("}");
     private static final Symbol COLON = new Symbol(":");
@@ -90,6 +80,7 @@ public final class DefineNodeFactory implements DirectiveNodeFactory {
         }
         
         // Map definition (e.g. "def x {a:b, c:d}")
+        // XXX: Move map parsing to expression or parser layer
         if (LB.equals(args.get(0)) && RB.equals(args.get(args.size() - 1))) {
 
             final Map<Argument, Argument> argMap = getMapDefinition(args);
@@ -107,18 +98,11 @@ public final class DefineNodeFactory implements DirectiveNodeFactory {
             };
         }
 
-        // Definition handled by value provider:
-        Argument firstToken = args.remove(0);
-        String identifier = ((Symbol) firstToken).getSymbol();
-
-        final ValueProvider handler = this.valueProviderMap.get(identifier);
-        if (handler == null) {
-            throw new RuntimeException("Unknown definition type: " + identifier + ": " + args);
-        }
-        final List<Argument> tokens = args;
+        // Expression:
+        final Expression expression = new Expression(this.functions, args);
         return new Node() {
             public void render(Context ctx, Writer out) throws Exception {
-                Object val = handler.create(tokens, ctx);
+                Object val = expression.evaluate(ctx);
                 ctx.define(variable, val, true);
             }
         };
@@ -162,55 +146,5 @@ public final class DefineNodeFactory implements DirectiveNodeFactory {
             }
         }
         return map;
-    }
-
-    private class ExpressionEvaluator implements ValueProvider {
-
-        public Object create(List<Argument> tokens, Context ctx)
-                throws Exception {
-            Expression expr = new Expression(tokens);
-            return expr.evaluate(ctx);
-        }
-    }
-    
-    private class ConcatHandler implements ValueProvider {
-
-        public Object create(List<Argument> tokens, Context ctx) {
-            StringBuilder result = new StringBuilder();
-            for (Argument arg: tokens) {
-                Object o = arg.getValue(ctx);
-                result.append(o);
-            }
-            return result.toString();
-        }
-    }
-    
-    @SuppressWarnings("unused")
-    private class JavaBeanFieldRetriever implements ValueProvider {
-
-        public Object create(List<Argument> tokens, Context ctx) throws Exception {
-            if (tokens.size() != 2) {
-                throw new RuntimeException("Wrong number of arguments: expected <object> <fieldname>");
-            }
-            Argument arg1 = tokens.get(0);
-            Object target = arg1.getValue(ctx);
-            
-            Argument arg2 = tokens.get(1);
-            Object o = arg2.getValue(ctx);
-            String field = o.toString();
-            BeanInfo beanInfo = Introspector.getBeanInfo(target.getClass());
-            PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
-            Method getter = null;
-            for (PropertyDescriptor desc: propertyDescriptors) {
-                if (desc.getName().equals(field)) {
-                    getter = desc.getReadMethod();
-                    break;
-                }
-            }
-            if (getter == null) {
-                throw new RuntimeException("Property not found: " + field);
-            }
-            return getter.invoke(target);
-        }
     }
 }

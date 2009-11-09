@@ -28,38 +28,58 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.resourcemanagement.view.tl;
+package org.vortikal.text.tl.expr;
 
-import org.vortikal.repository.Repository;
-import org.vortikal.repository.resourcetype.Value;
+import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.Stack;
+
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Symbol;
 
-/**
- *  Extends ResourcePropHandler to provide *object value* of property Value
- */
-public class ResourcePropObjectValueHandler extends ResourcePropHandler {
+public abstract class NumericOperator extends Operator {
 
-    public ResourcePropObjectValueHandler(Symbol symbol, Repository repository) {
-        super(symbol, repository);
-    }
+    private NumberFormat format = NumberFormat.getNumberInstance();
     
-    @Override
-    public Object eval(Context ctx, Object... args) throws Exception {
-        Object obj = super.eval(ctx, args);
-        
-        if (obj instanceof Value) 
-            return ((Value)obj).getObjectValue();
-        
-        if (obj instanceof Value[]) {
-            Value[] values = (Value[])obj;
-            Object[] objValues = new Object[values.length];
-            for (int i=0; i<values.length; i++) {
-                objValues[i] = values[i].getObjectValue();
+    public NumericOperator(Symbol symbol, Notation notation, Precedence precedence) {
+        super(symbol, notation, precedence);
+    }
+
+    public final Object eval(Context ctx, Stack<Object> stack) {
+        Object second = stack.pop();
+        Object first = stack.pop();
+        // Wrap values in BigDecimal to simplify calculations:
+        BigDecimal n1 = new BigDecimal(getNumericValue(first).doubleValue());
+        BigDecimal n2 = new BigDecimal(getNumericValue(second).doubleValue());
+        Object result = evalNumeric(n1, n2);
+        if (result instanceof BigDecimal) {
+            BigDecimal d = (BigDecimal) result;
+            if (d.scale() == 0) {
+                result = d.intValueExact();
+            } else {
+                result = d.floatValue();
             }
-            return objValues;
         }
-        return obj; // Unknown type or null, just pass-through
+        return result;
+    }
+
+    protected abstract Object evalNumeric(BigDecimal n1, BigDecimal n2);
+
+    private Number getNumericValue(Object obj) {
+        if (obj == null) {
+            throw new IllegalArgumentException("Argument is NULL");
+        }
+
+        if (obj instanceof Number) {
+            return (Number) obj;
+        } else if (obj instanceof String) {
+            try {
+                String s = (String) obj;
+                return format.parse(s);
+            } catch (ParseException e) { 
+            }
+        }
+        throw new IllegalArgumentException("Not a number: " + obj);
     }
 }
-

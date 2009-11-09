@@ -61,7 +61,6 @@ import org.vortikal.resourcemanagement.view.tl.ComponentInvokerNodeFactory;
 import org.vortikal.resourcemanagement.view.tl.JSONAttributeHandler;
 import org.vortikal.resourcemanagement.view.tl.JSONDocumentProvider;
 import org.vortikal.resourcemanagement.view.tl.LocalizationNodeFactory;
-import org.vortikal.resourcemanagement.view.tl.ModelConfigHandler;
 import org.vortikal.resourcemanagement.view.tl.PropertyValueFormatHandler;
 import org.vortikal.resourcemanagement.view.tl.ResourcePropHandler;
 import org.vortikal.resourcemanagement.view.tl.ResourcePropObjectValueHandler;
@@ -77,7 +76,9 @@ import org.vortikal.text.tl.DefineNodeFactory;
 import org.vortikal.text.tl.DirectiveNodeFactory;
 import org.vortikal.text.tl.IfNodeFactory;
 import org.vortikal.text.tl.ListNodeFactory;
+import org.vortikal.text.tl.Symbol;
 import org.vortikal.text.tl.ValNodeFactory;
+import org.vortikal.text.tl.expr.Concat;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.ComponentResolver;
@@ -94,7 +95,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
     public static final String TEMPLATE_EXECUTION_REQ_ATTR = "__template_execution_";
 
     private static final String COMPONENT_NS = "comp";
-    
+
     private Repository repository;
     private QueryParserFactory queryParserFactory;
     private Searcher searcher;
@@ -113,8 +114,8 @@ public class StructuredResourceDisplayController implements Controller, Initiali
 
     // XXX: clean up this mess:
     private Map<StructuredResourceDescription,
-                Map<String, TemplateLanguageDecoratorComponent>> components = 
-                      new ConcurrentHashMap<StructuredResourceDescription, Map<String, TemplateLanguageDecoratorComponent>>();
+    Map<String, TemplateLanguageDecoratorComponent>> components = 
+        new ConcurrentHashMap<StructuredResourceDescription, Map<String, TemplateLanguageDecoratorComponent>>();
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
@@ -152,19 +153,19 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         }
 
         HtmlPageContent content = renderInitialPage(res, model, request);
-        
+
         HtmlPage page = content.getHtmlContent();
         if (this.postFilter != null) {
             page.filter(this.postFilter);
         }
-        
+
         model.put("page", content.getHtmlContent());
         return new ModelAndView(this.viewName, model);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public HtmlPageContent renderInitialPage(StructuredResource res, Map model, HttpServletRequest request)
-            throws Exception {
+    throws Exception {
 
         String html = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";
         html += "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n";
@@ -194,7 +195,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         }
         ParsedHtmlDecoratorTemplate template = (ParsedHtmlDecoratorTemplate) t;
         ParsedHtmlDecoratorTemplate.Execution execution = (ParsedHtmlDecoratorTemplate.Execution) template
-                .newTemplateExecution(content, request, model);
+        .newTemplateExecution(content, request, model);
 
         ComponentResolver resolver = execution.getComponentResolver();
         Map<String, TemplateLanguageDecoratorComponent> components = this.components.get(res.getType());
@@ -237,20 +238,21 @@ public class StructuredResourceDisplayController implements Controller, Initiali
 
         directiveHandlers.put("list", new ListNodeFactory());
         directiveHandlers.put("resource-props", new ResourcePropsNodeFactory(this.repository));
+
         DefineNodeFactory def = new DefineNodeFactory();
-        def.addValueProvider("resource", new RetrieveHandler(this.repository));
-        def.addValueProvider("resource-prop", new ResourcePropHandler(this.repository));
-        def.addValueProvider("resource-prop-obj-val", new ResourcePropObjectValueHandler(this.repository)); // Hmm, better solution ?
-        def.addValueProvider("config", new ModelConfigHandler());
-        def.addValueProvider("structured-document", new JSONDocumentProvider());
-        def.addValueProvider("json-attr", new JSONAttributeHandler());
-        def.addValueProvider("search", new SearchResultValueProvider(this.queryParserFactory, this.searcher));
-        def.addValueProvider("view-url", new ViewURLValueProvider(this.viewService));
+        def.addFunction(new Concat(new Symbol("concat")));
+        def.addFunction(new RetrieveHandler(new Symbol("resource"), this.repository));
+        def.addFunction(new ResourcePropHandler(new Symbol("resource-prop"), this.repository));
+        def.addFunction(new ResourcePropObjectValueHandler(new Symbol("resource-prop-obj-val"), this.repository));
+        def.addFunction(new JSONDocumentProvider(new Symbol("structured-document")));
+        def.addFunction(new JSONAttributeHandler(new Symbol("json-attr")));
+        def.addFunction(new SearchResultValueProvider(new Symbol("search"), this.queryParserFactory, this.searcher));
+        def.addFunction(new ViewURLValueProvider(new Symbol("view-url"), this.viewService));
         directiveHandlers.put("def", def);
 
         directiveHandlers.put("localized", new LocalizationNodeFactory(this.resourceModelKey));
         directiveHandlers.put("call-component", new ComponentInvokerNodeFactory(this.htmlParser));
-        
+
         this.directiveHandlers = directiveHandlers;
 
         List<StructuredResourceDescription> allDescriptions = this.resourceManager.list();

@@ -57,8 +57,8 @@ resourcetype person {
   
     title {
       ##
-        [def titleValue resource-prop "." "title"]
-        [if titleValue]
+        [def titleValue resource-prop(".", "title")]
+        [if titleValue != null]
           [val titleValue]
         [endif]
       ##
@@ -68,14 +68,14 @@ resourcetype person {
       ##
        [resource-props "."] 
        <div class="vrtx-person-contactinfo">
-         [if email && email != ""]
+         [if email != null && email != ""]
          	<div class="vrtx-person-contact-info-line vrtx-email"><span class="vrtx-label">[localized "email"]</span>
          		[list email emailLine]
          			<a class="vrtx-value" href="mailto:[val emailLine]">[val emailLine]</a>
          		[endlist]
          	</div>
          [endif]      
-         [if phone && phone != ""]
+         [if phone != null && phone != ""]
            <div class="vrtx-person-contact-info-line vrtx-phone">
            	<span class="vrtx-label">[localized "phone"]</span> 
            	[list phone phoneLine]
@@ -83,7 +83,7 @@ resourcetype person {
          	[endlist]
          </div>
          [endif]
-         [if mobile && mobile != ""]
+         [if mobile != null && mobile != ""]
            <div class="vrtx-person-contact-info-line vrtx-mobile">
            	<span class="vrtx-label">[localized "mobile"]</span> 
            	[list mobile mobileLine]
@@ -91,7 +91,7 @@ resourcetype person {
            	[endlist]
            </div>
          [endif]
-         [if fax && fax != ""]
+         [if fax != null && fax != ""]
            <div class="vrtx-person-contact-info-line vrtx-fax">
            	<span class="vrtx-label">[localized "fax"]</span> 
            	[list fax faxLine]
@@ -99,37 +99,37 @@ resourcetype person {
            	[endlist]
            </div>
          [endif]
-         [if room && room != ""]
+         [if room != null && room != ""]
           <div class="vrtx-person-contact-info-line vrtx-room">
           	<span class="vrtx-label">[localized "room"]</span>
           	<span class="vrtx-value">[val room]</span>
           </div>
          [endif]
-         [if availableHours && availableHours != ""]
+         [if availableHours != null && availableHours != ""]
            <div class="vrtx-person-contact-info-line vrtx-available-hours">
            	<span class="vrtx-label">[localized "availableHours"]</span> 
            	<span class="vrtx-value">[val availableHours]</span>
            </div>
          [endif]
-		 [if alternativeVisitingAddress && alternativeVisitingAddress != ""]
+		 [if alternativeVisitingAddress != null && alternativeVisitingAddress != ""]
              <div class="vrtx-person-visiting-address"><span class="vrtx-label">[localized "userVisitingAddress"]</span>
                [list alternativeVisitingAddress alternativeVisitingAddressLine]
-                  <span class="vrtx-address-line">[if alternativeVisitingAddressLine][val alternativeVisitingAddressLine][endif]</span>
+                  <span class="vrtx-address-line">[if alternativeVisitingAddressLine != null][val alternativeVisitingAddressLine][endif]</span>
                [endlist]
              </div>
 		 [else]
-		 	[if visitingAddress && visitingAddress != ""]
+		 	[if visitingAddress != null && visitingAddress != ""]
 		    <div class="vrtx-person-visiting-address"><span class="vrtx-label">[localized "userVisitingAddress"]</span>
 		      [list visitingAddress visitingAddressLine]
-		        <span class="vrtx-address-line">[if visitingAddressLine][val visitingAddressLine][endif]</span>
+		        <span class="vrtx-address-line">[if visitingAddressLine != null][val visitingAddressLine][endif]</span>
 		      [endlist]
 		    </div>
          	[endif]
          [endif]
-         [if postalAddress && postalAddress != ""]
+         [if postalAddress != null && postalAddress != ""]
          <div class="vrtx-person-postal-address"><span class="vrtx-label"> [localized "postalAddress"]</span>
              [list postalAddress postalAddressLine]
-               <span class="vrtx-address-line">[if postalAddressLine][val postalAddressLine][endif]</span>
+               <span class="vrtx-address-line">[if postalAddressLine != null][val postalAddressLine][endif]</span>
              [endlist]
          </div>
          [endif]
@@ -140,15 +140,15 @@ resourcetype person {
     feeds {
       ##
         [resource-props "."]
-        [if rssFeeds]
-          [def document structured-document]
-          [def feeds json-attr document "properties.rssFeeds"]
-          [if feeds]
+        [if rssFeeds != null]
+          [def document structured-document()]
+          [def feeds json-attr(document, "properties.rssFeeds")]
+          [if feeds != null]
             [list feeds feed]
-              [def thetitle json-attr feed "rssTitle"]
-              [def theurl json-attr feed "rssUrl"]
-              [if theurl && theurl != ""]
-                [if thetitle && thetitle != ""]
+              [def thetitle json-attr(feedm, "rssTitle")]
+              [def theurl json-attr(feed, "rssUrl")]
+              [if theurl != null && theurl != ""]
+                [if thetitle != null && thetitle != ""]
                   ${include:feed url=\[[val theurl]\] override-feed-title=\[[val thetitle]\] feed-title=\[true\] max-messages=\[3\] include-if-empty=\[false\]}
                 [else]
                   ${include:feed url=\[[val theurl]\] feed-title=\[true\] max-messages=\[3\] include-if-empty=\[false\]}
@@ -162,17 +162,17 @@ resourcetype person {
     
     person-image {
       ##
-      [def img-uri resource-prop "." "picture"]
-      [if img-uri]
-        [def img resource img-uri]
-        [if img]
-          [def pixel-width resource-prop img-uri "pixelWidth"]
-          [if pixel-width]
-            [def style concat "width:" pixel-width "px"]
-            [def person-firstname resource-prop "." "firstName"]
-            [def person-surname resource-prop "." "surname"]
-            [if person-firstname || person-surname]
-              <img class="vrtx-person-image" src="[val img-uri]" alt="[localized 'picture-alt-found']&nbsp;[if person-firstname][val person-firstname][endif]&nbsp;[if person-surname][val person-surname][endif]" />
+      [def img-uri resource-prop(".", "picture")]
+      [if img-uri != null]
+        [def img resource(img-uri)]
+        [if img != null]
+          [def pixel-width resource-prop(img-uri, "pixelWidth")]
+          [if pixel-width != null]
+            [def style concat("width:", concat(pixel-width, "px"))]
+            [def person-firstname resource-prop(".", "firstName")]
+            [def person-surname resource-prop(".", "surname")]
+            [if person-firstname != null || person-surname]
+              <img class="vrtx-person-image" src="[val img-uri]" alt="[localized 'picture-alt-found']&nbsp;[if person-firstname != null][val person-firstname][endif]&nbsp;[if person-surname != null][val person-surname][endif]" />
             [else]
               <img class="vrtx-person-image" src="[val img-uri]" alt="[localized 'picture-alt-found']&nbsp;[localized 'picture-alt-unknown-person']" />
             [endif]
@@ -189,21 +189,21 @@ resourcetype person {
     scientific-info {
       ##
         [resource-props "."]
-        [def externalPublications resource-prop "." "externalScientificInformation"]
-        [def document structured-document]
-        [def publications json-attr document "properties.selectedPublications"]
-        [if (publications && publications != "") || (externalPublications && externalPublications != "")]
+        [def externalPublications resource-prop(".", "externalScientificInformation")]
+        [def document structured-document()]
+        [def publications json-attr(document, "properties.selectedPublications")]
+        [if (publications != null && publications != "") || (externalPublications != null && externalPublications != "")]
           <h2>[localized "scientificInformation"]</h2>
-          [if (publications && publications != "") && (externalPublications && externalPublications != "")]
+          [if (publications != null && publications != "") && (externalPublications != null && externalPublications != "")]
             <div id="vrtx-publication-tabs" class="vrtx-person-publications">
-                ${resource:publications}
+               ${resource:publications}
             </div>
           [else]
-            [if (publications && publications != "")]
+            [if (publications != null && publications != "")]
               [val publications unescaped]
             [else]
               <div id="vrtx-publication-tabs" class="vrtx-person-publications">   
-                ${resource:publications}
+               ${resource:publications}
               </div>
             [endif]
           [endif]
@@ -214,7 +214,7 @@ resourcetype person {
     position {
       ##
       [resource-props "."]
-        [if position]
+        [if position != null]
           <div id="vrtx-person-position">
             [val position]
           </div>
@@ -224,63 +224,63 @@ resourcetype person {
     
     project-list {
       ##
-      [def showProjectList resource-prop-obj-val "." "getRelatedProjects"]
-      [if showProjectList]
+      [def showProjectList resource-prop-obj-val(".", "getRelatedProjects")]
+      [if showProjectList != null]
         [call-component "resource:project-list"] 
       [endif]
       ##
     }
     
-    vrtx-date-info{
+    vrtx-date-info {
     	##
     	[resource-props "."]
-    	[if publish-date]
-	    	<div class="vrtx-date-info">
-	    	<span class="published-date-label">[localized "publishedDate"]</span> <span class="published-date">[val publish-date] </span>
-	    	[if publish-date < contentLastModified]
-	    		- <span class="last-modified-date">[localized "contentLastModifiedDate"]</span> <span class="last-modified-date">[val contentLastModified]</span>
-	    	[endif]
-	    	</div>
-    	[endif]
-    	##
+    	[if publish-date != null]
+           <div class="vrtx-date-info">
+           <span class="published-date-label">[localized "publishedDate"]</span> <span class="published-date">[val publish-date] </span>
+           [if publish-date < contentLastModified]
+              - <span class="last-modified-date">[localized "contentLastModifiedDate"]</span> <span class="last-modified-date">[val contentLastModified]</span>
+           [endif]
+           </div>
+        [endif]
+        ##
     }
     
-    hcard{
-    	##
-    	[resource-props "."]
-    	[def titleValue resource-prop "." "title"]
-    	[if (firstName && surname)]
-    	<div class="vcard">
-   	      <span class="fn n">
-		    <span class="given-name">[val firstName]</span>
-		    <span class="family-name">[val surname]</span>
-		  </span>
-		  [if email]
-		  <span class="email">[val email]</span>
-		  [endif]
-		  [if phone]
-		  <span class="tel"><span class="type">work</span>[val phone]</span>
-		  [endif]
-		  [if mobile]
-		  <span class="tel"><span class="type">cell</span>[val mobile]</span>
-		  [endif]
-		  [if fax]
-		  <span class="tel"><span class="type">fax</span>[val fax]</span>
-		  [endif]
-			</div>
-		[endif]
-    	##
+    hcard {
+        ##
+        [resource-props "."]
+        [def titleValue resource-prop(".", "title")]
+        [if (firstName != null && surname != null)]
+        <div class="vcard">
+             <span class="fn n">
+            <span class="given-name">[val firstName]</span>
+            <span class="family-name">[val surname]</span>
+          </span>
+          [if email != null]
+          <span class="email">[val email]</span>
+          [endif]
+          [if phone != null]
+          <span class="tel"><span class="type">work</span>[val phone]</span>
+          [endif]
+          [if mobile != null]
+          <span class="tel"><span class="type">cell</span>[val mobile]</span>
+          [endif]
+          [if fax != null]
+          <span class="tel"><span class="type">fax</span>[val fax]</span>
+          [endif]
+            </div>
+        [endif]
+        ##
     }
     
     contact-extras{
-    	##
-    	[resource-props "."]
-    	[if pressPhoto]
-		<div id="vrtx-person-contact-info-extras">
-      		<a id="vrtx-press-photo" href="[val pressPhoto]">[localized "pressPhoto"]</a>
-		</div>
-		[endif]
-    	##
+        ##
+        [resource-props "."]
+        [if pressPhoto != null]
+        <div id="vrtx-person-contact-info-extras">
+              <a id="vrtx-press-photo" href="[val pressPhoto]">[localized "pressPhoto"]</a>
+        </div>
+        [endif]
+        ##
     }
 
   }
@@ -289,11 +289,11 @@ resourcetype person {
     ##    
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
-	    <head profile="http://microformats.org/profile/hcard">
-	    <!-- begin person js -->
-	    <person:javascript />
-	    <!-- end person js -->
-	    <title><comp:title /></title>
+        <head profile="http://microformats.org/profile/hcard">
+        <!-- begin person js -->
+        <person:javascript />
+        <!-- end person js -->
+        <title><comp:title /></title>
       </head>
       <body id="vrtx-person">
       <div id="vrtx-content">

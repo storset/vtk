@@ -10,23 +10,23 @@ resourcetype featured-content {
     featured-items {
       ##
       [resource-props "."]
-      [def document structured-document]
-      [def items json-attr document "properties.featured-items"]
-      [if items]
+      [def document structured-document()]
+      [def items json-attr(document, "properties.featured-items")]
+      [if items != null]
         [list items item]
-           [def sticktitle json-attr item "featuredStickTitle"]
-           [def thetitle json-attr item "featuredTitle"]
-           [def date json-attr item "featuredDate"]
-           [def picture json-attr item "featuredPicture"]
-           [def content json-attr item "featuredContent"]
-           [def webaddress json-attr item "featuredWebaddress"]
-           [def urlText json-attr item "featuredWebaddressText" ]
-           [def number expr _index + 1]
+           [def sticktitle json-attr(item, "featuredStickTitle")]
+           [def thetitle json-attr(item, "featuredTitle")]
+           [def date json-attr(item, "featuredDate")]
+           [def picture json-attr(item, "featuredPicture")]
+           [def content json-attr(item, "featuredContent")]
+           [def webaddress json-attr(item, "featuredWebaddress")]
+           [def urlText json-attr(item, "featuredWebaddressText") ]
+           [def number _index + 1]
            
            <div class="vrtx-featured-item" id="vrtx-featured-item-[val number]">
-             [if picture && picture != ""]
+             [if picture != null && picture != ""]
                <div class="vrtx-featured-item-picture">
-               [if thetitle && thetitle != ""]
+               [if thetitle != null && thetitle != ""]
                  <img src="[val picture]" alt="[localized 'featuredPictureAlt'] [val thetitle]" />
                [else]
                  <img src="[val picture]" alt="[localized 'featuredPictureAlt']" />
@@ -34,26 +34,26 @@ resourcetype featured-content {
                </div>
              [endif]
              <div class="vrtx-box-content">
-               [if sticktitle && sticktitle != ""]
+               [if sticktitle != null && sticktitle != ""]
                  <div class="vrtx-sticktitle">[val sticktitle]</div>
                [endif]
-               [if thetitle && thetitle != ""]
-                 [if webaddress && webaddress != ""]
+               [if thetitle != null && thetitle != ""]
+                 [if webaddress != null && webaddress != ""]
                    <h2><a href="[val webaddress]">[val thetitle]</a></h2>
                  [else]
                    <h2>[val thetitle]</h2>
                  [endif]
                [endif]
-               [if date && date != ""]
+               [if date != null && date != ""]
                  <div class="vrtx-date">[val date]</div>
                [endif]
-               [if content && content != ""]
+               [if content != null && content != ""]
                  <div class="vrtx-box-sub-content">[val content unescaped]</div>
                [endif]  
              </div>
-             [if urlText && urlText != ""]
+             [if urlText != null && urlText != ""]
              <div class="vrtx-more">
-                [if webaddress && webaddress != ""]
+                [if webaddress != null && webaddress != ""]
                   <span><a href="[val webaddress]">[val urlText]</a></span>
                 [else]
                   <span>[val urlText]</span>
@@ -68,8 +68,8 @@ resourcetype featured-content {
     
     title {
       ##
-      [def v resource-prop "." "title"]
-      [if v]
+      [def v resource-prop(".", "title")]
+      [if v != null]
         [val v]
       [endif]
       ##

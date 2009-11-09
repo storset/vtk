@@ -31,7 +31,7 @@
 package org.vortikal.text.tl;
 
 
-public class Symbol implements Argument {
+public final class Symbol implements Argument {
 
     private String value;
     
@@ -54,16 +54,15 @@ public class Symbol implements Argument {
     }
     
     public boolean isDefined(Context ctx) {
-        return ctx.get(this.value) != null;
+        return ctx.isDefined(this.value);
     }
     
     public Object getValue(Context ctx) {
-        Object val = ctx.get(this.value);
-        if (val == null) {
+        if (!ctx.isDefined(this.value)) {
             throw new RuntimeException(
                     "Symbol '" + this.value + "' not defined");
         }
-        return val;
+        return ctx.get(this.value);
     }
     
     public String toString() {

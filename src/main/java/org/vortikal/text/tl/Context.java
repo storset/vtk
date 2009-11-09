@@ -37,35 +37,32 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
-public class Context {
+public final class Context {
     
     private static final Pattern VALID_NAME_PATTERN = 
         Pattern.compile("[a-zA-Z_]([a-zA-Z0-9\\-_]*[a-zA-Z0-9_])?");
-    
-
     private Locale locale = Locale.getDefault();
     private Stack<Map<String, Object>> stack = new Stack<Map<String, Object>>();
 
+    private static final String NULL = "null";
+    
     public Context(Locale locale) {
-        this.stack.add(new HashMap<String, Object>());
+        Map<String, Object> toplevel = new HashMap<String, Object>();
+        toplevel.put(NULL, null);
+        this.stack.push(toplevel);
         this.locale = locale;
     }
     
-    public Object translate(String name) {
-        Object o = get(name.substring(1));
-        if (o == null) {
-            throw new RuntimeException("Not found: " + name);
+    public boolean isDefined(String name) {
+        Map<String, Object> ctx;
+        int idx = this.stack.size() - 1;
+        while (idx >= 0) {
+            ctx = this.stack.get(idx--);
+            if (ctx.containsKey(name)) {
+                return true;
+            }
         }
-        return o;
-    }
-    
-    public Object[] translate(String[] names) {
-        Object[] result = new Object[names.length];
-        for (int i = 0; i < names.length; i++) {
-            result[i] = translate(names[i]);
-        }
-        return result;
+        return false;
     }
     
     public Object get(String name) {
@@ -80,7 +77,7 @@ public class Context {
         return null;
     }
 
-    // Defines a binding in the top context
+    // Defines a binding in the context. 
     public void define(String name, Object value, boolean global) {
         if (!validateSymbol(name)) {
             throw new IllegalArgumentException("Illegal name: '" + name + "'");
@@ -156,9 +153,10 @@ public class Context {
         if (symbol == null) {
             return false;
         }
+        if (NULL.equals(symbol)) {
+            return false;
+        }
         Matcher m = VALID_NAME_PATTERN.matcher(symbol);
         return m.matches();
     }
-    
-    
 }

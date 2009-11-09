@@ -36,6 +36,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.vortikal.text.tl.expr.Expression;
+
 public class IfNodeFactory implements DirectiveNodeFactory {
 
     private static final Set<String> IF_ELSE_TERM =
@@ -45,14 +47,7 @@ public class IfNodeFactory implements DirectiveNodeFactory {
         new HashSet<String>(Arrays.asList("endif"));
 
     public Node create(DirectiveParseContext ctx) throws Exception {
-    	List<Argument> args = ctx.getArguments();
-        if (args.isEmpty()) {
-            throw new RuntimeException("Missing condition: "
-                    + ctx.getNodeText());
-        }
 
-    	Expression expression = new Expression(args);
-    	
         ParseResult trueBranch = ctx.getParser().parse(IF_ELSE_TERM);
         ParseResult falseBranch = null;
 
@@ -69,12 +64,20 @@ public class IfNodeFactory implements DirectiveNodeFactory {
         }
         NodeList trueNodeList = trueBranch.getNodeList();
         NodeList falseNodeList = falseBranch != null ? falseBranch.getNodeList() : null;
+
+        List<Argument> args = ctx.getArguments();
+        if (args.isEmpty()) {
+            throw new RuntimeException("Missing condition: "
+                    + ctx.getNodeText());
+        }
+        
+        Expression expression = new Expression(args);
         return new IfNode(expression, trueNodeList, falseNodeList);
     }
 
 
     private class IfNode extends Node {
-        private Expression expression;
+        private Expression expression = null;
         private NodeList trueBranch;
         private NodeList falseBranch;
 

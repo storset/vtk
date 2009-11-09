@@ -30,10 +30,12 @@
  */
 package org.vortikal.text.tl;
 
+import java.math.BigDecimal;
+
 public class Literal implements Argument {
 
     public enum Type {
-        String, Integer, Boolean;
+        STRING, NUMBER, BOOLEAN;
     }
     
     private String rawValue;
@@ -42,25 +44,27 @@ public class Literal implements Argument {
     
     public Literal(String rawValue) {
         this.rawValue = rawValue;
-        String stringVal = getStringValue(rawValue);
-        if (stringVal != null) {
-            this.type = Type.String;
-            this.value = stringVal;
+        String stringValue = getStringValue(rawValue);
+        if (stringValue != null) {
+            this.type = Type.STRING;
+            this.value = stringValue;
             return;
         }
-        Integer intVal = getIntegerValue(rawValue);
-        if (intVal != null) {
-            this.type = Type.Integer;
-            this.value = intVal;
+        
+        Number numberValue = getNumberValue(rawValue);
+        if (numberValue != null) {
+            this.type = Type.NUMBER;
+            this.value = numberValue;
             return;
         }
-        Boolean boolVal = getBooleanValue(rawValue);
-        if (boolVal != null) {
-            this.type = Type.Boolean;
-            this.value = boolVal;
+        
+        Boolean booleanValue = getBooleanValue(rawValue);
+        if (booleanValue != null) {
+            this.type = Type.BOOLEAN;
+            this.value = booleanValue;
             return;
         }
-        throw new IllegalArgumentException("Unsupported value type: " + value);
+        throw new IllegalArgumentException("Unsupported value type: " + rawValue);
     }
     
     public String getRawValue() {
@@ -72,21 +76,21 @@ public class Literal implements Argument {
     }
     
     public String getStringValue() {
-        if (this.type != Type.String) {
+        if (this.type != Type.STRING) {
             throw new IllegalStateException("Literal not of type String: " + this.value);
         }
         return (String) this.value;
     }
 
-    public Integer getIntValue() {
-        if (this.type != Type.Integer) {
+    public Number getNumberValue() {
+        if (this.type != Type.NUMBER) {
             throw new IllegalStateException("Literal not of type Integer: " + this.value);
         }
-        return (Integer) this.value;
+        return (Number) this.value;
     }
 
     public Boolean getBoolValue() {
-        if (this.type != Type.Boolean) {
+        if (this.type != Type.BOOLEAN) {
             throw new IllegalStateException("Literal not of type Boolean: " + this.value);
         }
         return (Boolean) this.value;
@@ -106,9 +110,14 @@ public class Literal implements Argument {
         return null;
     }
     
-    private Integer getIntegerValue(String token) {
+    private Number getNumberValue(String token) {
         try {
-            return Integer.valueOf(Integer.parseInt(token));
+            BigDecimal d = new BigDecimal(token);
+            if (d.scale() == 0) {
+                return d.intValue();
+            } else {
+                return d.floatValue();
+            }
         } catch (NumberFormatException e) { 
             return null;
         }

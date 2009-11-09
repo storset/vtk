@@ -28,38 +28,68 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.resourcemanagement.view.tl;
+package org.vortikal.text.tl.expr;
 
-import org.vortikal.repository.Repository;
-import org.vortikal.repository.resourcetype.Value;
+import java.util.Stack;
+
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Symbol;
 
-/**
- *  Extends ResourcePropHandler to provide *object value* of property Value
- */
-public class ResourcePropObjectValueHandler extends ResourcePropHandler {
+public abstract class Operator {
+    private Symbol symbol;
+    private Notation notation;
+    private Precedence precedence;
 
-    public ResourcePropObjectValueHandler(Symbol symbol, Repository repository) {
-        super(symbol, repository);
+    /**
+     * The set of defined operator precedences
+     */
+    public static enum Precedence {
+        ZERO(0),
+        ONE(1),
+        TWO(2),
+        THREE(3),
+        FOUR(4),
+        FIVE(5),
+        SIX(6),
+        SEVEN(7),
+        EIGHT(8),
+        NINE(9),
+        TEN(10),
+        FUNCTION_PRECEDENCE(100);
+        private int n;
+        private Precedence(int n) {
+            this.n = n;
+        }
+        public int value() {
+            return this.n;
+        }
     }
     
-    @Override
-    public Object eval(Context ctx, Object... args) throws Exception {
-        Object obj = super.eval(ctx, args);
-        
-        if (obj instanceof Value) 
-            return ((Value)obj).getObjectValue();
-        
-        if (obj instanceof Value[]) {
-            Value[] values = (Value[])obj;
-            Object[] objValues = new Object[values.length];
-            for (int i=0; i<values.length; i++) {
-                objValues[i] = values[i].getObjectValue();
-            }
-            return objValues;
-        }
-        return obj; // Unknown type or null, just pass-through
+    public static enum Notation {
+        PREFIX, INFIX;
     }
-}
 
+    public Operator(Symbol symbol, Notation notation, Precedence precedence) {
+        this.symbol = symbol;
+        this.notation = notation;
+        this.precedence = precedence;
+    }
+    
+    public Symbol getSymbol() {
+        return this.symbol;
+    }
+    
+    public Notation getNotation() {
+        return this.notation;
+    }
+    
+    public Precedence getprecedence() {
+        return this.precedence;
+    }
+    
+    public String toString() {
+        return this.symbol.getSymbol();
+    }
+    
+    public abstract Object eval(Context ctx, Stack<Object> stack) throws Exception;
+}

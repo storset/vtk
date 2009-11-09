@@ -79,58 +79,57 @@ public class CollectionListingAggregationResolver implements AggregationResolver
             return null;
         }
         List<Path> paths = new ArrayList<Path>();
-        paths.add(resource.getURI());
-        getAggregationPaths(paths, resource, token, 0);
-        paths.remove(resource.getURI());
+        getAggregationPaths(paths, pathToResource, resource, token, 0);
         return paths;
     }
 
-    public Query extend(Query query, Resource collection) throws IllegalArgumentException {
+    public Query getAggregationQuery(Query originalQuery, Resource collection) throws IllegalArgumentException {
 
         // only extend simple UriPrefixQuery or instances of
         // AbstractMultipleQuery (AndQuery or OrQuery) containing UriPrefixQuery
-        if (!(query instanceof AbstractMultipleQuery || query instanceof UriPrefixQuery)) {
-            IllegalArgumentException up = new IllegalArgumentException("Unsupported query type: " + query);
+        if (!(originalQuery instanceof AbstractMultipleQuery || originalQuery instanceof UriPrefixQuery)) {
+            IllegalArgumentException up = new IllegalArgumentException("Unsupported query type: " + originalQuery);
             throw up;
         }
 
         Property aggregationProp = collection.getProperty(this.aggregationPropDef);
         if (aggregationProp != null) {
 
-            // get an OrQuery containing all valid paths to aggregate from
-            OrQuery aggregatedFoldersQuery = getAggregateFoldersQuery(collection, aggregationProp);
+            // get an OrQuery or UriPrefixQuery containing valid path(s) to
+            // aggregate from
+            Query aggregatedQuery = createAggregationQuery(collection, aggregationProp);
 
-            if (aggregatedFoldersQuery.getQueries().size() > 0) {
-                // a simple UriPrefixQuery -> just extend and return
-                if (isExtendableUriPrefixQuery(query)) {
-                    aggregatedFoldersQuery.add(query);
-                    return aggregatedFoldersQuery;
-                } else {
-                    // iterate the original query and build a new one, extending
-                    // any UriPrefixQuery you encounter
-                    AbstractMultipleQuery extendableQuery = getExtendableQuery(query);
-                    for (Query q : ((AbstractMultipleQuery) query).getQueries()) {
-                        q = extend(q, aggregatedFoldersQuery, null);
-                        extendableQuery.add(q);
-                    }
-                    return extendableQuery;
+            // originalQuery is a simple UriPrefixQuery and we aggregate from
+            // only ONE other collection
+            if (isExtendableUriPrefixQuery(originalQuery) && aggregatedQuery instanceof UriPrefixQuery) {
+                return aggregatedQuery;
+            } else {
+                // iterate the original query and build a new one,
+                // replacing any UriPrefixQuery you encounter
+                AbstractMultipleQuery extendableQuery = getExtendableQuery(originalQuery);
+                for (Query q : ((AbstractMultipleQuery) originalQuery).getQueries()) {
+                    q = aggregate(q, aggregatedQuery, null);
+                    extendableQuery.add(q);
                 }
+                return extendableQuery;
             }
 
         }
-        return query;
+        return originalQuery;
     }
 
-    private OrQuery getAggregateFoldersQuery(Resource collection, Property aggregationProp) {
+    private Query createAggregationQuery(Resource collection, Property aggregationProp) {
 
         // the actual paths to aggregate from
         // used to create an OrQuery to extend the original query with
         List<Path> paths = new ArrayList<Path>();
 
-        paths.add(collection.getURI());
         String token = SecurityContext.getSecurityContext().getToken();
-        getAggregationPaths(paths, collection, token, 0);
-        paths.remove(collection.getURI());
+        getAggregationPaths(paths, collection.getURI(), collection, token, 0);
+
+        if (paths.size() == 1) {
+            return new UriPrefixQuery(paths.get(0).toString(), TermOperator.EQ, false);
+        }
 
         OrQuery aggregatedFoldersQuery = new OrQuery();
         for (Path path : paths) {
@@ -139,8 +138,8 @@ public class CollectionListingAggregationResolver implements AggregationResolver
         return aggregatedFoldersQuery;
     }
 
-    private void getAggregationPaths(List<Path> paths, Resource collection, String token, int depth) {
-        List<Path> addedPaths = addToPaths(collection, paths);
+    private void getAggregationPaths(List<Path> paths, Path startingPath, Resource collection, String token, int depth) {
+        List<Path> addedPaths = addToPaths(collection, paths, startingPath);
         Property recursiveAggregationProp = collection.getProperty(this.recursiveAggregationPropDef);
         if ((recursiveAggregationProp != null && recursiveAggregationProp.getBooleanValue())
                 && depth < this.maxRecursiveDepth) {
@@ -151,7 +150,7 @@ public class CollectionListingAggregationResolver implements AggregationResolver
                     paths.remove(path);
                     continue;
                 }
-                getAggregationPaths(paths, resource, token, depth);
+                getAggregationPaths(paths, startingPath, resource, token, depth);
             }
         } else {
             for (Path path : addedPaths) {
@@ -179,8 +178,8 @@ public class CollectionListingAggregationResolver implements AggregationResolver
         return null;
     }
 
-    private List<Path> addToPaths(Resource collection, List<Path> paths) {
-        if (!paths.contains(collection.getURI())) {
+    private List<Path> addToPaths(Resource collection, List<Path> paths, Path startingPath) {
+        if (!paths.contains(collection.getURI()) && !collection.getURI().equals(startingPath)) {
             paths.add(collection.getURI());
         }
         List<Path> addedPaths = new ArrayList<Path>();
@@ -190,7 +189,7 @@ public class CollectionListingAggregationResolver implements AggregationResolver
             int aggregationLimit = values.length > this.limit ? this.limit : values.length;
             for (int i = 0; i < aggregationLimit; i++) {
                 Path path = getValidPath(values[i].getStringValue(), paths);
-                if (path != null && !paths.contains(path)) {
+                if (path != null && !paths.contains(path) && !path.equals(startingPath)) {
                     paths.add(path);
                     addedPaths.add(path);
                 }
@@ -208,7 +207,7 @@ public class CollectionListingAggregationResolver implements AggregationResolver
         return null;
     }
 
-    private Query extend(Query query, OrQuery aggregatedFoldersQuery, AbstractMultipleQuery extendable) {
+    private Query aggregate(Query query, Query aggregatedQuery, AbstractMultipleQuery extendable) {
 
         if (query instanceof AbstractMultipleQuery) {
             if (extendable == null) {
@@ -216,15 +215,15 @@ public class CollectionListingAggregationResolver implements AggregationResolver
             }
             for (Query q : ((AbstractMultipleQuery) query).getQueries()) {
                 if (isExtendableUriPrefixQuery(q)) {
-                    q = aggregatedFoldersQuery;
+                    q = aggregatedQuery;
                 } else if (q instanceof AbstractMultipleQuery) {
-                    q = extend(q, aggregatedFoldersQuery, getExtendableQuery(q));
+                    q = aggregate(q, aggregatedQuery, getExtendableQuery(q));
                 }
                 extendable.add(q);
             }
             return extendable;
         } else if (isExtendableUriPrefixQuery(query)) {
-            query = aggregatedFoldersQuery;
+            query = aggregatedQuery;
         }
 
         return query;

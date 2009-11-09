@@ -90,7 +90,7 @@ public class CollectionListingAggregationResolverTestCase extends AbstractContro
 
     private void runTest(Query original, boolean withAggregationProp, boolean withRecursiveAggregationProp,
             boolean expectExtended) {
-        Query extended = this.aggregationReslover.extend(original, getCollection(withAggregationProp,
+        Query extended = this.aggregationReslover.getAggregationQuery(original, getCollection(withAggregationProp,
                 withRecursiveAggregationProp));
         assertNotNull(extended);
         if (expectExtended) {

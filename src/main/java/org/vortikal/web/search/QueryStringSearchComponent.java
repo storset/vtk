@@ -48,12 +48,12 @@ public class QueryStringSearchComponent extends QuerySearchComponent {
     protected Query getQuery(Resource collection, HttpServletRequest request, boolean recursive) {
         Query query = this.queryParser.parse(this.query);
 
-        Query extended = null;
-        boolean extend = false;
+        Query aggregationQuery = null;
+        boolean aggregate = false;
         if (this.aggregationResolver != null) {
-            extended = this.aggregationResolver.extend(query, collection);
-            if (!query.equals(extended)) {
-                extend = true;
+            aggregationQuery = this.aggregationResolver.getAggregationQuery(query, collection);
+            if (!query.equals(aggregationQuery)) {
+                aggregate = true;
             }
         }
 
@@ -64,10 +64,10 @@ public class QueryStringSearchComponent extends QuerySearchComponent {
             query = andQuery;
         }
 
-        if (extend) {
+        if (aggregate) {
             OrQuery orQuery = new OrQuery();
             orQuery.add(query);
-            orQuery.add(extended);
+            orQuery.add(aggregationQuery);
             return orQuery;
         }
 

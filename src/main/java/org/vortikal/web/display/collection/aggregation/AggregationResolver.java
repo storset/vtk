@@ -38,8 +38,20 @@ import org.vortikal.repository.search.query.Query;
 
 public interface AggregationResolver {
 
+    /**
+     * Returns a list containing all paths a given resource is set to aggregate
+     * from. The list does not contain invalid path references such as paths to
+     * non-existing resources or syntactically invalid paths (as defined by the
+     * Path object). Also, the list will not contain a path similar to the path
+     * of resource in question.
+     */
     public List<Path> getAggregationPaths(Path pathToResource);
 
-    public Query extend(Query query, Resource collection) throws IllegalArgumentException;
+    /**
+     * Returns a query similar to originalQuery, but with all occurences of
+     * UriPrefixQuery replaced by paths (OrQuery) from which the collection is
+     * set to aggregate.
+     */
+    public Query getAggregationQuery(Query originalQuery, Resource collection) throws IllegalArgumentException;
 
 }

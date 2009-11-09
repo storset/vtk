@@ -55,12 +55,12 @@ public class QueryPartsSearchComponent extends QuerySearchComponent {
             }
         }
 
-        Query extended = null;
-        boolean extend = false;
+        Query aggregatioQuery = null;
+        boolean aggregate = false;
         if (this.aggregationResolver != null) {
-            extended = this.aggregationResolver.extend(query, collection);
-            if (!query.equals(extended)) {
-                extend = true;
+            aggregatioQuery = this.aggregationResolver.getAggregationQuery(query, collection);
+            if (!query.equals(aggregatioQuery)) {
+                aggregate = true;
             }
         }
 
@@ -68,10 +68,10 @@ public class QueryPartsSearchComponent extends QuerySearchComponent {
             query.add(new UriDepthQuery(collection.getURI().getDepth() + 1));
         }
 
-        if (extend) {
+        if (aggregate) {
             OrQuery orQuery = new OrQuery();
             orQuery.add(query);
-            orQuery.add(extended);
+            orQuery.add(aggregatioQuery);
             return orQuery;
         }
 

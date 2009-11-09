@@ -95,7 +95,12 @@ public class PathTest extends TestCase {
         assertEquals(2, paths.get(2).getDepth());
         assertEquals(Path.fromString("/aa/bb/cc"), paths.get(3));
         assertEquals(3, paths.get(3).getDepth());
-        
+
+        assertNull(Path.fromString("/").getParent());
+        assertEquals(Path.fromString("/"), Path.fromString("/a").getParent());
+        assertEquals(Path.fromString("/a"), Path.fromString("/a/b").getParent());
+        assertEquals(Path.fromString("/a/b"), Path.fromString("/a/b/c").getParent());
+
         paths = Path.fromString("/").getPaths();
         assertEquals(1, paths.size());
         assertEquals(Path.ROOT, paths.get(0));
@@ -135,7 +140,7 @@ public class PathTest extends TestCase {
         assertEquals(p, p.expand("../../../a/b/c"));
         assertNull(p.expand("../../../../"));
     }
-    
+
     private void assertInvalid(String path) {
         try {
             Path.fromString(path);

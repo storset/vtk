@@ -89,8 +89,10 @@ public final class Path implements Comparable<Path> {
         if (path == null
             || path.length() >= MAX_LENGTH
             || !path.startsWith("/")
-            || path.contains("//")  || path.contains("/../")
-            || path.endsWith("/..") || path.endsWith("/.")
+            || path.contains("//")
+            || path.contains("/../")
+            || path.endsWith("/..")
+            || path.endsWith("/.")
             || (!path.equals("/") && path.endsWith("/"))) {
 
             throw new IllegalArgumentException("Invalid path: '" + path + "'");
@@ -104,6 +106,7 @@ public final class Path implements Comparable<Path> {
      * This is the same string used to 
      * construct this path. 
      */
+    @Override
     public String toString() {
         return this.path;
     }
@@ -138,7 +141,12 @@ public final class Path implements Comparable<Path> {
      * minus one.
      */
     public int getDepth() {
-        return this.elements().size() - 1;
+        if (isRoot()) return 0;
+
+        int depth = 1, idx = 0;
+        while ((idx = this.path.indexOf('/', idx+1)) != -1) ++depth;
+
+        return depth;
     }
 	
     /**
@@ -225,13 +233,13 @@ public final class Path implements Comparable<Path> {
      * this path is the root path.
      */
     public Path getParent() {
-        List<Path> paths = this.paths();
-        if (paths.size() == 1) {
-            return null;
-        }
-        return paths.get(paths.size() - 2);
+        if (isRoot()) return null;
+
+        if (getDepth() == 1) return ROOT;
+
+        return instance(this.path.substring(0, this.path.lastIndexOf('/')));
     }
-	
+    
     /**
      * Extends this path with a sub-path. For example, the path 
      * <code>/a</code> when extended with the sub-path <code>b/c</code>
@@ -295,11 +303,13 @@ public final class Path implements Comparable<Path> {
     }
     
     
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof Path)) return false;
         return ((Path)o).path.equals(this.path);
     }
 	
+    @Override
     public int hashCode() {
         return this.path.hashCode();
     }

@@ -32,7 +32,9 @@ package org.vortikal.web.search;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.TermOperator;
@@ -40,18 +42,42 @@ import org.vortikal.repository.search.query.TypeTermQuery;
 
 public class ResourceTypeQueryBuilder implements QueryBuilder {
 
+    private ResourceTypeTree resourceTypeTree;
+
     public Query build(Resource base, HttpServletRequest request) {
-        String[] documentTypes = request.getParameterValues("resource-type");
-        if (documentTypes != null) {
-            if (documentTypes.length == 1) {
-                return new TypeTermQuery(documentTypes[0], TermOperator.IN);
+        String[] resourceTypes = request.getParameterValues("resource-type");
+        if (resourceTypes != null) {
+            if (resourceTypes.length == 1) {
+                if (isValidResourceType(resourceTypes[0])) {
+                    return new TypeTermQuery(resourceTypes[0], TermOperator.IN);
+                }
             }
-            OrQuery documentTypesQuery = new OrQuery();
-            for (String documentType : documentTypes) {
-                documentTypesQuery.add(new TypeTermQuery(documentType, TermOperator.IN));
+            OrQuery resourceTypesQuery = new OrQuery();
+            for (String resourceType : resourceTypes) {
+                if (isValidResourceType(resourceType)) {
+                    resourceTypesQuery.add(new TypeTermQuery(resourceType, TermOperator.IN));
+                }
             }
-            return documentTypesQuery;
+            if (resourceTypesQuery.getQueries().size() > 0) {
+                return resourceTypesQuery;
+            }
         }
         return null;
     }
+
+    private boolean isValidResourceType(String resourceTypeName) {
+        try {
+            this.resourceTypeTree.getResourceTypeDefinitionByName(resourceTypeName);
+            return true;
+        } catch (IllegalArgumentException iae) {
+            // resourceTypeName is bogus, ignore it
+        }
+        return false;
+    }
+
+    @Required
+    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+        this.resourceTypeTree = resourceTypeTree;
+    }
+
 }

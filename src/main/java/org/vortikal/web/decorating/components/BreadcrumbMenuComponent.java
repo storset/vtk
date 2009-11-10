@@ -36,12 +36,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
@@ -70,25 +73,20 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
 
         List<BreadcrumbElement> breadCrumbElements = getBreadcrumbElements();
         Resource currentResource = null;
-        try {
-            currentResource = repository.retrieve(token, uri, false);
-        } catch (Exception e) {
-            return; // no access to current resource - can't create menu
-        }
+        currentResource = repository.retrieve(token, uri, false);
+
         if ((!currentResource.isCollection() && (displayFromLevel + 1) > breadCrumbElements.size())
                 || (displayFromLevel > breadCrumbElements.size())) {
             return;
         }
         for (int i = 0; i < displayFromLevel; i++) {
-            breadCrumbElements.remove(0);
+            if(breadCrumbElements.size() > 0){
+                breadCrumbElements.remove(0);
+            }
         }
 
         if (!currentResource.isCollection()) {
-            try {
-                currentResource = repository.retrieve(token, uri.getParent(), false);
-            } catch (Exception e) {
-                return; // no access to current resource - can't create menu
-            }
+            currentResource = repository.retrieve(token, uri.getParent(), false);
             if (breadCrumbElements.size() > 0) {
                 breadCrumbElements.remove(breadCrumbElements.size() - 1);
             }
@@ -140,14 +138,15 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         return result;
     }
 
-    private List<MenuItem<PropertySet>> generateChildElements(List<Path> children, Principal principal)
-            throws Exception {
+    private List<MenuItem<PropertySet>> generateChildElements(List<Path> children, Principal principal) throws Exception{
         List<MenuItem<PropertySet>> items = new ArrayList<MenuItem<PropertySet>>();
         for (Path childPath : children) {
             Resource childResource = null;
             try {
                 childResource = repository.retrieve(token, childPath, false);
-            } catch (Exception e) {
+            }catch (AuthorizationException e) {
+                continue; // can't access resource - not displayed in menu
+            } catch (AuthenticationException e) {
                 continue; // can't access resource - not displayed in menu
             }
             if (!childResource.isCollection()) {

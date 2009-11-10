@@ -47,7 +47,7 @@ import org.vortikal.text.tl.expr.Function;
 public class ResourcePropHandler extends Function {
 
     private Repository repository;
-    
+
     public ResourcePropHandler(Symbol symbol, Repository repository) {
         super(symbol, 2);
         this.repository = repository;
@@ -65,12 +65,12 @@ public class ResourcePropHandler extends Function {
         } else {
             ref = arg1.toString();
         }
-        
+
         if (resource == null) {
             if (ref.equals(".")) {
                 Object o = ctx.get(StructuredResourceDisplayController.MVC_MODEL_KEY);
                 if (o == null) {
-                    throw new RuntimeException("Unable to access MVC model: " 
+                    throw new RuntimeException("Unable to access MVC model: "
                             + StructuredResourceDisplayController.MVC_MODEL_KEY);
                 }
                 @SuppressWarnings("unchecked")
@@ -82,12 +82,11 @@ public class ResourcePropHandler extends Function {
                 resource = this.repository.retrieve(token, uri, true);
             }
         }
-System.out.println("__arg2: " + arg2);        
         String propName = arg2.toString();
         if ("uri".equals(propName)) {
             return resource.getURI();
         }
-        
+
         Property property = resource.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, propName);
         if (property == null) {
             property = resource.getProperty(Namespace.DEFAULT_NAMESPACE, propName);

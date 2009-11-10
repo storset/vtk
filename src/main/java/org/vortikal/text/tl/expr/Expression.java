@@ -47,15 +47,15 @@ import org.vortikal.text.tl.expr.Operator.Notation;
 import org.vortikal.text.tl.expr.Operator.Precedence;
 
 /**
- * Utility class for parsing and evaluating infix expressions 
- * (e.g. <code>(x = y) || (x = z)</code>).
+ * Utility class for parsing and evaluating infix expressions (e.g.
+ * <code>(x = y) || (x = z)</code>).
  */
 public class Expression {
 
     private static final Symbol LP = new Symbol("(");
     private static final Symbol RP = new Symbol(")");
     private static final Symbol COMMA = new Symbol(",");
-    
+
     private static final Symbol EQ = new Symbol("=");
     private static final Symbol NEQ = new Symbol("!=");
     private static final Symbol GT = new Symbol(">");
@@ -74,7 +74,7 @@ public class Expression {
     public static final Map<Symbol, Operator> DEFAULT_OPERATORS;
     static {
         Map<Symbol, Operator> ops = new HashMap<Symbol, Operator>();
-        
+
         // Unary
         ops.put(NOT, new Not(NOT, Notation.PREFIX, Precedence.TEN));
 
@@ -89,7 +89,7 @@ public class Expression {
         // Greater/less than
         ops.put(GT, new Gt(GT, Notation.INFIX, Precedence.FIVE));
         ops.put(LT, new Lt(LT, Notation.INFIX, Precedence.FOUR));
-        
+
         // Equality
         ops.put(EQ, new Eq(EQ, Notation.INFIX, Precedence.THREE));
         ops.put(NEQ, new Neq(NEQ, Notation.INFIX, Precedence.TWO));
@@ -119,14 +119,13 @@ public class Expression {
     public Expression(List<Argument> args) {
         this(null, args);
     }
-    
+
     /**
      * Constructs an expression using a supplied set of functions
      */
-    public Expression(Set<Function> functions,
-            List<Argument> args) {
+    public Expression(Set<Function> functions, List<Argument> args) {
         if (functions != null) {
-            for (Function f: functions) {
+            for (Function f : functions) {
                 addFunction(f);
             }
         }
@@ -166,8 +165,7 @@ public class Expression {
                 int commas = 0;
                 while (true) {
                     if (stack.isEmpty()) {
-                        throw new RuntimeException(
-                                "Unbalanced parentheses in expression " + this);
+                        throw new RuntimeException("Unbalanced parentheses in expression " + this);
                     }
                     Symbol top = stack.pop();
                     if (LP.equals(top)) {
@@ -186,17 +184,15 @@ public class Expression {
                         Function f = (Function) op;
                         int expected = f.getArgumentCount();
                         if (expected == 0 && commas != 0 || expected > 0 && expected != commas + 1) {
-                            throw new RuntimeException(
-                                    this + ": wrong number of arguments for function " 
-                                    + f.getSymbol().getSymbol() + " (expected " 
-                                    + expected + ")");
+                            throw new RuntimeException(this + ": wrong number of arguments for function "
+                                    + f.getSymbol().getSymbol() + " (expected " + expected + ")");
                         }
                     }
                     postfix.add(top);
                 }
                 continue;
             }
-            
+
             if (COMMA.equals(symbol)) {
                 stack.push(symbol);
                 continue;
@@ -208,8 +204,7 @@ public class Expression {
                 continue;
             }
             if (op instanceof Function && !LP.equals(next)) {
-                throw new RuntimeException("Expected '(' after function name: " 
-                        + op.getSymbol().getSymbol());
+                throw new RuntimeException("Expected '(' after function name: " + op.getSymbol().getSymbol());
             }
             if (stack.isEmpty()) {
                 stack.push(symbol);
@@ -226,7 +221,7 @@ public class Expression {
                     top = this.operators.get(stack.peek());
                 }
             }
-            stack.push(symbol);            
+            stack.push(symbol);
         }
         while (!stack.isEmpty()) {
             postfix.add(stack.pop());
@@ -235,11 +230,9 @@ public class Expression {
     }
 
     /**
-     * Evaluates the expression. Returns a single 
-     * object value as the result.
+     * Evaluates the expression. Returns a single object value as the result.
      */
     public Object evaluate(Context ctx) {
-        System.out.println("__eval: " + this.postfix);
         Stack<Object> stack = new Stack<Object>();
         for (Argument arg : this.postfix) {
             if (arg instanceof Literal) {
@@ -256,15 +249,13 @@ public class Expression {
                         Object val = op.eval(ctx, stack);
                         stack.push(val);
                     } catch (Throwable t) {
-                        throw new RuntimeException("Unable to evaluate expression '" 
-                                + this + "': " + t.getMessage(), t);
+                        throw new RuntimeException("Unable to evaluate expression '" + this + "': " + t.getMessage(), t);
                     }
                 }
             }
         }
         if (stack.size() != 1) {
-            throw new RuntimeException(
-                    "Unable to evaluate expression " + this);
+            throw new RuntimeException("Unable to evaluate expression " + this);
         }
         return stack.peek();
     }

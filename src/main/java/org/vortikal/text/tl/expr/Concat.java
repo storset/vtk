@@ -40,8 +40,7 @@ public class Concat extends Function {
     }
 
     @Override
-    public Object eval(Context ctx, Object...args) {
-        System.out.println("__concat: " + java.util.Arrays.asList(args));
+    public Object eval(Context ctx, Object... args) {
         Object o1 = args[0];
         Object o2 = args[1];
         if (o1 == null) {
@@ -52,5 +51,5 @@ public class Concat extends Function {
         }
         return o1.toString() + o2.toString();
     }
-    
+
 }

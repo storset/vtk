@@ -224,7 +224,11 @@ public class Expression {
             stack.push(symbol);
         }
         while (!stack.isEmpty()) {
-            postfix.add(stack.pop());
+            Symbol top = stack.pop();
+            if (LP.equals(top) || RP.equals(top) || COMMA.equals(top)) {
+                throw new RuntimeException("Invalid expression: " + this);
+            }
+            postfix.add(top);
         }
         this.postfix = postfix;
     }
@@ -234,25 +238,25 @@ public class Expression {
      */
     public Object evaluate(Context ctx) {
         Stack<Object> stack = new Stack<Object>();
-        for (Argument arg : this.postfix) {
-            if (arg instanceof Literal) {
-                stack.push(arg.getValue(ctx));
-            } else {
-                Symbol s = (Symbol) arg;
-                Operator op = operators.get(s);
-                if (op == null) {
-                    // Variable:
-                    stack.push(s.getValue(ctx));
+        try {
+            for (Argument arg : this.postfix) {
+                if (arg instanceof Literal) {
+                    stack.push(arg.getValue(ctx));
                 } else {
-                    // Function/operator:
-                    try {
+                    Symbol s = (Symbol) arg;
+                    Operator op = operators.get(s);
+                    if (op == null) {
+                        // Variable:
+                        stack.push(s.getValue(ctx));
+                    } else {
+                        // Function/operator:
                         Object val = op.eval(ctx, stack);
                         stack.push(val);
-                    } catch (Throwable t) {
-                        throw new RuntimeException("Unable to evaluate expression '" + this + "': " + t.getMessage(), t);
                     }
                 }
             }
+        } catch (Throwable t) {
+            throw new RuntimeException("Unable to evaluate expression '" + this + "': " + t.getMessage(), t);
         }
         if (stack.size() != 1) {
             throw new RuntimeException("Unable to evaluate expression " + this);

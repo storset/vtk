@@ -182,32 +182,30 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
     }
 
     private void initRequestParameters(DecoratorRequest request) {
-        String displayFromLevel = request.getStringParameter(PARAMETER_DISPLAY_FROM_LEVEL);
-        if (displayFromLevel != null && !"".equals(displayFromLevel.trim())) {
-            int level = Integer.parseInt(displayFromLevel);
-            if (level < 1) {
-                intergerMustBeHigherThenZeroException(PARAMETER_DISPLAY_FROM_LEVEL);
-            }
-            this.displayFromLevel = level;
-        }
+        this.displayFromLevel = getIntegerGreaterThenZero(PARAMETER_DISPLAY_FROM_LEVEL, request, this.displayFromLevel);
+        this.maxSiblings = getIntegerGreaterThenZero(PARAMETER_MAX_NUMBER_OF_SIBLINGS, request, this.maxSiblings);
 
         boolean authenticated = "true".equals(request.getStringParameter(PARAMETER_AUTENTICATED));
         if (authenticated) {
             SecurityContext securityContext = SecurityContext.getSecurityContext();
             this.token = securityContext.getToken();
         }
-
-        try {
-            maxSiblings = Integer.parseInt((String) request.getStringParameter(PARAMETER_MAX_NUMBER_OF_SIBLINGS));
-            if (maxSiblings < 1)
-                intergerMustBeHigherThenZeroException(PARAMETER_MAX_NUMBER_OF_SIBLINGS);
-        } catch (NumberFormatException e) {
-            if (request.getParameter(PARAMETER_MAX_NUMBER_OF_SIBLINGS) != null)
-                intergerMustBeHigherThenZeroException(PARAMETER_MAX_NUMBER_OF_SIBLINGS);
-        }
     }
 
-    private void intergerMustBeHigherThenZeroException(String prameter) {
+    private int getIntegerGreaterThenZero(String prameter, DecoratorRequest request, int returnWhenParamNotFound) {
+        int value = returnWhenParamNotFound;
+        try {
+            value = Integer.parseInt((String) request.getStringParameter(prameter));
+            if (value < 1)
+                intergerMustBeGreaterThenZeroException(prameter);
+        } catch (NumberFormatException e) {
+            if (request.getParameter(prameter) != null)
+                intergerMustBeGreaterThenZeroException(prameter);
+        }
+        return value;
+    }
+
+    private void intergerMustBeGreaterThenZeroException(String prameter) {
         throw new DecoratorComponentException("Parameter '" + prameter + "' must be an integer > 0");
     }
 

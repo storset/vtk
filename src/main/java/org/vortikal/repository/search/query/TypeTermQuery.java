@@ -62,7 +62,7 @@ public class TypeTermQuery implements Query {
     }
     
     public String toString() {
-        StringBuilder sb = new StringBuilder(this.getClass().getName());
+        StringBuilder sb = new StringBuilder(this.getClass().getSimpleName());
         sb.append(";term=").append(this.term);
         sb.append(";operator=").append(this.operator);
         return sb.toString();

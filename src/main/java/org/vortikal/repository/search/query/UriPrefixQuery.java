@@ -69,7 +69,7 @@ public class UriPrefixQuery implements UriQuery {
     }
     
     public String toString() {
-        StringBuilder sb = new StringBuilder(this.getClass().getName());
+        StringBuilder sb = new StringBuilder(this.getClass().getSimpleName());
         sb.append(";uri=").append(this.uri);
         return sb.toString();
     }

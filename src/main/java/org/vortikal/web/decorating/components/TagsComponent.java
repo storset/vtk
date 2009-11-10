@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.decorating.components;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +38,9 @@ import java.util.Map;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.reporting.DataReportException;
+import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
@@ -52,23 +55,23 @@ import org.vortikal.web.tags.TagElement;
 public class TagsComponent extends ViewRenderingDecoratorComponent implements InitializingBean {
 
     private static final String DESCRIPTION = "Renders a tags as an alphabetically sorted list.";
-    
+
     private static final String PARAMETER_SCOPE = "scope";
     private static final String PARAMETER_SCOPE_DESC = "Set the URI scope for the tag cloud. Relative URIs are allowed. "
             + "Only tags existing in the folder tree given by the URI will be "
             + "taken into consideration when generating the tag cloud. "
             + "The default value is the current directory and below.";
-    
+
     private static final String PARAMETER_RESULT_SETS = "result-sets";
     private static final int PARAMETER_RESULT_DEFAULT_VALUE = 1;
-    private static final String PARAMETER_PARAMETER_RESULT_DESC  = "The number of result sets to split the result into. The default value is: " + PARAMETER_RESULT_DEFAULT_VALUE;
+    private static final String PARAMETER_PARAMETER_RESULT_DESC = "The number of result sets to split the result into. The default value is: "
+            + PARAMETER_RESULT_DEFAULT_VALUE;
 
     private static final String PARAMETER_TAG_LIMIT = "limit";
     private static final int PARAMETER_TAG_LIMIT_DEFAULT_VALUE = Integer.MAX_VALUE;
     private static final String PARAMETER_TAG_LIMIT_DESC = "Set limit on how many tags to include. Setting this to a low value will "
             + "show only the most popular tags. Default is: " + PARAMETER_TAG_LIMIT_DEFAULT_VALUE;
 
- 
     private static final String PARAMETER_SHOW_OCCURENCE = "show-occurence";
     private static final boolean PARAMETER_SHOW_OCCURENCE_VALUE = false;
     private static final String PARAMETER_SHOW_OCCURENCE_DESC = "Display a number indicating the number of documents associated with the tag"
@@ -77,8 +80,12 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
     private static final String PARAMETER_SERVICE_URL = "service-url";
     private static final String PARAMETER_SERVICE_URL_DESC = "Deprecated: NO LONGER USED. Kept to avoid breaking existing component references.";
 
+    private static final String PARAMETER_RESOURCE_TYPE = "resource-type";
+    private static final String PARAMETER_RESOURCE_TYPE_DESC = "Comma seperated list of resource types to search for tags in.";
+
     private RepositoryTagElementsDataProvider tagElementsProvider;
-    
+    private ResourceTypeTree resourceTypeTree;
+
     protected String getDescriptionInternal() {
         return DESCRIPTION;
     }
@@ -91,6 +98,7 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
         map.put(PARAMETER_RESULT_SETS, PARAMETER_PARAMETER_RESULT_DESC);
         map.put(PARAMETER_SHOW_OCCURENCE, PARAMETER_SHOW_OCCURENCE_DESC);
         map.put(PARAMETER_SERVICE_URL, PARAMETER_SERVICE_URL_DESC);
+        map.put(PARAMETER_RESOURCE_TYPE, PARAMETER_RESOURCE_TYPE_DESC);
 
         return map;
     }
@@ -110,15 +118,15 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
         int limit = PARAMETER_TAG_LIMIT_DEFAULT_VALUE;
         int resultSet = PARAMETER_RESULT_DEFAULT_VALUE;
         boolean showOccurence = PARAMETER_SHOW_OCCURENCE_VALUE;
-        
+
         try {
-        	
-        	if(request.getStringParameter(PARAMETER_RESULT_SETS) != null)
-        		resultSet = Integer.parseInt(request.getStringParameter(PARAMETER_RESULT_SETS));
-        	
-        	if(request.getStringParameter(PARAMETER_SHOW_OCCURENCE) !=null && 
-        			request.getStringParameter(PARAMETER_SHOW_OCCURENCE).equals("true"))
-        		showOccurence = true;
+
+            if (request.getStringParameter(PARAMETER_RESULT_SETS) != null)
+                resultSet = Integer.parseInt(request.getStringParameter(PARAMETER_RESULT_SETS));
+
+            if (request.getStringParameter(PARAMETER_SHOW_OCCURENCE) != null
+                    && request.getStringParameter(PARAMETER_SHOW_OCCURENCE).equals("true"))
+                showOccurence = true;
 
             if (request.getStringParameter(PARAMETER_TAG_LIMIT) != null) {
                 limit = Integer.parseInt(request.getStringParameter(PARAMETER_TAG_LIMIT));
@@ -134,37 +142,51 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
                     + nfe.getMessage());
         }
 
-       
+        Object resourceTypeParam = request.getParameter(PARAMETER_RESOURCE_TYPE);
+        List<ResourceTypeDefinition> resourceTypeDefs = new ArrayList<ResourceTypeDefinition>();
+        if (resourceTypeParam != null) {
+            String[] resourceTypes = resourceTypeParam.toString().split(",");
+            for (String resourceType : resourceTypes) {
+                ResourceTypeDefinition resourceTypeDef = getResourceTypeDef(resourceType.trim());
+                if (resourceTypeDef != null) {
+                    resourceTypeDefs.add(resourceTypeDef);
+                }
+            }
+        }
+
         // Legacy exception handling, should be refactored.
         try {
-            List<TagElement> tagElements = 
-                tagElementsProvider.getTagElements(scopeUri, token, 1, 1, limit, 1); //TODO: not so neat hack??
+            List<TagElement> tagElements = tagElementsProvider.getTagElements(scopeUri, resourceTypeDefs, token, 1, 1, limit, 1);
 
             // Populate model
             int numberOfTagsInEachColumn;
             int remainder;
-            if(limit < PARAMETER_TAG_LIMIT_DEFAULT_VALUE && limit < tagElements.size()){
-            	numberOfTagsInEachColumn = limit/resultSet;
-            	remainder = limit % resultSet;
-            }else{
-            	numberOfTagsInEachColumn =  tagElements.size()/resultSet;
-            	remainder = tagElements.size() % resultSet;
+            if (limit < PARAMETER_TAG_LIMIT_DEFAULT_VALUE && limit < tagElements.size()) {
+                numberOfTagsInEachColumn = limit / resultSet;
+                remainder = limit % resultSet;
+            } else {
+                numberOfTagsInEachColumn = tagElements.size() / resultSet;
+                remainder = tagElements.size() % resultSet;
             }
-            
+
             // If we have an reminder then we need to round up
-            if(remainder != 0)
-            	numberOfTagsInEachColumn++;
+            if (remainder != 0)
+                numberOfTagsInEachColumn++;
 
             // Ensure that we get the number of columns that we ask for in
-            // the parameter 'result-sets', given that we have enough elements. 
-            if((remainder != 0 && resultSet < numberOfTagsInEachColumn && resultSet > remainder) || (remainder == 0))
-            	model.put("completeColumn",resultSet);
-            else 
-            	model.put("completeColumn",remainder-1);
-            
+            // the parameter 'result-sets', given that we have enough elements.
+            if ((remainder != 0 && resultSet < numberOfTagsInEachColumn && resultSet > remainder) || (remainder == 0))
+                model.put("completeColumn", resultSet);
+            else
+                model.put("completeColumn", remainder - 1);
+
             model.put("showOccurence", showOccurence);
-            model.put("numberOfTagsInEachColumn",numberOfTagsInEachColumn);
+            model.put("numberOfTagsInEachColumn", numberOfTagsInEachColumn);
             model.put("tagElements", tagElements);
+            if (resourceTypeDefs.size() > 0) {
+                model.put("resourceTypes", resourceTypeDefs);
+            }
+            
         } catch (DataReportException d) {
             throw new DecoratorComponentException("There was a problem with the data report query: " + d.getMessage());
         } catch (IllegalArgumentException e) {
@@ -172,6 +194,15 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
                     + "', must be a valid URI.");
         }
 
+    }
+
+    private ResourceTypeDefinition getResourceTypeDef(String resourceType) {
+        try {
+            return this.resourceTypeTree.getResourceTypeDefinitionByName(resourceType);
+        } catch (IllegalArgumentException e) {
+            // Invalid resource type param, ignore it
+        }
+        return null;
     }
 
     Path buildScopePath(String href) {
@@ -183,8 +214,12 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
     }
 
     @Required
-    public void setTagElementsProvider(
-            RepositoryTagElementsDataProvider tagElementsProvider) {
+    public void setTagElementsProvider(RepositoryTagElementsDataProvider tagElementsProvider) {
         this.tagElementsProvider = tagElementsProvider;
+    }
+
+    @Required
+    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+        this.resourceTypeTree = resourceTypeTree;
     }
 }

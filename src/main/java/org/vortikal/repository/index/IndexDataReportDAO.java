@@ -69,6 +69,7 @@ import org.vortikal.repository.reporting.PropertyValueFrequencyQuery;
 import org.vortikal.repository.reporting.UriScope;
 import org.vortikal.repository.reporting.ValueFrequencyPairComparator;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.search.ConfigurablePropertySelect;
@@ -120,6 +121,11 @@ public class IndexDataReportDAO implements DataReportDAO {
             Filter propertyExistsFilter = getPropertyExistsFilter(def);
             Filter aclFilter = getAclFilter(token, reader);
             Filter uriScopeFilter = getUriScopeFilter(query.getUriScope(), reader);
+            Filter resourceTypeFilter = getResourceTypeFilter(query);
+
+            if (resourceTypeFilter != null) {
+                mainFilter.add(new FilterClause(resourceTypeFilter, BooleanClause.Occur.MUST));
+            }
 
             mainFilter.add(new FilterClause(publishedFilter, BooleanClause.Occur.MUST));
             mainFilter.add(new FilterClause(propertyExistsFilter, BooleanClause.Occur.MUST));
@@ -207,6 +213,24 @@ public class IndexDataReportDAO implements DataReportDAO {
                 }
             }
         }
+    }
+
+    private Filter getResourceTypeFilter(PropertyValueFrequencyQuery query) {
+        List<ResourceTypeDefinition> resourceTypes = query.getResourceTypes();
+        if (resourceTypes == null || resourceTypes.size() == 0) {
+            return null;
+        }
+        if (resourceTypes.size() == 1) {
+            TermQuery tq = new TermQuery(new Term(FieldNameMapping.RESOURCETYPE_FIELD_NAME, resourceTypes.get(0)
+                    .getName()));
+            return new QueryWrapperFilter(tq);
+        }
+        BooleanQuery bq = new BooleanQuery();
+        for (ResourceTypeDefinition resourceType : resourceTypes) {
+            bq.add(new TermQuery(new Term(FieldNameMapping.RESOURCETYPE_FIELD_NAME, resourceType.getName())),
+                    BooleanClause.Occur.SHOULD);
+        }
+        return new QueryWrapperFilter(bq);
     }
 
     private Filter getPublishedFilter() {

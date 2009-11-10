@@ -30,6 +30,8 @@
  */
 package org.vortikal.web.reporting;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.reporting.DataReportException;
@@ -38,17 +40,17 @@ import org.vortikal.repository.reporting.PropertyValueFrequencyQuery;
 import org.vortikal.repository.reporting.PropertyValueFrequencyQueryResult;
 import org.vortikal.repository.reporting.UriScope;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 
 public class TagsReportingComponent {
 
     private DataReportManager dataReportManager;
     private PropertyTypeDefinition tagsPropDef = null;
-    
-    public PropertyValueFrequencyQueryResult getTags(Path scopeUri, int limit, int tagOccurenceMin,
-            String token) throws DataReportException, IllegalArgumentException {
+
+    public PropertyValueFrequencyQueryResult getTags(Path scopeUri, List<ResourceTypeDefinition> resourceTypeDefs,
+            int limit, int tagOccurenceMin, String token) throws DataReportException, IllegalArgumentException {
 
         PropertyValueFrequencyQuery query = new PropertyValueFrequencyQuery();
-
         query.setPropertyTypeDefinition(this.tagsPropDef);
 
         // Sort by highest frequency first.
@@ -56,14 +58,18 @@ public class TagsReportingComponent {
 
         if (limit > -1)
             query.setLimit(limit);
-        
+
         if (tagOccurenceMin > -1)
             query.setMinValueFrequency(tagOccurenceMin);
 
         if (scopeUri != null && !scopeUri.isRoot()) {
             query.setUriScope(new UriScope(scopeUri));
         }
-        
+
+        if (resourceTypeDefs != null && resourceTypeDefs.size() > 0) {
+            query.setResourceTypes(resourceTypeDefs);
+        }
+
         return (PropertyValueFrequencyQueryResult) this.dataReportManager.executeReportQuery(query, token);
     }
 
@@ -71,7 +77,6 @@ public class TagsReportingComponent {
     public void setTagsPropDef(PropertyTypeDefinition tagsPropDef) {
         this.tagsPropDef = tagsPropDef;
     }
-
 
     @Required
     public void setDataReportManager(DataReportManager manager) {

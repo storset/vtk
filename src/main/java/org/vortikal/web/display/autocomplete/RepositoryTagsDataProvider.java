@@ -49,49 +49,48 @@ import org.vortikal.web.tags.Tag;
 /**
  * Provide keywords completion data from repository.
  */
-public class RepositoryTagsDataProvider implements
-        VocabularyDataProvider<Tag> {
-    
+public class RepositoryTagsDataProvider implements VocabularyDataProvider<Tag> {
+
     private final Log logger = LogFactory.getLog(getClass());
-    
     private TagsReportingComponent tagsReporter;
 
-    /* (non-Javadoc)
-     * @see org.vortikal.web.display.autocomplete.VocabularyDataProvider#getCompletions(java.lang.String, org.vortikal.repository.Path, java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.vortikal.web.display.autocomplete.VocabularyDataProvider#getCompletions
+     * (java.lang.String, org.vortikal.repository.Path, java.lang.String)
      */
-    public List<Tag> getCompletions(String prefix, 
-                                    Path contextUri, 
-                                    String token) {
-        
+    public List<Tag> getCompletions(String prefix, Path contextUri, String token) {
         List<Tag> tags = getCompletions(contextUri, token);
-        
         filterTagListByPrefix(prefix, tags);
-
         return tags;
     }
-    
-    /* (non-Javadoc)
-     * @see org.vortikal.web.display.autocomplete.VocabularyDataProvider#getCompletions(org.vortikal.repository.Path, java.lang.String)
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.vortikal.web.display.autocomplete.VocabularyDataProvider#getCompletions
+     * (org.vortikal.repository.Path, java.lang.String)
      */
     public List<Tag> getCompletions(Path contextUri, String token) {
-     
-        // TODO might consider adding limit on number of unique tags that are fetched.
-        try {
-            PropertyValueFrequencyQueryResult pfqResult =
-                tagsReporter.getTags(contextUri, -1, -1, token);
-                
-            List<Pair<Value, Integer>> pfqList = pfqResult.getValueFrequencyList();
 
+        // TODO might consider adding limit on number of unique tags that are
+        // fetched.
+        try {
+            PropertyValueFrequencyQueryResult pfqResult = tagsReporter.getTags(contextUri, null, -1, -1, token);
+            List<Pair<Value, Integer>> pfqList = pfqResult.getValueFrequencyList();
             List<Tag> result = new LinkedList<Tag>();
-            
-            for (Pair<Value, Integer> pair: pfqList) {
+
+            for (Pair<Value, Integer> pair : pfqList) {
                 result.add(new Tag(pair.first().getStringValue()));
             }
-            
+
             return result;
         } catch (DataReportException de) {
             logger.warn("Failed to execute data report query", de);
-            
+
             // Return empty list when failed, for now.
             return new ArrayList<Tag>(0);
         }
@@ -102,8 +101,7 @@ public class RepositoryTagsDataProvider implements
         Iterator<Tag> i = list.iterator();
         while (i.hasNext()) {
             String tagText = i.next().getText();
-            if (!(prefix.length() <= tagText.length() 
-                    && tagText.substring(0, prefix.length()).equalsIgnoreCase(prefix))) {
+            if (!(prefix.length() <= tagText.length() && tagText.substring(0, prefix.length()).equalsIgnoreCase(prefix))) {
                 i.remove();
             }
         }

@@ -234,6 +234,7 @@
     <property name="name" value="tags" />
     <property name="view" ref="decorating.tagsComponent.view" />
     <property name="tagElementsProvider" ref="tags.tagElementsProvider" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
 
   <bean id="decorating.shareAtComponent"
@@ -335,10 +336,9 @@
     <property name="url" value="layouts/tag-cloud.ftl" />
   </bean>
 
- <bean id="decorating.tagsComponent.view" parent="freemarkerView">
+  <bean id="decorating.tagsComponent.view" parent="freemarkerView">
     <property name="url" value="layouts/tags.ftl" />
   </bean>
-
 
   <bean id="decorating.feedComponent"
         class="org.vortikal.web.decorating.components.FeedComponent">

@@ -41,7 +41,7 @@ import org.vortikal.repository.search.query.TypeTermQuery;
 public class ResourceTypeQueryBuilder implements QueryBuilder {
 
     public Query build(Resource base, HttpServletRequest request) {
-        String[] documentTypes = request.getParameterValues("documenttype");
+        String[] documentTypes = request.getParameterValues("resource-type");
         if (documentTypes != null) {
             if (documentTypes.length == 1) {
                 return new TypeTermQuery(documentTypes[0], TermOperator.IN);

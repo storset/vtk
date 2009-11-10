@@ -42,7 +42,6 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
@@ -80,13 +79,19 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
             return;
         }
         for (int i = 0; i < displayFromLevel; i++) {
-            if(breadCrumbElements.size() > 0){
+            if (breadCrumbElements.size() > 0) {
                 breadCrumbElements.remove(0);
             }
         }
 
         if (!currentResource.isCollection()) {
-            currentResource = repository.retrieve(token, uri.getParent(), false);
+            try {
+                currentResource = repository.retrieve(token, uri.getParent(), false);
+            } catch (AuthorizationException e) {
+                return;
+            } catch (AuthenticationException e) {
+                return;
+            }
             if (breadCrumbElements.size() > 0) {
                 breadCrumbElements.remove(breadCrumbElements.size() - 1);
             }
@@ -100,7 +105,14 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         // If there is no children of the current resource, then we shall
         // instead display the children of the parent node.
         if (childElements != null && childElements.size() == 0) {
-            Resource childResource = repository.retrieve(token, currentResource.getURI().getParent(), false);
+            Resource childResource = null;
+            try {
+                childResource = repository.retrieve(token, currentResource.getURI().getParent(), false);
+            } catch (AuthorizationException e) {
+                return;
+            } catch (AuthenticationException e) {
+                return;
+            }
             childElements = generateChildElements(childResource.getChildURIs(), principal);
             breadCrumbElements.remove(breadCrumbElements.size() - 1);
             if (childElements.size() > maxSiblings) {
@@ -138,13 +150,14 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         return result;
     }
 
-    private List<MenuItem<PropertySet>> generateChildElements(List<Path> children, Principal principal) throws Exception{
+    private List<MenuItem<PropertySet>> generateChildElements(List<Path> children, Principal principal)
+            throws Exception {
         List<MenuItem<PropertySet>> items = new ArrayList<MenuItem<PropertySet>>();
         for (Path childPath : children) {
             Resource childResource = null;
             try {
                 childResource = repository.retrieve(token, childPath, false);
-            }catch (AuthorizationException e) {
+            } catch (AuthorizationException e) {
                 continue; // can't access resource - not displayed in menu
             } catch (AuthenticationException e) {
                 continue; // can't access resource - not displayed in menu

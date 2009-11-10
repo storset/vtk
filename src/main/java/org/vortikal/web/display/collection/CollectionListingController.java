@@ -89,7 +89,7 @@ public class CollectionListingController extends AbstractCollectionListingContro
         }
         model.put("searchComponents", results);
         model.put("page", page);
-        if(results.get(0) != null){
+        if(results.size() > 0 && results.get(0) != null){
             model.put("numberOfRecords", getNumberOfRecords(page, pageLimit, results.get(0).size()));
         }
         

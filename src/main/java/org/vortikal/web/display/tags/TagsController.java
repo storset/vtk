@@ -46,7 +46,6 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.web.display.collection.aggregation.AggregationResolver;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.service.Service;
@@ -64,7 +63,6 @@ public class TagsController implements Controller {
     private SearchComponent searchComponent;
     private Map<String, Service> alternativeRepresentations;
     private RepositoryTagElementsDataProvider tagElementsProvider;
-    private AggregationResolver aggregationResolver;
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
@@ -174,13 +172,6 @@ public class TagsController implements Controller {
         Path scopeUri = scope.getURI();
         List<TagElement> tagElements = this.tagElementsProvider.getTagElements(scopeUri, token, 1, 1,
                 Integer.MAX_VALUE, 1);
-        List<Path> aggregationPaths = this.aggregationResolver.getAggregationPaths(scopeUri);
-        if (aggregationPaths != null && aggregationPaths.size() > 0) {
-            for (Path aggregatedPath : aggregationPaths) {
-                tagElements.addAll(this.tagElementsProvider.getTagElements(aggregatedPath, token, 1, 1,
-                        Integer.MAX_VALUE, 1));
-            }
-        }
 
         model.put("tagElements", tagElements);
 
@@ -224,10 +215,6 @@ public class TagsController implements Controller {
 
     public void setTagElementsProvider(RepositoryTagElementsDataProvider tagElementsProvider) {
         this.tagElementsProvider = tagElementsProvider;
-    }
-
-    public void setAggregationResolver(AggregationResolver aggregationReslover) {
-        this.aggregationResolver = aggregationReslover;
     }
 
 }

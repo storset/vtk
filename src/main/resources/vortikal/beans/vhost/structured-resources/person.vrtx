@@ -145,7 +145,7 @@ resourcetype person {
           [def feeds json-attr(document, "properties.rssFeeds")]
           [if feeds != null]
             [list feeds feed]
-              [def thetitle json-attr(feedm, "rssTitle")]
+              [def thetitle json-attr(feed, "rssTitle")]
               [def theurl json-attr(feed, "rssUrl")]
               [if theurl != null && theurl != ""]
                 [if thetitle != null && thetitle != ""]

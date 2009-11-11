@@ -47,6 +47,7 @@ import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
 import org.vortikal.web.tags.RepositoryTagElementsDataProvider;
 import org.vortikal.web.tags.TagElement;
+import org.vortikal.web.tags.TagsHelper;
 
 /**
  * Decorator component for tags component.
@@ -56,7 +57,7 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
 
     private static final String DESCRIPTION = "Renders a tags as an alphabetically sorted list.";
 
-    private static final String PARAMETER_SCOPE = "scope";
+    private static final String PARAMETER_SCOPE = TagsHelper.SCOPE_PARAMETER;
     private static final String PARAMETER_SCOPE_DESC = "Set the URI scope for the tag cloud. Relative URIs are allowed. "
             + "Only tags existing in the folder tree given by the URI will be "
             + "taken into consideration when generating the tag cloud. "
@@ -80,7 +81,7 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
     private static final String PARAMETER_SERVICE_URL = "service-url";
     private static final String PARAMETER_SERVICE_URL_DESC = "Deprecated: NO LONGER USED. Kept to avoid breaking existing component references.";
 
-    private static final String PARAMETER_RESOURCE_TYPE = "resource-type";
+    private static final String PARAMETER_RESOURCE_TYPE = TagsHelper.RESOURCE_TYPE_PARAMETER;
     private static final String PARAMETER_RESOURCE_TYPE_DESC = "Comma seperated list of resource types to search for tags in.";
 
     private RepositoryTagElementsDataProvider tagElementsProvider;

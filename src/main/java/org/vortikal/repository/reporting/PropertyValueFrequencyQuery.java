@@ -31,42 +31,39 @@
 package org.vortikal.repository.reporting;
 
 /**
- * Finds all unique values for the property and returns a report
- * with a list of value<->frequency pairs.
- *
+ * Finds all unique values for the property and returns a report with a list of
+ * value<->frequency pairs.
+ * 
  */
 public class PropertyValueFrequencyQuery extends AbstractPropertyValueQuery {
 
     public static final int DEFAULT_LIMIT = 10;
     public static final int DEFAULT_MIN_VALUE_FREQUENCY = 1;
     public static final int LIMIT_UNLIMITED = -1;
-    
+
     public static enum Ordering {
-        ASCENDING_BY_FREQUENCY("FREQ_ASC"),
-        DESCENDING_BY_FREQUENCY("FREQ_DESC"),
-        ASCENDING_BY_PROPERTY_VALUE("VALUE_ASC"),
-        DESCENDING_BY_PROPERTY_VALUE("VALUE_DESC"),
-        NONE("NONE");
-        
+        ASCENDING_BY_FREQUENCY("FREQ_ASC"), DESCENDING_BY_FREQUENCY("FREQ_DESC"), ASCENDING_BY_PROPERTY_VALUE(
+                "VALUE_ASC"), DESCENDING_BY_PROPERTY_VALUE("VALUE_DESC"), NONE("NONE");
+
         private String value;
+
         Ordering(String value) {
             this.value = value;
         }
 
         @Override
-        public String toString()  {
+        public String toString() {
             return this.value;
         }
     }
-    
+
     private int limit = LIMIT_UNLIMITED;
     private int minValueFrequency = DEFAULT_MIN_VALUE_FREQUENCY;
     private Ordering ordering = Ordering.NONE;
 
     public void setLimit(int limit) {
         if (limit < 0 && limit != LIMIT_UNLIMITED) {
-            throw new IllegalArgumentException(
-                                "Limit must be greater that zero or -1");
+            throw new IllegalArgumentException("Limit must be greater that zero or -1");
         }
         this.limit = limit;
     }
@@ -85,8 +82,7 @@ public class PropertyValueFrequencyQuery extends AbstractPropertyValueQuery {
 
     public void setMinValueFrequency(int minValueFrequency) {
         if (minValueFrequency < 1) {
-            throw new IllegalArgumentException(
-                    "Minimum value frequency must be greater than or equal to 1");
+            throw new IllegalArgumentException("Minimum value frequency must be greater than or equal to 1");
         }
         this.minValueFrequency = minValueFrequency;
     }
@@ -102,49 +98,67 @@ public class PropertyValueFrequencyQuery extends AbstractPropertyValueQuery {
         if (getPropertyTypeDefintion() != null) {
             code = 31 * code + getPropertyTypeDefintion().hashCode();
         }
-        
+
         if (getUriScope() != null) {
             code = 31 * code + getUriScope().hashCode();
         }
-        
+
         code = 31 * code + this.ordering.hashCode();
         code = 31 * code + this.limit;
         code = 31 * code + this.minValueFrequency;
-        
+
         return code;
     }
-    
+
     @Override
     public boolean equals(Object other) {
         if (this == other) {
             return true;
         }
-        
+
         if (other == null || (this.getClass() != other.getClass())) {
             return false;
         }
 
-        PropertyValueFrequencyQuery otherQuery = (PropertyValueFrequencyQuery)other;
+        PropertyValueFrequencyQuery otherQuery = (PropertyValueFrequencyQuery) other;
 
-        if (getPropertyTypeDefintion() != otherQuery.getPropertyTypeDefintion()) return false;
-        
+        if (getPropertyTypeDefintion() != otherQuery.getPropertyTypeDefintion())
+            return false;
+
         if (getUriScope() != null) {
-            if (otherQuery.getUriScope() == null) return false;
-            
-            if (! getUriScope().equals(otherQuery.getUriScope())) return false;
+            if (otherQuery.getUriScope() == null)
+                return false;
+
+            if (!getUriScope().equals(otherQuery.getUriScope()))
+                return false;
         } else {
-            if (otherQuery.getUriScope() != null) return false;
+            if (otherQuery.getUriScope() != null)
+                return false;
         }
 
-        if (this.ordering != otherQuery.ordering) return false;
-        
-        if (this.limit != otherQuery.limit) return false;
-        
-        if (this.minValueFrequency != otherQuery.minValueFrequency) return false;
-        
+        if (this.ordering != otherQuery.ordering)
+            return false;
+
+        if (this.limit != otherQuery.limit)
+            return false;
+
+        if (this.minValueFrequency != otherQuery.minValueFrequency)
+            return false;
+
+        if (this.getResourceTypes() != null) {
+            if (otherQuery.getResourceTypes() == null)
+                return false;
+
+            if (!getResourceTypes().equals(otherQuery.getResourceTypes()))
+                return false;
+        } else {
+            if (otherQuery.getResourceTypes() != null)
+                return false;
+        }
+
         return true;
     }
-    
+
     @Override
     public String toString() {
         StringBuilder buffer = new StringBuilder(getClass().getSimpleName());
@@ -155,7 +169,7 @@ public class PropertyValueFrequencyQuery extends AbstractPropertyValueQuery {
         buffer.append("ordering = ").append(this.ordering).append(", ");
         buffer.append("minValueFrequency = ").append(this.minValueFrequency).append(", ");
         buffer.append("limit = ").append(this.limit).append(']');
-        
+
         return buffer.toString();
     }
 
@@ -169,7 +183,8 @@ public class PropertyValueFrequencyQuery extends AbstractPropertyValueQuery {
         clone.setLimit(this.limit);
         clone.setOrdering(this.ordering);
         clone.setMinValueFrequency(this.minValueFrequency);
+        clone.setResourceTypes(this.getResourceTypes());
         return clone;
     }
-    
+
 }

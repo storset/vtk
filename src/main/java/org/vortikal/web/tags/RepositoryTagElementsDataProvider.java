@@ -90,13 +90,14 @@ public class RepositoryTagElementsDataProvider {
                 tagOccurenceMin, token);
 
         // Generate list of tag elements
-        List<TagElement> tagElements = generateTagElementList(scopeUri, result, magnitudeMax, magnitudeMin);
+        List<TagElement> tagElements = generateTagElementList(scopeUri, resourceTypeDefs, result, magnitudeMax,
+                magnitudeMin);
 
         return tagElements;
     }
 
-    private List<TagElement> generateTagElementList(Path scopeUri, PropertyValueFrequencyQueryResult result,
-            int magnitudeMax, int magnitudeMin) {
+    private List<TagElement> generateTagElementList(Path scopeUri, List<ResourceTypeDefinition> resourceTypeDefs,
+            PropertyValueFrequencyQueryResult result, int magnitudeMax, int magnitudeMin) {
 
         List<Pair<Value, Integer>> freqList = result.getValueFrequencyList();
 
@@ -110,7 +111,7 @@ public class RepositoryTagElementsDataProvider {
 
             for (Pair<Value, Integer> pair : freqList) {
                 String tagName = pair.first().getStringValue();
-                URL link = getUrl(tagName, scopeUri);
+                URL link = getUrl(tagName, scopeUri, resourceTypeDefs);
 
                 int magnitude = getNormalizedMagnitude(pair.second().intValue(), maxFreq, minFreq, magnitudeMin,
                         magnitudeMax);
@@ -138,14 +139,19 @@ public class RepositoryTagElementsDataProvider {
         return (int) Math.round(magnitude * (magnitudeMax - magnitudeMin) + magnitudeMin);
     }
 
-    private URL getUrl(String tagName, Path scopeUri) {
+    private URL getUrl(String tagName, Path scopeUri, List<ResourceTypeDefinition> resourceTypeDefs) {
         URL url = this.tagService.constructURL(scopeUri);
         if (scopeUri.isRoot() && !this.servesRoot) {
             scopeUri = RequestContext.getRequestContext().getCurrentCollection();
             url = this.tagService.constructURL(scopeUri);
-            url.addParameter("scope", Path.ROOT.toString());
+            url.addParameter(TagsHelper.SCOPE_PARAMETER, Path.ROOT.toString());
         }
-        url.addParameter("tag", tagName);
+        url.addParameter(TagsHelper.TAG_PARAMETER, tagName);
+        if (resourceTypeDefs != null && resourceTypeDefs.size() > 0) {
+            for (ResourceTypeDefinition resourceTypeDef : resourceTypeDefs) {
+                url.addParameter(TagsHelper.RESOURCE_TYPE_PARAMETER, resourceTypeDef.getName());
+            }
+        }
         return url;
     }
 }

@@ -9,18 +9,6 @@
   -->
 
 <#if tagElements?exists && tagElements?size &gt; 0>
-
-<#assign resourceTypeParam = "" />
-<#if resourceTypes?exists && (resourceTypes?size > 0)>
-  <#list resourceTypes as resourceType>
-    <#if !resourceTypeParam?has_content>
-      <#assign resourceTypeParam = "resource-type=" + resourceType.name />
-    <#else>
-      <#assign resourceTypeParam = resourceTypeParam + "&resource-type=" + resourceType.name />
-    </#if>
-  </#list>
-</#if>
-
 <div id="vrtx-tags">
 	<#assign i=1 >
     <ul class="vrtx-tags-${i?html}">
@@ -40,11 +28,7 @@
 		     </#if>
 	     </#if>
 	       <li class="vrtx-tags-element">
-	         <#assign linkUrl = element.linkUrl />
-	         <#if resourceTypeParam?has_content>
-	           <#assign linkUrl = linkUrl + "&" + resourceTypeParam />
-	         </#if>
-	         <a class="tags" href="${linkUrl?html}" rel="tags">${element.text?html}</a>
+	         <a class="tags" href="${element.linkUrl?html}" rel="tags">${element.text?html}</a>
 	         <#if showOccurence >
 	         	(${element.occurences?html})
 	         </#if>

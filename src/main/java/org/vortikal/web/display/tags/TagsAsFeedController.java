@@ -59,7 +59,7 @@ public class TagsAsFeedController extends AtomFeedController {
 
         Resource scope = getScope(token, request);
 
-        String tag = request.getParameter("tag");
+        String tag = request.getParameter(TagsHelper.TAG_PARAMETER);
         if (StringUtils.isBlank(tag)) {
             response.sendError(404, "Missing tag parameter");
             return null;

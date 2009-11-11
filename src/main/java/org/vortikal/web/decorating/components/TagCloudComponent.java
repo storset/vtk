@@ -44,6 +44,7 @@ import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
 import org.vortikal.web.tags.RepositoryTagElementsDataProvider;
 import org.vortikal.web.tags.TagElement;
+import org.vortikal.web.tags.TagsHelper;
 
 /**
  * Decorator component for tag cloud.
@@ -69,7 +70,7 @@ public class TagCloudComponent extends ViewRenderingDecoratorComponent implement
             + "The default value is 1. Increase this as needed, if your tag cloud "
             + "contains many undesirable small tags with only few occurences.";
 
-    private static final String PARAMETER_SCOPE = "scope";
+    private static final String PARAMETER_SCOPE = TagsHelper.SCOPE_PARAMETER;
     private static final String PARAMETER_SCOPE_DESC = "Set the URI scope for the tag cloud. Relative URIs are allowed. "
             + "Only tags existing in the folder tree given by the URI will be "
             + "taken into consideration when generating the tag cloud. "

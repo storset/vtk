@@ -38,21 +38,21 @@ import org.vortikal.web.RequestContext;
 
 public final class TagsHelper {
 
+    public static final String TAG_PARAMETER = "tag";
     public static final String SCOPE_PARAMETER = "scope";
-
+    public static final String RESOURCE_TYPE_PARAMETER = "resource-type";
 
     public static final Path getScopePath(HttpServletRequest request) {
-        
+
         String scopeFromRequest = request.getParameter(SCOPE_PARAMETER);
-        
+
         if (StringUtils.isBlank(scopeFromRequest) || ".".equals(scopeFromRequest)) {
             return RequestContext.getRequestContext().getCurrentCollection();
         } else if (scopeFromRequest.startsWith("/")) {
             return Path.fromString(scopeFromRequest);
         }
-        
-        throw new IllegalArgumentException(
-                "Scope parameter must be empty, '.' or a valid path");
+
+        throw new IllegalArgumentException("Scope parameter must be empty, '.' or a valid path");
     }
 
 }

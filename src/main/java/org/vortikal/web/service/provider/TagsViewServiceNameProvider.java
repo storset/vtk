@@ -9,6 +9,7 @@ import org.springframework.web.servlet.support.RequestContext;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Resource;
 import org.vortikal.web.service.URL;
+import org.vortikal.web.tags.TagsHelper;
 
 public class TagsViewServiceNameProvider implements ServiceNameProvider {
 
@@ -19,7 +20,7 @@ public class TagsViewServiceNameProvider implements ServiceNameProvider {
         Path uri = resource.getURI();
         RequestContext rc = new RequestContext(request);
 
-        String tag = request.getParameter("tag");
+        String tag = request.getParameter(TagsHelper.TAG_PARAMETER);
         boolean noTagSpecified = StringUtils.isBlank(tag);
         try {
             tag = URL.decode(tag, "utf-8");
@@ -30,8 +31,8 @@ public class TagsViewServiceNameProvider implements ServiceNameProvider {
             return rc.getMessage(noTagSpecified ? "tags.serviceTitle" : "tags.title",
                     new Object[] { repositoryId, tag });
         }
-        return rc.getMessage(noTagSpecified ? "tags.serviceTitle" : "tags.scopedTitle",
-                new Object[] { resource.getTitle(), tag });
+        return rc.getMessage(noTagSpecified ? "tags.serviceTitle" : "tags.scopedTitle", new Object[] {
+                resource.getTitle(), tag });
 
     }
 

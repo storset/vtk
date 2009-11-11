@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.display.tags;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -45,6 +46,8 @@ import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceTypeTree;
+import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
@@ -63,6 +66,7 @@ public class TagsController implements Controller {
     private SearchComponent searchComponent;
     private Map<String, Service> alternativeRepresentations;
     private RepositoryTagElementsDataProvider tagElementsProvider;
+    private ResourceTypeTree resourceTypeTree;
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
@@ -72,13 +76,12 @@ public class TagsController implements Controller {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
 
-        String tag = request.getParameter("tag");
-
+        String tag = request.getParameter(TagsHelper.TAG_PARAMETER);
         Resource scope = getScope(token, request);
 
         /* List all known tags for the current collection */
         if (tag == null || tag.trim().equals("")) {
-            return handleAllTags(token, scope);
+            return handleAllTags(token, request, scope);
         }
 
         return handleSingleTag(request, tag, scope);
@@ -87,8 +90,8 @@ public class TagsController implements Controller {
     private ModelAndView handleSingleTag(HttpServletRequest request, String tag, Resource scope) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
 
-        model.put("scope", scope);
-        model.put("tag", tag);
+        model.put(TagsHelper.SCOPE_PARAMETER, scope);
+        model.put(TagsHelper.TAG_PARAMETER, tag);
 
         // Setting the default page limit
         int pageLimit = this.defaultPageLimit;
@@ -145,7 +148,7 @@ public class TagsController implements Controller {
                 Map<String, Object> m = new HashMap<String, Object>();
                 Service service = this.alternativeRepresentations.get(contentType);
                 Map<String, String> parameters = new HashMap<String, String>();
-                parameters.put("tag", tag);
+                parameters.put(TagsHelper.TAG_PARAMETER, tag);
                 URL url = service.constructURL(scope.getURI(), parameters);
                 String title = service.getName();
                 org.springframework.web.servlet.support.RequestContext rc = new org.springframework.web.servlet.support.RequestContext(
@@ -164,13 +167,15 @@ public class TagsController implements Controller {
         return new ModelAndView(this.viewName, model);
     }
 
-    private ModelAndView handleAllTags(String token, Resource scope) {
+    private ModelAndView handleAllTags(String token, HttpServletRequest request, Resource scope) {
 
         Map<String, Object> model = new HashMap<String, Object>();
-        model.put("scope", scope);
+        model.put(TagsHelper.SCOPE_PARAMETER, scope);
 
         Path scopeUri = scope.getURI();
-        List<TagElement> tagElements = this.tagElementsProvider.getTagElements(scopeUri, token, 1, 1,
+
+        List<ResourceTypeDefinition> resourceTypes = getResourceTypes(request);
+        List<TagElement> tagElements = this.tagElementsProvider.getTagElements(scopeUri, resourceTypes, token, 1, 1,
                 Integer.MAX_VALUE, 1);
 
         model.put("tagElements", tagElements);
@@ -186,6 +191,24 @@ public class TagsController implements Controller {
             throw new IllegalArgumentException("Scope resource isn't a collection");
         }
         return scopedResource;
+    }
+
+    private List<ResourceTypeDefinition> getResourceTypes(HttpServletRequest request) {
+        String[] resourcePrams = request.getParameterValues(TagsHelper.RESOURCE_TYPE_PARAMETER);
+        if (resourcePrams != null) {
+            List<ResourceTypeDefinition> resourceTypes = new ArrayList<ResourceTypeDefinition>();
+            for (String resourceType : resourcePrams) {
+                try {
+                    ResourceTypeDefinition resourceTypeDef = this.resourceTypeTree
+                            .getResourceTypeDefinitionByName(resourceType);
+                    resourceTypes.add(resourceTypeDef);
+                } catch (IllegalArgumentException iae) {
+                    // invalid resource type name, ignore it
+                }
+            }
+            return resourceTypes;
+        }
+        return null;
     }
 
     @Required
@@ -215,6 +238,10 @@ public class TagsController implements Controller {
 
     public void setTagElementsProvider(RepositoryTagElementsDataProvider tagElementsProvider) {
         this.tagElementsProvider = tagElementsProvider;
+    }
+
+    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+        this.resourceTypeTree = resourceTypeTree;
     }
 
 }

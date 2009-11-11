@@ -39,13 +39,14 @@ import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
+import org.vortikal.web.tags.TagsHelper;
 
 public class ResourceTypeQueryBuilder implements QueryBuilder {
 
     private ResourceTypeTree resourceTypeTree;
 
     public Query build(Resource base, HttpServletRequest request) {
-        String[] resourceTypes = request.getParameterValues("resource-type");
+        String[] resourceTypes = request.getParameterValues(TagsHelper.RESOURCE_TYPE_PARAMETER);
         if (resourceTypes != null) {
             if (resourceTypes.length == 1) {
                 if (isValidResourceType(resourceTypes[0])) {

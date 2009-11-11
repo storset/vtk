@@ -100,7 +100,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         breadCrumbElements.add(new BreadcrumbElement(markedUrl, getMenuTitle(currentResource)));
 
         List<MenuItem<PropertySet>> childElements = null;
-        childElements = generateChildElements(currentResource.getChildURIs(), principal);
+        childElements = generateChildElements(currentResource.getChildURIs(), principal, currentResource);
 
         // If there is no children of the current resource, then we shall
         // instead display the children of the parent node.
@@ -113,7 +113,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
             } catch (AuthenticationException e) {
                 return;
             }
-            childElements = generateChildElements(childResource.getChildURIs(), principal);
+            childElements = generateChildElements(childResource.getChildURIs(), principal, currentResource);
             breadCrumbElements.remove(breadCrumbElements.size() - 1);
             if (childElements.size() > maxSiblings) {
                 childElements = new ArrayList<MenuItem<PropertySet>>();
@@ -150,8 +150,8 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         return result;
     }
 
-    private List<MenuItem<PropertySet>> generateChildElements(List<Path> children, Principal principal)
-            throws Exception {
+    private List<MenuItem<PropertySet>> generateChildElements(List<Path> children, Principal principal,
+            Resource currentResource) throws Exception {
         List<MenuItem<PropertySet>> items = new ArrayList<MenuItem<PropertySet>>();
         for (Path childPath : children) {
             Resource childResource = null;
@@ -165,7 +165,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
             if (!childResource.isCollection()) {
                 continue;
             }
-            if (childResource.getProperty(this.hiddenPropDef) != null) {
+            if (childResource.getProperty(this.hiddenPropDef) != null && !childResource.equals(currentResource)) {
                 continue; // hidden
             }
             items.add(buildItem(childResource));

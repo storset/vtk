@@ -60,9 +60,7 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.search.ConfigurablePropertySelect;
 import org.vortikal.repository.search.query.filter.TermExistsFilter;
-import org.vortikal.repository.search.query.security.QueryAuthorizationFilterFactory;
 import org.vortikal.repository.store.DataReportDAO;
-import org.vortikal.web.display.collection.aggregation.AggregationResolver;
 
 /**
  * Experimental data-report DAO using system index instead of database.

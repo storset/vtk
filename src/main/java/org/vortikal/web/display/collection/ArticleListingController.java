@@ -162,7 +162,7 @@ public class ArticleListingController extends AbstractCollectionListingControlle
             prevURL.setParameter(USER_DISPLAY_PAGE, String.valueOf(userDisplayPage -1));
         }
         
-        List<URL> urls = generatePageThroughUrls(totalHits, pageLimit, featuredArticlesTotalHits, URL.create(request)); 
+        List<URL> urls = generatePageThroughUrls(totalHits, pageLimit, featuredArticlesTotalHits, URL.create(request),true); 
         model.put("pageThroughUrls", urls);
 
         model.put("nextURL", nextURL);

@@ -262,8 +262,12 @@ public abstract class AbstractCollectionListingController implements Controller 
             url.removeParameter(USER_DISPLAY_PAGE);
         }
     }
-
+    
     public List<URL> generatePageThroughUrls(int hits, int pageLimit, int hitsReturnedByFirstSearch, URL baseURL) {
+        return generatePageThroughUrls(hits, pageLimit, hitsReturnedByFirstSearch, baseURL, false);
+    }
+
+    public List<URL> generatePageThroughUrls(int hits, int pageLimit, int hitsReturnedByFirstSearch, URL baseURL, boolean isArticleListing) {
         if (pageLimit == 0) {
             return null;
         }
@@ -274,16 +278,28 @@ public abstract class AbstractCollectionListingController implements Controller 
         }
         int pagesUsedToDisplayResultsOfTheFirstSearch = (hitsReturnedByFirstSearch / pageLimit) + 1;
         int offset = pageLimit - (hitsReturnedByFirstSearch % pageLimit);
-        int j = 1;
+        int j = 1; int k = 1; int l = 1;
         for (int i = 0; i < pages; i++) {
             URL url = URL.parse(baseURL.getBase());
             if (pagesUsedToDisplayResultsOfTheFirstSearch > i || hitsReturnedByFirstSearch == 0) {
-                url.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(i + 1));
+                // Article listing is using the parameters in a slightly different manner then
+                // other listings. This should be unnecessary. Anyway, this hack must do for now...
+                if(isArticleListing){
+                    if(pagesUsedToDisplayResultsOfTheFirstSearch > 1){
+                        url.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(l));
+                        l++;
+                    }else{
+                        url.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(j));
+                        j++;
+                    }
+                }else{
+                    url.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(i + 1));
+                }
             } else {
                 url.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(pagesUsedToDisplayResultsOfTheFirstSearch));
                 url.setParameter(PREV_BASE_OFFSET_PARAM, String.valueOf(offset));
-                url.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(j));
-                j++;
+                url.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(k));
+                k++;
             }
             url.setParameter(USER_DISPLAY_PAGE, String.valueOf(i + 1));
             urls.add(url);

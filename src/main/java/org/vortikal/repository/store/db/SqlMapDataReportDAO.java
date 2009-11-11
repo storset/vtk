@@ -92,7 +92,7 @@ public class SqlMapDataReportDAO  extends AbstractSqlMapDataAccessor
             }
         }
         
-        if (uri != null && uri.isRoot()) {
+        if (uri != null && !uri.isRoot()) {
             params.setUriWildcard(
                     SqlDaoUtils.getUriSqlWildcard(uri, AbstractSqlMapDataAccessor.SQL_ESCAPE_CHAR));
         }

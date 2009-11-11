@@ -36,9 +36,12 @@ import java.util.Map;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.reporting.DataReportException;
 import org.vortikal.repository.reporting.Pair;
 import org.vortikal.repository.reporting.PropertyValueFrequencyQuery;
+import org.vortikal.repository.reporting.ReportScope;
+import org.vortikal.repository.reporting.UriPrefixScope;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
@@ -54,9 +57,7 @@ public class SqlMapDataReportDAO  extends AbstractSqlMapDataAccessor
     
     private ValueFactory valueFactory;
     
-    public List<Pair<Value, Integer>> executePropertyFrequencyValueQuery(
-                                            String token,
-                                            PropertyValueFrequencyQuery query) 
+    public List<Pair<Value, Integer>> executePropertyFrequencyValueQuery(PropertyValueFrequencyQuery query) 
         throws DataReportException {
         
         PropertyTypeDefinition def = query.getPropertyTypeDefintion();
@@ -72,11 +73,28 @@ public class SqlMapDataReportDAO  extends AbstractSqlMapDataAccessor
         params.setMinValueFrequency(query.getMinValueFrequency());
         
         params.setOrdering(query.getOrdering());
+
+        Path uri = null;
+        if (query.getScoping().size() > 0) {
+            for (ReportScope scope: query.getScoping()) {
+                if (scope instanceof UriPrefixScope) {
+                    List<Path> uris = ((UriPrefixScope)scope).getUriPrefixes();
+                    if (uris.isEmpty()) {
+                        return new ArrayList<Pair<Value,Integer>>(0); // This scoping yields zero results
+                    } else if (uris.size() == 1) {
+                        uri = uris.get(0);
+                    } else {
+                        throw new UnsupportedOperationException("This data report dao does not support URI prefix scope with more than one URI");
+                    }
+                } else {
+                    throw new UnsupportedOperationException("Unsupported report scope type:" + scope.getClass());
+                }
+            }
+        }
         
-        if (query.getUriScope() != null && !"/".equals(query.getUriScope().getUri())) {
+        if (uri != null && uri.isRoot()) {
             params.setUriWildcard(
-                    SqlDaoUtils.getUriSqlWildcard(query.getUriScope().getUri(), 
-                               AbstractSqlMapDataAccessor.SQL_ESCAPE_CHAR));
+                    SqlDaoUtils.getUriSqlWildcard(uri, AbstractSqlMapDataAccessor.SQL_ESCAPE_CHAR));
         }
         
         String sqlMap = getSqlMap("dataReportPropValueFrequency");

@@ -42,8 +42,11 @@ public class PropertyValueFrequencyQuery extends AbstractPropertyValueQuery {
     public static final int LIMIT_UNLIMITED = -1;
 
     public static enum Ordering {
-        ASCENDING_BY_FREQUENCY("FREQ_ASC"), DESCENDING_BY_FREQUENCY("FREQ_DESC"), ASCENDING_BY_PROPERTY_VALUE(
-                "VALUE_ASC"), DESCENDING_BY_PROPERTY_VALUE("VALUE_DESC"), NONE("NONE");
+        ASCENDING_BY_FREQUENCY("FREQ_ASC"),
+        DESCENDING_BY_FREQUENCY("FREQ_DESC"),
+        ASCENDING_BY_PROPERTY_VALUE("VALUE_ASC"),
+        DESCENDING_BY_PROPERTY_VALUE("VALUE_DESC"),
+        NONE("NONE");
 
         private String value;
 
@@ -93,16 +96,10 @@ public class PropertyValueFrequencyQuery extends AbstractPropertyValueQuery {
 
     @Override
     public int hashCode() {
-        int code = 7;
+        int code = 7 * 31;
 
-        if (getPropertyTypeDefintion() != null) {
-            code = 31 * code + getPropertyTypeDefintion().hashCode();
-        }
-
-        if (getUriScope() != null) {
-            code = 31 * code + getUriScope().hashCode();
-        }
-
+        code = 31 * code + getPropertyTypeDefintion().hashCode();
+        code = 31 * code + getScoping().hashCode();
         code = 31 * code + this.ordering.hashCode();
         code = 31 * code + this.limit;
         code = 31 * code + this.minValueFrequency;
@@ -122,19 +119,10 @@ public class PropertyValueFrequencyQuery extends AbstractPropertyValueQuery {
 
         PropertyValueFrequencyQuery otherQuery = (PropertyValueFrequencyQuery) other;
 
-        if (getPropertyTypeDefintion() != otherQuery.getPropertyTypeDefintion())
+        if (!getPropertyTypeDefintion().equals(otherQuery.getPropertyTypeDefintion()))
             return false;
 
-        if (getUriScope() != null) {
-            if (otherQuery.getUriScope() == null)
-                return false;
-
-            if (!getUriScope().equals(otherQuery.getUriScope()))
-                return false;
-        } else {
-            if (otherQuery.getUriScope() != null)
-                return false;
-        }
+        if (!getScoping().equals(otherQuery.getScoping())) return false;
 
         if (this.ordering != otherQuery.ordering)
             return false;
@@ -145,17 +133,6 @@ public class PropertyValueFrequencyQuery extends AbstractPropertyValueQuery {
         if (this.minValueFrequency != otherQuery.minValueFrequency)
             return false;
 
-        if (this.getResourceTypes() != null) {
-            if (otherQuery.getResourceTypes() == null)
-                return false;
-
-            if (!getResourceTypes().equals(otherQuery.getResourceTypes()))
-                return false;
-        } else {
-            if (otherQuery.getResourceTypes() != null)
-                return false;
-        }
-
         return true;
     }
 
@@ -165,7 +142,7 @@ public class PropertyValueFrequencyQuery extends AbstractPropertyValueQuery {
 
         buffer.append('[');
         buffer.append("propDef = ").append(getPropertyTypeDefintion()).append(", ");
-        buffer.append("uriScope = ").append(getUriScope()).append(", ");
+        buffer.append("scope = ").append(getScoping()).append(", ");
         buffer.append("ordering = ").append(this.ordering).append(", ");
         buffer.append("minValueFrequency = ").append(this.minValueFrequency).append(", ");
         buffer.append("limit = ").append(this.limit).append(']');
@@ -177,13 +154,14 @@ public class PropertyValueFrequencyQuery extends AbstractPropertyValueQuery {
     public Object clone() {
         PropertyValueFrequencyQuery clone = new PropertyValueFrequencyQuery();
         clone.setPropertyTypeDefinition(getPropertyTypeDefintion());
-        if (getUriScope() != null) {
-            clone.setUriScope(new UriScope(getUriScope().getUri()));
+        for (ReportScope scope: getScoping()) {
+            clone.addScope((ReportScope)scope.clone());
         }
+
         clone.setLimit(this.limit);
         clone.setOrdering(this.ordering);
         clone.setMinValueFrequency(this.minValueFrequency);
-        clone.setResourceTypes(this.getResourceTypes());
+
         return clone;
     }
 

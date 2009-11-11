@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.search;
 
+import org.vortikal.testing.mocktypes.MockResourceTypeTree;
 import java.util.List;
 
 import junit.framework.TestCase;

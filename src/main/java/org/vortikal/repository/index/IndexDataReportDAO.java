@@ -33,7 +33,6 @@ package org.vortikal.repository.index;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -41,37 +40,24 @@ import java.util.Map;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldSelector;
-import org.apache.lucene.document.FieldSelectorResult;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanFilter;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.CachingWrapperFilter;
 import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.DocIdSetIterator;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.FilterClause;
-import org.apache.lucene.search.QueryWrapperFilter;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TermsFilter;
-import org.apache.lucene.util.OpenBitSet;
 import org.codehaus.plexus.util.FastMap;
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.Path;
 import org.vortikal.repository.index.mapping.DocumentMapper;
 import org.vortikal.repository.index.mapping.FieldNameMapping;
 import org.vortikal.repository.index.mapping.FieldValueMapper;
 import org.vortikal.repository.reporting.DataReportException;
 import org.vortikal.repository.reporting.Pair;
 import org.vortikal.repository.reporting.PropertyValueFrequencyQuery;
-import org.vortikal.repository.reporting.UriScope;
 import org.vortikal.repository.reporting.ValueFrequencyPairComparator;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.search.ConfigurablePropertySelect;
 import org.vortikal.repository.search.query.filter.TermExistsFilter;
 import org.vortikal.repository.search.query.security.QueryAuthorizationFilterFactory;
@@ -93,16 +79,13 @@ import org.vortikal.web.display.collection.aggregation.AggregationResolver;
 public class IndexDataReportDAO implements DataReportDAO {
 
     private LuceneIndexManager systemIndexAccessor;
-    private QueryAuthorizationFilterFactory queryAuthFilterFactory;
     private DocumentMapper documentMapper;
     private FieldValueMapper fieldValueMapper;
-    private PropertyTypeDefinition publishedPropDef;
-    private AggregationResolver aggregationResolver;
-
-    private static final Filter MATCH_NOTHING_FILTER = new MatchNothingFilter();
+    private IndexDataReportScopeFilterFactory scopeFilterFactory;
 
     @SuppressWarnings("unchecked")
-    public List<Pair<Value, Integer>> executePropertyFrequencyValueQuery(String token, PropertyValueFrequencyQuery query)
+    public List<Pair<Value, Integer>>
+            executePropertyFrequencyValueQuery(PropertyValueFrequencyQuery query)
             throws DataReportException {
 
         IndexReader reader = null;
@@ -111,39 +94,17 @@ public class IndexDataReportDAO implements DataReportDAO {
 
             PropertyTypeDefinition def = query.getPropertyTypeDefintion();
 
-            if (def == null) {
-                throw new IllegalArgumentException("Property type definition cannot be null");
-            }
-
             BooleanFilter mainFilter = new BooleanFilter();
 
-            Filter publishedFilter = getPublishedFilter();
+            // Optimization: only consider resources that actually have the property in question
             Filter propertyExistsFilter = getPropertyExistsFilter(def);
-            Filter aclFilter = getAclFilter(token, reader);
-            Filter uriScopeFilter = getUriScopeFilter(query.getUriScope(), reader);
-            Filter resourceTypeFilter = getResourceTypeFilter(query);
 
-            if (resourceTypeFilter != null) {
-                mainFilter.add(new FilterClause(resourceTypeFilter, BooleanClause.Occur.MUST));
-            }
+            // Get general scope filter from factory
+            Filter scopeFilter = this.scopeFilterFactory.getScopeFilter(query.getScoping(), reader);
 
-            mainFilter.add(new FilterClause(publishedFilter, BooleanClause.Occur.MUST));
             mainFilter.add(new FilterClause(propertyExistsFilter, BooleanClause.Occur.MUST));
-
-            if (uriScopeFilter != null) {
-                List<Path> aggregationPaths = this.aggregationResolver
-                        .getAggregationPaths(query.getUriScope().getUri());
-                if (aggregationPaths != null && aggregationPaths.size() > 0) {
-                    Filter uriPathsFilter = getUriPathsFilter(uriScopeFilter, aggregationPaths, reader);
-                    mainFilter.add(new FilterClause(uriPathsFilter, BooleanClause.Occur.MUST));
-
-                } else {
-                    mainFilter.add(new FilterClause(uriScopeFilter, BooleanClause.Occur.MUST));
-                }
-            }
-
-            if (aclFilter != null) {
-                mainFilter.add(new FilterClause(aclFilter, BooleanClause.Occur.MUST));
+            if (scopeFilter != null) {
+                mainFilter.add(new FilterClause(scopeFilter, BooleanClause.Occur.MUST));
             }
 
             ConfigurablePropertySelect selector = new ConfigurablePropertySelect();
@@ -215,44 +176,6 @@ public class IndexDataReportDAO implements DataReportDAO {
         }
     }
 
-    private Filter getResourceTypeFilter(PropertyValueFrequencyQuery query) {
-        List<ResourceTypeDefinition> resourceTypes = query.getResourceTypes();
-        if (resourceTypes == null || resourceTypes.size() == 0) {
-            return null;
-        }
-        if (resourceTypes.size() == 1) {
-            TermQuery tq = new TermQuery(new Term(FieldNameMapping.RESOURCETYPE_FIELD_NAME, resourceTypes.get(0)
-                    .getName()));
-            return new QueryWrapperFilter(tq);
-        }
-        BooleanQuery bq = new BooleanQuery();
-        for (ResourceTypeDefinition resourceType : resourceTypes) {
-            bq.add(new TermQuery(new Term(FieldNameMapping.RESOURCETYPE_FIELD_NAME, resourceType.getName())),
-                    BooleanClause.Occur.SHOULD);
-        }
-        return new QueryWrapperFilter(bq);
-    }
-
-    private Filter getPublishedFilter() {
-        TermsFilter tf = new TermsFilter();
-        String searchFieldName = FieldNameMapping.getSearchFieldName(this.publishedPropDef, false);
-        String searchFieldValue = this.fieldValueMapper.encodeIndexFieldValue("true", Type.BOOLEAN, false);
-        Term publishedTrueTerm = new Term(searchFieldName, searchFieldValue);
-        tf.addTerm(publishedTrueTerm);
-        return new CachingWrapperFilter(tf);
-    }
-
-    private Filter getUriPathsFilter(Filter uriScopeFilter, List<Path> aggregationPaths, IndexReader reader)
-            throws IOException {
-        BooleanFilter booleanFilter = new BooleanFilter();
-        booleanFilter.add(new FilterClause(uriScopeFilter, BooleanClause.Occur.SHOULD));
-        for (Path path : aggregationPaths) {
-            Filter uriFilter = getUriFilter(path, reader);
-            booleanFilter.add(new FilterClause(uriFilter, BooleanClause.Occur.SHOULD));
-        }
-        return booleanFilter;
-    }
-
     @SuppressWarnings("unchecked")
     private void addValue(Map valFreqMap, Value value) {
         Integer currentFreq = (Integer) valFreqMap.get(value);
@@ -264,81 +187,14 @@ public class IndexDataReportDAO implements DataReportDAO {
         valFreqMap.put(value, currentFreq);
     }
 
-    private Filter getAclFilter(String token, IndexReader reader) {
-        return this.queryAuthFilterFactory.authorizationQueryFilter(token, reader);
-    }
-
     private Filter getPropertyExistsFilter(PropertyTypeDefinition def) {
         String fieldName = FieldNameMapping.getSearchFieldName(def, false);
         return new TermExistsFilter(fieldName);
     }
 
-    private Filter getUriScopeFilter(UriScope scope, IndexReader reader) throws IOException {
-        if (scope != null && !scope.getUri().toString().equals("/")) {
-            return getUriFilter(scope.getUri(), reader);
-        }
-        // Return null, which signals no uri scope filter (all)
-        return null;
-    }
-
-    private Filter getUriFilter(Path path, IndexReader reader) throws IOException {
-        TermDocs tdocs = reader.termDocs(new Term(FieldNameMapping.URI_FIELD_NAME, path.toString()));
-        try {
-            if (tdocs.next()) {
-                Document doc = reader.document(tdocs.doc(), new FieldSelector() {
-                    private static final long serialVersionUID = 2294209998307991707L;
-
-                    public FieldSelectorResult accept(String name) {
-                        // Interned string comparison
-                        if (FieldNameMapping.STORED_ID_FIELD_NAME == name) {
-                            return FieldSelectorResult.LOAD;
-                        }
-
-                        return FieldSelectorResult.NO_LOAD;
-                    }
-                });
-
-                String idValue = Integer.toString(this.fieldValueMapper.getIntegerFromStoredBinaryField(doc
-                        .getField(FieldNameMapping.STORED_ID_FIELD_NAME)));
-
-                BooleanQuery bq = new BooleanQuery(true);
-                bq.add(new TermQuery(new Term(FieldNameMapping.ANCESTORIDS_FIELD_NAME, idValue)),
-                        BooleanClause.Occur.SHOULD);
-                bq.add(new TermQuery(new Term(FieldNameMapping.ID_FIELD_NAME, idValue)), BooleanClause.Occur.SHOULD);
-
-                return new QueryWrapperFilter(bq);
-            } else {
-                // Invalid URI scope results in no matches (URI not found in
-                // index).
-                return MATCH_NOTHING_FILTER;
-            }
-        } finally {
-            tdocs.close();
-        }
-    }
-
-    private static final class MatchNothingFilter extends Filter {
-        private static final long serialVersionUID = 5225305691186860115L;
-
-        @Override
-        public DocIdSet getDocIdSet(IndexReader reader) {
-            return new OpenBitSet(reader.maxDoc());
-        }
-
-        @Override
-        public BitSet bits(IndexReader reader) {
-            return new BitSet(reader.maxDoc());
-        }
-    }
-
     @Required
     public void setSystemIndexAccessor(LuceneIndexManager systemIndexAccessor) {
         this.systemIndexAccessor = systemIndexAccessor;
-    }
-
-    @Required
-    public void setQueryAuthFilterFactory(QueryAuthorizationFilterFactory queryAuthFilterFactory) {
-        this.queryAuthFilterFactory = queryAuthFilterFactory;
     }
 
     @Required
@@ -351,14 +207,11 @@ public class IndexDataReportDAO implements DataReportDAO {
         this.fieldValueMapper = fieldValueMapper;
     }
 
+    /**
+     * @param scopeFilterFactory the scopeFilterFactory to set
+     */
     @Required
-    public void setPublishedPropDef(PropertyTypeDefinition publishedPropDef) {
-        this.publishedPropDef = publishedPropDef;
+    public void setScopeFilterFactory(IndexDataReportScopeFilterFactory scopeFilterFactory) {
+        this.scopeFilterFactory = scopeFilterFactory;
     }
-
-    @Required
-    public void setAggregationResolver(AggregationResolver aggregationResolver) {
-        this.aggregationResolver = aggregationResolver;
-    }
-
 }

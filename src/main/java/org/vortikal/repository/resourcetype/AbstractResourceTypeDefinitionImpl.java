@@ -65,6 +65,7 @@ public abstract class AbstractResourceTypeDefinitionImpl
         }
 
         // XXX hack:
+        // Setting namespace of all property type definitions to namespace of this resource type
         for (int i = 0; i < this.propertyTypeDefinitions.length; i++) {
             if (this.propertyTypeDefinitions[i] instanceof PropertyTypeDefinitionImpl) {
                 ((PropertyTypeDefinitionImpl) this.propertyTypeDefinitions[i]).setNamespace(this.namespace);

@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.vortikal.repository.search;
+package org.vortikal.testing.mocktypes;
 
 import java.util.List;
 import org.vortikal.repository.Namespace;
@@ -37,12 +37,13 @@ import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.HierarchicalNode;
 import org.vortikal.repository.resourcetype.MixinResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
+import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.ValueFormatter;
 
-class MockResourceTypeTree implements ResourceTypeTree {
+public class MockResourceTypeTree implements ResourceTypeTree {
 
     public List<MixinResourceTypeDefinition> getMixinTypes(
             PrimaryResourceTypeDefinition def) {
@@ -81,7 +82,11 @@ class MockResourceTypeTree implements ResourceTypeTree {
     }
 
     public ResourceTypeDefinition getResourceTypeDefinitionByName(String name) {
-        return null;
+        PrimaryResourceTypeDefinitionImpl def = new PrimaryResourceTypeDefinitionImpl();
+        def.setName(name);
+        def.setNamespace(Namespace.DEFAULT_NAMESPACE);
+        def.afterPropertiesSet();
+        return def;
     }
 
     public List<PrimaryResourceTypeDefinition> getResourceTypeDefinitionChildren(

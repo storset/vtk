@@ -46,31 +46,42 @@ import org.vortikal.util.cache.SimpleCache;
  *  - Caching of results (optional)
  * 
  * XXX: No authorization of any kind if currently done in database DAO.
- *      Index report DAO does proper authorization.
+ *      Index report DAO does proper ACL filtering for ResourceReadableACLScope scope.
  * 
  */
 public class DataReportManagerImpl implements
         DataReportManager {
 
-    private static final Log LOG = LogFactory.getLog(DataReportManagerImpl.class);
+    private final Log logger = LogFactory.getLog(DataReportManagerImpl.class);
     
     private DataReportDAO dao;
-    private SimpleCache<CacheItemKey, ReportResult> cache = null;
-    
+    private SimpleCache<ReportQuery, ReportResult> cache = null;
+    private List<ReportScope> defaultStaticScoping;
+
     public ReportResult executeReportQuery(ReportQuery query, String token) {
         if (query == null){
             throw new IllegalArgumentException("Query cannot be null");
         }
+
+        // Add ACL scoping (dynamic on token)
+        query.addScope(new ResourceReadableACLScope(token));
+
+        // Add default static scoping (if any is configured)
+        if (this.defaultStaticScoping != null) {
+            for (ReportScope scope: this.defaultStaticScoping) {
+                query.addScope(scope);
+            }
+        }
         
         if (this.cache != null) {
-            CacheItemKey key = new CacheItemKey(token, (ReportQuery)query.clone());
+            ReportQuery key = (ReportQuery)query.clone();
             
             ReportResult result = this.cache.get(key);
             if (result != null) {
-                LOG.debug("Got report query result from cache.");
+                this.logger.debug("Got report query result from cache.");
                 return result;
             } else {
-                LOG.debug("No result found in cache for query.");
+                this.logger.debug("No result found in cache for query, dispatching to DAO");
                 result = dispatchQuery(query, token);
                 this.cache.put(key, result);
             }
@@ -86,8 +97,7 @@ public class DataReportManagerImpl implements
         try {
             if (query instanceof PropertyValueFrequencyQuery) {
                 List<Pair<Value, Integer>> result = 
-                    this.dao.executePropertyFrequencyValueQuery(token, 
-                                            (PropertyValueFrequencyQuery)query);
+                    this.dao.executePropertyFrequencyValueQuery((PropertyValueFrequencyQuery)query);
                 
                 PropertyValueFrequencyQueryResultImpl res = 
                     new PropertyValueFrequencyQueryResultImpl(
@@ -98,62 +108,28 @@ public class DataReportManagerImpl implements
                 return res;
             }
         } catch (Exception e){
-            LOG.warn("Exception while dispatching report query", e);
+            this.logger.warn("Exception while dispatching report query", e);
             throw new DataReportException("Got an exception while dispatching query: ", e);
         }
         
         throw new DataReportException("Unsupported report query type: " 
                                                             + query.getClass());
     }
-    
-    private static final class CacheItemKey {
-        ReportQuery query;
-        String token;
-        CacheItemKey(String token, ReportQuery query) {
-            this.query = query;
-            this.token = token;
-        }
-        
-        public int hashCode() {
-            if (this.token == null) {
-                return this.query.hashCode();
-            } else {
-                return this.query.hashCode() ^ this.token.hashCode();
-            }
-        }
-        
-        public boolean equals(Object obj) {
-            if (obj == null || !(obj instanceof CacheItemKey)) {
-                return false;
-            }
-            
-            if (obj == this) return true;
-            
-            CacheItemKey other = (CacheItemKey)obj;
-            if (!this.query.equals(other.query)) {
-                return false;
-            }
-            
-            if (this.token == null) {
-                if (other.token != null) return false;
-                else
-                    return true;
-            }
-            
-            if (!this.token.equals(other.token)){
-                return false;
-            }
-            
-            return true;
-        }
-    }
 
+    /**
+     * Default scopes that will be inserted in scope for all executed queries.
+     * @param defaultScoping the defaultScoping to set.
+     */
+    public void setDefaultStaticScoping(List<ReportScope> defaultStaticScoping) {
+        this.defaultStaticScoping = defaultStaticScoping;
+    }
+    
     @Required
     public void setDataReportDAO(DataReportDAO dao) {
         this.dao = dao;
     }
 
-    public void setCache(SimpleCache<CacheItemKey, ReportResult> cache) {
+    public void setCache(SimpleCache<ReportQuery, ReportResult> cache) {
         this.cache = cache;
     }
 }

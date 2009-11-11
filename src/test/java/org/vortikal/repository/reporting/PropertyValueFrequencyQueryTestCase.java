@@ -125,15 +125,16 @@ public class PropertyValueFrequencyQueryTestCase extends TestCase {
         assertFalse(query1.equals(query2));
         query2.setOrdering(PropertyValueFrequencyQuery.Ordering.DESCENDING_BY_PROPERTY_VALUE);
         assertTrue(query1.equals(query2));
-        
-        query1.setUriScope(new UriScope(Path.fromString("/foo")));
+
+
+        query1.addScope(new UriPrefixScope(Path.fromString("/foo")));
         assertFalse(query1.equals(query2));
-        query2.setUriScope(new UriScope(Path.fromString("/foo")));
+        query2.addScope(new UriPrefixScope(Path.fromString("/foo")));
         assertTrue(query1.equals(query2));
 
-        query1.setUriScope(new UriScope(Path.fromString("/foo/bar")));
+        query1.addScope(new UriPrefixScope(Path.fromString("/foo/bar")));
         assertFalse(query1.equals(query2));
-        query2.setUriScope(new UriScope(Path.fromString("/foo/bar")));
+        query2.addScope(new UriPrefixScope(Path.fromString("/foo/bar")));
         assertTrue(query1.equals(query2));
         
     }
@@ -145,14 +146,14 @@ public class PropertyValueFrequencyQueryTestCase extends TestCase {
         query.setPropertyTypeDefinition(this.keywordsPropDef);
         query.setLimit(10);
         query.setOrdering(PropertyValueFrequencyQuery.Ordering.DESCENDING_BY_PROPERTY_VALUE);
-        query.setUriScope(new UriScope(Path.ROOT));
+        query.addScope(new UriPrefixScope(Path.ROOT));
         
         PropertyValueFrequencyQuery clone = (PropertyValueFrequencyQuery)query.clone();
         assertFalse(query == clone);
         assertTrue(query.equals(clone));
         assertTrue(query.hashCode() == clone.hashCode());
         
-        query.setUriScope(null);
+        query.clearScoping();
         assertFalse(query.equals(clone));
     }
     

@@ -30,45 +30,26 @@
  */
 package org.vortikal.repository.reporting;
 
-import java.util.List;
 
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 
 /**
  * Abstract data report query on a property type.
  * 
  */
-public abstract class AbstractPropertyValueQuery implements ReportQuery {
+public abstract class AbstractPropertyValueQuery extends AbstractReportQuery {
 
     private PropertyTypeDefinition def;
-    private UriScope uriScope;
-    private List<ResourceTypeDefinition> resourceTypes;
 
     public PropertyTypeDefinition getPropertyTypeDefintion() {
         return def;
     }
 
     public void setPropertyTypeDefinition(PropertyTypeDefinition def) {
+        if (def == null) {
+            throw new IllegalArgumentException("Def cannot be null");
+        }
         this.def = def;
     }
-
-    public UriScope getUriScope() {
-        return uriScope;
-    }
-
-    public void setUriScope(UriScope uriScope) {
-        this.uriScope = uriScope;
-    }
-
-    public List<ResourceTypeDefinition> getResourceTypes() {
-        return resourceTypes;
-    }
-
-    public void setResourceTypes(List<ResourceTypeDefinition> resourceTypes) {
-        this.resourceTypes = resourceTypes;
-    }
-
-    public abstract Object clone();
 
 }

@@ -44,7 +44,6 @@ import org.vortikal.repository.resourcetype.Value;
 public interface DataReportDAO {
 
     public List<Pair<Value, Integer>> executePropertyFrequencyValueQuery(
-                                            String token,
                                             PropertyValueFrequencyQuery query)
         throws DataReportException;
 

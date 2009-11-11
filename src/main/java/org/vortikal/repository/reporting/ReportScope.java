@@ -30,53 +30,16 @@
  */
 package org.vortikal.repository.reporting;
 
-import org.vortikal.repository.Path;
-
 /**
- * A query scope defined by an URI. 
+ * An interface for scoping report queries. A scope will always restrict
+ * the result set in some way, and can optionally be invereted/prohibited (that is, everthing
+ * the scope matches is prohibited instead of required).
  *
  */
-public class UriScope implements ReportQueryScope {
+public interface ReportScope extends Cloneable {
 
-    private Path uri;
-    
-    public UriScope(Path uri) {
-        if (uri == null) throw new IllegalArgumentException(
-                "URI cannot be NULL"); 
-        this.uri = uri;
-    }
+    public boolean isProhibited();
 
-    public Path getUri() {
-        return this.uri;
-    }
-
-    @Override
-    public int hashCode() {
-        return this.uri.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        
-        if (obj == null) return false;
-        
-        if (getClass() != obj.getClass()) return false;
-        
-        return this.uri.equals(((UriScope)obj).getUri());
-    }
-    
-    @Override
-    public String toString() {
-        String retval = getClass().getSimpleName() + "[";
-        
-        if ("/".equals(this.uri)) {
-            retval += "*]";
-        } else {
-            retval += this.uri + "/*]";
-        }
-        
-        return retval;
-    }
+    public Object clone();
     
 }

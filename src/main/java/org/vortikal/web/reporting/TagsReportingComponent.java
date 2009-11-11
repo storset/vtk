@@ -30,6 +30,8 @@
  */
 package org.vortikal.web.reporting;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Required;
@@ -38,14 +40,17 @@ import org.vortikal.repository.reporting.DataReportException;
 import org.vortikal.repository.reporting.DataReportManager;
 import org.vortikal.repository.reporting.PropertyValueFrequencyQuery;
 import org.vortikal.repository.reporting.PropertyValueFrequencyQueryResult;
-import org.vortikal.repository.reporting.UriScope;
+import org.vortikal.repository.reporting.ResourceTypeScope;
+import org.vortikal.repository.reporting.UriPrefixScope;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
+import org.vortikal.web.display.collection.aggregation.AggregationResolver;
 
 public class TagsReportingComponent {
 
     private DataReportManager dataReportManager;
     private PropertyTypeDefinition tagsPropDef = null;
+    private AggregationResolver aggregationResolver;
 
     public PropertyValueFrequencyQueryResult getTags(Path scopeUri, List<ResourceTypeDefinition> resourceTypeDefs,
             int limit, int tagOccurenceMin, String token) throws DataReportException, IllegalArgumentException {
@@ -63,11 +68,24 @@ public class TagsReportingComponent {
             query.setMinValueFrequency(tagOccurenceMin);
 
         if (scopeUri != null && !scopeUri.isRoot()) {
-            query.setUriScope(new UriScope(scopeUri));
+            UriPrefixScope scope = new UriPrefixScope();
+            scope.addUriPrefix(scopeUri);
+
+            // If we have an aggration resolver available, then include whatever URIs
+            // the scope URI might aggregate.
+            if (this.aggregationResolver != null) {
+                for (Path p: this.aggregationResolver.getAggregationPaths(scopeUri)) {
+                    scope.addUriPrefix(p);
+                }
+            }
+
+            query.addScope(scope);
         }
 
         if (resourceTypeDefs != null && resourceTypeDefs.size() > 0) {
-            query.setResourceTypes(resourceTypeDefs);
+            ResourceTypeScope rtscope = new ResourceTypeScope(
+                        new HashSet<ResourceTypeDefinition>(resourceTypeDefs));
+            query.addScope(rtscope);
         }
 
         return (PropertyValueFrequencyQueryResult) this.dataReportManager.executeReportQuery(query, token);
@@ -81,6 +99,13 @@ public class TagsReportingComponent {
     @Required
     public void setDataReportManager(DataReportManager manager) {
         this.dataReportManager = manager;
+    }
+
+    /**
+     * @param aggregationResolver the aggregationResolver to set
+     */
+    public void setAggregationResolver(AggregationResolver aggregationResolver) {
+        this.aggregationResolver = aggregationResolver;
     }
 
 }

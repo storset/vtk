@@ -217,6 +217,7 @@ public class Value implements Cloneable, Comparable<Value> {
         }
     }
 
+    @Override
     public Object clone() {
 
         switch (this.type) {

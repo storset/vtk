@@ -1,21 +1,21 @@
-/* Copyright (c) 2008, University of Oslo, Norway
+/* Copyright (c) 2009, University of Oslo, Norway
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  *  * Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
- * 
+ *
  *  * Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 
+ *
  *  * Neither the name of the University of Oslo nor the names of its
  *    contributors may be used to endorse or promote products derived from
  *    this software without specific prior written permission.
- *      
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
  * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
  * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -28,12 +28,41 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package org.vortikal.repository.reporting;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
- * Currently only a marker interface as the results are very query-type specific.
  *
+ * @author oyviste
  */
-public interface ReportResult {
-    
+public abstract class AbstractReportQuery implements ReportQuery {
+
+    private List<ReportScope> scoping = new LinkedList<ReportScope>();
+
+    public AbstractReportQuery() {}
+
+    public List<ReportScope> getScoping() {
+        return this.scoping;
+    }
+
+    public void addScope(ReportScope scope) {
+        this.scoping.add(scope);
+    }
+
+    public void clearScoping() {
+        this.scoping = new LinkedList<ReportScope>();
+    }
+
+    @Override
+    public abstract boolean equals(Object other);
+
+    @Override
+    public abstract int hashCode();
+
+    @Override
+    public abstract Object clone();
+
 }

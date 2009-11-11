@@ -30,12 +30,20 @@
  */
 package org.vortikal.repository.reporting;
 
+import java.util.List;
+
 /**
  * Enforce cloneability for caching purposes.
  *
  */
 public interface ReportQuery extends Cloneable {
- 
+
+    public void addScope(ReportScope scope);
+
+    public List<ReportScope> getScoping();
+
+    public void clearScoping();
+
     public Object clone();
-    
+
 }

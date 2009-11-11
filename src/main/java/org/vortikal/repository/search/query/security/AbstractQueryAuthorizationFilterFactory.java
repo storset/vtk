@@ -90,6 +90,4 @@ public abstract class AbstractQueryAuthorizationFilterFactory implements
         this.roleManager = roleManager;
     }
 
-    
-    
 }

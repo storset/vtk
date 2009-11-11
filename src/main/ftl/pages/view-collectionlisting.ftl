@@ -57,7 +57,7 @@
   </#if>
   
 </head>
-<body>
+<body id="vrtx-${resource.resourceType}">
   
   <#assign page = page?default(1) />
 

@@ -346,7 +346,7 @@
   
   <bean id="editor.personResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager" parent="requestLocalRepositoryAware">
     <property name="htmlParser" ref="decorating.htmlParser" />
-    <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
+    <property name="htmlPropsFilter" ref="personResourceManager.htmlPropsFilter" />
     <property name="contentResourceType" ref="documentResourceTypeDefinition" />
     <property name="editPropertyProvider">
       <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
@@ -458,4 +458,183 @@
     </property>
   </bean>
   
+
+  <!-- XXX: Separate HTML filter setup for person listing: -->
+
+  <bean id="personResourceManager.htmlPropsFilter" class="org.vortikal.text.html.SimpleHtmlPageFilter">
+    <property name="keepComments" value="false" />
+    <property name="illegalElements" ref="personResourceManager.htmlPropsFilter.illegalHtmlElementSet" />
+    <property name="validElements" ref="personResourceManager.htmlPropsFilter.validHtmlElementSet" />
+  </bean>
+
+  <bean id="personResourceManager.htmlPropsFilter.illegalHtmlElementSet"
+        class="org.springframework.beans.factory.config.SetFactoryBean">
+    <property name="sourceSet">
+      <set>
+        <value>script</value>
+        <value>style</value>
+        <!--
+        <value>form</value>
+        <value>input</value>
+        -->
+        <value>frameset</value>
+        <value>frame</value>
+        <value>iframe</value>
+        <value>object</value>
+        <value>embed</value>
+      </set>
+    </property>
+  </bean>
+
+  <bean id="personResourceManager.htmlPropsFilter.validHtmlElementSet"
+        class="org.springframework.beans.factory.config.SetFactoryBean">
+    <property name="sourceSet">
+      <set>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="a" />
+          <property name="attributes">
+            <set>
+              <value>href</value>
+              <value>rel</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="p" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="sub" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="sup" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="em" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="strong" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="cite" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="code" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="strike" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="u" />
+        </bean>
+
+
+        <!-- Additional legal elements: -->
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="h2" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="h3" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="ul" />
+          <property name="attributes">
+            <set>
+              <value>id</value>
+              <value>name</value>
+              <value>class</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="li" />
+          <property name="attributes">
+            <set>
+              <value>id</value>
+              <value>name</value>
+              <value>class</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="div" />
+          <property name="attributes">
+            <set>
+              <value>id</value>
+              <value>name</value>
+              <value>class</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="span" />
+          <property name="attributes">
+            <set>
+              <value>id</value>
+              <value>name</value>
+              <value>class</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="form" />
+          <property name="attributes">
+            <set>
+              <value>id</value>
+              <value>name</value>
+              <value>class</value>
+              <value>method</value>
+              <value>action</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="fieldset" />
+          <property name="attributes">
+            <set>
+              <value>id</value>
+              <value>name</value>
+              <value>class</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="label" />
+          <property name="attributes">
+            <set>
+              <value>id</value>
+              <value>name</value>
+              <value>class</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="input" />
+          <property name="validAsEmpty" value="true" />
+          <property name="attributes">
+            <set>
+              <value>id</value>
+              <value>name</value>
+              <value>class</value>
+              <value>type</value>
+              <value>value</value>
+              <value>size</value>
+              <value>autocomplete</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="button" />
+          <property name="attributes">
+            <set>
+              <value>id</value>
+              <value>name</value>
+              <value>type</value>
+              <value>class</value>
+            </set>
+          </property>
+        </bean>
+      </set>
+    </property>
+  </bean>
+
 </beans>

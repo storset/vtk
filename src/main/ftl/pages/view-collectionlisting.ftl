@@ -153,13 +153,13 @@
          </#list>
        </#if>
        
-       <span class="vrtx-paging-wrapper">
+       <div class="vrtx-paging-wrapper">
        
            <#-- Previous/next URLs: -->
            <#if prevURL?exists>
              <a class="vrtx-previous" href="${prevURL?html}"><@vrtx.msg code="viewCollectionListing.previous" /></a>
            </#if>
-           
+            
            <#if pageThroughUrls?exists && pageThroughUrls?size &gt; 1>
     	       <#list pageThroughUrls as url>
     	       		<a href="${url?html}" class="vrtx-page-number <#if (url_index+1) = page>vrtx-marked</#if>">${(url_index+1)}</a>
@@ -181,7 +181,7 @@
           </#if>
         </#list>
     
-     </span>
+     </div>
     
   </body>
 </html>

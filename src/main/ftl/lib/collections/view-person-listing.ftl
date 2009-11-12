@@ -1,8 +1,8 @@
 <#import "../vortikal.ftl" as vrtx />
-
 <#macro displayPersons personListing>
   <#local persons=personListing.files />
   <#if (persons?size > 0)>
+  <!--stopindex-->
   <div class="vrtx-number-of-records">
   	${vrtx.getMsg("person-listing.persons")} ${numberOfRecords["elementsOnPreviousPages"]} -
   	${numberOfRecords["elementsIncludingThisPage"]} ${vrtx.getMsg("person-listing.of")} 
@@ -76,6 +76,6 @@
     </#list>
     </tbody>
   </table>
+  <!--startindex-->
   </#if>
-
 </#macro>

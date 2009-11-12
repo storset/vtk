@@ -35,35 +35,65 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
+
 import org.vortikal.repository.Path;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.web.RequestContext;
 
 public abstract class AutoCompleteController implements Controller {
 
-    protected final static String SUGGESTION_DELIMITER = "\n";
-    protected final static String FIELD_SEPARATOR = ";";
-    private final static String QUERY_PARAM = "q";
-
-
-    protected abstract String getAutoCompleteSuggestions(String query, Path contextUri, String securityToken);
-
+    protected static final char SUGGESTION_DELIMITER = '\n';
+    protected static final char FIELD_SEPARATOR = ';';
+    protected static final String PARAM_QUERY = "q";
+    protected static final String PARAM_CONTEXT_URI_OVERRIDE = "context";
+    protected static final String RESPONSE_CONTENT_TYPE = "text/plain;charset=utf-8";
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         String token = SecurityContext.getSecurityContext().getToken();
+        Path contextUri = getContextUri(request);
 
-        String query = request.getParameter(QUERY_PARAM);
+        String query = request.getParameter(PARAM_QUERY);
         if (query == null) {
-            return null;
+            return null; // No query results in no auto-complete suggestions
         }
 
-        String autoCompleteSuggestions = this.getAutoCompleteSuggestions(query, null, token);
+        String autoCompleteSuggestions = this.getAutoCompleteSuggestions(query, contextUri, token);
         autoCompleteSuggestions = autoCompleteSuggestions == null ? "" : autoCompleteSuggestions;
 
-        response.setContentType("text/plain;charset=utf-8");
+        response.setContentType(RESPONSE_CONTENT_TYPE);
         response.getWriter().print(autoCompleteSuggestions);
 
         return null;
     }
+
+    protected Path getContextUri(HttpServletRequest request) {
+        Path contextUri = null;
+        try {
+            // Try getting from overriding parameter first
+            contextUri = Path.fromString(request.getParameter(PARAM_CONTEXT_URI_OVERRIDE));
+        } catch (IllegalArgumentException ie) {
+            // Ignore.
+        }
+
+        if (contextUri == null) {
+            // No luck (invalid path or missing override param), try request context ..
+            RequestContext requestContext = RequestContext.getRequestContext();
+            contextUri = requestContext.getResourceURI();
+        }
+
+        return contextUri;
+    }
+
+    /**
+     * Optionally implemented by subclasses to provide autocomplete suggestions.
+     * Only useful if handleRequest is *not* overridden.
+     * 
+     * @param query
+     * @param contextUri
+     * @param token
+     * @return
+     */
+    protected abstract String getAutoCompleteSuggestions(String query, Path contextUri, String token);
 
 }

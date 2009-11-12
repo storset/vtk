@@ -14,7 +14,7 @@ public class TagsAutoCompleteController extends AutoCompleteController {
     protected String getAutoCompleteSuggestions(String prefix, Path contextUri,
             String securityToken) {
 
-        List<Tag> completions = this.dataProvider.getCompletions(prefix, null,
+        List<Tag> completions = this.dataProvider.getCompletions(prefix, null, // Ignore contextUri
                 securityToken);
 
         StringBuilder result = new StringBuilder();

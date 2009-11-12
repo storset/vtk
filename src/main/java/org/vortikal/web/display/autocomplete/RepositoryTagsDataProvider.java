@@ -30,7 +30,7 @@
  */
 package org.vortikal.web.display.autocomplete;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -92,7 +92,7 @@ public class RepositoryTagsDataProvider implements VocabularyDataProvider<Tag> {
             logger.warn("Failed to execute data report query", de);
 
             // Return empty list when failed, for now.
-            return new ArrayList<Tag>(0);
+            return Collections.emptyList();
         }
     }
 
@@ -101,7 +101,8 @@ public class RepositoryTagsDataProvider implements VocabularyDataProvider<Tag> {
         Iterator<Tag> i = list.iterator();
         while (i.hasNext()) {
             String tagText = i.next().getText();
-            if (!(prefix.length() <= tagText.length() && tagText.substring(0, prefix.length()).equalsIgnoreCase(prefix))) {
+            if (!(prefix.length() <= tagText.length()
+                    && tagText.substring(0, prefix.length()).equalsIgnoreCase(prefix))) {
                 i.remove();
             }
         }

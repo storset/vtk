@@ -42,11 +42,10 @@ public class PrincipalAutoCompleteController extends AutoCompleteController {
     private boolean invert;
 
     @Override
-    protected String getAutoCompleteSuggestions(String input, Path contextUri,
-            String securityToken) {
+    protected String getAutoCompleteSuggestions(String input, Path contextUri, String token) {
 
-        List<Principal> completions = this.dataProvider.getCompletions(input,
-                contextUri, securityToken);
+        List<Principal> completions = this.dataProvider.getCompletions(input, null,  // Ignore contextUri
+                                                                       token);
 
         StringBuilder result = new StringBuilder();
 

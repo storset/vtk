@@ -71,7 +71,13 @@ public abstract class AutoCompleteController implements Controller {
         Path contextUri = null;
         try {
             // Try getting from overriding parameter first
-            contextUri = Path.fromString(request.getParameter(PARAM_CONTEXT_URI_OVERRIDE));
+            String contextParam = request.getParameter(PARAM_CONTEXT_URI_OVERRIDE);
+            // Be gentle and snip trailing slash if necessary:
+            if (contextParam != null && contextParam.endsWith("/") && contextParam.length() > 1) {
+                contextParam = contextParam.substring(0, contextParam.length() - 1);
+            }
+
+            contextUri = Path.fromString(contextParam);
         } catch (IllegalArgumentException ie) {
             // Ignore.
         }

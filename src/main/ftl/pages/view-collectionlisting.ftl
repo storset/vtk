@@ -154,7 +154,7 @@
        </#if>
        
        <div class="vrtx-paging-wrapper">
-       
+       	   <span class="vrtx-paging-wrapper"> 
            <#-- Previous/next URLs: -->
            <#if prevURL?exists>
              <a class="vrtx-previous" href="${prevURL?html}"><@vrtx.msg code="viewCollectionListing.previous" /></a>
@@ -170,7 +170,7 @@
              <a class="vrtx-next" href="${nextURL?html}"><@vrtx.msg code="viewCollectionListing.next" /></a>
            </#if>
          </#if>
-    
+    	 </span>
         <#-- XXX: display first link with content type = atom: -->
         <#list alternativeRepresentations as alt>
           <#if alt.contentType = 'application/atom+xml'>

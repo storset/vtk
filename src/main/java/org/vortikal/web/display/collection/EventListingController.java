@@ -152,9 +152,9 @@ public class EventListingController extends AbstractCollectionListingController 
                 nextURL.setParameter(PREV_BASE_OFFSET_PARAM, String.valueOf(upcomingOffset));
                 nextURL.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(prevEventPage));
             }
-        }else{
+        } else {
             Listing previous = this.previousEventsSearch.execute(request, collection, 1, 0, 0);
-            totalHits += previous.getTotalHits(); 
+            totalHits += previous.getTotalHits();
             previous = null;
         }
 
@@ -171,8 +171,8 @@ public class EventListingController extends AbstractCollectionListingController 
         if (prevURL != null && userDisplayPage > 2) {
             prevURL.setParameter(USER_DISPLAY_PAGE, String.valueOf(userDisplayPage - 1));
         }
-        
-        List<URL> urls = generatePageThroughUrls(totalHits, pageLimit, totalUpcomingHits, URL.create(request));
+
+        List<URL> urls = generatePageThroughUrls(totalHits, pageLimit, totalUpcomingHits, URL.create(request), true);
         model.put("pageThroughUrls", urls);
         model.put("nextURL", nextURL);
         model.put("prevURL", prevURL);

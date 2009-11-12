@@ -267,11 +267,8 @@ public abstract class AbstractCollectionListingController implements Controller 
         return generatePageThroughUrls(hits, pageLimit, hitsReturnedByFirstSearch, baseURL, false);
     }
 
-    // Note that article listing is using the request parameters in a slightly
-    // different manner then other listings. This should be unnecessary. Anyway,
-    // this hack must do for now...
     public List<URL> generatePageThroughUrls(int hits, int pageLimit, int hitsReturnedByFirstSearch, URL baseURL,
-            boolean isArticleListing) {
+            boolean twoSearches) {
         if (pageLimit == 0) {
             return null;
         }
@@ -280,27 +277,43 @@ public abstract class AbstractCollectionListingController implements Controller 
         if ((hits % pageLimit) > 0) {
             pages += 1;
         }
-        int pagesUsedToDisplayResultsOfTheFirstSearch = (hitsReturnedByFirstSearch / pageLimit) + 1;
-        int offset = pageLimit - (hitsReturnedByFirstSearch % pageLimit);
+        int pagesUsedToDisplayResultsOfTheFirstSearch = (hitsReturnedByFirstSearch / pageLimit);
+        if ((hitsReturnedByFirstSearch % pageLimit) > 0) {
+            pagesUsedToDisplayResultsOfTheFirstSearch += 1;
+        }
+        int offset = 0;
+        if (hitsReturnedByFirstSearch > 0){
+            offset =  pageLimit - (hitsReturnedByFirstSearch % pageLimit);
+        }
         int j = 1;
+        int k = 1;
         for (int i = 0; i < pages; i++) {
             URL url = URL.parse(baseURL.getBase());
             if (i == 0) {
                 urls.add(url);
                 continue;
             }
-            if (pagesUsedToDisplayResultsOfTheFirstSearch > i || hitsReturnedByFirstSearch == 0) {
-                if (!isArticleListing || (pagesUsedToDisplayResultsOfTheFirstSearch > 1)) {
-                    url.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(i + 1));
-                } else {
-                    url.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(i + 1));
-                }
+            if (offset == pageLimit && pagesUsedToDisplayResultsOfTheFirstSearch <= 1) {
+                url.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(k));
+                k++;
+            } else if (pagesUsedToDisplayResultsOfTheFirstSearch > i) {
+                url.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(i + 1));
+            } else if (hitsReturnedByFirstSearch == 0 && twoSearches) {
+                url.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(i + 1));
+            } else if (hitsReturnedByFirstSearch == 0) {
+                url.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(i + 1));
             } else {
-                if (!isArticleListing || (pagesUsedToDisplayResultsOfTheFirstSearch > 1)) {
+                if ((pagesUsedToDisplayResultsOfTheFirstSearch > 1)) {
                     url.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(pagesUsedToDisplayResultsOfTheFirstSearch));
                 }
-                url.setParameter(PREV_BASE_OFFSET_PARAM, String.valueOf(offset));
-                url.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(j));
+                if (offset != pageLimit){
+                    url.setParameter(PREV_BASE_OFFSET_PARAM, String.valueOf(offset));
+                }
+                if (offset == pageLimit && pagesUsedToDisplayResultsOfTheFirstSearch > 1) {
+                    url.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(i));
+                } else {
+                    url.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(j));
+                }
                 j++;
             }
             url.setParameter(USER_DISPLAY_PAGE, String.valueOf(i + 1));

@@ -182,6 +182,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
     }
 
     private void initRequestParameters(DecoratorRequest request) {
+        // XXX: NOT THREAD SAFE: :)
         this.displayFromLevel = getIntegerGreaterThenZero(PARAMETER_DISPLAY_FROM_LEVEL, request, this.displayFromLevel);
         this.maxSiblings = getIntegerGreaterThenZero(PARAMETER_MAX_NUMBER_OF_SIBLINGS, request, this.maxSiblings);
 

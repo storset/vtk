@@ -153,7 +153,7 @@
          </#list>
        </#if>
        
-       <div class="vrtx-paging-wrapper">
+       <div class="vrtx-paging-feed-wrapper">
        	   <span class="vrtx-paging-wrapper"> 
            <#-- Previous/next URLs: -->
            <#if prevURL?exists>

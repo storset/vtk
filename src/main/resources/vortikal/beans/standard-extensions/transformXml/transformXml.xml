@@ -47,6 +47,7 @@
       </list>
     </property>
     <property name="handler" ref="rawXmlQueryHandler" />
+    <property name="order" value="-2"/>
   </bean>
 
   <bean id="rawXmlQueryHandler" class="org.vortikal.web.display.search.XmlQueryController"

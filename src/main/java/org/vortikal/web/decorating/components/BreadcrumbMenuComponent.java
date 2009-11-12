@@ -60,13 +60,13 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
             + " reached no siblings are going to be displayed. Default limit is: " + Integer.MAX_VALUE;
     protected static final String PARAMETER_DISPLAY_FROM_LEVEL_DESC = "Defines the starting URI level for the menu";
 
-    private int maxSiblings = Integer.MAX_VALUE;
-    private int displayFromLevel = -1;
-    private String token;
-
     public void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
-        initRequestParameters(request);
+
+        String token = getToken(request);
+        int displayFromLevel = getIntegerGreaterThenZero(PARAMETER_DISPLAY_FROM_LEVEL, request, Integer.MAX_VALUE);
+        int maxSiblings = getIntegerGreaterThenZero(PARAMETER_MAX_NUMBER_OF_SIBLINGS, request, -1);
+
         Path uri = RequestContext.getRequestContext().getResourceURI();
         Principal principal = SecurityContext.getSecurityContext().getPrincipal();
 
@@ -100,7 +100,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         breadCrumbElements.add(new BreadcrumbElement(markedUrl, getMenuTitle(currentResource)));
 
         List<MenuItem<PropertySet>> childElements = null;
-        childElements = generateChildElements(currentResource.getChildURIs(), principal, currentResource);
+        childElements = generateChildElements(currentResource.getChildURIs(), principal, currentResource, token);
 
         // If there is no children of the current resource, then we shall
         // instead display the children of the parent node.
@@ -113,7 +113,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
             } catch (AuthenticationException e) {
                 return;
             }
-            childElements = generateChildElements(childResource.getChildURIs(), principal, currentResource);
+            childElements = generateChildElements(childResource.getChildURIs(), principal, currentResource, token);
             breadCrumbElements.remove(breadCrumbElements.size() - 1);
             if (childElements.size() > maxSiblings) {
                 childElements = new ArrayList<MenuItem<PropertySet>>();
@@ -151,7 +151,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
     }
 
     private List<MenuItem<PropertySet>> generateChildElements(List<Path> children, Principal principal,
-            Resource currentResource) throws Exception {
+            Resource currentResource, String token) throws Exception {
         List<MenuItem<PropertySet>> items = new ArrayList<MenuItem<PropertySet>>();
         for (Path childPath : children) {
             Resource childResource = null;
@@ -180,17 +180,14 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         }
         return resource.getTitle();
     }
-
-    private void initRequestParameters(DecoratorRequest request) {
-        // XXX: NOT THREAD SAFE: :)
-        this.displayFromLevel = getIntegerGreaterThenZero(PARAMETER_DISPLAY_FROM_LEVEL, request, this.displayFromLevel);
-        this.maxSiblings = getIntegerGreaterThenZero(PARAMETER_MAX_NUMBER_OF_SIBLINGS, request, this.maxSiblings);
-
+    
+    private String getToken(DecoratorRequest request){
         boolean authenticated = "true".equals(request.getStringParameter(PARAMETER_AUTENTICATED));
         if (authenticated) {
             SecurityContext securityContext = SecurityContext.getSecurityContext();
-            this.token = securityContext.getToken();
+            return securityContext.getToken();
         }
+        return null;
     }
 
     private int getIntegerGreaterThenZero(String prameter, DecoratorRequest request, int returnWhenParamNotFound) {

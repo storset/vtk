@@ -286,7 +286,6 @@ public abstract class AbstractCollectionListingController implements Controller 
             offset = pageLimit - (hitsReturnedByFirstSearch % pageLimit);
         }
         int j = 1;
-        int k = 1;
         for (int i = 0; i < pages; i++) {
             URL url = URL.parse(baseURL.getBase());
             if (i == 0) {

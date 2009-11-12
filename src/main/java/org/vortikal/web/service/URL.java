@@ -287,6 +287,7 @@ public class URL {
         this.characterEncoding = characterEncoding;
     }
 
+    @Override
     public String toString() {
         if (this.pathOnly) {
             return this.getPathRepresentation();
@@ -302,7 +303,8 @@ public class URL {
                 url.append(":").append(this.port.intValue());
             }
         }
-        url.append(getPathRepresentation());
+
+        url.append(getPathRepresentation());  // Includes encoded /path, ?query parameters and #ref.
 
         return url.toString();
     }

@@ -282,8 +282,8 @@ public abstract class AbstractCollectionListingController implements Controller 
             pagesUsedToDisplayResultsOfTheFirstSearch += 1;
         }
         int offset = 0;
-        if (hitsReturnedByFirstSearch > 0){
-            offset =  pageLimit - (hitsReturnedByFirstSearch % pageLimit);
+        if (hitsReturnedByFirstSearch > 0 && (hitsReturnedByFirstSearch % pageLimit) > 0) {
+            offset = pageLimit - (hitsReturnedByFirstSearch % pageLimit);
         }
         int j = 1;
         int k = 1;
@@ -293,27 +293,20 @@ public abstract class AbstractCollectionListingController implements Controller 
                 urls.add(url);
                 continue;
             }
-            if (offset == pageLimit && pagesUsedToDisplayResultsOfTheFirstSearch <= 1) {
-                url.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(k));
-                k++;
-            } else if (pagesUsedToDisplayResultsOfTheFirstSearch > i) {
+            if (pagesUsedToDisplayResultsOfTheFirstSearch > i) {
                 url.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(i + 1));
             } else if (hitsReturnedByFirstSearch == 0 && twoSearches) {
                 url.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(i + 1));
             } else if (hitsReturnedByFirstSearch == 0) {
                 url.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(i + 1));
             } else {
-                if ((pagesUsedToDisplayResultsOfTheFirstSearch > 1)) {
+                if (pagesUsedToDisplayResultsOfTheFirstSearch > 1) {
                     url.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(pagesUsedToDisplayResultsOfTheFirstSearch));
                 }
-                if (offset != pageLimit){
+                if (offset > 0) {
                     url.setParameter(PREV_BASE_OFFSET_PARAM, String.valueOf(offset));
                 }
-                if (offset == pageLimit && pagesUsedToDisplayResultsOfTheFirstSearch > 1) {
-                    url.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(i));
-                } else {
-                    url.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(j));
-                }
+                url.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(j));
                 j++;
             }
             url.setParameter(USER_DISPLAY_PAGE, String.valueOf(i + 1));

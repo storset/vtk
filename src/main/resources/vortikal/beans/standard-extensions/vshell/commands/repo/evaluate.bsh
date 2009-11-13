@@ -27,7 +27,12 @@ void execute(context, args, out) {
     log = out;
     logFile = args.get("logfile");
     if (logFile != null) {
-        log = new PrintWriter(new FileOutputStream("/tmp/property-eval-" + repo.getId() + ".log"));
+        try {
+            log = new PrintWriter(new FileOutputStream(logFile));
+        } catch (e) {
+            out.println("Error: unable to create log file: " + logFile);
+            return;
+        }
         out.println("Log file: " + logFile);
     }
 

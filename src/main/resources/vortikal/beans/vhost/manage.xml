@@ -689,16 +689,17 @@
   </bean>
 
   <bean id="lockResourceHandler" class="org.vortikal.web.actions.lock.LockResourceController" parent="requestLocalRepositoryAware" />
+
   <bean id="unlockResourceHandler" class="org.vortikal.web.actions.lock.UnlockResourceController" parent="requestLocalRepositoryAware" />
+
   <bean id="createDocumentHandler" class="org.vortikal.web.actions.create.TemplateBasedCreateController"
     parent="requestLocalRepositoryAware">
     <property name="formView" value="manageCollectionListing" />
     <property name="successView" value="redirectToManage" />
     <property name="commandName" value="createDocumentForm" />
     <property name="commandClass" value="org.vortikal.web.actions.create.CreateDocumentCommand" />
-    <property name="validator">
-      <bean class="org.vortikal.web.actions.create.CreateDocumentCommandValidator" parent="requestLocalRepositoryAware" />
-    </property>
+    <property name="downcaseNames" value="false" />
+    <property name="replaceNameChars" ref="createResource.nameReplacementMap" />
     <property name="templateManager" ref="templates.resourceTemplateManager" />
   </bean>
 
@@ -717,6 +718,19 @@
     <property name="method" value="refresh" />
   </bean>
 
+  <bean id="createResource.nameReplacementMap" class="java.util.HashMap">
+    <constructor-arg>
+      <map>
+        <entry key="\+" value="-" />
+        <entry key="%" value="" />
+        <entry key="æ" value="ae" />
+        <entry key="ø" value="oe" />
+        <entry key="å" value="aa" />
+        <entry key="\?" value="" />
+      </map>
+    </constructor-arg>
+  </bean>
+
   <bean id="createCollectionHandler" class="org.vortikal.web.actions.create.TemplateBasedCreateCollectionController"
     parent="requestLocalRepositoryAware">
     <property name="formView" value="manageCollectionListing" />
@@ -726,15 +740,7 @@
     <property name="userTitlePropDef" ref="userTitlePropDef" />
     <property name="downcaseCollectionNames" value="true" />
     <property name="templateManager" ref="templates.resourceTemplateManager" />
-    <property name="replaceNameChars">
-      <map>
-        <entry key="\+" value="-" />
-        <entry key="æ" value="ae" />
-        <entry key="ø" value="oe" />
-        <entry key="å" value="aa" />
-        <entry key="\?" value="" />
-      </map>
-    </property>
+    <property name="replaceNameChars" ref="createResource.nameReplacementMap" />
   </bean>
 
   <bean id="renameHandler" class="org.vortikal.web.actions.copymove.RenameController" parent="requestLocalRepositoryAware">

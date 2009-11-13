@@ -38,6 +38,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.validation.BindException;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
@@ -53,14 +54,9 @@ import org.vortikal.web.templates.ResourceTemplateManager;
 public class TemplateBasedCreateController extends SimpleFormController {
 
     private ResourceTemplateManager templateManager;
-
+    private boolean downcaseNames = false;
+    private Map<String, String> replaceNameChars; 
     private Repository repository;
-
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    } 
-
 
     protected Object formBackingObject(HttpServletRequest request)
     throws Exception {
@@ -79,7 +75,7 @@ public class TemplateBasedCreateController extends SimpleFormController {
 
         CreateDocumentCommand command = new CreateDocumentCommand(url);
 
-        List <ResourceTemplate> l = templateManager.getDocumentTemplates(token, uri);        
+        List <ResourceTemplate> l = this.templateManager.getDocumentTemplates(token, uri);        
 
         // Set first available template as the selected 
         if (!l.isEmpty()) {
@@ -90,7 +86,7 @@ public class TemplateBasedCreateController extends SimpleFormController {
     }
 
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     protected Map referenceData(HttpServletRequest request) throws Exception {       
         RequestContext requestContext = RequestContext.getRequestContext();        
         SecurityContext securityContext = SecurityContext.getSecurityContext();
@@ -102,15 +98,70 @@ public class TemplateBasedCreateController extends SimpleFormController {
 
         List <ResourceTemplate> l = templateManager.getDocumentTemplates(token, uri);
 
-        Map <String, String> tmp = new LinkedHashMap <String, String>();
+        Map <String, String> templates = new LinkedHashMap <String, String>();
         for (ResourceTemplate t: l) {
-            tmp.put(t.getUri().toString(),t.getName());
+            templates.put(t.getUri().toString(),t.getName());
         }
 
-        model.put("templates", tmp);		    	
+        model.put("templates", templates);		    	
         return model;
     }
 
+    @Override
+    protected void onBindAndValidate(HttpServletRequest request,
+            Object command, BindException errors) throws Exception {
+        super.onBindAndValidate(request, command, errors);
+
+        CreateDocumentCommand createDocumentCommand =
+            (CreateDocumentCommand) command;
+
+        if (createDocumentCommand.getCancelAction() != null) return;
+        
+        if (createDocumentCommand.getSourceURI() == null
+            || createDocumentCommand.getSourceURI().trim().equals("")) {
+            errors.rejectValue("sourceURI",
+                               "manage.create.document.missing.template",
+                               "You must choose a document type");
+        }
+
+        RequestContext requestContext = RequestContext.getRequestContext();
+        SecurityContext securityContext = SecurityContext.getSecurityContext();
+
+        Path uri = requestContext.getResourceURI();
+        String token = securityContext.getToken();
+        
+        String name = createDocumentCommand.getName();
+        if (null == name || "".equals(name.trim())) {
+            errors.rejectValue("name",
+                    "manage.create.document.missing.name",
+            "A name must be provided for the document");
+            return;
+        }
+
+        if (name.indexOf("/") >= 0) {
+            errors.rejectValue("name",
+                    "manage.create.document.invalid.name",
+            "This is an invalid document name");
+        }
+        name = fixDocumentName(name);
+        
+        if (name.isEmpty()) {
+            errors.rejectValue("name",
+                    "manage.create.document.invalid.name",
+            "This is an invalid document name");
+            return;
+        }
+        
+        Path destinationURI = uri.extend(name);
+
+        if (this.repository.exists(token, destinationURI)) {
+            errors.rejectValue("name", "manage.create.document.exists",
+            "A resource of this name already exists");
+        }
+
+    }
+
+    
     protected void doSubmitAction(Object command) throws Exception {        
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
@@ -124,20 +175,48 @@ public class TemplateBasedCreateController extends SimpleFormController {
         Path uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
 
-        // The location of the file that we shall copy
+        // The location of the file that we will be copying
         Path sourceURI = Path.fromString(createDocumentCommand.getSourceURI());
 
-        Path destinationURI = uri.extend(createDocumentCommand.getName());
+        String name = createDocumentCommand.getName();
+        name = fixDocumentName(name);
+        Path destinationURI = uri.extend(name);
 
         this.repository.copy(token, sourceURI, destinationURI, Depth.ZERO, false, false);
         createDocumentCommand.setDone(true);
 
     }
 
+    @Required
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    } 
 
+    @Required
     public void setTemplateManager(ResourceTemplateManager templateManager) {
         this.templateManager = templateManager;
     }
+    
+    public void setReplaceNameChars(Map<String, String> replaceNameChars) {
+        this.replaceNameChars = replaceNameChars;
+    }
+    
+    public void setDowncaseNames(boolean downcaseNames) {
+        this.downcaseNames = downcaseNames;
+    }
 
+    private String fixDocumentName(String name) {
+        if (this.downcaseNames) {
+            name = name.toLowerCase();
+        }
+
+        if (this.replaceNameChars != null) {
+            for (String regex: this.replaceNameChars.keySet()) {
+                String replacement = this.replaceNameChars.get(regex);
+                name = name.replaceAll(regex, replacement);
+            }
+        }
+        return name;
+    }
 }
 

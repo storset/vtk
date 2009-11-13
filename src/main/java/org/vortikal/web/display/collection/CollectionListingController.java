@@ -111,7 +111,7 @@ public class CollectionListingController extends AbstractCollectionListingContro
             }
         }
         
-        List<URL> urls = generatePageThroughUrls(totalHits, pageLimit, 0, URL.create(request));
+        List<URL> urls = generatePageThroughUrls(totalHits, pageLimit, URL.create(request));
         model.put("pageThroughUrls", urls);
         model.put("nextURL", nextURL);
         model.put("prevURL", prevURL);

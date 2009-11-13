@@ -263,8 +263,8 @@ public abstract class AbstractCollectionListingController implements Controller 
         }
     }
 
-    public List<URL> generatePageThroughUrls(int hits, int pageLimit, int hitsReturnedByFirstSearch, URL baseURL) {
-        return generatePageThroughUrls(hits, pageLimit, hitsReturnedByFirstSearch, baseURL, false);
+    public List<URL> generatePageThroughUrls(int hits, int pageLimit, URL baseURL) {
+        return generatePageThroughUrls(hits, pageLimit, 0, baseURL, false);
     }
 
     public List<URL> generatePageThroughUrls(int hits, int pageLimit, int hitsReturnedByFirstSearch, URL baseURL,
@@ -292,11 +292,9 @@ public abstract class AbstractCollectionListingController implements Controller 
                 urls.add(url);
                 continue;
             }
-            if (pagesUsedToDisplayResultsOfTheFirstSearch > i) {
-                url.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(i + 1));
-            } else if (hitsReturnedByFirstSearch == 0 && twoSearches) {
+            if (hitsReturnedByFirstSearch == 0 && twoSearches) {
                 url.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(i + 1));
-            } else if (hitsReturnedByFirstSearch == 0) {
+            } else if (pagesUsedToDisplayResultsOfTheFirstSearch > i || hitsReturnedByFirstSearch == 0) {
                 url.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(i + 1));
             } else {
                 if (pagesUsedToDisplayResultsOfTheFirstSearch > 1) {

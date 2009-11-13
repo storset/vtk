@@ -248,21 +248,6 @@ public abstract class AbstractCollectionListingController implements Controller 
         }
     }
 
-    protected void cleanURL(URL url) {
-        if (url != null) {
-            url.setCollection(true);
-            String param = url.getParameter(UPCOMING_PAGE_PARAM);
-            if ("1".equals(param)) {
-                url.removeParameter(UPCOMING_PAGE_PARAM);
-            }
-            param = url.getParameter(PREV_BASE_OFFSET_PARAM);
-            if ("0".equals(param)) {
-                url.removeParameter(PREV_BASE_OFFSET_PARAM);
-            }
-            url.removeParameter(USER_DISPLAY_PAGE);
-        }
-    }
-
     public List<URL> generatePageThroughUrls(int hits, int pageLimit, URL baseURL) {
         return generatePageThroughUrls(hits, pageLimit, 0, baseURL, false);
     }

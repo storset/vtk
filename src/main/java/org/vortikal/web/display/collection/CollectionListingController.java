@@ -47,17 +47,14 @@ public class CollectionListingController extends AbstractCollectionListingContro
 
     private List<SearchComponent> searchComponents;
 
-    protected void runSearch(HttpServletRequest request, Resource collection,
-    		Map<String, Object> model, int pageLimit) throws Exception {
+    protected void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
+            throws Exception {
 
         int page = getPage(request, UPCOMING_PAGE_PARAM);
         int offset = (page - 1) * pageLimit;
         int limit = pageLimit;
         int totalHits = 0;
-        
-        URL nextURL = null;
-        URL prevURL = null;
-        
+
         List<Listing> results = new ArrayList<Listing>();
         for (SearchComponent component : this.searchComponents) {
             Listing listing = component.execute(request, collection, page, limit, 0);
@@ -66,67 +63,43 @@ public class CollectionListingController extends AbstractCollectionListingContro
             if (listing.getFiles().size() > 0) {
                 results.add(listing);
             }
-
-            // Check previous result (by redoing the previous search),  
+            // Check previous result (by redoing the previous search),
             // to see if we need to adjust the offset.
             // XXX: is there a better way?
             if (listing.getFiles().size() == 0 && offset > 0) {
                 Listing prevListing = component.execute(request, collection, page - 1, limit, 0);
                 if (prevListing.getFiles().size() > 0 && !prevListing.hasMoreResults()) {
-                   offset -= prevListing.getFiles().size();
+                    offset -= prevListing.getFiles().size();
                 }
-             }
-
-            // We have more results to display for this listing 
+            }
+            // We have more results to display for this listing
             if (listing.hasMoreResults()) {
                 break;
             }
-
             // Only include enough results to fill the page:
             if (listing.getFiles().size() > 0) {
-               limit -= listing.getFiles().size();
-            }
-        }
-        model.put("searchComponents", results);
-        model.put("page", page);
-        if(results.size() > 0 && results.get(0) != null){
-            model.put("numberOfRecords", getNumberOfRecords(page, pageLimit, results.get(0).size()));
-        }
-        
-        if (results.size() > 0) {
-            Listing last = results.get(results.size() - 1);
-            if (last.hasMoreResults()) {
-                nextURL = URL.create(request);
-                nextURL.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(page + 1));
-                nextURL.setParameter(USER_DISPLAY_PAGE, String.valueOf(page + 1));
-            }
-            if (page > 1) {
-                prevURL = URL.create(request);
-                prevURL.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(page - 1));
-                if (page > 2) {
-                    prevURL.setParameter(USER_DISPLAY_PAGE, String.valueOf(page - 1));
-                } else {
-                    prevURL.removeParameter(USER_DISPLAY_PAGE);
-                }
+                limit -= listing.getFiles().size();
             }
         }
         
         List<URL> urls = generatePageThroughUrls(totalHits, pageLimit, URL.create(request));
+        model.put("searchComponents", results);
+        model.put("page", page);
         model.put("pageThroughUrls", urls);
-        model.put("nextURL", nextURL);
-        model.put("prevURL", prevURL);
-        
+        if (results.size() > 0 && results.get(0) != null) {
+            model.put("numberOfRecords", getNumberOfRecords(page, pageLimit, results.get(0).size()));
+        }
     }
 
-    private Map<String,Integer> getNumberOfRecords(int page, int pageLimit,int resultSize){
-         Map<String,Integer> numbers = new HashMap<String,Integer>();
-         int numberShownElements = ((page-1)*pageLimit)+1;
-         int includingThisPage = ((page-1)*pageLimit)+resultSize;
-         numbers.put("elementsOnPreviousPages", numberShownElements);
-         numbers.put("elementsIncludingThisPage", includingThisPage);
-         return numbers;
+    private Map<String, Integer> getNumberOfRecords(int page, int pageLimit, int resultSize) {
+        Map<String, Integer> numbers = new HashMap<String, Integer>();
+        int numberShownElements = ((page - 1) * pageLimit) + 1;
+        int includingThisPage = ((page - 1) * pageLimit) + resultSize;
+        numbers.put("elementsOnPreviousPages", numberShownElements);
+        numbers.put("elementsIncludingThisPage", includingThisPage);
+        return numbers;
     }
-    
+
     @Required
     public void setSearchComponents(List<SearchComponent> searchComponents) {
         this.searchComponents = searchComponents;

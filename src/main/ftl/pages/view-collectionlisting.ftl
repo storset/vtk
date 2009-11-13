@@ -74,11 +74,11 @@
      <#-- Introduction -->
      <#-- @viewutils.displayIntroduction resource / -->
      <#assign introduction = vrtx.getIntroduction(resource) />
-     <#if introduction?has_content>
-       <div class="vrtx-introduction">
-         ${introduction}
-       </div>
-     </#if>
+	     <#if introduction?has_content>
+	       <div class="vrtx-introduction">
+	         ${introduction}
+	       </div>
+	     </#if>
      </#if>
 
      <#-- XXX: "additional content" (for person listing) -->
@@ -90,52 +90,45 @@
      </#if>
 
      <#-- List collections: -->
-     <#if page == 1>
-     
-     <#if subCollections?size &gt; 0>
-       <#if subCollections?size &gt; 15>
-          <#assign splitList = ((subCollections?size/4)+0.75)?int />
-          <#assign interval = splitList />
-       <#elseif subCollections?size &gt; 8>
-          <#assign splitList = ((subCollections?size/3)+0.5)?int />
-          <#assign interval = splitList />
-       <#elseif subCollections?size &gt; 3>
-          <#assign splitList = ((subCollections?size/2)+0.5)?int />
-          <#assign interval = splitList />
-       <#else>
-         <#assign splitList = -1 />
-       </#if>
-
-
-       <div id="vrtx-collections" class="vrtx-collections">
-         <h2><@vrtx.msg code="viewCollectionListing.subareas" default="Subareas"/></h2>
-         <table>
-           <tr>
-             <td> 
-               <ul>
-                 <#list subCollections as c>
-                   <#if c_index = splitList>
-                     </ul></td>
-                     <td><ul>
-                     <#assign splitList = splitList + interval />
-                   </#if>
-                   <#assign navigationTitle = vrtx.propValue(c.resource, "navigationTitle")?html />
-                   <#if navigationTitle?exists && navigationTitle != "">
-                     <li><a href="${c.URL.pathRepresentation?html}">${navigationTitle}</a></li>
-                   <#else>
-                     <li><a href="${c.URL.pathRepresentation?html}">${vrtx.propValue(c.resource, "title")?html}</a></li>
-                   </#if>
-                 </#list>
-           </ul></td></tr>
-         </table>
-       </div>
-
+     <#if page == 1>    
+	     <#if subCollections?size &gt; 0>
+	       <#if subCollections?size &gt; 15>
+	          <#assign splitList = ((subCollections?size/4)+0.75)?int />
+	          <#assign interval = splitList />
+	       <#elseif subCollections?size &gt; 8>
+	          <#assign splitList = ((subCollections?size/3)+0.5)?int />
+	          <#assign interval = splitList />
+	       <#elseif subCollections?size &gt; 3>
+	          <#assign splitList = ((subCollections?size/2)+0.5)?int />
+	          <#assign interval = splitList />
+	       <#else>
+	         <#assign splitList = -1 />
+	       </#if>
+	       <div id="vrtx-collections" class="vrtx-collections">
+	         <h2><@vrtx.msg code="viewCollectionListing.subareas" default="Subareas"/></h2>
+	         <table>
+	           <tr>
+	             <td> 
+	               <ul>
+	                 <#list subCollections as c>
+	                   <#if c_index = splitList>
+	                     </ul></td>
+	                     <td><ul>
+	                     <#assign splitList = splitList + interval />
+	                   </#if>
+	                   <#assign navigationTitle = vrtx.propValue(c.resource, "navigationTitle")?html />
+	                   <#if navigationTitle?exists && navigationTitle != "">
+	                     <li><a href="${c.URL.pathRepresentation?html}">${navigationTitle}</a></li>
+	                   <#else>
+	                     <li><a href="${c.URL.pathRepresentation?html}">${vrtx.propValue(c.resource, "title")?html}</a></li>
+	                   </#if>
+	                 </#list>
+	           </ul></td></tr>
+	         </table>
+	       </div>
+	     </#if>
      </#if>
-     </#if>
-
-
      <#-- List resources: -->
-   
      <#if searchComponents?has_content>
        <#if collection.resourceType = 'article-listing'>
          <@coll.displayArticles page=page collectionListings=searchComponents hideNumberOfComments=hideNumberOfComments displayMoreURLs=true />
@@ -152,25 +145,22 @@
            </#if>
          </#list>
        </#if>
-       
-       <div class="vrtx-paging-feed-wrapper">
-       	   <span class="vrtx-paging-wrapper"> 
-           <#-- Previous/next URLs: -->
-           <#if prevURL?exists>
-             <a class="vrtx-previous" href="${prevURL?html}"><@vrtx.msg code="viewCollectionListing.previous" /></a>
-           </#if>
-            
-           <#if pageThroughUrls?exists && pageThroughUrls?size &gt; 1>
-    	       <#list pageThroughUrls as url>
-    	       		<a href="${url?html}" class="vrtx-page-number <#if (url_index+1) = page>vrtx-marked</#if>">${(url_index+1)}</a>
-    	       </#list>
-           </#if>
-           
-           <#if nextURL?exists>
-             <a class="vrtx-next" href="${nextURL?html}"><@vrtx.msg code="viewCollectionListing.next" /></a>
-           </#if>
-         </#if>
-    	 </span>
+     </#if>
+	 <div class="vrtx-paging-feed-wrapper"> 	   
+		<#-- Previous/next URLs: -->
+		<#if pageThroughUrls?exists && (pageThroughUrls?size > 1) >
+			 <span class="vrtx-paging-wrapper"> 
+		         <#if (page-2 > -1) >
+			  		<a class="vrtx-previous" href="${pageThroughUrls[page-2]}"><@vrtx.msg code="viewCollectionListing.previous" /></a>
+			   	 </#if> 
+			     <#list pageThroughUrls as url>
+			       	<a href="${url?html}" class="vrtx-page-number <#if (url_index+1) = page>vrtx-marked</#if>">${(url_index+1)}</a>
+			     </#list>
+			     <#if (pageThroughUrls?size > page) > 
+			        <a class="vrtx-next" href="${pageThroughUrls[page]}"><@vrtx.msg code="viewCollectionListing.next" /></a>
+			     </#if>
+		   	 </span> 
+		</#if>
         <#-- XXX: display first link with content type = atom: -->
         <#list alternativeRepresentations as alt>
           <#if alt.contentType = 'application/atom+xml'>
@@ -180,8 +170,6 @@
             <#break />
           </#if>
         </#list>
-    
      </div>
-    
   </body>
 </html>

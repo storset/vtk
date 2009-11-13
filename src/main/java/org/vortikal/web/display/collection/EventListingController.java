@@ -66,9 +66,6 @@ public class EventListingController extends AbstractCollectionListingController 
         int totalHits = 0;
         int totalUpcomingHits = 0;
 
-        URL nextURL = null;
-        URL prevURL = null;
-
         boolean atLeastOneUpcoming = this.upcomingEventsSearch.execute(request, collection, 1, 1, 0).size() > 0;
 
         List<Listing> results = new ArrayList<Listing>();
@@ -80,25 +77,14 @@ public class EventListingController extends AbstractCollectionListingController 
             totalUpcomingHits = upcoming.getTotalHits();
             if (upcoming.size() > 0) {
                 results.add(upcoming);
-                if (upcomingEventPage > 1) {
-                    prevURL = createURL(request, PREVIOUS_PAGE_PARAM, PREV_BASE_OFFSET_PARAM);
-                    prevURL.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(upcomingEventPage - 1));
-                }
-            }
-            if (upcoming.hasMoreResults()) {
-                nextURL = createURL(request, PREVIOUS_PAGE_PARAM, PREV_BASE_OFFSET_PARAM);
-                nextURL.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(upcomingEventPage + 1));
-            } else if (upcoming.size() == pageLimit) {
-                nextURL = URL.create(request);
-                nextURL.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(upcomingEventPage));
             }
         } else {
-            upcoming = this.upcomingEventsSearch.execute(request, collection, upcomingEventPage, pageLimit, 0);
+            upcoming = this.upcomingEventsSearch.execute(request, collection, upcomingEventPage, 0, 0);
             totalHits += upcoming.getTotalHits();
             totalUpcomingHits = upcoming.getTotalHits();
             upcoming = null;
         }
-
+        
         if (upcoming == null || upcoming.size() == 0) {
             // Searching only in previous events
             int upcomingOffset = getIntParameter(request, PREV_BASE_OFFSET_PARAM, 0);
@@ -110,72 +96,30 @@ public class EventListingController extends AbstractCollectionListingController 
             if (previous.size() > 0) {
                 results.add(previous);
             }
-
-            if (prevEventPage > 1) {
-                prevURL = URL.create(request);
-                prevURL.setParameter(PREV_BASE_OFFSET_PARAM, String.valueOf(upcomingOffset));
-                prevURL.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(prevEventPage - 1));
-
-            } else if (prevEventPage == 1 && atLeastOneUpcoming) {
-                prevURL = createURL(request, PREVIOUS_PAGE_PARAM, PREV_BASE_OFFSET_PARAM);
-            }
-
-            if (previous.hasMoreResults()) {
-                nextURL = URL.create(request);
-                nextURL.setParameter(PREV_BASE_OFFSET_PARAM, String.valueOf(upcomingOffset));
-                nextURL.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(prevEventPage + 1));
-            }
-
             if (atLeastOneUpcoming) {
                 userDisplayPage += prevEventPage;
             } else {
                 userDisplayPage = prevEventPage;
             }
-
         } else if (upcoming.size() < pageLimit) {
             // Fill up the rest of the page with previous events
             int upcomingOffset = pageLimit - upcoming.size();
             Listing previous = this.previousEventsSearch.execute(request, collection, 1, upcomingOffset, 0);
             totalHits += previous.getTotalHits();
-
             if (previous.size() > 0) {
                 results.add(previous);
-            }
-
-            if (upcomingEventPage > 1) {
-                prevURL = createURL(request, PREVIOUS_PAGE_PARAM, PREV_BASE_OFFSET_PARAM);
-                prevURL.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(upcomingEventPage - 1));
-            }
-
-            if (previous.hasMoreResults()) {
-                nextURL = URL.create(request);
-                nextURL.setParameter(PREV_BASE_OFFSET_PARAM, String.valueOf(upcomingOffset));
-                nextURL.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(prevEventPage));
             }
         } else {
             Listing previous = this.previousEventsSearch.execute(request, collection, 1, 0, 0);
             totalHits += previous.getTotalHits();
             previous = null;
         }
-
+        
+        List<URL> urls = generatePageThroughUrls(totalHits, pageLimit, totalUpcomingHits, URL.create(request), true);
         model.put("searchComponents", results);
         model.put("page", userDisplayPage);
         model.put("hideNumberOfComments", getHideNumberOfComments(collection));
-
-        cleanURL(nextURL);
-        cleanURL(prevURL);
-
-        if (nextURL != null) {
-            nextURL.setParameter(USER_DISPLAY_PAGE, String.valueOf(userDisplayPage + 1));
-        }
-        if (prevURL != null && userDisplayPage > 2) {
-            prevURL.setParameter(USER_DISPLAY_PAGE, String.valueOf(userDisplayPage - 1));
-        }
-
-        List<URL> urls = generatePageThroughUrls(totalHits, pageLimit, totalUpcomingHits, URL.create(request), true);
         model.put("pageThroughUrls", urls);
-        model.put("nextURL", nextURL);
-        model.put("prevURL", prevURL);
         model.put("currentDate", Calendar.getInstance().getTime());
 
     }

@@ -125,8 +125,8 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     private static final String PARAMETER_URI = "uri";
     private static final String PARAMETER_URI_DESC = "The URI (path) to the selected folder.";
 
-    protected static final String PARAMETER_AUTENTICATED = "authenticated";
-    protected static final String PARAMETER_AUTENTICATED_DESC = "The default is that only resources readable for everyone is listed. "
+    private static final String PARAMETER_AUTENTICATED = "authenticated";
+    private static final String PARAMETER_AUTENTICATED_DESC = "The default is that only resources readable for everyone is listed. "
             + "If this is set to 'true', the listing is done as the currently " + "logged in user (if any).";
 
     private static final String PARAMETER_DEPTH = "depth";

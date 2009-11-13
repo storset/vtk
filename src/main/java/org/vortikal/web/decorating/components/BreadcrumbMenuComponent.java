@@ -64,20 +64,22 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
             throws Exception {
 
         String token = getToken(request);
-        int displayFromLevel = getIntegerGreaterThenZero(PARAMETER_DISPLAY_FROM_LEVEL, request, Integer.MAX_VALUE);
-        int maxSiblings = getIntegerGreaterThenZero(PARAMETER_MAX_NUMBER_OF_SIBLINGS, request, -1);
+        int displayFromLevel = getIntegerGreaterThenZero(PARAMETER_DISPLAY_FROM_LEVEL, request, -1);
+        int maxSiblings = getIntegerGreaterThenZero(PARAMETER_MAX_NUMBER_OF_SIBLINGS, request, Integer.MAX_VALUE);
 
         Path uri = RequestContext.getRequestContext().getResourceURI();
         Principal principal = SecurityContext.getSecurityContext().getPrincipal();
 
         List<BreadcrumbElement> breadCrumbElements = getBreadcrumbElements();
         Resource currentResource = null;
+        
         currentResource = repository.retrieve(token, uri, false);
-
+        
         if ((!currentResource.isCollection() && (displayFromLevel + 1) > breadCrumbElements.size())
                 || (displayFromLevel > breadCrumbElements.size())) {
             return;
         }
+        
         for (int i = 0; i < displayFromLevel; i++) {
             if (breadCrumbElements.size() > 0) {
                 breadCrumbElements.remove(0);
@@ -88,10 +90,9 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
             try {
                 currentResource = repository.retrieve(token, uri.getParent(), false);
             } catch (AuthorizationException e) {
+                model.put("breadcrumb", breadCrumbElements);
                 return;
-            } catch (AuthenticationException e) {
-                return;
-            }
+            } 
             if (breadCrumbElements.size() > 0) {
                 breadCrumbElements.remove(breadCrumbElements.size() - 1);
             }
@@ -109,15 +110,14 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
             try {
                 childResource = repository.retrieve(token, currentResource.getURI().getParent(), false);
             } catch (AuthorizationException e) {
-                return;
-            } catch (AuthenticationException e) {
-                return;
             }
-            childElements = generateChildElements(childResource.getChildURIs(), principal, currentResource, token);
-            breadCrumbElements.remove(breadCrumbElements.size() - 1);
-            if (childElements.size() > maxSiblings) {
-                childElements = new ArrayList<MenuItem<PropertySet>>();
-                childElements.add(buildItem(currentResource));
+            if (childResource != null) {
+                childElements = generateChildElements(childResource.getChildURIs(), principal, currentResource, token);
+                breadCrumbElements.remove(breadCrumbElements.size() - 1);
+                if (childElements.size() > maxSiblings) {
+                    childElements = new ArrayList<MenuItem<PropertySet>>();
+                    childElements.add(buildItem(currentResource));
+                }
             }
         }
 
@@ -159,8 +159,6 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
                 childResource = repository.retrieve(token, childPath, false);
             } catch (AuthorizationException e) {
                 continue; // can't access resource - not displayed in menu
-            } catch (AuthenticationException e) {
-                continue; // can't access resource - not displayed in menu
             }
             if (!childResource.isCollection()) {
                 continue;
@@ -180,14 +178,10 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         }
         return resource.getTitle();
     }
-    
-    private String getToken(DecoratorRequest request){
-        boolean authenticated = "true".equals(request.getStringParameter(PARAMETER_AUTENTICATED));
-        if (authenticated) {
+
+    private String getToken(DecoratorRequest request) {
             SecurityContext securityContext = SecurityContext.getSecurityContext();
             return securityContext.getToken();
-        }
-        return null;
     }
 
     private int getIntegerGreaterThenZero(String prameter, DecoratorRequest request, int returnWhenParamNotFound) {
@@ -217,7 +211,6 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
 
     protected Map<String, String> getParameterDescriptionsInternal() {
         Map<String, String> map = new LinkedHashMap<String, String>();
-        map.put(PARAMETER_AUTENTICATED, PARAMETER_AUTENTICATED_DESC);
         map.put(PARAMETER_DISPLAY_FROM_LEVEL, PARAMETER_DISPLAY_FROM_LEVEL_DESC);
         map.put(PARAMETER_MAX_NUMBER_OF_SIBLINGS, PARAMETER_MAX_NUMBER_OF_SIBLINGS_DESC);
         return map;

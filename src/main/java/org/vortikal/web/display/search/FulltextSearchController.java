@@ -32,8 +32,10 @@ package org.vortikal.web.display.search;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -48,6 +50,7 @@ import org.vortikal.repository.search.fulltext.FulltextSearcher;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.display.collection.aggregation.AggregationResolver;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
@@ -79,6 +82,7 @@ public class FulltextSearchController implements Controller {
     private int maxResults = 500;
     private String hostName;
     private boolean servesWebRoot = true;
+    private AggregationResolver aggregationResolver;
 
 
     public void setSearcher(FulltextSearcher searcher) {
@@ -150,8 +154,14 @@ public class FulltextSearchController implements Controller {
         int currentPage = getPage(request.getParameter("page"));
         int startIdx = currentPage * this.pageSize;
         int endIdx = startIdx + this.pageSize;
+        
+        Set<Path> uriPrefixes = new HashSet<Path>();
+        uriPrefixes.add(resourceURI);
+        if (this.aggregationResolver != null) {
+            uriPrefixes.addAll(this.aggregationResolver.getAggregationPaths(resourceURI));
+        }
 
-        ResultSet resultSet = searcher.execute(token, query, resourceURI);
+        ResultSet resultSet = searcher.execute(token, query, uriPrefixes);
         List<PropertySet> results = resultSet.getAllResults();
         if (results.size() > this.maxResults) {
             results = results.subList(0, this.maxResults);
@@ -275,4 +285,8 @@ public class FulltextSearchController implements Controller {
         this.servesWebRoot = servesWebRoot;
     }
 
+    
+    public void setAggregationResolver(AggregationResolver aggregationResolver) {
+        this.aggregationResolver = aggregationResolver;
+    }
 }

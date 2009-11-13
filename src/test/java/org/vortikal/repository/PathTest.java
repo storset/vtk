@@ -36,6 +36,22 @@ import junit.framework.TestCase;
 
 public class PathTest extends TestCase {
 
+    public void testGetMostCommonAncestor() {
+        testMostCommonAncestor(Path.fromString("/a/b"), null, Path.ROOT);
+        testMostCommonAncestor(Path.ROOT, null, Path.ROOT);
+        testMostCommonAncestor(Path.fromString("/a/b/c"), Path.ROOT, Path.ROOT);
+        testMostCommonAncestor(Path.ROOT, Path.fromString("/a/g"), Path.ROOT);
+        testMostCommonAncestor(Path.fromString("/a/b"), Path.fromString("/a/b/c"), Path.fromString("/a/b"));
+        testMostCommonAncestor(Path.fromString("/a/b/c"), Path.fromString("/a/b"), Path.fromString("/a/b"));
+        testMostCommonAncestor(Path.fromString("/a/c/d"), Path.fromString("/a/b"), Path.fromString("/a"));
+        testMostCommonAncestor(Path.fromString("/a/b"), Path.fromString("/b/a"), Path.ROOT);
+    }
+
+    private void testMostCommonAncestor(Path path, Path otherPath, Path expected) {
+        Path mostCommonAncestor = path.getMostCommonAncestor(otherPath);
+        assertEquals(expected, mostCommonAncestor);
+    }
+
     public void testPaths() {
 
         assertInvalid(null);
@@ -49,7 +65,7 @@ public class PathTest extends TestCase {
         assertInvalid("/invalid/../path");
         assertInvalid("/invalid.path/");
         assertInvalid(getString("i", 1500));
-        
+
         Path p = Path.fromString("/");
         assertEquals(p.toString(), "/");
         assertTrue(p.isRoot());
@@ -58,7 +74,7 @@ public class PathTest extends TestCase {
         assertEquals(0, p.getDepth());
         assertNull(p.getParent());
         assertEquals(0, p.getAncestors().size());
-        
+
         p = Path.fromString("/a/b/c/d");
         assertEquals(p.toString(), "/a/b/c/d");
         assertFalse(p.isRoot());
@@ -75,13 +91,13 @@ public class PathTest extends TestCase {
 
         p2 = Path.fromString("/b/c/d");
         assertTrue(p2.compareTo(p) > 0);
-        
+
         assertEquals("/", p.getElements().get(0));
         assertEquals("a", p.getElements().get(1));
         assertEquals("b", p.getElements().get(2));
         assertEquals("c", p.getElements().get(3));
         assertEquals("d", p.getElements().get(4));
-        
+
         assertEquals(1, Path.fromString("/").getElements().size());
         assertEquals("/", Path.fromString("/").getElements().get(0));
 
@@ -104,32 +120,31 @@ public class PathTest extends TestCase {
         paths = Path.fromString("/").getPaths();
         assertEquals(1, paths.size());
         assertEquals(Path.ROOT, paths.get(0));
-        
+
         assertEquals("c", p.getParent().getElements().get(3));
-        
+
         assertTrue(p.isAncestorOf(Path.fromString("/a/b/c/d/e")));
         assertFalse(p.isAncestorOf(Path.fromString("/a/b/c/e")));
-        
+
         // Self should not be ancestor of self
         assertFalse(Path.fromString("/a/b").isAncestorOf(Path.fromString("/a/b")));
         assertFalse(Path.fromString("/a/b/c").isAncestorOf(Path.fromString("/a/b/d")));
         assertFalse(Path.fromString("/").isAncestorOf(Path.fromString("/")));
-        
+
         assertEquals(p.extend("e"), Path.fromString("/a/b/c/d/e"));
         assertEquals(p.extend("e/f/g"), Path.fromString("/a/b/c/d/e/f/g"));
-        
+
         // Test getAncestors()
         List<Path> ancestors = Path.fromString("/1/2/3/4").getAncestors();
         assertEquals(Path.fromString("/"), ancestors.get(0));
         assertEquals(Path.fromString("/1"), ancestors.get(1));
         assertEquals(Path.fromString("/1/2"), ancestors.get(2));
         assertEquals(Path.fromString("/1/2/3"), ancestors.get(3));
-        
+
         assertEquals(0, Path.fromString("/").getAncestors().size());
 
-        assertEquals(Path.fromString("/a/b/c"), 
-                Path.fromString("/a/b/c/d").getAncestor(3));
-        
+        assertEquals(Path.fromString("/a/b/c"), Path.fromString("/a/b/c/d").getAncestor(3));
+
         p = Path.fromString("/a/b/c");
         assertEquals(p, p.expand("."));
         assertEquals(p, p.expand("./"));
@@ -149,7 +164,7 @@ public class PathTest extends TestCase {
             // Expected
         }
     }
-    
+
     private String getString(String str, int length) {
         StringBuilder sb = new StringBuilder("/");
         for (int i = 1; i < length; i++) {

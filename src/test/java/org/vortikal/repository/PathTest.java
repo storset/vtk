@@ -37,18 +37,22 @@ import junit.framework.TestCase;
 public class PathTest extends TestCase {
 
     public void testGetMostCommonAncestor() {
-        testMostCommonAncestor(Path.fromString("/a/b"), null, Path.ROOT);
-        testMostCommonAncestor(Path.ROOT, null, Path.ROOT);
-        testMostCommonAncestor(Path.fromString("/a/b/c"), Path.ROOT, Path.ROOT);
-        testMostCommonAncestor(Path.ROOT, Path.fromString("/a/g"), Path.ROOT);
-        testMostCommonAncestor(Path.fromString("/a/b"), Path.fromString("/a/b/c"), Path.fromString("/a/b"));
-        testMostCommonAncestor(Path.fromString("/a/b/c"), Path.fromString("/a/b"), Path.fromString("/a/b"));
-        testMostCommonAncestor(Path.fromString("/a/c/d"), Path.fromString("/a/b"), Path.fromString("/a"));
-        testMostCommonAncestor(Path.fromString("/a/b"), Path.fromString("/b/a"), Path.ROOT);
+        testNearestCommonAncestor(Path.fromString("/a/b"), null, Path.ROOT);
+        testNearestCommonAncestor(Path.ROOT, null, Path.ROOT);
+        testNearestCommonAncestor(Path.fromString("/a/b/c"), Path.ROOT, Path.ROOT);
+        testNearestCommonAncestor(Path.ROOT, Path.fromString("/a/g"), Path.ROOT);
+        testNearestCommonAncestor(Path.fromString("/a/b"), Path.fromString("/a/b/c"), Path.fromString("/a/b"));
+        testNearestCommonAncestor(Path.fromString("/a/b/c"), Path.fromString("/a/b"), Path.fromString("/a/b"));
+        testNearestCommonAncestor(Path.fromString("/a/c/d"), Path.fromString("/a/b"), Path.fromString("/a"));
+        testNearestCommonAncestor(Path.fromString("/a/b"), Path.fromString("/b/a"), Path.ROOT);
+        testNearestCommonAncestor(Path.fromString("/a/b/g"), Path.fromString("/c/b/g"), Path.ROOT);
+        Path path = Path.fromString("/foo/bar/baz");
+        Path otherPath = Path.fromString("/foo/bar/baz");
+        testNearestCommonAncestor(path, otherPath, path);
     }
 
-    private void testMostCommonAncestor(Path path, Path otherPath, Path expected) {
-        Path mostCommonAncestor = path.getMostCommonAncestor(otherPath);
+    private void testNearestCommonAncestor(Path path, Path otherPath, Path expected) {
+        Path mostCommonAncestor = path.getNearestCommonAncestor(otherPath);
         assertEquals(expected, mostCommonAncestor);
     }
 

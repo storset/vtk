@@ -366,11 +366,11 @@ public final class Path implements Comparable<Path> {
         return paths;
     }
 
-    public Path getMostCommonAncestor(Path otherPath) {
+    public Path getNearestCommonAncestor(Path otherPath) {
         if (otherPath == null || otherPath.isRoot() || this.isRoot()) {
             return Path.ROOT;
         }
-        if (this.isAncestorOf(otherPath)) {
+        if (this.isAncestorOf(otherPath) || this.equals(otherPath)) {
             return this;
         }
         Path mostCommonPath = Path.ROOT;

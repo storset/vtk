@@ -9,7 +9,7 @@
 	</#list>
 	</select>
   <#else>
-	<input size="${inputFieldSize}" type="text" name="${inputFieldName}" id="${inputFieldName}" value="${value}"/>
+	<input size="${inputFieldSize}" type="text" name="${inputFieldName}" id="${inputFieldName}" value="${value?html}"/>
   </#if>
   <#if "${tooltip}" != ""><div class="tooltip">${tooltip}</div></#if>
   </div>

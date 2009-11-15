@@ -51,6 +51,14 @@ public final class BaseContext {
         return this.map.get(key);
     }
     
+    public static boolean exists() {
+        Stack<BaseContext> s = threadLocal.get();
+        if (s == null || s.isEmpty()) {
+            return false;
+        }
+        return true;
+    }
+    
     public static BaseContext getContext() {
         Stack<BaseContext> s = threadLocal.get();
         if (s == null || s.isEmpty()) {

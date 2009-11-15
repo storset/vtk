@@ -58,6 +58,9 @@ public class RepositoryContext {
     
 
     public static RepositoryContext getRepositoryContext() {
+        if (!BaseContext.exists()) {
+            return null;
+        }
         BaseContext ctx = BaseContext.getContext();
         RepositoryContext repositoryContext = (RepositoryContext)
             ctx.getAttribute(RepositoryContext.class.getName());

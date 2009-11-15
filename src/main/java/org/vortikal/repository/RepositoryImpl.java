@@ -1066,7 +1066,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             search.setOnlyPublishedResources(true);
             return this.searcher.execute(token, search);
         } else {
-            throw new QueryException("No repository searcher has been configured.");
+            throw new IllegalStateException("No repository searcher has been configured.");
         }
     }
 

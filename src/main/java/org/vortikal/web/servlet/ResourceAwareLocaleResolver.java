@@ -87,13 +87,10 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
         // Try to get request from RequestContext
 
         HttpServletRequest request = null;
-        try {
-            RequestContext requestContext = RequestContext.getRequestContext();
-            if (requestContext != null) {
-                request = requestContext.getServletRequest();
-            }
-        } catch (Exception e) {
-            // Will happen for all threads not originating from web layer
+
+        RequestContext requestContext = RequestContext.getRequestContext();
+        if (requestContext != null) {
+            request = requestContext.getServletRequest();
         }
 
         return resolveResourceLocale(request, uri);

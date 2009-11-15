@@ -114,6 +114,9 @@ public class RequestContext {
      * 
      */
     public static RequestContext getRequestContext() {
+        if (!BaseContext.exists()) {
+            return null;
+        }
         BaseContext ctx = BaseContext.getContext();
         RequestContext requestContext = (RequestContext)
             ctx.getAttribute(RequestContext.class.getName());

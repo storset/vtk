@@ -59,6 +59,9 @@ public class SecurityContext {
     }
     
     public static SecurityContext getSecurityContext() {
+        if (!BaseContext.exists()) {
+            return null;
+        }
         BaseContext ctx = BaseContext.getContext();
         SecurityContext securityContext = (SecurityContext)
             ctx.getAttribute(SecurityContext.class.getName());

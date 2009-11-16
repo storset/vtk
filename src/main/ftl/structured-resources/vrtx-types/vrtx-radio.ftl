@@ -6,7 +6,7 @@
   <#list options as option>
     <div>
       <input name="${option.name}-${option_index}" id="${option.name}-${option_index}" type="radio" value="${option.value}" />
-      <label for="${option.name}-${option_index}">${option.value}</label> 
+      <label for="${option.name}-${option_index}">${option.value?html}</label> 
     </div> 
   </#list>
   </div>

@@ -5,7 +5,7 @@
   <#if dropdown>
   <select name="${inputFieldName}">
     <#list valuemap?keys as key>
-	<option value="${key}" <#if value == key> selected </#if>>${valuemap[key]}</option>
+	<option value="${key?html}" <#if value == key> selected </#if>>${valuemap[key]}</option>
 	</#list>
 	</select>
   <#else>

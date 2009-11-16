@@ -61,7 +61,7 @@
                   '${fckeditorBase.url?html}', '${baseFolder}', '${fckBrowse.url.pathRepresentation}');">
 
     <#assign header>
-      <@vrtx.msg code="editor.edit" args=[resource.resourceTypeDefinition.getLocalizedName(springMacroRequestContext.getLocale())?lower_case] />
+      <@vrtx.msg code="editor.edit" args=[resource.resourceType?lower_case] />
     </#assign>
     <h2>${header}</h2>
 
@@ -166,7 +166,7 @@
          fck.Config['FullPage'] = false;
          fck.Config['ToolbarCanCollapse'] = false;
          fck.Config['TabSpaces'] = 4;
-         <#if resource.resourceTypeDefinition.name == 'article' || resource.resourceTypeDefinition.name == 'event'>
+         <#if resource.resourceType == 'article' || resource.resourceType == 'event'>
            fck.Config['FontFormats'] = 'p;h2;h3;h4;h5;h6;pre';
          <#else>
            fck.Config['FontFormats'] = 'p;h1;h2;h3;h4;h5;h6;pre';
@@ -363,6 +363,7 @@
       </#if>
       
       <#if type = 'HTML' && name != 'userTitle' && name != 'title' && name != 'caption'>
+
         <textarea id="resource.${name}" name="resource.${name}" rows="4" cols="60">${value?html}</textarea>
         <@fck 'resource.${name}' false false />
         

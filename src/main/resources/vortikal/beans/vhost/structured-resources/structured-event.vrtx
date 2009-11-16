@@ -47,8 +47,8 @@ resourcetype structured-event : structured-document {
               <resource:share-at />
             </div>
             <resource:comments />
+            <comp:vrtx-date-info />
           </div>
-          <comp:vrtx-date-info />
        </div>
       </body>
     </html>

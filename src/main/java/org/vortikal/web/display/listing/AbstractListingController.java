@@ -6,8 +6,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
-import org.vortikal.repository.Property;
-import org.vortikal.repository.Resource;
 import org.vortikal.web.service.URL;
 
 public abstract class AbstractListingController {

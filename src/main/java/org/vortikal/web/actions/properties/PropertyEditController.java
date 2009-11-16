@@ -53,6 +53,7 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.Vocabulary;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
@@ -354,15 +355,16 @@ public class PropertyEditController extends SimpleFormController
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
-        Resource resource = this.repository.retrieve(securityContext.getToken(),
-                                                     requestContext.getResourceURI(), false);
-
+        String token = securityContext.getToken();
+        Path uri = requestContext.getResourceURI();
+        Resource resource = this.repository.retrieve(token, uri, false);
+        TypeInfo typeInfo = this.repository.getTypeInfo(token, uri);
         List<PropertyItem> propsList = new ArrayList<PropertyItem>();
         Map<String, PropertyItem> propsMap = new HashMap<String, PropertyItem>();
 
         for (PropertyTypeDefinition def: this.propertyTypeDefinitions) {
 
-            if (!isApplicableProperty(def, resource.getResourceTypeDefinition())) {
+            if (!isApplicableProperty(def, typeInfo.getResourceType())) {
                 if (this.logger.isDebugEnabled()) {
                     this.logger.debug("Property type definition " + def
                                  + " not applicable for resource " + resource + ", skipping");
@@ -376,7 +378,7 @@ public class PropertyEditController extends SimpleFormController
             String toggleURL = null;
             String toggleValue = null;
             
-            if (resource.isAuthorized(def.getProtectionLevel(),
+            if (this.repository.isAuthorized(resource, def.getProtectionLevel(),
                                       securityContext.getPrincipal())) {
                 
                 Map<String, String> urlParameters = new HashMap<String, String>();

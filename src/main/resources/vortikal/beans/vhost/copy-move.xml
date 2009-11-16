@@ -112,7 +112,7 @@
 
   <bean id="copyMove.warningProvider"
         class="org.vortikal.web.actions.copymove.CopyMoveWarningProvider"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="confirmationService" ref="copyMove.confirmationService" />
     <property name="categories">
@@ -144,7 +144,7 @@
 
   <bean id="copyMove.warningHandler" 
     class="org.vortikal.web.display.file.DisplayResourceController"
-    parent="requestLocalRepositoryAware">
+    parent="repositoryAware">
     <property name="viewName" value="copyMove.warningView" />
   </bean>
 
@@ -160,13 +160,13 @@
 
   <bean id="copyToSelectedFolderHandler" 
     class="org.vortikal.web.actions.copymove.CopyMoveToSelectedFolderController"
-    parent="requestLocalRepositoryAware">
+    parent="repositoryAware">
     <property name="viewName" value="manageCollectionListing" />
   </bean>
 
   <bean id="moveToSelectedFolderHandler" 
     class="org.vortikal.web.actions.copymove.CopyMoveToSelectedFolderController"
-    parent="requestLocalRepositoryAware">
+    parent="repositoryAware">
     <property name="viewName" value="manageCollectionListing" />
   </bean>
 
@@ -185,13 +185,13 @@
       <list>
         <ref bean="copyMove.warningProvider" />
         <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
-              parent="requestLocalRepositoryAware">
+              parent="repositoryAware">
           <property name="service" ref="copyToSelectedFolderService" />
           <property name="modelName" value="copy" />
           <property name="matchAssertions" value="true" />
         </bean>
         <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
-              parent="requestLocalRepositoryAware">
+              parent="repositoryAware">
           <property name="service" ref="moveToSelectedFolderService" />
           <property name="modelName" value="move" />
           <property name="matchAssertions" value="true" />

@@ -37,6 +37,7 @@ import org.vortikal.repository.search.QueryException;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.security.AuthenticationException;
+import org.vortikal.security.Principal;
 
 
 /**
@@ -80,6 +81,8 @@ public interface Repository {
         throws ResourceNotFoundException, AuthorizationException, 
             AuthenticationException, Exception;
 
+    public TypeInfo getTypeInfo(String token, Path uri) throws Exception;
+    
     /**
      * Returns a listing of the immediate children of a
      * resource.
@@ -498,6 +501,19 @@ public interface Repository {
             AuthenticationException, IllegalOperationException, 
             ReadOnlyException, Exception;
 
+    /**
+     * Checks whether a principal is allowed to perform 
+     * an operation on a resource.
+     * @param resource the resource in question
+     * @param action the operation in question
+     * @param principal the principal in question
+     * @return <code>true</code> if the principal is allowed to 
+     * perform the operation, <code>false</code> otherwise
+     * @throws Exception if an error occurs
+     */
+    public boolean isAuthorized(Resource resource, RepositoryAction action, 
+            Principal principal) throws Exception;
+    
     
     /**
      * Lists all comments on a resource. Comments on child 

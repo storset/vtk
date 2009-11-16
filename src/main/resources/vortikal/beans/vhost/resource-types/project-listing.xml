@@ -18,7 +18,7 @@
     </property>
   </bean>
 
-  <bean id="resourceIsProjectListing" class="org.vortikal.web.service.ResourceTypeAssertion">
+  <bean id="resourceIsProjectListing" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
     <property name="resourceTypeDefinition" ref="projectListingResourceTypeDefinition" />
     <property name="exactMatch" value="true" />
   </bean>

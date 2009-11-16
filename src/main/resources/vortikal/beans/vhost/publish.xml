@@ -62,14 +62,14 @@
 	
 	<bean id="confirmPublishResourceHandler"
 		class="org.vortikal.web.actions.publish.ConfirmPublishController"
-		parent="requestLocalRepositoryAware">
+		parent="repositoryAware">
 		<property name="viewName" value="publish.confirm" />
 		<property name="publishService" ref="publish.publishResourceConfirmedService" />
 	</bean>
  
 	<bean id="confirmUnpublishResourceHandler"
 		class="org.vortikal.web.actions.publish.ConfirmPublishController"
-		parent="requestLocalRepositoryAware">
+		parent="repositoryAware">
 		<property name="viewName" value="publish.confirm" />
 		<property name="publishService" ref="publish.unpublishResourceConfirmedService" />
 	</bean>
@@ -126,7 +126,7 @@
   
    <bean id="publishResourceHandler"
         class="org.vortikal.web.actions.publish.PublishResourceController"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
         <property name="viewName" value="redirectToManage" />
         <property name="publishDatePropDef" ref="publishDatePropDef" />
     </bean>
@@ -158,7 +158,7 @@
 	</bean>
 	
 	<bean id="displayUnpublishedpPageHandler" class="org.vortikal.web.display.file.DisplayResourceController"
-		parent="requestLocalRepositoryAware">
+		parent="repositoryAware">
 		<property name="viewName" value="displayUnpublishedPage.view" />
 	</bean>
 	<bean id="displayUnpublishedPage.viewResolver" parent="decoratorViewResolver">
@@ -228,7 +228,7 @@
 	
 	<bean id="publishingHandler"
 		class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController"
-		parent="requestLocalRepositoryAware">
+		parent="repositoryAware">
 		<property name="viewName" value="publishing" />
 	</bean>
 	

@@ -273,7 +273,7 @@ public class HeaderControlHandlerInterceptor implements HandlerInterceptor {
                                          HttpServletRequest request, HttpServletResponse response) throws Exception {
         if (resource == null || this.includeNoCacheHeader) {
             response.setHeader("Cache-Control", "no-cache");
-        } else if (!resource.isAuthorized(RepositoryAction.READ_PROCESSED, null)) {
+        } else if (!this.repository.isAuthorized(resource, RepositoryAction.READ_PROCESSED, null)) {
             response.setHeader("Cache-Control", "private");
         }
     }

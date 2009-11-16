@@ -5,7 +5,7 @@
 
   <bean id="transformXmlHandlerInterceptor"
         class="org.vortikal.web.interceptors.HeaderControlHandlerInterceptor"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="includeLastModifiedHeader" value="false" />
     <property name="includeEtagHeader" value="false" />
   </bean>
@@ -51,7 +51,7 @@
   </bean>
 
   <bean id="rawXmlQueryHandler" class="org.vortikal.web.display.search.XmlQueryController"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="xmlSearcher" ref="xmlSearcher" />
   </bean>
 
@@ -83,7 +83,7 @@
     <property name="order" value="0" />
     <property name="assertions">
       <list>
-        <ref bean="resourceIsManagedXml" />
+        <ref bean="resourceTypeIsManagedXml" />
         <ref bean="viewXslStylesheetAvailable" />
       </list>
     </property>
@@ -94,10 +94,6 @@
 
 
 
-
-  <bean id="resourceIsManagedXml" class="org.vortikal.web.service.ResourceTypeAssertion">
-    <property name="resourceTypeDefinition" ref="managedXmlResource" />
-  </bean>
 
   <bean id="viewXslStylesheetAvailable"
         class="org.vortikal.web.service.XmlSchemaXPathAssertion">
@@ -119,7 +115,7 @@
 
     <property name="assertions">
       <list>
-        <ref bean="resourceIsManagedXml" />
+        <ref bean="resourceTypeIsManagedXml" />
         <ref bean="viewXslStylesheetAvailable" />
       </list>
     </property>
@@ -132,7 +128,7 @@
   </bean>
 
    <bean id="propertyAccessor" class="org.vortikal.web.view.PropertyAccessor"
-         parent="requestLocalRepositoryAware">
+         parent="repositoryAware">
      <property name="resourceTypeTree" ref="resourceTypeTree" />
    </bean>
 
@@ -145,7 +141,7 @@
       <list>
         <ref bean="xslBeanProvider" />
         <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
-          parent="requestLocalRepositoryAware">
+          parent="repositoryAware">
           <property name="service" ref="rssTransformService" />
           <property name="modelName" value="xsltParameters" />
           <property name="urlName" value="RSS-URL" />
@@ -173,7 +169,7 @@
       <list>
         <ref bean="xslBeanProvider" />
         <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
-              parent="requestLocalRepositoryAware">
+              parent="repositoryAware">
           <property name="service" ref="viewService" />
           <property name="modelName" value="xsltParameters" />
           <property name="urlName" value="VIEW-URL" />
@@ -185,7 +181,7 @@
 
   <bean id="xslBeanProvider"
         class="org.vortikal.web.referencedata.provider.XSLReferenceDataProvider"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <description>
       This reference data provider adds some metadata to the model for use when transforming XML documents.
     </description>
@@ -196,7 +192,7 @@
 
   <bean id="xmlSearcher"
         class="org.vortikal.repository.search.XmlSearcher"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="parser" ref="searchParser" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
@@ -212,7 +208,7 @@
 
   <bean id="rawXmlQueryURLProvider"
         class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="modelName" value="xsltParameters" />
     <property name="urlName" value="rawXmlQueryURL" />
     <property name="service" ref="rawXmlQueryService" />
@@ -232,7 +228,7 @@
 
    <bean id="xsltTransformationRepositoryURIResolver"
          class="org.vortikal.xml.RepositoryURIResolver"
-         parent="requestLocalRepositoryAware">
+         parent="repositoryAware">
      <description>
        No token is defined here, in order to use the user's actual
        token during transformation, for XSLT document() calls.
@@ -272,7 +268,7 @@
 
    <bean id="xsltCompilationRepositoryURIResolver"
          class="org.vortikal.xml.RepositoryURIResolver"
-         parent="requestLocalRepositoryAware">
+         parent="repositoryAware">
      <description>
        This URI resolver gets stylesheets from the repository. It uses
        a trusted token, as is is only used during compilation of the
@@ -336,7 +332,7 @@
 
   <bean id="previewXmlResourceHandler" 
     class="org.vortikal.web.display.url.ResourceServiceURLController"
-    parent="requestLocalRepositoryAware">
+    parent="repositoryAware">
     <!--property name="service" ref="displayResourceService" /-->
     <property name="service" ref="displayResourceService" />
     <property name="viewName" value="previewIframe" />
@@ -346,7 +342,7 @@
   <!--
   <bean id="displayXmlResourceHandler" 
     class="org.vortikal.web.display.xml.DisplayXmlResourceController"
-    parent="requestLocalRepositoryAware">
+    parent="repositoryAware">
     <property name="handleLastModified" value="false" />
     <property name="transformerManager" ref="transformerManager" />
     <property name="viewName" value="transformXmlResource"/>
@@ -355,7 +351,7 @@
 
   <bean id="displayXmlResourceHandler"
         class="org.vortikal.web.display.xml.DisplayXmlResourceController"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <description>This is used as parent for all similar handlers</description>
     <property name="transformerManager" ref="transformerManager" />
     <property name="viewName" value="transformXmlResource"/>
@@ -381,7 +377,7 @@
 
   <bean id="displayRssResourceHandler" 
     class="org.vortikal.web.display.xml.DisplayXmlResourceController"
-    parent="requestLocalRepositoryAware">
+    parent="repositoryAware">
     <property name="transformerManager" ref="rssTransformerManager" />
     <property name="viewName" value="transformRssResource" />
   </bean>

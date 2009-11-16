@@ -93,7 +93,7 @@
 
   <bean name="commenting.postCommentController"
         class="org.vortikal.web.commenting.PostCommentController"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="formView" value="commenting.redirectToDefault" />
     <property name="successView" value="commenting.redirectToDefault" />
     <property name="commandName" value="postCommentForm" />
@@ -157,26 +157,26 @@
 
   <bean name="commenting.deleteCommentController"
         class="org.vortikal.web.commenting.DeleteCommentController"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="viewName" value="commenting.redirectToDefault" />
   </bean>
 
   <bean name="commenting.deleteAllCommentsController"
         class="org.vortikal.web.commenting.DeleteCommentController"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="deleteAllComments" value="true" />
     <property name="viewName" value="commenting.redirectToDefault" />
   </bean>
 
   <bean name="commenting.resourceCommentsController"
         class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="viewName" value="commenting.resourceCommentsView" />
   </bean>
 
   <bean name="commenting.displayFeedController"
         class="org.vortikal.web.commenting.CommentsFeedController"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="viewService" ref="viewService" />
     <property name="viewName" value="commenting.feedView" />
   </bean>
@@ -258,7 +258,7 @@
 
   <bean id="commenting.redirectToDefaultProvider" 
         class="org.vortikal.web.referencedata.provider.RedirectProvider"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="redirectToService" ref="displayResourceService" />
     <property name="urlAnchor" value="comment-form" />
   </bean>
@@ -269,7 +269,7 @@
     <property name="contentType" value="text/html;charset=utf-8" />
     <property name="referenceDataProviders">
       <bean class="org.vortikal.web.commenting.RecentCommentsProvider"
-            parent="requestLocalRepositoryAware">
+            parent="repositoryAware">
         <property name="deepCommentsListing" value="true" />
         <property name="maxComments" value="100" />
         <property name="viewService" ref="viewService" />
@@ -290,7 +290,7 @@
     <property name="contentType" value="text/html;charset=utf-8" />
     <property name="referenceDataProviders">
       <bean class="org.vortikal.web.commenting.RecentCommentsProvider"
-            parent="requestLocalRepositoryAware">
+            parent="repositoryAware">
         <property name="deepCommentsListing" value="true" />
         <property name="maxComments" value="10" />
         <property name="viewService" ref="viewService" />
@@ -372,7 +372,7 @@
     <property name="sourceList">
       <list>
         <bean class="org.vortikal.web.commenting.CommentsProvider"
-              parent="requestLocalRepositoryAware">
+              parent="repositoryAware">
           <property name="postCommentService" ref="commenting.postCommentService" />
           <property name="deleteCommentService" ref="commenting.deleteCommentService" />
           <property name="deleteAllCommentsService" ref="commenting.deleteAllCommentsService" />
@@ -380,7 +380,7 @@
           <property name="loginService" ref="loginService" />
           <property name="formSessionAttributeName" ref="commenting.postFormSessionAttributeName" />
         </bean>
-        <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider" parent="requestLocalRepositoryAware">
+        <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider" parent="repositoryAware">
           <property name="service" ref="viewService" />
           <property name="uri" value="/" />
           <property name="appendPath" value="${editor.fck.resourcesURL}" />

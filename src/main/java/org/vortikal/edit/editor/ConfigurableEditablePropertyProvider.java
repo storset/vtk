@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
 public class ConfigurableEditablePropertyProvider implements
@@ -43,13 +44,12 @@ public class ConfigurableEditablePropertyProvider implements
     private List<PropertyTypeDefinition> preContentProperties = new ArrayList<PropertyTypeDefinition>();
     private List<PropertyTypeDefinition> postContentProperties = new ArrayList<PropertyTypeDefinition>();
     
-    public List<PropertyTypeDefinition> getPreContentProperties(Resource resource) {
+    public List<PropertyTypeDefinition> getPreContentProperties(Resource resource, TypeInfo typeInfo) {
         return Collections.unmodifiableList(this.preContentProperties);
 
     }
 
-    public List<PropertyTypeDefinition> getPostContentProperties(
-            Resource resource) {
+    public List<PropertyTypeDefinition> getPostContentProperties(Resource resource, TypeInfo typeInfo) {
         return Collections.unmodifiableList(this.postContentProperties);
     }
 

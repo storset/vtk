@@ -81,7 +81,7 @@
 	</bean>
 	<bean id="decorating.emailAFriendURLComponent.urlProvider"
 		class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
-		parent="requestLocalRepositoryAware">
+		parent="repositoryAware">
 		<property name="modelName" value="emailLink" />
 		<property name="urlName" value="url" />
 		<property name="service" ref="emailafriendService" />

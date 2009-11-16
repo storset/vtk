@@ -33,12 +33,13 @@ package org.vortikal.edit.editor;
 import java.util.List;
 
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
 public interface EditablePropertyProvider {
 
-	public List<PropertyTypeDefinition> getPreContentProperties(Resource resource);
+    public List<PropertyTypeDefinition> getPreContentProperties(Resource resource, TypeInfo typeInfo);
 
-    public List<PropertyTypeDefinition> getPostContentProperties(Resource resource);
+    public List<PropertyTypeDefinition> getPostContentProperties(Resource resource, TypeInfo typeInfo);
 
 }

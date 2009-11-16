@@ -9,7 +9,7 @@
 
   <bean id="logoutHandler" 
     class="org.vortikal.web.actions.logout.LogoutController"
-    parent="requestLocalRepositoryAware">
+    parent="repositoryAware">
     <property name="redirectService" ref="viewService" />
     <property name="securityInitializer" ref="securityInitializer" />
     <property name="commandName" value="form" />
@@ -22,19 +22,19 @@
 
   <bean id="httpOptionsHandler"
         class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="supportedMethods" value="OPTIONS" />
     <property name="viewName" value="httpOptions" />
   </bean>
   
   <bean id="displayIndexFileHandler" class="org.vortikal.web.display.index.IndexFileController"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="uriCharacterEncoding" value="${indexFileHandlerURIEncoding}" />
   </bean>
 
   <bean id="collectionListingAsFeedHandler" 
     class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController"
-    parent="requestLocalRepositoryAware">
+    parent="repositoryAware">
     <property name="viewName" value="collectionListingAsFeed" />
   </bean>
   
@@ -44,13 +44,13 @@
   
   <bean id="displayResourceHandler" 
     class="org.vortikal.web.display.file.DisplayResourceController"
-    parent="requestLocalRepositoryAware">
+    parent="repositoryAware">
     <property name="displayProcessed" value="true" />
   </bean>
 
   <bean id="displayHTMLResourceHandler" 
     class="org.vortikal.web.display.file.DisplayResourceController"
-    parent="requestLocalRepositoryAware">
+    parent="repositoryAware">
     <property name="displayProcessed" value="true" />
     <property name="viewName" value="displayHTMLResource" />
     <property name="ignoreLastModified" value="true" />

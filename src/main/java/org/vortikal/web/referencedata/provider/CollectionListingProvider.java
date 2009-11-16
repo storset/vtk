@@ -45,6 +45,7 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
@@ -202,7 +203,7 @@ public class CollectionListingProvider implements ReferenceDataProvider {
 
         children = this.repository.listChildren(token, uri, true);
 
-        children = filterChildren(children);
+        children = filterChildren(token, children);
 
         // Sort children according to input parameters 
         String sortBy = request.getParameter("sort-by");
@@ -281,7 +282,7 @@ public class CollectionListingProvider implements ReferenceDataProvider {
         model.put("collectionListing", collectionListingModel);
     }
 
-    private Resource[] filterChildren(Resource[] children) {
+    private Resource[] filterChildren(String token, Resource[] children) throws Exception {
 
         if (this.matchingResourceTypes == null) {
             return children;
@@ -289,8 +290,9 @@ public class CollectionListingProvider implements ReferenceDataProvider {
         
         List<Resource> filteredChildren = new ArrayList<Resource>();
         for (Resource resource: children) {
+            TypeInfo type = this.repository.getTypeInfo(token, resource.getURI());
             for (ResourceTypeDefinition resourceDef: this.matchingResourceTypes) {
-                if (resource.isOfType(resourceDef))
+                if (type.isOfType(resourceDef))
                     filteredChildren.add(resource);
             }
         }

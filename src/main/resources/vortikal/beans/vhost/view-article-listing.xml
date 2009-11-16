@@ -30,7 +30,7 @@
   </bean>
 
   <bean id="articleListing.handler" class="org.vortikal.web.display.collection.ArticleListingController"
-    parent="requestLocalRepositoryAware">
+    parent="repositoryAware">
     <property name="resourceManager" ref="resourceManager" />
     <property name="sortPropDefs">
       <list>
@@ -62,7 +62,7 @@
   </bean>
 
   <bean id="articleListing.atomHandler" class="org.vortikal.web.display.collection.ArticleListingAsFeedController"
-    parent="requestLocalRepositoryAware">
+    parent="repositoryAware">
     <property name="viewService" ref="viewService" />
     <property name="abdera" ref="abdera" />
     <property name="searcher" ref="articleListingSearcher" />
@@ -80,7 +80,7 @@
   </bean>
 
   <bean id="articleListing.searchComponent" class="org.vortikal.web.search.QueryStringSearchComponent"
-    parent="requestLocalRepositoryAware" depends-on="resourceTypeTree">
+    parent="repositoryAware" depends-on="resourceTypeTree">
     <property name="name" value="articleListing.defaultArticles" />
     <property name="viewService" ref="webService" />
     <property name="resourceManager" ref="resourceManager" />

@@ -27,14 +27,14 @@
     <property name="handler" ref="icalHandler" />
   </bean>
   
-  <bean id="icalHandler" class="org.vortikal.web.display.ical.ICalController" parent="requestLocalRepositoryAware">
+  <bean id="icalHandler" class="org.vortikal.web.display.ical.ICalController" parent="repositoryAware">
     <property name="startDatePropDef" ref="startDatePropDef" />
     <property name="endDatePropDef" ref="endDatePropDef" />
     <property name="locationPropDef" ref="locationPropDef" />
     <property name="introductionPropDef" ref="introductionPropDef" />
   </bean>
 
-  <bean id="resourceTypeIsStructuredEvent" class="org.vortikal.web.service.ResourceTypeAssertion">
+  <bean id="resourceTypeIsStructuredEvent" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
     <property name="resourceType" value="structured-event" />
   </bean>
 

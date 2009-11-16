@@ -30,7 +30,6 @@
  */
 package org.vortikal.repository;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -39,12 +38,9 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
-import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.ValueFormatException;
-import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.util.codec.MD5;
@@ -61,37 +57,16 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
     private Lock lock = null;
     private List<Path> childURIs = null;
 
-    private AuthorizationManager authorizationManager;
     private ResourceTypeTree resourceTypeTree;
 
     public ResourceImpl() {
         super();
     }
 
-    public ResourceImpl(Path uri, ResourceTypeTree resourceTypeTree, AuthorizationManager authorizationManager) {
+    public ResourceImpl(Path uri, ResourceTypeTree resourceTypeTree) {
         super();
         this.uri = uri;
         this.resourceTypeTree = resourceTypeTree;
-        this.authorizationManager = authorizationManager;
-    }
-
-    public PrimaryResourceTypeDefinition getResourceTypeDefinition() {
-        return (PrimaryResourceTypeDefinition) this.resourceTypeTree.getResourceTypeDefinitionByName(this.resourceType);
-    }
-
-    public boolean isOfType(ResourceTypeDefinition type) {
-        return this.resourceTypeTree.isContainedType(type, this.resourceType);
-    }
-
-    public boolean isAuthorized(RepositoryAction action, Principal principal) throws IOException {
-        try {
-            this.authorizationManager.authorizeAction(this.uri, action, principal);
-            return true;
-        } catch (AuthenticationException e) {
-            return false;
-        } catch (RepositoryException e) {
-            return false;
-        }
     }
 
     public Property createProperty(Namespace namespace, String name) {
@@ -320,7 +295,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
     }
 
     public ResourceImpl createCopy(Path newUri) {
-        ResourceImpl resource = new ResourceImpl(newUri, this.resourceTypeTree, this.authorizationManager);
+        ResourceImpl resource = new ResourceImpl(newUri, this.resourceTypeTree);
         resource.setResourceType(getResourceType());
         for (Property prop : getProperties()) {
             resource.addProperty(prop);
@@ -341,7 +316,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         if (this.lock != null)
             lock = (LockImpl) this.lock.clone();
 
-        ResourceImpl clone = new ResourceImpl(this.uri, this.resourceTypeTree, this.authorizationManager);
+        ResourceImpl clone = new ResourceImpl(this.uri, this.resourceTypeTree);
         clone.setID(this.id);
 
         if (this.acl != null) {
@@ -480,10 +455,6 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         sb.append(this.getClass().getName());
         sb.append(": [").append(this.uri).append("]");
         return sb.toString();
-    }
-
-    public void setAuthorizationManager(AuthorizationManager authorizationManager) {
-        this.authorizationManager = authorizationManager;
     }
 
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {

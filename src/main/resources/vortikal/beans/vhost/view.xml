@@ -116,7 +116,7 @@
 
   <bean id="resourceDetailProvider"
         class="org.vortikal.web.referencedata.provider.ResourceDetailProvider"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="serviceMap">
       <map>
         <entry key="ownershipServiceURL" value-ref="ownershipService" />
@@ -131,7 +131,7 @@
 
   <bean id="redirectToAboutProvider" 
         class="org.vortikal.web.referencedata.provider.RedirectProvider"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="redirectToService" ref="aboutResourceService" />
   </bean>
 
@@ -143,26 +143,26 @@
 
   <bean id="redirectToManageProvider" 
         class="org.vortikal.web.referencedata.provider.RedirectProvider"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="redirectToService" ref="manageService" />
   </bean>
 
   <bean id="redirectToPermissionsProvider" 
     class="org.vortikal.web.referencedata.provider.RedirectProvider"
-    parent="requestLocalRepositoryAware">
+    parent="repositoryAware">
     <property name="redirectToService" ref="permissionsService" />
   </bean>
 
   <bean id="leaveAdminLinkProvider"
         class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="service" ref="viewService" />
     <property name="modelName" value="leaveAdmin" />
   </bean>
 
   <bean id="parentLinkProvider"
         class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="service" ref="manageService" />
     <property name="modelName" value="tabMenu1" />
     <property name="linkToParent" value="true" />
@@ -173,7 +173,7 @@
     class="org.vortikal.web.view.components.menu.DefaultListMenuProvider">
     <constructor-arg ref="tabServicesFactory" />
     <constructor-arg value="tabs"/>
-    <constructor-arg ref="repository.requestLocal"/>
+    <constructor-arg ref="repository"/>
     <property name="matchAncestorServices" value="true" />
   </bean>
 
@@ -190,14 +190,14 @@
 
   <bean id="resourceContextProvider" 
         class="org.vortikal.web.referencedata.provider.ResourceContextProvider" 
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="retrieveForProcessing" value="true" />
     <property name="resourceWrapperManager" ref="resourceManager" />
   </bean>
 
   <bean id="switchLocaleActionsProvider" 
         class="org.vortikal.web.referencedata.provider.SwitchLocaleProvider"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <description>
       Map of links for locale switching
     </description>
@@ -217,7 +217,7 @@
     class="org.vortikal.web.view.components.menu.DefaultListMenuProvider">
     <constructor-arg ref="lockActionServicesFactory" />
     <constructor-arg value="lockUnlockActions" />
-    <constructor-arg ref="repository.requestLocal" />
+    <constructor-arg ref="repository" />
   </bean>
 
   <bean id="lockActionServicesFactory"
@@ -230,7 +230,7 @@
     class="org.vortikal.web.view.components.menu.DefaultListMenuProvider">
     <constructor-arg ref="readPermissionFactory" />
     <constructor-arg value="readPermissions" />
-    <constructor-arg ref="repository.requestLocal" />
+    <constructor-arg ref="repository" />
   </bean>
   
     <bean id="readPermissionFactory"
@@ -241,7 +241,7 @@
 
   <bean id="viewBreadCrumbProvider"
         class="org.vortikal.web.referencedata.provider.BreadCrumbProvider" 
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <description>
       Breadcrumb provider that generates links to the view service
     </description>
@@ -301,7 +301,7 @@
   
   <bean id="viewCollectionListingAsFeedProvider"
     class="org.vortikal.web.referencedata.provider.CollectionListingAsFeedProvider"
-    parent="requestLocalRepositoryAware" >
+    parent="repositoryAware" >
     <property name="browsingService" ref="viewService" />
   </bean>
   

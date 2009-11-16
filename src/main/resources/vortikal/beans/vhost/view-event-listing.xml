@@ -33,7 +33,7 @@
 
   <bean id="eventListing.handler" 
         class="org.vortikal.web.display.collection.EventListingController"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="resourceManager" ref="resourceManager" />
     <property name="sortPropDefs">
       <list>
@@ -67,7 +67,7 @@
 
   <bean id="eventListing.atomHandler" 
     class="org.vortikal.web.display.collection.CollectionListingAsAtomFeed"
-    parent="requestLocalRepositoryAware">
+    parent="repositoryAware">
     <property name="viewService" ref="viewService" />
     <property name="abdera" ref="abdera" />
     <property name="searchComponent" ref="eventListing.upcomingEventsSearchComponent" />
@@ -75,7 +75,7 @@
   </bean>
 
   <bean id="eventListing.upcomingEventsSearchComponent" class="org.vortikal.web.search.QueryStringSearchComponent"
-    parent="requestLocalRepositoryAware" depends-on="resourceTypeTree">
+    parent="repositoryAware" depends-on="resourceTypeTree">
     <property name="name" value="eventListing.upcomingEventsSearchComponent" />
     <property name="titleLocalizationKey" value="eventListing.upcomingEvents" />
     <property name="viewService" ref="webService" />
@@ -100,7 +100,7 @@
   </bean>
 
   <bean id="eventListing.previousEventsSearchComponent" class="org.vortikal.web.search.QueryStringSearchComponent"
-    parent="requestLocalRepositoryAware" depends-on="resourceTypeTree">
+    parent="repositoryAware" depends-on="resourceTypeTree">
     <property name="name" value="eventListing.previousEventsSearchComponent" />
     <property name="titleLocalizationKey" value="eventListing.previousEvents" />
     <property name="viewService" ref="webService" />

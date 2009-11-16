@@ -44,15 +44,18 @@ import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.ReadOnlyException;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.ResourceOverwriteException;
+import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.search.QueryException;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.security.AuthenticationException;
+import org.vortikal.security.Principal;
 
 
 public class RequestLocalRepository implements Repository {
@@ -344,6 +347,16 @@ public class RequestLocalRepository implements Repository {
 
     public ResultSet search(String token, Search search) throws QueryException {
         return this.repository.search(token, search);
+    }
+
+    public boolean isAuthorized(Resource resource, RepositoryAction action,
+            Principal principal) throws Exception {
+        return this.repository.isAuthorized(resource, action, principal);
+    }
+
+
+    public TypeInfo getTypeInfo(String token, Path uri) throws Exception {
+        return this.repository.getTypeInfo(token, uri);
     }
     
 }

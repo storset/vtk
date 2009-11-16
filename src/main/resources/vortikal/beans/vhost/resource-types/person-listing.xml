@@ -23,7 +23,7 @@
     </property>
   </bean>
   
-  <bean id="resourceIsPersonListing" class="org.vortikal.web.service.ResourceTypeAssertion">
+  <bean id="resourceIsPersonListing" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
     <property name="resourceTypeDefinition" ref="personListingResourceTypeDefinition" />
     <property name="exactMatch" value="true" />
   </bean>

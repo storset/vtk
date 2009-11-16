@@ -47,6 +47,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
@@ -110,8 +111,8 @@ public class BeanContextComponentResolver
         }
         DecoratorComponent component = this.components.get(namespace + ":" + name);
         if (this.resourceType != null) {
-            Resource resource = getCurrentResource();
-            if (resource == null || !resource.isOfType(this.resourceType)) {
+            TypeInfo type = getResourceTypeInfo();
+            if (type == null || !type.isOfType(this.resourceType)) {
                 component = null;
             }
         }
@@ -188,6 +189,16 @@ public class BeanContextComponentResolver
         this.initialized = true;
     }
 
+    private TypeInfo getResourceTypeInfo() {
+        try {
+            RequestContext requestContext = RequestContext.getRequestContext();
+            SecurityContext securityContext = SecurityContext.getSecurityContext();
+            return this.repository.getTypeInfo(securityContext.getToken(), requestContext.getResourceURI()); 
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+    
     private Resource getCurrentResource() {
         try {
             RequestContext requestContext = RequestContext.getRequestContext();

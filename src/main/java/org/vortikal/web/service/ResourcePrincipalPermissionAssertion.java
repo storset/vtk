@@ -31,7 +31,6 @@
 package org.vortikal.web.service;
 
 
-import java.io.IOException;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -193,11 +192,10 @@ public class ResourcePrincipalPermissionAssertion
         
         try {
             if (this.anonymous) {
-                return resource.isAuthorized(this.permission, null);
+                return this.repository.isAuthorized(resource, this.permission, null);
             }
-            return resource.isAuthorized(this.permission, principal);
-            
-        } catch (IOException e) {
+            return this.repository.isAuthorized(resource, this.permission, principal);
+        } catch (Exception e) {
             logger.error("Got exception during assertion evaluation", e);
             return false;
         }

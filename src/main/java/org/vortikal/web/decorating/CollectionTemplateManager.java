@@ -42,6 +42,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 
 
@@ -130,8 +131,9 @@ public class CollectionTemplateManager implements TemplateManager, InitializingB
     }
 
 
-    private void loadRecursively(Resource r, Set<Resource> result) {
-        if (r.isOfType(this.templateResourceType)) {
+    private void loadRecursively(Resource r, Set<Resource> result) throws Exception {
+        TypeInfo type = this.repository.getTypeInfo(null, r.getURI());
+        if (type.isOfType(this.templateResourceType)) {
             result.add(r);
         }
         if (r.isCollection()) {

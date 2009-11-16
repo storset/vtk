@@ -57,7 +57,7 @@
   <!-- XML edit handler -->
 
   <bean id="xmlEditHandler" class="org.vortikal.edit.xml.XmlEditController"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="transformerManager" ref="editTransformerManager" />
     <property name="schemaPropDef" ref="schemaPropDef" />
     <property name="browseService" ref="browseService" />

@@ -54,13 +54,20 @@
     <property name="tempDir" value="${repository.tempDir}" />
     <property name="maxResourceChildren" value="${repository.maxResourceChildren}" />
     <property name="searcher" ref="systemIndexSearcher" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
   
+
+  <!-- Wrapper around the repository that caches retrievals when executing in a servlet request: -->
+  <bean id="repository" class="org.vortikal.web.RequestLocalRepository">
+    <property name="repository" ref="repository.cachePurgeRepository"/>
+  </bean>
   <!--  Repository cache purge control wrapper hack -->
-  <bean id="repository" class="org.vortikal.repository.CachePurgeControlRepositoryWrapper">
+  <bean id="repository.cachePurgeRepository" class="org.vortikal.repository.CachePurgeControlRepositoryWrapper">
     <property name="wrappedRepository" ref="repository.internal"/>
     <property name="cache" ref="repository.cache"/>
   </bean>
+
 
   <bean id="repository.dataSource" class="org.apache.commons.dbcp.BasicDataSource"
         destroy-method="close">
@@ -126,7 +133,6 @@
 
   <bean id="resourceImpl" class="org.vortikal.repository.ResourceImpl" scope="prototype">
     <property name="resourceTypeTree" ref="resourceTypeTree"/>
-    <property name="authorizationManager" ref="authorizationManager" />
   </bean>
 
   <bean id="repository.cache" class="org.vortikal.repository.store.Cache">
@@ -141,17 +147,13 @@
     <property name="principalFactory" ref="principalFactory" />
   </bean>
 
-  <bean id="repository.requestLocal" class="org.vortikal.web.RequestLocalRepository">
-    <property name="repository" ref="repository"/>
-  </bean>
-
-  <bean id="requestLocalRepositoryAware" abstract="true">
+  <bean id="repositoryAware" abstract="true">
     <description>
       Simple parent template for repository aware controllers.  Just
       saves a couple of lines for each controller having a repository
       property, that's just about all of them
     </description>
-    <property name="repository" ref="repository.requestLocal" />
+    <property name="repository" ref="repository" />
   </bean>
 
   <bean id="repository.lockManager" class="org.vortikal.repository.LockManager">

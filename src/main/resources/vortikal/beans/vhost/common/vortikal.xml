@@ -13,7 +13,7 @@
       each request. (See classes org.vortikal.web.RequestContext and
       org.vortikal.web.service.Service) </description>
     <property name="trustedToken" ref="trustedToken" />
-    <property name="repository" ref="repository.requestLocal" />
+    <property name="repository" ref="repository" />
     <property name="indexFileResolver" ref="indexFileResolver" />
     <property name="services" ref="services" />
     <property name="nonRepositoryRoots">

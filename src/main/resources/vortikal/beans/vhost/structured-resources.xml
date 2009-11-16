@@ -2,7 +2,8 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
   
-  <bean id="structuredResources.typeAssertion" class="org.vortikal.web.service.ResourceTypeAssertion">
+  <bean id="structuredResources.typeAssertion" class="org.vortikal.web.service.ResourceTypeAssertion"
+        parent="repositoryAware">
     <property name="resourceTypeDefinition" ref="json.managedObjectResourceType" />
   </bean>
 
@@ -39,7 +40,7 @@
 
   <bean id="previewUnpublishedConditionProvider"
     class="org.vortikal.web.referencedata.provider.PreviewUnpublishedConditionProvider"
-    parent="requestLocalRepositoryAware">
+    parent="repositoryAware">
     <property name="viewUnpublishedResourceService" ref="viewUnpublishedResourceService" />
     <property name="assertion" ref="mayPreviewUnpublishedResourceAssertion" />
   </bean>
@@ -81,7 +82,7 @@
   
   <bean id="structuredResources.displayHandler"
         class="org.vortikal.resourcemanagement.view.StructuredResourceDisplayController"
-    parent="requestLocalRepositoryAware"
+    parent="repositoryAware"
     depends-on="structuredResource.parser">
     <property name="viewName" value="structuredResources.displayView" />
     <property name="viewService" ref="viewService" />
@@ -365,7 +366,7 @@
   
   <bean id="decorating.publicationsComponent.publicationsProvider"
         class="org.vortikal.web.referencedata.provider.FridaPublicationsProvider"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
   </bean>
   
   <bean id="project.cssComponent"

@@ -35,7 +35,7 @@
   
   <bean id="manage.createArchiveHandler"
         class="org.vortikal.web.actions.convert.CopyController"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="extension" value=".jar" />
     <property name="parentViewOnSuccess" value="true" />
     <property name="copyAction" ref="manage.createArchiveAction" />
@@ -47,7 +47,7 @@
     <property name="validator">
       <bean
           class="org.vortikal.web.actions.convert.CopyCommandValidator"
-          parent="requestLocalRepositoryAware" />
+          parent="repositoryAware" />
     </property>
   </bean>
   
@@ -91,7 +91,7 @@
   
   <bean id="manage.expandArchiveHandler"
         class="org.vortikal.web.actions.convert.CopyController"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="parentViewOnSuccess" value="true" />
     <property name="copyAction" ref="manage.expandArchiveAction" />
     <property name="formView" value="admin" />
@@ -102,7 +102,7 @@
     <property name="validator">
       <bean
           class="org.vortikal.web.actions.convert.CopyCommandValidator"
-          parent="requestLocalRepositoryAware" />
+          parent="repositoryAware" />
     </property>
   </bean>
   

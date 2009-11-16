@@ -293,7 +293,7 @@
 
    <bean id="viewServiceResourceAwareLocaleResolver"
          class="org.vortikal.web.servlet.ResourceAwareLocaleResolver"
-         parent="requestLocalRepositoryAware">
+         parent="repositoryAware">
      <property name="defaultLocale" value="${view.defaultLocale}" />
      <property name="trustedToken" ref="trustedToken" />
    </bean>
@@ -331,7 +331,7 @@
   for child services. -->
   <bean id="noCacheViewHandlerInterceptor"
         class="org.vortikal.web.interceptors.HeaderControlHandlerInterceptor"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="staticHeaders">
       <map>
         <entry key="Cache-Control" value="no-cache, must-revalidate, max-age=0" />
@@ -369,7 +369,7 @@
   <bean id="expiresCacheResponseFilter" class="org.vortikal.web.filter.ExpiresCacheResponseFilter"
         parent="defaultResponseFilterCategoryBean">
     <property name="expiresPropDef" ref="expiresSecPropDef" />
-    <property name="repository" ref="repository.requestLocal" />
+    <property name="repository" ref="repository" />
     <property name="rootService" ref="viewService" />
   </bean>
 
@@ -431,21 +431,21 @@
     <property name="pattern" value=".*[^/]$" />
   </bean>   
  
-  <bean id="resourceTypeInHtml" class="org.vortikal.web.service.ResourceTypeAssertion">
+  <bean id="resourceTypeInHtml" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
     <property name="resourceTypeDefinition" ref="htmlResourceTypeDefinition" />
     <property name="exactMatch" value="false" />
   </bean> 
   
-  <bean id="resourceTypeInXhtml" class="org.vortikal.web.service.ResourceTypeAssertion">
+  <bean id="resourceTypeInXhtml" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
     <property name="resourceTypeDefinition" ref="xhtml10ResourceTypeDefinition" />
     <property name="exactMatch" value="false" />
   </bean>
   
-  <bean id="resourceTypeIsXhtml" parent="resourceTypeInXhtml">
+  <bean id="resourceTypeIsXhtml" parent="resourceTypeInXhtml" >
     <property name="exactMatch" value="true" />
   </bean>
 
-  <bean id="resourceTypeInXhtmlTrans" class="org.vortikal.web.service.ResourceTypeAssertion">
+  <bean id="resourceTypeInXhtmlTrans" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
     <property name="resourceTypeDefinition" ref="xhtml10TransResourceTypeDefinition" />
     <property name="exactMatch" value="false" />
   </bean>

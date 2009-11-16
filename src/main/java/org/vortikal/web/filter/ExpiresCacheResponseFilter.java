@@ -90,7 +90,7 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
             Resource resource = this.repository.retrieve(token, uri, true);
             Property expiresProp = resource.getProperty(this.expiresPropDef);
             boolean anonymousReadable = 
-                resource.isAuthorized(RepositoryAction.READ_PROCESSED, null);
+                this.repository.isAuthorized(resource, RepositoryAction.READ_PROCESSED, null);
             
             if (expiresProp != null && anonymousReadable) {
                 long expiresMilliseconds = expiresProp.getLongValue() * 1000;

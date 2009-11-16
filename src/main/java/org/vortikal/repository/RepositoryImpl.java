@@ -85,6 +85,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     private ContentStore contentStore;
     private TokenManager tokenManager;
     private LockManager lockManager;
+    private ResourceTypeTree resourceTypeTree;
     private RepositoryResourceHelper resourceHelper;
     private AuthorizationManager authorizationManager;
     private PrincipalManager principalManager;
@@ -140,6 +141,18 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
     }
 
+    
+    public TypeInfo getTypeInfo(String token, Path uri) throws Exception {
+        Principal principal = this.tokenManager.getPrincipal(token);
+        ResourceImpl resource = null;
+        resource = this.dao.load(uri);
+
+        if (resource == null) {
+            throw new ResourceNotFoundException(uri);
+        }
+        this.authorizationManager.authorizeReadProcessed(uri, principal);
+        return new TypeInfo(this.resourceTypeTree, resource.getResourceType());
+    }
 
     public InputStream getInputStream(String token, Path uri, boolean forProcessing)
             throws ResourceNotFoundException, AuthorizationException, AuthenticationException,
@@ -520,6 +533,18 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
             if (tempFile != null)
                 tempFile.delete();
+        }
+    }
+
+    public boolean isAuthorized(Resource resource, RepositoryAction action,
+            Principal principal) throws Exception {
+        try {
+            this.authorizationManager.authorizeAction(resource.getURI(), action, principal);
+            return true;
+        } catch (AuthenticationException e) {
+            return false;
+        } catch (RepositoryException e) {
+            return false;
         }
     }
 
@@ -983,6 +1008,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         this.resourceHelper = resourceHelper;
     }
 
+    @Required
+    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+        this.resourceTypeTree = resourceTypeTree;
+    }
 
     public void setTempDir(String tempDirPath) {
         File tmp = new File(tempDirPath);
@@ -1074,5 +1103,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     public void setSearcher(Searcher searcher) {
         this.searcher = searcher;
     }
+
 
 }

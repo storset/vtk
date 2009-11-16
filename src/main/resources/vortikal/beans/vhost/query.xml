@@ -34,18 +34,18 @@
         <bean class="org.vortikal.repository.search.preprocessor.OutputEscapingExpressionEvaluatorWrapper">
           <property name="wrappedEvaluator">
             <bean class="org.vortikal.repository.search.preprocessor.CurrentFolderExpressionEvaluator"
-              parent="requestLocalRepositoryAware" />
+              parent="repositoryAware" />
           </property>
         </bean>
         
         <!-- TODO: Wrap FeaturedArticlesExpressionEvaluator, like CurrentFolderExpressionEvaluator??? -->
         <bean class="org.vortikal.repository.search.preprocessor.FeaturedArticlesExpressionEvaluator"
-              parent="requestLocalRepositoryAware">
+              parent="repositoryAware">
           <property name="featuredArticlesPropDef" ref="articleListing.featuredArticlesPropDef" />
         </bean>
               
         <bean class="org.vortikal.repository.search.preprocessor.SubfoldersExpressionEvaluator"
-              parent="requestLocalRepositoryAware">
+              parent="repositoryAware">
           <property name="recursiveListingPropDef" ref="articleListing.recursiveListingPropDef" />
           <property name="subfolderPropDef" ref="articleListing.recursiveListingSubfoldersPropDef" />
         </bean>

@@ -64,7 +64,7 @@
 
   <bean id="decorating.decorationResolver"
         class="org.vortikal.web.decorating.ConfigurableDecorationResolver"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="config" value="${decorating.templateConfigFile}" />
     <property name="supportMultipleTemplates" value="${decorating.supportMultipleTemplates}" />
     <property name="templateManager" ref="decorating.templateManager" />
@@ -189,7 +189,7 @@
     </property>
     <property name="assertions">
       <list>
-        <bean class="org.vortikal.web.service.ResourceTypeAssertion">
+        <bean class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
           <property name="resourceTypeDefinition" ref="htmlResourceTypeDefinition" />
         </bean>
         <bean class="org.vortikal.web.service.ResourceURIRegexpAssertion">
@@ -215,7 +215,7 @@
     </property>
     <property name="assertions">
       <list>
-        <bean class="org.vortikal.web.service.ResourceTypeAssertion">
+        <bean class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
           <property name="resourceTypeDefinition" ref="htmlResourceTypeDefinition" />
         </bean>
         <bean class="org.vortikal.web.service.ResourceURIRegexpAssertion">

@@ -30,17 +30,14 @@
  */
 package org.vortikal.repository;
 
-import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 import org.vortikal.edit.editor.ResourceWrapperManager;
-import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.security.Principal;
 
 public class ResourceWrapper implements Resource {
@@ -192,10 +189,6 @@ public class ResourceWrapper implements Resource {
         return this.resource.getPropertiesModifiedBy();
     }
 
-    public PrimaryResourceTypeDefinition getResourceTypeDefinition() {
-        return this.resource.getResourceTypeDefinition();
-    }
-
     public String getSerial() {
         return this.resource.getSerial();
     }
@@ -208,21 +201,12 @@ public class ResourceWrapper implements Resource {
         return this.resource.getUserSpecifiedCharacterEncoding();
     }
 
-    public boolean isAuthorized(RepositoryAction privilege, Principal principal)
-            throws IOException {
-        return this.resource.isAuthorized(privilege, principal);
-    }
-
     public boolean isCollection() {
         return this.resource.isCollection();
     }
 
     public boolean isInheritedAcl() {
         return this.resource.isInheritedAcl();
-    }
-
-    public boolean isOfType(ResourceTypeDefinition type) {
-        return this.resource.isOfType(type);
     }
 
     public void removeProperty(Namespace namespace, String name) {

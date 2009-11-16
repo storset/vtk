@@ -30,9 +30,13 @@
  */
 package org.vortikal.web.service;
 
+import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.security.Principal;
+import org.vortikal.security.SecurityContext;
 
 /**
  * Assertion for matching on whether the current resource has a given resource
@@ -50,6 +54,7 @@ import org.vortikal.security.Principal;
  */
 public class ResourceTypeAssertion extends AbstractRepositoryAssertion {
 
+    private Repository repository;
     private ResourceTypeDefinition resourceTypeDefinition;
     private boolean invert = false;
     private boolean exactMatch = false;
@@ -67,6 +72,11 @@ public class ResourceTypeAssertion extends AbstractRepositoryAssertion {
     public void setResourceType(String resourceType) {
         this.resourceType = resourceType;
     }
+    
+    @Required
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
 
     public boolean conflicts(Assertion assertion) {
         // XXX: implement
@@ -75,29 +85,38 @@ public class ResourceTypeAssertion extends AbstractRepositoryAssertion {
 
     public boolean matches(Resource resource, Principal principal) {
 
-        if (resource == null)
+        if (resource == null) {
             return this.invert;
-
-        boolean match = false;
-
-        if (this.exactMatch) {
-            if (this.resourceTypeDefinition != null) {
-                match = (resource.getResourceTypeDefinition().equals(this.resourceTypeDefinition));
-            } else {
-                match = resource.getResourceType().equals(this.resourceType);
-            }
-        } else {
-            if (this.resourceTypeDefinition != null) {
-                match = resource.isOfType(this.resourceTypeDefinition);
-            } else {
-                match = resource.getResourceType().equals(this.resourceType);
-            }
         }
 
-        if (this.invert)
-            return !match;
+        try {
 
-        return match;
+            SecurityContext securityContext = SecurityContext.getSecurityContext();
+            TypeInfo typeInfo = this.repository.getTypeInfo(securityContext.getToken(), resource.getURI());
+            boolean match = false;
+
+            if (this.exactMatch) {
+                if (this.resourceTypeDefinition != null) {
+                    match = (typeInfo.getResourceType().equals(this.resourceTypeDefinition));
+                } else {
+                    typeInfo.getResourceType().getName().equals(this.resourceType);
+                }
+            } else {
+                if (this.resourceTypeDefinition != null) {
+
+                    match = typeInfo.isOfType(this.resourceTypeDefinition);
+                } else {
+                    match = typeInfo.getResourceType().getName().equals(this.resourceType);
+                }
+            }
+
+            if (this.invert)
+                return !match;
+
+            return match;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public String toString() {

@@ -28,21 +28,21 @@
     <property name="handler" ref="event.displayHandler" />
   </bean>
 
-  <bean id="resourceTypeIsDocument" class="org.vortikal.web.service.ResourceTypeAssertion">
+  <bean id="resourceTypeIsDocument" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
     <property name="resourceTypeDefinition" ref="documentResourceTypeDefinition" />
   </bean>
 
-  <bean id="resourceTypeIsNotDocument" class="org.vortikal.web.service.ResourceTypeAssertion">
+  <bean id="resourceTypeIsNotDocument" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
     <property name="resourceTypeDefinition" ref="documentResourceTypeDefinition" />
 	<property name="invert" value="true" />
   </bean>
   
-  <bean id="resourceTypeIsEvent" class="org.vortikal.web.service.ResourceTypeAssertion">
+  <bean id="resourceTypeIsEvent" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
     <property name="resourceTypeDefinition" ref="eventResourceTypeDefinition" />
   </bean>
 
   <bean id="article.displayHandler"  class="org.vortikal.web.decorating.HtmlController"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="parser" ref="decorating.htmlParser" />
     <property name="parseFilters" ref="decorating.nodeFilters" />
     <property name="parseableContentPropDef" ref="containsSSIDirectivesPropDef" />
@@ -60,7 +60,7 @@
 
   <bean id="resourceManager"
         class="org.vortikal.edit.editor.ResourceWrapperManager"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
     <property name="contentResourceType" ref="xhtml10TransResourceTypeDefinition" />

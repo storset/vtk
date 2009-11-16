@@ -68,8 +68,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
 
     public ResourceImpl create(Principal principal, Path uri, boolean collection)
             throws IOException {
-        ResourceImpl resource = new ResourceImpl(uri, this.resourceTypeTree,
-                this.authorizationManager);
+        ResourceImpl resource = new ResourceImpl(uri, this.resourceTypeTree);
         if (collection) {
             resource.setChildURIs(new ArrayList<Path>());
         }
@@ -201,7 +200,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
                 // If it hasn't been set for the new resource, check if zombie
                 boolean zombie = true;
                 for (ResourceTypeDefinition definition : rts) {
-                    if (newResource.isOfType(definition)) {
+                    if (this.resourceTypeTree.isContainedType(definition, newResource.getResourceType())) {
                         zombie = false;
                         break;
                     }

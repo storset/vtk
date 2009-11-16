@@ -118,7 +118,7 @@
 
   <bean id="decorating.manageURLComponent.urlProvider"
         class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="modelName" value="manageLink" />
     <property name="urlName" value="url" />
     <property name="service" ref="manageService" />
@@ -210,7 +210,7 @@
     </property>
   </bean>
 
- <bean id="decorating.resourceTagsComponent" parent="requestLocalRepositoryAware"
+ <bean id="decorating.resourceTagsComponent" parent="repositoryAware"
         class="org.vortikal.web.decorating.components.PropertyLinkedValueDecoratorComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="tags" />
@@ -257,7 +257,7 @@
   </bean>
   
   <bean id="socialWebsitesProvider" class="org.vortikal.web.referencedata.provider.UrlTemplateExternalLinksProvider"
-    parent="requestLocalRepositoryAware">
+    parent="repositoryAware">
     <property name="modelKey" value="socialWebsites" />
      <property name="urlTemplates">
         <map>
@@ -273,14 +273,14 @@
       </property>
   </bean>
   
-  <bean id="decorating.resourcePropertyComponent" parent="requestLocalRepositoryAware"
+  <bean id="decorating.resourcePropertyComponent" parent="repositoryAware"
         class="org.vortikal.web.decorating.components.ResourcePropertiesDecoratorComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="property" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
 
-  <bean id="decorating.includeResourcePropertyComponent" parent="requestLocalRepositoryAware"
+  <bean id="decorating.includeResourcePropertyComponent" parent="repositoryAware"
         class="org.vortikal.web.decorating.components.ResourcePropertiesDecoratorComponent">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="property" />
@@ -391,7 +391,7 @@
   </bean>
   
   <bean id="decorating.listMenuComponent" 
-    class="org.vortikal.web.decorating.components.ListMenuComponent" parent="requestLocalRepositoryAware">
+    class="org.vortikal.web.decorating.components.ListMenuComponent" parent="repositoryAware">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="uri-menu" />
     <property name="view" ref="decorating.listMenuComponent.view" />
@@ -436,7 +436,7 @@
 
   <bean id="decorating.authenticationComponent"
         class="org.vortikal.web.decorating.components.AuthenticationComponent"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="login" />
     <property name="view" ref="decorating.authenticationComponent.view" />
@@ -452,7 +452,7 @@
 
   <bean id="decorating.includeComponent"
         class="org.vortikal.web.decorating.components.IncludeComponent"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="file" />
     <property name="description" value="Includes the contents of another document in the page" />
@@ -466,7 +466,7 @@
     <property name="expressionEvaluators">
       <list>
         <bean class="org.vortikal.repository.search.preprocessor.CurrentFolderExpressionEvaluator"
-              parent="requestLocalRepositoryAware" />
+              parent="repositoryAware" />
         <bean class="org.vortikal.repository.search.preprocessor.CurrentUriExpressionEvaluator" />
       </list>
     </property>

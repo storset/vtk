@@ -39,6 +39,7 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceWrapper;
+import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.security.Principal;
@@ -105,7 +106,8 @@ public class ResourceWrapperManager {
 
         if (wrapper instanceof ResourceEditWrapper) {
             ResourceEditWrapper editWrapper = (ResourceEditWrapper) wrapper;
-            if (resource.isOfType(this.contentResourceType)) {
+            TypeInfo type = this.repository.getTypeInfo(token, wrapper.getURI());
+            if (type.isOfType(this.contentResourceType)) {
                 InputStream is = this.repository.getInputStream(token, resource.getURI(), forProcessing);
                 HtmlPage content = null;
 
@@ -122,9 +124,9 @@ public class ResourceWrapperManager {
                 editWrapper.setContent(content);
             }
             editWrapper.setPreContentProperties(
-                    this.editPropertyProvider.getPreContentProperties(resource));
+                    this.editPropertyProvider.getPreContentProperties(resource, type));
             editWrapper.setPostContentProperties(
-                    this.editPropertyProvider.getPostContentProperties(resource));
+                    this.editPropertyProvider.getPostContentProperties(resource, type));
         }
     }    
 

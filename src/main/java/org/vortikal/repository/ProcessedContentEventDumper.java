@@ -30,7 +30,6 @@
  */
 package org.vortikal.repository;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -137,12 +136,14 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
         Principal all = PrincipalFactory.ALL;
         
         try {
-            if (originalResource.isAuthorized(Privilege.READ_PROCESSED, all) &&
-                resource.isAuthorized(Privilege.READ_PROCESSED, all)) {
+            Acl originalAcl = originalResource.getAcl();
+            if (originalAcl.containsEntry(Privilege.READ_PROCESSED, all) &&
+                originalAcl.containsEntry(Privilege.READ_PROCESSED, all)) {
                 return;
             }
             
-            Operation op = resource.isAuthorized(Privilege.READ_PROCESSED, all) ?
+            Acl acl = resource.getAcl();
+            Operation op = acl.containsEntry(Privilege.READ_PROCESSED, all) ?
                     Operation.ACL_READ_ALL_YES : Operation.ACL_READ_ALL_NO;
 
             ChangeLogEntry entry = changeLogEntry(this.loggerId, this.loggerType, 
@@ -162,7 +163,7 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
                     this.changeLogDAO.addChangeLogEntry(entry, false);
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new DataAccessException("Unable to authorize", e);
         }
 

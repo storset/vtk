@@ -25,12 +25,12 @@
     </property>
   </bean>
 
-  <bean id="apt2html.resourceTypeAssertion" class="org.vortikal.web.service.ResourceTypeAssertion">
+  <bean id="apt2html.resourceTypeAssertion" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
     <property name="resourceTypeDefinition" ref="aptResource" />
   </bean>
 
   <bean id="apt2html.handler" class="org.vortikal.web.display.file.DisplayResourceController"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="viewName" value="apt2html.view" />
     <property name="displayProcessed" value="true" />
   </bean>

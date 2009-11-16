@@ -43,7 +43,7 @@
     </property>
   </bean>
 
-  <bean id="resourceTypeIsText" class="org.vortikal.web.service.ResourceTypeAssertion">
+  <bean id="resourceTypeIsText" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
     <property name="resourceTypeDefinition" ref="textResourceTypeDefinition" />
   </bean>
 
@@ -105,7 +105,7 @@
   
   <bean id="plaintextEditHandler"
         class="org.vortikal.edit.plaintext.PlaintextEditController"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="formView" value="plaintextEdit" />
     <property name="successView" value="plaintextEdit" />
     <property name="manageView" value="redirectToManage" />

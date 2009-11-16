@@ -80,7 +80,7 @@
     </property>
   </bean>
   
-  <bean id="resourceIsEventListing" class="org.vortikal.web.service.ResourceTypeAssertion">
+  <bean id="resourceIsEventListing" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
     <property name="resourceTypeDefinition" ref="eventListingResourceTypeDefinition" />
     <property name="exactMatch" value="true" />
   </bean>

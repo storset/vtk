@@ -71,7 +71,7 @@
   </bean>
   
   <bean id="aggregationResolver" class="org.vortikal.web.display.collection.aggregation.CollectionListingAggregationResolver"
-    parent="requestLocalRepositoryAware">
+    parent="repositoryAware">
     <property name="aggregationPropDef" ref="aggregationPropDef" />
     <property name="recursiveAggregationPropDef" ref="recursiveAggregationPropDef" />
     <property name="limit" value="${aggregation.limit}"/>
@@ -356,11 +356,12 @@
     </property>
   </bean>
   
-  <bean id="resourceInCollection" class="org.vortikal.web.service.ResourceTypeAssertion">
+  <bean id="resourceInCollection" class="org.vortikal.web.service.ResourceTypeAssertion"
+        parent="repositoryAware">
     <property name="resourceTypeDefinition" ref="collectionResourceTypeDefinition" />
   </bean>
   
-  <bean id="resourceIsCollection" class="org.vortikal.web.service.ResourceTypeAssertion">
+  <bean id="resourceIsCollection" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
     <property name="resourceTypeDefinition" ref="collectionResourceTypeDefinition" />
     <property name="exactMatch" value="true" />
   </bean>

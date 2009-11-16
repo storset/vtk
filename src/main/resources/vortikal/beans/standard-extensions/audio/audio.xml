@@ -26,14 +26,14 @@
     <property name="parameterName" value="showresource" />
   </bean>
 
-  <bean id="resourceIsAudio" class="org.vortikal.web.service.ResourceTypeAssertion">
+  <bean id="resourceIsAudio" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
     <property name="resourceTypeDefinition" ref="audioResourceTypeDefinition" />
   </bean>
 
 
   <bean id="displayAudioResourceHandler"
         class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <description>This is used as parent for all similar handlers</description>
     <property name="viewName" value="displayAudioResource"/>
   </bean> 

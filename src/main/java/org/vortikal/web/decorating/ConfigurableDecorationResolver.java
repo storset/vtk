@@ -54,6 +54,7 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceNotFoundException;
+import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
@@ -236,7 +237,7 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
         return null;
     }
 
-    private String checkPathMatch(Path uri, Resource resource) {
+    private String checkPathMatch(Path uri, Resource resource) throws Exception {
         if (this.config == null) {
             return null;
         }
@@ -298,9 +299,12 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
     }
     
 
-    private boolean matchPredicate(Predicate predicate, Resource resource) {
+    private boolean matchPredicate(Predicate predicate, Resource resource) throws Exception {
         if ("type".equals(predicate.getName())) {
-            PrimaryResourceTypeDefinition type = resource.getResourceTypeDefinition();
+            String token = SecurityContext.getSecurityContext().getToken();
+            
+            TypeInfo typeInfo = this.repository.getTypeInfo(token, resource.getURI());
+            PrimaryResourceTypeDefinition type = typeInfo.getResourceType();
             while (type != null) {
                 if (type.getName().equals(predicate.getValue())) {
                     return true;

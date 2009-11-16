@@ -29,7 +29,7 @@
     </property>
   </bean>
 
-  <bean id="resourceTypeIsManagedXml" class="org.vortikal.web.service.ResourceTypeAssertion">
+  <bean id="resourceTypeIsManagedXml" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
     <property name="resourceTypeDefinition" ref="managedXmlResource" />
   </bean>
 

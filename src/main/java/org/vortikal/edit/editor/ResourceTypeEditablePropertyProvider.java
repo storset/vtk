@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.MixinResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -42,20 +43,20 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition.ContentRelati
 
 public class ResourceTypeEditablePropertyProvider implements EditablePropertyProvider {
 	
-	public List<PropertyTypeDefinition> getPreContentProperties(Resource resource) {
+	public List<PropertyTypeDefinition> getPreContentProperties(Resource resource, TypeInfo typeInfo) {
         ContentRelation type = PropertyTypeDefinition.ContentRelation.PRE_CONTENT;
-	    return getPropertyDefinitionsOfType(resource, type);
+	    return getPropertyDefinitionsOfType(typeInfo, type);
 	}
 
-    public List<PropertyTypeDefinition> getPostContentProperties(Resource resource) {
+    public List<PropertyTypeDefinition> getPostContentProperties(Resource resource, TypeInfo typeInfo) {
         ContentRelation type = PropertyTypeDefinition.ContentRelation.POST_CONTENT;
-        return getPropertyDefinitionsOfType(resource, type);
+        return getPropertyDefinitionsOfType(typeInfo, type);
     }
 
 	
-	private List<PropertyTypeDefinition> getPropertyDefinitionsOfType(Resource resource, ContentRelation type) {
+	private List<PropertyTypeDefinition> getPropertyDefinitionsOfType(TypeInfo typeInfo, ContentRelation type) {
         List<ResourceTypeDefinition> resourceDefinitions = new ArrayList<ResourceTypeDefinition>();
-	    populateDefinitions(resourceDefinitions, resource.getResourceTypeDefinition());
+	    populateDefinitions(resourceDefinitions, typeInfo.getResourceType());
 	    List<PropertyTypeDefinition> defs = new ArrayList<PropertyTypeDefinition>();
 	    for (ResourceTypeDefinition resourceDef : resourceDefinitions) {
 	        for (PropertyTypeDefinition propDef: resourceDef.getPropertyTypeDefinitions()) {

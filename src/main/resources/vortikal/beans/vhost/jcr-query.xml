@@ -24,7 +24,7 @@
         <bean class="org.vortikal.repository.search.preprocessor.OutputEscapingExpressionEvaluatorWrapper">
           <property name="wrappedEvaluator">
             <bean class="org.vortikal.repository.search.preprocessor.CurrentFolderExpressionEvaluator"
-              parent="requestLocalRepositoryAware" />
+              parent="repositoryAware" />
           </property>
         </bean>
         

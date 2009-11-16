@@ -31,44 +31,14 @@
 package org.vortikal.repository;
 
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.security.Principal;
 
 public interface Resource extends PropertySet, Cloneable {
-
-    public PrimaryResourceTypeDefinition getResourceTypeDefinition();
-
-    /**
-     * Determines whether this resource is of a given resource type. 
-     *
-     * @param type a resource type definition
-     * @return <code>true</code> if this resource's definition is the
-     * same as or a descendant of the supplied resource type or the
-     * supplied definition is one of this resource's mixin types,
-     * <code>false</code> otherwise.
-     */
-    public boolean isOfType(ResourceTypeDefinition type);
-
-
-    /**
-     * Determines whether a principal is authorized to perform a given
-     * repository action on this resource.
-     *
-     * @param privilege the action in question
-     * @param principal the principal in question
-     * @return <code>true</code> if the principal is authorized,
-     * <code>false</code> otherwise.
-     */
-    public boolean isAuthorized(RepositoryAction privilege, 
-            Principal principal) throws IOException;
-
 
     /**
      * Creates a property with a given name space and name on this

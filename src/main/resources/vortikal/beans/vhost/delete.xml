@@ -64,14 +64,14 @@
   
   <bean id="delete.fromResourceMenuHandler" 
         class="org.vortikal.web.actions.delete.ConfirmDeleteController"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="viewName" value="delete.confirm" />
     <property name="deleteService" ref="deleteFromResourceMenuHandlerResourceService" />
   </bean>
   
   <bean id="delete.handler" 
         class="org.vortikal.web.actions.delete.ConfirmDeleteController"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="viewName" value="delete.confirm" />
     <property name="deleteService" ref="deleteResourceService" />
   </bean>
@@ -141,13 +141,13 @@
   
   <bean id="deleteResourceHandler" 
         class="org.vortikal.web.actions.delete.DeleteResourceController"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="viewName" value="redirectToManage" />
   </bean>
   
   <bean id="deleteFromResourceMenuHandler" 
         class="org.vortikal.web.actions.delete.DeleteResourceController"
-        parent="requestLocalRepositoryAware">
+        parent="repositoryAware">
     <property name="viewName" value="redirectToManage" />
     <property name="requestFromResourceMenu" value="true" />
   </bean>  

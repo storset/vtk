@@ -42,6 +42,7 @@ import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.store.Cache;
 import org.vortikal.security.AuthenticationException;
+import org.vortikal.security.Principal;
 
 /**
  * A hack and necessary evil to fix some cache coherency problems after repository
@@ -320,6 +321,15 @@ public class CachePurgeControlRepositoryWrapper implements Repository {
 
     public ResultSet search(String token, Search search) throws QueryException {
         return this.wrappedRepository.search(token, search);
+    }
+
+    public boolean isAuthorized(Resource resource, RepositoryAction action,
+            Principal principal) throws Exception {
+        return this.wrappedRepository.isAuthorized(resource, action, principal);
+    }
+
+    public TypeInfo getTypeInfo(String token, Path uri) throws Exception {
+        return this.wrappedRepository.getTypeInfo(token, uri);
     }
 
 }

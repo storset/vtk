@@ -38,6 +38,7 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.resourcemanagement.view.StructuredResourceDisplayController;
@@ -66,6 +67,7 @@ public class ResourcePropsNodeFactory implements DirectiveNodeFactory {
         return new Node() {
             public void render(Context ctx, Writer out) throws Exception {
                 Resource resource;
+                String token = SecurityContext.getSecurityContext().getToken();
                 String ref = arg1.getValue(ctx).toString();
 
                 if (ref.equals(".")) {
@@ -79,14 +81,13 @@ public class ResourcePropsNodeFactory implements DirectiveNodeFactory {
                     resource = (Resource) model.get("resource");
                 } else {
                     Path uri = Path.fromString(ref);
-                    String token = SecurityContext.getSecurityContext().getToken();
                     resource = repository.retrieve(token, uri, true);
                 }
                 if (resource == null) {
                     throw new RuntimeException("Unable to resolve resource");
                 }
-                
-                PrimaryResourceTypeDefinition resourceType = resource.getResourceTypeDefinition();
+                TypeInfo typeInfo = repository.getTypeInfo(token, resource.getURI());
+                PrimaryResourceTypeDefinition resourceType = typeInfo.getResourceType();
                 while (resourceType != null) {
                     PropertyTypeDefinition[] propDefs = resourceType.getPropertyTypeDefinitions();
                     for (PropertyTypeDefinition propDef : propDefs) {

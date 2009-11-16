@@ -165,7 +165,7 @@ public class CommentsProvider implements ReferenceDataProvider {
         if (this.resourceCommentsFeedService != null) {
             
             // Only provide feed subscription link if resource is READ for ALL.
-            if (resource.isAuthorized(RepositoryAction.READ, PrincipalFactory.ALL)) {    
+            if (this.repository.isAuthorized(resource, RepositoryAction.READ, PrincipalFactory.ALL)) {
                 try {
                     URL feedURL = this.resourceCommentsFeedService.constructURL(resource, principal);
                     model.put("feedURL", feedURL);

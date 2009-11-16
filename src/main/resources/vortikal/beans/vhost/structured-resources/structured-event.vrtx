@@ -42,12 +42,12 @@ resourcetype structured-event : structured-document {
             <comp:introduction-image />
             <json:field select="content" />
             <resource:tags />
+            <comp:vrtx-date-info />
             <div class="vrtx-social-components"
               <resource:email-friend />
               <resource:share-at />
             </div>
             <resource:comments />
-            <comp:vrtx-date-info />
           </div>
        </div>
       </body>

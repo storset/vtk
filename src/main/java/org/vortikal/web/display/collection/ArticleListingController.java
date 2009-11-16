@@ -43,18 +43,18 @@ import org.vortikal.web.search.Listing;
 import org.vortikal.web.service.URL;
 
 public class ArticleListingController extends AbstractCollectionListingController {
-	
-	private ArticleListingSearcher searcher;
-        	
-    protected void runSearch(HttpServletRequest request, Resource collection,
-    		Map<String, Object> model, int pageLimit) throws Exception {
-    	        
+
+    private ArticleListingSearcher searcher;
+
+    protected void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
+            throws Exception {
+
         int featuredArticlesPage = getPage(request, UPCOMING_PAGE_PARAM);
         int defaultArticlesPage = getPage(request, PREVIOUS_PAGE_PARAM);
         int totalHits = 0;
         int featuredArticlesTotalHits = 0;
         int userDisplayPage = featuredArticlesPage;
-        
+
         boolean atLeastOneFeaturedArticle = false;
         if (collection.getProperty(searcher.getFeaturedArticlesPropDef()) != null) {
             atLeastOneFeaturedArticle = this.searcher.getFeaturedArticles(request, collection, 1, 1, 0).size() > 0;
@@ -64,28 +64,31 @@ public class ArticleListingController extends AbstractCollectionListingControlle
         Listing featuredArticles = null;
         if (request.getParameter(PREVIOUS_PAGE_PARAM) == null) {
             // Search featured articles
-        	featuredArticles = this.searcher.getFeaturedArticles(request, collection, featuredArticlesPage, pageLimit, 0);
-        	totalHits += featuredArticles.getTotalHits();
-        	featuredArticlesTotalHits = featuredArticles.getTotalHits();
+            featuredArticles = this.searcher.getFeaturedArticles(request, collection, featuredArticlesPage, pageLimit,
+                    0);
+            totalHits += featuredArticles.getTotalHits();
+            featuredArticlesTotalHits = featuredArticles.getTotalHits();
             if (featuredArticles.size() > 0) {
-            	results.add(featuredArticles);
+                results.add(featuredArticles);
             }
-        }else{
+        } else {
             featuredArticles = this.searcher.getFeaturedArticles(request, collection, featuredArticlesPage, 0, 0);
             totalHits += featuredArticles.getTotalHits();
             featuredArticlesTotalHits = featuredArticles.getTotalHits();
             featuredArticles = null;
         }
-        
+
         if (featuredArticles == null || featuredArticles.size() == 0) {
             // Searching only in default articles
             int upcomingOffset = getIntParameter(request, PREV_BASE_OFFSET_PARAM, 0);
-            if (upcomingOffset > pageLimit) upcomingOffset = 0;
-            Listing defaultArticles = this.searcher.getArticles(request, collection, defaultArticlesPage, pageLimit, upcomingOffset);
+            if (upcomingOffset > pageLimit)
+                upcomingOffset = 0;
+            Listing defaultArticles = this.searcher.getArticles(request, collection, defaultArticlesPage, pageLimit,
+                    upcomingOffset);
             totalHits += defaultArticles.getTotalHits();
             if (defaultArticles.size() > 0) {
-            	results.add(defaultArticles);
-            } 
+                results.add(defaultArticles);
+            }
             if (atLeastOneFeaturedArticle) {
                 userDisplayPage += defaultArticlesPage;
             } else {
@@ -97,15 +100,16 @@ public class ArticleListingController extends AbstractCollectionListingControlle
             Listing defaultArticles = this.searcher.getArticles(request, collection, 1, upcomingOffset, 0);
             totalHits += defaultArticles.getTotalHits();
             if (defaultArticles.size() > 0) {
-            	results.add(defaultArticles);
+                results.add(defaultArticles);
             }
-        }else{
+        } else {
             Listing defaultArticles = this.searcher.getArticles(request, collection, defaultArticlesPage, 0, 0);
             totalHits += defaultArticles.getTotalHits();
             defaultArticles = null;
         }
-        
-        List<URL> urls = generatePageThroughUrls(totalHits, pageLimit, featuredArticlesTotalHits, URL.create(request),true); 
+
+        List<URL> urls = generatePageThroughUrls(totalHits, pageLimit, featuredArticlesTotalHits, getBaseURL(request),
+                true);
         model.put("searchComponents", results);
         model.put("page", userDisplayPage);
         model.put("hideNumberOfComments", getHideNumberOfComments(collection));
@@ -113,8 +117,8 @@ public class ArticleListingController extends AbstractCollectionListingControlle
     }
 
     @Required
-	public void setSearcher(ArticleListingSearcher searcher) {
-		this.searcher = searcher;
-	}
+    public void setSearcher(ArticleListingSearcher searcher) {
+        this.searcher = searcher;
+    }
 
 }

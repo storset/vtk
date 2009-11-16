@@ -81,8 +81,8 @@ public class CollectionListingController extends AbstractCollectionListingContro
                 limit -= listing.getFiles().size();
             }
         }
-        
-        List<URL> urls = generatePageThroughUrls(totalHits, pageLimit, URL.create(request));
+
+        List<URL> urls = generatePageThroughUrls(totalHits, pageLimit, getBaseURL(request));
         model.put("searchComponents", results);
         model.put("page", page);
         model.put("pageThroughUrls", urls);

@@ -16,7 +16,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-
   <#if tagElements?exists && !scope.URI.root>
      <#assign title><@vrtx.msg code="tags.serviceTitle" args=[scope.title] /></#assign>
   <#elseif tagElements?exists>
@@ -26,19 +25,16 @@
   <#else>
     <#assign title><@vrtx.msg code="tags.title" args=[repositoryID, tag] /></#assign>
   </#if>
-
   <title>${title?html}
     <#if page?has_content>
       <#if "${page}" != "1"> - <@vrtx.msg code="viewCollectionListing.page" /> ${page}</#if>
     </#if>
   </title>
-
   <#if cssURLs?exists>
     <#list cssURLs as cssUrl>
        <link href="${cssUrl}" type="text/css" rel="stylesheet"/>
     </#list>
   </#if>
-  
   <#if alternativeRepresentations?exists>
   <#list alternativeRepresentations as alt>
     <link rel="alternate" type="${alt.contentType?html}" title="${alt.title?html}" href="${alt.url?html}" />
@@ -72,9 +68,7 @@
 
   <#else>
 
-    <#if listing?exists && listing.hasContent()>
-  
-
+    <#if listing?exists && listing.hasContent() >
      <#-- List resources: -->
      <div class="tagged-resources vrtx-resources">
       <#assign resources=listing.getFiles() />
@@ -85,11 +79,8 @@
 
               <#list resources as resource>
                   <#assign resourceTitle = resource.getPropertyByPrefix("","title").getFormattedValue() />
-                  <#assign introImageProp = resource.getPropertyByPrefix("","picture")?default("") />
-                  
-                  
-                  <div class="vrtx-resource" id="vrtx-result-${i}">
-                     
+                  <#assign introImageProp = resource.getPropertyByPrefix("","picture")?default("") />                 
+                  <div class="vrtx-resource" id="vrtx-result-${i}">                   
                         <#if introImageProp != "">
                           <a href="${resource.getURI()?html}" class="vrtx-image">
         		          <#assign src = vrtx.propValue(resource, 'picture', 'thumbnail') />
@@ -111,8 +102,7 @@
                             </#assign>
                           <#else>
                             <#assign val = vrtx.propValue(resource, displayPropDef.name, "long") /> <#-- Default to 'long' format -->
-                          </#if>
-                
+                          </#if>              
                           <#if val?has_content>
                             <div class="${displayPropDef.name}">
                               ${val} 
@@ -129,36 +119,37 @@
                               </div>
                           </#if> 
                         </#list>
-
                    </div> <!-- end class result -->
                   <#assign i = i + 1 />
                 </#list>
               </div> <!-- end class tagged-resources -->
-              
-              
-              
-             <#-- Previous/next URLs: -->
-        
-             <#if prevURL?exists>
-               <a class="vrtx-previous" href="${prevURL?html}"><@vrtx.msg code="viewCollectionListing.previous" /></a>
-             </#if>
-             <#if nextURL?exists>
-               <a class="vrtx-next" href="${nextURL?html}"><@vrtx.msg code="viewCollectionListing.next" /></a>
-             </#if>
-
-    <#-- XXX: display first link with content type = atom: -->
-	
-	  <#if alternativeRepresentations?exists>
-	    <#list alternativeRepresentations as alt>
-	      <#if alt.contentType = 'application/atom+xml'>
-	        <div class="vrtx-feed-link">
-	          <a id="vrtx-feed-link" href="${alt.url?html}"><@vrtx.msg code="viewCollectionListing.feed.fromThis" /></a>
-	        </div>
-	        <#break />
-	      </#if>
-	    </#list>
-	</#if>
-
+            <#-- Previous/next URLs: -->
+        	 <div class="vrtx-paging-feed-wrapper"> 	
+			<#if pageThroughUrls?exists && (pageThroughUrls?size > 1) >
+				 <span class="vrtx-paging-wrapper"> 
+			         <#if (page-2 > -1) >
+				  		<a class="vrtx-previous" href="${pageThroughUrls[page-2]}"><@vrtx.msg code="viewCollectionListing.previous" /></a>
+				   	 </#if> 
+				     <#list pageThroughUrls as url>
+				       	<a href="${url?html}" class="vrtx-page-number <#if (url_index+1) = page>vrtx-marked</#if>">${(url_index+1)}</a>
+				     </#list>
+				     <#if (pageThroughUrls?size > page) > 
+				        <a class="vrtx-next" href="${pageThroughUrls[page]}"><@vrtx.msg code="viewCollectionListing.next" /></a>
+				     </#if>
+			   	 </span> 
+			</#if>
+    		<#-- XXX: display first link with content type = atom: -->
+			  <#if alternativeRepresentations?exists>
+			    <#list alternativeRepresentations as alt>
+			      <#if alt.contentType = 'application/atom+xml'>
+			        <div class="vrtx-feed-link">
+			          <a id="vrtx-feed-link" href="${alt.url?html}"><@vrtx.msg code="viewCollectionListing.feed.fromThis" /></a>
+			        </div>
+			        <#break />
+			      </#if>
+			    </#list>
+			</#if>
+			</div>
     <#else> <#-- no resources found for tag -->
       <p>
         ${vrtx.getMsg("tags.notFound")} <span class="italic">${tag?html}</span>.

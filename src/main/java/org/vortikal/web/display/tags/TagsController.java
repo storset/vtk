@@ -44,11 +44,13 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.web.display.listing.AbstractListingController;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.service.Service;
@@ -57,7 +59,7 @@ import org.vortikal.web.tags.RepositoryTagElementsDataProvider;
 import org.vortikal.web.tags.TagElement;
 import org.vortikal.web.tags.TagsHelper;
 
-public class TagsController implements Controller {
+public class TagsController extends AbstractListingController implements Controller {
 
     private boolean defaultRecursive = true;
     private Repository repository;
@@ -96,51 +98,20 @@ public class TagsController implements Controller {
         // Setting the default page limit
         int pageLimit = this.defaultPageLimit;
 
-        PageInfo pageInfo = new PageInfo(request, pageLimit);
-        int page = pageInfo.getPage();
-        int limit = pageInfo.getLimit();
-        int offset = pageInfo.getOffset();
+        int page = getPage(request, UPCOMING_PAGE_PARAM);
+        int limit = pageLimit;
+        int totalHits = 0;
 
         Listing listing = this.searchComponent.execute(request, scope, page, limit, 0, defaultRecursive);
+        if (listing != null) {
+            totalHits = listing.getTotalHits();
+        }
+        
+        List<URL> urls = generatePageThroughUrls(totalHits, pageLimit, URL.create(request));
+        
         model.put("listing", listing);
-
-        // Check previous result (by redoing the previous search),
-        // to see if we need to adjust the offset.
-        // XXX: is there a better way?
-        if (listing.getFiles().size() == 0 && offset > 0) {
-            Listing prevListing = this.searchComponent.execute(request, scope, page - 1, limit, 0, defaultRecursive);
-            if (prevListing.getFiles().size() > 0 && !prevListing.hasMoreResults()) {
-                offset -= prevListing.getFiles().size();
-            }
-        }
-
-        // We have more results to display for this listing
-        // Only include enough results to fill the page:
-        if (!listing.hasMoreResults() && listing.getFiles().size() > 0) {
-            limit -= listing.getFiles().size();
-        }
-
         model.put("page", page);
-
-        URL nextURL = null;
-        URL prevURL = null;
-        if (listing.hasContent()) {
-            if (listing.hasMoreResults()) {
-                nextURL = URL.create(request);
-                nextURL.setParameter("page", String.valueOf(page + 1));
-            }
-            if (page > 1) {
-                prevURL = URL.create(request);
-                if (page == 1) {
-                    prevURL.removeParameter("page");
-                } else {
-                    prevURL.setParameter("page", String.valueOf(page - 1));
-                }
-            }
-        }
-
-        model.put("nextURL", nextURL);
-        model.put("prevURL", prevURL);
+        model.put("pageThroughUrls", urls);
 
         Set<Object> alt = new HashSet<Object>();
         for (String contentType : this.alternativeRepresentations.keySet()) {

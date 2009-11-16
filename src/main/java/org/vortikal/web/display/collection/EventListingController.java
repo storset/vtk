@@ -84,7 +84,7 @@ public class EventListingController extends AbstractCollectionListingController 
             totalUpcomingHits = upcoming.getTotalHits();
             upcoming = null;
         }
-        
+
         if (upcoming == null || upcoming.size() == 0) {
             // Searching only in previous events
             int upcomingOffset = getIntParameter(request, PREV_BASE_OFFSET_PARAM, 0);
@@ -114,8 +114,8 @@ public class EventListingController extends AbstractCollectionListingController 
             totalHits += previous.getTotalHits();
             previous = null;
         }
-        
-        List<URL> urls = generatePageThroughUrls(totalHits, pageLimit, totalUpcomingHits, URL.create(request), true);
+
+        List<URL> urls = generatePageThroughUrls(totalHits, pageLimit, totalUpcomingHits, getBaseURL(request), true);
         model.put("searchComponents", results);
         model.put("page", userDisplayPage);
         model.put("hideNumberOfComments", getHideNumberOfComments(collection));

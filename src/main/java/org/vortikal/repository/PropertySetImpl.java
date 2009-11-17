@@ -184,6 +184,7 @@ public class PropertySetImpl implements PropertySet, Cloneable {
         return props;
     }
 
+    @Override
     public Object clone() throws CloneNotSupportedException {
         
         PropertySetImpl clone = new PropertySetImpl();
@@ -199,6 +200,7 @@ public class PropertySetImpl implements PropertySet, Cloneable {
         return clone;
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(this.getClass().getName());
         sb.append(" [").append(this.uri).append("]");
@@ -214,6 +216,7 @@ public class PropertySetImpl implements PropertySet, Cloneable {
     }
 
 
+    @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof PropertySetImpl))
             return false;

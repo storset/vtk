@@ -210,6 +210,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         return clone;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if ((obj == null) || !(obj instanceof Property)) return false;
         
@@ -247,6 +248,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         return this.value.equals(otherProp.getValue());
     }
     
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
 

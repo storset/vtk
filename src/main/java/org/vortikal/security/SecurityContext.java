@@ -57,11 +57,16 @@ public class SecurityContext {
         BaseContext ctx = BaseContext.getContext();
         ctx.setAttribute(SecurityContext.class.getName(), securityContext);
     }
-    
-    public static SecurityContext getSecurityContext() {
-        if (!BaseContext.exists()) {
-            return null;
+
+    public static boolean exists() {
+        if (BaseContext.exists()) {
+            return BaseContext.getContext().getAttribute(SecurityContext.class.getName()) != null;
         }
+
+        return false;
+    }
+
+    public static SecurityContext getSecurityContext() {
         BaseContext ctx = BaseContext.getContext();
         SecurityContext securityContext = (SecurityContext)
             ctx.getAttribute(SecurityContext.class.getName());

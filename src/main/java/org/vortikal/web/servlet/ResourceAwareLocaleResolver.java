@@ -85,12 +85,10 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
 
     public Locale resolveResourceLocale(Path uri) {
         // Try to get request from RequestContext
-
         HttpServletRequest request = null;
 
-        RequestContext requestContext = RequestContext.getRequestContext();
-        if (requestContext != null) {
-            request = requestContext.getServletRequest();
+        if (RequestContext.exists()) {
+            request = RequestContext.getRequestContext().getServletRequest();
         }
 
         return resolveResourceLocale(request, uri);
@@ -188,7 +186,6 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
 
         Locale locale = null;
         while (parentUri != null) {
-
             Resource parent = this.repository.retrieve(token, parentUri, true);
             if (StringUtils.isNotBlank(parent.getContentLanguage())) {
                 locale = LocaleHelper.getLocale(parent.getContentLanguage());

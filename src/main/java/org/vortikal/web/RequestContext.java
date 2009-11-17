@@ -107,16 +107,20 @@ public class RequestContext {
         BaseContext ctx = BaseContext.getContext();
         ctx.setAttribute(RequestContext.class.getName(), requestContext);
     }
-    
+
+    public static boolean exists() {
+        if (BaseContext.exists()) {
+            return BaseContext.getContext().getAttribute(RequestContext.class.getName()) != null;
+        }
+
+        return false;
+    }
 
     /**
      * Gets the current request context.
      * 
      */
     public static RequestContext getRequestContext() {
-        if (!BaseContext.exists()) {
-            return null;
-        }
         BaseContext ctx = BaseContext.getContext();
         RequestContext requestContext = (RequestContext)
             ctx.getAttribute(RequestContext.class.getName());

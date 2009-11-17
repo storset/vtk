@@ -34,11 +34,30 @@ import java.util.Arrays;
 
 import junit.framework.TestCase;
 
+import org.vortikal.repository.Path;
 import org.vortikal.repository.store.db.SqlDaoUtils.PropHolder;
 
 
 
 public class SqlDaoUtilsTestCase extends TestCase {
+
+
+    public void testGetUriSqlWildcard() {
+
+        assertEquals("/%", SqlDaoUtils.getUriSqlWildcard(Path.ROOT, '@'));
+
+        assertEquals("/foo/bar/%", SqlDaoUtils.getUriSqlWildcard(Path.fromString("/foo/bar"), '@'));
+
+        assertEquals("/foo@@bar/%",
+                SqlDaoUtils.getUriSqlWildcard(Path.fromString("/foo@bar"), '@'));
+
+        assertEquals("/foo@@bar@%/%",
+                SqlDaoUtils.getUriSqlWildcard(Path.fromString("/foo@bar%"), '@'));
+
+        assertEquals("/vrtx/@_@_vrtx/@%foo@%/@@children/%",
+                SqlDaoUtils.getUriSqlWildcard(Path.fromString("/vrtx/__vrtx/%foo%/@children"), '@'));
+
+    }
 
     // PropHolder is used for aggregation of multi-value property values from database
     // because of de-normalized storage. Usage of PropHolder class in SqlMapDataAccessor
@@ -74,8 +93,8 @@ public class SqlDaoUtilsTestCase extends TestCase {
         assertTrue(holder2.equals(holder1)); // Symmetry
         holder2 = newTestHolder();
         
-        // Test that type does not affect hashcode or equals
-        holder2.type = 5;
+        // Test that propTypeId does not affect hashcode or equals
+        holder2.propTypeId = 5;
         assertEquals(holder1.hashCode(), holder2.hashCode());
         assertTrue(holder1.equals(holder2));
         assertTrue(holder2.equals(holder1)); // Symmetry
@@ -162,7 +181,7 @@ public class SqlDaoUtilsTestCase extends TestCase {
         holder.values = Arrays.asList(new String[]{"Root"});
         holder.propID = new Integer(1000);
         holder.binary = false;
-        holder.type = 0;
+        holder.propTypeId = 0;
         return holder;
     }
     

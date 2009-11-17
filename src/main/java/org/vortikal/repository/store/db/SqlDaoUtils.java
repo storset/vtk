@@ -30,51 +30,45 @@
  */
 package org.vortikal.repository.store.db;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.vortikal.repository.Path;
 
 
-class SqlDaoUtils {
+final class SqlDaoUtils {
 
-    private static final Set<Character> WILDCARDS = new HashSet<Character>();
-    
-    static {
-        WILDCARDS.add('_');
-        WILDCARDS.add('%');
-    }
-
-    public static String getUriSqlWildcard(Path uri, char escape) {
-        String path = uri.toString();
-        if ("/".equals(path)) {
+    public static String getUriSqlWildcard(Path uri, final char escape) {
+        if (uri.isRoot()) {
             return "/%";
         }
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < path.length(); i++) {
-            char c = path.charAt(i);
-            if (c == escape) {
-                result.append(escape);
-            } else if (WILDCARDS.contains(c)) {
+        
+        String pathString = uri.toString();
+        StringBuilder result = new StringBuilder(pathString.length() + 2);
+        for (int i = 0; i < pathString.length(); i++) {
+            char c = pathString.charAt(i);
+            if (c == escape 
+             || c == '%'
+             || c == '_') {
                 result.append(escape);
             }
+            
             result.append(c);
         }
         result.append("/%");
+        
         return result.toString();
     }
     
 
     /**
-     * This class is used to aggregate property values from potentially 
+     * This internal class is used to aggregate property values from potentially
      * multiple rows for a single property into a single prop holder 
      * object.
      * 
      * Elements that together constitute prop holder identity are:
-     * * The property name space 
-     * * The property name
      * * The resource id
+     * * The property name space URI
+     * * The property name
      *
      * And nothing more. A single property instance at application level
      * can map to multiple propIDs in database because of de-normalized storage
@@ -83,40 +77,36 @@ class SqlDaoUtils {
     public static class PropHolder {
         String namespaceUri = "";
         String name = "";
-        int type;
+        int propTypeId;
         int resourceId;
         Object propID = null;
         boolean binary = false;
         List<String> values;
         
+        @Override
         public boolean equals(Object object) {
-            if (object == null) return false;
-            
             if (object == this) return true;
+
+            if (object == null || object.getClass() != this.getClass()) return false;
             
             PropHolder other = (PropHolder) object;
-            if (this.namespaceUri != null) {
-                if (!this.namespaceUri.equals(other.namespaceUri)) return false;
-            } else if (other.namespaceUri != null) {
-                if (!other.namespaceUri.equals(this.namespaceUri)) return false;
-            }
-            
-            if (!this.name.equals(other.name)) {
-                return false;
-            }
+            if (!this.name.equals(other.name)) return false;
 
             if (this.resourceId != other.resourceId) return false;
-            
-            return true;
+
+            if (this.namespaceUri != null) {
+                return this.namespaceUri.equals(other.namespaceUri);
+            } else {
+                return other.namespaceUri == null;
+            }
         }
         
+        @Override
         public int hashCode() {
-            int hashCode = 217 + this.name.hashCode();
-            hashCode = 31 * hashCode + this.resourceId;
-            hashCode = 31 * hashCode + (this.namespaceUri != null ? 
-                                            this.namespaceUri.hashCode() : 0);
-
-            return hashCode;
+            int code = this.resourceId + 7;
+            code = 31 * code + this.name.hashCode();
+            code = 31 * code + (this.namespaceUri == null ? 0 : this.namespaceUri.hashCode());
+            return code;
         }
     }
 

@@ -75,16 +75,8 @@ public class MessageSourceTypeLocalizationProvider implements
 
     public String getLocalizedResourceTypeName(ResourceTypeDefinition def,
             Locale locale) {
-
-        String key = null;
-        String prefix = def.getNamespace().getPrefix();
         String name = def.getName();
-        if (prefix != null){
-            key = RESOURCE_TYPE_NAME_KEY_PREFIX + prefix + ":" + name;
-        } else {
-            key = RESOURCE_TYPE_NAME_KEY_PREFIX + name;
-        }
-        
+        String key = RESOURCE_TYPE_NAME_KEY_PREFIX + name;
         return this.messageSource.getMessage(key, null, name, locale);
     }
     
@@ -92,6 +84,4 @@ public class MessageSourceTypeLocalizationProvider implements
     public void setMessageSource(MessageSource messageSource) {
         this.messageSource = messageSource;
     }
-
-
 }

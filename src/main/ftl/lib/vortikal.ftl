@@ -272,7 +272,7 @@
 
 <#function resourceTypeName resource>
     <#local locale = springMacroRequestContext.getLocale() />
-    <#return resource.resourceType />
+    <#return getMsg("resourcetype.name." + resource.resourceType) />
 </#function>
 
 <#function prop resource propName prefix=''>

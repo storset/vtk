@@ -126,7 +126,7 @@
 
           <#case "name">
             <#if collectionListing.browsingLinks[child_index]?exists>
-              <#local resourceTypeName = child.resourceType />
+              <#local resourceTypeName = vrtx.resourceTypeName(child) />
               <a href="${collectionListing.browsingLinks[child_index]?html}" title="${resourceTypeName}">
                 <span class="authorizedListedResource">${child.name}</span>
               </a>

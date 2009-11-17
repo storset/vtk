@@ -170,11 +170,12 @@
 
   <bean id="typeLocalizationProvider" 
     class="org.vortikal.repository.resourcetype.MessageSourceTypeLocalizationProvider">
-    <property name="messageSource">
-      <bean class="org.springframework.context.support.ResourceBundleMessageSource">
-        <property name="basename" value="vortikal.i18n.resource-types"/>
-      </bean>
-    </property>
+    <property name="messageSource" ref="repository.typeLocalizationMessageSource" />
+  </bean>
+
+  <bean id="repository.typeLocalizationMessageSource"
+        class="org.springframework.context.support.ResourceBundleMessageSource">
+    <property name="basename" value="vortikal.i18n.resource-types"/>
   </bean>
 
   <bean id="contentRepresentationRegistry"

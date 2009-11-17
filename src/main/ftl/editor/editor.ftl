@@ -61,7 +61,7 @@
                   '${fckeditorBase.url?html}', '${baseFolder}', '${fckBrowse.url.pathRepresentation}');">
 
     <#assign header>
-      <@vrtx.msg code="editor.edit" args=[resource.resourceType?lower_case] />
+      <@vrtx.msg code="editor.edit" args=[vrtx.resourceTypeName(resource)?lower_case] />
     </#assign>
     <h2>${header}</h2>
 

@@ -33,34 +33,37 @@ resourcetype featured-content {
                [endif]
                </div>
              [endif]
-             <div class="vrtx-box-content">
-               [if sticktitle != null && sticktitle != ""]
-                 <div class="vrtx-sticktitle">[val sticktitle]</div>
-               [endif]
-               [if thetitle != null && thetitle != ""]
-                 [if webaddress != null && webaddress != ""]
-                   <h2><a href="[val webaddress]">[val thetitle]</a></h2>
-                 [else]
-                   <h2>[val thetitle]</h2>
+             [if (sticktitle != null && sticktitle != "") || (thetitle != null && thetitle != "")
+              || (date != null && date != "") || (content != null && content != "") || (urlText != null && urlText != "")]
+               <div class="vrtx-box-content">
+                 [if sticktitle != null && sticktitle != ""]
+                   <div class="vrtx-sticktitle">[val sticktitle]</div>
                  [endif]
+                 [if thetitle != null && thetitle != ""]
+                   [if webaddress != null && webaddress != ""]
+                     <h2><a href="[val webaddress]">[val thetitle]</a></h2>
+                   [else]
+                     <h2>[val thetitle]</h2>
+                   [endif]
+                 [endif]
+                 [if date != null && date != ""]
+                   <div class="vrtx-date">[val date]</div>
+                 [endif]
+                 [if content != null && content != ""]
+                   <div class="vrtx-box-sub-content">[val content unescaped]</div>
+                 [endif]  
+               </div>
+               [if urlText != null && urlText != ""]
+                 <div class="vrtx-more">
+                   [if webaddress != null && webaddress != ""]
+                     <span><a href="[val webaddress]">[val urlText]</a></span>
+                   [else]
+                     <span>[val urlText]</span>
+                   [endif]
+                 </div>
                [endif]
-               [if date != null && date != ""]
-                 <div class="vrtx-date">[val date]</div>
-               [endif]
-               [if content != null && content != ""]
-                 <div class="vrtx-box-sub-content">[val content unescaped]</div>
-               [endif]  
              </div>
-             [if urlText != null && urlText != ""]
-             <div class="vrtx-more">
-                [if webaddress != null && webaddress != ""]
-                  <span><a href="[val webaddress]">[val urlText]</a></span>
-                [else]
-                  <span>[val urlText]</span>
-                [endif]
-              </div>
-              [endif]
-           </div>
+           [endif]
         [endlist]
       [endif]
       ##

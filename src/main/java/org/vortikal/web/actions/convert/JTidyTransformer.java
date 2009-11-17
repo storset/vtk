@@ -38,7 +38,9 @@ import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.util.io.StreamUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -179,8 +181,9 @@ public class JTidyTransformer implements Filter {
             if (this.insertedCssReference != null && !"".equals(this.insertedCssReference.trim())) {
                 insertCssReference(document, this.insertedCssReference);
             }
-
-            resource.setUserSpecifiedCharacterEncoding(null);
+            
+            resource.removeProperty(Namespace.DEFAULT_NAMESPACE, 
+                    PropertyType.CHARACTERENCODING_USER_SPECIFIED_PROP_NAME);
 
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             tidy.pprint(document, outputStream);

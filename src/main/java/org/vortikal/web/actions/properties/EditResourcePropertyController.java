@@ -44,6 +44,7 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.TypeInfo;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -153,6 +154,7 @@ public class EditResourcePropertyController extends SimpleFormController
         }
         Path uri = requestContext.getResourceURI();
         Resource resource = this.repository.retrieve(token, uri, false);
+        TypeInfo typeInfo = this.repository.getTypeInfo(token, uri);
         
         Namespace ns = Namespace.getNamespace(propertyCommand.getNamespace());
         String name = propertyCommand.getName();
@@ -168,7 +170,8 @@ public class EditResourcePropertyController extends SimpleFormController
             resource.removeProperty(ns, name);
         } else {
             if (prop == null) {
-                prop = resource.createProperty(ns, name);
+                prop = typeInfo.createProperty(ns, name);
+                resource.addProperty(prop);
             }
             prop.setStringValue(value);
         }

@@ -46,6 +46,7 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
@@ -92,8 +93,9 @@ public class PublishResourceController extends SimpleFormController implements I
         String token = SecurityContext.getSecurityContext().getToken();
 
         Path resourceURI = RequestContext.getRequestContext().getResourceURI();
-        Resource resource = repository.retrieve(token, resourceURI, true);
-
+        Resource resource = this.repository.retrieve(token, resourceURI, true);
+        TypeInfo typeInfo = this.repository.getTypeInfo(token, resourceURI);
+        
         PublishResourceCommand publishResourceCommand = (PublishResourceCommand) command;
 
         String action = request.getParameter(ACTION_PARAM);
@@ -107,7 +109,8 @@ public class PublishResourceController extends SimpleFormController implements I
             if (PUBLISH_PARAM.equals(action)) {
                 Property publishDateProp = resource.getProperty(this.publishDatePropDef);
                 if (publishDateProp == null) {
-                    publishDateProp = resource.createProperty(this.publishDatePropDef);
+                    publishDateProp = this.publishDatePropDef.createProperty();
+                    resource.addProperty(publishDateProp);
                 }
                 publishDateProp.setDateValue(Calendar.getInstance().getTime());
                 msgCode += "publish";

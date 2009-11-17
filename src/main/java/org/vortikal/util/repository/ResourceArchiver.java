@@ -504,7 +504,7 @@ public class ResourceArchiver {
 
     private boolean setProperty(Resource resource, String name,
             Attributes attributes, boolean decode, EventListener listener) 
-    throws Exception {
+        throws Exception {
         String valueString = attributes.getValue(name);
         if (decode) {
             valueString = decodeValue(valueString);
@@ -526,7 +526,8 @@ public class ResourceArchiver {
         }
         Property prop = resource.getProperty(propDef);
         if (prop == null) {
-            prop = resource.createProperty(propDef);
+            prop = propDef.createProperty();
+            resource.addProperty(prop);
         }
         ValueFormatter valueFormatter = propDef.getValueFormatter();
         String format = null;

@@ -136,18 +136,7 @@ public class ResourceWrapperManager {
         Resource resource = wrapper.getResource();
 
         if (wrapper.isPropChange()) {
-            // Checks that is not a folder
-            if (resource.getCharacterEncoding() != null) {
-                // Set default encoding if unsupported encoding
-                if (Charset.isSupported(resource.getCharacterEncoding())) {
-                    resource = this.repository.store(token, resource);
-                } else {
-                    resource.setUserSpecifiedCharacterEncoding(defaultCharacterEncoding);
-                    resource = this.repository.store(token, resource);
-                }
-            } else {
-                resource = this.repository.store(token, resource);
-            }
+            resource = this.repository.store(token, resource);
         }
 
         if (wrapper.isContentChange()) {

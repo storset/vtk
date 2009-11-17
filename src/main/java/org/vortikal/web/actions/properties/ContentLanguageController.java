@@ -37,9 +37,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.TypeInfo;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.web.RequestContext;
@@ -94,10 +98,18 @@ public class ContentLanguageController extends SimpleFormController {
         }
         
         Resource resource = this.repository.retrieve(token, uri, false);
-
+        TypeInfo typeInfo = this.repository.getTypeInfo(token, uri);
         Locale locale = LocaleHelper.getLocale(contentLanguageCommand.getContentLanguage());
-        resource.setContentLocale((locale == null) ? null : locale.toString());
-
+        
+        if (locale == null) {
+            resource.removeProperty(Namespace.DEFAULT_NAMESPACE, 
+                    PropertyType.CONTENTLOCALE_PROP_NAME);
+        } else {
+            Property prop = typeInfo.createProperty(Namespace.DEFAULT_NAMESPACE, 
+                    PropertyType.CONTENTLOCALE_PROP_NAME);
+            prop.setStringValue(locale.toString());
+            resource.addProperty(prop);
+        }
         if (logger.isDebugEnabled()) {
             logger.debug("Setting new content language '" +
                          resource.getContentLanguage() + 

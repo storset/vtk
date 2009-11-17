@@ -38,7 +38,6 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
 public class DefaultPublishEvaluator implements PropertyEvaluator {
 
-    private PropertyTypeDefinition publishDatePropDef;
     private PropertyTypeDefinition creationTimePropDef;
 
     public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
@@ -51,16 +50,11 @@ public class DefaultPublishEvaluator implements PropertyEvaluator {
 
         if (ctx.getEvaluationType() == Type.Create) {
             // Make sure every newly created resource is published
-            Property publishDateProp = ctx.getNewResource().createProperty(this.publishDatePropDef);
-            publishDateProp.setDateValue(creationTimeProp.getDateValue());
+            property.setDateValue(creationTimeProp.getDateValue());
             return true;
         }
 
         return false;
-    }
-
-    public void setPublishDatePropDef(PropertyTypeDefinition publishDatePropDef) {
-        this.publishDatePropDef = publishDatePropDef;
     }
 
     public void setCreationTimePropDef(PropertyTypeDefinition creationTimePropDef) {

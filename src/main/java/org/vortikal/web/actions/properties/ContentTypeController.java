@@ -36,9 +36,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.TypeInfo;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -86,6 +90,7 @@ public class ContentTypeController extends SimpleFormController {
         }
         
         Resource resource = this.repository.retrieve(token, uri, false);
+        TypeInfo typeInfo = this.repository.getTypeInfo(token, uri);
 
         String contentType = contentTypeCommand.getContentType();
 
@@ -95,8 +100,10 @@ public class ContentTypeController extends SimpleFormController {
             return;
         }
 
-        resource.setContentType(contentType);
-
+        Property prop = typeInfo.createProperty(
+                Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTTYPE_PROP_NAME);
+        prop.setStringValue(contentType);
+        resource.addProperty(prop);
         if (logger.isDebugEnabled()) {
             logger.debug("Setting new content type '" +
                          resource.getContentType() + 

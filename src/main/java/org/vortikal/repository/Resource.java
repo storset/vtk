@@ -41,19 +41,14 @@ import org.vortikal.security.Principal;
 public interface Resource extends PropertySet, Cloneable {
 
     /**
-     * Creates a property with a given name space and name on this
-     * resource.
+     * Adds a property to this resource.
      *
-     * @param namespace the name space of the property
-     * @param name the name of the property
-     * @return the created property
+     * @param property the given property
      */
-    public Property createProperty(Namespace namespace, String name);
+    public void addProperty(Property property);
     
-    public Property createProperty(PropertyTypeDefinition propDef);
-
     /**
-     * Removes a property on this resource.
+     * Removes a property from this resource.
      *
      * @param namespace the name space of the property
      * @param name the name of the property
@@ -67,7 +62,6 @@ public interface Resource extends PropertySet, Cloneable {
      * Gets a resource's serial string.  A serial string is a unique
      * string which changes on each write-operation on the resource,
      * and may be used for instance as an ETag on that resource.
-     *
      */
     public String getSerial();
 
@@ -221,18 +215,12 @@ public interface Resource extends PropertySet, Cloneable {
     public String getUserSpecifiedCharacterEncoding();
 
     /**
-     * Sets the user specified character encoding.
-     */
-    public void setUserSpecifiedCharacterEncoding(String characterEncoding);
-
-    /**
      * Gets the evaluated ('guessed') character encoding.
      */
     public String getGuessedCharacterEncoding();
 
     public String getTitle();
 
-    
     /**
      * Gets the character encoding. This value is only relevant if the
      * resource type is 'textResource'. It depends on the value of
@@ -240,25 +228,6 @@ public interface Resource extends PropertySet, Cloneable {
      * <code>getUserSpecifiedCharacterEncoding()</code>.
      */
     public String getCharacterEncoding();
-    
-
-    /**
-     * Sets this resource's content locale.
-     *
-     */
-    public void setContentLocale(String locale);
-
-    /**
-     * Sets this resource's content (MIME) type.
-     *
-     */
-    public void setContentType(String string);
-
-    /**
-     * Sets the owner of this resource.
-     *
-     */
-    public void setOwner(Principal principal);
 
     public Object clone() throws CloneNotSupportedException;
     

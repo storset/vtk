@@ -41,6 +41,7 @@ import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.TypeInfo;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -137,11 +138,13 @@ public class SetResourcePropertyController
 
         Resource resource = this.repository.retrieve(
             token, requestContext.getResourceURI(), false);
+        TypeInfo typeInfo = this.repository.getTypeInfo(token, requestContext.getResourceURI());
         Namespace ns = Namespace.getNamespace(propertyCommand.getNamespace());
 
         Property property = resource.getProperty(ns, propertyCommand.getName());
         if (property == null) {
-            property = resource.createProperty(ns, propertyCommand.getName());
+            property = typeInfo.createProperty(ns, propertyCommand.getName());
+            resource.addProperty(property);
         }
         property.setStringValue(propertyCommand.getValue());
 

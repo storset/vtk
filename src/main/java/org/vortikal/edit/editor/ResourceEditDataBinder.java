@@ -125,7 +125,8 @@ public class ResourceEditDataBinder extends ServletRequestDataBinder {
             if (prop == null) {
                 if (value != null && !value.trim().equals("")) {
                     try {
-                        prop = resource.createProperty(propDef);
+                        prop = propDef.createProperty();
+                        resource.addProperty(prop);
                         setPropValue(value, prop);
                         command.setPropChange(true);
                     } catch (Throwable t) {

@@ -47,10 +47,14 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.Repository.Depth;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
@@ -204,6 +208,7 @@ public class PlaintextEditController extends SimpleFormController
         PlaintextEditCommand plaintextEditCommand = (PlaintextEditCommand) command;
 
         Resource resource = this.repository.retrieve(token, uri, false);
+        TypeInfo typeInfo = this.repository.getTypeInfo(token, uri);
         String storedEncoding = resource.getCharacterEncoding();
         String postedEncoding = getPostedEncoding(resource, plaintextEditCommand);
 
@@ -241,7 +246,10 @@ public class PlaintextEditController extends SimpleFormController
             maybeSetEncoding = false;
         }
         if (maybeSetEncoding) {
-            resource.setUserSpecifiedCharacterEncoding(characterEncoding);
+            Property prop = typeInfo.createProperty(Namespace.DEFAULT_NAMESPACE, 
+                    PropertyType.CHARACTERENCODING_USER_SPECIFIED_PROP_NAME);
+            prop.setStringValue(characterEncoding);
+            resource.addProperty(prop);
             this.repository.store(token, resource);
         }
 

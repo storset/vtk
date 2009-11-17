@@ -51,9 +51,13 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.support.RequestContextUtils;
 import org.vortikal.repository.AuthorizationException;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.TypeInfo;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.MimeHelper;
 import org.vortikal.web.service.Service;
@@ -239,12 +243,17 @@ public class FCKeditorConnector implements Controller {
             this.repository.storeContent(token, uri, inStream);
 
             Resource newResource = this.repository.retrieve(token, uri, true);
+            TypeInfo typeInfo = this.repository.getTypeInfo(token, uri);
             
             String contentType = uploadItem.getContentType();
             if (contentType == null || MimeHelper.DEFAULT_MIME_TYPE.equals(contentType)) {
                 contentType = MimeHelper.map(newResource.getName());
             }
-            newResource.setContentType(contentType);
+
+            Property prop = typeInfo.createProperty(
+                    Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTTYPE_PROP_NAME);
+            prop.setStringValue(contentType);
+            newResource.addProperty(prop);
             this.repository.store(token, newResource);
             
             URL fileURL = this.viewService.constructURL(uri);

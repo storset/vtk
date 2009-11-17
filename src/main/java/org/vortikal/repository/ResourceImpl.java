@@ -40,7 +40,6 @@ import java.util.Map;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.resourcetype.ValueFormatException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.util.codec.MD5;
@@ -69,72 +68,19 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         this.resourceTypeTree = resourceTypeTree;
     }
 
-    public Property createProperty(Namespace namespace, String name) {
-        PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyTypeDefinition(namespace, name);
-        return createProperty(propDef);
-    }
-
-    public Property createProperty(PropertyTypeDefinition propDef) {
-        Property prop = propDef.createProperty();
-        addProperty(prop);
-        return prop;
-    }
-
-    /**
-     * Creates and adds a property with a given namespace, name and value. The
-     * type is set according to its {@link PropertyTypeDefinition property
-     * definition}, or {@link PropertyType.TYPE_STRING} if it has no definition
-     * 
-     * @param namespace
-     *            the namespace
-     * @param name
-     *            the name
-     * @return a property instance
-     * @throws ValueFormatException
-     *             if the supplied value's type does not match that of the
-     *             property definition
-     */
-    public Property createProperty(Namespace namespace, String name, Object value) throws ValueFormatException {
-        PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyTypeDefinition(namespace, name);
-        Property prop = propDef.createProperty(value);
-        addProperty(prop);
-        return prop;
-    }
-
-    public Property createProperty(String namespaceUrl, String name, String[] stringValues) {
-        Namespace namespace = this.resourceTypeTree.getNamespace(namespaceUrl);
-        PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyTypeDefinition(namespace, name);
-        Property prop = propDef.createProperty(stringValues);
-        addProperty(prop);
-        return prop;
-    }
-
-    public Property createProperty(String prefix, String name, List<String> values) {
-        PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
-        if (propDef == null) {
-            return null;
-        }
-        Property prop = propDef.createProperty(values.toArray(new String[values.size()]));
-        addProperty(prop);
-        return prop;
-    }
-
     public void removeProperty(Namespace namespace, String name) {
         Map<String, Property> props = this.propertyMap.get(namespace);
-
-        if (props == null)
+        if (props == null) {
             return;
-
+        }
         Property prop = props.get(name);
-
-        if (prop == null)
+        if (prop == null) {
             return;
-
+        }
         PropertyTypeDefinition def = prop.getDefinition();
-
-        if (def != null && def.isMandatory())
+        if (def != null && def.isMandatory()) {
             throw new ConstraintViolationException("Property is mandatory");
-
+        }
         props.remove(name);
     }
 
@@ -267,25 +213,6 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         return LocaleHelper.getLocale(this.getContentLanguage());
     }
 
-    public void setUserSpecifiedCharacterEncoding(String characterEncoding) {
-        setProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CHARACTERENCODING_USER_SPECIFIED_PROP_NAME,
-                characterEncoding);
-
-    }
-
-    public void setContentLocale(String locale) {
-        setProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLOCALE_PROP_NAME, locale);
-    }
-
-    public void setContentType(String contentType) {
-        setProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTTYPE_PROP_NAME, contentType);
-    }
-
-    public void setOwner(Principal principal) {
-        Property prop = getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.OWNER_PROP_NAME);
-        prop.setPrincipalValue(principal);
-    }
-
     public Object clone() throws CloneNotSupportedException {
         ResourceImpl clone = cloneWithoutProperties();
         for (Property prop : getProperties()) {
@@ -362,17 +289,6 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         return prop.getPrincipalValue();
     }
 
-    private void setProperty(Namespace namespace, String name, String value) {
-        if (value == null) {
-            removeProperty(namespace, name);
-            return;
-        }
-        Property prop = getProperty(namespace, name);
-        if (prop == null) {
-            prop = createProperty(namespace, name);
-        }
-        prop.setStringValue(value);
-    }
 
     // Mumble mumble. this.childURIs should never be null if this method is
     // called.

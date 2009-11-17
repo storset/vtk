@@ -103,16 +103,6 @@ public class ResourceWrapper implements Resource {
         return this.resource.getContentLocale();
     }
     
-    /** Delegation of resource implementation: **/
-    
-    public Property createProperty(Namespace namespace, String name) {
-        return this.resource.createProperty(namespace, name);
-    }
-
-    public Property createProperty(PropertyTypeDefinition propDef) {
-        return this.resource.createProperty(propDef);
-    }
-
     public Acl getAcl() {
         return this.resource.getAcl();
     }
@@ -221,24 +211,8 @@ public class ResourceWrapper implements Resource {
         this.resource.setAcl(acl);
     }
 
-    public void setContentLocale(String locale) {
-        this.resource.setContentLocale(locale);
-    }
-
-    public void setContentType(String string) {
-        this.resource.setContentType(string);
-    }
-
     public void setInheritedAcl(boolean inheritedAcl) {
         this.resource.setInheritedAcl(inheritedAcl);
-    }
-
-    public void setOwner(Principal principal) {
-        this.resource.setOwner(principal);
-    }
-
-    public void setUserSpecifiedCharacterEncoding(String characterEncoding) {
-        this.resource.setUserSpecifiedCharacterEncoding(characterEncoding);
     }
 
     public List<Property> getProperties() {
@@ -275,6 +249,11 @@ public class ResourceWrapper implements Resource {
     
     public boolean isReadRestricted() {
         return this.resource.isReadRestricted();
+    }
+
+    public void addProperty(Property property) {
+        this.resource.addProperty(property);
+        
     }
 
 }

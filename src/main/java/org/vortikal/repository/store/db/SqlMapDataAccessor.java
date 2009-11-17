@@ -60,8 +60,10 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.ResourceImpl;
+import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.value.BinaryValue;
 import org.vortikal.repository.store.DataAccessException;
@@ -80,7 +82,8 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
   implements DataAccessor {
 
     private PrincipalFactory principalFactory;
-
+    private ResourceTypeTree resourceTypeTree;
+    
     private Log logger = LogFactory.getLog(this.getClass());
 
     private boolean optimizedAclCopySupported = false;
@@ -1035,11 +1038,12 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             }
             
             if (prop.binary) {
-                r.createProperty(prop.namespaceUri, prop.name,
-                        new String[]{prop.propID.toString()});
+                
+                r.addProperty(createProperty(prop.namespaceUri, prop.name,
+                        new String[]{prop.propID.toString()}));
             } else {
-                r.createProperty(prop.namespaceUri, prop.name, 
-                        prop.values.toArray(new String[prop.values.size()]));
+                r.addProperty(createProperty(prop.namespaceUri, prop.name, 
+                        prop.values.toArray(new String[prop.values.size()])));
             }
         }
     }
@@ -1050,98 +1054,98 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         resourceImpl.setID(((Number)resourceMap.get("id")).intValue());
         
         boolean collection = "Y".equals(resourceMap.get("isCollection"));
-        resourceImpl.createProperty(
+        resourceImpl.addProperty(createProperty(
             Namespace.DEFAULT_NAMESPACE, PropertyType.COLLECTION_PROP_NAME,
-            Boolean.valueOf(collection));
+            Boolean.valueOf(collection)));
         
         Principal createdBy = principalFactory.getPrincipal(
             (String) resourceMap.get("createdBy"), Principal.Type.USER);
-        resourceImpl.createProperty(
+        resourceImpl.addProperty(createProperty(
                 Namespace.DEFAULT_NAMESPACE, PropertyType.CREATEDBY_PROP_NAME,
-                createdBy);
+                createdBy));
 
-        resourceImpl.createProperty(
+        resourceImpl.addProperty(createProperty(
             Namespace.DEFAULT_NAMESPACE, PropertyType.CREATIONTIME_PROP_NAME,
-            resourceMap.get("creationTime"));
+            resourceMap.get("creationTime")));
 
         Principal principal = principalFactory.getPrincipal(
             (String) resourceMap.get("owner"), Principal.Type.USER);
-        resourceImpl.createProperty(
+        resourceImpl.addProperty(createProperty(
             Namespace.DEFAULT_NAMESPACE, PropertyType.OWNER_PROP_NAME,
-            principal);
+            principal));
 
         String string = (String) resourceMap.get("contentType");
         if (string != null) {
-            resourceImpl.createProperty(
+            resourceImpl.addProperty(createProperty(
                 Namespace.DEFAULT_NAMESPACE, 
                 PropertyType.CONTENTTYPE_PROP_NAME,
-                string);
+                string));
         }
         
         string = (String) resourceMap.get("characterEncoding");
         if (string != null) {
-            resourceImpl.createProperty(
+            resourceImpl.addProperty(createProperty(
                 Namespace.DEFAULT_NAMESPACE, 
                 PropertyType.CHARACTERENCODING_PROP_NAME,
-                string);
+                string));
         }
         
         string = (String) resourceMap.get("guessedCharacterEncoding");
         if (string != null) {
-            resourceImpl.createProperty(
+            resourceImpl.addProperty(createProperty(
                 Namespace.DEFAULT_NAMESPACE, 
                 PropertyType.CHARACTERENCODING_GUESSED_PROP_NAME,
-                string);
+                string));
         }
         
         string = (String) resourceMap.get("userSpecifiedCharacterEncoding");
         if (string != null) {
-            resourceImpl.createProperty(
+            resourceImpl.addProperty(createProperty(
                 Namespace.DEFAULT_NAMESPACE, 
                 PropertyType.CHARACTERENCODING_USER_SPECIFIED_PROP_NAME,
-                string);
+                string));
         }
         
         string = (String) resourceMap.get("contentLanguage");
         if (string != null) {
-            resourceImpl.createProperty(
+            resourceImpl.addProperty(createProperty(
                 Namespace.DEFAULT_NAMESPACE, 
                 PropertyType.CONTENTLOCALE_PROP_NAME,
-                string);
+                string));
         }
 
-        resourceImpl.createProperty(
+        resourceImpl.addProperty(createProperty(
                 Namespace.DEFAULT_NAMESPACE, PropertyType.LASTMODIFIED_PROP_NAME,
-                resourceMap.get("lastModified"));
+                resourceMap.get("lastModified")));
 
         principal = principalFactory.getPrincipal((String) resourceMap.get("modifiedBy"), Principal.Type.USER);
-        resourceImpl.createProperty(
+        resourceImpl.addProperty(createProperty(
                 Namespace.DEFAULT_NAMESPACE, PropertyType.MODIFIEDBY_PROP_NAME,
-                principal);
+                principal));
 
-        resourceImpl.createProperty(
+        resourceImpl.addProperty(createProperty(
             Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLASTMODIFIED_PROP_NAME,
-            resourceMap.get("contentLastModified"));
+            resourceMap.get("contentLastModified")));
 
         principal = principalFactory.getPrincipal((String) resourceMap.get("contentModifiedBy"), Principal.Type.USER);
-        resourceImpl.createProperty(
+        resourceImpl.addProperty(createProperty(
             Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTMODIFIEDBY_PROP_NAME,
-            principal);
+            principal));
 
-        resourceImpl.createProperty(
+        resourceImpl.addProperty(createProperty(
             Namespace.DEFAULT_NAMESPACE, PropertyType.PROPERTIESLASTMODIFIED_PROP_NAME,
-            resourceMap.get("propertiesLastModified"));
+            resourceMap.get("propertiesLastModified")));
 
         principal = principalFactory.getPrincipal((String) resourceMap.get("propertiesModifiedBy"), Principal.Type.USER);
-        resourceImpl.createProperty(
+        resourceImpl.addProperty(createProperty(
             Namespace.DEFAULT_NAMESPACE, PropertyType.PROPERTIESMODIFIEDBY_PROP_NAME,
-            principal);
+            principal));
 
         if (!collection) {
             long contentLength = ((Number) resourceMap.get("contentLength")).longValue();
-            resourceImpl.createProperty(
+            resourceImpl.addProperty(createProperty(
                 Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLENGTH_PROP_NAME,
-                new Long(contentLength));
+                new Long(contentLength)));
         }
         
         resourceImpl.setResourceType((String) resourceMap.get("resourceType"));
@@ -1154,7 +1158,18 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         resourceImpl.setAclInheritedFrom(aclInheritedFrom.intValue());
     }
 
+    private Property createProperty(Namespace ns, String name, Object value) {
+        PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyTypeDefinition(ns, name);
+        Property prop = propDef.createProperty(value);
+        return prop;
+    }
 
+    private Property createProperty(String namespaceUrl, String name, String[] stringValues) {
+        Namespace namespace = this.resourceTypeTree.getNamespace(namespaceUrl);
+        PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyTypeDefinition(namespace, name);
+        Property prop = propDef.createProperty(stringValues);
+        return prop;
+    }
     
     private Map<String, Object> getResourceAsMap(ResourceImpl r) {
         Map<String, Object> map = new HashMap<String, Object>();
@@ -1225,6 +1240,11 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
     @Required
     public void setPrincipalFactory(PrincipalFactory principalFactory) {
         this.principalFactory = principalFactory;
+    }
+    
+    @Required
+    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+        this.resourceTypeTree = resourceTypeTree;
     }
 
 }

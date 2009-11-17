@@ -51,10 +51,12 @@ import org.jdom.filter.Filter;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.Repository.Depth;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.Xml;
@@ -164,7 +166,8 @@ public class EditDocument extends Document {
         if (this.resource.getCharacterEncoding() != null) {
             String encoding = this.resource.getCharacterEncoding().toLowerCase();
             if (!"utf-8".equals(encoding)) {
-                this.resource.setUserSpecifiedCharacterEncoding(null);
+                this.resource.removeProperty(Namespace.DEFAULT_NAMESPACE, 
+                        PropertyType.CHARACTERENCODING_USER_SPECIFIED_PROP_NAME);
                 this.resource = repository.store(token, this.resource);
             }
         }

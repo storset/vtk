@@ -59,6 +59,7 @@ import org.vortikal.repository.ReadOnlyException;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
+import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -96,6 +97,7 @@ public class ProppatchController extends AbstractWebdavController  {
 
         try {
             Resource resource = this.repository.retrieve(token, uri, false);
+            TypeInfo typeInfo = this.repository.getTypeInfo(token, uri);
             this.ifHeader = new IfHeaderImpl(request);
             verifyIfHeader(resource, true);
             
@@ -105,7 +107,7 @@ public class ProppatchController extends AbstractWebdavController  {
             /* Make sure the request is valid: */
             validateRequestBody(requestBody);
 
-            Document doc = doPropertyUpdate(resource, requestBody, principal);
+            Document doc = doPropertyUpdate(resource, typeInfo, requestBody, principal);
             Format format = Format.getPrettyFormat();
             format.setEncoding("utf-8");
 
@@ -316,7 +318,7 @@ public class ProppatchController extends AbstractWebdavController  {
      * @exception InvalidRequestException if an error occurs
      */
     @SuppressWarnings("unchecked") 
-    protected Document doPropertyUpdate(Resource resource, Document requestBody, 
+    protected Document doPropertyUpdate(Resource resource, TypeInfo typeInfo, Document requestBody, 
             Principal principal)
         throws ResourceNotFoundException, AuthorizationException,
         AuthenticationException, IllegalOperationException,
@@ -344,7 +346,7 @@ public class ProppatchController extends AbstractWebdavController  {
             String action = actionElement.getName();
 
             if (action.equals("set")) {
-                setProperties(propstat, resource, 
+                setProperties(propstat, resource, typeInfo, 
                               actionElement.getChild(
                                   "prop", WebdavConstants.DAV_NAMESPACE).getChildren());
                 
@@ -375,7 +377,8 @@ public class ProppatchController extends AbstractWebdavController  {
      */
     @SuppressWarnings("unchecked") 
     protected void setProperties(Element propstat,
-                                 Resource resource,  
+                                 Resource resource,
+                                 TypeInfo typeInfo,
                                  List propElements)
         throws ResourceNotFoundException, AuthorizationException,
         AuthenticationException, IllegalOperationException {
@@ -384,7 +387,7 @@ public class ProppatchController extends AbstractWebdavController  {
         for (Iterator elementIterator = propElements.iterator();
              elementIterator.hasNext();) {
             Element propElement = (Element) elementIterator.next();
-            setProperty(resultPropElement, resource, propElement);
+            setProperty(resultPropElement, resource, typeInfo, propElement);
         }
         propstat.addContent(resultPropElement);
 
@@ -404,7 +407,7 @@ public class ProppatchController extends AbstractWebdavController  {
      * property, or a custom one, although at present only standard
      * DAV properties are supported.
      */
-    protected void setProperty(Element resultElement, Resource resource, Element propertyElement)
+    protected void setProperty(Element resultElement, Resource resource, TypeInfo typeInfo, Element propertyElement)
         throws ResourceNotFoundException, AuthorizationException,
         AuthenticationException, IllegalOperationException {
 
@@ -426,14 +429,21 @@ public class ProppatchController extends AbstractWebdavController  {
                     this.logger.debug("setting property 'getcontentlanguage' to '"
                                  + propertyElement.getText() + "'");
                 }
-                resource.setContentLocale(propertyElement.getText());
+                Property prop = typeInfo.createProperty(Namespace.DEFAULT_NAMESPACE, 
+                        PropertyType.CONTENTLOCALE_PROP_NAME);
+                prop.setStringValue(propertyElement.getText());
+                resource.addProperty(prop);
                 
             } else if (propertyName.equals("getcontenttype")) {
                 if (this.logger.isDebugEnabled()) {
                     this.logger.debug("setting property 'getcontenttype' to '"
                                  + propertyElement.getText() + "'");
+                
                 }
-                resource.setContentType(propertyElement.getText());
+                Property prop = typeInfo.createProperty(Namespace.DEFAULT_NAMESPACE, 
+                        PropertyType.CONTENTTYPE_PROP_NAME);
+                prop.setStringValue(propertyElement.getText());
+                resource.addProperty(prop);
                 
             } else {
                 if (this.logger.isDebugEnabled()) {
@@ -445,7 +455,8 @@ public class ProppatchController extends AbstractWebdavController  {
         } else {
 
             Namespace ns;
-            if (nameSpace.toUpperCase().equals(WebdavConstants.DEFAULT_NAMESPACE.getURI().toUpperCase())) {
+            if (nameSpace.toUpperCase().equals(
+                    WebdavConstants.DEFAULT_NAMESPACE.getURI().toUpperCase())) {
                 ns = Namespace.DEFAULT_NAMESPACE;
             } else {
                 ns = Namespace.getNamespace(nameSpace);
@@ -455,7 +466,8 @@ public class ProppatchController extends AbstractWebdavController  {
 
             if (property == null) {
                 /* Create a new property: */
-                property = resource.createProperty(ns, propertyName);
+                property = typeInfo.createProperty(ns, propertyName);
+                resource.addProperty(property);
             }
             
             if (this.logger.isDebugEnabled()) {

@@ -110,6 +110,7 @@
     <property name="sqlMapClient" ref="repository.sqlMapClient"/>
     <property name="sqlMaps" ref="repository.statementMappings" />
     <property name="optimizedAclCopySupported" value="${optimizedAclCopySupported}" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="principalFactory" ref="principalFactory" />
   </bean>
   

@@ -96,8 +96,10 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceImpl;
+import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.store.CommentDAO;
 import org.vortikal.repository.store.ContentStore;
 import org.vortikal.repository.store.DataAccessException;
@@ -112,6 +114,7 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
     private static final Log logger = LogFactory.getLog(JcrDao.class);
 
     protected Repository repository;
+    private ResourceTypeTree resourceTypeTree;
     
     private PrincipalFactory principalFactory;
     
@@ -305,8 +308,8 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
                 stringValues.add(prop.getString());
             }
             if (logger.isTraceEnabled()) logger.trace("Prop: " + name + " values: " + stringValues);
-
-            resource.createProperty(prefix, name, stringValues);
+            org.vortikal.repository.Property p = createProperty(prefix, name, stringValues);
+            resource.addProperty(p);
         }
         
         if (node.isLocked()) {
@@ -317,6 +320,12 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
         if (resource.isCollection()) {
             resource.setChildURIs(getChildUris(node));
         }
+    }
+
+    private org.vortikal.repository.Property createProperty(String prefix, String name, List<String> stringValues) {
+        PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
+        org.vortikal.repository.Property prop = propDef.createProperty(stringValues.toArray(new String[stringValues.size()]));
+        return prop;
     }
     
     private AclImpl getAcl(Node node, ResourceImpl resource)

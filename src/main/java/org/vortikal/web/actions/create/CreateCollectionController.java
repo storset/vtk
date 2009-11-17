@@ -147,8 +147,9 @@ public class CreateCollectionController extends SimpleFormController {
         
         Resource collection = this.repository.createCollection(token, newURI);
         if (!title.equals(name)) {
-            Property titleProp = collection.createProperty(this.userTitlePropDef);
+            Property titleProp = this.userTitlePropDef.createProperty();
             titleProp.setStringValue(title);
+            collection.addProperty(titleProp);
             this.repository.store(token, collection);
         }
         createCollectionCommand.setDone(true);

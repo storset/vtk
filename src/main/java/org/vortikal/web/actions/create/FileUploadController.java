@@ -47,9 +47,13 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.TypeInfo;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.MimeHelper;
 import org.vortikal.web.RequestContext;
@@ -165,6 +169,7 @@ public class FileUploadController extends SimpleFormController {
             }
 
             Resource newResource = this.repository.createDocument(token, itemURI);
+            TypeInfo typeInfo = this.repository.getTypeInfo(token, uri);
 
             String contentType = uploadItem.getContentType();
             
@@ -172,7 +177,10 @@ public class FileUploadController extends SimpleFormController {
             		MimeHelper.DEFAULT_MIME_TYPE.equals(StringUtils.trim(contentType))) {
                 contentType = MimeHelper.map(newResource.getName());
             }
-            newResource.setContentType(contentType);
+            Property prop = typeInfo.createProperty(
+                    Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTTYPE_PROP_NAME);
+            prop.setStringValue(contentType);
+            newResource.addProperty(prop);
             this.repository.store(token, newResource);
 
             InputStream inStream = uploadItem.getInputStream();

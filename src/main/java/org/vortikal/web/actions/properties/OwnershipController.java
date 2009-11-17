@@ -38,9 +38,13 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.TypeInfo;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.SecurityContext;
@@ -97,6 +101,7 @@ public class OwnershipController extends SimpleFormController implements Initial
         }
 
         Resource resource = this.repository.retrieve(token, uri, false);
+        TypeInfo typeInfo = this.repository.getTypeInfo(token, uri);
         String owner = resource.getOwner().getQualifiedName();
         
         if (!owner.equals(ownershipCommand.getOwner())) {
@@ -104,7 +109,9 @@ public class OwnershipController extends SimpleFormController implements Initial
                 logger.debug("Setting new owner '" + ownershipCommand.getOwner() + 
                              "' for resource " + uri);
             }
-            resource.setOwner(principalFactory.getPrincipal(ownershipCommand.getOwner(), Principal.Type.USER));
+            Property prop = typeInfo.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.OWNER_PROP_NAME);
+            prop.setPrincipalValue(principalFactory.getPrincipal(ownershipCommand.getOwner(), Principal.Type.USER));
+            resource.addProperty(prop);
             this.repository.store(token, resource);
         }
         ownershipCommand.setDone(true);

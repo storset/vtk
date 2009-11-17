@@ -248,6 +248,7 @@ public class PropertyEditController extends SimpleFormController
         }
         Path uri = requestContext.getResourceURI();
         Resource resource = this.repository.retrieve(token, uri, false);
+        TypeInfo typeInfo = this.repository.getTypeInfo(token, uri);
         for (PropertyTypeDefinition def: this.propertyTypeDefinitions) {
             
             if (isFocusedProperty(def, propertyCommand.getNamespace(),
@@ -294,7 +295,8 @@ public class PropertyEditController extends SimpleFormController
                                 this.logger.debug("Property does not exist on resource " + resource
                                                   + ", creating from definition: " + def);
                             }
-                            property = resource.createProperty(def.getNamespace(), def.getName());
+                            property = typeInfo.createProperty(def.getNamespace(), def.getName());
+                            resource.addProperty(property);
                             created = true;
                         }
                     

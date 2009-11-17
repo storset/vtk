@@ -39,11 +39,15 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.repository.IllegalOperationException;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.ReadOnlyException;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
+import org.vortikal.repository.TypeInfo;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.MimeHelper;
 import org.vortikal.util.web.HttpUtil;
@@ -207,6 +211,8 @@ public class PutController extends AbstractWebdavController {
             this.repository.storeContent(token, resource.getURI(), inStream);
 
             resource = this.repository.retrieve(token, resource.getURI(), false);
+            TypeInfo typeInfo = this.repository.getTypeInfo(token, resource.getURI());
+            
             boolean store = false;
             
             String contentType = getContentType(request, resource);
@@ -214,7 +220,9 @@ public class PutController extends AbstractWebdavController {
                 if (this.logger.isDebugEnabled()) {
                     this.logger.debug("Setting content-type: " + contentType);
                 }
-                resource.setContentType(contentType);
+                Property prop = typeInfo.createProperty(
+                        Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTTYPE_PROP_NAME);
+                resource.addProperty(prop);
                 store = true;
             }
 
@@ -226,11 +234,17 @@ public class PutController extends AbstractWebdavController {
                     if (this.logger.isDebugEnabled()) {
                         this.logger.debug("Setting character encoding: " + characterEncoding);
                     }
-                    resource.setUserSpecifiedCharacterEncoding(characterEncoding);
+                    Property prop = typeInfo.createProperty(
+                            Namespace.DEFAULT_NAMESPACE, 
+                            PropertyType.CHARACTERENCODING_USER_SPECIFIED_PROP_NAME);
+                    prop.setStringValue(characterEncoding);
+                    resource.addProperty(prop);
                     store = true;
                 }
             } else if (this.removeUserSpecifiedCharacterEncoding) {
-                resource.setUserSpecifiedCharacterEncoding(null);
+                resource.removeProperty(
+                        Namespace.DEFAULT_NAMESPACE, 
+                        PropertyType.CHARACTERENCODING_USER_SPECIFIED_PROP_NAME);
                 store = true;
             }
 

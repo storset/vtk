@@ -39,7 +39,7 @@
     <#assign title><@vrtx.msg code=msgKey args=[scopeParam, tag] /></#assign>
   </#if>
   
-  <title>${title?html}
+  <title>${title}
     <#if page?has_content>
       <#if "${page}" != "1"> - <@vrtx.msg code="viewCollectionListing.page" /> ${page}</#if>
     </#if>

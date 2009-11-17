@@ -3,7 +3,6 @@
 <#import "/lib/view-collectionlisting.ftl" as coll />
 <#import "/lib/collections/view-project-listing.ftl" as projects />
 <#import "/lib/collections/view-person-listing.ftl" as persons />
-<#import "/lib/collections/view-image-listing.ftl" as images />
 
 <#macro displayTagElements tagElements>
   <div id="vrtx-tags-service">

@@ -53,9 +53,13 @@ public class ValueFactoryImpl implements ValueFactory {
     private PrincipalFactory principalFactory;
     private BinaryContentDataAccessor binaryDao;
 
-    private static final String[] dateFormats = new String[] { "dd.MM.yyyy HH:mm:ss",
-            "dd.MM.yyyy HH:mm", "dd.MM.yyyy", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm",
-            "yyyy-MM-dd" };
+    private static final String[] dateFormats = new String[] {
+                                             "dd.MM.yyyy HH:mm:ss",
+                                             "dd.MM.yyyy HH:mm",
+                                             "dd.MM.yyyy",
+                                             "yyyy-MM-dd HH:mm:ss",
+                                             "yyyy-MM-dd HH:mm",
+                                             "yyyy-MM-dd" };
 
     private Log logger = LogFactory.getLog(this.getClass());
 
@@ -162,10 +166,10 @@ public class ValueFactoryImpl implements ValueFactory {
         
         public ValueRefImpl(BinaryContentDataAccessor dao, String objRef) {
             if (dao == null) {
-                throw new IllegalArgumentException("Constructor arg 'dao' cannot be NULL");
+                throw new IllegalArgumentException("Constructor arg 'dao' cannot be null");
             }
             if (objRef == null) {
-                throw new IllegalArgumentException("Constructor arg 'objRef' cannot be NULL");
+                throw new IllegalArgumentException("Constructor arg 'objRef' cannot be null");
             }
             this.dao = dao;
             this.objRef = objRef;
@@ -183,15 +187,25 @@ public class ValueFactoryImpl implements ValueFactory {
             return this.objRef;
         }
 
+        @Override
         public String toString() {
             return "ref#" + this.getID();
         }
         
+        @Override
         public boolean equals(Object obj) {
-            if (obj == null || !(obj instanceof BinaryValue.ValueRef)) {
+            if (obj == this) return true;
+
+            if (! (obj instanceof BinaryValue.ValueRef)) {
                 return false;
             }
+        
             return this.getID().equals(((BinaryValue.ValueRef) obj).getID());
+        }
+
+        @Override
+        public int hashCode() {
+            return this.getID().hashCode();
         }
     }
 

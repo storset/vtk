@@ -203,8 +203,7 @@ public class ResourcePrincipalPermissionAssertion
             //     For instance, handling of AuthenticationException in VortikalServlet.
             throw e;
         } catch (Exception e) {
-            logger.error("Got exception during assertion evaluation", e);
-            return false;
+            throw new RuntimeException(e);
         }
     }
 }

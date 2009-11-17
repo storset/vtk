@@ -33,20 +33,13 @@ package org.vortikal.repository;
 
 public class Namespace {
 
-    /**
-     * @deprecated this namespace will be removed
-     */
-    private static final String CUSTOM_NAMESPACE_URI = 
-        "http://www.uio.no/vortex/custom-properties";
-
-    public static final Namespace DEFAULT_NAMESPACE = 
-        new Namespace(null, null);
+    public static final Namespace DEFAULT_NAMESPACE = new Namespace(null, null);
     
     /**
-     * @deprecated this namespace will be removed
+     * @deprecated This namespace will be removed.
      */
     public static final Namespace CUSTOM_NAMESPACE = 
-        new Namespace("custom", CUSTOM_NAMESPACE_URI);
+        new Namespace("custom", "http://www.uio.no/vortex/custom-properties");
     
     public static final Namespace STRUCTURED_RESOURCE_NAMESPACE = 
         new Namespace("resource", "http://www.uio.no/vrtx/__vrtx/ns/structured-resources");
@@ -67,7 +60,7 @@ public class Namespace {
     public static Namespace getNamespace(String uri) {
         if (uri == null) return DEFAULT_NAMESPACE;
         if (uri.equals(STRUCTURED_RESOURCE_NAMESPACE.getUri())) return STRUCTURED_RESOURCE_NAMESPACE;
-        if (uri.equals(CUSTOM_NAMESPACE_URI)) return CUSTOM_NAMESPACE;
+        if (uri.equals(CUSTOM_NAMESPACE.getUri())) return CUSTOM_NAMESPACE;
         
         return new Namespace(uri);
     }
@@ -94,20 +87,26 @@ public class Namespace {
         return this.uri;
     }
     
+    @Override
     public boolean equals(Object obj) {
-        if (obj == null) return false;
-        if (! (obj instanceof Namespace)) return false;
-        Namespace ns = (Namespace) obj;
+        if (this == obj) return true;
 
-        String thisUri = (this.uri == null) ? "" : this.uri;
-        String thatUri = (ns.getUri() == null) ? "" : ns.getUri();
-        return thisUri.equals(thatUri);
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+
+        Namespace other = (Namespace) obj;
+        if (this.uri != null) {
+            return this.uri.equals(other.uri);
+        } else {
+            return other.uri == null;
+        }
     }
     
+    @Override
     public int hashCode() {
         return this.uri == null ? 0 : this.uri.hashCode();
     }
     
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         if (this.prefix != null) {
@@ -120,14 +119,6 @@ public class Namespace {
             sb.append(this.uri);
         }
         return sb.toString();
-    }
-
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
-    }
-
-    public void setUri(String uri) {
-        this.uri = uri;
     }
     
 }

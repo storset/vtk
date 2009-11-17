@@ -1,5 +1,6 @@
 package org.vortikal.web.display.autocomplete;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Required;
@@ -11,17 +12,20 @@ public class TagsAutoCompleteController extends AutoCompleteController {
     private VocabularyDataProvider<Tag> dataProvider;
 
     @Override
-    protected String getAutoCompleteSuggestions(String prefix, Path contextUri,
+    protected List<Suggestion> getAutoCompleteSuggestions(String prefix, Path contextUri,
             String securityToken) {
 
         List<Tag> completions = this.dataProvider.getCompletions(prefix, null, // Ignore contextUri
                 securityToken);
 
-        StringBuilder result = new StringBuilder();
-        for (Tag tag : completions) {
-            result.append(tag.getText() + SUGGESTION_DELIMITER);
+        List<Suggestion> suggestions = new ArrayList<Suggestion>(completions.size());
+        for (Tag tag: completions) {
+            Suggestion suggestion = new Suggestion(1);
+            suggestion.setField(0, tag.getText());
+            suggestions.add(suggestion);
         }
-        return result.toString();
+
+        return suggestions;
     }
 
     @Required

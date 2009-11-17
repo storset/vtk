@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.display.autocomplete;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Required;
@@ -42,24 +43,20 @@ public class PrincipalAutoCompleteController extends AutoCompleteController {
     private boolean invert;
 
     @Override
-    protected String getAutoCompleteSuggestions(String input, Path contextUri, String token) {
+    protected List<Suggestion> getAutoCompleteSuggestions(String input, Path contextUri, String token) {
 
         List<Principal> completions = this.dataProvider.getCompletions(input, null,  // Ignore contextUri
                                                                        token);
 
-        StringBuilder result = new StringBuilder();
-
-        for (Principal principal : completions) {
-            if (invert) {
-                result.append(principal.getUnqualifiedName() + FIELD_SEPARATOR
-                        + principal.getDescription() + SUGGESTION_DELIMITER);
-            } else {
-                result.append(principal.getDescription() + FIELD_SEPARATOR
-                        + principal.getUnqualifiedName() + SUGGESTION_DELIMITER);
-            }
+        List<Suggestion> suggestions = new ArrayList<Suggestion>(completions.size());
+        for (Principal principal: completions) {
+            Suggestion suggestion = new Suggestion(2);
+            suggestion.setField(this.invert ? 0 : 1, principal.getUnqualifiedName());
+            suggestion.setField(this.invert ? 1 : 0, principal.getDescription());
+            suggestions.add(suggestion);
         }
 
-        return result.toString();
+        return suggestions;
     }
 
     @Required

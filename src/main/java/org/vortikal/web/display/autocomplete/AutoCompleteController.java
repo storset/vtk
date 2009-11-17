@@ -30,6 +30,10 @@
  */
 package org.vortikal.web.display.autocomplete;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
+import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -46,6 +50,7 @@ public abstract class AutoCompleteController implements Controller {
     protected static final char FIELD_SEPARATOR = ';';
     protected static final String PARAM_QUERY = "q";
     protected static final String PARAM_CONTEXT_URI_OVERRIDE = "context";
+    protected static final String PARAM_PREFERRED_LOCALE = "locale";
     protected static final String RESPONSE_CONTENT_TYPE = "text/plain;charset=utf-8";
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -58,13 +63,25 @@ public abstract class AutoCompleteController implements Controller {
             return null; // No query results in no auto-complete suggestions
         }
 
-        String autoCompleteSuggestions = this.getAutoCompleteSuggestions(query, contextUri, token);
-        autoCompleteSuggestions = autoCompleteSuggestions == null ? "" : autoCompleteSuggestions;
+        //getPreferredLocale(request);
 
-        response.setContentType(RESPONSE_CONTENT_TYPE);
-        response.getWriter().print(autoCompleteSuggestions);
+        List<Suggestion> suggestions = this.getAutoCompleteSuggestions(query, contextUri, token);
+
+        if (suggestions != null) {
+            writeSuggestions(suggestions, response);
+        }
 
         return null;
+    }
+
+    protected void writeSuggestions(List<Suggestion> suggestions, HttpServletResponse response)
+        throws IOException {
+        response.setContentType(RESPONSE_CONTENT_TYPE);
+        PrintWriter writer = response.getWriter();
+        for (Suggestion suggestion: suggestions) {
+            writer.print(suggestion);
+            writer.print(SUGGESTION_DELIMITER);
+        }
     }
 
     protected Path getContextUri(HttpServletRequest request) {
@@ -91,6 +108,11 @@ public abstract class AutoCompleteController implements Controller {
         return contextUri;
     }
 
+    protected Locale getPreferredLocale(HttpServletRequest request) {
+
+        return null;
+    }
+
     /**
      * Optionally implemented by subclasses to provide autocomplete suggestions.
      * Only useful if handleRequest is *not* overridden.
@@ -100,6 +122,36 @@ public abstract class AutoCompleteController implements Controller {
      * @param token
      * @return
      */
-    protected abstract String getAutoCompleteSuggestions(String query, Path contextUri, String token);
+    protected abstract List<Suggestion> getAutoCompleteSuggestions(String query, Path contextUri, String token);
+
+    /**
+     * Class representing one single suggestion composed of a list of fields.
+     */
+    protected static final class Suggestion {
+        private Object[] fields;
+
+        public Suggestion(int fields) {
+            this.fields = new Object[fields];
+        }
+
+        public void setField(int field, Object value) {
+            this.fields[field] = value;
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder builder = new StringBuilder();
+            for (int i=0; i<this.fields.length; i++) {
+                if (this.fields[i] != null) {
+                    builder.append(this.fields[i]);
+                } // Render null as empty string instead of "null"
+
+                if (i < this.fields.length-1) {
+                    builder.append(FIELD_SEPARATOR);
+                }
+            }
+            return builder.toString();
+        }
+    }
 
 }

@@ -114,13 +114,14 @@ public class ResourceTypeAssertion extends AbstractRepositoryAssertion {
                 return !match;
 
             return match;
-        } catch (Exception e) {
+
+        } catch (RuntimeException e) {
             // XXX Hmm. Don't wrap runtime-exceptions, because we then hide
             //     the real exception type information, which is needed
             //     in higher level error handling.
             //     For instance, handling of AuthenticationException in VortikalServlet.
-            if (e instanceof RuntimeException) throw (RuntimeException)e;
-            
+            throw e;
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

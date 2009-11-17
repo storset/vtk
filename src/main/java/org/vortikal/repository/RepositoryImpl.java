@@ -577,7 +577,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                 parent = this.dao.load(r.getURI().getParent());
             }
 
-            if ("/".equals(resource.getURI()) && resource.isInheritedAcl()) {
+            if (resource.getURI().isRoot() && resource.isInheritedAcl()) {
                 throw new IllegalOperationException(
                         "The root resource cannot have an inherited ACL");
             }

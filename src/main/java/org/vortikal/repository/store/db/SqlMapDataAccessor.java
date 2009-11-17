@@ -929,8 +929,10 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
 
     private void storeProperties(final ResourceImpl r) {
 
-        for (Property p: r.getProperties()) {
-            if (PropertyType.Type.BINARY.equals(p.getDefinition().getType())) {
+        final List<Property> properties = r.getProperties();
+
+        for (Property p: properties) {
+            if (p.getType() == PropertyType.Type.BINARY) {
                 // XXX: mem copying has to be done because of the way properties 
                 // are stored: first deleted then inserted (never updated)
                 copyBinaryPropValueToMemory(p);                
@@ -939,8 +941,6 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         
         String sqlMap = getSqlMap("deletePropertiesByResourceId");
         getSqlMapClientTemplate().update(sqlMap, r.getID());
-
-        final List<Property> properties = r.getProperties();
         
         if (properties != null) {
 

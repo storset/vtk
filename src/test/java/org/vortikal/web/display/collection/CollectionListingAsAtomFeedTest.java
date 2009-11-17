@@ -27,14 +27,12 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceImpl;
-import org.vortikal.repository.ResourceTypeTreeImpl;
 import org.vortikal.repository.resourcetype.DateValueFormatter;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.StringValueFormatter;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.web.AbstractControllerTest;
-import org.vortikal.web.display.collection.CollectionListingAsAtomFeed;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.service.Service;
@@ -157,9 +155,7 @@ public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
 
 
     private Resource getCollection() {
-        ResourceImpl collection = new ResourceImpl();
-        collection.setUri(requestPath);
-        collection.setResourceTypeTree(new ResourceTypeTreeImpl());
+        ResourceImpl collection = new ResourceImpl(requestPath);
 
         PropertyTypeDefinitionImpl propDef = getPropDef(Namespace.DEFAULT_NAMESPACE,
                 PropertyType.TITLE_PROP_NAME, Type.STRING, new StringValueFormatter());

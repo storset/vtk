@@ -106,7 +106,6 @@
   </bean>
 
   <bean id="repository.sqlMapDao" class="org.vortikal.repository.store.db.SqlMapDataAccessor">
-    <lookup-method name="createResourceImpl" bean="resourceImpl"/>
     <property name="sqlMapClient" ref="repository.sqlMapClient"/>
     <property name="sqlMaps" ref="repository.statementMappings" />
     <property name="optimizedAclCopySupported" value="${optimizedAclCopySupported}" />
@@ -130,10 +129,6 @@
   <bean id="repository.changeLogDAO" class="org.vortikal.repository.store.db.SqlMapChangeLogDAO">
     <property name="sqlMapClient" ref="repository.sqlMapClient"/>
     <property name="sqlMaps" ref="repository.statementMappings" />
-  </bean>
-
-  <bean id="resourceImpl" class="org.vortikal.repository.ResourceImpl" scope="prototype">
-    <property name="resourceTypeTree" ref="resourceTypeTree"/>
   </bean>
 
   <bean id="repository.cache" class="org.vortikal.repository.store.Cache">

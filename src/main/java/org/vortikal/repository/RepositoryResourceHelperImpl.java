@@ -68,7 +68,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
 
     public ResourceImpl create(Principal principal, Path uri, boolean collection)
             throws IOException {
-        ResourceImpl resource = new ResourceImpl(uri, this.resourceTypeTree);
+        ResourceImpl resource = new ResourceImpl(uri);
         if (collection) {
             resource.setChildURIs(new ArrayList<Path>());
         }

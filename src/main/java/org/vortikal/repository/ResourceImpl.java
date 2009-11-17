@@ -56,16 +56,9 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
     private Lock lock = null;
     private List<Path> childURIs = null;
 
-    private ResourceTypeTree resourceTypeTree;
-
-    public ResourceImpl() {
-        super();
-    }
-
-    public ResourceImpl(Path uri, ResourceTypeTree resourceTypeTree) {
+    public ResourceImpl(Path uri) {
         super();
         this.uri = uri;
-        this.resourceTypeTree = resourceTypeTree;
     }
 
     public void removeProperty(Namespace namespace, String name) {
@@ -222,7 +215,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
     }
 
     public ResourceImpl createCopy(Path newUri) {
-        ResourceImpl resource = new ResourceImpl(newUri, this.resourceTypeTree);
+        ResourceImpl resource = new ResourceImpl(newUri);
         resource.setResourceType(getResourceType());
         for (Property prop : getProperties()) {
             resource.addProperty(prop);
@@ -243,7 +236,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         if (this.lock != null)
             lock = (LockImpl) this.lock.clone();
 
-        ResourceImpl clone = new ResourceImpl(this.uri, this.resourceTypeTree);
+        ResourceImpl clone = new ResourceImpl(this.uri);
         clone.setID(this.id);
 
         if (this.acl != null) {
@@ -372,9 +365,4 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         sb.append(": [").append(this.uri).append("]");
         return sb.toString();
     }
-
-    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
-        this.resourceTypeTree = resourceTypeTree;
-    }
-
 }

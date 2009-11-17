@@ -127,8 +127,7 @@ public class CollectionListingAggregationResolverTestCase extends AbstractContro
     }
 
     private Resource getCollection(boolean withAggregationProp, boolean withRecursiveAggregationProp) {
-        ResourceImpl collection = new ResourceImpl();
-        collection.setUri(Path.fromString("/rootCollection"));
+        ResourceImpl collection = new ResourceImpl(Path.fromString("/rootCollection"));
 
         if (withAggregationProp) {
             String[] values = { "/barfolder", "/foo/bar" };

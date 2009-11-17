@@ -113,12 +113,6 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         return resource;
     }
 
-    /**
-     * This method needs to be overridden by the framework.
-     * 
-     */
-    protected ResourceImpl createResourceImpl() { return null; }
-    
     @SuppressWarnings("unchecked")
     private ResourceImpl loadResourceInternal(Path uri) {
         String sqlMap = getSqlMap("loadResourceByUri");
@@ -127,8 +121,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         if (resourceMap == null) {
             return null;
         }
-        ResourceImpl resource = createResourceImpl();
-        resource.setUri(uri);
+        ResourceImpl resource = new ResourceImpl(uri);
         
         Map<Path, Lock> locks = loadLocks(new Path[] {resource.getURI()});
         if (locks.containsKey(resource.getURI())) {
@@ -349,8 +342,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         for (Map<String, Object> resourceMap: resources) {
             Path uri = Path.fromString((String) resourceMap.get("uri"));
 
-            ResourceImpl resource = createResourceImpl();
-            resource.setUri(uri);
+            ResourceImpl resource = new ResourceImpl(uri);
 
             populateStandardProperties(resource, resourceMap);
             

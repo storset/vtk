@@ -12,13 +12,11 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceImpl;
-import org.vortikal.repository.ResourceTypeTreeImpl;
 import org.vortikal.repository.resourcetype.DateValueFormatter;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.StringValueFormatter;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.web.AbstractControllerTest;
-import org.vortikal.web.display.ical.ICalController;
 
 public class ICalControllerTest extends AbstractControllerTest {
 
@@ -95,9 +93,7 @@ public class ICalControllerTest extends AbstractControllerTest {
 
 
     private Resource getEvent() {
-        ResourceImpl event = new ResourceImpl();
-        event.setUri(requestPath);
-        event.setResourceTypeTree(new ResourceTypeTreeImpl());
+        ResourceImpl event = new ResourceImpl(requestPath);
 
         Calendar cal = Calendar.getInstance();
         Property startDateProp = startDatePropDef.createProperty(cal.getTime());

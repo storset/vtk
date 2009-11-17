@@ -3,11 +3,13 @@
   <#local persons=personListing.files />
   <#if (persons?size > 0)>
   <!--stopindex-->
-  <div class="vrtx-number-of-records">
-  	${vrtx.getMsg("person-listing.persons")} ${numberOfRecords["elementsOnPreviousPages"]} -
-  	${numberOfRecords["elementsIncludingThisPage"]} ${vrtx.getMsg("person-listing.of")} 
-  	${personListing.totalHits?string}
-  </div>
+  <#if numberOfRecords?exists>
+    <div class="vrtx-number-of-records">
+  	  ${vrtx.getMsg("person-listing.persons")} ${numberOfRecords["elementsOnPreviousPages"]} -
+  	  ${numberOfRecords["elementsIncludingThisPage"]} ${vrtx.getMsg("person-listing.of")} 
+  	  ${personListing.totalHits?string}
+    </div>
+  </#if>
    <table class="vrtx-person-listing">
        <thead>
     	 <tr>

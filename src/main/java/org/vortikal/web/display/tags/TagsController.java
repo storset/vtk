@@ -105,9 +105,9 @@ public class TagsController extends AbstractListingController implements Control
         if (listing != null) {
             totalHits = listing.getTotalHits();
         }
-        
+
         List<URL> urls = generatePageThroughUrls(totalHits, pageLimit, URL.create(request));
-        
+
         model.put("listing", listing);
         model.put("page", page);
         model.put("pageThroughUrls", urls);
@@ -134,6 +134,15 @@ public class TagsController extends AbstractListingController implements Control
             }
         }
         model.put("alternativeRepresentations", alt);
+
+        List<ResourceTypeDefinition> resourceTypes = getResourceTypes(request);
+        if (resourceTypes != null) {
+            model.put(TagsHelper.RESOURCE_TYPES_MODEL_KEY, resourceTypes);
+            if (resourceTypes.size() == 1) {
+                model.put(TagsHelper.SINGLE_RESOURCE_TYPE_MODEL_KEY, resourceTypes.get(0).getName());
+            }
+        }
+
         return new ModelAndView(this.viewName, model);
     }
 

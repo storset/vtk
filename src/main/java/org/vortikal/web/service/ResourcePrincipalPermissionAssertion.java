@@ -195,10 +195,16 @@ public class ResourcePrincipalPermissionAssertion
                 return this.repository.isAuthorized(resource, this.permission, null);
             }
             return this.repository.isAuthorized(resource, this.permission, principal);
+
+        } catch (RuntimeException e) {
+            // XXX Hmm. Don't wrap runtime-exceptions, because we then hide
+            //     the real exception type information, which is needed
+            //     in higher level error handling.
+            //     For instance, handling of AuthenticationException in VortikalServlet.
+            throw e;
         } catch (Exception e) {
             logger.error("Got exception during assertion evaluation", e);
             return false;
         }
     }
-    
 }

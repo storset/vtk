@@ -159,10 +159,8 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         PropertyImpl prop = new PropertyImpl();
         prop.setDefinition(this);
         
-        Type type = this.getType();
-        
         if (this.isMultiple()) {
-            Value[] values = this.valueFactory.createValues(stringValues, type);
+            Value[] values = this.valueFactory.createValues(stringValues, this.getType());
             prop.setValues(values);
         } else {
             // Not multi-value, stringValues must be of length 1, otherwise there are
@@ -174,7 +172,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
                     + " for property " + prop);
             }
             
-            Value value = this.valueFactory.createValue(stringValues[0], type);
+            Value value = this.valueFactory.createValue(stringValues[0], this.getType());
             prop.setValue(value);
         }
         
@@ -277,6 +275,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         this.namespace = namespace;
     }
     
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(this.getClass().getName());
         sb.append(": [name=").append(this.name).append("]");

@@ -108,7 +108,7 @@ public class InternalReplicationEventDumper extends AbstractRepositoryEventDumpe
 
 
     public void aclModified(Resource resource, Resource originalResource,
-                            Acl originalACL, Acl newACL) {
+                            Acl newACL, Acl originalACL) {
         
         ChangeLogEntry entry = changeLogEntry(super.loggerId, super.loggerType, resource.getURI(), 
                 Operation.MODIFIED_ACL,

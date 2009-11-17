@@ -102,7 +102,7 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
 
 
     public void aclModified(Resource resource, Resource originalResource,
-                            Acl originalACL, Acl newACL) {
+                            Acl newACL, Acl originalACL) {
         
         if (originalACL.equals(newACL)) {
             return;
@@ -136,9 +136,8 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
         Principal all = PrincipalFactory.ALL;
         
         try {
-            Acl originalAcl = originalResource.getAcl();
-            if (originalAcl.containsEntry(Privilege.READ_PROCESSED, all) &&
-                originalAcl.containsEntry(Privilege.READ_PROCESSED, all)) {
+            if (originalACL.containsEntry(Privilege.READ_PROCESSED, all) &&
+                newACL.containsEntry(Privilege.READ_PROCESSED, all)) {
                 return;
             }
             

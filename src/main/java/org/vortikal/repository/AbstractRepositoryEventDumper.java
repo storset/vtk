@@ -95,10 +95,10 @@ public abstract class AbstractRepositoryEventDumper
         } else if (event instanceof ContentModificationEvent) {
             contentModified(((ContentModificationEvent) event).getResource());
         } else if (event instanceof ACLModificationEvent) {
-            aclModified(((ACLModificationEvent) event).getResource(),
-                        ((ACLModificationEvent) event).getOriginal(),
-                        ((ACLModificationEvent) event).getACL(),
-                        ((ACLModificationEvent) event).getOriginalACL());
+            aclModified(((ACLModificationEvent)event).getResource(),
+                        ((ACLModificationEvent)event).getOriginalResource(),
+                        ((ACLModificationEvent)event).getACL(),
+                        ((ACLModificationEvent)event).getOriginalACL());
         }
         
     }
@@ -112,7 +112,7 @@ public abstract class AbstractRepositoryEventDumper
     public abstract void contentModified(Resource resource);
 
     public abstract void aclModified(Resource resource, Resource originalResource,
-                                     Acl originalACL, Acl newACL);
+                                     Acl acl, Acl originalAcl);
 
     protected ChangeLogEntry changeLogEntry(int loggerId, int loggerType,
             Path uri, Operation operation, int resourceId,

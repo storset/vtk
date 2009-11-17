@@ -128,7 +128,7 @@ public class ChangeHistoryEventDumper extends AbstractRepositoryEventDumper {
     }
 
     public void aclModified(Resource resource, Resource originalResource,
-                            Acl originalACL, Acl newACL) {
+                            Acl newACL, Acl originalACL) {
        	Principal changer = SecurityContext.getSecurityContext().getPrincipal();
         logVersioningEvent("MODIFIED_ACL", true, resource.getURI(),
     			           "", resource.isCollection(), changer);

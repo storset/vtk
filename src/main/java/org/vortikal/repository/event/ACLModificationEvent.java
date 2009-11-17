@@ -45,8 +45,9 @@ public class ACLModificationEvent extends RepositoryEvent {
     private Acl acl = null;
     private Acl originalACL = null;
 
-    public ACLModificationEvent(Repository source, Resource resource,
-        Resource original, Acl acl, Acl originalACL) {
+    public ACLModificationEvent(Repository source,
+                                Resource resource, Resource original,
+                                Acl acl, Acl originalACL) {
         super(source);
         this.resource = resource;
         this.original = original;
@@ -62,7 +63,7 @@ public class ACLModificationEvent extends RepositoryEvent {
         return this.resource.getURI();
     }
 
-    public Resource getOriginal() {
+    public Resource getOriginalResource() {
         return this.original;
     }
 
@@ -74,6 +75,7 @@ public class ACLModificationEvent extends RepositoryEvent {
         return this.originalACL;
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(getClass().getName());
         sb.append("[");

@@ -110,7 +110,7 @@ public class RepositoryIndexingEventDumperImpl extends AbstractRepositoryEventDu
     }
 
     public void aclModified(Resource resource, Resource originalResource, 
-                            Acl originalACL, Acl newACL) {
+                            Acl newACL, Acl originalACL) {
         
         
         // XXX: ACL inheritance concern moved into Resource class, so a change of the

@@ -33,11 +33,11 @@ package org.vortikal.repository;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
@@ -70,15 +70,15 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         if (prop == null) {
             return;
         }
-        PropertyTypeDefinition def = prop.getDefinition();
-        if (def != null && def.isMandatory()) {
-            throw new ConstraintViolationException("Property is mandatory");
-        }
         props.remove(name);
     }
 
     public void removeProperty(PropertyTypeDefinition propDef) {
         removeProperty(propDef.getNamespace(), propDef.getName());
+    }
+    
+    public void removeAllProperties() {
+        this.propertyMap = new HashMap<Namespace, Map<String,Property>>();
     }
 
     public String getContentLanguage() {
@@ -207,31 +207,6 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
     }
 
     public Object clone() throws CloneNotSupportedException {
-        ResourceImpl clone = cloneWithoutProperties();
-        for (Property prop : getProperties()) {
-            clone.addProperty((Property) prop.clone());
-        }
-        return clone;
-    }
-
-    public ResourceImpl createCopy(Path newUri) {
-        ResourceImpl resource = new ResourceImpl(newUri);
-        resource.setResourceType(getResourceType());
-        for (Property prop : getProperties()) {
-            resource.addProperty(prop);
-        }
-        resource.setAcl(new AclImpl());
-        return resource;
-    }
-
-    /**
-     * Temp. way of getting a "clean" resource clone XXX: Should be renamed to
-     * something other than "cloneXyz", like createCopyWithoutProperties. Clone
-     * implies identical, as defined by equals(), and a "clone" without props is
-     * not identical.
-     */
-    public ResourceImpl cloneWithoutProperties() throws CloneNotSupportedException {
-
         LockImpl lock = null;
         if (this.lock != null)
             lock = (LockImpl) this.lock.clone();
@@ -248,8 +223,22 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         clone.setLock(lock);
         clone.setChildURIs(this.childURIs);
         clone.setResourceType(super.resourceType);
+        for (Property prop : getProperties()) {
+            clone.addProperty((Property) prop.clone());
+        }
         return clone;
     }
+
+    public ResourceImpl createCopy(Path newUri) {
+        ResourceImpl resource = new ResourceImpl(newUri);
+        resource.setResourceType(getResourceType());
+        for (Property prop : getProperties()) {
+            resource.addProperty(prop);
+        }
+        resource.setAcl(new AclImpl());
+        return resource;
+    }
+
 
     private String getPropValue(String name) {
         Property prop = this.propertyMap.get(Namespace.DEFAULT_NAMESPACE).get(name);

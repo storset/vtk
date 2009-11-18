@@ -123,7 +123,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
      * XXX: This hard coded list must be replaced by standard prop handling
      * methods..
      */
-    public PropertySet getFixedCopyProperties(Resource resource, Principal principal, Path destUri)
+    public PropertySet getFixedCopyProperties(ResourceImpl resource, Principal principal, Path destUri)
             throws CloneNotSupportedException {
         PropertySetImpl fixedProps = new PropertySetImpl();
         fixedProps.setUri(destUri);
@@ -180,7 +180,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
 
 
     private void checkForDeadAndZombieProperties(PropertyEvaluationContext ctx) {
-        ResourceImpl newResource = ctx.getNewResource();
+        Resource newResource = ctx.getNewResource();
 
         Resource resource = ctx.getSuppliedResource();
         if (resource == null)
@@ -255,7 +255,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
     private void evaluateManagedProperty(PropertyEvaluationContext ctx, PropertyTypeDefinition propDef) throws IOException {
 
         Property evaluatedProp = doEvaluate(ctx, propDef);
-        ResourceImpl newResource = ctx.getNewResource();
+        Resource newResource = ctx.getNewResource();
 
         if (evaluatedProp == null && propDef.isMandatory()) {
             Value defaultValue = propDef.getDefaultValue();
@@ -320,7 +320,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
                 return null;
             }
         }
-        ResourceImpl newResource = ctx.getNewResource();
+        Resource newResource = ctx.getNewResource();
 
         PropertyEvaluator evaluator = propDef.getPropertyEvaluator();
         Property property = ctx.getOriginalResource().getProperty(propDef);

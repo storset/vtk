@@ -44,12 +44,12 @@ public class PropertyEvaluationContext {
     }
 
     private Type evaluationType;
-    private Resource originalResource;
+    private ResourceImpl originalResource;
     private ResourceImpl newResource;
+    private ResourceImpl suppliedResource;
     private Content content;
     private boolean collection;
     private Date time = new Date();
-    private Resource suppliedResource;
     private Principal principal;
     private Map<String, Object> propertyValueMap;
 
@@ -101,17 +101,19 @@ public class PropertyEvaluationContext {
         this.content = content;
         this.evaluationType = evaluationType;
         try {
-            this.newResource = originalResource.cloneWithoutProperties();
+            this.newResource = (ResourceImpl) originalResource.clone();
+            this.newResource.removeAllProperties();
+            
         } catch (CloneNotSupportedException e) {
             throw new InternalRepositoryException("Unable to clone resource '" + originalResource.getURI() + "'", e);
         }
     }
 
-    public Resource getOriginalResource() {
+    public ResourceImpl getOriginalResource() {
         return this.originalResource;
     }
 
-    public Resource getSuppliedResource() {
+    public ResourceImpl getSuppliedResource() {
         return this.suppliedResource;
     }
 

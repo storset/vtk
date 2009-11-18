@@ -57,6 +57,7 @@ public interface Resource extends PropertySet, Cloneable {
     
     public void removeProperty(PropertyTypeDefinition propDef);
 
+    public void removeAllProperties();
     
     /**
      * Gets a resource's serial string.  A serial string is a unique

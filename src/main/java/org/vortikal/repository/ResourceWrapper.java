@@ -206,6 +206,10 @@ public class ResourceWrapper implements Resource {
     public void removeProperty(PropertyTypeDefinition propDef) {
         this.resource.removeProperty(propDef);
     }
+    
+    public void removeAllProperties() {
+        this.resource.removeAllProperties();
+    }
 
     public void setAcl(Acl acl) {
         this.resource.setAcl(acl);

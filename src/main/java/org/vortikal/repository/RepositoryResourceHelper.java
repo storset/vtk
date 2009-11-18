@@ -66,7 +66,7 @@ public interface RepositoryResourceHelper {
             Principal principal, ResourceImpl suppliedResource) throws IOException;
 
     
-    public PropertySet getFixedCopyProperties(Resource resource, Principal principal, Path destUri)
+    public PropertySet getFixedCopyProperties(ResourceImpl resource, Principal principal, Path destUri)
             throws CloneNotSupportedException;
     
     

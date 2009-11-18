@@ -62,7 +62,7 @@ public interface ResourceTypeTree extends HierarchicalVocabulary<String> {
      * @param def The <code>ResourceTypeDefinition</code> 
      * @return A <code>Set</code> of <code>PropertyTypeDefinition</code> instances.
      */
-    public List<PropertyTypeDefinition> getPropertyTypeDefinitionsForResourceTypeIncludingAncestors(
+    public List<PropertyTypeDefinition> getPropertyTypeDefinitionsIncludingAncestors(
                                                     ResourceTypeDefinition def);
 
     /**

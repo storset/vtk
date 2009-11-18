@@ -62,18 +62,22 @@ public final class FieldValueMapper {
     private static final String STRING_VALUE_ENCODING = "utf-8";
 
     // Note that order (complex towards simpler format) is important here.
-    private static final String[] SUPPORTED_DATE_FORMATS = { "yyyy-MM-dd HH:mm:ss Z",
-            "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM-dd HH", "yyyy-MM-dd" };
+    private static final String[] SUPPORTED_DATE_FORMATS = {
+                                                "yyyy-MM-dd HH:mm:ss Z",
+                                                "yyyy-MM-dd HH:mm:ss",
+                                                "yyyy-MM-dd HH:mm",
+                                                "yyyy-MM-dd HH",
+                                                "yyyy-MM-dd" };
 
-    @SuppressWarnings("unchecked")
-    private static final ReusableObjectCache<SimpleDateFormat>[] CACHED_DATE_FORMAT_PARSERS = 
-        new ReusableObjectCache[SUPPORTED_DATE_FORMATS.length];
+    private static final ReusableObjectCache<SimpleDateFormat>[] CACHED_DATE_FORMAT_PARSERS;
 
     static {
-        // Create parser caches for each date format (maximum capacity of 5
+        // Create parser caches for each date format (maximum capacity of 3
         // instances per format)
-        for (int i = 0; i < CACHED_DATE_FORMAT_PARSERS.length; i++) {
-            CACHED_DATE_FORMAT_PARSERS[i] = new ReusableObjectArrayStackCache<SimpleDateFormat>(5);
+        CACHED_DATE_FORMAT_PARSERS = new ReusableObjectCache[SUPPORTED_DATE_FORMATS.length];
+
+        for (int i = 0; i < SUPPORTED_DATE_FORMATS.length; i++) {
+            CACHED_DATE_FORMAT_PARSERS[i] = new ReusableObjectArrayStackCache<SimpleDateFormat>(3);
         }
     }
 
@@ -225,6 +229,9 @@ public final class FieldValueMapper {
      * sortable, basically).
      * 
      * Only native string representations are supported by this method.
+     *
+     * This method is mostly used when constructing searchable values from query
+     * building process.
      */
     public String encodeIndexFieldValue(String stringValue, Type type, boolean lowercase)
             throws ValueFormatException, FieldDataEncodingException {
@@ -246,10 +253,9 @@ public final class FieldValueMapper {
         case DATE:
         case TIMESTAMP:
             try {
-                long l = Long.parseLong(stringValue);
-                return FieldDataEncoder.encodeDateValueToString(l);
-            } catch (NumberFormatException nfe) { // Failed to parse "long"
-                // format, ignore.
+                return FieldDataEncoder.encodeDateValueToString(Long.parseLong(stringValue));
+            } catch (NumberFormatException nfe) { 
+                // Failed to parse "long" format, ignore.
             }
 
             Date d = null;

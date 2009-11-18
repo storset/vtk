@@ -208,7 +208,7 @@ public class StructuredResourceManager {
         }
         ResourceTypeDefinition startingPoint = this.resourceTypeTree.getResourceTypeDefinitionByName(typeName);
         List<PropertyTypeDefinition> allProps = this.resourceTypeTree
-                .getPropertyTypeDefinitionsForResourceTypeIncludingAncestors(startingPoint);
+                .getPropertyTypeDefinitionsIncludingAncestors(startingPoint);
         boolean foundDef = false;
         for (PropertyTypeDefinition propDef : allProps) {
             if (propDef.getNamespace().equals(target.getNamespace()) && propDef.getName().equals(target.getName())) {

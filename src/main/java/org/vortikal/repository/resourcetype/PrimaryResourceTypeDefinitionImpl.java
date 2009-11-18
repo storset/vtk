@@ -93,8 +93,9 @@ public class PrimaryResourceTypeDefinitionImpl
     }
 
     
+    @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer(this.getClass().getName());
+        StringBuilder sb = new StringBuilder(this.getClass().getName());
         sb.append("[namespace = ").append(getNamespace());
         sb.append(", name = '").append(getName());
         sb.append("']");

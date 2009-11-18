@@ -51,7 +51,6 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldSelector;
 import org.apache.lucene.document.FieldSelectorResult;
-import org.apache.lucene.index.IndexReader;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
@@ -60,6 +59,8 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.ResourceTypeTree;
+import org.vortikal.repository.resourcetype.MixinResourceTypeDefinition;
+import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
@@ -83,35 +84,37 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
     private ResourceTypeTree resourceTypeTree;
     private FieldValueMapper fieldValueMapper;
 
-    // Fast lookup maps for index field names:
-    private Map<String, PropertyTypeDefinition> storedFieldNamePropDefMap 
-                = new HashMap<String, PropertyTypeDefinition>();
-    private Map<PropertyTypeDefinition, String> propDefStoredFieldNameMap
-                = new HashMap<PropertyTypeDefinition, String>();
-    private Map<PropertyTypeDefinition, String> propDefIndexedFieldNameMap
-                = new HashMap<PropertyTypeDefinition, String>();
-    private Map<PropertyTypeDefinition, String> propDefLowercaseIndexedFieldNameMap
-                = new HashMap<PropertyTypeDefinition, String>();
-    
+    // Fast lookup maps for flat list of resource type prop defs and
+    // stored field-name to prop-def map
+    Map<String, List<PropertyTypeDefinition>> resourceTypePropDefsMap
+            = new HashMap<String,List<PropertyTypeDefinition>>();
+    Map<String, PropertyTypeDefinition> storedFieldNamePropDefMap
+            = new HashMap<String,PropertyTypeDefinition>();
+
     public void afterPropertiesSet() {
-        // Populate maps for fast field name lookup,
-        // and check for possible reserved field name collisions.
-        for (PropertyTypeDefinition def : this.resourceTypeTree.getPropertyTypeDefinitions()) {
-            String indexedFieldName = FieldNameMapping.getSearchFieldName(def, false);
-            String lowercaseIndexedFieldName = FieldNameMapping.getSearchFieldName(def, true);
-            String storedFieldName = FieldNameMapping.getStoredFieldName(def);
-            
-            if (FieldNameMapping.isReservedField(indexedFieldName)) {
-                throw new BeanInitializationException(
-                        "Encountered collision between property type name and reserved index field: "
-                        + indexedFieldName);
-            }
-            
-            this.storedFieldNamePropDefMap.put(storedFieldName, def);
-            this.propDefStoredFieldNameMap.put(def, storedFieldName);
-            this.propDefIndexedFieldNameMap.put(def, indexedFieldName);
-            this.propDefLowercaseIndexedFieldNameMap.put(def, lowercaseIndexedFieldName);
+        populateTypeInfoCacheMaps(this.resourceTypePropDefsMap,
+                                  this.storedFieldNamePropDefMap,
+                                  this.resourceTypeTree.getRoot());
+    }
+
+    private void populateTypeInfoCacheMaps(Map<String, List<PropertyTypeDefinition>> resourceTypePropDefsMap,
+                                           Map<String, PropertyTypeDefinition> storedFieldPropDefMap,
+                                           PrimaryResourceTypeDefinition rtDef) {
+
+        String resourceTypeName = rtDef.getName();
+        List<PropertyTypeDefinition> propDefs // Prop-defs from mixins are included here
+                = this.resourceTypeTree.getPropertyTypeDefinitionsIncludingAncestors(rtDef);
+        resourceTypePropDefsMap.put(resourceTypeName, propDefs);
+
+        for (PropertyTypeDefinition propDef: propDefs) {
+            storedFieldPropDefMap.put(FieldNameMapping.getStoredFieldName(propDef), propDef);
         }
+
+        for (PrimaryResourceTypeDefinition child :
+                   this.resourceTypeTree.getResourceTypeDefinitionChildren(rtDef)) {
+            populateTypeInfoCacheMaps(resourceTypePropDefsMap, storedFieldPropDefMap, child);
+        }
+
     }
     
     
@@ -184,23 +187,27 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
                 doc.add(f);
             }
         }
+
+        List<PropertyTypeDefinition> propDefs
+                = this.resourceTypePropDefsMap.get(propSet.getResourceType());
+
+        if (propDefs == null) {
+            logger.warn("Missing type information for resource type '" 
+                    + propSet.getResourceType()
+                    + "', cannot create complete index document.");
+            return doc;
+        }
         
-        ResourceTypeDefinition resourceDef = this.resourceTypeTree
-                .getResourceTypeDefinitionByName(propSet.getResourceType());
-
-        List<PropertyTypeDefinition> propDefs = this.resourceTypeTree
-                .getPropertyTypeDefinitionsForResourceTypeIncludingAncestors(resourceDef);
-
         // Index only properties that satisfy the following conditions:
         //   1) Belongs to the resource type's definition
         //   2) Exists in the property set.
         //   3) Is of type that is sensible to index for searching.
         // Store *all* properties, except those of type BINARY.
-        for (PropertyTypeDefinition propDef : propDefs) {
+        for (PropertyTypeDefinition propDef: propDefs) {
             Property property = propSet.getProperty(propDef);
             
             if (property == null) continue;
-            
+
             // Create indexed fields
             switch (property.getType()) {
             case BINARY: continue; // Don't index or store BINARY property values
@@ -258,8 +265,8 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
 
 
                 public FieldSelectorResult accept(String fieldName) {
-                    PropertyTypeDefinition def = DocumentMapperImpl.this.storedFieldNamePropDefMap
-                            .get(fieldName);
+                    PropertyTypeDefinition def =
+                            DocumentMapperImpl.this.storedFieldNamePropDefMap.get(fieldName);
 
                     if (def == null) {
                         // Reserved field, load it
@@ -332,7 +339,7 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
                 currentName = fieldName; 
             }
             
-            if (fieldName == currentName) {
+            if (fieldName == currentName) { // Interned string comparison
                 // Add field for current property
                 fields.add(field);
             } else {
@@ -428,20 +435,11 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
             throw new DocumentMappingException(
                     "Cannot create indexed field for property with null definition");
         }
-        String fieldName;
-        if (lowercase) {
-            fieldName = this.propDefLowercaseIndexedFieldNameMap.get(def);
-        } else {
-            fieldName = this.propDefIndexedFieldNameMap.get(def);
-        }
 
-        if (fieldName == null) {
-            // Apparently unregistered PropertyTypeDefinition instance, just fallback to generating the name.
-            fieldName = FieldNameMapping.getSearchFieldName(def, lowercase);
-            if (FieldNameMapping.isReservedField(fieldName)) {
-                throw new DocumentMappingException(
-                        "Unregistered property type definition has name which collides with reserved index field:" + fieldName);
-            }
+        String fieldName = FieldNameMapping.getSearchFieldName(def, lowercase);
+        if (FieldNameMapping.isReservedField(fieldName)) {
+            throw new DocumentMappingException(
+                    "Property type definition has name which collides with reserved index field:" + fieldName);
         }
 
         Field field = null;
@@ -529,10 +527,7 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
                     "Cannot create stored field for a property with null definition");
         }
         
-        String fieldName = this.propDefStoredFieldNameMap.get(property.getDefinition());
-        if (fieldName == null) {
-            fieldName = FieldNameMapping.getStoredFieldName(def);
-        }
+        String fieldName = FieldNameMapping.getStoredFieldName(def);
 
         if (def.isMultiple()) {
             Value[] values = property.getValues();

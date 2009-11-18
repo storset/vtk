@@ -76,7 +76,7 @@ public class MockResourceTypeTree implements ResourceTypeTree {
         return null;
     }
 
-    public List<PropertyTypeDefinition> getPropertyTypeDefinitionsForResourceTypeIncludingAncestors(
+    public List<PropertyTypeDefinition> getPropertyTypeDefinitionsIncludingAncestors(
             ResourceTypeDefinition def) {
         return null;
     }

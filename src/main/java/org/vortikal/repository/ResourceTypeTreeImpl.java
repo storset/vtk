@@ -255,7 +255,7 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
      * @param def The <code>ResourceTypeDefinition</code> 
      * @return A <code>Set</code> of <code>PropertyTypeDefinition</code> instances.
      */
-    public List<PropertyTypeDefinition> getPropertyTypeDefinitionsForResourceTypeIncludingAncestors(
+    public List<PropertyTypeDefinition> getPropertyTypeDefinitionsIncludingAncestors(
                                                     ResourceTypeDefinition def) {
         Set<String> encounteredIds = new HashSet<String>();
         List<PropertyTypeDefinition> propertyTypes = new ArrayList<PropertyTypeDefinition>();
@@ -517,7 +517,7 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
                                             PropertyTypeDefinition[] propDefs) {
         for (PropertyTypeDefinition propDef: propDefs) {
             String id = propDef.getNamespace().getUri() + ":" + propDef.getName();
-            // Add only _first_ occurence of property type definition
+            // Add only _first_ occurence of property type definition keyed on
             if (encounteredIds.add(id)) {
                 propertyTypes.add(propDef);
             }

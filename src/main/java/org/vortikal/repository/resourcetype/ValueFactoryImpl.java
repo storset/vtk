@@ -30,10 +30,11 @@
  */
 package org.vortikal.repository.resourcetype;
 
+
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -44,6 +45,8 @@ import org.vortikal.repository.store.BinaryContentDataAccessor;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
+import org.vortikal.util.cache.ReusableObjectArrayStackCache;
+import org.vortikal.util.cache.ReusableObjectCache;
 
 /**
  * Implementation of {@link ValueFactory}.
@@ -53,15 +56,25 @@ public class ValueFactoryImpl implements ValueFactory {
     private PrincipalFactory principalFactory;
     private BinaryContentDataAccessor binaryDao;
 
-    private static final String[] dateFormats = new String[] {
-                                             "dd.MM.yyyy HH:mm:ss",
-                                             "dd.MM.yyyy HH:mm",
-                                             "dd.MM.yyyy",
-                                             "yyyy-MM-dd HH:mm:ss",
-                                             "yyyy-MM-dd HH:mm",
-                                             "yyyy-MM-dd" };
+    private static final String[] DATE_FORMATS = new String[] {
+                                               "yyyy-MM-dd HH:mm:ss",
+                                               "yyyy-MM-dd HH:mm",
+                                               "yyyy-MM-dd",
+                                               "dd.MM.yyyy HH:mm:ss",
+                                               "dd.MM.yyyy HH:mm",
+                                               "dd.MM.yyyy"
+                                              };
 
-    private Log logger = LogFactory.getLog(this.getClass());
+    private static final ReusableObjectCache<SimpleDateFormat>[]
+                                                    CACHED_DATE_FORMAT_PARSERS;
+    static {
+        CACHED_DATE_FORMAT_PARSERS = new ReusableObjectCache[DATE_FORMATS.length];
+        for (int i = 0; i < DATE_FORMATS.length; i++) {
+            CACHED_DATE_FORMAT_PARSERS[i] = new ReusableObjectArrayStackCache<SimpleDateFormat>(3);
+        }
+    }
+
+    private final Log logger = LogFactory.getLog(this.getClass());
 
 
     /*
@@ -85,7 +98,6 @@ public class ValueFactoryImpl implements ValueFactory {
         return values;
 
     }
-
 
     /*
      * (non-Javadoc)
@@ -210,35 +222,37 @@ public class ValueFactoryImpl implements ValueFactory {
     }
 
     private Date getDateFromStringValue(String stringValue) throws ValueFormatException {
-
         try {
             return new Date(Long.parseLong(stringValue));
-        } catch (NumberFormatException nfe) {
-        }
+        } catch (NumberFormatException nfe) {}
 
-        SimpleDateFormat format;
-        Date date;
-        for (String dateFormat : dateFormats) {
-            format = new SimpleDateFormat(dateFormat);
-            format.setLenient(false);
+        for (int i=0; i<DATE_FORMATS.length; i++) {
+            SimpleDateFormat formatter = CACHED_DATE_FORMAT_PARSERS[i].getInstance();
+            if (formatter == null) {
+                formatter = new SimpleDateFormat(DATE_FORMATS[i]);
+                formatter.setLenient(false);
+            }
+
             try {
-                date = format.parse(stringValue);
-                return date;
+                return formatter.parse(stringValue);
             } catch (ParseException e) {
-                this.logger.debug("Failed to parse date using format '" + dateFormat + "', input '"
-                        + stringValue + "'", e);
+                this.logger.debug("Failed to parse date using format '" 
+                        + DATE_FORMATS[i]
+                        + "', input '" + stringValue + "'", e);
+            } finally {
+                // Cache the constructed date parser for later re-use
+                CACHED_DATE_FORMAT_PARSERS[i].putInstance(formatter);
             }
         }
+
         throw new ValueFormatException("Unable to parse date value for input string: '"
                 + stringValue + "'");
     }
-
 
     @Required
     public void setPrincipalFactory(PrincipalFactory principalFactory) {
         this.principalFactory = principalFactory;
     }
-
 
     //@Required
     public void setBinaryDao(BinaryContentDataAccessor binaryDao) {

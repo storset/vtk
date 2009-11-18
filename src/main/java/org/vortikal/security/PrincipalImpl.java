@@ -158,6 +158,7 @@ public class PrincipalImpl implements Principal {
         return this.url;
     }
 
+    @Override
     public String toString() {
         return this.qualifiedName;
     }

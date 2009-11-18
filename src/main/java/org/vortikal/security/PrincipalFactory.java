@@ -80,7 +80,7 @@ public class PrincipalFactory {
         PrincipalImpl principal = new PrincipalImpl(id, type);
         if (principal.getType() == Type.USER) {
             if (this.principalMetadataDao != null) {
-                
+
                 // Set metadata for principal, if we can get any.
                 try {
                     PrincipalMetadata metadata = this.principalMetadataDao.getMetadata(principal);

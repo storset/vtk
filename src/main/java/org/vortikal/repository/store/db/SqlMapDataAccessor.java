@@ -1225,7 +1225,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
 			}
 			prop.setBinaryValue(out.toByteArray(), prop.getBinaryMimeType());
 		} catch (Exception e) {
-			logger.error("Colud not read binary stream for property " + prop.getDefinition().getName(), e);
+			logger.error("Could not read binary stream for property " + prop.getDefinition().getName(), e);
 		}
 	}
     

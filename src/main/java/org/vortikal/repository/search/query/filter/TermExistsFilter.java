@@ -38,6 +38,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.search.DocIdSet;
+import org.apache.lucene.search.DocIdSetIterator;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.util.OpenBitSet;
 
@@ -45,9 +46,6 @@ import org.apache.lucene.util.OpenBitSet;
  * Experimental, might be slow for common terms in indexes with many
  * documents. Avoid if you can.
  * 
- * <p>      
- * Not thread safe. A new instance should be created for every query.
- *      
  * @author oyviste
  *
  */
@@ -55,9 +53,8 @@ public class TermExistsFilter extends Filter {
     
     private static final long serialVersionUID = 6676434194690479831L;
     private String fieldName;
-    private BitSet bits;
-    private DocIdSet docIdSet;
-    
+    private boolean invert = false;
+
     /**
      * Construct a filter for the given fieldName.
      * 
@@ -66,66 +63,94 @@ public class TermExistsFilter extends Filter {
     public TermExistsFilter(String fieldName) {
         this.fieldName = fieldName;
     }
+
+    public TermExistsFilter(String fieldName, boolean invert) {
+        this.fieldName = fieldName;
+        this.invert = invert;
+    }
     
-    public BitSet bits(IndexReader reader) throws IOException {
-        if (this.bits == null) {
-            BitSet bits = new BitSet(reader.maxDoc());
-            Term term = new Term(this.fieldName, "");
-            String termField = term.field();
-            
-            TermEnum tenum = reader.terms(term);
-            TermDocs tdocs = reader.termDocs(term);
+    @Override
+    @Deprecated
+    public BitSet bits(final IndexReader reader) throws IOException {
+        final BitSet bits = new BitSet(reader.maxDoc());
+        new ExistsIdGenerator(this.fieldName) {
+            @Override
+            public void handleDoc(int doc) {
+                bits.set(doc);
+            }
+        }.generate(reader);
+
+        if (this.invert) {
+            bits.flip(0, reader.maxDoc());
+            if (reader.hasDeletions()) {
+                for (int doc = bits.nextSetBit(0); doc != -1; doc = bits.nextSetBit(doc+1)) {
+                    if (reader.isDeleted(doc)) {
+                        bits.clear(doc);
+                    }
+                }
+            }
+        }
+
+        return bits;
+    }
+
+    @Override
+    public DocIdSet getDocIdSet(final IndexReader reader) throws IOException {
+        final OpenBitSet bits = new OpenBitSet(reader.maxDoc());
+        new ExistsIdGenerator(this.fieldName) {
+            @Override
+            public void handleDoc(int doc) {
+                bits.fastSet(doc);
+            }
+        }.generate(reader);
+
+        if (this.invert) {
+            bits.flip(0, reader.maxDoc());
+            if (reader.hasDeletions()) {
+                for (DocIdSetIterator i = bits.iterator(); i.next();) {
+                    if (reader.isDeleted(i.doc())) {
+                        bits.fastClear(i.doc());
+                    }
+                }
+            }
+        }
+
+        return bits;
+    }
+
+
+    private static abstract class ExistsIdGenerator {
+        private Term exists;
+
+        ExistsIdGenerator(String fieldName) {
+            this.exists = new Term(fieldName, "");
+        }
+
+        void generate(final IndexReader reader) throws IOException {
+            TermEnum tenum = reader.terms(this.exists);
+            TermDocs tdocs = reader.termDocs(this.exists);
+            String existsFieldName = this.exists.field();
             try {
                 do {
-                    if (tenum.term() != null && tenum.term().field() == termField) { // Interned string comparison
+                    Term t = tenum.term();
+                    if (t != null && t.field() == existsFieldName) { // Interned string comparison
                         // Add the docs
                         tdocs.seek(tenum);
                         while (tdocs.next()) {
-                            bits.set(tdocs.doc());
+                            handleDoc(tdocs.doc());
                         }
-                    } else break;
-                    
+                    } else {
+                        break;
+                    }
                 } while (tenum.next());
             } finally {
                 tenum.close();
                 tdocs.close();
             }
-            
-            this.bits = bits;
         }
+        
+        abstract void handleDoc(int doc);
 
-        return this.bits;
-    }
-    
-    public DocIdSet getDocIdSet(IndexReader reader) throws IOException {
-       if (this.docIdSet == null) {
-           OpenBitSet openBits = new OpenBitSet(reader.maxDoc());
-           Term term = new Term(this.fieldName, "");
-           String fieldName = term.field();
-           
-           TermEnum tenum = reader.terms(term);
-           TermDocs tdocs = reader.termDocs(term);
-           try {
-               do {
-                   Term t = tenum.term();
-                   if (t != null && t.field() == fieldName) {
-                       // Add the docs
-                       tdocs.seek(tenum);
-                       while (tdocs.next()) {
-                           openBits.fastSet(tdocs.doc());
-                       }
-                   } else break;
-                   
-               } while (tenum.next());
-           } finally {
-               tenum.close();
-               tdocs.close();
-           }
-           
-           this.docIdSet = openBits;
-       }
-
-       return this.docIdSet;
     }
 
 }

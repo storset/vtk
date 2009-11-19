@@ -33,6 +33,7 @@ package org.vortikal.repository.search.query.builders;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
+import org.apache.lucene.search.PrefixFilter;
 import org.apache.lucene.search.Query;
 import org.vortikal.repository.index.mapping.FieldNameMapping;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
@@ -42,7 +43,6 @@ import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.filter.InversionFilter;
-import org.vortikal.repository.search.query.filter.PrefixTermFilter;
 
 /**
  * 
@@ -85,7 +85,7 @@ public class PropertyPrefixQueryBuilder implements QueryBuilder {
                     def, ppq.getComplexValueAttributeSpecifier(), ignorecase);
         }
 
-        Filter filter = new PrefixTermFilter(new Term(fieldName, term));
+        Filter filter = new PrefixFilter(new Term(fieldName, term));
 
         if (inverted) {
             filter = new InversionFilter(filter);

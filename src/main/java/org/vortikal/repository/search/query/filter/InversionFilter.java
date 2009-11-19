@@ -66,8 +66,6 @@ public class InversionFilter extends Filter {
     private static final long serialVersionUID = -8133303000593033686L;
 
     private Filter wrappedFilter;
-    private BitSet bits;
-    private DocIdSet docIdSet;
     
     public InversionFilter(Filter wrappedFilter) {
         this.wrappedFilter = wrappedFilter;
@@ -76,48 +74,41 @@ public class InversionFilter extends Filter {
     @Override
     @Deprecated
     public BitSet bits(IndexReader reader) throws IOException {
-        if (bits == null) {
-            bits = this.wrappedFilter.bits(reader);
-            bits.flip(0, reader.maxDoc());
-            for (int i = bits.nextSetBit(0); i >= 0; i = bits.nextSetBit(i+1)) {
-                if (reader.isDeleted(i)) {
-                    bits.clear(i);
-                }
+        BitSet bits = this.wrappedFilter.bits(reader);
+        bits.flip(0, reader.maxDoc());
+        for (int i = bits.nextSetBit(0); i >= 0; i = bits.nextSetBit(i + 1)) {
+            if (reader.isDeleted(i)) {
+                bits.clear(i);
             }
         }
-        
+
         return bits;
     }
     
     @Override
     public DocIdSet getDocIdSet(IndexReader reader) throws IOException {
-        if (this.docIdSet == null) {
-            int maxDoc = reader.maxDoc();
-            OpenBitSet docIdSet = new OpenBitSet(maxDoc);
-        
-            DocIdSetIterator iterator = this.wrappedFilter.getDocIdSet(reader).iterator();
-            int prevDocId = -1;
-            while(iterator.next()) {
-                int currentDocId = iterator.doc();
-                for (int i=prevDocId+1; i<currentDocId; i++) {
-                    if (!reader.isDeleted(i)) { 
-                        docIdSet.fastSet(i);
-                    }
-                }
-                prevDocId = currentDocId;
-            }
-            
-            // Flip the rest of the bits (last doc id+1 to maxdoc())
-            for (int i=prevDocId+1; i<maxDoc; i++) {
+        int maxDoc = reader.maxDoc();
+        OpenBitSet docIdSet = new OpenBitSet(maxDoc);
+
+        DocIdSetIterator iterator = this.wrappedFilter.getDocIdSet(reader).iterator();
+        int prevDocId = -1;
+        while (iterator.next()) {
+            int currentDocId = iterator.doc();
+            for (int i = prevDocId + 1; i < currentDocId; i++) {
                 if (!reader.isDeleted(i)) {
                     docIdSet.fastSet(i);
                 }
             }
-            
-            this.docIdSet = docIdSet;
+            prevDocId = currentDocId;
         }
-        
-        return this.docIdSet;
+
+        // Flip the rest of the bits (last doc id+1 to maxdoc())
+        for (int i = prevDocId + 1; i < maxDoc; i++) {
+            if (!reader.isDeleted(i)) {
+                docIdSet.fastSet(i);
+            }
+        }
+
+        return docIdSet;
     }
-    
 }

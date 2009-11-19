@@ -31,14 +31,12 @@
 package org.vortikal.repository.search.query.builders;
 
 import org.apache.lucene.search.ConstantScoreQuery;
-import org.apache.lucene.search.Filter;
 import org.vortikal.repository.index.mapping.FieldNameMapping;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.query.PropertyExistsQuery;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
-import org.vortikal.repository.search.query.filter.InversionFilter;
 import org.vortikal.repository.search.query.filter.TermExistsFilter;
 
 /**
@@ -63,13 +61,7 @@ public class PropertyExistsQueryBuilder implements QueryBuilder {
             fieldName = FieldNameMapping.getJSONSearchFieldName(def, query.getComplexValueAttributeSpecifier(), false);
         }
 
-        Filter filter = new TermExistsFilter(fieldName);
-        
-        if (query.isInverted()) {
-            filter = new InversionFilter(filter);
-        }
-        
-        return new ConstantScoreQuery(filter);
+        return new ConstantScoreQuery(new TermExistsFilter(fieldName, query.isInverted()));
     }
 
 }

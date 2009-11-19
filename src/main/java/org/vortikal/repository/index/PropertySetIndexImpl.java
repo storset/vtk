@@ -43,6 +43,9 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.index.TermEnum;
+import org.apache.lucene.search.ConstantScoreQuery;
+import org.apache.lucene.search.Filter;
+import org.apache.lucene.search.PrefixFilter;
 import org.apache.lucene.store.Directory;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
@@ -117,143 +120,196 @@ public class PropertySetIndexImpl implements PropertySetIndex {
         }
     }
 
-
     public void deletePropertySetTreeByUUID(String rootUuid) throws IndexException {
         try {
-            IndexReader reader = this.indexAccessor.getIndexReader();
 
-            int n = reader.deleteDocuments(new Term(FieldNameMapping.ID_FIELD_NAME, rootUuid));
-
-            n += reader.deleteDocuments(new Term(FieldNameMapping.ANCESTORIDS_FIELD_NAME, rootUuid));
-
-            if (logger.isDebugEnabled()) {
-                logger.debug("Deleted " + n + " docs from index for property set tree with root ID '" + rootUuid + "'");
-            }
+            IndexWriter writer = this.indexAccessor.getIndexWriter();
+            writer.deleteDocuments(new Term(FieldNameMapping.ID_FIELD_NAME, rootUuid));
+            writer.deleteDocuments(new Term(FieldNameMapping.ANCESTORIDS_FIELD_NAME, rootUuid));
 
         } catch (IOException io) {
             throw new IndexException(io);
         }
     }
 
+    public void deletePropertySetTree(Path rootUri) throws IndexException {
 
-    public int deletePropertySetTree(Path rootPath) throws IndexException {
+        System.out.println("Deleting property set tree: " + rootUri);
 
-        String rootUri = rootPath.toString();
+        String rootUriString = rootUri.toString();
         String prefix;
-        if ("/".equals(rootUri))  {
+        if ("/".equals(rootUriString))  {
             prefix = "/";
         } else {
-            prefix = rootUri + "/";
+            prefix = rootUriString + "/";
         }
 
-        TermEnum tenum = null;
-        TermDocs tdocs = null;
         try {
-            IndexReader reader = this.indexAccessor.getIndexReader();
-            Term rootUriTerm = new Term(FieldNameMapping.URI_FIELD_NAME, rootUri);
-            String fieldName = rootUriTerm.field();
-            tenum = reader.terms(rootUriTerm);
-            tdocs = reader.termDocs();
-            int n = 0;
+            IndexWriter writer = this.indexAccessor.getIndexWriter();
+            Term rootUriTerm = new Term(FieldNameMapping.URI_FIELD_NAME, rootUriString);
+            Filter prefixFilter = new PrefixFilter(new Term(FieldNameMapping.URI_FIELD_NAME, prefix));
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("Deleting property set tree with root URI '" + rootUri + "'");
-            }
+            writer.deleteDocuments(rootUriTerm);
+            writer.deleteDocuments(new ConstantScoreQuery(prefixFilter));
 
-            // Do root only, first
-            Term term = tenum.term();
-            if (term != null && term.field() == fieldName
-                    && term.text().equals(rootUri)) {
-                
-                tdocs.seek(tenum);
-                while (tdocs.next()) {
-                    reader.deleteDocument(tdocs.doc());
-                    ++n;
-                }
-            }
-            tenum.close();
-
-            // Create a separate enumeration starting at slash-terminated prefix.
-            // This is important because lexicographic sorting of URIs is not always in 
-            // strict parent-child-sequence. If disregarded, the iteration will stop if
-            // any same-level URIs occur in the middle. That would result in dangling 
-            // resources in index.
-            // Example of lexicographic URI sorting which demonstrates problem, 
-            // starting at root URI /a:
-            //     /a
-            //     /a.jar       <-- Iteration would stop here if the root URI enumration was used.
-            //     /a/1
-            //     /a/2
-            
-            Term prefixTerm = new Term(FieldNameMapping.URI_FIELD_NAME, prefix);
-            fieldName = prefixTerm.field();
-            tenum = reader.terms(prefixTerm);
-            
-            do {
-                term = tenum.term();
-                if (term != null && term.field() == fieldName
-                        && term.text().startsWith(prefix)) {
-
-                    tdocs.seek(tenum);
-                    while (tdocs.next()) {
-                        reader.deleteDocument(tdocs.doc());
-                        ++n;
-                    }
-                } else
-                    break; // End of subtree in sequence
-
-            } while (tenum.next());
-
-            if (logger.isDebugEnabled()) {
-                logger.debug("Deleted " + n + " index documents.");
-            }
-
-            return n;
         } catch (IOException io) {
             throw new IndexException(io);
-        } finally {
-            try {
-                if (tenum != null)
-                    tenum.close();
-                if (tdocs != null)
-                    tdocs.close();
-            } catch (IOException io) {}
         }
     }
-
 
     public void deletePropertySet(Path uri) throws IndexException {
         try {
             Term uriTerm = new Term(FieldNameMapping.URI_FIELD_NAME, uri.toString());
-            IndexReader reader = this.indexAccessor.getIndexReader();
-            int n = reader.deleteDocuments(uriTerm);
-
-            if (logger.isDebugEnabled()) {
-                logger.debug("Deleted " + n + " docs from index, for property set at URI '" + uri + "'");
-            }
-
+            this.indexAccessor.getIndexWriter().deleteDocuments(uriTerm);
         } catch (IOException io) {
             throw new IndexException(io);
         }
     }
+
 
 
     public void deletePropertySetByUUID(String uuid) throws IndexException {
         try {
-            Term uuidTerm = new Term(FieldNameMapping.ID_FIELD_NAME, uuid);
-            IndexReader reader = this.indexAccessor.getIndexReader();
-
-            int n = reader.deleteDocuments(uuidTerm);
-            
-            if (logger.isDebugEnabled()) {
-                logger.debug("Deleted " + n + " docs from index, for property set with ID '" + uuid + "'");
-            }
-
+            this.indexAccessor.getIndexWriter().deleteDocuments(
+                                new Term(FieldNameMapping.ID_FIELD_NAME, uuid));
         } catch (IOException io) {
             throw new IndexException(io);
         }
     }
 
+//    public void deletePropertySetByUUIDOLD(String uuid) throws IndexException {
+//        try {
+//            Term uuidTerm = new Term(FieldNameMapping.ID_FIELD_NAME, uuid);
+//            IndexReader reader = this.indexAccessor.getIndexReader();
+//
+//            int n = reader.deleteDocuments(uuidTerm);
+//
+//            if (logger.isDebugEnabled()) {
+//                logger.debug("Deleted " + n
+//                       + " docs from index, for property set with ID '" + uuid + "'");
+//            }
+//
+//        } catch (IOException io) {
+//            throw new IndexException(io);
+//        }
+//    }
+//
+//    public int deletePropertySetTreeOLD(Path rootPath) throws IndexException {
+//
+//        String rootUri = rootPath.toString();
+//        String prefix;
+//        if ("/".equals(rootUri)) {
+//            prefix = "/";
+//        } else {
+//            prefix = rootUri + "/";
+//        }
+//
+//        TermEnum tenum = null;
+//        TermDocs tdocs = null;
+//        try {
+//            IndexReader reader = this.indexAccessor.getIndexReader();
+//            Term rootUriTerm = new Term(FieldNameMapping.URI_FIELD_NAME, rootUri);
+//            String fieldName = rootUriTerm.field();
+//            tenum = reader.terms(rootUriTerm);
+//            tdocs = reader.termDocs();
+//            int n = 0;
+//
+//            if (logger.isDebugEnabled()) {
+//                logger.debug("Deleting property set tree with root URI '" + rootUri + "'");
+//            }
+//
+//            // Do root only, first
+//            Term term = tenum.term();
+//            if (term != null && term.field() == fieldName // Interned String comparison
+//                    && term.text().equals(rootUri)) {
+//
+//                tdocs.seek(tenum);
+//                while (tdocs.next()) {
+//                    reader.deleteDocument(tdocs.doc());
+//                    ++n;
+//                }
+//            }
+//            tenum.close();
+//
+//            // Create a separate enumeration starting at slash-terminated prefix.
+//            // This is important because lexicographic sorting of URIs is not always in
+//            // strict parent-child-sequence. If disregarded, the iteration will stop if
+//            // any same-level URIs occur in the middle. That would result in dangling
+//            // resources in index.
+//            // Example of lexicographic URI sorting which demonstrates problem,
+//            // starting at root URI /a:
+//            //     /a
+//            //     /a.jar       <-- Iteration would stop here if the root URI enumration was used.
+//            //     /a/1
+//            //     /a/2
+//
+//            Term prefixTerm = new Term(FieldNameMapping.URI_FIELD_NAME, prefix);
+//            fieldName = prefixTerm.field();
+//            tenum = reader.terms(prefixTerm);
+//
+//            do {
+//                term = tenum.term();
+//                if (term != null && term.field() == fieldName // Interned String comparison
+//                        && term.text().startsWith(prefix)) {
+//
+//                    tdocs.seek(tenum);
+//                    while (tdocs.next()) {
+//                        reader.deleteDocument(tdocs.doc());
+//                        ++n;
+//                    }
+//                } else
+//                    break; // End of subtree in sequence
+//
+//            } while (tenum.next());
+//
+//            if (logger.isDebugEnabled()) {
+//                logger.debug("Deleted " + n + " index documents.");
+//            }
+//
+//            return n;
+//        } catch (IOException io) {
+//            throw new IndexException(io);
+//        } finally {
+//            try {
+//                if (tenum != null)
+//                    tenum.close();
+//                if (tdocs != null)
+//                    tdocs.close();
+//            } catch (IOException io) {}
+//        }
+//    }
+//
+//    public void deletePropertySetTreeByUUIDOLD(String rootUuid) throws IndexException {
+//        try {
+//            IndexReader reader = this.indexAccessor.getIndexReader();
+//
+//            int n = reader.deleteDocuments(new Term(FieldNameMapping.ID_FIELD_NAME, rootUuid));
+//
+//            n += reader.deleteDocuments(new Term(FieldNameMapping.ANCESTORIDS_FIELD_NAME, rootUuid));
+//
+//            if (logger.isDebugEnabled()) {
+//                logger.debug("Deleted " + n + " docs from index for property set tree with root ID '" + rootUuid + "'");
+//            }
+//
+//        } catch (IOException io) {
+//            throw new IndexException(io);
+//        }
+//    }
+//
+//    public void deletePropertySetOLD(Path uri) throws IndexException {
+//        try {
+//            Term uriTerm = new Term(FieldNameMapping.URI_FIELD_NAME, uri.toString());
+//            IndexReader reader = this.indexAccessor.getIndexReader();
+//            int n = reader.deleteDocuments(uriTerm);
+//
+//            if (logger.isDebugEnabled()) {
+//                logger.debug("Deleted " + n + " docs from index, for property set at URI '" + uri + "'");
+//            }
+//
+//        } catch (IOException io) {
+//            throw new IndexException(io);
+//        }
+//    }
 
     public int countAllInstances() throws IndexException {
         TermEnum termEnum = null;
@@ -267,7 +323,8 @@ public class PropertySetIndexImpl implements PropertySetIndex {
             termEnum = reader.terms(start);
             termDocs = reader.termDocs(start);
 
-            while (termEnum.term() != null && termEnum.term().field() == enumField) {
+            while (termEnum.term() != null
+                    && termEnum.term().field() == enumField) { // Interned String comparison
                 termDocs.seek(termEnum);
                 while (termDocs.next()) {
                     ++count;

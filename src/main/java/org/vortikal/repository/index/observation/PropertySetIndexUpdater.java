@@ -172,9 +172,13 @@ public class PropertySetIndexUpdater implements BeanNameAware,
                         updateUris.add(uri);
                     }
                 }
-                
+
                 logger.debug("--- indexUpdate(): End of update list, going to fetch from DAO and add to index:");
                 
+                // Immediately make lastChanges available for GC, since the next operation
+                // can take a while, and lastChanges can be huge (tens of thousands of entries).
+                lastChanges = null;
+
                 // Now query index dao for a list of all property sets that 
                 // need updating.
                 class CountingPropertySetHandler implements PropertySetHandler {

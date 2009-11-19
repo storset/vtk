@@ -69,8 +69,9 @@ import org.vortikal.security.Principal;
  * The {@link #lock()}, {@link #unlock()} and {@link #commit()} methods
  * should provide the possibility of executing a set
  * operations that cannot be mixed with other write operations from other threads
- * at the same time. Any modifying operation is not guaranteed to be visible by
- * other index users before {@link commit()} has been called.
+ * at the same time. Any modifying operation will not be visible by
+ * other index users/readers before {@link commit()} has been called, as long
+ * as the lock has been acquired properly first.
  * </p>
  *
  * @author oyviste
@@ -79,8 +80,9 @@ public interface PropertySetIndex {
     
     /**
      * Add a <code>PropertySet</code> to index, in addition to a set of principals
-     * which are allowed to read it. Does not erasing any existing property sets
-     * at the same URI.
+     * which are allowed to read it. 
+     * 
+     * <em>Does not erasing any existing property sets at the same URI.</em>
      *  
      * @param propertySet
      * @param aclReadPrincipals
@@ -94,7 +96,7 @@ public interface PropertySetIndex {
      * Updates a <code>PropertySet</code> in index. If no property set exists
      * at the URI, this method will give the same result as {@link #addPropertySet(PropertySet, Set)}.
      * 
-     * This method will always erase any existing property sets at the URI for
+     * This method will always erase any existing property sets at the same URI for
      * the property set to update.
      */
     public void updatePropertySet(PropertySet propertySet,
@@ -131,7 +133,7 @@ public interface PropertySetIndex {
      *         
      * @throws IndexException
      */
-    public int deletePropertySetTree(Path rootUri) throws IndexException;
+    public void deletePropertySetTree(Path rootUri) throws IndexException;
     
     /**
      * Delete the <code>PropertySet</code> with the given auxilliary UUID and all its
@@ -145,6 +147,10 @@ public interface PropertySetIndex {
     
     /**
      * Get a {@link PropertySetIndexRandomAccessor} instances for this index.
+     *
+     * Note that calling this method will implicitly commit all changes made earlier
+     * using any of the methods for deleting, updating or adding property sets.
+     *
      * @return
      * @throws IndexException
      */
@@ -155,6 +161,9 @@ public interface PropertySetIndex {
      * 
      * The iteration is ordered by URI lexicographically. Any URI-duplicates are included. 
      * 
+     * Note that calling this method will implicitly commit all changes made earlier
+     * using any of the methods for deleting, updating or adding property sets.
+     * 
      * @return
      * @throws IndexException
      */
@@ -163,6 +172,9 @@ public interface PropertySetIndex {
     /**
      * Get an un-ordered <code>Iterator</code> over all <code>PropertySet</code> instances
      * in index. Any URI-duplicates are included.
+     * 
+     * Note that calling this method will implicitly commit all changes made earlier
+     * using any of the methods for deleting, updating or adding property sets.
      * 
      * @return
      * @throws IndexException
@@ -176,6 +188,9 @@ public interface PropertySetIndex {
      * The iteration is ordered by URI lexicographically. Any URI-duplicates are included, 
      * and should <em>directly</em> follow each other because of the sorting.
      * 
+     * Note that calling this method will implicitly commit all changes made earlier
+     * using any of the methods for deleting, updating or adding property sets.
+     * 
      * @return
      * @throws IndexException
      */
@@ -188,6 +203,9 @@ public interface PropertySetIndex {
      * The iteration is ordered by URI lexicographically. Any duplicates are included
      * and should <em>directly</em> follow each other because of the sorting.
      * 
+     * Note that calling this method will implicitly commit all changes made earlier
+     * using any of the methods for deleting, updating or adding property sets.
+     * 
      * @param rootUri
      * @return
      * @throws IndexException
@@ -198,6 +216,9 @@ public interface PropertySetIndex {
      * Count all property set instances currently in index. This number includes any multiples
      * for a single URI.
      *  
+     * Note that calling this method will implicitly commit all changes made earlier
+     * using any of the methods for deleting, updating or adding property sets.
+     * 
      * @return
      * @throws IndexException
      */
@@ -234,6 +255,9 @@ public interface PropertySetIndex {
     /**
      * Re-initialize the index. Should be used to re-open a previously
      * closed instance.
+     * 
+     * Note that calling this method will implicitly commit all changes made earlier
+     * using any of the methods for deleting, updating or adding property sets.
      * 
      * @throws IndexException
      */
@@ -277,7 +301,9 @@ public interface PropertySetIndex {
     public void unlock();
  
     /**
-     * Commit any changes
+     * Commit any changes using the methods for updating, delete or adding property sets.
+     * This makes the changes visible in searches.
+     * 
      * @throws IndexException
      */
     public void commit() throws IndexException;

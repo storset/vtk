@@ -18,27 +18,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   
-  <#if tagElements?exists>
-    <#if !scope.URI.root>
-      <#assign title><@vrtx.msg code="tags.serviceTitle" args=[scope.title] /></#assign>
-    <#else>
-  	  <#assign title>${vrtx.getMsg("tags.noTagTitle")}</#assign>
-  	</#if>
-  <#elseif listing?exists && listing?has_content >
-    <#assign scopeParam = scope.title />
-    <#if scope.URI.root>
-      <#assign scopeParam = repositoryID />
-    </#if>
-    <#assign msgKey = "tags.title" />
-    <#if resourceType?exists>
-      <#assign resourceTypeKey = msgKey + "." + resourceType />
-      <#if resourceTypeKey != vrtx.getMsg(resourceTypeKey)>
-        <#assign msgKey = resourceTypeKey />
-      </#if>
-    </#if>
-    <#assign title><@vrtx.msg code=msgKey args=[scopeParam, tag] /></#assign>
-  </#if>
-  
   <title>${title}
     <#if page?has_content>
       <#if "${page}" != "1"> - <@vrtx.msg code="viewCollectionListing.page" /> ${page}</#if>
@@ -62,6 +41,7 @@
 </head>
 
 <body id="vrtx-tagview">
+
   <h1>${title}
     <#if page?has_content>
       <#if "${page}" != "1"> - <@vrtx.msg code="viewCollectionListing.page" /> ${page}</#if>

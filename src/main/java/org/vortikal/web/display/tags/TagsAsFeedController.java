@@ -38,11 +38,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.abdera.model.Feed;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.AtomFeedController;
 import org.vortikal.web.search.Listing;
@@ -53,11 +51,12 @@ import org.vortikal.web.tags.TagsHelper;
 public class TagsAsFeedController extends AtomFeedController {
 
     private SearchComponent searchComponent;
+    private TagsHelper tagsHelper;
 
     @Override
     protected Feed createFeed(HttpServletRequest request, HttpServletResponse response, String token) throws Exception {
 
-        Resource scope = getScope(token, request);
+        Resource scope = this.tagsHelper.getScope(token, request);
 
         String tag = request.getParameter(TagsHelper.TAG_PARAMETER);
         if (StringUtils.isBlank(tag)) {
@@ -95,27 +94,14 @@ public class TagsAsFeedController extends AtomFeedController {
         return null;
     }
 
-    // Duplicated from TagsController :(
-    private Resource getScope(String token, HttpServletRequest request) throws Exception {
-        Path requestedScope = TagsHelper.getScopePath(request);
-        Resource scopedResource = null;
-        try {
-            scopedResource = this.repository.retrieve(token, requestedScope, true);
-        } catch (ResourceNotFoundException e) {
-            throw new IllegalArgumentException("Scope resource doesn't exist: " + requestedScope);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Could not get scope resource");
-        }
-
-        if (!scopedResource.isCollection()) {
-            throw new IllegalArgumentException("Scope resource isn't a collection");
-        }
-        return scopedResource;
-    }
-
     @Required
     public void setSearchComponent(SearchComponent searchComponent) {
         this.searchComponent = searchComponent;
+    }
+    
+    @Required
+    public void setTagsHelper(TagsHelper tagsHelper) {
+        this.tagsHelper = tagsHelper;
     }
 
 }

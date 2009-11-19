@@ -25,8 +25,8 @@
   </bean>
 
   <bean id="tags.viewService.serviceNameProvider"
-    class="org.vortikal.web.service.provider.TagsViewServiceNameProvider">
-    <property name="repositoryId" value="${repositoryID}" />
+    class="org.vortikal.web.service.provider.TagsViewServiceNameProvider" >
+    <property name="tagsHelper" ref="tagsHelper" />
   </bean>
 
   <bean id="tags.atomService" class="org.vortikal.web.service.ServiceImpl">
@@ -45,8 +45,7 @@
     <property name="parameterValue" value="feed" />
   </bean>
 
-  <bean id="tags.handler" class="org.vortikal.web.display.tags.TagsController"
-    parent="repositoryAware">
+  <bean id="tags.handler" class="org.vortikal.web.display.tags.TagsController">
     <property name="viewName" value="tags.tags" />
     <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
     <property name="searchComponent" ref="tags.searchComponent" />
@@ -57,6 +56,7 @@
         <entry key="application/atom+xml" value-ref="tags.atomService" />
       </map>
     </property>
+    <property name="tagsHelper" ref="tagsHelper" />
   </bean>
 
   <bean id="tags.tagElementsProvider"
@@ -78,6 +78,7 @@
     -->
     <property name="publishedDatePropDef" ref="creationTimePropDef" />
     <property name="authorPropDef" ref="createdByPropDef" />
+    <property name="tagsHelper" ref="tagsHelper" />
   </bean>
 
   <bean id="tags.searchComponent" class="org.vortikal.web.search.QueryPartsSearchComponent"
@@ -163,8 +164,22 @@
     </property>
   </bean>
 
+  <bean id="tagsHelper" class="org.vortikal.web.tags.TagsHelper" parent="repositoryAware">
+    <property name="repositoryID" value="${repositoryID}" />
+    <property name="includeScopeInTitle" value="${tagService.includeScopeInTitle}" />
+  </bean>
+
   <bean id="tags.tagsParameterAssertion" parent="vrtxParameterEquals">
     <property name="parameterValue" value="tags" />
+  </bean>
+
+  <bean id="tags.messageSource"
+    class="org.springframework.context.support.ResourceBundleMessageSource">
+    <property name="basenames">
+      <list>
+        <value>vortikal.i18n.tags</value>
+      </list>
+    </property>
   </bean>
 
 </beans>

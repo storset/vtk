@@ -33,29 +33,96 @@ package org.vortikal.web.tags;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.web.servlet.support.RequestContext;
 import org.vortikal.repository.Path;
-import org.vortikal.web.RequestContext;
+import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceNotFoundException;
 
 public final class TagsHelper {
 
     public static final String TAG_PARAMETER = "tag";
     public static final String SCOPE_PARAMETER = "scope";
     public static final String RESOURCE_TYPE_PARAMETER = "resource-type";
-    
+
     public static final String RESOURCE_TYPES_MODEL_KEY = "resourceTypes";
     public static final String SINGLE_RESOURCE_TYPE_MODEL_KEY = "resourceType";
 
-    public static final Path getScopePath(HttpServletRequest request) {
+    private Repository repository;
+    private String repositoryID;
+    private boolean includeScopeInTitle;
+
+    public Resource getScope(String token, HttpServletRequest request) throws Exception {
+        Path requestedScope = this.getScopePath(request);
+        Resource scopedResource = null;
+        try {
+            scopedResource = this.repository.retrieve(token, requestedScope, true);
+        } catch (ResourceNotFoundException e) {
+            throw new IllegalArgumentException("Scope resource doesn't exist: " + requestedScope);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Could not get scope resource");
+        }
+
+        if (!scopedResource.isCollection()) {
+            throw new IllegalArgumentException("Scope resource isn't a collection");
+        }
+        return scopedResource;
+    }
+
+    private final Path getScopePath(HttpServletRequest request) {
 
         String scopeFromRequest = request.getParameter(SCOPE_PARAMETER);
 
         if (StringUtils.isBlank(scopeFromRequest) || ".".equals(scopeFromRequest)) {
-            return RequestContext.getRequestContext().getCurrentCollection();
+            return org.vortikal.web.RequestContext.getRequestContext().getCurrentCollection();
         } else if (scopeFromRequest.startsWith("/")) {
             return Path.fromString(scopeFromRequest);
         }
 
         throw new IllegalArgumentException("Scope parameter must be empty, '.' or a valid path");
+    }
+
+    public String getTitle(HttpServletRequest request, Resource scope, String tag) {
+        RequestContext rc = new RequestContext(request);
+        if (StringUtils.isBlank(tag)) {
+            return getTitle(rc, scope);
+        }
+        String scopeTitle = scope.getURI().isRoot() ? this.repositoryID : scope.getTitle();
+        String titleKey = this.includeScopeInTitle ? "tags.scopedTitle" : "tags.title";
+        String[] resourceParams = request.getParameterValues(RESOURCE_TYPE_PARAMETER);
+        if (resourceParams != null && resourceParams.length == 1) {
+            String tmpKey = titleKey + "." + resourceParams[0];
+            try {
+                rc.getMessage(tmpKey);
+                titleKey = tmpKey;
+            } catch (Exception e) {
+                // key doesn't exist, ignore it
+            }
+        }
+        return this.includeScopeInTitle ? rc.getMessage(titleKey, new Object[] { scopeTitle, tag }) : rc.getMessage(
+                titleKey, new Object[] { tag });
+    }
+
+    private String getTitle(RequestContext rc, Resource scope) {
+        if (!scope.getURI().isRoot()) {
+            return rc.getMessage("tags.serviceTitle", new Object[] { scope.getTitle() });
+        }
+        return rc.getMessage("tags.noTagTitle");
+    }
+
+    @Required
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
+
+    @Required
+    public void setRepositoryID(String repositoryID) {
+        this.repositoryID = repositoryID;
+    }
+
+    public void setIncludeScopeInTitle(boolean includeSopeInTitle) {
+        this.includeScopeInTitle = includeSopeInTitle;
     }
 
 }

@@ -80,8 +80,8 @@
   <#assign i = 1 />
 
   <#list resources as resource>
-    <#assign resourceTitle = resource.getPropertyByPrefix("","title").getFormattedValue() />
-    <#assign introImageProp = resource.getPropertyByPrefix("","picture")?default("") />
+    <#assign resourceTitle = vrtx.prop(resource, "title", "").getFormattedValue() />
+    <#assign introImageProp = vrtx.prop(resource, "picture", "")?default("") />
     <div class="vrtx-resource" id="vrtx-result-${i}">
       <#if introImageProp != "">
       <a href="${resource.getURI()?html}" class="vrtx-image">

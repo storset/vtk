@@ -44,7 +44,6 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
-import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
@@ -61,13 +60,13 @@ import org.vortikal.web.tags.TagsHelper;
 public class TagsController extends AbstractListingController implements Controller {
 
     private boolean defaultRecursive = true;
-    private Repository repository;
     private int defaultPageLimit = 20;
     private String viewName;
     private SearchComponent searchComponent;
     private Map<String, Service> alternativeRepresentations;
     private RepositoryTagElementsDataProvider tagElementsProvider;
     private ResourceTypeTree resourceTypeTree;
+    private TagsHelper tagsHelper;
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
@@ -78,7 +77,7 @@ public class TagsController extends AbstractListingController implements Control
         String token = securityContext.getToken();
 
         String tag = request.getParameter(TagsHelper.TAG_PARAMETER);
-        Resource scope = getScope(token, request);
+        Resource scope = this.tagsHelper.getScope(token, request);
 
         /* List all known tags for the current collection */
         if (tag == null || tag.trim().equals("")) {
@@ -143,6 +142,9 @@ public class TagsController extends AbstractListingController implements Control
             }
         }
 
+        String title = this.tagsHelper.getTitle(request, scope, tag);
+        model.put("title", title);
+
         return new ModelAndView(this.viewName, model);
     }
 
@@ -158,18 +160,10 @@ public class TagsController extends AbstractListingController implements Control
                 Integer.MAX_VALUE, 1);
 
         model.put("tagElements", tagElements);
+        String title = this.tagsHelper.getTitle(request, scope, null);
+        model.put("title", title);
 
         return new ModelAndView(this.viewName, model);
-    }
-
-    private Resource getScope(String token, HttpServletRequest request) throws Exception {
-        Path requestedScope = TagsHelper.getScopePath(request);
-        Resource scopedResource = null;
-        scopedResource = this.repository.retrieve(token, requestedScope, true);
-        if (!scopedResource.isCollection()) {
-            throw new IllegalArgumentException("Scope resource isn't a collection");
-        }
-        return scopedResource;
     }
 
     private List<ResourceTypeDefinition> getResourceTypes(HttpServletRequest request) {
@@ -188,11 +182,6 @@ public class TagsController extends AbstractListingController implements Control
             return resourceTypes;
         }
         return null;
-    }
-
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
     }
 
     public void setDefaultPageLimit(int defaultPageLimit) {
@@ -221,6 +210,11 @@ public class TagsController extends AbstractListingController implements Control
 
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
+    }
+
+    @Required
+    public void setTagsHelper(TagsHelper tagsHelper) {
+        this.tagsHelper = tagsHelper;
     }
 
 }

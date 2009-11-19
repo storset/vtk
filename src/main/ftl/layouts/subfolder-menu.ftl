@@ -73,7 +73,7 @@
         <@displayItem item=item />
       </li>
     </#list>
-	<#if menu.moreUrl?exists >
+	<#if (menu.totalNumberOfItems > menu.maxNumberOfItems)>
 	    <li class="vrtx-more">   
 			<a href="${menu.moreUrl?html}"><@vrtx.msg code="subfolder.morelinkTitle" /></a>
 		</li>

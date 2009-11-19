@@ -56,6 +56,7 @@ public class ListMenu<T> {
     private MenuItem<T> activeItem;
     private Comparator<MenuItem<T>> comparator;
     private URL moreUrl;
+    private int maxNumberOfItems = Integer.MAX_VALUE;
 
     public String getTitle() {
         return this.title;
@@ -88,8 +89,16 @@ public class ListMenu<T> {
     public void addAllItems(List<MenuItem<T>> items) {
         this.items.addAll(items);
     }
+    
+    public int getTotalNumberOfItems(){
+        return items.size();
+    }
 
     public List<MenuItem<T>> getItems() {
+        List<MenuItem<T>> list = new ArrayList<MenuItem<T>>(this.items);
+        while (list.size() > getMaxNumberOfItems()) {
+            list.remove(list.size() - 1);
+        }
         return Collections.unmodifiableList(this.items);
     }
     
@@ -103,8 +112,12 @@ public class ListMenu<T> {
             throw new IllegalStateException("No comparator has been specified on this list menu");
         }
         Collections.sort(sortedList, this.comparator);
+        while (sortedList.size() > getMaxNumberOfItems()) {
+            sortedList.remove(sortedList.size() - 1);
+        }
         return Collections.unmodifiableList(sortedList);
     }
+    
     
 
     public String toString() {
@@ -125,5 +138,13 @@ public class ListMenu<T> {
 
     public URL getMoreUrl() {
         return moreUrl;
+    }
+
+    public void setMaxNumberOfItems(int maxNumberOfItems) {
+        this.maxNumberOfItems = maxNumberOfItems;
+    }
+
+    public int getMaxNumberOfItems() {
+        return maxNumberOfItems;
     }
 }

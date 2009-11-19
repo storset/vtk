@@ -651,17 +651,24 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         }
     }
 
-    private class ListMenuComparator implements Comparator<MenuItem<PropertySet>> {
+    protected class ListMenuComparator implements Comparator<MenuItem<PropertySet>> {
 
         private Collator collator;
         private PropertyTypeDefinition importancePropertyDef;
         private PropertyTypeDefinition navigationTitlePropDef;
+        private boolean ascending = true;
 
         public ListMenuComparator(Locale locale, PropertyTypeDefinition importancePropertyDef,
                 PropertyTypeDefinition navigationTitlePropDef) {
             this.collator = Collator.getInstance(locale);
             this.importancePropertyDef = importancePropertyDef;
             this.navigationTitlePropDef = navigationTitlePropDef;
+        }
+
+        public ListMenuComparator(Locale locale, PropertyTypeDefinition importancePropertyDef,
+                PropertyTypeDefinition navigationTitlePropDef, boolean ascending) {
+            this(locale, importancePropertyDef, navigationTitlePropDef);
+            this.ascending = ascending;
         }
 
         public int compare(MenuItem<PropertySet> i1, MenuItem<PropertySet> i2) {
@@ -694,6 +701,9 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
                 value2 = x2;
             } else {
                 value2 = i2.getTitle();
+            }
+            if (!ascending) {
+                return collator.compare(value2, value1);
             }
             return this.collator.compare(value1, value2);
         }

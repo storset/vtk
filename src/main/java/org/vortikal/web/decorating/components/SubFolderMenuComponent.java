@@ -30,9 +30,7 @@
  */
 package org.vortikal.web.decorating.components;
 
-import java.text.Collator;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -128,7 +126,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
 
     private static final String PARAMETER_MAX_NUMBER_OF_CHILDREN = "max-number-of-children";
     private static final String PARAMETER_MAX_NUMBER_OF_CHILDREN_DESC = "Defines the maximum number of children displayed for each element";
-    
+
     private static Log logger = LogFactory.getLog(SubFolderMenuComponent.class);
 
     private ResourceTypeTree resourceTypeTree;
@@ -220,7 +218,8 @@ public class SubFolderMenuComponent extends ListMenuComponent {
 
             List<MenuItem<PropertySet>> subList = allItems.subList(startIdx, endIdx);
             ListMenu<PropertySet> m = new ListMenu<PropertySet>();
-            m.setComparator(new SubFolderMenuComparator(menuRequest, this.navigationTitlePropDef));
+            m.setComparator(new ListMenuComparator(menuRequest.getLocale(), menuRequest.getImportancePropDef(),
+                    this.navigationTitlePropDef));
             m.setTitle(menu.getTitle());
             m.setLabel(menu.getLabel());
             m.addAllItems(subList);
@@ -292,32 +291,28 @@ public class SubFolderMenuComponent extends ListMenuComponent {
             if (this.hiddenPropDef != null && resource.getProperty(this.hiddenPropDef) != null) {
                 continue;
             }
-            
+
             Path parentURI = resource.getURI().getParent();
             if (parentURI.equals(menuRequest.getCurrentCollectionUri())) {
                 toplevel.add(resource);
             }
             List<PropertySet> childList = childMap.get(parentURI);
-            
+
             if (childList == null) {
                 childList = new ArrayList<PropertySet>();
                 childMap.put(parentURI, childList);
             }
-            if(childList.size() < menuRequest.getMaxNumberOfChildren()){
-                childList.add(resource);
-            }
-            
+            childList.add(resource);
         }
 
-        menu.setMoreUrl(URL.parse("http://localhost/"));
-        
         List<MenuItem<PropertySet>> toplevelItems = new ArrayList<MenuItem<PropertySet>>();
 
         for (PropertySet resource : toplevel) {
             toplevelItems.add(buildItem(resource, childMap, menuRequest));
         }
-        
-        menu.setComparator(new SubFolderMenuComparator(menuRequest, this.navigationTitlePropDef));
+
+        menu.setComparator(new ListMenuComparator(menuRequest.getLocale(), menuRequest.getImportancePropDef(),
+                this.navigationTitlePropDef, menuRequest.isAscendingSort()));
         menu.addAllItems(toplevelItems);
         menu.setTitle(menuRequest.getTitle());
         menu.setLabel(this.modelName);
@@ -332,7 +327,8 @@ public class SubFolderMenuComponent extends ListMenuComponent {
 
         Property titleProperty = resource.getProperty(this.navigationTitlePropDef);
         titleProperty = titleProperty == null ? resource.getProperty(this.titlePropDef) : titleProperty;
-        Value title = titleProperty != null ? titleProperty.getValue() : new Value(resource.getName(), PropertyType.Type.STRING);
+        Value title = titleProperty != null ? titleProperty.getValue() : new Value(resource.getName(),
+                PropertyType.Type.STRING);
 
         MenuItem<PropertySet> item = new MenuItem<PropertySet>(resource);
         item.setUrl(url);
@@ -343,14 +339,16 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         List<PropertySet> children = childMap.get(resource.getURI());
         if (children != null) {
             ListMenu<PropertySet> subMenu = new ListMenu<PropertySet>();
-            if(children.size() == menuRequest.getMaxNumberOfChildren()){
-                URL moreUrl = this.viewService.constructURL(resource.getURI());
-                subMenu.setMoreUrl(moreUrl);
-            }
-            subMenu.setComparator(new SubFolderMenuComparator(menuRequest, this.navigationTitlePropDef));
+            subMenu.setComparator(new ListMenuComparator(menuRequest.getLocale(), menuRequest.getImportancePropDef(),
+                    this.navigationTitlePropDef, menuRequest.isAscendingSort()));
             for (PropertySet child : children) {
                 subMenu.addItem(buildItem(child, childMap, menuRequest));
             }
+
+            URL moreUrl = this.viewService.constructURL(resource.getURI());
+            subMenu.setMoreUrl(moreUrl);
+
+            subMenu.setMaxNumberOfItems(menuRequest.getMaxNumberOfChildren());
             item.setSubMenu(subMenu);
         }
         return item;
@@ -371,8 +369,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         private ArrayList<Path> excludeURIs;
         private Locale locale;
         private String token;
-        
-        
+
         public MenuRequest(DecoratorRequest request) {
 
             RequestContext requestContext = RequestContext.getRequestContext();
@@ -623,63 +620,6 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         }
     }
 
-    private class SubFolderMenuComparator implements Comparator<MenuItem<PropertySet>> {
-
-        private Collator collator;
-        private boolean ascending = true;
-        private PropertyTypeDefinition sortPropDef;
-        private PropertyTypeDefinition importancePropDef;
-        private PropertyTypeDefinition navigationTitlePropDef;
-
-        public SubFolderMenuComparator(MenuRequest menuRequest, PropertyTypeDefinition navigationTitlePropDef) {
-            this.ascending = menuRequest.isAscendingSort();
-            this.collator = Collator.getInstance(menuRequest.getLocale());
-            this.sortPropDef = menuRequest.getSortProperty();
-            this.importancePropDef = menuRequest.getImportancePropDef();
-            this.navigationTitlePropDef = navigationTitlePropDef;
-        }
-
-        public int compare(MenuItem<PropertySet> item1, MenuItem<PropertySet> item2) {
-            if (this.importancePropDef != null) {
-                int importance1 = 0, importance2 = 0;
-                if (item1.getValue().getProperty(this.importancePropDef) != null) {
-                    importance1 = item1.getValue().getProperty(this.importancePropDef).getIntValue();
-                }
-                if (item2.getValue().getProperty(this.importancePropDef) != null) {
-                    importance2 = item2.getValue().getProperty(this.importancePropDef).getIntValue();
-                }
-                if (importance1 != importance2) {
-                    return importance2 - importance1;
-                }
-            }
-
-            String value1 = item1.getValue().getName(), value2 = item2.getValue().getName();
-            if (this.sortPropDef != null) {
-                value1 = item1.getValue().getProperty(this.sortPropDef).getStringValue();
-                value2 = item2.getValue().getProperty(this.sortPropDef).getStringValue();
-            }
-            if (!this.ascending) {
-                return collator.compare(value2, value1);
-            }
-
-            String x1 = null, x2 = null;
-            if (item1.getValue().getProperty(this.navigationTitlePropDef) != null) {
-                x1 = item1.getValue().getProperty(navigationTitlePropDef).getStringValue();
-                if (x1 != null) {
-                    value1 = x1;
-                }
-            }
-            if (item2.getValue().getProperty(this.navigationTitlePropDef) != null) {
-                x2 = item2.getValue().getProperty(navigationTitlePropDef).getStringValue();
-                if (x2 != null) {
-                    value2 = x2;
-                }
-            }
-
-            return collator.compare(value1, value2);
-        }
-    }
-
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
     }
@@ -709,7 +649,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         map.put(PARAMETER_EXCLUDE_FOLDERS, PARAMETER_EXCLUDE_FOLDERS_DESC);
         map.put(PARAMETER_AS_CURRENT_USER, PARAMETER_AS_CURRENT_USER_DESC);
         map.put(PARAMETER_DEPTH, PARAMETER_DEPTH_DESC);
-        map.put(PARAMETER_MAX_NUMBER_OF_CHILDREN,PARAMETER_MAX_NUMBER_OF_CHILDREN_DESC);
+        map.put(PARAMETER_MAX_NUMBER_OF_CHILDREN, PARAMETER_MAX_NUMBER_OF_CHILDREN_DESC);
         return map;
     }
 

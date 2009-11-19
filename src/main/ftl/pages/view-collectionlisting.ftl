@@ -148,19 +148,7 @@
      </#if>
 	 <div class="vrtx-paging-feed-wrapper"> 	   
 		<#-- Previous/next URLs: -->
-		<#if pageThroughUrls?exists && (pageThroughUrls?size > 1) >
-			 <span class="vrtx-paging-wrapper"> 
-		         <#if (page-2 > -1) >
-			  		<a class="vrtx-previous" href="${pageThroughUrls[page-2]}"><@vrtx.msg code="viewCollectionListing.previous" /></a>
-			   	 </#if> 
-			     <#list pageThroughUrls as url>
-			       	<a href="${url?html}" class="vrtx-page-number <#if (url_index+1) = page>vrtx-marked</#if>">${(url_index+1)}</a>
-			     </#list>
-			     <#if (pageThroughUrls?size > page) > 
-			        <a class="vrtx-next" href="${pageThroughUrls[page]}"><@vrtx.msg code="viewCollectionListing.next" /></a>
-			     </#if>
-		   	 </span> 
-		</#if>
+		<@vrtx.displayPageThroughUrls pageThroughUrls page />
         <#-- XXX: display first link with content type = atom: -->
         <#list alternativeRepresentations as alt>
           <#if alt.contentType = 'application/atom+xml'>

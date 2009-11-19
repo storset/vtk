@@ -148,7 +148,7 @@
     <#if mapurl == "">
       ${location}
     <#else>
-      <a href="${mapurl}">${location}</a>
+      <a href="${mapurl?html}">${location}</a>
     </#if>
     </span>
   </#if>

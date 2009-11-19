@@ -383,18 +383,4 @@ in  <#local propVal = getPropValue(resource, name, format, prefix) />
          value="${VRTX_CSRF_PREVENTION_HANDLER.newToken(url)}" />
 </#macro>
 
-<#macro displayPageThroughUrls pageThroughUrls page >
-		<#if pageThroughUrls?exists && (pageThroughUrls?size > 1) >
-			 <span class="vrtx-paging-wrapper"> 
-		         <#if (page-2 > -1) >
-			  		<a class="vrtx-previous" href="${pageThroughUrls[page-2]?html}"><@msg code="viewCollectionListing.previous" /></a>
-			   	 </#if> 
-			     <#list pageThroughUrls as url>
-			       	<a href="${url?html}" class="vrtx-page-number <#if (url_index+1) = page>vrtx-marked</#if>">${(url_index+1)}</a>
-			     </#list>
-			     <#if (pageThroughUrls?size > page) > 
-			        <a class="vrtx-next" href="${pageThroughUrls[page]?html}"><@msg code="viewCollectionListing.next" /></a>
-			     </#if>
-		   	 </span> 
-		</#if>
-</#macro>
+

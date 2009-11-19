@@ -149,7 +149,9 @@
      </#if>
 	 <div class="vrtx-paging-feed-wrapper"> 	   
 		<#-- Previous/next URLs: -->
-		<@vrtx.displayPageThroughUrls pageThroughUrls page />
+		<#if pageThroughUrls?exists >
+			<@viewutils.displayPageThroughUrls pageThroughUrls page />
+		</#if>
         <#-- XXX: display first link with content type = atom: -->
         <#list alternativeRepresentations as alt>
           <#if alt.contentType = 'application/atom+xml'>

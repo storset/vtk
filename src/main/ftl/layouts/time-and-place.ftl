@@ -20,6 +20,6 @@
 
 <#if start != "" || end != "" || location != "">
   <div class="vevent">
-    <#t /><@viewutils.displayTimeAndPlace resource title/>
+    <#t /><@viewutils.displayTimeAndPlace resource title false false true />
   </div>
 </#if>

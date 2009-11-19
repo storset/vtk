@@ -81,14 +81,6 @@
 	     </#if>
      </#if>
 
-     <#-- XXX: "additional content" (for person listing) -->
-     <#assign additionalContent = vrtx.propValue(resource, "additionalContent", "", "pl") />
-     <#if additionalContent?has_content>
-       <div class="vrtx-additional-content">
-         <@vrtx.invokeComponentRefs additionalContent />
-       </div>
-     </#if>
-
      <#-- List collections: -->
      <#if page == 1>    
 	     <#if subCollections?size &gt; 0>
@@ -128,6 +120,15 @@
 	       </div>
 	     </#if>
      </#if>
+     
+     <#-- XXX: "additional content" (for person listing) -->
+     <#assign additionalContent = vrtx.propValue(resource, "additionalContent", "", "pl") />
+     <#if additionalContent?has_content>
+       <div class="vrtx-additional-content">
+         <@vrtx.invokeComponentRefs additionalContent />
+       </div>
+     </#if>
+     
      <#-- List resources: -->
      <#if searchComponents?has_content>
        <#if collection.resourceType = 'article-listing'>
@@ -137,7 +138,7 @@
            <#if collection.resourceType = 'event-listing'>
              <@coll.displayEvents collectionListing=searchComponent hideNumberOfComments=hideNumberOfComments displayMoreURLs=true  />
            <#elseif collection.resourceType = 'person-listing'>
-             <@persons.displayPersons searchComponent />
+             <@persons.displayPersons searchComponent title />
            <#elseif collection.resourceType = 'project-listing'>
              <@projects.displayProjects searchComponent />
            <#else>

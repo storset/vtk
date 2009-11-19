@@ -344,10 +344,8 @@ public class SubFolderMenuComponent extends ListMenuComponent {
             for (PropertySet child : children) {
                 subMenu.addItem(buildItem(child, childMap, menuRequest));
             }
-
             URL moreUrl = this.viewService.constructURL(resource.getURI());
             subMenu.setMoreUrl(moreUrl);
-
             subMenu.setMaxNumberOfItems(menuRequest.getMaxNumberOfChildren());
             item.setSubMenu(subMenu);
         }

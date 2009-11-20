@@ -81,6 +81,8 @@ public interface Repository {
         throws ResourceNotFoundException, AuthorizationException, 
             AuthenticationException, Exception;
 
+    public TypeInfo getTypeInfo(Resource resource);
+    
     public TypeInfo getTypeInfo(String token, Path uri)
         throws ResourceNotFoundException, AuthorizationException, 
             AuthenticationException, Exception;    

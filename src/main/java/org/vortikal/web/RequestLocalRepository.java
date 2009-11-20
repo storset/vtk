@@ -359,4 +359,8 @@ public class RequestLocalRepository implements Repository {
         return this.repository.getTypeInfo(token, uri);
     }
     
+    public TypeInfo getTypeInfo(Resource resource) {
+        return this.repository.getTypeInfo(resource);
+    }
+
 }

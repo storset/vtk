@@ -331,5 +331,9 @@ public class CachePurgeControlRepositoryWrapper implements Repository {
     public TypeInfo getTypeInfo(String token, Path uri) throws Exception {
         return this.wrappedRepository.getTypeInfo(token, uri);
     }
+    
+    public TypeInfo getTypeInfo(Resource resource) {
+        return this.wrappedRepository.getTypeInfo(resource);
+    }
 
 }

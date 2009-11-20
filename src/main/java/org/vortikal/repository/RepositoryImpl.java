@@ -153,6 +153,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         this.authorizationManager.authorizeReadProcessed(uri, principal);
         return new TypeInfo(this.resourceTypeTree, resource.getResourceType());
     }
+    
+    public TypeInfo getTypeInfo(Resource resource) {
+        return new TypeInfo(this.resourceTypeTree, resource.getResourceType());
+    }
+
 
     public InputStream getInputStream(String token, Path uri, boolean forProcessing)
             throws ResourceNotFoundException, AuthorizationException, AuthenticationException,

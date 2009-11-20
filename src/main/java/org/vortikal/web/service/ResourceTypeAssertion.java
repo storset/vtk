@@ -92,7 +92,7 @@ public class ResourceTypeAssertion extends AbstractRepositoryAssertion {
         try {
 
             SecurityContext securityContext = SecurityContext.getSecurityContext();
-            TypeInfo typeInfo = this.repository.getTypeInfo(securityContext.getToken(), resource.getURI());
+            TypeInfo typeInfo = this.repository.getTypeInfo(resource);
             boolean match = false;
 
             if (this.exactMatch) {

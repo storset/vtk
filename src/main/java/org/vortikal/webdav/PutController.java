@@ -222,6 +222,7 @@ public class PutController extends AbstractWebdavController {
                 }
                 Property prop = typeInfo.createProperty(
                         Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTTYPE_PROP_NAME);
+                prop.setStringValue(contentType);
                 resource.addProperty(prop);
                 store = true;
             }

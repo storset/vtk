@@ -155,6 +155,7 @@
             <value>root@localhost</value>
             <value>vortex@localhost</value>
             <value>user@localhost</value>
+            <value>nobody@localhost</value>
           </list>
         </entry>
       </map>
@@ -169,6 +170,7 @@
         <prop key="user@localhost">${password.user@localhost}</prop>
         <!-- is not possible to authenticate as: -->
         <prop key="trusteduser@localhost">NO_REAL_VALUE</prop>
+        <prop key="nobody@localhost">NO_REAL_VALUE</prop>
       </props>
     </constructor-arg>
   </bean>

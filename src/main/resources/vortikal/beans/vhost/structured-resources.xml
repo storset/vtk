@@ -172,6 +172,7 @@
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
+        <ref bean="manage.refreshLockURLProvider" />
         <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
           <property name="repository" ref="repository" />
           <property name="service" ref="staticResourceService" />
@@ -185,7 +186,7 @@
           <property name="path" value="${editor.fck.browseURL}" />
           <property name="modelName" value="fckBrowse" />
         </bean>
-                <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
           <property name="repository" ref="repository" />
           <property name="service" ref="viewService" />
           <property name="modelName" value="fckeditorBase" />

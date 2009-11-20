@@ -104,10 +104,16 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
         String resourceTypeName = rtDef.getName();
         List<PropertyTypeDefinition> propDefs // Prop-defs from mixins are included here
                 = this.resourceTypeTree.getPropertyTypeDefinitionsIncludingAncestors(rtDef);
-        resourceTypePropDefsMap.put(resourceTypeName, propDefs);
 
-        for (PropertyTypeDefinition propDef: propDefs) {
-            storedFieldPropDefMap.put(FieldNameMapping.getStoredFieldName(propDef), propDef);
+        List<PropertyTypeDefinition> canonicalPropDefs = getCanonicalPropDefInstances(propDefs);
+
+        resourceTypePropDefsMap.put(resourceTypeName, canonicalPropDefs);
+
+        for (PropertyTypeDefinition canonicalDef: canonicalPropDefs) {
+            String fieldName = FieldNameMapping.getStoredFieldName(canonicalDef);
+            if (!storedFieldPropDefMap.containsKey(fieldName)) {
+                storedFieldPropDefMap.put(fieldName, canonicalDef);
+            }
         }
 
         for (PrimaryResourceTypeDefinition child :
@@ -116,7 +122,22 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
         }
 
     }
-    
+
+    // XXX Make sure we get "canonical" or "final" prop-def object ref.
+    //     Multiple prop-def objects for same property can exist because of overriding
+    //     This is relevant in field-loading/property selection code, which compares propdef-instances by object ref.
+    // XXX Fix ResourceTypeTree.getPropertyTypeDefinitionsIncludingAncestors(..)
+    // XXX Sigh..
+    private List<PropertyTypeDefinition> getCanonicalPropDefInstances(List<PropertyTypeDefinition> defs) {
+        List<PropertyTypeDefinition> canonicalDefs = new ArrayList<PropertyTypeDefinition>(defs.size());
+        for (PropertyTypeDefinition def: defs) {
+            canonicalDefs.add(getCanonicalPropDefInstance(def));
+        }
+        return canonicalDefs;
+    }
+    private PropertyTypeDefinition getCanonicalPropDefInstance(PropertyTypeDefinition def) {
+        return this.resourceTypeTree.getPropertyTypeDefinition(def.getNamespace(), def.getName());
+    }
     
     /**
      * Map <code>PropertySetImpl</code> to Lucene <code>Document</code>.

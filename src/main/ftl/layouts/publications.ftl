@@ -31,16 +31,16 @@
 
 <ul>
     <#if tab1 != 0>
-      <li><a href="#vrtx-publication-tab-${tab1}"><@vrtx.msg code="decorating.frida.publications.selected" default="Selected"/></a></li>
+      <li><a href="#vrtx-publication-tab-${tab1}" name="#vrtx-publication-tab-${tab1}"><@vrtx.msg code="decorating.frida.publications.selected" default="Selected"/></a></li>
     </#if>
     <#if tab2 != 0>
-      <li><a href="#vrtx-publication-tab-${tab2}"><@vrtx.msg code="decorating.frida.publications.sciartbookchapters" default="Scientific articles and bookchapters"/></a></li>
+      <li><a href="#vrtx-publication-tab-${tab2}" name="#vrtx-publication-tab-${tab2}"><@vrtx.msg code="decorating.frida.publications.sciartbookchapters" default="Scientific articles and bookchapters"/></a></li>
     </#if>
     <#if tab3 != 0>
-      <li><a href="#vrtx-publication-tab-${tab3}"><@vrtx.msg code="decorating.frida.publications.books" default="Books"/></a></li>
+      <li><a href="#vrtx-publication-tab-${tab3}" name="#vrtx-publication-tab-${tab3}"><@vrtx.msg code="decorating.frida.publications.books" default="Books"/></a></li>
     </#if>
     <#if tab4 != 0>
-      <li><a href="#vrtx-publication-tab-${tab4}"><@vrtx.msg code="decorating.frida.publications.other" default="Other works"/></a></li>
+      <li><a href="#vrtx-publication-tab-${tab4}" name="#vrtx-publication-tab-${tab4}"><@vrtx.msg code="decorating.frida.publications.other" default="Other works"/></a></li>
     </#if>
 </ul> 
 

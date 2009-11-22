@@ -55,12 +55,15 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.Vocabulary;
+import org.vortikal.repository.resourcetype.Constraint;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
+import org.vortikal.repository.resourcetype.ValueFormatException;
+import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
@@ -126,6 +129,8 @@ public class PropertyEditController extends SimpleFormController
     private String propertyMapModelName;
 
     private Service vocabularyChooserService;
+
+    private PrincipalManager principalManager;
 
     @Required public void setPropertyListModelName(String propertyListModelName) {
         this.propertyListModelName = propertyListModelName;
@@ -230,9 +235,94 @@ public class PropertyEditController extends SimpleFormController
         return new PropertyEditCommand(editURL, definition, value, formAllowedValues, hierarchicalHelpUrl);
     }
 
+    @Override
+    protected void onBindAndValidate(HttpServletRequest request,
+            Object object, BindException errors) throws Exception {
+        PropertyEditCommand command = (PropertyEditCommand) object;
+        if (command.getCancelAction() != null) {
+            return;
+        }
+
+        PropertyTypeDefinition def = command.getDefinition();
+        // Special handling of 'take ownership' action:
+        if (Namespace.DEFAULT_NAMESPACE.equals(def.getNamespace()) &&
+                PropertyType.OWNER_PROP_NAME.equals(def.getName()) &&
+                "true".equals(request.getParameter(this.toggleRequestParameter))) {
+            return;
+        }        
+        
+        if (isToggleProperty(command.getDefinition())) {
+            return;
+        }
+
+        String formValue = command.getValue();
+        if ("".equals(formValue) || formValue == null) {
+            if (command.getDefinition().isMandatory()) {
+                errors.rejectValue("value", "mandatory property"); // XXX
+            }
+            return;
+        }
+
+        try {
+            
+            if (command.getDefinition().isMultiple()) {
+                String[] splitValues = formValue.split(",");
+                Value[] values = this.valueFactory.createValues(
+                    splitValues, command.getDefinition().getType());
+
+                if (command.getDefinition().getType() == PropertyType.Type.PRINCIPAL) {
+                    for (Value v: values) {
+                        if (!this.principalManager.validatePrincipal(v.getPrincipalValue())) {
+                            throw new ValueFormatException("Invalid principal " + v);
+                        }
+                    } 
+                }
+
+            } else {
+                
+                Value value = this.valueFactory.createValue(
+                    formValue, command.getDefinition().getType());
+                if (command.getDefinition().getType() == PropertyType.Type.PRINCIPAL) {
+                    if (!this.principalManager.validatePrincipal(value.getPrincipalValue())) {
+                            throw new ValueFormatException("Invalid principal " + value);
+                    }
+                }
+
+                Constraint constraint = command.getDefinition().getConstraint();
+                if (constraint != null) {
+                    constraint.validate(value);
+                }
+
+                Vocabulary<Value> vocabulary = command.getDefinition().getVocabulary();
+
+                if (vocabulary == null) {
+                    return;
+                }
+                
+                Value[] allowedValues = vocabulary.getAllowedValues();
+
+                if (allowedValues == null) {
+                    return;
+                }
+
+                for (Value v: allowedValues) {
+                    if (value.equals(v)) {
+                        return;
+                    }
+                }
+                errors.rejectValue("value", "Illegal value");
+
+            }
+        } catch (ValueFormatException e) {
+            errors.rejectValue("value", "Illegal value: " + e.getMessage()); // XXX
+        } catch (ConstraintViolationException e) {
+            errors.rejectValue("value", "Illegal value: " + e.getMessage()); // XXX
+        }
+    }
+
+    @Override
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,
                                     Object command, BindException errors) throws Exception {    
-
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         
@@ -267,7 +357,7 @@ public class PropertyEditController extends SimpleFormController
                     // Using toggle submit parameter to take ownership:
                     stringValue = securityContext.getPrincipal().getQualifiedName();
                     
-                } else if (isToggleableProperty(def)
+                } else if (isToggleProperty(def)
                     && "true".equals(request.getParameter(this.toggleRequestParameter))) {
 
                     Value toggleValue = getToggleValue(def, property);
@@ -338,7 +428,7 @@ public class PropertyEditController extends SimpleFormController
                     return showForm(request, response, errors);
                 }
                 break;
-            }
+            } 
         }
 
         propertyCommand.clear();
@@ -411,7 +501,7 @@ public class PropertyEditController extends SimpleFormController
                                                       securityContext.getPrincipal(),
                                                       urlParameters);
 
-                } else if (isToggleableProperty(def)) {
+                } else if (isToggleProperty(def)) {
                     Value toggleValueObject = getToggleValue(def, property);
                     if (toggleValueObject != null) {
                         toggleValue = getValueAsString(toggleValueObject);
@@ -437,7 +527,7 @@ public class PropertyEditController extends SimpleFormController
         model.put(this.propertyMapModelName, propsMap);
     }
     
-    private boolean isToggleableProperty(PropertyTypeDefinition def) {
+    private boolean isToggleProperty(PropertyTypeDefinition def) {
         Vocabulary<Value> vocabulary = def.getVocabulary();
         
         if (vocabulary == null) {
@@ -529,4 +619,11 @@ public class PropertyEditController extends SimpleFormController
     public void setValueFactory(ValueFactory valueFactory) {
         this.valueFactory = valueFactory;
     }
+
+
+    @Required
+    public void setPrincipalManager(PrincipalManager principalManager) {
+        this.principalManager = principalManager;
+    }
+
 }

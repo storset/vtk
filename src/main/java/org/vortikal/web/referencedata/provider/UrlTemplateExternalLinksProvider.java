@@ -102,13 +102,8 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
     private class UrlTemplate {
         private List<TemplateNode> templateNodes;
 
-
         UrlTemplate(String urlTemplate) {
             List<TemplateNode> templateNodes = new ArrayList<TemplateNode>();
-
-            // fix, encode it instead in the encoding node, or do some Spring magic
-            // to preserve the ampersands from there?
-            urlTemplate = urlTemplate.replace("&", "&amp;");
 
             Matcher fieldPatternMatcher = FIELD_PATTERN.matcher(urlTemplate);
 
@@ -148,6 +143,7 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
     // Factory method for dynamic node renderers. Might consider making this configurable (only if need arises).
     private TemplateNode dynamicNode(String field) {
         TemplateNode node;
+
         if ("url".equals(field)) {
             node = new ServiceUrl();
         } else {

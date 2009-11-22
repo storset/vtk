@@ -261,13 +261,13 @@
     <property name="modelKey" value="socialWebsites" />
      <property name="urlTemplates">
         <map>
-            <entry key="Facebook" value="http://www.facebook.com/share.php?u=%{url}&amp;t=%{title}" />
+            <entry key="Facebook" value="http://www.facebook.com/share.php?u=%{url}&amp;amp;t=%{title}" />
             <entry key="Twitter" value="http://twitter.com/home?status=%{url}" />
-            <!-- <entry key="Nettby" value="http://www.nettby.no/user/edit_link.php?name=%{title}&amp;url=%{url}&amp;description=%{resource:introduction}" /> -->
-            <entry key="Delicious" value="http://del.icio.us/post?url=%{url}&amp;title=%{title}" />
+            <!-- <entry key="Nettby" value="http://www.nettby.no/user/edit_link.php?name=%{title}&amp;amp;url=%{url}&amp;amp;description=%{resource:introduction}" /> -->
+            <entry key="Delicious" value="http://del.icio.us/post?url=%{url}&amp;amp;title=%{title}" />
             <!-- 
-            <entry key="Digg" value="http://digg.com/submit?url=%{url}&amp;title=%{title}&amp;bodytext=%{resource:introduction}" />            
-            <entry key="LinkedIn" value="http://www.linkedin.com/shareArticle?mini=true&amp;url=%{url}&amp;title=%{title}" />
+            <entry key="Digg" value="http://digg.com/submit?url=%{url}&amp;amp;title=%{title}&amp;amp;bodytext=%{resource:introduction}" />
+            <entry key="LinkedIn" value="http://www.linkedin.com/shareArticle?mini=true&amp;amp;url=%{url}&amp;amp;title=%{title}" />
             -->
         </map>
       </property>

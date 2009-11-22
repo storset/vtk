@@ -62,11 +62,10 @@ public class PublishResourceController extends SimpleFormController implements I
     private static final String PUBLISH_PARAM = "publish-confirmed";
     private static final String UNPUBLISH_PARAM = "unpublish-confirmed";
 
-
     public void afterPropertiesSet() throws Exception {
-        if (this.viewName == null) throw new BeanInitializationException("Property 'viewName' must be set");
+        if (this.viewName == null)
+            throw new BeanInitializationException("Property 'viewName' must be set");
     }
-
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -83,7 +82,6 @@ public class PublishResourceController extends SimpleFormController implements I
         return new PublishResourceCommand(url);
     }
 
-
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
             BindException errors) throws Exception {
 
@@ -93,15 +91,12 @@ public class PublishResourceController extends SimpleFormController implements I
 
         Path resourceURI = RequestContext.getRequestContext().getResourceURI();
         Resource resource = this.repository.retrieve(token, resourceURI, true);
-        
+
         PublishResourceCommand publishResourceCommand = (PublishResourceCommand) command;
 
         String action = request.getParameter(ACTION_PARAM);
 
-        if (publishResourceCommand.getPublishResourceAction() == null) {
-
-        } else {
-
+        if (publishResourceCommand.getPublishResourceAction() != null) {
             String msgCode = "publish.permission.";
 
             if (PUBLISH_PARAM.equals(action)) {
@@ -127,16 +122,13 @@ public class PublishResourceController extends SimpleFormController implements I
 
     }
 
-
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
-
     public void setViewName(String viewName) {
         this.viewName = viewName;
     }
-
 
     public void setPublishDatePropDef(PropertyTypeDefinition publishDatePropDef) {
         this.publishDatePropDef = publishDatePropDef;

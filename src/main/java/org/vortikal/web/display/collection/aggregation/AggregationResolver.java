@@ -44,6 +44,9 @@ public interface AggregationResolver {
      * non-existing resources or syntactically invalid paths (as defined by the
      * Path object). Also, the list will not contain a path similar to the path
      * of resource in question.
+     *
+     * @return List of aggregation-paths for the given resource, or <code>null</code>
+     *         if resource not found.
      */
     public List<Path> getAggregationPaths(Path pathToResource);
 

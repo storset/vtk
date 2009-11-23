@@ -58,7 +58,11 @@ public class PrincipalFactory {
     // This dao will only be used if configured.
     private PrincipalMetadataDAO principalMetadataDao;
 
-    public Principal getPrincipal(String id, Type type)
+    public Principal getPrincipal(String id, Type type) throws InvalidPrincipalException {
+        return getPrincipal(id, type, true);
+    }
+
+    public Principal getPrincipal(String id, Type type, boolean includeMetadata)
         throws InvalidPrincipalException {
 
         if (type == null) {
@@ -79,8 +83,8 @@ public class PrincipalFactory {
             throw new InvalidPrincipalException("Tried to get \"\" (empty string) principal");
 
         PrincipalImpl principal = new PrincipalImpl(id, type);
-        if (principal.getType() == Type.USER && this.principalMetadataDao != null) {
-            // Set metadata for principal, if we can get any.
+        if (principal.getType() == Type.USER && includeMetadata && this.principalMetadataDao != null) {
+            // Set metadata for principal if requested and we are able to fetch it
             try {
                 PrincipalMetadata metadata = this.principalMetadataDao.getMetadata(principal);
                 if (metadata != null) {

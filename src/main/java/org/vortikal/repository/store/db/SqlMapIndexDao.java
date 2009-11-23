@@ -209,7 +209,7 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
                     type = Principal.Type.GROUP;
                 }
                 
-                Principal principal = this.principalFactory.getPrincipal(name, type);
+                Principal principal = this.principalFactory.getPrincipal(name, type, false);
                 aclReadPrincipals.add(principal);
             }
         }

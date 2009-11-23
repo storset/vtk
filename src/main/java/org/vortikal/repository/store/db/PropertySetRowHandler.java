@@ -172,6 +172,12 @@ class PropertySetRowHandler implements RowHandler {
         
         return null; // No longer found in database
     }
+
+    private Principal getPrincipal(String id, Principal.Type type) {
+         // Don't include metadata, not necessary for indexing-purposes, and it's costly,
+        //  and we bog down the metadata-cache (lots of LDAP lookups).
+        return this.principalFactory.getPrincipal(id, type, false);
+    }
     
     private PropertySetImpl createPropertySet(List<Map<String, Object>> rowBuffer) {
         
@@ -203,7 +209,7 @@ class PropertySetRowHandler implements RowHandler {
         propertySet.addProperty(prop);
         
         // createdBy
-        Principal createdBy = principalFactory.getPrincipal((String)row.get("createdBy"), Principal.Type.USER);
+        Principal createdBy = getPrincipal((String)row.get("createdBy"), Principal.Type.USER);
         propDef = this.resourceTypeTree.getPropertyTypeDefinition(
                 Namespace.DEFAULT_NAMESPACE, PropertyType.CREATEDBY_PROP_NAME);
         prop = propDef.createProperty(createdBy);
@@ -216,7 +222,7 @@ class PropertySetRowHandler implements RowHandler {
         propertySet.addProperty(prop);
 
         // owner
-        Principal principal = principalFactory.getPrincipal((String)row.get("owner"), Principal.Type.USER);
+        Principal principal = getPrincipal((String)row.get("owner"), Principal.Type.USER);
         propDef = this.resourceTypeTree.getPropertyTypeDefinition(
                 Namespace.DEFAULT_NAMESPACE, PropertyType.OWNER_PROP_NAME);
         prop = propDef.createProperty(principal);
@@ -274,7 +280,7 @@ class PropertySetRowHandler implements RowHandler {
         propertySet.addProperty(prop);
 
         // modifiedBy
-        principal = principalFactory.getPrincipal((String)row.get("modifiedBy"), Principal.Type.USER);
+        principal = getPrincipal((String)row.get("modifiedBy"), Principal.Type.USER);
         propDef = this.resourceTypeTree.getPropertyTypeDefinition(
                 Namespace.DEFAULT_NAMESPACE, PropertyType.MODIFIEDBY_PROP_NAME);
         prop = propDef.createProperty(principal);
@@ -287,7 +293,7 @@ class PropertySetRowHandler implements RowHandler {
         propertySet.addProperty(prop);
 
         // contentModifiedBy
-        principal = principalFactory.getPrincipal((String)row.get("contentModifiedBy"), Principal.Type.USER);
+        principal = getPrincipal((String)row.get("contentModifiedBy"), Principal.Type.USER);
         propDef = this.resourceTypeTree.getPropertyTypeDefinition(
                 Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTMODIFIEDBY_PROP_NAME);
         prop = propDef.createProperty(principal);
@@ -300,7 +306,7 @@ class PropertySetRowHandler implements RowHandler {
         propertySet.addProperty(prop);
 
         // propertiesModifiedBy
-        principal = principalFactory.getPrincipal((String)row.get("propertiesModifiedBy"), Principal.Type.USER);
+        principal = getPrincipal((String)row.get("propertiesModifiedBy"), Principal.Type.USER);
         propDef = this.resourceTypeTree.getPropertyTypeDefinition(
                 Namespace.DEFAULT_NAMESPACE, PropertyType.PROPERTIESMODIFIEDBY_PROP_NAME);
         prop = propDef.createProperty(principal);

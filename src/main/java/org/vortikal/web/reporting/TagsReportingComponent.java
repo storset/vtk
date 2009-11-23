@@ -73,8 +73,11 @@ public class TagsReportingComponent {
             // If we have an aggration resolver available, then include whatever URIs
             // the scope URI might aggregate.
             if (this.aggregationResolver != null) {
-                for (Path p: this.aggregationResolver.getAggregationPaths(scopeUri)) {
-                    scope.addUriPrefix(p);
+                List<Path> aggregationPaths = this.aggregationResolver.getAggregationPaths(scopeUri);
+                if (aggregationPaths != null) {
+                    for (Path p : this.aggregationResolver.getAggregationPaths(scopeUri)) {
+                        scope.addUriPrefix(p);
+                    }
                 }
             }
 

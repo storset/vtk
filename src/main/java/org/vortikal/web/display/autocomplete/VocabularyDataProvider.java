@@ -46,7 +46,7 @@ public interface VocabularyDataProvider<T> {
      * @param token
      * @return
      */
-    public List<T> getCompletions(String input, Path contextUri, String token);
+    public List<T> getCompletions(String input, CompletionContext context);
 
 
     /**
@@ -56,6 +56,6 @@ public interface VocabularyDataProvider<T> {
      * @param token
      * @return
      */
-    public List<T> getCompletions(Path contextUri, String token);
+    public List<T> getCompletions(CompletionContext context);
 
 }

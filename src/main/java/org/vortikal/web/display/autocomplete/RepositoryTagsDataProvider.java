@@ -61,8 +61,8 @@ public class RepositoryTagsDataProvider implements VocabularyDataProvider<Tag> {
      * org.vortikal.web.display.autocomplete.VocabularyDataProvider#getCompletions
      * (java.lang.String, org.vortikal.repository.Path, java.lang.String)
      */
-    public List<Tag> getCompletions(String prefix, Path contextUri, String token) {
-        List<Tag> tags = getCompletions(contextUri, token);
+    public List<Tag> getCompletions(String prefix, CompletionContext context) {
+        List<Tag> tags = getCompletions(context);
         filterTagListByPrefix(prefix, tags);
         return tags;
     }
@@ -74,12 +74,13 @@ public class RepositoryTagsDataProvider implements VocabularyDataProvider<Tag> {
      * org.vortikal.web.display.autocomplete.VocabularyDataProvider#getCompletions
      * (org.vortikal.repository.Path, java.lang.String)
      */
-    public List<Tag> getCompletions(Path contextUri, String token) {
+    public List<Tag> getCompletions(CompletionContext context) {
 
         // TODO might consider adding limit on number of unique tags that are
         // fetched.
         try {
-            PropertyValueFrequencyQueryResult pfqResult = tagsReporter.getTags(contextUri, null, -1, -1, token);
+            PropertyValueFrequencyQueryResult pfqResult = tagsReporter.getTags(context.getContextUri(),
+                                                            null, -1, -1, context.getToken());
             List<Pair<Value, Integer>> pfqList = pfqResult.getValueFrequencyList();
             List<Tag> result = new LinkedList<Tag>();
 

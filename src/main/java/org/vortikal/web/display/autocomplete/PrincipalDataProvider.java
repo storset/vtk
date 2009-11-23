@@ -53,11 +53,11 @@ public class PrincipalDataProvider implements VocabularyDataProvider<Principal> 
     private PrincipalFactory principalFactory;
     private PrincipalManager principalManager;
 
-    public List<Principal> getCompletions(Path scopeUri, String token) {
-        return null;
+    public List<Principal> getCompletions(CompletionContext context) {
+        return null; // We require input
     }
 
-    public List<Principal> getCompletions(String input, Path contextUri, String token) {
+    public List<Principal> getCompletions(String input, CompletionContext context) {
 
         Set<Principal> result = new HashSet<Principal>(0);
 

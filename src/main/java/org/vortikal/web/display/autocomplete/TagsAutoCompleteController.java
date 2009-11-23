@@ -12,11 +12,9 @@ public class TagsAutoCompleteController extends AutoCompleteController {
     private VocabularyDataProvider<Tag> dataProvider;
 
     @Override
-    protected List<Suggestion> getAutoCompleteSuggestions(String prefix, Path contextUri,
-            String securityToken) {
+    protected List<Suggestion> getAutoCompleteSuggestions(String prefix, CompletionContext context) {
 
-        List<Tag> completions = this.dataProvider.getCompletions(prefix, null, // Ignore contextUri
-                securityToken);
+        List<Tag> completions = this.dataProvider.getCompletions(prefix, context);
 
         List<Suggestion> suggestions = new ArrayList<Suggestion>(completions.size());
         for (Tag tag: completions) {

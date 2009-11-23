@@ -43,29 +43,28 @@ import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.servlet.ResourceAwareLocaleResolver;
 
 public abstract class AutoCompleteController implements Controller {
 
     protected static final char SUGGESTION_DELIMITER = '\n';
     protected static final char FIELD_SEPARATOR = ';';
+    protected static final char FIELD_SEPARATOR_ESCAPE = '\\';
     protected static final String PARAM_QUERY = "q";
     protected static final String PARAM_CONTEXT_URI_OVERRIDE = "context";
-    protected static final String PARAM_PREFERRED_LOCALE = "locale";
+    protected static final String PARAM_PREFERRED_LANG = "lang";
     protected static final String RESPONSE_CONTENT_TYPE = "text/plain;charset=utf-8";
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        String token = SecurityContext.getSecurityContext().getToken();
-        Path contextUri = getContextUri(request);
-
         String query = request.getParameter(PARAM_QUERY);
         if (query == null) {
-            return null; // No query results in no auto-complete suggestions
+            return null; // Global policy: No query results in no auto-complete suggestions
         }
 
-        //getPreferredLocale(request);
+        CompletionContext context = getCompletionContext(request);
 
-        List<Suggestion> suggestions = this.getAutoCompleteSuggestions(query, contextUri, token);
+        List<Suggestion> suggestions = this.getAutoCompleteSuggestions(query, context);
 
         if (suggestions != null) {
             writeSuggestions(suggestions, response);
@@ -84,7 +83,15 @@ public abstract class AutoCompleteController implements Controller {
         }
     }
 
-    protected Path getContextUri(HttpServletRequest request) {
+    protected CompletionContext getCompletionContext(HttpServletRequest request) {
+        String token = SecurityContext.getSecurityContext().getToken();
+        Path contextUri = getContextUri(request);
+        Locale preferredLocale = getPreferredLocale(request);
+
+        return new CompletionContextImpl(contextUri, preferredLocale, token);
+    }
+
+    private Path getContextUri(HttpServletRequest request) {
         Path contextUri = null;
         try {
             // Try getting from overriding parameter first
@@ -108,9 +115,15 @@ public abstract class AutoCompleteController implements Controller {
         return contextUri;
     }
 
-    protected Locale getPreferredLocale(HttpServletRequest request) {
+    private Locale getPreferredLocale(HttpServletRequest request) {
+        // Try preferred language param
+        String lang = request.getParameter(PARAM_PREFERRED_LANG);
+        if (lang != null && lang.length() == 2) {
+            // Construct locale from two-letter lang code
+            return new Locale(lang.toLowerCase());
+        }
 
-        return null;
+        return null; // No preference
     }
 
     /**
@@ -122,7 +135,34 @@ public abstract class AutoCompleteController implements Controller {
      * @param token
      * @return
      */
-    protected abstract List<Suggestion> getAutoCompleteSuggestions(String query, Path contextUri, String token);
+    protected abstract List<Suggestion> getAutoCompleteSuggestions(String query, CompletionContext context);
+
+    /**
+     * Wrap som completion-context concerns into a class..
+     */
+    private static final class CompletionContextImpl implements CompletionContext {
+        private Path contextUri;
+        private Locale preferredLocale;
+        private String token;
+
+        private CompletionContextImpl(Path contextUri, Locale preferredLocale, String token) {
+            this.contextUri = contextUri;
+            this.preferredLocale = preferredLocale;
+            this.token = token;
+        }
+
+        public Locale getPreferredLocale() {
+            return this.preferredLocale;
+        }
+
+        public Path getContextUri() {
+            return this.contextUri;
+        }
+
+        public String getToken() {
+            return this.token;
+        }
+    }
 
     /**
      * Class representing one single suggestion composed of a list of fields.
@@ -142,15 +182,32 @@ public abstract class AutoCompleteController implements Controller {
         public String toString() {
             StringBuilder builder = new StringBuilder();
             for (int i=0; i<this.fields.length; i++) {
+                // Render null as empty string instead of "null"
                 if (this.fields[i] != null) {
-                    builder.append(this.fields[i]);
-                } // Render null as empty string instead of "null"
+                    builder.append(escapeFieldValue(this.fields[i].toString()));
+                } 
 
                 if (i < this.fields.length-1) {
                     builder.append(FIELD_SEPARATOR);
                 }
             }
             return builder.toString();
+        }
+
+        private String escapeFieldValue(String value) {
+            StringBuilder escapedValue = new StringBuilder(value.length());
+            for (int i=0; i<value.length(); i++) {
+                char c = value.charAt(i);
+                switch (c) {
+                case FIELD_SEPARATOR:
+                case FIELD_SEPARATOR_ESCAPE:
+                    escapedValue.append(FIELD_SEPARATOR_ESCAPE);
+                default:
+                    escapedValue.append(c);
+                }
+            }
+
+            return escapedValue.toString();
         }
     }
 

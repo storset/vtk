@@ -45,7 +45,7 @@ import org.vortikal.security.Principal.Type;
 
 public class PrincipalFactory {
 
-    private static final Log LOG = LogFactory.getLog(PrincipalFactory.class);
+    private final Log logger = LogFactory.getLog(PrincipalFactory.class);
     
     public static final String NAME_AUTHENTICATED = "pseudo:authenticated";
     public static final String NAME_ALL = "pseudo:all";
@@ -58,7 +58,8 @@ public class PrincipalFactory {
     // This dao will only be used if configured.
     private PrincipalMetadataDAO principalMetadataDao;
 
-    public Principal getPrincipal(String id, Type type) throws InvalidPrincipalException {
+    public Principal getPrincipal(String id, Type type)
+        throws InvalidPrincipalException {
 
         if (type == null) {
             throw new InvalidPrincipalException("Principal must have a type");
@@ -78,23 +79,19 @@ public class PrincipalFactory {
             throw new InvalidPrincipalException("Tried to get \"\" (empty string) principal");
 
         PrincipalImpl principal = new PrincipalImpl(id, type);
-        if (principal.getType() == Type.USER) {
-            if (this.principalMetadataDao != null) {
-
-                // Set metadata for principal, if we can get any.
-                try {
-                    PrincipalMetadata metadata = this.principalMetadataDao.getMetadata(principal);
-                    if (metadata != null) {
-                        principal.setDescription((String)metadata.getValue(PrincipalMetadata.DESCRIPTION_ATTRIBUTE));
-                        principal.setURL((String)metadata.getValue(PrincipalMetadata.URL_ATTRIBUTE));
-                        principal.setMetadata(metadata);
-                    }
-                } catch (UnsupportedPrincipalDomainException d) {
-                    // Ignore
-                } catch (Exception e) {
-                    LOG.warn(
-                      "Exception while fetching principal metadata", e);
+        if (principal.getType() == Type.USER && this.principalMetadataDao != null) {
+            // Set metadata for principal, if we can get any.
+            try {
+                PrincipalMetadata metadata = this.principalMetadataDao.getMetadata(principal);
+                if (metadata != null) {
+                    principal.setDescription((String) metadata.getValue(PrincipalMetadata.DESCRIPTION_ATTRIBUTE));
+                    principal.setURL((String) metadata.getValue(PrincipalMetadata.URL_ATTRIBUTE));
+                    principal.setMetadata(metadata);
                 }
+            } catch (UnsupportedPrincipalDomainException d) {
+                // Ignore
+            } catch (Exception e) {
+                logger.warn("Exception while fetching principal metadata", e);
             }
         }
         
@@ -125,8 +122,8 @@ public class PrincipalFactory {
 
     private Principal getPseudoPrincipal(String name) throws InvalidPrincipalException {
         if (NAME_ALL.equals(name)) return ALL;
-        if (NAME_AUTHENTICATED.equals(name)) return AUTHENTICATED;
         if (NAME_OWNER.equals(name)) return OWNER;
+        if (NAME_AUTHENTICATED.equals(name)) return AUTHENTICATED;
         throw new InvalidPrincipalException("Pseudo principal with name '"
                 + name + "' doesn't exist");
     }

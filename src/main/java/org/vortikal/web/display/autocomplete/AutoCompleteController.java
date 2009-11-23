@@ -129,11 +129,6 @@ public abstract class AutoCompleteController implements Controller {
     /**
      * Optionally implemented by subclasses to provide autocomplete suggestions.
      * Only useful if handleRequest is *not* overridden.
-     * 
-     * @param query
-     * @param contextUri
-     * @param token
-     * @return
      */
     protected abstract List<Suggestion> getAutoCompleteSuggestions(String query, CompletionContext context);
 

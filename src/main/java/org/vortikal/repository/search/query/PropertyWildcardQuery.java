@@ -35,18 +35,31 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 public class PropertyWildcardQuery extends AbstractPropertyQuery {
 
     private String term;
+    private TermOperator op;
     
-    public PropertyWildcardQuery(PropertyTypeDefinition propertyDefinition, String term) {
+    public PropertyWildcardQuery(PropertyTypeDefinition propertyDefinition, String term, TermOperator op) {
         super(propertyDefinition);
         this.term = term;
+        this.op = op;
     }
 
     public String getTerm() {
         return this.term;
     }
+    
+    public TermOperator getOperator() {
+        return this.op;
+    }
 
     public Object accept(QueryTreeVisitor visitor, Object data) {
         return visitor.visit(this, data);
+    }
+    
+    public String toString() {
+        StringBuilder buf = new StringBuilder(getClass().getName()).append(':');
+        buf.append(" propdef = ").append(getPropertyDefinition());
+        buf.append("; term ").append(this.op).append(" '").append(this.term).append("'");
+        return buf.toString();
     }
 
 }

@@ -35,24 +35,32 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 public class PropertyPrefixQuery extends AbstractPropertyQuery {
 
     private final String term;
-    private final boolean inverted;
+    private final TermOperator op;
 
-    public PropertyPrefixQuery(PropertyTypeDefinition propertyDefinition, String term, boolean inverted) {
+    public PropertyPrefixQuery(PropertyTypeDefinition propertyDefinition, String term, TermOperator op) {
         super(propertyDefinition);
         this.term = term;
-        this.inverted = inverted;
+        this.op = op;
     }
 
     public String getTerm() {
         return this.term;
     }
 
-    public boolean isInverted() {
-        return this.inverted;
+    public TermOperator getOperator() {
+        return this.op;
     }
 
     public Object accept(QueryTreeVisitor visitor, Object data) {
         return visitor.visit(this, data);
+    }
+    
+    public String toString() {
+        StringBuilder buf = new StringBuilder(getClass().getName()).append(": ");
+        buf.append("propdef = ").append(getPropertyDefinition());
+        buf.append("; prefix ").append(this.op).append(" '").append(this.term).append("'");
+        
+        return buf.toString();
     }
 
 }

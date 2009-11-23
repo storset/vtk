@@ -1,7 +1,7 @@
 options {
   // MULTI = true;
   STATIC = false;
-  //  DEBUG_PARSER = false;
+  //  DEBUG_PARSER = true;
   //  DEBUG_LOOKAHEAD = false;
   //  DEBUG_TOKEN_MANAGER = false;
   // JAVA_UNICODE_ESCAPE = true;
@@ -22,6 +22,7 @@ import org.vortikal.repository.search.query.NameTermQuery;
 import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.PropertyExistsQuery;
 import org.vortikal.repository.search.query.PropertyPrefixQuery;
+import org.vortikal.repository.search.query.PropertyWildcardQuery;
 import org.vortikal.repository.search.query.PropertyTermQuery;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.TermOperator;
@@ -76,15 +77,24 @@ public class QueryParserImpl implements QueryParser {
         return new PropertyTermQuery(def, value, operator);
     }
 
-    private Query getPropPrefixQuery(String prefix, String name, String value, boolean inverted) {
+    private Query getPropPrefixQuery(String prefix, String name, String value, TermOperator op) {
         PropertyTypeDefinition def = 
             resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
         if (def == null)
             throw new RuntimeException("Unknown property " + prefix + ":" + name);
 
-        return new PropertyPrefixQuery(def, value, inverted);
+        return new PropertyPrefixQuery(def, value, op);
     }
 
+    private Query getPropWildcardQuery(String prefix, String name, String value, TermOperator op) {
+        PropertyTypeDefinition def = 
+            resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
+        if (def == null)
+            throw new RuntimeException("Unknown property " + prefix + ":" + name);
+
+        return new PropertyWildcardQuery(def, value, op);
+    }
+    
     private String unescape(String escaped) {
         char[] caSource = escaped.toCharArray();
         char[] caDest = new char[caSource.length];
@@ -96,6 +106,7 @@ public class QueryParserImpl implements QueryParser {
         }
         return new String(caDest, 0, j);
     }
+    
 }
 
 PARSER_END(QueryParserImpl)
@@ -123,31 +134,40 @@ TOKEN : {
         | <AND: "AND" | "&&">
         | <OR: "OR" | "||">
 
+        // XXX: This isn't consistent ! Some reserved words are all uppercase, other all lowercase ...WHY ?
+        //      Cannot change now, since that would probably break a lot of things in the wild.
+        | <EXISTS: "exists">                          // Should be "EXISTS"
+        | <NOTEXISTS: "not exists" | "!exists">       // Should be "NOT EXISTS | !EXISTS"
+
         | <ASTERISK: "*">
 
         | <LP: "(">
         | <RP: ")">
 
+        | <NAMEVALUE: (<ID_CHAR> | <ESCAPED_CHAR>)+ >
+        
         | <NLP: ~["(", ":"] >
         | <NRP: ~[")", ":"] >
 }
 
 TOKEN : { < COLON: ":"> }
 
-TOKEN : { < EXISTS: "exists"> }
-TOKEN : { < NOTEXISTS: "not exists" | "!exists"> }
-
-TOKEN : { < #ID: ~[" ", "\t", "\n", "\r", "\\", "\"", "=", "<", ">", "!", "(", ")", ":"] > }
-TOKEN : { < NAMEVALUE: (<ID> | <ESCAPED_CHAR>)+ > }
+TOKEN : { < #ID_CHAR: ~[" ", "\t", "\n", "\r", "\\", "\"", "=", "<", ">", "!", "(", ")", ":", "*", "?"] > }
 
 <DEFAULT, Value> TOKEN : {
-    <ESCAPED_CHAR: "\\" (" " | "\\" | "!" | "(" | ")" | ":" | "\"" | "|" | "&" | "=" | "<" | ">") >
+      <ESCAPED_CHAR: "\\" [" ", "\\", "!", "(", ")", ":", "\"", "|", "&", "=", "<", ">", "*", "?"] >
 }
 
+// Tokens available only in lexical state 'Value':
 <Value> TOKEN : {
-    <#VALUE_CHAR: (<ESCAPED_CHAR> | ~["*", " ", ")", "\t", "\n", "\r"]) > 
-        | <VALUE: (<VALUE_CHAR>)+ > : DEFAULT
-         | <WILDVALUE:  (<VALUE_CHAR> ((<VALUE_CHAR>)* ([ "*", "?" ])+ (<VALUE_CHAR>)*)+ <VALUE_CHAR>)> : DEFAULT
+           <#VALUE_CHAR: (<ESCAPED_CHAR> | ~["*", "?", " ", ")", "\t", "\n", "\r"])>
+         | <#WILDCARD_CHAR: ["*","?"]>
+         | <VALUE: (<VALUE_CHAR>)+ > : DEFAULT // Transition lexical state back to default
+         | <WILDVALUE: (
+                          (<WILDCARD_CHAR>)+ (<VALUE_CHAR>)+ (<WILDCARD_CHAR>)*
+                        | 
+                          (<WILDCARD_CHAR>)* (<VALUE_CHAR>)+ (<WILDCARD_CHAR>)+ <VALUE_CHAR> (<VALUE_CHAR> | <WILDCARD_CHAR>)*
+                        ) > : DEFAULT
 }
 
 
@@ -406,6 +426,7 @@ Query PropertyQuery() :
 {
     (LOOKAHEAD(4) q=PropertyExistsQuery() 
      | LOOKAHEAD(6) q=PropertyPrefixQuery()
+     | LOOKAHEAD(6) q=PropertyWildcardQuery()
      | q=PropertyTermQuery())
         { return q;}
 }    
@@ -427,11 +448,11 @@ Query PropertyExistsQuery() : {
 
 Query PropertyPrefixQuery() : 
 {
-    Token p=null, n, v, eq=null;
+    Token p=null, n, v, eq=null, ne=null, eqi=null, nei=null;
 }
 {
     [LOOKAHEAD(2) p=<NAMEVALUE> <COLON>] n=<NAMEVALUE> 
-        (eq=<EQ> | <NE>)
+        (eq=<EQ> | ne=<NE> | eqi=<EQ_IGNORECASE> | nei=<NE_IGNORECASE>)
         //        ("\"" v=<VALUE> "\"" | v=<VALUE>)    
         v=<VALUE> <ASTERISK>
         { 
@@ -440,8 +461,47 @@ Query PropertyPrefixQuery() :
             String name = n.image;
             
             String value = unescape(v.image);
-            boolean inverted = (eq == null);
-            return getPropPrefixQuery(prefix, name, value, inverted); 
+
+            TermOperator op = null;
+            if (eq != null)
+                op = TermOperator.EQ;
+            else if (ne != null)
+                op = TermOperator.NE;
+            else if (eqi != null)
+                op = TermOperator.EQ_IGNORECASE;
+            else if (nei != null)
+                op = TermOperator.NE_IGNORECASE;
+
+            return getPropPrefixQuery(prefix, name, value, op); 
+        }
+}
+
+Query PropertyWildcardQuery() : 
+{
+    Token p=null, n, v, eq=null, ne=null, eqi=null, nei=null;
+}
+{
+    [LOOKAHEAD(2) p=<NAMEVALUE> <COLON>] n=<NAMEVALUE> 
+        (eq=<EQ> | ne=<NE> | eqi=<EQ_IGNORECASE> | nei=<NE_IGNORECASE>)
+        v=<WILDVALUE>
+        { 
+            String prefix = null;
+            if (p != null) prefix = p.image;
+            String name = n.image;
+            
+            String value = unescape(v.image);
+            
+            TermOperator op = null;
+            if (eq != null)
+                op = TermOperator.EQ;
+            else if (ne != null)
+                op = TermOperator.NE;
+            else if (eqi != null)
+                op = TermOperator.EQ_IGNORECASE;
+            else if (nei != null)
+                op = TermOperator.NE_IGNORECASE;
+
+            return getPropWildcardQuery(prefix, name, value, op); 
         }
 }
 

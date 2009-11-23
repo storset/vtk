@@ -31,6 +31,7 @@
 
 package org.vortikal.repository.store;
 
+import java.util.Locale;
 import org.vortikal.security.Principal;
 import org.vortikal.security.Principal.Type;
 
@@ -41,14 +42,20 @@ public class PrincipalSearchImpl implements PrincipalSearch {
 
     protected String searchString;
     protected Principal.Type principalType;
+    protected Locale preferredLocale;
 
     public PrincipalSearchImpl(String searchString) {
-        this(Principal.Type.USER, searchString);
+        this(Principal.Type.USER, searchString, null);
     }
 
     public PrincipalSearchImpl(Principal.Type type, String searchString) {
+        this(type, searchString, null);
+    }
+
+    public PrincipalSearchImpl(Principal.Type type, String searchString, Locale preferredLocale) {
         this.principalType = type;
         this.searchString = searchString;
+        this.preferredLocale = preferredLocale;
     }
 
     public Type getPrincipalType() {
@@ -59,6 +66,10 @@ public class PrincipalSearchImpl implements PrincipalSearch {
         return this.searchString;
     }
 
+    public Locale getPreferredLocale() {
+        return this.preferredLocale;
+    }
+
     @Override
     public int hashCode() {
         int code = 7;
@@ -67,6 +78,10 @@ public class PrincipalSearchImpl implements PrincipalSearch {
 
         if (this.searchString != null) {
             code = 31 * code + this.searchString.hashCode();
+        }
+
+        if (this.preferredLocale != null) {
+            code = 31 * code + this.preferredLocale.hashCode();
         }
 
         return code;
@@ -85,6 +100,12 @@ public class PrincipalSearchImpl implements PrincipalSearch {
         PrincipalSearchImpl po = (PrincipalSearchImpl)other;
 
         if (this.principalType != po.principalType) return false;
+
+        if (this.preferredLocale != null) {
+            if (!this.preferredLocale.equals(po.preferredLocale)) return false;
+        } else {
+            if (po.preferredLocale != null) return false;
+        }
 
         if (this.searchString == null) {
             return (po.searchString == null);

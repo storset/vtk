@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.store;
 
+import java.util.Locale;
 import org.vortikal.security.Principal;
 
 /**
@@ -47,4 +48,8 @@ public interface PrincipalSearch {
      */
     String getSearchString();
 
+    /**
+     * Preferred Locale (may be <code>null</code>).
+     */
+    Locale getPreferredLocale();
 }

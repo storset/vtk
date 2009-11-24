@@ -112,7 +112,6 @@
         class="org.vortikal.repository.search.query.LuceneQueryBuilderImpl">
     <property name="resourceTypeTree" ref="resourceTypeTree"/>
     <property name="fieldValueMapper" ref="fieldValueMapper"/>
-    <property name="allowWildcardQueries" value="${search.query.allowWildcardQueries}" />
     <property name="queryAuthorizationFilterFactory" ref="queryAuthorizationFilterFactory"/>
     <property name="publishedPropDef" ref="publishedPropDef" />
   </bean>

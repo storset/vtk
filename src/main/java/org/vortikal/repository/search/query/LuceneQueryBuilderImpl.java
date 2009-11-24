@@ -98,7 +98,6 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
     
     private ResourceTypeTree resourceTypeTree;
     private FieldValueMapper fieldValueMapper;
-    private boolean allowWildcardQueries = false;
     private QueryAuthorizationFilterFactory queryAuthorizationFilterFactory;
     private Filter onlyPublishedFilter;
     private PropertyTypeDefinition publishedPropDef;
@@ -269,11 +268,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         }
         
         if (query instanceof PropertyWildcardQuery) {
-            if (this.allowWildcardQueries) {
-                return new PropertyWildcardQueryBuilder((PropertyWildcardQuery)query);
-            } else {
-                throw new QueryBuilderException("Wildcard-queries are disabled.");
-            }
+            return new PropertyWildcardQueryBuilder((PropertyWildcardQuery)query);
         }
         
         if (query instanceof PropertyExistsQuery) {
@@ -389,10 +384,6 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
     @Required
     public void setFieldValueMapper(FieldValueMapper fieldValueMapper) {
         this.fieldValueMapper = fieldValueMapper;
-    }
-
-    public void setAllowWildcardQueries(boolean allowWildcardQueries) {
-        this.allowWildcardQueries = allowWildcardQueries;
     }
 
     @Required

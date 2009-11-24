@@ -54,7 +54,6 @@ public class ConfirmPublishController implements Controller {
     private String viewName;
     private Service publishService;
 
-
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
 
@@ -73,18 +72,15 @@ public class ConfirmPublishController implements Controller {
         return new ModelAndView(this.viewName, model);
     }
 
-
     @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
-
     @Required
     public void setViewName(String viewName) {
         this.viewName = viewName;
     }
-
 
     @Required
     public void setPublishService(Service publishService) {

@@ -75,18 +75,7 @@
 	  </#if>
   </#if>
 
-  <#-- description -->
-  <#-- 
-  
-  <#if element = "description">
-	  <#if conf.itemDescription?exists && (entry.description.value)?exists>
-	    <div class="item-description">
-	      ${entry.description.value?string}
-	    </div>
-	  </#if>
-  </#if> -->  
-  
-  <#if element = "categories" >
+    <#if element = "categories" >
 	  <#if conf.displayCategories?exists && (entry.categories)?exists && (entry.categories)?size &gt; 0>
 	    <ul class="categories">
 	      <#list entry.categories as category>
@@ -102,13 +91,13 @@
 	  </#if>
   </#if>
   
-  <#if element = "description" && conf.itemDescription?exists && descriptionNoImage[counter-1]?exists>
+  <#if element = "description" && conf.itemDescription?exists && descriptionNoImage[counter-1]?exists && descriptionNoImage[counter-1]?has_content>
     <div class="item-description">
   	  ${descriptionNoImage[counter-1]?string}
     </div>
   </#if>
   
-  <#if element = "picture" && conf.itemPicture?exists && imageMap[counter-1]?exists>
+  <#if element = "picture" && conf.itemPicture?exists && imageMap[counter-1]?exists && imageMap[counter-1]?has_content >
   	  <a class="vrtx-image" href="<#if entry.link?exists>${entry.link?html}<#else>${entry.uri?html}</#if>">${imageMap[counter-1]?string}</a>
   </#if>
 

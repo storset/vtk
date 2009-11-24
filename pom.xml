@@ -125,7 +125,7 @@
     </repositories>
 
     <properties>
-        <test.skip>true</test.skip>
+        <test.skip>false</test.skip>
         <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
     </properties>
 

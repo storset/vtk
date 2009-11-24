@@ -72,6 +72,7 @@ import org.vortikal.repository.search.query.builders.QueryTreeBuilder;
 import org.vortikal.repository.search.query.builders.TypeTermQueryBuilder;
 import org.vortikal.repository.search.query.builders.UriDepthQueryBuilder;
 import org.vortikal.repository.search.query.builders.UriPrefixQueryBuilder;
+import org.vortikal.repository.search.query.builders.UriSetQueryBuilder;
 import org.vortikal.repository.search.query.builders.UriTermQueryBuilder;
 
 /**
@@ -125,6 +126,10 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
         
         else if (query instanceof UriDepthQuery) {
             builder = new UriDepthQueryBuilder((UriDepthQuery)query);
+        }
+        
+        else if (query instanceof UriSetQuery) {
+            builder = new UriSetQueryBuilder((UriSetQuery)query);
         }
 
         else if (query instanceof NameTermQuery) {

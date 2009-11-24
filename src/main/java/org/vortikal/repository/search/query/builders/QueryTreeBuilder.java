@@ -79,7 +79,7 @@ public class QueryTreeBuilder implements QueryBuilder {
         for (Query q: subQueries) {
             bq.add(buildInternal(q), occur);
         }
-
+        
         return bq;
     }
 }

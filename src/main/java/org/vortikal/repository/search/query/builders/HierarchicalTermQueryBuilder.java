@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, 2007, University of Oslo, Norway
+/* Copyright (c) 2006, 2007, 2009 University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -34,13 +34,10 @@ package org.vortikal.repository.search.query.builders;
 import java.util.List;
 
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.QueryWrapperFilter;
-import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TermsFilter;
 import org.vortikal.repository.HierarchicalVocabulary;
 import org.vortikal.repository.search.query.InversionFilter;
 import org.vortikal.repository.search.query.QueryBuilder;
@@ -64,9 +61,9 @@ public class HierarchicalTermQueryBuilder<T> implements QueryBuilder {
 
     public Query buildQuery() {
         if (this.operator == TermOperator.IN) {
-            return getInQuery();
+            return new ConstantScoreQuery(getInFilter());
         } else if (this.operator == TermOperator.NI) {
-            Filter filter = new InversionFilter(new QueryWrapperFilter(getInQuery()));
+            Filter filter = new InversionFilter(getInFilter());
             return new ConstantScoreQuery(filter);
         } else {
             throw new QueryBuilderException("Unsupported type operator: " + this.operator);
@@ -74,24 +71,17 @@ public class HierarchicalTermQueryBuilder<T> implements QueryBuilder {
 
     }
 
-    private Query getInQuery() {
-        BooleanQuery bq = new BooleanQuery(true);
-        bq.add(new TermQuery(new Term(fieldName, this.term.toString())),
-                            BooleanClause.Occur.SHOULD);
+    private Filter getInFilter() {
+        TermsFilter tf = new TermsFilter();
+        tf.addTerm(new Term(this.fieldName, this.term.toString()));
 
         List<T> descendantNames = this.hierarchicalVocabulary.getResourceTypeDescendants(this.term);
-        
         if (descendantNames != null && !descendantNames.isEmpty()) {
-            for (T o: descendantNames) {
-                String descendantName = o.toString();
-                Term t = new Term(fieldName, descendantName);
-                bq.add(new TermQuery(t),  BooleanClause.Occur.SHOULD);
+            for (T descendantName: descendantNames) {
+                tf.addTerm(new Term(this.fieldName, descendantName.toString()));
             }
-
-
         }
         
-        return bq;
+        return tf;
     }
-
 }

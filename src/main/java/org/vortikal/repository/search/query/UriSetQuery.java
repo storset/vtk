@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2009, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,32 +30,46 @@
  */
 package org.vortikal.repository.search.query;
 
-public class UriTermQuery implements UriQuery {
+import java.util.Set;
 
-    private final String uri;
+/**
+ * This query matches a set of URIs. It is an optimized form
+ * of boolean query with multiple clauses, where each clause
+ * should occur (OR). It can be optimized in query backend.
+ * 
+ */
+public class UriSetQuery implements UriQuery {
+
+    private final Set<String> uris;
     private final TermOperator operator;
-
-    public UriTermQuery(String uri, TermOperator operator) {
-        this.uri = uri;
+    
+    public UriSetQuery(Set<String> uris) {
+        this(uris, TermOperator.IN);
+    }
+    
+    public UriSetQuery(Set<String> uris, TermOperator operator) {
+        this.uris = uris;
         this.operator = operator;
     }
-
-    public String getUri() {
-        return this.uri;
+    
+    public Set<String> getUris() {
+        return this.uris;
     }
-
+    
     public TermOperator getOperator() {
         return this.operator;
     }
-
+    
     public Object accept(QueryTreeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
-
+    
     public String toString() {
-        StringBuilder sb = new StringBuilder(this.getClass().getName());
-        sb.append(";uri=").append(this.uri);
-        sb.append(", operator=").append(this.operator);
-        return sb.toString();
+        StringBuilder buf = new StringBuilder();
+        buf.append(getClass().getName()).append(", ");
+        buf.append("URI set = ").append(this.uris).append(", ");
+        buf.append("operator = ").append(this.operator);
+        return buf.toString();
     }
+
 }

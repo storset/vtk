@@ -69,7 +69,7 @@
 </#if>
  <#if element = "publishDate" >
 	  <#if conf.publishedDate?exists && entry.publishedDate?exists>
-	  <span class="item-published-date">
+	  <span class="published-date">
 	    <@vrtx.date value=entry.publishedDate format="${conf.publishedDate}" />
 	  </span>
 	  </#if>

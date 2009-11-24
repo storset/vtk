@@ -185,7 +185,7 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
         model.put("elementOrder", elementOrder);
 
         List<String> imgMap = getFilteredEntryValues(getImgHtmlFilter(), feed);
-        imgMap = excludeEverytingButFirstTag(imgMap);
+        imgMap = excludeEverythingButFirstTag(imgMap);
         List<String> descriptionNoImage = getFilteredEntryValues(getNoImgHtmlFilter(), feed);
         model.put("descriptionNoImage", descriptionNoImage);        
         model.put("imageMap", imgMap);

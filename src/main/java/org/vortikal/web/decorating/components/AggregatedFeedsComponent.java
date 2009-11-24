@@ -48,7 +48,7 @@ import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.feed.synd.SyndFeedImpl;
 
-public class AggregatedFeedsComponent extends ViewRenderingDecoratorComponent {
+public class AggregatedFeedsComponent extends AbstractFeedComponent {
 
     private ContentCache<String, SyndFeed> cache;
     private LocalFeedFetcher localFeedFetcher;
@@ -75,19 +75,21 @@ public class AggregatedFeedsComponent extends ViewRenderingDecoratorComponent {
         if (urls == null) {
             throw new DecoratorComponentException("Component parameter 'urls' is required");
         }
-
+        
         String feedTitle = request.getStringParameter(Parameter.FEED_TITLE.getId());
         if (feedTitle != null) {
             conf.put("feedTitleValue", feedTitle.trim());
         }
 
-        String displayChannelString = request.getStringParameter(Parameter.DISPLAY_CHANNEL.getId());
-        if (displayChannelString == null || !"false".equals(displayChannelString)) {
+        if(prameterHasValue(PARAMETER_ITEM_PICTURE, "true", request)){
+            conf.put("itemPicture", true);
+        }
+        
+        if(!prameterHasValue(Parameter.DISPLAY_CHANNEL.getId(),"false",request)){
             conf.put("displayChannel", true);
         }
 
-        String itemDescriptionString = request.getStringParameter(Parameter.ITEM_DESCRIPTION.getId());
-        if (itemDescriptionString != null && "true".equals(itemDescriptionString)) {
+        if(prameterHasValue(Parameter.ITEM_DESCRIPTION.getId(),"true",request)){
             conf.put("itemDescription", true);
         }
 
@@ -169,7 +171,6 @@ public class AggregatedFeedsComponent extends ViewRenderingDecoratorComponent {
         }
 
         String[] urlArray = urls.split(",");
-
         parseFeeds(request, entries, feedMapping, urlArray);
 
         try {
@@ -179,7 +180,21 @@ public class AggregatedFeedsComponent extends ViewRenderingDecoratorComponent {
             throw new MissingPublishedDateException("Unable to sort feed '" + f.getUri()
                     + "': does not contain published date");
         }
+               
+        List<String> elementOrder = getElementOrder(PARAMETER_FEED_ELEMENT_ORDER, request);
+        model.put("elementOrder", elementOrder);
 
+        List<String> imgMap = getFilteredEntryValues(getImgHtmlFilter(), feed);
+        imgMap = excludeEverytingButFirtTag(imgMap);
+        List<String> descriptionNoImage = getFilteredEntryValues(getNoImgHtmlFilter(), feed);
+        model.put("descriptionNoImage", descriptionNoImage);        
+        model.put("imageMap", imgMap);
+    
+        String displayIfEmptyMessage = request.getStringParameter(PARAMETER_IF_EMPTY_MESSAGE);
+        if (displayIfEmptyMessage != null && displayIfEmptyMessage.length() > 0) {
+            model.put("displayIfEmptyMessage", displayIfEmptyMessage);
+        }        
+        
         model.put("feed", feed);
         model.put("conf", conf);
     }
@@ -300,6 +315,9 @@ public class AggregatedFeedsComponent extends ViewRenderingDecoratorComponent {
 
     protected Map<String, String> getParameterDescriptionsInternal() {
         Map<String, String> map = new LinkedHashMap<String, String>();
+        map.put(PARAMETER_ITEM_PICTURE, PARAMETER_ITEM_PICTURE_DESC);
+        map.put(PARAMETER_IF_EMPTY_MESSAGE, PARAMETER_IF_EMPTY_MESSAGE_DESC);
+        map.put(PARAMETER_FEED_ELEMENT_ORDER,PARAMETER_FEED_ELEMENT_ORDER_DESC);
         map.put(Parameter.URLS.getId(), Parameter.URLS.getDesc());
         map.put(Parameter.FEED_TITLE.getId(), Parameter.FEED_TITLE.getDesc());
         map.put(Parameter.MAX_MESSAGES.getId(), Parameter.MAX_MESSAGES.getDesc());

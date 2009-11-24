@@ -32,6 +32,7 @@ package org.vortikal.web.decorating.components;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -42,10 +43,11 @@ import org.vortikal.web.decorating.DecoratorResponse;
 import com.sun.syndication.feed.synd.SyndFeed;
 
 /**
- * XXX: this class currently depends on the thread safety of the SyndFeed implementation: if it turns out that it is not
- * thread safe, its data has to be extracted to a custom bean after fetching a feed.
+ * XXX: this class currently depends on the thread safety of the SyndFeed
+ * implementation: if it turns out that it is not thread safe, its data has to
+ * be extracted to a custom bean after fetching a feed.
  */
-public class FeedComponent extends ViewRenderingDecoratorComponent {
+public class FeedComponent extends AbstractFeedComponent {
 
     private static final String PARAMETER_FEED_DESCRIPTION = "feed-description";
     private static final String PARAMETER_FEED_DESCRIPTION_DESC = "Must be set to 'true' to show feed description";
@@ -87,7 +89,6 @@ public class FeedComponent extends ViewRenderingDecoratorComponent {
     private ContentCache<String, SyndFeed> cache;
     private LocalFeedFetcher localFeedFetcher;
 
-
     @Override
     protected void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
@@ -100,19 +101,39 @@ public class FeedComponent extends ViewRenderingDecoratorComponent {
             throw new DecoratorComponentException("Component parameter 'url' is required");
         }
 
-        String feedTitleString = request.getStringParameter(PARAMETER_FEED_TITLE);
-        if (feedTitleString == null || !"false".equals(feedTitleString)) {
+        if (!prameterHasValue(PARAMETER_FEED_TITLE, "false", request)) {
             conf.put("feedTitle", true);
         }
 
-        String feedDescriptionString = request.getStringParameter(PARAMETER_FEED_DESCRIPTION);
-        if (feedDescriptionString != null && "true".equals(feedDescriptionString)) {
+        if (prameterHasValue(PARAMETER_FEED_DESCRIPTION, "true", request)) {
             conf.put("feedDescription", true);
         }
 
-        String itemDescriptionString = request.getStringParameter(PARAMETER_ITEM_DESCRIPTION);
-        if (itemDescriptionString != null && "true".equals(itemDescriptionString)) {
+        if (prameterHasValue(PARAMETER_ITEM_DESCRIPTION, "true", request)) {
             conf.put("itemDescription", true);
+        }
+
+        if (prameterHasValue(PARAMETER_ITEM_PICTURE, "true", request)) {
+            conf.put("itemPicture", true);
+        }
+
+        if (prameterHasValue(PARAMETER_DISPLAY_CATEGORIES, "true", request)) {
+            conf.put("displayCategories", true);
+        }
+
+        if (!prameterHasValue(PARAMETER_ALL_MESSAGES_LINK, "false", request)) {
+            conf.put("bottomLinkToAllMessages", true);
+        }
+
+        conf.put("includeIfEmpty", !prameterHasValue(PARAMETER_INCLUDE_IF_EMPTY, "false", request));
+
+        String overrideFeedTitle = request.getStringParameter(PARAMETER_OVERRIDE_FEED_TITLE);
+        if (overrideFeedTitle != null && overrideFeedTitle.length() > 0) {
+            model.put("overrideFeedTitle", overrideFeedTitle);
+        }
+        String displayIfEmptyMessage = request.getStringParameter(PARAMETER_IF_EMPTY_MESSAGE);
+        if (displayIfEmptyMessage != null && displayIfEmptyMessage.length() > 0) {
+            model.put("displayIfEmptyMessage", displayIfEmptyMessage);
         }
 
         conf.put("maxMsgs", 10);
@@ -136,11 +157,6 @@ public class FeedComponent extends ViewRenderingDecoratorComponent {
             conf.put("publishedDate", "long");
         }
 
-        String bottomLinkToAllMessagesString = request.getStringParameter(PARAMETER_ALL_MESSAGES_LINK);
-        if (!"false".equals(bottomLinkToAllMessagesString)) {
-            conf.put("bottomLinkToAllMessages", true);
-        }
-
         // Typical sort strings we handle:
         // asc
         // item-title
@@ -148,7 +164,8 @@ public class FeedComponent extends ViewRenderingDecoratorComponent {
         // desc item-title
         // etc..
         String sortString = request.getStringParameter(PARAMETER_SORT);
-        boolean directionSpecified = false; // Indicates explicitly set sort direction
+        boolean directionSpecified = false; // Indicates explicitly set sort
+        // direction
         if (sortString != null) {
             StringTokenizer tokenizer = new StringTokenizer(sortString);
             while (tokenizer.hasMoreTokens()) {
@@ -171,18 +188,6 @@ public class FeedComponent extends ViewRenderingDecoratorComponent {
             }
         }
 
-        boolean includeIfEmpty = true;
-        String includeIfEmptyParam = request.getStringParameter(PARAMETER_INCLUDE_IF_EMPTY);
-        if ("false".equalsIgnoreCase(includeIfEmptyParam)) {
-            includeIfEmpty = false;
-        }
-        conf.put("includeIfEmpty", includeIfEmpty);
-
-        String displayCategoriesParam = request.getStringParameter(PARAMETER_DISPLAY_CATEGORIES);
-        if (displayCategoriesParam != null && "true".equalsIgnoreCase(displayCategoriesParam)) {
-            conf.put("displayCategories", true);
-        }
-
         SyndFeed feed = null;
 
         try {
@@ -195,22 +200,28 @@ public class FeedComponent extends ViewRenderingDecoratorComponent {
             throw new RuntimeException("Could not read feed url " + url, e);
         }
 
-        String overrideFeedTitle = request.getStringParameter(PARAMETER_OVERRIDE_FEED_TITLE);
-        if (overrideFeedTitle != null && overrideFeedTitle.length() > 0) {
-            model.put("overrideFeedTitle", overrideFeedTitle);
-        }
+        List<String> elementOrder = getElementOrder(PARAMETER_FEED_ELEMENT_ORDER, request);
+        model.put("elementOrder", elementOrder);
+
+        List<String> imgMap = getFilteredEntryValues(getImgHtmlFilter(), feed);
+        imgMap = excludeEverytingButFirtTag(imgMap);
+        List<String> descriptionNoImage = getFilteredEntryValues(getNoImgHtmlFilter(), feed);
+        model.put("descriptionNoImage", descriptionNoImage);
+        model.put("imageMap", imgMap);
+
         model.put("feed", feed);
         model.put("conf", conf);
     }
-
 
     protected String getDescriptionInternal() {
         return "Inserts a feed (RSS, Atom) component on the page";
     }
 
-
     protected Map<String, String> getParameterDescriptionsInternal() {
         Map<String, String> map = new LinkedHashMap<String, String>();
+        map.put(PARAMETER_ITEM_PICTURE, PARAMETER_ITEM_PICTURE_DESC);
+        map.put(PARAMETER_IF_EMPTY_MESSAGE, PARAMETER_IF_EMPTY_MESSAGE_DESC);
+        map.put(PARAMETER_FEED_ELEMENT_ORDER, PARAMETER_FEED_ELEMENT_ORDER_DESC);
         map.put(PARAMETER_URL, PARAMETER_URL_DESC);
         map.put(PARAMETER_MAX_MESSAGES, PARAMETER_MAX_MESSAGES_DESC);
         map.put(PARAMETER_FEED_TITLE, PARAMETER_FEED_TITLE_DESC);
@@ -225,11 +236,9 @@ public class FeedComponent extends ViewRenderingDecoratorComponent {
         return map;
     }
 
-
     public void setContentCache(ContentCache<String, SyndFeed> cache) {
         this.cache = cache;
     }
-
 
     public void setLocalFeedFetcher(LocalFeedFetcher localFeedFetcher) {
         this.localFeedFetcher = localFeedFetcher;

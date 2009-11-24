@@ -125,9 +125,103 @@
     </property>
   </bean>
   
+
+  
   <bean id="safeHtml.filter" class="org.vortikal.text.html.SimpleHtmlPageFilter">
     <property name="illegalElements" ref="safeHtml.illegalElementSet" />
     <property name="validElements" ref="safeHtml.validElementSet" />
+  </bean>
+
+  <bean id="imgHtml.filter" class="org.vortikal.text.html.SimpleHtmlPageFilter">
+    <property name="illegalElements" ref="imgHtml.illegalElementSet" />
+    <property name="validElements" ref="imgHtml.validElementSet" />
+  </bean>
+
+  <bean id="noImgHtml.filter" class="org.vortikal.text.html.SimpleHtmlPageFilter">
+      <property name="illegalElements" ref="no.illegalElementSet" />
+      <property name="validElements" ref="noImgeHtml.validElementSet" />
+  </bean>
+
+ 
+  <bean id="imgHtml.illegalElementSet" class="org.springframework.beans.factory.config.SetFactoryBean">
+    <property name="sourceSet">
+      <set>
+        <value>p</value>
+        <value>div</value>
+      </set>
+    </property>
+  </bean>
+  
+  <bean id="no.illegalElementSet" class="org.springframework.beans.factory.config.SetFactoryBean">
+    <property name="sourceSet">
+    <set>
+    </set>
+    </property>
+  </bean>
+  
+   <bean id="imgHtml.validElementSet" class="org.springframework.beans.factory.config.SetFactoryBean">
+    <property name="sourceSet">
+      <set>
+          <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="img" />
+          <property name="validAsEmpty" value="true" />
+          <property name="attributes">
+            <set>
+              <value>src</value>
+              <value>alt</value>
+            </set>
+          </property>
+        </bean>
+      </set>
+    </property>
+  </bean>
+  
+    <bean id="noImgeHtml.validElementSet" class="org.springframework.beans.factory.config.SetFactoryBean">
+    <property name="sourceSet">
+      <set>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="a" />
+          <property name="attributes">
+            <set>
+              <value>href</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="div" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="p" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="ul" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="li" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="ol" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="em" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="strong" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="cite" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="code" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="strike" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="u" />
+        </bean>
+      </set>
+    </property>
   </bean>
   
   <bean id="safeHtml.illegalElementSet" class="org.springframework.beans.factory.config.SetFactoryBean">

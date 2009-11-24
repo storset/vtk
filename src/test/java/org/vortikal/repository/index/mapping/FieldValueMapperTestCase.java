@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006, 2009 University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,24 +30,34 @@
  */
 package org.vortikal.repository.index.mapping;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
+import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.apache.lucene.document.Field;
+import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFactoryImpl;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
+import org.vortikal.security.InvalidPrincipalException;
+import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalFactory;
+import org.vortikal.security.PrincipalImpl;
 
-/**
- * TODO: This JUnit test case class is not complete.
- * 
- *
- */
 public class FieldValueMapperTestCase extends TestCase {
 
     private FieldValueMapper fieldValueMapper;
+    private ValueFactory vf;
 
     public FieldValueMapperTestCase() {
         this.fieldValueMapper = new FieldValueMapper();
+        ValueFactoryImpl vf = new ValueFactoryImpl();
+        vf.setPrincipalFactory(new MockPrincipalFactory());
+        this.vf = vf;
         this.fieldValueMapper.setValueFactory(new ValueFactoryImpl());
     }
     
@@ -74,27 +84,95 @@ public class FieldValueMapperTestCase extends TestCase {
         }
     }
     
-//    public void testMultithreadedDateValueIndexFieldEncoding() {
-//        
-//        Thread[] threads = new Thread[100];
-//        for (int i=0; i<threads.length; i++) {
-//            threads[i] = new Thread(new Runnable() {
-//               public void run() {
-//                   testDateValueIndexFieldEncoding();
-//               }
-//            });
-//        }
-//        
-//        for (int i=0; i<threads.length; i++) {
-//            threads[i].start();
-//        }
-//        
-//        for (int i = 0; i < threads.length; i++) {
-//            try {
-//                threads[i].join(); } catch (InterruptedException ie) { 
-//                    fail("Interrupted while waiting for test threads to finish.");}
-//        }
-//        
-//    }
+    /**
+     * Tests FieldValueMapper.getValueFromStoredBinaryField(Field,Type)
+     * and   FieldValueMapper.getStoredBinaryFieldFromValue(String,Value)
+     */
+    public void testBinaryMapping() {
+        
+        Field stringField = this.fieldValueMapper.getStoredBinaryFieldFromValue("string", this.vf.createValue("bâr", Type.STRING));
+        Field intField = this.fieldValueMapper.getStoredBinaryFieldFromValue("int", this.vf.createValue("1024", Type.INT));
+        Field longField = this.fieldValueMapper.getStoredBinaryFieldFromValue("long", this.vf.createValue("1024", Type.LONG));
+        
+        assertEquals("string", stringField.name());
+        assertEquals("int", intField.name());
+        assertEquals("long", longField.name());
+        
+        try {
+            assertEquals("bâr".getBytes("utf-8").length, stringField.getBinaryLength());
+            assertEquals("bâr", new String(stringField.getBinaryValue(), stringField.getBinaryOffset(), stringField.getBinaryLength(), "utf-8"));
+        } catch (UnsupportedEncodingException ue) {}
+        
+        byte[] data = new byte[intField.getBinaryLength()];
+        System.arraycopy(intField.getBinaryValue(), intField.getBinaryOffset(), data, 0, intField.getBinaryLength());
+        
+        assertEquals(4, data.length);
+        assertEquals(0x0, data[3]);
+        assertEquals(0x0, data[2]);
+        assertEquals(0x4, data[1]);
+        assertEquals(0x0, data[0]);
+
     
+        data = new byte[longField.getBinaryLength()];
+        System.arraycopy(longField.getBinaryValue(), longField.getBinaryOffset(), data, 0, longField.getBinaryLength());
+        
+        assertEquals(8, data.length);
+        assertEquals(0x0, data[7]);
+        assertEquals(0x0, data[6]);
+        assertEquals(0x0, data[5]);
+        assertEquals(0x0, data[4]);
+        assertEquals(0x0, data[3]);
+        assertEquals(0x0, data[2]);
+        assertEquals(0x4, data[1]);
+        assertEquals(0x0, data[0]);
+        
+        Value stringValue = this.fieldValueMapper.getValueFromStoredBinaryField(stringField, Type.STRING);
+        assertEquals(stringValue.getNativeStringRepresentation(), "bâr");
+        
+        Value intValue = this.fieldValueMapper.getValueFromStoredBinaryField(intField, Type.INT);
+        assertEquals(1024, intValue.getIntValue());
+        
+        Value longValue = this.fieldValueMapper.getValueFromStoredBinaryField(longField, Type.LONG);
+        assertEquals(1024, longValue.getLongValue());
+}
+    
+    public void testMultithreadedDateValueIndexFieldEncoding() {
+        
+        Thread[] threads = new Thread[10];
+        for (int i=0; i<threads.length; i++) {
+            threads[i] = new Thread(new Runnable() {
+               public void run() {
+                   testDateValueIndexFieldEncoding();
+               }
+            });
+        }
+        
+        for (int i=0; i<threads.length; i++) {
+            threads[i].start();
+        }
+        
+        for (int i = 0; i < threads.length; i++) {
+            try {
+                threads[i].join(); } catch (InterruptedException ie) { 
+                    fail("Interrupted while waiting for test threads to finish.");}
+        }
+        
+    }
+    
+}
+
+class MockPrincipalFactory extends PrincipalFactory {
+
+    @Override
+    public Principal getPrincipal(String id, Principal.Type type)
+            throws InvalidPrincipalException {
+        return new PrincipalImpl(id, type);
+    }
+
+    @Override
+    public List<Principal> search(String filter, Principal.Type type)
+            throws RepositoryException {
+        return null;
+    }
+
 }

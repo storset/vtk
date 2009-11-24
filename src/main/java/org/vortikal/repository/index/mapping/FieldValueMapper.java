@@ -370,7 +370,9 @@ public final class FieldValueMapper {
         case HTML:
         case STRING:
             try {
-                String stringValue = new String(value, STRING_VALUE_ENCODING);
+                String stringValue = new String(value, field.getBinaryOffset(), 
+                                                       field.getBinaryLength(),
+                                                       STRING_VALUE_ENCODING);
                 return this.valueFactory.createValue(stringValue, type);
             } catch (UnsupportedEncodingException ue) {
             } // Won't happen.

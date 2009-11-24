@@ -14,4 +14,6 @@
   <@vrtx.msg code="commenting.comments"
              args=[vrtx.propValue(resourceContext.currentResource, "title", "flattened")] />
 </#assign>
-<link type="application/atom+xml" rel="alternate" href="${commentsFeed.url?html}" title="${linkTitle?html}" />
+<#if commentsEnabled?exists && commentsEnabled >
+	<link type="application/atom+xml" rel="alternate" href="${commentsFeed.url?html}" title="${linkTitle?html}" />
+</#if>

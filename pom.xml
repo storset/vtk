@@ -338,7 +338,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <skip>${test.skip}</skip>
-                    <forkMode>pertest</forkMode>
+                    <!--<forkMode>pertest</forkMode>-->
                     <useFile>false</useFile>
                     <systemProperties>
                         <property>

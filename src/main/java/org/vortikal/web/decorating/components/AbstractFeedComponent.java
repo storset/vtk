@@ -74,7 +74,7 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
         return resultOrder;
     }
 
-    protected List<String> excludeEverytingButFirtTag(List<String> list) {
+    protected List<String> excludeEverythingButFirstTag(List<String> list) {
         List<String> result = new ArrayList<String>();
         for (String s : list) {
             int index = -1;

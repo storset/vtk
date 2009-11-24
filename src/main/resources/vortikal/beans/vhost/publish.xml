@@ -176,7 +176,7 @@
       <ref bean="resourceContextProvider" />
     </property>
   </bean>
-  
+
   <!-- ### view of unpublished resources ### -->
   <bean id="viewUnpublishedResourceService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="structuredResources.displayService" />
@@ -235,11 +235,92 @@
     <property name="viewName" value="publishing" />
   </bean>
 
+  <bean id="editPublishDateService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="publish.editPublishingService" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="edit-publish-date" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="editPublishDateHandler" />
+  </bean>
+
+  <bean id="editUnpublishDateService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="publish.editPublishingService" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="edit-unpublish-date" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="editUnpublishDateHandler" />
+  </bean>
+
+  <bean id="abstractEditPublishingHandler" abstract="true" class="org.vortikal.web.actions.publish.EditPublishingController"
+    parent="repositoryAware">
+    <property name="formView" value="publishing" />
+    <property name="successView" value="publishing" />
+    <property name="commandClass" value="org.vortikal.web.actions.publish.EditPublishingCommand" />
+    <property name="validator">
+      <bean class="org.vortikal.web.actions.publish.EditPublishingCommandValidator" />
+    </property>
+  </bean>
+
+  <bean id="editPublishDateHandler" parent="abstractEditPublishingHandler">
+    <property name="commandName" value="publish-date" />
+  </bean>
+
+  <bean id="editUnpublishDateHandler" parent="abstractEditPublishingHandler">
+    <property name="commandName" value="unpublish-date" />
+  </bean>
+
   <bean id="publishingView" parent="freemarkerView">
     <property name="url" value="pages/publishing.ftl" />
     <property name="referenceDataProviders">
-      <ref bean="resourceContextProvider" />
+      <list>
+        <ref bean="resourceContextProvider" />
+        <ref bean="editPublishingProvider" />
+      </list>
     </property>
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/publishing.css</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="editPublishingProvider" class="org.vortikal.web.referencedata.provider.EditPublishingProvider"
+    parent="repositoryAware">
+    <property name="publishResourceService" ref="publish.publishResourceService" />
+    <property name="unpublishResourceService" ref="publish.unpublishResourceService" />
+    <property name="editPublishDateService" ref="editPublishDateService" />
+    <property name="editUnpublishDateService" ref="editUnpublishDateService" />
+    <property name="publishedPropDef" ref="publishedPropDef" />
+  </bean>
+
+  <!-- Automatic publishing -->
+  <bean id="repository.publisher" class="org.vortikal.scheduling.SimpleMethodInvokingTriggerBean">
+    <property name="targetObject" ref="publishingPoller" />
+    <property name="targetMethodName" value="publish" />
+    <property name="triggerThreadName" value="${repositoryID}.publisher" />
+    <property name="startDelay" value="20000" />
+    <property name="repeatInterval" value="${repository.indexUpdater.interval}" />
+    <property name="startTriggerAfterInitialization" value="true" />
+    <property name="abortTriggerOnTargetMethodException" value="false" />
+  </bean>
+
+  <bean id="publishingPoller" class="org.vortikal.web.actions.publish.ResourcePublisher" parent="repositoryAware" >
+    <property name="searcher" ref="systemIndexSearcher" />
+    <property name="token" ref="trustedToken" />
   </bean>
 
 </beans>

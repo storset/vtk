@@ -32,10 +32,12 @@
       <#local emails = vrtx.propValue(person, 'email')  />
       <#local tags = vrtx.propValue(person, 'tags') />  
       <#local src = vrtx.propValue(person, 'picture', 'thumbnail') />
+      <#local imageAlt = vrtx.getMsg("person-listing.image-alt") >
+       <#local imageAlt = imageAlt + " " + firstName + " " + surname />
 	   <tr class="vrtx-person-${personNr}">      
          <td class="vrtx-person-listing-name"> 
   			<#if src?has_content>
-           		<a class="vrtx-image" href="${personListing.urls[person.URI]?html}"><img src="${src?html}" alt="" /></a>
+           		<a class="vrtx-image" href="${personListing.urls[person.URI]?html}"><img src="${src?html}" alt="${imageAlt}" /></a>
            	</#if>
            	<#if surname?has_content >
          		<a href="${personListing.urls[person.URI]?html}">${surname}<#if firstName?has_content && surname?has_content>, </#if>${firstName?html}</a>

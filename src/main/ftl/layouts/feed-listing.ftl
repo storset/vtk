@@ -97,7 +97,7 @@
     </div>
   </#if>
   
-  <#if element = "picture" && conf.itemPicture?exists && imageMap[counter-1]?exists && imageMap[counter-1]?trim?has_content >
+  <#if element = "picture" && conf.itemPicture?exists && imageMap[counter-1]?exists && imageMap[counter-1]?has_content >
   	  <a class="vrtx-image" href="<#if entry.link?exists>${entry.link?html}<#else>${entry.uri?html}</#if>">${imageMap[counter-1]?string}</a>
   </#if>
 

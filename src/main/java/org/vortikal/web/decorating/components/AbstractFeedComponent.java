@@ -77,14 +77,16 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
     protected List<String> excludeEverythingButFirstTag(List<String> list) {
         List<String> result = new ArrayList<String>();
         for (String s : list) {
-            int index = -1;
+            int l_index = -1;
+            int r_index = -1;
             if (s != null) {
-                index = s.indexOf(">");
+                l_index = s.indexOf("<");
+                r_index = s.indexOf(">");     
             }
-            if (index > -1) {
-                result.add(s.subSequence(0, index + 1).toString());
+            if (r_index > -1 && l_index > -1) {
+                result.add(s.subSequence(l_index, r_index + 1).toString());
             } else {
-                result.add(s);
+                result.add(null);
             }
         }
         return result;

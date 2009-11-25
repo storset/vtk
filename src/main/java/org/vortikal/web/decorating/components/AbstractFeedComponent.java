@@ -40,7 +40,9 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
         List<String> result = new ArrayList<String>();
         List<SyndEntry> entries = feed.getEntries();
         for (SyndEntry entry : entries) {
-            String htmlFragment = entry.getDescription().getValue();
+            String htmlFragment = null;
+            if (entry.getDescription() != null)
+                htmlFragment = entry.getDescription().getValue();
             HtmlPageParser parser = new HtmlPageParserImpl();
             HtmlFragment fragment = parser.parseFragment(htmlFragment);
             fragment.filter(filter);
@@ -81,7 +83,7 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
             int r_index = -1;
             if (s != null) {
                 l_index = s.indexOf("<");
-                r_index = s.indexOf(">");     
+                r_index = s.indexOf(">");
             }
             if (r_index > -1 && l_index > -1) {
                 result.add(s.subSequence(l_index, r_index + 1).toString());

@@ -635,8 +635,9 @@ public class StructuredResourceManager {
             }
             if (value != null) {
                 setPropValue(property, value);
+                return true;
             }
-            return true;
+            return false;
         }
     }
 

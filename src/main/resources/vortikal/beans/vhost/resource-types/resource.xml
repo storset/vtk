@@ -43,7 +43,7 @@
         <ref bean="numberOfCommentsPropDef" />
         <ref bean="publishedPropDef" />
         <ref bean="publishDatePropDef" />
-        <ref bean="unPublishDatePropDef" />
+        <ref bean="unpublishDatePropDef" />
       </list>
     </property>
   </bean>
@@ -251,7 +251,7 @@
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
   </bean>
   
-  <bean id="unPublishDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+  <bean id="unpublishDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
     parent="abstractPropDef">
     <property name="name" value="unpublish-date" />
     <property name="type" value="TIMESTAMP" />

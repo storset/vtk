@@ -267,8 +267,12 @@
     <property name="successView" value="publishing" />
     <property name="commandClass" value="org.vortikal.web.actions.publish.EditPublishingCommand" />
     <property name="validator">
-      <bean class="org.vortikal.web.actions.publish.EditPublishingCommandValidator" />
+      <bean class="org.vortikal.web.actions.publish.EditPublishingCommandValidator" >
+        <property name="valueFormatterRegistry" ref="valueFormatterRegistry" />
+      </bean>
     </property>
+    <property name="publishDatePropDef" ref="publishDatePropDef" />
+    <property name="unpublishDatePropDef" ref="unpublishDatePropDef" />
   </bean>
 
   <bean id="editPublishDateHandler" parent="abstractEditPublishingHandler">
@@ -305,6 +309,22 @@
     <property name="editPublishDateService" ref="editPublishDateService" />
     <property name="editUnpublishDateService" ref="editUnpublishDateService" />
     <property name="publishedPropDef" ref="publishedPropDef" />
+  </bean>
+
+  <!-- Automatic publishing -->
+  <bean id="repository.publisher" class="org.vortikal.scheduling.SimpleMethodInvokingTriggerBean">
+    <property name="targetObject" ref="publishingPoller" />
+    <property name="targetMethodName" value="publish" />
+    <property name="triggerThreadName" value="${repositoryID}.publisher" />
+    <property name="startDelay" value="20000" />
+    <property name="repeatInterval" value="${repository.indexUpdater.interval}" />
+    <property name="startTriggerAfterInitialization" value="true" />
+    <property name="abortTriggerOnTargetMethodException" value="false" />
+  </bean>
+
+  <bean id="publishingPoller" class="org.vortikal.web.actions.publish.ResourcePublisher" parent="repositoryAware" >
+    <property name="searcher" ref="systemIndexSearcher" />
+    <property name="token" ref="trustedToken" />
   </bean>
 
 </beans>

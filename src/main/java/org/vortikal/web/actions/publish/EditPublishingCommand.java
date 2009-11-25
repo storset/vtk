@@ -30,15 +30,31 @@
  */
 package org.vortikal.web.actions.publish;
 
+import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.web.actions.UpdateCancelCommand;
 
 public class EditPublishingCommand extends UpdateCancelCommand {
 
+    private Resource resource;
     private String publishDate;
     private String unpublishDate;
+    private Value publishDateValue;
+    private Value unpublishDateValue;
+
+    private String publishDateUpdateAction;
+    private String unpublishDateUpdateAction;
 
     public EditPublishingCommand(String submitURL) {
         super(submitURL);
+    }
+
+    public Resource getResource() {
+        return resource;
+    }
+
+    public void setResource(Resource resource) {
+        this.resource = resource;
     }
 
     public String getPublishDate() {
@@ -55,6 +71,38 @@ public class EditPublishingCommand extends UpdateCancelCommand {
 
     public void setUnpublishDate(String unpublishDate) {
         this.unpublishDate = unpublishDate;
+    }
+
+    public Value getPublishDateValue() {
+        return publishDateValue;
+    }
+
+    public void setPublishDateValue(Value publishDateValue) {
+        this.publishDateValue = publishDateValue;
+    }
+
+    public Value getUnpublishDateValue() {
+        return unpublishDateValue;
+    }
+
+    public void setUnpublishDateValue(Value unpublishDateValue) {
+        this.unpublishDateValue = unpublishDateValue;
+    }
+
+    public String getPublishDateUpdateAction() {
+        return publishDateUpdateAction;
+    }
+
+    public void setPublishDateUpdateAction(String publishDateUpdateAction) {
+        this.publishDateUpdateAction = publishDateUpdateAction;
+    }
+
+    public String getUnpublishDateUpdateAction() {
+        return unpublishDateUpdateAction;
+    }
+
+    public void setUnpublishDateUpdateAction(String unpublishDateUpdateAction) {
+        this.unpublishDateUpdateAction = unpublishDateUpdateAction;
     }
 
 }

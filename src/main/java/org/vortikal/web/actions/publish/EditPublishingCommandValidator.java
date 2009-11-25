@@ -30,10 +30,17 @@
  */
 package org.vortikal.web.actions.publish;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.repository.resourcetype.ValueFormatter;
+import org.vortikal.repository.resourcetype.ValueFormatterRegistry;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 
 public class EditPublishingCommandValidator implements Validator {
+
+    private ValueFormatterRegistry valueFormatterRegistry;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -44,14 +51,39 @@ public class EditPublishingCommandValidator implements Validator {
     @Override
     public void validate(Object command, Errors errors) {
 
-        EditPublishingCommand scheduledPublishingCommand = (EditPublishingCommand) command;
+        EditPublishingCommand editPublishingCommand = (EditPublishingCommand) command;
 
-        if (scheduledPublishingCommand.getUpdateAction() == null) {
+        if (editPublishingCommand.getCancelAction() != null) {
             return;
         }
 
-        // XXX implement
+        if (editPublishingCommand.getPublishDateUpdateAction() != null) {
+            if (!StringUtils.isBlank(editPublishingCommand.getPublishDate())) {
+                Value value = getValidDate(editPublishingCommand.getPublishDate(), "publishDate", errors);
+                editPublishingCommand.setPublishDateValue(value);
+            }
+        } else if (editPublishingCommand.getUnpublishDateUpdateAction() != null) {
+            if (!StringUtils.isBlank(editPublishingCommand.getUnpublishDate())) {
+                Value value = getValidDate(editPublishingCommand.getUnpublishDate(), "unpublishDate", errors);
+                editPublishingCommand.setUnpublishDateValue(value);
+            }
+        }
 
+    }
+
+    private Value getValidDate(String date, String bindName, Errors errors) {
+        ValueFormatter valueFormatter = this.valueFormatterRegistry.getValueFormatter(Type.TIMESTAMP);
+        try {
+            Value value = valueFormatter.stringToValue(date, null, null);
+            return value;
+        } catch (IllegalArgumentException e) {
+            errors.rejectValue(bindName, "publishing.edit.invalid.date", "Invalid date");
+        }
+        return null;
+    }
+
+    public void setValueFormatterRegistry(ValueFormatterRegistry valueFormatterRegistry) {
+        this.valueFormatterRegistry = valueFormatterRegistry;
     }
 
 }

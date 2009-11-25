@@ -40,8 +40,11 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -49,6 +52,8 @@ import org.vortikal.web.service.Service;
 public class EditPublishingController extends SimpleFormController {
 
     private Repository repository;
+    private PropertyTypeDefinition publishDatePropDef;
+    private PropertyTypeDefinition unpublishDatePropDef;
 
     @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
@@ -64,6 +69,7 @@ public class EditPublishingController extends SimpleFormController {
         String submitURL = service.constructLink(resource, securityContext.getPrincipal());
 
         EditPublishingCommand command = new EditPublishingCommand(submitURL);
+        command.setResource(resource);
 
         return command;
     }
@@ -79,19 +85,47 @@ public class EditPublishingController extends SimpleFormController {
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
             BindException errors) throws Exception {
 
-        EditPublishingCommand scheduledPublishingCommand = (EditPublishingCommand) command;
+        EditPublishingCommand editPublishingCommand = (EditPublishingCommand) command;
 
-        if (scheduledPublishingCommand.getUpdateAction() == null) {
+        if (editPublishingCommand.getCancelAction() != null) {
             return new ModelAndView(getSuccessView());
         }
-        
-        // XXX implement
+
+        Resource resource = editPublishingCommand.getResource();
+
+        if (editPublishingCommand.getPublishDateUpdateAction() != null) {
+            storeResource(resource, editPublishingCommand.getPublishDateValue(), this.publishDatePropDef);
+        } else if (editPublishingCommand.getUnpublishDateUpdateAction() != null) {
+            storeResource(resource, editPublishingCommand.getUnpublishDateValue(), this.unpublishDatePropDef);
+        }
 
         return new ModelAndView(getSuccessView());
     }
 
+    private void storeResource(Resource resource, Value dateValue, PropertyTypeDefinition propTypeDef) throws Exception {
+        if (dateValue != null) {
+            Property dateProp = resource.getProperty(propTypeDef);
+            if (dateProp == null) {
+                dateProp = propTypeDef.createProperty(dateValue.getDateValue());
+            }
+            resource.addProperty(dateProp);
+        } else {
+            resource.removeProperty(propTypeDef);
+        }
+        String token = SecurityContext.getSecurityContext().getToken();
+        this.repository.store(token, resource);
+    }
+
     public void setRepository(Repository repository) {
         this.repository = repository;
+    }
+
+    public void setPublishDatePropDef(PropertyTypeDefinition publishDatePropDef) {
+        this.publishDatePropDef = publishDatePropDef;
+    }
+
+    public void setUnpublishDatePropDef(PropertyTypeDefinition unpublishDatePropDef) {
+        this.unpublishDatePropDef = unpublishDatePropDef;
     }
 
 }

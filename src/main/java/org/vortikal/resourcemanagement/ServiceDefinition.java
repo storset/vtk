@@ -56,4 +56,12 @@ public class ServiceDefinition {
         return requires;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("[" + this.getName());
+        sb.append(",service:" + this.getServiceName());
+        sb.append(",requires:" + this.getRequires() + "]");
+        return sb.toString();
+    }
+
 }

@@ -27,9 +27,9 @@ resourcetype featured-content {
              [if picture != null && picture != ""]
                <div class="vrtx-featured-item-picture">
                [if thetitle != null && thetitle != ""]
-                 <img src="[val picture]" alt="[localized 'featuredPictureAlt'] [val thetitle]" />
+                 <a href="[val webaddress]"><img src="[val picture]" alt="[localized 'featuredPictureAlt'] [val thetitle]" /></a>
                [else]
-                 <img src="[val picture]" alt="[localized 'featuredPictureAlt']" />
+                 <a href="[val webaddress]"><img src="[val picture]" alt="[localized 'featuredPictureAlt']" /></a>
                [endif]
                </div>
              [endif]

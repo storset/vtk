@@ -109,7 +109,7 @@ public class FridaPublicationsProvider implements ReferenceDataProvider {
                         pBooks.add(publication);
                     } else if (subCategory.equals("Vitenskapelig artikkel")
                             || subCategory.equals("Vitenskapelig Kapittel/Artikkel")
-                            || subCategory.equals("Vitenskapelig oversiktsartikkel/review") {
+                            || subCategory.equals("Vitenskapelig oversiktsartikkel/review")) {
                         pSciArtBookChapters.add(publication);
                     } else {
                         pOther.add(publication);

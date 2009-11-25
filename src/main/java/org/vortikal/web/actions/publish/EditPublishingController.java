@@ -107,6 +107,8 @@ public class EditPublishingController extends SimpleFormController {
             Property dateProp = resource.getProperty(propTypeDef);
             if (dateProp == null) {
                 dateProp = propTypeDef.createProperty(dateValue.getDateValue());
+            } else {
+                dateProp.setDateValue(dateValue.getDateValue());
             }
             resource.addProperty(dateProp);
         } else {

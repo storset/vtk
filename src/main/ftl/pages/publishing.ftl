@@ -58,18 +58,24 @@
     <div class="expandedForm">
       <@spring.bind formName + ".submitURL" /> 
       <form class="schedule-publishing" action="${spring.status.value?html}" method="post">
-        <#assign dateValue = vrtx.propValue(resource, propName) />
+        <#assign dateValue = vrtx.propValue(resource, propName, "iso-8601-short") />
+        <#assign timeValue = vrtx.propValue(resource, propName, "hours-minutes") />
+        <#assign dateTimeValue = "" />
+        <#if dateValue?has_content && timeValue?has_content >
+          <#assign dateTimeValue = dateValue + " " + timeValue />
+        </#if>
         <@spring.bind formName + "." + bindName />
         <@displayValidationErrors spring.status.errorMessages />
         <#if spring.status.value?exists>
-          <#assign dateValue = spring.status.value />
+          <#assign dateTimeValue = spring.status.value />
         </#if>
         <div class="publishing edit ${propName}">
           <label for="${spring.status.expression}"><@vrtx.msg code="publishing." + propName default="${propName}" />:</label>
-          <input type="text" id="${spring.status.expression}" name="${spring.status.expression}" value="${dateValue?html}" />
+          <input type="text" id="${spring.status.expression}" name="${spring.status.expression}" value="${dateTimeValue?html}" />
+          (dd-MM-yyyy HH:mm)
         </div>
         <div id="submitButtons" class="submitButtons">
-          <input type="submit" id="updateAction" name="updateAction" value="${vrtx.getMsg("editor.save")}"/>
+          <input type="submit" id="${bindName}UpdateAction" name="${bindName}UpdateAction" value="${vrtx.getMsg("editor.save")}"/>
           <input type="submit" id="cancelAction" name="cancelAction" value="${vrtx.getMsg("editor.cancel")}">
         </div>
       </form>

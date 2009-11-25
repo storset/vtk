@@ -48,6 +48,12 @@
       </#list>
     </ul>
   </#if>
+  
+  <#if displayIfEmptyMessage?exists && feed.entries?size = 0>
+	<span class="vrtx-empty-message">
+	 	${displayIfEmptyMessage?html}
+	 </span>
+  </#if>
 
   <#if conf.bottomLinkToAllMessages?exists>
   <a class="all-messages" href="${feed.link}">
@@ -55,12 +61,6 @@
   </a>
   </#if>
 </div>
-</#if>
-
-<#if displayIfEmptyMessage?exists && feed.entries?size = 0 && conf.includeIfEmpty>
-	<span class="vrtx-empty-message">
-	 	${displayIfEmptyMessage?html}
-	 </span>
 </#if>
 
 <#macro displayEntry entry conf element>

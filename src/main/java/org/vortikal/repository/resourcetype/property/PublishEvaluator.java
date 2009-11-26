@@ -33,6 +33,7 @@ package org.vortikal.repository.resourcetype.property;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.PropertyEvaluationContext.Type;
@@ -42,22 +43,43 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 public class PublishEvaluator implements PropertyEvaluator {
 
     private PropertyTypeDefinition publishDatePropDef;
+    private PropertyTypeDefinition unpublishDatePropDef;
 
     public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
 
         if (ctx.getEvaluationType() == Type.Create) {
-            // Make sure there's no publish date on creation
+            // Make sure there's no publish/unpublish date on creation
             ctx.getNewResource().removeProperty(this.publishDatePropDef);
+            ctx.getNewResource().removeProperty(this.unpublishDatePropDef);
             return true;
         }
 
         Property publishDateProp = ctx.getNewResource().getProperty(this.publishDatePropDef);
+        Property unpublishDateProp = ctx.getNewResource().getProperty(this.unpublishDatePropDef);
         Date now = Calendar.getInstance().getTime();
-        if (publishDateProp != null && publishDateProp.getDateValue().compareTo(now) <= 0) {
-            property.setBooleanValue(true);
+
+        if (publishDateProp != null) {
+            Date publishDate = publishDateProp.getDateValue();
+            if (unpublishDateProp != null) {
+                Date unpublishDate = unpublishDateProp.getDateValue();
+                if (unpublishDate.before(publishDate)) {
+                    property.setBooleanValue(true);
+                    ctx.getNewResource().removeProperty(this.unpublishDatePropDef);
+                    return true;
+                } else if (unpublishDate.before(now)) {
+                    property.setBooleanValue(false);
+                    return true;
+                }
+            }
+            if (publishDate.before(now)) {
+                property.setBooleanValue(true);
+            } else {
+                property.setBooleanValue(false);
+            }
             return true;
         } else if (property.getBooleanValue()) {
             property.setBooleanValue(false);
+            ctx.getNewResource().removeProperty(this.unpublishDatePropDef);
             return true;
         }
 
@@ -65,8 +87,14 @@ public class PublishEvaluator implements PropertyEvaluator {
 
     }
 
+    @Required
     public void setPublishDatePropDef(PropertyTypeDefinition publishDatePropDef) {
         this.publishDatePropDef = publishDatePropDef;
+    }
+
+    @Required
+    public void setUnpublishDatePropDef(PropertyTypeDefinition unpublishDatePropDef) {
+        this.unpublishDatePropDef = unpublishDatePropDef;
     }
 
 }

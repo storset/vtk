@@ -43,7 +43,6 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
@@ -73,7 +72,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         List<BreadcrumbElement> breadCrumbElements = getBreadcrumbElements();
         Resource currentResource = null;
         
-        currentResource = repository.retrieve(token, uri, false);
+        currentResource = repository.retrieve(token, uri, true);
         
         if ((!currentResource.isCollection() && (displayFromLevel + 1) > breadCrumbElements.size())
                 || (displayFromLevel > breadCrumbElements.size())) {
@@ -88,7 +87,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
 
         if (!currentResource.isCollection()) {
             try {
-                currentResource = repository.retrieve(token, uri.getParent(), false);
+                currentResource = repository.retrieve(token, uri.getParent(), true);
             } catch (AuthorizationException e) {
                 model.put("breadcrumb", breadCrumbElements);
                 return;
@@ -108,7 +107,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         if (childElements != null && childElements.size() == 0) {
             Resource childResource = null;
             try {
-                childResource = repository.retrieve(token, currentResource.getURI().getParent(), false);
+                childResource = repository.retrieve(token, currentResource.getURI().getParent(), true);
             } catch (AuthorizationException e) {
             }
             if (childResource != null) {
@@ -156,7 +155,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         for (Path childPath : children) {
             Resource childResource = null;
             try {
-                childResource = repository.retrieve(token, childPath, false);
+                childResource = repository.retrieve(token, childPath, true);
             } catch (AuthorizationException e) {
                 continue; // can't access resource - not displayed in menu
             }

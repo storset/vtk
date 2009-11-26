@@ -50,7 +50,7 @@ public class LockManager {
     private long iterationWaitTimeout = 4000;
 
     /* All access to this map must be synchronized on the map object itself */
-    private Map<Path, Lock> locks = new HashMap<Path, Lock>();
+    private final Map<Path, Lock> locks = new HashMap<Path, Lock>();
 
     private Log logger = LogFactory.getLog(LockManager.class);
 

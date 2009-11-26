@@ -6,7 +6,8 @@ $(document).ready(function() {
         }
     );
     // TODO !spageti 
-    initPropChange();
+    if(initPropChange() != undefined)
+        initPropChange();
     
     // specific for start- and enddate
     if($("#start-date-date").length == 0 || $("#end-date-date").length == 0){
@@ -88,7 +89,6 @@ function saveDateAndTimeFields(){
                 var minutes = $.find("#" + fieldName + "-minutes");
                 var date = $.find("#" + fieldName + "-date");
 
-                this.value = "";
                 if(date[0] != null && date[0].value.toString().length > 0){
                     this.value = date[0].value 
                     if(hours[0] != null && hours[0].value.toString().length > 0){
@@ -98,12 +98,7 @@ function saveDateAndTimeFields(){
                         }
                     }
                 }
-                
-                // Hack.. .must be fixed!!!
-                $("#" + fieldName + "-hours").remove();
-                $("#" + fieldName + "-minutes").remove();
-                $("#" + fieldName + "-date").remove();
-
+            
             }
     );
 }

@@ -265,6 +265,7 @@
   
   <bean id="publishEvaluator" class="org.vortikal.repository.resourcetype.property.PublishEvaluator">
     <property name="publishDatePropDef" ref="publishDatePropDef" />
+    <property name="unpublishDatePropDef" ref="unpublishDatePropDef" />
   </bean>
   
 </beans>

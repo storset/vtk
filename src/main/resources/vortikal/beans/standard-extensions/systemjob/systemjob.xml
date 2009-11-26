@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <bean id="repository.systemJob" abstract="true" class="org.vortikal.repository.systemjob.SystemJob"
+    parent="repositoryAware">
+    <property name="searcher" ref="systemIndexSearcher" />
+    <property name="securityContext">
+      <bean class="org.vortikal.security.SecurityContext">
+        <constructor-arg ref="writeAllToken" />
+        <constructor-arg ref="rootPrincipal" />
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="repository.systemJobMethodInvokingTrigger" abstract="true"
+    class="org.vortikal.scheduling.SimpleMethodInvokingTriggerBean">
+    <property name="targetMethodName" value="execute" />
+    <property name="startDelay" value="20000" />
+    <property name="startTriggerAfterInitialization" value="true" />
+    <property name="abortTriggerOnTargetMethodException" value="false" />
+  </bean>
+
+  <!-- Automatic publishing -->
+  <bean id="repository.publisher" parent="repository.systemJobMethodInvokingTrigger">
+    <property name="targetObject" ref="repository.resourcePublisher" />
+    <property name="triggerThreadName" value="${repositoryID}.publisher" />
+    <property name="repeatInterval" value="${repository.publisher.interval}" />
+  </bean>
+
+  <bean id="repository.resourcePublisher" class="org.vortikal.repository.systemjob.publishing.ResourcePublisher"
+    parent="repository.systemJob">
+    <property name="systemJobName" value="published-status" />
+    <property name="publishedPropDef" ref="publishedPropDef" />
+    <property name="publishDatePropDef" ref="publishDatePropDef" />
+    <property name="unpublishDatePropDef" ref="unpublishDatePropDef" />
+    <property name="affectedProperties">
+      <list>
+        <ref bean="overriddenPublishedPropDef" />
+      </list>
+    </property>
+  </bean>
+
+</beans>

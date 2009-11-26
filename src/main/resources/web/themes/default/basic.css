@@ -254,7 +254,8 @@ div.collection,
 div.article-listing,
 div.event-listing,
 div.person-listing,
-div.project-listing {
+div.project-listing,
+div.image-listing {
   background: transparent url(icons/dir.png) no-repeat 0px 5px;
 }
 
@@ -262,7 +263,8 @@ div.collection h1,
 div.article-listing h1,
 div.event-listing h1,
 div.person-listing h1,
-div.project-listing h1 {
+div.project-listing h1,
+div.image-listing h1 {
   margin: 0 0 0 38px;
 }
 
@@ -773,7 +775,8 @@ table.directoryListing tr.collection td.name,
 table.directoryListing tr.article-listing td.name,
 table.directoryListing tr.event-listing td.name,
 table.directoryListing tr.person-listing td.name,
-table.directoryListing tr.project-listing td.name
+table.directoryListing tr.project-listing td.name,
+table.directoryListing tr.image-listing td.name
   {
   background-position: 4px 4px;
   background-image: url(icons/dir2.gif);

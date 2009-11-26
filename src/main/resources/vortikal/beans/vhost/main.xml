@@ -39,6 +39,7 @@
   <import resource="view-event-listing.xml" />
   <import resource="view-person-listing.xml" />
   <import resource="view-project-listing.xml" />
+  <import resource="view-image-listing.xml" />
   <import resource="manage.xml" />
   <import resource="commenting.xml" />
   <import resource="root-management.xml" />

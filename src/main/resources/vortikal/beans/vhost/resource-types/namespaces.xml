@@ -40,4 +40,9 @@
     <constructor-arg value="http://www.uio.no/resource-types/project-listing" />
   </bean>
 
+  <bean id="IMAGE_LISTING_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="imgl" />
+    <constructor-arg value="http://www.uio.no/resource-types/image-listing" />
+  </bean>
+
 </beans>

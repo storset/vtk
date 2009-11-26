@@ -25,6 +25,7 @@
 <#import "/lib/view-utils.ftl" as viewutils />
 <#import "/lib/collections/view-project-listing.ftl" as projects />
 <#import "/lib/collections/view-person-listing.ftl" as persons />
+<#import "/lib/collections/view-image-listing.ftl" as images />
 
 <#assign resource = collection />
 
@@ -32,6 +33,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+
   <#if cssURLs?exists>
     <#list cssURLs as cssURL>
       <link rel="stylesheet" href="${cssURL}" />
@@ -42,10 +44,11 @@
       <link rel="stylesheet" href="${cssURL}" media="print" />
     </#list>
   </#if>
+
   <#list alternativeRepresentations as alt>
     <link rel="alternate" type="${alt.contentType?html}" title="${alt.title?html}" href="${alt.url?html}" />
   </#list>
-  
+
   <title>${title?html}
     <#if page?has_content>
       <#if "${page}" != "1"> - <@vrtx.msg code="viewCollectionListing.page" /> ${page}</#if>
@@ -141,6 +144,8 @@
              <@persons.displayPersons searchComponent title />
            <#elseif collection.resourceType = 'project-listing'>
              <@projects.displayProjects searchComponent />
+           <#elseif collection.resourceType = 'image-listing'>
+             <@images.displayImages searchComponent collection />
            <#else>
              <@coll.displayResources collectionListing=searchComponent />
            </#if>

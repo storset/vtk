@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <bean id="imageListingResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="image-listing" />
+    <property name="namespace" ref="IMAGE_LISTING_NAMESPACE" />
+    <property name="parentTypeDefinition" ref="collectionResourceTypeDefinition" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
+          <property name="namespace" ref="DEFAULT_NAMESPACE" />
+          <property name="name" value="collection-type" />
+          <property name="value" value="image-listing" />
+          <property name="checkExistenceOnly" value="false" />
+        </bean>
+      </list>
+    </property>
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="imageListing.showDescriptionPropDef" />
+        <ref bean="imageListing.showKeywordsPropDef" />
+        <ref bean="imageListing.showDimensionPropDef" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="imageListing.showHidePropDef" abstract="true"
+    class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="type" value="BOOLEAN" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="values">
+          <list>
+            <ref bean="VALUE_TRUE" />
+          </list>
+        </property>
+      </bean>
+    </property>
+    <property name="metadata">
+      <map>
+        <entry key="editingHints">
+          <map>
+            <entry key="hideLabel" value="true" />
+          </map>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="imageListing.showDimensionPropDef" parent="imageListing.showHidePropDef">
+    <property name="name" value="show-dimension" />
+  </bean>
+
+  <bean id="imageListing.showDescriptionPropDef" parent="imageListing.showHidePropDef">
+    <property name="name" value="show-description" />
+  </bean>
+
+  <bean id="imageListing.showKeywordsPropDef" parent="imageListing.showHidePropDef">
+    <property name="name" value="show-keywords" />
+  </bean>
+
+  <bean id="resourceIsImageListing" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
+    <property name="resourceTypeDefinition" ref="imageListingResourceTypeDefinition" />
+    <property name="exactMatch" value="true" />
+  </bean>
+
+</beans>

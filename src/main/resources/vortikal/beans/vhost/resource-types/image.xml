@@ -81,6 +81,10 @@
   <bean id="scaleUp" class="java.lang.Boolean">
     <constructor-arg type="boolean" value="false" />
   </bean>
+
+  <bean id="resourceTypeIsImage" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
+    <property name="resourceTypeDefinition" ref="imageResourceTypeDefinition" />
+  </bean>
   
 </beans>
 

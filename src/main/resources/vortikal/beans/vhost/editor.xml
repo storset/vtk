@@ -67,6 +67,15 @@
     </property>
     <property name="handler" ref="editor.projectEditHandler" />
   </bean>
+
+  <bean id="editor.imageListingEditService" parent="editor.abstractEditService">
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsImageListing" />
+      </list>
+    </property>
+    <property name="handler" ref="editor.imageEditHandler" />
+  </bean>
   
   <bean id="editor.articleListingEditService" parent="editor.abstractEditService">
     <property name="assertions">
@@ -274,6 +283,12 @@
     <property name="successView" value="redirectToManage" />
   </bean>
 
+  <bean id="editor.imageEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+    <property name="resourceManager" ref="editor.imageResourceManager" />
+    <property name="formView" value="editor.editView" />
+    <property name="successView" value="redirectToManage" />
+  </bean>
+
   <bean id="editor.articleListingEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
     <property name="resourceManager" ref="editor.articleListingResourceManager" />
     <property name="formView" value="editor.editView" />
@@ -329,6 +344,7 @@
             <ref bean="introductionImagePropDef" />
             <ref bean="introductionImageCaptionPropDef" />
             <!-- Navigation -->
+            
             <ref bean="navigationTitlePropDef" />
             <ref bean="importancePropDef" />
             <ref bean="hiddenPropDef" />
@@ -393,7 +409,33 @@
       </bean>
     </property>
   </bean>
-  
+
+  <bean id="editor.imageResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager"
+    parent="repositoryAware">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
+    <property name="contentResourceType" ref="documentResourceTypeDefinition" />
+    <property name="editPropertyProvider">
+      <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
+        <property name="preContentProperties">
+          <list>
+            <ref bean="userTitlePropDef" />
+            <ref bean="introductionPropDef" />
+            <ref bean="navigationTitlePropDef" />
+            <ref bean="importancePropDef" />
+            <ref bean="hiddenPropDef" />
+            <ref bean="pageLimitPropDef" />
+            <ref bean="aggregationPropDef" />
+            <ref bean="recursiveAggregationPropDef" />
+            <ref bean="imageListing.showDescriptionPropDef" />
+            <ref bean="imageListing.showKeywordsPropDef" />
+            <ref bean="imageListing.showDimensionPropDef" />
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
   <bean id="editor.articleListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager"
     parent="repositoryAware">
     <property name="htmlParser" ref="decorating.htmlParser" />

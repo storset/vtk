@@ -1,0 +1,43 @@
+@import url('view-collectionlisting.css');
+
+img {
+  border-style: none;
+}
+
+ul.vrtx-image-listing {
+  list-style-type: none;
+}
+
+.vrtx-image-listing-container {
+  margin-bottom: 8px;
+}
+
+.vrtx-image-entry {
+  width: 100%;
+  height: 1px;
+  margin: 0 0 -1px;
+  clear: both;
+  padding: 5px;
+}
+
+.vrtx-image-container {
+  float: left;
+  padding-right: 20px;
+}
+
+vrtx-image-info {
+  float: left;
+}
+
+.vrtx-image-title {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.vrtx-image-title a {
+  text-decoration: none;
+}
+
+.vrtx-paging-feed-wrapper {
+  clear: both;
+}

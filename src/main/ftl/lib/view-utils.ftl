@@ -250,7 +250,7 @@
 			     <#list pageThroughUrls as url>
 			       	<a href="${url?html}" class="vrtx-page-number <#if (url_index+1) = page>vrtx-marked</#if>">${(url_index+1)}</a>
 			     </#list>
-			     <#if (pageThroughUrls?size > page) && pageThroughUrls[page-2]?exists > 
+			     <#if (pageThroughUrls?size > page) && pageThroughUrls[page]?exists > 
 			        <a class="vrtx-next" href="${pageThroughUrls[page]?html}"><@vrtx.msg code="viewCollectionListing.next" /></a>
 			     </#if>
 		   	 </span> 

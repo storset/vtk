@@ -40,7 +40,7 @@
       <li><a href="#vrtx-publication-tab-${tab3}" name="#vrtx-publication-tab-${tab3}"><@vrtx.msg code="decorating.frida.publications.books" default="Books"/></a></li>
     </#if>
     <#if tab4 != 0>
-      <li><a href="#vrtx-publication-tab-${tab4}" name="#vrtx-publication-tab-${tab4}"><@vrtx.msg code="decorating.frida.publications.other" default="Other works"/></a></li>
+      <li><a href="#vrtx-publication-tab-${tab4}" name="#vrtx-publication-tab-${tab4}"><@vrtx.msg code="decorating.frida.publications.other" default="Other"/></a></li>
     </#if>
 </ul> 
 

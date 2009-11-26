@@ -134,8 +134,6 @@ public class PropertySetIndexImpl implements PropertySetIndex {
 
     public void deletePropertySetTree(Path rootUri) throws IndexException {
 
-        System.out.println("Deleting property set tree: " + rootUri);
-
         String rootUriString = rootUri.toString();
         String prefix;
         if ("/".equals(rootUriString))  {

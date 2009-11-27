@@ -6,8 +6,9 @@ $(document).ready(function() {
         }
     );
     // TODO !spageti 
-    if(initPropChange() != undefined)
+    if(requestFromEditor()){
         initPropChange();
+    }
     
     // specific for start- and enddate
     if($("#start-date-date").length == 0 || $("#end-date-date").length == 0){
@@ -23,6 +24,11 @@ $(document).ready(function() {
 		}
 	);
 });
+
+// Stupid test to check if loaded from editor
+function requestFromEditor(){
+    return (PROP_CHANGE_CONFIRM_MSG != undefined);
+}
 
 function displayDateAsMultipleInputFields(name){
     var hours = "";
@@ -88,7 +94,8 @@ function saveDateAndTimeFields(){
                 var hours = $.find("#" + fieldName + "-hours"); 
                 var minutes = $.find("#" + fieldName + "-minutes");
                 var date = $.find("#" + fieldName + "-date");
-
+                if(requestFromEditor())
+                    this.value = "";
                 if(date[0] != null && date[0].value.toString().length > 0){
                     this.value = date[0].value 
                     if(hours[0] != null && hours[0].value.toString().length > 0){
@@ -98,7 +105,13 @@ function saveDateAndTimeFields(){
                         }
                     }
                 }
-            
+                
+                // Hack.. .must be fixed!!!
+                if(requestFromEditor()){
+                    $("#" + fieldName + "-hours").remove();
+                    $("#" + fieldName + "-minutes").remove();
+                    $("#" + fieldName + "-date").remove();
+                }
             }
     );
 }

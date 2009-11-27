@@ -37,24 +37,21 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.vortikal.text.html.HtmlUtil;
-
 public final class Context {
-    
-    private static final Pattern VALID_NAME_PATTERN = 
-        Pattern.compile("[a-zA-Z_]([a-zA-Z0-9\\-_]*[a-zA-Z0-9_])?");
+
+    private static final Pattern VALID_NAME_PATTERN = Pattern.compile("[a-zA-Z_]([a-zA-Z0-9\\-_]*[a-zA-Z0-9_])?");
     private Locale locale = Locale.getDefault();
     private Stack<Map<String, Object>> stack = new Stack<Map<String, Object>>();
 
     private static final String NULL = "null";
-    
+
     public Context(Locale locale) {
         Map<String, Object> toplevel = new HashMap<String, Object>();
         toplevel.put(NULL, null);
         this.stack.push(toplevel);
         this.locale = locale;
     }
-    
+
     public boolean isDefined(String name) {
         Map<String, Object> ctx;
         int idx = this.stack.size() - 1;
@@ -66,7 +63,7 @@ public final class Context {
         }
         return false;
     }
-    
+
     public Object get(String name) {
         Map<String, Object> ctx;
         int idx = this.stack.size() - 1;
@@ -79,7 +76,7 @@ public final class Context {
         return null;
     }
 
-    // Defines a binding in the context. 
+    // Defines a binding in the context.
     public void define(String name, Object value, boolean global) {
         if (!validateSymbol(name)) {
             throw new IllegalArgumentException("Illegal name: '" + name + "'");
@@ -113,20 +110,43 @@ public final class Context {
     public void pop() {
         this.stack.pop();
     }
-    
+
     public Locale getLocale() {
         return this.locale;
     }
-    
+
     public String htmlEscape(String html) {
-        return HtmlUtil.escapeHtmlString(html);
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < html.length(); i++) {
+            char c = html.charAt(i);
+            switch (c) {
+            case '&':
+                result.append("&amp;");
+                break;
+            case '"':
+                result.append("&quot;");
+                break;
+            case '\'':
+                result.append("&#39;");
+                break;
+            case '<':
+                result.append("&lt;");
+                break;
+            case '>':
+                result.append("&gt;");
+                break;
+            default:
+                result.append(c);
+                break;
+            }
+        }
+        return result.toString();
     }
 
-    
     public String toString() {
         return this.stack.toString();
     }
-    
+
     private boolean validateSymbol(String symbol) {
         if (symbol == null) {
             return false;

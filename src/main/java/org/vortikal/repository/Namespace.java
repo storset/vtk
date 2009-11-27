@@ -89,18 +89,15 @@ public class Namespace {
     
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
+        if (obj == null) return false;
+        if (! (obj instanceof Namespace)) return false;
+        Namespace ns = (Namespace) obj;
 
-        if (obj == null || obj.getClass() != this.getClass()) return false;
-
-        Namespace other = (Namespace) obj;
-        if (this.uri != null) {
-            return this.uri.equals(other.uri);
-        } else {
-            return other.uri == null;
-        }
+        String thisUri = (this.uri == null) ? "" : this.uri;
+        String thatUri = (ns.getUri() == null) ? "" : ns.getUri();
+        return thisUri.equals(thatUri);
     }
-    
+
     @Override
     public int hashCode() {
         return this.uri == null ? 0 : this.uri.hashCode();

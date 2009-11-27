@@ -37,6 +37,8 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.vortikal.text.html.HtmlUtil;
+
 public final class Context {
     
     private static final Pattern VALID_NAME_PATTERN = 
@@ -117,31 +119,7 @@ public final class Context {
     }
     
     public String htmlEscape(String html) {
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < html.length(); i++) {
-            char c = html.charAt(i);
-            switch (c) {
-            case '&':
-                result.append("&amp;");
-                break;
-            case '"':
-                result.append("&quot;");
-                break;
-            case '\'':
-                result.append("&apos;");
-                break;
-            case '<':
-                result.append("&lt;");
-                break;
-            case '>':
-                result.append("&gt;");
-                break;
-            default:
-                result.append(c);
-                break;
-            }
-        }
-        return result.toString();
+        return HtmlUtil.escapeHtmlString(html);
     }
 
     

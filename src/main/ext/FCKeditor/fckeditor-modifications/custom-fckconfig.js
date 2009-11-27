@@ -1,4 +1,4 @@
-FCKConfig.AutoDetectLanguage = true;
+FCKConfig.AutoDetectLanguage = false;
 FCKConfig.ForcePasteAsPlainText = true;
 FCKConfig.AutoDetectPasteFromWord = false;
 FCKConfig.ToolbarCanCollapse = false;

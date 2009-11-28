@@ -104,7 +104,7 @@ public abstract class SystemJob {
             }
 
         } catch (Throwable t) {
-            logger.error("An error occured while automatically publishing resources", t);
+            logger.error("An error occured while running job '" + this.systemJobName + "'", t);
         } finally {
             SecurityContext.setSecurityContext(null);
             BaseContext.popContext();

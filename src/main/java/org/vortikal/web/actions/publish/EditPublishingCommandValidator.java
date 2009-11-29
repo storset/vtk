@@ -46,7 +46,7 @@ public class EditPublishingCommandValidator implements Validator {
 
     private static final SimpleDateFormat DATEFORMATTER;
     static {
-        DATEFORMATTER = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+        DATEFORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         DATEFORMATTER.setLenient(false);
     }
 

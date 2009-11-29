@@ -68,7 +68,7 @@
           <ul class="property">
           	<li>
           		<input class="date" type="text" id="${spring.status.expression}" name="${spring.status.expression}" value="${dateTimeValue?html}" />
-          	(yyyy-MM-dd hh:mm)
+          	(yyyy-MM-dd HH:mm)
 		  	</li>
 		  </ul>
         </div>

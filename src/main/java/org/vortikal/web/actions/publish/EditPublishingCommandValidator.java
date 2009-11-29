@@ -30,6 +30,10 @@
  */
 package org.vortikal.web.actions.publish;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.Errors;
@@ -37,13 +41,15 @@ import org.springframework.validation.Validator;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.repository.resourcetype.ValueFormatter;
-import org.vortikal.repository.resourcetype.ValueFormatterRegistry;
-import org.vortikal.repository.resourcetype.PropertyType.Type;
 
 public class EditPublishingCommandValidator implements Validator {
 
-    private ValueFormatterRegistry valueFormatterRegistry;
+    private static final SimpleDateFormat DATEFORMATTER;
+    static {
+        DATEFORMATTER = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+        DATEFORMATTER.setLenient(false);
+    }
+
     private PropertyTypeDefinition publishDatePropDef;
     private PropertyTypeDefinition unpublishDatePropDef;
 
@@ -64,8 +70,11 @@ public class EditPublishingCommandValidator implements Validator {
 
         if (editPublishingCommand.getPublishDateUpdateAction() != null) {
             if (!StringUtils.isBlank(editPublishingCommand.getPublishDate())) {
-                Value value = getValidDate(editPublishingCommand.getPublishDate(), "publishDate", errors);
-                editPublishingCommand.setPublishDateValue(value);
+                Date date = getValidDate(editPublishingCommand.getPublishDate(), "publishDate", errors);
+                if (date == null) {
+                    return;
+                }
+                editPublishingCommand.setPublishDateValue(new Value(date, false));
             } else {
                 Property unpublishDateProp = editPublishingCommand.getResource().getProperty(this.unpublishDatePropDef);
                 if (unpublishDateProp != null) {
@@ -74,34 +83,30 @@ public class EditPublishingCommandValidator implements Validator {
             }
         } else if (editPublishingCommand.getUnpublishDateUpdateAction() != null) {
             if (!StringUtils.isBlank(editPublishingCommand.getUnpublishDate())) {
-                Value value = getValidDate(editPublishingCommand.getUnpublishDate(), "unpublishDate", errors);
+                Date date = getValidDate(editPublishingCommand.getUnpublishDate(), "unpublishDate", errors);
+                if (date == null) {
+                    return;
+                }
                 Property publishDateProp = editPublishingCommand.getResource().getProperty(this.publishDatePropDef);
                 if (publishDateProp == null) {
                     errors.rejectValue("unpublishDate", "publishing.edit.invalid.unpublishDateNonExisting",
                             "Invalid date");
-                } else if (value.getDateValue().before(publishDateProp.getDateValue())) {
+                } else if (date.before(publishDateProp.getDateValue())) {
                     errors.rejectValue("unpublishDate", "publishing.edit.invalid.unpublishDateBefore", "Invalid date");
                 }
-                editPublishingCommand.setUnpublishDateValue(value);
+                editPublishingCommand.setUnpublishDateValue(new Value(date, false));
             }
         }
 
     }
 
-    private Value getValidDate(String date, String bindName, Errors errors) {
-        ValueFormatter valueFormatter = this.valueFormatterRegistry.getValueFormatter(Type.TIMESTAMP);
+    private Date getValidDate(String dateString, String bindName, Errors errors) {
         try {
-            Value value = valueFormatter.stringToValue(date, null, null);
-            return value;
-        } catch (IllegalArgumentException e) {
+            return DATEFORMATTER.parse(dateString);
+        } catch (ParseException e) {
             errors.rejectValue(bindName, "publishing.edit.invalid." + bindName, "Invalid date");
         }
         return null;
-    }
-
-    @Required
-    public void setValueFormatterRegistry(ValueFormatterRegistry valueFormatterRegistry) {
-        this.valueFormatterRegistry = valueFormatterRegistry;
     }
 
     @Required

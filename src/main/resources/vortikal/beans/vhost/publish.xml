@@ -268,7 +268,6 @@
     <property name="commandClass" value="org.vortikal.web.actions.publish.EditPublishingCommand" />
     <property name="validator">
       <bean class="org.vortikal.web.actions.publish.EditPublishingCommandValidator" >
-        <property name="valueFormatterRegistry" ref="valueFormatterRegistry" />
         <property name="publishDatePropDef" ref="publishDatePropDef" />
         <property name="unpublishDatePropDef" ref="unpublishDatePropDef" />
       </bean>

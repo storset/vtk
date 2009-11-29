@@ -15,6 +15,7 @@
         <entry key="redirectToPreviewCollection" value-ref="redirectToPreviewCollectionView" />
         <entry key="displayResource" value-ref="displayResourceView" />
         <entry key="collectionListingAsFeed" value-ref="collectionListingAsFeedView" />
+        <entry key="redirectToPublish" value-ref="redirectToPublishView" />
       </map>
     </property>
   </bean>
@@ -96,6 +97,16 @@
     <property name="referenceDataProviders">
       <list>
         <ref bean="redirectToManageProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="redirectToPublishView"
+    class="org.vortikal.web.view.RedirectView">
+    <description>Standard HTTP redirect view to the publish service</description>
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="redirectToPublishProvider" />
       </list>
     </property>
   </bean>
@@ -303,6 +314,12 @@
     class="org.vortikal.web.referencedata.provider.CollectionListingAsFeedProvider"
     parent="repositoryAware" >
     <property name="browsingService" ref="viewService" />
+  </bean>
+  
+  <bean id="redirectToPublishProvider" 
+        class="org.vortikal.web.referencedata.provider.RedirectProvider"
+        parent="repositoryAware">
+    <property name="redirectToService" ref="publish.editPublishingService" />
   </bean>
   
 </beans>

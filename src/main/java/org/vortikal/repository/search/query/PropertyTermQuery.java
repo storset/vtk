@@ -31,12 +31,13 @@
 package org.vortikal.repository.search.query;
 
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 
 public class PropertyTermQuery extends AbstractPropertyQuery {
 
     private String term;
     private TermOperator operator;
-    
+
     public PropertyTermQuery(PropertyTypeDefinition propertyDefinition, String term, TermOperator operator) {
         super(propertyDefinition);
         this.term = term;
@@ -58,7 +59,7 @@ public class PropertyTermQuery extends AbstractPropertyQuery {
     public void setTerm(String term) {
         this.term = term;
     }
-    
+
     public Object accept(QueryTreeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
@@ -66,6 +67,9 @@ public class PropertyTermQuery extends AbstractPropertyQuery {
     public String toString() {
         StringBuilder sb = new StringBuilder(this.getClass().getSimpleName());
         sb.append(";propdef=").append(getPropertyDefinition());
+        if (getPropertyDefinition().getType() == Type.JSON && getComplexValueAttributeSpecifier() != null) {
+            sb.append(getComplexValueAttributeSpecifier());
+        }
         sb.append(";term=").append(this.term);
         sb.append(";operator=").append(this.operator);
         return sb.toString();

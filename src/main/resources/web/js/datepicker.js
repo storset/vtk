@@ -95,7 +95,6 @@ function saveDateAndTimeFields(){
                 var hours = $.find("#" + fieldName + "-hours"); 
                 var minutes = $.find("#" + fieldName + "-minutes");
                 var date = $.find("#" + fieldName + "-date");
-                if(requestFromEditor())
                     this.value = "";
                 if(date[0] != null && date[0].value.toString().length > 0){
                     this.value = date[0].value 

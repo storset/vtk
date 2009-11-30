@@ -29,20 +29,19 @@
       <h2>
         ${header}
       </h2>
-        <div class="publised-status">
-          <#assign isPublished = vrtx.propValue(resource, "published") == "true" />
-          <#assign publishedStatusMsgKey = "publishing.status." + isPublished?string />
-          <@vrtx.msg code="publishing.status" default="Status" />: <@vrtx.msg code=publishedStatusMsgKey default="" />
-          <#if isPublished>
-            <#assign titleMsg = vrtx.getMsg("confirm-publish.title.unpublish") />
-            (&nbsp;<a href="${unPublishUrl?html}&amp;showAsHtml=true&amp;height=80&amp;width=230" class="thickbox" title="${titleMsg}"><@vrtx.msg code="globalMenu.publish.unpublishResourceService" default="unpublish" /></a>&nbsp;)
-          <#else>
-            <#assign titleMsg = vrtx.getMsg("confirm-publish.title.publish") />
-            (&nbsp;<a href="${publishUrl?html}&amp;showAsHtml=true&amp;height=80&amp;width=230" class="thickbox" title="${titleMsg}"><@vrtx.msg code="globalMenu.publish.publishResourceService" default="publish" /></a>&nbsp;)
-          </#if>
-        </div>      
-        <@displayOrEdit "publish-date" "publishDate" editPublishDateUrl />
-        <@displayOrEdit "unpublish-date" "unpublishDate" editUnpublishDateUrl />
+		  <#assign isPublished = vrtx.propValue(resource, "published") == "true" />
+		  <#assign publishedStatusMsgKey = "publishing.status." + isPublished?string />
+		  <h3><@vrtx.msg code="publishing.status" default="Status" /></h3> 
+		  <div>
+		  <@vrtx.msg code=publishedStatusMsgKey default="" />
+		  <#if isPublished>
+		(&nbsp;<a href="${unPublishUrl?html}&amp;showAsHtml=true&amp;height=80&amp;width=230" class="thickbox"><@vrtx.msg code="globalMenu.publish.unpublishResourceService" default="unpublish" /></a>&nbsp;)
+		  <#else>
+		(&nbsp;<a href="${publishUrl?html}&amp;showAsHtml=true&amp;height=80&amp;width=230" class="thickbox"><@vrtx.msg code="globalMenu.publish.publishResourceService" default="publish" /></a>&nbsp;)
+		  </#if>
+		  </div>
+		  <@displayOrEdit "publish-date" "publishDate" editPublishDateUrl />
+		  <@displayOrEdit "unpublish-date" "unpublishDate" editUnpublishDateUrl />
     </div>
   </body>  
 </html>
@@ -63,15 +62,13 @@
         <#if spring.status.value?exists>
           <#assign dateTimeValue = spring.status.value />
         </#if>
-        <div class="publishing edit ${propName}">
           <h3><@vrtx.msg code="publishing." + propName default="${propName}" />:</h3>
           <ul class="property">
           	<li>
           		<input class="date" type="text" id="${spring.status.expression}" name="${spring.status.expression}" value="${dateTimeValue?html}" />
-          	(yyyy-MM-dd HH:mm)
 		  	</li>
 		  </ul>
-        </div>
+
         <div id="submitButtons" class="submitButtons">
           <input type="submit" id="${bindName}UpdateAction" name="${bindName}UpdateAction" value="${vrtx.getMsg("editor.save")}" onclick="saveDateAndTimeFields();"/>
           <input type="submit" id="cancelAction" name="cancelAction" value="${vrtx.getMsg("editor.cancel")}">
@@ -79,8 +76,9 @@
       </form>
     </div>
   <#else>
-    <div class="publishing ${propName}">
-      <@vrtx.msg code="publishing." + propName default="Published date" />:
+
+      <h3><@vrtx.msg code="publishing." + propName default="Published date" /></h3>
+      <div>
       <#assign editableDate = vrtx.propValue(resource, propName) />
       <#if editableDate?has_content>
         ${editableDate}
@@ -88,7 +86,7 @@
         <@vrtx.msg code="publishing.date.not-set" default="Not set" />
       </#if>
       (&nbsp;<a href="${editUrl?html}"><@vrtx.msg code="publishing.edit" default="edit" /></a>&nbsp;)
-    </div>
+	  </div>
   </#if>
 </#macro>
 

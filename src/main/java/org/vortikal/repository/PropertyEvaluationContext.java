@@ -30,13 +30,19 @@
  */
 package org.vortikal.repository;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
+
 import org.vortikal.repository.resourcetype.Content;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.systemjob.SystemJobContext;
 import org.vortikal.security.Principal;
 
@@ -185,21 +191,55 @@ public class PropertyEvaluationContext {
         List<PropertyTypeDefinition> affectedProperties = systemJobContext.getAffectedProperties();
         return affectedProperties == null || affectedProperties.contains(propDef);
     }
-    
+
     public void updateSystemJobStatusProp() {
+        
         SystemJobContext systemJobContext = this.suppliedResource.getSystemJobContext();
         if (systemJobContext == null) {
             return;
         }
+        
         PropertyTypeDefinition systemJobStatusPropDef = systemJobContext.getSystemJobStatusPropDef();
         Property systemJobStatusProp = this.suppliedResource.getProperty(systemJobStatusPropDef);
+        
         if (systemJobStatusProp == null) {
+            
+            // first time a system job runs on this resource, add property
             systemJobStatusProp = systemJobStatusPropDef.createProperty();
+            Value jsonValue = getJsonValue(systemJobContext);
+            Value[] values = { jsonValue };
+            systemJobStatusProp.setValues(values);
+            
+        } else {
+            
+            // check previously run system jobs and update if this particular
+            // job has been run before, if not, add it
+            List<Value> systemJobList = new ArrayList<Value>();
+            boolean existingJob = false;
+            Value[] values = systemJobStatusProp.getValues();
+            for (Value propValue : values) {
+                JSONObject systemJobStatus = (JSONObject) JSONSerializer.toJSON(propValue.getStringValue());
+                if (systemJobStatus.get(systemJobContext.getJobName()) != null) {
+                    propValue = getJsonValue(systemJobContext);
+                    existingJob = true;
+                }
+                systemJobList.add(propValue);
+            }
+            if (!existingJob) {
+                systemJobList.add(getJsonValue(systemJobContext));
+            }
+            
+            values = (Value[]) systemJobList.toArray(new Value[systemJobList.size()]);
+            systemJobStatusProp.setValues(values);
         }
         
-        // XXX set/alter system-job-status prop
-        
-        //this.newResource.addProperty(systemJobStatusProp);
+        this.newResource.addProperty(systemJobStatusProp);
+    }
+
+    private Value getJsonValue(SystemJobContext systemJobContext) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(systemJobContext.getJobName(), systemJobContext.getTime());
+        return new Value(jsonObject.toString(), PropertyType.Type.JSON);
     }
 
 }

@@ -319,18 +319,20 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         }
 
         if (ctx.getEvaluationType() == Type.SystemPropertiesChange) {
-            
+
             Property property = ctx.getOriginalResource().getProperty(propDef);
             try {
-                if (ctx.isSystemChangeAffectedProperty(propDef)) {
+                if (property != null && ctx.isSystemChangeAffectedProperty(propDef)) {
                     PropertyEvaluator evaluator = propDef.getPropertyEvaluator();
-                    boolean evaluated = evaluator.evaluate(property, ctx);
-                    if (evaluated) {
-                        return property;
+                    if (evaluator != null) {
+                        boolean evaluated = evaluator.evaluate(property, ctx);
+                        if (evaluated) {
+                            return property;
+                        }
                     }
                 }
             } catch (Throwable t) {
-                logger.error("An error occured while evaluating a property during an automatic job");
+                logger.error("An error occured while evaluating a property during an automatic job", t);
             }
             return property;
         }

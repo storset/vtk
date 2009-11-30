@@ -38,6 +38,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.PropertyEvaluationContext.Type;
 import org.vortikal.repository.content.ContentImpl;
 import org.vortikal.repository.content.ContentRepresentationRegistry;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
@@ -65,18 +66,16 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
     private ContentStore contentStore;
     private ContentRepresentationRegistry contentRepresentationRegistry;
 
-
-    public ResourceImpl create(Principal principal, Path uri, boolean collection)
-            throws IOException {
+    public ResourceImpl create(Principal principal, Path uri, boolean collection) throws IOException {
         ResourceImpl resource = new ResourceImpl(uri);
         if (collection) {
             resource.setChildURIs(new ArrayList<Path>());
         }
-        PropertyEvaluationContext ctx = PropertyEvaluationContext.createResourceContext(resource, collection, principal);
+        PropertyEvaluationContext ctx = PropertyEvaluationContext
+                .createResourceContext(resource, collection, principal);
         recursiveTreeEvaluation(ctx, this.resourceTypeTree.getRoot());
         return ctx.getNewResource();
     }
-
 
     public ResourceImpl propertiesChange(ResourceImpl originalResource, Principal principal,
             ResourceImpl suppliedResource) throws AuthenticationException, AuthorizationException,
@@ -89,10 +88,9 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         checkForDeadAndZombieProperties(ctx);
         return ctx.getNewResource();
     }
-    
-    public ResourceImpl commentsChange(ResourceImpl originalResource, Principal principal, ResourceImpl suppliedResource) 
-        throws AuthenticationException, AuthorizationException,
-        InternalRepositoryException, IOException {
+
+    public ResourceImpl commentsChange(ResourceImpl originalResource, Principal principal, ResourceImpl suppliedResource)
+            throws AuthenticationException, AuthorizationException, InternalRepositoryException, IOException {
 
         Content content = getContent(originalResource);
         PropertyEvaluationContext ctx = PropertyEvaluationContext.commentsChangeContext(originalResource,
@@ -102,8 +100,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         return ctx.getNewResource();
     }
 
-    public ResourceImpl contentModification(ResourceImpl resource, Principal principal)
-            throws IOException {
+    public ResourceImpl contentModification(ResourceImpl resource, Principal principal) throws IOException {
         Content content = getContent(resource);
         PropertyEvaluationContext ctx = PropertyEvaluationContext.contentChangeContext(resource, principal, content);
         recursiveTreeEvaluation(ctx, this.resourceTypeTree.getRoot());
@@ -111,11 +108,25 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         return ctx.getNewResource();
     }
 
-    public ResourceImpl nameChange(ResourceImpl original, ResourceImpl resource, Principal principal) throws IOException {
+    public ResourceImpl nameChange(ResourceImpl original, ResourceImpl resource, Principal principal)
+            throws IOException {
         Content content = getContent(original);
-        PropertyEvaluationContext ctx = PropertyEvaluationContext.nameChangeContext(original, resource, principal, content);
+        PropertyEvaluationContext ctx = PropertyEvaluationContext.nameChangeContext(original, resource, principal,
+                content);
         recursiveTreeEvaluation(ctx, this.resourceTypeTree.getRoot());
         checkForDeadAndZombieProperties(ctx);
+        return ctx.getNewResource();
+    }
+
+    public ResourceImpl systemChange(ResourceImpl originalResource, Principal principal, ResourceImpl suppliedResource)
+            throws AuthenticationException, AuthorizationException, InternalRepositoryException, IOException {
+
+        Content content = getContent(originalResource);
+        PropertyEvaluationContext ctx = PropertyEvaluationContext.systemChangeContext(originalResource,
+                suppliedResource, principal, content);
+        recursiveTreeEvaluation(ctx, this.resourceTypeTree.getRoot());
+        checkForDeadAndZombieProperties(ctx);
+        ctx.updateSystemJobStatusProp();
         return ctx.getNewResource();
     }
 
@@ -130,8 +141,8 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
 
         java.util.Date now = new java.util.Date();
 
-        Property owner = (Property) resource.getProperty(Namespace.DEFAULT_NAMESPACE,
-                PropertyType.OWNER_PROP_NAME).clone();
+        Property owner = (Property) resource.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.OWNER_PROP_NAME)
+                .clone();
         owner.setPrincipalValue(principal);
         fixedProps.addProperty(owner);
 
@@ -150,8 +161,8 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         contentLastModified.setDateValue(now);
         fixedProps.addProperty(contentLastModified);
 
-        Property propertiesLastModified = (Property) resource.getProperty(
-                Namespace.DEFAULT_NAMESPACE, PropertyType.PROPERTIESLASTMODIFIED_PROP_NAME).clone();
+        Property propertiesLastModified = (Property) resource.getProperty(Namespace.DEFAULT_NAMESPACE,
+                PropertyType.PROPERTIESLASTMODIFIED_PROP_NAME).clone();
         propertiesLastModified.setDateValue(now);
         fixedProps.addProperty(propertiesLastModified);
 
@@ -170,14 +181,13 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         contentModifiedBy.setPrincipalValue(principal);
         fixedProps.addProperty(contentModifiedBy);
 
-        Property propertiesModifiedBy = (Property) resource.getProperty(
-                Namespace.DEFAULT_NAMESPACE, PropertyType.PROPERTIESMODIFIEDBY_PROP_NAME).clone();
+        Property propertiesModifiedBy = (Property) resource.getProperty(Namespace.DEFAULT_NAMESPACE,
+                PropertyType.PROPERTIESMODIFIEDBY_PROP_NAME).clone();
         propertiesModifiedBy.setPrincipalValue(principal);
         fixedProps.addProperty(propertiesModifiedBy);
 
         return fixedProps;
     }
-
 
     private void checkForDeadAndZombieProperties(PropertyEvaluationContext ctx) {
         Resource newResource = ctx.getNewResource();
@@ -189,8 +199,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         for (Property suppliedProp : resource.getProperties()) {
             PropertyTypeDefinition propDef = suppliedProp.getDefinition();
 
-            ResourceTypeDefinition[] rts = resourceTypeTree
-                    .getPrimaryResourceTypesForPropDef(propDef);
+            ResourceTypeDefinition[] rts = resourceTypeTree.getPrimaryResourceTypesForPropDef(propDef);
 
             if (rts == null) {
                 // Dead property, no resource type connected to it.
@@ -213,9 +222,8 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         }
     }
 
-
     private boolean recursiveTreeEvaluation(PropertyEvaluationContext ctx, PrimaryResourceTypeDefinition rt)
-    throws IOException {
+            throws IOException {
 
         // Check resource type assertions
         if (!checkAssertions(rt, ctx)) {
@@ -241,8 +249,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         }
 
         // Trigger child evaluation
-        List<PrimaryResourceTypeDefinition> childTypes = this.resourceTypeTree
-                .getResourceTypeDefinitionChildren(rt);
+        List<PrimaryResourceTypeDefinition> childTypes = this.resourceTypeTree.getResourceTypeDefinitionChildren(rt);
 
         for (PrimaryResourceTypeDefinition childDef : childTypes) {
             if (recursiveTreeEvaluation(ctx, childDef)) {
@@ -252,7 +259,8 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         return true;
     }
 
-    private void evaluateManagedProperty(PropertyEvaluationContext ctx, PropertyTypeDefinition propDef) throws IOException {
+    private void evaluateManagedProperty(PropertyEvaluationContext ctx, PropertyTypeDefinition propDef)
+            throws IOException {
 
         Property evaluatedProp = doEvaluate(ctx, propDef);
         Resource newResource = ctx.getNewResource();
@@ -260,11 +268,9 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         if (evaluatedProp == null && propDef.isMandatory()) {
             Value defaultValue = propDef.getDefaultValue();
             if (defaultValue == null) {
-                throw new InternalRepositoryException("Property " + propDef
-                        + " is mandatory with no default value, "
-                        + "and evaluator either did not exist or returned false. " + "Resource "
-                        + newResource + " not evaluated (resource type: "
-                        + newResource.getResourceType() + ")");
+                throw new InternalRepositoryException("Property " + propDef + " is mandatory with no default value, "
+                        + "and evaluator either did not exist or returned false. " + "Resource " + newResource
+                        + " not evaluated (resource type: " + newResource.getResourceType() + ")");
             }
             evaluatedProp = propDef.createProperty();
             evaluatedProp.setValue(defaultValue);
@@ -278,63 +284,72 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         }
     }
 
-    
     private Property doEvaluate(PropertyEvaluationContext ctx, PropertyTypeDefinition propDef) throws IOException {
-        
-        if (ctx.getEvaluationType() == PropertyEvaluationContext.Type.PropertiesChange) {
+
+        if (ctx.getEvaluationType() == Type.PropertiesChange) {
             // Check for user change or addition
             Property property = checkForUserAdditionOrChange(ctx, propDef);
             if (property != null) {
                 if (propDef.getProtectionLevel() != null) {
                     try {
-                    this.authorizationManager.authorizeAction(
-                            ctx.getOriginalResource().getURI(), 
-                            propDef.getProtectionLevel(),
-                            ctx.getPrincipal());
+                        this.authorizationManager.authorizeAction(ctx.getOriginalResource().getURI(), propDef
+                                .getProtectionLevel(), ctx.getPrincipal());
                     } catch (AuthorizationException e) {
-                        throw new AuthorizationException(
-                                "Principal " + ctx.getPrincipal() 
-                                + " not authorized to set property " 
-                                + property + " (protectionLevel=" 
-                                + propDef.getProtectionLevel() 
-                                + ") on resource " 
-                                + ctx.getNewResource(), e);
+                        throw new AuthorizationException("Principal " + ctx.getPrincipal()
+                                + " not authorized to set property " + property + " (protectionLevel="
+                                + propDef.getProtectionLevel() + ") on resource " + ctx.getNewResource(), e);
                     }
                 }
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Property user-modified or added: " + property 
-                            + " for resource " + ctx.getNewResource() 
-                            + ", type " + ctx.getNewResource().getResourceType());
+                    logger.debug("Property user-modified or added: " + property + " for resource "
+                            + ctx.getNewResource() + ", type " + ctx.getNewResource().getResourceType());
                 }
-                
+
                 return property;
             }
             // Check for user deletion
             if (checkForUserDeletion(ctx, propDef)) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Property user-deleted: " + propDef 
-                            + " for resource " + ctx.getNewResource() 
+                    logger.debug("Property user-deleted: " + propDef + " for resource " + ctx.getNewResource()
                             + ", type " + ctx.getNewResource().getResourceType());
                 }
-                
+
                 return null;
             }
         }
+
+        if (ctx.getEvaluationType() == Type.SystemPropertiesChange) {
+            
+            Property property = ctx.getOriginalResource().getProperty(propDef);
+            try {
+                if (ctx.isSystemChangeAffectedProperty(propDef)) {
+                    PropertyEvaluator evaluator = propDef.getPropertyEvaluator();
+                    boolean evaluated = evaluator.evaluate(property, ctx);
+                    if (evaluated) {
+                        return property;
+                    }
+                }
+            } catch (Throwable t) {
+                logger.error("An error occured while evaluating a property during an automatic job");
+            }
+            return property;
+        }
+
         Resource newResource = ctx.getNewResource();
 
         PropertyEvaluator evaluator = propDef.getPropertyEvaluator();
         Property property = ctx.getOriginalResource().getProperty(propDef);
 
         /**
-         * The evaluator will be given a clone of the original property as input if
-         * it previously existed, or an uninitialized property otherwise.
+         * The evaluator will be given a clone of the original property as input
+         * if it previously existed, or an uninitialized property otherwise.
          */
         if (property != null) {
             try {
                 property = (Property) property.clone();
             } catch (CloneNotSupportedException e) {
-                throw new InternalRepositoryException("Couldn't clone property " + propDef
-                        + "on resource '" + newResource.getURI() + "'", e);
+                throw new InternalRepositoryException("Couldn't clone property " + propDef + "on resource '"
+                        + newResource.getURI() + "'", e);
             }
         }
 
@@ -346,10 +361,8 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
             boolean evaluated = evaluator.evaluate(property, ctx);
             if (!evaluated) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Property not evaluated: " + propDef
-                            + " by evaluator " + evaluator
-                            + " for resource " + ctx.getNewResource() 
-                            + ", type " + ctx.getNewResource().getResourceType());
+                    logger.debug("Property not evaluated: " + propDef + " by evaluator " + evaluator + " for resource "
+                            + ctx.getNewResource() + ", type " + ctx.getNewResource().getResourceType());
                 }
                 return null;
             }
@@ -357,29 +370,24 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
                 throw new InternalRepositoryException("Evaluator " + evaluator + " on resource '"
                         + newResource.getURI() + "' returned un-initialized value: " + propDef);
             }
-        } 
+        }
         if (property == null && propDef.isMandatory()) {
             Value defaultValue = propDef.getDefaultValue();
             if (defaultValue == null) {
-                throw new InternalRepositoryException("Property " + propDef
-                        + " is mandatory with no default value, "
-                        + "and evaluator either did not exist or returned false. " + "Resource "
-                        + newResource + " not evaluated (resource type: "
-                        + newResource.getResourceType() + ")");
+                throw new InternalRepositoryException("Property " + propDef + " is mandatory with no default value, "
+                        + "and evaluator either did not exist or returned false. " + "Resource " + newResource
+                        + " not evaluated (resource type: " + newResource.getResourceType() + ")");
             }
             property = propDef.createProperty();
             property.setValue(defaultValue);
         }
         if (logger.isDebugEnabled()) {
-            logger.debug("Property evaluated: " + property
-                    + " by evaluator " + evaluator
-                    + " for resource " + ctx.getNewResource() 
-                    + ", type " + ctx.getNewResource().getResourceType());
+            logger.debug("Property evaluated: " + property + " by evaluator " + evaluator + " for resource "
+                    + ctx.getNewResource() + ", type " + ctx.getNewResource().getResourceType());
         }
         return property;
     }
 
-    
     private boolean checkForUserDeletion(PropertyEvaluationContext ctx, PropertyTypeDefinition propDef)
             throws ConstraintViolationException {
         Property originalProp = ctx.getOriginalResource().getProperty(propDef);
@@ -392,8 +400,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         return false;
     }
 
-    private Property checkForUserAdditionOrChange(PropertyEvaluationContext ctx,
-            PropertyTypeDefinition propDef) {
+    private Property checkForUserAdditionOrChange(PropertyEvaluationContext ctx, PropertyTypeDefinition propDef) {
         Property originalProp = ctx.getOriginalResource().getProperty(propDef);
         Property suppliedProp = ctx.getSuppliedResource().getProperty(propDef);
 
@@ -407,12 +414,11 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
                 return (Property) suppliedProp.clone();
             }
         } catch (CloneNotSupportedException e) {
-            throw new InternalRepositoryException("Couldn't clone property " + suppliedProp
-                    + "on resource '" + ctx.getNewResource().getURI() + "'", e);
+            throw new InternalRepositoryException("Couldn't clone property " + suppliedProp + "on resource '"
+                    + ctx.getNewResource().getURI() + "'", e);
         }
         return null;
     }
-
 
     /**
      * Checking that all resource type assertions match for resource
@@ -427,29 +433,29 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         if (assertions != null) {
             for (int i = 0; i < assertions.length; i++) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Checking assertion " + assertions[i] + " for resource "
-                            + resource);
+                    logger.debug("Checking assertion " + assertions[i] + " for resource " + resource);
                 }
-                
+
                 if (assertions[i] instanceof RepositoryContentEvaluationAssertion) {
-                    // XXX Hack for all assertions that implement this interface (they need content)
-                    RepositoryContentEvaluationAssertion cea = 
-                                                (RepositoryContentEvaluationAssertion) assertions[i];
-                    
+                    // XXX Hack for all assertions that implement this interface
+                    // (they need content)
+                    RepositoryContentEvaluationAssertion cea = (RepositoryContentEvaluationAssertion) assertions[i];
+
                     if (!cea.matches(resource, principal, ctx.getContent())) {
                         if (logger.isDebugEnabled()) {
-                            logger.debug("Checking for type '" + rt.getName() + "', resource "
-                                    + resource + " failed, unmatched content evaluation assertion: " + cea);
+                            logger.debug("Checking for type '" + rt.getName() + "', resource " + resource
+                                    + " failed, unmatched content evaluation assertion: " + cea);
                         }
                         return false;
                     }
                 } else {
-                    // Normal assertions that should not require content or resource input stream:
+                    // Normal assertions that should not require content or
+                    // resource input stream:
                     if (!assertions[i].matches(resource, principal)) {
-    
+
                         if (logger.isDebugEnabled()) {
-                            logger.debug("Checking for type '" + rt.getName() + "', resource "
-                                    + resource + " failed, unmatched assertion: " + assertions[i]);
+                            logger.debug("Checking for type '" + rt.getName() + "', resource " + resource
+                                    + " failed, unmatched assertion: " + assertions[i]);
                         }
                         return false;
                     }
@@ -458,8 +464,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         }
         if (logger.isDebugEnabled()) {
             logger.debug("Checking for type '" + rt.getName() + "', resource " + resource
-                    + " succeeded, assertions matched: "
-                    + (assertions != null ? Arrays.asList(assertions) : null));
+                    + " succeeded, assertions matched: " + (assertions != null ? Arrays.asList(assertions) : null));
         }
         return true;
     }
@@ -468,8 +473,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         if (resource == null || resource.isCollection()) {
             return null;
         }
-        return new ContentImpl(resource.getURI(), this.contentStore,
-                this.contentRepresentationRegistry);
+        return new ContentImpl(resource.getURI(), this.contentStore, this.contentRepresentationRegistry);
     }
 
     @Required
@@ -478,8 +482,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
     }
 
     @Required
-    public void setContentRepresentationRegistry(
-            ContentRepresentationRegistry contentRepresentationRegistry) {
+    public void setContentRepresentationRegistry(ContentRepresentationRegistry contentRepresentationRegistry) {
         this.contentRepresentationRegistry = contentRepresentationRegistry;
     }
 

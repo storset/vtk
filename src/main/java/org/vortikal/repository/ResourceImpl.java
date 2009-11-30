@@ -40,6 +40,7 @@ import java.util.Map;
 
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.systemjob.SystemJobContext;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.util.codec.MD5;
@@ -76,9 +77,9 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
     public void removeProperty(PropertyTypeDefinition propDef) {
         removeProperty(propDef.getNamespace(), propDef.getName());
     }
-    
+
     public void removeAllProperties() {
-        this.propertyMap = new HashMap<Namespace, Map<String,Property>>();
+        this.propertyMap = new HashMap<Namespace, Map<String, Property>>();
     }
 
     public String getContentLanguage() {
@@ -239,7 +240,6 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         return resource;
     }
 
-
     private String getPropValue(String name) {
         Property prop = this.propertyMap.get(Namespace.DEFAULT_NAMESPACE).get(name);
         if (prop == null)
@@ -270,7 +270,6 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         Property prop = this.propertyMap.get(Namespace.DEFAULT_NAMESPACE).get(name);
         return prop.getPrincipalValue();
     }
-
 
     // Mumble mumble. this.childURIs should never be null if this method is
     // called.
@@ -354,4 +353,20 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         sb.append(": [").append(this.uri).append("]");
         return sb.toString();
     }
+
+    // START HACK
+    // Mark the resource as being altered by a system job
+
+    private SystemJobContext systemJobContext;
+
+    public void setSystemJobContext(SystemJobContext systemJobContext) {
+        this.systemJobContext = systemJobContext;
+    }
+
+    public SystemJobContext getSystemJobContext() {
+        return this.systemJobContext;
+    }
+
+    // END HACK
+
 }

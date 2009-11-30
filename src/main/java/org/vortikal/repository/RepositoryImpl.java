@@ -475,8 +475,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         try {
             ResourceImpl originalClone = (ResourceImpl) original.clone();
 
-            ResourceImpl newResource = this.resourceHelper.propertiesChange(original, principal,
-                    (ResourceImpl) resource);
+            ResourceImpl suppliedResource = (ResourceImpl) resource;
+            ResourceImpl newResource;
+            if (suppliedResource.getSystemJobContext() == null) {
+                newResource = this.resourceHelper.propertiesChange(original, principal, suppliedResource);
+            } else {
+                newResource = this.resourceHelper.systemChange(original, principal, suppliedResource);
+            }
+            
             this.dao.store(newResource);
 
             newResource = (ResourceImpl) this.dao.load(uri).clone();

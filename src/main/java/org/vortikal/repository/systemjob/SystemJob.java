@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.systemjob;
 
+import java.util.Calendar;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -39,6 +40,7 @@ import org.vortikal.context.BaseContext;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceImpl;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.ResultSet;
@@ -58,6 +60,7 @@ public abstract class SystemJob {
     private Searcher searcher;
     private int limit = MAX_LIMIT;
     private SecurityContext securityContext;
+    private PropertyTypeDefinition systemJobStatusPropDef;
 
     /**
      * List of properties to be affected as a result of this job. If none, all
@@ -86,14 +89,24 @@ public abstract class SystemJob {
             search.setLimit(this.limit);
             ResultSet results = this.searcher.execute(token, search);
 
+            logger.info("Running job '" + this.systemJobName + "', " + results.getSize()
+                    + " resource(s) to be affected");
+
             for (PropertySet propSet : results.getAllResults()) {
+
                 try {
                     Resource resource = this.repository.retrieve(token, propSet.getURI(), true);
                     if (resource.getLock() == null) {
-                        // XXX no, don't just store -> need to store with
-                        // only the affected properties altered and
-                        // system-job-status updated
-                        // this.repository.store(token, resource);
+
+                        // Explicit cast to ResourceImpl because we don't want
+                        // to expose this further up the chain. This whole thing
+                        // can suck monkey ballsack
+                        String time = SystemJobContext.dateAsTimeString(Calendar.getInstance().getTime());
+                        SystemJobContext systemJobContext = new SystemJobContext(this.systemJobName, time,
+                                this.affectedProperties, this.systemJobStatusPropDef);
+                        ((ResourceImpl) resource).setSystemJobContext(systemJobContext);
+
+                        this.repository.store(token, resource);
                     }
                 } catch (ResourceNotFoundException rnfe) {
                     // Resource is no longer there after search (deleted, moved
@@ -138,6 +151,11 @@ public abstract class SystemJob {
     @Required
     public void setSecurityContext(SecurityContext securityContext) {
         this.securityContext = securityContext;
+    }
+
+    @Required
+    public void setSystemJobStatusPropDef(PropertyTypeDefinition systemJobStatusPropDef) {
+        this.systemJobStatusPropDef = systemJobStatusPropDef;
     }
 
     public void setAffectedProperties(List<PropertyTypeDefinition> affectedProperties) {

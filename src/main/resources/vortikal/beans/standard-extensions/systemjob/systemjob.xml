@@ -11,6 +11,7 @@
         <constructor-arg ref="rootPrincipal" />
       </bean>
     </property>
+    <property name="systemJobStatusPropDef" ref="systemJobStatusPropDef" />
   </bean>
 
   <bean id="repository.systemJobMethodInvokingTrigger" abstract="true"

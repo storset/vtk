@@ -32,15 +32,18 @@ package org.vortikal.repository;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.vortikal.repository.resourcetype.Content;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.systemjob.SystemJobContext;
 import org.vortikal.security.Principal;
 
 public class PropertyEvaluationContext {
 
     public enum Type {
-        Create, ContentChange, PropertiesChange, NameChange, CommentsChange
+        Create, ContentChange, PropertiesChange, NameChange, CommentsChange, SystemPropertiesChange
     }
 
     private Type evaluationType;
@@ -93,6 +96,14 @@ public class PropertyEvaluationContext {
         return ctx;
     }
 
+    public static PropertyEvaluationContext systemChangeContext(ResourceImpl originalResource,
+            ResourceImpl suppliedResource, Principal principal, Content content) throws InternalRepositoryException {
+        PropertyEvaluationContext ctx = new PropertyEvaluationContext(originalResource,
+                originalResource.isCollection(), principal, content, Type.SystemPropertiesChange);
+        ctx.suppliedResource = suppliedResource;
+        return ctx;
+    }
+
     private PropertyEvaluationContext(ResourceImpl originalResource, boolean collection, Principal principal,
             Content content, Type evaluationType) {
         this.collection = collection;
@@ -103,7 +114,7 @@ public class PropertyEvaluationContext {
         try {
             this.newResource = (ResourceImpl) originalResource.clone();
             this.newResource.removeAllProperties();
-            
+
         } catch (CloneNotSupportedException e) {
             throw new InternalRepositoryException("Unable to clone resource '" + originalResource.getURI() + "'", e);
         }
@@ -156,10 +167,39 @@ public class PropertyEvaluationContext {
     }
 
     public void addEvaluationAttribute(String name, Object value) {
-    	this.contextAttributes.put(name, value);
+        this.contextAttributes.put(name, value);
+    }
+
+    public Object getEvaluationAttribute(String name) {
+        return this.contextAttributes.get(name);
+    }
+
+    public boolean isSystemChangeAffectedProperty(PropertyTypeDefinition propDef) {
+        if (this.evaluationType != Type.SystemPropertiesChange) {
+            return false;
+        }
+        SystemJobContext systemJobContext = this.suppliedResource.getSystemJobContext();
+        if (systemJobContext == null) {
+            return false;
+        }
+        List<PropertyTypeDefinition> affectedProperties = systemJobContext.getAffectedProperties();
+        return affectedProperties == null || affectedProperties.contains(propDef);
     }
     
-    public Object getEvaluationAttribute(String name) {
-    	return this.contextAttributes.get(name);
+    public void updateSystemJobStatusProp() {
+        SystemJobContext systemJobContext = this.suppliedResource.getSystemJobContext();
+        if (systemJobContext == null) {
+            return;
+        }
+        PropertyTypeDefinition systemJobStatusPropDef = systemJobContext.getSystemJobStatusPropDef();
+        Property systemJobStatusProp = this.suppliedResource.getProperty(systemJobStatusPropDef);
+        if (systemJobStatusProp == null) {
+            systemJobStatusProp = systemJobStatusPropDef.createProperty();
+        }
+        
+        // XXX set/alter system-job-status prop
+        
+        //this.newResource.addProperty(systemJobStatusProp);
     }
+
 }

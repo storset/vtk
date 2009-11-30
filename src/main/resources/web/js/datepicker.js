@@ -10,7 +10,7 @@ $(document).ready(function() {
         initPropChange();
     }
     
-    // specific for start- and enddate
+    // specific for start and end date
     if($("#start-date-date").length == 0 || $("#end-date-date").length == 0){
         return;
     }
@@ -25,9 +25,10 @@ $(document).ready(function() {
 	);
 });
 
-// Stupid test to check if loaded from editor
+// Stupid test to check if script is loaded from editor
+// PROP_CHANGE_CONFIRM_MSG is defined in "structured-resource/editor.ftl"
 function requestFromEditor(){
-    return (PROP_CHANGE_CONFIRM_MSG != undefined);
+    return !(typeof(PROP_CHANGE_CONFIRM_MSG) == "undefined");
 }
 
 function displayDateAsMultipleInputFields(name){
@@ -106,7 +107,7 @@ function saveDateAndTimeFields(){
                     }
                 }
                 
-                // Hack.. .must be fixed!!!
+                // Hack fix for editor.. .must be removed!!!
                 if(requestFromEditor()){
                     $("#" + fieldName + "-hours").remove();
                     $("#" + fieldName + "-minutes").remove();

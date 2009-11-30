@@ -44,11 +44,7 @@ import org.vortikal.repository.resourcetype.Value;
 
 public class EditPublishingCommandValidator implements Validator {
 
-    private static final SimpleDateFormat DATEFORMATTER;
-    static {
-        DATEFORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        DATEFORMATTER.setLenient(false);
-    }
+    private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm";
 
     private PropertyTypeDefinition publishDatePropDef;
     private PropertyTypeDefinition unpublishDatePropDef;
@@ -102,7 +98,9 @@ public class EditPublishingCommandValidator implements Validator {
 
     private Date getValidDate(String dateString, String bindName, Errors errors) {
         try {
-            return DATEFORMATTER.parse(dateString);
+            SimpleDateFormat dateParser = new SimpleDateFormat(DATE_FORMAT);
+            dateParser.setLenient(false);
+            return dateParser.parse(dateString);
         } catch (ParseException e) {
             errors.rejectValue(bindName, "publishing.edit.invalid." + bindName, "Invalid date");
         }

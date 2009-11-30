@@ -60,17 +60,16 @@
           <#assign dateTimeValue = dateValue + " " + timeValue />
         </#if>
         <@spring.bind formName + "." + bindName />
-        <@displayValidationErrors spring.status.errorMessages />
         <#if spring.status.value?exists>
           <#assign dateTimeValue = spring.status.value />
         </#if>
           <h3><@vrtx.msg code="publishing." + propName default="${propName}" />:</h3>
+          <@displayValidationErrors spring.status.errorMessages />
           <ul class="property">
           	<li>
-          		<input class="date" type="text" id="${spring.status.expression}" name="${spring.status.expression}" value="${dateTimeValue?html}" />
+          	  <input class="date" type="text" id="${spring.status.expression}" name="${spring.status.expression}" value="${dateTimeValue?html}" />
 		  	</li>
 		  </ul>
-
         <div id="submitButtons" class="submitButtons">
           <input type="submit" id="${bindName}UpdateAction" name="${bindName}UpdateAction" value="${vrtx.getMsg("editor.save")}" onclick="saveDateAndTimeFields();"/>
           <input type="submit" id="cancelAction" name="cancelAction" value="${vrtx.getMsg("editor.cancel")}">

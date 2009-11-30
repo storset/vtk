@@ -67,6 +67,7 @@ import org.vortikal.resourcemanagement.view.tl.ResourcePropObjectValueHandler;
 import org.vortikal.resourcemanagement.view.tl.ResourcePropsNodeFactory;
 import org.vortikal.resourcemanagement.view.tl.RetrieveHandler;
 import org.vortikal.resourcemanagement.view.tl.SearchResultValueProvider;
+import org.vortikal.resourcemanagement.view.tl.ToDateFunction;
 import org.vortikal.resourcemanagement.view.tl.ViewURLValueProvider;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.text.html.HtmlPage;
@@ -248,6 +249,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         def.addFunction(new JSONAttributeHandler(new Symbol("json-attr")));
         def.addFunction(new SearchResultValueProvider(new Symbol("search"), this.queryParserFactory, this.searcher));
         def.addFunction(new ViewURLValueProvider(new Symbol("view-url"), this.viewService));
+        def.addFunction(new ToDateFunction(new Symbol("to-date")));
         directiveHandlers.put("def", def);
 
         directiveHandlers.put("localized", new LocalizationNodeFactory(this.resourceModelKey));

@@ -153,7 +153,7 @@ public final class Path implements Comparable<Path> {
 
     /**
      * Returns whether this path contains another path, i.e. that this path is
-     * one of the ancestors of or is the same path as the other.
+     * one of the ancestors of the other.
      * 
      * @param other
      *            the other path
@@ -215,6 +215,11 @@ public final class Path implements Comparable<Path> {
         }
     }
 
+    /* XXX Trying to get "self" as an ancestor of itself should throw index out of bounds
+     *     to be consistent with methods getAncestors and isAncestorOf,
+     *     which always exclude the path itself.
+     *     Self is not an ancestor of self.
+     */
     /**
      * Gets an ancestor path of this path on a given level. If the supplied
      * level is 0, the root path is returned. If the supplied level is equal to

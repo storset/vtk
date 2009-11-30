@@ -93,7 +93,7 @@
              <#if publication.mainCategoryCode == "BOK">
                   <#if publication.publisherName != "">${publication.publisherName}.<#else></#if>
                   <#if publication.isbn != "">&nbsp;ISBN&nbsp;${publication.isbn}.</#if>
-                  <#if publication.numberOfPages != "" && ( publication.numberOfPages > 0 )>&nbsp;${publication.numberOfPages}&nbsp;s.</#if>
+                  <#if publication.numberOfPages != "" && publication.numberOfPages != "-1">&nbsp;${publication.numberOfPages}&nbsp;s.</#if>
              <#elseif publication.mainCategoryCode == "BOKRAPPORTDEL">
             <#t /><#if publication.titlePartOf != "">&#44;&nbsp;<#if publication.sprak == "EN">In<#else>I:</#if>&nbsp;
                   <#t /><#if publication.researchersPartOf != "">${publication.researchersPartOf}&nbsp;

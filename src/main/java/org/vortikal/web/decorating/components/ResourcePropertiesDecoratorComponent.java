@@ -177,6 +177,7 @@ public class ResourcePropertiesDecoratorComponent extends AbstractDecoratorCompo
         }
     }
 
+    // XXX: should be renamed to "getAncestorAtLevel"
     Path getParentAtLevel(Path uri, String uriLevelString) 
         throws NumberFormatException, IllegalArgumentException {
         

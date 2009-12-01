@@ -55,8 +55,8 @@ public class LockManager {
     private Log logger = LogFactory.getLog(LockManager.class);
 
     /**
-     * Aquires lock on URI. Blocks until lock is
-     * obtained, or throws an exception (leaving no locks) if it could not
+     * Aquires lock on a single URI. Blocks until lock is
+     * obtained, or throws an exception (leaving no lock) if it could not
      * be obtained.
      *
      * @param uri the URI to lock
@@ -84,7 +84,7 @@ public class LockManager {
     
     private List<Path> lockInternal(Path[] uris) {
         
-        Arrays.sort(uris); // Always try to lock a set of URIs in the same order to prevent deadlocking.
+        Arrays.sort(uris); // Always try to lock a set of URIs in the same order to reduce chance of deadlocking.
         
         List<Path> claimedLocks = new ArrayList<Path>(uris.length);
         for (Path uri: uris) {

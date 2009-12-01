@@ -179,9 +179,15 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
                 && ("true".equals(includeLast) || Boolean.TRUE.equals(includeLast))) {
             skipLastElement = false;
         }
+        boolean displayServiceName = true;
+        Object includeServiceName = model.get("display-services");
+        if (includeServiceName != null 
+                && ("false".equals(includeServiceName) || Boolean.FALSE.equals(includeServiceName))) {
+            displayServiceName = false;
+        }
         
         String serviceName = null;
-        if (!skipLastElement) {
+        if (!skipLastElement && displayServiceName) {
         	try {
             	Service service = requestContext.getService();
             	Resource resource = this.repository.retrieve(token, uri, true);

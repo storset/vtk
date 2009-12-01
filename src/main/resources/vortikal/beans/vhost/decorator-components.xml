@@ -286,6 +286,7 @@
         <value>hide-prefix</value>
         <value>stop-at-level</value>
         <value>display-from-level</value>
+        <value>display-services</value>
       </set>
     </property>
     <property name="parameterDescriptions">
@@ -295,6 +296,7 @@
         <entry key="hide-prefix" value="If set to 'true', the prefix 'You are here:' will be hidden. The default is 'false'." />
         <entry key="stop-at-level" value="This stops the breadcrumb generation at a certain number of levels. The default is none." />
         <entry key="display-from-level" value="Defines the starting URI level for the breadcrumb" />
+        <entry key="display-services" value="Display name of service. Default true." />
       </map>
     </property>
   </bean>

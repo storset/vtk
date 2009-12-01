@@ -80,6 +80,7 @@ public class FulltextSearchController implements Controller {
     private String redirectViewName;
     private int pageSize = 20;
     private int maxResults = 500;
+    private String hostName;
     private boolean servesWebRoot = true;
     private AggregationResolver aggregationResolver;
     private FulltextSearchTitleResolver titleResolver;
@@ -144,6 +145,10 @@ public class FulltextSearchController implements Controller {
         
         String searchTitle = this.titleResolver.resolveTitle(resourceURI, request);
         searchModel.put("title", searchTitle);
+        
+        if (this.hostName != null && this.hostName.length() > 0) {
+            searchModel.put("hostName", this.hostName);
+        }
 
         if (query == null || query.length() == 0) {
             return new ModelAndView(this.viewName, model);
@@ -287,6 +292,10 @@ public class FulltextSearchController implements Controller {
     
     public void setTitleResolver(FulltextSearchTitleResolver titleResolver) {
         this.titleResolver = titleResolver;
+    }
+    
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
     }
     
 }

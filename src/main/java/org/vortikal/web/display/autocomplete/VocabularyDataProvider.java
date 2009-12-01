@@ -32,8 +32,6 @@ package org.vortikal.web.display.autocomplete;
 
 import java.util.List;
 
-import org.vortikal.repository.Path;
-
 /**
  * Generic auto-complete data provider/query interface of sorts.
  */

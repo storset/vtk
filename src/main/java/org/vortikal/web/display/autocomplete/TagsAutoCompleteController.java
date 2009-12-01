@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.Path;
 import org.vortikal.web.tags.Tag;
 
 public class TagsAutoCompleteController extends AutoCompleteController {

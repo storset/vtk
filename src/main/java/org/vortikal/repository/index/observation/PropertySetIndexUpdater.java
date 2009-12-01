@@ -118,7 +118,7 @@ public class PropertySetIndexUpdater implements BeanNameAware,
         
     }
     
-    public void notifyResourceChanges(List<ChangeLogEntry> changes) {
+    public void notifyResourceChanges(final List<ChangeLogEntry> changes) {
 
         synchronized (this) {
             if (! this.enabled) {
@@ -156,7 +156,7 @@ public class PropertySetIndexUpdater implements BeanNameAware,
             
             // Updates/additions
             if (lastChanges.size() > 0) {
-                List<Path> updateUris = new ArrayList<Path>(lastChanges.size());
+                final List<Path> updateUris = new ArrayList<Path>(lastChanges.size());
                 
                 // Remove updated property sets from index in one batch, first, 
                 // before re-adding them. This is very necessary to keep things
@@ -193,7 +193,12 @@ public class PropertySetIndexUpdater implements BeanNameAware,
                         // Add updated resource to index
                         PropertySetIndexUpdater.this.index.addPropertySet(propertySet, 
                                                             aclReadPrincipals);
-                        ++count;
+                        if (++count % 10000 == 0) {
+                            // Logg some progress to update
+                            PropertySetIndexUpdater.this.logger.info(
+                                    "Incremental index update progress: "  + count + " resources of "
+                                    + updateUris.size() + " total in current update batch.");
+                        }
                     }
                 }
                 

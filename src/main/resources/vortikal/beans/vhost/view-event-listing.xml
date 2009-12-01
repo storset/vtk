@@ -84,7 +84,7 @@
     <property name="recursivePropDef" ref="eventListing.recursiveListingPropDef" />
     <property name="query">
       <value>
-        (uri = {$currentFolder}/* AND type IN structured-event) AND (resource:start-date &gt; {$currentDate} OR resource:end-date &gt; {$currentDate})
+        (uri = {$currentFolder}/* AND type IN structured-event) AND (resource:start-date &gt;= {$currentDate} OR resource:end-date &gt;= {$currentDate})
       </value>
     </property>
     <property name="queryParser" ref="searchParser" />

@@ -60,17 +60,17 @@ public class PropertyTermQueryBuilder implements QueryBuilder {
 
     public Query buildQuery() throws QueryBuilderException {
         
-        // XXX: QueryBuilderFactoryImpl does the necessary downcasing and field name selection
+        // XXX: LuceneQueryBuilderImpl does the necessary downcasing and field name selection
         //      if ignore case has been enabled. Kinda inconsistent.
         
         if (op == TermOperator.EQ || op == TermOperator.EQ_IGNORECASE) {
-            return new TermQuery(new Term(fieldName, fieldValue));
+            return new TermQuery(new Term(this.fieldName, this.fieldValue));
         }
         
         if (op == TermOperator.NE || op == TermOperator.NE_IGNORECASE) {
-            TermQuery tq = new TermQuery(new Term(fieldName, fieldValue));
+            TermQuery tq = new TermQuery(new Term(this.fieldName, this.fieldValue));
             return new ConstantScoreQuery(new InversionFilter(new QueryWrapperFilter(tq)));
-        } 
+        }
 
         boolean includeLower = false;
         boolean includeUpper = false;

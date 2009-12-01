@@ -81,6 +81,7 @@ public class FulltextSearchController implements Controller {
     private int pageSize = 20;
     private int maxResults = 500;
     private String hostName;
+    private boolean displayHostNameInTitle = true;
     private boolean servesWebRoot = true;
     private AggregationResolver aggregationResolver;
 
@@ -145,6 +146,7 @@ public class FulltextSearchController implements Controller {
         if (this.hostName != null && this.hostName.length() > 0) {
             searchModel.put("hostName", this.hostName);
         }
+        searchModel.put("displayHostNameInTitle", this.displayHostNameInTitle);
 
         if (query == null || query.length() == 0) {
             return new ModelAndView(this.viewName, model);
@@ -288,5 +290,12 @@ public class FulltextSearchController implements Controller {
     
     public void setAggregationResolver(AggregationResolver aggregationResolver) {
         this.aggregationResolver = aggregationResolver;
+    }
+
+    /**
+     * @param displayHostNameInTitle the displayHostNameInTitle to set
+     */
+    public void setDisplayHostNameInTitle(boolean displayHostNameInTitle) {
+        this.displayHostNameInTitle = displayHostNameInTitle;
     }
 }

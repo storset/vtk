@@ -43,6 +43,7 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
@@ -91,7 +92,10 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
             } catch (AuthorizationException e) {
                 model.put("breadcrumb", breadCrumbElements);
                 return;
-            } 
+            } catch (AuthenticationException e){
+                model.put("breadcrumb", breadCrumbElements);
+                return;
+            }
             if (breadCrumbElements.size() > 0) {
                 breadCrumbElements.remove(breadCrumbElements.size() - 1);
             }
@@ -109,7 +113,9 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
             try {
                 childResource = repository.retrieve(token, currentResource.getURI().getParent(), true);
             } catch (AuthorizationException e) {
+            } catch (AuthenticationException e){               
             }
+            
             if (childResource != null) {
                 childElements = generateChildElements(childResource.getChildURIs(), principal, currentResource, token);
                 breadCrumbElements.remove(breadCrumbElements.size() - 1);
@@ -157,6 +163,8 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
             try {
                 childResource = repository.retrieve(token, childPath, true);
             } catch (AuthorizationException e) {
+                continue; // can't access resource - not displayed in menu
+            } catch (AuthenticationException e){
                 continue; // can't access resource - not displayed in menu
             }
             if (!childResource.isCollection()) {

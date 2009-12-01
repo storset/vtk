@@ -50,7 +50,7 @@ public class DirectReindexer implements PropertySetIndexReindexer {
 
     private PropertySetIndex targetIndex;
     private IndexDao indexDao;
-    private final Log LOG = LogFactory.getLog(DirectReindexer.class);
+    private final Log logger = LogFactory.getLog(DirectReindexer.class);
     
     public DirectReindexer(PropertySetIndex targetIndex, IndexDao indexDao) {
         this.targetIndex = targetIndex;
@@ -63,8 +63,8 @@ public class DirectReindexer implements PropertySetIndexReindexer {
                     + this.targetIndex.getId() + "'");
         }
         
-        if (LOG.isInfoEnabled()) {
-            LOG.info("Exclusive write lock acquired on target index '" 
+        if (logger.isInfoEnabled()) {
+            logger.info("Exclusive write lock acquired on target index '"
                     + this.targetIndex.getId() + "', initiating direct re-indexing");
         }
         
@@ -85,24 +85,24 @@ public class DirectReindexer implements PropertySetIndexReindexer {
         
         try {
 
-            LOG.info("Clearing index contents ..");
+            logger.info("Clearing index contents ..");
             targetIndex.clearContents();
 
-            LOG.info("Starting re-indexing ..");
+            logger.info("Starting re-indexing ..");
             AddAllPropertySetHandler handler = 
                 new AddAllPropertySetHandler(this.targetIndex);
             
             this.indexDao.orderedPropertySetIteration(handler);
             
             targetIndex.commit();
-            if (LOG.isInfoEnabled()) {
-                LOG.info("Index '" + this.targetIndex.getId() + "' committed, " 
+            if (logger.isInfoEnabled()) {
+                logger.info("Index '" + this.targetIndex.getId() + "' committed, "
                         + handler.getCount() + " property sets indexed successfully");
             }
             
             return handler.getCount();
         } catch (Exception e) {
-            LOG.warn("Exception while re-indexing", e);
+            logger.warn("Exception while re-indexing", e);
             throw new IndexException(e);
         }
     }
@@ -118,8 +118,12 @@ public class DirectReindexer implements PropertySetIndexReindexer {
         
         public void handlePropertySet(PropertySet propertySet, 
                                       Set<Principal> aclReadPrincipals) {
+
             this.index.addPropertySet(propertySet, aclReadPrincipals);
-            ++count;
+
+            if (++count % 10000 == 0) {
+                DirectReindexer.this.logger.info("Reindexing progress: " + count + " resources indexed.");
+            }
         }
         
         public int getCount(){

@@ -11,6 +11,7 @@
   <head>
     <#-- The resource title or some generic "unpublished" title? ØH: something like this? : -->
     <title>${title} - <@vrtx.msg code="publish.permission.unpublished" default="Unpublished"/></title>
+    <meta name="robots" content="noindex, nofollow" />
   </head>
 
   <body>

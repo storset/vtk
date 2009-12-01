@@ -196,7 +196,7 @@ public class PropertySetIndexUpdater implements BeanNameAware,
                         if (++count % 10000 == 0) {
                             // Logg some progress to update
                             PropertySetIndexUpdater.this.logger.info(
-                                    "Incremental index update progress: "  + count + " resources of "
+                                    "Incremental index update progress: "  + count + " resources indexed of "
                                     + updateUris.size() + " total in current update batch.");
                         }
                     }

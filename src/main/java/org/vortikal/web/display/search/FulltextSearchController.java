@@ -142,7 +142,7 @@ public class FulltextSearchController implements Controller {
             searchModel.put("rootScopeSearchUrl", rootScopeSearchUrl);
         }
 
-        if (this.hostName != null) {
+        if (this.hostName != null && this.hostName.length() > 0) {
             searchModel.put("hostName", this.hostName);
         }
 

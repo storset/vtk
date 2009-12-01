@@ -205,6 +205,13 @@ public class PropertySetIndexUpdater implements BeanNameAware,
                 CountingPropertySetHandler handler = new CountingPropertySetHandler();
                 
                 this.indexDao.orderedPropertySetIterationForUris(updateUris, handler);
+
+                if (this.logger.isInfoEnabled()) {
+                    if (updateUris.size() >= 10000) {
+                        this.logger.info("Incremental index update for current batch finished"
+                               + ", final resource update count was " + handler.count);
+                    }
+                }
                 
                 // Note that it is OK to get less resources than requested from DAO, because
                 // they can be deleted in the mean time. 

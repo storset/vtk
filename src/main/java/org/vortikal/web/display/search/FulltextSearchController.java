@@ -80,10 +80,9 @@ public class FulltextSearchController implements Controller {
     private String redirectViewName;
     private int pageSize = 20;
     private int maxResults = 500;
-    private String hostName;
-    private boolean displayHostNameInTitle = true;
     private boolean servesWebRoot = true;
     private AggregationResolver aggregationResolver;
+    private FulltextSearchTitleResolver titleResolver;
 
 
     public void setSearcher(FulltextSearcher searcher) {
@@ -142,11 +141,9 @@ public class FulltextSearchController implements Controller {
                 rootScopeSearchUrl.addParameter("query", query);
             searchModel.put("rootScopeSearchUrl", rootScopeSearchUrl);
         }
-
-        if (this.hostName != null && this.hostName.length() > 0) {
-            searchModel.put("hostName", this.hostName);
-        }
-        searchModel.put("displayHostNameInTitle", this.displayHostNameInTitle);
+        
+        String searchTitle = this.titleResolver.resolveTitle(resourceURI, request);
+        searchModel.put("title", searchTitle);
 
         if (query == null || query.length() == 0) {
             return new ModelAndView(this.viewName, model);
@@ -278,11 +275,6 @@ public class FulltextSearchController implements Controller {
     }
 
 
-    public void setHostName(String hostName) {
-        this.hostName = hostName;
-    }
-
-
     public void setServesWebRoot(boolean servesWebRoot) {
         this.servesWebRoot = servesWebRoot;
     }
@@ -292,10 +284,9 @@ public class FulltextSearchController implements Controller {
         this.aggregationResolver = aggregationResolver;
     }
 
-    /**
-     * @param displayHostNameInTitle the displayHostNameInTitle to set
-     */
-    public void setDisplayHostNameInTitle(boolean displayHostNameInTitle) {
-        this.displayHostNameInTitle = displayHostNameInTitle;
+    
+    public void setTitleResolver(FulltextSearchTitleResolver titleResolver) {
+        this.titleResolver = titleResolver;
     }
+    
 }

@@ -17,7 +17,7 @@
       <div class="vrtx-send-inner">
         <div class="vrtx-share-top">
           <div class="vrtx-share-title"><@vrtx.msg code="decorating.shareAtComponent.title" default="Share at" />...</div>
-          <span><a href="#share" class="vrtx-close-toolbox-send-share" onclick="share();">
+          <span><a href="#vrtx-share-link" class="vrtx-close-toolbox-send-share" onclick="share();">
           <@vrtx.msg code="decorating.shareAtComponent.close" default="Close" /></a></span>
         </div>
         <ul>

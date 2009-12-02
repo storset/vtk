@@ -20,7 +20,7 @@ function setAutoComplete(id, service, params) {
     $.extend(p, params);
   }
   var objId = '#' + id;
-  var serviceUrl = '/vrtx/__vrtx/app-resources/autocomplete?vrtx=admin&action=autocomplete&service=' + service;
+  var serviceUrl = '?vrtx=admin&action=autocomplete&service=' + service;
   $(objId).autocomplete(serviceUrl, p);
 
 }

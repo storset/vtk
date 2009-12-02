@@ -32,6 +32,7 @@
   <bean id="tagsAutoCompleteHandler"
     class="org.vortikal.web.display.autocomplete.TagsAutoCompleteController">
     <property name="dataProvider" ref="tagsAutoCompleteDataProvider" />
+    <property name="useRootContext" value="true" />
   </bean>
   
   <bean id="tagsAutoCompleteDataProvider"

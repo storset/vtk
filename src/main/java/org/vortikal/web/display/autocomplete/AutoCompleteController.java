@@ -53,6 +53,8 @@ public abstract class AutoCompleteController implements Controller {
     protected static final String PARAM_CONTEXT_URI_OVERRIDE = "context";
     protected static final String PARAM_PREFERRED_LANG = "lang";
     protected static final String RESPONSE_CONTENT_TYPE = "text/plain;charset=utf-8";
+    
+    private boolean useRootContext;
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
@@ -92,6 +94,11 @@ public abstract class AutoCompleteController implements Controller {
 
     private Path getContextUri(HttpServletRequest request) {
         Path contextUri = null;
+        
+        if (this.useRootContext) {
+            return Path.ROOT;
+        }
+        
         try {
             // Try getting from overriding parameter first
             String contextParam = request.getParameter(PARAM_CONTEXT_URI_OVERRIDE);
@@ -203,6 +210,10 @@ public abstract class AutoCompleteController implements Controller {
 
             return escapedValue.toString();
         }
+    }
+    
+    public void setUseRootContext(boolean useRootContext) {
+        this.useRootContext = useRootContext;
     }
 
 }

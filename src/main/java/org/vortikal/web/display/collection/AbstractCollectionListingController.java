@@ -149,8 +149,9 @@ public abstract class AbstractCollectionListingController extends AbstractListin
             } catch (Throwable t) {
             }
         }
-        model.put("alternativeRepresentations", alt);
-
+        if(pageLimit > 0){
+            model.put("alternativeRepresentations", alt);
+        }
         return new ModelAndView(this.viewName, model);
     }
 

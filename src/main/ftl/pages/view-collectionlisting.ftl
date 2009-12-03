@@ -45,9 +45,11 @@
     </#list>
   </#if>
 
-  <#list alternativeRepresentations as alt>
-    <link rel="alternate" type="${alt.contentType?html}" title="${alt.title?html}" href="${alt.url?html}" />
-  </#list>
+  <#if alternativeRepresentations?exists > 
+	  <#list alternativeRepresentations as alt>
+	    <link rel="alternate" type="${alt.contentType?html}" title="${alt.title?html}" href="${alt.url?html}" />
+	  </#list>
+  </#if>
 
   <title>${title?html}
     <#if page?has_content>
@@ -158,14 +160,16 @@
 			<@viewutils.displayPageThroughUrls pageThroughUrls page />
 		</#if>
         <#-- XXX: display first link with content type = atom: -->
-        <#list alternativeRepresentations as alt>
-          <#if alt.contentType = 'application/atom+xml'>
-            <div class="vrtx-feed-link">
-              <a id="vrtx-feed-link" href="${alt.url?html}"><@vrtx.msg code="viewCollectionListing.feed.fromThis" /></a>
-            </div>
-            <#break />
-          </#if>
-        </#list>
+        <#if alternativeRepresentations?exists > 
+	        <#list alternativeRepresentations as alt>
+	          <#if alt.contentType = 'application/atom+xml'>
+	            <div class="vrtx-feed-link">
+	              <a id="vrtx-feed-link" href="${alt.url?html}"><@vrtx.msg code="viewCollectionListing.feed.fromThis" /></a>
+	            </div>
+	            <#break />
+	          </#if>
+	        </#list>
+	    </#if>
      </div>
   </body>
 </html>

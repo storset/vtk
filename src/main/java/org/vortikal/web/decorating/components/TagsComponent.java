@@ -84,6 +84,11 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
     private static final String PARAMETER_RESOURCE_TYPE = TagsHelper.RESOURCE_TYPE_PARAMETER;
     private static final String PARAMETER_RESOURCE_TYPE_DESC = "Comma seperated list of resource types to search for tags in.";
 
+    private static final String PARAMETER_SORT_SELECTED_TAG_BY = "sort-selected-by";
+    private static final String PARAMETER_SORT_SELECTED_TAG_BY_DESC = "Comma seperated list of attributesattributes to sort a selected tag "
+            + "from the result, each attribute in the format [prefix]:[name]:[sortdirection]. Prefix is optional. "
+            + "For example: resource:surname:asc";
+
     private RepositoryTagElementsDataProvider tagElementsProvider;
     private ResourceTypeTree resourceTypeTree;
 
@@ -100,6 +105,7 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
         map.put(PARAMETER_SHOW_OCCURENCE, PARAMETER_SHOW_OCCURENCE_DESC);
         map.put(PARAMETER_SERVICE_URL, PARAMETER_SERVICE_URL_DESC);
         map.put(PARAMETER_RESOURCE_TYPE, PARAMETER_RESOURCE_TYPE_DESC);
+        map.put(PARAMETER_SORT_SELECTED_TAG_BY, PARAMETER_SORT_SELECTED_TAG_BY_DESC);
 
         return map;
     }
@@ -155,9 +161,19 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
             }
         }
 
+        List<String> urlSortingParmas = new ArrayList<String>();
+        Object sortingParam = request.getParameter(PARAMETER_SORT_SELECTED_TAG_BY);
+        if (sortingParam != null) {
+            String[] sortingParams = sortingParam.toString().split(",");
+            for (String param : sortingParams) {
+                urlSortingParmas.add(param);
+            }
+        }
+
         // Legacy exception handling, should be refactored.
         try {
-            List<TagElement> tagElements = tagElementsProvider.getTagElements(scopeUri, resourceTypeDefs, token, 1, 1, limit, 1);
+            List<TagElement> tagElements = tagElementsProvider.getTagElements(scopeUri, resourceTypeDefs,
+                    urlSortingParmas, token, 1, 1, limit, 1);
 
             // Populate model
             int numberOfTagsInEachColumn;
@@ -187,7 +203,7 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
             if (resourceTypeDefs.size() > 0) {
                 model.put("resourceTypes", resourceTypeDefs);
             }
-            
+
         } catch (DataReportException d) {
             throw new DecoratorComponentException("There was a problem with the data report query: " + d.getMessage());
         } catch (IllegalArgumentException e) {

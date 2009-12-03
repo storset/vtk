@@ -121,9 +121,9 @@ public abstract class QuerySearchComponent implements SearchComponent, Initializ
         String token = SecurityContext.getSecurityContext().getToken();
         List<SortField> sortFields = new ArrayList<SortField>();
 
-        if(sortProp != null){
+        if (sortProp != null) {
             sortFields.add(new PropertySortField(sortProp, sortFieldDirection));
-        }else{
+        } else {
             if (sortOrderPropDefs != null) {
                 for (PropertyTypeDefinition p : sortOrderPropDefs) {
                     sortFields.add(new PropertySortField(p, sortFieldDirection));
@@ -270,10 +270,5 @@ public abstract class QuerySearchComponent implements SearchComponent, Initializ
     public void setSortOrderPropDefPointers(List<String> sortOrderPropDefPointers) {
         this.sortOrderPropDefPointers = sortOrderPropDefPointers;
     }
-
-    public List<String> getSortOrderPropDefPointers() {
-        return sortOrderPropDefPointers;
-    }
-
 
 }

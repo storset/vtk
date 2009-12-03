@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <bean id="structured.articleListing.searchComponent" parent="articleListing.searchComponent">
+    <property name="name" value="structured.articleListing.defaultArticles" />
+    <property name="query">
+      <value>(uri = {$currentFolder}/* AND uri NOT IN {$featuredArticles}) AND (type IN structured-article)</value>
+    </property>
+    <property name="sortOrderPropDefPointers">
+      <list>
+        <value>publish-date</value>
+      </list>
+    </property>
+  </bean>
+  
+  <!-- Fetch specifically specified articles, aka 'featured articles' -->
+  <bean id="structured.articleListing.featuredArticlesSearchComponent" parent="articleListing.featuredArticlesSearchComponent">
+    <property name="name" value="structured.articleListing.featuredArticles" />
+    <property name="query">
+      <value>(uri IN {$featuredArticles}) AND (type IN structured-article)</value>
+    </property>
+  </bean>
+
+  <!-- Fetch articles from explicitly specified subfolders -->
+  <bean id="structured.articleListing.subfoldersSearchComponent" parent="articleListing.subfoldersSearchComponent">
+    <property name="name" value="structured.articleListing.subfolderArticles" />
+    <property name="query">
+      <value>(uri IN {$subfolders}* AND uri NOT IN {$featuredArticles}) AND (type IN structured-article)</value>
+    </property>
+  </bean>
+
+  <bean id="structured.articleListing.view" parent="freemarkerView">
+    <property name="url" value="pages/view-collectionlisting.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+      </list>
+    </property>
+  </bean>
+
+</beans>

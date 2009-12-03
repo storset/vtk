@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
+
   <bean id="articleListing.viewService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="collectionListing.viewService" />
     <property name="order" value="0" />
@@ -52,7 +53,7 @@
     <property name="pageLimitPropDef" ref="pageLimitPropDef" />
     <property name="hideNumberOfComments" ref="hideNumberOfCommentsPropDef" />
     <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
-    <property name="viewName" value="articleListing.view" />
+    <property name="viewName" value="${override.listing.prefix}articleListing.view" />
     <property name="searcher" ref="articleListingSearcher" />
     <property name="alternativeRepresentations">
       <map>
@@ -71,9 +72,9 @@
   </bean>
 
   <bean id="articleListingSearcher" class="org.vortikal.web.display.article.ArticleListingSearcher">
-    <property name="defaultSearch" ref="articleListing.searchComponent" />
-    <property name="featuredArticlesSearch" ref="articleListing.featuredArticlesSearchComponent" />
-    <property name="subfoldersSearch" ref="articleListing.subfoldersSearchComponent" />
+    <property name="defaultSearch" ref="${override.listing.prefix}articleListing.searchComponent" />
+    <property name="featuredArticlesSearch" ref="${override.listing.prefix}articleListing.featuredArticlesSearchComponent" />
+    <property name="subfoldersSearch" ref="${override.listing.prefix}articleListing.subfoldersSearchComponent" />
     <property name="recursiveListingPropDef" ref="articleListing.recursiveListingPropDef" />
     <property name="subfolderPropDef" ref="articleListing.recursiveListingSubfoldersPropDef" />
     <property name="featuredArticlesPropDef" ref="articleListing.featuredArticlesPropDef" />
@@ -88,18 +89,15 @@
     <property name="recursivePropDef" ref="articleListing.recursiveListingPropDef" />
     <property name="sortPropDef" ref="articleListing.sortingPropDef" />
     <property name="query">
-      <value>
-        (uri = {$currentFolder}/* AND uri NOT IN {$featuredArticles}) 
-          AND (type IN structured-article)
-      </value>
+      <value>(uri = {$currentFolder}/* AND uri NOT IN {$featuredArticles}) AND (type IN article AND published-date &lt;= {$currentTime})</value>
     </property>
-    <property name="queryParser" ref="searchParser" /> 
+    <property name="queryParser" ref="searchParser" />
     <property name="sortOrderPropDefPointers">
       <list>
         <value>publish-date</value>
       </list>
     </property>
-    <property name="resourceTypeTree"  ref ="resourceTypeTree" />   
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="defaultSortOrder" ref="SORT_ORDER.DESC" />
     <property name="sortOrderMapping">
       <map>
@@ -129,8 +127,7 @@
   <bean id="articleListing.featuredArticlesSearchComponent" parent="articleListing.searchComponent">
     <property name="name" value="articleListing.featuredArticles" />
     <property name="recursivePropDef">
-      <bean class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
-            parent="articleListing.recursiveListingPropDef">
+      <bean class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="articleListing.recursiveListingPropDef">
         <property name="vocabulary">
           <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
             <property name="values">
@@ -143,40 +140,32 @@
       </bean>
     </property>
     <property name="query">
-      <value>
-        (uri IN {$featuredArticles}) AND (type IN structured-article)
-      </value>
+      <value>(uri IN {$featuredArticles}) AND (type IN article AND published-date &lt;= {$currentTime})</value>
     </property>
-    <property name="aggregationResolver"><null/></property>
+    <property name="aggregationResolver">
+      <null />
+    </property>
   </bean>
 
   <!-- Fetch articles from explicitly specified subfolders -->
   <bean id="articleListing.subfoldersSearchComponent" parent="articleListing.searchComponent">
     <property name="name" value="articleListing.subfolderArticles" />
     <property name="query">
-      <value>
-        (uri IN {$subfolders}* AND uri NOT IN {$featuredArticles}) 
-          AND (type IN structured-article)
-      </value>
+      <value>(uri IN {$subfolders}* AND uri NOT IN {$featuredArticles}) AND (type IN article AND published-date &lt;= {$currentTime})</value>
     </property>
-    <property name="aggregationResolver"><null/></property>
+    <property name="aggregationResolver">
+      <null />
+    </property>
   </bean>
 
   <bean id="articleListing.viewResolver" parent="decoratorViewResolver">
     <property name="views">
       <map>
-        <entry key="articleListing.view"  value-ref="articleListing.view" />
+        <entry key="${override.listing.prefix}articleListing.view" value-ref="articleListing.view" />
       </map>
     </property>
   </bean>
 
-  <bean id="articleListing.view" parent="freemarkerView">
-    <property name="url" value="pages/view-collectionlisting.ftl" />
-    <property name="referenceDataProviders">
-      <list>
-        <ref bean="resourceContextProvider" />
-      </list>
-    </property> 
-  </bean>
+  <bean id="articleListing.view" parent="collectionListing.view" />
 
 </beans>

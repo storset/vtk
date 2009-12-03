@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <bean id="structured.eventListing.upcomingEventsSearchComponent" parent="eventListing.upcomingEventsSearchComponent">
+    <property name="name" value="structured.eventListing.upcomingEventsSearchComponent" />
+    <property name="query">
+      <value>(uri = {$currentFolder}/* AND type IN structured-event) AND (resource:start-date &gt;= {$currentDate} OR resource:end-date &gt;= {$currentDate})</value>
+    </property>
+    <property name="sortOrderPropDefPointers">
+      <list>
+        <value>resource:start-date</value>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="structured.eventListing.previousEventsSearchComponent" parent="eventListing.previousEventsSearchComponent" >
+    <property name="name" value="structured.eventListing.previousEventsSearchComponent" />
+    <property name="query">
+      <value>(uri = {$currentFolder}/* AND type IN structured-event) AND (resource:end-date &lt; {$currentDate} OR (resource:end-date not exists AND resource:start-date &lt; {$currentDate}))</value>
+    </property>
+    <property name="sortOrderPropDefPointers">
+      <list>
+        <value>resource:start-date</value>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="structured.eventListing.view" parent="freemarkerView">
+    <property name="url" value="pages/view-collectionlisting.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+      </list>
+    </property>
+  </bean>
+
+</beans>

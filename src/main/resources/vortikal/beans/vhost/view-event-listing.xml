@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
 <beans>
 
   <bean id="eventListing.viewService" class="org.vortikal.web.service.ServiceImpl">
@@ -19,7 +18,7 @@
     <property name="handler" ref="eventListing.handler" />
     <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
   </bean>
-  
+
   <bean id="eventListing.atomService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="collectionListing.atomService" />
     <property name="order" value="-2" />
@@ -31,9 +30,8 @@
     <property name="handler" ref="eventListing.atomHandler" />
   </bean>
 
-  <bean id="eventListing.handler" 
-        class="org.vortikal.web.display.collection.EventListingController"
-        parent="repositoryAware">
+  <bean id="eventListing.handler" class="org.vortikal.web.display.collection.EventListingController"
+    parent="repositoryAware">
     <property name="resourceManager" ref="resourceManager" />
     <property name="sortPropDefs">
       <list>
@@ -52,12 +50,12 @@
       </map>
     </property>
     <property name="hiddenPropDef" ref="hiddenPropDef" />
-    <property name="viewName" value="eventListing.view" />
+    <property name="viewName" value="${override.listing.prefix}eventListing.view" />
     <property name="pageLimitPropDef" ref="pageLimitPropDef" />
     <property name="hideNumberOfComments" ref="hideNumberOfCommentsPropDef" />
     <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
-    <property name="upcomingEventsSearch" ref="eventListing.upcomingEventsSearchComponent" />
-    <property name="previousEventsSearch" ref="eventListing.previousEventsSearchComponent" />
+    <property name="upcomingEventsSearch" ref="${override.listing.prefix}eventListing.upcomingEventsSearchComponent" />
+    <property name="previousEventsSearch" ref="${override.listing.prefix}eventListing.previousEventsSearchComponent" />
     <property name="alternativeRepresentations">
       <map>
         <entry key="application/atom+xml" value-ref="eventListing.atomService" />
@@ -65,12 +63,11 @@
     </property>
   </bean>
 
-  <bean id="eventListing.atomHandler" 
-    class="org.vortikal.web.display.collection.CollectionListingAsAtomFeed"
+  <bean id="eventListing.atomHandler" class="org.vortikal.web.display.collection.CollectionListingAsAtomFeed"
     parent="repositoryAware">
     <property name="viewService" ref="viewService" />
     <property name="abdera" ref="abdera" />
-    <property name="searchComponent" ref="eventListing.upcomingEventsSearchComponent" />
+    <property name="searchComponent" ref="${override.listing.prefix}eventListing.upcomingEventsSearchComponent" />
     <property name="publishedDatePropDef" ref="startDatePropDef" />
   </bean>
 
@@ -83,14 +80,12 @@
     <property name="defaultRecursive" value="true" />
     <property name="recursivePropDef" ref="eventListing.recursiveListingPropDef" />
     <property name="query">
-      <value>
-        (uri = {$currentFolder}/* AND type IN structured-event) AND (resource:start-date &gt;= {$currentDate} OR resource:end-date &gt;= {$currentDate})
-      </value>
+      <value>(uri = {$currentFolder}/* AND type IN event) AND (start-date &gt;= {$currentDate} OR end-date &gt;= {$currentDate})</value>
     </property>
     <property name="queryParser" ref="searchParser" />
     <property name="sortOrderPropDefPointers">
       <list>
-        <value>resource:start-date</value>
+        <value>start-date</value>
       </list>
     </property>
     <property name="resourceTypeTree"  ref ="resourceTypeTree" />
@@ -108,14 +103,12 @@
     <property name="defaultRecursive" value="true" />
     <property name="recursivePropDef" ref="eventListing.recursiveListingPropDef" />
     <property name="query">
-      <value>
-        (uri = {$currentFolder}/* AND type IN structured-event) AND (resource:end-date &lt; {$currentDate} OR (resource:end-date not exists AND resource:start-date &lt; {$currentDate}))
-      </value>
+      <value>(uri = {$currentFolder}/* AND type IN event) AND (end-date &lt; {$currentDate} OR (end-date not exists AND start-date &lt; {$currentDate}))</value>
     </property>
     <property name="queryParser" ref="searchParser" />
     <property name="sortOrderPropDefPointers">
       <list>
-        <value>resource:start-date</value>
+        <value>start-date</value>
       </list>
     </property>
     <property name="resourceTypeTree"  ref ="resourceTypeTree" />
@@ -153,18 +146,11 @@
   <bean id="eventListing.viewResolver" parent="decoratorViewResolver">
     <property name="views">
       <map>
-        <entry key="eventListing.view"  value-ref="eventListing.view" />
+        <entry key="${override.listing.prefix}eventListing.view"  value-ref="eventListing.view" />
       </map>
     </property>
   </bean>
 
-  <bean id="eventListing.view" parent="freemarkerView">
-    <property name="url" value="pages/view-collectionlisting.ftl" />
-    <property name="referenceDataProviders">
-      <list>
-        <ref bean="resourceContextProvider" />
-      </list>
-    </property>
-  </bean>
+  <bean id="eventListing.view" parent="collectionListing.view" />
 
 </beans>

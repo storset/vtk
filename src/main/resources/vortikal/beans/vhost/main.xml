@@ -40,6 +40,11 @@
   <import resource="view-person-listing.xml" />
   <import resource="view-project-listing.xml" />
   <import resource="view-image-listing.xml" />
+  
+  <!-- Beans to override default listing of events and articles -->
+  <import resource="view-structured-article-listing.xml" />
+  <import resource="view-structured-event-listing.xml" />
+  
   <import resource="manage.xml" />
   <import resource="commenting.xml" />
   <import resource="root-management.xml" />

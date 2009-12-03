@@ -70,8 +70,12 @@
             <#local tagsNr = 0 />
             <#if tags != "">
               <#list tagsList as tag>
+                <#local tagUrl = "?vrtx=tags&tag=" + tag?trim + "&resource-type=" + person.getResourceType() />
+                <#if personListingdefaultPerson_sorting?has_content>
+                  <#local tagUrl = tagUrl + "&" + personListingdefaultPerson_sorting />
+                </#if>
                 <#local tagsNr = tagsNr+1 />
-                <a href="${"?vrtx=tags&tag="?html}${tag?trim?html}&amp;resource-type=${person.getResourceType()?html}">${tag?trim?html}</a><#if tagsList?size != tagsNr>,</#if> 
+                <a href="${tagUrl?html}">${tag?trim?html}</a><#if tagsList?size != tagsNr>,</#if> 
            	  </#list>
            	</#if>
          </td>

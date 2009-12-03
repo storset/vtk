@@ -52,8 +52,12 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.search.PropertySortField;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
+import org.vortikal.repository.search.SortField;
+import org.vortikal.repository.search.SortFieldDirection;
+import org.vortikal.repository.search.Sorting;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.PropertyExistsQuery;
 import org.vortikal.repository.search.query.TermOperator;
@@ -65,11 +69,13 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.ResourcePropertyComparator;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.listing.AbstractListingController;
+import org.vortikal.web.search.Listing;
+import org.vortikal.web.search.QuerySearchComponent;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 public abstract class AbstractCollectionListingController extends AbstractListingController implements Controller {
-    
+
     protected final static String MODEL_KEY_SEARCH_COMPONENTS = "searchComponents";
     protected final static String MODEL_KEY_PAGE = "page";
     protected final static String MODEL_KEY_PAGE_THROUGH_URLS = "pageThroughUrls";
@@ -153,7 +159,7 @@ public abstract class AbstractCollectionListingController extends AbstractListin
             } catch (Throwable t) {
             }
         }
-        if(pageLimit > 0){
+        if (pageLimit > 0) {
             model.put("alternativeRepresentations", alt);
         }
         return new ModelAndView(this.viewName, model);
@@ -216,8 +222,6 @@ public abstract class AbstractCollectionListingController extends AbstractListin
         return p.getBooleanValue();
     }
 
-
-
     protected int getIntParameter(HttpServletRequest request, String name, int defaultValue) {
         String param = request.getParameter(name);
         if (param == null) {
@@ -230,7 +234,37 @@ public abstract class AbstractCollectionListingController extends AbstractListin
         }
     }
 
-  
+    private String getRequestSortOrderParams(Sorting sorting) {
+        StringBuilder params = new StringBuilder();
+        for (SortField sortField : sorting.getSortFields()) {
+            if (sortField instanceof PropertySortField) {
+                PropertySortField propertySortField = ((PropertySortField) sortField);
+                String prefix = propertySortField.getDefinition().getNamespace().getPrefix();
+                String name = propertySortField.getDefinition().getName();
+                SortFieldDirection sortDirection = propertySortField.getDirection();
+                StringBuilder paramValue = new StringBuilder();
+                if (prefix != null) {
+                    paramValue.append(URL.encode(prefix + ":"));
+                }
+                paramValue.append(URL.encode(name + ":" + sortDirection.toString()));
+                if (!params.toString().equals("")) {
+                    params.append("&" + QuerySearchComponent.SORTING_PARAM + "=" + paramValue.toString());
+                } else {
+                    params.append(QuerySearchComponent.SORTING_PARAM + "=" + paramValue.toString());
+                }
+            }
+        }
+        return params.toString();
+    }
+
+    protected void addSortOrderParamsToModel(Listing listing, Map<String, Object> model) {
+        String sortOrderParams = getRequestSortOrderParams(listing.getSorting());
+        if (sortOrderParams != null) {
+            String key = listing.getName().replaceAll("\\.", "") + "_" + QuerySearchComponent.SORTING_PARAM;
+            model.put(key, sortOrderParams);
+        }
+    }
+
     @Required
     public void setRepository(Repository repository) {
         this.repository = repository;

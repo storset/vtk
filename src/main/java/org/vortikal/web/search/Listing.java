@@ -38,10 +38,11 @@ import java.util.Map;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.ResourceWrapper;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.search.Sorting;
 import org.vortikal.web.service.URL;
 
 public class Listing {
-    
+
     private ResourceWrapper resource;
     private String title;
     private String name;
@@ -51,6 +52,7 @@ public class Listing {
     private Map<String, URL> urls = new HashMap<String, URL>();
     private List<PropertyTypeDefinition> displayPropDefs = new ArrayList<PropertyTypeDefinition>();
     private int totalHits; /* Regardless of number of files ( files.size() ) */
+    private Sorting sorting;
 
     public Listing(ResourceWrapper resource, String title, String name, int offset) {
         this.resource = resource;
@@ -125,6 +127,22 @@ public class Listing {
         return getFiles() != null && getFiles().size() > 0;
     }
 
+    public void setTotalHits(int totalHits) {
+        this.totalHits = totalHits;
+    }
+
+    public int getTotalHits() {
+        return totalHits;
+    }
+
+    public Sorting getSorting() {
+        return sorting;
+    }
+
+    public void setSorting(Sorting sorting) {
+        this.sorting = sorting;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(this.getClass().getName());
@@ -134,13 +152,5 @@ public class Listing {
         sb.append("; size: " + this.files.size());
         sb.append("; more:").append(this.more);
         return sb.toString();
-    }
-
-    public void setTotalHits(int totalHits) {
-        this.totalHits = totalHits;
-    }
-
-    public int getTotalHits() {
-        return totalHits;
     }
 }

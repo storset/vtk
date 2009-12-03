@@ -72,6 +72,10 @@ public class CollectionListingController extends AbstractCollectionListingContro
                     offset -= prevListing.getFiles().size();
                 }
             }
+
+            // For each listing, add the sorting parameters to the map
+            addSortOrderParamsToModel(listing, model);
+
             // We have more results to display for this listing
             if (listing.hasMoreResults()) {
                 break;
@@ -80,6 +84,7 @@ public class CollectionListingController extends AbstractCollectionListingContro
             if (listing.getFiles().size() > 0) {
                 limit -= listing.getFiles().size();
             }
+
         }
 
         List<URL> urls = generatePageThroughUrls(totalHits, pageLimit, getBaseURL(request));

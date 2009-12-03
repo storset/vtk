@@ -83,9 +83,9 @@ public class CollectionListingController extends AbstractCollectionListingContro
         }
 
         List<URL> urls = generatePageThroughUrls(totalHits, pageLimit, getBaseURL(request));
-        model.put("searchComponents", results);
-        model.put("page", page);
-        model.put("pageThroughUrls", urls);
+        model.put(MODEL_KEY_SEARCH_COMPONENTS, results);
+        model.put(MODEL_KEY_PAGE, page);
+        model.put(MODEL_KEY_PAGE_THROUGH_URLS, urls);
         if (results.size() > 0 && results.get(0) != null) {
             model.put("numberOfRecords", getNumberOfRecords(page, pageLimit, results.get(0).size()));
         }

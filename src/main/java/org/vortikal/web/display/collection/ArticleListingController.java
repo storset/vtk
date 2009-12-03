@@ -110,10 +110,10 @@ public class ArticleListingController extends AbstractCollectionListingControlle
 
         List<URL> urls = generatePageThroughUrls(totalHits, pageLimit, featuredArticlesTotalHits, getBaseURL(request),
                 true);
-        model.put("searchComponents", results);
-        model.put("page", userDisplayPage);
+        model.put(MODEL_KEY_SEARCH_COMPONENTS, results);
+        model.put(MODEL_KEY_PAGE, userDisplayPage);
+        model.put(MODEL_KEY_PAGE_THROUGH_URLS, urls);
         model.put("hideNumberOfComments", getHideNumberOfComments(collection));
-        model.put("pageThroughUrls", urls);
     }
 
     @Required

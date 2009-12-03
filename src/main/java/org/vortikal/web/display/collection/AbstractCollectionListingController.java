@@ -69,6 +69,10 @@ import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 public abstract class AbstractCollectionListingController extends AbstractListingController implements Controller {
+    
+    protected final static String MODEL_KEY_SEARCH_COMPONENTS = "searchComponents";
+    protected final static String MODEL_KEY_PAGE = "page";
+    protected final static String MODEL_KEY_PAGE_THROUGH_URLS = "pageThroughUrls";
 
     private Repository repository;
     protected ResourceWrapperManager resourceManager;

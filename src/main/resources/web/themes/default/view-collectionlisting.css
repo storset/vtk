@@ -190,11 +190,9 @@ span.vrtx-add-event a.vrtx-ical-help {
        zoom: 1; /* IE hack to get background image to display. To be fixed. */
 }
 
-/* END vrtx-resource (standard, article, events) */
-	/* next / previous links */
-a.vrtx-next,a.vrtx-previous {
-/*	float: left; */
-	margin: 0 .5em 1em 0;
+.vrtx-paging-wrapper {
+	margin: 0 0 1em 0;
+	display:block;
 }
 
 /* RSS - stuff */

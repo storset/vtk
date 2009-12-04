@@ -81,8 +81,6 @@ public abstract class QuerySearchComponent implements SearchComponent, Initializ
 
     protected CollectionListingAggregationResolver aggregationResolver;
 
-    public static final String SORTING_PARAM = "sorting";
-
     protected abstract Query getQuery(Resource collection, HttpServletRequest request, boolean recursive);
 
     public Listing execute(HttpServletRequest request, Resource collection, int page, int pageLimit, int baseOffset)
@@ -111,7 +109,7 @@ public abstract class QuerySearchComponent implements SearchComponent, Initializ
         PropertyTypeDefinition sortProp = null;
         SortFieldDirection sortFieldDirection = this.defaultSortOrder;
 
-        String[] sortingParams = request.getParameterValues(SORTING_PARAM);
+        String[] sortingParams = request.getParameterValues(Listing.SORTING_PARAM);
         if (sortingParams != null && sortingParams.length > 0) {
             List<SortField> sortFields = getSortFieldsFromRequestParams(sortingParams);
             search.setSorting(new SortingImpl(sortFields));
@@ -190,7 +188,7 @@ public abstract class QuerySearchComponent implements SearchComponent, Initializ
     private List<SortField> getSortFieldsFromRequestParams(String[] sortingParams) {
         List<SortField> sortFields = new ArrayList<SortField>();
         for (String sortFiledParam : sortingParams) {
-            String[] paramValues = sortFiledParam.split(":");
+            String[] paramValues = sortFiledParam.split(Listing.SORTING_PARAM_DELIMITER);
             if (paramValues.length > 3) {
                 // invalid, just ignore it
                 continue;

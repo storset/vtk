@@ -73,9 +73,6 @@ public class CollectionListingController extends AbstractCollectionListingContro
                 }
             }
 
-            // For each listing, add the sorting parameters to the map
-            addSortOrderParamsToModel(listing, model);
-
             // We have more results to display for this listing
             if (listing.hasMoreResults()) {
                 break;

@@ -71,8 +71,9 @@
             <#if tags != "">
               <#list tagsList as tag>
                 <#local tagUrl = "?vrtx=tags&tag=" + tag?trim + "&resource-type=" + person.getResourceType() />
-                <#if personListingdefaultPerson_sorting?has_content>
-                  <#local tagUrl = tagUrl + "&" + personListingdefaultPerson_sorting />
+                <#local sortingParams = personListing.getRequestSortOrderParams() />
+                <#if sortingParams?has_content>
+                  <#local tagUrl = tagUrl + "&" + sortingParams />
                 </#if>
                 <#local tagsNr = tagsNr+1 />
                 <a href="${tagUrl?html}">${tag?trim?html}</a><#if tagsList?size != tagsNr>,</#if> 

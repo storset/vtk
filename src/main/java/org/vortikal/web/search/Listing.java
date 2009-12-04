@@ -38,6 +38,9 @@ import java.util.Map;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.ResourceWrapper;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.search.PropertySortField;
+import org.vortikal.repository.search.SortField;
+import org.vortikal.repository.search.SortFieldDirection;
 import org.vortikal.repository.search.Sorting;
 import org.vortikal.web.service.URL;
 
@@ -53,6 +56,9 @@ public class Listing {
     private List<PropertyTypeDefinition> displayPropDefs = new ArrayList<PropertyTypeDefinition>();
     private int totalHits; /* Regardless of number of files ( files.size() ) */
     private Sorting sorting;
+
+    public static final String SORTING_PARAM = "sorting";
+    public static final String SORTING_PARAM_DELIMITER = ":";
 
     public Listing(ResourceWrapper resource, String title, String name, int offset) {
         this.resource = resource;
@@ -105,16 +111,6 @@ public class Listing {
         return displayPropDefs;
     }
 
-    // Need this because of structured resource namespace
-    // God damn it....
-    public boolean hasDisplayPropDef(String propDefName) {
-        for (PropertyTypeDefinition def : this.displayPropDefs) {
-            if (def.getName().equals(propDefName))
-                return true;
-        }
-        return false;
-    }
-
     public void setMore(boolean more) {
         this.more = more;
     }
@@ -135,12 +131,33 @@ public class Listing {
         return totalHits;
     }
 
-    public Sorting getSorting() {
-        return sorting;
-    }
-
     public void setSorting(Sorting sorting) {
         this.sorting = sorting;
+    }
+
+    public String getRequestSortOrderParams() {
+        StringBuilder params = new StringBuilder();
+        if (this.sorting != null) {
+            for (SortField sortField : this.sorting.getSortFields()) {
+                if (sortField instanceof PropertySortField) {
+                    PropertySortField propertySortField = ((PropertySortField) sortField);
+                    String prefix = propertySortField.getDefinition().getNamespace().getPrefix();
+                    String name = propertySortField.getDefinition().getName();
+                    SortFieldDirection sortDirection = propertySortField.getDirection();
+                    StringBuilder paramValue = new StringBuilder();
+                    if (prefix != null) {
+                        paramValue.append(URL.encode(prefix + SORTING_PARAM_DELIMITER));
+                    }
+                    paramValue.append(URL.encode(name + SORTING_PARAM_DELIMITER + sortDirection.toString()));
+                    if (!params.toString().equals("")) {
+                        params.append("&" + SORTING_PARAM + "=" + paramValue.toString());
+                    } else {
+                        params.append(SORTING_PARAM + "=" + paramValue.toString());
+                    }
+                }
+            }
+        }
+        return params.toString();
     }
 
     @Override

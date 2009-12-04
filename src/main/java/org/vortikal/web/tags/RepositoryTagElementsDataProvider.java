@@ -43,7 +43,7 @@ import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.reporting.TagsReportingComponent;
-import org.vortikal.web.search.QuerySearchComponent;
+import org.vortikal.web.search.Listing;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
@@ -163,7 +163,7 @@ public class RepositoryTagElementsDataProvider {
         }
         if (urlSortingParmas != null && urlSortingParmas.size() > 0) {
             for (String urlSortingParam : urlSortingParmas) {
-                url.addParameter(QuerySearchComponent.SORTING_PARAM, urlSortingParam);
+                url.addParameter(Listing.SORTING_PARAM, urlSortingParam);
             }
         }
         return url;

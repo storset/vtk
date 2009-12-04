@@ -45,6 +45,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
+import org.springframework.web.servlet.support.RequestContext;
 import org.vortikal.edit.editor.ResourceWrapperManager;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
@@ -63,7 +64,6 @@ import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.ResourcePropertyComparator;
-import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.listing.AbstractListingController;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -112,7 +112,7 @@ public abstract class AbstractCollectionListingController extends AbstractListin
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        Path uri = RequestContext.getRequestContext().getResourceURI();
+        Path uri = org.vortikal.web.RequestContext.getRequestContext().getResourceURI();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
         Principal principal = securityContext.getPrincipal();
@@ -120,7 +120,7 @@ public abstract class AbstractCollectionListingController extends AbstractListin
         Resource collection = this.repository.retrieve(token, uri, true);
         List<PropertySet> subCollections = listCollections(uri, token);
 
-        Locale locale = new org.springframework.web.servlet.support.RequestContext(request).getLocale();
+        Locale locale = new RequestContext(request).getLocale();
         Collections.sort(subCollections, new ResourcePropertyComparator(this.sortPropDefs, this.overridingSortPropDefs,
                 false, locale));
 
@@ -141,8 +141,7 @@ public abstract class AbstractCollectionListingController extends AbstractListin
                 Service service = this.alternativeRepresentations.get(contentType);
                 URL url = service.constructURL(collection, principal);
                 String title = service.getName();
-                org.springframework.web.servlet.support.RequestContext rc = new org.springframework.web.servlet.support.RequestContext(
-                        request);
+                RequestContext rc = new RequestContext(request);
                 title = rc.getMessage(service.getName(), new Object[] { collection.getTitle() }, service.getName());
 
                 m.put("title", title);

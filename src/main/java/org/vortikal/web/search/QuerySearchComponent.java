@@ -187,8 +187,9 @@ public abstract class QuerySearchComponent implements SearchComponent, Initializ
 
     private List<SortField> getSortFieldsFromRequestParams(String[] sortingParams) {
         List<SortField> sortFields = new ArrayList<SortField>();
-        for (String sortFiledParam : sortingParams) {
-            String[] paramValues = sortFiledParam.split(Listing.SORTING_PARAM_DELIMITER);
+        for (String sortFieldParam : sortingParams) {
+            sortFieldParam = URL.decode(sortFieldParam);
+            String[] paramValues = sortFieldParam.split(Listing.SORTING_PARAM_DELIMITER);
             if (paramValues.length > 3) {
                 // invalid, just ignore it
                 continue;

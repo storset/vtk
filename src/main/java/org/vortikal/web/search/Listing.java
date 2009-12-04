@@ -136,7 +136,22 @@ public class Listing {
     }
 
     public String getRequestSortOrderParams() {
+        List<String> sortFieldParams = this.getSortFieldParams();
         StringBuilder params = new StringBuilder();
+        if (sortFieldParams.size() > 0) {
+            for (String sortFieldParam : sortFieldParams) {
+                if (!params.toString().equals("")) {
+                    params.append("&" + SORTING_PARAM + "=" + sortFieldParam.toString());
+                } else {
+                    params.append(SORTING_PARAM + "=" + sortFieldParam.toString());
+                }
+            }
+        }
+        return params.toString();
+    }
+
+    public List<String> getSortFieldParams() {
+        List<String> sortFields = new ArrayList<String>();
         if (this.sorting != null) {
             for (SortField sortField : this.sorting.getSortFields()) {
                 if (sortField instanceof PropertySortField) {
@@ -149,15 +164,11 @@ public class Listing {
                         paramValue.append(URL.encode(prefix + SORTING_PARAM_DELIMITER));
                     }
                     paramValue.append(URL.encode(name + SORTING_PARAM_DELIMITER + sortDirection.toString()));
-                    if (!params.toString().equals("")) {
-                        params.append("&" + SORTING_PARAM + "=" + paramValue.toString());
-                    } else {
-                        params.append(SORTING_PARAM + "=" + paramValue.toString());
-                    }
+                    sortFields.add(paramValue.toString());
                 }
             }
         }
-        return params.toString();
+        return sortFields;
     }
 
     @Override

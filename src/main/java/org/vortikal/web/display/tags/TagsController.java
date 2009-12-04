@@ -43,6 +43,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
+import org.springframework.web.servlet.support.RequestContext;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
@@ -116,9 +117,14 @@ public class TagsController extends AbstractListingController implements Control
                 Map<String, String> parameters = new HashMap<String, String>();
                 parameters.put(TagsHelper.TAG_PARAMETER, tag);
                 URL url = service.constructURL(scope.getURI(), parameters);
+                List<String> sortFieldParams = listing.getSortFieldParams();
+                if (sortFieldParams.size() > 0) {
+                    for (String param : sortFieldParams) {
+                        url.addParameter(Listing.SORTING_PARAM, param);
+                    }
+                }
                 String title = service.getName();
-                org.springframework.web.servlet.support.RequestContext rc = new org.springframework.web.servlet.support.RequestContext(
-                        request);
+                RequestContext rc = new RequestContext(request);
                 title = rc.getMessage(service.getName(), new Object[] { scope.getTitle() }, service.getName());
 
                 m.put("title", title);

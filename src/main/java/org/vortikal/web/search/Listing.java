@@ -131,6 +131,14 @@ public class Listing {
         return totalHits;
     }
 
+    public boolean hasDisplayPropDef(String propDefName) {
+        for (PropertyTypeDefinition def : this.displayPropDefs) {
+            if (def.getName().equals(propDefName))
+                return true;
+        }
+        return false;
+    }
+
     public void setSorting(Sorting sorting) {
         this.sorting = sorting;
     }

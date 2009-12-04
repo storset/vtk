@@ -39,7 +39,6 @@ import java.util.Stack;
 import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.resourcemanagement.view.StructuredResourceDisplayController;
-import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.text.tl.Argument;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.DirectiveNodeFactory;
@@ -58,10 +57,7 @@ public class ComponentInvokerNodeFactory implements DirectiveNodeFactory {
     private static final String COMPONENT_STACK_REQ_ATTR = 
         ComponentInvokerNodeFactory.class.getName() + ".ComponentStack";
     
-    private HtmlPageParser htmlParser;
-    
-    public ComponentInvokerNodeFactory(HtmlPageParser htmlParser) {
-        this.htmlParser = htmlParser;
+    public ComponentInvokerNodeFactory() {
     }
 
     public Node create(DirectiveParseContext ctx) throws Exception {

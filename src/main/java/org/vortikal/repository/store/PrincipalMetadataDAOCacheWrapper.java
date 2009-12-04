@@ -31,13 +31,11 @@
 package org.vortikal.repository.store;
 
 import java.util.List;
-
-import java.util.Map;
 import java.util.Set;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.security.Principal;
-import org.vortikal.security.Principal.Type;
 import org.vortikal.util.cache.SimpleCache;
 import org.vortikal.util.cache.SimpleCacheImpl;
 

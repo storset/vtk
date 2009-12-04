@@ -164,7 +164,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         return new ModelAndView(this.viewName, model);
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings("unchecked")
     public HtmlPageContent renderInitialPage(StructuredResource res, Map model, HttpServletRequest request)
     throws Exception {
 
@@ -253,7 +253,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         directiveHandlers.put("def", def);
 
         directiveHandlers.put("localized", new LocalizationNodeFactory(this.resourceModelKey));
-        directiveHandlers.put("call-component", new ComponentInvokerNodeFactory(this.htmlParser));
+        directiveHandlers.put("call-component", new ComponentInvokerNodeFactory());
 
         this.directiveHandlers = directiveHandlers;
 

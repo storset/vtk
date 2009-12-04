@@ -188,7 +188,7 @@ public class CollectionListingAggregationResolver implements AggregationResolver
             Value[] values = aggregationProp.getValues();
             int aggregationLimit = values.length > this.limit ? this.limit : values.length;
             for (int i = 0; i < aggregationLimit; i++) {
-                Path path = getValidPath(values[i].getStringValue(), paths);
+                Path path = getValidPath(values[i].getStringValue());
                 if (path != null && !paths.contains(path) && !path.equals(startingPath)) {
                     paths.add(path);
                     addedPaths.add(path);
@@ -198,7 +198,7 @@ public class CollectionListingAggregationResolver implements AggregationResolver
         return addedPaths;
     }
 
-    private Path getValidPath(String pathValue, List<Path> paths) {
+    private Path getValidPath(String pathValue) {
         try {
             return Path.fromString(pathValue);
         } catch (IllegalArgumentException e) {

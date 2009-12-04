@@ -86,7 +86,7 @@ public class TemplateBasedCreateController extends SimpleFormController {
     }
 
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings("unchecked" )
     protected Map referenceData(HttpServletRequest request) throws Exception {       
         RequestContext requestContext = RequestContext.getRequestContext();        
         SecurityContext securityContext = SecurityContext.getSecurityContext();

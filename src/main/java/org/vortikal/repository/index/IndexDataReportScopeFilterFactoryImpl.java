@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Set;
+
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.FieldSelector;
 import org.apache.lucene.document.FieldSelectorResult;

@@ -36,7 +36,6 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 
 /**
  * Assertion for matching on whether the current resource has a given resource
@@ -91,7 +90,6 @@ public class ResourceTypeAssertion extends AbstractRepositoryAssertion {
 
         try {
 
-            SecurityContext securityContext = SecurityContext.getSecurityContext();
             TypeInfo typeInfo = this.repository.getTypeInfo(resource);
             boolean match = false;
 

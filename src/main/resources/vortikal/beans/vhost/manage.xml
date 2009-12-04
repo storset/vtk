@@ -1158,7 +1158,9 @@
       <list>
         <bean class="org.vortikal.web.referencedata.provider.SpringResourceContentProvider">
           <property name="modelKey" value="systemInfoMessage" />
-          <property name="location" value="${manage.infoMessageLocation}" />
+          <property name="folderLocation" value="${manage.infoMessageFolderLocation}" />
+          <property name="repositoryId" value="${repositoryID}" />
+          <property name="defaultFile" value="${manage.infoMessageDefaultFile}" />
         </bean>
       </list>
     </property>

@@ -30,6 +30,9 @@
  */
 package org.vortikal.web.referencedata.provider;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,42 +41,74 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.io.Resource;
+import org.springframework.web.servlet.support.RequestContext;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 
 public class SpringResourceContentProvider implements ReferenceDataProvider, ApplicationContextAware {
 
     private ApplicationContext applicationContext;
-    private String location;
+    private String folderLocation;
+    private String repositoryId;
+    private String defaultFile;
     private String encoding = "utf-8";
     private String modelKey = "content";
-    
+
     @SuppressWarnings("unchecked")
-    public void referenceData(Map model, HttpServletRequest request)
-            throws Exception {
+    public void referenceData(Map model, HttpServletRequest request) throws Exception {
+        List<String> fileLocaltions = new ArrayList<String>();
+        RequestContext rc = new RequestContext(request);
+        Locale locale = rc.getLocale();
+        fileLocaltions.add(this.folderLocation + this.repositoryId + "_" + locale.getLanguage());
+        fileLocaltions.add(this.folderLocation + this.repositoryId);
+        fileLocaltions.add(this.folderLocation + this.defaultFile + "_" + locale.getLanguage());
+        fileLocaltions.add(this.folderLocation + this.defaultFile);
         try {
-            Resource resource = this.applicationContext.getResource(this.location);
-            if (resource.exists()) {
+            Resource resource = getResource(fileLocaltions);
+            if (resource != null) {
                 byte[] buffer = StreamUtil.readInputStream(resource.getInputStream());
                 String content = new String(buffer, this.encoding);
                 model.put(this.modelKey, content);
             }
-        } catch(Exception e) { }
+        } catch (Exception e) {
+            // ignore
+        }
     }
-    
-    public void setLocation(String location) {
-        this.location = location;
+
+    private Resource getResource(List<String> fileLocaltions) {
+        for (String fileLocation : fileLocaltions) {
+            try {
+                Resource resource = this.applicationContext.getResource(fileLocation);
+                if (resource.exists()) {
+                    return resource;
+                }
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return null;
     }
-    
+
+    public void setFolderLocation(String folderLocation) {
+        this.folderLocation = folderLocation;
+    }
+
+    public void setRepositoryId(String repositoryId) {
+        this.repositoryId = repositoryId;
+    }
+
+    public void setDefaultFile(String defaultFile) {
+        this.defaultFile = defaultFile;
+    }
+
     public void setEncoding(String encoding) {
         this.encoding = encoding;
     }
 
-    public void setApplicationContext(ApplicationContext applicationContext)
-            throws BeansException {
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
-    
+
     public void setModelKey(String modelKey) {
         this.modelKey = modelKey;
     }

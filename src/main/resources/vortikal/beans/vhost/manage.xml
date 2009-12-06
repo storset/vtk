@@ -716,7 +716,7 @@
   <bean id="createResource.nameReplacementMap" class="java.util.HashMap">
     <constructor-arg>
       <map>
-        <entry key="\+" value="-" />
+        <entry key="\s+" value="-" />
         <entry key="%" value="" />
         <entry key="æ" value="ae" />
         <entry key="ø" value="oe" />

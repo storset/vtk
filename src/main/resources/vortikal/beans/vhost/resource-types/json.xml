@@ -57,6 +57,11 @@
     <property name="type" value="JSON" />
     <property name="multiple" value="true" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="indexableAttributes">
+      <list>
+        <value>published-status</value>
+      </list>
+    </property>
   </bean>
 
 </beans>

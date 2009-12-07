@@ -111,7 +111,7 @@ public class Cache implements DataAccessor, InitializingBean {
     private int maxItems = 1000;
     private double evictionRatio = 0.1;
     private int removeItems;
-    private Items items = new Items();
+    private final Items items = new Items();
 
     private boolean gatherStatistics = false;
     private long hits = 0;
@@ -119,6 +119,7 @@ public class Cache implements DataAccessor, InitializingBean {
     
     private float loadChildrenSelectivelyThreshold = 0.05f;
     
+    @Override
     public boolean validate() throws DataAccessException {
         return this.wrappedAccessor.validate();
     }
@@ -165,6 +166,7 @@ public class Cache implements DataAccessor, InitializingBean {
     }
     
     
+    @Override
     public void afterPropertiesSet() {
         this.removeItems = (int) (this.maxItems * this.evictionRatio);
 
@@ -174,6 +176,7 @@ public class Cache implements DataAccessor, InitializingBean {
     }
     
 
+    @Override
     public ResourceImpl[] loadChildren(ResourceImpl parent) throws DataAccessException {
 
         List<ResourceImpl> found = new ArrayList<ResourceImpl>();
@@ -279,6 +282,7 @@ public class Cache implements DataAccessor, InitializingBean {
      * @return a <code>Resource</code> value
      * @exception DataAccessException if an error occurs
      */
+    @Override
     public ResourceImpl load(Path uri) throws DataAccessException {
         long start = System.currentTimeMillis();
 
@@ -351,6 +355,7 @@ public class Cache implements DataAccessor, InitializingBean {
         }
     }
 
+    @Override
     public void storeACL(ResourceImpl r) throws DataAccessException {
         List<Path> uris = new ArrayList<Path>();
         uris.add(r.getURI());
@@ -364,7 +369,7 @@ public class Cache implements DataAccessor, InitializingBean {
                 }
             }
         }
-        
+
         List<Path> lockedUris = this.lockManager.lock(uris);
         try {
             this.wrappedAccessor.storeACL(r); // Persist
@@ -379,18 +384,14 @@ public class Cache implements DataAccessor, InitializingBean {
     }
     
 
-    public void store(ResourceImpl r) throws DataAccessException {
-        List<Path> uris = new ArrayList<Path>();
-
-        uris.add(r.getURI());
-
-        List<Path> lockedUris = this.lockManager.lock(uris);
+    @Override
+    public void store(final ResourceImpl resource) throws DataAccessException {
+        List<Path> locked = this.lockManager.lock(resource.getURI());
         try {
-            this.wrappedAccessor.store(r); // Persist
-            this.items.remove(uris);       // Purge item from cache
-
+            this.wrappedAccessor.store(resource); // Persist
+            this.items.remove(resource.getURI()); // Purge item from cache
         } finally {
-            this.lockManager.unlock(lockedUris); // Release URI sync lock
+            this.lockManager.unlock(locked); // Release URI sync lock
 
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("cache size : " + this.items.size());
@@ -405,13 +406,11 @@ public class Cache implements DataAccessor, InitializingBean {
      * @param uri
      */
     public void purgeFromCache(Path uri) {
-        List<Path> uris = new ArrayList<Path>(1);
-        uris.add(uri);
-        List<Path> lockedUris = this.lockManager.lock(uris);
+        List<Path> locked = this.lockManager.lock(uri);
         try {
-            this.items.remove(lockedUris);
+            this.items.remove(locked);
         } finally {
-            this.lockManager.unlock(lockedUris);
+            this.lockManager.unlock(locked);
         }
     }
     
@@ -430,12 +429,13 @@ public class Cache implements DataAccessor, InitializingBean {
         }
     }
 
+    @Override
     public void copy(ResourceImpl r, ResourceImpl destParent, PropertySet newResource, boolean copyACLs,
                      PropertySet fixedProperties) throws DataAccessException {
         
         Path destURI = newResource.getURI();
 
-        List<Path> uris = new ArrayList<Path>();
+        List<Path> uris = new ArrayList<Path>(4);
         uris.add(r.getURI());
         uris.add(destURI);
 
@@ -451,13 +451,11 @@ public class Cache implements DataAccessor, InitializingBean {
         }
 
         List<Path> lockedUris = this.lockManager.lock(uris);
-
         try {
             // Persist copy operation
             this.wrappedAccessor.copy(r, destParent, newResource, copyACLs, fixedProperties);
             // Purge affected destination parent from cache
             this.items.remove(destParentURI);        
-
         } finally {
             this.lockManager.unlock(lockedUris); // Release URI sync locks
 
@@ -468,6 +466,7 @@ public class Cache implements DataAccessor, InitializingBean {
     }
     
 
+    @Override
     public void move(ResourceImpl r, ResourceImpl newResource) throws DataAccessException {
         Path destURI = newResource.getURI();
         List<Path> uris = new ArrayList<Path>();
@@ -508,6 +507,7 @@ public class Cache implements DataAccessor, InitializingBean {
     }
     
 
+    @Override
     public void delete(ResourceImpl r) throws DataAccessException {
         List<Path> uris = new ArrayList<Path>();
 
@@ -541,11 +541,13 @@ public class Cache implements DataAccessor, InitializingBean {
         }
     }
 
+    @Override
     public void deleteExpiredLocks(Date expireDate) throws DataAccessException {
         this.wrappedAccessor.deleteExpiredLocks(expireDate);
     }
     
 
+    @Override
     public Path[] discoverLocks(Path uri) throws DataAccessException {
         return this.wrappedAccessor.discoverLocks(uri);
     }
@@ -576,7 +578,7 @@ public class Cache implements DataAccessor, InitializingBean {
      * @param item a <code>Resource</code> value
      *
      */
-    private void enterResource(ResourceImpl item) {
+    private void enterResource(ResourceImpl resource) {
         synchronized (this.items) {
             if (this.items.size() > (this.maxItems - 1)) {
 
@@ -594,7 +596,7 @@ public class Cache implements DataAccessor, InitializingBean {
                 }
             }
 
-            this.items.put(item.getURI(), item);
+            this.items.put(resource.getURI(), resource);
         }
     }
     
@@ -655,9 +657,9 @@ public class Cache implements DataAccessor, InitializingBean {
         }
 
         public synchronized void put(Path uri, ResourceImpl resource) {
-            Item i = new Item(resource);
+            Item item = new Item(resource);
 
-            Item replaced = this.map.put(uri, i);
+            Item replaced = this.map.put(uri, item);
             if (replaced != null) {
                 // Remove replaced item from eviction list
                 // This avoid growing the eviction list if the same set of URIs
@@ -675,11 +677,11 @@ public class Cache implements DataAccessor, InitializingBean {
 
             // Put new item in eviction list head
             if (this.in != null) {
-                this.in.newer = i;
+                this.in.newer = item;
             }
 
-            i.older = this.in;
-            this.in = i;
+            item.older = this.in;
+            this.in = item;
 
             if (this.out == null) {
                 this.out = this.in;
@@ -775,10 +777,12 @@ public class Cache implements DataAccessor, InitializingBean {
         }
     }
 
+    @Override
     public Path[] discoverACLs(Path uri) throws DataAccessException {
         return this.wrappedAccessor.discoverACLs(uri);
     }
     
+    @Override
     public Set<Principal> discoverGroups() throws DataAccessException {
         return this.wrappedAccessor.discoverGroups();
     }

@@ -91,6 +91,7 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
     Map<String, PropertyTypeDefinition> storedFieldNamePropDefMap
             = new HashMap<String,PropertyTypeDefinition>();
 
+    @Override
     public void afterPropertiesSet() {
         populateTypeInfoCacheMaps(this.resourceTypePropDefsMap,
                                   this.storedFieldNamePropDefMap,
@@ -143,6 +144,7 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
      * Map <code>PropertySetImpl</code> to Lucene <code>Document</code>.
      * Used when indexing.
      */
+    @Override
     public Document getDocument(PropertySetImpl propSet, Set<Principal> aclReadPrincipals) 
         throws DocumentMappingException {
         Document doc = new Document();
@@ -268,6 +270,7 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
     }
 
 
+    @Override
     public FieldSelector getDocumentFieldSelector(final PropertySelect select) {
 
         FieldSelector selector = null;
@@ -330,6 +333,7 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
      * @throws DocumentMappingException
      */
     @SuppressWarnings("unchecked")
+    @Override
     public PropertySetImpl getPropertySet(Document doc)
             throws DocumentMappingException {
 
@@ -509,9 +513,12 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
                     // Selection can be of type JSONArray, in which case we index it as multi-value
                     if (selection instanceof JSONArray) {
                         for (Iterator iter = ((JSONArray) selection).iterator(); iter.hasNext();) {
-                            fieldValues.add(iter.next());
+                            Object nextVal = iter.next();
+                            if (nextVal != null) {
+                                fieldValues.add(nextVal);
+                            }
                         }
-                    } else {
+                    } else if (selection != null) {
                         fieldValues.add(selection);
                     }
                 }
@@ -532,7 +539,7 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
             // Don't index any JSON attributes of this prop, since some data apparently is broken.
             return new Field[0];
         }
-        
+
         return fields.toArray(new Field[fields.size()]);
     }
 

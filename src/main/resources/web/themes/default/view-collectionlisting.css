@@ -193,6 +193,7 @@ span.vrtx-add-event a.vrtx-ical-help {
 .vrtx-paging-wrapper {
 	margin: 0 0 1em 0;
 	display:block;
+	clear:left;
 }
 
 /* RSS - stuff */

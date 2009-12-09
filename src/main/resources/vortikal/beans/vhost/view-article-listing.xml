@@ -94,7 +94,7 @@
     <property name="queryParser" ref="searchParser" />
     <property name="sortOrderPropDefPointers">
       <list>
-        <value>publish-date</value>
+        <value>published-date</value>
       </list>
     </property>
     <property name="resourceTypeTree" ref="resourceTypeTree" />

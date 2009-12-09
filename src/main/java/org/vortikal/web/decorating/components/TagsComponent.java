@@ -85,8 +85,8 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
     private static final String PARAMETER_RESOURCE_TYPE_DESC = "Comma seperated list of resource types to search for tags in.";
 
     private static final String PARAMETER_SORT_SELECTED_TAG_BY = "sort-selected-by";
-    private static final String PARAMETER_SORT_SELECTED_TAG_BY_DESC = "Comma seperated list of attributesattributes to sort a selected tag "
-            + "from the result, each attribute in the format [prefix]:[name]:[sortdirection]. Prefix is optional. "
+    private static final String PARAMETER_SORT_SELECTED_TAG_BY_DESC = "Comma seperated list of attributes to sort a selected tag by "
+            + "from the result. Each attribute in the format [prefix]:[name]:[sortdirection]. Prefix is optional. "
             + "For example: resource:surname:asc";
 
     private RepositoryTagElementsDataProvider tagElementsProvider;

@@ -1,7 +1,10 @@
 package org.vortikal.web.decorating.components;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.text.html.HtmlPageFilter;
@@ -36,8 +39,8 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
     }
 
     @SuppressWarnings("unchecked")
-    protected List<String> getFilteredEntryValues(HtmlPageFilter filter, SyndFeed feed) throws Exception {
-        List<String> result = new ArrayList<String>();
+    protected Map<String,String> getFilteredEntryValues(HtmlPageFilter filter, SyndFeed feed) throws Exception {
+        Map<String,String> result = new LinkedHashMap<String,String>();
         List<SyndEntry> entries = feed.getEntries();
         for (SyndEntry entry : entries) {
             String htmlFragment = null;
@@ -46,7 +49,7 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
             HtmlPageParser parser = new HtmlPageParserImpl();
             HtmlFragment fragment = parser.parseFragment(htmlFragment);
             fragment.filter(filter);
-            result.add(fragment.getStringRepresentation());
+            result.put(entry.toString(),fragment.getStringRepresentation());
         }
         return result;
     }
@@ -76,9 +79,10 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
         return resultOrder;
     }
 
-    protected List<String> excludeEverythingButFirstTag(List<String> list) {
-        List<String> result = new ArrayList<String>();
-        for (String s : list) {
+    protected Map<String,String> excludeEverythingButFirstTag(Map<String,String> list) {
+        Map<String,String> result = new HashMap<String,String>();
+        for (String x : list.keySet()) {
+            String s = list.get(x);
             int l_index = -1;
             int r_index = -1;
             if (s != null) {
@@ -86,9 +90,9 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
                 r_index = s.indexOf(">");
             }
             if (r_index > -1 && l_index > -1) {
-                result.add(s.subSequence(l_index, r_index + 1).toString());
+                result.put(x,s.subSequence(l_index, r_index + 1).toString());
             } else {
-                result.add(null);
+                result.put(x,null);
             }
         }
         return result;

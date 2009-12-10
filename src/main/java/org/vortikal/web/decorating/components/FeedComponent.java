@@ -199,16 +199,16 @@ public class FeedComponent extends AbstractFeedComponent {
         } catch (Exception e) {
             throw new RuntimeException("Could not read feed url " + url, e);
         }
-
+                
         List<String> elementOrder = getElementOrder(PARAMETER_FEED_ELEMENT_ORDER, request);
         model.put("elementOrder", elementOrder);
 
-        List<String> imgMap = getFilteredEntryValues(getImgHtmlFilter(), feed);
+        Map<String,String> imgMap = getFilteredEntryValues(getImgHtmlFilter(), feed);
         imgMap = excludeEverythingButFirstTag(imgMap);
-        List<String> descriptionNoImage = getFilteredEntryValues(getNoImgHtmlFilter(), feed);
+        Map<String,String> descriptionNoImage = getFilteredEntryValues(getNoImgHtmlFilter(), feed);
         model.put("descriptionNoImage", descriptionNoImage);
         model.put("imageMap", imgMap);
-
+        
         model.put("feed", feed);
         model.put("conf", conf);
     }
@@ -243,4 +243,5 @@ public class FeedComponent extends AbstractFeedComponent {
     public void setLocalFeedFetcher(LocalFeedFetcher localFeedFetcher) {
         this.localFeedFetcher = localFeedFetcher;
     }
+   
 }

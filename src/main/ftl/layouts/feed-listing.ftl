@@ -91,16 +91,14 @@
 	  </#if>
   </#if>
   
-  <#if element = "description" && conf.itemDescription?exists && descriptionNoImage[counter-1]?exists && descriptionNoImage[counter-1]?has_content>
+  <#if element = "description" && conf.itemDescription?exists && descriptionNoImage[entry]?exists && descriptionNoImage[entry]?has_content>
     <div class="item-description">
-  	  ${descriptionNoImage[counter-1]?string}
+  	  ${descriptionNoImage[entry]?string}
     </div>
   </#if>
   
-  <#if element = "picture" && conf.itemPicture?exists && imageMap[counter-1]?exists && imageMap[counter-1]?has_content >
-  
-  	  <a class="vrtx-image" href="<#if entry.link?exists>${entry.link?html}<#else>${entry.uri?html}</#if>">${imageMap[counter-1]?string}</a>
-  
+  <#if element = "picture" && conf.itemPicture?exists && imageMap[entry]?exists && imageMap[entry]?has_content >
+  	  <a class="vrtx-image" href="<#if entry.link?exists>${entry.link?html}<#else>${entry.uri?html}</#if>">${imageMap[entry]?string}</a>
   </#if>
 
 </#macro>

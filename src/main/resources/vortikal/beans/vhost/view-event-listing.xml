@@ -146,7 +146,7 @@
   <bean id="eventListing.viewResolver" parent="decoratorViewResolver">
     <property name="views">
       <map>
-        <entry key="${override.listing.prefix}eventListing.view"  value-ref="eventListing.view" />
+        <entry key="${override.listing.prefix}eventListing.view"  value-ref="${override.listing.prefix}eventListing.view" />
       </map>
     </property>
   </bean>

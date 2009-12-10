@@ -80,7 +80,6 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
     }
 
     protected Map<String,String> excludeEverythingButFirstTag(Map<String,String> list) {
-        Map<String,String> result = new HashMap<String,String>();
         for (String x : list.keySet()) {
             String s = list.get(x);
             int l_index = -1;
@@ -90,12 +89,12 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
                 r_index = s.indexOf(">");
             }
             if (r_index > -1 && l_index > -1) {
-                result.put(x,s.subSequence(l_index, r_index + 1).toString());
+                list.put(x,s.subSequence(l_index, r_index + 1).toString());
             } else {
-                result.put(x,null);
+                list.put(x,null);
             }
         }
-        return result;
+        return list;
     }
 
     public void setImgHtmlFilter(HtmlPageFilter imgHtmlFilter) {

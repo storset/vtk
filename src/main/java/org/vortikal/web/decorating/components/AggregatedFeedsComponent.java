@@ -184,9 +184,9 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
         List<String> elementOrder = getElementOrder(PARAMETER_FEED_ELEMENT_ORDER, request);
         model.put("elementOrder", elementOrder);
 
-        List<String> imgMap = getFilteredEntryValues(getImgHtmlFilter(), feed);
+        Map<String,String> imgMap = getFilteredEntryValues(getImgHtmlFilter(), feed);
         imgMap = excludeEverythingButFirstTag(imgMap);
-        List<String> descriptionNoImage = getFilteredEntryValues(getNoImgHtmlFilter(), feed);
+        Map<String,String> descriptionNoImage = getFilteredEntryValues(getNoImgHtmlFilter(), feed);
         model.put("descriptionNoImage", descriptionNoImage);        
         model.put("imageMap", imgMap);
     

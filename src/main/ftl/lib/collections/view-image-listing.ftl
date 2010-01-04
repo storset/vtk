@@ -7,10 +7,8 @@
       <ul class="vrtx-image-listing">
       <#list images as image>
         <#local title = vrtx.propValue(image, 'title')?html />
-        <li>
+        <li class="vrtx-image-entry">
         
-          <div class="vrtx-image-entry">
-
             <div class="vrtx-image-container">
               <div class="vrtx-image">
                 <a href="${image.URI}"><img src="${image.URI}?vrtx=thumbnail" title="${title}" alt="${title}"></a>
@@ -52,8 +50,6 @@
               </#if>
               
             </div>
-          
-          </div>
           
         </li>
       </#list>

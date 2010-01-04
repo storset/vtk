@@ -6,6 +6,7 @@ img {
 
 ul.vrtx-image-listing {
   list-style-type: none;
+  padding: 0;
 }
 
 .vrtx-image-listing-container {

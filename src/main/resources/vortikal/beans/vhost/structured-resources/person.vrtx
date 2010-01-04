@@ -222,15 +222,6 @@ resourcetype person {
       ##
     }
     
-    project-list {
-      ##
-      [def showProjectList resource-prop-obj-val(".", "getRelatedProjects")]
-      [if showProjectList != null]
-        [call-component "resource:project-list"] 
-      [endif]
-      ##
-    }
-    
     vrtx-date-info {
     	##
     	[resource-props "."]
@@ -309,7 +300,7 @@ resourcetype person {
         </div>
         <div id="vrtx-additional-content">
            <comp:feeds />
-           <comp:project-list />
+           <resource:project-list />
         </div>
         <comp:vrtx-date-info />
       </body>

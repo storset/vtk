@@ -7,18 +7,29 @@ img {
 ul.vrtx-image-listing {
   list-style-type: none;
   padding: 0;
+  margin: 0;
+  float: left;
+  width: 100%;
 }
 
 .vrtx-image-listing-container {
-  margin-bottom: 8px;
+  padding-bottom: 8px;
+  float: left;
+  width: 100%;
 }
 
 .vrtx-image-entry {
+  float: left;
+  width: 100%;
+  padding-bottom: 10px;
+  clear: both;
+	/* OLD
   width: 100%;
   height: 1px;
   margin: 0 0 -1px;
   clear: both;
   padding: 5px;
+   */
 }
 
 .vrtx-image-container {

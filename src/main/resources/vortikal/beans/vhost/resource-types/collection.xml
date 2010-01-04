@@ -126,12 +126,12 @@
               </constructor-arg>
               <constructor-arg ref="TYPE_STRING" />
             </bean>
-            <!--bean class="org.vortikal.repository.resourcetype.Value">
+            <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>image-listing</value>
               </constructor-arg>
               <constructor-arg ref="TYPE_STRING" />
-            </bean-->
+            </bean>
           </list>
         </property>
       </bean>

@@ -104,7 +104,8 @@ label.resource\.hide-end-date,
 label.resource\.hide-location,
 label.resource\.show-dimension,
 label.resource\.show-description,
-label.resource\.show-keywords
+label.resource\.show-keywords,
+label.resource\.show-author
   {
   display: inline;
 }
@@ -271,7 +272,8 @@ hide-published-date label,
 .hide-introduction-image label,
 .show-dimension label,
 .show-description label,
-.show-keywords label
+.show-keywords label,
+.show-author label
   {
   margin: 0;
   margin-top: .3em;
@@ -286,7 +288,8 @@ hide-published-date label,
 .hide-introduction-image input,
 .show-dimension input,
 .show-description input,
-.show-keywords input
+.show-keywords input,
+.show-author input
   {
   margin: 0;
   margin-right: .2em;

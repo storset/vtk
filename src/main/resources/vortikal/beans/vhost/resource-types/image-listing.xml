@@ -21,6 +21,7 @@
         <ref bean="imageListing.showDescriptionPropDef" />
         <ref bean="imageListing.showKeywordsPropDef" />
         <ref bean="imageListing.showDimensionPropDef" />
+        <ref bean="imageListing.showAuthorPropDef" />
       </list>
     </property>
   </bean>
@@ -60,6 +61,10 @@
 
   <bean id="imageListing.showKeywordsPropDef" parent="imageListing.showHidePropDef">
     <property name="name" value="show-keywords" />
+  </bean>
+  
+  <bean id="imageListing.showAuthorPropDef" parent="imageListing.showHidePropDef">
+    <property name="name" value="show-author" />
   </bean>
 
   <bean id="resourceIsImageListing" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">

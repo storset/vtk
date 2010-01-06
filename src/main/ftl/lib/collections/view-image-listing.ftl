@@ -48,6 +48,11 @@
                   ${width} x ${height}
                 </div>
               </#if>
+             
+              <#local author = vrtx.propValue(image, 'authorName', '', 'content') />
+                <div class="vrtx-image-author">
+                  ${author}
+                </div>
               
             </div>
           

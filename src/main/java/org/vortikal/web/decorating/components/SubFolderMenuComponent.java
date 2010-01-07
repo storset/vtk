@@ -312,7 +312,9 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         }
 
         menu.setComparator(new ListMenuComparator(menuRequest.getLocale(), menuRequest.getImportancePropDef(),
-                this.navigationTitlePropDef, menuRequest.isAscendingSort()));
+                this.navigationTitlePropDef, menuRequest.isAscendingSort(), menuRequest.isSortByName(), menuRequest
+                        .getSortProperty()));
+
         menu.addAllItems(toplevelItems);
         menu.setTitle(menuRequest.getTitle());
         menu.setLabel(this.modelName);
@@ -339,11 +341,15 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         List<PropertySet> children = childMap.get(resource.getURI());
         if (children != null) {
             ListMenu<PropertySet> subMenu = new ListMenu<PropertySet>();
+
             subMenu.setComparator(new ListMenuComparator(menuRequest.getLocale(), menuRequest.getImportancePropDef(),
-                    this.navigationTitlePropDef, menuRequest.isAscendingSort()));
+                    this.navigationTitlePropDef, menuRequest.isAscendingSort(), menuRequest.isSortByName(),
+                    menuRequest.getSortProperty()));
+
             for (PropertySet child : children) {
                 subMenu.addItem(buildItem(child, childMap, menuRequest));
             }
+
             URL moreUrl = this.viewService.constructURL(resource.getURI());
             subMenu.setMoreUrl(moreUrl);
             subMenu.setMaxNumberOfItems(menuRequest.getMaxNumberOfChildren());
@@ -358,6 +364,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         private String title;
         private PropertyTypeDefinition sortProperty;
         private boolean ascendingSort = true;
+        private boolean sortByName = false;
         private int resultSets = 1;
         private int groupResultSetsBy = 0;
         private int freezeAtLevel = 0;
@@ -589,6 +596,9 @@ public class SubFolderMenuComponent extends ListMenuComponent {
             }
             if ("title".equals(sortFieldParam)) {
                 this.sortProperty = titlePropDef;
+            } else if ("name".equals(sortFieldParam)) {
+                this.sortProperty = null;
+                this.setSortByName(true);
             } else if (!"name".equals(sortFieldParam)) {
                 throw new DecoratorComponentException("Illegal value for parameter '" + PARAMETER_SORT
                         + "': must be one of ('name', 'title')");
@@ -615,6 +625,14 @@ public class SubFolderMenuComponent extends ListMenuComponent {
 
         public int getMaxNumberOfChildren() {
             return maxNumberOfChildren;
+        }
+
+        public void setSortByName(boolean sortByName) {
+            this.sortByName = sortByName;
+        }
+
+        public boolean isSortByName() {
+            return sortByName;
         }
     }
 

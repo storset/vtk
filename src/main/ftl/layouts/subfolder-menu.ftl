@@ -54,7 +54,7 @@
           <div class="vrtx-group-${groupCount?html}">
   </#if>
   <ul class="resultset-${currentCount?html}">
-    <#list menu.itemsSorted as item>
+    <#list menu.items as item>
       <li> 
         <@displayItem item=item />
       </li>
@@ -68,7 +68,7 @@
 
 <#macro displaySubMenu menu>
   <ul>
-    <#list menu.itemsSorted as item>
+    <#list menu.items as item>
       <li>   
         <@displayItem item=item />
       </li>

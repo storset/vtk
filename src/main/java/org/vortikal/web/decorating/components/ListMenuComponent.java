@@ -656,7 +656,9 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         private Collator collator;
         private PropertyTypeDefinition importancePropertyDef;
         private PropertyTypeDefinition navigationTitlePropDef;
+        private PropertyTypeDefinition overrideSortProp;
         private boolean ascending = true;
+        private boolean sortByName = false;
 
         public ListMenuComparator(Locale locale, PropertyTypeDefinition importancePropertyDef,
                 PropertyTypeDefinition navigationTitlePropDef) {
@@ -666,12 +668,29 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         }
 
         public ListMenuComparator(Locale locale, PropertyTypeDefinition importancePropertyDef,
-                PropertyTypeDefinition navigationTitlePropDef, boolean ascending) {
+                PropertyTypeDefinition navigationTitlePropDef, boolean ascending, boolean sortByName,
+                PropertyTypeDefinition overrideSortProp) {
             this(locale, importancePropertyDef, navigationTitlePropDef);
             this.ascending = ascending;
+            this.overrideSortProp = overrideSortProp;
+            this.sortByName = sortByName;
         }
 
         public int compare(MenuItem<PropertySet> i1, MenuItem<PropertySet> i2) {
+            if(sortByName){
+                if (ascending) {
+                    return collator.compare(i1.getValue().getName(), i2.getValue().getName());
+                }
+                return collator.compare(i2.getValue().getName(), i1.getValue().getName());
+            }
+            if (overrideSortProp != null) {
+                String overrideValue1 = i1.getValue().getProperty(overrideSortProp).getStringValue();
+                String overrideValue2 = i2.getValue().getProperty(overrideSortProp).getStringValue();
+                if (ascending) {
+                    return collator.compare(overrideValue1, overrideValue2);
+                }
+                return collator.compare(overrideValue2, overrideValue1);
+            }
             if (this.importancePropertyDef != null) {
                 int importance1 = 0, importance2 = 0;
                 if (i1.getValue().getProperty(this.importancePropertyDef) != null) {
@@ -702,10 +721,10 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             } else {
                 value2 = i2.getTitle();
             }
-            if (!ascending) {
-                return collator.compare(value2, value1);
+            if (ascending) {
+                return collator.compare(value1, value2);
             }
-            return this.collator.compare(value1, value2);
+            return collator.compare(value2, value1);
         }
     }
 

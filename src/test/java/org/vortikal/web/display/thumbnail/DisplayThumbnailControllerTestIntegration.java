@@ -11,6 +11,7 @@ import javax.servlet.ServletOutputStream;
 
 import org.jmock.Expectations;
 import org.springframework.web.servlet.ModelAndView;
+import org.vortikal.repository.ContentStream;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
@@ -46,7 +47,11 @@ public class DisplayThumbnailControllerTestIntegration extends AbstractControlle
         prepareRequest(false, true);
 
         // No thumbnail, so we should redirect
-        context.checking(new Expectations() {{ one(mockResponse).sendRedirect(requestPath.toString()); }});
+        context.checking(new Expectations() {
+            {
+                one(mockResponse).sendRedirect(requestPath.toString());
+            }
+        });
 
         handleRequest();
     }
@@ -55,7 +60,12 @@ public class DisplayThumbnailControllerTestIntegration extends AbstractControlle
         prepareRequest(true, true);
 
         // No mimetype for binary data, so we should redirect
-        context.checking(new Expectations() {{ one(mockThumbnail).getBinaryMimeType(); will(returnValue("")); }});
+        context.checking(new Expectations() {
+            {
+                one(mockThumbnail).getBinaryMimeType();
+                will(returnValue(""));
+            }
+        });
 
         handleRequest();
     }
@@ -68,24 +78,57 @@ public class DisplayThumbnailControllerTestIntegration extends AbstractControlle
         ImageIO.write(image, "png", out);
         final byte[] imageBytes = out.toByteArray();
         out.close();
-        final InputStream in = new ByteArrayInputStream(imageBytes);
+        InputStream in = new ByteArrayInputStream(imageBytes);
+        final ContentStream contentStream = new ContentStream(in, imageBytes.length);
 
-        context.checking(new Expectations() {{ atLeast(2).of(mockThumbnail).getBinaryMimeType(); will(returnValue(thumbnailMimeType)); }});
-        context.checking(new Expectations() {{ one(mockThumbnail).getBinaryStream(); will(returnValue(in)); }});
-        context.checking(new Expectations() {{ one(mockResponse).setContentType(thumbnailMimeType); }});
-        context.checking(new Expectations() {{ one(mockResponse).setContentLength(imageBytes.length); }});
+        context.checking(new Expectations() {
+            {
+                atLeast(2).of(mockThumbnail).getBinaryMimeType();
+                will(returnValue(thumbnailMimeType));
+            }
+        });
+        context.checking(new Expectations() {
+            {
+                one(mockThumbnail).getBinaryStream();
+                will(returnValue(contentStream));
+            }
+        });
+        context.checking(new Expectations() {
+            {
+                one(mockResponse).setContentType(thumbnailMimeType);
+            }
+        });
+        context.checking(new Expectations() {
+            {
+                one(mockResponse).setContentLength(imageBytes.length);
+            }
+        });
 
         final ServletOutputStream responseOut = new MockServletOutputStream();
-        context.checking(new Expectations() {{ one(mockResponse).getOutputStream(); will(returnValue(responseOut)); }});
+        context.checking(new Expectations() {
+            {
+                one(mockResponse).getOutputStream();
+                will(returnValue(responseOut));
+            }
+        });
 
         handleRequest();
     }
 
     private void prepareRequest(final boolean withThumbnail, boolean expectRedirect) throws Exception {
         // Retrieve the image to display thumbnail for
-        context.checking(new Expectations() {{ one(mockRepository).retrieve(null, requestPath, true); will(returnValue(getImage(withThumbnail))); }});
+        context.checking(new Expectations() {
+            {
+                one(mockRepository).retrieve(null, requestPath, true);
+                will(returnValue(getImage(withThumbnail)));
+            }
+        });
         if (expectRedirect) {
-            context.checking(new Expectations() {{ one(mockResponse).sendRedirect(requestPath.toString()); }});
+            context.checking(new Expectations() {
+                {
+                    one(mockResponse).sendRedirect(requestPath.toString());
+                }
+            });
         }
     }
 
@@ -103,7 +146,12 @@ public class DisplayThumbnailControllerTestIntegration extends AbstractControlle
             thumbnailPropDef.setNamespace(Namespace.DEFAULT_NAMESPACE);
             thumbnailPropDef.setName(PropertyType.THUMBNAIL_PROP_NAME);
 
-            context.checking(new Expectations() {{ one(mockThumbnail).getDefinition(); will(returnValue(thumbnailPropDef)); }});
+            context.checking(new Expectations() {
+                {
+                    one(mockThumbnail).getDefinition();
+                    will(returnValue(thumbnailPropDef));
+                }
+            });
 
             image.addProperty(mockThumbnail);
         }

@@ -175,7 +175,7 @@ public abstract class AtomFeedController implements Controller {
             } else {
                 entry.addAuthor(author.getFormattedValue("name", null));
             }
-        }else{
+        } else {
             entry.addAuthor("");
         }
 
@@ -207,7 +207,7 @@ public abstract class AtomFeedController implements Controller {
         String summary = getIntroduction(resource);
         Property pic = resource.getProperty(NS, PropertyType.PICTURE_PROP_NAME);
         if (pic == null) {
-            pic = resource.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, PropertyType.PICTURE_PROP_NAME);
+            pic = resource.getProperty(SRNS, PropertyType.PICTURE_PROP_NAME);
         }
         if (pic != null) {
             String imageRef = pic.getStringValue();
@@ -240,7 +240,7 @@ public abstract class AtomFeedController implements Controller {
         Property mediaRef = null;
         mediaRef = result.getProperty(NS, PropertyType.MEDIA_PROP_NAME);
         if (mediaRef == null) {
-            mediaRef = result.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, PropertyType.MEDIA_PROP_NAME);
+            mediaRef = result.getProperty(SRNS, PropertyType.MEDIA_PROP_NAME);
         }
         return mediaRef;
     }
@@ -249,10 +249,10 @@ public abstract class AtomFeedController implements Controller {
         Property publishDate = null;
         if (this.publishedDatePropDef != null) {
             publishDate = result.getProperty(this.publishedDatePropDef);
-        }      
-        if (publishDate == null && type.equals("structured-event")) {
-            publishDate = result.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, "start-date");
-        }else if (publishDate == null){
+        }
+        if (publishDate == null && (type != null && type.equals("structured-event"))) {
+            publishDate = result.getProperty(SRNS, "start-date");
+        } else if (publishDate == null) {
             publishDate = result.getProperty(NS, "publish-date");
         }
         return publishDate;
@@ -262,9 +262,9 @@ public abstract class AtomFeedController implements Controller {
         Property author = null;
         if (this.authorPropDef != null) {
             author = result.getProperty(this.authorPropDef);
-        } 
-        if(author == null){
-            author = result.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, "author");
+        }
+        if (author == null) {
+            author = result.getProperty(SRNS, "author");
         }
         return author;
     }
@@ -272,7 +272,7 @@ public abstract class AtomFeedController implements Controller {
     protected String getIntroduction(PropertySet resource) {
         Property prop = resource.getProperty(NS, PropertyType.INTRODUCTION_PROP_NAME);
         if (prop == null) {
-            prop = resource.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, PropertyType.INTRODUCTION_PROP_NAME);
+            prop = resource.getProperty(SRNS, PropertyType.INTRODUCTION_PROP_NAME);
         }
         return prop != null ? prop.getFormattedValue() : null;
     }

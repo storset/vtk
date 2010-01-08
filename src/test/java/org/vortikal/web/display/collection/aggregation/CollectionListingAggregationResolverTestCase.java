@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.display.collection.aggregation;
 
+import org.jmock.Expectations;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
@@ -51,6 +52,7 @@ import org.vortikal.web.AbstractControllerTest;
 public class CollectionListingAggregationResolverTestCase extends AbstractControllerTest {
 
     private CollectionListingAggregationResolver aggregationReslover;
+    private String[] aggregationPropValues = { "/barfolder", "/foo/bar" };
 
     @Override
     protected void setUp() throws Exception {
@@ -61,30 +63,32 @@ public class CollectionListingAggregationResolverTestCase extends AbstractContro
         this.aggregationReslover.setRepository(mockRepository);
     }
 
-    public void testRecursiveAggregation() throws Exception {
+    public void testRecursiveAggregation() {
 
-        // XXX god damn it, all the mocking to do a simple test...
+        // XXX handle mocking
 
         // runTest(getAndQuery(), true, true, true);
     }
 
-    public void testExtend() {
-        runTest(new UriPrefixQuery("/someuri/", TermOperator.EQ, false), true, false, true);
-        runTest(getAndQuery(), true, false, true);
-        runTest(getNestedQuery(), true, false, true);
-    }
-
-    public void testNullTermOperator() {
-        AndQuery query = new AndQuery();
-        query.add(new UriPrefixQuery("/someuri", null, false));
-        runTest(query, true, false, true);
-    }
-
     public void testNotExtended() {
         runTest(getAndQuery(), false, false, false);
+    }
+
+    public void testNotExtendedWithAggregationPropSet() throws Exception {
         OrQuery original = new OrQuery();
         original.add(new TypeTermQuery("someterm", TermOperator.IN));
         original.add(new TypeTermQuery("someotherterm", TermOperator.IN));
+
+        for (String aggregationPropValue : this.aggregationPropValues) {
+            final String val = aggregationPropValue;
+            context.checking(new Expectations() {
+                {
+                    one(mockRepository).retrieve(null, Path.fromString(val), false);
+                    will(returnValue(null));
+                }
+            });
+        }
+
         runTest(original, true, false, false);
     }
 
@@ -130,8 +134,7 @@ public class CollectionListingAggregationResolverTestCase extends AbstractContro
         ResourceImpl collection = new ResourceImpl(Path.fromString("/rootCollection"));
 
         if (withAggregationProp) {
-            String[] values = { "/barfolder", "/foo/bar" };
-            Property aggregatedProp = getAggregatedPropTypeDef().createProperty(values);
+            Property aggregatedProp = getAggregatedPropTypeDef().createProperty(aggregationPropValues);
             collection.addProperty(aggregatedProp);
         }
 

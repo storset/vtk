@@ -13,6 +13,7 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceImpl;
 import org.vortikal.repository.resourcetype.DateValueFormatter;
+import org.vortikal.repository.resourcetype.HtmlValueFormatter;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.StringValueFormatter;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
@@ -25,7 +26,7 @@ public class ICalControllerTest extends AbstractControllerTest {
     private PropertyTypeDefinitionImpl startDatePropDef;
     private PropertyTypeDefinitionImpl endDatePropDef;
     private PropertyTypeDefinitionImpl locationPropDef;
-
+    private PropertyTypeDefinitionImpl introductionPropDef;
 
     @Override
     protected void setUp() throws Exception {
@@ -33,25 +34,24 @@ public class ICalControllerTest extends AbstractControllerTest {
         controller = new ICalController();
         controller.setRepository(mockRepository);
 
-        startDatePropDef = getPropDef(Namespace.DEFAULT_NAMESPACE, "start-date", Type.DATE,
-                new DateValueFormatter());
+        startDatePropDef = getPropDef(Namespace.DEFAULT_NAMESPACE, "start-date", Type.DATE, new DateValueFormatter());
         controller.setStartDatePropDef(startDatePropDef);
 
-        endDatePropDef = getPropDef(Namespace.DEFAULT_NAMESPACE, "end-date", Type.DATE,
-                new DateValueFormatter());
+        endDatePropDef = getPropDef(Namespace.DEFAULT_NAMESPACE, "end-date", Type.DATE, new DateValueFormatter());
         controller.setEndDatePropDef(endDatePropDef);
 
-        locationPropDef = getPropDef(Namespace.DEFAULT_NAMESPACE, "location", Type.STRING,
-                new StringValueFormatter());
+        locationPropDef = getPropDef(Namespace.DEFAULT_NAMESPACE, "location", Type.STRING, new StringValueFormatter());
         controller.setLocationPropDef(locationPropDef);
-    }
 
+        introductionPropDef = getPropDef(Namespace.DEFAULT_NAMESPACE, "introduction", Type.HTML,
+                new HtmlValueFormatter());
+        controller.setIntroductionPropDef(introductionPropDef);
+    }
 
     public Path getRequestPath() {
         requestPath = Path.fromString("/event.html?ical");
         return requestPath;
     }
-
 
     public void testCreateICal() throws Exception {
 
@@ -90,7 +90,6 @@ public class ICalControllerTest extends AbstractControllerTest {
         // TODO test the outputstream
 
     }
-
 
     private Resource getEvent() {
         ResourceImpl event = new ResourceImpl(requestPath);

@@ -11,19 +11,16 @@ public class URIValidatorTest extends TestCase {
         this.validator = new URIValidator();
     }
 
-
     public void testValidateCopyURIs() {
-        assertValidity("/", "", "Cannot copy or move the root resource ('/')");
-        assertValidity("", "/", "Cannot copy or move to the root resource ('/')");
+        assertValidity("/", "/", "Cannot copy or move the root resource ('/')");
+        assertValidity("/someURI", "/", "Cannot copy or move to the root resource ('/')");
         assertValidity("/copyURI", "/copyURI", "Cannot copy or move a resource to itself");
-        assertValidity("/copyURI", "/copyURI/", "Cannot copy or move a resource into itself");
     }
 
-    private void assertValidity(String srcUri, String destUri, 
-            String exceptionMessage) {
+    private void assertValidity(String srcUri, String destUri, String exceptionMessage) {
         try {
             validator.validateCopyURIs(Path.fromString(srcUri), Path.fromString(destUri));
-            fail("Should throw IllegalOperationException");
+            fail("Should fail...");
         } catch (IllegalOperationException ioe) {
             assertNotNull("Exception is NULL", ioe);
             assertEquals("Wrong exception message", exceptionMessage, ioe.getMessage());

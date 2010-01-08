@@ -36,6 +36,7 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceImpl;
+import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.ValueFactoryImpl;
@@ -80,11 +81,11 @@ public class CollectionListingAggregationResolverTest extends AbstractController
         original.add(new TypeTermQuery("someotherterm", TermOperator.IN));
 
         for (String aggregationPropValue : this.aggregationPropValues) {
-            final String val = aggregationPropValue;
+            final Path path = Path.fromString(aggregationPropValue);
             context.checking(new Expectations() {
                 {
-                    one(mockRepository).retrieve(null, Path.fromString(val), false);
-                    will(returnValue(null));
+                    one(mockRepository).retrieve(null, path, false);
+                    will(throwException(new ResourceNotFoundException(path)));
                 }
             });
         }

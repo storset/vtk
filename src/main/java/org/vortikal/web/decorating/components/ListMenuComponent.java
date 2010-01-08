@@ -677,7 +677,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         }
 
         public int compare(MenuItem<PropertySet> i1, MenuItem<PropertySet> i2) {
-            if(sortByName){
+            if (sortByName) {
                 if (ascending) {
                     return collator.compare(i1.getValue().getName(), i2.getValue().getName());
                 }
@@ -703,21 +703,21 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
                     return importance2 - importance1;
                 }
             }
-            String x1 = null, x2 = null;
+            String navigationTitleValue1 = null, navigationTitleValue2 = null;
             if (i1.getValue().getProperty(this.navigationTitlePropDef) != null) {
-                x1 = i1.getValue().getProperty(navigationTitlePropDef).getStringValue();
+                navigationTitleValue1 = i1.getValue().getProperty(navigationTitlePropDef).getStringValue();
             }
             if (i2.getValue().getProperty(this.navigationTitlePropDef) != null) {
-                x2 = i2.getValue().getProperty(navigationTitlePropDef).getStringValue();
+                navigationTitleValue2 = i2.getValue().getProperty(navigationTitlePropDef).getStringValue();
             }
             String value1, value2;
-            if (x1 != null) {
-                value1 = x1;
+            if (navigationTitleValue1 != null) {
+                value1 = navigationTitleValue1;
             } else {
                 value1 = i1.getTitle();
             }
-            if (x2 != null) {
-                value2 = x2;
+            if (navigationTitleValue2 != null) {
+                value2 = navigationTitleValue2;
             } else {
                 value2 = i2.getTitle();
             }

@@ -343,8 +343,8 @@ public class SubFolderMenuComponent extends ListMenuComponent {
             ListMenu<PropertySet> subMenu = new ListMenu<PropertySet>();
 
             subMenu.setComparator(new ListMenuComparator(menuRequest.getLocale(), menuRequest.getImportancePropDef(),
-                    this.navigationTitlePropDef, menuRequest.isAscendingSort(), menuRequest.isSortByName(),
-                    menuRequest.getSortProperty()));
+                    this.navigationTitlePropDef, menuRequest.isAscendingSort(), menuRequest.isSortByName(), menuRequest
+                            .getSortProperty()));
 
             for (PropertySet child : children) {
                 subMenu.addItem(buildItem(child, childMap, menuRequest));
@@ -590,18 +590,16 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         }
 
         private void initSortField(DecoratorRequest request) {
-            String sortFieldParam = "title";
-            if (request.getStringParameter(PARAMETER_SORT) != null) {
-                sortFieldParam = request.getStringParameter(PARAMETER_SORT);
-            }
-            if ("title".equals(sortFieldParam)) {
-                this.sortProperty = titlePropDef;
-            } else if ("name".equals(sortFieldParam)) {
-                this.sortProperty = null;
-                this.setSortByName(true);
-            } else if (!"name".equals(sortFieldParam)) {
-                throw new DecoratorComponentException("Illegal value for parameter '" + PARAMETER_SORT
-                        + "': must be one of ('name', 'title')");
+            String sortFieldParam = request.getStringParameter(PARAMETER_SORT);
+            if (sortFieldParam != null) {
+                if ("title".equals(sortFieldParam)) {
+                    this.sortProperty = titlePropDef;
+                } else if ("name".equals(sortFieldParam)) {
+                    this.setSortByName(true);
+                } else if (!"name".equals(sortFieldParam)) {
+                    throw new DecoratorComponentException("Illegal value for parameter '" + PARAMETER_SORT
+                            + "': must be one of ('name', 'title')");
+                }
             }
 
             String sortDirectionParam = request.getStringParameter(PARAMETER_SORT_DIRECTION);

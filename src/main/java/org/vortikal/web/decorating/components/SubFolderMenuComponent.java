@@ -596,7 +596,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
                     this.sortProperty = titlePropDef;
                 } else if ("name".equals(sortFieldParam)) {
                     this.setSortByName(true);
-                } else if (!"name".equals(sortFieldParam)) {
+                } else {
                     throw new DecoratorComponentException("Illegal value for parameter '" + PARAMETER_SORT
                             + "': must be one of ('name', 'title')");
                 }

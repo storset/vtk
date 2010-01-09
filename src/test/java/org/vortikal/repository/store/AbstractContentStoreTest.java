@@ -259,10 +259,8 @@ public abstract class AbstractContentStoreTest extends TestCase {
         // Verify content
         byte[] content = getContent(getStore().getInputStream(Path.fromString("/a/x/file1.txt")));
         assertTrue(equals(contentFile1, content));
-        System.out.println("__foofoo");
         content = getContent(getStore().getInputStream(Path.fromString("/a/x/file2.txt")));
         assertTrue(equals(contentFile2, content));
-        System.out.println("__foofoo");
         content = getContent(getStore().getInputStream(Path.fromString("/a/x/file3.txt")));
         assertTrue(equals(contentFile3, content));
         

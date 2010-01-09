@@ -42,14 +42,11 @@ public class RepositoryTestIntegration extends AbstractBeanContextTestIntegratio
 
     private Repository repository;
 
-
     protected void setUp() throws Exception {
         super.setUp();
-        ApplicationContext ctx = getApplicationContext(false, "resource-types/resource.xml",
-                "repository.xml");
+        ApplicationContext ctx = getApplicationContext("resource-types/resource.xml", "repository.xml");
         repository = (Repository) ctx.getBean("repository");
     }
-
 
     public void testRetrieve() throws Exception {
         Resource root = repository.retrieve(null, Path.ROOT, true);

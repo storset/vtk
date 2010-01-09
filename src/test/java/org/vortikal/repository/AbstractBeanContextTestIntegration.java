@@ -43,21 +43,15 @@ public abstract class AbstractBeanContextTestIntegration extends TestCase {
     private final static String configBasePath = "classpath:/vortikal/beans/vhost/";
 
     static {
-        System.setProperty("org.apache.commons.logging.Log",
-                "org.apache.commons.logging.impl.Log4JLogger");
+        System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.Log4JLogger");
         System.setProperty("log4j.configuration", "log4j.test.xml");
     }
 
-
-    protected ApplicationContext getApplicationContext(boolean inMemory, String... configFiles) {
+    protected ApplicationContext getApplicationContext(String... configFiles) {
 
         List<String> configLocations = new ArrayList<String>();
-        if (!inMemory) {
-            configLocations.add(configBasePath + "config/property-configurer.xml");
-        } else {
-            configLocations.add(configBasePath + "config/in-memory-property-configurer.xml");
-        }
-        
+        configLocations.add(configBasePath + "config/property-configurer.xml");
+
         configLocations.add(configBasePath + "common/html-util.xml");
         configLocations.add(configBasePath + "common/common.xml");
         configLocations.add(configBasePath + "common/security.xml");
@@ -67,10 +61,8 @@ public abstract class AbstractBeanContextTestIntegration extends TestCase {
             configLocations.add(configBasePath + configFile);
         }
 
-        return new ClassPathXmlApplicationContext(configLocations
-                .toArray(new String[configLocations.size()]));
+        return new ClassPathXmlApplicationContext(configLocations.toArray(new String[configLocations.size()]));
     }
-
 
     protected void checkForBeanInConfig(ApplicationContext ctx, String beanDef) {
         assertTrue("Expected bean not found: " + beanDef, ctx.containsBean(beanDef));

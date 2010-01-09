@@ -42,13 +42,13 @@ import org.vortikal.text.html.HtmlUtil;
 public class CommonApplicationContextTestIntegration extends AbstractBeanContextTestIntegration {
 
     public void testCommonConfiguration() {
-        ApplicationContext ctx = getApplicationContext(false, new String[] {});
+        ApplicationContext ctx = getApplicationContext(new String[] {});
 
         checkForBeanInConfig(ctx, "defaultMessageSource");
         ResourceBundleMessageSource resourceBundleMessageSource = (ResourceBundleMessageSource) ctx
                 .getBean("defaultMessageSource");
-        String message = resourceBundleMessageSource.getMessage("title.admin",
-                new String[] { "testfolder" }, new Locale("en"));
+        String message = resourceBundleMessageSource.getMessage("title.admin", new String[] { "testfolder" },
+                new Locale("en"));
         assertEquals("Managing: testfolder", message);
 
         checkForBeanInConfig(ctx, "htmlUtil");

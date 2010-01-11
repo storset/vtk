@@ -1,6 +1,15 @@
 <#import "../vortikal.ftl" as vrtx />
 
 <#macro displayImages imageListing collection>
+  <#local galleryListing = vrtx.propValue(collection, 'display-type', '', 'imgl') == 'gallery' />
+  <#if galleryListing == false>
+    <@displayDefault imageListing collection />
+  <#else>
+    <@displayGallery imageListing collection />
+  </#if>
+</#macro>
+
+<#macro displayDefault imageListing collection>
   <#local images=imageListing.files />
   <#if (images?size > 0)>
     <div class="vrtx-image-listing-container">
@@ -65,4 +74,10 @@
     </div>
     <p/>
   </#if>
+</#macro>
+
+<#macro displayGallery imageListing collection>
+
+  <#-- keep your pants on, I'm working on it... -->
+  
 </#macro>

@@ -427,6 +427,7 @@
             <ref bean="pageLimitPropDef" />
             <ref bean="aggregationPropDef" />
             <ref bean="recursiveAggregationPropDef" />
+            <ref bean="imageListing.displayType" />
             <ref bean="imageListing.showDescriptionPropDef" />
             <ref bean="imageListing.showKeywordsPropDef" />
             <ref bean="imageListing.showDimensionPropDef" />

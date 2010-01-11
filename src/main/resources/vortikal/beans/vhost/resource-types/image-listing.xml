@@ -18,6 +18,7 @@
     </property>
     <property name="propertyTypeDefinitions">
       <list>
+        <ref bean="imageListing.displayType" />
         <ref bean="imageListing.showDescriptionPropDef" />
         <ref bean="imageListing.showKeywordsPropDef" />
         <ref bean="imageListing.showDimensionPropDef" />
@@ -65,6 +66,43 @@
   
   <bean id="imageListing.showAuthorPropDef" parent="imageListing.showHidePropDef">
     <property name="name" value="show-author" />
+  </bean>
+
+  <bean id="imageListing.displayType" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="name" value="display-type" />
+    <property name="type" value="STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+    <property name="valueFormatter">
+      <bean class="org.vortikal.repository.resourcetype.MessageSourceValueFormatter">
+        <constructor-arg value="vortikal.beans.vhost.resource-types.properties.image-listing-display-as-gallery" />
+        <constructor-arg value="STRING" />
+      </bean>
+    </property>
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="values">
+          <list>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>gallery</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+          </list>
+        </property>
+      </bean>
+    </property>
+    <property name="metadata">
+      <map>
+        <entry key="editingHints">
+          <map>
+            <entry key="radio" value="true" />
+          </map>
+        </entry>
+      </map>
+    </property>
   </bean>
 
   <bean id="resourceIsImageListing" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">

@@ -41,7 +41,7 @@ public abstract class StructuredResourceTestSetup extends AbstractBeanContextTes
     protected void setUp() throws Exception {
         super.setUp();
 
-        ApplicationContext ctx = getApplicationContext(false, "resource-types/resource.xml", "resource-types/file.xml",
+        ApplicationContext ctx = getApplicationContext("resource-types/resource.xml", "resource-types/file.xml",
                 "repository.xml", "structured-resources-management.xml", "resource-types/json.xml");
 
         srdp = (StructuredResourceParser) ctx.getBean("structuredResource.parser");

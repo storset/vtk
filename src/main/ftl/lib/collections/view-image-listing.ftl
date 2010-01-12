@@ -103,15 +103,6 @@
             <li><a href="${image.URI}" title="${title}"><img src="${image.URI}?vrtx=thumbnail" alt="${title}"></a></li>
         </#list>
       </ul>
-      
-      <#-- Move script in own file and localize-->
-      <div id="vrtx-image-gallery-colors">
-        View on:
-        <a id="vrtx-display-on-white" href="#" onClick="$('body').css( { 'color': '#555', 'background-color': '#fff' } ); $('#vrtx-display-on-white:link').css('color', '#555'); 
-        $('#vrtx-display-on-black:link').css('color', '#334488');">White</a> |
-        <a id="vrtx-display-on-black" href="#" onClick="$('body').css( { 'color': '#eee', 'background-color': '#000' } ); $('#vrtx-display-on-black:link').css('color', '#eee'); 
-        $('#vrtx-display-on-white:link').css( 'color', '#334488');">Black</a>
-      </div>
     </div>
  </#if>
 </#macro>

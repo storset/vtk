@@ -184,6 +184,10 @@ label.resource\.hidden {
   margin-right: 0px;
 }
 
+label.resource\.display-type {
+  display: inline;
+}
+
 /* END Navigation */
 div#allowedValues {
   margin-bottom: 1em;

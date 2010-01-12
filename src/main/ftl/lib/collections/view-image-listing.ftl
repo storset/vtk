@@ -84,6 +84,15 @@
   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/galleria/galleria.js"></script>
   <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/jquery/galleria/galleria.css" />
   <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/jquery/galleria/galleria.override.css" />
+  <script type="text/javascript">
+      $(document).ready(function() {
+        var htmlBGChange = "<div id='vrtx-image-gallery-colors'>${vrtx.getMsg("imageListing.view.on")}: ";
+        htmlBGChange += "<a id='vrtx-display-on-white' href='#' onClick='toWhiteBG();'>${vrtx.getMsg("imageListing.view.on.white")}</a>";
+        htmlBGChange += " | <a id='vrtx-display-on-black' href='#' onClick='toBlackBG();'>${vrtx.getMsg("imageListing.view.on.black")}</a>";
+        htmlBGChange += "</div>";
+        $(htmlBGChange).insertAfter("ul.vrtx-gallery");
+      });
+  </script>
 
   <#local images=imageListing.files />
   <#if (images?size > 0)>

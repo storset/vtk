@@ -91,6 +91,13 @@
       <ul class="vrtx-gallery">
         <#list images as image>
           <#local title = vrtx.propValue(image, 'title')?html />
+          
+          <#local showAuthor = vrtx.propValue(collection, 'show-author', '', 'imgl') = 'true' />
+              <#if showAuthor>
+                <#local author = vrtx.propValue(image, 'authorName', '', 'content') />
+                <#local title = title + " | " + author>
+              </#if>
+              
             <li><a href="${image.URI}" title="${title}"><img src="${image.URI}?vrtx=thumbnail" alt="${title}"></a></li>
         </#list>
       </ul>

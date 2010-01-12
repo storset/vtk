@@ -105,3 +105,11 @@ a:hover {
   padding-top: 5px;
   clear: left;
 }
+
+#vrtx-display-on-white {
+  color: #555;
+}
+
+#vrtx-display-on-black {
+  color: ##348;
+}

@@ -14,12 +14,12 @@ jQuery( function($) {
 //View on black / white background
 
 function toWhiteBG() {
-  $('body').css( { 'color':'#555', 'background-color': '#fff' } );
+  $('body .vrtx-image-gallery').css( { 'color':'#555', 'background-color': '#fff' } );
   $('#vrtx-display-on-white').css('color', '#555'); 
   $('#vrtx-display-on-black').css('color', '#334488');
 }
 function toBlackBG() {
-  $('body').css( { 'color': '#eee', 'background-color': '#000' } );
+  $('body .vrtx-image-gallery').css( { 'color': '#eee', 'background-color': '#000' } );
   $('#vrtx-display-on-black').css('color', '#eee'); 
   $('#vrtx-display-on-white').css( 'color', '#334488');
 }

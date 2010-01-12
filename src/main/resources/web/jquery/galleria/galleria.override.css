@@ -8,6 +8,7 @@ body {
 
 .vrtx-image-gallery {
   float: left;
+  padding: 20px;
 }
 
 a {

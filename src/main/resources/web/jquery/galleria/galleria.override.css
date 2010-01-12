@@ -69,8 +69,6 @@ a:hover {
 }
 
 .galleria_container {
-  margin: 0 auto 60px auto;
-  height: 538px;
   width: 700px;
   float: right;
 }
@@ -100,4 +98,5 @@ a:hover {
   width: 700px;
   overflow: hidden;
   border: 1px solid #ccc;
+  margin-bottom: 30px;
 }

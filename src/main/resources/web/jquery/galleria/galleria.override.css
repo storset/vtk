@@ -1,16 +1,13 @@
-* {
-  margin: 0;
-  padding: 0
-}
-
 body {
   padding: 20px;
   background: white;
-  background: white;
   color: #555;
   font: 80%/ 140% 'helvetica neue', sans-serif;
-  width: 900px;
-  margin: 0 auto;
+  /* margin: 0 auto; */
+}
+
+.vrtx-image-gallery {
+  float: left;
 }
 
 a {
@@ -25,10 +22,8 @@ a:hover {
 
 .caption {
   color: #888;
-  position: absolute;
-  top: 250px;
-  left: 3px;
-  width: 200px;
+  display:block;
+  margin-top: 15px;
 }
 
 .vrtx-gallery {
@@ -44,6 +39,8 @@ a:hover {
 .default_galleria_style {
   width: 200px;
   float: left;
+  margin: 0;
+  padding: 0;
 }
 
 .default_galleria_style li {
@@ -73,7 +70,7 @@ a:hover {
 
 .galleria_container {
   margin: 0 auto 60px auto;
-  height: 438px;
+  height: 538px;
   width: 700px;
   float: right;
 }
@@ -96,4 +93,11 @@ a:hover {
 
 .info p {
   margin-top: 1.6em;
+}
+
+.galleria_wrapper {
+  height: 438px;
+  width: 700px;
+  overflow: hidden;
+  border: 1px solid #ccc;
 }

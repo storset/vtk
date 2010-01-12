@@ -78,6 +78,22 @@
 
 <#macro displayGallery imageListing collection>
 
-  <#-- keep your pants on, I'm working on it... -->
-  
+  <#-- MOVE TO CONFIG, INCLUDE IN HEAD-TAG -->
+  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/jquery-1.3.2.min.js"></script>
+  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/galleria/jquery.galleria.pack.js"></script>
+  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/galleria/galleria.js"></script>
+  <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/jquery/galleria/galleria.css" />
+  <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/jquery/galleria/galleria.override.css" />
+
+  <#local images=imageListing.files />
+  <#if (images?size > 0)>
+    <div class="vrtx-image-gallery"> 
+      <ul class="vrtx-gallery">
+        <#list images as image>
+          <#local title = vrtx.propValue(image, 'title')?html />
+            <li><a href="${image.URI}" title="${title}"><img src="${image.URI}?vrtx=thumbnail" alt="${title}"></a></li>
+        </#list>
+      </ul>
+    </div>
+ </#if>
 </#macro>

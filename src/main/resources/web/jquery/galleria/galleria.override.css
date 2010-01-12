@@ -1,6 +1,6 @@
 body {
   padding: 20px;
-  background: white;
+  background-color: white;
   color: #555;
   font: 80%/ 140% 'helvetica neue', sans-serif;
   /* margin: 0 auto; */
@@ -23,7 +23,7 @@ a:hover {
 .caption {
   color: #888;
   display:block;
-  margin-top: 15px;
+  margin-bottom: 15px;
 }
 
 .vrtx-gallery {
@@ -98,5 +98,10 @@ a:hover {
   width: 700px;
   overflow: hidden;
   border: 1px solid #ccc;
-  margin-bottom: 30px;
+  margin-bottom: 15px;
+}
+
+#vrtx-image-gallery-colors {
+  padding-top: 5px;
+  clear: left;
 }

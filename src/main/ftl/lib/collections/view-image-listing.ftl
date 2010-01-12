@@ -95,7 +95,9 @@
           <#local showAuthor = vrtx.propValue(collection, 'show-author', '', 'imgl') = 'true' />
               <#if showAuthor>
                 <#local author = vrtx.propValue(image, 'authorName', '', 'content') />
-                <#local title = title + " | " + author>
+                <#if author != "">
+                  <#local title = title + " | " + author>
+                </#if>
               </#if>
               
             <li><a href="${image.URI}" title="${title}"><img src="${image.URI}?vrtx=thumbnail" alt="${title}"></a></li>

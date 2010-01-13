@@ -133,7 +133,7 @@
         <tbody>
         <#list images as image>
           <tr>
-            <td><a href="${image.URI}?vrtx=thumbnail"><img src="${image.URI}?vrtx=thumbnail"/></a></td>
+            <td><a href="${image.URI}"><img src="${image.URI}?vrtx=thumbnail"/></a></td>
             <#local title = vrtx.propValue(image, 'title')?html />
             <td>${title}</td>
           </tr>

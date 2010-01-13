@@ -429,9 +429,7 @@
             <ref bean="recursiveAggregationPropDef" />
             <ref bean="imageListing.displayType" />
             <ref bean="imageListing.showDescriptionPropDef" />
-            <ref bean="imageListing.showKeywordsPropDef" />
             <ref bean="imageListing.showDimensionPropDef" />
-            <ref bean="imageListing.showAuthorPropDef" />
           </list>
         </property>
       </bean>

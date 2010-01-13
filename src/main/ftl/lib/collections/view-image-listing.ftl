@@ -41,30 +41,12 @@
                 </#if>
               </#if>
               
-              <#local showKeywords = vrtx.propValue(collection, 'show-keywords', '', 'imgl') = 'true' />
-              <#if showKeywords>
-                <#local keywords = vrtx.propValue(image, 'keywords', '', 'content')?html />
-                <#if keywords?has_content>
-                  <div class="vrtx-image-keywords">
-                    ${vrtx.getMsg("property.content:keywords")}: ${keywords}
-                  </div>
-                </#if>
-              </#if>
-              
               <#local showDimension = vrtx.propValue(collection, 'show-dimension', '', 'imgl') = 'true' />
               <#if showDimension>
                 <#local width = vrtx.propValue(image, 'pixelWidth') />
                 <#local height = vrtx.propValue(image, 'pixelHeight') />
                 <div class="vrtx-image-dimension">
                   ${width} x ${height}
-                </div>
-              </#if>
-             
-              <#local showAuthor = vrtx.propValue(collection, 'show-author', '', 'imgl') = 'true' />
-              <#if showAuthor>
-                <#local author = vrtx.propValue(image, 'authorName', '', 'content') />
-                <div class="vrtx-image-author">
-                  ${author}
                 </div>
               </#if>
               
@@ -130,6 +112,9 @@
             <td><a href="${image.URI}"><img src="${image.URI}?vrtx=thumbnail"/></a></td>
             <#local title = vrtx.propValue(image, 'title')?html />
             <td>${title}</td>
+            <!-- TODO: beskrivelse -->
+            <!-- TODO: bredde -->
+            <!-- TODO: høyde -->
           </tr>
         </#list>
         </tbody>

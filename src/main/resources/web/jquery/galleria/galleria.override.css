@@ -49,8 +49,8 @@ a:hover {
 
 .default_galleria_style li {
   /* width: 55px; */
-  width: 135px;
-  height: 101px;
+  width: 136px;
+  height: 102px;
   border: 3px double #eee;
   margin: 0 2px 2px 0;
   background: #eee;
@@ -118,7 +118,7 @@ a:hover {
 }
 
 #vrtx-image-gallery-colors {
-  padding-top: 5px;
+  padding-top: 10px;
   clear: left;
 }
 

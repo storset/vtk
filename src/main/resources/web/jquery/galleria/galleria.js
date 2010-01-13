@@ -23,12 +23,16 @@ jQuery( function($) {
 //View on black / white background
 
 function toWhiteBG() {
-  $('body .vrtx-image-gallery').css( { 'color':'#555', 'background-color': '#fff' } );
+  $('.vrtx-image-gallery').css( { 'color':'#555', 'background-color': '#fff' } );
   $('#vrtx-display-on-white').css('color', '#555'); 
   $('#vrtx-display-on-black').css('color', '#334488');
+  $('.vrtx-image-gallery .nav').css( { 'color': '#000', 'background-color': '#000' } );
+  $('.vrtx-image-gallery .nav a').css( 'color', '#eee' );
 }
 function toBlackBG() {
-  $('body .vrtx-image-gallery').css( { 'color': '#eee', 'background-color': '#000' } );
+  $('.vrtx-image-gallery').css( { 'color': '#eee', 'background-color': '#000' } );
   $('#vrtx-display-on-black').css('color', '#eee'); 
   $('#vrtx-display-on-white').css( 'color', '#334488');
+  $('.vrtx-image-gallery .nav').css( { 'color': '#fff', 'background-color': '#fff' } );
+  $('.vrtx-image-gallery .nav a').css( 'color', '#111' );
 }

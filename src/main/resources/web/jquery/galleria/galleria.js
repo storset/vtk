@@ -3,7 +3,7 @@ jQuery( function($) {
   $('.nav').css('display', 'none');
   $('ul.default_galleria_style').galleria( {
     history :false,
-    clickNext :false,
+    clickNext :true,
     insert :undefined,
     onImage : function() {
       $('.nav').css('display', 'block');

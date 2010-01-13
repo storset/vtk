@@ -9,6 +9,7 @@ body {
 .vrtx-image-gallery {
   float: left;
   padding: 20px;
+  position: relative;
 }
 
 a {
@@ -38,15 +39,17 @@ a:hover {
 }
 
 .default_galleria_style {
-  width: 200px;
-  float: left;
+  /* width: 200px;
+  float: left; */
+  width: 730px;
   margin: 0;
   padding: 0;
 }
 
 .default_galleria_style li {
-  width: 55px;
-  height: 70px;
+  /* width: 55px; */
+  width: 139px;
+  height: 100px;
   border: 3px double #eee;
   margin: 0 2px 2px 0;
   background: #eee;
@@ -70,16 +73,23 @@ a:hover {
 }
 
 .galleria_container {
-  width: 700px;
-  float: right;
+  width: 730px;
+  /* float: right; */
 }
 
 .nav {
-  padding-top: 15px;
-  clear: both;
-  position: absolute;
-  top: 410px;
-  left: 0;
+  height:20px;
+  background-color:#000;
+  position:absolute;
+  top:405px;
+  width:710px;
+  padding:10px;
+  -moz-opacity:.75; filter:alpha(opacity=75); opacity:.75;
+  color: #eee;
+}
+
+.nav a {
+  color: #eee;	
 }
 
 .info {
@@ -96,9 +106,9 @@ a:hover {
 
 .galleria_wrapper {
   height: 438px;
-  width: 700px;
+  width: 730px;
   overflow: hidden;
-  border: 1px solid #ccc;
+ /* border: 1px solid #ccc; */
   margin-bottom: 15px;
 }
 

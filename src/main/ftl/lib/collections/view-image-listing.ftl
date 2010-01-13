@@ -98,7 +98,8 @@
 
   <#local images=imageListing.files />
   <#if (images?size > 0)>
-    <div class="vrtx-image-gallery"> 
+    <div class="vrtx-image-gallery">
+      <p class="nav"><a href="#" onclick="$.galleria.prev(); return false;">previous</a> | <a href="#" onclick="$.galleria.next(); return false;">next</a></p>
       <ul class="vrtx-gallery">
         <#list images as image>
           <#local title = vrtx.propValue(image, 'title')?html />

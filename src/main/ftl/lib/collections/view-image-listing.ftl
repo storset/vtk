@@ -114,8 +114,8 @@
               </#if>
             <#local showDimension = vrtx.propValue(collection, 'show-dimension', '', 'imgl') = 'true' />
               <#if showDimension>
-                <th class="sortable-numeric">Bredde</th>
-                <th class="sortable-numeric">Høyde</th>
+                <th class="sortable-numeric">${vrtx.getMsg("imageListing.width")}</th>
+                <th class="sortable-numeric">${vrtx.getMsg("imageListing.height")}</th>
               </#if>
           </tr>
         </thead>

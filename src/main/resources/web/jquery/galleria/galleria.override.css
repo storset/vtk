@@ -25,7 +25,8 @@ a:hover {
 .caption {
   color: #888;
   display:block;
-  margin-bottom: 15px;
+  margin-bottom:30px;
+  text-align:center;
 }
 
 .vrtx-gallery {

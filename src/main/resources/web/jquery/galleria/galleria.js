@@ -8,6 +8,16 @@ jQuery( function($) {
     insert :undefined,
     onImage : function() {
       $('.nav').css('display', 'block');
+
+      var width = $(".galleria_wrapper img").width();
+      var height = $(".galleria_wrapper img").height();
+      
+      if(width > 730 && width > height) {
+    	  $(".galleria_wrapper img").css('width', '730px');   
+      } else if (height > 438 && height > width) {
+    	  $(".galleria_wrapper img").css('width', '440px');
+      }
+ 
     }
   });
 });

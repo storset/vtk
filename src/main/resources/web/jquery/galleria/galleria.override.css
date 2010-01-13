@@ -86,11 +86,15 @@ a:hover {
   width:710px;
   padding:10px;
   -moz-opacity:.75; filter:alpha(opacity=75); opacity:.75;
-  color: #eee;
+  color: #000;
 }
 
 .nav a {
-  color: #eee;	
+  color: #eee;
+}
+
+.nav a.previous {
+  padding-right: 608px;	
 }
 
 .info {

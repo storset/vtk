@@ -1,6 +1,7 @@
 jQuery( function($) {
   $('.vrtx-gallery').addClass('default_galleria_style');
   $('.nav').css('display', 'none');
+  $('.nav a:first').addClass('previous'); //because of missing id/class on links in nav
   $('ul.default_galleria_style').galleria( {
     history :false,
     clickNext :true,

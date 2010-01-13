@@ -91,10 +91,11 @@ a:hover {
 
 .nav a {
   color: #eee;
+  float: left;
 }
 
-.nav a.previous {
-  padding-right: 588px;	
+.nav a#vrtx-image-gallery-next {
+  float: right;	
 }
 
 .info {

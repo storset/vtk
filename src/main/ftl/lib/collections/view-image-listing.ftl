@@ -89,8 +89,8 @@
   <script type="text/javascript">
       $(document).ready(function() {
         var htmlBGChange = "<div id='vrtx-image-gallery-colors'>${vrtx.getMsg("imageListing.view.on")}: ";
-        htmlBGChange += "<a id='vrtx-display-on-white' href='#' onClick='toWhiteBG();'>${vrtx.getMsg("imageListing.view.on.white")}</a>";
-        htmlBGChange += " | <a id='vrtx-display-on-black' href='#' onClick='toBlackBG();'>${vrtx.getMsg("imageListing.view.on.black")}</a>";
+        htmlBGChange += "<a id='vrtx-display-on-white' href='#' onclick='toWhiteBG();'>${vrtx.getMsg("imageListing.view.on.white")}</a>";
+        htmlBGChange += " | <a id='vrtx-display-on-black' href='#' onclick='toBlackBG();'>${vrtx.getMsg("imageListing.view.on.black")}</a>";
         htmlBGChange += "</div>";
         $(htmlBGChange).insertAfter("ul.vrtx-gallery");
       });
@@ -99,10 +99,13 @@
   <#local images=imageListing.files />
   <#if (images?size > 0)>
     <div class="vrtx-image-gallery">
-      <p class="nav"><a href="#" onclick="$.galleria.prev(); return false;">previous</a> | <a href="#" onclick="$.galleria.next(); return false;">next</a></p>
+      <p class="nav">
+        <a id="vrtx-image-gallery-previous" href="#" onclick="$.galleria.prev(); return false;">${vrtx.getMsg("imageListing.previous")}</a>
+        <a id="vrtx-image-gallery-next" href="#" onclick="$.galleria.next(); return false;">${vrtx.getMsg("imageListing.next")}</a>
+      </p>
       <ul class="vrtx-gallery">
         <#list images as image>
-          <#local title = vrtx.propValue(image, 'title')?html />              
+          <#local title = vrtx.propValue(image, 'title')?html />            
             <li><a href="${image.URI}" title="${title}"><img src="${image.URI}?vrtx=thumbnail" alt="${title}"></a></li>
         </#list>
       </ul>

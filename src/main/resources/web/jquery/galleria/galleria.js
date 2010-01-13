@@ -1,7 +1,6 @@
 jQuery( function($) {
   $('.vrtx-gallery').addClass('default_galleria_style');
   $('.nav').css('display', 'none');
-  $('.nav a:first').addClass('previous'); //because of missing id/class on links in nav
   $('.default_galleria_style li').each(function (i) {
     if((i+1) % 5 == 0) {
       $(this).css('marginRight', '0');	

@@ -117,6 +117,10 @@ a:hover {
   margin-bottom: 15px;
 }
 
+.galleria_wrapper img {
+  width: 730px;
+}
+
 #vrtx-image-gallery-colors {
   padding-top: 5px;
   clear: left;

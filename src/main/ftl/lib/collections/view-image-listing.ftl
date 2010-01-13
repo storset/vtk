@@ -102,16 +102,7 @@
       <p class="nav"><a href="#" onclick="$.galleria.prev(); return false;">previous</a> | <a href="#" onclick="$.galleria.next(); return false;">next</a></p>
       <ul class="vrtx-gallery">
         <#list images as image>
-          <#local title = vrtx.propValue(image, 'title')?html />
-          
-          <#local showAuthor = vrtx.propValue(collection, 'show-author', '', 'imgl') = 'true' />
-              <#if showAuthor>
-                <#local author = vrtx.propValue(image, 'authorName', '', 'content') />
-                <#if author != "">
-                  <#local title = title + " | " + author>
-                </#if>
-              </#if>
-              
+          <#local title = vrtx.propValue(image, 'title')?html />              
             <li><a href="${image.URI}" title="${title}"><img src="${image.URI}?vrtx=thumbnail" alt="${title}"></a></li>
         </#list>
       </ul>

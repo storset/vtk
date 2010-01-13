@@ -42,15 +42,15 @@ a:hover {
 .default_galleria_style {
   /* width: 200px;
   float: left; */
-  width: 730px;
+  width: 710px;
   margin: 0;
   padding: 0;
 }
 
 .default_galleria_style li {
   /* width: 55px; */
-  width: 139px;
-  height: 100px;
+  width: 135px;
+  height: 101px;
   border: 3px double #eee;
   margin: 0 2px 2px 0;
   background: #eee;
@@ -74,7 +74,7 @@ a:hover {
 }
 
 .galleria_container {
-  width: 730px;
+  width: 710px;
   /* float: right; */
 }
 
@@ -82,8 +82,8 @@ a:hover {
   height:20px;
   background-color:#000;
   position:absolute;
-  top:405px;
-  width:710px;
+  top:501px;
+  width:690px;
   padding:10px;
   -moz-opacity:.75; filter:alpha(opacity=75); opacity:.75;
   color: #000;
@@ -94,7 +94,7 @@ a:hover {
 }
 
 .nav a.previous {
-  padding-right: 608px;	
+  padding-right: 588px;	
 }
 
 .info {
@@ -110,8 +110,8 @@ a:hover {
 }
 
 .galleria_wrapper {
-  height: 438px;
-  width: 730px;
+  height: 533px;
+  width: 710px;
   overflow: hidden;
  /* border: 1px solid #ccc; */
   margin-bottom: 15px;

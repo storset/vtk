@@ -96,22 +96,26 @@
 </#macro>
 
 <#macro displayTable imageListing collection>
+
+  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/tablesort.js"></script>
+  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/customsort-norwegian-mod.js"></script>
+  
   <#local images=imageListing.files />
   <#if (images?size > 0)>
     <div class="vrtx-image-table"> 
-      <table cellpadding="5" border="1">
+      <table class="rowstyle-alt colstyle-alt no-arrow" cellpadding="5" border="1">
         <thead>
           <tr>
             <th>${vrtx.getMsg("property.resourceType.image")}</th>
-            <th>${vrtx.getMsg("property.title")}</th>
+            <th class="sortable-text">${vrtx.getMsg("property.title")}</th>
             <#local showDescription = vrtx.propValue(collection, 'show-description', '', 'imgl') = 'true' />
               <#if showDescription>
-                <th>${vrtx.getMsg("property.content:description")}</th>
+                <th class="sortable-text">${vrtx.getMsg("property.content:description")}</th>
               </#if>
             <#local showDimension = vrtx.propValue(collection, 'show-dimension', '', 'imgl') = 'true' />
               <#if showDimension>
-                <th>Bredde</th>
-                <th>Høyde</th>
+                <th class="sortable-numeric">Bredde</th>
+                <th class="sortable-numeric">Høyde</th>
               </#if>
           </tr>
         </thead>
@@ -130,8 +134,8 @@
               <#if showDimension>
                 <#local width = vrtx.propValue(image, 'pixelWidth') />
                 <#local height = vrtx.propValue(image, 'pixelHeight') />
-                <td>${width}</td>
-                <td>${height}</td>
+                <td>${width} px</td>
+                <td>${height} px</td>
               </#if>
           </tr>
         </#list>

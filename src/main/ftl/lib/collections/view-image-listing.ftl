@@ -99,7 +99,7 @@
   <#local images=imageListing.files />
   <#if (images?size > 0)>
     <div class="vrtx-image-table"> 
-      <table>
+      <table cellpadding="2" border="1">
         <thead>
           <tr>
             <th>${vrtx.getMsg("property.resourceType.image")}</th>
@@ -109,7 +109,7 @@
         <tbody>
         <#list images as image>
           <tr>
-            <td><a href="${image.URI}"><img src="${image.URI}?vrtx=thumbnail"/></a></td>
+            <td class="vrtx-table-image"><a href="${image.URI}"><img src="${image.URI}?vrtx=thumbnail"/></a></td>
             <#local title = vrtx.propValue(image, 'title')?html />
             <td>${title}</td>
             <!-- TODO: beskrivelse -->

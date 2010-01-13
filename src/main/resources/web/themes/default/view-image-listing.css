@@ -64,3 +64,23 @@ vrtx-image-info {
 .vrtx-paging-feed-wrapper {
   clear: both;
 }
+
+.vrtx-image-table {
+  padding-bottom: 15px;	
+}
+
+.vrtx-image-table table {
+  border-collapse: collapse;
+  border-color: #ccc;
+}
+
+.vrtx-image-table table th {
+  text-align:left;
+}
+
+.vrtx-image-table table td.vrtx-table-image {
+}
+
+.vrtx-image-table table img {
+  width: 50px;
+}

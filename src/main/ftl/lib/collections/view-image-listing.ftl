@@ -1,11 +1,13 @@
 <#import "../vortikal.ftl" as vrtx />
 
 <#macro displayImages imageListing collection>
-  <#local galleryListing = vrtx.propValue(collection, 'display-type', '', 'imgl') == 'gallery' />
-  <#if galleryListing == false>
-    <@displayDefault imageListing collection />
-  <#else>
+  <#local listingType = vrtx.propValue(collection, 'display-type', '', 'imgl') />
+  <#if listingType == 'gallery'>
     <@displayGallery imageListing collection />
+  <#elseif listingType == 'table'>
+    <@displayTable imageListing collection />
+  <#else>
+    <@displayDefault imageListing collection />
   </#if>
 </#macro>
 
@@ -115,3 +117,28 @@
     </div>
  </#if>
 </#macro>
+
+<#macro displayTable imageListing collection>
+  <#local images=imageListing.files />
+  <#if (images?size > 0)>
+    <div class="vrtx-image-table"> 
+      <table>
+        <thead>
+          <tr>
+            <th>${vrtx.getMsg("property.resourceType.image")}</th>
+            <th>${vrtx.getMsg("property.title")}</th>
+          </tr>
+        </thead>
+        <tbody>
+        <#list images as image>
+          <tr>
+            <td><a href="${image.URI}?vrtx=thumbnail"><img src="${image.URI}?vrtx=thumbnail"/></a></td>
+            <#local title = vrtx.propValue(image, 'title')?html />
+            <td>${title}</td>
+          </tr>
+        </#list>
+        </tbody>
+      </table>
+    </div>
+  </#if>
+</#macro>      

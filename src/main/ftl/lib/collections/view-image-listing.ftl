@@ -99,11 +99,20 @@
   <#local images=imageListing.files />
   <#if (images?size > 0)>
     <div class="vrtx-image-table"> 
-      <table cellpadding="2" border="1">
+      <table cellpadding="5" border="1">
         <thead>
           <tr>
             <th>${vrtx.getMsg("property.resourceType.image")}</th>
             <th>${vrtx.getMsg("property.title")}</th>
+            <#local showDescription = vrtx.propValue(collection, 'show-description', '', 'imgl') = 'true' />
+              <#if showDescription>
+                <th>${vrtx.getMsg("property.content:description")}</th>
+              </#if>
+            <#local showDimension = vrtx.propValue(collection, 'show-dimension', '', 'imgl') = 'true' />
+              <#if showDimension>
+                <th>Bredde</th>
+                <th>Høyde</th>
+              </#if>
           </tr>
         </thead>
         <tbody>
@@ -112,9 +121,18 @@
             <td class="vrtx-table-image"><a href="${image.URI}"><img src="${image.URI}?vrtx=thumbnail"/></a></td>
             <#local title = vrtx.propValue(image, 'title')?html />
             <td>${title}</td>
-            <!-- TODO: beskrivelse -->
-            <!-- TODO: bredde -->
-            <!-- TODO: høyde -->
+            <#local showDescription = vrtx.propValue(collection, 'show-description', '', 'imgl') = 'true' />
+              <#if showDescription>
+                <#local description = vrtx.propValue(image, 'description', '', 'content')?html />
+                <td>${description}</td>
+              </#if>
+            <#local showDimension = vrtx.propValue(collection, 'show-dimension', '', 'imgl') = 'true' />
+              <#if showDimension>
+                <#local width = vrtx.propValue(image, 'pixelWidth') />
+                <#local height = vrtx.propValue(image, 'pixelHeight') />
+                <td>${width}</td>
+                <td>${height}</td>
+              </#if>
           </tr>
         </#list>
         </tbody>

@@ -76,6 +76,7 @@ vrtx-image-info {
 
 .vrtx-image-table table th {
   text-align:left;
+  background-color: #eee;
 }
 
 .vrtx-image-table table td.vrtx-table-image {

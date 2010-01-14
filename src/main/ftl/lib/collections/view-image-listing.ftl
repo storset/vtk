@@ -130,7 +130,7 @@
           <tr>
             <td class="vrtx-table-image"><a href="${image.URI}"><img src="${image.URI}?vrtx=thumbnail"/></a></td>
             <#local title = vrtx.propValue(image, 'title')?html />
-            <td>${title}</td>
+            <td><a href="${image.URI}">${title}</a></td>
             <#local showDescription = vrtx.propValue(collection, 'show-description', '', 'imgl') = 'true' />
               <#if showDescription>
                 <#local description = vrtx.propValue(image, 'description', '', 'content')?html />

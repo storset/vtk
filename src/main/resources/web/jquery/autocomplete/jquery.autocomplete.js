@@ -21,7 +21,9 @@
         url :isUrl ? urlOrData : null,
         data :isUrl ? null : urlOrData,
         delay :isUrl ? $.Autocompleter.defaults.delay : 10,
-        max :options && !options.scroll ? 10 : 150
+        max :options && !options.scroll ? 10 : 150,
+        resultsBeforeScroll :options,
+        cacheLength :options
       }, options);
 
       // if highlight is set to false, replace it with a do-nothing function
@@ -438,7 +440,8 @@
           "<strong>$1</strong>");
     },
     scroll :true,
-    scrollHeight :180
+    scrollHeight :180,
+    resultsBeforeScroll :10
   };
 
   $.Autocompleter.Cache = function(options) {
@@ -633,7 +636,7 @@
       listItems.slice(active, active + 1).removeClass(CLASSES.ACTIVE);
       movePosition(step);
       var activeItem = listItems.slice(active, active + 1).addClass(CLASSES.ACTIVE);
-      if (options.scroll) {
+      if (options.scroll && (listItems.size() > options.resultsBeforeScroll || options.resultsBeforeScroll == 0)) {
         var offset = 0;
         listItems.slice(0, active).each( function() {
           offset += this.offsetHeight;
@@ -670,6 +673,8 @@
         if (formatted === false)
           continue;
         var li = $("<li/>").html(options.highlight(formatted, term)).addClass(i % 2 == 0 ? "ac_even" : "ac_odd")
+            .addClass(i == (max - 1) ? "ac_last" : "")
+            .addClass(i == 0 ? "ac_first" : "")
             .appendTo(list)[0];
         $.data(li, "ac_data", data[i]);
       }
@@ -728,7 +733,7 @@
           top :offset.top + input.offsetHeight,
           left :offset.left
         }).show();
-        if (options.scroll) {
+        if (options.scroll && (listItems.size() > options.resultsBeforeScroll || options.resultsBeforeScroll == 0)) {
           list.scrollTop(0);
           list.css( {
             maxHeight :options.scrollHeight,
@@ -744,12 +749,16 @@
             list.css('height', scrollbarsVisible ? options.scrollHeight : listHeight);
             if (!scrollbarsVisible) {
               // IE doesn't recalculate width when scrollbar disappears
-      listItems
-          .width(list.width() - parseInt(listItems.css("padding-left")) - parseInt(listItems.css("padding-right")));
-    }
-  }
+              listItems.width(list.width() - parseInt(listItems.css("padding-left")) - parseInt(listItems.css("padding-right")));
+            }
+          }
 
-}
+        } else {
+          list.css( {
+            maxHeight :'100%',
+            overflow :'hidden'
+          });
+        }      
 },
 selected : function() {
 var selected = listItems && listItems.filter("." + CLASSES.ACTIVE).removeClass(CLASSES.ACTIVE);

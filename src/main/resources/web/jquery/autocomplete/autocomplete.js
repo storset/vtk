@@ -14,7 +14,10 @@ function setAutoComplete(id, service, params) {
     minChars :2,
     multiple :true,
     selectFirst :true,
-    max :20
+    max :20,
+    //extensions for person and cource
+    resultsBeforeScroll :0, //default behaviour when set to 0
+    cacheLength :10 //default
   };
   if (params) {
     $.extend(p, params);

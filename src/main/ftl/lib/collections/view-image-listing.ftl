@@ -22,13 +22,13 @@
         
             <div class="vrtx-image-container">
               <div class="vrtx-image">
-                <a href="${image.URI}"><img src="${image.URI}?vrtx=thumbnail" title="${title}" alt="${title}"></a>
+                <a href="${image.URI?html}"><img src="${image.URI?html}?vrtx=thumbnail" title="${title}" alt="${title}"></a>
               </div>
             </div>
 
             <div class="vrtx-image-info">
               <div class="vrtx-image-title">
-                <a href="${image.URI}">${title}</a>
+                <a href="${image.URI?html}">${title}</a>
               </div>
               
               <#local showDescription = vrtx.propValue(collection, 'show-description', '', 'imgl') = 'true' />
@@ -68,7 +68,7 @@
   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/galleria/galleria.js"></script>
   <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/jquery/galleria/galleria.css" />
   <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/jquery/galleria/galleria.override.css" />
-  <script type="text/javascript">
+  <script type="text/javascript"><!--
       $(document).ready(function() {
         var htmlBGChange = "<div id='vrtx-image-gallery-colors'>${vrtx.getMsg("imageListing.view.on")}: ";
         htmlBGChange += "<a id='vrtx-display-on-white' href='#' onclick='toWhiteBG();'>${vrtx.getMsg("imageListing.view.on.white")}</a>";
@@ -76,6 +76,7 @@
         htmlBGChange += "</div>";
         $(htmlBGChange).insertAfter("ul.vrtx-gallery");
       });
+      //-->
   </script>
 
   <#local images=imageListing.files />
@@ -93,7 +94,7 @@
             <#else>
               <li>
             </#if>
-            <a href="${image.URI}" title="${title}"><img src="${image.URI}?vrtx=thumbnail" alt="${title}"></a></li>
+            <a href="${image.URI?html}" title="${title}"><img src="${image.URI?html}?vrtx=thumbnail" alt="${title}"></a></li>
         </#list>
       </ul>
     </div>
@@ -151,4 +152,4 @@
       </table>
     </div>
   </#if>
-</#macro>      
+</#macro>

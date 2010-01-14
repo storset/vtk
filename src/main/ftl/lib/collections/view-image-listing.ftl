@@ -88,7 +88,7 @@
       <ul class="vrtx-gallery">
         <#list images as image>
           <#local title = vrtx.propValue(image, 'title')?html />
-            <#if (image_index = 0) >
+            <#if (image_index == 0) >
               <li class="active">
             <#else>
               <li>

@@ -87,8 +87,13 @@
       </p>
       <ul class="vrtx-gallery">
         <#list images as image>
-          <#local title = vrtx.propValue(image, 'title')?html />            
-            <li><a href="${image.URI}" title="${title}"><img src="${image.URI}?vrtx=thumbnail" alt="${title}"></a></li>
+          <#local title = vrtx.propValue(image, 'title')?html />
+            <#if (image_index = 0) >
+              <li class="active">
+            <#else>
+              <li>
+            </#if>
+            <a href="${image.URI}" title="${title}"><img src="${image.URI}?vrtx=thumbnail" alt="${title}"></a></li>
         </#list>
       </ul>
     </div>

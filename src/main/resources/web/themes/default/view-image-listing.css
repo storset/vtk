@@ -39,23 +39,22 @@ vrtx-image-info {
 
 .vrtx-image-title {
   font-size: 20px;
-  padding-bottom: 10px;
 }
 
 .vrtx-image-title a {
   text-decoration: none;
 }
 
-.vrtx-image-description {
-  padding-bottom: 10px;
+.vrtx-image-creation-time {
+  padding-top: 2px;  	
 }
 
-.vrtx-image-creation-time {
-  padding-bottom: 5px;  	
+.vrtx-image-description {
+  padding-top: 10px;
 }
 
 .vrtx-image-dimension {
-  padding-bottom: 5px;	
+  padding-top: 10px;
 }
 
 .vrtx-paging-feed-wrapper {

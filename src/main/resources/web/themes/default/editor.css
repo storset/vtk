@@ -103,7 +103,8 @@ label.resource\.hide-introduction-image,
 label.resource\.hide-end-date,
 label.resource\.hide-location,
 label.resource\.show-dimension,
-label.resource\.show-description
+label.resource\.show-description,
+label.resource\.show-creation-time
   {
   display: inline;
 }
@@ -273,7 +274,8 @@ hide-published-date label,
 .hide-introduction label,
 .hide-introduction-image label,
 .show-dimension label,
-.show-description label
+.show-description label,
+.show-creation-time label
   {
   margin: 0;
   margin-top: .3em;
@@ -287,7 +289,8 @@ hide-published-date label,
 .hide-introduction input,
 .hide-introduction-image input,
 .show-dimension input,
-.show-description input
+.show-description input,
+.show-creation-time input
   {
   margin: 0;
   margin-right: .2em;

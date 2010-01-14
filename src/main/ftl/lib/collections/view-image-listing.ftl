@@ -31,6 +31,14 @@
                 <a href="${image.URI?html}">${title}</a>
               </div>
               
+              <#local showCreationTime = vrtx.propValue(collection, 'show-creation-time', '', 'imgl') = 'true' />
+              <#if showCreationTime>
+                <#local creationTime = vrtx.propValue(image, 'creationTime', 'short', '') />
+                <div class="vrtx-image-creation-time">
+                  ${creationTime}
+                </div>
+              </#if>
+              
               <#local showDescription = vrtx.propValue(collection, 'show-description', '', 'imgl') = 'true' />
               <#if showDescription>
                 <#local description = vrtx.propValue(image, 'description', '', 'content')?html />
@@ -144,8 +152,11 @@
                 <td>${width} px</td>
                 <td>${height} px</td>
               </#if>
-            <#local creationTime = vrtx.propValue(image, 'creationTime', 'short', '') />
-            <td>${creationTime}</td>
+            <#local showCreationTime = vrtx.propValue(collection, 'show-creation-time', '', 'imgl') = 'true' />
+              <#if showCreationTime>
+                <#local creationTime = vrtx.propValue(image, 'creationTime', 'short', '') />
+                <td>${creationTime}</td>
+              </#if>
           </tr>
         </#list>
         </tbody>

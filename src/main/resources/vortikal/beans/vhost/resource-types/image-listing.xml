@@ -21,6 +21,7 @@
         <ref bean="imageListing.displayType" />
         <ref bean="imageListing.showDescriptionPropDef" />
         <ref bean="imageListing.showDimensionPropDef" />
+        <ref bean="imageListing.showCreationTimePropDef" />
       </list>
     </property>
   </bean>
@@ -56,6 +57,10 @@
 
   <bean id="imageListing.showDescriptionPropDef" parent="imageListing.showHidePropDef">
     <property name="name" value="show-description" />
+  </bean>
+  
+  <bean id="imageListing.showCreationTimePropDef" parent="imageListing.showHidePropDef">
+    <property name="name" value="show-creation-time" />
   </bean>
 
   <bean id="imageListing.displayType" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"

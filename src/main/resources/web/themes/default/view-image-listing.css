@@ -50,15 +50,12 @@ vrtx-image-info {
   padding-bottom: 10px;
 }
 
-.vrtx-image-keywords {
-  padding-bottom: 5px;
+.vrtx-image-creation-time {
+  padding-bottom: 5px;  	
 }
 
 .vrtx-image-dimension {
   padding-bottom: 5px;	
-}
-
-.vrtx-image-author {
 }
 
 .vrtx-paging-feed-wrapper {

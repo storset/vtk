@@ -143,7 +143,7 @@
                 <td>${width} px</td>
                 <td>${height} px</td>
               </#if>
-            <#local creationTime = vrtx.propValue(image, 'creationTime')?html />
+            <#local creationTime = vrtx.propValue(image, 'creationTime') />
             <td>${creationTime}</td>
           </tr>
         </#list>

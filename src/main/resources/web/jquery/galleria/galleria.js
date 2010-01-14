@@ -14,7 +14,6 @@ jQuery( function($) {
     onImage : function() {
       $('.nav').css('display', 'block');
 
-      var width = $(".galleria_wrapper img").width();
       var height = $(".galleria_wrapper img").height();
       
       if (height > 518) { //Landscape 4:3 aspect ratio to 690px

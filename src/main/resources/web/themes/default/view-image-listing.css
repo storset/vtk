@@ -75,6 +75,10 @@ vrtx-image-info {
   background-color: #eee;
 }
 
+.vrtx-image-table table tr td {
+  border: 1px solid #dbd8d6;
+}
+
 .vrtx-image-table table td.vrtx-table-image {
 }
 

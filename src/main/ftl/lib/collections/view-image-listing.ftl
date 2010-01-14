@@ -122,6 +122,7 @@
                 <th class="sortable-numeric">${vrtx.getMsg("imageListing.width")}</th>
                 <th class="sortable-numeric">${vrtx.getMsg("imageListing.height")}</th>
               </#if>
+            <th class="sortable-sortEnglishLonghandDateFormat">${vrtx.getMsg("proptype.name.creationTime")}</th>
           </tr>
         </thead>
         <tbody>
@@ -142,6 +143,8 @@
                 <td>${width} px</td>
                 <td>${height} px</td>
               </#if>
+            <#local creationTime = vrtx.propValue(image, 'creationTime')?html />
+            <td>${creationTime}</td>
           </tr>
         </#list>
         </tbody>

@@ -42,15 +42,15 @@ a:hover {
 .default_galleria_style {
   /* width: 200px;
   float: left; */
-  width: 710px;
+  width: 690px;
   margin: 0;
   padding: 0;
 }
 
 .default_galleria_style li {
   /* width: 55px; */
-  width: 136px;
-  height: 102px;
+  width: 132px;
+  height: 99px;
   border: 3px double #eee;
   margin: 0 2px 2px 0;
   background: #eee;
@@ -74,7 +74,7 @@ a:hover {
 }
 
 .galleria_container {
-  width: 710px;
+  width: 690px;
   /* float: right; */
 }
 
@@ -82,8 +82,8 @@ a:hover {
   height:20px;
   background-color:#000;
   position:absolute;
-  top:501px;
-  width:690px;
+  top:481px;
+  width:670px;
   padding:10px;
   -moz-opacity:.75; filter:alpha(opacity=75); opacity:.75;
   color: #000;
@@ -111,8 +111,8 @@ a:hover {
 }
 
 .galleria_wrapper {
-  height: 533px;
-  width: 710px;
+  height: 518px;
+  width: 690px;
   overflow: hidden;
  /* border: 1px solid #ccc; */
   margin-bottom: 15px;

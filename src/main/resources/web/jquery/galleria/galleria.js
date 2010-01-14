@@ -17,8 +17,8 @@ jQuery( function($) {
       var width = $(".galleria_wrapper img").width();
       var height = $(".galleria_wrapper img").height();
       
-      if (height > 533) { //Landscape 4:3 aspect ratio to 710px
-    	  $(".galleria_wrapper img").css('height', '533px');
+      if (height > 518) { //Landscape 4:3 aspect ratio to 690px
+    	  $(".galleria_wrapper img").css('height', '518px');
       }
  
     }

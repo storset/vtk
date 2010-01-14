@@ -11,6 +11,15 @@
  *
  */
 
+/*
+ * Extensions by Vortex
+ * 
+ * Added RIGHTARROW & SPACE as selectionkeys
+ * Added parameter "resultsBeforeScroll"
+ *   -> defines minimum nr of hits before scrollbar is added to dropdown
+ * 
+ */
+
 ;
 ( function($) {
 
@@ -21,9 +30,7 @@
         url :isUrl ? urlOrData : null,
         data :isUrl ? null : urlOrData,
         delay :isUrl ? $.Autocompleter.defaults.delay : 10,
-        max :options && !options.scroll ? 10 : 150,
-        resultsBeforeScroll :options,
-        cacheLength :options
+        max :options && !options.scroll ? 10 : 150
       }, options);
 
       // if highlight is set to false, replace it with a do-nothing function
@@ -673,9 +680,7 @@
         if (formatted === false)
           continue;
         var li = $("<li/>").html(options.highlight(formatted, term)).addClass(i % 2 == 0 ? "ac_even" : "ac_odd")
-            .addClass(i == (max - 1) ? "ac_last" : "")
-            .addClass(i == 0 ? "ac_first" : "")
-            .appendTo(list)[0];
+            .addClass(i == (max - 1) ? "ac_last" : "").addClass(i == 0 ? "ac_first" : "").appendTo(list)[0];
         $.data(li, "ac_data", data[i]);
       }
       listItems = list.find("li");
@@ -749,16 +754,17 @@
             list.css('height', scrollbarsVisible ? options.scrollHeight : listHeight);
             if (!scrollbarsVisible) {
               // IE doesn't recalculate width when scrollbar disappears
-              listItems.width(list.width() - parseInt(listItems.css("padding-left")) - parseInt(listItems.css("padding-right")));
-            }
-          }
+      listItems
+          .width(list.width() - parseInt(listItems.css("padding-left")) - parseInt(listItems.css("padding-right")));
+    }
+  }
 
-        } else {
-          list.css( {
-            maxHeight :'100%',
-            overflow :'hidden'
-          });
-        }      
+} else {
+  list.css( {
+    maxHeight :'100%',
+    overflow :'hidden'
+  });
+}
 },
 selected : function() {
 var selected = listItems && listItems.filter("." + CLASSES.ACTIVE).removeClass(CLASSES.ACTIVE);

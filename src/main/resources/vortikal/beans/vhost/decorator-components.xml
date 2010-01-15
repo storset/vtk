@@ -27,14 +27,6 @@
     <constructor-arg type="java.lang.String" value="css" />
   </bean>
 
-  <!--
-    <bean id="decorating.tocComponent" class="org.vortikal.web.decorating.components.HtmlTocComponent"> <property
-    name="namespace" ref="decorating.resourceNamespace" /> <property name="name" value="toc" /> <property
-    name="description" value="Inserts a table of contents box" /> <property name="view"
-    ref="decorating.tocComponent.view" /> </bean> <bean id="decorating.tocComponent.view" parent="freemarkerView">
-    <property name="url" value="layouts/page-toc.ftl" /> </bean>
-  -->
-
   <bean id="decorating.bodyComponent" class="org.vortikal.web.decorating.components.HtmlElementComponent">
     <property name="namespace" ref="decorating.documentNamespace" />
     <property name="name" value="body" />
@@ -130,6 +122,16 @@
     <property name="name" value="toc" />
     <property name="description" value="Inserts a table of contents based on h2/h3 in the document" />
     <property name="view" ref="decorating.tableOfContentsComponent.view" />
+    <property name="exposedParameters">
+      <set>
+        <value>title</value>
+      </set>
+    </property>
+    <property name="parameterDescriptions">
+      <map>
+        <entry key="title" value="Optional title for the table of contents." />
+      </map>
+    </property>
   </bean>
 
   <bean id="decorating.tableOfContentsComponent.view" parent="freemarkerView">

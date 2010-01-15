@@ -11,7 +11,13 @@
   <#stop "Missing 'url' in model"/>
 </#if>
 
-<#assign tocHeader>'<span class="vrtx-toc-header"><@vrtx.msg code="decorating.tocComponent.header" default="Table of Contents"/><\/span>'</#assign>
+<#assign headerTitle><@vrtx.msg code="decorating.tocComponent.header" default="Table of Contents"/></#assign>
+
+<#if title?has_content>
+  <#assign headerTitle = title />
+</#if>
+
+<#assign tocHeader>'<span class="vrtx-toc-header">${headerTitle}<\/span>'</#assign>
 
 <script type="text/javascript">document.write(${tocHeader});</script>
 

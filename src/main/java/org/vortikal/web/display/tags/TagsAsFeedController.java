@@ -72,7 +72,7 @@ public class TagsAsFeedController extends AtomFeedController {
         Listing searchResult = searchComponent.execute(request, scope, 1, 25, 0);
 
         for (PropertySet result : searchResult.getFiles()) {
-            populateEntry(token, result, feed.addEntry());
+            addEntry(feed, token, result);
         }
 
         return feed;

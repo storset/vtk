@@ -47,41 +47,41 @@ import org.vortikal.web.display.article.ArticleListingSearcher;
 import org.vortikal.web.search.Listing;
 
 public class ArticleListingAsFeedController extends AtomFeedController {
-	
+
     private ArticleListingSearcher searcher;
 
-	@Override
-	protected Feed createFeed(HttpServletRequest request, HttpServletResponse response, String token) throws Exception {
-    	
-		Path uri = RequestContext.getRequestContext().getResourceURI();
+    @Override
+    protected Feed createFeed(HttpServletRequest request, HttpServletResponse response, String token) throws Exception {
+
+        Path uri = RequestContext.getRequestContext().getResourceURI();
         Resource collection = this.repository.retrieve(token, uri, true);
-        
+
         String feedTitle = getTitle(collection);
         Feed feed = populateFeed(collection, feedTitle);
-        
+
         List<Listing> results = new ArrayList<Listing>();
         Listing featuredArticles = this.searcher.getFeaturedArticles(request, collection, 1, 25, 0);
         if (featuredArticles.size() > 0) {
-        	results.add(featuredArticles);
+            results.add(featuredArticles);
         }
-        
+
         Listing articles = this.searcher.getArticles(request, collection, 1, 25, 0);
         if (articles.size() > 0) {
-        	results.add(articles);
+            results.add(articles);
         }
 
         for (Listing searchResult : results) {
-        	for (PropertySet result : searchResult.getFiles()) {
-                populateEntry(token, result, feed.addEntry());
+            for (PropertySet result : searchResult.getFiles()) {
+                addEntry(feed, token, result);
             }
         }
 
-    	return feed;
-	}
+        return feed;
+    }
 
-	@Required
-	public void setSearcher(ArticleListingSearcher searcher) {
-		this.searcher = searcher;
-	}
+    @Required
+    public void setSearcher(ArticleListingSearcher searcher) {
+        this.searcher = searcher;
+    }
 
 }

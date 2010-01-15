@@ -59,7 +59,7 @@ public class CollectionListingAsAtomFeed extends AtomFeedController {
         Listing searchResult = searchComponent.execute(request, collection, 1, 25, 0);
 
         for (PropertySet result : searchResult.getFiles()) {
-            populateEntry(token, result, feed.addEntry());
+            addEntry(feed, token, result);
         }
 
     	return feed;

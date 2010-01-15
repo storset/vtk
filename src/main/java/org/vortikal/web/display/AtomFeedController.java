@@ -44,6 +44,8 @@ import org.apache.abdera.model.Feed;
 import org.apache.abdera.model.Link;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.util.URIUtil;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openxri.IRIUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
@@ -63,6 +65,8 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.web.service.Service;
 
 public abstract class AtomFeedController implements Controller {
+
+    private final Log logger = LogFactory.getLog(AtomFeedController.class);
 
     private static final String TAG_PREFIX = "tag:";
     protected static final Namespace NS = Namespace.DEFAULT_NAMESPACE;
@@ -129,76 +133,86 @@ public abstract class AtomFeedController implements Controller {
         return feed;
     }
 
-    protected void populateEntry(String token, PropertySet result, Entry entry) throws URIException,
-            UnsupportedEncodingException {
-        String id = getId(result.getURI(), result.getProperty(NS, PropertyType.CREATIONTIME_PROP_NAME), null);
-        entry.setId(id);
-        entry.addCategory(result.getResourceType());
+    protected void addEntry(Feed feed, String token, PropertySet result) {
+        try {
 
-        Property title = getTitle(result);
-        if (title != null) {
-            entry.setTitle(title.getFormattedValue());
-        }
-        String type = result.getResourceType();
-        // Add introduction and/or pic as xhtml if resource is event or
-        // article...
-        if (type != null
-                && (type.equals("event") || type.equals("article") || type.equals("structured-article")
-                        || type.equals("structured-event") || type.equals("structured-project"))) {
-            String summary = prepareSummary(result);
-            entry.setSummaryAsXhtml(summary);
-            // ...add description as plain text else
-        } else {
-            String description = getDescription(result);
-            if (description != null) {
-                entry.setSummary(description);
+            Entry entry = Abdera.getInstance().newEntry();
+
+            String id = getId(result.getURI(), result.getProperty(NS, PropertyType.CREATIONTIME_PROP_NAME), null);
+            entry.setId(id);
+            entry.addCategory(result.getResourceType());
+
+            Property title = getTitle(result);
+            if (title != null) {
+                entry.setTitle(title.getFormattedValue());
             }
-        }
+            String type = result.getResourceType();
+            // Add introduction and/or pic as xhtml if resource is event or
+            // article...
+            if (type != null
+                    && (type.equals("event") || type.equals("article") || type.equals("structured-article")
+                            || type.equals("structured-event") || type.equals("structured-project"))) {
+                String summary = prepareSummary(result);
+                entry.setSummaryAsXhtml(summary);
+                // ...add description as plain text else
+            } else {
+                String description = getDescription(result);
+                if (description != null) {
+                    entry.setSummary(description);
+                }
+            }
 
-        Property publishDate = getPublishDate(result, type);
-        if (publishDate != null) {
-            entry.setPublished(publishDate.getDateValue());
-        }
+            Property publishDate = getPublishDate(result, type);
+            if (publishDate != null) {
+                entry.setPublished(publishDate.getDateValue());
+            }
 
-        Property updated = getLastModified(result);
-        if (updated != null) {
-            entry.setUpdated(updated.getDateValue());
-        }
+            Property updated = getLastModified(result);
+            if (updated != null) {
+                entry.setUpdated(updated.getDateValue());
+            }
 
-        Property author = getAuthor(result);
-        if (author != null) {
-            ValueFormatter vf = author.getDefinition().getValueFormatter();
-            if (author.getDefinition().isMultiple()) {
-                for (Value v : author.getValues()) {
-                    entry.addAuthor(vf.valueToString(v, "name", null));
+            Property author = getAuthor(result);
+            if (author != null) {
+                ValueFormatter vf = author.getDefinition().getValueFormatter();
+                if (author.getDefinition().isMultiple()) {
+                    for (Value v : author.getValues()) {
+                        entry.addAuthor(vf.valueToString(v, "name", null));
+                    }
+                } else {
+                    entry.addAuthor(author.getFormattedValue("name", null));
                 }
             } else {
-                entry.addAuthor(author.getFormattedValue("name", null));
+                entry.addAuthor("");
             }
-        } else {
-            entry.addAuthor("");
-        }
 
-        Property mediaRef = getMediaRef(result);
-        if (mediaRef != null) {
-            try {
-                Link link = abdera.getFactory().newLink();
-                Path propRef = getPropRef(result, mediaRef.getStringValue());
-                link.setHref(viewService.constructLink(propRef));
-                link.setRel("enclosure");
-                Resource mediaResource = repository.retrieve(token, propRef, true);
-                link.setMimeType(mediaResource.getContentType());
-                entry.addLink(link);
-            } catch (Throwable t) {
-            }
-        }
-
-        try {
             Link link = abdera.getFactory().newLink();
             link.setHref(viewService.constructLink(result.getURI()));
             link.setRel("alternate");
             entry.addLink(link);
+
+            Property mediaRef = getMediaRef(result);
+            if (mediaRef != null) {
+                try {
+                    Link mediaLink = abdera.getFactory().newLink();
+                    Path propRef = getPropRef(result, mediaRef.getStringValue());
+                    mediaLink.setHref(viewService.constructLink(propRef));
+                    mediaLink.setRel("enclosure");
+                    Resource mediaResource = repository.retrieve(token, propRef, true);
+                    mediaLink.setMimeType(mediaResource.getContentType());
+                    entry.addLink(mediaLink);
+                } catch (Throwable t) {
+                    // Don't break the entire entry if media link breaks
+                    logger.error("An error occured while setting media link for feed entry, " + result.getURI() + ": "
+                            + t.getMessage());
+                }
+            }
+
+            feed.addEntry(entry);
+
         } catch (Throwable t) {
+            // Don't break the entire feed if the entry breaks
+            logger.error("An error occured while creating feed entry for " + result.getURI() + ": " + t.getMessage());
         }
     }
 

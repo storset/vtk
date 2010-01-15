@@ -31,32 +31,23 @@
                 <a href="${image.URI?html}">${title}</a>
               </div>
               
-              <#local showCreationTime = vrtx.propValue(collection, 'show-creation-time', '', 'imgl') = 'true' />
-              <#if showCreationTime>
-                <#local creationTime = vrtx.propValue(image, 'creationTime', 'short', '') />
-                <div class="vrtx-image-creation-time">
-                  ${creationTime}
+              <#local creationTime = vrtx.propValue(image, 'creationTime', 'short', '') />
+              <div class="vrtx-image-creation-time">
+                ${creationTime}
+              </div>
+              
+              <#local description = vrtx.propValue(image, 'description', '', 'content')?html />
+              <#if description?has_content>
+                <div class="vrtx-image-description">
+                  ${description}
                 </div>
               </#if>
               
-              <#local showDescription = vrtx.propValue(collection, 'show-description', '', 'imgl') = 'true' />
-              <#if showDescription>
-                <#local description = vrtx.propValue(image, 'description', '', 'content')?html />
-                <#if description?has_content>
-                  <div class="vrtx-image-description">
-                    ${description}
-                  </div>
-                </#if>
-              </#if>
-              
-              <#local showDimension = vrtx.propValue(collection, 'show-dimension', '', 'imgl') = 'true' />
-              <#if showDimension>
-                <#local width = vrtx.propValue(image, 'pixelWidth') />
-                <#local height = vrtx.propValue(image, 'pixelHeight') />
-                <div class="vrtx-image-dimension">
-                  ${width} x ${height}
-                </div>
-              </#if>
+              <#local width = vrtx.propValue(image, 'pixelWidth') />
+              <#local height = vrtx.propValue(image, 'pixelHeight') />
+              <div class="vrtx-image-dimension">
+                ${width} x ${height}
+              </div>
               
             </div>
           
@@ -122,15 +113,9 @@
           <tr>
             <th>${vrtx.getMsg("property.resourceType.image")}</th>
             <th class="sortable-text">${vrtx.getMsg("property.title")}</th>
-            <#local showDescription = vrtx.propValue(collection, 'show-description', '', 'imgl') = 'true' />
-              <#if showDescription>
-                <th class="sortable-text">${vrtx.getMsg("property.content:description")}</th>
-              </#if>
-            <#local showDimension = vrtx.propValue(collection, 'show-dimension', '', 'imgl') = 'true' />
-              <#if showDimension>
-                <th class="sortable-numeric">${vrtx.getMsg("imageListing.width")}</th>
-                <th class="sortable-numeric">${vrtx.getMsg("imageListing.height")}</th>
-              </#if>
+            <th class="sortable-text">${vrtx.getMsg("property.content:description")}</th>
+            <th class="sortable-numeric">${vrtx.getMsg("imageListing.width")}</th>
+            <th class="sortable-numeric">${vrtx.getMsg("imageListing.height")}</th>
             <th class="sortable-sortEnglishLonghandDateFormat">${vrtx.getMsg("proptype.name.creationTime")}</th>
           </tr>
         </thead>
@@ -140,23 +125,14 @@
             <td class="vrtx-table-image"><a href="${image.URI}"><img src="${image.URI}?vrtx=thumbnail"/></a></td>
             <#local title = vrtx.propValue(image, 'title')?html />
             <td><a href="${image.URI}">${title}</a></td>
-            <#local showDescription = vrtx.propValue(collection, 'show-description', '', 'imgl') = 'true' />
-              <#if showDescription>
-                <#local description = vrtx.propValue(image, 'description', '', 'content')?html />
-                <td>${description}</td>
-              </#if>
-            <#local showDimension = vrtx.propValue(collection, 'show-dimension', '', 'imgl') = 'true' />
-              <#if showDimension>
-                <#local width = vrtx.propValue(image, 'pixelWidth') />
-                <#local height = vrtx.propValue(image, 'pixelHeight') />
-                <td>${width} px</td>
-                <td>${height} px</td>
-              </#if>
-            <#local showCreationTime = vrtx.propValue(collection, 'show-creation-time', '', 'imgl') = 'true' />
-              <#if showCreationTime>
-                <#local creationTime = vrtx.propValue(image, 'creationTime', 'short', '') />
-                <td>${creationTime}</td>
-              </#if>
+            <#local description = vrtx.propValue(image, 'description', '', 'content')?html />
+            <td>${description}</td>
+            <#local width = vrtx.propValue(image, 'pixelWidth') />
+            <#local height = vrtx.propValue(image, 'pixelHeight') />
+            <td>${width} px</td>
+            <td>${height} px</td>
+            <#local creationTime = vrtx.propValue(image, 'creationTime', 'short', '') />
+            <td>${creationTime}</td>
           </tr>
         </#list>
         </tbody>

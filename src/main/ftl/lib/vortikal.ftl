@@ -396,3 +396,7 @@ in  <#local propVal = getPropValue(resource, name, format, prefix) />
     ${contentLength} B
   </#if>
 </#macro>
+
+<#macro calculateResourceSizeToKB contentLength>
+  ${(contentLength / 1000)?string("0.#")} KB
+</#macro>

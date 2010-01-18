@@ -21,9 +21,7 @@
         <li class="vrtx-image-entry">
         
             <div class="vrtx-image-container">
-              <div class="vrtx-image">
                 <a href="${image.URI?html}"><img src="${image.URI?html}?vrtx=thumbnail" title="${title}" alt="${title}"></a>
-              </div>
             </div>
 
             <div class="vrtx-image-info">
@@ -47,7 +45,7 @@
               <#local height = vrtx.propValue(image, 'pixelHeight') />
               <#local contentLength = vrtx.propValue(image, 'contentLength') />
               <div class="vrtx-image-dimension">
-                ${width} x ${height} - <@vrtx.calculateResourceSize contentLength?number />
+                ${width} x ${height} - <@vrtx.calculateResourceSizeToKB contentLength?number />
               </div>
               
             </div>
@@ -125,7 +123,7 @@
             <td>${width} px</td>
             <td>${height} px</td>
             <#local contentLength = vrtx.propValue(image, 'contentLength') />
-            <td><@vrtx.calculateResourceSize contentLength?number /></td>
+            <td><@vrtx.calculateResourceSizeToKB contentLength?number /></td>
             <#local username = vrtx.propValue(image, 'owner', 'short', '') />
             <td>${username}</td>
             <#local creationTime = vrtx.propValue(image, 'creationTime', 'short', '') />

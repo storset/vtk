@@ -48,7 +48,6 @@ public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
     private String atomFeedRequestPath = "/atomfeedtest";
     private String host = "localhost";
 
-
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -59,12 +58,10 @@ public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
         controller.setSearchComponent(new MockSearchComponent());
     }
 
-
     public Path getRequestPath() {
         requestPath = Path.fromString(atomFeedRequestPath);
         return requestPath;
     }
-
 
     public void testCreateFeed() throws Exception {
 
@@ -121,7 +118,6 @@ public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
 
     }
 
-
     private void validateFeedXML(String feed) throws JDOMException, IOException {
         SAXBuilder builder = new SAXBuilder();
 
@@ -132,8 +128,7 @@ public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
         assertNotNull("No root document (empty xml document)", root);
         assertEquals("Wrong root element", "feed", root.getName());
 
-        org.jdom.Namespace atomNamespace = org.jdom.Namespace
-                .getNamespace("http://www.w3.org/2005/Atom");
+        org.jdom.Namespace atomNamespace = org.jdom.Namespace.getNamespace("http://www.w3.org/2005/Atom");
 
         Element id = root.getChild("id", atomNamespace);
         assertNotNull("No id set for feed", id);
@@ -153,17 +148,16 @@ public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
         assertEquals("Wrong href", atomFeedRequestPath, linkHref.getValue());
     }
 
-
     private Resource getCollection() {
         ResourceImpl collection = new ResourceImpl(requestPath);
 
-        PropertyTypeDefinitionImpl propDef = getPropDef(Namespace.DEFAULT_NAMESPACE,
-                PropertyType.TITLE_PROP_NAME, Type.STRING, new StringValueFormatter());
+        PropertyTypeDefinitionImpl propDef = getPropDef(Namespace.DEFAULT_NAMESPACE, PropertyType.TITLE_PROP_NAME,
+                Type.STRING, new StringValueFormatter());
         Property title = propDef.createProperty("feedtest");
         collection.addProperty(title);
 
-        propDef = getPropDef(Namespace.DEFAULT_NAMESPACE, PropertyType.CREATIONTIME_PROP_NAME,
-                Type.DATE, new DateValueFormatter());
+        propDef = getPropDef(Namespace.DEFAULT_NAMESPACE, PropertyType.CREATIONTIME_PROP_NAME, Type.DATE,
+                new DateValueFormatter());
         Property publishedProp = propDef.createProperty(Calendar.getInstance().getTime());
         collection.addProperty(publishedProp);
 
@@ -172,8 +166,8 @@ public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
 
     private class MockSearchComponent implements SearchComponent {
 
-        public Listing execute(HttpServletRequest request, Resource collection, int page,
-                int pageLimit, int baseOffset) throws Exception {
+        public Listing execute(HttpServletRequest request, Resource collection, int page, int pageLimit, int baseOffset)
+                throws Exception {
             Listing listing = new Listing(null, null, null, 0);
 
             List<PropertySet> files = new ArrayList<PropertySet>();
@@ -183,7 +177,6 @@ public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
             listing.setFiles(files);
             return listing;
         }
-
 
         private PropertySetImpl getPropertySet(String uri) {
             PropertySetImpl propSet = new PropertySetImpl();
@@ -201,32 +194,27 @@ public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
             context.checking(new Expectations() {
                 {
                     one(mockViewService).constructLink(propSetUri);
-                    will(returnValue(url));
+                    will(returnValue(url.toString()));
                 }
             });
 
-            PropertyTypeDefinitionImpl creationTimePropDef = getPropDef(
-                    Namespace.DEFAULT_NAMESPACE, PropertyType.CREATIONTIME_PROP_NAME, Type.DATE,
-                    new DateValueFormatter());
-            propSet.addProperty(creationTimePropDef
-                    .createProperty(Calendar.getInstance().getTime()));
+            PropertyTypeDefinitionImpl creationTimePropDef = getPropDef(Namespace.DEFAULT_NAMESPACE,
+                    PropertyType.CREATIONTIME_PROP_NAME, Type.DATE, new DateValueFormatter());
+            propSet.addProperty(creationTimePropDef.createProperty(Calendar.getInstance().getTime()));
 
             PropertyTypeDefinitionImpl titlePropDef = getPropDef(Namespace.DEFAULT_NAMESPACE,
                     PropertyType.TITLE_PROP_NAME, Type.STRING, new StringValueFormatter());
             propSet.addProperty(titlePropDef.createProperty(uri));
 
-            PropertyTypeDefinitionImpl lastModifiedPropDef = getPropDef(
-                    Namespace.DEFAULT_NAMESPACE, PropertyType.LASTMODIFIED_PROP_NAME, Type.DATE,
-                    new DateValueFormatter());
-            propSet.addProperty(lastModifiedPropDef
-                    .createProperty(Calendar.getInstance().getTime()));
+            PropertyTypeDefinitionImpl lastModifiedPropDef = getPropDef(Namespace.DEFAULT_NAMESPACE,
+                    PropertyType.LASTMODIFIED_PROP_NAME, Type.DATE, new DateValueFormatter());
+            propSet.addProperty(lastModifiedPropDef.createProperty(Calendar.getInstance().getTime()));
 
             return propSet;
         }
 
-
-        public Listing execute(HttpServletRequest request, Resource collection, int page,
-                int pageLimit, int baseOffset, boolean recursive) throws Exception {
+        public Listing execute(HttpServletRequest request, Resource collection, int page, int pageLimit,
+                int baseOffset, boolean recursive) throws Exception {
             return null;
         }
 

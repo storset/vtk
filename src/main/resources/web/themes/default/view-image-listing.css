@@ -20,11 +20,8 @@ ul.vrtx-image-listing {
 
 .vrtx-image-entry {
   float: left;
-  width: 100%;
   margin-bottom:15px;
   padding-bottom:15px;
-  border-bottom: 1px dotted #ccc;
-  clear: both;
 }
 
 .vrtx-image-container {

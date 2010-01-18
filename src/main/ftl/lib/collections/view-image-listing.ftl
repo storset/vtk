@@ -45,8 +45,9 @@
               
               <#local width = vrtx.propValue(image, 'pixelWidth') />
               <#local height = vrtx.propValue(image, 'pixelHeight') />
+              <#local contentLength = vrtx.propValue(image, 'contentLength') />
               <div class="vrtx-image-dimension">
-                ${width} x ${height}
+                ${width} x ${height} - <@vrtx.calculateResourceSize contentLength?number />
               </div>
               
             </div>

@@ -20,11 +20,15 @@ import org.vortikal.web.RequestContext;
 
 public abstract class AbstractControllerTest extends TestCase {
 
+    static {
+        System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.Log4JLogger");
+        System.setProperty("log4j.configuration", "log4j.test.xml");
+    }
+
     protected Mockery context = new JUnit4Mockery();
     protected final HttpServletRequest mockRequest = context.mock(HttpServletRequest.class);
     protected final HttpServletResponse mockResponse = context.mock(HttpServletResponse.class);
     protected final Repository mockRepository = context.mock(Repository.class);
-
 
     @Override
     protected void setUp() throws Exception {
@@ -36,9 +40,7 @@ public abstract class AbstractControllerTest extends TestCase {
         SecurityContext.setSecurityContext(securityContext);
     }
 
-
     protected abstract Path getRequestPath();
-
 
     protected PropertyTypeDefinitionImpl getPropDef(Namespace namespace, String name, Type type,
             ValueFormatter valueFormatter) {

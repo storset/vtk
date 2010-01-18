@@ -16,27 +16,10 @@ jQuery( function($) {
 
       var height = $(".galleria_wrapper img").height();
       
-      if (height > 518) { //Landscape 4:3 aspect ratio to 690px
-    	  $(".galleria_wrapper img").css('height', '518px');
+      if (height > 548) { //Landscape 4:3 aspect ratio to 730px
+    	  $(".galleria_wrapper img").css('height', '548px');
       }
  
     }
   });
 });
-
-//View on black / white background
-
-function toWhiteBG() {
-  $('.vrtx-image-gallery').css( { 'color':'#555', 'background-color': '#fff' } );
-  $('#vrtx-display-on-white').css('color', '#555'); 
-  $('#vrtx-display-on-black').css('color', '#334488');
-  $('.vrtx-image-gallery .nav').css( { 'color': '#000', 'background-color': '#000' } );
-  $('.vrtx-image-gallery .nav a').css( 'color', '#eee' );
-}
-function toBlackBG() {
-  $('.vrtx-image-gallery').css( { 'color': '#eee', 'background-color': '#000' } );
-  $('#vrtx-display-on-black').css('color', '#eee'); 
-  $('#vrtx-display-on-white').css( 'color', '#334488');
-  $('.vrtx-image-gallery .nav').css( { 'color': '#fff', 'background-color': '#fff' } );
-  $('.vrtx-image-gallery .nav a').css( 'color', '#111' );
-}

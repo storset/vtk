@@ -383,4 +383,16 @@ in  <#local propVal = getPropValue(resource, name, format, prefix) />
          value="${VRTX_CSRF_PREVENTION_HANDLER.newToken(url)}" />
 </#macro>
 
-
+<#macro calculateResourceSize contentLength>
+  <#if contentLength <= 1000>
+    ${contentLength} B
+  <#elseif contentLength <= 1000000>
+    ${(contentLength / 1000)?string("0.#")} KB
+  <#elseif contentLength <= 1000000000>
+    ${(contentLength / 1000000)?string("0.#")} MB
+  <#elseif contentLength <= 1000000000000>
+    ${(contentLength / 1000000000)?string("0.#")} GB
+  <#else>
+    ${contentLength} B
+  </#if>
+</#macro>

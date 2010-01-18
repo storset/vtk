@@ -106,6 +106,8 @@
             <th class="sortable-text">${vrtx.getMsg("property.content:description")}</th>
             <th class="sortable-numeric">${vrtx.getMsg("imageListing.width")}</th>
             <th class="sortable-numeric">${vrtx.getMsg("imageListing.height")}</th>
+            <th class="sortable-numeric">${vrtx.getMsg("property.contentLength")}</th>
+            <th class="sortable-text">Eier</th>
             <th class="sortable-sortEnglishLonghandDateFormat">${vrtx.getMsg("proptype.name.creationTime")}</th>
           </tr>
         </thead>
@@ -121,6 +123,10 @@
             <#local height = vrtx.propValue(image, 'pixelHeight') />
             <td>${width} px</td>
             <td>${height} px</td>
+            <#local contentLength = vrtx.propValue(image, 'contentLength') />
+            <td><@vrtx.calculateResourceSize contentLength?number /></td>
+            <#local username = vrtx.propValue(image, 'owner', 'short', '') />
+            <td>${username}</td>
             <#local creationTime = vrtx.propValue(image, 'creationTime', 'short', '') />
             <td>${creationTime}</td>
           </tr>

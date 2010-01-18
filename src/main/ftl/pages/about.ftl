@@ -138,17 +138,7 @@
       <!-- Size -->
       <#assign size>
        <#if resourceContext.currentResource.contentLength?exists>
-          <#if resourceContext.currentResource.contentLength <= 1000>
-            ${resourceContext.currentResource.contentLength} B
-          <#elseif resourceContext.currentResource.contentLength <= 1000000>
-            ${(resourceContext.currentResource.contentLength / 1000)?string("0.#")} KB
-          <#elseif resourceContext.currentResource.contentLength <= 1000000000>
-            ${(resourceContext.currentResource.contentLength / 1000000)?string("0.#")} MB
-          <#elseif resourceContext.currentResource.contentLength <= 1000000000000>
-            ${(resourceContext.currentResource.contentLength / 1000000000)?string("0.#")} GB
-          <#else>
-            ${resourceContext.currentResource.contentLength} B
-          </#if>
+          <@vrtx.calculateResourceSize resourceContext.currentResource.contentLength />       
        <#else>
 	 <@vrtx.msg code="property.contentLength.unavailable" default="Not available" />
        </#if>

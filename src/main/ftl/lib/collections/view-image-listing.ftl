@@ -107,7 +107,7 @@
             <th class="sortable-numeric">${vrtx.getMsg("imageListing.width")}</th>
             <th class="sortable-numeric">${vrtx.getMsg("imageListing.height")}</th>
             <th class="sortable-numeric">${vrtx.getMsg("property.contentLength")}</th>
-            <th class="sortable-text">Eier</th>
+            <th class="sortable-text">${vrtx.getMsg("property.owner")}</th>
             <th class="sortable-sortEnglishLonghandDateFormat">${vrtx.getMsg("proptype.name.creationTime")}</th>
           </tr>
         </thead>

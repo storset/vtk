@@ -16,15 +16,20 @@
   <#-- MOVE TO CONFIG, INCLUDE IN HEAD-TAG -->
   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/jquery-1.3.2.min.js"></script>
   <script type="text/javascript">
-    $(".vrtx-image-container img").each(function (i) {
-  
-      var height = $(this).height();
+    <!--
+    $(document).ready(function() {
+        $(".vrtx-image-container").each(function (i) {
       
-      if (height > 188) { //Landscape 4:3 aspect ratio to standard thumbnail size: 250px
-        $(this).css('height', '188px');
-      }
-    
+          var height = $(this).find("img").height();
+          var maxSize = parseInt($(this).css('height')); //can vary depending on thumbnail size on host
+          
+          if (height > maxSize) { 
+            $(this).find("img").css('height', maxSize + 'px');
+          }
+        
+        });
     });
+    // -->
   </script>
 
   <#local images=imageListing.files />
@@ -142,7 +147,7 @@
             <#local contentLength = vrtx.propValue(image, 'contentLength') />
             <td><@vrtx.calculateResourceSizeToKB contentLength?number /></td>
             <#local owner = vrtx.propValue(image, 'owner', 'short', '') />
-            <#local ownerUrl = vrtx.propValue(image, 'authorURL', 'short', '') />
+            <#local ownerUrl = vrtx.propValue(image, 'authorUrl', 'short', 'content') />
             <td>${owner} ${ownerUrl}</td>
             <#local creationTime = vrtx.propValue(image, 'creationTime', 'short', '') />
             <td>${creationTime}</td>

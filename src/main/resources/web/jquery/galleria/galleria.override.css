@@ -1,11 +1,16 @@
 .vrtx-image-gallery,
-body#vrtx-image-listing h1,
 .vrtx-paging-feed-wrapper {
   width:730px;
   margin: 0 auto;
   position: relative;
   font: 80%/ 140% 'helvetica neue', sans-serif;
   color: #555;
+}
+
+body#vrtx-image-listing h1 {
+  width:730px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 a {

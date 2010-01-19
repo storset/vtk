@@ -60,6 +60,7 @@ ul.vrtx-image-listing {
 
 .vrtx-paging-feed-wrapper {
   clear: both;
+  padding-top: 10px;
 }
 
 .vrtx-image-table {

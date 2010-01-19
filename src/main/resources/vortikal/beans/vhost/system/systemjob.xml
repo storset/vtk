@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <bean id="repository.systemJob" abstract="true" class="org.vortikal.repository.systemjob.SystemJob"
+    parent="repositoryAware">
+    <property name="searcher" ref="systemIndexSearcher" />
+    <property name="securityContext">
+      <bean class="org.vortikal.security.SecurityContext">
+        <constructor-arg ref="writeAllToken" />
+        <constructor-arg ref="rootPrincipal" />
+      </bean>
+    </property>
+    <property name="systemJobStatusPropDef" ref="systemJobStatusPropDef" />
+  </bean>
+
+  <bean id="repository.systemJobMethodInvokingTrigger" abstract="true"
+    class="org.vortikal.scheduling.SimpleMethodInvokingTriggerBean">
+    <property name="targetMethodName" value="execute" />
+    <property name="startDelay" value="20000" />
+    <property name="startTriggerAfterInitialization" value="true" />
+    <property name="abortTriggerOnTargetMethodException" value="false" />
+  </bean>
+
+</beans>

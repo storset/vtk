@@ -66,4 +66,10 @@
   <!-- OperationLog interceptor for Repository -->
   <import resource="repository-operationlog-interceptor.xml" />
   
+  <!--
+    Generalized abstract systemjob bean, used to 
+    define & configure periodic jobs run by the system
+  -->
+  <import resource="system/systemjob.xml" />
+  
 </beans>

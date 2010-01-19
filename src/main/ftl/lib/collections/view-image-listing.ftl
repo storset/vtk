@@ -12,6 +12,21 @@
 </#macro>
 
 <#macro displayDefault imageListing collection>
+
+  <#-- MOVE TO CONFIG, INCLUDE IN HEAD-TAG -->
+  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/jquery-1.3.2.min.js"></script>
+  <script type="text/javascript">
+    $(".vrtx-image-container img").each(function (i) {
+  
+      var height = $(this).height();
+      
+      if (height > 188) { //Landscape 4:3 aspect ratio to standard thumbnail size: 250px
+        $(this).css('height', '188px');
+      }
+    
+    });
+  </script>
+
   <#local images=imageListing.files />
   <#if (images?size > 0)>
     <div class="vrtx-image-listing-container">
@@ -92,6 +107,7 @@
 
 <#macro displayTable imageListing collection>
 
+  <#-- MOVE TO CONFIG, INCLUDE IN HEAD-TAG -->
   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/tablesort.js"></script>
   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/customsort-norwegian-mod.js"></script>
   

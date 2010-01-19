@@ -26,7 +26,11 @@
 
             <div class="vrtx-image-info">
               <div class="vrtx-image-title">
-                <a href="${image.URI?html}">${title}</a>
+                <#if (title?string?length > 20) >
+                  <a href="${image.URI?html}">${title?substring(0, 20)}...</a>
+                <#else> 
+                  <a href="${image.URI?html}">${title}</a>
+                </#if>
               </div>
               
               <#local creationTime = vrtx.propValue(image, 'creationTime', 'short', '') />
@@ -35,21 +39,18 @@
               </div>
               
               <#local description = vrtx.propValue(image, 'description', '', 'content')?html />
-              <#if description?has_content>
-                <div class="vrtx-image-description">
-                  ${description}
-                </div>
-              </#if>
-              
-              <#local width = vrtx.propValue(image, 'pixelWidth') />
-              <#local height = vrtx.propValue(image, 'pixelHeight') />
-              <#local contentLength = vrtx.propValue(image, 'contentLength') />
-              <div class="vrtx-image-dimension">
-                ${width} x ${height} - <@vrtx.calculateResourceSizeToKB contentLength?number />
+              <div class="vrtx-image-description">
+                <#if description?has_content>
+                  <#if (description?string?length > 20) >
+                    ${description?substring(0, 20)}...
+                  <#else>
+                    ${description}
+                  </#if>
+                <#else>
+                   
+                </#if>
               </div>
-              
-            </div>
-          
+            </div>          
         </li>
       </#list>
       </ul>
@@ -124,8 +125,9 @@
             <td>${height} px</td>
             <#local contentLength = vrtx.propValue(image, 'contentLength') />
             <td><@vrtx.calculateResourceSizeToKB contentLength?number /></td>
-            <#local username = vrtx.propValue(image, 'owner', 'short', '') />
-            <td>${username}</td>
+            <#local owner = vrtx.propValue(image, 'owner', 'short', '') />
+            <#local ownerUrl = vrtx.propValue(image, 'authorURL', 'short', '') />
+            <td>${owner} ${ownerUrl}</td>
             <#local creationTime = vrtx.propValue(image, 'creationTime', 'short', '') />
             <td>${creationTime}</td>
           </tr>

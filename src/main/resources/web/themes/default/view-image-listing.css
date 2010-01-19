@@ -33,8 +33,8 @@ ul.vrtx-image-listing {
   overflow: hidden;
 }
 
-vrtx-image-info {
-  float: left;
+.vrtx-image-info {
+  width: 250px;
 }
 
 .vrtx-image-title {
@@ -51,6 +51,7 @@ vrtx-image-info {
 
 .vrtx-image-description {
   padding-top: 10px;
+  height: 20px;
 }
 
 .vrtx-image-dimension {

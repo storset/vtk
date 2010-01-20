@@ -34,21 +34,25 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 
-  <#if cssURLs?exists>
-    <#list cssURLs as cssURL>
-      <link rel="stylesheet" href="${cssURL}" />
-    </#list>
-  </#if>
-  <#if printCssURLs?exists>
-    <#list printCssURLs as cssURL>
-      <link rel="stylesheet" href="${cssURL}" media="print" />
-    </#list>
+  <#if collection.resourceType = 'image-listing'>
+    <@images.addScripts collection />
+  <#else>
+    <#if cssURLs?exists>
+      <#list cssURLs as cssURL>
+        <link rel="stylesheet" href="${cssURL}" />
+      </#list>
+    </#if>
+    <#if printCssURLs?exists>
+      <#list printCssURLs as cssURL>
+        <link rel="stylesheet" href="${cssURL}" media="print" />
+      </#list>
+    </#if>
   </#if>
 
   <#if alternativeRepresentations?exists > 
-	  <#list alternativeRepresentations as alt>
-	    <link rel="alternate" type="${alt.contentType?html}" title="${alt.title?html}" href="${alt.url?html}" />
-	  </#list>
+    <#list alternativeRepresentations as alt>
+      <link rel="alternate" type="${alt.contentType?html}" title="${alt.title?html}" href="${alt.url?html}" />
+    </#list>
   </#if>
 
   <title>${title?html}

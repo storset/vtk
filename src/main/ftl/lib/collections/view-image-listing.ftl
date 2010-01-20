@@ -1,6 +1,43 @@
 <#import "../vortikal.ftl" as vrtx />
 
+<#macro addScripts collection>
+
+  <#local listingType = vrtx.propValue(collection, 'display-type', '', 'imgl') />  
+  <#--
+    Default listing chosen, no particular listing type given.
+    Set it to "list" to retrieve proper scripts
+  -->
+  <#if !listingType?has_content>
+    <#local listingType = "list" />
+  </#if>
+  
+  <#if cssURLs?exists>
+    <@addScriptURLs "css" "common" cssURLs />
+    <@addScriptURLs "css" listingType cssURLs />
+  </#if>  
+  <#if jsURLs?exists>
+    <@addScriptURLs "js" "common" jsURLs />
+    <@addScriptURLs "js" listingType jsURLs />
+  </#if>
+  
+</#macro>
+
+<#macro addScriptURLs scriptType listingType urls>
+  
+  <#if urls[listingType]?exists>
+    <#list urls[listingType] as commonUrl>
+      <#if scriptType == "css">
+        <link rel="stylesheet" href="${commonUrl}" />
+      <#elseif scriptType == "js">
+        <script type="text/javascript" src="${commonUrl}"></script>
+      </#if>
+    </#list>
+  </#if>
+
+</#macro>
+
 <#macro displayImages imageListing collection>
+
   <#local listingType = vrtx.propValue(collection, 'display-type', '', 'imgl') />
   <#if listingType == 'gallery'>
     <@displayGallery imageListing collection />
@@ -9,28 +46,10 @@
   <#else>
     <@displayDefault imageListing collection />
   </#if>
+
 </#macro>
 
 <#macro displayDefault imageListing collection>
-
-  <#-- MOVE TO CONFIG, INCLUDE IN HEAD-TAG -->
-  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/jquery-1.3.2.min.js"></script>
-  <script type="text/javascript">
-    <!--
-    $(document).ready(function() {
-        $(".vrtx-image-container").each(function (i) {
-      
-          var height = $(this).find("img").height();
-          var maxSize = parseInt($(this).css('height')); //can vary depending on thumbnail size on host
-          
-          if (height > maxSize) { 
-            $(this).find("img").css('height', maxSize + 'px');
-          }
-        
-        });
-    });
-    // -->
-  </script>
 
   <#local images=imageListing.files />
   <#if (images?size > 0)>
@@ -77,16 +96,10 @@
     </div>
     <p/>
   </#if>
+
 </#macro>
 
 <#macro displayGallery imageListing collection>
-
-  <#-- MOVE TO CONFIG, INCLUDE IN HEAD-TAG -->
-  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/jquery-1.3.2.min.js"></script>
-  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/galleria/jquery.galleria.pack.js"></script>
-  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/galleria/galleria.js"></script>
-  <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/jquery/galleria/galleria.css" />
-  <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/jquery/galleria/galleria.override.css" />
 
   <#local images=imageListing.files />
   <#if (images?size > 0)>
@@ -108,14 +121,11 @@
       </ul>
     </div>
  </#if>
+
 </#macro>
 
 <#macro displayTable imageListing collection>
 
-  <#-- MOVE TO CONFIG, INCLUDE IN HEAD-TAG -->
-  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/tablesort.js"></script>
-  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/customsort-norwegian-mod.js"></script>
-  
   <#local images=imageListing.files />
   <#if (images?size > 0)>
     <div class="vrtx-image-table"> 
@@ -157,4 +167,5 @@
       </table>
     </div>
   </#if>
+
 </#macro>

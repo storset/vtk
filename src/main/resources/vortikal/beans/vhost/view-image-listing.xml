@@ -48,11 +48,52 @@
   <bean id="imageListing.view" parent="collectionListing.view">
     <property name="attributesMap">
       <map>
+        
+        <!-- CSS's -->
         <entry key="cssURLs">
-          <list>
-            <value>${themeBaseURL}/view-image-listing.css</value>
-          </list>
+          <map>
+            <entry key="common">
+              <list>
+                <value>${themeBaseURL}/view-image-listing.css</value>
+              </list>
+            </entry>
+            <entry key="gallery">
+              <list>
+                <value>${webResources.baseURL}/jquery/galleria/galleria.css</value>
+                <value>${webResources.baseURL}/jquery/galleria/galleria.override.css</value>
+              </list>
+            </entry>
+          </map>
         </entry>
+        
+        <!-- JS's -->
+        <entry key="jsURLs">
+          <map>
+            <entry key="common">
+              <list>
+                <value>${webResources.baseURL}/jquery/jquery-1.3.2.min.js</value>
+              </list>
+            </entry>
+            <entry key="list">
+              <list>
+                <value>${jsBaseURL}/image-listing.js</value>
+              </list>
+            </entry>
+            <entry key="table">
+              <list>
+                <value>${jsBaseURL}/tablesort.js</value>
+                <value>${jsBaseURL}/customsort-norwegian-mod.js</value>
+              </list>
+            </entry>
+            <entry key="gallery">
+              <list>
+                <value>${webResources.baseURL}/jquery/galleria/jquery.galleria.pack.js</value>
+                <value>${webResources.baseURL}/jquery/galleria/galleria.js</value>
+              </list>
+            </entry>
+          </map>
+        </entry>
+        
       </map>
     </property>
   </bean>

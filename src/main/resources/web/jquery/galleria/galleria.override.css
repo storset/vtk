@@ -41,15 +41,12 @@ a:hover {
 }
 
 .default_galleria_style {
-  /* width: 200px;
-  float: left; */
   width: 730px;
   margin: 0;
   padding: 0;
 }
 
 .default_galleria_style li {
-  /* width: 55px; */
   width: 138px;
   height: 104px;
   border: 3px double #eee;
@@ -76,7 +73,6 @@ a:hover {
 
 .galleria_container {
   width: 730px;
-  /* float: right; */
 }
 
 .nav {
@@ -115,7 +111,6 @@ a:hover {
   height: 548px;
   width: 730px;
   overflow: hidden;
- /* border: 1px solid #ccc; */
   margin-bottom: 15px;
 }
 

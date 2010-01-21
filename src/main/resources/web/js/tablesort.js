@@ -449,7 +449,7 @@ fdTableSort = {
                                                 txt = fdTableSort.dateFormat(txt);
                                         } else if(txt.search(fdTableSort.regExp_Number) != -1 || txt.search(fdTableSort.regExp_Currency) != -1) {
                                                 fdTableSort.addClass(th, "sortable-numeric");
-                                                txt = parseFloat(txt.replace(/[^0-9\.\-]/g,''));
+                                                txt = parseFloat(txt.replace(/[^0-9\,\-]/g,''));
                                                 if(isNaN(txt)) txt = "";
                                         } else {
                                                 fdTableSort.addClass(th, "sortable-text");

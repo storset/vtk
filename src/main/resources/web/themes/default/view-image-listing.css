@@ -82,9 +82,6 @@ ul.vrtx-image-listing {
   background-color: #fff;
 }
 
-.vrtx-image-table table td.vrtx-table-image {
-}
-
 .vrtx-image-table table img {
-  height: 50px;
+  width: 50px;
 }

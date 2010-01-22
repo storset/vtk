@@ -141,8 +141,9 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         p.setRepository(repository);
         p.setBreadcrumbName(breadcrumbName);
         p.setSkipIndexFile(false);
-        PropertyTypeDefinition titleProp[] = new PropertyTypeDefinition[1];
-        titleProp[0] = titlePropDef;
+        PropertyTypeDefinition titleProp[] = new PropertyTypeDefinition[2];
+        titleProp[0] = navigationTitlePropDef;
+        titleProp[1] = titlePropDef;
         p.setTitleOverrideProperties(titleProp);
         p.afterPropertiesSet();
         Map<String, BreadcrumbElement[]> map = new HashMap<String, BreadcrumbElement[]>();

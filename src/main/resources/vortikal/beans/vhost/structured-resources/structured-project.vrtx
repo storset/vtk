@@ -58,7 +58,9 @@ resourcetype structured-project {
                 <div class="vrtx-imagetext">
                   <div class="vrtx-imagedescription">[val caption unescaped]</div>
                   [if img-author != null]
-                    <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val img-author]
+                    <span class="vrtx-photo">
+                      <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val img-author]
+                    </span>
                   [endif]
                 </div>
               </div>

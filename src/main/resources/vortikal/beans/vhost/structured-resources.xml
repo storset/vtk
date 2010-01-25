@@ -140,6 +140,7 @@
   </bean>
 
   <bean id="structuredResources.editHandler" class="org.vortikal.resourcemanagement.edit.StructuredResourceEditor">
+    <property name="safeHtmlFilter" ref="safeHtml.filter" />
     <property name="resourceManager" ref="structuredResources.resourceManager" />
     <property name="repository" ref="repository" />
     <property name="formView" value="structuredResources.editView" />

@@ -58,6 +58,10 @@ import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.resourcemanagement.StructuredResourceManager;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.text.html.HtmlFragment;
+import org.vortikal.text.html.HtmlPageFilter;
+import org.vortikal.text.html.HtmlPageParser;
+import org.vortikal.text.html.HtmlPageParserImpl;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.URL;
@@ -66,6 +70,7 @@ public class StructuredResourceEditor extends SimpleFormController {
 
     private StructuredResourceManager resourceManager;
     private Repository repository;
+    private HtmlPageFilter safeHtmlFilter;
 
     public StructuredResourceEditor() {
         super();
@@ -147,7 +152,14 @@ public class StructuredResourceEditor extends SimpleFormController {
             FormSubmitCommand form = (FormSubmitCommand) getTarget();
             for (PropertyDescription desc : props) {
                 if (desc instanceof EditablePropertyDescription) {
-                    if (desc instanceof JSONPropertyDescription) {
+                    if ("simple_html".equals(desc.getType())) {
+                        try {
+                            String v = filterValue(request.getParameter(desc.getName()));
+                            form.bind(desc.getName(), v);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    } else if (desc instanceof JSONPropertyDescription) {
                         // Build JSON from input, invoke form.bind(JSON)
                         JSONPropertyDescription jsonDesc = (JSONPropertyDescription) desc;
                         if (jsonDesc.isMultiple()) {
@@ -214,6 +226,14 @@ public class StructuredResourceEditor extends SimpleFormController {
         }
     }
 
+    private String filterValue(String value) throws Exception {
+        HtmlPageParser parser = new HtmlPageParserImpl();
+        HtmlFragment fragment;
+        fragment = parser.parseFragment(value);
+        fragment.filter(safeHtmlFilter);
+        return fragment.getStringRepresentation();
+    }
+
     public void unlock() throws Exception {
         String token = SecurityContext.getSecurityContext().getToken();
         Path uri = RequestContext.getRequestContext().getResourceURI();
@@ -225,6 +245,14 @@ public class StructuredResourceEditor extends SimpleFormController {
         Path uri = RequestContext.getRequestContext().getResourceURI();
         Principal principal = SecurityContext.getSecurityContext().getPrincipal();
         this.repository.lock(token, uri, principal.getQualifiedName(), Depth.ZERO, 600, null);
+    }
+
+    public void setSafeHtmlFilter(HtmlPageFilter safeHtmlFilter) {
+        this.safeHtmlFilter = safeHtmlFilter;
+    }
+
+    public HtmlPageFilter getSafeHtmlFilter() {
+        return safeHtmlFilter;
     }
 
 }

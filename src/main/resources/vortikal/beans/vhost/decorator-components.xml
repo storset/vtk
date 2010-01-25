@@ -485,4 +485,15 @@
     <property name="clientIdentifier" value="${decorating.includeComponent.identifier}" />
   </bean>
 
+  <bean id="decorating.imageListingComponent" class="org.vortikal.web.decorating.components.ImageListingComponent"
+    parent="repositoryAware">
+    <property name="namespace" ref="decorating.includeNamespace" />
+    <property name="name" value="image-listing" />
+    <property name="view" ref="decorating.imageListing.view" />
+  </bean>
+
+  <bean name="decorating.imageListing.view" parent="freemarkerView">
+    <property name="url" value="layouts/image-listing.ftl" />
+  </bean>
+
 </beans>

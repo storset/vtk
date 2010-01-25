@@ -30,7 +30,6 @@
  */
 package org.vortikal.repository;
 
-
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -42,167 +41,176 @@ public interface Resource extends PropertySet, Cloneable {
 
     /**
      * Adds a property to this resource.
-     *
-     * @param property the given property
+     * 
+     * @param property
+     *            the given property
      */
     public void addProperty(Property property);
-    
+
+
     /**
      * Removes a property from this resource.
-     *
-     * @param namespace the name space of the property
-     * @param name the name of the property
+     * 
+     * @param namespace
+     *            the name space of the property
+     * @param name
+     *            the name of the property
      */
     public void removeProperty(Namespace namespace, String name);
-    
+
+
     public void removeProperty(PropertyTypeDefinition propDef);
 
+
     public void removeAllProperties();
-    
+
+
     /**
-     * Gets a resource's serial string.  A serial string is a unique
-     * string which changes on each write-operation on the resource,
-     * and may be used for instance as an ETag on that resource.
+     * Gets a resource's serial string. A serial string is a unique string which changes on each write-operation on the
+     * resource, and may be used for instance as an ETag on that resource.
      */
     public String getSerial();
 
+
     /**
      * 
-     * @return The ETag String 
+     * @return The ETag String
      */
     public String getEtag();
-    
+
+
     /**
      * Gets the size of a resource.
-     *
+     * 
      * @return the size of the resource's content (in bytes)
      */
     public long getContentLength();
-    
+
+
     /**
-     * Gets the list of children. These are "soft" references, listing
-     * the URIs of the children.
-     *
-     * @return the children's URIs, or <code>null</code> if the
-     * resource is not a collection
+     * Gets the list of children. These are "soft" references, listing the URIs of the children.
+     * 
+     * @return the children's URIs, or <code>null</code> if the resource is not a collection
      */
     public List<Path> getChildURIs();
 
-    /**
-     * Returns a lock for the resource, if one is set.
-     *
-     * @return a <code>Lock</code> object representing
-     * the active lock that are set on the resource
-     */
-    public Lock getLock();
-    
 
     /**
-     * Retrieves the Access Control List (ACL) for a resource. The ACL
-     * may or may not be inherited.
+     * Returns a lock for the resource, if one is set.
+     * 
+     * @return a <code>Lock</code> object representing the active lock that are set on the resource
+     */
+    public Lock getLock();
+
+
+    /**
+     * Retrieves the Access Control List (ACL) for a resource. The ACL may or may not be inherited.
      */
     public Acl getAcl();
 
 
     /**
-     * Sets the Access Control List (ACL) for a resource. 
+     * Sets the Access Control List (ACL) for a resource.
      */
     public void setAcl(Acl acl);
-    
+
 
     /**
-     * Determines whether this resource has an inherited ACL.     
+     * Determines whether this resource has an inherited ACL.
      */
     public boolean isInheritedAcl();
 
 
     /**
-     * Sets this resource's ACL inheritance flag (called prior to
-     * performing a {@link Repository#storeACL} operation).
+     * Sets this resource's ACL inheritance flag (called prior to performing a {@link Repository#storeACL} operation).
      */
     public void setInheritedAcl(boolean inheritedAcl);
-    
+
 
     /**
      * Determines whether this resource is a collection.
-     *
-     * @return a <code>true</code> if this resource is a collection,
-     * <code>false</code> otherwise
+     * 
+     * @return a <code>true</code> if this resource is a collection, <code>false</code> otherwise
      */
     public boolean isCollection();
-    
+
+
     /**
      * Gets a resource's owner.
-     *
+     * 
      */
     public Principal getOwner();
-    
+
 
     /**
      * Gets the principal that created this resource.
-     *
+     * 
      */
     public Principal getCreatedBy();
 
+
     /**
-     * Gets the name of the principal that last modified either the
-     * content or the properties of this resource.
-     *
+     * Gets the name of the principal that last modified either the content or the properties of this resource.
+     * 
      * @return the name of the principal
      */
     public Principal getModifiedBy();
-    
+
+
     /**
-     * Gets the name of the principal that last modified the
-     * resource's content.
+     * Gets the name of the principal that last modified the resource's content.
      */
     public Principal getContentModifiedBy();
 
+
     /**
-     * Gets the name of the principal that last modified the
-     * resource's properties.
+     * Gets the name of the principal that last modified the resource's properties.
      */
     public Principal getPropertiesModifiedBy();
-    
+
+
     /**
      * Gets a resource's content language.
-     *
+     * 
      * @return the locale string (if it has one, <code>null</code> otherwise)
      */
     public String getContentLanguage();
-    
+
+
     public Locale getContentLocale();
+
 
     /**
      * Gets a resource's content (MIME) type.
-     *
+     * 
      * @return the content type
      */
     public String getContentType();
-    
+
+
     /**
      * Gets the creation time for this resource.
-     *
-     * @return the <code>Date</code> object representing the creation
-     * time
+     * 
+     * @return the <code>Date</code> object representing the creation time
      */
     public Date getCreationTime();
 
+
     /**
-     * Gets the date of this resource's last modification. The date
-     * returned is either that of the
-     * <code>getContentLastModified()</code> or the
-     * <code>getPropertiesLastModified()</code> method, depending on
-     * which one is the most recent.
-     *
+     * Gets the date of this resource's last modification. The date returned is either that of the
+     * <code>getContentLastModified()</code> or the <code>getPropertiesLastModified()</code> method, depending on which
+     * one is the most recent.
+     * 
      * @return the time of last modification
      */
     public Date getLastModified();
+
 
     /**
      * Gets the date of the last property modification.
      */
     public Date getContentLastModified();
+
 
     /**
      * Gets the date of the last content modification.
@@ -215,27 +223,29 @@ public interface Resource extends PropertySet, Cloneable {
      */
     public String getUserSpecifiedCharacterEncoding();
 
+
     /**
      * Gets the evaluated ('guessed') character encoding.
      */
     public String getGuessedCharacterEncoding();
 
+
     public String getTitle();
 
+
     /**
-     * Gets the character encoding. This value is only relevant if the
-     * resource type is 'textResource'. It depends on the value of
-     * <code>getEvaluatedCharacterEncoding()</code> and
-     * <code>getUserSpecifiedCharacterEncoding()</code>.
+     * Gets the character encoding. This value is only relevant if the resource type is 'textResource'. It depends on
+     * the value of <code>getEvaluatedCharacterEncoding()</code> and <code>getUserSpecifiedCharacterEncoding()</code>.
      */
     public String getCharacterEncoding();
 
+
     public Object clone() throws CloneNotSupportedException;
-    
+
+
     /**
-     * @return Boolean indicating if resource has entries in acl concerning 
-     * read permissions on the resource, i.e. if the resource in some way
-     * is read restricted.
+     * @return Boolean indicating if resource has entries in acl concerning read permissions on the resource, i.e. if
+     *         the resource in some way is read restricted.
      */
     public boolean isReadRestricted();
 

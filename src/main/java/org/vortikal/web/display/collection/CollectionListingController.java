@@ -47,6 +47,7 @@ public class CollectionListingController extends AbstractCollectionListingContro
 
     private List<SearchComponent> searchComponents;
 
+
     protected void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
             throws Exception {
 
@@ -93,6 +94,7 @@ public class CollectionListingController extends AbstractCollectionListingContro
         }
     }
 
+
     private Map<String, Integer> getNumberOfRecords(int page, int pageLimit, int resultSize) {
         Map<String, Integer> numbers = new HashMap<String, Integer>();
         int numberShownElements = ((page - 1) * pageLimit) + 1;
@@ -101,6 +103,7 @@ public class CollectionListingController extends AbstractCollectionListingContro
         numbers.put("elementsIncludingThisPage", includingThisPage);
         return numbers;
     }
+
 
     @Required
     public void setSearchComponents(List<SearchComponent> searchComponents) {

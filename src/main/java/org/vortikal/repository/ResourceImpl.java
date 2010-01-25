@@ -48,8 +48,8 @@ import org.vortikal.util.repository.LocaleHelper;
 
 /**
  * 
- * XXX: Handling of child URI list should be improved/done differently.
- * Currently fragile and ugly (there are too many hidden assumptions).
+ * XXX: Handling of child URI list should be improved/done differently. Currently fragile and ugly (there are too many
+ * hidden assumptions).
  */
 public class ResourceImpl extends PropertySetImpl implements Resource {
 
@@ -57,10 +57,12 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
     private Lock lock = null;
     private List<Path> childURIs = null;
 
+
     public ResourceImpl(Path uri) {
         super();
         this.uri = uri;
     }
+
 
     public void removeProperty(Namespace namespace, String name) {
         Map<String, Property> props = this.propertyMap.get(namespace);
@@ -74,21 +76,26 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         props.remove(name);
     }
 
+
     public void removeProperty(PropertyTypeDefinition propDef) {
         removeProperty(propDef.getNamespace(), propDef.getName());
     }
+
 
     public void removeAllProperties() {
         this.propertyMap = new HashMap<Namespace, Map<String, Property>>();
     }
 
+
     public String getContentLanguage() {
         return getPropValue(PropertyType.CONTENTLOCALE_PROP_NAME);
     }
 
+
     public void setChildURIs(List<Path> childURIs) {
         this.childURIs = childURIs;
     }
+
 
     public List<Path> getChildURIs() {
         if (this.childURIs != null) {
@@ -99,21 +106,26 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         // it is stated in Resource interface).
     }
 
+
     public Acl getAcl() {
         return this.acl;
     }
+
 
     public void setAcl(Acl acl) {
         this.acl = acl;
     }
 
+
     public Lock getLock() {
         return this.lock;
     }
 
+
     public void setLock(Lock lock) {
         this.lock = lock;
     }
+
 
     public String getSerial() {
         String serial = getURI().toString() + getContentLastModified() + getPropertiesLastModified()
@@ -123,67 +135,81 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         return serial;
     }
 
+
     public String getEtag() {
         return "\"" + getSerial() + "\"";
     }
+
 
     public Principal getOwner() {
         return getPrincipalPropValue(PropertyType.OWNER_PROP_NAME);
     }
 
+
     public Principal getCreatedBy() {
         return getPrincipalPropValue(PropertyType.CREATEDBY_PROP_NAME);
     }
+
 
     public Principal getContentModifiedBy() {
         return getPrincipalPropValue(PropertyType.CONTENTMODIFIEDBY_PROP_NAME);
     }
 
+
     public Principal getPropertiesModifiedBy() {
         return getPrincipalPropValue(PropertyType.PROPERTIESMODIFIEDBY_PROP_NAME);
     }
+
 
     public Date getCreationTime() {
         return getDatePropValue(PropertyType.CREATIONTIME_PROP_NAME);
     }
 
+
     public Date getContentLastModified() {
         return getDatePropValue(PropertyType.CONTENTLASTMODIFIED_PROP_NAME);
     }
+
 
     public Date getPropertiesLastModified() {
         return getDatePropValue(PropertyType.PROPERTIESLASTMODIFIED_PROP_NAME);
     }
 
+
     public String getContentType() {
         return getPropValue(PropertyType.CONTENTTYPE_PROP_NAME);
     }
+
 
     public String getCharacterEncoding() {
         return getPropValue(PropertyType.CHARACTERENCODING_PROP_NAME);
     }
 
+
     public String getUserSpecifiedCharacterEncoding() {
         return getPropValue(PropertyType.CHARACTERENCODING_USER_SPECIFIED_PROP_NAME);
     }
+
 
     public String getGuessedCharacterEncoding() {
         return getPropValue(PropertyType.CHARACTERENCODING_GUESSED_PROP_NAME);
     }
 
+
     public String getTitle() {
         return getPropValue(PropertyType.TITLE_PROP_NAME);
     }
+
 
     public boolean isCollection() {
         return getBooleanPropValue(PropertyType.COLLECTION_PROP_NAME);
     }
 
+
     /**
-     * Gets the date of this resource's last modification. The date returned is
-     * either that of the <code>getContentLastModified()</code> or the
-     * <code>getPropertiesLastModified()</code> method, depending on which one
-     * is the most recent.
+     * Gets the date of this resource's last modification. The date returned is either that of the
+     * <code>getContentLastModified()</code> or the <code>getPropertiesLastModified()</code> method, depending on which
+     * one is the most recent.
      * 
      * @return the time of last modification
      */
@@ -191,26 +217,28 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         return getDatePropValue(PropertyType.LASTMODIFIED_PROP_NAME);
     }
 
+
     /**
-     * Gets the name of the principal that last modified either the content or
-     * the properties of this resource.
+     * Gets the name of the principal that last modified either the content or the properties of this resource.
      */
     public Principal getModifiedBy() {
         return getPrincipalPropValue(PropertyType.MODIFIEDBY_PROP_NAME);
     }
 
+
     public long getContentLength() {
         return getLongPropValue(PropertyType.CONTENTLENGTH_PROP_NAME);
     }
+
 
     public Locale getContentLocale() {
         return LocaleHelper.getLocale(this.getContentLanguage());
     }
 
+
     public Object clone() throws CloneNotSupportedException {
         LockImpl lock = null;
-        if (this.lock != null)
-            lock = (LockImpl) this.lock.clone();
+        if (this.lock != null) lock = (LockImpl) this.lock.clone();
 
         ResourceImpl clone = new ResourceImpl(this.uri);
         clone.setID(this.id);
@@ -230,6 +258,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         return clone;
     }
 
+
     public ResourceImpl createCopy(Path newUri) {
         ResourceImpl resource = new ResourceImpl(newUri);
         resource.setResourceType(getResourceType());
@@ -240,36 +269,39 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         return resource;
     }
 
+
     private String getPropValue(String name) {
         Property prop = this.propertyMap.get(Namespace.DEFAULT_NAMESPACE).get(name);
-        if (prop == null)
-            return null;
+        if (prop == null) return null;
         return prop.getStringValue();
     }
 
+
     private Date getDatePropValue(String name) {
         Property prop = this.propertyMap.get(Namespace.DEFAULT_NAMESPACE).get(name);
-        if (prop == null)
-            return null;
+        if (prop == null) return null;
         return prop.getDateValue();
     }
 
+
     private long getLongPropValue(String name) {
         Property prop = this.propertyMap.get(Namespace.DEFAULT_NAMESPACE).get(name);
-        if (prop == null)
-            return -1;
+        if (prop == null) return -1;
         return prop.getLongValue();
     }
+
 
     private boolean getBooleanPropValue(String name) {
         Property prop = this.propertyMap.get(Namespace.DEFAULT_NAMESPACE).get(name);
         return prop.getBooleanValue();
     }
 
+
     private Principal getPrincipalPropValue(String name) {
         Property prop = this.propertyMap.get(Namespace.DEFAULT_NAMESPACE).get(name);
         return prop.getPrincipalValue();
     }
+
 
     // Mumble mumble. this.childURIs should never be null if this method is
     // called.
@@ -287,6 +319,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         copy.add(childURI);
         this.childURIs = copy;
     }
+
 
     // Mumble mumble. this.childURIs should never be null if this method is
     // called.
@@ -306,20 +339,15 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         this.childURIs = copy;
     }
 
+
     public boolean equals(Object obj) {
-        if (!(obj instanceof ResourceImpl))
-            return false;
-        if (!super.equals(obj))
-            return false;
+        if (!(obj instanceof ResourceImpl)) return false;
+        if (!super.equals(obj)) return false;
         ResourceImpl other = (ResourceImpl) obj;
-        if (!this.acl.equals(other.acl))
-            return false;
-        if (this.lock == null && other.lock != null)
-            return false;
-        if (this.lock != null && other.lock == null)
-            return false;
-        if (this.lock != null && !this.lock.equals(other.lock))
-            return false;
+        if (!this.acl.equals(other.acl)) return false;
+        if (this.lock == null && other.lock != null) return false;
+        if (this.lock != null && other.lock == null) return false;
+        if (this.lock != null && !this.lock.equals(other.lock)) return false;
 
         // Copy refs to current child URI list objects, because 'this.childURIs'
         // is not a stable reference.
@@ -327,25 +355,24 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         List<Path> thisChildURIs = this.childURIs;
         List<Path> otherChildURIs = other.childURIs;
 
-        if ((thisChildURIs == null && otherChildURIs != null) || (thisChildURIs != null && otherChildURIs == null))
-            return false;
+        if ((thisChildURIs == null && otherChildURIs != null) || (thisChildURIs != null && otherChildURIs == null)) return false;
 
         if (thisChildURIs != null && otherChildURIs != null) {
-            if (thisChildURIs.size() != otherChildURIs.size())
-                return false;
+            if (thisChildURIs.size() != otherChildURIs.size()) return false;
             for (int i = 0; i < thisChildURIs.size(); i++) {
-                if (!thisChildURIs.get(i).equals(otherChildURIs.get(i)))
-                    return false;
+                if (!thisChildURIs.get(i).equals(otherChildURIs.get(i))) return false;
             }
         }
 
         return true;
     }
 
+
     public boolean isReadRestricted() {
         return !this.getAcl().hasPrivilege(RepositoryAction.READ, PrincipalFactory.ALL)
                 && !this.getAcl().hasPrivilege(RepositoryAction.READ_PROCESSED, PrincipalFactory.ALL);
     }
+
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -359,9 +386,11 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
 
     private SystemJobContext systemJobContext;
 
+
     public void setSystemJobContext(SystemJobContext systemJobContext) {
         this.systemJobContext = systemJobContext;
     }
+
 
     public SystemJobContext getSystemJobContext() {
         return this.systemJobContext;

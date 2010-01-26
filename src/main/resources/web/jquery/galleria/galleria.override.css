@@ -76,19 +76,22 @@ a:hover {
 }
 
 .nav {
+  color:#000000;
   height:20px;
-  background-color:#000;
-  position:absolute;
-  top:495px;
-  width:710px;
+  left:-41px;
+  margin:0;
   padding:10px;
-  -moz-opacity:.75; filter:alpha(opacity=75); opacity:.75;
-  color: #000;
+  position:absolute;
+  top:126px;
+  width:562px;
+  /* -moz-opacity:.75; filter:alpha(opacity=75); opacity:.75; */
 }
 
 .nav a {
-  color: #eee;
-  float: left;
+  background:#AAAAAA none repeat scroll 0 0;
+  color:#EEEEEE;
+  float:left;
+  padding:10px;
 }
 
 .nav a#vrtx-image-gallery-next {
@@ -108,7 +111,6 @@ a:hover {
 }
 
 .galleria_wrapper {
-  height: 548px;
   width: 730px;
   overflow: hidden;
   margin-bottom: 15px;

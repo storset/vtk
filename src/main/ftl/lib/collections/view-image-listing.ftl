@@ -113,8 +113,8 @@
   <#if (images?size > 0)>
     <div class="vrtx-image-gallery">
       <p class="nav">
-        <a id="vrtx-image-gallery-previous" href="#" onclick="$.galleria.prev(); return false;">${vrtx.getMsg("imageListing.previous")}</a>
-        <a id="vrtx-image-gallery-next" href="#" onclick="$.galleria.next(); return false;">${vrtx.getMsg("imageListing.next")}</a>
+        <a id="vrtx-image-gallery-previous" href="#" onclick="$.galleria.prev(); return false;">&lt;</a>
+        <a id="vrtx-image-gallery-next" href="#" onclick="$.galleria.next(); return false;">&gt;</a>
       </p>
       
       <#local activeImage = "" />

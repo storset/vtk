@@ -25,17 +25,18 @@ jQuery( function($) {
     	  $(".galleria_wrapper").css('height', height + 'px');
       }
       
-      var heightFinal = (parseInt($(".galleria_wrapper").css('height')) / 2) - 30;
+      //Calculate where to place navigation paging links
+      var heightFinal = (parseInt($(".galleria_wrapper").css('height')) / 2) - 17;
       
       var width = $(".galleria_wrapper img").width();
-      
-      var widthFinal = width + 42 + 20;
-      if(widthFinal < 140) {
-        widthFinal = 140;  
+
+      if(width < 140) {
+        width = 140;  
       }
       
-      $(".nav").css('top', heightFinal + "px");
-      $(".nav").css('width', widthFinal + "px");
+      $("a#vrtx-image-gallery-previous").css('top', heightFinal + "px");
+      $("a#vrtx-image-gallery-next").css('top', heightFinal + "px");
+      $("a#vrtx-image-gallery-next").css('left', width + "px");
  
     }
   });

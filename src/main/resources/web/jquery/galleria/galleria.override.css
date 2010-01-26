@@ -75,6 +75,7 @@ a:hover {
   width: 730px;
 }
 
+/*
 .nav {
   color:#000000;
   height:20px;
@@ -84,22 +85,33 @@ a:hover {
   position:absolute;
   top:126px;
   width:562px;
-  /* -moz-opacity:.75; filter:alpha(opacity=75); opacity:.75; */
+  -moz-opacity:.75; filter:alpha(opacity=75); opacity:.75;
+}
+*/
+
+a#vrtx-image-gallery-previous {
+  left: -31px;
+  top: 0px;
 }
 
-.nav a {
+a#vrtx-image-gallery-next {
+  left: 0px;
+  top: 0px;
+}
+
+a#vrtx-image-gallery-previous,
+a#vrtx-image-gallery-next {
   background-color: #333;
   color:#eee;
   float:left;
   padding:10px;
+  display: block;
+  position: absolute;
 }
 
-.nav a:hover {
+a#vrtx-image-gallery-previous:hover,
+a#vrtx-image-gallery-next:hover {
   background-color: #0B5A9D;
-}
-
-.nav a#vrtx-image-gallery-next {
-  float: right;	
 }
 
 .info {

@@ -100,7 +100,7 @@
 </#macro>
 
 <#macro displayGallery imageListing collection>
-
+  
   <#local images=imageListing.files />
   <#if (images?size > 0)>
     <div class="vrtx-image-gallery">
@@ -108,13 +108,24 @@
         <a id="vrtx-image-gallery-previous" href="#" onclick="$.galleria.prev(); return false;">${vrtx.getMsg("imageListing.previous")}</a>
         <a id="vrtx-image-gallery-next" href="#" onclick="$.galleria.next(); return false;">${vrtx.getMsg("imageListing.next")}</a>
       </p>
+      
+      <#local activeImage = RequestParameters['actimg'] />
+      
       <ul class="vrtx-gallery">
         <#list images as image>
           <#local title = vrtx.propValue(image, 'title')?html />
-            <#if (image_index == 0) >
-              <li class="active">
+            <#if activeImage != "">
+              <#if (activeImage == image.URI) >
+                <li class="active">
+              <#else>
+                <li>
+              </#if>
             <#else>
-              <li>
+              <#if (image_index == 0) >
+                <li class="active">
+              <#else>
+                <li>
+              </#if>
             </#if>
             <a href="${image.URI?html}" title="${title}"><img src="${image.URI?html}?vrtx=thumbnail" alt="${title}"></a></li>
         </#list>

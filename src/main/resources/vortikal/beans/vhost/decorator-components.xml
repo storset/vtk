@@ -486,6 +486,13 @@
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="image-listing" />
     <property name="view" ref="decorating.imageListing.view" />
+    <property name="description" value="Inserts a simple image list." />
+    <property name="parameterDescriptions">
+      <map>
+        <entry key="url" value="URL of the imagefolder to include pictures from." />
+        <entry key="limit" value="Maximum number of images to show in list." />
+      </map>
+    </property>
   </bean>
 
   <bean name="decorating.imageListing.view" parent="freemarkerView">

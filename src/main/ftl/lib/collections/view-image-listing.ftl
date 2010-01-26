@@ -109,7 +109,10 @@
         <a id="vrtx-image-gallery-next" href="#" onclick="$.galleria.next(); return false;">${vrtx.getMsg("imageListing.next")}</a>
       </p>
       
-      <#local activeImage = RequestParameters['actimg'] />
+      <#local activeImage = "" />
+      <#if RequestParameters['actimg']?exists>
+        <#local activeImage = RequestParameters['actimg'] />
+      </#if>
       
       <ul class="vrtx-gallery">
         <#list images as image>

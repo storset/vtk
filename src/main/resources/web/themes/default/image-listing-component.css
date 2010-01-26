@@ -1,19 +1,23 @@
-body {
-  width: 800px;	
-}
-
 .vrtx-image-listing-include {
   border: 3px solid #aaa;
   clear: both;
   float: left;
   padding: 5px 10px 10px;
-  margin: 0 auto;
 }
 
 .vrtx-image-listing-include-title {
   display: block;
   font-size: 16px;
   padding: 10px 0 5px;
+}
+
+.vrtx-image-listing-include-title a {
+  color: #333;
+  text-decoration: none;
+}
+
+.vrtx-image-listing-include-title a:hover {
+  color: #666;
 }
 	
 .vrtx-image-listing-include ul {

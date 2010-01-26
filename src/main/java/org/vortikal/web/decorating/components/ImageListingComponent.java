@@ -62,8 +62,11 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
 
         String requestLimit = request.getStringParameter("limit");
         int searchLimit = getSearchLimit(requestLimit);
-
-        String token = SecurityContext.getSecurityContext().getToken();
+        
+        String excludeScripts = request.getStringParameter("exclude-scripts");
+        if (excludeScripts != null && "true".equalsIgnoreCase(excludeScripts.trim())) {
+            model.put("excludeScripts", excludeScripts);
+        }
 
         AndQuery mainQuery = new AndQuery();
         mainQuery.add(new UriPrefixQuery(url));
@@ -75,6 +78,7 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
         // XXX Sort?
         search.setSorting(null);
 
+        String token = SecurityContext.getSecurityContext().getToken();
         ResultSet rs = this.repository.search(token, search);
 
         Resource folder = this.repository.retrieve(token, Path.fromString(url), false);

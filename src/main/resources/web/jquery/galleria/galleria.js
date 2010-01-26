@@ -32,6 +32,8 @@ jQuery( function($) {
 
       if(width < 140) {
         width = 140;  
+      } else if ( width > 730) {
+    	width = 730;  
       }
       
       $("a#vrtx-image-gallery-previous").css('top', heightFinal + "px");

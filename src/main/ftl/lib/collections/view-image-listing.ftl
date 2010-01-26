@@ -2,7 +2,11 @@
 
 <#macro addScripts collection>
 
-  <#local listingType = vrtx.propValue(collection, 'display-type', '', 'imgl') />  
+  <#local listingType = vrtx.propValue(collection, 'display-type', '', 'imgl') />
+  <#if displayTypeParam?exists>
+    <#local listingType = displayTypeParam />
+  </#if>
+  
   <#--
     Default listing chosen, no particular listing type given.
     Set it to "list" to retrieve proper scripts
@@ -14,7 +18,7 @@
   <#if cssURLs?exists>
     <@addScriptURLs "css" "common" cssURLs />
     <@addScriptURLs "css" listingType cssURLs />
-  </#if>  
+  </#if>
   <#if jsURLs?exists>
     <@addScriptURLs "js" "common" jsURLs />
     <@addScriptURLs "js" listingType jsURLs />
@@ -39,6 +43,10 @@
 <#macro displayImages imageListing collection>
 
   <#local listingType = vrtx.propValue(collection, 'display-type', '', 'imgl') />
+  <#if displayTypeParam?exists>
+    <#local listingType = displayTypeParam />
+  </#if>
+  
   <#if listingType == 'gallery'>
     <@displayGallery imageListing collection />
   <#elseif listingType == 'table'>
@@ -89,7 +97,7 @@
                    
                 </#if>
               </div>
-            </div>          
+            </div>
         </li>
       </#list>
       </ul>

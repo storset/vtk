@@ -19,7 +19,7 @@
     <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
   </bean>
 
-  <bean id="imageListing.handler" class="org.vortikal.web.display.collection.CollectionListingController"
+  <bean id="imageListing.handler" class="org.vortikal.web.display.collection.ImageListingController"
     parent="collectionListing.handler">
     <property name="searchComponents">
       <list>
@@ -27,6 +27,13 @@
       </list>
     </property>
     <property name="viewName" value="imageListing.view" />
+    <property name="supportedDisplayTypes">
+      <set>
+        <value>list</value>
+        <value>gallery</value>
+        <value>table</value>
+      </set>
+    </property>
   </bean>
 
   <bean id="imageListing.searchComponent" parent="collectionListing.searchComponent">

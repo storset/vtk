@@ -1,0 +1,33 @@
+.vrtx-image-listing-include {
+  border: 3px solid #aaa;
+  clear: both;
+  float: left;
+  padding: 5px 10px 10px;
+}
+
+.vrtx-image-listing-include-title {
+  display: block;
+  font-size: 16px;
+  padding: 5px 0;
+}
+	
+.vrtx-image-listing-include ul {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+.vrtx-image-listing-include ul li {
+  border:1px solid #CCCCCC;
+  float:left;
+  height:80px;
+  margin:0 5px 0 0;
+  overflow:hidden;
+  padding:0;
+  width:80px;
+}
+
+.vrtx-image-listing-include ul li img {
+  height: 80px;
+  border: none;
+}

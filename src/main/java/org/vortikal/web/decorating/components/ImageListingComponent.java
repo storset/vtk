@@ -35,6 +35,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.query.AndQuery;
@@ -49,6 +50,7 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
 
     private static final int LIMIT = 5;
     private Repository repository;
+
 
     protected void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
@@ -75,9 +77,14 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
 
         ResultSet rs = this.repository.search(token, search);
 
+        Resource folder = this.repository.retrieve(token, Path.fromString(url), false);
+
         model.put("images", rs.getAllResults());
+        model.put("folderTitle", folder.getTitle());
+        model.put("folderUrl", url);
 
     }
+
 
     private boolean isValidPath(String url) {
         try {
@@ -87,6 +94,7 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
         }
         return false;
     }
+
 
     private int getSearchLimit(String requestLimit) {
         try {
@@ -98,6 +106,7 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
         }
         return LIMIT;
     }
+
 
     @Required
     public void setRepository(Repository repository) {

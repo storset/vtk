@@ -1,8 +1,13 @@
+body {
+  width: 800px;	
+}
+
 .vrtx-image-listing-include {
   border: 3px solid #aaa;
   clear: both;
   float: left;
   padding: 5px 10px 10px;
+  margin: 0 auto;
 }
 
 .vrtx-image-listing-include-title {
@@ -18,7 +23,7 @@
 }
 
 .vrtx-image-listing-include ul li {
-  border:1px solid #CCCCCC;
+  border:2px solid #CCCCCC;
   float:left;
   height:80px;
   margin:0 5px 0 0;
@@ -28,7 +33,7 @@
 }
 
 .vrtx-image-listing-include ul li:hover {
-  border:1px solid blue;	
+  border:2px solid #0B5A9D;	
 }
 
 .vrtx-image-listing-include ul li img {

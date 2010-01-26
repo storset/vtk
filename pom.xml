@@ -99,11 +99,6 @@
       <url>http://repo1.maven.org/maven2</url>
     </repository>
     <repository>
-      <id>apache-incubating</id>
-      <name>Apache Incubating Repository</name>
-      <url>http://people.apache.org/repo/m2-incubating-repository/</url>
-    </repository>
-    <repository>
       <id>download.java.net</id>
       <url>http://download.java.net/maven/2/</url>
     </repository>

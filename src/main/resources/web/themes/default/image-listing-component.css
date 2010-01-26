@@ -27,6 +27,10 @@
   width:80px;
 }
 
+.vrtx-image-listing-include ul li:hover {
+  border:1px solid blue;	
+}
+
 .vrtx-image-listing-include ul li img {
   height: 80px;
   border: none;

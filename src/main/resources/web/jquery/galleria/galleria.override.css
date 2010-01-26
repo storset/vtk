@@ -88,10 +88,14 @@ a:hover {
 }
 
 .nav a {
-  background:#AAAAAA none repeat scroll 0 0;
-  color:#EEEEEE;
+  background-color: #333;
+  color:#eee;
   float:left;
   padding:10px;
+}
+
+.nav a:hover {
+  background-color: #0B5A9D;
 }
 
 .nav a#vrtx-image-gallery-next {
@@ -114,17 +118,4 @@ a:hover {
   width: 730px;
   overflow: hidden;
   margin-bottom: 15px;
-}
-
-#vrtx-image-gallery-colors {
-  padding-top: 10px;
-  clear: left;
-}
-
-#vrtx-display-on-white {
-  color: #555;
-}
-
-#vrtx-display-on-black {
-  color: #348;
 }

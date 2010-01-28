@@ -34,10 +34,14 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
+import org.vortikal.repository.search.Sorting;
+import org.vortikal.repository.search.SortingImpl;
+import org.vortikal.repository.search.TypedSortField;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
@@ -75,8 +79,14 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
         Search search = new Search();
         search.setQuery(mainQuery);
         search.setLimit(searchLimit);
+        
+        //Same sorting as standard image-listing (by name / title)
+        SortingImpl sorting = new SortingImpl();
+        sorting.addSortField(new TypedSortField(PropertySet.NAME_IDENTIFIER));
+        
         // XXX Sort?
-        search.setSorting(null);
+        //search.setSorting(null);
+        search.setSorting(sorting);
 
         String token = SecurityContext.getSecurityContext().getToken();
         ResultSet rs = this.repository.search(token, search);

@@ -14,7 +14,7 @@
     <ul class="vrtx-tags-${i?html}">
      <#assign counter=0 >
      <#assign i = i +1>
-     <#list tagElements as element>     
+     <#list tagElements as element>    
 	     <#if counter == numberOfTagsInEachColumn>
 		     </ul>
 		     <ul  class="vrtx-tags-${i?html}">

@@ -42,7 +42,7 @@
     <#if tab4 != 0>
       <li><a href="#vrtx-publication-tab-${tab4}" name="#vrtx-publication-tab-${tab4}"><@vrtx.msg code="decorating.frida.publications.other" default="Other"/></a></li>
     </#if>
-</ul> 
+</ul>
 
 <#if tab1 != 0>
   <div id="vrtx-publication-tab-${tab1}">
@@ -150,7 +150,7 @@
         </#if>
       </#if>
     </div>
-  </#if> 
+  </#if>
 </#macro>
 
 <#function parseDate date>

@@ -5,7 +5,7 @@
   <#if (projects?size > 0) >
     <div id="${projectListing.name}" class="vrtx-projects ${projectListing.name}">
     <#if projectListing.title?exists && projectListing.offset == 0>
-      <h2>${projectListing.title?html}</h2> 
+      <h2>${projectListing.title?html}</h2>
     </#if>
     <#local locale = springMacroRequestContext.getLocale() />
     <#list projects as project>

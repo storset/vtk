@@ -10,7 +10,7 @@
 	  	  ${numberOfRecords["elementsIncludingThisPage"]} ${vrtx.getMsg("person-listing.of")} 
 	  	  ${personListing.totalHits?string}
 	    </caption>
-	  </#if> 
+	  </#if>
       <thead>
     	 <tr>
 	      <th class="vrtx-person-listing-name">${vrtx.getMsg("person-listing.name")}</th>
@@ -30,12 +30,12 @@
       <#local phonenumbers = vrtx.propValue(person, 'phone')  />
       <#local mobilenumbers = vrtx.propValue(person, 'mobile')  />
       <#local emails = vrtx.propValue(person, 'email')  />
-      <#local tags = vrtx.propValue(person, 'tags') />  
+      <#local tags = vrtx.propValue(person, 'tags') />
       <#local src = vrtx.propValue(person, 'picture', 'thumbnail') />
       <#local imageAlt = vrtx.getMsg("person-listing.image-alt") >
        <#local imageAlt = imageAlt + " " + firstName + " " + surname />
-	   <tr class="vrtx-person-${personNr}">      
-         <td class="vrtx-person-listing-name"> 
+	   <tr class="vrtx-person-${personNr}">
+         <td class="vrtx-person-listing-name">
   			<#if src?has_content>
            		<a class="vrtx-image" href="${personListing.urls[person.URI]?html}"><img src="${src?html}" alt="${imageAlt}" /></a>
            	</#if>
@@ -76,7 +76,7 @@
                   <#local tagUrl = tagUrl + "&" + sortingParams />
                 </#if>
                 <#local tagsNr = tagsNr+1 />
-                <a href="${tagUrl?html}">${tag?trim?html}</a><#if tagsList?size != tagsNr>,</#if> 
+                <a href="${tagUrl?html}">${tag?trim?html}</a><#if tagsList?size != tagsNr>,</#if>
            	  </#list>
            	</#if>
          </td>

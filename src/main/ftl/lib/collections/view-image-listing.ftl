@@ -75,7 +75,7 @@
               <div class="vrtx-image-title">
                 <#if (title?string?length > 20) >
                   <a href="${image.URI?html}">${title?substring(0, 20)}...</a>
-                <#else> 
+                <#else>
                   <a href="${image.URI?html}">${title}</a>
                 </#if>
               </div>
@@ -149,7 +149,7 @@
 
   <#local images=imageListing.files />
   <#if (images?size > 0)>
-    <div class="vrtx-image-table"> 
+    <div class="vrtx-image-table">
       <table class="rowstyle-alt colstyle-alt no-arrow" cellpadding="5" border="1">
         <thead>
           <tr>

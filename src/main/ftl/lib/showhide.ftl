@@ -1,6 +1,6 @@
 <#-- Adds the default required scripts necessary to use show and hide functionality -->
 
-<#macro addShowHideScripts srcBase="">  
+<#macro addShowHideScripts srcBase="">
   <script type="text/javascript" src="${jsBaseURL?html}/admin-showhide.js"></script>
 </#macro>
 

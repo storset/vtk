@@ -11,11 +11,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-  <head>  
+  <head>
     <title>Publishing status on document</title>
     <script type="text/javascript" src="${webResources?html}/jquery-ui-1.7.1.custom/js/jquery-ui-1.7.1.custom.min.js"></script>
     <script type="text/javascript" src="${jsBaseURL?html}/datepicker.js"></script>
-    <link type="text/css" href="${webResources?html}/jquery-ui-1.7.1.custom/css/smoothness/jquery-ui-1.7.1.custom.css" rel="stylesheet" />   
+    <link type="text/css" href="${webResources?html}/jquery-ui-1.7.1.custom/css/smoothness/jquery-ui-1.7.1.custom.css" rel="stylesheet" />
     <#if cssURLs?exists>
       <#list cssURLs as cssURL>
         <link rel="stylesheet" href="${cssURL}" />
@@ -31,7 +31,7 @@
       </h2>
         <#assign isPublished = vrtx.propValue(resource, "published") == "true" />
         <#assign publishedStatusMsgKey = "publishing.status." + isPublished?string />
-        <h3><@vrtx.msg code="publishing.status" default="Status" /></h3> 
+        <h3><@vrtx.msg code="publishing.status" default="Status" /></h3>
         <div>
         <@vrtx.msg code=publishedStatusMsgKey default="" />
         <#if isPublished>
@@ -45,13 +45,13 @@
         <@displayOrEdit "publish-date" "publishDate" editPublishDateUrl />
         <@displayOrEdit "unpublish-date" "unpublishDate" editUnpublishDateUrl />
     </div>
-  </body>  
+  </body>
 </html>
 
 <#macro displayOrEdit propName bindName editUrl >
   <#if formName?exists && formName == propName >
     <div class="expandedForm">
-      <@spring.bind formName + ".submitURL" /> 
+      <@spring.bind formName + ".submitURL" />
       <form class="schedule-publishing" action="${spring.status.value?html}" method="post">
         <#assign dateValue = vrtx.propValue(resource, propName, "iso-8601-short") />
         <#assign timeValue = vrtx.propValue(resource, propName, "hours-minutes") />

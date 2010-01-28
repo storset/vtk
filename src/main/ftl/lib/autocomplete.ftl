@@ -1,6 +1,6 @@
 <#-- Adds the default required scripts necessary to use autocomplete functionality -->
 
-<#macro addAutoCompleteScripts srcBase>  
+<#macro addAutoCompleteScripts srcBase>
   <script type='text/javascript' src='${srcBase}/jquery/autocomplete/jquery.autocomplete.js'></script>
   <script type='text/javascript' src='${srcBase}/jquery/autocomplete/autocomplete.js'></script>
   <link rel="stylesheet" type="text/css" href="${srcBase}/jquery/autocomplete/jquery.autocomplete.css" />

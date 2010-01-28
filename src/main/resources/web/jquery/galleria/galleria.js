@@ -29,12 +29,14 @@ jQuery( function($) {
       var heightFinal = (parseInt($(".galleria_wrapper").css('height')) / 2) - 17;
       
       var width = $(".galleria_wrapper img").width();
-
+     
       if(width < 140) {
         width = 140;  
       } else if ( width > 730) {
     	width = 730;  
       }
+      
+      $(".galleria_container").css('width', width + "px");
       
       $("a#vrtx-image-gallery-previous").css('top', heightFinal + "px");
       $("a#vrtx-image-gallery-next").css('top', heightFinal + "px");

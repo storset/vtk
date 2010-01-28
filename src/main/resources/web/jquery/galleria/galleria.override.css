@@ -90,7 +90,7 @@ a:hover {
 */
 
 a#vrtx-image-gallery-previous {
-  left: -31px;
+  left: -35px;
   top: 0px;
 }
 
@@ -101,17 +101,20 @@ a#vrtx-image-gallery-next {
 
 a#vrtx-image-gallery-previous,
 a#vrtx-image-gallery-next {
-  background-color: #333;
-  color:#eee;
-  float:left;
-  padding:10px;
+  background: transparent url(../../themes/default/icons/next-gallery-image.gif) no-repeat;
+  width: 38px;
+  height: 34px;
   display: block;
   position: absolute;
 }
 
-a#vrtx-image-gallery-previous:hover,
-a#vrtx-image-gallery-next:hover {
-  background-color: #0B5A9D;
+a#vrtx-image-gallery-previous {
+  background-image: url(../../themes/default/icons/previous-gallery-image.gif);	
+}
+
+a#vrtx-image-gallery-next:hover,
+a#vrtx-image-gallery-previous:hover {
+  background-position: 0 -34px; 
 }
 
 .info {

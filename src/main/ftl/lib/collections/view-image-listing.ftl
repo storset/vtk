@@ -113,8 +113,8 @@
   <#if (images?size > 0)>
     <div class="vrtx-image-gallery">
       
-      <a id="vrtx-image-gallery-previous" href="#" onclick="$.galleria.prev(); return false;">&lt;</a>
-      <a id="vrtx-image-gallery-next" href="#" onclick="$.galleria.next(); return false;">&gt;</a>
+      <a id="vrtx-image-gallery-previous" href="#" onclick="$.galleria.prev(); return false;"></a>
+      <a id="vrtx-image-gallery-next" href="#" onclick="$.galleria.next(); return false;"></a>
       
       <#local activeImage = "" />
       <#if RequestParameters['actimg']?exists>

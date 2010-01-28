@@ -26,20 +26,29 @@ jQuery( function($) {
       }
       
       //Calculate where to place navigation paging links
-      var heightFinal = (parseInt($(".galleria_wrapper").css('height')) / 2) - 17;
+      var top = (parseInt($(".galleria_wrapper").css('height')) / 2) - 17;
       
       var width = $(".galleria_wrapper img").width();
      
       if(width < 140) {
         width = 140;  
-      } else if ( width > 730) {
+      } else if (width > 730) {
     	width = 730;  
       }
       
       $(".galleria_container").css('width', width + "px");
       
-      $("a#vrtx-image-gallery-previous").css('top', heightFinal + "px");
-      $("a#vrtx-image-gallery-next").css('top', heightFinal + "px");
+      //Center paging when image width is less than 730px
+      if(width < 730) {
+    	  prev = ((730 - width) / 2) - 35;
+    	  width = width + ((730 - width) / 2);
+      } else {
+    	  prev = -35;  
+      }
+      
+      $("a#vrtx-image-gallery-previous").css('top', top + "px");
+      $("a#vrtx-image-gallery-previous").css('left', prev + "px");
+      $("a#vrtx-image-gallery-next").css('top', top + "px");
       $("a#vrtx-image-gallery-next").css('left', width + "px");
  
     }

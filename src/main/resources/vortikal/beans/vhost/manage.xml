@@ -3,6 +3,8 @@
 "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
+  <import resource="statistics.xml"/>
+
   <!-- MANAGE services -->
   <!--
     (deleteResourceService has been moved out of manageService and made a root level service because in some

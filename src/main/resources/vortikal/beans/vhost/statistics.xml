@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+"http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <bean id="statisticsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="categories">
+      <set>
+        <value>tabMenu</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="tabOrder">
+          <value type="java.lang.Integer">400</value>
+        </entry>
+      </map>
+    </property>
+    <property name="assertions">
+      <list>
+        <ref bean="writeACLPermissionAssertion" />
+        <ref bean="resourceInCollection" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="mode" />
+          <property name="parameterValue" value="statistics" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="statisticsHandler" />
+  </bean>
+
+  <bean id="statisticsHandler" class="org.vortikal.web.actions.statistics.StatisticsHandler">
+    <property name="viewName" value="statistics" />
+  </bean>
+
+  <bean id="statistics.viewResolver" parent="system.decoratingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="statistics" value-ref="statistics.view" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="statistics.view" parent="freemarkerView">
+    <property name="url" value="pages/statistics.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="defaultStatisticsProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="defaultStatisticsProvider" class="org.vortikal.web.referencedata.provider.statistics.StatisticsProvider">
+    <property name="searcher" ref="systemIndexSearcher"/>
+  </bean>
+
+  <bean class="org.springframework.context.support.ResourceBundleMessageSource">
+    <property name="basenames">
+      <list>
+        <value>vortikal.i18n.statistics.statistics</value>
+      </list>
+    </property>
+  </bean>
+
+</beans>

@@ -30,29 +30,27 @@
     <property name="handler" ref="statisticsHandler" />
   </bean>
 
-  <bean id="statisticsHandler" class="org.vortikal.web.actions.statistics.StatisticsHandler">
-    <property name="viewName" value="statistics" />
+  <bean id="statisticsHandler" class="org.vortikal.web.actions.statistics.StatisticsHandler" parent="repositoryAware">
+    <property name="searcher" ref="systemIndexSearcher"/>
+    <property name="formView" value="statistics" />
+    <property name="successView" value="statistics" />
+    <property name="commandClass" value="org.vortikal.web.actions.statistics.StatisticsCommand" />
+    <property name="commandName" value="statistics-command" />
+    <property name="validator">
+      <bean class="org.vortikal.web.actions.statistics.StatisticsValidator" />
+    </property>
   </bean>
 
   <bean id="statistics.viewResolver" parent="system.decoratingViewResolver">
     <property name="views">
       <map>
-        <entry key="statistics" value-ref="statistics.view" />
+        <entry key="statistics" value-ref="statisticsView" />
       </map>
     </property>
   </bean>
 
-  <bean id="statistics.view" parent="freemarkerView">
+  <bean id="statisticsView" parent="freemarkerView">
     <property name="url" value="pages/statistics.ftl" />
-    <property name="referenceDataProviders">
-      <list>
-        <ref bean="defaultStatisticsProvider" />
-      </list>
-    </property>
-  </bean>
-
-  <bean id="defaultStatisticsProvider" class="org.vortikal.web.referencedata.provider.statistics.StatisticsProvider">
-    <property name="searcher" ref="systemIndexSearcher"/>
   </bean>
 
   <bean class="org.springframework.context.support.ResourceBundleMessageSource">

@@ -28,34 +28,35 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.referencedata.provider.statistics;
+package org.vortikal.web.actions.statistics;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
+import org.vortikal.web.actions.UpdateCancelCommand;
 
-import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.search.Searcher;
-import org.vortikal.web.referencedata.ReferenceDataProvider;
+public class StatisticsCommand extends UpdateCancelCommand {
 
-public class StatisticsProvider implements ReferenceDataProvider {
+    private boolean allResources = true;
+    private List<String> resourceTypes;
 
-    private Searcher searcher;
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public void referenceData(Map model, HttpServletRequest request) throws Exception {
-        Map<String, Object> statistics = new HashMap<String, Object>();
-
-        // XXX fetch some stats
-
-        model.put("statistics", statistics);
+    public StatisticsCommand(String submitURL) {
+        super(submitURL);
     }
 
-    @Required
-    public void setSearcher(Searcher searcher) {
-        this.searcher = searcher;
+    public boolean isAllResources() {
+        return allResources;
+    }
+
+    public void setAllResources(boolean allResources) {
+        this.allResources = allResources;
+    }
+
+    public List<String> getResourceTypes() {
+        return resourceTypes;
+    }
+
+    public void setResourceTypes(List<String> resourceTypes) {
+        this.resourceTypes = resourceTypes;
     }
 
 }

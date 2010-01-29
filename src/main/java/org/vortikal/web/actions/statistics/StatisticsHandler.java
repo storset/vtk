@@ -30,23 +30,86 @@
  */
 package org.vortikal.web.actions.statistics;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
+import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.vortikal.repository.Path;
+import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
+import org.vortikal.repository.search.ResultSet;
+import org.vortikal.repository.search.Search;
+import org.vortikal.repository.search.Searcher;
+import org.vortikal.security.SecurityContext;
+import org.vortikal.web.RequestContext;
+import org.vortikal.web.service.Service;
 
-public class StatisticsHandler implements Controller {
+public class StatisticsHandler extends SimpleFormController {
 
-    private String viewName;
+    private Repository repository;
+    private Searcher searcher;
 
     @Override
-    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        return new ModelAndView(this.viewName);
+    protected Object formBackingObject(HttpServletRequest request) throws Exception {
+
+        RequestContext requestContext = RequestContext.getRequestContext();
+        SecurityContext securityContext = SecurityContext.getSecurityContext();
+
+        Path uri = requestContext.getResourceURI();
+        String token = securityContext.getToken();
+        Resource resource = this.repository.retrieve(token, uri, false);
+
+        Service service = requestContext.getService();
+        String submitURL = service.constructLink(resource, securityContext.getPrincipal());
+
+        return new StatisticsCommand(submitURL);
     }
 
-    public void setViewName(String viewName) {
-        this.viewName = viewName;
+    @SuppressWarnings("unchecked")
+    protected Map referenceData(HttpServletRequest request) throws Exception {
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("form", this.getCommandName());
+        return model;
+    }
+
+    @Override
+    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
+            BindException errors) throws Exception {
+
+        StatisticsCommand statisticsCommand = (StatisticsCommand) command;
+
+        Search search = new Search();
+        search.setLimit(Integer.MAX_VALUE);
+        search.setQuery(StatisticsSearchQueryProvider.getStatisticsSearchQuery(statisticsCommand));
+
+        // XXX nope, this token won't do, need to search everything, regardless
+        // of restrictions -> root token?
+        String token = SecurityContext.getSecurityContext().getToken();
+        ResultSet rs = this.searcher.execute(token, search);
+
+        Map<String, Object> statistics = new HashMap<String, Object>();
+        statistics.put("resources", rs.getAllResults());
+        statistics.put("numberOfResources", rs.getTotalHits());
+
+        statistics.put("returnURL", statisticsCommand.getSubmitURL());
+
+        return new ModelAndView(getSuccessView(), statistics);
+    }
+
+    @Required
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
+
+    @Required
+    public void setSearcher(Searcher searcher) {
+        this.searcher = searcher;
     }
 
 }

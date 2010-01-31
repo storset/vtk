@@ -3,7 +3,7 @@
 "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
-  <!-- import resource="statistics.xml"/ -->
+  <import resource="report.xml"/>
 
   <!-- MANAGE services -->
   <!--
@@ -924,7 +924,6 @@
         <entry key="previewText" value-ref="previewTextView" />
         <entry key="previewFallback" value-ref="previewFallbackView" />
         <entry key="publishing" value-ref="publishingView" />
-        <!-- entry key="statistics" value-ref="statisticsView" / -->
       </map>
     </property>
   </bean>

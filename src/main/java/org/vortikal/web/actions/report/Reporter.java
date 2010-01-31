@@ -28,37 +28,18 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.actions.statistics;
+package org.vortikal.web.actions.report;
 
-import java.util.Arrays;
+import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.vortikal.repository.search.query.Query;
+import org.vortikal.repository.Resource;
 
-public class StatisticsSearchQueryProviderTest {
+public interface Reporter {
 
-    @Test
-    public void testGetStatisticsSearchQueryAllResources() {
-        StatisticsCommand statisticsCommand = getStatisticsCommand(true);
-        Query query = StatisticsSearchQueryProvider.getStatisticsSearchQuery(statisticsCommand);
-        Assert.assertNotNull("Query cannot be null", query);       
-    }
+    public Map<String, Object> getReportContent(String token, Resource currentResource);
+    
+    public String getName();
 
-    @Test
-    public void testGetStatisticsSearchQuerySelectedResources() {
-        StatisticsCommand statisticsCommand = getStatisticsCommand(false);
-        Query query = StatisticsSearchQueryProvider.getStatisticsSearchQuery(statisticsCommand);
-        Assert.assertNotNull("Query cannot be null", query);
-    }
-
-    private StatisticsCommand getStatisticsCommand(boolean allResources) {
-        StatisticsCommand statisticsCommand = new StatisticsCommand("Http://some.link.url");
-        statisticsCommand.setAllResources(allResources);
-        if (!allResources) {
-            statisticsCommand.setResourceTypes(Arrays.asList("article", "person", "image"));
-        }
-        return statisticsCommand;
-    }
+    public String getViewName();
 
 }

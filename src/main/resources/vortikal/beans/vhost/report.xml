@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+"http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <bean id="reportService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="categories">
+      <set>
+        <value>tabMenu</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="tabOrder">
+          <value type="java.lang.Integer">400</value>
+        </entry>
+      </map>
+    </property>
+    <property name="assertions">
+      <list>
+        <ref bean="writeACLPermissionAssertion" />
+        <ref bean="resourceInCollection" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="mode" />
+          <property name="parameterValue" value="report" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="reportHandler" />
+  </bean>
+
+  <bean id="reportHandler" class="org.vortikal.web.actions.report.ReportHandler"
+    parent="repositoryAware">
+    <property name="viewName" value="report" />
+    <property name="reporters">
+      <list>
+        <ref bean="collectionStructureReporter" />
+        <ref bean="lastModifiedReporter" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="reporter" abstract="true" class="org.vortikal.web.actions.report.AbstractReporter" parent="repositoryAware">
+    <property name="searcher" ref="systemIndexSearcher" />
+  </bean>
+
+  <bean id="collectionStructureReporter" class="org.vortikal.web.actions.report.CollectionStructureReporter"
+    parent="reporter">
+    <property name="name" value="collection-structure" />
+    <property name="viewName" value="collectionStructure" />
+  </bean>
+
+  <bean id="lastModifiedReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="reporter">
+    <property name="name" value="last-modified" />
+    <property name="viewName" value="lastModified" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="report.viewResolver" parent="system.decoratingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="report" value-ref="reportView" />
+        <entry key="collectionStructure" value-ref="collectionStructureView" />
+        <entry key="lastModified" value-ref="lastModifiedView" />
+      </map>
+    </property>
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="reportView" parent="freemarkerView">
+    <property name="url" value="pages/report/report.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/report/report.css</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="collectionStructureView" parent="freemarkerView">
+    <property name="url" value="pages/report/collection-structure-report.ftl" />
+  </bean>
+
+  <bean id="lastModifiedView" parent="freemarkerView">
+    <property name="url" value="pages/report/last-modified-report.ftl" />
+  </bean>
+
+  <bean class="org.springframework.context.support.ResourceBundleMessageSource">
+    <property name="basenames">
+      <list>
+        <value>vortikal.i18n.report.report</value>
+      </list>
+    </property>
+  </bean>
+
+</beans>

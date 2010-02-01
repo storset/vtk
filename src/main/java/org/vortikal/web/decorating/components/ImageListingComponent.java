@@ -34,13 +34,11 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
-import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.SortingImpl;
-import org.vortikal.repository.search.TypedSortField;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
@@ -48,12 +46,14 @@ import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
+import org.vortikal.web.search.SearchSorting;
 
 public class ImageListingComponent extends ViewRenderingDecoratorComponent {
 
     private static final int LIMIT = 5;
     private Repository repository;
 
+    private SearchSorting searchSorting;
 
     protected void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
@@ -65,10 +65,17 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
 
         String requestLimit = request.getStringParameter("limit");
         int searchLimit = getSearchLimit(requestLimit);
-        
+
         String excludeScripts = request.getStringParameter("exclude-scripts");
         if (excludeScripts != null && "true".equalsIgnoreCase(excludeScripts.trim())) {
             model.put("excludeScripts", excludeScripts);
+        }
+
+        String token = SecurityContext.getSecurityContext().getToken();
+        Resource requestedResource = this.repository.retrieve(token, Path.fromString(url), false);
+
+        if (!requestedResource.isCollection()) {
+            return;
         }
 
         AndQuery mainQuery = new AndQuery();
@@ -78,26 +85,15 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
         Search search = new Search();
         search.setQuery(mainQuery);
         search.setLimit(searchLimit);
-        
-        //Same sorting as standard image-listing (by name / title)
-        SortingImpl sorting = new SortingImpl();
-        sorting.addSortField(new TypedSortField(PropertySet.NAME_IDENTIFIER));
-        
-        // XXX Sort?
-        //search.setSorting(null);
-        search.setSorting(sorting);
+        search.setSorting(new SortingImpl(this.searchSorting.getSortFields(requestedResource)));
 
-        String token = SecurityContext.getSecurityContext().getToken();
         ResultSet rs = this.repository.search(token, search);
 
-        Resource folder = this.repository.retrieve(token, Path.fromString(url), false);
-
         model.put("images", rs.getAllResults());
-        model.put("folderTitle", folder.getTitle());
+        model.put("folderTitle", requestedResource.getTitle());
         model.put("folderUrl", url);
 
     }
-
 
     private boolean isValidPath(String url) {
         try {
@@ -107,7 +103,6 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
         }
         return false;
     }
-
 
     private int getSearchLimit(String requestLimit) {
         try {
@@ -120,10 +115,13 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
         return LIMIT;
     }
 
-
     @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
+    @Required
+    public void setSearchSorting(SearchSorting searchSorting) {
+        this.searchSorting = searchSorting;
+    }
 }

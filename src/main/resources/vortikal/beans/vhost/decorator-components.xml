@@ -493,6 +493,7 @@
         <entry key="limit" value="Maximum number of images to show in list." />
       </map>
     </property>
+    <property name="searchSorting" ref="collectionListing.searchSorting" />
   </bean>
 
   <bean name="decorating.imageListing.view" parent="freemarkerView">

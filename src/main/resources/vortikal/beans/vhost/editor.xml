@@ -427,6 +427,7 @@
             <ref bean="pageLimitPropDef" />
             <ref bean="aggregationPropDef" />
             <ref bean="recursiveAggregationPropDef" />
+            <ref bean="collection.sortingPropDef" />
             <ref bean="imageListing.displayType" />
           </list>
         </property>

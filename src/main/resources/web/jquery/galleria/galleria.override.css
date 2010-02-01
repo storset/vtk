@@ -27,8 +27,11 @@ a:hover {
   color: #888;
   display:block;
   margin-bottom:30px;
-  width: 730px;
   text-align:center;
+}
+
+* html .caption {
+  width: 730px;
 }
 
 .vrtx-gallery {

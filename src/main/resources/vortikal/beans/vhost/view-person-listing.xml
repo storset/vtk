@@ -36,6 +36,10 @@
       <value>(uri = {$currentFolder}/*) AND (type IN person)</value>
     </property>
     <property name="queryParser" ref="searchParser" />
+    <property name="searchSorting" ref="personListing.searchSorting" />
+  </bean>
+
+  <bean id="personListing.searchSorting" parent="collectionListing.searchSorting">
     <property name="sortOrderPropDefPointers">
       <list>
         <value>resource:surname</value>
@@ -43,7 +47,7 @@
       </list>
     </property>
   </bean>
-  
+
   <bean id="personListing.viewResolver" parent="decoratorViewResolver">
     <property name="views">
       <map>

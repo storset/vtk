@@ -7,6 +7,10 @@
     <property name="query">
       <value>(uri = {$currentFolder}/* AND type IN structured-event) AND (resource:start-date &gt;= {$currentDate} OR resource:end-date &gt;= {$currentDate})</value>
     </property>
+    <property name="searchSorting" ref="structured.eventListing.upcoming.searchSorting" />
+  </bean>
+
+  <bean id="structured.eventListing.upcoming.searchSorting" parent="eventListing.upcoming.searchSorting">
     <property name="sortOrderPropDefPointers">
       <list>
         <value>resource:start-date</value>
@@ -19,9 +23,13 @@
     <property name="query">
       <value>(uri = {$currentFolder}/* AND type IN structured-event) AND (resource:end-date &lt; {$currentDate} OR (resource:end-date not exists AND resource:start-date &lt; {$currentDate}))</value>
     </property>
+    <property name="searchSorting" ref="structured.eventListing.previous.searchSorting" />
+  </bean>
+
+  <bean id="structured.eventListing.previous.searchSorting" parent="eventListing.previous.searchSorting">
     <property name="sortOrderPropDefPointers">
       <list>
-        <value>resource:start-date</value>
+        <value>resource:end-date</value>
       </list>
     </property>
   </bean>

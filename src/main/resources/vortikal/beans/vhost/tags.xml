@@ -87,19 +87,6 @@
     <property name="viewService" ref="webService" />
     <property name="resourceManager" ref="resourceManager" />
     <property name="defaultRecursive" value="true" />
-    <property name="sortOrderPropDefPointers">
-      <list>
-        <value>lastModified</value>
-      </list>
-    </property>
-    <property name="resourceTypeTree" ref="resourceTypeTree" />
-    <property name="defaultSortOrder" ref="SORT_ORDER.DESC" />
-    <property name="sortOrderMapping">
-      <map>
-        <entry key="lastModified" value-ref="SORT_ORDER.DESC" />
-        <entry key="title" value-ref="SORT_ORDER.ASC" />
-      </map>
-    </property>
     <property name="listableProperties">
       <list>
         <bean class="org.vortikal.web.search.PropertyDisplayConfig">
@@ -130,6 +117,23 @@
       </list>
     </property>
     <property name="aggregationResolver" ref="aggregationResolver" />
+    <property name="searchSorting" ref="tags.searchSorting" />
+  </bean>
+
+  <bean id="tags.searchSorting" class="org.vortikal.web.search.SearchSorting" depends-on="resourceTypeTree">
+    <property name="sortOrderPropDefPointers">
+      <list>
+        <value>lastModified</value>
+      </list>
+    </property>
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="defaultSortOrder" ref="SORT_ORDER.DESC" />
+    <property name="sortOrderMapping">
+      <map>
+        <entry key="lastModified" value-ref="SORT_ORDER.DESC" />
+        <entry key="title" value-ref="SORT_ORDER.ASC" />
+      </map>
+    </property>
   </bean>
 
   <bean id="tags.viewResolver" parent="decoratorViewResolver">

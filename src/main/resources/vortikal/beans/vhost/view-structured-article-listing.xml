@@ -7,6 +7,10 @@
     <property name="query">
       <value>(uri = {$currentFolder}/* AND uri NOT IN {$featuredArticles}) AND (type IN structured-article)</value>
     </property>
+    <property name="searchSorting" ref="structured.articleListing.searchSorting" />
+  </bean>
+
+  <bean id="structured.articleListing.searchSorting" parent="articleListing.searchSorting">
     <property name="sortOrderPropDefPointers">
       <list>
         <value>publish-date</value>

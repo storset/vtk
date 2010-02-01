@@ -81,29 +81,16 @@
   </bean>
 
   <bean id="articleListing.searchComponent" class="org.vortikal.web.search.QueryStringSearchComponent"
-    parent="repositoryAware" depends-on="resourceTypeTree">
+    parent="repositoryAware">
     <property name="name" value="articleListing.defaultArticles" />
     <property name="viewService" ref="webService" />
     <property name="resourceManager" ref="resourceManager" />
     <property name="defaultRecursive" value="true" />
     <property name="recursivePropDef" ref="articleListing.recursiveListingPropDef" />
-    <property name="sortPropDef" ref="articleListing.sortingPropDef" />
     <property name="query">
       <value>(uri = {$currentFolder}/* AND uri NOT IN {$featuredArticles}) AND (type IN article AND published-date &lt;= {$currentTime})</value>
     </property>
     <property name="queryParser" ref="searchParser" />
-    <property name="sortOrderPropDefPointers">
-      <list>
-        <value>published-date</value>
-      </list>
-    </property>
-    <property name="resourceTypeTree" ref="resourceTypeTree" />
-    <property name="defaultSortOrder" ref="SORT_ORDER.DESC" />
-    <property name="sortOrderMapping">
-      <map>
-        <entry key="title" value-ref="SORT_ORDER.ASC" />
-      </map>
-    </property>
     <property name="listableProperties">
       <list>
         <bean class="org.vortikal.web.search.PropertyDisplayConfig">
@@ -121,8 +108,25 @@
       </list>
     </property>
     <property name="aggregationResolver" ref="aggregationResolver" />
+    <property name="searchSorting" ref="articleListing.searchSorting" />
   </bean>
-  
+
+  <bean id="articleListing.searchSorting" class="org.vortikal.web.search.SearchSorting" depends-on="resourceTypeTree">
+    <property name="sortPropDef" ref="articleListing.sortingPropDef" />
+    <property name="sortOrderPropDefPointers">
+      <list>
+        <value>published-date</value>
+      </list>
+    </property>
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="defaultSortOrder" ref="SORT_ORDER.DESC" />
+    <property name="sortOrderMapping">
+      <map>
+        <entry key="title" value-ref="SORT_ORDER.ASC" />
+      </map>
+    </property>
+  </bean>
+
   <!-- Fetch specifically specified articles, aka 'featured articles' -->
   <bean id="articleListing.featuredArticlesSearchComponent" parent="articleListing.searchComponent">
     <property name="name" value="articleListing.featuredArticles" />

@@ -37,23 +37,17 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.support.RequestContext;
 import org.vortikal.edit.editor.ResourceWrapperManager;
-import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.ResourceWrapper;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.search.PropertySortField;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
-import org.vortikal.repository.search.SortField;
-import org.vortikal.repository.search.SortFieldDirection;
 import org.vortikal.repository.search.SortingImpl;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.security.SecurityContext;
@@ -61,23 +55,18 @@ import org.vortikal.web.display.collection.aggregation.CollectionListingAggregat
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
-public abstract class QuerySearchComponent implements SearchComponent, InitializingBean {
+public abstract class QuerySearchComponent implements SearchComponent {
 
     private String name;
     private String titleLocalizationKey;
     private boolean defaultRecursive = false;
     private ResourceWrapperManager resourceManager;
     private Service viewService;
-    private SortFieldDirection defaultSortOrder;
-    private Map<String, SortFieldDirection> sortOrderMapping;
     private PropertyTypeDefinition recursivePropDef;
-    private PropertyTypeDefinition sortPropDef;
     private List<PropertyDisplayConfig> listableProperties;
     private Repository repository;
-    private ResourceTypeTree resourceTypeTree;
 
-    private List<String> sortOrderPropDefPointers;
-    private List<PropertyTypeDefinition> sortOrderPropDefs;
+    private SearchSorting searchSorting;
 
     protected CollectionListingAggregationResolver aggregationResolver;
 
@@ -106,37 +95,11 @@ public abstract class QuerySearchComponent implements SearchComponent, Initializ
 
         String token = SecurityContext.getSecurityContext().getToken();
 
-        PropertyTypeDefinition sortProp = null;
-        SortFieldDirection sortFieldDirection = this.defaultSortOrder;
-
         String[] sortingParams = request.getParameterValues(Listing.SORTING_PARAM);
         if (sortingParams != null && sortingParams.length > 0) {
-            List<SortField> sortFields = getSortFieldsFromRequestParams(sortingParams);
-            search.setSorting(new SortingImpl(sortFields));
+            search.setSorting(new SortingImpl(this.searchSorting.getSortFieldsFromRequestParams(sortingParams)));
         } else {
-            if (this.sortPropDef != null && collection.getProperty(this.sortPropDef) != null) {
-                String sortString = collection.getProperty(this.sortPropDef).getStringValue();
-                sortProp = resourceTypeTree.getPropertyTypeDefinition(Namespace.DEFAULT_NAMESPACE, sortString);
-                if (sortProp == null) {
-                    sortProp = resourceTypeTree.getPropertyTypeDefinition(Namespace.STRUCTURED_RESOURCE_NAMESPACE,
-                            sortString);
-                }
-                if (this.sortOrderMapping != null && this.sortOrderMapping.containsKey(sortString)) {
-                    sortFieldDirection = this.sortOrderMapping.get(sortString);
-                }
-            }
-
-            List<SortField> sortFields = new ArrayList<SortField>();
-            if (sortProp != null) {
-                sortFields.add(new PropertySortField(sortProp, sortFieldDirection));
-            } else {
-                if (sortOrderPropDefs != null) {
-                    for (PropertyTypeDefinition p : sortOrderPropDefs) {
-                        sortFields.add(new PropertySortField(p, sortFieldDirection));
-                    }
-                }
-            }
-            search.setSorting(new SortingImpl(sortFields));
+            search.setSorting(new SortingImpl(this.searchSorting.getSortFields(collection)));
         }
 
         ResultSet result = this.repository.search(token, search);
@@ -185,69 +148,6 @@ public abstract class QuerySearchComponent implements SearchComponent, Initializ
         return listing;
     }
 
-    private List<SortField> getSortFieldsFromRequestParams(String[] sortingParams) {
-        List<SortField> sortFields = new ArrayList<SortField>();
-        for (String sortFieldParam : sortingParams) {
-            sortFieldParam = URL.decode(sortFieldParam);
-            String[] paramValues = sortFieldParam.split(Listing.SORTING_PARAM_DELIMITER);
-            if (paramValues.length > 3) {
-                // invalid, just ignore it
-                continue;
-            }
-            PropertyTypeDefinition propDef = null;
-            String sortDirectionPointer = null;
-            if (paramValues.length == 3) {
-                propDef = this.resourceTypeTree.getPropertyDefinitionByPrefix(paramValues[0], paramValues[1]);
-                sortDirectionPointer = paramValues[2];
-            } else if (paramValues.length == 2) {
-                propDef = this.resourceTypeTree.getPropertyDefinitionByPrefix(null, paramValues[0]);
-                sortDirectionPointer = paramValues[1];
-            } else {
-                propDef = this.resourceTypeTree.getPropertyDefinitionByPrefix(null, paramValues[0]);
-            }
-            if (propDef != null) {
-                SortFieldDirection sortDirection = null;
-                if (sortDirectionPointer != null) {
-                    sortDirection = resolveSortOrderDirection(sortDirectionPointer);
-                } else {
-                    sortDirection = this.defaultSortOrder;
-                }
-                sortFields.add(new PropertySortField(propDef, sortDirection));
-            }
-        }
-        return sortFields;
-    }
-
-    private SortFieldDirection resolveSortOrderDirection(String sortDirectionPointer) {
-        try {
-            return SortFieldDirection.valueOf(sortDirectionPointer.toUpperCase());
-        } catch (Exception e) {
-            return this.defaultSortOrder;
-        }
-    }
-
-    public void afterPropertiesSet() {
-        if (this.sortOrderPropDefPointers != null) {
-            for (String pointer : this.sortOrderPropDefPointers) {
-                String prefix = null;
-                String name = null;
-                if (pointer.indexOf(":") > 0) {
-                    prefix = pointer.substring(0, pointer.indexOf(":"));
-                    name = pointer.substring(pointer.indexOf(":") + 1, pointer.length());
-                } else {
-                    name = pointer;
-                }
-                PropertyTypeDefinition prop = this.resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
-                if (this.sortOrderPropDefs == null) {
-                    this.sortOrderPropDefs = new ArrayList<PropertyTypeDefinition>();
-                }
-                if (prop != null) {
-                    this.sortOrderPropDefs.add(prop);
-                }
-            }
-        }
-    }
-
     @Required
     public void setName(String name) {
         this.name = name;
@@ -271,22 +171,9 @@ public abstract class QuerySearchComponent implements SearchComponent, Initializ
         this.recursivePropDef = recursivePropDef;
     }
 
-    public void setSortPropDef(PropertyTypeDefinition sortPropDef) {
-        this.sortPropDef = sortPropDef;
-    }
-
     @Required
     public void setListableProperties(List<PropertyDisplayConfig> listableProperties) {
         this.listableProperties = listableProperties;
-    }
-
-    @Required
-    public void setDefaultSortOrder(SortFieldDirection defaultSortOrder) {
-        this.defaultSortOrder = defaultSortOrder;
-    }
-
-    public void setSortOrderMapping(Map<String, SortFieldDirection> sortOrderMapping) {
-        this.sortOrderMapping = sortOrderMapping;
     }
 
     public void setTitleLocalizationKey(String titleLocalizationKey) {
@@ -306,17 +193,13 @@ public abstract class QuerySearchComponent implements SearchComponent, Initializ
         this.repository = repository;
     }
 
-    @Required
-    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
-        this.resourceTypeTree = resourceTypeTree;
-    }
-
     public void setAggregationResolver(CollectionListingAggregationResolver aggregationResolver) {
         this.aggregationResolver = aggregationResolver;
     }
 
-    public void setSortOrderPropDefPointers(List<String> sortOrderPropDefPointers) {
-        this.sortOrderPropDefPointers = sortOrderPropDefPointers;
+    @Required
+    public void setSearchSorting(SearchSorting searchSorting) {
+        this.searchSorting = searchSorting;
     }
 
 }

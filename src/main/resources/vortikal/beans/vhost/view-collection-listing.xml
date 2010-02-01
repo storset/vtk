@@ -80,32 +80,16 @@
   </bean>
   
   <bean id="collectionListing.searchComponent" class="org.vortikal.web.search.QueryStringSearchComponent"
-    parent="repositoryAware" depends-on="resourceTypeTree">
+    parent="repositoryAware">
     <property name="name" value="collectionListing.searchComponent" />
     <property name="viewService" ref="webService" />
     <property name="resourceManager" ref="resourceManager" />
     <property name="defaultRecursive" value="false" />
     <property name="recursivePropDef" ref="collection.recursiveListingPropDef" />
-    <property name="sortPropDef" ref="collection.sortingPropDef" />
     <property name="query">
       <value>(uri = {$currentFolder}/*) AND (type IN file)</value>
     </property>
     <property name="queryParser" ref="searchParser" />
-    
-    <property name="sortOrderPropDefPointers">
-      <list>
-        <value>title</value>
-      </list>
-    </property>
-    
-    <property name="resourceTypeTree"  ref ="resourceTypeTree" />
-    <property name="defaultSortOrder" ref="SORT_ORDER.ASC" />
-    <property name="sortOrderMapping">
-      <map>
-        <entry key="lastModified" value-ref="SORT_ORDER.DESC" />
-        <entry key="title" value-ref="SORT_ORDER.ASC" />
-      </map>
-    </property>
     <property name="listableProperties">
       <list>
         <bean class="org.vortikal.web.search.PropertyDisplayConfig">
@@ -119,6 +103,24 @@
       </list>
     </property>
     <property name="aggregationResolver" ref="aggregationResolver" />
+    <property name="searchSorting" ref="collectionListing.searchSorting" />
+  </bean>
+
+  <bean id="collectionListing.searchSorting" class="org.vortikal.web.search.SearchSorting" depends-on="resourceTypeTree">
+    <property name="sortPropDef" ref="collection.sortingPropDef" />
+    <property name="sortOrderPropDefPointers">
+      <list>
+        <value>title</value>
+      </list>
+    </property>
+    <property name="resourceTypeTree"  ref ="resourceTypeTree" />
+    <property name="defaultSortOrder" ref="SORT_ORDER.ASC" />
+    <property name="sortOrderMapping">
+      <map>
+        <entry key="lastModified" value-ref="SORT_ORDER.DESC" />
+        <entry key="title" value-ref="SORT_ORDER.ASC" />
+      </map>
+    </property>
   </bean>
 
   <bean id="collectionListing.viewResolver" parent="decoratorViewResolver">

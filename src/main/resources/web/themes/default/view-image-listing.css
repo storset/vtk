@@ -70,11 +70,13 @@ ul.vrtx-image-listing {
 .vrtx-image-table table {
   border-collapse: collapse;
   border-color: #ccc;
+  border-spacing: 0;
 }
 
 .vrtx-image-table table th {
   text-align:left;
   background-color: #eee;
+  border: 1px solid #dbd8d6;
 }
 
 .vrtx-image-table table tr td {

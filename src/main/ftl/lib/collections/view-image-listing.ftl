@@ -178,7 +178,11 @@
             <#local contentLength = vrtx.propValue(image, 'contentLength') />
             <td><@vrtx.calculateResourceSizeToKB contentLength?number /></td>
             <#local owner = vrtx.propValue(image, 'owner') />
-            <td>${owner}</td>
+            <#if owner?index_of("@") != -1>
+              <td>${owner}</td>
+            <#else>
+              <td><a href="http://www.uio.no/sok?person=${owner}">${owner}</a></td>
+            </#if>
             <#local creationTime = vrtx.propValue(image, 'creationTime', 'short', '') />
             <td>${creationTime}</td>
           </tr>

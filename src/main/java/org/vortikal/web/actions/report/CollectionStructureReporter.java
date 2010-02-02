@@ -30,15 +30,53 @@
  */
 package org.vortikal.web.actions.report;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.search.ResultSet;
+import org.vortikal.repository.search.Search;
+import org.vortikal.repository.search.SortingImpl;
+import org.vortikal.repository.search.query.AndQuery;
+import org.vortikal.repository.search.query.TermOperator;
+import org.vortikal.repository.search.query.TypeTermQuery;
+import org.vortikal.repository.search.query.UriPrefixQuery;
 
 public class CollectionStructureReporter extends AbstractReporter {
 
-    @Override
+    private static final int LIMIT = 2000;
+    
     public Map<String, Object> getReportContent(String token, Resource currentResource) {
-        return null;
+        AndQuery query = new AndQuery();
+        query.add(new TypeTermQuery("collection", TermOperator.IN));
+        query.add(new UriPrefixQuery(currentResource.getURI().toString()));
+
+        Search search = new Search();
+        search.setLimit(LIMIT);
+        SortingImpl sorting = new SortingImpl();
+        search.setSorting(sorting);
+        search.setQuery(query);
+
+        ResultSet rs = this.searcher.execute(token, search);
+        Map<String, Object> result = new HashMap<String, Object>();
+
+        List<PropertySet> searchResult = rs.getAllResults();
+        Collections.sort(searchResult, new CollectionStructureReportComperator());
+        result.put("collectionList", searchResult);
+        
+        return result;
+    }
+
+    private class CollectionStructureReportComperator implements Comparator<PropertySet> {
+
+        public int compare(PropertySet o1, PropertySet o2) {
+            return o1.getURI().compareTo(o2.getURI());
+        }
+
     }
 
 }

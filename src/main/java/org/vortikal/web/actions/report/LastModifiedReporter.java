@@ -52,7 +52,6 @@ public class LastModifiedReporter extends AbstractReporter {
     private PropertyTypeDefinition sortPropDef;
     private SortFieldDirection sortOrder;
 
-    @Override
     public Map<String, Object> getReportContent(String token, Resource currentResource) {
 
         AndQuery query = new AndQuery();
@@ -83,5 +82,5 @@ public class LastModifiedReporter extends AbstractReporter {
     public void setSortOrder(SortFieldDirection sortOrder) {
         this.sortOrder = sortOrder;
     }
-
+    
 }

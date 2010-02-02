@@ -12,5 +12,22 @@
     <a href="${serviceURL}"><@vrtx.msg code="report.back" default="Back" /></a>
   </div>
   
+  <div class="vrtx-report">
+    <table cellpadding="3" border="1">
+      <thead>
+        <tr>
+          <th><@vrtx.msg code="report.collection" default="Collection" /></th>
+        </tr>
+      </thead>
+      <tbody>
+      <#list report.collectionList as collection>
+        <tr>
+          <td><a href="${collection.URI}?vrtx=admin">${collection.URI}</a></td>
+        </tr>
+      </#list>
+      </tbody>
+    </table>
+  </div>
+  
   </body>
 </html>

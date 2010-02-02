@@ -17,9 +17,9 @@
       <thead>
         <tr>
           <th><@vrtx.msg code="report.document" default="Document" /></th>
-          <th><@vrtx.msg code="report.owner" default="Owner" /></th>
           <th><@vrtx.msg code="report.last-modified" default="Last modified" /></th>
           <th><@vrtx.msg code="report.modified-by" default="Modified by" /></th>
+          <th><@vrtx.msg code="report.permission-set" default="Permissions set" /></th>
           <th><@vrtx.msg code="report.published" default="Published" /></th>
         </tr>
       </thead>
@@ -27,8 +27,6 @@
       <#list report.lastModifiedList as lastModified>
         <tr>
           <td><a href="${lastModified.URI}?vrtx=admin">${lastModified.URI}</a></td>
-          <#assign owner = vrtx.propValue(lastModified, 'owner') />
-          <td>${owner}</td>
           <#assign lastModifiedTime = vrtx.propValue(lastModified, 'lastModified') />
           <td>${lastModifiedTime}</td>
           <#assign modifiedBy = vrtx.propValue(lastModified, 'modifiedBy') />
@@ -38,6 +36,11 @@
           <#if published = "false">
             <#assign publishedStatus = vrtx.getMsg("report.no", "No")>
           </#if>
+          <#assign aclIsInherited = vrtx.getMsg("report.yes", "Yes")>
+          <#if lastModified.isInheritedAcl() >
+          	<#assign aclIsInherited = vrtx.getMsg("report.no", "No")>
+          </#if>
+          <td>${aclIsInherited}</td>
           <td>${publishedStatus}</td>
         </tr>
       </#list>

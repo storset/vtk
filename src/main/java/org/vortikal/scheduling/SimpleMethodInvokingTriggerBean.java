@@ -181,14 +181,14 @@ public class SimpleMethodInvokingTriggerBean implements BeanNameAware,
                 		"[days]:[hours]:[minutes], " +
                 		"e.g. 2:15:25 meaning start in 2 days, at 15:25PM");
             } else {
-                this.startDelay = this.getFixedDelayInLong();
+                this.startDelay = this.getFixedDelayInMillis();
             }
         }
         
         if (this.startTriggerAfterInitialization) start(); // Start up after init
     }
     
-    private long getFixedDelayInLong() {
+    private long getFixedDelayInMillis() {
 
         try {
 

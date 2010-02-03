@@ -32,6 +32,9 @@ package org.vortikal.scheduling;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -112,12 +115,20 @@ public class SimpleMethodInvokingTriggerBean implements BeanNameAware,
     private Object[] arguments;
     private Class<?>[] argumentTypes;
     
-    private int startDelay = 0;
-    private int repeatInterval = 5000;
+    private long startDelay = 0;
+    private long repeatInterval = 5000;
     private int repeatCount = REPEAT_INDEFINITELY;
     private boolean abortTriggerOnTargetMethodException = false;
     private boolean startTriggerAfterInitialization = true;
     
+    // Delay pattern given as [days]:[hours]:[minutes], with a maximum 1 day delay allowed (i.e. tomorrow)
+    private static final Pattern FIXED_DELAY_PATTERN = Pattern.compile("[0-1]:([01]?[0-9]|2[0-3]):[0-5][0-9]");
+    
+    /*
+     * Fixed period of time to wait before starting.
+     * If set and valid according to FIXED_DELAY_PATTERN, overrides startDelay.
+     */
+    private String fixedDelay;    
     
     /* (non-Javadoc)
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
@@ -164,9 +175,54 @@ public class SimpleMethodInvokingTriggerBean implements BeanNameAware,
                     + this.targetObject.getClass());
         }
         
+        if (this.fixedDelay != null) {
+            if (!FIXED_DELAY_PATTERN.matcher(fixedDelay).matches()) {
+                throw new BeanInitializationException("Fixed delay must be provided as " +
+                		"[days]:[hours]:[minutes], " +
+                		"e.g. 2:15:25 meaning start in 2 days, at 15:25PM");
+            } else {
+                this.startDelay = this.getFixedDelayInLong();
+            }
+        }
+        
         if (this.startTriggerAfterInitialization) start(); // Start up after init
     }
     
+    private long getFixedDelayInLong() {
+
+        try {
+
+            String[] delayValues = this.fixedDelay.split(":");
+            int daysToWait = getIntValue(delayValues[0]);
+            int fixedDelayHours = getIntValue(delayValues[1]);
+            int fixedDelayMinutes = getIntValue(delayValues[2]);
+
+            Calendar delay = new GregorianCalendar();
+            delay.add(Calendar.DATE, daysToWait);
+            Calendar fixedDelay = new GregorianCalendar(
+                    delay.get(Calendar.YEAR),
+                    delay.get(Calendar.MONTH),
+                    delay.get(Calendar.DATE),
+                    fixedDelayHours, fixedDelayMinutes);
+
+            long fixedDelayInMillis = fixedDelay.getTimeInMillis() - System.currentTimeMillis();
+            return fixedDelayInMillis > 0 ? fixedDelayInMillis : this.startDelay;
+
+        } catch (Throwable t) {
+            logger.error("Could not set fixed delay", t);
+        }
+
+        return this.startDelay;
+    }
+
+    private int getIntValue(String value) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+        }
+        return 0;
+    }
+
     /**
      * Start trigger
      *
@@ -382,6 +438,10 @@ public class SimpleMethodInvokingTriggerBean implements BeanNameAware,
 
     public void setRepeatCount(int repeatCount) {
         this.repeatCount = repeatCount;
+    }
+    
+    public void setFixedDelay(String fixedDelay) {
+        this.fixedDelay = fixedDelay;
     }
 
 }

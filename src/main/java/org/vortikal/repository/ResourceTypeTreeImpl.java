@@ -243,6 +243,18 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
         return propertyTypeDefinition;
     }
 
+    public PropertyTypeDefinition getPropertyDefinitionByPointer(String pointer) {
+        String prefix = null;
+        String name = null;
+        if (pointer.indexOf(":") > 0) {
+            prefix = pointer.substring(0, pointer.indexOf(":"));
+            name = pointer.substring(pointer.indexOf(":") + 1, pointer.length());
+        } else {
+            name = pointer;
+        }
+        return this.getPropertyDefinitionByPrefix(prefix, name);
+    }
+    
     /**
      * Search upwards in resource type tree, collect property type definitions
      * from all encountered resource type definitions including mixin resource types.

@@ -56,20 +56,10 @@ public class SearchSorting implements InitializingBean {
     private ResourceTypeTree resourceTypeTree;
 
     public void afterPropertiesSet() {
+        this.sortOrderPropDefs = new ArrayList<PropertyTypeDefinition>();
         if (this.sortOrderPropDefPointers != null) {
             for (String pointer : this.sortOrderPropDefPointers) {
-                String prefix = null;
-                String name = null;
-                if (pointer.indexOf(":") > 0) {
-                    prefix = pointer.substring(0, pointer.indexOf(":"));
-                    name = pointer.substring(pointer.indexOf(":") + 1, pointer.length());
-                } else {
-                    name = pointer;
-                }
-                PropertyTypeDefinition prop = this.resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
-                if (this.sortOrderPropDefs == null) {
-                    this.sortOrderPropDefs = new ArrayList<PropertyTypeDefinition>();
-                }
+                PropertyTypeDefinition prop = this.resourceTypeTree.getPropertyDefinitionByPointer(pointer);
                 if (prop != null) {
                     this.sortOrderPropDefs.add(prop);
                 }

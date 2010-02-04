@@ -93,6 +93,15 @@ public interface ResourceTypeTree extends HierarchicalVocabulary<String> {
     public PropertyTypeDefinition getPropertyDefinitionByPrefix(String prefix, String name);
 
     /**
+     * Gets a property type definition by a pointer
+     *
+     * @param pointer a pointer referring to a property, given as [namespace]:[name]
+     *                 (namespace is optional)
+     * @return a the property definition, or <code>null</code> if not found
+     */
+    public PropertyTypeDefinition getPropertyDefinitionByPointer(String pointer);
+
+    /**
      * XXX: equivalent methods for resource-types, mixin-types, etc ?
      * @return Return flat list of all registered property type definitions.
      */

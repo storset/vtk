@@ -12,6 +12,7 @@
       </bean>
     </property>
     <property name="systemJobStatusPropDef" ref="systemJobStatusPropDef" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
 
   <bean id="repository.systemJobMethodInvokingTrigger" abstract="true"

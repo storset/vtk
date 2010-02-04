@@ -30,11 +30,13 @@
  */
 package org.vortikal.repository.systemjob;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.context.BaseContext;
 import org.vortikal.repository.PropertySet;
@@ -42,14 +44,19 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceImpl;
 import org.vortikal.repository.ResourceNotFoundException;
+import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
+import org.vortikal.repository.search.query.OrQuery;
+import org.vortikal.repository.search.query.PropertyExistsQuery;
+import org.vortikal.repository.search.query.PropertyTermQuery;
 import org.vortikal.repository.search.query.Query;
+import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.security.SecurityContext;
 
-public abstract class SystemJob {
+public abstract class SystemJob implements InitializingBean {
 
     private Log logger = LogFactory.getLog(SystemJob.class);
 
@@ -61,14 +68,31 @@ public abstract class SystemJob {
     private int limit = MAX_LIMIT;
     private SecurityContext securityContext;
     private PropertyTypeDefinition systemJobStatusPropDef;
-
+    private ResourceTypeTree resourceTypeTree;
+    
     /**
-     * List of properties to be affected as a result of this job. If none, all
-     * properties of the resource in question are to be affected
+     * List of pointers to properties that are to be affected as a result of this job.
+     * If none, all properties of the resource in question are to be affected.
      */
+    private List<String> affectedPropDefPointers;
     private List<PropertyTypeDefinition> affectedProperties;
 
     protected abstract Query getSearchQuery();
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        if (this.affectedPropDefPointers != null) {
+            for (String pointer : this.affectedPropDefPointers) {
+                PropertyTypeDefinition prop = this.resourceTypeTree.getPropertyDefinitionByPointer(pointer);
+                if (this.affectedProperties == null) {
+                    this.affectedProperties = new ArrayList<PropertyTypeDefinition>();
+                }
+                if (prop != null) {
+                    this.affectedProperties.add(prop);
+                }
+            }
+        }
+    }
 
     public synchronized void execute() {
 
@@ -125,6 +149,23 @@ public abstract class SystemJob {
 
     }
 
+    protected Query getSystemJobQuery() {
+        OrQuery orQuery = new OrQuery();
+
+        PropertyExistsQuery systemJobPropertyExistsQuery = new PropertyExistsQuery(this.getSystemJobStatusPropDef(),
+                true);
+        systemJobPropertyExistsQuery.setComplexValueAttributeSpecifier(this.getSystemJobName());
+        orQuery.add(systemJobPropertyExistsQuery);
+
+        String now = SystemJobContext.dateAsTimeString(Calendar.getInstance().getTime());
+        PropertyTermQuery systemJobPropertyQuery = new PropertyTermQuery(this.getSystemJobStatusPropDef(), now,
+                TermOperator.LT);
+        systemJobPropertyQuery.setComplexValueAttributeSpecifier(this.getSystemJobName());
+        orQuery.add(systemJobPropertyQuery);
+
+        return orQuery;
+    }
+
     @Required
     public void setSystemJobName(String systemJobName) {
         this.systemJobName = systemJobName;
@@ -158,7 +199,24 @@ public abstract class SystemJob {
         this.systemJobStatusPropDef = systemJobStatusPropDef;
     }
 
-    public void setAffectedProperties(List<PropertyTypeDefinition> affectedProperties) {
-        this.affectedProperties = affectedProperties;
+    @Required
+    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+        this.resourceTypeTree = resourceTypeTree;
+    }
+
+    public ResourceTypeTree getResourceTypeTree() {
+        return resourceTypeTree;
+    }
+
+    public void setAffectedPropDefPointers(List<String> affectedPropDefPointers) {
+        this.affectedPropDefPointers = affectedPropDefPointers;
+    }
+
+    protected String getSystemJobName() {
+        return this.systemJobName;
+    }
+
+    protected PropertyTypeDefinition getSystemJobStatusPropDef() {
+        return this.systemJobStatusPropDef;
     }
 }

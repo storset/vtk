@@ -15,9 +15,9 @@
     <property name="publishedPropDef" ref="publishedPropDef" />
     <property name="publishDatePropDef" ref="publishDatePropDef" />
     <property name="unpublishDatePropDef" ref="unpublishDatePropDef" />
-    <property name="affectedProperties">
+    <property name="affectedPropDefPointers">
       <list>
-        <ref bean="overriddenPublishedPropDef" />
+        <value>json-resource::published</value>
       </list>
     </property>
   </bean>

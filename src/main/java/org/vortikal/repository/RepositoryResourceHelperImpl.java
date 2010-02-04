@@ -322,12 +322,15 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
 
             Property property = ctx.getOriginalResource().getProperty(propDef);
             try {
-                if (property != null && ctx.isSystemChangeAffectedProperty(propDef)) {
+                if (ctx.isSystemChangeAffectedProperty(propDef)) {
+                    if (property == null) {
+                        property = propDef.createProperty();
+                    }
                     PropertyEvaluator evaluator = propDef.getPropertyEvaluator();
                     if (evaluator != null) {
                         boolean evaluated = evaluator.evaluate(property, ctx);
-                        if (evaluated) {
-                            return property;
+                        if (!evaluated) {
+                            return null;
                         }
                     }
                 }

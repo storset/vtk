@@ -526,7 +526,8 @@ public class StructuredResourceManager {
             if (ctx.getEvaluationType() == PropertyEvaluationContext.Type.Create) {
                 return false;
             }
-            if (ctx.getEvaluationType() != PropertyEvaluationContext.Type.ContentChange) {
+            if (ctx.getEvaluationType() != PropertyEvaluationContext.Type.ContentChange
+                    && ctx.getEvaluationType() != PropertyEvaluationContext.Type.SystemPropertiesChange) {
                 return ctx.getOriginalResource().getProperty(property.getDefinition()) != null;
             }
 

@@ -88,6 +88,10 @@ public class MockResourceTypeTree implements ResourceTypeTree {
         def.afterPropertiesSet();
         return def;
     }
+    
+    public PropertyTypeDefinition getPropertyDefinitionByPointer(String pointer) {
+        return null;
+    }
 
     public List<PrimaryResourceTypeDefinition> getResourceTypeDefinitionChildren(
             PrimaryResourceTypeDefinition def) {

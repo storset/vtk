@@ -87,7 +87,7 @@ import org.vortikal.web.view.components.menu.MenuItem;
 public class ListMenuComponent extends ViewRenderingDecoratorComponent {
 
     private static final int DEFAULT_DEPTH = 1;
-    private static final int DEFAULT_SEARCH_LIMIT = 500;
+    protected static final int DEFAULT_SEARCH_LIMIT = 500;
 
     private static final String STYLE_NONE = "none";
     private static final String STYLE_VERTICAL = "vertical";
@@ -135,6 +135,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     protected static final String PARAMETER_DISPLAY_FROM_LEVEL = "display-from-level";
     protected static final String PARAMETER_DISPLAY_FROM_LEVEL_DESC = "Defines the starting URI level for the menu (cannot be used with the '"
             + PARAMETER_URI + "' parameter)";
+    
 
     protected Service viewService;
     protected PropertyTypeDefinition titlePropDef;

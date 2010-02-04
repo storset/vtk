@@ -49,12 +49,19 @@
     parent="reporter">
     <property name="name" value="collection-structure" />
     <property name="viewName" value="collectionStructure" />
+    <property name="viewService" ref="webService" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="hiddenPropDef" ref="hiddenPropDef" />
+    <property name="importancePropDef" ref="importancePropDef" />
+    <property name="navigationTitlePropDef" ref="navigationTitlePropDef" />
+    <property name="collectionResourceType" ref="collectionResourceTypeDefinition" />
   </bean>
 
   <bean id="lastModifiedReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="reporter">
     <property name="name" value="last-modified" />
     <property name="viewName" value="lastModified" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 

@@ -30,8 +30,11 @@
  */
 package org.vortikal.web.actions.report;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
 import org.vortikal.repository.search.Searcher;
 
 public abstract class AbstractReporter implements Reporter {

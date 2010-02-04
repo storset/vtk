@@ -33,6 +33,8 @@ package org.vortikal.web.actions.report;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -49,10 +51,11 @@ import org.vortikal.repository.search.query.UriPrefixQuery;
 public class LastModifiedReporter extends AbstractReporter {
 
     private static final int LIMIT = 100;
+    private PropertyTypeDefinition titlePropDef;
     private PropertyTypeDefinition sortPropDef;
     private SortFieldDirection sortOrder;
 
-    public Map<String, Object> getReportContent(String token, Resource currentResource) {
+    public Map<String, Object> getReportContent(String token, Resource currentResource, HttpServletRequest request) {
 
         AndQuery query = new AndQuery();
         query.add(new TypeTermQuery("file", TermOperator.IN));
@@ -70,6 +73,8 @@ public class LastModifiedReporter extends AbstractReporter {
         Map<String, Object> result = new HashMap<String, Object>();
         result.put("lastModifiedList", rs.getAllResults());
 
+        result.put("type", titlePropDef);
+        
         return result;
     }
 
@@ -81,6 +86,14 @@ public class LastModifiedReporter extends AbstractReporter {
     @Required
     public void setSortOrder(SortFieldDirection sortOrder) {
         this.sortOrder = sortOrder;
+    }
+
+    public void setTitlePropDef(PropertyTypeDefinition titlePropDef) {
+        this.titlePropDef = titlePropDef;
+    }
+
+    public PropertyTypeDefinition getTitlePropDef() {
+        return titlePropDef;
     }
     
 }

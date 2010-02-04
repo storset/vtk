@@ -30,14 +30,19 @@
  */
 package org.vortikal.web.actions.report;
 
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.web.servlet.support.RequestContext;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.SortingImpl;
@@ -45,18 +50,27 @@ import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
+import org.vortikal.web.decorating.components.SubFolderMenuComponent;
+import org.vortikal.web.decorating.components.SubFolderMenuComponent.MenuRequest;
+import org.vortikal.web.service.Service;
+import org.vortikal.web.view.components.menu.ListMenu;
 
 public class CollectionStructureReporter extends AbstractReporter {
 
-    private static final int LIMIT = 2000;
-    
-    public Map<String, Object> getReportContent(String token, Resource currentResource) {
+    private Service viewService;
+    private PropertyTypeDefinition titlePropDef;
+    private PropertyTypeDefinition hiddenPropDef;
+    private PropertyTypeDefinition importancePropDef;
+    private PropertyTypeDefinition navigationTitlePropDef;
+    private ResourceTypeDefinition collectionResourceType;
+
+    public Map<String, Object> getReportContent(String token, Resource currentResource, HttpServletRequest request) {
         AndQuery query = new AndQuery();
         query.add(new TypeTermQuery("collection", TermOperator.IN));
         query.add(new UriPrefixQuery(currentResource.getURI().toString()));
 
         Search search = new Search();
-        search.setLimit(LIMIT);
+        search.setLimit(Integer.MAX_VALUE);
         SortingImpl sorting = new SortingImpl();
         search.setSorting(sorting);
         search.setQuery(query);
@@ -64,19 +78,66 @@ public class CollectionStructureReporter extends AbstractReporter {
         ResultSet rs = this.searcher.execute(token, search);
         Map<String, Object> result = new HashMap<String, Object>();
 
-        List<PropertySet> searchResult = rs.getAllResults();
-        Collections.sort(searchResult, new CollectionStructureReportComperator());
-        result.put("collectionList", searchResult);
-        
+        Locale locale = new RequestContext(request).getLocale();
+
+        Map<String, Object> menu = getSubfolderMenu(rs, currentResource.getURI(), token, locale);
+        result.put("subFolderMenu", menu);
+
         return result;
     }
 
-    private class CollectionStructureReportComperator implements Comparator<PropertySet> {
+    private Map<String, Object> getSubfolderMenu(ResultSet rs, Path currentCollectionUri, String token, Locale locale) {
+        String title = null;
+        PropertyTypeDefinition sortProperty = null;
+        boolean ascendingSort = true;
+        boolean sortByName = false;
+        int resultSets = 1;
+        int groupResultSetsBy = 0;
+        int freezeAtLevel = 0;
+        int depth = Integer.MAX_VALUE;
+        int displayFromLevel = -1;
+        int maxNumberOfChildren = Integer.MAX_VALUE;
+        ArrayList<Path> excludeURIs = new ArrayList<Path>();
+        int searchLimit = Integer.MAX_VALUE;
 
-        public int compare(PropertySet o1, PropertySet o2) {
-            return o1.getURI().compareTo(o2.getURI());
-        }
+        SubFolderMenuComponent subfolderMenu = new SubFolderMenuComponent();
+        subfolderMenu.setViewService(viewService);
+        subfolderMenu.setNavigationTitlePropDef(navigationTitlePropDef);
+        subfolderMenu.setTitlePropDef(titlePropDef);
+        subfolderMenu.setImportancePropDef(importancePropDef);
+        subfolderMenu.setHiddenPropDef(hiddenPropDef);
+        subfolderMenu.setCollectionResourceType(collectionResourceType);
 
+        MenuRequest menuRequest = subfolderMenu.getNewMenuReqeust(currentCollectionUri, title, sortProperty,
+                ascendingSort, sortByName, resultSets, groupResultSetsBy, freezeAtLevel, depth, displayFromLevel,
+                maxNumberOfChildren, excludeURIs, locale, token, searchLimit);
+
+        ListMenu<PropertySet> menu = subfolderMenu.buildListMenu(rs, menuRequest);
+        return subfolderMenu.buildMenuModel(menu, menuRequest);
+    }
+
+    public void setViewService(Service viewService) {
+        this.viewService = viewService;
+    }
+
+    public void setTitlePropDef(PropertyTypeDefinition titlePropDef) {
+        this.titlePropDef = titlePropDef;
+    }
+
+    public void setHiddenPropDef(PropertyTypeDefinition hiddenPropDef) {
+        this.hiddenPropDef = hiddenPropDef;
+    }
+
+    public void setImportancePropDef(PropertyTypeDefinition importancePropDef) {
+        this.importancePropDef = importancePropDef;
+    }
+
+    public void setNavigationTitlePropDef(PropertyTypeDefinition navigationTitlePropDef) {
+        this.navigationTitlePropDef = navigationTitlePropDef;
+    }
+
+    public void setCollectionResourceType(ResourceTypeDefinition collectionResourceType) {
+        this.collectionResourceType = collectionResourceType;
     }
 
 }

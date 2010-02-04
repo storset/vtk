@@ -57,7 +57,6 @@ public class ReportHandler implements Controller {
 
     private static final String REPORT_TYPE_PARAM = "report-type";
 
-    @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -77,7 +76,7 @@ public class ReportHandler implements Controller {
         if (reportType != null && !"".equals(reportType.trim())) {
             Reporter reporter = getReporter(reportType);
             if (reporter != null) {
-                model.put("report", reporter.getReportContent(token, resource));
+                model.put("report", reporter.getReportContent(token, resource,request));
                 return new ModelAndView(reporter.getViewName(), model);
             }
         }

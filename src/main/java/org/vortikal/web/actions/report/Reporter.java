@@ -32,11 +32,13 @@ package org.vortikal.web.actions.report;
 
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.vortikal.repository.Resource;
 
 public interface Reporter {
 
-    public Map<String, Object> getReportContent(String token, Resource currentResource);
+    public Map<String, Object> getReportContent(String token, Resource currentResource, HttpServletRequest request);
     
     public String getName();
 

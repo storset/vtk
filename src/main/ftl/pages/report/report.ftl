@@ -14,14 +14,15 @@
   
   </head>
   <body>
-  
+  <div class="resourceInfo">
+  <h2>Rapporter</h2>
   <div class="vrtx-report">
+    <ul class="vrtx-reporters">
   <#list reporters as reporter>
-    <li class="vrtx-reporters">
-      <ul><a href="${reporter.url}"><@vrtx.msg code="report.${reporter.name}" default="${reporter.name}" /></a></ul>
-    </li>
+      <li><a href="${reporter.url}"><@vrtx.msg code="report.${reporter.name}" default="${reporter.name}" /></a></li>
   </#list>
+  	</ul>
   </div>
-  
+  </div>
   </body>
 </html>

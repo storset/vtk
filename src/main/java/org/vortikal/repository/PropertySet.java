@@ -51,9 +51,11 @@ public interface PropertySet {
     public Property getProperty(Namespace namespace, String name);
 
     public Property getProperty(PropertyTypeDefinition type);
-
+    
     public List<Property> getProperties(Namespace namespace);
 
     public Property getPropertyByPrefix(String prefix, String name);
+    
+    public boolean isInheritedAcl();
 
 }

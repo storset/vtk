@@ -7,9 +7,14 @@
   -   subFolderMenu
   -
   -->
-  <#import "../lib/vortikal.ftl" as vrtx />
+<#import "../lib/vortikal.ftl" as vrtx />
  <#-- RECURSIVE MENU BUILD --> 
- <#if subFolderMenu?exists>
+
+<#if subFolderMenu?exists> 
+	<@displaySubFolderMenu subFolderMenu />
+</#if>
+
+<#macro displaySubFolderMenu subFolderMenu>
     <#if subFolderMenu.size &gt; 0>
       <#assign "counter" = 0>
       <#assign "counter2" = 0>
@@ -26,15 +31,16 @@
             <#if subFolderMenu.groupResultSetsBy?exists && (subFolderMenu.groupResultSetsBy?number = counter2 || counter = 1)>
                <#assign "counter2" = 0>
                <#assign c = c+1>
-               <@displayParentMenu menu=resultSet currentCount=counter groupCount=c newDiv=true />
+               <@displayParentMenu menu=resultSet currentCount=counter groupCount=c newDiv=true subFolderMenu=subFolderMenu />
             <#else>
-               <@displayParentMenu menu=resultSet currentCount=counter groupCount=c newDiv=false />
+               <@displayParentMenu menu=resultSet currentCount=counter groupCount=c newDiv=false subFolderMenu=subFolderMenu />
             </#if>
           </#list>
         </div>
       </#if>
-    </#if>
 </#if>
+
+</#macro>
 
 <#-- MACROS: -->
 <#macro displayItem item>
@@ -46,7 +52,7 @@
   </#if>
 </#macro>
 
-<#macro displayParentMenu menu currentCount groupCount newDiv>
+<#macro displayParentMenu menu currentCount groupCount newDiv subFolderMenu>
   <#if newDiv>
        <#if currentCount != 1>
           </div>

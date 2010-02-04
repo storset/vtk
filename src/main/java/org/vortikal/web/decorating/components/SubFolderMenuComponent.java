@@ -157,7 +157,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         }
     }
 
-    private Map<String, Object> buildMenuModel(ListMenu<PropertySet> menu, MenuRequest menuRequest) {
+    public Map<String, Object> buildMenuModel(ListMenu<PropertySet> menu, MenuRequest menuRequest) {
         List<ListMenu<PropertySet>> resultList = new ArrayList<ListMenu<PropertySet>>();
 
         int resultSets = menuRequest.getResultSets();
@@ -275,12 +275,14 @@ public class SubFolderMenuComponent extends ListMenuComponent {
 
         Search search = new Search();
         search.setQuery(mainQuery);
-        search.setLimit(this.searchLimit);
+
+        search.setLimit(menuRequest.searchLimit);
+
         search.setPropertySelect(select);
         return search;
     }
 
-    private ListMenu<PropertySet> buildListMenu(ResultSet rs, MenuRequest menuRequest) {
+    public ListMenu<PropertySet> buildListMenu(ResultSet rs, MenuRequest menuRequest) {
         ListMenu<PropertySet> menu = new ListMenu<PropertySet>();
         Map<Path, List<PropertySet>> childMap = new HashMap<Path, List<PropertySet>>();
         List<PropertySet> toplevel = new ArrayList<PropertySet>();
@@ -358,7 +360,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         return item;
     }
 
-    private class MenuRequest {
+    public class MenuRequest {
 
         private Path currentCollectionUri;
         private String title;
@@ -374,6 +376,29 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         private ArrayList<Path> excludeURIs;
         private Locale locale;
         private String token;
+        private int searchLimit = DEFAULT_SEARCH_LIMIT;
+
+        public MenuRequest(Path currentCollectionUri, String title, PropertyTypeDefinition sortProperty,
+                boolean ascendingSort, boolean sortByName, int resultSets, int groupResultSetsBy, int freezeAtLevel,
+                int depth, int displayFromLevel, int maxNumberOfChildren, ArrayList<Path> excludeURIs, Locale locale,
+                String token, int searchLimit) {
+            super();
+            this.currentCollectionUri = currentCollectionUri;
+            this.title = title;
+            this.sortProperty = sortProperty;
+            this.ascendingSort = ascendingSort;
+            this.sortByName = sortByName;
+            this.resultSets = resultSets;
+            this.groupResultSetsBy = groupResultSetsBy;
+            this.freezeAtLevel = freezeAtLevel;
+            this.depth = depth;
+            this.displayFromLevel = displayFromLevel;
+            this.maxNumberOfChildren = maxNumberOfChildren;
+            this.excludeURIs = excludeURIs;
+            this.locale = locale;
+            this.token = token;
+            this.searchLimit = searchLimit;
+        }
 
         public MenuRequest(DecoratorRequest request) {
 
@@ -642,10 +667,6 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         this.importancePropDef = importancePropDef;
     }
 
-    public void setSearchLimit(int searchLimit) {
-        this.searchLimit = searchLimit;
-    }
-
     protected String getDescriptionInternal() {
         return DESCRIPTION;
     }
@@ -685,6 +706,15 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         if (this.searchLimit <= 0) {
             throw new BeanInitializationException("JavaBean property '" + searchLimit + "' must be a positive integer");
         }
+    }
+
+    public MenuRequest getNewMenuReqeust(Path currentCollectionUri, String title, PropertyTypeDefinition sortProperty,
+            boolean ascendingSort, boolean sortByName, int resultSets, int groupResultSetsBy, int freezeAtLevel,
+            int depth, int displayFromLevel, int maxNumberOfChildren, ArrayList<Path> excludeURIs, Locale locale,
+            String token, int searchLimit) {
+        return new MenuRequest(currentCollectionUri, title, sortProperty, ascendingSort, sortByName, resultSets,
+                groupResultSetsBy, freezeAtLevel, depth, displayFromLevel, maxNumberOfChildren, excludeURIs, locale,
+                token, searchLimit);
     }
 
 }

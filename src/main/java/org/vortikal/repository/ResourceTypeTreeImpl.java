@@ -244,17 +244,47 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
     }
 
     public PropertyTypeDefinition getPropertyDefinitionByPointer(String pointer) {
-        String prefix = null;
-        String name = null;
-        if (pointer.indexOf(":") > 0) {
-            prefix = pointer.substring(0, pointer.indexOf(":"));
-            name = pointer.substring(pointer.indexOf(":") + 1, pointer.length());
-        } else {
-            name = pointer;
+        
+        final String pointerDelimiter = ":";
+        if (!pointer.contains(pointerDelimiter)) {
+            return this.getPropertyDefinitionByPrefix(null, pointer);
         }
-        return this.getPropertyDefinitionByPrefix(prefix, name);
+
+        String[] pointers = pointer.split(pointerDelimiter);
+        if (pointers.length == 2) {
+            return this.getPropertyDefinitionByPrefix(pointers[0], pointers[1]);
+        }
+        if (pointers.length == 3) {
+            return this.getPropertyDefinitionForResource(pointers[0], pointers[1], pointers[2]);
+        }
+
+        return null;
+
     }
-    
+
+    private PropertyTypeDefinition getPropertyDefinitionForResource(String resource, String prefix, String name) {
+
+        prefix = "".trim().equals(prefix) ? null : prefix;
+
+        ResourceTypeDefinition resourceTypeDefinition = this.getResourceTypeDefinitionByName(resource);
+        if (resourceTypeDefinition == null) {
+            return null;
+        }
+
+        Namespace namespace = this.namespacePrefixMap.get(prefix);
+        if (namespace == null) {
+            return null;
+        }
+
+        for (PropertyTypeDefinition propDef : resourceTypeDefinition.getPropertyTypeDefinitions()) {
+            if (propDef.getNamespace().equals(namespace) && propDef.getName().equals(name)) {
+                return propDef;
+            }
+        }
+
+        return null;
+    }
+
     /**
      * Search upwards in resource type tree, collect property type definitions
      * from all encountered resource type definitions including mixin resource types.

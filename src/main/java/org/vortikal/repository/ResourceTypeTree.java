@@ -95,8 +95,8 @@ public interface ResourceTypeTree extends HierarchicalVocabulary<String> {
     /**
      * Gets a property type definition by a pointer
      *
-     * @param pointer a pointer referring to a property, given as [namespace]:[name]
-     *                 (namespace is optional)
+     * @param pointer a pointer referring to a property, given as [resource]:[namespace]:[name]
+     *                 resource and namespace are optional, default namespace is blank e.g. article::title
      * @return a the property definition, or <code>null</code> if not found
      */
     public PropertyTypeDefinition getPropertyDefinitionByPointer(String pointer);

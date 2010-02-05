@@ -197,12 +197,17 @@ public class SimpleMethodInvokingTriggerBean implements BeanNameAware,
             int fixedDelayHours = getIntValue(delayValues[1]);
             int fixedDelayMinutes = getIntValue(delayValues[2]);
 
-            Calendar delay = new GregorianCalendar();
-            delay.add(Calendar.DATE, daysToWait);
+            Calendar cal = new GregorianCalendar();
+            // Delay minutes same day, same hour
+            if (daysToWait == 0 && fixedDelayHours == 0) {
+                fixedDelayHours = cal.get(Calendar.HOUR_OF_DAY);
+                fixedDelayMinutes = cal.get(Calendar.MINUTE) + fixedDelayMinutes;
+            }
+            cal.add(Calendar.DATE, daysToWait);
             Calendar fixedDelay = new GregorianCalendar(
-                    delay.get(Calendar.YEAR),
-                    delay.get(Calendar.MONTH),
-                    delay.get(Calendar.DATE),
+                    cal.get(Calendar.YEAR),
+                    cal.get(Calendar.MONTH),
+                    cal.get(Calendar.DATE),
                     fixedDelayHours, fixedDelayMinutes);
 
             long fixedDelayInMillis = fixedDelay.getTimeInMillis() - System.currentTimeMillis();

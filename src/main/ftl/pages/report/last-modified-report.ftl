@@ -39,16 +39,18 @@
           <td>${lastModifiedTime}</td>
           <#assign modifiedBy = vrtx.propValue(lastModified, 'modifiedBy') />
           <td><a href="http://www.uio.no/sok?person=${modifiedBy}">${modifiedBy}</a></td>
+          <!--
+          <#assign aclIsInherited = vrtx.getMsg("report.yes", "Yes")>
+          <#if lastModified.isInheritedAcl() >
+          	<#assign aclIsInherited = vrtx.getMsg("report.no", "No")>
+          </#if>
+          <td>${aclIsInherited}</td>
+          -->
           <#assign published = vrtx.propValue(lastModified, 'published') />
           <#assign publishedStatus = vrtx.getMsg("report.yes", "Yes")>
           <#if published = "false">
             <#assign publishedStatus = vrtx.getMsg("report.no", "No")>
           </#if>
-          <#assign aclIsInherited = vrtx.getMsg("report.yes", "Yes")>
-          <#if lastModified.isInheritedAcl() >
-          	<#assign aclIsInherited = vrtx.getMsg("report.no", "No")>
-          </#if>
-         <!-- <td>${aclIsInherited}</td> -->
           <td>${publishedStatus}</td>
         </tr>
       </#list>

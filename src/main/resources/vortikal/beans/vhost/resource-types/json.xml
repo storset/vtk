@@ -60,6 +60,7 @@
     <property name="indexableAttributes">
       <list>
         <value>published-status</value>
+        <value>person-external-data</value>
       </list>
     </property>
   </bean>

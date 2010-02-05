@@ -11,10 +11,11 @@
  <#-- RECURSIVE MENU BUILD --> 
 
 <#if subFolderMenu?exists> 
-	<@displaySubFolderMenu subFolderMenu />
+	<@displaySubFolderMenu subFolderMenu false />
 </#if>
 
-<#macro displaySubFolderMenu subFolderMenu>
+<#macro displaySubFolderMenu subFolderMenu adminLink>
+	<#assign CREATE_ADMIN_LINK=adminLink>
     <#if subFolderMenu.size &gt; 0>
       <#assign "counter" = 0>
       <#assign "counter2" = 0>
@@ -43,16 +44,16 @@
 </#macro>
 
 <#-- MACROS: -->
-<#macro displayItem item>
+<#macro displayItem item >
   <#if item.menu?exists>
-    <a href="${item.url?html}">${item.label}</a>
-    <@displaySubMenu item.menu />
+    <a href="${item.url?html}<#if CREATE_ADMIN_LINK >?vrtx=admin</#if>">${item.label}</a>
+    <@displaySubMenu item.menu displaySubMenu />
   <#else>
-    <a href="${item.url?html}">${item.label}</a>
+    <a href="${item.url?html}<#if CREATE_ADMIN_LINK >?vrtx=admin</#if>">${item.label}</a>
   </#if>
 </#macro>
 
-<#macro displayParentMenu menu currentCount groupCount newDiv subFolderMenu>
+<#macro displayParentMenu menu currentCount groupCount newDiv subFolderMenu >
   <#if newDiv>
        <#if currentCount != 1>
           </div>
@@ -72,7 +73,7 @@
   </#if>
 </#macro>
 
-<#macro displaySubMenu menu>
+<#macro displaySubMenu menu displaySubMenu >
   <ul>
     <#list menu.items as item>
       <li>   

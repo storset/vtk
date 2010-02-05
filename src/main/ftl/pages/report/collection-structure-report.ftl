@@ -9,7 +9,6 @@
 	<link href="http://www.uio.no/vrtx/css/view-components.css" type="text/css" rel="stylesheet">
   </head>
   <body>
-
   <div class="vrtx-report-nav">
     <div class="resourceInfo">
       <div class="back">
@@ -21,7 +20,7 @@
 	  </p>
 	  </div>
 	  <div class="vrtx-report">
-		<@subfolder.displaySubFolderMenu report.subFolderMenu />
+		<@subfolder.displaySubFolderMenu report.subFolderMenu true />
 	  </div>
     </div>
   </body>

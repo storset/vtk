@@ -5,6 +5,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+  <#if cssURLs?exists>
+    <#list cssURLs as cssURL>
+    <link rel="stylesheet" href="${cssURL}" />
+    </#list>
+  </#if>
+  <#if jsURLs?exists>
+    <#list jsURLs as jsURL>
+    <script type="text/javascript" src="${jsURL}"></script>
+    </#list>
+  </#if>
   </head>
   <body>
   <div class="resourceInfo">
@@ -21,12 +31,12 @@
     <table cellpadding="3" border="1">
       <thead>
         <tr>
-          <th><@vrtx.msg code="report.title" default="Title" /></th>
-          <th><@vrtx.msg code="report.location" default="Location" /></th>
-          <th><@vrtx.msg code="report.last-modified" default="Last modified" /></th>
-          <th><@vrtx.msg code="report.modified-by" default="Modified by" /></th>
-          <!-- <th><@vrtx.msg code="report.permission-set" default="Permissions set" /></th> -->
-          <th><@vrtx.msg code="report.published" default="Published" /> </th>
+          <th class="sortable-text"><@vrtx.msg code="report.title" default="Title" /></th>
+          <th class="sortable-text"><@vrtx.msg code="report.location" default="Location" /></th>
+          <th class="sortable-sortEnglishLonghandDateFormat"><@vrtx.msg code="report.last-modified" default="Last modified" /></th>
+          <th class="sortable-text"><@vrtx.msg code="report.modified-by" default="Modified by" /></th>
+          <!-- <th class="sortable-text"><@vrtx.msg code="report.permission-set" default="Permissions set" /></th> -->
+          <th class="sortable-text"><@vrtx.msg code="report.published" default="Published" /> </th>
         </tr>
       </thead>
       <tbody>

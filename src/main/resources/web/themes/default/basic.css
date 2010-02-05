@@ -995,10 +995,10 @@ div.tabMessagePublishPermission {
   padding: 3px 15px 0 0; 
 }
 
-div.resourceInfo div.back{
+div.resourceInfo div.back {
   margin-bottom:1em;
 }
 
 div.vrtx-subfolder-menu {
-  border: none;
-}
+  border:none;
+} 

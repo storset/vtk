@@ -6,22 +6,31 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-	<link href="http://www.uio.no/vrtx/css/view-components.css" type="text/css" rel="stylesheet">
+  <#if cssURLs?exists>
+    <#list cssURLs as cssURL>
+    <link rel="stylesheet" href="${cssURL}" />
+    </#list>
+  </#if>
+  <#if jsURLs?exists>
+    <#list jsURLs as jsURL>
+    <script type="text/javascript" src="${jsURL}"></script>
+    </#list>
+  </#if>
   </head>
   <body>
   <div class="vrtx-report-nav">
     <div class="resourceInfo">
       <div class="back">
-	  <a href="${serviceURL}"><@vrtx.msg code="report.back" default="Back" /></a>
+	    <a href="${serviceURL}"><@vrtx.msg code="report.back" default="Back" /></a>
 	  </div>
 	  <h2><@vrtx.msg code="report.collection-structure" /></h2>
 	  <p>
-	  <@vrtx.msg code="report.collection-structure.about" />
+	    <@vrtx.msg code="report.collection-structure.about" />
 	  </p>
-	  </div>
-	  <div class="vrtx-report">
-		<@subfolder.displaySubFolderMenu report.subFolderMenu true />
-	  </div>
-    </div>
+	</div>
+	<div class="vrtx-report">
+	  <@subfolder.displaySubFolderMenu report.subFolderMenu true />
+	</div>
+  </div>
   </body>
 </html>

@@ -5,7 +5,7 @@ div.tabs {
 	margin: 0;
         margin-top: 10px;
         font-size: 95%;
-        width: 47em; /* a width is required for Opera, older Mozilla browsers, and Konqueror browsers */
+        width: 57em; /* a width is required for Opera, older Mozilla browsers, and Konqueror browsers */
 }
 
 div.tabs ul {
@@ -14,7 +14,7 @@ div.tabs ul {
 	position: absolute;
 	bottom: -1px;
         left: 0px;
-        width: 47em; /* a width is required for Opera, older Mozilla browsers, and Konqueror browsers */
+        width: 57em; /* a width is required for Opera, older Mozilla browsers, and Konqueror browsers */
         /* Width is also required for IE 6.0. Can be reduced when we shorten some of the text on the tabs */
 }
 

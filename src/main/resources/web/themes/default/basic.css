@@ -996,5 +996,9 @@ div.tabMessagePublishPermission {
 }
 
 div.resourceInfo div.back{
- margin-bottom:1em;
+  margin-bottom:1em;
+}
+
+div.vrtx-subfolder-menu {
+  border: none;
 }

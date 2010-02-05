@@ -206,6 +206,9 @@ public class SimpleMethodInvokingTriggerBean implements BeanNameAware,
                     fixedDelayHours, fixedDelayMinutes);
 
             long fixedDelayInMillis = fixedDelay.getTimeInMillis() - System.currentTimeMillis();
+            
+            logger.info("Scheduling " + this.triggerThreadName + " to start at " + fixedDelay.getTime());
+            
             return fixedDelayInMillis > 0 ? fixedDelayInMillis : this.startDelay;
 
         } catch (Throwable t) {

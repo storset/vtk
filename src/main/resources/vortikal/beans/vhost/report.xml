@@ -101,6 +101,12 @@
           <list>
             <value>${themeBaseURL}/report/report.css</value>
             <value>${themeBaseURL}/view-components.css</value>
+            <value>${themeBaseURL}/report/jquery.treeview.css</value>
+          </list>
+        </entry>
+        <entry key="jsURLs">
+          <list>
+            <value>${jsBaseURL}/jquery.treeview.min.js</value>
           </list>
         </entry>
       </map>

@@ -90,9 +90,9 @@
 <#macro displaySubMenu menu displaySubMenu >
   <ul>
     <#list menu.items as item>
-      <#if filetree >
+       <#if filetree >
         <li class="closed">
-      <#else>
+       <#else>
         <li>
        </#if>
           <#if filetree >

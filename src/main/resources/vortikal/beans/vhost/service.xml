@@ -131,7 +131,7 @@
   </bean>
 
   <bean id="requireAuthenticationController" class="org.vortikal.web.actions.auth.RequireAuthenticationController">
-    <property name="redirectService" ref="viewService" />
+     <property name="viewName" value="redirectToManage" />
   </bean>
 
 

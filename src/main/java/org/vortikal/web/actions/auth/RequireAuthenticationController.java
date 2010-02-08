@@ -30,45 +30,36 @@
  */
 package org.vortikal.web.actions.auth;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
-import org.vortikal.repository.Path;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.web.RequestContext;
-import org.vortikal.web.service.Service;
-import org.vortikal.web.service.URL;
-
-
 
 public class RequireAuthenticationController implements Controller {
 
-    private Service redirectService;
-    
-    public void setRedirectService(Service redirectService) {
-        this.redirectService = redirectService;
-    }
+    private String viewName;
 
-    public ModelAndView handleRequest(HttpServletRequest request,
-                                      HttpServletResponse response) 
-	throws Exception {
-
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Map<String, Object> model = new HashMap<String, Object>();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         if (securityContext.getPrincipal() == null) {
             throw new AuthenticationException();
         }
-        Path uri = RequestContext.getRequestContext().getResourceURI();
-        URL url = this.redirectService.constructURL(uri);
+        return new ModelAndView(this.getViewName(), model);
+    }
 
-        String anchor = request.getParameter("anchor");
-        if (anchor != null && !"".equals(anchor.trim())) {
-            url.setRef(anchor);
-        }
-        response.sendRedirect(url.toString());
-        return null;
+    public void setViewName(String viewName) {
+        this.viewName = viewName;
+    }
+
+    public String getViewName() {
+        return viewName;
     }
 
 }

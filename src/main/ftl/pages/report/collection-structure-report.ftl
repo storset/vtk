@@ -18,7 +18,10 @@
   </#if>
   <script type="text/javascript">
     $(document).ready(function(){
-      $(".resultset-1").treeview();
+      $(".resultset-1").treeview({
+        animated: "fast",
+        collapsed: true
+      });
     });
   </script>
   </head>

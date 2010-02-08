@@ -57,9 +57,6 @@
     <@displaySubMenu item.menu displaySubMenu />
   <#else>
     <a href="${item.url?html}<#if CREATE_ADMIN_LINK >?vrtx=admin</#if>">${item.label}</a>
-    <#if filetree>
-      </span>
-    </#if>
   </#if>
 </#macro>
 
@@ -77,9 +74,8 @@
   </#if>
     <#list menu.items as item>
       <li>
-        <#if filetree >
+        <#if filetree >       
           <span class="folder">
-          <#global level = 0 >
         </#if>
         <@displayItem item=item />
       </li>
@@ -92,21 +88,18 @@
 </#macro>
 
 <#macro displaySubMenu menu displaySubMenu >
-  <#if level != 3 && filetree >
-    <#assign level = level + 1 >
-  </#if>
   <ul>
     <#list menu.items as item>
-      <#if level = 3 && filetree >
+      <#if filetree >
         <li class="closed">
       <#else>
         <li>
-      </#if>
-        <#if filetree >
-          <span class="folder">
-        </#if>
-        <@displayItem item=item />       
-      </li>
+       </#if>
+          <#if filetree >
+            <span class="folder">
+          </#if>
+          <@displayItem item=item />       
+        </li>
     </#list>
 	<#if (menu.totalNumberOfItems > menu.maxNumberOfItems)>
 	    <li class="vrtx-more">   

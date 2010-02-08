@@ -48,7 +48,11 @@
           <#assign lastModifiedTime = vrtx.propValue(lastModified, 'lastModified') />
           <td>${lastModifiedTime}</td>
           <#assign modifiedBy = vrtx.propValue(lastModified, 'modifiedBy') />
-          <td><a href="http://www.uio.no/sok?person=${modifiedBy}">${modifiedBy}</a></td>
+          <#if modifiedBy?index_of("@") != -1>
+            <td>${modifiedBy}</td>
+          <#else>
+            <td><a href="http://www.uio.no/sok?person=${modifiedBy}">${modifiedBy}</a></td>
+          </#if>
           <!--
           <#assign aclIsInherited = vrtx.getMsg("report.yes", "Yes")>
           <#if lastModified.isInheritedAcl() >

@@ -79,6 +79,7 @@
       <li>
         <#if filetree >
           <span class="folder">
+          <#global level = 0 >
         </#if>
         <@displayItem item=item />
       </li>
@@ -91,9 +92,16 @@
 </#macro>
 
 <#macro displaySubMenu menu displaySubMenu >
+  <#if level != 3 && filetree >
+    <#assign level = level + 1 >
+  </#if>
   <ul>
     <#list menu.items as item>
-      <li>
+      <#if level = 3 && filetree >
+        <li class="closed">
+      <#else>
+        <li>
+      </#if>
         <#if filetree >
           <span class="folder">
         </#if>

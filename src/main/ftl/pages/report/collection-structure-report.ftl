@@ -19,8 +19,7 @@
   <script type="text/javascript">
     $(document).ready(function(){
       $(".resultset-1").treeview({
-        animated: "fast",
-        collapsed: true
+        animated: "fast"
       });
     });
   </script>

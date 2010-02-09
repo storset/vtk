@@ -67,7 +67,7 @@
        </#if>  
           <div class="vrtx-group-${groupCount?html}">
   </#if>
-  <#if filetree>
+  <#if filetree >
     <ul class="resultset-${currentCount?html} filetree">
   <#else>
     <ul class="resultset-${currentCount?html}">

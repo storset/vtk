@@ -54,10 +54,8 @@ jQuery( function($) {
     	  prev = -35;  
       }
       
-      $("a#vrtx-image-gallery-previous").css('top', top + "px");
-      $("a#vrtx-image-gallery-previous").css('left', prev + "px");
-      $("a#vrtx-image-gallery-next").css('top', top + "px");
-      $("a#vrtx-image-gallery-next").css('left', width + "px");
+      $("a#vrtx-image-gallery-previous").css( { top: top + "px", left: prev + "px" } );
+      $("a#vrtx-image-gallery-next").css( { top: top + "px", left: width + "px" } );
  
     }
   });

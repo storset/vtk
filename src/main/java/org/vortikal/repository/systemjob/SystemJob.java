@@ -60,7 +60,7 @@ public abstract class SystemJob implements InitializingBean {
 
     private Log logger = LogFactory.getLog(SystemJob.class);
 
-    private static final int MAX_LIMIT = 100;
+    private static final int MAX_LIMIT = 2000;
 
     private String systemJobName;
     private Repository repository;

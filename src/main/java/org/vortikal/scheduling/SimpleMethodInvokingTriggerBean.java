@@ -122,7 +122,7 @@ public class SimpleMethodInvokingTriggerBean implements BeanNameAware,
     private boolean startTriggerAfterInitialization = true;
     
     // Delay pattern given as [days]:[hours]:[minutes], with a maximum 1 day delay allowed (i.e. tomorrow)
-    private static final Pattern FIXED_DELAY_PATTERN = Pattern.compile("[0-1]:([01]?[0-9]|2[0-3]):[0-5][0-9]");
+    private static final Pattern FIXED_DELAY_PATTERN = Pattern.compile("([01]?[0-9]|2[0-3]):[0-5][0-9]");
     
     /*
      * Fixed period of time to wait before starting.
@@ -176,7 +176,13 @@ public class SimpleMethodInvokingTriggerBean implements BeanNameAware,
         }
         
         if (this.fixedDelay != null) {
-            this.startDelay = this.getFixedDelayInMillis();
+            
+            if (!FIXED_DELAY_PATTERN.matcher(fixedDelay).matches()) {
+                throw new BeanInitializationException(
+                        "Fixed delay must be provided as [hours]:[minutes], e.g. 15:25 run every day @15:25PM");
+            }
+            
+            this.startDelay = this.getFixedDelayInMillis(0);
             Calendar cal = Calendar.getInstance();
             cal.setTimeInMillis(this.startDelay + System.currentTimeMillis());
             logger.info("Scheduling " + this.triggerThreadName + " to start at " + cal.getTime());
@@ -185,23 +191,17 @@ public class SimpleMethodInvokingTriggerBean implements BeanNameAware,
         if (this.startTriggerAfterInitialization) start(); // Start up after init
     }
     
-    private long getFixedDelayInMillis() {
-        
-        if (!FIXED_DELAY_PATTERN.matcher(fixedDelay).matches()) {
-            throw new BeanInitializationException("Fixed delay must be provided as " + "[days]:[hours]:[minutes], "
-                    + "e.g. 2:15:25 meaning start in 2 days, at 15:25PM");
-        }
+    private long getFixedDelayInMillis(int daysToWait) {
 
         try {
 
             String[] delayValues = this.fixedDelay.split(":");
-            int daysToWait = getIntValue(delayValues[0]);
-            int fixedDelayHours = getIntValue(delayValues[1]);
-            int fixedDelayMinutes = getIntValue(delayValues[2]);
+            int fixedDelayHours = getIntValue(delayValues[0]);
+            int fixedDelayMinutes = getIntValue(delayValues[1]);
 
             Calendar cal = new GregorianCalendar();
             // Delay minutes same day, same hour
-            if (daysToWait == 0 && fixedDelayHours == 0) {
+            if (fixedDelayHours == 0) {
                 fixedDelayHours = cal.get(Calendar.HOUR_OF_DAY);
                 fixedDelayMinutes = cal.get(Calendar.MINUTE) + fixedDelayMinutes;
             }
@@ -211,6 +211,11 @@ public class SimpleMethodInvokingTriggerBean implements BeanNameAware,
                     cal.get(Calendar.MONTH),
                     cal.get(Calendar.DATE),
                     fixedDelayHours, fixedDelayMinutes);
+            
+            // Requested time has already passed, wait till tomorrow same time
+            if (daysToWait == 0 && fixedDelay.getTime().before(Calendar.getInstance().getTime())) {
+                return getFixedDelayInMillis(1);
+            }
 
             long fixedDelayInMillis = fixedDelay.getTimeInMillis() - System.currentTimeMillis();
             return fixedDelayInMillis > 0 ? fixedDelayInMillis : this.startDelay;
@@ -394,7 +399,7 @@ public class SimpleMethodInvokingTriggerBean implements BeanNameAware,
                 // Sleep
                 try {
                     long sleeptime = SimpleMethodInvokingTriggerBean.this.fixedDelay != null
-                            ? SimpleMethodInvokingTriggerBean.this.getFixedDelayInMillis()
+                            ? SimpleMethodInvokingTriggerBean.this.getFixedDelayInMillis(0)
                             : SimpleMethodInvokingTriggerBean.this.repeatInterval;
                     Thread.sleep(sleeptime);
                 } catch (InterruptedException ie) {

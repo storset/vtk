@@ -13,16 +13,6 @@ body#vrtx-image-listing h1 {
   margin-right: auto;
 }
 
-a {
-  color: #348;
-  text-decoration: none;
-  outline: none;
-}
-
-a:hover {
-  color: #67a;
-}
-
 .caption {
   color: #888;
   display:block;

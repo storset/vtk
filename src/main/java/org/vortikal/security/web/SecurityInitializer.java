@@ -30,11 +30,13 @@
  */
 package org.vortikal.security.web;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -51,54 +53,47 @@ import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.security.token.TokenManager;
 
-
-
 /**
- * Initializer for the {@link SecurityContext security context}. A
- * security context is created for every request. Also detects
- * authentication information in requests (using {@link
- * AuthenticationHandler authentication handlers}) and tries to
- * process them.
- *
- * <p>Configurable JavaBean properties:
+ * Initializer for the {@link SecurityContext security context}. A security context is created for every request. Also
+ * detects authentication information in requests (using {@link AuthenticationHandler authentication handlers}) and
+ * tries to process them.
+ * 
+ * <p>
+ * Configurable JavaBean properties:
  * <ul>
- *   <li><code>authenticationHandlers</code> the list of {@link
- *       AuthenticationHandler authentication handlers} to use. These
- *       handlers are invoked in the same order they are provided.  If
- *       unspecified, the application context is searched for
- *       authentication handlers.
- *   <li><code>tokenManager</code> the {@link TokenManager} which
- *       stores repository tokens for authenticated principals
+ * <li><code>authenticationHandlers</code> the list of {@link AuthenticationHandler authentication handlers} to use.
+ * These handlers are invoked in the same order they are provided. If unspecified, the application context is searched
+ * for authentication handlers.
+ * <li><code>tokenManager</code> the {@link TokenManager} which stores repository tokens for authenticated principals
  * </ul>
  */
 public class SecurityInitializer implements InitializingBean, ApplicationContextAware {
 
-
     private static Log logger = LogFactory.getLog(SecurityInitializer.class);
+
     private static Log authLogger = LogFactory.getLog("org.vortikal.security.web.AuthLog");
 
     private TokenManager tokenManager;
 
     private List<AuthenticationHandler> authenticationHandlers;
+
     private ApplicationContext applicationContext;
 
 
-    public void setTokenManager(
-            TokenManager tokenManager) {
+    public void setTokenManager(TokenManager tokenManager) {
         this.tokenManager = tokenManager;
     }
 
 
-    public void setAuthenticationHandlers(
-        List<AuthenticationHandler> authenticationHandlers) {
+    public void setAuthenticationHandlers(List<AuthenticationHandler> authenticationHandlers) {
         this.authenticationHandlers = authenticationHandlers;
     }
-    
+
 
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
-    
+
 
     @SuppressWarnings("unchecked")
     public void afterPropertiesSet() {
@@ -106,13 +101,12 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
             logger.info("No authentication handlers specified, looking in context");
 
             Map<?, AuthenticationHandler> matchingBeans = this.applicationContext.getBeansOfType(
-                AuthenticationHandler.class, false, false);
+                    AuthenticationHandler.class, false, false);
 
             List<AuthenticationHandler> handlers = new ArrayList<AuthenticationHandler>(matchingBeans.values());
             if (handlers.isEmpty()) {
-                throw new IllegalStateException(
-                    "At least one authentication handler must be specified, "
-                    + "either explicitly or in application context");
+                throw new IllegalStateException("At least one authentication handler must be specified, "
+                        + "either explicitly or in application context");
             }
 
             Collections.sort(handlers, new OrderComparator());
@@ -122,18 +116,17 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
 
         logger.info("Using authentication handlers: " + this.authenticationHandlers);
     }
-    
 
-    public boolean createContext(HttpServletRequest req,
-                                 HttpServletResponse resp) {
+
+    public boolean createContext(HttpServletRequest req, HttpServletResponse resp)
+            throws AuthenticationProcessingException, ServletException, IOException {
 
         HttpSession session = req.getSession(false);
 
         String token = null;
         if (session != null) {
             try {
-                token = (String) session.getAttribute(
-                    SecurityContext.SECURITY_TOKEN_ATTRIBUTE);
+                token = (String) session.getAttribute(SecurityContext.SECURITY_TOKEN_ATTRIBUTE);
             } catch (IllegalStateException e) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Session has been invalidated, creating new");
@@ -142,106 +135,86 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                 session = req.getSession(true);
             }
         }
-        
+
         if (token != null) {
             Principal principal = this.tokenManager.getPrincipal(token);
             if (principal == null) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug(
-                        "Invalid token '" + token + "' in request session, "
-                        + "will proceed to check authentication");
+                    logger.debug("Invalid token '" + token + "' in request session, "
+                            + "will proceed to check authentication");
                 }
             } else {
                 if (logger.isDebugEnabled()) {
-                    logger.debug(
-                        "Found valid token '" + token + "', principal " + principal
-                        + " in request session, setting security context");
+                    logger.debug("Found valid token '" + token + "', principal " + principal
+                            + " in request session, setting security context");
                 }
-                SecurityContext.setSecurityContext(
-                    new SecurityContext(token, principal));
+                SecurityContext.setSecurityContext(new SecurityContext(token, principal));
                 return true;
             }
         }
-        
-        for (AuthenticationHandler handler: this.authenticationHandlers) {
+
+        for (AuthenticationHandler handler : this.authenticationHandlers) {
 
             if (handler.isRecognizedAuthenticationRequest(req)) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug(
-                        "Request " + req + " is recognized as an authentication "
-                        + "attempt by handler " + handler + ", will try to authenticate");
+                    logger.debug("Request " + req + " is recognized as an authentication " + "attempt by handler "
+                            + handler + ", will try to authenticate");
                 }
 
                 try {
                     Principal principal = handler.authenticate(req);
                     if (logger.isDebugEnabled()) {
-                        logger.debug(
-                            "Successfully authenticated principal: " + principal
-                            + " using authentication handler " + handler + ". "
-                            + "Setting security context.");
+                        logger.debug("Successfully authenticated principal: " + principal
+                                + " using authentication handler " + handler + ". " + "Setting security context.");
                     }
                     if (authLogger.isDebugEnabled()) {
                         authLogger.debug("Auth: principal: '" + principal + "' - method: '"
-                                         + handler.getClass().getName() + "' - status: OK");
+                                + handler.getClass().getName() + "' - status: OK");
                     }
 
-                    
                     token = this.tokenManager.newToken(principal, handler);
-                    SecurityContext securityContext = 
-                        new SecurityContext(token, this.tokenManager.getPrincipal(token));
-                        
+                    SecurityContext securityContext = new SecurityContext(token, this.tokenManager.getPrincipal(token));
+
                     SecurityContext.setSecurityContext(securityContext);
                     session = req.getSession(true);
-                    session.setAttribute(
-                        SecurityContext.SECURITY_TOKEN_ATTRIBUTE,
-                        token);
-                    
+                    session.setAttribute(SecurityContext.SECURITY_TOKEN_ATTRIBUTE, token);
+
                     if (!handler.postAuthentication(req, resp)) {
                         if (logger.isDebugEnabled()) {
-                            logger.debug(
-                                "Authentication post-processing completed by "
-                                + "authentication handler " + handler 
-                                + ", request processing will proceed");
+                            logger.debug("Authentication post-processing completed by " + "authentication handler "
+                                    + handler + ", request processing will proceed");
                         }
                         return true;
                     }
 
                     if (logger.isDebugEnabled()) {
-                        logger.debug(
-                            "Authentication post-processing completed by "
-                            + "authentication handler " + handler 
-                            + ", response already committed.");
+                        logger.debug("Authentication post-processing completed by " + "authentication handler "
+                                + handler + ", response already committed.");
                     }
                     return false;
-                
+
                 } catch (AuthenticationException exception) {
 
-                    AuthenticationChallenge challenge = 
-                        handler.getAuthenticationChallenge();
+                    AuthenticationChallenge challenge = handler.getAuthenticationChallenge();
 
                     if (logger.isDebugEnabled()) {
-                        logger.debug(
-                            "Authentication attempt " + req + " rejected by " +
-                            "handler " + handler + " with message "
-                            + exception.getMessage() + ", presenting challenge "
-                            + challenge + " to the client");
+                        logger.debug("Authentication attempt " + req + " rejected by " + "handler " + handler
+                                + " with message " + exception.getMessage() + ", presenting challenge " + challenge
+                                + " to the client");
                     }
                     if (authLogger.isDebugEnabled()) {
-                        authLogger.debug("Auth: request: '" + req.getRequestURI()
-                                         + "' - method: '" + handler.getClass().getName()
-                                         + "' - status: FAIL");
+                        authLogger.debug("Auth: request: '" + req.getRequestURI() + "' - method: '"
+                                + handler.getClass().getName() + "' - status: FAIL");
                     }
                     challenge.challenge(req, resp);
                     return false;
                 }
             }
         }
-        
+
         if (logger.isDebugEnabled()) {
-            logger.debug(
-                "Request " + req + " is not recognized as an authentication "
-                + "attempt by any authentication handler. Creating default "
-                + "security context.");
+            logger.debug("Request " + req + " is not recognized as an authentication "
+                    + "attempt by any authentication handler. Creating default " + "security context.");
         }
 
         SecurityContext.setSecurityContext(new SecurityContext(null, null));
@@ -254,53 +227,51 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
      */
     public void destroyContext() {
         if (logger.isDebugEnabled())
-            logger.debug("Destroying security context: "
-                         + SecurityContext.getSecurityContext());
+            logger.debug("Destroying security context: " + SecurityContext.getSecurityContext());
         SecurityContext.setSecurityContext(null);
     }
 
+
     /**
-     * Logs out the client from the authentication system. Clears the
-     * {@link SecurityContext}, removes the principal from the {@link
-     * TokenManager} and invalidates the request {@link
-     * javax.servlet.http.HttpSession session}. Finally, calls the
-     * authentication handler's {@link AuthenticationHandler#logout
-     * logout} method.
+     * Logs out the client from the authentication system. Clears the {@link SecurityContext}, removes the principal
+     * from the {@link TokenManager} and invalidates the request {@link javax.servlet.http.HttpSession session}.
+     * Finally, calls the authentication handler's {@link AuthenticationHandler#logout logout} method.
      * 
-     * @param req the request
-     * @param resp the response
-     * @return the return value of the authentication handler's
-     * <code>logout()</code> method.
-     * @throws AuthenticationProcessingException if an underlying
-     *  problem prevented the request from being processed
+     * @param req
+     *            the request
+     * @param resp
+     *            the response
+     * @return the return value of the authentication handler's <code>logout()</code> method.
+     * @throws AuthenticationProcessingException
+     *             if an underlying problem prevented the request from being processed
+     * @throws IOException
+     * @throws ServletException
      * @see AuthenticationHandler#logout
      */
-    public boolean logout(HttpServletRequest req, HttpServletResponse resp)
-            throws AuthenticationProcessingException {
+    public boolean logout(HttpServletRequest req, HttpServletResponse resp) throws AuthenticationProcessingException,
+            ServletException, IOException {
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Principal principal = securityContext.getPrincipal();
-        if (principal == null) return false;
+        if (principal == null)
+            return false;
 
-        AuthenticationHandler handler = this.tokenManager.getAuthenticationHandler(
-            securityContext.getToken());
+        AuthenticationHandler handler = this.tokenManager.getAuthenticationHandler(securityContext.getToken());
 
         // FIXME: what if handler.isLogoutSupported() == false?
         boolean result = handler.logout(principal, req, resp);
-        String status = result ? "OK": "FAIL";
+        String status = result ? "OK" : "FAIL";
         if (authLogger.isDebugEnabled()) {
-            authLogger.debug("Logout: principal: '" + principal
-                             + "' - method: '" + handler.getClass().getName()
-                             + "' - status: " + status);
+            authLogger.debug("Logout: principal: '" + principal + "' - method: '" + handler.getClass().getName()
+                    + "' - status: " + status);
         }
-
 
         this.tokenManager.removeToken(securityContext.getToken());
         SecurityContext.setSecurityContext(null);
         req.getSession(true).invalidate();
 
         return result;
-        
+
     }
 
 
@@ -314,4 +285,3 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         return sb.toString();
     }
 }
-

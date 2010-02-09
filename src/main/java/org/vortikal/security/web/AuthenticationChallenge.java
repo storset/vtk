@@ -30,33 +30,35 @@
  */
 package org.vortikal.security.web;
 
+import java.io.IOException;
+
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.vortikal.security.AuthenticationProcessingException;
 
-
-
 /**
  * An authentication challenge, to be presented to the web client.
- *
+ * 
  */
 public interface AuthenticationChallenge {
 
-
-
     /**
-     * Present the authentication challenge. In most cases, this
-     * involves some form of response manipulation. Implementations of
-     * this interface should be thread safe, and may thus use the
-     * servlet request session as a means for accessing any required
-     * state information.
-     *
-     * @param req the servlet request
-     * @param resp a <code>HttpServletResponse</code> 
-     * @exception AuthenticationProcessingException if an error occurs
+     * Present the authentication challenge. In most cases, this involves some form of response manipulation.
+     * Implementations of this interface should be thread safe, and may thus use the servlet request session as a means
+     * for accessing any required state information.
+     * 
+     * @param req
+     *            the servlet request
+     * @param resp
+     *            a <code>HttpServletResponse</code>
+     * @exception AuthenticationProcessingException
+     *                if an error occurs
+     * @throws IOException
+     * @throws ServletException
      */
-    public void challenge(HttpServletRequest req, HttpServletResponse resp)
-        throws AuthenticationProcessingException;
-    
+    public void challenge(HttpServletRequest req, HttpServletResponse resp) throws AuthenticationProcessingException,
+            ServletException, IOException;
+
 }

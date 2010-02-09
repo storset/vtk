@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.servlet;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -382,7 +383,11 @@ public class VortikalServlet extends DispatcherServlet {
             }
 
         } catch (AuthenticationException ex) {
-            authenticationChallenge(request, responseWrapper, ex);
+            try {
+                authenticationChallenge(request, responseWrapper, ex);
+            } catch (IOException e) {
+                logError(request, e);
+            }
         } catch (AuthenticationProcessingException e) {
             handleAuthenticationProcessingError(request, responseWrapper, e);
         } catch (InvalidRequestException e) {
@@ -452,7 +457,7 @@ public class VortikalServlet extends DispatcherServlet {
     }
 
     private void authenticationChallenge(HttpServletRequest request, HttpServletResponse response, 
-            AuthenticationException ex) throws ServletException {
+            AuthenticationException ex) throws ServletException, IOException {
         Service service = RequestContext.getRequestContext()
                 .getService();
         AuthenticationChallenge challenge = getAuthenticationChallenge(service);

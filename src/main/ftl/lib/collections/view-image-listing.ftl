@@ -102,7 +102,6 @@
       </#list>
       </ul>
     </div>
-    <p/>
   </#if>
 
 </#macro>

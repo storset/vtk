@@ -142,7 +142,7 @@ public class SimpleMethodInvokingTriggerBean implements BeanNameAware,
         } else if (this.startDelay < 0) {
             throw new BeanInitializationException(
                     "Bean property 'startDelay' must be positive integer");
-        } else if (this.repeatInterval <= 0) {
+        } else if (this.fixedDelay == null && this.repeatInterval <= 0) {
             throw new BeanInitializationException(
                     "Bean property 'repeatInterval' must be greater than zero.");
         } else if (this.repeatCount != REPEAT_INDEFINITELY && this.repeatCount < 0) {
@@ -151,7 +151,7 @@ public class SimpleMethodInvokingTriggerBean implements BeanNameAware,
                     + " a positive integer");
         }
         
-        if (! (this.arguments == null && this.argumentTypes == null)) {
+        if (!(this.arguments == null && this.argumentTypes == null)) {
             if (this.argumentTypes == null) {
                 throw new BeanInitializationException("Bean property 'arguments' "
                         + "set, but missing needed property 'argumentTypes'");
@@ -176,19 +176,21 @@ public class SimpleMethodInvokingTriggerBean implements BeanNameAware,
         }
         
         if (this.fixedDelay != null) {
-            if (!FIXED_DELAY_PATTERN.matcher(fixedDelay).matches()) {
-                throw new BeanInitializationException("Fixed delay must be provided as " +
-                		"[days]:[hours]:[minutes], " +
-                		"e.g. 2:15:25 meaning start in 2 days, at 15:25PM");
-            } else {
-                this.startDelay = this.getFixedDelayInMillis();
-            }
+            this.startDelay = this.getFixedDelayInMillis();
+            Calendar cal = Calendar.getInstance();
+            cal.setTimeInMillis(this.startDelay + System.currentTimeMillis());
+            logger.info("Scheduling " + this.triggerThreadName + " to start at " + cal.getTime());
         }
         
         if (this.startTriggerAfterInitialization) start(); // Start up after init
     }
     
     private long getFixedDelayInMillis() {
+        
+        if (!FIXED_DELAY_PATTERN.matcher(fixedDelay).matches()) {
+            throw new BeanInitializationException("Fixed delay must be provided as " + "[days]:[hours]:[minutes], "
+                    + "e.g. 2:15:25 meaning start in 2 days, at 15:25PM");
+        }
 
         try {
 
@@ -211,9 +213,6 @@ public class SimpleMethodInvokingTriggerBean implements BeanNameAware,
                     fixedDelayHours, fixedDelayMinutes);
 
             long fixedDelayInMillis = fixedDelay.getTimeInMillis() - System.currentTimeMillis();
-            
-            logger.info("Scheduling " + this.triggerThreadName + " to start at " + fixedDelay.getTime());
-            
             return fixedDelayInMillis > 0 ? fixedDelayInMillis : this.startDelay;
 
         } catch (Throwable t) {
@@ -264,7 +263,7 @@ public class SimpleMethodInvokingTriggerBean implements BeanNameAware,
      *                  and wait.
      */
     public synchronized void stop(boolean interrupt) {
-        if (! isEnabled()) {
+        if (!isEnabled()) {
             this.logger.warn("stop() called, but interval triggering is not running");
             return;
             
@@ -394,7 +393,10 @@ public class SimpleMethodInvokingTriggerBean implements BeanNameAware,
                 
                 // Sleep
                 try {
-                    Thread.sleep(SimpleMethodInvokingTriggerBean.this.repeatInterval);
+                    long sleeptime = SimpleMethodInvokingTriggerBean.this.fixedDelay != null
+                            ? SimpleMethodInvokingTriggerBean.this.getFixedDelayInMillis()
+                            : SimpleMethodInvokingTriggerBean.this.repeatInterval;
+                    Thread.sleep(sleeptime);
                 } catch (InterruptedException ie) {
                     SimpleMethodInvokingTriggerBean.this.logger.warn("Interrupted while sleeping");
                 }

@@ -16,13 +16,6 @@
     <script type="text/javascript" src="${jsURL}"></script>
     </#list>
   </#if>
-  <script type="text/javascript">
-    $(document).ready(function(){
-      $(".resultset-1").treeview({
-        animated: "fast"
-      });
-    });
-  </script>
   </head>
   <body>
   <div class="vrtx-report-nav">
@@ -36,7 +29,7 @@
 	  </p>
 	</div>
 	<div class="vrtx-report">
-	  <@subfolder.displaySubFolderMenu report.subFolderMenu true true />
+	  <@subfolder.displaySubFolderMenu report.subFolderMenu true />
 	</div>
   </div>
   </body>

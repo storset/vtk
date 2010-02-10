@@ -88,3 +88,7 @@ div.tabs ul li.structuredResources\.editService a:hover {
 div.tabs ul li.activeTab a, div.tabs ul li.activeTab a:hover {
 	background-color: #efefef;;
 }
+
+.beta{
+	color:orange;
+}

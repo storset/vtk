@@ -52,8 +52,8 @@ public final class StructuredResourceDescription {
     private List<ServiceDefinition> services;
 
     private List<ComponentDefinition> componentDefinitions = new ArrayList<ComponentDefinition>();
-    private HashMap<String, HashMap<Locale, String>> localization = new HashMap<String, HashMap<Locale, String>>();
-    private HashMap<String, HashMap<Locale, String>> tooltips = new HashMap<String, HashMap<Locale, String>>();
+    private HashMap<String, Map<Locale, String>> localization = new HashMap<String, Map<Locale, String>>();
+    private HashMap<String, Map<Locale, String>> tooltips = new HashMap<String, Map<Locale, String>>();
 
     public StructuredResourceDescription(StructuredResourceManager manager) {
         this.manager = manager;
@@ -163,11 +163,11 @@ public final class StructuredResourceDescription {
     }
 
     public void addTooltips(String name, Map<Locale, String> m) {
-        tooltips.put(name, (HashMap<Locale, String>) m);
+        tooltips.put(name, m);
     }
 
-    public Map<String, HashMap<Locale, String>> getAllLocalizedTooltips() {
-        Map<String, HashMap<Locale, String>> locales = new HashMap<String, HashMap<Locale, String>>();
+    public Map<String, Map<Locale, String>> getAllLocalizedTooltips() {
+        Map<String, Map<Locale, String>> locales = new HashMap<String, Map<Locale, String>>();
         if (this.inheritsFrom != null) {
             StructuredResourceDescription parent = this.manager.get(this.inheritsFrom);
             locales.putAll(parent.getAllLocalizedTooltips());
@@ -177,7 +177,7 @@ public final class StructuredResourceDescription {
     }
 
     public String getLocalizedTooltip(String key, Locale locale) {
-        HashMap<Locale, String> tooltipMap = this.getAllLocalizedTooltips().get(key);
+        Map<Locale, String> tooltipMap = this.getAllLocalizedTooltips().get(key);
         if (tooltipMap == null) {
             return "";
         }
@@ -186,11 +186,11 @@ public final class StructuredResourceDescription {
     }
 
     public void addLocalization(String name, Map<Locale, String> m) {
-        localization.put(name, (HashMap<Locale, String>) m);
+        localization.put(name, m);
     }
 
-    public Map<String, HashMap<Locale, String>> getAllLocalization() {
-        Map<String, HashMap<Locale, String>> locales = new HashMap<String, HashMap<Locale, String>>();
+    public Map<String, Map<Locale, String>> getAllLocalization() {
+        Map<String, Map<Locale, String>> locales = new HashMap<String, Map<Locale, String>>();
         if (this.inheritsFrom != null) {
             StructuredResourceDescription parent = this.manager.get(this.inheritsFrom);
             locales.putAll(parent.getAllLocalization());
@@ -201,7 +201,7 @@ public final class StructuredResourceDescription {
 
     // XXX: handle parameters
     public String getLocalizedMsg(String key, Locale locale, Object[] param) {
-        HashMap<Locale, String> localizationMap = this.getAllLocalization().get(key);
+        Map<Locale, String> localizationMap = this.getAllLocalization().get(key);
         if (localizationMap == null) {
             return key;
         }

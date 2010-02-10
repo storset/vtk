@@ -185,9 +185,6 @@ public class DisplayXmlResourceController implements Controller, LastModified {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
         Path uri = requestContext.getResourceURI();
-        if (this.childName != null) {
-            uri.equals(this.childName);
-        }
         String token = securityContext.getToken();
         Map<String, Object> model = new HashMap<String, Object>();
         Resource resource = this.repository.retrieve(token, uri, true);

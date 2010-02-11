@@ -55,7 +55,7 @@ public class SpringResourceContentProvider implements ReferenceDataProvider, App
     private String modelKey = "content";
 
     @SuppressWarnings("unchecked")
-    public void referenceData(Map model, HttpServletRequest request) throws Exception {
+    public void referenceData(Map model, HttpServletRequest request) {
         List<String> fileLocaltions = new ArrayList<String>();
         RequestContext rc = new RequestContext(request);
         Locale locale = rc.getLocale();

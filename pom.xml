@@ -102,6 +102,13 @@
       <id>download.java.net</id>
       <url>http://download.java.net/maven/2/</url>
     </repository>
+    
+    <!-- For opensaml -->
+    <repository>
+      <id>shibboleth</id>
+      <url>http://shibboleth.internet2.edu/downloads/maven2</url>
+    </repository>
+
   </repositories>
   <properties>
     <test.skip>true</test.skip>
@@ -344,20 +351,19 @@
         
     <!-- OpenSAML -->
     <dependency>
-             <groupId>org.opensaml</groupId>
-             <artifactId>opensaml</artifactId>
-             <version>2.2.3</version>
-  
-             <exclusions>
-               <exclusion>
-                 <groupId>org.slf4j</groupId>
-                 <artifactId>jcl-over-slf4j</artifactId>
-               </exclusion>
-               <exclusion>
-                 <groupId>org.slf4j</groupId>
-                 <artifactId>log4j-over-slf4j</artifactId>
-               </exclusion>
-             </exclusions>
+      <groupId>org.opensaml</groupId>
+      <artifactId>opensaml</artifactId>
+      <version>2.2.3</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>jcl-over-slf4j</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>log4j-over-slf4j</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- Abdera Atom Feed -->

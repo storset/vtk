@@ -27,28 +27,27 @@ import org.opensaml.xml.validation.ValidationException;
 
 public class SamlAuthnRequestHelper {
 
-    public static final String CERTIFICATE_KEY = "";
+    private String keystorePath;
+    private String certKey;
 
-    public static final String KEYSTORE_PATH = "/home/dave/source/testwebclient/keystore";
-
-    private OpenSAMLUtilites utils;
-
-
-    public SamlAuthnRequestHelper() {
+    public SamlAuthnRequestHelper(String keystorePath, String certKey) {
+        if (keystorePath == null || certKey == null) {
+            throw new RuntimeException("Constructor arguments cannot be NULL");
+        }
+        this.keystorePath = keystorePath;
+        this.certKey = certKey;
         try {
             DefaultBootstrap.bootstrap();
         } catch (ConfigurationException e) {
             throw new RuntimeException("Exception when trying to bootstrap OpenSAML." + e);
         }
-        utils = new OpenSAMLUtilites();
     }
 
 
-    public String urlToLoginServiceForDomain(String domain, String relayState) {
-        SamlConfiguration config = ConfigurationRepository.configurationForDomain(domain);
+    public String urlToLoginServiceForDomain(SamlConfiguration config, String relayState) {
+        //SamlConfiguration config = ConfigurationRepository.configurationForDomain(domain);
         AuthnRequest authnRequest = createAuthenticationRequest(config);
         String url = buildSignedAndEncodedRequestUrl(authnRequest, relayState);
-
         return url;
     }
 
@@ -57,7 +56,7 @@ public class SamlAuthnRequestHelper {
 
         try {
             SAMLEncoder enc = new SAMLEncoder();
-            Credential signingCredential = new CredentialRepository().getCredential(KEYSTORE_PATH, CERTIFICATE_KEY);
+            Credential signingCredential = new CredentialRepository().getCredential(this.keystorePath, this.certKey);
             return enc.buildRedirectURL(signingCredential, relayState, authnRequest);
         } catch (Exception e) {
             throw new RuntimeException("Exception caught when signing and encoding request URL: " + e);
@@ -71,9 +70,9 @@ public class SamlAuthnRequestHelper {
         authnRequest.setID("_" + UUID.randomUUID().toString());
         authnRequest.setForceAuthn(Boolean.FALSE);
         authnRequest.setIssueInstant(new DateTime(DateTimeZone.UTC));
-        authnRequest.setProtocolBinding(config.protocolBinding());
-        authnRequest.setDestination(config.authenticationUrl());
-        authnRequest.setAssertionConsumerServiceURL(config.serviceLoginUrl());
+        authnRequest.setProtocolBinding(config.getProtocolBinding());
+        authnRequest.setDestination(config.getAuthenticationUrl());
+        authnRequest.setAssertionConsumerServiceURL(config.getServiceLoginUrl());
         authnRequest.setIssuer(config.issuer());
 
         try {
@@ -86,8 +85,8 @@ public class SamlAuthnRequestHelper {
     }
 
 
-    public String urlToLogoutServiceForDomain(String domain, String relayState) {
-        SamlConfiguration config = ConfigurationRepository.configurationForDomain(domain);
+    public String urlToLogoutServiceForDomain(SamlConfiguration config, String relayState) {
+        //SamlConfiguration config = ConfigurationRepository.configurationForDomain(domain);
         LogoutRequest logoutRequest = createLogoutRequest(config);
         String url = buildSignedAndEncodedLogoutRequestUrl(logoutRequest, relayState);
 
@@ -99,7 +98,7 @@ public class SamlAuthnRequestHelper {
 
         try {
             SAMLEncoder enc = new SAMLEncoder();
-            Credential signingCredential = new CredentialRepository().getCredential(KEYSTORE_PATH, CERTIFICATE_KEY);
+            Credential signingCredential = new CredentialRepository().getCredential(this.keystorePath, this.certKey);
             return enc.buildRedirectURL(signingCredential, relayState, logoutRequest);
         } catch (Exception e) {
             throw new RuntimeException("Exception caught when signing and encoding request URL: " + e);
@@ -113,7 +112,7 @@ public class SamlAuthnRequestHelper {
         logoutRequest.setID("_" + UUID.randomUUID().toString());
         logoutRequest.setIssueInstant(new DateTime(DateTimeZone.UTC));
         logoutRequest.addNamespace(new Namespace(SAMLConstants.SAML20_NS, SAMLConstants.SAML20_PREFIX));
-        logoutRequest.setDestination(config.serviceLogoutUrl());
+        logoutRequest.setDestination(config.getLogoutUrl());
         logoutRequest.setReason("urn:oasis:names:tc:SAML:2.0:logout:user");
         logoutRequest.setIssuer(config.issuer());
 
@@ -124,7 +123,6 @@ public class SamlAuthnRequestHelper {
         }
 
         return logoutRequest;
-
     }
 
     private class SAMLEncoder extends HTTPRedirectDeflateEncoder {

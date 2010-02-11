@@ -17,7 +17,6 @@ import org.opensaml.Configuration;
 import org.opensaml.common.SignableSAMLObject;
 import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.Issuer;
-import org.opensaml.saml2.core.Response;
 import org.opensaml.xml.XMLObject;
 import org.opensaml.xml.XMLObjectBuilder;
 import org.opensaml.xml.security.x509.BasicX509Credential;
@@ -150,20 +149,6 @@ public class OpenSAMLUtilites {
         }
     }
 
-
-    /**
-     * @param destination
-     *            The expected destination
-     * @return <code>true</code>, if the destination is match the destination in the &lt;SAMLResponse&gt; - otherwise
-     *         <code>false</code>. If the response does not have assertion destination, <code>true</code> is returned.
-     */
-    public static boolean isDestinationOK(String destination, Response response) {
-        if (response.getDestination() == null) {
-            return true;
-        }
-
-        return response.getDestination() != null && response.getDestination().equals(destination);
-    }
 
 
     /**

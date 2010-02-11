@@ -3,6 +3,8 @@ package org.vortikal.security.web.saml;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.joda.time.DateTime;
 import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.Response;
@@ -12,22 +14,44 @@ import org.opensaml.saml2.core.SubjectConfirmationData;
 import org.opensaml.xml.Configuration;
 import org.opensaml.xml.io.Unmarshaller;
 import org.opensaml.xml.util.Base64;
+import org.vortikal.web.service.URL;
 import org.w3c.dom.Element;
 
 public class SamlResponseHelper {
-    public static final String ENCODED_IDP_CERT = "";
 
-    public static final String SP_LOGIN_URL = "http://davide-laptop.uio.no:9322/vrtx/__vrtx/app-resources/saml/sp";
+    /**
+     * Fixed SP login URL
+     */
+    private URL spLoginURL;
+    
+    /**
+     * Encoded IDP certificate string
+     */
+    private String encodedCertificate;
+    
+    private HttpServletRequest request;
 
+    public SamlResponseHelper(URL spLoginURL, String encodedCert, HttpServletRequest request) {
+        this.spLoginURL = spLoginURL;
+        this.encodedCertificate = encodedCert;
+        this.request = request;
+    }
+    
+    public UserData getUserData() {
+        String encodedSamlResponseString = this.request.getParameter("SAMLResponse");
 
-    public static UserData retrieveUserDataFromSamlResponse(String encodedSamlResponseString) {
-        Assertion assertion = assertionFromSamlResponse(encodedSamlResponseString);
-        UserData userData = new UserData(assertion);
-        return userData;
+        Response samlResponse = decodeSamlResponse(encodedSamlResponseString);
+        verifyStatusCodeIsSuccess(samlResponse);
+        verifyDestinationAddressIsCorrect(this.spLoginURL, samlResponse);
+        
+        Assertion assertion = extractAssertionFromSamlResponse(samlResponse);
+        verifyCryptographicAssertionSignature(assertion);
+        validateAssertionContent(assertion);
+        
+        return new UserData(assertion);
     }
 
-
-    public static void validateAssertionContent(Assertion assertion) throws RuntimeException {
+    public void validateAssertionContent(Assertion assertion) throws RuntimeException {
         verifyConfirmationTimeNotExpired(assertion);
         // Sjekk In Reply To ID mot ID vi genererte ved sending av request
         // Sjekk at Assertion ikke er brukt fra f�r. (replay)
@@ -36,7 +60,7 @@ public class SamlResponseHelper {
     }
 
 
-    private static DateTime assertionConfirmationTime(Assertion assertion) {
+    private DateTime assertionConfirmationTime(Assertion assertion) {
         DateTime confirmationTime = null;
         for (SubjectConfirmation subjectConfirmation : assertion.getSubject().getSubjectConfirmations()) {
             SubjectConfirmationData data = subjectConfirmation.getSubjectConfirmationData();
@@ -48,16 +72,8 @@ public class SamlResponseHelper {
     }
 
 
-    private static Assertion assertionFromSamlResponse(String encodedSamlResponseString) {
-        Response samlResponse = decodeAndVerifySamlResponse(encodedSamlResponseString);
-        Assertion assertion = extractAssertionFromSamlResponse(samlResponse);
-        verifyCryptographicAssertionSignature(assertion);
-        validateAssertionContent(assertion);
-        return assertion;
-    }
 
-
-    private static X509Certificate buildX509CertificateFromEncodedString(String encodedCertificateString)
+    private X509Certificate buildX509CertificateFromEncodedString(String encodedCertificateString)
             throws RuntimeException {
         java.security.cert.X509Certificate cert;
         try {
@@ -69,7 +85,7 @@ public class SamlResponseHelper {
     }
 
 
-    private static Response decodeSamlResponse(String encodedSamlResponseXml) throws RuntimeException {
+    private Response decodeSamlResponse(String encodedSamlResponseXml) throws RuntimeException {
         try {
             String samlResponseXml = new String(Base64.decode(encodedSamlResponseXml), "UTF-8");
             Element samlElement = OpenSAMLUtilites.loadElementFromString(samlResponseXml);
@@ -83,13 +99,13 @@ public class SamlResponseHelper {
     }
 
 
-    private static Assertion extractAssertionFromSamlResponse(Response samlResponse) {
+    private Assertion extractAssertionFromSamlResponse(Response samlResponse) {
         Assertion assertion = samlResponse.getAssertions().get(0);
         return assertion;
     }
 
 
-    private static void verifyConfirmationTimeNotExpired(Assertion assertion) throws RuntimeException {
+    private void verifyConfirmationTimeNotExpired(Assertion assertion) throws RuntimeException {
         DateTime confirmationTime = assertionConfirmationTime(assertion);
         if (confirmationTime == null || !confirmationTime.isAfterNow()) {
             throw new RuntimeException("Assertion confirmation time has expired: " + confirmationTime + " before "
@@ -98,21 +114,34 @@ public class SamlResponseHelper {
     }
 
 
-    private static void verifyCryptographicAssertionSignature(Assertion assertion) {
-        X509Certificate cert = buildX509CertificateFromEncodedString(ENCODED_IDP_CERT);
+    private void verifyCryptographicAssertionSignature(Assertion assertion) {
+        X509Certificate cert = buildX509CertificateFromEncodedString(this.encodedCertificate);
         // TODO If-test
         OpenSAMLUtilites.verifySignature(cert.getPublicKey(), assertion);
     }
 
 
-    private static void verifyDestinationAddressIsCorrect(Response samlResponse) throws RuntimeException {
-        if (!OpenSAMLUtilites.isDestinationOK(SP_LOGIN_URL, samlResponse)) {
-            throw new RuntimeException("Destination mismatch: " + samlResponse.getDestination());
+
+    /**
+     * Verifies the destination URL. 
+     * If the response does not have a destination assertion, or the destination parameter 
+     * matches the destination in the assertion, this method returns. Otherwise, an exception is thrown.
+     * @param destination the destination
+     * @param samlResponse the SAML response
+     * @throws RuntimeException
+     */
+    private void verifyDestinationAddressIsCorrect(URL destination, Response samlResponse) throws RuntimeException {
+        if (samlResponse.getDestination() == null) {
+            return;
         }
+        if (samlResponse.getDestination().equals(destination.toString())) {
+            return;
+        }
+        throw new RuntimeException("Destination mismatch: " + samlResponse.getDestination());
     }
 
 
-    private static void verifyStatusCodeIsSuccess(Response samlResponse) throws RuntimeException {
+    private void verifyStatusCodeIsSuccess(Response samlResponse) throws RuntimeException {
         String statusCode = samlResponse.getStatus().getStatusCode().getValue();
         if (!StatusCode.SUCCESS_URI.equals(statusCode)) {
             throw new RuntimeException("Wrong status code (" + statusCode + "),  should be: " + StatusCode.SUCCESS_URI);
@@ -120,11 +149,4 @@ public class SamlResponseHelper {
     }
 
 
-    private static Response decodeAndVerifySamlResponse(String encodedSamlResponseString) {
-        Response samlResponse = decodeSamlResponse(encodedSamlResponseString);
-        verifyStatusCodeIsSuccess(samlResponse);
-        verifyDestinationAddressIsCorrect(samlResponse);
-
-        return samlResponse;
-    }
 }

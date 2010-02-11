@@ -4,50 +4,45 @@ import org.opensaml.saml2.core.Issuer;
 
 public class SamlConfiguration {
 
-    private String authenticationUrl = "https://auth-test1.uio.no/simplesaml/saml2/idp/SSOService.php";
 
-    private String logoutUrl = "https://auth-test1.uio.no/simplesaml/saml2/idp/SingleLogoutService.php";
+    private String authenticationUrl = null;
+    private String logoutUrl = null;
 
-    private final String protocolBinding = "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST";
+    private String serviceLoginUrl = null;
+    private String serviceIdentifier = null;
 
-    private final String serviceLoginUrl;
+    private String protocolBinding = "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST";
 
-    private final String serviceIdentifier;
-
-
-    public SamlConfiguration(String serviceUrl, String serviceIdentifier) {
-        this.serviceLoginUrl = serviceUrl;
+    public SamlConfiguration(String authenticationUrl, String logoutUrl,
+            String serviceLoginUrl, String serviceIdentifier) {
+        this.authenticationUrl = authenticationUrl;
+        this.logoutUrl = logoutUrl;
+        this.serviceLoginUrl = serviceLoginUrl;
         this.serviceIdentifier = serviceIdentifier;
     }
-
 
     public Issuer issuer() {
         return OpenSAMLUtilites.createIssuer(serviceIdentifier);
     }
 
-
-    public String protocolBinding() {
-        return "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST";
+    public String getAuthenticationUrl() {
+        return authenticationUrl;
     }
 
-
-    public String serviceLoginUrl() {
-        return serviceLoginUrl;
-    }
-
-
-    public String serviceLogoutUrl() {
+    public String getLogoutUrl() {
         return logoutUrl;
     }
 
+    public String getServiceLoginUrl() {
+        return serviceLoginUrl;
+    }
 
-    public String serviceIdentifier() {
+    public String getServiceIdentifier() {
         return serviceIdentifier;
     }
 
-
-    public String authenticationUrl() {
-        return authenticationUrl;
+    public String getProtocolBinding() {
+        return protocolBinding;
     }
 
 }

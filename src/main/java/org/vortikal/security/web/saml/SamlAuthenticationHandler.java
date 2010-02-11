@@ -23,15 +23,23 @@ import org.vortikal.web.service.URL;
  */
 public class SamlAuthenticationHandler implements AuthenticationChallenge, AuthenticationHandler {
 
-    public static final String DOMAIN = "davide-laptop.uio.no";
-
-    private final static String USERNAME = "username";
-
     private static final String URL_SESSION_ATTR = SamlAuthenticationHandler.class.getName() + ".SamlSavedURL";
 
     private PrincipalFactory principalFactory;
 
     private Path serviceProviderURI;
+
+    private String keystorePath;
+    private String certKey;
+
+    private String idpCertificate;
+
+    // IDP login/logout URLs:
+    private String authenticationURL;
+    private String logoutURL;
+
+    // A string identifying this service provider
+    private String serviceIdentifier;
 
 
     @Override
@@ -41,53 +49,14 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
         URL url = URL.create(req);
         req.getSession(true).setAttribute(URL_SESSION_ATTR, url);
 
-        // 2. Present client with a XHTML form:
-        // <form method="post" action="https://idp.example.org/SAML2/SSO/POST" ...>
-        // <input type="hidden" name="SAMLRequest" value="request" />
-        // <input type="hidden" name="RelayState" value="token" />
-        // ...
-        // <input type="submit" value="Submit" />
-        // </form>
-
-        String userName = userNameFromSession(req);
-
-        if (userIsAuthenticated(userName)) {
-            System.out.println("Access granted");
-        } else {
-            sendUserToAuthenticationPoint(resp);
-        }
-
-        // try {
-        // resp.getWriter().write("<html><head></head><body><form...></form></body></html>");
-        // } catch (Exception e) {
-        // throw new AuthenticationProcessingException(e);
-        // }
-    }
-
-
-    private void sendUserToAuthenticationPoint(HttpServletResponse response) throws ServletException, IOException {
-        SamlAuthnRequestHelper samlConnector = new SamlAuthnRequestHelper();
+        SamlAuthnRequestHelper samlConnector = new SamlAuthnRequestHelper(this.keystorePath, this.certKey);
         String generatedRelayState = generateRelayState();
 
-        String url = samlConnector.urlToLoginServiceForDomain(DOMAIN, generatedRelayState);
-        response.sendRedirect(url);
+        SamlConfiguration samlConfiguration = newSamlConfiguration(req);
+        
+        String redirURL = samlConnector.urlToLoginServiceForDomain(samlConfiguration, generatedRelayState);
+        resp.sendRedirect(redirURL);
     }
-
-
-    private boolean userIsAuthenticated(String userName) {
-        return userName != null;
-    }
-
-
-    private String userNameFromSession(HttpServletRequest request) throws ServletException, IOException {
-        return (String) request.getSession(true).getAttribute(USERNAME);
-    }
-
-
-    private String generateRelayState() {
-        return UUID.randomUUID().toString();
-    }
-
 
     @Override
     public boolean isRecognizedAuthenticationRequest(HttpServletRequest req) throws AuthenticationProcessingException,
@@ -116,7 +85,9 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     public Principal authenticate(HttpServletRequest req) throws AuthenticationProcessingException,
             AuthenticationException, InvalidAuthenticationRequestException {
 
-        UserData userData = SamlResponseHelper.retrieveUserDataFromSamlResponse(req.getParameter("SAMLResponse"));
+        URL loginURL = getServiceProviderURL(req);
+        SamlResponseHelper helper = new SamlResponseHelper(loginURL, this.idpCertificate, req);
+        UserData userData = helper.getUserData();
         if (userData != null) {
             String id = userData.username();
             return this.principalFactory.getPrincipal(id, Principal.Type.USER);
@@ -137,29 +108,6 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
         }
     }
 
-
-    @Override
-    public AuthenticationChallenge getAuthenticationChallenge() {
-        return this;
-    }
-
-
-    @Override
-    public boolean isLogoutSupported() {
-        // TODO: implement single logout protocol
-        return true;
-    }
-
-
-    @Override
-    public boolean logout(Principal principal, HttpServletRequest req, HttpServletResponse resp)
-            throws AuthenticationProcessingException, ServletException, IOException {
-        // TODO: implement single logout protocol
-        sendUserToLogout(resp);
-        return true;
-    }
-
-
     @Override
     public boolean postAuthentication(HttpServletRequest req, HttpServletResponse resp)
             throws AuthenticationProcessingException, InvalidAuthenticationRequestException {
@@ -173,13 +121,48 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
         }
     }
 
+    @Override
+    public AuthenticationChallenge getAuthenticationChallenge() {
+        return this;
+    }
 
-    private void sendUserToLogout(HttpServletResponse response) throws ServletException, IOException {
-        SamlAuthnRequestHelper samlConnector = new SamlAuthnRequestHelper();
+
+    @Override
+    public boolean isLogoutSupported() {
+        return true;
+    }
+
+
+    @Override
+    public boolean logout(Principal principal, HttpServletRequest req, HttpServletResponse resp)
+            throws AuthenticationProcessingException, ServletException, IOException {
+
+        SamlAuthnRequestHelper samlConnector = new SamlAuthnRequestHelper(this.keystorePath, this.certKey);
         String generatedRelayState = generateRelayState();
 
-        String url = samlConnector.urlToLogoutServiceForDomain(DOMAIN, generatedRelayState);
-        response.sendRedirect(url);
+        SamlConfiguration samlConfiguration = newSamlConfiguration(req);
+        String url = samlConnector.urlToLogoutServiceForDomain(samlConfiguration, generatedRelayState);
+        resp.sendRedirect(url);
+        return true;
+    }
+
+
+    private SamlConfiguration newSamlConfiguration(HttpServletRequest request) {
+        URL url = getServiceProviderURL(request);
+        SamlConfiguration configuration = new SamlConfiguration(this.authenticationURL, 
+                this.logoutURL, url.toString(), this.serviceIdentifier);
+        return configuration;
+    }
+ 
+    private URL getServiceProviderURL(HttpServletRequest request) {
+        URL url = URL.create(request);
+        url.clearParameters();
+        url.setPath(this.serviceProviderURI);
+        return url;
+    }
+    
+    private String generateRelayState() {
+        return UUID.randomUUID().toString();
     }
 
 
@@ -194,4 +177,37 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
         this.serviceProviderURI = Path.fromString(serviceProviderURI);
     }
 
+
+    @Required
+    public void setKeystorePath(String keystorePath) {
+        this.keystorePath = keystorePath;
+    }
+
+
+    @Required
+    public void setCertKey(String certKey) {
+        this.certKey = certKey;
+    }
+
+
+    @Required
+    public void setIdpCertificate(String idpCertificate) {
+        this.idpCertificate = idpCertificate;
+    }
+
+
+    @Required
+    public void setAuthenticationURL(String authenticationURL) {
+        this.authenticationURL = authenticationURL;
+    }
+
+    @Required
+    public void setLogoutURL(String logoutURL) {
+        this.logoutURL = logoutURL;
+    }
+
+    @Required
+    public void setServiceIdentifier(String serviceIdentifier) {
+        this.serviceIdentifier = serviceIdentifier;
+    }
 }

@@ -143,28 +143,5 @@
     <property name="notifier" ref="repository.resourceChangeNotifier"/>
     <property name="indexDao" ref="repository.indexDao"/>
   </bean>
-  
-
-  <!-- Uhtml Context -->
-  <!--bean id="repository.contextDAO" class="org.vortikal.repository.store.db.SqlMapContextDAO">
-    <property name="sqlMapClient" ref="repository.sqlMapClient"/>
-    <property name="sqlMaps" ref="repository.statementMappings" />
-  </bean>
-
-  <bean id="contextManager" class="org.vortikal.repository.domain.ContextManagerImpl">
-    <property name="notifier" ref="repository.resourceChangeNotifier"/>
-    <property name="contextDAO" ref="repository.contextDAO" />
-    <property name="contextPropertyDefinitions">
-      <list>
-        <ref bean="unitPropDef" />
-        <ref bean="topicPropDef" />
-        <ref bean="editorNamePropDef" />
-        <ref bean="editorEmailPropDef" />
-        <ref bean="editorURLPropDef" />
-      </list>
-    </property>
-    <property name="enabledProp" ref="visualProfileEnabledPropdef" />
-    <property name="definesContextProp" ref="visualProfileCustomDefinedPropdef" />
-  </bean-->
 
 </beans>

@@ -788,12 +788,4 @@
     </isNotNull>
   </select>
 
-  <select id="getContextList"  
-          parameterClass="org.vortikal.repository.resourcetype.PropertyTypeDefinition"
-          resultClass="org.vortikal.repository.store.db.ContextMapping"> 
-    select b.uri as uri, a.value as value 
-      from extra_prop_entry a, vortex_resource b 
-      where a.name_space = #namespace.uri# and
-          a.name = #name# and a.resource_id = b.resource_id
-  </select> 
 </sqlMap>

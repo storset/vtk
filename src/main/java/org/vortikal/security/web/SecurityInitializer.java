@@ -268,10 +268,8 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
 
         this.tokenManager.removeToken(securityContext.getToken());
         SecurityContext.setSecurityContext(null);
-        req.getSession(true).invalidate();
 
         return result;
-
     }
 
 

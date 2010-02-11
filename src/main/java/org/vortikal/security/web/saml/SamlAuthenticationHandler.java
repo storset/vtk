@@ -6,8 +6,11 @@ import java.util.UUID;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
@@ -21,7 +24,7 @@ import org.vortikal.web.service.URL;
 /**
  * Skeleton of what will be a SAML Web browser SSO authentication handler/challenge
  */
-public class SamlAuthenticationHandler implements AuthenticationChallenge, AuthenticationHandler {
+public class SamlAuthenticationHandler implements AuthenticationChallenge, AuthenticationHandler, Controller {
 
     private static final String URL_SESSION_ATTR = SamlAuthenticationHandler.class.getName() + ".SamlSavedURL";
 
@@ -80,7 +83,9 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
         return true;
     }
 
-
+    /**
+     * Performs the authentication based on the SAMLResponse request parameter
+     */
     @Override
     public Principal authenticate(HttpServletRequest req) throws AuthenticationProcessingException,
             AuthenticationException, InvalidAuthenticationRequestException {
@@ -108,6 +113,9 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
         }
     }
 
+    /**
+     * Does a redirect to the original resource after a successful authentication
+     */
     @Override
     public boolean postAuthentication(HttpServletRequest req, HttpServletResponse resp)
             throws AuthenticationProcessingException, InvalidAuthenticationRequestException {
@@ -121,6 +129,44 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
         }
     }
 
+    /**
+     * Initiates logout process with IDP
+     */
+    @Override
+    public boolean logout(Principal principal, HttpServletRequest req, HttpServletResponse resp)
+            throws AuthenticationProcessingException, ServletException, IOException {
+
+        URL savedURL = URL.create(req);
+        req.getSession(true).setAttribute(URL_SESSION_ATTR, savedURL);
+        
+        SamlAuthnRequestHelper samlConnector = new SamlAuthnRequestHelper(this.keystorePath, this.certKey);
+        String generatedRelayState = generateRelayState();
+
+        SamlConfiguration samlConfiguration = newSamlConfiguration(req);
+        String url = samlConnector.urlToLogoutServiceForDomain(samlConfiguration, generatedRelayState);
+        resp.sendRedirect(url);
+        return true;
+    }
+
+    /**
+     * Handles post-logout requests from IDP (redirects to original resource)
+     */
+    @Override
+    public ModelAndView handleRequest(HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+        HttpSession session = request.getSession();
+        if (session == null){
+            throw new IllegalStateException("No session exists, not a post-logout request");
+        }
+        
+        URL url = (URL) session.getAttribute(URL_SESSION_ATTR);
+        if (url == null) {
+            throw new IllegalStateException("No URL session attribute exists, nowhere to redirect");
+        }
+        response.sendRedirect(url.toString());
+        return null;
+    }
+
     @Override
     public AuthenticationChallenge getAuthenticationChallenge() {
         return this;
@@ -131,21 +177,6 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     public boolean isLogoutSupported() {
         return true;
     }
-
-
-    @Override
-    public boolean logout(Principal principal, HttpServletRequest req, HttpServletResponse resp)
-            throws AuthenticationProcessingException, ServletException, IOException {
-
-        SamlAuthnRequestHelper samlConnector = new SamlAuthnRequestHelper(this.keystorePath, this.certKey);
-        String generatedRelayState = generateRelayState();
-
-        SamlConfiguration samlConfiguration = newSamlConfiguration(req);
-        String url = samlConnector.urlToLogoutServiceForDomain(samlConfiguration, generatedRelayState);
-        resp.sendRedirect(url);
-        return true;
-    }
-
 
     private SamlConfiguration newSamlConfiguration(HttpServletRequest request) {
         URL url = getServiceProviderURL(request);

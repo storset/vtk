@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
 <beans>
 
   <!-- 
@@ -18,7 +17,7 @@
     saml.keystorePath = <path to keystore>
     saml.certKey = <saml cert key>
   -->
- 
+
   <bean id="saml.authenticationHandler" class="org.vortikal.security.web.saml.SamlAuthenticationHandler">
     <property name="principalFactory" ref="principalFactory" />
     <property name="serviceProviderURI" value="${saml.serviceProviderURI}" />
@@ -33,4 +32,20 @@
     <property name="serviceIdentifier" value="${saml.serviceIdentifier}" />
   </bean>
 
+
+  <!-- 
+    - This service serves the purpose of receiving "post-logout" requests from IDP 
+    - and then redirecting to the resource from where logout request was initiated
+  -->
+  <bean id="saml.postLogoutService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="-97000" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestPathAssertion">
+          <property name="path" value="${saml.serviceProviderURI}" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="saml.authenticationHandler" />
+  </bean>
 </beans>

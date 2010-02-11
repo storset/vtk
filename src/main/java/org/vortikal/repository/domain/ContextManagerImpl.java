@@ -89,7 +89,7 @@ public class ContextManagerImpl implements ContextManager, InitializingBean {
         for (PropertyTypeDefinition propDef : this.contextPropertyDefinitions) {
             Map<String, String> contextMap = this.contextMaps.get(propDef);
 
-            String value = contextMap.get(uri);
+            String value = contextMap.get(uri.toString());
             if (value != null) {
                 context.put(propDef, value);
             }
@@ -98,11 +98,11 @@ public class ContextManagerImpl implements ContextManager, InitializingBean {
     }
 
     private boolean definesContext(Path uri) {
-        return "true".equals(this.definesMap.get(uri));
+        return "true".equals(this.definesMap.get(uri.toString()));
     }
     
     private boolean enabledContext(Path uri) {
-        return "true".equals(this.enabledMap.get(uri));
+        return "true".equals(this.enabledMap.get(uri.toString()));
     }
 
     @Required

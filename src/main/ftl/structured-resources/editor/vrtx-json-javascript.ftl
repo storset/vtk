@@ -46,9 +46,17 @@
 	
 	   var counter = getCounterForJson(j.name,j.a[0].name);
 	   
+	   // Add opp og ned knapp...blah
+	   
 	   var htmlTemplate = "";
+	   var arrayOfIds = "new Array("
 	   for(i in j.a){
 	   		var inputFieldName = j.name + "." + j.a[i].name + "." + counter;
+	   		if(i > 0){
+	   			arrayOfIds += "," 
+	   		}
+	   		arrayOfIds += "'" + j.name + "." + j.a[i].name + "." + "'";
+	   		
 	   		switch(j.a[i].type) {
 	   			case "string":
 	   				htmlTemplate += addStringField(j.a[i],inputFieldName); break
@@ -67,13 +75,20 @@
 	   			default:
 	   				htmlTemplate += ""; break
 	   		}
-	   } 
+	   }
+	   arrayOfIds = arrayOfIds.replace(/\./g,"\\\\.");
 	   
-	   var deleteButton = "<input type=\"button\" class=\"vrtx-remove-button\" value=\"${vrtx.getMsg("editor.remove")}\" onClick=\"$('#vrtx-json-element-" + j.name + "-" + counter + "').remove()\" \/>"
-	   $("#" + j.name +" .vrtx-add-button").before("<div class=\"vrtx-json-element\" id=\"vrtx-json-element-" + j.name + "-" + counter + "\">" +  htmlTemplate + deleteButton + "<\/div>");
+	   // Need a move down button for the element before the element we are inserting 
+	   lastElement = "vrtx-" + j.type + "-element-" + j.name + "-" + (counter-1);
+	   var moveDownButton = "<input type=\"button\" value=\"${vrtx.getMsg("editor.move-down")}\" onClick=\"swapContent(" + (counter-1) + "," + arrayOfIds.toString() + "),1)\" />";
+	   $("#" + lastElement).append(moveDownButton);   	   	   
+	   
+	   //The new element needs a move up button and also a delete button
+	   var moveUpButton = "<input type=\"button\" value=\"${vrtx.getMsg("editor.move-up")}\" onClick=\"swapContent(" + counter + "," + arrayOfIds.toString() + "),-1)\" />";
+	   var deleteButton = "<input type=\"button\" class=\"vrtx-remove-button\" value=\"${vrtx.getMsg("editor.remove")}\" onClick=\"$('#vrtx-json-element-" + j.name + "-" + counter + "').remove()\" \/>";
+	   $("#" + j.name +" .vrtx-add-button").before("<div class=\"vrtx-json-element\" id=\"vrtx-json-element-" + j.name + "-" + counter + "\">" +  htmlTemplate + deleteButton + moveUpButton + "<\/div>");
 	   
 	   // Fck.........
-	   
 	   for(i in j.a){
 	   	var inputFieldName = j.name + "." + j.a[i].name + "." + counter;
 	   	if(j.a[i].type == "simple_html"){	
@@ -188,6 +203,42 @@
 		htmlTemplate = htmlTemplate.replace(/{value}/g,"");
 		
 		return htmlTemplate;
+	}
+	
+
+	function getFckValue( instanceName ){
+		var oEditor = FCKeditorAPI.GetInstance( instanceName ) ;
+		return oEditor.GetXHTML( true ) ;
+	}
+	
+	function setFckValue( instanceName, data ){
+		var oEditor = FCKeditorAPI.GetInstance(instanceName) ;
+		oEditor.SetData( data ) ;
+	}
+	 
+	function isFckEditor( instanceName ) {
+		var oEditor = FCKeditorAPI.GetInstance( instanceName ) ;
+		return oEditor != null;
+	}
+	
+	function swapContent(counter,arrayOfIds,move){
+		for(x in arrayOfIds){	
+			var fckInstanceName1 = arrayOfIds[x].replace(/\\/g,'') + counter;
+			var fckInstanceName2 = arrayOfIds[x].replace(/\\/g,'') + (counter + move);
+			if(isFckEditor( fckInstanceName1 ) && isFckEditor( fckInstanceName2 ) ){
+				var val1 = getFckValue( fckInstanceName1 );
+				var val2 = getFckValue( fckInstanceName2 );	
+				setFckValue( fckInstanceName1, val2 );
+				setFckValue( fckInstanceName2, val1 );
+			}else{
+				var element1 = $('#' + arrayOfIds[x] + counter);
+				var element2 = $('#' + arrayOfIds[x] + (counter + move));
+				var val1 = element1.val();
+				var val2 = element2.val();
+				element1.val(val2);
+				element2.val(val1);
+			}
+		}
 	}
 
   </script>

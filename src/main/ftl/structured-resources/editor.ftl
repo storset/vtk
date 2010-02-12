@@ -13,6 +13,7 @@
 <#import "include/scripts.ftl" as scripts />
 
 <#import "editor/fck.ftl" as fckEditor />
+
 <#import "editor/vrtx-json-javascript.ftl" as vrtxJSONJavascript />
 <html>
 <head>
@@ -118,8 +119,9 @@
           value=elem.value 
           classes=cssclass 
           tooltip=form.resource.getLocalizedTooltip(elem.name,locale)
+          editor="simple-ckeditor"
           />
-        <@fckEditor.insertEditor elem.name />
+         <@fckEditor.insertEditor elem.name /> 
         <#break>
       <#case "html">
         <#if elem.description.edithints?exists>
@@ -133,8 +135,9 @@
           value=elem.value 
           classes="vrtx-html " + elem.name  
           tooltip=form.resource.getLocalizedTooltip(elem.name,locale)
+          editor="ckeditor"
           />
-        <@fckEditor.insertEditor elem.name true false />
+        <@fckEditor.insertEditor elem.name true false /> 
         <#break>
       <#case "boolean">
         <@vrtxBoolean.printPropertyEditView 

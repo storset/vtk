@@ -2,19 +2,25 @@
 <div class="vrtx-json">
   	<div id="${id}" class="fieldset">
   	<div class="header">${title}</div>
+	
+
+	
 	<#if "${tooltip}" != ""><div class="tooltip">${tooltip}</div></#if>
 	<#local counter = 0 />
 	<#local locale = springMacroRequestContext.getLocale() />
-	
+
 	<#-- Json property that has no value. We need to crate empty fields. -->
 	<#if !elem.value?exists > 
 	 	<div class="vrtx-json-element" id="vrtx-json-element-${inputFieldName}-${counter}">
+	 	
+
+	 	
 	  	<#list elem.description.attributes as jsonAttr>
 			<#assign tmpName = inputFieldName + "." + jsonAttr + "." + counter />
 			<#assign jsonAttrLocalizedTitle = form.resource.getLocalizedMsg(jsonAttr, locale, null) />
 			<@printJsonProperyEditView elem.description.getType(jsonAttr) jsonAttrLocalizedTitle tmpName "" elem jsonAttr />                              
 	  	</#list>
-	  	<input type="button" class="vrtx-remove-button" value="${vrtx.getMsg("editor.remove")}" onClick="$('#vrtx-json-element-${inputFieldName}-${counter}').remove()" />      
+	  	<input type="button" class="vrtx-remove-button" value="${vrtx.getMsg("editor.remove")}" onClick="$('#vrtx-json-element-${inputFieldName}-${counter}').remove()" />  	      
 	  	</div> 
 	</#if>
 	
@@ -31,7 +37,24 @@
 		    	<@printJsonProperyEditView elem.description.getType(jsonAttr) jsonAttrLocalizedTitle tmpName "" elem jsonAttr />    
 		    </#if>
 		</#list>
+		
+		<#assign arrayOfIds = "new Array(" />
+		<#list elem.description.attributes as jsonAttr>
+			<#assign tmpName = inputFieldName + '\\\\.' + jsonAttr + '\\\\.' />
+			<#assign arrayOfIds = arrayOfIds + "'" + tmpName + "'" />
+			<#if jsonAttr_has_next>
+				<#assign arrayOfIds = arrayOfIds + "," />
+			</#if>	
+		</#list>
+		<#assign arrayOfIds = arrayOfIds + ")" />
+
 		<input type="button" class="vrtx-remove-button" value="${vrtx.getMsg("editor.remove")}" onClick="$('#vrtx-json-element-${inputFieldName}-${counter}').remove()" />
+		<#if (counter > 0) >
+		<input type="button" onClick="swapContent(${counter},${arrayOfIds},-1)"  value="${vrtx.getMsg("editor.move-up")}"  />	
+	    </#if>
+	    <#if map_has_next >
+	    <input type="button"  onClick="swapContent(${counter},${arrayOfIds},1)"  value="${vrtx.getMsg("editor.move-down")}"  />
+	   	</#if>
 	    </div>
 	    <#local counter = counter + 1 />
 	    </#list>
@@ -79,6 +102,7 @@
           title=jsonAttr 
           inputFieldName=tmpName
           value=value
+          editor="simple-ckeditor"
           classes=cssclass />
         <@fckEditor.insertEditor tmpName />
         <#break>
@@ -92,7 +116,9 @@
           title=jsonAttr 
           inputFieldName=tmpName
           value=value
+          editor="ckeditor"
           classes="vrtx-html " + tmpName />
+       
         <@fckEditor.insertEditor tmpName true false />
         <#break>
  	  <#case "boolean">

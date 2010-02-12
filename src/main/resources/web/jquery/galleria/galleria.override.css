@@ -63,6 +63,10 @@ body#vrtx-image-listing h1 {
   background: #eee;
 }
 
+.default_galleria_style li img {
+  max-height: 104px;	
+}
+
 .default_galleria_style li.hover {
   border-color: #bbb;
 }

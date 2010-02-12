@@ -19,14 +19,7 @@ jQuery( function($) {
      
       if (height > 548) { //Landscape 4:3 aspect ratio to 730px
     	  $(".galleria_wrapper img").css('height', '548px');
-    	  $(".galleria_wrapper").css('height', '548px');
-
-          var browser = navigator.appName;
-          var version = navigator.appVersion;
-          if(browser == "Microsoft Internet Explorer" && version == 7) {
-            //Better downscaling in IE7 (explicit set bicubic interpolation)
-            $(".galleria_wrapper img").css('-ms-interpolation-mode', 'bicubic');
-          }          
+    	  $(".galleria_wrapper").css('height', '548px');      
       } else if (height < 140) {
     	  $(".galleria_wrapper").css('height', '140px');
       } else {

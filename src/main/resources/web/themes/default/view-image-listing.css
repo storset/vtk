@@ -33,6 +33,11 @@ ul.vrtx-image-listing {
   overflow: hidden;
 }
 
+/* IE 7 better downscaling */
+*:first-child+html .vrtx-image-container img {
+  -ms-interpolation-mode : bicubic;
+}
+
 .vrtx-image-info {
   width: 250px;
 }

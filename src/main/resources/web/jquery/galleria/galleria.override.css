@@ -34,6 +34,11 @@ body#vrtx-image-listing h1 {
   margin-bottom: 15px;
 }
 
+/* IE 7 better downscaling */
+*:first-child+html .galleria_wrapper img {
+  -ms-interpolation-mode : bicubic;
+}
+
 .galleria_container {
   width: 730px;
   margin-left: auto;
@@ -64,7 +69,12 @@ body#vrtx-image-listing h1 {
 }
 
 .default_galleria_style li img {
-  max-height: 104px;	
+  max-height: 104px;
+}
+
+/* IE 7 better downscaling */
+*:first-child+html .default_galleria_style li img {
+  -ms-interpolation-mode : bicubic;
 }
 
 .default_galleria_style li.hover {

@@ -94,8 +94,8 @@
           <li class="closed">
           <span class="folder">
           <#if item.menu?exists >
-            <a href="${item.url?html}">${item.title?html}</a>
-            (<a href="${item.url?html}?vrtx=admin&mode=report&report-type=collection-structure">naviger til undermapper</a>)
+            (<a href="${item.url?html}?vrtx=admin&mode=report&report-type=collection-structure">+</a>) 
+            <a href="${item.url?html}">${item.title?html}</a>    
           <#else>
             <a href="${item.url?html}">${item.title?html}</a>
           </#if>

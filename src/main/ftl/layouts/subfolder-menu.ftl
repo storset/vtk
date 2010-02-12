@@ -93,11 +93,18 @@
         <#if USE_TREE_VIEW >
           <li class="closed">
           <span class="folder">
+          <#if item.menu?exists >
+            <a href="${item.url?html}">${item.title?html}</a>
+            (<a href="${item.url?html}?vrtx=admin&mode=report&report-type=collection-structure">naviger til undermapper</a>)
+          <#else>
+            <a href="${item.url?html}">${item.title?html}</a>
+          </#if>
+          </li> 
         <#else>
-         <li>
-        </#if>
-          <@displayItem item=item />       
-        </li>
+          <li>
+            <@displayItem item=item />
+          </li> 
+        </#if>   
     </#list>
 	<#if (menu.totalNumberOfItems > menu.maxNumberOfItems)>
 	    <li class="vrtx-more">   

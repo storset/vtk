@@ -18,19 +18,25 @@
   </#if>
   <script type="text/javascript">
     <#if ( report.subFolderMenu.size > 1000 ) >
-     $(window).load(function(){
-       loadTreeView();
-     });
+       <!--
+       $(window).load(function(){
+         loadTreeView();
+       }); 
+       // -->
      <#else>
-     $(window).ready(function(){
-       loadTreeView();
-     });
+       <!--
+       $(window).ready(function(){
+         loadTreeView();
+       });
+       // -->
      </#if>
+     <!--
      function loadTreeView() {
        $(".resultset-1").treeview({
          animated: "fast"
        });
      }
+     // -->
   </script>
   </head>
   <body>

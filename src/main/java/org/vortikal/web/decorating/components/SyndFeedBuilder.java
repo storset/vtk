@@ -81,16 +81,18 @@ public class SyndFeedBuilder {
                 }
 
                 String type = desc.getType();
-                if (type != null && type.equals("xhtml")) {
-                    HtmlFragment frag = this.htmlParser.parseFragment(value);
-                    filterXhtml(frag);
-                    desc.setValue(frag.getStringRepresentation());
+                if (type != null) {
+                    if (type.equals("xhtml")) {
+                        HtmlFragment frag = this.htmlParser.parseFragment(value);
+                        filterXhtml(frag);
+                        desc.setValue(frag.getStringRepresentation());
 
-                } else if (type.equals("text/html") && desc.getValue() != null) {
-                    HtmlFragment frag = this.htmlParser.parseFragment(value);
-                    filterHtml(frag);
-                    desc.setValue(frag.getStringRepresentation());
+                    } else if (type.equals("text/html") && desc.getValue() != null) {
+                        HtmlFragment frag = this.htmlParser.parseFragment(value);
+                        filterHtml(frag);
+                        desc.setValue(frag.getStringRepresentation());
 
+                    }  
                 } else {
                     HtmlFragment frag = this.htmlParser.parseFragment(value);
                     filterText(frag);

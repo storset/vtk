@@ -60,24 +60,3 @@ jQuery( function($) {
     }
   });
 });
-
-$(document).load(function() {
-  //wait until all images are fully loaded
-  setTimeout(function(){ navImagesScale(); }, 100);
-});
-
-function navImagesScale() {
-  $("ul.vrtx-gallery li img").each(function(i) {
-	var navImgHeight = $(this).height();
-
-	if(navImgHeight > 104) {
-	  $(this).css('height', '104');
-	  
-	  //recalculate centering as image dimension has changed.
-      var left = - ( $(this).width() - 138 ) / 2; // 4:3
-	  var top = - ( $(this).height() - 104 ) / 2;
-	  $(this).css( { marginLeft: left + 'px', marginTop: top + 'px' } );
-    }
-	
-  });	
-}

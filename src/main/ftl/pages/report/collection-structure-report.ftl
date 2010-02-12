@@ -17,7 +17,7 @@
     </#list>
   </#if>
   <script type="text/javascript">
-     $(document).ready(function(){
+     $(window).load(function(){
        $(".resultset-1").treeview({
          animated: "fast"
        });

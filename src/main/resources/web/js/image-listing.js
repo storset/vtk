@@ -1,4 +1,3 @@
-
 $(document).ready( function() {
   $(".vrtx-image-container").each( function(i) {
 

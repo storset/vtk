@@ -11,11 +11,14 @@
  <#-- RECURSIVE MENU BUILD --> 
 
 <#if subFolderMenu?exists> 
-	<@displaySubFolderMenu subFolderMenu false />
+	<@displaySubFolderMenu subFolderMenu false false />
 </#if>
 
-<#macro displaySubFolderMenu subFolderMenu adminLink>
+<#global USE_TREE_VIEW = false >
+
+<#macro displaySubFolderMenu subFolderMenu adminLink treeView>
 	<#assign CREATE_ADMIN_LINK=adminLink>
+	<#assign USE_TREE_VIEW=treeView>
 	
     <#if subFolderMenu.size &gt; 0>
       <#assign "counter" = 0>
@@ -48,6 +51,9 @@
 <#macro displayItem item >
   <#if item.menu?exists>
     <a href="${item.url?html}<#if CREATE_ADMIN_LINK >?vrtx=admin</#if>">${item.label}</a>
+    <#if USE_TREE_VIEW>
+       </span>
+     </#if>
     <@displaySubMenu item.menu displaySubMenu />
   <#else>
     <a href="${item.url?html}<#if CREATE_ADMIN_LINK >?vrtx=admin</#if>">${item.label}</a>
@@ -61,9 +67,16 @@
        </#if>  
           <div class="vrtx-group-${groupCount?html}">
   </#if>
-  <ul class="resultset-${currentCount?html}">
+   <#if USE_TREE_VIEW >
+    <ul class="resultset-${currentCount?html} filetree">
+   <#else>
+    <ul class="resultset-${currentCount?html}">
+   </#if>
     <#list menu.items as item>
       <li>
+        <#if USE_TREE_VIEW >       
+          <span class="folder">
+        </#if>
         <@displayItem item=item />
       </li>
     </#list>
@@ -77,7 +90,12 @@
 <#macro displaySubMenu menu displaySubMenu >
   <ul>
     <#list menu.items as item>
-        <li>
+        <#if USE_TREE_VIEW >
+          <li class="closed">
+          <span class="folder">
+        <#else>
+         <li>
+        </#if>
           <@displayItem item=item />       
         </li>
     </#list>

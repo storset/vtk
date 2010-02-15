@@ -31,12 +31,18 @@
 package org.vortikal.web.actions.report;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.AuthorizationException;
+import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceNotFoundException;
+import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.PropertySortField;
 import org.vortikal.repository.search.ResultSet;
@@ -47,6 +53,9 @@ import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
+import org.vortikal.security.AuthenticationException;
+import org.vortikal.web.search.Listing;
+import org.vortikal.web.search.SearchComponent;
 
 public class LastModifiedReporter extends AbstractReporter {
 
@@ -54,9 +63,10 @@ public class LastModifiedReporter extends AbstractReporter {
     private PropertyTypeDefinition titlePropDef;
     private PropertyTypeDefinition sortPropDef;
     private SortFieldDirection sortOrder;
-
+    
     public Map<String, Object> getReportContent(String token, Resource currentResource, HttpServletRequest request) {
-
+        Map<String, Object> result = new HashMap<String, Object>();
+        
         AndQuery query = new AndQuery();
         query.add(new TypeTermQuery("file", TermOperator.IN));
         query.add(new UriPrefixQuery(currentResource.getURI().toString()));
@@ -69,12 +79,19 @@ public class LastModifiedReporter extends AbstractReporter {
         search.setQuery(query);
 
         ResultSet rs = this.searcher.execute(token, search);
-
-        Map<String, Object> result = new HashMap<String, Object>();
         result.put("lastModifiedList", rs.getAllResults());
-
-        result.put("type", titlePropDef);
         
+        boolean[] isReadRestricted = new boolean[rs.getSize()];
+        int i = 0;
+        for(PropertySet p : rs.getResults(Integer.MAX_VALUE)){
+            try {
+                Resource r = repository.retrieve(token, p.getURI(), false);
+                isReadRestricted[i] = r.isReadRestricted();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        result.put("isReadRestricted", isReadRestricted);
         return result;
     }
 

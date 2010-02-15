@@ -28,49 +28,60 @@
   <@vrtx.msg code="report.last-modified.about" />
   </p>
   <div class="vrtx-report">
+
+<#if report.lastModifiedList?exists >
     <table cellpadding="3" border="1">
       <thead>
         <tr>
-          <th class="sortable-text"><@vrtx.msg code="report.title" default="Title" /></th>
-          <!-- <th class="sortable-text"><@vrtx.msg code="report.location" default="Location" /></th> -->
-          <th class="sortable-sortEnglishLonghandDateFormat"><@vrtx.msg code="report.last-modified" default="Last modified" /></th>
-          <th class="sortable-text"><@vrtx.msg code="report.modified-by" default="Modified by" /></th>
-           <th class="sortable-text"><@vrtx.msg code="report.permission-set" default="Permissions set" /></th> 
-          <th class="sortable-text"><@vrtx.msg code="report.published" default="Published" /> </th>
+          <th><@vrtx.msg code="report.title" default="Title" /></th>
+          <th><@vrtx.msg code="report.last-modified" default="Last modified" /></th>
+          <th><@vrtx.msg code="report.modified-by" default="Modified by" /></th>
+          <th><@vrtx.msg code="report.permission-set" default="Permissions set" /></th> 
+          <th><@vrtx.msg code="collectionListing.permissions" default="Permissions"/></th>
+          <th><@vrtx.msg code="report.published" default="Published" /> </th>
         </tr>
       </thead>
-      <tbody>
+      <tbody>   
       <#list report.lastModifiedList as lastModified>
-        <tr>
-       	  <#assign title=lastModified.getProperty(report.type) >
-          <td>${title.value}</td>
-          <!-- <td><a href="${lastModified.URI}?vrtx=admin">${lastModified.URI}</a></td> -->
-          <#assign lastModifiedTime = vrtx.propValue(lastModified, 'lastModified') />
-          <td>${lastModifiedTime}</td>
-          <#assign modifiedBy = vrtx.propValue(lastModified, 'modifiedBy') />
-          <#if modifiedBy?index_of("@") != -1>
-            <td>${modifiedBy}</td>
-          <#else>
-            <td><a href="http://www.uio.no/sok?person=${modifiedBy}">${modifiedBy}</a></td>
-          </#if>
-          
-          <#assign aclIsInherited = vrtx.getMsg("report.yes", "Yes")>
-          <#if lastModified.isInheritedAcl() >
-          	<#assign aclIsInherited = vrtx.getMsg("report.no", "No")>
-          </#if>
-          <td>${aclIsInherited}</td>
-          
-          <#assign published = vrtx.propValue(lastModified, 'published') />
-          <#assign publishedStatus = vrtx.getMsg("report.yes", "Yes")>
-          <#if published = "false">
-            <#assign publishedStatus = vrtx.getMsg("report.no", "No")>
-          </#if>
-          <td>${publishedStatus}</td>
-        </tr>
+      	<#assign title= vrtx.propValue(lastModified, 'title') />
+      	<#assign lastModifiedTime = vrtx.propValue(lastModified, 'lastModified') />
+      	<#assign modifiedBy = vrtx.propValue(lastModified, 'modifiedBy') /> 
+        <#assign aclIsInherited = vrtx.getMsg("report.yes", "Yes")>
+        <#if lastModified.isInheritedAcl() >
+        	<#assign aclIsInherited = vrtx.getMsg("report.no", "No")>
+        </#if>
+        <#assign isReadRestricted = vrtx.getMsg("collectionListing.permissions.readAll") >
+        <#if report.isReadRestricted[lastModified_index] >
+        	<#assign isReadRestricted = vrtx.getMsg("collectionListing.permissions.restricted")>
+        </#if>
+        <#assign published = vrtx.propValue(lastModified, 'published') />
+		<#assign publishedStatus = vrtx.getMsg("report.yes", "Yes")>
+		<#if published = "false">
+			<#assign publishedStatus = vrtx.getMsg("report.no", "No")>
+		</#if>
+        <tr>  
+        <td><a href="${lastModified.URI}">${title}</a></td>
+        <td>${lastModifiedTime}</td>
+		<#if modifiedBy?index_of("@") != -1>
+		<td>${modifiedBy}</td>
+		  <#else>
+		<td><a href="http://www.uio.no/sok?person=${modifiedBy}">${modifiedBy}</a></td>
+		</#if>
+        <td>${aclIsInherited}</td> 
+        <td>${isReadRestricted}</td>  
+        <td>${publishedStatus}</td>
+      </tr>
       </#list>
       </tbody>
     </table>
   </div>
+  
+  </#if>
+  
+  
   </div>
+  
+  
+
   </body>
 </html>

@@ -47,8 +47,10 @@ import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.SortingImpl;
 import org.vortikal.repository.search.query.AndQuery;
+import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
+import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.web.decorating.components.SubFolderMenuComponent;
 import org.vortikal.web.decorating.components.SubFolderMenuComponent.MenuRequest;
@@ -68,15 +70,22 @@ public class CollectionStructureReporter extends AbstractReporter {
         AndQuery query = new AndQuery();
         query.add(new TypeTermQuery("collection", TermOperator.IN));
         query.add(new UriPrefixQuery(currentResource.getURI().toString()));
-
+        OrQuery depthQuery = new OrQuery();
+        for (int i = 0; i < 3; i++) {
+            depthQuery.add(new UriDepthQuery(i + currentResource.getURI().getDepth()));
+        }
+        query.add(depthQuery);
+        
         Search search = new Search();
         search.setLimit(Integer.MAX_VALUE);
         SortingImpl sorting = new SortingImpl();
         search.setSorting(sorting);
+
         search.setQuery(query);
 
         ResultSet rs = this.searcher.execute(token, search);
         Map<String, Object> result = new HashMap<String, Object>();
+
 
         Locale locale = new RequestContext(request).getLocale();
 
@@ -94,7 +103,7 @@ public class CollectionStructureReporter extends AbstractReporter {
         int resultSets = 1;
         int groupResultSetsBy = 0;
         int freezeAtLevel = 0;
-        int depth = Integer.MAX_VALUE;
+        int depth = 2;
         int displayFromLevel = -1;
         int maxNumberOfChildren = Integer.MAX_VALUE;
         ArrayList<Path> excludeURIs = new ArrayList<Path>();

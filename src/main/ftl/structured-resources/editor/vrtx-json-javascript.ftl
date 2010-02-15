@@ -206,38 +206,65 @@
 	}
 	
 
-	function getFckValue( instanceName ){
-		var oEditor = FCKeditorAPI.GetInstance( instanceName ) ;
-		return oEditor.GetXHTML( true ) ;
+	function getFckValue(instanceName){
+		var oEditor = FCKeditorAPI.GetInstance(instanceName) ;
+		return oEditor.GetXHTML(true) ;
 	}
 	
-	function setFckValue( instanceName, data ){
+	function setFckValue(instanceName, data){
 		var oEditor = FCKeditorAPI.GetInstance(instanceName) ;
-		oEditor.SetData( data ) ;
+		oEditor.SetData(data) ;
 	}
 	 
-	function isFckEditor( instanceName ) {
-		var oEditor = FCKeditorAPI.GetInstance( instanceName ) ;
+	function isFckEditor(instanceName) {
+		var oEditor = FCKeditorAPI.GetInstance(instanceName) ;
 		return oEditor != null;
 	}
 	
-	function swapContent(counter,arrayOfIds,move){
+	function swapContent(counter,arrayOfIds,move){	
 		for(x in arrayOfIds){	
+			var elementId1 = '#' + arrayOfIds[x] + counter;
+			var elementId2 = '#' + arrayOfIds[x] + (counter + move);
+
+			/* We need to handle special cases like date and fck fields	*/
 			var fckInstanceName1 = arrayOfIds[x].replace(/\\/g,'') + counter;
 			var fckInstanceName2 = arrayOfIds[x].replace(/\\/g,'') + (counter + move);
-			if(isFckEditor( fckInstanceName1 ) && isFckEditor( fckInstanceName2 ) ){
-				var val1 = getFckValue( fckInstanceName1 );
-				var val2 = getFckValue( fckInstanceName2 );	
-				setFckValue( fckInstanceName1, val2 );
-				setFckValue( fckInstanceName2, val1 );
-			}else{
-				var element1 = $('#' + arrayOfIds[x] + counter);
-				var element2 = $('#' + arrayOfIds[x] + (counter + move));
-				var val1 = element1.val();
-				var val2 = element2.val();
-				element1.val(val2);
-				element2.val(val1);
+			if(isFckEditor(fckInstanceName1) && isFckEditor(fckInstanceName2)){
+				var val1 = getFckValue(fckInstanceName1);
+				var val2 = getFckValue(fckInstanceName2);	
+				setFckValue(fckInstanceName1, val2);
+				setFckValue(fckInstanceName2, val1);
+			}else if($(elementId1).hasClass("date") && $(elementId2).hasClass("date")){		
+				var date1 = $(elementId1 + '-date');
+				var hours1 = $(elementId1 + '-hours');
+				var minutes1 = $(elementId1 + '-minutes');
+				
+				var date2 = $(elementId2 + '-date');
+				var hours2 = $(elementId2 + '-hours');
+				var minutes2 = $(elementId2 + '-minutes');
+				
+				var dateVal1 = date1.val();
+				var hoursVal1 = hours1.val();
+				var minutesVal1 = minutes1.val();
+				
+				var dateVal2 = date2.val();
+				var hoursVal2 = hours2.val();
+				var minutesVal2 = minutes2.val();
+				
+				date1.val(dateVal2);
+				hours1.val(hoursVal2);
+				minutes1.val(minutesVal2);
+				
+				date2.val(dateVal1);
+				hours2.val(hoursVal1);
+				minutes2.val(minutesVal1);
 			}
+			
+			var element1 = $(elementId1);
+			var element2 = $(elementId2);
+			var val1 = element1.val();
+			var val2 = element2.val();
+			element1.val(val2);
 		}
 	}
 

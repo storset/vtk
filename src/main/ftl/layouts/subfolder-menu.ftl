@@ -50,13 +50,13 @@
 <#-- MACROS: -->
 <#macro displayItem item >
   <#if item.menu?exists>
-    <a href="${item.url?html}<#if CREATE_ADMIN_LINK >?vrtx=admin</#if>">${item.label}</a>
+    <a href="${item.url?html}<#if CREATE_ADMIN_LINK >?vrtx=admin&mode=report&report-type=collection-structure</#if>">${item.label}</a>
     <#if USE_TREE_VIEW>
        </span>
      </#if>
     <@displaySubMenu item.menu displaySubMenu />
   <#else>
-    <a href="${item.url?html}<#if CREATE_ADMIN_LINK >?vrtx=admin</#if>">${item.label}</a>
+    <a href="${item.url?html}<#if CREATE_ADMIN_LINK >?vrtx=admin&mode=report&report-type=collection-structure</#if>">${item.label}</a>
   </#if>
 </#macro>
 
@@ -93,18 +93,11 @@
         <#if USE_TREE_VIEW >
           <li class="closed">
           <span class="folder">
-          <#if item.menu?exists >
-            (<a href="${item.url?html}?vrtx=admin&mode=report&report-type=collection-structure">+</a>) 
-            <a href="${item.url?html}?vrtx=admin">${item.title?html}</a>    
-          <#else>
-            <a href="${item.url?html}?vrtx=admin">${item.title?html}</a>
-          </#if>
-          </li>
         <#else>
           <li>
+        </#if> 
             <@displayItem item=item />
-          </li> 
-        </#if>   
+          </li>  
     </#list>
 	<#if (menu.totalNumberOfItems > menu.maxNumberOfItems)>
 	    <li class="vrtx-more">   

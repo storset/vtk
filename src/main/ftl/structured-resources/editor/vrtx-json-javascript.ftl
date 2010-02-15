@@ -265,6 +265,7 @@
 			var val1 = element1.val();
 			var val2 = element2.val();
 			element1.val(val2);
+			element2.val(val1);
 		}
 	}
 

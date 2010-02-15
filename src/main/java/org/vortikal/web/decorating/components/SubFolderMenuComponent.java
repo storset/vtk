@@ -334,6 +334,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         
         if(menuRequest.generateStructuredCollectionReportLink()) {
           url = this.reportService.constructURL(uri);
+          url.addParameter("report-type", "collection-structure");
         } else {
           url = this.viewService.constructURL(uri); 
         }

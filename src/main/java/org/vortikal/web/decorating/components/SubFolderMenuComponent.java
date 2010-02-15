@@ -730,7 +730,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         }
     }
 
-    public MenuRequest getNewMenuReqeust(Path currentCollectionUri, String title, PropertyTypeDefinition sortProperty,
+    public MenuRequest getNewMenuRequest(Path currentCollectionUri, String title, PropertyTypeDefinition sortProperty,
             boolean ascendingSort, boolean sortByName, int resultSets, int groupResultSetsBy, int freezeAtLevel,
             int depth, int displayFromLevel, int maxNumberOfChildren, ArrayList<Path> excludeURIs, Locale locale,
             String token, int searchLimit, boolean structuredCollectionReportLink) {

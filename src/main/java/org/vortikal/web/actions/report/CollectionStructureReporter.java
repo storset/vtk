@@ -119,7 +119,7 @@ public class CollectionStructureReporter extends AbstractReporter {
         subfolderMenu.setHiddenPropDef(hiddenPropDef);
         subfolderMenu.setCollectionResourceType(collectionResourceType);
 
-        MenuRequest menuRequest = subfolderMenu.getNewMenuReqeust(currentCollectionUri, title, sortProperty,
+        MenuRequest menuRequest = subfolderMenu.getNewMenuRequest(currentCollectionUri, title, sortProperty,
                 ascendingSort, sortByName, resultSets, groupResultSetsBy, freezeAtLevel, depth, displayFromLevel,
                 maxNumberOfChildren, excludeURIs, locale, token, searchLimit, structuredCollectionReportLink);
 

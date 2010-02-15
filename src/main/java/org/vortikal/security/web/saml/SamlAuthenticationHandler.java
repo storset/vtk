@@ -8,6 +8,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.opensaml.DefaultBootstrap;
+import org.opensaml.xml.ConfigurationException;
+import org.opensaml.xml.security.credential.Credential;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -26,15 +29,23 @@ import org.vortikal.web.service.URL;
  */
 public class SamlAuthenticationHandler implements AuthenticationChallenge, AuthenticationHandler, Controller {
 
+    static {
+        try {
+            DefaultBootstrap.bootstrap();
+        } catch (ConfigurationException e) {
+            throw new RuntimeException("Exception when trying to bootstrap OpenSAML." + e);
+        }
+    }
+    
     private static final String URL_SESSION_ATTR = SamlAuthenticationHandler.class.getName() + ".SamlSavedURL";
 
     private PrincipalFactory principalFactory;
 
     private Path serviceProviderURI;
 
-    private String keystorePath;
-    private String certKey;
-
+    private CertificateManager certificateManager;
+    private String privateKeyAlias;
+    
     private String idpCertificate;
 
     // IDP login/logout URLs:
@@ -52,7 +63,13 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
         URL url = URL.create(req);
         req.getSession(true).setAttribute(URL_SESSION_ATTR, url);
 
-        SamlAuthnRequestHelper samlConnector = new SamlAuthnRequestHelper(this.keystorePath, this.certKey);
+        Credential signingCredential = this.certificateManager.getCredential(this.privateKeyAlias);
+        if (signingCredential == null) {
+            throw new AuthenticationProcessingException(
+                    "Unable to obtain credentials for signing using keystore alias '" 
+                    +  this.privateKeyAlias + "'");
+        }
+        SamlAuthnRequestHelper samlConnector = new SamlAuthnRequestHelper(signingCredential);
         String generatedRelayState = generateRelayState();
 
         SamlConfiguration samlConfiguration = newSamlConfiguration(req);
@@ -94,7 +111,7 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
         SamlResponseHelper helper = new SamlResponseHelper(loginURL, this.idpCertificate, req);
         UserData userData = helper.getUserData();
         if (userData != null) {
-            String id = userData.username();
+            String id = userData.getUsername();
             return this.principalFactory.getPrincipal(id, Principal.Type.USER);
         }
         // 1) Dekode URL
@@ -139,7 +156,13 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
         URL savedURL = URL.create(req);
         req.getSession(true).setAttribute(URL_SESSION_ATTR, savedURL);
         
-        SamlAuthnRequestHelper samlConnector = new SamlAuthnRequestHelper(this.keystorePath, this.certKey);
+        Credential signingCredential = this.certificateManager.getCredential(this.privateKeyAlias);
+        if (signingCredential == null) {
+            throw new AuthenticationProcessingException(
+                    "Unable to obtain credentials for signing using keystore alias '" 
+                    +  this.privateKeyAlias + "'");
+        }
+        SamlAuthnRequestHelper samlConnector = new SamlAuthnRequestHelper(signingCredential);
         String generatedRelayState = generateRelayState();
 
         SamlConfiguration samlConfiguration = newSamlConfiguration(req);
@@ -210,22 +233,20 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
 
 
     @Required
-    public void setKeystorePath(String keystorePath) {
-        this.keystorePath = keystorePath;
-    }
-
-
-    @Required
-    public void setCertKey(String certKey) {
-        this.certKey = certKey;
-    }
-
-
-    @Required
     public void setIdpCertificate(String idpCertificate) {
         this.idpCertificate = idpCertificate;
     }
 
+
+    @Required
+    public void setCertificateManager(CertificateManager certificateManager) {
+        this.certificateManager = certificateManager;
+    }
+
+    @Required
+    public void setPrivateKeyAlias(String privateKeyAlias) {
+        this.privateKeyAlias = privateKeyAlias;
+    }
 
     @Required
     public void setAuthenticationURL(String authenticationURL) {

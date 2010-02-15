@@ -8,7 +8,6 @@ import java.util.zip.DeflaterOutputStream;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.opensaml.DefaultBootstrap;
 import org.opensaml.common.SAMLObject;
 import org.opensaml.common.binding.BasicSAMLMessageContext;
 import org.opensaml.common.binding.SAMLMessageContext;
@@ -18,7 +17,6 @@ import org.opensaml.saml2.core.AuthnRequest;
 import org.opensaml.saml2.core.LogoutRequest;
 import org.opensaml.saml2.core.RequestAbstractType;
 import org.opensaml.ws.message.encoder.MessageEncodingException;
-import org.opensaml.xml.ConfigurationException;
 import org.opensaml.xml.Namespace;
 import org.opensaml.xml.security.credential.Credential;
 import org.opensaml.xml.util.Base64;
@@ -27,20 +25,10 @@ import org.opensaml.xml.validation.ValidationException;
 
 public class SamlAuthnRequestHelper {
 
-    private String keystorePath;
-    private String certKey;
+    private Credential signingCredential;
 
-    public SamlAuthnRequestHelper(String keystorePath, String certKey) {
-        if (keystorePath == null || certKey == null) {
-            throw new RuntimeException("Constructor arguments cannot be NULL");
-        }
-        this.keystorePath = keystorePath;
-        this.certKey = certKey;
-        try {
-            DefaultBootstrap.bootstrap();
-        } catch (ConfigurationException e) {
-            throw new RuntimeException("Exception when trying to bootstrap OpenSAML." + e);
-        }
+    public SamlAuthnRequestHelper(Credential signingCredential) {
+        this.signingCredential = signingCredential;
     }
 
 
@@ -56,8 +44,7 @@ public class SamlAuthnRequestHelper {
 
         try {
             SAMLEncoder enc = new SAMLEncoder();
-            Credential signingCredential = new CredentialRepository().getCredential(this.keystorePath, this.certKey);
-            return enc.buildRedirectURL(signingCredential, relayState, authnRequest);
+            return enc.buildRedirectURL(this.signingCredential, relayState, authnRequest);
         } catch (Exception e) {
             throw new RuntimeException("Exception caught when signing and encoding request URL: " + e);
         }
@@ -84,7 +71,6 @@ public class SamlAuthnRequestHelper {
         return authnRequest;
     }
 
-
     public String urlToLogoutServiceForDomain(SamlConfiguration config, String relayState) {
         //SamlConfiguration config = ConfigurationRepository.configurationForDomain(domain);
         LogoutRequest logoutRequest = createLogoutRequest(config);
@@ -93,18 +79,15 @@ public class SamlAuthnRequestHelper {
         return url;
     }
 
-
     private String buildSignedAndEncodedLogoutRequestUrl(LogoutRequest logoutRequest, String relayState) {
 
         try {
             SAMLEncoder enc = new SAMLEncoder();
-            Credential signingCredential = new CredentialRepository().getCredential(this.keystorePath, this.certKey);
-            return enc.buildRedirectURL(signingCredential, relayState, logoutRequest);
+            return enc.buildRedirectURL(this.signingCredential, relayState, logoutRequest);
         } catch (Exception e) {
             throw new RuntimeException("Exception caught when signing and encoding request URL: " + e);
         }
     }
-
 
     private LogoutRequest createLogoutRequest(SamlConfiguration config) {
         LogoutRequest logoutRequest = OpenSAMLUtilites.buildXMLObject(LogoutRequest.class);

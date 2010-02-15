@@ -62,6 +62,7 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
+import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 import org.vortikal.web.view.components.menu.ListMenu;
 import org.vortikal.web.view.components.menu.MenuItem;
@@ -130,6 +131,8 @@ public class SubFolderMenuComponent extends ListMenuComponent {
     private static Log logger = LogFactory.getLog(SubFolderMenuComponent.class);
 
     private ResourceTypeTree resourceTypeTree;
+    
+    protected Service reportService;
 
     public void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
@@ -326,7 +329,14 @@ public class SubFolderMenuComponent extends ListMenuComponent {
     private MenuItem<PropertySet> buildItem(PropertySet resource, Map<Path, List<PropertySet>> childMap,
             MenuRequest menuRequest) {
         Path uri = resource.getURI();
-        URL url = this.viewService.constructURL(uri);
+        
+        URL url = null;
+        
+        if(menuRequest.generateStructuredCollectionReportLink()) {
+          url = this.reportService.constructURL(uri);
+        } else {
+          url = this.viewService.constructURL(uri); 
+        }
         url.setCollection(true);
 
         Property titleProperty = resource.getProperty(this.navigationTitlePropDef);
@@ -336,6 +346,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
 
         MenuItem<PropertySet> item = new MenuItem<PropertySet>(resource);
         item.setUrl(url);
+
         item.setTitle(titleProperty.getFormattedValue());
         item.setLabel(title.getStringValue());
         item.setActive(false);
@@ -377,11 +388,12 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         private Locale locale;
         private String token;
         private int searchLimit = DEFAULT_SEARCH_LIMIT;
+        private boolean structuredCollectionReportLink = false;
 
         public MenuRequest(Path currentCollectionUri, String title, PropertyTypeDefinition sortProperty,
                 boolean ascendingSort, boolean sortByName, int resultSets, int groupResultSetsBy, int freezeAtLevel,
                 int depth, int displayFromLevel, int maxNumberOfChildren, ArrayList<Path> excludeURIs, Locale locale,
-                String token, int searchLimit) {
+                String token, int searchLimit, boolean structuredCollectionReportLink) {
             super();
             this.currentCollectionUri = currentCollectionUri;
             this.title = title;
@@ -398,6 +410,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
             this.locale = locale;
             this.token = token;
             this.searchLimit = searchLimit;
+            this.structuredCollectionReportLink = structuredCollectionReportLink;
         }
 
         public MenuRequest(DecoratorRequest request) {
@@ -657,6 +670,14 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         public boolean isSortByName() {
             return sortByName;
         }
+        
+        public boolean generateStructuredCollectionReportLink() {
+            return this.structuredCollectionReportLink;
+        }
+    }
+    
+    public void setReportService(Service reportService) {
+        this.reportService = reportService;
     }
 
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
@@ -711,10 +732,10 @@ public class SubFolderMenuComponent extends ListMenuComponent {
     public MenuRequest getNewMenuReqeust(Path currentCollectionUri, String title, PropertyTypeDefinition sortProperty,
             boolean ascendingSort, boolean sortByName, int resultSets, int groupResultSetsBy, int freezeAtLevel,
             int depth, int displayFromLevel, int maxNumberOfChildren, ArrayList<Path> excludeURIs, Locale locale,
-            String token, int searchLimit) {
+            String token, int searchLimit, boolean structuredCollectionReportLink) {
         return new MenuRequest(currentCollectionUri, title, sortProperty, ascendingSort, sortByName, resultSets,
                 groupResultSetsBy, freezeAtLevel, depth, displayFromLevel, maxNumberOfChildren, excludeURIs, locale,
-                token, searchLimit);
+                token, searchLimit, structuredCollectionReportLink);
     }
 
 }

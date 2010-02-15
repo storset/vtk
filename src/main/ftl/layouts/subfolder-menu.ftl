@@ -11,13 +11,12 @@
  <#-- RECURSIVE MENU BUILD --> 
 
 <#if subFolderMenu?exists> 
-	<@displaySubFolderMenu subFolderMenu false false />
+	<@displaySubFolderMenu subFolderMenu false />
 </#if>
 
 <#global USE_TREE_VIEW = false >
 
-<#macro displaySubFolderMenu subFolderMenu adminLink treeView>
-	<#assign CREATE_ADMIN_LINK=adminLink>
+<#macro displaySubFolderMenu subFolderMenu treeView>
 	<#assign USE_TREE_VIEW=treeView>
 	
     <#if subFolderMenu.size &gt; 0>
@@ -50,13 +49,13 @@
 <#-- MACROS: -->
 <#macro displayItem item >
   <#if item.menu?exists>
-    <a href="${item.url?html}<#if CREATE_ADMIN_LINK >?vrtx=admin&mode=report&report-type=collection-structure</#if>">${item.label}</a>
+    <a href="${item.url?html}">${item.label}</a>
     <#if USE_TREE_VIEW>
        </span>
      </#if>
     <@displaySubMenu item.menu displaySubMenu />
   <#else>
-    <a href="${item.url?html}<#if CREATE_ADMIN_LINK >?vrtx=admin&mode=report&report-type=collection-structure</#if>">${item.label}</a>
+    <a href="${item.url?html}">${item.label}</a>
   </#if>
 </#macro>
 

@@ -38,7 +38,7 @@
 	  </p>
 	</div>
 	<div class="vrtx-report">
-	  <@subfolder.displaySubFolderMenu report.subFolderMenu true true />
+	  <@subfolder.displaySubFolderMenu report.subFolderMenu true />
 	</div>
   </div>
   </body>

@@ -425,6 +425,7 @@
     <property name="view" ref="decorating.subFolderMenuComponent.view" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="viewService" ref="webService" />
+    <property name="reportService" ref="reportService" />
     <property name="modelName" value="subFolderMenu" />
     <property name="description" value="Lists the subfolders of the current folder" />
   </bean>

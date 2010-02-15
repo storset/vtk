@@ -60,6 +60,7 @@ import org.vortikal.web.view.components.menu.ListMenu;
 public class CollectionStructureReporter extends AbstractReporter {
 
     private Service viewService;
+    private Service reportService;
     private PropertyTypeDefinition titlePropDef;
     private PropertyTypeDefinition hiddenPropDef;
     private PropertyTypeDefinition importancePropDef;
@@ -86,8 +87,7 @@ public class CollectionStructureReporter extends AbstractReporter {
         ResultSet rs = this.searcher.execute(token, search);
         Map<String, Object> result = new HashMap<String, Object>();
 
-
-        Locale locale = new RequestContext(request).getLocale();
+        Locale locale = new RequestContext(request).getLocale(); 
 
         Map<String, Object> menu = getSubfolderMenu(rs, currentResource.getURI(), token, locale);
         result.put("subFolderMenu", menu);
@@ -108,9 +108,11 @@ public class CollectionStructureReporter extends AbstractReporter {
         int maxNumberOfChildren = Integer.MAX_VALUE;
         ArrayList<Path> excludeURIs = new ArrayList<Path>();
         int searchLimit = Integer.MAX_VALUE;
+        boolean structuredCollectionReportLink = true;
 
         SubFolderMenuComponent subfolderMenu = new SubFolderMenuComponent();
         subfolderMenu.setViewService(viewService);
+        subfolderMenu.setReportService(reportService);
         subfolderMenu.setNavigationTitlePropDef(navigationTitlePropDef);
         subfolderMenu.setTitlePropDef(titlePropDef);
         subfolderMenu.setImportancePropDef(importancePropDef);
@@ -119,7 +121,7 @@ public class CollectionStructureReporter extends AbstractReporter {
 
         MenuRequest menuRequest = subfolderMenu.getNewMenuReqeust(currentCollectionUri, title, sortProperty,
                 ascendingSort, sortByName, resultSets, groupResultSetsBy, freezeAtLevel, depth, displayFromLevel,
-                maxNumberOfChildren, excludeURIs, locale, token, searchLimit);
+                maxNumberOfChildren, excludeURIs, locale, token, searchLimit, structuredCollectionReportLink);
 
         ListMenu<PropertySet> menu = subfolderMenu.buildListMenu(rs, menuRequest);
         return subfolderMenu.buildMenuModel(menu, menuRequest);
@@ -127,6 +129,10 @@ public class CollectionStructureReporter extends AbstractReporter {
 
     public void setViewService(Service viewService) {
         this.viewService = viewService;
+    }
+    
+    public void setReportService(Service reportService) {
+        this.reportService = reportService;
     }
 
     public void setTitlePropDef(PropertyTypeDefinition titlePropDef) {

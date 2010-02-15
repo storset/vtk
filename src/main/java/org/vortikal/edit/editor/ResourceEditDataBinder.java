@@ -215,11 +215,11 @@ public class ResourceEditDataBinder extends ServletRequestDataBinder {
             HtmlElement body = command.getContent().selectSingleElement("html.body");
             HtmlElement suppliedBody = parsed.selectSingleElement("html.body");
 
-            // If body tag is non-excisting add standard web-page with supplied body-content
+            // If body tag is non-existing add standard web-page with supplied body-content
             if (body == null) {
                 body = command.getContent().createElement("html.body");
                 command.setContent(parsed);
-                // Else: Normal behaviour
+                // Else: Normal behavior
             } else {
                 body.setChildNodes(suppliedBody.getChildNodes());
             }

@@ -50,10 +50,10 @@
 
 		<input type="button" class="vrtx-remove-button" value="${vrtx.getMsg("editor.remove")}" onClick="$('#vrtx-json-element-${inputFieldName}-${counter}').remove()" />
 		<#if (counter > 0) >
-		<input type="button" class="vrtx-move-up-button" onClick="swapContent(${counter},${arrayOfIds},-1)"  value="${vrtx.getMsg("editor.move-up")} &uarr;"  />	
+		<input type="button" class="vrtx-move-up-button" onClick="swapContent(${counter},${arrayOfIds},-1)"  value="&uarr; ${vrtx.getMsg("editor.move-up")}"  />	
 	    </#if>
 	    <#if map_has_next >
-	    <input type="button"  class="vrtx-move-down-button" onClick="swapContent(${counter},${arrayOfIds},1)"  value="${vrtx.getMsg("editor.move-down")} &darr;"  />
+	    <input type="button"  class="vrtx-move-down-button" onClick="swapContent(${counter},${arrayOfIds},1)"  value="&darr; ${vrtx.getMsg("editor.move-down")}"  />
 	   	</#if>
 	    </div>
 	    <#local counter = counter + 1 />

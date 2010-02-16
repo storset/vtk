@@ -1,3 +1,33 @@
+/* Copyright (c) 2010, University of Oslo, Norway
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ * 
+ *  * Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 
+ *  * Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 
+ *  * Neither the name of the University of Oslo nor the names of its
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ *      
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+ * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package org.vortikal.security.web.saml;
 
 import java.io.ByteArrayOutputStream;
@@ -6,18 +36,23 @@ import java.util.UUID;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 
+import javax.xml.namespace.QName;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.opensaml.Configuration;
 import org.opensaml.common.SAMLObject;
 import org.opensaml.common.binding.BasicSAMLMessageContext;
 import org.opensaml.common.binding.SAMLMessageContext;
 import org.opensaml.common.xml.SAMLConstants;
 import org.opensaml.saml2.binding.encoding.HTTPRedirectDeflateEncoder;
 import org.opensaml.saml2.core.AuthnRequest;
+import org.opensaml.saml2.core.Issuer;
 import org.opensaml.saml2.core.LogoutRequest;
 import org.opensaml.saml2.core.RequestAbstractType;
 import org.opensaml.ws.message.encoder.MessageEncodingException;
 import org.opensaml.xml.Namespace;
+import org.opensaml.xml.XMLObjectBuilder;
 import org.opensaml.xml.security.credential.Credential;
 import org.opensaml.xml.util.Base64;
 import org.opensaml.xml.util.XMLHelper;
@@ -33,15 +68,21 @@ public class SamlAuthnRequestHelper {
 
 
     public String urlToLoginServiceForDomain(SamlConfiguration config, String relayState) {
-        //SamlConfiguration config = ConfigurationRepository.configurationForDomain(domain);
         AuthnRequest authnRequest = createAuthenticationRequest(config);
         String url = buildSignedAndEncodedRequestUrl(authnRequest, relayState);
         return url;
     }
 
 
-    private String buildSignedAndEncodedRequestUrl(AuthnRequest authnRequest, String relayState) {
+    
+    public String urlToLogoutServiceForDomain(SamlConfiguration config, String relayState) {
+        LogoutRequest logoutRequest = createLogoutRequest(config);
+        String url = buildSignedAndEncodedLogoutRequestUrl(logoutRequest, relayState);
 
+        return url;
+    }
+    
+    private String buildSignedAndEncodedRequestUrl(AuthnRequest authnRequest, String relayState) {
         try {
             SAMLEncoder enc = new SAMLEncoder();
             return enc.buildRedirectURL(this.signingCredential, relayState, authnRequest);
@@ -52,15 +93,18 @@ public class SamlAuthnRequestHelper {
 
 
     private AuthnRequest createAuthenticationRequest(SamlConfiguration config) throws RuntimeException {
-        AuthnRequest authnRequest = OpenSAMLUtilites.buildXMLObject(AuthnRequest.class);
-
+        QName qname = AuthnRequest.DEFAULT_ELEMENT_NAME;
+        @SuppressWarnings("unchecked")
+        XMLObjectBuilder<AuthnRequest> builder = Configuration.getBuilderFactory().getBuilder(qname);
+        AuthnRequest authnRequest = builder.buildObject(qname.getNamespaceURI(), qname.getLocalPart(), qname.getPrefix());
+        
         authnRequest.setID("_" + UUID.randomUUID().toString());
         authnRequest.setForceAuthn(Boolean.FALSE);
         authnRequest.setIssueInstant(new DateTime(DateTimeZone.UTC));
         authnRequest.setProtocolBinding(config.getProtocolBinding());
         authnRequest.setDestination(config.getAuthenticationUrl());
         authnRequest.setAssertionConsumerServiceURL(config.getServiceLoginUrl());
-        authnRequest.setIssuer(config.issuer());
+        authnRequest.setIssuer(createIssuer(config.getServiceIdentifier()));
 
         try {
             authnRequest.validate(true);
@@ -71,13 +115,16 @@ public class SamlAuthnRequestHelper {
         return authnRequest;
     }
 
-    public String urlToLogoutServiceForDomain(SamlConfiguration config, String relayState) {
-        //SamlConfiguration config = ConfigurationRepository.configurationForDomain(domain);
-        LogoutRequest logoutRequest = createLogoutRequest(config);
-        String url = buildSignedAndEncodedLogoutRequestUrl(logoutRequest, relayState);
-
-        return url;
+    private Issuer createIssuer(String serviceIdentifier) {
+        QName qname = Issuer.DEFAULT_ELEMENT_NAME;
+        @SuppressWarnings("unchecked")
+        XMLObjectBuilder<Issuer> builder = Configuration.getBuilderFactory().getBuilder(qname);        
+        Issuer issuer = builder.buildObject(qname.getNamespaceURI(), qname.getLocalPart(), qname.getPrefix());
+        issuer.setValue(serviceIdentifier);
+        return issuer;
     }
+    
+
 
     private String buildSignedAndEncodedLogoutRequestUrl(LogoutRequest logoutRequest, String relayState) {
 
@@ -90,14 +137,17 @@ public class SamlAuthnRequestHelper {
     }
 
     private LogoutRequest createLogoutRequest(SamlConfiguration config) {
-        LogoutRequest logoutRequest = OpenSAMLUtilites.buildXMLObject(LogoutRequest.class);
+        QName qname = LogoutRequest.DEFAULT_ELEMENT_NAME;
+        @SuppressWarnings("unchecked")
+        XMLObjectBuilder<LogoutRequest> builder = Configuration.getBuilderFactory().getBuilder(qname);
 
+        LogoutRequest logoutRequest = builder.buildObject(qname.getNamespaceURI(), qname.getLocalPart(), qname.getPrefix());
         logoutRequest.setID("_" + UUID.randomUUID().toString());
         logoutRequest.setIssueInstant(new DateTime(DateTimeZone.UTC));
         logoutRequest.addNamespace(new Namespace(SAMLConstants.SAML20_NS, SAMLConstants.SAML20_PREFIX));
         logoutRequest.setDestination(config.getLogoutUrl());
         logoutRequest.setReason("urn:oasis:names:tc:SAML:2.0:logout:user");
-        logoutRequest.setIssuer(config.issuer());
+        logoutRequest.setIssuer(createIssuer(config.getServiceIdentifier()));
 
         try {
             logoutRequest.validate(true);

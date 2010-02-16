@@ -20,6 +20,7 @@ body#vrtx-image-listing h1 {
 .vrtx-gallery {
   list-style: none;
   width: 200px;
+  clear: left;
 }
 
 .default_galleria_style {

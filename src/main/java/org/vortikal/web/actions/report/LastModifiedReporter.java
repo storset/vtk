@@ -86,7 +86,7 @@ public class LastModifiedReporter extends AbstractReporter {
         for (int i = 0; i < rs.getSize(); i++) {
             PropertySet p = rs.getResult(i);
             try {
-                Resource r = repository.retrieve(token, p.getURI(), false);
+                Resource r = repository.retrieve(token, p.getURI(), true);
                 isReadRestricted[i] = r.isReadRestricted();
             } catch (Exception e) {
                 e.printStackTrace();

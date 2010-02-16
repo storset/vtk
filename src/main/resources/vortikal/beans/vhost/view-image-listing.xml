@@ -94,7 +94,7 @@
             </entry>
             <entry key="gallery">
               <list>
-                <value>${webResources.baseURL}/jquery/galleria/jquery.galleria.pack.js</value>
+                <value>${webResources.baseURL}/jquery/galleria/jquery.galleria.min.js</value>
                 <value>${webResources.baseURL}/jquery/galleria/galleria.js</value>
               </list>
             </entry>

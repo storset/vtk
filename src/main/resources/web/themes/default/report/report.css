@@ -4,6 +4,10 @@ ul.vrtx-reporters {
   padding-left: 2px;
 }
 
+ul.vrtx-reporters li {
+  padding-bottom: 0.15em;	
+}
+
 div.vrtx-report div.vrtx-subfolder-menu {
   border: none;
 }

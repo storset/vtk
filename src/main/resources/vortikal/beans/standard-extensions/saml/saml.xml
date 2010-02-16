@@ -15,7 +15,6 @@
     webAuthenticationChallenge = saml.authenticationHandler
     saml.authenticationURL = <login url>
     saml.logoutURL = <logout url>
-    saml.serviceIdentifier = <your URL>
     saml.idpCertificate = <encoded IDP certificate>
     saml.keystorePath = <path to keystore>
     saml.keystorePassword = <keystore password>

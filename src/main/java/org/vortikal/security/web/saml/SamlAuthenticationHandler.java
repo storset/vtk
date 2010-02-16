@@ -144,17 +144,6 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
             String id = userData.getUsername();
             return this.principalFactory.getPrincipal(id, Principal.Type.USER);
         }
-        // 1) Dekode URL
-        // 2) Verifiser signatur
-        // 3) Valider assertion...
-        // 4) Sjekke at vi har sendt request (in-reply-to-felt...)
-        // 5) Hent uid, cn etc. fra assertion
-
-        // Verify SAMLResponse and RelayState form inputs
-        // If OK:
-        // id = <get user id from request>
-        // return this.principalFactory.getPrincipal(id, Principal.Type.USER);
-        // Else:
         else {
             throw new AuthenticationException("Unable to authenticate request " + req);
         }
@@ -233,8 +222,16 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
 
     private SamlConfiguration newSamlConfiguration(HttpServletRequest request) {
         URL url = getServiceProviderURL(request);
+        String id = this.serviceIdentifier;
+        if (id == null || "".equals(id.trim())) {
+            URL serviceIdentifierURL = URL.create(request);
+            serviceIdentifierURL.clearParameters();
+            serviceIdentifierURL.setPath(Path.ROOT);
+            id = serviceIdentifierURL.toString();
+            id = id.substring(0, id.length() - 1);
+        }
         SamlConfiguration configuration = new SamlConfiguration(this.authenticationURL, 
-                this.logoutURL, url.toString(), this.serviceIdentifier);
+                this.logoutURL, url.toString(), id);
         return configuration;
     }
  
@@ -288,7 +285,6 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
         this.logoutURL = logoutURL;
     }
 
-    @Required
     public void setServiceIdentifier(String serviceIdentifier) {
         this.serviceIdentifier = serviceIdentifier;
     }

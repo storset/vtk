@@ -46,6 +46,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.web.AuthenticationChallenge;
 import org.vortikal.util.net.NetUtils;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.provider.ServiceNameProvider;
 
 
@@ -266,7 +267,15 @@ public class ServiceImpl implements Service, BeanNameAware {
     }
 
     public URL constructURL(Path uri) {
-        URL urlObject = new URL("http", DEFAULT_HOST, uri);
+        String protocol = "http";
+        String host = DEFAULT_HOST;
+        if (RequestContext.exists()) {
+            RequestContext requestContext = RequestContext.getRequestContext();
+            HttpServletRequest request = requestContext.getServletRequest();
+            protocol = request.isSecure() ? "https" : "http"; 
+            host = request.getServerName();
+        }
+        URL urlObject = new URL(protocol, host, uri);
 
         for (Assertion assertion: getAllAssertions()) {
             assertion.processURL(urlObject);
@@ -282,7 +291,15 @@ public class ServiceImpl implements Service, BeanNameAware {
     }
 
     public URL constructURL(Path uri, Map<String, String> parameters) {
-        URL urlObject = new URL("http", DEFAULT_HOST, uri);
+        String protocol = "http";
+        String host = DEFAULT_HOST;
+        if (RequestContext.exists()) {
+            RequestContext requestContext = RequestContext.getRequestContext();
+            HttpServletRequest request = requestContext.getServletRequest();
+            protocol = request.isSecure() ? "https" : "http"; 
+            host = request.getServerName();
+        }
+        URL urlObject = new URL(protocol, host, uri);
 
         if (parameters != null) {
             for (Map.Entry<String, String> entry: parameters.entrySet()) {
@@ -367,7 +384,17 @@ public class ServiceImpl implements Service, BeanNameAware {
             Map<String, String> parameters, List<Assertion> assertions, boolean matchAssertions) {
 
         Path path = resource.getURI();
-        URL urlObject = new URL("http", DEFAULT_HOST, path);
+
+        String protocol = "http";
+        String host = DEFAULT_HOST;
+        if (RequestContext.exists()) {
+            RequestContext requestContext = RequestContext.getRequestContext();
+            HttpServletRequest request = requestContext.getServletRequest();
+            protocol = request.isSecure() ? "https" : "http"; 
+            host = request.getServerName();
+        }
+        URL urlObject = new URL(protocol, host, path);
+        
         if (resource.isCollection()) {
             urlObject.setCollection(true);
         }

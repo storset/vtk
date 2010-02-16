@@ -30,7 +30,7 @@
   <div class="vrtx-report">
 
 <#if report.lastModifiedList?exists >
-    <table cellpadding="3" border="1">
+    <table id="vrtx-report-last-modified-list">
       <thead>
         <tr>
           <th id="vrtx-report-title"><@vrtx.msg code="report.title" default="Title" /></th>

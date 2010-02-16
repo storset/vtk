@@ -23,12 +23,18 @@ div.vrtx-report table#vrtx-report-last-modified-list th {
   font-weight: bold;
   font-size: 80%;
   background-color: #eeeeee;
+  border: none;
 }
 
 div.vrtx-report table#vrtx-report-last-modified-list td {
   background-color: #fff;
   padding: 3px;
   padding-right: 15px;
+  border: none;
+}
+
+div.vrtx-report table#vrtx-report-last-modified-list tr {
+  border: none;
 }
 
 div.vrtx-report table#vrtx-report-last-modified-list td.vrtx-report-last-modified {

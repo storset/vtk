@@ -63,10 +63,10 @@ public class LastModifiedReporter extends AbstractReporter {
     private PropertyTypeDefinition titlePropDef;
     private PropertyTypeDefinition sortPropDef;
     private SortFieldDirection sortOrder;
-    
+
     public Map<String, Object> getReportContent(String token, Resource currentResource, HttpServletRequest request) {
         Map<String, Object> result = new HashMap<String, Object>();
-        
+
         AndQuery query = new AndQuery();
         query.add(new TypeTermQuery("file", TermOperator.IN));
         query.add(new UriPrefixQuery(currentResource.getURI().toString()));
@@ -80,10 +80,11 @@ public class LastModifiedReporter extends AbstractReporter {
 
         ResultSet rs = this.searcher.execute(token, search);
         result.put("lastModifiedList", rs.getAllResults());
-        
+
         boolean[] isReadRestricted = new boolean[rs.getSize()];
-        int i = 0;
-        for(PropertySet p : rs.getResults(rs.getSize())){
+
+        for (int i = 0; i < rs.getSize(); i++) {
+            PropertySet p = rs.getResult(i);
             try {
                 Resource r = repository.retrieve(token, p.getURI(), false);
                 isReadRestricted[i] = r.isReadRestricted();
@@ -112,5 +113,5 @@ public class LastModifiedReporter extends AbstractReporter {
     public PropertyTypeDefinition getTitlePropDef() {
         return titlePropDef;
     }
-    
+
 }

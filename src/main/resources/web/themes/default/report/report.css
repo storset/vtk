@@ -7,3 +7,34 @@ ul.vrtx-reporters {
 div.vrtx-report div.vrtx-subfolder-menu {
   border: none;
 }
+
+div.vrtx-report table {
+  clear: both;
+  font-weight: normal;
+  font-size: 100%;
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #b0e0e6;
+}
+
+div.vrtx-report table th {
+  padding: 3px;
+  text-align: left;
+  font-weight: normal;
+  font-size: 80%;
+  background-color: #eeeeee;
+}
+
+div.vrtx-report table td {
+  background-color: #fff;
+  padding: 3px;
+  padding-right: 15px;
+}
+
+div.vrtx-report table td.vrtx-report-last-modified {
+  white-space: nowrap;
+}
+
+div.vrtx-report table tr.even td {
+  background-color: #eeeeee;
+}

@@ -33,15 +33,16 @@
     <table cellpadding="3" border="1">
       <thead>
         <tr>
-          <th><@vrtx.msg code="report.title" default="Title" /></th>
-          <th><@vrtx.msg code="report.last-modified" default="Last modified" /></th>
-          <th><@vrtx.msg code="report.modified-by" default="Modified by" /></th>
-          <th><@vrtx.msg code="report.permission-set" default="Permissions set" /></th> 
-          <th><@vrtx.msg code="collectionListing.permissions" default="Permissions"/></th>
-          <th><@vrtx.msg code="report.published" default="Published" /> </th>
+          <th id="vrtx-report-title"><@vrtx.msg code="report.title" default="Title" /></th>
+          <th id="vrtx-report-last-modified"><@vrtx.msg code="report.last-modified" default="Last modified" /></th>
+          <th id="vrtx-report-modified-by"><@vrtx.msg code="report.modified-by" default="Modified by" /></th>
+          <th id="vrtx-report-permission-set"><@vrtx.msg code="report.permission-set" default="Permissions set" /></th> 
+          <th id="vrtx-report-permissions"><@vrtx.msg code="collectionListing.permissions" default="Permissions"/></th>
+          <th id="vrtx-report-published"><@vrtx.msg code="report.published" default="Published" /> </th>
         </tr>
       </thead>
       <tbody>   
+      <#assign count = 1 />
       <#list report.lastModifiedList as lastModified>
       	<#assign title= vrtx.propValue(lastModified, 'title') />
       	<#assign lastModifiedTime = vrtx.propValue(lastModified, 'lastModified') />
@@ -59,18 +60,24 @@
 		<#if published = "false">
 			<#assign publishedStatus = vrtx.getMsg("report.no", "No")>
 		</#if>
-        <tr>  
-        <td><a href="${lastModified.URI}">${title}</a></td>
-        <td>${lastModifiedTime}</td>
+		
+	    <#if (count % 2 == 0) >
+		  <tr class="even">
+	    <#else>
+	      <tr class="odd"> 
+	    </#if>
+          <td class="vrtx-report-title"><a href="${lastModified.URI}">${title}</a></td>
+          <td class="vrtx-report-last-modified">${lastModifiedTime}</td>
 		<#if modifiedBy?index_of("@") != -1>
-		<td>${modifiedBy}</td>
-		  <#else>
-		<td><a href="http://www.uio.no/sok?person=${modifiedBy}">${modifiedBy}</a></td>
+		  <td class="vrtx-report-modified-by">${modifiedBy}</td>
+		<#else>
+		  <td class="vrtx-report-modified-by"><a href="http://www.uio.no/sok?person=${modifiedBy}">${modifiedBy}</a></td>
 		</#if>
-        <td>${aclIsInherited}</td> 
-        <td>${isReadRestricted}</td>  
-        <td>${publishedStatus}</td>
-      </tr>
+          <td class="vrtx-report-permission-set">${aclIsInherited}</td> 
+          <td class="vrtx-report-permissions">${isReadRestricted}</td>  
+          <td class="vrtx-report-published">${publishedStatus}</td>
+        </tr>
+        <#assign count = count + 1 />
       </#list>
       </tbody>
     </table>

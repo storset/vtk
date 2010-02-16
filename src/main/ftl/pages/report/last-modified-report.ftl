@@ -18,15 +18,15 @@
   </head>
   <body>
   <div class="resourceInfo">
-  <div class="vrtx-report-nav">
-  	<div class="back"> 
-    <a href="${serviceURL}" ><@vrtx.msg code="report.back" default="Back" /></a>
+    <div class="vrtx-report-nav">
+  	  <div class="back"> 
+        <a href="${serviceURL}" ><@vrtx.msg code="report.back" default="Back" /></a>
+      </div>
     </div>
-  </div>
-  <h2><@vrtx.msg code="report.last-modified" /></h2>
-  <p>
-  <@vrtx.msg code="report.last-modified.about" />
-  </p>
+    <h2><@vrtx.msg code="report.last-modified" /></h2>
+    <p>
+      <@vrtx.msg code="report.last-modified.about" />
+    </p>
   <div class="vrtx-report">
 
 <#if report.lastModifiedList?exists >

@@ -27,11 +27,12 @@
   </script>
   </head>
   <body>
-  <div class="vrtx-report-nav">
-    <div class="resourceInfo">
-      <div class="back">
+  <div class="resourceInfo">
+    <div class="vrtx-report-nav">
+  	  <div class="back">
 	    <a href="${serviceURL}"><@vrtx.msg code="report.back" default="Back" /></a>
 	  </div>
+	  
 	  <h2><@vrtx.msg code="report.collection-structure" /></h2>
 	  <p>
 	    <@vrtx.msg code="report.collection-structure.about" />

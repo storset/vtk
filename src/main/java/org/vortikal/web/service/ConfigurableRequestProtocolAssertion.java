@@ -79,7 +79,6 @@ public class ConfigurableRequestProtocolAssertion implements Assertion, Initiali
     public void processURL(URL url) {
         Path uri = url.getPath();
         if (this.configuration == null || this.configuration.isEmpty()) {
-            url.setProtocol(PROTO_HTTP);
             return;
         }
         

@@ -66,15 +66,12 @@ public class SamlAuthnRequestHelper {
         this.signingCredential = signingCredential;
     }
 
-
     public String urlToLoginServiceForDomain(SamlConfiguration config, String relayState) {
         AuthnRequest authnRequest = createAuthenticationRequest(config);
         String url = buildSignedAndEncodedRequestUrl(authnRequest, relayState);
         return url;
     }
 
-
-    
     public String urlToLogoutServiceForDomain(SamlConfiguration config, String relayState) {
         LogoutRequest logoutRequest = createLogoutRequest(config);
         String url = buildSignedAndEncodedLogoutRequestUrl(logoutRequest, relayState);
@@ -90,7 +87,6 @@ public class SamlAuthnRequestHelper {
             throw new RuntimeException("Exception caught when signing and encoding request URL: " + e);
         }
     }
-
 
     private AuthnRequest createAuthenticationRequest(SamlConfiguration config) throws RuntimeException {
         QName qname = AuthnRequest.DEFAULT_ELEMENT_NAME;

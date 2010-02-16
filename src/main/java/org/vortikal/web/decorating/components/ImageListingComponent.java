@@ -58,7 +58,7 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
     protected void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
 
-        String url = request.getStringParameter("url");
+        String url = request.getStringParameter("uri");
         if (url == null || "".equals(url.trim()) || !isValidPath(url)) {
             return;
         }

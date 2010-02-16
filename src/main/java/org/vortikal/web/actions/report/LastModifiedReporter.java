@@ -83,7 +83,7 @@ public class LastModifiedReporter extends AbstractReporter {
         
         boolean[] isReadRestricted = new boolean[rs.getSize()];
         int i = 0;
-        for(PropertySet p : rs.getResults(Integer.MAX_VALUE)){
+        for(PropertySet p : rs.getResults(rs.getSize())){
             try {
                 Resource r = repository.retrieve(token, p.getURI(), false);
                 isReadRestricted[i] = r.isReadRestricted();

@@ -79,7 +79,10 @@ public class SamlResponseHelper {
     }
     
     public UserData getUserData() {
+
         String encodedSamlResponseString = this.request.getParameter("SAMLResponse");
+
+        // Verify SAMLResponse and RelayState form inputs
 
         Response samlResponse = decodeSamlResponse(encodedSamlResponseString);
         verifyStatusCodeIsSuccess(samlResponse);
@@ -94,10 +97,11 @@ public class SamlResponseHelper {
 
     public void validateAssertionContent(Assertion assertion) throws RuntimeException {
         verifyConfirmationTimeNotExpired(assertion);
-        // Sjekk In Reply To ID mot ID vi genererte ved sending av request
-        // Sjekk at Assertion ikke er brukt fra f�r. (replay)
-        // SJekk destination
-        // Sjekk begge timeout.
+        
+        // TODO: check in-reply-to-ID against generated ID from request
+        // TODO: verify that assertion has not been used before (replay)
+        // TODO: check destination
+        // TODO: check both timeouts
     }
 
 
@@ -125,18 +129,6 @@ public class SamlResponseHelper {
         }
     }
     
-//    private X509Certificate buildX509CertificateFromEncodedString(String encodedCertificateString)
-//            throws RuntimeException {
-//        java.security.cert.X509Certificate cert;
-//        try {
-//            cert = OpenSAMLUtilites.buildJavaX509Cert(encodedCertificateString);
-//        } catch (CertificateException e) {
-//            throw new RuntimeException("Unable to build x509 certificate from encoded string.", e);
-//        }
-//        return cert;
-//    }
-
-
     private Response decodeSamlResponse(String encodedSamlResponseXml) throws RuntimeException {
         try {
             String samlResponseXml = new String(Base64.decode(encodedSamlResponseXml), "utf-8");
@@ -155,13 +147,10 @@ public class SamlResponseHelper {
     }
 
     
-    
-
     private Assertion extractAssertionFromSamlResponse(Response samlResponse) {
         Assertion assertion = samlResponse.getAssertions().get(0);
         return assertion;
     }
-
 
     private void verifyConfirmationTimeNotExpired(Assertion assertion) throws RuntimeException {
         DateTime confirmationTime = assertionConfirmationTime(assertion);

@@ -95,7 +95,7 @@ public class XmlSearcher {
     private Searcher searcher;
     private Parser parser;
     private ResourceTypeTree resourceTypeTree;
-    private int maxResults = 1000;
+    private int maxResults = 2000;
     private Repository repository;
     private String defaultLocale = Locale.getDefault().getLanguage();
 

@@ -31,18 +31,13 @@
 package org.vortikal.web.actions.report;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.ResourceNotFoundException;
-import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.PropertySortField;
 import org.vortikal.repository.search.ResultSet;
@@ -53,9 +48,6 @@ import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
-import org.vortikal.security.AuthenticationException;
-import org.vortikal.web.search.Listing;
-import org.vortikal.web.search.SearchComponent;
 
 public class LastModifiedReporter extends AbstractReporter {
 

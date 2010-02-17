@@ -48,6 +48,7 @@ body#vrtx-image-listing h1 {
 
 * html .galleria_container {
   text-align: center;
+  overflow: visible;
 }
 
 .caption {

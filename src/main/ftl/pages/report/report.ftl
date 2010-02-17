@@ -18,7 +18,7 @@
   </head>
   <body>
   <div class="resourceInfo">
-  <h2>Rapporter</h2>
+  <h2><@vrtx.msg code="report.heading" default="Reports" /></h2>
   <div class="vrtx-report">
     <ul class="vrtx-reporters">
   <#list reporters as reporter>

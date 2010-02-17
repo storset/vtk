@@ -62,10 +62,17 @@ body#vrtx-image-listing h1 {
 }
 
 .thumb_filetype {
-  font-size: 0.85em;
+  margin: 26px 0 0 55px;
+  width: 32px;
+  height: 32px;
+}
+
+.thumb_filetype_text {
   display: block;
-  margin-top: 42px;
-  margin-left: 59px;
+  clear: left;
+  margin: 2px 0 0 59px;
+  font-size: 0.85em;
+  color: #444;
 }
 
 .default_galleria_style li {

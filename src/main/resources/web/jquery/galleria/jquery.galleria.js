@@ -213,12 +213,20 @@ $$ = $.fn.galleria = function($options) {
 			}).error(function () {
 				
 				//USIT added: show filetype centered instead of red error message
-				var imageType = _src.substring(_src.length - 3, _src.length);
+				if(_src.length >= 3) {
+				  var imageType = _src.substring(_src.length - 3, _src.length);
+				} else {
+			      var imageType = "???";
+				}
 				
-				var _thumb_filetype = "<span class='thumb_filetype'>" + imageType + "</span>";
+				var _thumb_filetype = 
+				"<img class='thumb_filetype' " +
+				"src='/vrtx/__vrtx/static-resources/themes/default/icons/image-galleria.png'" +
+				"alt='" + imageType + "' />" +
+				"<span class='thumb_filetype_text'>" + imageType + "</span>";
 				
 				// Error handling
-			    _container.prepend(_thumb_filetype);
+			    _container.append(_thumb_filetype);
 			    
 			    // Old
 			    //_container.html('<span class="error" style="color:red">Error loading image: '+_src+'</span>');

@@ -61,6 +61,13 @@ body#vrtx-image-listing h1 {
   width: 730px;
 }
 
+.thumb_filetype {
+  font-size: 0.85em;
+  display: block;
+  margin-top: 42px;
+  margin-left: 59px;
+}
+
 .default_galleria_style li {
   width: 138px;
   height: 104px;

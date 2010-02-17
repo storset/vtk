@@ -68,6 +68,7 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     }
     
     private static final String URL_SESSION_ATTR = SamlAuthenticationHandler.class.getName() + ".SamlSavedURL";
+    private static final String REQUEST_ID_SESSION_ATTR = SamlAuthenticationHandler.class.getName() + ".SamlSavedRequestID";
 
     private PrincipalFactory principalFactory;
 
@@ -100,11 +101,15 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
                     +  this.privateKeyAlias + "'");
         }
         SamlAuthnRequestHelper samlConnector = new SamlAuthnRequestHelper(signingCredential);
-        String generatedRelayState = generateRelayState();
+        UUID relayState = UUID.randomUUID();
 
         SamlConfiguration samlConfiguration = newSamlConfiguration(req);
         
-        String redirURL = samlConnector.urlToLoginServiceForDomain(samlConfiguration, generatedRelayState);
+        // Generate request ID, save in session
+        UUID requestID = UUID.randomUUID();
+        req.getSession().setAttribute(REQUEST_ID_SESSION_ATTR, requestID);
+            
+        String redirURL = samlConnector.urlToLoginServiceForDomain(samlConfiguration, requestID, relayState);
         resp.sendRedirect(redirURL);
     }
 
@@ -138,13 +143,17 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
             AuthenticationException, InvalidAuthenticationRequestException {
 
         URL loginURL = getServiceProviderURL(req);
-        SamlResponseHelper helper = new SamlResponseHelper(loginURL, this.idpCertificate, req);
+        UUID expectedRequestID = (UUID) req.getSession(true).getAttribute(REQUEST_ID_SESSION_ATTR);
+        if (expectedRequestID == null) {
+            throw new RuntimeException("Missing request ID attribute in session");
+        }
+        req.getSession().removeAttribute(REQUEST_ID_SESSION_ATTR);
+        SamlResponseHelper helper = new SamlResponseHelper(loginURL, this.idpCertificate, expectedRequestID, req);
         UserData userData = helper.getUserData();
         if (userData != null) {
             String id = userData.getUsername();
             return this.principalFactory.getPrincipal(id, Principal.Type.USER);
-        }
-        else {
+        } else {
             throw new AuthenticationException("Unable to authenticate request " + req);
         }
     }
@@ -157,6 +166,9 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
             throws AuthenticationProcessingException, InvalidAuthenticationRequestException {
         // Get original request URL (saved in challenge()) from session, redirect to it
         URL url = (URL) req.getSession(true).getAttribute(URL_SESSION_ATTR);
+        if (url == null) {
+            throw new AuthenticationProcessingException("Missing URL attribute in session");
+        }
         try {
             resp.sendRedirect(url.toString());
             return true;
@@ -174,6 +186,10 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
 
         URL savedURL = URL.create(req);
         req.getSession(true).setAttribute(URL_SESSION_ATTR, savedURL);
+    
+        // Generate request ID, save in session
+        UUID requestID = UUID.randomUUID();
+        req.getSession().setAttribute(REQUEST_ID_SESSION_ATTR, requestID);
         
         Credential signingCredential = this.certificateManager.getCredential(this.privateKeyAlias);
         if (signingCredential == null) {
@@ -182,10 +198,9 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
                     +  this.privateKeyAlias + "'");
         }
         SamlAuthnRequestHelper samlConnector = new SamlAuthnRequestHelper(signingCredential);
-        String generatedRelayState = generateRelayState();
-
+        UUID relayState = UUID.randomUUID();
         SamlConfiguration samlConfiguration = newSamlConfiguration(req);
-        String url = samlConnector.urlToLogoutServiceForDomain(samlConfiguration, generatedRelayState);
+        String url = samlConnector.urlToLogoutServiceForDomain(samlConfiguration, requestID, relayState);
         resp.sendRedirect(url);
         return true;
     }
@@ -197,7 +212,7 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     public ModelAndView handleRequest(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         HttpSession session = request.getSession();
-        if (session == null){
+        if (session == null) {
             throw new IllegalStateException("No session exists, not a post-logout request");
         }
         
@@ -205,6 +220,9 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
         if (url == null) {
             throw new IllegalStateException("No URL session attribute exists, nowhere to redirect");
         }
+        session.removeAttribute(URL_SESSION_ATTR);
+        session.removeAttribute(REQUEST_ID_SESSION_ATTR);
+
         response.sendRedirect(url.toString());
         return null;
     }
@@ -242,11 +260,6 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
         return url;
     }
     
-    private String generateRelayState() {
-        return UUID.randomUUID().toString();
-    }
-
-
     @Required
     public void setPrincipalFactory(PrincipalFactory principalFactory) {
         this.principalFactory = principalFactory;

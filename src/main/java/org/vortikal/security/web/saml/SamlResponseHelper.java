@@ -35,6 +35,7 @@ import java.security.PublicKey;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
@@ -70,11 +71,14 @@ public class SamlResponseHelper {
      */
     private String encodedCertificate;
     
+    private UUID expectedRequestID;
+    
     private HttpServletRequest request;
 
-    public SamlResponseHelper(URL spLoginURL, String encodedCert, HttpServletRequest request) {
+    public SamlResponseHelper(URL spLoginURL, String encodedCert, UUID expectedRequestID, HttpServletRequest request) {
         this.spLoginURL = spLoginURL;
         this.encodedCertificate = encodedCert;
+        this.expectedRequestID = expectedRequestID;
         this.request = request;
     }
     
@@ -84,7 +88,15 @@ public class SamlResponseHelper {
 
         // Verify SAMLResponse and RelayState form inputs
 
+        // TODO: verify that assertion has not been used before (replay)
+        // TODO: check both timeouts
+
         Response samlResponse = decodeSamlResponse(encodedSamlResponseString);
+        String inResponseToID = samlResponse.getInResponseTo();
+        if (!this.expectedRequestID.toString().equals(inResponseToID)) {
+            throw new RuntimeException("Request ID mismatch");
+        }
+        
         verifyStatusCodeIsSuccess(samlResponse);
         verifyDestinationAddressIsCorrect(this.spLoginURL, samlResponse);
         
@@ -97,11 +109,6 @@ public class SamlResponseHelper {
 
     public void validateAssertionContent(Assertion assertion) throws RuntimeException {
         verifyConfirmationTimeNotExpired(assertion);
-        
-        // TODO: check in-reply-to-ID against generated ID from request
-        // TODO: verify that assertion has not been used before (replay)
-        // TODO: check destination
-        // TODO: check both timeouts
     }
 
 

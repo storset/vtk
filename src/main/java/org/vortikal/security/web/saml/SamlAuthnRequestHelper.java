@@ -66,20 +66,20 @@ public class SamlAuthnRequestHelper {
         this.signingCredential = signingCredential;
     }
 
-    public String urlToLoginServiceForDomain(SamlConfiguration config, String relayState) {
-        AuthnRequest authnRequest = createAuthenticationRequest(config);
+    public String urlToLoginServiceForDomain(SamlConfiguration config, UUID requestID, UUID relayState) {
+        AuthnRequest authnRequest = createAuthenticationRequest(config, requestID);
         String url = buildSignedAndEncodedRequestUrl(authnRequest, relayState);
         return url;
     }
 
-    public String urlToLogoutServiceForDomain(SamlConfiguration config, String relayState) {
-        LogoutRequest logoutRequest = createLogoutRequest(config);
+    public String urlToLogoutServiceForDomain(SamlConfiguration config, UUID requestID, UUID relayState) {
+        LogoutRequest logoutRequest = createLogoutRequest(config, requestID);
         String url = buildSignedAndEncodedLogoutRequestUrl(logoutRequest, relayState);
 
         return url;
     }
     
-    private String buildSignedAndEncodedRequestUrl(AuthnRequest authnRequest, String relayState) {
+    private String buildSignedAndEncodedRequestUrl(AuthnRequest authnRequest, UUID relayState) {
         try {
             SAMLEncoder enc = new SAMLEncoder();
             return enc.buildRedirectURL(this.signingCredential, relayState, authnRequest);
@@ -88,13 +88,13 @@ public class SamlAuthnRequestHelper {
         }
     }
 
-    private AuthnRequest createAuthenticationRequest(SamlConfiguration config) throws RuntimeException {
+    private AuthnRequest createAuthenticationRequest(SamlConfiguration config, UUID requestID) throws RuntimeException {
         QName qname = AuthnRequest.DEFAULT_ELEMENT_NAME;
         @SuppressWarnings("unchecked")
         XMLObjectBuilder<AuthnRequest> builder = Configuration.getBuilderFactory().getBuilder(qname);
         AuthnRequest authnRequest = builder.buildObject(qname.getNamespaceURI(), qname.getLocalPart(), qname.getPrefix());
-        
-        authnRequest.setID("_" + UUID.randomUUID().toString());
+
+        authnRequest.setID(requestID.toString());
         authnRequest.setForceAuthn(Boolean.FALSE);
         authnRequest.setIssueInstant(new DateTime(DateTimeZone.UTC));
         authnRequest.setProtocolBinding(config.getProtocolBinding());
@@ -107,7 +107,6 @@ public class SamlAuthnRequestHelper {
         } catch (ValidationException e) {
             throw new RuntimeException("Unable to validate SAML authentication request: " + e);
         }
-
         return authnRequest;
     }
 
@@ -122,7 +121,7 @@ public class SamlAuthnRequestHelper {
     
 
 
-    private String buildSignedAndEncodedLogoutRequestUrl(LogoutRequest logoutRequest, String relayState) {
+    private String buildSignedAndEncodedLogoutRequestUrl(LogoutRequest logoutRequest, UUID relayState) {
 
         try {
             SAMLEncoder enc = new SAMLEncoder();
@@ -132,13 +131,13 @@ public class SamlAuthnRequestHelper {
         }
     }
 
-    private LogoutRequest createLogoutRequest(SamlConfiguration config) {
+    private LogoutRequest createLogoutRequest(SamlConfiguration config, UUID requestID) {
         QName qname = LogoutRequest.DEFAULT_ELEMENT_NAME;
         @SuppressWarnings("unchecked")
         XMLObjectBuilder<LogoutRequest> builder = Configuration.getBuilderFactory().getBuilder(qname);
 
         LogoutRequest logoutRequest = builder.buildObject(qname.getNamespaceURI(), qname.getLocalPart(), qname.getPrefix());
-        logoutRequest.setID("_" + UUID.randomUUID().toString());
+        logoutRequest.setID(requestID.toString());
         logoutRequest.setIssueInstant(new DateTime(DateTimeZone.UTC));
         logoutRequest.addNamespace(new Namespace(SAMLConstants.SAML20_NS, SAMLConstants.SAML20_PREFIX));
         logoutRequest.setDestination(config.getLogoutUrl());
@@ -156,12 +155,12 @@ public class SamlAuthnRequestHelper {
 
     private class SAMLEncoder extends HTTPRedirectDeflateEncoder {
 
-        public String buildRedirectURL(Credential signingCredential, String relayState, RequestAbstractType request)
+        public String buildRedirectURL(Credential signingCredential, UUID relayState, RequestAbstractType request)
                 throws MessageEncodingException, IOException {
             SAMLMessageContext<?, RequestAbstractType, ?> messageContext = new BasicSAMLMessageContext<SAMLObject, RequestAbstractType, SAMLObject>();
             // Build the parameters for the request
             messageContext.setOutboundSAMLMessage(request);
-            messageContext.setRelayState(relayState);
+            messageContext.setRelayState(relayState.toString());
 
             // Sign the parameters
             messageContext.setOutboundSAMLMessageSigningCredential(signingCredential);

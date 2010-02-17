@@ -31,7 +31,6 @@ body#vrtx-image-listing h1 {
 
 .galleria_wrapper {
   width: 730px;
-  overflow: hidden;
   margin-bottom: 15px;
 }
 
@@ -44,6 +43,7 @@ body#vrtx-image-listing h1 {
   width: 730px;
   margin-left: auto;
   margin-right: auto;
+  overflow: hidden;
 }
 
 * html .galleria_container {

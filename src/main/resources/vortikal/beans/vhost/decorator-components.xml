@@ -438,10 +438,20 @@
     parent="repositoryAware">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="login" />
-    <property name="view" ref="decorating.authenticationComponent.view" />
-    <property name="loginService" ref="loginService" />
+    <property name="view" ref="decorating.authenticationComponent.view" /> 
+    <property name="defaultLoginService" ref="loginService" />
+    <property name="alternativeLoginServices">
+      <map>
+        <entry key="admin" value-ref="manageService" />
+      </map>
+    </property>
     <property name="logoutService" ref="logoutService" />
     <property name="description" value="Displays a login or logout URL" />
+     <property name="parameterDescriptions">
+      <map>
+        <entry key="destination-service" value="Destination service. Default destination is view, the other possible value is 'admin'." />
+      </map>
+    </property>
   </bean>
 
   <bean name="decorating.authenticationComponent.view" parent="freemarkerView">

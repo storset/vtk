@@ -45,37 +45,39 @@ import org.vortikal.web.decorating.DecoratorResponse;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
-
 public class AuthenticationComponent extends ViewRenderingDecoratorComponent {
 
     private static final String DESCRIPTION = "Displays a login or logout URL";
 
-    private Service loginService;
+    private Service defaultLoginService;
+    private Map<String, Service> alternativeLoginServices;
     private Service logoutService;
     private Repository repository;
-    
 
-    @Required public void setLoginService(Service loginService) {
+    @Required
+    public void setDefaultLoginService(Service loginService) {
         if (loginService == null) {
             throw new IllegalArgumentException("Argument cannot be null");
         }
-        this.loginService = loginService;
+        this.defaultLoginService = loginService;
     }
 
-    @Required public void setLogoutService(Service logoutService) {
+    @Required
+    public void setLogoutService(Service logoutService) {
         if (logoutService == null) {
             throw new IllegalArgumentException("Argument cannot be null");
         }
         this.logoutService = logoutService;
     }
-    
-    @Required public void setRepository(Repository repository) {
+
+    @Required
+    public void setRepository(Repository repository) {
         if (repository == null) {
             throw new IllegalArgumentException("Argument cannot be null");
         }
         this.repository = repository;
     }
-    
+
     protected String getDescriptionInternal() {
         return DESCRIPTION;
     }
@@ -85,30 +87,51 @@ public class AuthenticationComponent extends ViewRenderingDecoratorComponent {
         return map;
     }
 
-    protected void processModel(Map<Object, Object> model, DecoratorRequest request,
-                             DecoratorResponse response) throws Exception {
+    protected void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
+            throws Exception {
 
         super.processModel(model, request, response);
         Path uri = RequestContext.getRequestContext().getResourceURI();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
-        
+
         Principal principal = securityContext.getPrincipal();
-        String token = securityContext.getToken();
-        Resource resource = this.repository.retrieve(token, uri, true);
-        
         model.put("principal", principal);
 
-        if (principal == null) {
-        	try {
-        		URL loginURL = this.loginService.constructURL(resource, principal);
-        		model.put("loginURL", loginURL);
-        	} catch (Exception e) { }
-        } else {
-        	try {
-        		URL logoutURL = this.logoutService.constructURL(resource, principal);
-        		model.put("logoutURL", logoutURL);
-        	} catch (Exception e) { }
+        String token = securityContext.getToken();
+        Resource resource = this.repository.retrieve(token, uri, true);
+
+        String destinationService = request.getStringParameter("destination-service");
+        Service alternativeService = alternativeLoginServices.get(destinationService);
+        if (principal == null && alternativeService != null) {
+            try {
+                URL loginURL = alternativeService.constructURL(resource.getURI());
+                model.put("loginURL", loginURL);
+            } catch (Exception e) {
+            }
+            return;
         }
+
+        if (principal == null) {
+            try {
+                URL loginURL = this.defaultLoginService.constructURL(resource, principal);
+                model.put("loginURL", loginURL);
+            } catch (Exception e) {
+            }
+        } else {
+            try {
+                URL logoutURL = this.logoutService.constructURL(resource, principal);
+                model.put("logoutURL", logoutURL);
+            } catch (Exception e) {
+            }
+        }
+    }
+
+    public void setAlternativeLoginServices(Map<String, Service> alternativeLoginServices) {
+        this.alternativeLoginServices = alternativeLoginServices;
+    }
+
+    public Map<String, Service> getAlternativeLoginServices() {
+        return alternativeLoginServices;
     }
 
 }

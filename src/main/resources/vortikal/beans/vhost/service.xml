@@ -129,9 +129,9 @@
     </property>
     <property name="handler" ref="requireAuthenticationController" />
   </bean>
-
+  
   <bean id="requireAuthenticationController" class="org.vortikal.web.actions.auth.RequireAuthenticationController">
-     <property name="viewName" value="redirectToManage" />
+    <property name="redirectService" ref="viewService" />
   </bean>
 
 

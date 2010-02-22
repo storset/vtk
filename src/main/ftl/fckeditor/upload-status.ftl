@@ -17,6 +17,7 @@
   -
   -->
 <script type="text/javascript">
+  <!--
     var uploadCompletedFunction;
     if (window.parent.frames['frmUpload'].OnUploadCompleted) {
        uploadCompletedFunction = window.parent.frames['frmUpload'].OnUploadCompleted;
@@ -26,4 +27,5 @@
     uploadCompletedFunction(
       ${error}, '${(fileURL?html)?default("")}', 
       '${(fileName?html)?default("")}', '${customMessage?default("")}');
+  //-->
 </script>

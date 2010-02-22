@@ -64,6 +64,8 @@ body#vrtx-image-listing h1 {
   width: 730px;
 }
 
+/* When thumbnail image fails */
+
 .thumb_filetype {
   margin: 26px 0 0 55px;
   width: 32px;
@@ -78,6 +80,8 @@ body#vrtx-image-listing h1 {
   color: #444;
 }
 
+/* ^ When thumbnail image fails */ 
+
 .vrtx-gallery li {
   width: 138px;
   height: 104px;
@@ -89,18 +93,25 @@ body#vrtx-image-listing h1 {
   overflow: hidden;
 }
 
-.vrtx-gallery li span { /*CSS for enlarged image*/
+/* Pure CSS gallery - Large image */
+
+.vrtx-gallery li span {
   position: absolute;
   left: -3000px;
   visibility: hidden;
   display: block;
 }
 
-.vrtx-gallery li:hover span { /*CSS for enlarged image*/
+.vrtx-gallery li:hover span {
   visibility: visible;
-  left: 322px; /*position where enlarged image should offset horizontally */
+  left: 322px; /* horizontally offset */
   margin-top: -107px;
   z-index: 99999;
+}
+
+/* vertical offset fix IE 7 */
+*:first-child+html .vrtx-gallery li:hover span {
+  margin-top: 0px;
 }
 
 .vrtx-gallery li span img {
@@ -110,6 +121,8 @@ body#vrtx-image-listing h1 {
 .vrtx-gallery li:hover {
   border-color: #bbb	
 }
+
+/* ^ Pure CSS gallery */
 
 .vrtx-gallery li img.thumbnail {
   max-height: 104px;

@@ -68,7 +68,7 @@
         <li class="vrtx-image-entry">
         
             <div class="vrtx-image-container">
-                <a href="${image.URI?html}"><img src="${image.URI?html}?vrtx=thumbnail" title="${title}" alt="${title}"></a>
+                <a href="${image.URI?html}"><img src="${image.URI?html}?vrtx=thumbnail" title="${title}" alt="${title}" /></a>
             </div>
 
             <div class="vrtx-image-info">
@@ -112,9 +112,6 @@
   <#if (images?size > 0)>
     <div class="vrtx-image-gallery">
       
-      <a id="vrtx-image-gallery-previous" href="#" onclick="$.galleria.prev(); return false;"></a>
-      <a id="vrtx-image-gallery-next" href="#" onclick="$.galleria.next(); return false;"></a>
-      
       <#local activeImage = "" />
       <#if RequestParameters['actimg']?exists>
         <#local activeImage = RequestParameters['actimg'] />
@@ -136,7 +133,9 @@
                 <li>
               </#if>
             </#if>
-            <a href="${image.URI?html}" title="${title}"><img src="${image.URI?html}?vrtx=thumbnail" alt="${title}"></a></li>
+            <a href="${image.URI?html}" title="${title}"><img class="thumbnail" src="${image.URI?html}?vrtx=thumbnail" alt="${title}" />
+            <span><img src="${image.URI?html}" alt="${title}" /></span>
+            </a></li>
         </#list>
       </ul>
     </div>
@@ -165,8 +164,8 @@
         <tbody>
         <#list images as image>
           <tr>
-            <td class="vrtx-table-image"><a href="${image.URI}"><img src="${image.URI}?vrtx=thumbnail"/></a></td>
             <#local title = vrtx.propValue(image, 'title')?html />
+            <td class="vrtx-table-image"><a href="${image.URI}"><img src="${image.URI}?vrtx=thumbnail" alt="${title}" /></a></td>
             <td><a href="${image.URI}">${title}</a></td>
             <#local description = vrtx.propValue(image, 'description', '', 'content')?html />
             <td>${description}</td>

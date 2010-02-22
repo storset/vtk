@@ -19,14 +19,16 @@ body#vrtx-image-listing h1 {
 
 .vrtx-gallery {
   list-style: none;
-  width: 200px;
   clear: left;
-}
-
-.default_galleria_style {
-  width: 730px;
+  width: 292px;
   margin: 0;
   padding: 0;
+  position: relative;
+}
+
+/* With JavaScript */
+.default_galleria_style {
+  width: 730px;
 }
 
 .galleria_wrapper {
@@ -76,20 +78,45 @@ body#vrtx-image-listing h1 {
   color: #444;
 }
 
-.default_galleria_style li {
+.vrtx-gallery li {
   width: 138px;
   height: 104px;
   border: 3px double #eee;
   margin: 0 2px 2px 0;
   background: #eee;
+  float: left;
+  clear: none;
+  overflow: hidden;
 }
 
-.default_galleria_style li img {
+.vrtx-gallery li span { /*CSS for enlarged image*/
+  position: absolute;
+  left: -3000px;
+  visibility: hidden;
+  display: block;
+}
+
+.vrtx-gallery li:hover span { /*CSS for enlarged image*/
+  visibility: visible;
+  left: 322px; /*position where enlarged image should offset horizontally */
+  margin-top: -107px;
+}
+
+.vrtx-gallery li span img {
+  max-width: 408px;
+  z-index: 9999;
+}
+
+.vrtx-gallery li:hover {
+  border-color: #bbb	
+}
+
+.vrtx-gallery li img.thumbnail {
   max-height: 104px;
 }
 
 /* IE 7 better downscaling */
-*:first-child+html .default_galleria_style li img {
+*:first-child+html .vrtx-gallery li img.thumbnail {
   -ms-interpolation-mode : bicubic;
 }
 

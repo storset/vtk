@@ -1,5 +1,12 @@
 jQuery( function($) {
   $('.vrtx-gallery').addClass('default_galleria_style');
+  
+  //Unobtrusive pagingLinks
+  var pagingLinks = '<a id="vrtx-image-gallery-previous" href="#" onclick="$.galleria.prev(); return false;"></a>'
+                  + '<a id="vrtx-image-gallery-next" href="#" onclick="$.galleria.next(); return false;"></a>';
+  
+  $('.vrtx-image-gallery').prepend(pagingLinks);
+  
   $('.nav').css('display', 'none');
   $('.default_galleria_style li').each(function (i) {
     if((i+1) % 5 == 0) {

@@ -88,15 +88,21 @@
 
 <#macro displaySubMenu menu displaySubMenu >
   <ul>
+  	<#assign i = 0 />
     <#list menu.items as item>
-        <#if USE_TREE_VIEW >
-          <li class="closed">
-          <span class="folder">
-        <#else>
-          <li>
-        </#if> 
+    	<#if (i < menu.maxNumberOfItems)>
+	        <#if USE_TREE_VIEW >
+	          <li class="closed">
+	          <span class="folder">
+	        <#else>
+	          <li>
+	        </#if> 
             <@displayItem item=item />
-          </li>  
+          	</li>
+         <#else>
+         	<#break>
+         </#if>
+         <#assign i = i + 1 />
     </#list>
 	<#if (menu.totalNumberOfItems > menu.maxNumberOfItems)>
 	    <li class="vrtx-more">   

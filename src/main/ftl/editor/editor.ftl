@@ -34,10 +34,12 @@
     <@autocomplete.addAutoCompleteScripts srcBase="${webResources?html}"/>
 
     <script type="text/javascript">
+    <!--
       $(document).ready(function() {
           interceptEnterKey();
           setAutoComplete('resource\\.tags', 'tags', {minChars:1});
        });
+    // -->
     </script>
 
     <!-- JQuery UI (used for datepicker) -->

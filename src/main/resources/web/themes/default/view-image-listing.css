@@ -28,13 +28,13 @@ ul.vrtx-image-listing {
 
 .vrtx-image-container {
   margin-bottom:15px;
-  max-height: 188px;
+  height: 188px;
   width: 250px;
   overflow: hidden;
 }
 
-* html .vrtx-image-container {
-  height: 188px;
+.vrtx-image-container img {
+  max-height: 188px;	
 }
 
 /* IE 7 better downscaling */

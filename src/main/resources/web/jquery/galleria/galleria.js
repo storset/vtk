@@ -12,6 +12,8 @@ jQuery( function($) {
     if((i+1) % 5 == 0) {
       $(this).css('marginRight', '0');	
     }
+    //Remove span img for pure CSS gallery
+    $("span", this).remove();
   });
 
   $('ul.default_galleria_style').galleria( {

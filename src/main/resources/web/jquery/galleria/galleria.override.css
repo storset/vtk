@@ -100,11 +100,11 @@ body#vrtx-image-listing h1 {
   visibility: visible;
   left: 322px; /*position where enlarged image should offset horizontally */
   margin-top: -107px;
+  z-index: 99999;
 }
 
 .vrtx-gallery li span img {
   max-width: 408px;
-  z-index: 9999;
 }
 
 .vrtx-gallery li:hover {

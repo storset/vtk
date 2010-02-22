@@ -39,7 +39,7 @@
           interceptEnterKey();
           setAutoComplete('resource\\.tags', 'tags', {minChars:1});
        });
-    // -->
+    //-->
     </script>
 
     <!-- JQuery UI (used for datepicker) -->

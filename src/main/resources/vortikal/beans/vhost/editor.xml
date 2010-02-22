@@ -3,6 +3,8 @@
 "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
+  <import resource="blog-listing-editor.xml" />
+
   <bean id="editor.service" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
     <property name="order" value="-9800" />

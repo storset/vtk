@@ -26,6 +26,7 @@
 <#import "/lib/collections/view-project-listing.ftl" as projects />
 <#import "/lib/collections/view-person-listing.ftl" as persons />
 <#import "/lib/collections/view-image-listing.ftl" as images />
+<#import "/lib/collections/view-blog-listing.ftl" as blogs />
 
 <#assign resource = collection />
 
@@ -152,6 +153,8 @@
              <@projects.displayProjects searchComponent />
            <#elseif collection.resourceType = 'image-listing'>
              <@images.displayImages searchComponent collection />
+           <#elseif collection.resourceType = 'blog-listing'>
+             <@blogs.displayBlogs searchComponent collection />
            <#else>
              <@coll.displayResources collectionListing=searchComponent />
            </#if>

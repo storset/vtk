@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <bean id="editor.blogListingEditService" parent="editor.abstractEditService">
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsBlogListing" />
+      </list>
+    </property>
+    <property name="handler" ref="editor.blogListingEditHandler" />
+  </bean>
+
+  <bean id="editor.blogListingEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+    <property name="resourceManager" ref="editor.blogListingResourceManager" />
+    <property name="formView" value="editor.editView" />
+    <property name="successView" value="redirectToManage" />
+  </bean>
+
+  <bean id="editor.blogListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager"
+    parent="repositoryAware">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
+    <property name="contentResourceType" ref="documentResourceTypeDefinition" />
+  </bean>
+
+</beans>

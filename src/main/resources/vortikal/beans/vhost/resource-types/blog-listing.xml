@@ -63,7 +63,6 @@
       </map>
     </property>
   </bean>
-  
 
   <bean id="resourceIsBlogListing" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
     <property name="resourceTypeDefinition" ref="blogListingResourceTypeDefinition" />

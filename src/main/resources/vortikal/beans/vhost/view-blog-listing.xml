@@ -7,7 +7,7 @@
     <property name="order" value="0" />
     <property name="assertions">
       <list>
-        <ref bean="resourceIsblogListing" />
+        <ref bean="resourceIsBlogListing" />
       </list>
     </property>
     <property name="handlerInterceptors">
@@ -58,7 +58,7 @@
     <property name="order" value="-2" />
     <property name="assertions">
       <list>
-        <ref bean="resourceIsblogListing" />
+        <ref bean="resourceIsBlogListing" />
         <ref bean="feedParameterSetAssertion" />
       </list>
     </property>

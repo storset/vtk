@@ -695,7 +695,7 @@
     <property name="successView" value="redirectToManage" />
     <property name="commandName" value="createDocumentForm" />
     <property name="commandClass" value="org.vortikal.web.actions.create.CreateDocumentCommand" />
-    <property name="downcaseNames" value="false" />
+    <property name="downcaseNames" value="true" />
     <property name="replaceNameChars" ref="createResource.nameReplacementMap" />
     <property name="templateManager" ref="templates.resourceTemplateManager" />
   </bean>

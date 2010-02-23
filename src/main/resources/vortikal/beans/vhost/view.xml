@@ -46,9 +46,7 @@
     </property>
   </bean>
 
-
-  <bean id="freemarkerView" abstract="true"
-        class="org.vortikal.web.view.freemarker.FreeMarkerView">
+  <bean id="freemarkerView" abstract="true" class="org.vortikal.web.view.freemarker.FreeMarkerViewRenderer">
     <property name="exposeSpringMacroHelpers" value="true" />
     <property name="contentType" value="text/html;charset=utf-8" />
     <property name="encoding" value="utf-8" />

@@ -37,11 +37,20 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.Response;
+import org.opensaml.util.storage.MapBasedStorageService;
+import org.opensaml.util.storage.ReplayCache;
+import org.opensaml.util.storage.ReplayCacheEntry;
+import org.opensaml.util.storage.StorageService;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.web.service.URL;
 
 public class Login extends SamlService {
+
+    int replayMinutes = 60;
+    private StorageService<String, ReplayCacheEntry> replayStorage = new MapBasedStorageService<String, ReplayCacheEntry>();
+    private ReplayCache replayCache = new ReplayCache(replayStorage, 60 * 1000 * replayMinutes);
+    
 
     public boolean isLoginRequest(HttpServletRequest req) {
         URL url = URL.create(req);
@@ -90,15 +99,13 @@ public class Login extends SamlService {
     UserData getUserData(HttpServletRequest request, UUID expectedRequestID) {
         String encodedSamlResponseString = request.getParameter("SAMLResponse");
 
-        // Verify SAMLResponse and RelayState form inputs
-
-        // TODO: verify that assertion has not been used before (replay)
-        // TODO: check both timeouts
-
         Response samlResponse = decodeSamlResponse(encodedSamlResponseString);
+        
+        checkReplay(samlResponse);
+        
         String inResponseToID = samlResponse.getInResponseTo();
         if (!expectedRequestID.toString().equals(inResponseToID)) {
-            throw new RuntimeException("Request ID mismatch");
+            throw new AuthenticationProcessingException("Request ID mismatch");
         }
         
         verifyStatusCodeIsSuccess(samlResponse);
@@ -111,5 +118,22 @@ public class Login extends SamlService {
         return new UserData(assertion);
         
     }
+    
+    public void setReplayMinutes(int replayMinutes) {
+        if (replayMinutes <= 0) {
+            throw new IllegalArgumentException("Replay cache minutes must be greater than 0");
+        }
+        this.replayMinutes = replayMinutes;
+    }
+    
+    private void checkReplay(Response response) {
+        boolean replay = this.replayCache.isReplay(response.getIssuer().getValue(), response.getID());
+        if (replay) {
+            throw new AuthenticationProcessingException("Replay attempt discovered");
+        }
+        response.getIssuer();
+        response.getID();
+    }
+
     
 }

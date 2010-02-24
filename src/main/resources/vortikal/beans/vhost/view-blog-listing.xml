@@ -19,11 +19,10 @@
     <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
   </bean>
 
-  <bean id="blogListing.handler" class="org.vortikal.web.display.collection.BlogListingController"
-    parent="collectionListing.handler">
+  <bean id="blogListing.handler" class="org.vortikal.web.display.collection.BlogListingController" parent="collectionListing.handler">
     <property name="searchComponents">
       <list>
-        <ref bean="blogListing.searchComponent" />
+        <ref bean="${override.listing.prefix}blogListing.searchComponent" />
       </list>
     </property>
     <property name="viewName" value="blogListing.view" />
@@ -32,13 +31,13 @@
     <property name="commentingService" ref="commenting.resourceCommentsService" />
   </bean>
 
-  <bean id="blogListing.searchComponent" parent="collectionListing.searchComponent">
+  <bean id="structured.blogListing.searchComponent" parent="collectionListing.searchComponent">
     <property name="name" value="blogListing.defaultListing" />
     <property name="defaultRecursive" value="true" />
     <property name="query">
       <value>(uri = {$currentFolder}/*) AND (type IN structured-article) </value>
     </property>
-      <property name="listableProperties">
+    <property name="listableProperties">
       <list>
         <bean class="org.vortikal.web.search.PropertyDisplayConfig">
           <property name="displayProperty" ref="introductionImagePropDef" />
@@ -54,7 +53,54 @@
         </bean>
       </list>
     </property>
-    <property name="searchSorting" ref="articleListing.searchSorting" />
+    <property name="searchSorting" ref="structured.blogListing.searchSorting" />
+  </bean>
+
+  <bean id="blogListing.searchComponent" parent="collectionListing.searchComponent">
+    <property name="name" value="blogListing.defaultListing" />
+    <property name="defaultRecursive" value="true" />
+    <property name="query">
+      <value>(uri = {$currentFolder}/*) AND (type IN article) </value>
+    </property>
+    <property name="listableProperties">
+      <list>
+        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
+          <property name="displayProperty" ref="introductionImagePropDef" />
+          <property name="preventDisplayProperty" ref="articleListing.hideIntroductionImagePropDef" />
+        </bean>
+        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
+          <property name="displayProperty" ref="publishedDatePropDef" />
+          <property name="preventDisplayProperty" ref="articleListing.hidePublishedDatePropDef" />
+        </bean>
+        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
+          <property name="displayProperty" ref="introductionPropDef" />
+          <property name="preventDisplayProperty" ref="articleListing.hideIntroductionPropDef" />
+        </bean>
+      </list>
+    </property>
+    <property name="searchSorting" ref="blogListing.searchSorting" />
+  </bean>
+
+  <bean id="blogListing.searchSorting" class="org.vortikal.web.search.SearchSorting" depends-on="resourceTypeTree">
+    <property name="sortPropDef" ref="articleListing.sortingPropDef" />
+    <property name="sortOrderPropDefPointers">
+      <list>
+        <value>published-date</value>
+      </list>
+    </property>
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="defaultSortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="structured.blogListing.searchSorting" class="org.vortikal.web.search.SearchSorting" depends-on="resourceTypeTree">
+    <property name="sortPropDef" ref="articleListing.sortingPropDef" />
+    <property name="sortOrderPropDefPointers">
+      <list>
+        <value>publish-date</value>
+      </list>
+    </property>
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="defaultSortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
   <bean id="blogListing.viewResolver" parent="decoratorViewResolver">
@@ -64,15 +110,15 @@
       </map>
     </property>
   </bean>
-  
+
   <bean id="blogListing.view" parent="freemarkerView">
-  <property name="url" value="pages/view-collectionlisting.ftl" />
+    <property name="url" value="pages/view-collectionlisting.ftl" />
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
       </list>
     </property>
-     <property name="attributesMap">
+    <property name="attributesMap">
       <map>
         <entry key="cssURLs">
           <list>
@@ -96,7 +142,7 @@
   </bean>
 
   <bean id="blogListing.feedHandler" parent="collectionListing.atomHandler">
-    <property name="searchComponent" ref="blogListing.searchComponent" />
+    <property name="searchComponent" ref="${override.listing.prefix}blogListing.searchComponent" />
   </bean>
 
 </beans>

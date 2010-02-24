@@ -25,9 +25,7 @@
 	          <a href="${url?html}">
 	          	${comment.author.description?html} <@vrtx.msg code="commenting.comments.on" default="about" /> "${title?html}"
 	          </a>
-	          <div class="pubdate">
-	          	<@vrtx.date value=comment.time format='long' />
-	          </div>
+	          <div class="pubdate"><@vrtx.date value=comment.time format='long' /></div>
 	          <div class="comment">
 	          	${comment.content}
 	          </div>

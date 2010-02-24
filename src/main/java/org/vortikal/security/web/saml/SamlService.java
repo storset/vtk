@@ -62,6 +62,7 @@ import org.opensaml.saml2.core.AuthnRequest;
 import org.opensaml.saml2.core.Issuer;
 import org.opensaml.saml2.core.LogoutRequest;
 import org.opensaml.saml2.core.LogoutResponse;
+import org.opensaml.saml2.core.NameID;
 import org.opensaml.saml2.core.RequestAbstractType;
 import org.opensaml.saml2.core.Response;
 import org.opensaml.saml2.core.Status;
@@ -276,12 +277,19 @@ public abstract class SamlService {
         logoutRequest.setReason("urn:oasis:names:tc:SAML:2.0:logout:user");
         logoutRequest.setIssuer(createIssuer(config.getServiceIdentifier()));
 
+        qname = NameID.DEFAULT_ELEMENT_NAME;
+        @SuppressWarnings("unchecked")
+        XMLObjectBuilder<NameID> nameBuilder = Configuration.getBuilderFactory().getBuilder(qname);
+        NameID nameID = nameBuilder.buildObject(qname.getNamespaceURI(), qname.getLocalPart(), qname.getPrefix());
+        nameID.setValue(UUID.randomUUID().toString());
+        logoutRequest.setNameID(nameID);
+
         try {
             logoutRequest.validate(true);
         } catch (ValidationException e) {
             throw new AuthenticationProcessingException("Unable to validate SAML logout request", e);
         }
-
+        
         return logoutRequest;
     }
     

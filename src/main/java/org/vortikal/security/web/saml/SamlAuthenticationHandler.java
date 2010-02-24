@@ -108,7 +108,6 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     /**
      * Handles incoming logout requests (originated from IDP) and responses 
      * (from IDP based on request from us)
-     * TODO: Single Logout Protocol not implemented
      */
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {

@@ -19,9 +19,36 @@
 
   <bean id="editor.blogListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager"
     parent="repositoryAware">
-    <property name="htmlParser" ref="decorating.htmlParser" />
+ <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
     <property name="contentResourceType" ref="documentResourceTypeDefinition" />
+    <property name="editPropertyProvider">
+      <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
+        <property name="preContentProperties">
+          <list>
+            <ref bean="userTitlePropDef" />
+            <ref bean="introductionPropDef" />
+            <ref bean="introductionImagePropDef" />
+            <ref bean="introductionImageCaptionPropDef" />
+            <ref bean="navigationTitlePropDef" />
+            <ref bean="importancePropDef" />
+            <ref bean="hiddenPropDef" />
+            <ref bean="pageLimitPropDef" />
+<!--        <ref bean="articleListing.featuredArticlesPropDef" />
+            <ref bean="articleListing.recursiveListingPropDef" />
+            <ref bean="articleListing.recursiveListingSubfoldersPropDef" />
+            <ref bean="aggregationPropDef" /> 
+            <ref bean="recursiveAggregationPropDef" />  -->
+            
+            <ref bean="articleListing.sortingPropDef" /> 
+            <ref bean="articleListing.hidePublishedDatePropDef" />
+            <ref bean="articleListing.hideIntroductionPropDef" />
+            <ref bean="articleListing.hideIntroductionImagePropDef" />
+            <ref bean="hideNumberOfCommentsPropDef" />
+          </list>
+        </property>
+      </bean>
+    </property>
   </bean>
 
 </beans>

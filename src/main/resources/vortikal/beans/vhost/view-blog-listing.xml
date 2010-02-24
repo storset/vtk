@@ -19,7 +19,7 @@
     <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
   </bean>
 
-  <bean id="blogListing.handler" class="org.vortikal.web.display.collection.CollectionListingController"
+  <bean id="blogListing.handler" class="org.vortikal.web.display.collection.BlogListingController"
     parent="collectionListing.handler">
     <property name="searchComponents">
       <list>
@@ -27,6 +27,9 @@
       </list>
     </property>
     <property name="viewName" value="blogListing.view" />
+    <property name="viewService" ref="viewService" />
+    <property name="tagElementsProvider" ref="tags.tagElementsProvider" />
+    <property name="commentingService" ref="commenting.resourceCommentsService" />
   </bean>
 
   <bean id="blogListing.searchComponent" parent="collectionListing.searchComponent">
@@ -35,6 +38,23 @@
     <property name="query">
       <value>(uri = {$currentFolder}/*) AND (type IN structured-article) </value>
     </property>
+      <property name="listableProperties">
+      <list>
+        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
+          <property name="displayProperty" ref="introductionImagePropDef" />
+          <property name="preventDisplayProperty" ref="articleListing.hideIntroductionImagePropDef" />
+        </bean>
+        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
+          <property name="displayProperty" ref="publishedDatePropDef" />
+          <property name="preventDisplayProperty" ref="articleListing.hidePublishedDatePropDef" />
+        </bean>
+        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
+          <property name="displayProperty" ref="introductionPropDef" />
+          <property name="preventDisplayProperty" ref="articleListing.hideIntroductionPropDef" />
+        </bean>
+      </list>
+    </property>
+    <property name="searchSorting" ref="articleListing.searchSorting" />
   </bean>
 
   <bean id="blogListing.viewResolver" parent="decoratorViewResolver">
@@ -51,7 +71,17 @@
       <list>
         <ref bean="resourceContextProvider" />
       </list>
-    </property> 
+    </property>
+     <property name="attributesMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/view-components.css</value>
+            <value>${themeBaseURL}/view-blog-listing.css</value>
+          </list>
+        </entry>
+      </map>
+    </property>
   </bean>
 
   <bean id="blogListing.feedService" parent="collectionListing.atomService">

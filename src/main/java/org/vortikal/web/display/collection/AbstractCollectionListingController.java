@@ -74,7 +74,7 @@ public abstract class AbstractCollectionListingController extends AbstractListin
     protected final static String MODEL_KEY_PAGE = "page";
     protected final static String MODEL_KEY_PAGE_THROUGH_URLS = "pageThroughUrls";
 
-    private Repository repository;
+    protected Repository repository;
     protected ResourceWrapperManager resourceManager;
     protected PropertyTypeDefinition hiddenPropDef;
     protected int defaultPageLimit = 20;

@@ -154,7 +154,7 @@
            <#elseif collection.resourceType = 'image-listing'>
              <@images.displayImages searchComponent collection />
            <#elseif collection.resourceType = 'blog-listing'>
-             <@blogs.displayBlogs searchComponent collection />
+              <@blogs.displayBlogs searchComponent collection />		              
            <#else>
              <@coll.displayResources collectionListing=searchComponent />
            </#if>

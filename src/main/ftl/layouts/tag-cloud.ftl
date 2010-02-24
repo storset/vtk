@@ -8,12 +8,16 @@
   - 
   -->
 
-<#if tagElements?exists && tagElements?size &gt; 0>
-    <ul class="vrtx-tag-cloud">
-     <#list tagElements as element>
-       <li class="tag-magnitude-${element.magnitude}">
-         <a class="tag" href="${element.linkUrl?html}" rel="tag">${element.text?html}</a>
-       </li>
-     </#list>
-    </ul>
-</#if>
+<@crateTagCloud />
+
+<#macro crateTagCloud>
+	<#if tagElements?exists && tagElements?size &gt; 0>
+	    <ul class="vrtx-tag-cloud">
+	     <#list tagElements as element>
+	       <li class="tag-magnitude-${element.magnitude}">
+	         <a class="tag" href="${element.linkUrl?html}" rel="tag">${element.text?html}</a>
+	       </li>
+	     </#list>
+	    </ul>
+	</#if>
+</#macro>

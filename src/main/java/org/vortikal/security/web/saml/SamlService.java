@@ -199,18 +199,7 @@ public abstract class SamlService {
     
     protected final void validateAssertionContent(Assertion assertion) throws AuthenticationProcessingException {
         verifyConfirmationTimeNotExpired(assertion);
-
-        // TODO: verify that assertion has not been used before (replay)
-        //checkReplay(assertion);
     }
-
-//    private void checkReplay(Assertion assertion) {
-//        Issuer issuer = assertion.getIssuer();
-//        assertion.getID();
-//        SAMLMessageContext ctx;
-//        System.out.println("__assertion issuer: " + issuer.getValue());
-//    }
-
     
     protected final void verifyStatusCodeIsSuccess(Response samlResponse) throws AuthenticationProcessingException {
         String statusCode = samlResponse.getStatus().getStatusCode().getValue();

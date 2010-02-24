@@ -48,12 +48,15 @@ import org.opensaml.ws.message.encoder.MessageEncodingException;
 import org.opensaml.ws.transport.http.HttpServletRequestAdapter;
 import org.opensaml.xml.security.credential.Credential;
 import org.opensaml.xml.util.Pair;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.security.AuthenticationProcessingException;
-import org.vortikal.security.SecurityContext;
+import org.vortikal.security.web.SecurityInitializer;
 import org.vortikal.web.service.URL;
 
 public class Logout extends SamlService {
 
+    private SecurityInitializer securityInitializer;
+    
     public void initiateLogout(HttpServletRequest request, HttpServletResponse response) {
         URL savedURL = URL.create(request);
         request.getSession(true).setAttribute(URL_SESSION_ATTR, savedURL);
@@ -89,23 +92,24 @@ public class Logout extends SamlService {
         String relayState = request.getParameter("RelayState");
         
         String redirectURL = buildRedirectURL(logoutResponse, relayState, signingCredential);
+
+        // Remove authentication state
+        this.securityInitializer.removeAuthState();
         
-        SecurityContext.getSecurityContext();
+        // Handle the response ourselves.
         request.getSession().invalidate();
-        //SessionStateUtil.logoutUser(httpRequest.getSession(true));
         response.sendRedirect(redirectURL);
     }
 
     
     
     public void handleLogoutResponse(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        //URL loginURL = getServiceProviderURL(request);
         if (request.getParameter("SAMLResponse") == null) {
             throw new IllegalStateException("Not a SAML logout request");
         }
         UUID expectedRequestID = (UUID) request.getSession(true).getAttribute(REQUEST_ID_SESSION_ATTR);
         if (expectedRequestID == null) {
-            throw new RuntimeException("Missing request ID attribute in session");
+            throw new AuthenticationProcessingException("Missing request ID attribute in session");
         }
         request.getSession().removeAttribute(REQUEST_ID_SESSION_ATTR);
 
@@ -114,12 +118,12 @@ public class Logout extends SamlService {
         
         HttpSession session = request.getSession();
         if (session == null) {
-            throw new IllegalStateException("No session exists, not a post-logout request");
+            throw new AuthenticationProcessingException("No session exists, not a post-logout request");
         }
         
         URL url = (URL) session.getAttribute(URL_SESSION_ATTR);
         if (url == null) {
-            throw new IllegalStateException("No URL session attribute exists, nowhere to redirect");
+            throw new AuthenticationProcessingException("No URL session attribute exists, nowhere to redirect");
         }
         session.removeAttribute(URL_SESSION_ATTR);
         session.removeAttribute(REQUEST_ID_SESSION_ATTR);
@@ -130,7 +134,6 @@ public class Logout extends SamlService {
     private String urlToLogoutServiceForDomain(SamlConfiguration config, UUID requestID, UUID relayState) {
         LogoutRequest logoutRequest = createLogoutRequest(config, requestID);
         String url = buildSignedAndEncodedLogoutRequestUrl(logoutRequest, relayState);
-
         return url;
     }
 
@@ -144,7 +147,7 @@ public class Logout extends SamlService {
         try {
             decoder.decode(messageContext);
         } catch (Exception e) {
-            throw new RuntimeException("Unable to decode LogoutResponse.", e);
+            throw new AuthenticationProcessingException("Unable to decode LogoutResponse.", e);
         }
         LogoutRequest logoutRequest = messageContext.getInboundSAMLMessage();
         return logoutRequest;
@@ -168,10 +171,15 @@ public class Logout extends SamlService {
                 String sigMaterial = urlBuilder.buildQueryString();
                 queryParams.add(new Pair<String, String>("Signature", enc.generateSignature(signingCredential, enc.getSignatureAlgorithmURI(signingCredential, null), sigMaterial)));
             } catch (MessageEncodingException ex) {
-                throw new RuntimeException("Exception caught when encoding and signing parameters", ex);
+                throw new AuthenticationProcessingException("Exception caught when encoding and signing parameters", ex);
             }
         }
         return urlBuilder.buildURL();
+    }
+
+    @Required
+    public void setSecurityInitializer(SecurityInitializer securityInitializer) {
+        this.securityInitializer = securityInitializer;
     }
     
 }

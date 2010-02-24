@@ -85,6 +85,7 @@ import org.opensaml.xml.util.XMLHelper;
 import org.opensaml.xml.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
+import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.web.service.URL;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -95,7 +96,7 @@ public abstract class SamlService {
         try {
             DefaultBootstrap.bootstrap();
         } catch (ConfigurationException e) {
-            throw new RuntimeException("Exception when trying to bootstrap OpenSAML", e);
+            throw new IllegalStateException("Exception when trying to bootstrap OpenSAML", e);
         }
     }
     
@@ -179,7 +180,7 @@ public abstract class SamlService {
         return configuration;
     }
  
-    protected final Response decodeSamlResponse(String encodedSamlResponseXml) throws RuntimeException {
+    protected final Response decodeSamlResponse(String encodedSamlResponseXml) throws AuthenticationProcessingException {
         try {
             String samlResponseXml = new String(Base64.decode(encodedSamlResponseXml), "utf-8");
             DocumentBuilderFactory newFactory = DocumentBuilderFactory.newInstance();
@@ -192,23 +193,33 @@ public abstract class SamlService {
 
             return samlResponse;
         } catch (Exception e) {
-            throw new RuntimeException("Exception caught when trying to decode SAML response.", e);
+            throw new AuthenticationProcessingException("Exception caught when trying to decode SAML response.", e);
         }
     }
     
-    protected final void validateAssertionContent(Assertion assertion) throws RuntimeException {
+    protected final void validateAssertionContent(Assertion assertion) throws AuthenticationProcessingException {
         verifyConfirmationTimeNotExpired(assertion);
+
+        // TODO: verify that assertion has not been used before (replay)
+        //checkReplay(assertion);
     }
 
+//    private void checkReplay(Assertion assertion) {
+//        Issuer issuer = assertion.getIssuer();
+//        assertion.getID();
+//        SAMLMessageContext ctx;
+//        System.out.println("__assertion issuer: " + issuer.getValue());
+//    }
+
     
-    protected final void verifyStatusCodeIsSuccess(Response samlResponse) throws RuntimeException {
+    protected final void verifyStatusCodeIsSuccess(Response samlResponse) throws AuthenticationProcessingException {
         String statusCode = samlResponse.getStatus().getStatusCode().getValue();
         if (!StatusCode.SUCCESS_URI.equals(statusCode)) {
-            throw new RuntimeException("Wrong status code (" + statusCode + "),  should be: " + StatusCode.SUCCESS_URI);
+            throw new AuthenticationProcessingException("Wrong status code (" + statusCode + "),  should be: " + StatusCode.SUCCESS_URI);
         }
     }
     
-    protected final void verifyDestinationAddressIsCorrect(Response samlResponse) throws RuntimeException {
+    protected final void verifyDestinationAddressIsCorrect(Response samlResponse) throws AuthenticationProcessingException {
         if (samlResponse.getDestination() == null) {
             return;
         }
@@ -224,7 +235,7 @@ public abstract class SamlService {
     protected final void verifyCryptographicAssertionSignature(Assertion assertion) {
         X509Certificate cert = buildX509CertificateFromEncodedString(this.idpCertificate);
         if (!verifySignature(cert, assertion)) {
-            throw new RuntimeException("Failed to verify signature of assertion: " + assertion.getID());
+            throw new AuthenticationProcessingException("Failed to verify signature of assertion: " + assertion.getID());
         }
     }
     
@@ -235,7 +246,7 @@ public abstract class SamlService {
         try {
             decoder.decode(messageContext);
         } catch (Exception e) {
-            throw new RuntimeException("Unable to decode LogoutResponse.", e);
+            throw new AuthenticationProcessingException("Unable to decode LogoutResponse", e);
         }
         LogoutResponse logoutResponse = messageContext.getInboundSAMLMessage();
         return logoutResponse;
@@ -258,7 +269,7 @@ public abstract class SamlService {
         try {
             authnRequest.validate(true);
         } catch (ValidationException e) {
-            throw new RuntimeException("Unable to validate SAML authentication request: " + e);
+            throw new AuthenticationProcessingException("Unable to validate SAML authentication request" + e);
         }
         return authnRequest;
     }
@@ -279,7 +290,7 @@ public abstract class SamlService {
         try {
             logoutRequest.validate(true);
         } catch (ValidationException e) {
-            throw new RuntimeException("Unable to validate SAML logout request: " + e);
+            throw new AuthenticationProcessingException("Unable to validate SAML logout request", e);
         }
 
         return logoutRequest;
@@ -323,7 +334,7 @@ public abstract class SamlService {
             Encoder enc = new Encoder();
             return enc.buildRedirectURL(getSigningCredential(), relayState, authnRequest);
         } catch (Exception e) {
-            throw new RuntimeException("Exception caught when signing and encoding request URL: " + e);
+            throw new AuthenticationProcessingException("Exception caught when signing and encoding request URL", e);
         }
     }
 
@@ -332,7 +343,7 @@ public abstract class SamlService {
             Encoder enc = new Encoder();
             return enc.buildRedirectURL(getSigningCredential(), relayState, logoutRequest);
         } catch (Exception e) {
-            throw new RuntimeException("Exception caught when signing and encoding request URL: " + e);
+            throw new AuthenticationProcessingException("Exception caught when signing and encoding request URL", e);
         }
     }
 
@@ -349,10 +360,11 @@ public abstract class SamlService {
         return issuer;
     }
 
-    private void verifyConfirmationTimeNotExpired(Assertion assertion) throws RuntimeException {
+    private void verifyConfirmationTimeNotExpired(Assertion assertion) throws AuthenticationProcessingException {
+        // TODO: check both timeouts
         DateTime confirmationTime = assertionConfirmationTime(assertion);
         if (confirmationTime == null || !confirmationTime.isAfterNow()) {
-            throw new RuntimeException("Assertion confirmation time has expired: " + confirmationTime + " before "
+            throw new AuthenticationProcessingException("Assertion confirmation time has expired: " + confirmationTime + " before "
                     + new DateTime());
         }
     }
@@ -376,6 +388,7 @@ public abstract class SamlService {
             throw new IllegalArgumentException("Assertion must be an instance of SignableSAMLObject");
         }        
         SignableSAMLObject signable = (SignableSAMLObject) assertion;
+        
         Signature signature = signable.getSignature();
         if (signature == null) {
             return false;
@@ -384,7 +397,6 @@ public abstract class SamlService {
         if (publicKey == null) {
             return false;
         }
-
         BasicX509Credential x509credential = new BasicX509Credential();
         x509credential.setPublicKey(publicKey);
         SignatureValidator validator = new SignatureValidator(x509credential);
@@ -404,7 +416,7 @@ public abstract class SamlService {
             newCert = (java.security.cert.X509Certificate) cf.generateCertificate(input);
             return newCert;
         } catch (CertificateException e) {
-            throw new RuntimeException("Unable to build x509 certificate from encoded string.", e);
+            throw new AuthenticationProcessingException("Unable to build x509 certificate from encoded string", e);
         }
     }
     
@@ -428,7 +440,7 @@ public abstract class SamlService {
                 deflaterStream.write(messageStr.getBytes("UTF-8"));
                 deflaterStream.finish();
             } catch (IOException e) {
-                throw new RuntimeException("Unable to deflate message", e);
+                throw new AuthenticationProcessingException("Unable to deflate message", e);
             }
 
             return Base64.encodeBytes(bytesOut.toByteArray(), Base64.DONT_BREAK_LINES);
@@ -463,7 +475,7 @@ public abstract class SamlService {
                 deflaterStream.write(messageStr.getBytes("UTF-8"));
                 deflaterStream.finish();
             } catch (IOException e) {
-                throw new RuntimeException("Unable to deflate message", e);
+                throw new AuthenticationProcessingException("Unable to deflate message", e);
             }
 
             String encoded = Base64.encodeBytes(bytesOut.toByteArray(), Base64.DONT_BREAK_LINES);

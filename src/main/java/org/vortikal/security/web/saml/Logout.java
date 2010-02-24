@@ -97,29 +97,28 @@ public class Logout extends SamlService {
         this.securityInitializer.removeAuthState();
         
         // Handle the response ourselves.
-        request.getSession().invalidate();
+        //request.getSession().invalidate();
         response.sendRedirect(redirectURL);
     }
 
     
     
     public void handleLogoutResponse(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            throw new AuthenticationProcessingException("No session");
+        }
         if (request.getParameter("SAMLResponse") == null) {
             throw new IllegalStateException("Not a SAML logout request");
         }
-        UUID expectedRequestID = (UUID) request.getSession(true).getAttribute(REQUEST_ID_SESSION_ATTR);
+        UUID expectedRequestID = (UUID) session.getAttribute(REQUEST_ID_SESSION_ATTR);
         if (expectedRequestID == null) {
             throw new AuthenticationProcessingException("Missing request ID attribute in session");
         }
-        request.getSession().removeAttribute(REQUEST_ID_SESSION_ATTR);
+        session.removeAttribute(REQUEST_ID_SESSION_ATTR);
 
         LogoutResponse logoutResponse = getLogoutResponse(request);
         logoutResponse.validate(true);
-        
-        HttpSession session = request.getSession();
-        if (session == null) {
-            throw new AuthenticationProcessingException("No session exists, not a post-logout request");
-        }
         
         URL url = (URL) session.getAttribute(URL_SESSION_ATTR);
         if (url == null) {

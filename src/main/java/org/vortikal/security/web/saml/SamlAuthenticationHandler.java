@@ -31,20 +31,14 @@
 package org.vortikal.security.web.saml;
 
 import java.io.IOException;
-import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
-import org.opensaml.DefaultBootstrap;
-import org.opensaml.xml.ConfigurationException;
-import org.opensaml.xml.security.credential.Credential;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
-import org.vortikal.repository.Path;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.Principal;
@@ -52,109 +46,42 @@ import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.web.AuthenticationChallenge;
 import org.vortikal.security.web.AuthenticationHandler;
 import org.vortikal.security.web.InvalidAuthenticationRequestException;
-import org.vortikal.web.service.URL;
 
 /**
  * Skeleton of what will be a SAML Web browser SSO authentication handler/challenge
  */
 public class SamlAuthenticationHandler implements AuthenticationChallenge, AuthenticationHandler, Controller {
 
-    static {
-        try {
-            DefaultBootstrap.bootstrap();
-        } catch (ConfigurationException e) {
-            throw new RuntimeException("Exception when trying to bootstrap OpenSAML." + e);
-        }
-    }
+    private Challenge challenge;
+    private Login login;
+    private Logout logout;
     
-    private static final String URL_SESSION_ATTR = SamlAuthenticationHandler.class.getName() + ".SamlSavedURL";
-    private static final String REQUEST_ID_SESSION_ATTR = SamlAuthenticationHandler.class.getName() + ".SamlSavedRequestID";
-
     private PrincipalFactory principalFactory;
 
-    private Path serviceProviderURI;
-
-    private CertificateManager certificateManager;
-    private String privateKeyAlias;
-    
-    private String idpCertificate;
-
-    // IDP login/logout URLs:
-    private String authenticationURL;
-    private String logoutURL;
-
-    // A string identifying this service provider
-    private String serviceIdentifier;
-
-
     @Override
-    public void challenge(HttpServletRequest req, HttpServletResponse resp) throws AuthenticationProcessingException,
+    public void challenge(HttpServletRequest request, HttpServletResponse response) throws AuthenticationProcessingException,
             ServletException, IOException {
-        // 1. Save request information in session for later redirect
-        URL url = URL.create(req);
-        req.getSession(true).setAttribute(URL_SESSION_ATTR, url);
-
-        Credential signingCredential = this.certificateManager.getCredential(this.privateKeyAlias);
-        if (signingCredential == null) {
-            throw new AuthenticationProcessingException(
-                    "Unable to obtain credentials for signing using keystore alias '" 
-                    +  this.privateKeyAlias + "'");
-        }
-        SamlAuthnRequestHelper samlConnector = new SamlAuthnRequestHelper(signingCredential);
-        UUID relayState = UUID.randomUUID();
-
-        SamlConfiguration samlConfiguration = newSamlConfiguration(req);
-        
-        // Generate request ID, save in session
-        UUID requestID = UUID.randomUUID();
-        req.getSession().setAttribute(REQUEST_ID_SESSION_ATTR, requestID);
-            
-        String redirURL = samlConnector.urlToLoginServiceForDomain(samlConfiguration, requestID, relayState);
-        resp.sendRedirect(redirURL);
+        this.challenge.challenge(request, response);
     }
 
     @Override
     public boolean isRecognizedAuthenticationRequest(HttpServletRequest req) throws AuthenticationProcessingException,
             InvalidAuthenticationRequestException {
-        // If request is POST and request.uri = this.serviceProviderURI
-        // and request contains both parameters (SAMLResponse, RelayState)
-        // then return true else return false
-        URL url = URL.create(req);
-        if (!url.getPath().equals(this.serviceProviderURI)) {
-            return false;
-        }
-        if (!"POST".equals(req.getMethod())) {
-            return false;
-        }
-        if (req.getParameter("SAMLResponse") == null) {
-            return false;
-        }
-        if (req.getParameter("RelayState") == null) {
-            return false;
-        }
-        return true;
+        return this.login.isLoginRequest(req);
     }
 
     /**
      * Performs the authentication based on the SAMLResponse request parameter
      */
     @Override
-    public Principal authenticate(HttpServletRequest req) throws AuthenticationProcessingException,
+    public Principal authenticate(HttpServletRequest request) throws AuthenticationProcessingException,
             AuthenticationException, InvalidAuthenticationRequestException {
-
-        URL loginURL = getServiceProviderURL(req);
-        UUID expectedRequestID = (UUID) req.getSession(true).getAttribute(REQUEST_ID_SESSION_ATTR);
-        if (expectedRequestID == null) {
-            throw new RuntimeException("Missing request ID attribute in session");
-        }
-        req.getSession().removeAttribute(REQUEST_ID_SESSION_ATTR);
-        SamlResponseHelper helper = new SamlResponseHelper(loginURL, this.idpCertificate, expectedRequestID, req);
-        UserData userData = helper.getUserData();
+        UserData userData = this.login.login(request);
         if (userData != null) {
             String id = userData.getUsername();
             return this.principalFactory.getPrincipal(id, Principal.Type.USER);
         } else {
-            throw new AuthenticationException("Unable to authenticate request " + req);
+            throw new AuthenticationException("Unable to authenticate request " + request);
         }
     }
 
@@ -162,143 +89,69 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
      * Does a redirect to the original resource after a successful authentication
      */
     @Override
-    public boolean postAuthentication(HttpServletRequest req, HttpServletResponse resp)
+    public boolean postAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationProcessingException, InvalidAuthenticationRequestException {
-        // Get original request URL (saved in challenge()) from session, redirect to it
-        URL url = (URL) req.getSession(true).getAttribute(URL_SESSION_ATTR);
-        if (url == null) {
-            throw new AuthenticationProcessingException("Missing URL attribute in session");
-        }
-        try {
-            resp.sendRedirect(url.toString());
-            return true;
-        } catch (Exception e) {
-            throw new AuthenticationProcessingException(e);
-        }
+        this.login.redirectAfterLogin(request, response);
+        return true;
     }
 
     /**
      * Initiates logout process with IDP
      */
     @Override
-    public boolean logout(Principal principal, HttpServletRequest req, HttpServletResponse resp)
+    public boolean logout(Principal principal, HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationProcessingException, ServletException, IOException {
-
-        URL savedURL = URL.create(req);
-        req.getSession(true).setAttribute(URL_SESSION_ATTR, savedURL);
-    
-        // Generate request ID, save in session
-        UUID requestID = UUID.randomUUID();
-        req.getSession().setAttribute(REQUEST_ID_SESSION_ATTR, requestID);
-        
-        Credential signingCredential = this.certificateManager.getCredential(this.privateKeyAlias);
-        if (signingCredential == null) {
-            throw new AuthenticationProcessingException(
-                    "Unable to obtain credentials for signing using keystore alias '" 
-                    +  this.privateKeyAlias + "'");
-        }
-        SamlAuthnRequestHelper samlConnector = new SamlAuthnRequestHelper(signingCredential);
-        UUID relayState = UUID.randomUUID();
-        SamlConfiguration samlConfiguration = newSamlConfiguration(req);
-        String url = samlConnector.urlToLogoutServiceForDomain(samlConfiguration, requestID, relayState);
-        resp.sendRedirect(url);
+        this.logout.initiateLogout(request, response);
         return true;
     }
 
     /**
-     * Handles post-logout requests from IDP (redirects to original resource)
+     * Handles incoming logout requests (originated from IDP) and responses 
+     * (from IDP based on request from us)
+     * TODO: Single Logout Protocol not implemented
      */
     @Override
-    public ModelAndView handleRequest(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
-        HttpSession session = request.getSession();
-        if (session == null) {
-            throw new IllegalStateException("No session exists, not a post-logout request");
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        if (request.getParameter("SAMLResponse") == null) {
+            // Logout request from IDP (based on some other SP's request)
+            this.logout.handleLogoutRequest(request, response);
+        } else {
+            // Logout response (based on our request) from IDP
+            this.logout.handleLogoutResponse(request, response);
         }
-        
-        URL url = (URL) session.getAttribute(URL_SESSION_ATTR);
-        if (url == null) {
-            throw new IllegalStateException("No URL session attribute exists, nowhere to redirect");
-        }
-        session.removeAttribute(URL_SESSION_ATTR);
-        session.removeAttribute(REQUEST_ID_SESSION_ATTR);
-
-        response.sendRedirect(url.toString());
         return null;
     }
+    
 
     @Override
     public AuthenticationChallenge getAuthenticationChallenge() {
         return this;
     }
 
-
     @Override
     public boolean isLogoutSupported() {
         return true;
     }
 
-    private SamlConfiguration newSamlConfiguration(HttpServletRequest request) {
-        URL url = getServiceProviderURL(request);
-        String id = this.serviceIdentifier;
-        if (id == null || "".equals(id.trim())) {
-            URL serviceIdentifierURL = URL.create(request);
-            serviceIdentifierURL.clearParameters();
-            serviceIdentifierURL.setPath(Path.ROOT);
-            id = serviceIdentifierURL.toString();
-            id = id.substring(0, id.length() - 1);
-        }
-        SamlConfiguration configuration = new SamlConfiguration(this.authenticationURL, 
-                this.logoutURL, url.toString(), id);
-        return configuration;
-    }
- 
-    private URL getServiceProviderURL(HttpServletRequest request) {
-        URL url = URL.create(request);
-        url.clearParameters();
-        url.setPath(this.serviceProviderURI);
-        return url;
-    }
-    
     @Required
     public void setPrincipalFactory(PrincipalFactory principalFactory) {
         this.principalFactory = principalFactory;
     }
 
-
     @Required
-    public void setServiceProviderURI(String serviceProviderURI) {
-        this.serviceProviderURI = Path.fromString(serviceProviderURI);
-    }
-
-
-    @Required
-    public void setIdpCertificate(String idpCertificate) {
-        this.idpCertificate = idpCertificate;
-    }
-
-
-    @Required
-    public void setCertificateManager(CertificateManager certificateManager) {
-        this.certificateManager = certificateManager;
+    public void setChallenge(Challenge challenge) {
+        this.challenge = challenge;
     }
 
     @Required
-    public void setPrivateKeyAlias(String privateKeyAlias) {
-        this.privateKeyAlias = privateKeyAlias;
+    public void setLogin(Login login) {
+        this.login = login;
     }
 
     @Required
-    public void setAuthenticationURL(String authenticationURL) {
-        this.authenticationURL = authenticationURL;
+    public void setLogout(Logout logout) {
+        this.logout = logout;
     }
 
-    @Required
-    public void setLogoutURL(String logoutURL) {
-        this.logoutURL = logoutURL;
-    }
 
-    public void setServiceIdentifier(String serviceIdentifier) {
-        this.serviceIdentifier = serviceIdentifier;
-    }
 }

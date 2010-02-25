@@ -21,18 +21,18 @@
 
 <#macro listComments >
 <#if (comments?size > 0) >
-	<div class="recent-comments">
-		<h3><@vrtx.msg code="commenting.comments.recent" /></h3>
-		<ul class="comments">
+	<div class="vrtx-recent-comments">
+		<a class="comments-title"><@vrtx.msg code="commenting.comments.recent" /></h3>
+		<ul class="items">
 	    <#list comments as comment >
 	    	<#local url = urlMap[comment.URI] + '#comment-' + comment.ID />
 	    	<#local title = resourceMap[comment.URI].title />
 	        <li class="comment">
-	          <a href="${url?html}">
+	          <a class="item-title" href="${url?html}">
 	          	${comment.author.description?html} <@vrtx.msg code="commenting.comments.on" default="about" /> "${title?html}"
 	          </a>
-	          <div class="pubdate"><@vrtx.date value=comment.time format='long' /></div>
-	          <div class="comment">
+	          <span class="published-date"><@vrtx.date value=comment.time format='long' /></span>
+	          <div class="item-description">
 	          	${comment.content}
 	          </div>
 	        </li>

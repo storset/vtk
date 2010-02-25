@@ -11,3 +11,10 @@ div.additional-information {
 div.vrtx-paging-feed-wrapper {
 	clear:left;
 }
+
+/* Override defaults */
+.vrtx-recent-comments {
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+}

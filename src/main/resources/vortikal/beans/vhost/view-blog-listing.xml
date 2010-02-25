@@ -18,8 +18,8 @@
     <property name="handler" ref="blogListing.handler" />
     <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
   </bean>
-
-  <bean id="blogListing.handler" class="org.vortikal.web.display.collection.BlogListingController" parent="collectionListing.handler">
+  <bean id="blogListing.handler" class="org.vortikal.web.display.collection.BlogListingController"
+    parent="collectionListing.handler">
     <property name="searchComponents">
       <list>
         <ref bean="${override.listing.prefix}blogListing.searchComponent" />
@@ -31,76 +31,21 @@
     <property name="commentingService" ref="commenting.resourceCommentsService" />
   </bean>
 
-  <bean id="structured.blogListing.searchComponent" parent="collectionListing.searchComponent">
+  <bean id="blogListing.searchComponent" parent="articleListing.searchComponent">
     <property name="name" value="blogListing.defaultListing" />
-    <property name="defaultRecursive" value="true" />
-    <property name="query">
-      <value>(uri = {$currentFolder}/*) AND (type IN structured-article) </value>
-    </property>
-    <property name="listableProperties">
-      <list>
-        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
-          <property name="displayProperty" ref="introductionImagePropDef" />
-          <property name="preventDisplayProperty" ref="articleListing.hideIntroductionImagePropDef" />
-        </bean>
-        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
-          <property name="displayProperty" ref="publishedDatePropDef" />
-          <property name="preventDisplayProperty" ref="articleListing.hidePublishedDatePropDef" />
-        </bean>
-        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
-          <property name="displayProperty" ref="introductionPropDef" />
-          <property name="preventDisplayProperty" ref="articleListing.hideIntroductionPropDef" />
-        </bean>
-      </list>
-    </property>
-    <property name="searchSorting" ref="structured.blogListing.searchSorting" />
-  </bean>
-
-  <bean id="blogListing.searchComponent" parent="collectionListing.searchComponent">
-    <property name="name" value="blogListing.defaultListing" />
-    <property name="defaultRecursive" value="true" />
     <property name="query">
       <value>(uri = {$currentFolder}/*) AND (type IN article) </value>
     </property>
-    <property name="listableProperties">
-      <list>
-        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
-          <property name="displayProperty" ref="introductionImagePropDef" />
-          <property name="preventDisplayProperty" ref="articleListing.hideIntroductionImagePropDef" />
-        </bean>
-        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
-          <property name="displayProperty" ref="publishedDatePropDef" />
-          <property name="preventDisplayProperty" ref="articleListing.hidePublishedDatePropDef" />
-        </bean>
-        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
-          <property name="displayProperty" ref="introductionPropDef" />
-          <property name="preventDisplayProperty" ref="articleListing.hideIntroductionPropDef" />
-        </bean>
-      </list>
+    <property name="aggregationResolver">
+      <null />
     </property>
-    <property name="searchSorting" ref="blogListing.searchSorting" />
+    <property name="searchSorting" ref="${override.listing.prefix}articleListing.searchSorting" />
   </bean>
 
-  <bean id="blogListing.searchSorting" class="org.vortikal.web.search.SearchSorting" depends-on="resourceTypeTree">
-    <property name="sortPropDef" ref="articleListing.sortingPropDef" />
-    <property name="sortOrderPropDefPointers">
-      <list>
-        <value>published-date</value>
-      </list>
+  <bean id="structured.blogListing.searchComponent" parent="blogListing.searchComponent">
+    <property name="query">
+      <value>(uri = {$currentFolder}/*) AND (type IN structured-article) </value>
     </property>
-    <property name="resourceTypeTree" ref="resourceTypeTree" />
-    <property name="defaultSortOrder" ref="SORT_ORDER.DESC" />
-  </bean>
-
-  <bean id="structured.blogListing.searchSorting" class="org.vortikal.web.search.SearchSorting" depends-on="resourceTypeTree">
-    <property name="sortPropDef" ref="articleListing.sortingPropDef" />
-    <property name="sortOrderPropDefPointers">
-      <list>
-        <value>publish-date</value>
-      </list>
-    </property>
-    <property name="resourceTypeTree" ref="resourceTypeTree" />
-    <property name="defaultSortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
   <bean id="blogListing.viewResolver" parent="decoratorViewResolver">

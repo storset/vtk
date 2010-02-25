@@ -8,9 +8,9 @@
   - 
   -->
 
-<@crateTagCloud />
+<@createTagCloud />
 
-<#macro crateTagCloud>
+<#macro createTagCloud>
 	<#if tagElements?exists && tagElements?size &gt; 0>
 	    <ul class="vrtx-tag-cloud">
 	     <#list tagElements as element>

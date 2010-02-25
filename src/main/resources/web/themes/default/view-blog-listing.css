@@ -8,12 +8,20 @@ div.additional-information {
 	margin-right:28px;
 }
 
+div.additional-information ul {
+	padding-top: 0;
+}
+
+div.additional-information h3 {
+   margin-bottom: 0;	
+}
+
 div.vrtx-paging-feed-wrapper {
 	clear:left;
 }
 
 /* Override defaults */
-.vrtx-recent-comments {
+div.additional-information .vrtx-recent-comments {
   margin: 0 !important;
   padding: 0 !important;
   border: none !important;

@@ -20,9 +20,11 @@
 
 
 <#import "/lib/vortikal.ftl" as vrtx />
-<#import "/lib/view-collectionlisting.ftl" as coll />
 <#import "/lib/dump.ftl" as dumper>
 <#import "/lib/view-utils.ftl" as viewutils />
+
+<#import "/lib/collections/view-collection-listing.ftl" as coll />
+<#import "/lib/collections/view-article-listing.ftl" as articles />
 <#import "/lib/collections/view-event-listing.ftl" as events />
 <#import "/lib/collections/view-project-listing.ftl" as projects />
 <#import "/lib/collections/view-person-listing.ftl" as persons />
@@ -143,7 +145,7 @@
      <#-- List resources: -->
      <#if searchComponents?has_content>
        <#if collection.resourceType = 'article-listing'>
-         <@coll.displayArticles page=page collectionListings=searchComponents hideNumberOfComments=hideNumberOfComments displayMoreURLs=true />
+         <@articles.displayArticles page=page collectionListings=searchComponents hideNumberOfComments=hideNumberOfComments displayMoreURLs=true />
        <#else>
          <#list searchComponents as searchComponent>
            <#if collection.resourceType = 'event-listing'>
@@ -157,7 +159,7 @@
            <#elseif collection.resourceType = 'blog-listing'>
               <@blogs.displayBlogs searchComponent collection />		              
            <#else>
-             <@coll.displayResources collectionListing=searchComponent />
+             <@coll.displayCollection collectionListing=searchComponent />
            </#if>
          </#list>
        </#if>

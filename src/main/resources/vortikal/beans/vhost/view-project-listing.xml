@@ -46,7 +46,7 @@
   </bean>
   
   <bean id="projectListing.view" parent="freemarkerView">
-  <property name="url" value="pages/view-collectionlisting.ftl" />
+  <property name="url" value="pages/view-collection-listing.ftl" />
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />

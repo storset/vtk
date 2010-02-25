@@ -190,6 +190,12 @@ function takeOwnershipButtonAsLink() {
     });
 }
 
+function leftAdjustTabMessagePublishPermissionIfRootFolder() {
+	if($("li.navigateToParentService").length <= 0) {
+	   	$("#vrtx-manage-collectionlisting div.tabMessagePublishPermission span").css("marginLeft", "0px");
+	}
+}
+
 // Add callbacks for the above methods:
 
 $(document).ready(logoutButtonAsLink);
@@ -199,3 +205,4 @@ $(document).ready(placeCopyButtonInActiveTab);
 $(document).ready(unlockButtonAsLink);
 $(document).ready(toggleAclInheritanceButtonAsLink);
 $(document).ready(takeOwnershipButtonAsLink);
+$(document).ready(leftAdjustTabMessagePublishPermissionIfRootFolder);

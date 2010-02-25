@@ -7,3 +7,7 @@ div.additional-information {
 	margin-left:68%;
 	margin-right:28px;
 }
+
+div.vrtx-paging-feed-wrapper {
+	clear:left;
+}

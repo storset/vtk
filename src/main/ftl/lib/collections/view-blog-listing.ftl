@@ -1,9 +1,13 @@
 <#import "/layouts/tag-cloud.ftl" as tagCloud />
 
 <#macro displayBlogs blogListing collection>
+	<#assign introduction = vrtx.getIntroduction(collection) />
 	<div class="container">
 		<div class="main-article-listing">
-		<@coll.displayArticles page=page collectionListings=searchComponents hideNumberOfComments=hideNumberOfComments displayMoreURLs=true />
+		<div class="vrtx-introduction">
+	         ${introduction}
+	    </div>
+		<@articles.displayArticles page=page collectionListings=searchComponents hideNumberOfComments=hideNumberOfComments displayMoreURLs=true />
 		</div>
 		<div class="additional-information">
 			<h3><@vrtx.msg code="decorating.tags" /></h3>

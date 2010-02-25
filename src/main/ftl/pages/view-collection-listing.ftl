@@ -87,7 +87,7 @@
      <#-- Introduction -->
      <#-- @viewutils.displayIntroduction resource / -->
      <#assign introduction = vrtx.getIntroduction(resource) />
-	     <#if introduction?has_content>
+	     <#if introduction?has_content && collection.resourceType != 'blog-listing'>
 	       <div class="vrtx-introduction">
 	         ${introduction}
 	       </div>

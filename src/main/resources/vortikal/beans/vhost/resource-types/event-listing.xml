@@ -21,7 +21,7 @@
         <ref bean="eventListing.recursiveListingPropDef" />
         <ref bean="eventListing.hideEndDatePropDef" />
         <ref bean="eventListing.hideLocationPropDef" />
-        <ref bean="eventListing.displayType" />
+        <ref bean="eventListing.displayTypePropDef" />
       </list>
     </property>
   </bean>
@@ -81,7 +81,7 @@
     </property>
   </bean>
 
-  <bean id="eventListing.displayType" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+  <bean id="eventListing.displayTypePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
     parent="abstractPropDef">
     <property name="name" value="display-type" />
     <property name="type" value="STRING" />

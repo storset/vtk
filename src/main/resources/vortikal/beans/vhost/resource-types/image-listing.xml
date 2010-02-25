@@ -18,12 +18,12 @@
     </property>
     <property name="propertyTypeDefinitions">
       <list>
-        <ref bean="imageListing.displayType" />
+        <ref bean="imageListing.displayTypePropDef" />
       </list>
     </property>
   </bean>
 
-  <bean id="imageListing.displayType" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+  <bean id="imageListing.displayTypePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
     parent="abstractPropDef">
     <property name="name" value="display-type" />
     <property name="type" value="STRING" />

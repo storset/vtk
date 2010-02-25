@@ -424,7 +424,7 @@
             <ref bean="aggregationPropDef" />
             <ref bean="recursiveAggregationPropDef" />
             <ref bean="collection.sortingPropDef" />
-            <ref bean="imageListing.displayType" />
+            <ref bean="imageListing.displayTypePropDef" />
           </list>
         </property>
       </bean>
@@ -489,7 +489,7 @@
             <ref bean="articleListing.hideIntroductionPropDef" />
             <ref bean="articleListing.hideIntroductionImagePropDef" />
             <ref bean="hideNumberOfCommentsPropDef" />
-            <ref bean="eventListing.displayType" />
+            <ref bean="eventListing.displayTypePropDef" />
           </list>
         </property>
       </bean>

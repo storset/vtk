@@ -34,7 +34,7 @@
     parent="repositoryAware">
     <property name="standardEventListing" ref="eventListing.standardHandler" />
     <property name="calendarEventListing" ref="eventListing.calendarHandler" />
-    <property name="displayTypePropDef" ref="eventListing.displayType" />
+    <property name="displayTypePropDef" ref="eventListing.displayTypePropDef" />
   </bean>
 
   <bean id="eventListing.standardHandler" class="org.vortikal.web.display.collection.StandardEventListingController"

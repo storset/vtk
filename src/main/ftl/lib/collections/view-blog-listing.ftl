@@ -4,9 +4,11 @@
 	<#assign introduction = vrtx.getIntroduction(collection) />
 	<div class="container">
 		<div class="main-article-listing">
+		<#if page == 1>
 		<div class="vrtx-introduction">
 	         ${introduction}
 	    </div>
+		</#if>
 		<@articles.displayArticles page=page collectionListings=searchComponents hideNumberOfComments=hideNumberOfComments displayMoreURLs=true />
 		</div>
 		<div class="additional-information">

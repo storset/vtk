@@ -6,13 +6,13 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.web.servlet.support.RequestContext;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Resource;
-import org.vortikal.web.display.collection.AbstractCollectionListingController;
+import org.vortikal.web.display.listing.ListingPager;
 
 public class CollectionListingViewServiceNameProvider implements ServiceNameProvider {
 
     public String getLocalizedName(Resource resource, HttpServletRequest request) {
 
-        String page = request.getParameter(AbstractCollectionListingController.USER_DISPLAY_PAGE);
+        String page = request.getParameter(ListingPager.USER_DISPLAY_PAGE);
         if (StringUtils.isBlank(page)) {
             return null;
         }

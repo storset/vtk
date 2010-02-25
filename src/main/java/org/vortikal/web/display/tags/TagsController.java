@@ -49,7 +49,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.web.display.listing.AbstractListingController;
+import org.vortikal.web.display.listing.ListingPager;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.service.Service;
@@ -58,7 +58,7 @@ import org.vortikal.web.tags.RepositoryTagElementsDataProvider;
 import org.vortikal.web.tags.TagElement;
 import org.vortikal.web.tags.TagsHelper;
 
-public class TagsController extends AbstractListingController implements Controller {
+public class TagsController implements Controller {
 
     private boolean defaultRecursive = true;
     private int defaultPageLimit = 20;
@@ -94,7 +94,7 @@ public class TagsController extends AbstractListingController implements Control
         // Setting the default page limit
         int pageLimit = this.defaultPageLimit;
 
-        int page = getPage(request, UPCOMING_PAGE_PARAM);
+        int page = ListingPager.getPage(request, ListingPager.UPCOMING_PAGE_PARAM);
         int limit = pageLimit;
         int totalHits = 0;
 
@@ -103,7 +103,7 @@ public class TagsController extends AbstractListingController implements Control
             totalHits = listing.getTotalHits();
         }
 
-        List<URL> urls = generatePageThroughUrls(totalHits, pageLimit, URL.create(request));
+        List<URL> urls = ListingPager.generatePageThroughUrls(totalHits, pageLimit, URL.create(request));
 
         model.put("listing", listing);
         model.put("page", page);

@@ -68,6 +68,7 @@
         <entry key="cssURLs">
           <list>
             <value>${themeBaseURL}/view-components.css</value>
+            <value>${themeBaseURL}/view-collectionlisting.css</value>
             <value>${themeBaseURL}/view-blog-listing.css</value>
           </list>
         </entry>

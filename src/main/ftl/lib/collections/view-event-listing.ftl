@@ -38,20 +38,19 @@
         <@vrtx.flattenHtml value=caption escape=true />
       </#local>
       <div class="vrtx-resource vevent">
-         
-            <#if introImg?has_content && collectionListing.hasDisplayPropDef(introImg.definition.name)>
-               <#local src = vrtx.propValue(resource, 'picture', 'thumbnail') />
-               <a class="vrtx-image" href="${collectionListing.urls[resource.URI]?html}">
-                 <#if caption != ''>
-                    <img src="${src?html}" alt="${captionFlattened}" />
-                  <#else>
-                    <img src="${src?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
-                  </#if>
-               </a>
+        <#if introImg?has_content && collectionListing.hasDisplayPropDef(introImg.definition.name)>
+          <#local src = vrtx.propValue(resource, 'picture', 'thumbnail') />
+          <a class="vrtx-image" href="${collectionListing.urls[resource.URI]?html}">
+            <#if caption != ''>
+              <img src="${src?html}" alt="${captionFlattened}" />
+            <#else>
+              <img src="${src?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
             </#if>
-            <div class="vrtx-title">
-            <a class="vrtx-title summary" href="${collectionListing.urls[resource.URI]?html}">${title?html}</a>
-            </div>
+          </a>
+        </#if>
+        <div class="vrtx-title">
+          <a class="vrtx-title summary" href="${collectionListing.urls[resource.URI]?html}">${title?html}</a>
+        </div>
 
         <div class="time-and-place"> 
           <@viewutils.displayTimeAndPlace resource title hideEndDate hideLocation hideNumberOfComments />
@@ -80,7 +79,7 @@
 
 <#macro displayCalendar>
 
- <!-- XXX IMPLEMENT -->
+  <!-- XXX IMPLEMENT -->
 
   To be implemented...
 

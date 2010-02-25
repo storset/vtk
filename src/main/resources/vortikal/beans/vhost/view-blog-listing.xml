@@ -18,8 +18,7 @@
     <property name="handler" ref="blogListing.handler" />
     <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
   </bean>
-  <bean id="blogListing.handler" class="org.vortikal.web.display.collection.BlogListingController"
-    parent="collectionListing.handler">
+  <bean id="blogListing.handler" class="org.vortikal.web.display.collection.BlogListingController" parent="collectionListing.handler">
     <property name="searchComponents">
       <list>
         <ref bean="${override.listing.prefix}blogListing.searchComponent" />
@@ -57,12 +56,12 @@
   </bean>
 
   <bean id="structured.blogListing.view" parent="freemarkerView">
-      <property name="url" value="pages/view-collection-listing.ftl" />
-      <property name="referenceDataProviders">
-        <list>
-          <ref bean="resourceContextProvider" />
-        </list>
-      </property>
+    <property name="url" value="pages/view-collection-listing.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+      </list>
+    </property>
   </bean>
 
   <bean id="blogListing.view" parent="structured.blogListing.view">
@@ -78,9 +77,6 @@
       </map>
     </property>
   </bean>
-
-
-
 
   <bean id="blogListing.feedService" parent="collectionListing.atomService">
     <property name="order" value="-2" />

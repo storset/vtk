@@ -1,6 +1,6 @@
 <#ftl strip_whitespace=true>
 
-<#import "/lib/view-collectionlisting.ftl" as coll />
+<#import "/lib/collections/view-collection-listing.ftl" as coll />
 <#import "/lib/collections/view-project-listing.ftl" as projects />
 <#import "/lib/collections/view-person-listing.ftl" as persons />
 

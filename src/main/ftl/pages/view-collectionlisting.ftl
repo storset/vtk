@@ -23,6 +23,7 @@
 <#import "/lib/view-collectionlisting.ftl" as coll />
 <#import "/lib/dump.ftl" as dumper>
 <#import "/lib/view-utils.ftl" as viewutils />
+<#import "/lib/collections/view-event-listing.ftl" as events />
 <#import "/lib/collections/view-project-listing.ftl" as projects />
 <#import "/lib/collections/view-person-listing.ftl" as persons />
 <#import "/lib/collections/view-image-listing.ftl" as images />
@@ -146,7 +147,7 @@
        <#else>
          <#list searchComponents as searchComponent>
            <#if collection.resourceType = 'event-listing'>
-             <@coll.displayEvents collectionListing=searchComponent hideNumberOfComments=hideNumberOfComments displayMoreURLs=true  />
+             <@events.displayEvents collection searchComponent hideNumberOfComments=hideNumberOfComments />
            <#elseif collection.resourceType = 'person-listing'>
              <@persons.displayPersons searchComponent title />
            <#elseif collection.resourceType = 'project-listing'>

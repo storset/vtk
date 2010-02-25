@@ -21,6 +21,7 @@
         <ref bean="eventListing.recursiveListingPropDef" />
         <ref bean="eventListing.hideEndDatePropDef" />
         <ref bean="eventListing.hideLocationPropDef" />
+        <ref bean="eventListing.displayType" />
       </list>
     </property>
   </bean>
@@ -79,7 +80,44 @@
       </map>
     </property>
   </bean>
-  
+
+  <bean id="eventListing.displayType" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="name" value="display-type" />
+    <property name="type" value="STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+    <property name="valueFormatter">
+      <bean class="org.vortikal.repository.resourcetype.MessageSourceValueFormatter">
+        <constructor-arg value="vortikal.beans.vhost.resource-types.properties.event-listing-display-type" />
+        <constructor-arg value="STRING" />
+      </bean>
+    </property>
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="values">
+          <list>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>calendar</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+          </list>
+        </property>
+      </bean>
+    </property>
+    <property name="metadata">
+      <map>
+        <entry key="editingHints">
+          <map>
+            <entry key="radio" value="true" />
+          </map>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
   <bean id="resourceIsEventListing" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
     <property name="resourceTypeDefinition" ref="eventListingResourceTypeDefinition" />
     <property name="exactMatch" value="true" />

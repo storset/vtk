@@ -53,7 +53,7 @@
     </#if>
   </#if>
 
-  <#if alternativeRepresentations?exists > 
+  <#if alternativeRepresentations?exists >
     <#list alternativeRepresentations as alt>
       <link rel="alternate" type="${alt.contentType?html}" title="${alt.title?html}" href="${alt.url?html}" />
     </#list>
@@ -78,7 +78,7 @@
     <#if page?has_content>
       <#if "${page}" != "1"> - <@vrtx.msg code="viewCollectionListing.page" /> ${page}</#if>
     </#if>
-  </h1> 
+  </h1>
 
      <#if page == 1>
      <#-- Image -->
@@ -95,7 +95,7 @@
      </#if>
 
      <#-- List collections: -->
-     <#if page == 1>    
+     <#if page == 1>
 	     <#if subCollections?size &gt; 0>
 	       <#if subCollections?size &gt; 15>
 	          <#assign splitList = ((subCollections?size/4)+0.75)?int />
@@ -113,7 +113,7 @@
 	         <h2><@vrtx.msg code="viewCollectionListing.subareas" default="Subareas"/></h2>
 	         <table>
 	           <tr>
-	             <td> 
+	             <td>
 	               <ul>
 	                 <#list subCollections as c>
 	                   <#if c_index = splitList>
@@ -149,7 +149,7 @@
        <#else>
          <#list searchComponents as searchComponent>
            <#if collection.resourceType = 'event-listing'>
-             <@events.displayEvents collection searchComponent hideNumberOfComments=hideNumberOfComments />
+             <@events.displayEvents collection=collection searchComponent=searchComponent hideNumberOfComments=hideNumberOfComments displayMoreURLs=true />
            <#elseif collection.resourceType = 'person-listing'>
              <@persons.displayPersons searchComponent title />
            <#elseif collection.resourceType = 'project-listing'>
@@ -157,20 +157,20 @@
            <#elseif collection.resourceType = 'image-listing'>
              <@images.displayImages searchComponent collection />
            <#elseif collection.resourceType = 'blog-listing'>
-              <@blogs.displayBlogs searchComponent collection />		              
+              <@blogs.displayBlogs searchComponent collection />
            <#else>
              <@coll.displayCollection collectionListing=searchComponent />
            </#if>
          </#list>
        </#if>
      </#if>
-	 <div class="vrtx-paging-feed-wrapper"> 	   
+	 <div class="vrtx-paging-feed-wrapper">
 		<#-- Previous/next URLs: -->
 		<#if pageThroughUrls?exists >
 			<@viewutils.displayPageThroughUrls pageThroughUrls page />
 		</#if>
         <#-- XXX: display first link with content type = atom: -->
-        <#if alternativeRepresentations?exists > 
+        <#if alternativeRepresentations?exists >
 	        <#list alternativeRepresentations as alt>
 	          <#if alt.contentType = 'application/atom+xml'>
 	            <div class="vrtx-feed-link">

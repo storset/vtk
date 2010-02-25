@@ -13,7 +13,7 @@
 		</div>
 		<div class="additional-information">
 			<h3><@vrtx.msg code="decorating.tags" /></h3>
-			<@tagCloud.crateTagCloud />
+			<@tagCloud.createTagCloud />
 			<@listComments />
 		</div>
 	</div>
@@ -33,7 +33,7 @@
 	          </a>
 	          <span class="published-date"><@vrtx.date value=comment.time format='long' /></span>
 	          <div class="item-description">
-	          	${comment.content}
+	            ${comment.content}
 	          </div>
 	        </li>
 	    </#list>

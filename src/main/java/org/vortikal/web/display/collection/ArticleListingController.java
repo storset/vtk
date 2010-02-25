@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Resource;
 import org.vortikal.web.display.article.ArticleListingSearcher;
+import org.vortikal.web.display.listing.ListingPager;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.service.URL;
 
@@ -46,11 +47,12 @@ public class ArticleListingController extends AbstractCollectionListingControlle
 
     private ArticleListingSearcher searcher;
 
-    protected void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
+    @Override
+    public void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
             throws Exception {
 
-        int featuredArticlesPage = getPage(request, UPCOMING_PAGE_PARAM);
-        int defaultArticlesPage = getPage(request, PREVIOUS_PAGE_PARAM);
+        int featuredArticlesPage = ListingPager.getPage(request, ListingPager.UPCOMING_PAGE_PARAM);
+        int defaultArticlesPage = ListingPager.getPage(request, ListingPager.PREVIOUS_PAGE_PARAM);
         int totalHits = 0;
         int featuredArticlesTotalHits = 0;
         int userDisplayPage = featuredArticlesPage;
@@ -62,7 +64,7 @@ public class ArticleListingController extends AbstractCollectionListingControlle
 
         List<Listing> results = new ArrayList<Listing>();
         Listing featuredArticles = null;
-        if (request.getParameter(PREVIOUS_PAGE_PARAM) == null) {
+        if (request.getParameter(ListingPager.PREVIOUS_PAGE_PARAM) == null) {
             // Search featured articles
             featuredArticles = this.searcher.getFeaturedArticles(request, collection, featuredArticlesPage, pageLimit,
                     0);
@@ -80,7 +82,7 @@ public class ArticleListingController extends AbstractCollectionListingControlle
 
         if (featuredArticles == null || featuredArticles.size() == 0) {
             // Searching only in default articles
-            int upcomingOffset = getIntParameter(request, PREV_BASE_OFFSET_PARAM, 0);
+            int upcomingOffset = getIntParameter(request, ListingPager.PREV_BASE_OFFSET_PARAM, 0);
             if (upcomingOffset > pageLimit)
                 upcomingOffset = 0;
             Listing defaultArticles = this.searcher.getArticles(request, collection, defaultArticlesPage, pageLimit,
@@ -108,8 +110,8 @@ public class ArticleListingController extends AbstractCollectionListingControlle
             defaultArticles = null;
         }
 
-        List<URL> urls = generatePageThroughUrls(totalHits, pageLimit, featuredArticlesTotalHits, getBaseURL(request),
-                true);
+        List<URL> urls = ListingPager.generatePageThroughUrls(totalHits, pageLimit, featuredArticlesTotalHits,
+                ListingPager.getBaseURL(request), true);
         model.put(MODEL_KEY_SEARCH_COMPONENTS, results);
         model.put(MODEL_KEY_PAGE, userDisplayPage);
         model.put(MODEL_KEY_PAGE_THROUGH_URLS, urls);

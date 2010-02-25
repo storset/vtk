@@ -31,34 +31,19 @@
 package org.vortikal.web.display.collection;
 
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Resource;
 
-public class ImageListingController extends CollectionListingController {
-
-    private Set<String> supportedDisplayTypes;
+public class CalendarEventListingController extends AbstractCollectionListingController {
 
     @Override
     public void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
             throws Exception {
-
-        String displayTypeParam = request.getParameter("display");
-        if (displayTypeParam != null && !"".equals(displayTypeParam.trim())
-                && this.supportedDisplayTypes.contains(displayTypeParam)) {
-            model.put("displayTypeParam", displayTypeParam);
-        }
-
-        super.runSearch(request, collection, model, pageLimit);
-
-    }
-
-    @Required
-    public void setSupportedDisplayTypes(Set<String> supportedDisplayTypes) {
-        this.supportedDisplayTypes = supportedDisplayTypes;
+        
+        // XXX implement
+        
     }
 
 }

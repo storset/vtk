@@ -44,7 +44,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.support.RequestContext;
 import org.vortikal.edit.editor.ResourceWrapperManager;
 import org.vortikal.repository.Path;
@@ -64,11 +63,10 @@ import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.ResourcePropertyComparator;
-import org.vortikal.web.display.listing.AbstractListingController;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
-public abstract class AbstractCollectionListingController extends AbstractListingController implements Controller {
+public abstract class AbstractCollectionListingController implements ListingController {
 
     protected final static String MODEL_KEY_SEARCH_COMPONENTS = "searchComponents";
     protected final static String MODEL_KEY_PAGE = "page";
@@ -194,9 +192,6 @@ public abstract class AbstractCollectionListingController extends AbstractListin
         }
         return url;
     }
-
-    protected abstract void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model,
-            int pageLimit) throws Exception;
 
     protected int getPageLimit(Resource collection) {
         int pageLimit = this.defaultPageLimit;

@@ -30,108 +30,59 @@
  */
 package org.vortikal.web.display.collection;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.Controller;
+import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.web.search.Listing;
-import org.vortikal.web.search.SearchComponent;
-import org.vortikal.web.service.URL;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.security.SecurityContext;
 
-/**
- * A controller for displaying event listings (a collection subtype).
- * 
- * XXX: Refactor this class. Should have a "front page" displaying a number of
- * upcoming and previous events, and a separate paging mode for each category.
- * The way it is done now (a single paging mode) is just painful.
- */
-public class EventListingController extends AbstractCollectionListingController {
+public class EventListingController implements Controller {
 
-    private SearchComponent upcomingEventsSearch;
-    private SearchComponent previousEventsSearch;
+    private Repository repository;
+    private ListingController standardEventListing;
+    private ListingController calendarEventListing;
+    private PropertyTypeDefinition displayTypePropDef;
 
-    protected void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
-            throws Exception {
+    @Override
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        int upcomingEventPage = getPage(request, UPCOMING_PAGE_PARAM);
-        int prevEventPage = getPage(request, PREVIOUS_PAGE_PARAM);
+        Path uri = org.vortikal.web.RequestContext.getRequestContext().getResourceURI();
+        SecurityContext securityContext = SecurityContext.getSecurityContext();
+        String token = securityContext.getToken();
+        Resource collection = this.repository.retrieve(token, uri, false);
 
-        int userDisplayPage = upcomingEventPage;
-
-        int totalHits = 0;
-        int totalUpcomingHits = 0;
-
-        boolean atLeastOneUpcoming = this.upcomingEventsSearch.execute(request, collection, 1, 1, 0).size() > 0;
-
-        List<Listing> results = new ArrayList<Listing>();
-        Listing upcoming = null;
-        if (request.getParameter(PREVIOUS_PAGE_PARAM) == null) {
-            // Search upcoming events
-            upcoming = this.upcomingEventsSearch.execute(request, collection, upcomingEventPage, pageLimit, 0);
-            totalHits += upcoming.getTotalHits();
-            totalUpcomingHits = upcoming.getTotalHits();
-            if (upcoming.size() > 0) {
-                results.add(upcoming);
-            }
-        } else {
-            upcoming = this.upcomingEventsSearch.execute(request, collection, upcomingEventPage, 0, 0);
-            totalHits += upcoming.getTotalHits();
-            totalUpcomingHits = upcoming.getTotalHits();
-            upcoming = null;
+        Property displayType = collection.getProperty(this.displayTypePropDef);
+        if (displayType == null || !"calendar".equals(displayType.getStringValue())) {
+            return this.standardEventListing.handleRequest(request, response);
         }
-
-        if (upcoming == null || upcoming.size() == 0) {
-            // Searching only in previous events
-            int upcomingOffset = getIntParameter(request, PREV_BASE_OFFSET_PARAM, 0);
-            if (upcomingOffset > pageLimit)
-                upcomingOffset = 0;
-            Listing previous = this.previousEventsSearch.execute(request, collection, prevEventPage, pageLimit,
-                    upcomingOffset);
-            totalHits += previous.getTotalHits();
-            if (previous.size() > 0) {
-                results.add(previous);
-            }
-            if (atLeastOneUpcoming) {
-                userDisplayPage += prevEventPage;
-            } else {
-                userDisplayPage = prevEventPage;
-            }
-        } else if (upcoming.size() < pageLimit) {
-            // Fill up the rest of the page with previous events
-            int upcomingOffset = pageLimit - upcoming.size();
-            Listing previous = this.previousEventsSearch.execute(request, collection, 1, upcomingOffset, 0);
-            totalHits += previous.getTotalHits();
-            if (previous.size() > 0) {
-                results.add(previous);
-            }
-        } else {
-            Listing previous = this.previousEventsSearch.execute(request, collection, 1, 0, 0);
-            totalHits += previous.getTotalHits();
-            previous = null;
-        }
-
-        List<URL> urls = generatePageThroughUrls(totalHits, pageLimit, totalUpcomingHits, getBaseURL(request), true);
-        model.put(MODEL_KEY_SEARCH_COMPONENTS, results);
-        model.put(MODEL_KEY_PAGE, userDisplayPage);
-        model.put(MODEL_KEY_PAGE_THROUGH_URLS, urls);
-        model.put("hideNumberOfComments", getHideNumberOfComments(collection));
-        model.put("currentDate", Calendar.getInstance().getTime());
-
+        return this.calendarEventListing.handleRequest(request, response);
     }
 
     @Required
-    public void setUpcomingEventsSearch(SearchComponent upcomingEventsSearch) {
-        this.upcomingEventsSearch = upcomingEventsSearch;
+    public void setRepository(Repository repository) {
+        this.repository = repository;
     }
 
     @Required
-    public void setPreviousEventsSearch(SearchComponent previousEventsSearch) {
-        this.previousEventsSearch = previousEventsSearch;
+    public void setDisplayTypePropDef(PropertyTypeDefinition displayTypePropDef) {
+        this.displayTypePropDef = displayTypePropDef;
+    }
+
+    @Required
+    public void setStandardEventListing(ListingController standardEventListing) {
+        this.standardEventListing = standardEventListing;
+    }
+
+    @Required
+    public void setCalendarEventListing(ListingController calendarEventListing) {
+        this.calendarEventListing = calendarEventListing;
     }
 
 }

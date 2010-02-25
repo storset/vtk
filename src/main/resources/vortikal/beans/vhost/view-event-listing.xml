@@ -32,6 +32,13 @@
 
   <bean id="eventListing.handler" class="org.vortikal.web.display.collection.EventListingController"
     parent="repositoryAware">
+    <property name="standardEventListing" ref="eventListing.standardHandler" />
+    <property name="calendarEventListing" ref="eventListing.calendarHandler" />
+    <property name="displayTypePropDef" ref="eventListing.displayType" />
+  </bean>
+
+  <bean id="eventListing.standardHandler" class="org.vortikal.web.display.collection.StandardEventListingController"
+    parent="repositoryAware">
     <property name="resourceManager" ref="resourceManager" />
     <property name="sortPropDefs">
       <list>
@@ -56,6 +63,40 @@
     <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
     <property name="upcomingEventsSearch" ref="${override.listing.prefix}eventListing.upcomingEventsSearchComponent" />
     <property name="previousEventsSearch" ref="${override.listing.prefix}eventListing.previousEventsSearchComponent" />
+    <property name="alternativeRepresentations">
+      <map>
+        <entry key="application/atom+xml" value-ref="eventListing.atomService" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="eventListing.calendarHandler" class="org.vortikal.web.display.collection.CalendarEventListingController"
+    parent="repositoryAware">
+    <property name="resourceManager" ref="resourceManager" />
+    <property name="sortPropDefs">
+      <list>
+        <ref bean="importancePropDef" />
+        <ref bean="navigationTitlePropDef" />
+        <ref bean="titlePropDef" />
+      </list>
+    </property>
+    <property name="overridingSortPropDefs">
+      <map>
+        <entry key-ref="navigationTitlePropDef">
+          <list>
+            <ref bean="titlePropDef" />
+          </list>
+        </entry>
+      </map>
+    </property>
+    <property name="hiddenPropDef" ref="hiddenPropDef" />
+    <property name="viewName" value="${override.listing.prefix}eventListing.view" />
+    <property name="pageLimitPropDef" ref="pageLimitPropDef" />
+    <property name="hideNumberOfComments" ref="hideNumberOfCommentsPropDef" />
+    <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
+    
+    <!-- XXX search components -->
+    
     <property name="alternativeRepresentations">
       <map>
         <entry key="application/atom+xml" value-ref="eventListing.atomService" />

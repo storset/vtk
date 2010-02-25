@@ -21,7 +21,8 @@ public class BlogListingController extends CollectionListingController {
     private Service viewService;
     private Service commentingService;
 
-    protected void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
+    @Override
+    public void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
             throws Exception {
         super.runSearch(request, collection, model, pageLimit);
 

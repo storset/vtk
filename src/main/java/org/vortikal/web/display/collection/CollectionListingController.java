@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Resource;
+import org.vortikal.web.display.listing.ListingPager;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.service.URL;
@@ -47,11 +48,11 @@ public class CollectionListingController extends AbstractCollectionListingContro
 
     private List<SearchComponent> searchComponents;
 
-
-    protected void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
+    @Override
+    public void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
             throws Exception {
 
-        int page = getPage(request, UPCOMING_PAGE_PARAM);
+        int page = ListingPager.getPage(request, ListingPager.UPCOMING_PAGE_PARAM);
         int offset = (page - 1) * pageLimit;
         int limit = pageLimit;
         int totalHits = 0;
@@ -85,7 +86,7 @@ public class CollectionListingController extends AbstractCollectionListingContro
 
         }
 
-        List<URL> urls = generatePageThroughUrls(totalHits, pageLimit, getBaseURL(request));
+        List<URL> urls = ListingPager.generatePageThroughUrls(totalHits, pageLimit, ListingPager.getBaseURL(request));
         model.put(MODEL_KEY_SEARCH_COMPONENTS, results);
         model.put(MODEL_KEY_PAGE, page);
         model.put(MODEL_KEY_PAGE_THROUGH_URLS, urls);
@@ -93,7 +94,6 @@ public class CollectionListingController extends AbstractCollectionListingContro
             model.put("numberOfRecords", getNumberOfRecords(page, pageLimit, results.get(0).size()));
         }
     }
-
 
     private Map<String, Integer> getNumberOfRecords(int page, int pageLimit, int resultSize) {
         Map<String, Integer> numbers = new HashMap<String, Integer>();
@@ -103,7 +103,6 @@ public class CollectionListingController extends AbstractCollectionListingContro
         numbers.put("elementsIncludingThisPage", includingThisPage);
         return numbers;
     }
-
 
     @Required
     public void setSearchComponents(List<SearchComponent> searchComponents) {

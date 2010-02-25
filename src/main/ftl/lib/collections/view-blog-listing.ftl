@@ -22,7 +22,7 @@
 <#macro listComments >
 <#if (comments?size > 0) >
 	<div class="vrtx-recent-comments">
-		<a class="comments-title" href="${moreCommentsUrl}"><@vrtx.msg code="commenting.comments.recent" /></h3>
+		<a class="comments-title" href="${moreCommentsUrl}"><@vrtx.msg code="commenting.comments.recent" />
 		<ul class="items">
 	    <#list comments as comment >
 	    	<#local url = urlMap[comment.URI] + '#comment-' + comment.ID />

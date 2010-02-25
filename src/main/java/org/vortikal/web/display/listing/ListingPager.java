@@ -8,18 +8,18 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.vortikal.web.service.URL;
 
-public abstract class AbstractListingController {
+public class ListingPager {
 
-    protected static final String UPCOMING_PAGE_PARAM = "page";
-    protected static final String PREVIOUS_PAGE_PARAM = "p-page";
-    protected static final String PREV_BASE_OFFSET_PARAM = "p-offset";
+    public static final String UPCOMING_PAGE_PARAM = "page";
+    public static final String PREVIOUS_PAGE_PARAM = "p-page";
+    public static final String PREV_BASE_OFFSET_PARAM = "p-offset";
     public static final String USER_DISPLAY_PAGE = "u-page";
 
-    public List<URL> generatePageThroughUrls(int hits, int pageLimit, URL baseURL) {
+    public static List<URL> generatePageThroughUrls(int hits, int pageLimit, URL baseURL) {
         return generatePageThroughUrls(hits, pageLimit, 0, baseURL, false);
     }
 
-    public List<URL> generatePageThroughUrls(int hits, int pageLimit, int hitsReturnedByFirstSearch, URL baseURL,
+    public static List<URL> generatePageThroughUrls(int hits, int pageLimit, int hitsReturnedByFirstSearch, URL baseURL,
             boolean twoSearches) {
         if (pageLimit == 0) {
             return null;
@@ -72,7 +72,7 @@ public abstract class AbstractListingController {
         return urls;
     }
 
-    protected int getPage(HttpServletRequest request, String parameter) {
+    public static int getPage(HttpServletRequest request, String parameter) {
         int page = 0;
         String pageParam = request.getParameter(parameter);
         if (StringUtils.isNotBlank(pageParam)) {
@@ -91,7 +91,7 @@ public abstract class AbstractListingController {
         return page;
     }
 
-    protected URL getBaseURL(HttpServletRequest request) {
+    public static URL getBaseURL(HttpServletRequest request) {
         return URL.parse(URL.create(request).getBase());
     }
 

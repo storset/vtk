@@ -45,6 +45,7 @@ public class QueryStringSearchComponent extends QuerySearchComponent {
     private String query;
     private QueryParser queryParser;
 
+    @Override
     protected Query getQuery(Resource collection, HttpServletRequest request, boolean recursive) {
         Query query = this.queryParser.parse(this.query);
 

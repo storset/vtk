@@ -30,32 +30,90 @@
  */
 package org.vortikal.security.web.saml;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.opensaml.xml.security.x509.BasicX509Credential;
+import org.opensaml.xml.util.Base64;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.io.Resource;
 
-public class CertificateManager {
+public class CertificateManager implements InitializingBean {
     
     private Map<String, BasicX509Credential> privateKeys;
+
+    private Resource keystore;
+    private String keystorePassword;
+    private String privateKeyPassword;
+    private X509Certificate idpCertificate;
     
-    public CertificateManager(Resource keystore, String keystorePassword, String privateKeyPassword) throws Exception {
+    public BasicX509Credential getCredential(String keyAlias) {
+        return this.privateKeys.get(keyAlias);
+    }
+    
+    public X509Certificate getIDPCertificate() {
+        return this.idpCertificate;
+    }
+    
+    /**
+     * Sets the IDP certificate
+     * 
+     * @param a Base64 encoded X.509 certificate string
+     * @throws CertificateException
+     */
+    @Required
+    public void setIdpCertificate(String idpCertificate) throws CertificateException {
+        CertificateFactory cf = CertificateFactory.getInstance("X.509");
+        ByteArrayInputStream input = new ByteArrayInputStream(Base64.decode(idpCertificate));
+        this.idpCertificate = (X509Certificate) cf.generateCertificate(input);
+    }
+
+    
+    @Required
+    public void setKeystore(Resource keystore) {
+        if (keystore == null) {
+            throw new IllegalArgumentException("Argument is NULL");
+        }
+        this.keystore = keystore;
+    }
+
+    @Required
+    public void setKeystorePassword(String keystorePassword) {
+        if (keystorePassword == null) {
+            throw new IllegalArgumentException("Argument is NULL");
+        }
+        this.keystorePassword = keystorePassword;
+    }
+
+    @Required
+    public void setPrivateKeyPassword(String privateKeyPassword) {
+        if (privateKeyPassword == null) {
+            throw new IllegalArgumentException("Argument is NULL");
+        }
+        this.privateKeyPassword = privateKeyPassword;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
         Map<String, BasicX509Credential> privateKeys = new HashMap<String, BasicX509Credential>();
-        KeyStore ks = load(keystore, keystorePassword);
+        KeyStore ks = load(this.keystore, this.keystorePassword);
         Enumeration<String> aliases = ks.aliases();
 
         while (aliases.hasMoreElements()) {
             String alias = aliases.nextElement();
             if (ks.isKeyEntry(alias)) {
-                Key key = ks.getKey(alias, privateKeyPassword.toCharArray());
+                Key key = ks.getKey(alias, this.privateKeyPassword.toCharArray());
                 if (!(key instanceof PrivateKey)) {
                     continue;
                 }
@@ -76,10 +134,6 @@ public class CertificateManager {
         this.privateKeys = privateKeys;
     }
 
-    public BasicX509Credential getCredential(String keyAlias) {
-        return this.privateKeys.get(keyAlias);
-    }
-    
     private KeyStore load(Resource resource, String password) throws Exception {
         InputStream is = resource.getInputStream();
         KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());

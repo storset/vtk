@@ -34,8 +34,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.PublicKey;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.UUID;
 import java.util.zip.Deflater;
@@ -115,9 +113,6 @@ public abstract class SamlService {
     // SP Identifier
     private String serviceIdentifier;
 
-    // IDP certificate
-    private String idpCertificate;
-
     // IDP login/logout URLs:
     private String authenticationURL;
     private String logoutURL;
@@ -140,11 +135,6 @@ public abstract class SamlService {
 
     public void setServiceIdentifier(String serviceIdentifier) {
         this.serviceIdentifier = serviceIdentifier;
-    }
-
-    @Required
-    public void setIdpCertificate(String idpCertificate) {
-        this.idpCertificate = idpCertificate;
     }
 
     @Required
@@ -224,7 +214,7 @@ public abstract class SamlService {
     }
     
     protected final void verifyCryptographicAssertionSignature(Assertion assertion) {
-        X509Certificate cert = buildX509CertificateFromEncodedString(this.idpCertificate);
+        X509Certificate cert = this.certificateManager.getIDPCertificate();
         if (!verifySignature(cert, assertion)) {
             throw new AuthenticationProcessingException("Failed to verify signature of assertion: " + assertion.getID());
         }
@@ -403,18 +393,6 @@ public abstract class SamlService {
             return true;
         } catch (ValidationException e) {
             return false;
-        }
-    }
-    
-    private X509Certificate buildX509CertificateFromEncodedString(String encodedCertificateString) {
-        try {
-            CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            ByteArrayInputStream input = new ByteArrayInputStream(Base64.decode(encodedCertificateString));
-            java.security.cert.X509Certificate newCert = null;
-            newCert = (java.security.cert.X509Certificate) cf.generateCertificate(input);
-            return newCert;
-        } catch (CertificateException e) {
-            throw new AuthenticationProcessingException("Unable to build x509 certificate from encoded string", e);
         }
     }
     

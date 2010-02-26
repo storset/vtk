@@ -34,13 +34,6 @@
             <ref bean="importancePropDef" />
             <ref bean="hiddenPropDef" />
             <ref bean="pageLimitPropDef" />
-<!--        <ref bean="articleListing.featuredArticlesPropDef" />
-            <ref bean="articleListing.recursiveListingPropDef" />
-            <ref bean="articleListing.recursiveListingSubfoldersPropDef" />
-            <ref bean="aggregationPropDef" /> 
-            <ref bean="recursiveAggregationPropDef" />  -->
-            
-            <ref bean="articleListing.sortingPropDef" /> 
             <ref bean="articleListing.hidePublishedDatePropDef" />
             <ref bean="articleListing.hideIntroductionPropDef" />
             <ref bean="articleListing.hideIntroductionImagePropDef" />

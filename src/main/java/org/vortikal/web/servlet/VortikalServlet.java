@@ -61,7 +61,6 @@ import org.vortikal.security.web.InvalidAuthenticationRequestException;
 import org.vortikal.security.web.SecurityInitializer;
 import org.vortikal.util.Version;
 import org.vortikal.web.ErrorHandler;
-import org.vortikal.web.InvalidRequestException;
 import org.vortikal.web.RepositoryContextInitializer;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.RequestContextInitializer;
@@ -390,9 +389,6 @@ public class VortikalServlet extends DispatcherServlet {
             }
         } catch (AuthenticationProcessingException e) {
             handleAuthenticationProcessingError(request, responseWrapper, e);
-        } catch (InvalidRequestException e) {
-            responseWrapper.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            logError(request, e);
         	
         } catch (InvalidAuthenticationRequestException e) {
             responseWrapper.setStatus(HttpServletResponse.SC_BAD_REQUEST);

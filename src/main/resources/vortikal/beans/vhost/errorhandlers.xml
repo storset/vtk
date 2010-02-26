@@ -26,6 +26,25 @@
   </bean>
 
 
+  <bean id="badRequestErrorHandler" class="org.vortikal.web.DefaultErrorHandler">
+    <property name="errorViewName" value="badRequestError" />
+    <property name="errorType">
+      <bean class="java.lang.Class" factory-method="forName">
+        <constructor-arg value="org.vortikal.web.InvalidRequestException" />
+      </bean>
+    </property>
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider"/>
+      </list>
+    </property>
+    <property name="statusCodeMappings">
+      <map>
+        <entry key="org.vortikal.web.InvalidRequestException" value="400" />
+      </map>
+    </property>
+  </bean>
+
   <bean id="notAuthorizedErrorHandler" class="org.vortikal.web.DefaultErrorHandler">
     <property name="errorViewName" value="notAuthorizedError" />
     <property name="errorType">
@@ -110,6 +129,7 @@
     <property name="order" value="0" />
     <property name="views">
       <map>
+        <entry key="badRequestError" value-ref="badRequestErrorView" />
         <entry key="resourceNotFoundError" value-ref="resourceNotFoundErrorView" />
         <entry key="notAuthorizedError" value-ref="notAuthorizedErrorView" />
         <entry key="preconditionFailedError" value-ref="preconditionFailedErrorView" />
@@ -117,6 +137,10 @@
         <entry key="defaultError" value-ref="defaultErrorView" />
       </map>
     </property>
+  </bean>
+
+  <bean id="badRequestErrorView" parent="freemarkerView">
+    <property name="url" value="pages/error/400.ftl" />
   </bean>
 
   <bean id="resourceNotFoundErrorView" parent="freemarkerView">

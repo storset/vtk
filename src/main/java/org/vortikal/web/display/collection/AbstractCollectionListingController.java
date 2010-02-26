@@ -108,6 +108,7 @@ public abstract class AbstractCollectionListingController implements ListingCont
         }
     }
 
+    @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         Path uri = org.vortikal.web.RequestContext.getRequestContext().getResourceURI();

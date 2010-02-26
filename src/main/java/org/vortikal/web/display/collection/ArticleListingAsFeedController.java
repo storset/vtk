@@ -43,7 +43,6 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.AtomFeedController;
-import org.vortikal.web.display.article.ArticleListingSearcher;
 import org.vortikal.web.search.Listing;
 
 public class ArticleListingAsFeedController extends AtomFeedController {

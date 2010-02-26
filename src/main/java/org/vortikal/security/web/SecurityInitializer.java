@@ -231,16 +231,36 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         SecurityContext.setSecurityContext(null);
     }
 
+    /**
+     * Removes authentication state from the authentication system. The {@link SecurityContext} is cleared, 
+     * the current principal is removed from the {@link TokenManager}, but the 
+     * {@link AuthenticationHandler#logout logout} process is not initiated.
+     * @return <code>true</code> if any state was removed, <code>false</code> otherwise
+     */
+    public boolean removeAuthState() {
+        if (!SecurityContext.exists()) {
+            return false;
+        }
+        SecurityContext securityContext = SecurityContext.getSecurityContext();
+        Principal principal = securityContext.getPrincipal();
+        if (principal == null) {
+            return false;
+        }
+        this.tokenManager.removeToken(securityContext.getToken());
+        SecurityContext.setSecurityContext(null);
+        if (authLogger.isDebugEnabled()) {
+            authLogger.debug("Logout: principal: '" + principal + "' - method: '<none>' - status: OK");
+        }
+        return true;
+    }
 
     /**
-     * Logs out the client from the authentication system. Clears the {@link SecurityContext}, removes the principal
-     * from the {@link TokenManager} and invalidates the request {@link javax.servlet.http.HttpSession session}.
+     * Logs out the client from the authentication system. Clears the {@link SecurityContext} and removes the principal
+     * from the {@link TokenManager}.
      * Finally, calls the authentication handler's {@link AuthenticationHandler#logout logout} method.
      * 
-     * @param req
-     *            the request
-     * @param resp
-     *            the response
+     * @param req the request
+     * @param resp the response
      * @return the return value of the authentication handler's <code>logout()</code> method.
      * @throws AuthenticationProcessingException
      *             if an underlying problem prevented the request from being processed
@@ -251,11 +271,14 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
     public boolean logout(HttpServletRequest req, HttpServletResponse resp) throws AuthenticationProcessingException,
             ServletException, IOException {
 
+        if (!SecurityContext.exists()) {
+            return false;
+        }
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Principal principal = securityContext.getPrincipal();
-        if (principal == null)
+        if (principal == null) {
             return false;
-
+        }
         AuthenticationHandler handler = this.tokenManager.getAuthenticationHandler(securityContext.getToken());
 
         // FIXME: what if handler.isLogoutSupported() == false?
@@ -271,7 +294,6 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
 
         return result;
     }
-
 
     public String toString() {
         StringBuffer sb = new StringBuffer();

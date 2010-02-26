@@ -57,6 +57,9 @@ public class UserData {
                 this.attrs.put(attr.getName(), extractValues(attr));
             }
         }
+        if (getUsername() == null) {
+            throw new IllegalArgumentException("Assertion does not contain uid attribute");
+        }
     }
 
 

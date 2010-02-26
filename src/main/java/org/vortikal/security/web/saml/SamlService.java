@@ -87,6 +87,7 @@ import org.opensaml.xml.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.security.AuthenticationProcessingException;
+import org.vortikal.web.InvalidRequestException;
 import org.vortikal.web.service.URL;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -236,7 +237,7 @@ public abstract class SamlService {
         try {
             decoder.decode(messageContext);
         } catch (Exception e) {
-            throw new AuthenticationProcessingException("Unable to decode LogoutResponse", e);
+            throw new InvalidRequestException("Invalid SAML request: unable to decode LogoutResponse", e);
         }
         LogoutResponse logoutResponse = messageContext.getInboundSAMLMessage();
         return logoutResponse;

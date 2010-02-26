@@ -51,6 +51,7 @@ import org.opensaml.xml.util.Pair;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.web.SecurityInitializer;
+import org.vortikal.web.InvalidRequestException;
 import org.vortikal.web.service.URL;
 
 public class Logout extends SamlService {
@@ -97,7 +98,6 @@ public class Logout extends SamlService {
         this.securityInitializer.removeAuthState();
         
         // Handle the response ourselves.
-        //request.getSession().invalidate();
         response.sendRedirect(redirectURL);
     }
 
@@ -106,7 +106,7 @@ public class Logout extends SamlService {
     public void handleLogoutResponse(HttpServletRequest request, HttpServletResponse response) throws Exception {
         HttpSession session = request.getSession(false);
         if (session == null) {
-            throw new AuthenticationProcessingException("No session");
+            throw new InvalidRequestException("Not a logout request: missing session");
         }
         if (request.getParameter("SAMLResponse") == null) {
             throw new IllegalStateException("Not a SAML logout request");
@@ -146,7 +146,7 @@ public class Logout extends SamlService {
         try {
             decoder.decode(messageContext);
         } catch (Exception e) {
-            throw new AuthenticationProcessingException("Unable to decode LogoutResponse.", e);
+            throw new InvalidRequestException("Invalid SAML request: unable to decode LogoutResponse", e);
         }
         LogoutRequest logoutRequest = messageContext.getInboundSAMLMessage();
         return logoutRequest;

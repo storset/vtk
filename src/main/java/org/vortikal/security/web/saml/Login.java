@@ -43,6 +43,7 @@ import org.opensaml.util.storage.ReplayCacheEntry;
 import org.opensaml.util.storage.StorageService;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
+import org.vortikal.web.InvalidRequestException;
 import org.vortikal.web.service.URL;
 
 public class Login extends SamlService {
@@ -72,7 +73,7 @@ public class Login extends SamlService {
     public UserData login(HttpServletRequest request) throws AuthenticationException, AuthenticationProcessingException {
         UUID expectedRequestID = (UUID) request.getSession(true).getAttribute(REQUEST_ID_SESSION_ATTR);
         if (expectedRequestID == null) {
-            throw new AuthenticationProcessingException("Missing request ID attribute in session");
+            throw new InvalidRequestException("Missing request ID attribute in session");
         }
         request.getSession().removeAttribute(REQUEST_ID_SESSION_ATTR);
 
@@ -105,7 +106,7 @@ public class Login extends SamlService {
         
         String inResponseToID = samlResponse.getInResponseTo();
         if (!expectedRequestID.toString().equals(inResponseToID)) {
-            throw new AuthenticationProcessingException("Request ID mismatch");
+            throw new InvalidRequestException("Request ID mismatch");
         }
         
         verifyStatusCodeIsSuccess(samlResponse);
@@ -129,7 +130,7 @@ public class Login extends SamlService {
     private void checkReplay(Response response) {
         boolean replay = this.replayCache.isReplay(response.getIssuer().getValue(), response.getID());
         if (replay) {
-            throw new AuthenticationProcessingException("Replay attempt discovered");
+            throw new InvalidRequestException("Replay attempt discovered");
         }
         response.getIssuer();
         response.getID();

@@ -46,6 +46,7 @@ import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.web.AuthenticationChallenge;
 import org.vortikal.security.web.AuthenticationHandler;
 import org.vortikal.security.web.InvalidAuthenticationRequestException;
+import org.vortikal.web.InvalidRequestException;
 
 /**
  * Skeleton of what will be a SAML Web browser SSO authentication handler/challenge
@@ -111,6 +112,9 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
      */
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        if (request.getParameter("SAMLResponse") == null && request.getParameter("SAMLRequest") == null) {
+            throw new InvalidRequestException("Invalid SAML request: expected one of 'SAMLRequest' or 'SAMLResponse' parameters");
+        }
         if (request.getParameter("SAMLResponse") == null) {
             // Logout request from IDP (based on some other SP's request)
             this.logout.handleLogoutRequest(request, response);

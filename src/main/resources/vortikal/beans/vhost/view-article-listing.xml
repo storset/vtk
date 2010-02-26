@@ -71,7 +71,7 @@
     <property name="authorPropDef" ref="authorsPropDef" />
   </bean>
 
-  <bean id="articleListingSearcher" class="org.vortikal.web.display.article.ArticleListingSearcher">
+  <bean id="articleListingSearcher" class="org.vortikal.web.display.collection.ArticleListingSearcher">
     <property name="defaultSearch" ref="${override.listing.prefix}articleListing.searchComponent" />
     <property name="featuredArticlesSearch" ref="${override.listing.prefix}articleListing.featuredArticlesSearchComponent" />
     <property name="subfoldersSearch" ref="${override.listing.prefix}articleListing.subfoldersSearchComponent" />

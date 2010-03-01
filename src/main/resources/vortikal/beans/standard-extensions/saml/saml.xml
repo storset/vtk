@@ -48,6 +48,7 @@
 
   <bean id="saml.logout" class="org.vortikal.security.web.saml.Logout" parent="saml.abstractHandler">
     <property name="securityInitializer" ref="securityInitializer" />
+    <property name="redirectService" ref="viewService" />
   </bean>
 
 

@@ -73,7 +73,6 @@
     </property>
     <property name="openIDAuthenticationService" ref="webService" />
     <property name="formService" ref="openid.authenticationFormService" />
-    <property name="finalRedirectService" ref="webService" />
     <property name="principalFactory" ref="principalFactory" />
   </bean>
 

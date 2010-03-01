@@ -45,18 +45,20 @@ import org.vortikal.security.PrincipalFactory;
  * <ul><li>default: {@link Principal#getName()}
  * <li>'name': {@link Principal#getDescription()}
  * <li>'link' and {@link Principal} has url: &lt;a href="{@link Principal#getURL()}">{@link Principal#getDescription()}&lt;/a>
+ * <li>'name-link' and {@link Principal} has url: &lt;a href="{@link Principal#getURL()}">{@link Principal#getName()}&lt;/a>
  */
 public class PrincipalValueFormatter implements ValueFormatter {
 
     // Possible formats for principal objects
     public static final String NAME_FORMAT = "name";
     public static final String LINK_FORMAT = "link";
+    public static final String NAME_LINK_FORMAT = "name-link";
 
     private PrincipalFactory principalFactory;
 
     /* 
-     * Defaults to return the principal description. Also supports the "id" format and the "link" format, 
-     * returning an html <a> tag if the principal has a url.
+     * Defaults to return the principal description. Also supports the "name", "link" and "name-link" formats, 
+     * the two latter returning an html <a> tag if the principal has a url.
      * 
      * @see org.vortikal.repository.resourcetype.ValueFormatter#valueToString(org.vortikal.repository.resourcetype.Value, java.lang.String, java.util.Locale)
      */
@@ -70,6 +72,8 @@ public class PrincipalValueFormatter implements ValueFormatter {
         Principal principal = value.getPrincipalValue();
         if (LINK_FORMAT.equals(format) && principal.getURL() != null) {
             return "<a href=\"" + principal.getURL() + "\">" + principal.getDescription() + "</a>"; 
+        } else if (NAME_LINK_FORMAT.equals(format) && principal.getURL() != null) {
+            return "<a href=\"" + principal.getURL() + "\">" + principal.getName() + "</a>";
         } else if (NAME_FORMAT.equals(format)) {
             return principal.getDescription();
         }

@@ -31,6 +31,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -51,13 +52,18 @@ import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.web.AuthenticationChallenge;
 import org.vortikal.security.web.AuthenticationHandler;
+import org.vortikal.web.InvalidRequestException;
 import org.vortikal.web.service.Service;
+import org.vortikal.web.service.URL;
 
 
 public class OpenIDAuthenticationHandler
   implements AuthenticationHandler, AuthenticationChallenge, Ordered, InitializingBean {
 
-    private Log logger = LogFactory.getLog(this.getClass());
+    private static final String DISCOVERY_SESSION_ATTRIBUTE = OpenIDAuthenticationHandler.class.getName() + ".discovered";
+    private static final String ORIGINAL_URI_SESSION_ATTRIBUTE = OpenIDAuthenticationHandler.class.getName() + ".original_uri";
+    
+    private static Log logger = LogFactory.getLog(OpenIDAuthenticationHandler.class);
 
     private PrincipalFactory principalFactory;
     
@@ -66,7 +72,6 @@ public class OpenIDAuthenticationHandler
     private ConsumerManager consumerManager;
     private Service formService;
     private Service openIDAuthenticationService;
-    private Service finalRedirectService;
     
     public void setConsumerManager(ConsumerManager consumerManager) {
         this.consumerManager = consumerManager;
@@ -78,10 +83,6 @@ public class OpenIDAuthenticationHandler
 
     public void setFormService(Service formService) {
         this.formService = formService;
-    }
-
-    public void setFinalRedirectService(Service finalRedirectService) {
-        this.finalRedirectService = finalRedirectService;
     }
 
     public void setOrder(int order) {
@@ -105,21 +106,21 @@ public class OpenIDAuthenticationHandler
             throw new BeanInitializationException(
                 "JavaBean property 'formService' not set.");
         }
-//         if (this.finalRedirectService == null) {
-//             throw new BeanInitializationException(
-//                 "JavaBean property 'finalRedirectService' not set.");
-//         }
     }
 
 
     public boolean isLogoutSupported() {
-        return false;
+        return true;
     }
 
 
     public boolean logout(Principal principal, HttpServletRequest req,
                           HttpServletResponse resp) {
-        // FIXME: redirect user to page explaining how to exit the browser? 
+        HttpSession session = req.getSession(false);
+        if (session != null) {
+            session.removeAttribute(DISCOVERY_SESSION_ATTRIBUTE);
+            session.removeAttribute(ORIGINAL_URI_SESSION_ATTRIBUTE);
+        }
         return false;
     }
 
@@ -144,18 +145,19 @@ public class OpenIDAuthenticationHandler
     }
 
     public void challenge(HttpServletRequest request, HttpServletResponse response) {
-
+        HttpSession session = request.getSession(true);
         String identifier = request.getParameter("openid_identifier");
 
         if (identifier == null) {
+            // Save original URL in session:
+            URL originalURL = URL.create(request);
+            session.setAttribute(ORIGINAL_URI_SESSION_ATTRIBUTE, originalURL);
             String redirectURL = this.formService.constructLink(Path.fromString(request.getRequestURI()));
-            if (true) {
                 try {
                     response.sendRedirect(redirectURL);
                 } catch (Exception e) {
                     throw new AuthenticationProcessingException("Unable to redirect to form service", e);
                 }
-            }
             return;
         }
 
@@ -179,8 +181,8 @@ public class OpenIDAuthenticationHandler
         DiscoveryInformation discovered = this.consumerManager.associate(discoveries);
 
         // store the discovery information in the user's session for later use
-        request.getSession().setAttribute("discovered", discovered);
-        
+        session.setAttribute(DISCOVERY_SESSION_ATTRIBUTE, discovered);
+
         try {
             // obtain a AuthRequest message to be sent to the OpenID provider
             AuthRequest authReq = this.consumerManager.authenticate(discovered, returnURL);
@@ -208,21 +210,29 @@ public class OpenIDAuthenticationHandler
         ParameterList openidResp = new ParameterList(request.getParameterMap());
 
         // retrieve the previously stored discovery information
-        DiscoveryInformation discovered = (DiscoveryInformation)
-            request.getSession().getAttribute("discovered");
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            throw new InvalidRequestException("No session exists");
+        }
+        DiscoveryInformation discovey = (DiscoveryInformation)
+            session.getAttribute(DISCOVERY_SESSION_ATTRIBUTE);
+        if (discovey == null) {
+            throw new InvalidRequestException("No discovery information in session");
+        }
+        session.removeAttribute(DISCOVERY_SESSION_ATTRIBUTE);
 
         // extract the receiving URL from the HTTP request
         StringBuffer receivingURL = request.getRequestURL();
         String queryString = request.getQueryString();
-        if (queryString != null && queryString.length() > 0)
+        if (queryString != null && queryString.length() > 0) {
             receivingURL.append("?").append(request.getQueryString());
-
+        }
         // verify the response
 
         VerificationResult verification;
         try {
             verification = this.consumerManager.verify(
-                receivingURL.toString(), openidResp, discovered);
+                receivingURL.toString(), openidResp, discovey);
         } catch (Exception e) {
             throw new AuthenticationProcessingException(
                 "Failed to verify authentication request", e);
@@ -246,14 +256,17 @@ public class OpenIDAuthenticationHandler
 
     public boolean postAuthentication(HttpServletRequest request,
                                       HttpServletResponse response) {
-        
-        String redirectURL = this.finalRedirectService.constructLink(Path.fromString(request.getRequestURI()));
-        
-        try {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Redirect after authentication: " + redirectURL);
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            return false;
         }
-        response.sendRedirect(redirectURL);
+        URL redirectURL = (URL) session.getAttribute(ORIGINAL_URI_SESSION_ATTRIBUTE);
+        try {
+            session.removeAttribute(ORIGINAL_URI_SESSION_ATTRIBUTE);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Redirect after authentication: " + redirectURL);
+            }
+            response.sendRedirect(redirectURL.toString());
             return true;
         } catch (Exception e) {
             throw new AuthenticationProcessingException("Unable to redirect to URL: '"

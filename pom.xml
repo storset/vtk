@@ -378,6 +378,13 @@
       </exclusions>
     </dependency>
 
+    <!-- OpenID -->
+    <dependency>
+      <groupId>org.openid4java</groupId>
+      <artifactId>openid4java</artifactId>
+      <version>0.9.5</version>
+    </dependency>
+
     <!-- Abdera Atom Feed -->
     <dependency>
       <groupId>org.apache.abdera</groupId>
@@ -682,28 +689,14 @@
       <version>0.7.3</version>
       <scope>provided</scope>
     </dependency>
+    <!--
     <dependency>
       <groupId>org.apache.geronimo.modules</groupId>
       <artifactId>geronimo-transaction</artifactId>
       <version>1.2-beta</version>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>org.openid4java</groupId>
-      <artifactId>openid4java</artifactId>
-      <version>0.9.3</version>
-      <exclusions>
-        <exclusion>
-          <groupId>com.ibm.icu</groupId>
-          <artifactId>icu4j</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>xml-apis</groupId>
-          <artifactId>xml-apis</artifactId>
-        </exclusion>
-      </exclusions>
-      <scope>provided</scope>
-    </dependency>
+    -->
   </dependencies>
   <reporting>
     <plugins>

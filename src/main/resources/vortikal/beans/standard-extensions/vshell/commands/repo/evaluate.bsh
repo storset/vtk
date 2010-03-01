@@ -78,11 +78,11 @@ void execute(context, args, out) {
             if (prop.getDefinition() != null) {
                 if (old == null) {
                     curVal = multi ? Arrays.asList(prop.getValues()) : prop.getValue();
-                    log.println("   + " + ns.getPrefix() + ":" + name + ": '" + curVal + "'");
+                    log.println("   + " + prefix + ":" + name + ": '" + curVal + "'");
                 } else if (!old.equals(prop)) {
                     prevVal = old.getDefinition().isMultiple() ? Arrays.asList(old.getValues()) : old.getValue();
                     curVal = multi ? Arrays.asList(prop.getValues()) : prop.getValue();
-                    log.println("   m " + ns.getPrefix()  + ":" + name 
+                    log.println("   m " + prefix + ":" + name 
                                 + ": '" + prevVal + "' --> '" + curVal + "'");
                 }
             }

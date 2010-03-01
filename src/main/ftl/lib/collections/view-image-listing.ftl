@@ -133,9 +133,11 @@
                 <li>
               </#if>
             </#if>
-            <a href="${image.URI?html}" title="${title}"><img class="thumbnail" src="${image.URI?html}?vrtx=thumbnail" alt="${title}" />
-            <span><img src="${image.URI?html}" alt="${title}" /></span>
-            </a></li>
+            <a href="${image.URI?html}" title="${title}">
+              <img class="thumbnail" src="${image.URI?html}?vrtx=thumbnail" alt="${title}" />
+              <span><img src="${image.URI?html}" alt="${title}" /></span>
+            </a>
+            </li>
         </#list>
       </ul>
     </div>

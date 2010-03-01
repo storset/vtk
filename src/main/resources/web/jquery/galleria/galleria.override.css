@@ -22,13 +22,16 @@ body#vrtx-image-listing h1 {
   clear: left;
   width: 292px;
   margin: 0;
-  padding: 0;
+  padding: 0 0 240px 0;
   position: relative;
+  float: left;
 }
 
 /* With JavaScript */
 .default_galleria_style {
   width: 730px;
+  float: none;
+  padding: 0;
 }
 
 .galleria_wrapper {

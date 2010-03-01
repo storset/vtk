@@ -98,14 +98,14 @@ body#vrtx-image-listing h1 {
 
 /* Pure CSS gallery - Large image */
 
-.vrtx-gallery li span {
+.vrtx-gallery li span.vrtx-pure-css-gallery-image {
   position: absolute;
   left: -3000px;
   visibility: hidden;
   display: block;
 }
 
-.vrtx-gallery li a:hover span {
+.vrtx-gallery li a:hover span.vrtx-pure-css-gallery-image {
   visibility: visible;
   left: 322px; /* horizontally offset */
   z-index: 99999;
@@ -114,6 +114,14 @@ body#vrtx-image-listing h1 {
 /* fix IE 6 popup bug: http://ago.tanfa.co.uk/css/articles/pure-css-popups-bug.html */
 * html .vrtx-gallery li a:hover {
   height: auto;
+}
+
+.vrtx-pure-css-gallery-image-caption {
+  display: block;
+  color: #888;
+  padding: 10px 0 0 0;
+  text-align: center;
+  width: auto;
 }
 
 .vrtx-gallery li span img {

@@ -134,8 +134,11 @@
               </#if>
             </#if>
             <a href="${image.URI?html}" title="${title}">
-              <span><img src="${image.URI?html}" alt="${title}" /></span>
-              <img class="thumbnail" src="${image.URI?html}?vrtx=thumbnail" alt="${title}" />     
+              <span class="vrtx-pure-css-gallery-image">
+                <img src="${image.URI?html}" alt="${title}" />
+                <span class="vrtx-pure-css-gallery-image-caption">${title}</span>
+              </span>
+              <img class="thumbnail" src="${image.URI?html}?vrtx=thumbnail" alt="${title}" />    
             </a>
             </li>
         </#list>

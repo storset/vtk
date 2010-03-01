@@ -29,7 +29,7 @@
   <bean id="structured.eventListing.previous.searchSorting" parent="eventListing.previous.searchSorting">
     <property name="sortOrderPropDefPointers">
       <list>
-        <value>resource:end-date</value>
+        <value>resource:start-date</value>
       </list>
     </property>
   </bean>

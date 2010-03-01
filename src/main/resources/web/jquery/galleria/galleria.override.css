@@ -105,10 +105,15 @@ body#vrtx-image-listing h1 {
   display: block;
 }
 
-.vrtx-gallery li:hover span {
+.vrtx-gallery li a:hover span {
   visibility: visible;
   left: 322px; /* horizontally offset */
   z-index: 99999;
+}
+
+/* fix IE 6 popup bug: http://ago.tanfa.co.uk/css/articles/pure-css-popups-bug.html */
+* html .vrtx-gallery li a:hover {
+  height: auto;
 }
 
 .vrtx-gallery li span img {

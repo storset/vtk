@@ -23,8 +23,8 @@ body#vrtx-image-listing h1 {
   width: 292px;
   margin: 0;
   padding: 0 0 240px 0;
-  position: relative;
   float: left;
+  position: relative;
 }
 
 /* With JavaScript */
@@ -108,13 +108,7 @@ body#vrtx-image-listing h1 {
 .vrtx-gallery li:hover span {
   visibility: visible;
   left: 322px; /* horizontally offset */
-  margin-top: -107px;
   z-index: 99999;
-}
-
-/* vertical offset fix IE 7 */
-*:first-child+html .vrtx-gallery li:hover span {
-  margin-top: 0px;
 }
 
 .vrtx-gallery li span img {

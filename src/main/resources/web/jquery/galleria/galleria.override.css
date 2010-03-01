@@ -105,6 +105,10 @@ body#vrtx-image-listing h1 {
   display: block;
 }
 
+.vrtx-gallery li a:hover {
+  text-decoration: none;	
+}
+
 .vrtx-gallery li a:hover span.vrtx-pure-css-gallery-image {
   visibility: visible;
   left: 322px; /* horizontally offset */
@@ -122,6 +126,7 @@ body#vrtx-image-listing h1 {
   padding: 10px 0 0 0;
   text-align: center;
   width: auto;
+  white-space: nowrap;
 }
 
 .vrtx-gallery li span img {

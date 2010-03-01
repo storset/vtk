@@ -180,7 +180,7 @@
             <td>${height} px</td>
             <#local contentLength = vrtx.propValue(image, 'contentLength') />
             <td><@vrtx.calculateResourceSizeToKB contentLength?number /></td>
-            <#local owner = vrtx.propValue(image, 'owner', 'link') />
+            <#local owner = vrtx.propValue(image, 'owner', 'name-link') />
             <td>${owner}</td>
             <#local creationTime = vrtx.propValue(image, 'creationTime', 'short', '') />
             <td>${creationTime}</td>

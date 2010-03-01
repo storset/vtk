@@ -95,6 +95,7 @@
     <property name="order" value="200" />
     <property name="assertions">
       <list>
+        <bean class="org.vortikal.web.service.IsAuthenticatedAssertion" />
         <ref bean="logoutIsSupported" />
         <ref bean="vrtxParameterEqualsLogout" />
         <bean class="org.vortikal.web.service.RequestMethodAssertion">

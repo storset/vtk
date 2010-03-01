@@ -113,7 +113,7 @@
   </bean>
 
   <bean id="eventListing.upcomingEventsSearchComponent" class="org.vortikal.web.search.QueryStringSearchComponent"
-    parent="repositoryAware" depends-on="resourceTypeTree">
+    parent="repositoryAware">
     <property name="name" value="eventListing.upcomingEventsSearchComponent" />
     <property name="titleLocalizationKey" value="eventListing.upcomingEvents" />
     <property name="viewService" ref="webService" />
@@ -140,7 +140,7 @@
   </bean>
 
   <bean id="eventListing.previousEventsSearchComponent" class="org.vortikal.web.search.QueryStringSearchComponent"
-    parent="repositoryAware" depends-on="resourceTypeTree">
+    parent="repositoryAware">
     <property name="name" value="eventListing.previousEventsSearchComponent" />
     <property name="titleLocalizationKey" value="eventListing.previousEvents" />
     <property name="viewService" ref="webService" />

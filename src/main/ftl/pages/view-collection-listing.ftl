@@ -1,7 +1,7 @@
 <#ftl strip_whitespace=true>
 
 <#--
-  - File: view-collectionlisting.ftl
+  - File: view-collection-listing.ftl
   - 
   - Description: A HTML page that displays a collection listing.
   - 
@@ -128,7 +128,9 @@
 	                     <li><a href="${c.URL.pathRepresentation?html}">${vrtx.propValue(c.resource, "title")?html}</a></li>
 	                   </#if>
 	                 </#list>
-	           </ul></td></tr>
+	               </ul>
+	             </td>
+	           </tr>
 	         </table>
 	       </div>
 	     </#if>

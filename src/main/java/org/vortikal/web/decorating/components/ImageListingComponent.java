@@ -65,6 +65,13 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
 
         String requestLimit = request.getStringParameter("limit");
         int searchLimit = getSearchLimit(requestLimit);
+        
+        String type = request.getStringParameter("type");
+        if(type != null && type.equals("simple-gallery")) {
+            model.put("type", "simple-gallery");
+        } else {
+            model.put("type", "list");
+        }
 
         String excludeScripts = request.getStringParameter("exclude-scripts");
         if (excludeScripts != null && "true".equalsIgnoreCase(excludeScripts.trim())) {

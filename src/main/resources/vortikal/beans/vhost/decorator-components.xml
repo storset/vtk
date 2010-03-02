@@ -502,6 +502,7 @@
       <map>
         <entry key="uri" value="URI of the imagefolder to include pictures from." />
         <entry key="limit" value="Maximum number of images to show in list. Default is 5" />
+        <entry key="type" value="How to the display the list. Default is 'list'" />
       </map>
     </property>
     <property name="searchSorting" ref="collectionListing.searchSorting" />
@@ -514,6 +515,12 @@
         <entry key="cssURLs">
           <list>
             <value>${themeBaseURL}/image-listing-component.css</value>
+          </list>
+        </entry>
+        <entry key="jsURLs">
+          <list>
+            <value>${webResources.baseURL}/jquery/include-jquery.js</value>
+            <value>${jsBaseURL}/image-listing-component.js</value>
           </list>
         </entry>
       </map>

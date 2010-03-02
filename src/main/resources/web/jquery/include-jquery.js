@@ -1,4 +1,3 @@
-
 if (typeof jQuery == 'undefined') {
   var scriptNode = document.createElement("script");
   document.getElementsByTagName("head")[0].appendChild(scriptNode);

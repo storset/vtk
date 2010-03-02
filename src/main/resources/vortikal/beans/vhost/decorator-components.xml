@@ -501,7 +501,7 @@
     <property name="parameterDescriptions">
       <map>
         <entry key="uri" value="URI of the imagefolder to include pictures from." />
-        <entry key="limit" value="Maximum number of images to show in list." />
+        <entry key="limit" value="Maximum number of images to show in list. Default is 5" />
       </map>
     </property>
     <property name="searchSorting" ref="collectionListing.searchSorting" />

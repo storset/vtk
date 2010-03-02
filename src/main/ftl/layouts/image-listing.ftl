@@ -17,7 +17,7 @@
     <span class="vrtx-image-listing-include-title"><a href="${folderUrl}?display=gallery">${folderTitle}</a></span>
     <#if type == 'simple-gallery'>
       <#list images as image>
-        <div class="vrtx-listing-include-container-pure-css">
+        <div class="vrtx-image-listing-include-container-pure-css">
           <a href="${folderUrl}?actimg=${image.URI}&amp;display=gallery">
             <img src="${image.URI}" alt="${image.URI}" />
           </a>

@@ -53,20 +53,20 @@
 }
 
 /* Unobtrusive JavaScript */
-.vrtx-image-listing-include .vrtx-listing-include-container-pure-css {
+.vrtx-image-listing-include .vrtx-image-listing-include-container-pure-css {
   display: none;
 }
 
-.vrtx-image-listing-include .vrtx-listing-include-container {
+.vrtx-image-listing-include .vrtx-image-listing-include-container {
   display: block;
 }
 
-.vrtx-image-listing-include .vrtx-listing-include-container {
+.vrtx-image-listing-include .vrtx-image-listing-include-container {
   width: 507px;
   overflow: hidden;
   margin-bottom: 10px;
 }
 
-.vrtx-image-listing-include .vrtx-listing-include-container img {
+.vrtx-image-listing-include .vrtx-image-listing-include-container img {
   max-height: 380px;
 }

@@ -1,5 +1,6 @@
 // Vortex Simple Gallery v0.1b
 // w/ paging and fade effect
+// by UiO / USIT
 
 $(document).ready( function() {
 	

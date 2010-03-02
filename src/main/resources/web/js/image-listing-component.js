@@ -6,10 +6,17 @@ $(document).ready( function() {
       $(this).click(function(e) { 
     	  
     	  //change image
-    	  var i = new Image();
-    	  var src = $("img", this).attr("src").split("?")[0]; i.src = src; i.alt = src;
-          $(".vrtx-image-listing-include .vrtx-listing-include-container img").remove();
-          $(".vrtx-image-listing-include .vrtx-listing-include-container").append(i);
+    	  var img = new Image();
+    	  var src = $("img", this).attr("src").split("?")[0]; img.src = src; img.alt = src;
+          
+          //change link
+          link = document.createElement("a"); 
+          link.setAttribute("href", $(this).attr("href"))
+          
+          //replace link and image
+          $(".vrtx-image-listing-include .vrtx-listing-include-container a").remove();
+          $(".vrtx-image-listing-include .vrtx-listing-include-container").append(link);
+          $(".vrtx-image-listing-include .vrtx-listing-include-container a").append(img);
           
           jQuery(".vrtx-image-listing-include ul li a").each( function(j) {
             jQuery(this).removeClass("active");

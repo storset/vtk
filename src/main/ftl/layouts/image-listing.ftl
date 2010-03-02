@@ -18,7 +18,9 @@
     <#if type == 'simple-gallery'>
       <#list images as image>
         <div class="vrtx-listing-include-container-pure-css">
-          <img src="${image.URI}" alt="${image.URI}" />
+          <a href="${folderUrl}?actimg=${image.URI}&amp;display=gallery">
+            <img src="${image.URI}" alt="${image.URI}" />
+          </a>
         </div>
         <#break />
       </#list>

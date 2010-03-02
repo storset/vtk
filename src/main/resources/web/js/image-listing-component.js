@@ -23,6 +23,8 @@ $(document).ready( function() {
           link = document.createElement("a"); 
           link.setAttribute("href", $(this).attr("href"));
           link.setAttribute("class", "vrtx-image-listing-include-container-link");
+          // IE
+          link.setAttribute("className", "vrtx-image-listing-include-container-link");
           
       	  //replace link and image (w/ fade effect down to fadedOutOpacity)
           $(wrapper + " " + container).animate({opacity: fadedOutOpacity}, fadeInOutTime, function() {

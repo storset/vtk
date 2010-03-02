@@ -2,7 +2,8 @@ $(document).ready( function() {
 	
   var wrapper = ".vrtx-image-listing-include";
   var container = ".vrtx-image-listing-include-container";
-  var fadeInOutTime = 100; //ms
+  var fadeInOutTime = 125; //ms
+  var fadedOutOpacity = 0.5;
   
   // Unobtrusive JavaScript
   $(container + "-pure-css").addClass("vrtx-image-listing-include-container");
@@ -21,13 +22,13 @@ $(document).ready( function() {
           //add them together
           $(link).append(img);
           
-      	  //replace link and image (w/ fade effect down to 0.5 opacity)
-          $(wrapper + " " + container).animate({opacity: 0.5}, fadeInOutTime, function() {
-        	  //done fading -> remove
+      	  //replace link and image (w/ fade effect down to fadedOutOpacity)
+          $(wrapper + " " + container).animate({opacity: fadedOutOpacity}, fadeInOutTime, function() {
+        	  //done fade out -> remove
         	  $("a", this).remove();
         	  //start fading in ...
         	  $(this).animate({opacity: 1.0}, fadeInOutTime);
-        	  // ... before adding new image for smoother change
+        	  //... before adding new image for smoother change
         	  $(this).append(link);
           });
           

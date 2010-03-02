@@ -52,14 +52,20 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.web.SecurityInitializer;
 import org.vortikal.web.InvalidRequestException;
+import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 public class Logout extends SamlService {
 
+    private Service redirectService;
     private SecurityInitializer securityInitializer;
     
     public void initiateLogout(HttpServletRequest request, HttpServletResponse response) {
+
         URL savedURL = URL.create(request);
+        if (this.redirectService != null) {
+            savedURL = this.redirectService.constructURL(savedURL.getPath());
+        }
         request.getSession(true).setAttribute(URL_SESSION_ATTR, savedURL);
     
         // Generate request ID, save in session
@@ -109,11 +115,11 @@ public class Logout extends SamlService {
             throw new InvalidRequestException("Not a logout request: missing session");
         }
         if (request.getParameter("SAMLResponse") == null) {
-            throw new IllegalStateException("Not a SAML logout request");
+            throw new InvalidRequestException("Not a SAML logout request");
         }
         UUID expectedRequestID = (UUID) session.getAttribute(REQUEST_ID_SESSION_ATTR);
         if (expectedRequestID == null) {
-            throw new AuthenticationProcessingException("Missing request ID attribute in session");
+            throw new InvalidRequestException("Missing request ID attribute in session");
         }
         session.removeAttribute(REQUEST_ID_SESSION_ATTR);
 
@@ -122,7 +128,7 @@ public class Logout extends SamlService {
         
         URL url = (URL) session.getAttribute(URL_SESSION_ATTR);
         if (url == null) {
-            throw new AuthenticationProcessingException("No URL session attribute exists, nowhere to redirect");
+            throw new InvalidRequestException("No URL session attribute exists, nowhere to redirect");
         }
         session.removeAttribute(URL_SESSION_ATTR);
         session.removeAttribute(REQUEST_ID_SESSION_ATTR);
@@ -179,6 +185,10 @@ public class Logout extends SamlService {
     @Required
     public void setSecurityInitializer(SecurityInitializer securityInitializer) {
         this.securityInitializer = securityInitializer;
+    }
+
+    public void setRedirectService(Service redirectService) {
+        this.redirectService = redirectService;
     }
     
 }

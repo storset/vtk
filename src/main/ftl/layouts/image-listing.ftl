@@ -18,22 +18,18 @@
     <#if type == 'simple-gallery'>
       <#list images as image>
         <div class="vrtx-image-listing-include-container-pure-css">
-          <a href="${folderUrl}?actimg=${image.URI}&amp;display=gallery">
+          <a class="vrtx-image-listing-include-container-link" href="${folderUrl}?actimg=${image.URI}&amp;display=gallery">
             <img src="${image.URI}" alt="${image.URI}" />
           </a>
+          <a class='prev' href='#'>&lt;&lt;</a>
+          <a class='next' href='#'>&gt;&gt;</a>
         </div>
         <#break />
       </#list>
     </#if>
     <ul>
-    <#assign first = 'true' />
     <#list images as image>
-      <#if first == 'true' && type == 'simple-gallery'>
-        <li><a class="active" href="${folderUrl}?actimg=${image.URI}&amp;display=gallery"><img src="${image.URI}?vrtx=thumbnail" /></a></li>
-        <#assign first = 'false' />
-      <#else>
         <li><a href="${folderUrl}?actimg=${image.URI}&amp;display=gallery"><img src="${image.URI}?vrtx=thumbnail" /></a></li>
-      </#if>
     </#list>
     </ul>
   </div>

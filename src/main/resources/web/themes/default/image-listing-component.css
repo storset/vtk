@@ -59,9 +59,7 @@
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container {
   display: block;
-}
-
-.vrtx-image-listing-include .vrtx-image-listing-include-container {
+  position: relative;
   width: 507px;
   overflow: hidden;
   margin-bottom: 10px;
@@ -69,4 +67,30 @@
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container img {
   max-height: 380px;
+}
+
+.vrtx-image-listing-include .vrtx-image-listing-include-container a.prev,
+.vrtx-image-listing-include .vrtx-image-listing-include-container a.next {
+	text-decoration: none !important;
+	font-size: 16px;
+	position: absolute;
+	top: 0px;
+	width: 25px;
+	height: 100%;
+	color: #fff;
+	background-color: #000;
+	opacity:0.65;
+	filter:alpha(opacity=65);
+	z-index: 99999;
+}
+
+.vrtx-image-listing-include .vrtx-image-listing-include-container a.prev {
+	left: 0px;
+	padding-left: 5px;
+}
+
+.vrtx-image-listing-include .vrtx-image-listing-include-container a.next {
+    right: 7px;
+    text-align: right;
+    padding-right: 5px
 }

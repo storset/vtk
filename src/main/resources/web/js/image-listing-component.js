@@ -22,9 +22,12 @@ $(document).ready( function() {
           $(link).append(img);
           
       	  //replace link and image (w/ fade effect down to 0.5 opacity)
-          $(wrapper + " " + container).animate({opacity: 0.5}, fadeInOutTime, function() {      
+          $(wrapper + " " + container).animate({opacity: 0.5}, fadeInOutTime, function() {
+        	  //done fading -> remove
         	  $("a", this).remove();
+        	  //start fading in ...
         	  $(this).animate({opacity: 1.0}, fadeInOutTime);
+        	  // ... before adding new image for smoother change
         	  $(this).append(link);
           });
           

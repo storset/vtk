@@ -24,9 +24,6 @@ $(document).ready( function() {
           link.setAttribute("href", $(this).attr("href"));
           link.setAttribute("class", "vrtx-image-listing-include-container-link");
           
-          //add them together
-          $(link).append(img);
-          
       	  //replace link and image (w/ fade effect down to fadedOutOpacity)
           $(wrapper + " " + container).animate({opacity: fadedOutOpacity}, fadeInOutTime, function() {
         	  //done fade out -> remove
@@ -35,6 +32,7 @@ $(document).ready( function() {
         	  $(this).animate({opacity: 1.0}, fadeInOutTime);
         	  //... before adding new image for smoother change
         	  $(this).prepend(link);
+        	  $(link, this).append(img);
           });
           
           //remove active classes
@@ -57,6 +55,8 @@ $(document).ready( function() {
   $(wrapper + " " + container + " " + " a.prev").click(function(g) {
 	  if($(wrapper + " ul li a.active").parent().prev().length != 0) {
 		 $(wrapper + " ul li a.active").parent().prev().find("a").click();
+	  } else {
+		 $(wrapper + " ul li:last a").click();   
 	  }
 	  g.preventDefault(); 
   });
@@ -64,6 +64,8 @@ $(document).ready( function() {
   $(wrapper + " " + container + " " + " a.next").click(function(h) {
 	  if($(wrapper + " ul li a.active").parent().next().length != 0) {
 		  $(wrapper + " ul li a.active").parent().next().find("a").click();
+	  } else {
+		  $(wrapper + " ul li:first a").click();  
 	  }
 	  h.preventDefault(); 
   });

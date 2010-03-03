@@ -71,39 +71,22 @@
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container a.prev,
 .vrtx-image-listing-include .vrtx-image-listing-include-container a.next {
+	margin-top: 5px;
 	text-decoration: none !important;
-	font-size: 16px;
-	position: absolute;
-	top: 0px;
-	width: 30px;
-	height: 100%;
-	color: #fff;
-	background-color: #000;
-	z-index: 99999;
-	filter: alpha(opacity=60);
-	opacity:0.60;
+	text-size: 11px;
 }
 
-.vrtx-image-listing-include .vrtx-image-listing-include-container a.prev span,
-.vrtx-image-listing-include .vrtx-image-listing-include-container a.next span {
-    display: block;
-    position: absolute;
-    top: 47%;
-    left: 5px;  
+.vrtx-image-listing-include .vrtx-image-listing-include-container a.prev:hover,
+.vrtx-image-listing-include .vrtx-image-listing-include-container a.next:hover {
+	text-decoration: underline !important;
 }
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container a.prev {
-	left: 0px;
-}
-
-.vrtx-image-listing-include .vrtx-image-listing-include-container a.prev span {
-	left: 5px;
+	float: left;
+	margin-left: 5px;
 }
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container a.next {
-    right: 7px;
-}
-
-.vrtx-image-listing-include .vrtx-image-listing-include-container a.next span {
-    right: 5px;
+    float: right;
+    margin-right: 12px;
 }

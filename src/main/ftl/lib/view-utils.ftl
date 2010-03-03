@@ -108,9 +108,9 @@
   <#if endiso8601 != "" >
     <#local isoendhour = endiso8601?substring(11, 16) />
   </#if>
-  <#local locationMsgCode = "article.time" />
+  <#local locationMsgCode = "event.time" />
   <#if location != "" && !hideLocation><#t/>
-    <#local locationMsgCode = "article.time-and-place" />
+    <#local locationMsgCode = "event.time-and-place" />
   </#if>
   <span class="time-and-place"><@vrtx.msg code=locationMsgCode />:</span>
   <span class="summary" style="display:none;">${title}</span>

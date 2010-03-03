@@ -531,9 +531,9 @@
       <version>1.0</version>
     </dependency>
     <dependency>
-      <groupId>jtidy</groupId>
+      <groupId>org.jvnet.hudson</groupId>
       <artifactId>jtidy</artifactId>
-      <version>4aug2000r7-dev</version>
+      <version>4aug2000r7-dev-hudson-1</version>
     </dependency>
     <dependency>
       <groupId>commons-codec</groupId>

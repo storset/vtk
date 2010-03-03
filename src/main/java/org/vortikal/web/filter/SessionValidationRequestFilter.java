@@ -59,7 +59,7 @@ public class SessionValidationRequestFilter extends AbstractRequestFilter
     
     public HttpServletRequest filterRequest(HttpServletRequest request) {
         String clientAddress = request.getRemoteAddr();
-        if (authorizedAddresses.contains(clientAddress)) {
+        if (this.authorizedAddresses.contains(clientAddress)) {
             return request;
         }
         return new SessionValidationRequestWrapper(request);
@@ -74,8 +74,8 @@ public class SessionValidationRequestFilter extends AbstractRequestFilter
 
     private static class SessionValidationRequestWrapper extends HttpServletRequestWrapper {
 
-        private static final String COOKIE_REQUEST_ATTRIBUTE = 
-            SessionValidationRequestWrapper.class.getName() + ".requestAttribute";
+        private static final String CLIENT_ADDR_SESSION_ATTRIBUTE = 
+            SessionValidationRequestWrapper.class.getName() + ".clientAddrAttribute";
 
         private HttpServletRequest request;
 
@@ -94,12 +94,12 @@ public class SessionValidationRequestFilter extends AbstractRequestFilter
                 return null;
             }
             String clientAddress = request.getRemoteAddr();
-            Object o = s.getAttribute(COOKIE_REQUEST_ATTRIBUTE);
+            Object o = s.getAttribute(CLIENT_ADDR_SESSION_ATTRIBUTE);
             if (o == null || ! (o instanceof String)) {
                 s.invalidate();
                 s = this.request.getSession(create);
                 if (s != null) {
-                    s.setAttribute(COOKIE_REQUEST_ATTRIBUTE, clientAddress);
+                    s.setAttribute(CLIENT_ADDR_SESSION_ATTRIBUTE, clientAddress);
                 }
                 return s;
             }
@@ -108,7 +108,7 @@ public class SessionValidationRequestFilter extends AbstractRequestFilter
                 s.invalidate();
                 s = this.request.getSession(create);
                 if (s != null) {
-                    s.setAttribute(COOKIE_REQUEST_ATTRIBUTE, clientAddress);
+                    s.setAttribute(CLIENT_ADDR_SESSION_ATTRIBUTE, clientAddress);
                 }
             }
             return s;

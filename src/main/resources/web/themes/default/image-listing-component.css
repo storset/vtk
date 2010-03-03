@@ -24,6 +24,7 @@
   margin: 0;
   padding: 0;
   list-style-type: none;
+  clear: both;
 }
 
 .vrtx-image-listing-include ul li {
@@ -59,34 +60,44 @@
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container {
   display: block;
-  position: relative;
   width: 507px;
   overflow: hidden;
-  margin-bottom: 10px;
 }
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container img {
   max-height: 380px;
 }
 
-.vrtx-image-listing-include .vrtx-image-listing-include-container a.prev,
-.vrtx-image-listing-include .vrtx-image-listing-include-container a.next {
-	margin-top: 5px;
-	text-decoration: none !important;
-	text-size: 11px;
+/* Unobtrusive JavaScript */
+.vrtx-image-listing-include-container-nav-pure-css {
+  display: none;	
 }
 
-.vrtx-image-listing-include .vrtx-image-listing-include-container a.prev:hover,
-.vrtx-image-listing-include .vrtx-image-listing-include-container a.next:hover {
+.vrtx-image-listing-include-container-nav {
+  display: block;
+  width: 507px;
+  padding-bottom: 10px;
+}
+
+.vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.prev,
+.vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.next {
+	margin: 5px 0;
+	text-decoration: none !important;
+	font-size: 12px;
+	color: #888;
+}
+
+.vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.prev:hover,
+.vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.next:hover {
 	text-decoration: underline !important;
 }
 
-.vrtx-image-listing-include .vrtx-image-listing-include-container a.prev {
+.vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.prev {
 	float: left;
 	margin-left: 5px;
 }
 
-.vrtx-image-listing-include .vrtx-image-listing-include-container a.next {
+.vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.next {
     float: right;
-    margin-right: 12px;
+    margin-right: 13px;
 }

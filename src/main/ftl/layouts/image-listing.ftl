@@ -21,8 +21,10 @@
           <a class="vrtx-image-listing-include-container-link" href="${folderUrl}?actimg=${image.URI}&amp;display=gallery">
             <img src="${image.URI}" alt="${image.URI}" />
           </a>
-          <a class='prev' href='#'><span>&lt;&lt; Forrige</span></a>
-          <a class='next' href='#'><span>Neste &gt;&gt;</span></a>
+        </div>
+        <div class="vrtx-image-listing-include-container-nav-pure-css">
+          <a class='prev' href='#'>&lt;&lt; Forrige</a>
+          <a class='next' href='#'>Neste &gt;&gt;</a>
         </div>
         <#break />
       </#list>

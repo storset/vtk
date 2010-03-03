@@ -11,6 +11,7 @@ $(document).ready( function() {
   
   // Unobtrusive JavaScript
   $(container + "-pure-css").addClass("vrtx-image-listing-include-container");
+  $(".vrtx-image-listing-include-container-nav-pure-css").addClass("vrtx-image-listing-include-container-nav");
   
   $(wrapper + " ul li a").each( function(i) {
       $(this).click(function(e) {
@@ -54,7 +55,7 @@ $(document).ready( function() {
   $(wrapper + " ul li:first a").click();
   
   //paging (relative to li a.active)
-  $(wrapper + " " + container + " " + " a.prev").click(function(g) {
+  $(wrapper + " " + " a.prev").click(function(g) {
 	  if($(wrapper + " ul li a.active").parent().prev().length != 0) {
 		 $(wrapper + " ul li a.active").parent().prev().find("a").click();
 	  } else {
@@ -63,7 +64,7 @@ $(document).ready( function() {
 	  g.preventDefault(); 
   });
   
-  $(wrapper + " " + container + " " + " a.next").click(function(h) {
+  $(wrapper + " " + " a.next").click(function(h) {
 	  if($(wrapper + " ul li a.active").parent().next().length != 0) {
 		  $(wrapper + " ul li a.active").parent().next().find("a").click();
 	  } else {

@@ -1020,6 +1020,7 @@
             <value>${jsBaseURL}/featured-articles-multiple-properties.js</value>
             <value>${jsBaseURL}/admin-edit-display-articles.js</value>
             <value>${webResources.baseURL}/thickbox-modified/thickbox.js</value>
+            <value>${webResources.baseURL}/thickbox-modified/check-unsaved-changes.js</value>
           </list>
         </entry>
       </map>
@@ -1446,6 +1447,7 @@
             <value>${jsBaseURL}/admin-enhancements.js</value>
             <value>${jsBaseURL}/iframe.js</value>
             <value>${webResources.baseURL}/thickbox-modified/thickbox.js</value>
+            <value>${webResources.baseURL}/thickbox-modified/check-unsaved-changes.js</value>
             <value>${jsBaseURL}/visualize-links.js</value>
           </list>
         </entry>

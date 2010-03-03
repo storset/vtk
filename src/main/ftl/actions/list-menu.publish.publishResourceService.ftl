@@ -4,7 +4,7 @@
 
 <#assign titleMsg = vrtx.getMsg("confirm-publish.title.publish") />
 
-(&nbsp;<a href="${item.url?html}&amp;showAsHtml=true&amp;height=80&amp;width=230" class="thickbox" title="${titleMsg}">${item.title}</a>&nbsp;)
+(&nbsp;<a href="${item.url?html}&amp;showAsHtml=true&amp;height=80&amp;width=230" class="thickbox-check-unsaved-changes" title="${titleMsg}">${item.title}</a>&nbsp;)
 <#recover>
 ${.error}
 </#recover>

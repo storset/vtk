@@ -26,9 +26,9 @@ $(document).ready(function() {
 });
 
 // Stupid test to check if script is loaded from editor
-// PROP_CHANGE_CONFIRM_MSG is defined in "structured-resource/editor.ftl"
+// UNSAVED_CAHANGES_CONFIRMATION is defined in "structured-resource/editor.ftl"
 function requestFromEditor(){
-    return !(typeof(PROP_CHANGE_CONFIRM_MSG) == "undefined");
+    return !(typeof(UNSAVED_CAHANGES_CONFIRMATION) == "undefined");
 }
 
 function displayDateAsMultipleInputFields(name){

@@ -23,8 +23,10 @@
   <@vrtxJSONJavascript.script />
   <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/admin-prop-change.js"></script>
   <script language="Javascript" type="text/javascript"><!--
-    window.onbeforeunload = checkPropChange;
-    PROP_CHANGE_CONFIRM_MSG = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";
+    window.onbeforeunload = unsavedChangesInEditorMessage;
+    UNSAVED_CAHANGES_CONFIRMATION = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";
+    COMPLETE_UNSAVED_CAHANGES_CONFIRMATION = "<@vrtx.msg code='manage.completeUnsavedChangesConfirmation' />";
+    
     function performSave() {
         saveDateAndTimeFields();
         if (typeof(MULTIPLE_INPUT_FIELD_NAMES) != "undefined") {

@@ -1,7 +1,7 @@
 // JavaScript Document	
 var INITIAL_INPUT_FIELDS = new Array();
 var NEED_TO_CONFIRM = true;
-var PROP_CHANGE_CONFIRM_MSG;
+var UNSAVED_CAHANGES_CONFIRMATION;
 
 function initPropChange(){
     var i = 0;
@@ -10,9 +10,9 @@ function initPropChange(){
     });
 }
 
-function checkPropChange(){
+function unsavedChangesInEditor(){
     if(!NEED_TO_CONFIRM)
-        return;
+        return false;
     var dirtyState = false;
     currentStateOfInputFields = $("input");
     for(i = 0; i < INITIAL_INPUT_FIELDS.length; i++){
@@ -29,6 +29,11 @@ function checkPropChange(){
             }
         }
      });
-     if(dirtyState)
-        return PROP_CHANGE_CONFIRM_MSG;
+     return dirtyState;
+}
+
+function unsavedChangesInEditorMessage(){
+    if(unsavedChangesInEditor()){
+        return UNSAVED_CAHANGES_CONFIRMATION;
+    }
 }

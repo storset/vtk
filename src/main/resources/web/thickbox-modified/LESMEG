@@ -31,3 +31,8 @@ var tb_pathToImage = "/vrtx/__vrtx/static-resources/thickbox-modified/loadingAni
 1.3 Fjernet linje fra CSS
 
 *{padding: 0; margin: 0;}
+
+1.4 Modifisert loader med sjekk for endringer i innholdet til editoren 
+
+Benytt "thickbox-check-unsaved-changes" i stede for "thickbox" for at det skal sjekkes for 
+endringer i editoren før lasting av thickbox. Se "check-unsaved-changes.js". 

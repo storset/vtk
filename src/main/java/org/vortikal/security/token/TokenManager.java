@@ -33,7 +33,6 @@ package org.vortikal.security.token;
 import org.vortikal.security.Principal;
 import org.vortikal.security.web.AuthenticationHandler;
 
-
 /**
  * Token management interface. Token management involves creation,
  * storing and removing authenticated tokens as well as mapping
@@ -44,11 +43,8 @@ import org.vortikal.security.web.AuthenticationHandler;
  * token and a principal object directly, through a PrincipalManager.
  *
  * @see org.vortikal.security.PrincipalStore
- * @version $Id: TokenManager.java 42 2004-05-05 19:16:53Z gormap $
  */
 public interface TokenManager {
-
-
 
     /**
      * Maps a token to a principal object.
@@ -58,9 +54,6 @@ public interface TokenManager {
      * such session exists
      */
     public Principal getPrincipal(String token);
-
-
-
 
     /**
      * Inserts a new principal into the token manager (typically
@@ -73,9 +66,6 @@ public interface TokenManager {
      */
     public String newToken(Principal principal, AuthenticationHandler authenticationHandler);
 
-
-
-
     /**
      * Removes a principal from the principal manager (typically after
      * a user has logged out).
@@ -84,7 +74,6 @@ public interface TokenManager {
      */
     public void removeToken(String token);
 
-    
     /**
      * Gets the authentication handler that authenticated the
      * principal identified by this token.
@@ -96,7 +85,5 @@ public interface TokenManager {
      */
     public AuthenticationHandler getAuthenticationHandler(String token);
     
-
     public String getRegisteredToken(Principal principal);
-    
 }

@@ -33,8 +33,8 @@ package org.vortikal.repository;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.UUID;
 
-import org.safehaus.uuid.UUIDGenerator;
 import org.vortikal.repository.store.DataAccessor;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
@@ -77,8 +77,7 @@ public class LockManager {
 
         if (resource.getLock() == null) {
             String lockToken = "opaquelocktoken:"
-                    + UUIDGenerator.getInstance().generateRandomBasedUUID()
-                            .toString();
+                + UUID.randomUUID().toString();
 
             Date timeout = new Date(System.currentTimeMillis()
                     + this.lockDefaultTimeout);

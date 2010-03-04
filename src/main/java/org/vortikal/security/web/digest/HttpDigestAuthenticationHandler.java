@@ -30,13 +30,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.safehaus.uuid.UUIDGenerator;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
@@ -438,7 +438,7 @@ public class HttpDigestAuthenticationHandler
 
 
     private String generateOpaque() {
-        return UUIDGenerator.getInstance().generateRandomBasedUUID().toString();
+        return UUID.randomUUID().toString();
     }
 
 

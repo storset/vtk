@@ -33,17 +33,15 @@ package org.vortikal.security.token;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.safehaus.uuid.UUIDGenerator;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.security.Principal;
 import org.vortikal.security.web.AuthenticationHandler;
 import org.vortikal.util.cache.SimpleCache;
 import org.vortikal.util.cache.SimpleCacheImpl;
-
-
 
 /**
  * Default implementation of the {@link TokenManager} interface. Keeps
@@ -93,7 +91,6 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
         }
     }
 
-
     public Principal getPrincipal(String token) {
 
         if (this.registeredPrincipals.containsKey(token))
@@ -105,7 +102,6 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
         }
         return item.getPrincipal();
     }
-
 
     public AuthenticationHandler getAuthenticationHandler(String token) {
         if (this.registeredPrincipals.containsKey(token))
@@ -148,9 +144,8 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
         return null;
     }
 
-
     private String generateID() {
-        return UUIDGenerator.getInstance().generateRandomBasedUUID().toString();
+        return UUID.randomUUID().toString();
     }
  
 

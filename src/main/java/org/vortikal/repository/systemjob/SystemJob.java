@@ -69,10 +69,11 @@ public abstract class SystemJob implements InitializingBean {
     private SecurityContext securityContext;
     private PropertyTypeDefinition systemJobStatusPropDef;
     private ResourceTypeTree resourceTypeTree;
-    
+
     /**
-     * List of pointers to properties that are to be affected as a result of this job.
-     * If none, all properties of the resource in question are to be affected.
+     * List of pointers to properties that are to be affected as a result of
+     * this job. If none, all properties of the resource in question are to be
+     * affected.
      */
     private List<String> affectedPropDefPointers;
     private List<PropertyTypeDefinition> affectedProperties;
@@ -152,15 +153,15 @@ public abstract class SystemJob implements InitializingBean {
     protected Query getSystemJobQuery() {
         OrQuery orQuery = new OrQuery();
 
-        PropertyExistsQuery systemJobPropertyExistsQuery = new PropertyExistsQuery(this.getSystemJobStatusPropDef(),
+        PropertyExistsQuery systemJobPropertyExistsQuery = new PropertyExistsQuery(this.systemJobStatusPropDef,
                 true);
-        systemJobPropertyExistsQuery.setComplexValueAttributeSpecifier(this.getSystemJobName());
+        systemJobPropertyExistsQuery.setComplexValueAttributeSpecifier(this.systemJobName);
         orQuery.add(systemJobPropertyExistsQuery);
 
         String now = SystemJobContext.dateAsTimeString(Calendar.getInstance().getTime());
-        PropertyTermQuery systemJobPropertyQuery = new PropertyTermQuery(this.getSystemJobStatusPropDef(), now,
+        PropertyTermQuery systemJobPropertyQuery = new PropertyTermQuery(this.systemJobStatusPropDef, now,
                 TermOperator.LT);
-        systemJobPropertyQuery.setComplexValueAttributeSpecifier(this.getSystemJobName());
+        systemJobPropertyQuery.setComplexValueAttributeSpecifier(this.systemJobName);
         orQuery.add(systemJobPropertyQuery);
 
         return orQuery;
@@ -210,13 +211,5 @@ public abstract class SystemJob implements InitializingBean {
 
     public void setAffectedPropDefPointers(List<String> affectedPropDefPointers) {
         this.affectedPropDefPointers = affectedPropDefPointers;
-    }
-
-    protected String getSystemJobName() {
-        return this.systemJobName;
-    }
-
-    protected PropertyTypeDefinition getSystemJobStatusPropDef() {
-        return this.systemJobStatusPropDef;
     }
 }

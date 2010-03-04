@@ -42,7 +42,7 @@ import org.vortikal.repository.search.query.UriDepthQuery;
 
 public class QueryStringSearchComponent extends QuerySearchComponent {
 
-    private String query;
+    protected String query;
     private QueryParser queryParser;
 
     @Override

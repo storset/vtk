@@ -37,6 +37,7 @@
   <import resource="view-collection-listing.xml" />
   <import resource="view-article-listing.xml" />
   <import resource="view-event-listing.xml" />
+  <import resource="view-event-calendar-listing.xml"/>
   <import resource="view-blog-listing.xml" />
   <import resource="view-person-listing.xml" />
   <import resource="view-project-listing.xml" />

@@ -34,6 +34,30 @@
     </property>
   </bean>
 
+  <bean id="structured.eventListing.groupedByDayEventSearchQueryString" class="java.lang.String">
+    <constructor-arg type="java.lang.String">
+      <value>
+        (uri = {$currentFolder}/* AND type IN structured-event) AND (resource:start-date &gt;= {$currentDate+[1]d} AND resource:start-date &lt; {$currentDate+[2]d})
+      </value>
+    </constructor-arg>
+  </bean>
+
+  <bean id="structured.eventListing.furtherUpcomingSearchString" class="java.lang.String">
+    <constructor-arg type="java.lang.String">
+      <value>
+        (uri = {$currentFolder}/* AND type IN structured-event) AND (resource:start-date &gt;= {$currentDate+[1]d})
+      </value>
+    </constructor-arg>
+  </bean>
+
+  <bean id="structured.eventListing.specificDateEventSearchQueryString" class="java.lang.String">
+    <constructor-arg type="java.lang.String">
+      <value>
+        (uri = {$currentFolder}/* AND type IN structured-event) AND (resource:start-date &gt;= [1] AND resource:start-date &lt; [2])
+      </value>
+    </constructor-arg>
+  </bean>
+
   <bean id="structured.eventListing.view" parent="freemarkerView">
     <property name="url" value="pages/view-collection-listing.ftl" />
     <property name="referenceDataProviders">

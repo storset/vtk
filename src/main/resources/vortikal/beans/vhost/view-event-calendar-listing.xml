@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <bean id="calendarEventListing.viewService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="eventListing.viewService" />
+    <property name="order" value="0" />
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsEventListing" />
+        <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
+          <property name="namespace" ref="EVENT_LISTING_NAMESPACE" />
+          <property name="name" value="display-type" />
+          <property name="value" value="calendar" />
+          <property name="checkExistenceOnly" value="false" />
+        </bean>
+      </list>
+    </property>
+    <property name="handlerInterceptors">
+      <list>
+        <ref bean="noCacheViewHandlerInterceptor" />
+      </list>
+    </property>
+    <property name="handler" ref="eventListing.calendarHandler" />
+    <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
+  </bean>
+
+  <bean id="eventListing.calendarHandler" class="org.vortikal.web.display.collection.CalendarEventListingController"
+    parent="eventListing.handler" />
+
+  <bean id="eventListing.groupedByDayEventSearchQueryString" class="java.lang.String">
+    <constructor-arg type="java.lang.String">
+      <value>
+        (uri = {$currentFolder}/* AND type IN event) AND (start-date &gt;= {$currentDate+[1]d} AND start-date &lt; {$currentDate+[2]d})
+      </value>
+    </constructor-arg>
+  </bean>
+
+  <bean id="eventListing.furtherUpcomingSearchString" class="java.lang.String">
+    <constructor-arg type="java.lang.String">
+      <value>
+        (uri = {$currentFolder}/* AND type IN event) AND (start-date &gt;= {$currentDate+[1]d})
+      </value>
+    </constructor-arg>
+  </bean>
+
+  <bean id="eventListing.specificDateEventSearchQueryString" class="java.lang.String">
+    <constructor-arg type="java.lang.String">
+      <value>
+        (uri = {$currentFolder}/* AND type IN event) AND (start-date &gt;= [1] AND start-date &lt; [2])
+      </value>
+    </constructor-arg>
+  </bean>
+
+</beans>

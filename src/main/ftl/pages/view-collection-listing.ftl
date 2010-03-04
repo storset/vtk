@@ -145,14 +145,14 @@
      </#if>
      
      <#-- List resources: -->
-     <#if searchComponents?has_content>
+     <#if collection.resourceType = 'event-listing'>
+       <@events.displayEvents collection=collection hideNumberOfComments=hideNumberOfComments displayMoreURLs=true />
+     <#elseif searchComponents?has_content>
        <#if collection.resourceType = 'article-listing'>
          <@articles.displayArticles page=page collectionListings=searchComponents hideNumberOfComments=hideNumberOfComments displayMoreURLs=true />
        <#else>
          <#list searchComponents as searchComponent>
-           <#if collection.resourceType = 'event-listing'>
-             <@events.displayEvents collection=collection searchComponent=searchComponent hideNumberOfComments=hideNumberOfComments displayMoreURLs=true />
-           <#elseif collection.resourceType = 'person-listing'>
+           <#if collection.resourceType = 'person-listing'>
              <@persons.displayPersons searchComponent title />
            <#elseif collection.resourceType = 'project-listing'>
              <@projects.displayProjects searchComponent />

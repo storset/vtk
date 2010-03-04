@@ -46,7 +46,7 @@
       <#list report.lastModifiedList as lastModified>
       	<#assign title= vrtx.propValue(lastModified, 'title') />
       	<#assign lastModifiedTime = vrtx.propValue(lastModified, 'lastModified') />
-      	<#assign modifiedBy = vrtx.propValue(lastModified, 'modifiedBy') /> 
+        <#assign modifiedBy = vrtx.propValue(lastModified, 'modifiedBy', 'name-link') />
         <#assign aclIsInherited = vrtx.getMsg("report.yes", "Yes")>
         <#if lastModified.isInheritedAcl() >
         	<#assign aclIsInherited = vrtx.getMsg("report.no", "No")>
@@ -56,23 +56,19 @@
         	<#assign isReadRestricted = vrtx.getMsg("collectionListing.permissions.restricted")>
         </#if>
         <#assign published = vrtx.propValue(lastModified, 'published') />
-		<#assign publishedStatus = vrtx.getMsg("report.yes", "Yes")>
-		<#if published = "false">
-			<#assign publishedStatus = vrtx.getMsg("report.no", "No")>
-		</#if>
+	<#assign publishedStatus = vrtx.getMsg("report.yes", "Yes")>
+	  <#if published = "false">
+	    <#assign publishedStatus = vrtx.getMsg("report.no", "No")>
+	    </#if>
 		
 	    <#if (count % 2 == 0) >
-		  <tr class="even">
+	      <tr class="even">
 	    <#else>
 	      <tr class="odd"> 
 	    </#if>
           <td class="vrtx-report-title"><a href="${lastModified.URI}">${title}</a></td>
           <td class="vrtx-report-last-modified">${lastModifiedTime}</td>
-		<#if modifiedBy?index_of("@") != -1>
-		  <td class="vrtx-report-modified-by">${modifiedBy}</td>
-		<#else>
-		  <td class="vrtx-report-modified-by"><a href="http://www.uio.no/sok?person=${modifiedBy}">${modifiedBy}</a></td>
-		</#if>
+          <td class="vrtx-report-last-modified-by">${modifiedBy}</td>
           <td class="vrtx-report-permission-set">${aclIsInherited}</td> 
           <td class="vrtx-report-permissions">${isReadRestricted}</td>  
           <td class="vrtx-report-published">${publishedStatus}</td>

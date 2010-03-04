@@ -3,7 +3,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>412 - precondition failed</title>
-  <link href="http://www.uio.no/visuell-profil/css/uio.css" type="text/css" rel="stylesheet">
 </head>
 <body>
 

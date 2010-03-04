@@ -30,6 +30,9 @@
  */
 package org.vortikal.util.cache;
 
+import java.util.Set;
+
+
 
 /**
  * Simple cache interface.
@@ -43,6 +46,8 @@ public interface SimpleCache<K, V> {
     public V remove(K key);
 
     public int getSize();
+    
+    public Set<K> getKeys();
     
     public void cleanupExpiredItems();
 }

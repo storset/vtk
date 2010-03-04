@@ -30,14 +30,15 @@
  */
 package org.vortikal.util.cache;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -137,6 +138,10 @@ public class SimpleCacheImpl<K, V> implements SimpleCache<K, V>, BeanNameAware,
         return i.getValue();
     }
 
+    
+    public Set<K> getKeys() {
+        return Collections.unmodifiableSet(this.cache.keySet());
+    }
 
     public int getSize() {
         return this.cache.size();

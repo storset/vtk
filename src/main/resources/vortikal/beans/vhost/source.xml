@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+"http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <bean id="getSourceService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
+    <property name="assertions">
+      <list>
+        <ref bean="getSourceParameterAssertion" />
+        <ref bean="requiresReadPermissionAssertion" />
+        <ref bean="fileAssertion" />
+      </list>
+    </property>
+    <property name="handler" ref="getSourceHandler" />
+  </bean>
+
+  <bean id="getSourceParameterAssertion" class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="vrtx" />
+    <property name="parameterValue" value="source" />
+  </bean>
+
+  <bean id="getSourceHandler" class="org.vortikal.web.display.file.DisplayResourceController" parent="repositoryAware">
+    <property name="viewName" value="getSourceDisplayResource" />
+    <property name="ignoreLastModified" value="true" />
+  </bean>
+
+  <bean id="getSourceViewResolver" class="org.vortikal.web.decorating.MappingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="getSourceDisplayResource" value-ref="getSourceDisplayResourceView" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="getSourceDisplayResourceView" class="org.vortikal.web.view.DisplayResourceView" />
+
+</beans>

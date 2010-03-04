@@ -52,6 +52,7 @@
   <import resource="root-management.xml" />
   <import resource="browse.xml" />
   <import resource="webdav.xml" />
+  <import resource="source.xml" />
   <import resource="windows-webdav-explorer.xml" />
   <import resource="editor.xml" />
   <import resource="plaintextedit.xml" />

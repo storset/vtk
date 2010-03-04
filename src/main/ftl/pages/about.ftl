@@ -124,15 +124,14 @@
              value = url />
 
       <!-- WebDAV address -->
-      <#assign url><a id="vrtx-aboutWebdavAddress" href="${resourceDetail.webdavURL?html}">${resourceDetail.webdavURL}</a></#assign>
-      <@propList.defaultPropertyDisplay
-             name = vrtx.getMsg("resource.webdavURL", "WebDAV address")
-             value = url />
-
+      <#if resourceDetail.getSourceURL?exists>
+		  <#assign url><a id="vrtx-aboutWebdavAddress" href="${resourceDetail.getSourceURL?html}">${resourceDetail.getSourceURL}</a></#assign>
+		  <@propList.defaultPropertyDisplay
+		         name = vrtx.getMsg("resource.sourceURL")
+		         value = url />
+	  </#if>
       <!-- Content language -->
       <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'contentLocale' displayMacro = 'languagePropertyDisplay' />
-
-      
 
     <#if !resource.collection>
       <!-- Size -->

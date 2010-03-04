@@ -133,7 +133,7 @@
         <entry key="setContentLanguageServiceURL" value-ref="setContentLanguageService" />
         <entry key="setCharacterEncodingServiceURL" value-ref="setCharacterEncodingService" />
         <entry key="viewURL" value-ref="viewService" />
-        <entry key="webdavURL" value-ref="webdavService" />
+        <entry key="getSourceURL" value-ref="getSourceService" />
       </map>
     </property>
   </bean>

@@ -21,11 +21,15 @@ $(window).bind("load", function () {
 
 (function ($) {
   $.fn.vrtxSGallery = function (options) {
+	 
+  //animation settings
+  settings = jQuery.extend({
+	fadeInOutTime : 250,
+	fadedOutOpacity: 0
+  }, options);
 	  
   var wrapper = ".vrtx-image-listing-include";
   var container = ".vrtx-image-listing-include-container";
-  var fadeInOutTime = 250; //ms
-  var fadedOutOpacity = 0;
 	  
   $(container + "-nav-pure-css").addClass("vrtx-image-listing-include-container-nav");
   
@@ -63,12 +67,12 @@ $(window).bind("load", function () {
 	          // IE
 	          link.setAttribute("className", "vrtx-image-listing-include-container-link");
 	          
-	      	  //replace link and image (w/ fade effect down to fadedOutOpacity) + stop() current animations.
-	          $(wrapper + " " + container).stop().fadeTo(fadeInOutTime, fadedOutOpacity, function() {
+	      	  //replace link and image (w/ fade effect down to fadedOutOpacity) + stop() current animation.
+	          $(wrapper + " " + container).stop().fadeTo(settings.fadeInOutTime, settings.fadedOutOpacity, function() {
 	        	  //done fade out -> remove
 	        	  $("a.vrtx-image-listing-include-container-link", this).remove();
 	        	  //start fading in ...
-	        	  $(this).fadeTo(fadeInOutTime, 1);
+	        	  $(this).fadeTo(settings.fadeInOutTime, 1);
 	        	  //... before adding new image for smoother change
 	        	  $(this).prepend(link);
 	        	  $(link, this).append(img);

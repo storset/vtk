@@ -48,10 +48,10 @@ import org.vortikal.web.service.URL;
 
 public class CalendarEventListingController extends EventListingController {
 
-    private static final String REQUEST_PARAMETER_DATE = "date";
-    private static final String REQUEST_PARAMETER_VIEW = "view";
-    private static final String VIEW_TYPE_ALL_UPCOMING = "allupcoming";
-    private static final String VIEW_TYPE_ALL_PREVIOUS = "allprevious";
+    public static final String REQUEST_PARAMETER_DATE = "date";
+    public static final String REQUEST_PARAMETER_VIEW = "view";
+    public static final String VIEW_TYPE_ALL_UPCOMING = "allupcoming";
+    public static final String VIEW_TYPE_ALL_PREVIOUS = "allprevious";
 
     private static final String MODEL_KEY_ALL_UPCOMING = "allUpcoming";
     private static final String MODEL_KEY_ALL_PREVIOUS = "allPrevious";

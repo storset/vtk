@@ -49,7 +49,8 @@
       <#list groupedByDayEvents as groupedEvents>
         <div id="vrtx-daily-events-${count}">
           <div id="vrtx-daily-events-date">
-            <@vrtx.date value=groupedEvents.day format='short' />
+            <span class="vrtx-daily-events-date-day"><@vrtx.date value=groupedEvents.day format='dd' /></span>
+            <span class="vrtx-daily-events-date-month"><@vrtx.date value=groupedEvents.day format='MMM' /></span>
           </div>
           <div id="vrtx-daily-event">
           <#local eventListing = groupedEvents.events />
@@ -67,7 +68,6 @@
       <h2>${furtherUpcomingTitle?html}</h2>
       <@displayStandard furtherUpcoming hideNumberOfComments displayMoreURLs=false />
     </#if>
-    
     <div>
       <a href="${viewAllUpcomingURL}"><@vrtx.msg code="eventListing.allUpcoming" default="Upcoming events"/></a>
       <a href="${viewAllPreviousURL}"><@vrtx.msg code="eventListing.allPrevious" default="Previous events"/></a>

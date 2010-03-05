@@ -5,14 +5,11 @@
 // ('load') so that all images is loaded before running
 // and .bind for performance increase: http://jqueryfordesigners.com/demo/fade-method2.html
 $(window).bind("load", function () {
-	
+ 
   var wrapper = ".vrtx-image-listing-include";	
   var container = ".vrtx-image-listing-include-container";
-
-  // Unobtrusive JavaScript
-  $(container + "-pure-css").addClass("vrtx-image-listing-include-container");	
   
-  $(wrapper + " ul li a").vrtxSGallery();
+  $(wrapper + " ul li a").vrtxSGallery(wrapper, container);
 	
   //choose first image in <li>
   $(wrapper + " ul li:first a").click();
@@ -20,19 +17,18 @@ $(window).bind("load", function () {
 });
 
 (function ($) {
-  $.fn.vrtxSGallery = function (options) {
+  $.fn.vrtxSGallery = function (wrapper, container, options) {
 	 
   //animation settings
   settings = jQuery.extend({
 	fadeInOutTime : 250,
 	fadedOutOpacity: 0
   }, options);
-	  
-  var wrapper = ".vrtx-image-listing-include";
-  var container = ".vrtx-image-listing-include-container";
-	  
-  $(container + "-nav-pure-css").addClass("vrtx-image-listing-include-container-nav");
   
+  //Unobtrusive JavaScript
+  $(container + "-pure-css").addClass("vrtx-image-listing-include-container");
+  $(container + "-nav-pure-css").addClass("vrtx-image-listing-include-container-nav");
+	  
   //paging (relative to li a.active)
   addPagingClickEvent("next", wrapper);
   addPagingClickEvent("prev", wrapper);  

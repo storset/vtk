@@ -85,7 +85,7 @@ public class CalendarEventListingController extends EventListingController {
             } else {
 
                 List<GroupedEvents> groupedByDayEvents = this.searcher.searchGroupedByDayEvents(request, collection,
-                        model, this.daysAhead);
+                        this.daysAhead);
                 model.put(MODEL_KEY_GROUPED_BY_DAY_EVENTS, groupedByDayEvents);
                 String groupedByDayTitle = getTitle(request, "eventListing.groupedEvents",
                         new Object[] { this.daysAhead });
@@ -127,8 +127,7 @@ public class CalendarEventListingController extends EventListingController {
             }
             try {
                 Date date = sdf.parse(specificDate);
-                Listing specificDateEvents = this.searcher.searchSpecificDate(request, collection, model, date,
-                        searchType);
+                Listing specificDateEvents = this.searcher.searchSpecificDate(request, collection, date, searchType);
                 model.put(MODEL_KEY_SPECIFIC_DATE_EVENTS, specificDateEvents);
                 model.put(MODEL_KEY_SPECIFIC_DATE_EVENTS_TITLE, getTitle(request, "eventListing.specificDateEvent",
                         new Object[] { specificDate }));

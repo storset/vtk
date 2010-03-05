@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -67,8 +66,8 @@ public class EventListingSearcher {
         return this.previousEventsSearch.execute(request, collection, upcomingEventPage, pageLimit, 0);
     }
 
-    public List<GroupedEvents> searchGroupedByDayEvents(HttpServletRequest request, Resource collection,
-            Map<String, Object> model, int daysAhead) throws Exception {
+    public List<GroupedEvents> searchGroupedByDayEvents(HttpServletRequest request, Resource collection, int daysAhead)
+            throws Exception {
         List<GroupedEvents> groupedByDayEvents = this.getGroupedByDayEvents(request, collection, daysAhead);
         return groupedByDayEvents;
     }
@@ -80,8 +79,8 @@ public class EventListingSearcher {
         return furtherUpcoming;
     }
 
-    public Listing searchSpecificDate(HttpServletRequest request, Resource collection, Map<String, Object> model,
-            Date date, SpecificDateSearchType searchType) throws Exception {
+    public Listing searchSpecificDate(HttpServletRequest request, Resource collection, Date date,
+            SpecificDateSearchType searchType) throws Exception {
         this.processedQuerySearchComponent.setProcessedQuery(getProcessedSpecificDayQueryString(date, searchType));
         Listing specificDateEventListing = this.processedQuerySearchComponent.execute(request, collection, 1, 100, 0);
         return specificDateEventListing;

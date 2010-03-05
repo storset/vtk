@@ -123,7 +123,14 @@
              name = vrtx.getMsg("resource.viewURL", "Web address")
              value = url />
 
-      <!-- WebDAV address -->
+      <!-- WebDAV address -->      
+      <#assign url>${resourceDetail.webdavURL}</#assign>
+      <@propList.defaultPropertyDisplay
+             name = vrtx.getMsg("resource.webdavURL", "WebDAV address")
+             value = url />
+
+      
+      
       <#if resourceDetail.getSourceURL?exists>
 		  <#assign url><a id="vrtx-aboutWebdavAddress" href="${resourceDetail.getSourceURL?html}">${resourceDetail.getSourceURL}</a></#assign>
 		  <@propList.defaultPropertyDisplay

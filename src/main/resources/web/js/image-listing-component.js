@@ -12,7 +12,6 @@ $(window).bind("load", function () {
   // Unobtrusive JavaScript
   $(container + "-pure-css").addClass("vrtx-image-listing-include-container");	
   
-  alert(container);
   $(wrapper + " ul li a").vrtxSGallery();
 	
   //choose first image in <li>

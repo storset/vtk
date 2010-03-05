@@ -132,7 +132,7 @@
       
       
       <#if resourceDetail.getSourceURL?exists>
-		  <#assign url><a id="vrtx-aboutWebdavAddress" href="${resourceDetail.getSourceURL?html}">${resourceDetail.getSourceURL}</a></#assign>
+		  <#assign url><a id="vrtx-aboutSourceAddress" href="${resourceDetail.getSourceURL?html}">${resourceDetail.getSourceURL}</a></#assign>
 		  <@propList.defaultPropertyDisplay
 		         name = vrtx.getMsg("resource.sourceURL")
 		         value = url />

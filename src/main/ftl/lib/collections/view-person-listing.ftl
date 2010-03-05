@@ -61,7 +61,16 @@
          <td class="vrtx-person-listing-email">
             <#if emails != "" >
          	  <#list emails?split(",") as email >
-         	    <a href="mailto:${email?html}">${email?html}</a>
+         	    <#if (email?string?length > 25) >
+                  <#if email?string?contains('@') >
+                    <#assign eS = email?string?split('@') />
+                     <a href="mailto:${email?html}"><span>${eS[0]?html}</span><span>@${eS[1]?html}</span></a>
+                  <#else>
+                     <a href="mailto:${email?html}"><span>${email?string?substring(0, 25)?html}</span><span>${email?string?substring(25,email?string?length)?html}</span></a>
+                  </#if>
+                <#else>       
+                  <a href="mailto:${email?html}">${email?html}</a>
+                </#if>
          	  </#list>
          	</#if>
          </td>

@@ -175,6 +175,7 @@
     <property name="views">
       <map>
         <entry key="${override.listing.prefix}eventListing.view"  value-ref="${override.listing.prefix}eventListing.view" />
+        <entry key="eventListingCalendar.view"  value-ref="eventListingCalendar.view" />
       </map>
     </property>
   </bean>

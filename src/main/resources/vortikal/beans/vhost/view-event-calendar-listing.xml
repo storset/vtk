@@ -26,7 +26,9 @@
   </bean>
 
   <bean id="eventListing.calendarHandler" class="org.vortikal.web.display.collection.CalendarEventListingController"
-    parent="eventListing.handler" />
+    parent="eventListing.handler">
+    <property name="viewName" value="eventListingCalendar.view" />
+  </bean>
 
   <bean id="eventListing.groupedByDayEventSearchQueryString" class="java.lang.String">
     <constructor-arg type="java.lang.String">
@@ -50,6 +52,25 @@
         (uri = {$currentFolder}/* AND type IN event) AND (start-date &gt;= [1] AND start-date &lt; [2])
       </value>
     </constructor-arg>
+  </bean>
+
+  <bean id="eventListingCalendar.view" parent="freemarkerView">
+    <property name="url" value="pages/view-collection-listing.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/view-event-calendar-listing.css</value>
+          </list>
+        </entry>
+        <entry key="jsURLs">
+          <list>
+            <value>${webResources.baseURL}/jquery/include-jquery.js</value>
+            <!-- XXX add necessary scripts for calendar -->
+          </list>
+        </entry>
+      </map>
+    </property>
   </bean>
 
 </beans>

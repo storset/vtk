@@ -1,5 +1,5 @@
 // Vortex Simple Gallery jQuery plugin v0.1b
-// w/ paging, fade effect
+// w/ paging, centered thumbnail navigation and fade effect
 // by Øyvind Hatland - UiO / USIT
 
 // ('load') so that all images is loaded before running
@@ -70,14 +70,14 @@ $(window).bind("load", function () {
 	      //change link
 	      link = document.createElement("a"); 
 	      link.setAttribute("href", $(this).attr("href"));
-	      link.setAttribute("class", "vrtx-image-listing-include-container-link");
+	      link.setAttribute("class", container.substring(1) + "-link");
 	      // IE
-	      link.setAttribute("className", "vrtx-image-listing-include-container-link");
+	      link.setAttribute("className", container.substring(1) + "-link");
 	      
 	  	  //replace link and image (w/ fade effect down to fadedOutOpacity) + stop() current animation.
 	      $(wrapper + " " + container).stop().fadeTo(settings.fadeInOutTime, settings.fadedOutOpacity, function() {
 	    	  //done fade out -> remove
-	    	  $("a.vrtx-image-listing-include-container-link", this).remove();
+	    	  $("a" + container + "-link", this).remove();
 	    	  //start fading in ...
 	    	  $(this).fadeTo(settings.fadeInOutTime, 1);
 	    	  //... before adding new image for smoother change

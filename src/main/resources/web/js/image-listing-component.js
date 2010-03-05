@@ -26,8 +26,8 @@ $(window).bind("load", function () {
   }, options);
   
   //Unobtrusive JavaScript
-  $(container + "-pure-css").addClass("vrtx-image-listing-include-container");
-  $(container + "-nav-pure-css").addClass("vrtx-image-listing-include-container-nav");
+  $(container + "-pure-css").addClass(container.substring(1));
+  $(container + "-nav-pure-css").addClass(container.substring(1) + "-nav");
 	  
   //paging (relative to li a.active)
   addPagingClickEvent("next", wrapper);

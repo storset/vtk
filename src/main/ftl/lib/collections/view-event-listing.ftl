@@ -48,12 +48,12 @@
       <#assign count = 1 />
       <#list groupedByDayEvents as groupedEvents>
         <div id="vrtx-daily-events-${count}">
-          <div id="vrtx-daily-events-date">
+          <div class="vrtx-daily-events-date">
             <span class="vrtx-daily-events-date-day"><@vrtx.date value=groupedEvents.day format='dd' /></span>
             <span class="vrtx-daily-events-date-month"><@vrtx.date value=groupedEvents.day format='MMM' /></span>
           </div>
-          <div id="vrtx-daily-event">
-          <#local eventListing = groupedEvents.events />
+          <div class="vrtx-daily-event">
+          <#local eventListing = groupedEvents.events /> 
           <#list eventListing.files as event>
             <@displayEvent eventListing event hideNumberOfComments displayMoreURLs=false />
           </#list>
@@ -68,6 +68,7 @@
       <h2>${furtherUpcomingTitle?html}</h2>
       <@displayStandard furtherUpcoming hideNumberOfComments displayMoreURLs=false />
     </#if>
+    
     <div>
       <a href="${viewAllUpcomingURL}"><@vrtx.msg code="eventListing.allUpcoming" default="Upcoming events"/></a>
       <a href="${viewAllPreviousURL}"><@vrtx.msg code="eventListing.allPrevious" default="Previous events"/></a>
@@ -75,7 +76,23 @@
   
   </#if>
   
-  <div id="vrtx-event-calendar">
+  <div id="vrtx-additional-content">
+     <div class="vrtx-frontpage-box" id="vrtx-event-calendar">
+       <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/include-jquery"></script>
+       <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery-ui-1.7.1.custom/js/jquery-ui-1.7.1.custom.min.js"></script>
+       <script type="text/javascript">
+         $(document).ready(function(){
+           $("#datepicker").datepicker({
+             dateFormat: 'yy-mm-dd',
+             onSelect: function(dateText, inst) {
+               location.href = location.href.split('?')[0] + "?date=" + dateText;   
+             }
+           });
+         });
+       </script>
+       <h2>Bla i arrangementer</h2>
+       <div type="text" id="datepicker"></div>
+     </div>
   </div>
 
 </#macro>

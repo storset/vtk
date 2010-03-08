@@ -64,18 +64,15 @@
       </div>
     </#if>
 
-    <#if furtherUpcoming?has_content && furtherUpcoming.files?size &gt; 0>
-      <h2>${furtherUpcomingTitle?html}</h2>
-      <@displayStandard furtherUpcoming hideNumberOfComments displayMoreURLs=false />
-    </#if>
-
   </#if>
-  
+  ${eventDates}
   <div id="vrtx-additional-content">
      <div class="vrtx-frontpage-box" id="vrtx-event-calendar">
        <script type="text/javascript">
          $(document).ready(function(){
-
+           
+           var activeDate = findActiveDate();
+           
            $("#datepicker").datepicker({
              dateFormat: 'yy-mm-dd',
              onSelect: function(dateText, inst) {
@@ -90,17 +87,37 @@
                  day.getMonth() + 1,
                  day.getDate()
                ].join('-');
-
                if ($.inArray(date_str, ${eventDates}) != -1) {
-                 return [true, 'vrtx-selected-date', '<@vrtx.msg code="eventListing.calendar.dayHasPlannedEvents" />'];      
+                 if(activeDate == date_str) {
+                   return [true, 'state-active', '<@vrtx.msg code="eventListing.calendar.dayHasPlannedEvents" />'];
+                 } else {
+                   return [true, '', '<@vrtx.msg code="eventListing.calendar.dayHasPlannedEvents" />'];
+                 }     
                } else {
-                 return [false, 'vrtx-unselected-date', '<@vrtx.msg code="eventListing.calendar.dayHasNoPlannedEvents" />'];
+                 return [false, '', '<@vrtx.msg code="eventListing.calendar.dayHasNoPlannedEvents" />'];
                }
              },
              onChangeMonthYear: function(year, month, inst) {
               
              }
            });
+           
+           function findActiveDate() {
+             var activeDate = "";
+             if(location.href.indexOf('?date=') != -1) {
+               var dated = location.href.split('=');
+               activeDate = dated[(dated.length-1)].replace(/-0/g,"-");
+             } else {
+               var cDate = new Date();
+               var dated = [
+                 cDate.getFullYear(),
+                 cDate.getMonth() + 1,
+                 cDate.getDate()
+               ].join('-');
+               activeDate = dated.replace(/-0/g,"-");
+             }
+             return activeDate;
+           }
 
          });
        </script>
@@ -110,9 +127,14 @@
   </div>
   
   <#if groupedByDayEvents?has_content || furtherUpcoming?has_content>
-   <div id="vrtx-events-nav">
-      <a href="${viewAllUpcomingURL}"><@vrtx.msg code="eventListing.allUpcoming" default="Upcoming events"/></a>
-      <a href="${viewAllPreviousURL}"><@vrtx.msg code="eventListing.allPrevious" default="Previous events"/></a>
+    <#if furtherUpcoming?has_content && furtherUpcoming.files?size &gt; 0>
+      <h2>${furtherUpcomingTitle?html}</h2>
+      <@displayStandard furtherUpcoming hideNumberOfComments displayMoreURLs=false />
+    </#if>
+  
+    <div id="vrtx-events-nav">
+       <a href="${viewAllUpcomingURL}"><@vrtx.msg code="eventListing.allUpcoming" default="Upcoming events"/></a>
+       <a href="${viewAllPreviousURL}"><@vrtx.msg code="eventListing.allPrevious" default="Previous events"/></a>
     </div>
   </#if>
 </#macro>

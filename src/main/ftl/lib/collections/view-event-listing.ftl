@@ -86,6 +86,8 @@
              onSelect: function(dateText, inst) {
                location.href = location.href.split('?')[0] + "?date=" + dateText;
              },
+             monthNames: ['Januar','Februar','Mars','April','Mai','Juni','Juli','August','September','Oktober','November','Desember'],
+             dayNamesMin: ['Sø', 'Ma', 'Ti', 'On', 'To', 'Fr', 'Lø'],
              firstDay: 1,
              beforeShowDay: function(day) {
               var date_str = [
@@ -98,7 +100,10 @@
                  return [true, 'vrtx-selected-date', '<@vrtx.msg code="eventListing.calendar.dayHasPlannedEvents" />'];      
                } else {
                  return [false, 'vrtx-unselected-date', '<@vrtx.msg code="eventListing.calendar.dayHasNoPlannedEvents" />'];
-               } 
+               }
+            },
+            onChangeMonthYear: function(year, month, inst) {
+              
             }
            });
 

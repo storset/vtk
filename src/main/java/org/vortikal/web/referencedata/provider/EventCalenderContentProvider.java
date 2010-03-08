@@ -51,7 +51,7 @@ import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.display.collection.CalendarEventListingController;
+import org.vortikal.web.display.collection.EventCalendarListingController;
 import org.vortikal.web.display.collection.EventListingSearcher;
 import org.vortikal.web.display.collection.EventListingSearcher.SpecificDateSearchType;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
@@ -85,7 +85,7 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
             cal.set(Calendar.SECOND, 0);
             cal.set(Calendar.MILLISECOND, 0);
 
-            String dateString = request.getParameter(CalendarEventListingController.REQUEST_PARAMETER_DATE);
+            String dateString = request.getParameter(EventCalendarListingController.REQUEST_PARAMETER_DATE);
             if (dateString != null) {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
                 try {

@@ -46,7 +46,7 @@ import org.vortikal.web.search.Listing;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
-public class CalendarEventListingController extends EventListingController {
+public class EventCalendarListingController extends EventListingController {
 
     public static final String REQUEST_PARAMETER_DATE = "date";
     public static final String REQUEST_PARAMETER_VIEW = "view";

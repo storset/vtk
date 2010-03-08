@@ -3,8 +3,7 @@
 
 <beans>
 
-  <bean id="visualProfileMixinResourceTypeDef"
-    class="org.vortikal.repository.resourcetype.MixinResourceTypeDefinitionImpl">
+  <bean id="visualProfileMixinResourceTypeDef" class="org.vortikal.repository.resourcetype.MixinResourceTypeDefinitionImpl">
     <property name="name" value="vp" />
     <property name="namespace" ref="VISUAL_PROFILE_NAMESPACE" />
     <property name="propertyTypeDefinitions" ref="visualProfilePropertyDefinitions" />
@@ -24,7 +23,8 @@
     </property>
   </bean>
 
-  <bean id="visualProfileDisabledPropdef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  <bean id="visualProfileDisabledPropdef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
     <property name="name" value="disabled" />
     <property name="type" value="BOOLEAN" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
@@ -43,8 +43,8 @@
   </bean>
 
 
-  <bean id="visualProfileCustomDefinedPropdef"
-    class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  <bean id="visualProfileCustomDefinedPropdef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
     <property name="name" value="customDefined" />
     <property name="type" value="BOOLEAN" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
@@ -372,7 +372,7 @@
               </constructor-arg>
               <constructor-arg ref="TYPE_STRING" />
             </bean>
-            
+
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>iri</value>
@@ -406,6 +406,12 @@
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>ulleval</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>ub</value>
               </constructor-arg>
               <constructor-arg ref="TYPE_STRING" />
             </bean>

@@ -56,11 +56,11 @@
 
   <bean id="eventListingCalendar.view" parent="freemarkerView">
     <property name="url" value="pages/view-collection-listing.ftl" />
-    <!-- property name="referenceDataProviders">
+    <property name="referenceDataProviders">
       <list>
         <ref bean="eventCalenderContentProvider" />
       </list>
-    </property -->
+    </property>
     <property name="attributesMap">
       <map>
         <entry key="cssURLs">
@@ -78,11 +78,11 @@
     </property>
   </bean>
 
-  <!--  bean id="eventCalenderContentProvider" class="org.vortikal.web.referencedata.provider.EventCalenderContentProvider"
+  <bean id="eventCalenderContentProvider" class="org.vortikal.web.referencedata.provider.EventCalenderContentProvider"
     parent="repositoryAware">
     <property name="searcher" ref="eventListing.eventListingSearcher" />
     <property name="displayTypePropDef" ref="eventListing.displayTypePropDef" />
     <property name="startDatePropDef" ref="startDatePropDef" />
-  </bean -->
+  </bean>
 
 </beans>

@@ -12,6 +12,12 @@
   width: 100%;
 }
 
+.vrtx-daily-events {
+  clear: left;
+  width: 100%;
+  float: left;	
+}
+
 #vrtx-daily-events {
   background-color: #fff;
   padding: 6px 20px 20px 20px;
@@ -26,13 +32,12 @@
 
 .vrtx-daily-events-date {
   float: left;
-  clear: left;
   width: 33px;
   height: 35px;
   border: 1px solid #ccc;
   text-align: center;
   margin-right: 22px;
-  margin-bottom: 100%;
+  /* margin-bottom: 100%; */
 }
 
 .vrtx-daily-events-date .vrtx-daily-events-date-day {

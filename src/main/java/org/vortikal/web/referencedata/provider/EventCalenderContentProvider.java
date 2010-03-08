@@ -47,6 +47,7 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
@@ -60,8 +61,9 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
 
     private Repository repository;
     private EventListingSearcher searcher;
+    private ResourceTypeTree resourceTypeTree;
     private PropertyTypeDefinition displayTypePropDef;
-    private PropertyTypeDefinition startDatePropDef;
+    private String startDatePropDefPointer;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -72,6 +74,9 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
         Resource resource = this.repository.retrieve(token, resourceURI, false);
         Property displayTypeProp = resource.getProperty(this.displayTypePropDef);
         if (displayTypeProp != null && "calendar".equals(displayTypeProp.getStringValue())) {
+
+            PropertyTypeDefinition startDatePropDef = this.resourceTypeTree
+                    .getPropertyDefinitionByPointer(startDatePropDefPointer);
 
             Calendar cal = Calendar.getInstance();
             cal.set(Calendar.DAY_OF_MONTH, 1);
@@ -98,7 +103,7 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
                 Listing plannedEvents = this.searcher.searchSpecificDate(request, resource, cal.getTime(),
                         SpecificDateSearchType.Month);
                 for (PropertySet propSet : plannedEvents.getFiles()) {
-                    Property startDate = propSet.getProperty(this.startDatePropDef);
+                    Property startDate = propSet.getProperty(startDatePropDef);
                     if (startDate != null) {
                         Date eventDate = startDate.getDateValue();
                         eventDates.add(String.valueOf(eventDateFormat.format(eventDate)));
@@ -137,13 +142,18 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
     }
 
     @Required
+    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+        this.resourceTypeTree = resourceTypeTree;
+    }
+
+    @Required
     public void setDisplayTypePropDef(PropertyTypeDefinition displayTypePropDef) {
         this.displayTypePropDef = displayTypePropDef;
     }
 
     @Required
-    public void setStartDatePropDef(PropertyTypeDefinition startDatePropDef) {
-        this.startDatePropDef = startDatePropDef;
+    public void setStartDatePropDefPointer(String startDatePropDefPointer) {
+        this.startDatePropDefPointer = startDatePropDefPointer;
     }
 
 }

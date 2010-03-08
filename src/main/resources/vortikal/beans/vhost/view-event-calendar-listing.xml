@@ -82,7 +82,14 @@
     parent="repositoryAware">
     <property name="searcher" ref="eventListing.eventListingSearcher" />
     <property name="displayTypePropDef" ref="eventListing.displayTypePropDef" />
-    <property name="startDatePropDef" ref="startDatePropDef" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="startDatePropDefPointer" ref="${override.listing.prefix}eventListing.startDatePropDefPointer" />
+  </bean>
+
+  <bean id="eventListing.startDatePropDefPointer" class="java.lang.String">
+    <constructor-arg type="java.lang.String">
+      <value>start-date</value>
+    </constructor-arg>
   </bean>
 
 </beans>

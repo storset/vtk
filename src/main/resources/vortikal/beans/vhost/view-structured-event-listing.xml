@@ -58,6 +58,12 @@
     </constructor-arg>
   </bean>
 
+  <bean id="structured.eventListing.startDatePropDefPointer" class="java.lang.String">
+    <constructor-arg type="java.lang.String">
+      <value>resource:start-date</value>
+    </constructor-arg>
+  </bean>
+
   <bean id="structured.eventListing.view" parent="freemarkerView">
     <property name="url" value="pages/view-collection-listing.ftl" />
     <property name="referenceDataProviders">

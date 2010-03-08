@@ -56,6 +56,11 @@
 
   <bean id="eventListingCalendar.view" parent="freemarkerView">
     <property name="url" value="pages/view-collection-listing.ftl" />
+    <!-- property name="referenceDataProviders">
+      <list>
+        <ref bean="eventCalenderContentProvider" />
+      </list>
+    </property -->
     <property name="attributesMap">
       <map>
         <entry key="cssURLs">
@@ -66,11 +71,18 @@
         <entry key="jsURLs">
           <list>
             <value>${webResources.baseURL}/jquery/include-jquery.js</value>
-            <!-- XXX add necessary scripts for calendar -->
+            <value>${webResources.baseURL}/jquery-ui-1.7.1.custom/js/jquery-ui-1.7.1.custom.min.js</value>
           </list>
         </entry>
       </map>
     </property>
   </bean>
+
+  <!--  bean id="eventCalenderContentProvider" class="org.vortikal.web.referencedata.provider.EventCalenderContentProvider"
+    parent="repositoryAware">
+    <property name="searcher" ref="eventListing.eventListingSearcher" />
+    <property name="displayTypePropDef" ref="eventListing.displayTypePropDef" />
+    <property name="startDatePropDef" ref="startDatePropDef" />
+  </bean -->
 
 </beans>

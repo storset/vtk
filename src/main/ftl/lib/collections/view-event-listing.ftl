@@ -78,8 +78,6 @@
   
   <div id="vrtx-additional-content">
      <div class="vrtx-frontpage-box" id="vrtx-event-calendar">
-       <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/include-jquery"></script>
-       <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery-ui-1.7.1.custom/js/jquery-ui-1.7.1.custom.min.js"></script>
        <script type="text/javascript">
          $(document).ready(function(){
            $("#datepicker").datepicker({

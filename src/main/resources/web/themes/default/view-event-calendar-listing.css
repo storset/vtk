@@ -14,17 +14,21 @@
   margin-bottom: 0;	
 }
 
-#vrtx-event-calendar .ui-datepicker .ui-datepicker-header,
+#vrtx-event-calendar .ui-datepicker .ui-datepicker-header {
+  background-color: #555;
+  color: #fff;
+}
+
+#vrtx-event-calendar .ui-datepicker .ui-datepicker-header a:hover {
+  background-image: none !important;	
+}
+	
 #vrtx-event-calendar .ui-datepicker th {
   background-color: #fff;	
 }
 
 #vrtx-event-calendar .ui-widget-header {
   color: #2b2b2b;	
-}
-
-#vrtx-event-calendar .ui-datepicker .ui-datepicker-title {
-  font-size: 15px;
 }
 
 #vrtx-event-calendar .ui-widget-content .ui-datepicker-unselectable span {
@@ -36,7 +40,7 @@
   color: #aaa !important;	
 }
 
-#vrtx-event-calendar .ui-widget-content a {
+#vrtx-event-calendar .ui-widget-content table a {
   border-width: thin thin 0 0;
   text-align: center;
   background-image: none !important;
@@ -50,8 +54,8 @@
   background-color: #fff !important;
 }
 
-#vrtx-event-calendar .ui-widget-content .ui-state-hover,
-#vrtx-event-calendar .ui-widget-content a:hover {
+#vrtx-event-calendar .ui-widget-content table .ui-state-hover,
+#vrtx-event-calendar .ui-widget-content table a:hover {
   background-color: #6677ee !important;	
   color: #fff !important;
 }

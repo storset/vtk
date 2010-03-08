@@ -63,7 +63,7 @@
       </#list>
       </div>
     </#if>
-
+<!--
     <#if furtherUpcoming?has_content && furtherUpcoming.files?size &gt; 0>
       <h2>${furtherUpcomingTitle?html}</h2>
       <@displayStandard furtherUpcoming hideNumberOfComments displayMoreURLs=false />
@@ -73,18 +73,33 @@
       <a href="${viewAllUpcomingURL}"><@vrtx.msg code="eventListing.allUpcoming" default="Upcoming events"/></a>
       <a href="${viewAllPreviousURL}"><@vrtx.msg code="eventListing.allPrevious" default="Previous events"/></a>
     </div>
-  
+  -->
   </#if>
   
   <div id="vrtx-additional-content">
      <div class="vrtx-frontpage-box" id="vrtx-event-calendar">
        <script type="text/javascript">
          $(document).ready(function(){
+
            $("#datepicker").datepicker({
              dateFormat: 'yy-mm-dd',
              onSelect: function(dateText, inst) {
                location.href = location.href.split('?')[0] + "?date=" + dateText;   
-             }
+             },
+             firstDay: 1,
+             beforeShowDay: function(day) {
+              var date_str = [
+                 day.getFullYear(),
+                 day.getMonth() + 1,
+                 day.getDate()
+               ].join('-');
+
+               if ($.inArray(date_str, ${eventDates}) != -1) {
+                 return [true, 'vrtx-selected-date', 'This date is selectable'];      
+               } else {
+                 return [false, 'vrtx-unselected-date', 'This date is NOT selectable'];
+               } 
+            }
            });
          });
        </script>

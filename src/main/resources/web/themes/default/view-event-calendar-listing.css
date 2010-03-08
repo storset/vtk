@@ -1,0 +1,62 @@
+.ui-datepicker {
+  width: 100%;
+  padding-left: 0px;
+  padding-right: 0px;
+  background-color: #ccc;
+}
+
+#vrtx-daily-events {
+  background-color: #fff;
+  padding: 6px 20px 20px 20px;
+  border: 1px solid #ccc;
+  width: 465px;
+  float: left;
+}
+
+#vrtx-daily-events .vevent {
+  background: url(../images/dot.png) repeat-x 0 100%;
+  padding-bottom: 12px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+#vrtx-daily-events h2 {
+  margin-top: 5px;
+}
+
+.vrtx-daily-events-date {
+  float: left;
+  width: 33px;
+  height: 35px;
+  border: 1px solid #ccc;
+  text-align: center;
+  margin-right: 22px;
+  margin-bottom: 100%;
+}
+
+.vrtx-daily-events-date .vrtx-daily-events-date-day {
+  display: block;
+  background-color: #ffffff;
+  padding-top: 3px;
+  padding-right: 4px;
+  padding-left: 4px;
+  padding-bottom: 2px;
+  font-size: 1.15em;
+}
+
+.vrtx-daily-events-date .vrtx-daily-events-date-month {
+  display: block;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 0.8em;
+  background-color: #444;
+  color: #fff;
+}
+
+.vrtx-unselected-date {
+  background-color: #ccc !important;
+}
+
+.vrtx-unselected-date span {
+  color: #aaa !important;
+}

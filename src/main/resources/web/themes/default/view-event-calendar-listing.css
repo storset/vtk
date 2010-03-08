@@ -12,10 +12,8 @@
   width: 100%;
 }
 
-.vrtx-daily-events {
-  clear: left;
-  width: 100%;
-  float: left;	
+.vrtx-daily-event {
+  padding-left: 55px;	
 }
 
 #vrtx-daily-events {

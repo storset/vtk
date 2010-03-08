@@ -101,10 +101,10 @@
                } else {
                  return [false, 'vrtx-unselected-date', '<@vrtx.msg code="eventListing.calendar.dayHasNoPlannedEvents" />'];
                }
-            },
-            onChangeMonthYear: function(year, month, inst) {
+             },
+             onChangeMonthYear: function(year, month, inst) {
               
-            }
+             }
            });
 
          });

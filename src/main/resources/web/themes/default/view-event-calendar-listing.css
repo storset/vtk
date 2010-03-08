@@ -5,7 +5,9 @@
   background-color: #ccc;
 }
 
-.eventListing\.calendarEventSearch {
+.eventListing\.calendarEventSearch,
+.structured\.eventListing\.upcomingEventsSearchComponent,
+.structured\.eventListing\.previousEventsSearchComponent {
   width: 507px;
   float: left;
   clear: left;

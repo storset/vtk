@@ -84,7 +84,7 @@
            $("#datepicker").datepicker({
              dateFormat: 'yy-mm-dd',
              onSelect: function(dateText, inst) {
-               location.href = location.href.split('?')[0] + "?date=" + dateText;   
+               location.href = location.href.split('?')[0] + "?date=" + dateText;
              },
              firstDay: 1,
              beforeShowDay: function(day) {
@@ -95,12 +95,13 @@
                ].join('-');
 
                if ($.inArray(date_str, ${eventDates}) != -1) {
-                 return [true, 'vrtx-selected-date', 'This date is selectable'];      
+                 return [true, 'vrtx-selected-date', '<@vrtx.msg code="eventListing.calendar.dayHasPlannedEvents" />'];      
                } else {
-                 return [false, 'vrtx-unselected-date', 'This date is NOT selectable'];
+                 return [false, 'vrtx-unselected-date', '<@vrtx.msg code="eventListing.calendar.dayHasNoPlannedEvents" />'];
                } 
             }
            });
+
          });
        </script>
        <h2>Bla i arrangementer</h2>

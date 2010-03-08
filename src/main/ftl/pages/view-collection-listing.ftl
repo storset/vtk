@@ -51,6 +51,11 @@
         <link rel="stylesheet" href="${cssURL}" media="print" />
       </#list>
     </#if>
+    <#if jsURLs?exists>
+      <#list jsURLs as jsURL>
+        <script type="text/javascript" src="${jsURL}"></script>
+      </#list>
+    </#if>
   </#if>
 
   <#if alternativeRepresentations?exists >

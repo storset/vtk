@@ -63,17 +63,12 @@
       </#list>
       </div>
     </#if>
-<!--
+
     <#if furtherUpcoming?has_content && furtherUpcoming.files?size &gt; 0>
       <h2>${furtherUpcomingTitle?html}</h2>
       <@displayStandard furtherUpcoming hideNumberOfComments displayMoreURLs=false />
     </#if>
-    
-    <div>
-      <a href="${viewAllUpcomingURL}"><@vrtx.msg code="eventListing.allUpcoming" default="Upcoming events"/></a>
-      <a href="${viewAllPreviousURL}"><@vrtx.msg code="eventListing.allPrevious" default="Previous events"/></a>
-    </div>
-  -->
+
   </#if>
   
   <div id="vrtx-additional-content">
@@ -113,7 +108,13 @@
        <div type="text" id="datepicker"></div>
      </div>
   </div>
-
+  
+  <#if groupedByDayEvents?has_content || furtherUpcoming?has_content>
+   <div id="vrtx-events-nav">
+      <a href="${viewAllUpcomingURL}"><@vrtx.msg code="eventListing.allUpcoming" default="Upcoming events"/></a>
+      <a href="${viewAllPreviousURL}"><@vrtx.msg code="eventListing.allPrevious" default="Previous events"/></a>
+    </div>
+  </#if>
 </#macro>
 
 <#macro displayEvent parent event hideNumberOfComments displayMoreURLs >

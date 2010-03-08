@@ -65,7 +65,7 @@
     </#if>
 
   </#if>
-  ${eventDates}
+
   <div id="vrtx-additional-content">
      <div class="vrtx-frontpage-box" id="vrtx-event-calendar">
        <script type="text/javascript">

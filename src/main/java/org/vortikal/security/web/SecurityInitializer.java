@@ -110,15 +110,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
 
         String token = null;
         if (session != null) {
-            try {
-                token = (String) session.getAttribute(SECURITY_TOKEN_ATTRIBUTE);
-            } catch (IllegalStateException e) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Session has been invalidated, creating new");
-                }
-                session.invalidate();
-                session = req.getSession(true);
-            }
+            token = (String) session.getAttribute(SECURITY_TOKEN_ATTRIBUTE);
         }
 
         if (token != null) {

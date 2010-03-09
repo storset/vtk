@@ -69,30 +69,15 @@ import org.vortikal.security.token.TokenManager;
  */
 public class SecurityInitializer implements InitializingBean, ApplicationContextAware {
 
+    private static final String SECURITY_TOKEN_ATTRIBUTE =
+        SecurityInitializer.class.getName() + ".SECURITY_TOKEN";
+
     private static Log logger = LogFactory.getLog(SecurityInitializer.class);
 
     private static Log authLogger = LogFactory.getLog("org.vortikal.security.web.AuthLog");
-
     private TokenManager tokenManager;
-
     private List<AuthenticationHandler> authenticationHandlers;
-
     private ApplicationContext applicationContext;
-
-
-    public void setTokenManager(TokenManager tokenManager) {
-        this.tokenManager = tokenManager;
-    }
-
-
-    public void setAuthenticationHandlers(List<AuthenticationHandler> authenticationHandlers) {
-        this.authenticationHandlers = authenticationHandlers;
-    }
-
-
-    public void setApplicationContext(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
-    }
 
 
     @SuppressWarnings("unchecked")
@@ -126,7 +111,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         String token = null;
         if (session != null) {
             try {
-                token = (String) session.getAttribute(SecurityContext.SECURITY_TOKEN_ATTRIBUTE);
+                token = (String) session.getAttribute(SECURITY_TOKEN_ATTRIBUTE);
             } catch (IllegalStateException e) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Session has been invalidated, creating new");
@@ -177,7 +162,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
 
                     SecurityContext.setSecurityContext(securityContext);
                     session = req.getSession(true);
-                    session.setAttribute(SecurityContext.SECURITY_TOKEN_ATTRIBUTE, token);
+                    session.setAttribute(SECURITY_TOKEN_ATTRIBUTE, token);
 
                     if (!handler.postAuthentication(req, resp)) {
                         if (logger.isDebugEnabled()) {
@@ -303,5 +288,17 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         sb.append(this.authenticationHandlers);
         sb.append("]");
         return sb.toString();
+    }
+
+    public void setTokenManager(TokenManager tokenManager) {
+        this.tokenManager = tokenManager;
+    }
+
+    public void setAuthenticationHandlers(List<AuthenticationHandler> authenticationHandlers) {
+        this.authenticationHandlers = authenticationHandlers;
+    }
+
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
     }
 }

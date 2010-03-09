@@ -32,18 +32,8 @@ package org.vortikal.security;
 
 import org.vortikal.context.BaseContext;
 
-
 public class SecurityContext {
 
-    /**
-     * Session attribute to hold the security context.
-     */
-    public static final String SECURITY_TOKEN_ATTRIBUTE =
-        SecurityContext.class.getName() + ".SECURITY_TOKEN";
-
-    public static final String AUTHENTICATOR_ID =
-        SecurityContext.class.getName() + ".AUTHENTICATOR_ID";
-    
     private String token;
     private Principal principal;
     
@@ -74,14 +64,14 @@ public class SecurityContext {
     }
     
     /**
-     * @return Returns the principal.
+     * @return the principal
      */
     public Principal getPrincipal() {
         return getSecurityContext().principal;
     }
 
     /**
-     * @return Returns the token.
+     * @return the security token.
      */
     public String getToken() {
         return getSecurityContext().token;

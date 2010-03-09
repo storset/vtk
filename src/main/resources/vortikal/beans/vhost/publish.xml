@@ -92,7 +92,7 @@
   </bean>
 
   <bean id="publish.unpublishResourceConfirmedService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="webService" />
+    <property name="parent" ref="manageService" />
     <property name="order" value="490" />
     <property name="assertions">
       <list>
@@ -108,7 +108,7 @@
   </bean>
 
   <bean id="publish.publishResourceConfirmedService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="webService" />
+    <property name="parent" ref="manageService" />
     <property name="order" value="490" />
     <property name="assertions">
       <list>

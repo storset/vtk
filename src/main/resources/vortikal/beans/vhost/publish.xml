@@ -97,7 +97,6 @@
     <property name="assertions">
       <list>
         <ref bean="manage.postRequestAssertion" />
-        <ref bean="adminVrtxParameterRule" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="unpublish-confirmed" />
@@ -113,7 +112,6 @@
     <property name="assertions">
       <list>
         <ref bean="manage.postRequestAssertion" />
-        <ref bean="adminVrtxParameterRule" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="publish-confirmed" />

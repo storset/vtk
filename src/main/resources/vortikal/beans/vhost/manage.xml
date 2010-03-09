@@ -15,7 +15,8 @@
     <property name="order" value="500" />
     <property name="assertions">
       <list>
-        <ref local="adminVrtxParameterRule" />
+        <ref bean="manage.hostNameAssertion" />
+        <ref bean="adminVrtxParameterRule" />
         <ref bean="requiresReadPermissionAssertion" />
       </list>
     </property>
@@ -1597,6 +1598,11 @@
     <property name="uri" value="/" />
     <property name="inverted" value="true" />
   </bean>
+
+  <bean id="manage.hostNameAssertion" class="org.vortikal.web.service.RequestHostNameAssertion">
+    <property name="hostName" value="${manage.hostName}" />
+  </bean>
+
 
   <bean id="adminVrtxParameterRule" class="org.vortikal.web.service.RequestParameterAssertion">
     <property name="parameterName" value="vrtx" />

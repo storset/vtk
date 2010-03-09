@@ -4,12 +4,16 @@
 
 function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle) {
 
-  var activeDate = findActiveDate();
-  
   var allowedDates = new Array();
-  var date = new Date();
-	  
-  allowedDates = queryAllowedDates (service, date.getFullYear(), date.getMonth + 1);
+  
+  //Get allowedDates for this month
+  var today = new Date();
+  var month = today.getMonth() + 1;
+  if(month <= 9) { 
+	  month = "0" + month;  
+  }
+  allowedDates = queryAllowedDates (service, today.getFullYear(), month);
+  var activeDate = findActiveDate(today);
   
   $("#datepicker").datepicker(
   {
@@ -53,14 +57,11 @@ function queryAllowedDates (service, year, month) {
   return allowedDates;
 }
 
-function findActiveDate() {
-  var activeDate = "";
+function findActiveDate(today) {
+  var activeDate = [ today.getFullYear(), today.getMonth() + 1, today.getDate() ].join('-');
   if (location.href.indexOf('?date=') != -1) {
-    var dated = location.href.split('=');
-    activeDate = dated[(dated.length - 1)].replace(/-0/g, "-");
-  } else {
-    var cDate = new Date();
-    var activeDate = [ cDate.getFullYear(), cDate.getMonth() + 1, cDate.getDate() ].join('-');
+    var parameterDate = location.href.split('=');
+    activeDate = parameterDate[(parameterDate.length - 1)].replace(/-0/g, "-");
   }
   return activeDate;
 }

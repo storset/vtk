@@ -55,7 +55,7 @@ public class DateValueFormatter implements ValueFormatter {
         this.recognizedLocales.add("no");
         this.recognizedLocales.add("nn");
         this.recognizedLocales.add("en");
-
+        
         this.namedDateFormats.put("short_en", FastDateFormat.getInstance("MMM d, yyyy", new Locale("en")));
         this.namedDateFormats.put("short_no", FastDateFormat.getInstance("d. MMM. yyyy", new Locale("no")));
         this.namedDateFormats.put("short_nn", FastDateFormat.getInstance("d. MMM. yyyy", new Locale("no")));
@@ -68,6 +68,10 @@ public class DateValueFormatter implements ValueFormatter {
         this.namedDateFormats.put("iso-8601", FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ssZZ", new Locale("en")));
         this.namedDateFormats.put("iso-8601-short", FastDateFormat.getInstance("yyyy-MM-dd", new Locale("en")));
         this.namedDateFormats.put("rfc-822", FastDateFormat.getInstance("EEE, dd MMM yyyy HH:mm:ss Z", new Locale("en")));
+        
+        this.namedDateFormats.put("month-year_no", FastDateFormat.getInstance("MMM, yyyy", new Locale("no")));
+        this.namedDateFormats.put("month-year_nn", FastDateFormat.getInstance("MMM, yyyy", new Locale("nn")));
+        this.namedDateFormats.put("month-year_en", FastDateFormat.getInstance("MMM, yyyy", new Locale("en")));
     }
 
     public DateValueFormatter(boolean date) {

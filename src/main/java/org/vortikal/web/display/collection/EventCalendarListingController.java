@@ -30,7 +30,6 @@
  */
 package org.vortikal.web.display.collection;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -131,24 +130,42 @@ public class EventCalendarListingController extends EventListingController {
                 Listing specificDateEvents = this.searcher.searchSpecificDate(request, collection, date, searchType);
 
                 model.put("specificDate", Boolean.TRUE);
-                Locale locale = this.localeResolver.resolveResourceLocale(request, collection.getURI());
-                String titleDate = this.dateValueFormatter.valueToString(new Value(date, false), "short", locale);
+
+                String titleDate = specificDate;
+                String titleKey = "eventListing.upcomingSpecificDateEvent";
+                Calendar now = Calendar.getInstance();
+                if (searchType != SpecificDateSearchType.Year) {
+                    Locale locale = this.localeResolver.resolveResourceLocale(request, collection.getURI());
+                    Calendar requestedCal = Calendar.getInstance();
+                    requestedCal.setTime(date);
+                    String format = "short";
+                    if (searchType == SpecificDateSearchType.Day) {
+                        if (requestedCal.get(Calendar.DAY_OF_MONTH) < now.get(Calendar.DAY_OF_MONTH)) {
+                            titleKey = "eventListing.previousSpecificDateEvent";
+                        }
+                    } else if (searchType == SpecificDateSearchType.Month) {
+                        format = "month-year";
+                        if (requestedCal.get(Calendar.MONTH) < now.get(Calendar.MONTH)) {
+                            titleKey = "eventListing.previousSpecificDateEvent";
+                        }
+                    }
+                    titleDate = this.dateValueFormatter.valueToString(new Value(date, false), format, locale);
+                } else {
+                    int requestedYear = Integer.parseInt(specificDate);
+                    if (requestedYear < now.get(Calendar.YEAR)) {
+                        titleKey = "eventListing.previousSpecificDateEvent";
+                    }
+                }
 
                 if (specificDateEvents.size() > 0) {
                     model.put("specificDateEvents", specificDateEvents);
-
-                    Date now = Calendar.getInstance().getTime();
-                    now = sdf.parse(sdf.format(now));
-                    String titleKey = date.after(now) ? "eventListing.upcomingSpecificDateEvent"
-                            : "eventListing.previousSpecificDateEvent";
-
                     model.put("specificDateEventsTitle", getTitle(request, titleKey, new Object[] { titleDate }));
                 } else {
                     model.put("noPlannedEventsMsg", getTitle(request, "eventListing.noPlannedEvents",
                             new Object[] { titleDate }));
                 }
 
-            } catch (ParseException e) {
+            } catch (Exception e) {
                 return false;
             }
         }

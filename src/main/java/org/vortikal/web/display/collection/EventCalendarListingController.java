@@ -34,17 +34,24 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.support.RequestContext;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.DateValueFormatter;
+import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.web.display.collection.EventListingSearcher.GroupedEvents;
 import org.vortikal.web.display.collection.EventListingSearcher.SpecificDateSearchType;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
+import org.vortikal.web.servlet.ResourceAwareLocaleResolver;
+
+import com.ibm.icu.util.Calendar;
 
 public class EventCalendarListingController extends EventListingController {
 
@@ -53,14 +60,8 @@ public class EventCalendarListingController extends EventListingController {
     public static final String VIEW_TYPE_ALL_UPCOMING = "allupcoming";
     public static final String VIEW_TYPE_ALL_PREVIOUS = "allprevious";
 
-    private static final String MODEL_KEY_ALL_UPCOMING = "allUpcoming";
-    private static final String MODEL_KEY_ALL_PREVIOUS = "allPrevious";
-    private static final String MODEL_KEY_GROUPED_BY_DAY_EVENTS = "groupedByDayEvents";
-    private static final String MODEL_KEY_GROUPED_EVENTS_TITLE = "groupedEventsTitle";
-    private static final String MODEL_KEY_FURTHER_UPCOMING = "furtherUpcoming";
-    private static final String MODEL_KEY_FURTHER_UPCOMING_TITLE = "furtherUpcomingTitle";
-    private static final String MODEL_KEY_SPECIFIC_DATE_EVENTS = "specificDateEvents";
-    private static final String MODEL_KEY_SPECIFIC_DATE_EVENTS_TITLE = "specificDateEventsTitle";
+    private DateValueFormatter dateValueFormatter;
+    private ResourceAwareLocaleResolver localeResolver;
 
     private final int daysAhead = 5; // 5 days ahead
     private final int furtherUpcomingPageLimit = 3; // 3 events on 1 page
@@ -76,26 +77,26 @@ public class EventCalendarListingController extends EventListingController {
 
                 if (VIEW_TYPE_ALL_UPCOMING.equals(viewType)) {
                     Listing upcoming = this.searcher.searchUpcoming(request, collection, 1, this.defaultPageLimit, 0);
-                    model.put(MODEL_KEY_ALL_UPCOMING, upcoming);
+                    model.put("allUpcoming", upcoming);
                 } else if (VIEW_TYPE_ALL_PREVIOUS.equals(viewType)) {
                     Listing previuos = this.searcher.searchPrevious(request, collection, 1, this.defaultPageLimit, 0);
-                    model.put(MODEL_KEY_ALL_PREVIOUS, previuos);
+                    model.put("allPrevious", previuos);
                 }
 
             } else {
 
                 List<GroupedEvents> groupedByDayEvents = this.searcher.searchGroupedByDayEvents(request, collection,
                         this.daysAhead);
-                model.put(MODEL_KEY_GROUPED_BY_DAY_EVENTS, groupedByDayEvents);
+                model.put("groupedByDayEvents", groupedByDayEvents);
                 String groupedByDayTitle = getTitle(request, "eventListing.groupedEvents",
                         new Object[] { this.daysAhead });
-                model.put(MODEL_KEY_GROUPED_EVENTS_TITLE, groupedByDayTitle);
+                model.put("groupedEventsTitle", groupedByDayTitle);
 
                 Listing furtherUpcoming = this.searcher.searchFurtherUpcoming(request, collection, this.daysAhead,
                         this.furtherUpcomingPageLimit);
-                model.put(MODEL_KEY_FURTHER_UPCOMING, furtherUpcoming);
+                model.put("furtherUpcoming", furtherUpcoming);
                 String furtherUpcomingTitle = getTitle(request, "eventListing.furtherUpcomingEvents", null);
-                model.put(MODEL_KEY_FURTHER_UPCOMING_TITLE, furtherUpcomingTitle);
+                model.put("furtherUpcomingTitle", furtherUpcomingTitle);
 
             }
         }
@@ -128,9 +129,25 @@ public class EventCalendarListingController extends EventListingController {
             try {
                 Date date = sdf.parse(specificDate);
                 Listing specificDateEvents = this.searcher.searchSpecificDate(request, collection, date, searchType);
-                model.put(MODEL_KEY_SPECIFIC_DATE_EVENTS, specificDateEvents);
-                model.put(MODEL_KEY_SPECIFIC_DATE_EVENTS_TITLE, getTitle(request, "eventListing.specificDateEvent",
-                        new Object[] { specificDate }));
+
+                model.put("specificDate", Boolean.TRUE);
+                Locale locale = this.localeResolver.resolveResourceLocale(request, collection.getURI());
+                String titleDate = this.dateValueFormatter.valueToString(new Value(date, false), "short", locale);
+
+                if (specificDateEvents.size() > 0) {
+                    model.put("specificDateEvents", specificDateEvents);
+
+                    Date now = Calendar.getInstance().getTime();
+                    now = sdf.parse(sdf.format(now));
+                    String titleKey = date.after(now) ? "eventListing.upcomingSpecificDateEvent"
+                            : "eventListing.previousSpecificDateEvent";
+
+                    model.put("specificDateEventsTitle", getTitle(request, titleKey, new Object[] { titleDate }));
+                } else {
+                    model.put("noPlannedEventsMsg", getTitle(request, "eventListing.noPlannedEvents",
+                            new Object[] { titleDate }));
+                }
+
             } catch (ParseException e) {
                 return false;
             }
@@ -152,6 +169,16 @@ public class EventCalendarListingController extends EventListingController {
         URL url = URL.create(baseULR);
         url.addParameter(parameterKey, parameterValue);
         return url;
+    }
+
+    @Required
+    public void setDateValueFormatter(DateValueFormatter dateValueFormatter) {
+        this.dateValueFormatter = dateValueFormatter;
+    }
+
+    @Required
+    public void setLocaleResolver(ResourceAwareLocaleResolver localeResolver) {
+        this.localeResolver = localeResolver;
     }
 
 }

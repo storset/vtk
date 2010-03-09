@@ -34,15 +34,22 @@
 <#macro displayCalendar hideNumberOfComments displayMoreURLs>
   
   <#if allUpcoming?has_content>
-    <@displayStandard allUpcoming hideNumberOfComments displayMoreURLs />
+    <@displayStandard allUpcoming hideNumberOfComments displayMoreURLs />  
+
   <#elseif allPrevious?has_content>
     <@displayStandard allPrevious hideNumberOfComments displayMoreURLs />
-  <#elseif specificDateEvents?has_content>
-    <h2>${specificDateEventsTitle}</h2>
-    <@displayStandard specificDateEvents hideNumberOfComments displayMoreURLs=false />
+
+  <#elseif specificDate?has_content && specificDate>
+    <#if specificDateEvents?has_content && specificDateEvents?size &gt; 0>
+      <h2>${specificDateEventsTitle}</h2>
+      <@displayStandard specificDateEvents hideNumberOfComments displayMoreURLs=false />
+    <#else>
+      <h3>${noPlannedEventsMsg}</h3>
+    </#if>
+
   <#elseif groupedByDayEvents?has_content || furtherUpcoming?has_content>
   
-    <#if groupedByDayEvents?has_content>
+    <#if groupedByDayEvents?has_content && groupedByDayEvents?size &gt; 0>
       <div id="vrtx-daily-events">
         <h2>${groupedEventsTitle?html}</h2>
       <#assign count = 1 />
@@ -63,80 +70,35 @@
       </#list>
       </div>
     </#if>
+    
+    <#if furtherUpcoming?has_content && furtherUpcoming?size &gt; 0>
+      <h2>${furtherUpcomingTitle?html}</h2>
+      <@displayStandard furtherUpcoming hideNumberOfComments displayMoreURLs=false />
+    </#if>
+
+    <div id="vrtx-events-nav">
+       <a href="${viewAllUpcomingURL}"><@vrtx.msg code="eventListing.allUpcoming" default="Upcoming events"/></a>
+       <a href="${viewAllPreviousURL}"><@vrtx.msg code="eventListing.allPrevious" default="Previous events"/></a>
+    </div>
 
   </#if>
 
   <div id="vrtx-additional-content">
      <div class="vrtx-frontpage-box" id="vrtx-event-calendar">
+       <#local clikcableDayTitle = vrtx.getMsg("eventListing.calendar.dayHasPlannedEvents", "View upcoming events this day") />
+       <#local notClickableDayTitle = vrtx.getMsg("eventListing.calendar.dayHasNoPlannedEvents", "No upcoming events this day") />
        <script type="text/javascript">
-         $(document).ready(function(){
-           
-           var activeDate = findActiveDate();
-           
-           $("#datepicker").datepicker({
-             dateFormat: 'yy-mm-dd',
-             onSelect: function(dateText, inst) {
-               location.href = location.href.split('?')[0] + "?date=" + dateText;
-             },
-             monthNames: ['Januar','Februar','Mars','April','Mai','Juni','Juli','August','September','Oktober','November','Desember'],
-             dayNamesMin: ['Sø', 'Ma', 'Ti', 'On', 'To', 'Fr', 'Lø'],
-             firstDay: 1,
-             beforeShowDay: function(day) {
-              var date_str = [
-                 day.getFullYear(),
-                 day.getMonth() + 1,
-                 day.getDate()
-               ].join('-');
-               if ($.inArray(date_str, []) != -1) {
-                 if(activeDate == date_str) {
-                   return [true, 'state-active', '<@vrtx.msg code="eventListing.calendar.dayHasPlannedEvents" />'];
-                 } else {
-                   return [true, '', '<@vrtx.msg code="eventListing.calendar.dayHasPlannedEvents" />'];
-                 }     
-               } else {
-                 return [false, '', '<@vrtx.msg code="eventListing.calendar.dayHasNoPlannedEvents" />'];
-               }
-             },
-             onChangeMonthYear: function(year, month, inst) {
-              
-             }
-           });
-           
-           function findActiveDate() {
-             var activeDate = "";
-             if(location.href.indexOf('?date=') != -1) {
-               var dated = location.href.split('=');
-               activeDate = dated[(dated.length-1)].replace(/-0/g,"-");
-             } else {
-               var cDate = new Date();
-               var dated = [
-                 cDate.getFullYear(),
-                 cDate.getMonth() + 1,
-                 cDate.getDate()
-               ].join('-');
-               activeDate = dated.replace(/-0/g,"-");
-             }
-             return activeDate;
-           }
-
+       <!--
+         $(document).ready(function() {
+           eventListingCalendar('${plannedEventDatesServiceBaseUrl}', '${clikcableDayTitle}', '${notClickableDayTitle}');
          });
+       // -->
        </script>
        <h2>Bla i arrangementer</h2>
        <div type="text" id="datepicker"></div>
      </div>
   </div>
-  
-  <#if groupedByDayEvents?has_content || furtherUpcoming?has_content>
-    <#if furtherUpcoming?has_content && furtherUpcoming.files?size &gt; 0>
-      <h2>${furtherUpcomingTitle?html}</h2>
-      <@displayStandard furtherUpcoming hideNumberOfComments displayMoreURLs=false />
-    </#if>
-  
-    <div id="vrtx-events-nav">
-       <a href="${viewAllUpcomingURL}"><@vrtx.msg code="eventListing.allUpcoming" default="Upcoming events"/></a>
-       <a href="${viewAllPreviousURL}"><@vrtx.msg code="eventListing.allPrevious" default="Previous events"/></a>
-    </div>
-  </#if>
+
 </#macro>
 
 <#macro displayEvent parent event hideNumberOfComments displayMoreURLs >

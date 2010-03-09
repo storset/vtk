@@ -131,7 +131,7 @@ public class EventCalendarPlannedEventDatesHandler implements Controller {
         boolean first = true;
         while (it.hasNext()) {
             if (!first) {
-                sb.append(", ");
+                sb.append(",");
             }
             sb.append(it.next());
             first = false;

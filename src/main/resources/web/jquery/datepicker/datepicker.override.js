@@ -8,7 +8,8 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle) 
   
   var allowedDates = new Array();
   var date = new Date();
-  allowedDates = queryAllowedDates (service, date.getFullYear(), date.getMonth() + 1);
+	  
+  allowedDates = queryAllowedDates (service, date.getFullYear(), date.getMonth + 1);
   
   $("#datepicker").datepicker(
       {
@@ -22,7 +23,6 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle) 
         firstDay :1,
         beforeShowDay : function(day) {
           var date_str = [ day.getFullYear(), day.getMonth() + 1, day.getDate()].join('-');
-          
           if ($.inArray(date_str, allowedDates) != -1) {
             if (activeDate == date_str) {
               return [ true, 'state-active', clickableDayTitle ];
@@ -60,8 +60,7 @@ function findActiveDate() {
     activeDate = dated[(dated.length - 1)].replace(/-0/g, "-");
   } else {
     var cDate = new Date();
-    var dated = [ cDate.getFullYear(), cDate.getMonth() + 1, cDate.getDate() ].join('-');
-    activeDate = dated.replace(/-0/g, "-");
+    var activeDate = [ cDate.getFullYear(), cDate.getMonth() + 1, cDate.getDate() ].join('-');
   }
   return activeDate;
 }

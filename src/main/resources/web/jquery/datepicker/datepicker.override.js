@@ -12,45 +12,45 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle) 
   allowedDates = queryAllowedDates (service, date.getFullYear(), date.getMonth + 1);
   
   $("#datepicker").datepicker(
-      {
-        dateFormat :'yy-mm-dd',
-        onSelect : function(dateText, inst) {
-          location.href = location.href.split('?')[0] + "?date=" + dateText;
-        },
-        monthNames : [ 'Januar', 'Februar', 'Mars', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober',
-            'November', 'Desember' ],
-        dayNamesMin : [ 'Sø', 'Ma', 'Ti', 'On', 'To', 'Fr', 'Lø' ],
-        firstDay :1,
-        beforeShowDay : function(day) {
-          var date_str = [ day.getFullYear(), day.getMonth() + 1, day.getDate()].join('-');
-          if ($.inArray(date_str, allowedDates) != -1) {
-            if (activeDate == date_str) {
-              return [ true, 'state-active', clickableDayTitle ];
-            } else {
-              return [ true, '', clickableDayTitle ];
-            }
-          } else {
-            return [ false, '', notClickableDayTitle ];
-          }
-        },
-        onChangeMonthYear : function(year, month, inst) {
-        	
+  {
+    dateFormat :'yy-mm-dd',
+    onSelect : function(dateText, inst) {
+      location.href = location.href.split('?')[0] + "?date=" + dateText;
+    },
+    monthNames : [ 'Januar', 'Februar', 'Mars', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober',
+        'November', 'Desember' ],
+    dayNamesMin : [ 'Sø', 'Ma', 'Ti', 'On', 'To', 'Fr', 'Lø' ],
+    firstDay :1,
+    beforeShowDay : function(day) {
+      var date_str = [ day.getFullYear(), day.getMonth() + 1, day.getDate()].join('-');
+      if ($.inArray(date_str, allowedDates) != -1) {
+        if (activeDate == date_str) {
+          return [ true, 'state-active', clickableDayTitle ];
+        } else {
+          return [ true, '', clickableDayTitle ];
         }
-      });
+      } else {
+        return [ false, '', notClickableDayTitle ];
+      }
+    },
+    onChangeMonthYear : function(year, month, inst) {
+    	
+    }
+  });
 }
 
 function queryAllowedDates (service, year, month) {
-	  var allowedDates = new Array();
-	  $.ajax({
-	    type: 'GET',
-	    url: service + month,
-	    dataType: 'text',
-	    async: false,
-	    success: function(response) {
-		  allowedDates = response.split(',');
-	    }
-	  });
-	  return allowedDates;
+  var allowedDates = new Array();
+  $.ajax({
+    type: 'GET',
+    url: service + month,
+    dataType: 'text',
+    async: false,
+    success: function(response) {
+	  allowedDates = response.split(',');
+    }
+  });
+  return allowedDates;
 }
 
 function findActiveDate() {

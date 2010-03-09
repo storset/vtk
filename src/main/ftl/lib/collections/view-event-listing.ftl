@@ -87,7 +87,7 @@
                  day.getMonth() + 1,
                  day.getDate()
                ].join('-');
-               if ($.inArray(date_str, ${eventDates}) != -1) {
+               if ($.inArray(date_str, []) != -1) {
                  if(activeDate == date_str) {
                    return [true, 'state-active', '<@vrtx.msg code="eventListing.calendar.dayHasPlannedEvents" />'];
                  } else {

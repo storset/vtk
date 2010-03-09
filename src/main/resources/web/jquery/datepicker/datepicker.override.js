@@ -1,0 +1,1 @@
+// TODO: move the customized js for the datepicker here (from view-event-listing.ftl)

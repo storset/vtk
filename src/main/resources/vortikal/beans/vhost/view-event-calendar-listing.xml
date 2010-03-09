@@ -72,6 +72,7 @@
           <list>
             <value>${webResources.baseURL}/jquery/include-jquery.js</value>
             <value>${webResources.baseURL}/jquery-ui-1.7.1.custom/js/jquery-ui-1.7.1.custom.min.js</value>
+            <value>${webResources.baseURL}/jquery/datepicker/datepicker.override.js</value>
           </list>
         </entry>
       </map>
@@ -79,6 +80,24 @@
   </bean>
 
   <bean id="eventCalenderContentProvider" class="org.vortikal.web.referencedata.provider.EventCalenderContentProvider"
+    parent="repositoryAware">
+    <property name="calendarPlannedEventsService" ref="calendarPlannedEventsService" />
+  </bean>
+
+  <bean id="calendarPlannedEventsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="calendarEventListing.viewService" />
+    <property name="order" value="0" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterExistsAssertion">
+          <property name="parameterName" value="planned-event-days" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="calendarPlannedEventsHandler" />
+  </bean>
+
+  <bean id="calendarPlannedEventsHandler" class="org.vortikal.web.display.collection.EventCalendarPlannedEventDatesHandler"
     parent="repositoryAware">
     <property name="searcher" ref="eventListing.eventListingSearcher" />
     <property name="displayTypePropDef" ref="eventListing.displayTypePropDef" />

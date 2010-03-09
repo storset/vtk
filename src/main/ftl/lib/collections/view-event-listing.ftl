@@ -85,12 +85,12 @@
 
   <div id="vrtx-additional-content">
      <div class="vrtx-frontpage-box" id="vrtx-event-calendar">
-       <#local clikcableDayTitle = vrtx.getMsg("eventListing.calendar.dayHasPlannedEvents", "View upcoming events this day") />
+       <#local clickableDayTitle = vrtx.getMsg("eventListing.calendar.dayHasPlannedEvents", "View upcoming events this day") />
        <#local notClickableDayTitle = vrtx.getMsg("eventListing.calendar.dayHasNoPlannedEvents", "No upcoming events this day") />
        <script type="text/javascript">
        <!--
          $(document).ready(function() {
-           eventListingCalendar('${plannedEventDatesServiceBaseUrl}', '${clikcableDayTitle}', '${notClickableDayTitle}');
+           eventListingCalendar('${plannedEventDatesServiceBaseUrl}', '${clickableDayTitle}', '${notClickableDayTitle}');
          });
        // -->
        </script>

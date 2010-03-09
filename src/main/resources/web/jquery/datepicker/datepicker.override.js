@@ -2,9 +2,13 @@
  * Specific behavior of datepicker for event listing
  */
 
-function eventListingCalendar(service, clikcableDayTitle, notClickableDayTitle) {
+function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle) {
 
   var activeDate = findActiveDate();
+  
+  var allowedDates = new Array();
+  var date = new Date();
+  allowedDates = queryAllowedDates (service, date.getFullYear(), date.getMonth() + 1);
   
   $("#datepicker").datepicker(
       {
@@ -17,21 +21,36 @@ function eventListingCalendar(service, clikcableDayTitle, notClickableDayTitle) 
         dayNamesMin : [ 'Sø', 'Ma', 'Ti', 'On', 'To', 'Fr', 'Lø' ],
         firstDay :1,
         beforeShowDay : function(day) {
-          var date_str = [ day.getFullYear(), day.getMonth() + 1, day.getDate() ].join('-');
-          if ($.inArray(date_str, []) != -1) {
+          var date_str = [ day.getFullYear(), day.getMonth() + 1, day.getDate()].join('-');
+          
+          if ($.inArray(date_str, allowedDates) != -1) {
             if (activeDate == date_str) {
-              return [ true, 'state-active', clikcableDayTitle ];
+              return [ true, 'state-active', clickableDayTitle ];
             } else {
-              return [ true, '', clikcableDayTitle ];
+              return [ true, '', clickableDayTitle ];
             }
           } else {
             return [ false, '', notClickableDayTitle ];
           }
         },
         onChangeMonthYear : function(year, month, inst) {
-
+        	
         }
       });
+}
+
+function queryAllowedDates (service, year, month) {
+	  var allowedDates = new Array();
+	  $.ajax({
+	    type: 'GET',
+	    url: service + month,
+	    dataType: 'text',
+	    async: false,
+	    success: function(response) {
+		  allowedDates = response.split(',');
+	    }
+	  });
+	  return allowedDates;
 }
 
 function findActiveDate() {

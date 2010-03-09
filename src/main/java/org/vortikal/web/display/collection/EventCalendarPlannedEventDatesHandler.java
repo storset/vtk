@@ -126,17 +126,17 @@ public class EventCalendarPlannedEventDatesHandler implements Controller {
     }
 
     private String getEventDatesAsArrayString(Set<String> eventDates) {
-        StringBuilder sb = new StringBuilder("[");
+        StringBuilder sb = new StringBuilder();
         Iterator<String> it = eventDates.iterator();
         boolean first = true;
         while (it.hasNext()) {
             if (!first) {
                 sb.append(", ");
             }
-            sb.append("'" + it.next() + "'");
+            sb.append(it.next());
             first = false;
         }
-        sb.append("]");
+        //sb.append("]");
         return sb.toString();
     }
 

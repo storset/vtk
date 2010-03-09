@@ -16,6 +16,7 @@
     <property name="assertions">
       <list>
         <ref bean="manage.hostNameAssertion" />
+        <ref bean="manage.protocolAssertion" />
         <ref bean="adminVrtxParameterRule" />
         <ref bean="requiresReadPermissionAssertion" />
       </list>
@@ -1603,6 +1604,9 @@
     <property name="hostName" value="${manage.hostName}" />
   </bean>
 
+  <bean id="manage.protocolAssertion" class="org.vortikal.web.service.RequestProtocolAssertion">
+    <property name="protocol" value="${manage.protocol}" />
+  </bean>        
 
   <bean id="adminVrtxParameterRule" class="org.vortikal.web.service.RequestParameterAssertion">
     <property name="parameterName" value="vrtx" />

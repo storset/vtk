@@ -9,17 +9,22 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle) 
   var today = new Date();
   var activeDate = findActiveDate(today);
   
-  $("#datepicker").datepicker(
-  {
+  $("#datepicker").datepicker({
     dateFormat :'yy-mm-dd',
     onSelect : function(dateText, inst) {
       location.href = location.href.split('?')[0] + "?date=" + dateText;
+      //TODO: keep current selected month when click on event in that month
     },
     //TODO: localize according to language
     monthNames : [ 'Januar', 'Februar', 'Mars', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober',
         'November', 'Desember' ],
     dayNamesMin : [ 'Sø', 'Ma', 'Ti', 'On', 'To', 'Fr', 'Lø' ],
+    prevText: 'Tidligere',
+    nextText: 'Senere',
     firstDay :1,
+    beforeShow : function(input, inst) {
+    	
+    },
     beforeShowDay : function(day) {
       var date_str = [ day.getFullYear(), day.getMonth() + 1, day.getDate()].join('-');
       if ($.inArray(date_str, allowedDates) != -1) {
@@ -37,7 +42,6 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle) 
         month = "0" + month;  
       }
       allowedDates = queryAllowedDates (service, year, month);
-      //TODO: keep current selected month when click on event in that month
     }
   });
 }

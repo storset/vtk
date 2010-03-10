@@ -6,13 +6,7 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle) 
 
   var allowedDates = new Array();
   
-  //Get allowedDates for this month
   var today = new Date();
-  var month = today.getMonth() + 1;
-  if(month <= 9) { 
-	  month = "0" + month;  
-  }
-  allowedDates = queryAllowedDates (service, today.getFullYear(), month);
   var activeDate = findActiveDate(today);
   
   $("#datepicker").datepicker(
@@ -38,7 +32,10 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle) 
       }
     },
     onChangeMonthYear : function(year, month, inst) {
-    	
+      if(month <= 9) { 
+        month = "0" + month;  
+      }
+      allowedDates = queryAllowedDates (service, year, month);
     }
   });
 }
@@ -47,7 +44,7 @@ function queryAllowedDates (service, year, month) {
   var allowedDates = new Array();
   $.ajax({
     type: 'GET',
-    url: service + month,
+    url: service + "&date=" + year + '-' + month,
     dataType: 'text',
     async: false,
     success: function(response) {

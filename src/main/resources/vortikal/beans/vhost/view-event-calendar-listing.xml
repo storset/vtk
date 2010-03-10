@@ -28,8 +28,7 @@
   <bean id="eventListing.calendarHandler" class="org.vortikal.web.display.collection.event.EventCalendarListingController"
     parent="eventListing.handler">
     <property name="viewName" value="eventListingCalendar.view" />
-    <property name="localeResolver" ref="viewServiceResourceAwareLocaleResolver" />
-    <property name="dateValueFormatter" ref="dateValueFormatter" />
+    <property name="helper" ref="eventListingHelper" />
   </bean>
 
   <bean id="eventListing.groupedByDayEventSearchQueryString" class="java.lang.String">

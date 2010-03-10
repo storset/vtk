@@ -60,6 +60,7 @@
         <entry key="application/atom+xml" value-ref="eventListing.atomService" />
       </map>
     </property>
+    <property name="includeRequestParametersInAlternativeRepresentation" value="true" />
   </bean>
 
   <bean id="eventListing.eventListingSearcher" class="org.vortikal.web.display.collection.event.EventListingSearcher">
@@ -83,12 +84,18 @@
     </property>
   </bean>
 
-  <bean id="eventListing.atomHandler" class="org.vortikal.web.display.collection.CollectionListingAsAtomFeed"
+  <bean id="eventListing.atomHandler" class="org.vortikal.web.display.collection.event.EventListingAsFeedController"
     parent="repositoryAware">
     <property name="viewService" ref="viewService" />
     <property name="abdera" ref="abdera" />
-    <property name="searchComponent" ref="${override.listing.prefix}eventListing.upcomingEventsSearchComponent" />
-    <property name="publishedDatePropDef" ref="startDatePropDef" />
+    <property name="helper" ref="eventListingHelper" />
+    <property name="searcher" ref="eventListing.eventListingSearcher" />
+    <property name="displayTypePropDef" ref="eventListing.displayTypePropDef" />
+  </bean>
+
+  <bean id="eventListingHelper" class="org.vortikal.web.display.collection.event.EventListingHelper">
+    <property name="localeResolver" ref="viewServiceResourceAwareLocaleResolver" />
+    <property name="dateValueFormatter" ref="dateValueFormatter" />
   </bean>
 
   <bean id="eventListing.upcomingEventsSearchComponent" class="org.vortikal.web.search.QueryStringSearchComponent"

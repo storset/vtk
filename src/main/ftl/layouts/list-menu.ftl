@@ -70,7 +70,7 @@
 </#function>
 
 <#macro displayItem item>
-  <a href="${item.url?html}">${item.title?html}</a>
+  <#if item.linkToResource ><a href="${item.url?html}"></#if>${item.title?html}<#if item.linkToResource ></a></#if>
   <#if item.menu?exists && item.menu.items?size &gt; 0>
     <#if item.menu.label?exists>
       <ul class="${item.menu.label}">

@@ -55,7 +55,6 @@ import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
  *   <li><code>repository</code> - the {@link Repository content repository}
  *   <li><code>collectionName</code> - the complete path to the
  *   templates collection, e.g. <code>/foo/bar/templates</code>.
- *   <li><code>templateParser</code> - a {@link TextualComponentParser template parser}
  *   <li><code>templateResourceType</code> - the {@link
  *   ResourceTypeDefinition resource type} identifying templates (all
  *   candidate templates must be of this resource type).

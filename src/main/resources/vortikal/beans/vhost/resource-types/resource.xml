@@ -41,9 +41,9 @@
         <ref bean="titlePropDef" />
         <ref bean="contentLocalePropDef" />
         <ref bean="numberOfCommentsPropDef" />
-        <ref bean="publishedPropDef" />
         <ref bean="publishDatePropDef" />
         <ref bean="unpublishDatePropDef" />
+        <ref bean="publishedPropDef" />
       </list>
     </property>
   </bean>
@@ -238,17 +238,12 @@
     <property name="propertyEvaluator" ref="defaultPublishEvaluator" />
   </bean>
   
-  <bean id="overriddenPublishedPropDef" class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
-    <property name="overriddenPropDef" ref="publishedPropDef" />
-    <property name="defaultValue" ref="VALUE_FALSE" />
-    <property name="propertyEvaluator" ref="publishEvaluator" />
-  </bean>
-  
-  <bean id="publishDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+  <bean id="publishDatePropDef" class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl"
     parent="abstractPropDef">
     <property name="name" value="publish-date" />
     <property name="type" value="TIMESTAMP" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="propertyEvaluator" ref="defaultPublishDateEvaluator" />
   </bean>
   
   <bean id="unpublishDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
@@ -258,14 +253,21 @@
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
   </bean>
   
-  <bean id="defaultPublishEvaluator" class="org.vortikal.repository.resourcetype.property.DefaultPublishEvaluator">
-    <property name="publishDatePropDef" ref="publishDatePropDef" />
+  <bean id="defaultPublishDateEvaluator" class="org.vortikal.repository.resourcetype.property.PublishDateEvaluator">
     <property name="creationTimePropDef" ref="creationTimePropDef" />
   </bean>
-  
+
+  <!--
+  <bean id="defaultPublishEvaluator" class="org.vortikal.repository.resourcetype.property.DefaultPublishEvaluator">
+    <property name="publishDatePropDef" ref="publishDatePropDef" />
+  </bean>
+  -->
+
+  <alias name="publishEvaluator" alias="defaultPublishEvaluator" />
+
   <bean id="publishEvaluator" class="org.vortikal.repository.resourcetype.property.PublishEvaluator">
     <property name="publishDatePropDef" ref="publishDatePropDef" />
     <property name="unpublishDatePropDef" ref="unpublishDatePropDef" />
   </bean>
-  
+
 </beans>

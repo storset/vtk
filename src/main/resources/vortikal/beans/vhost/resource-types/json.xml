@@ -15,7 +15,8 @@
     </property>
     <property name="propertyTypeDefinitions">
       <list>
-        <ref bean="overriddenPublishedPropDef" />
+        <ref bean="overridingPublishDatePropDef" />
+        <ref bean="overridingPublishedPropDef" />
         <ref bean="systemJobStatusPropDef" />
       </list>
     </property>
@@ -51,6 +52,20 @@
     <property name="resourceManager" ref="structuredResources.resourceManager" />
   </bean>
   
+
+  <bean id="overridingPublishDatePropDef" class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
+    <property name="overriddenPropDef" ref="publishDatePropDef" />
+    <!-- No default value, no evaluator: removes the value evaluated by publishDatePropDef on CREATE -->
+  </bean>
+  
+
+  <bean id="overridingPublishedPropDef" class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
+    <property name="overriddenPropDef" ref="publishedPropDef" />
+    <property name="defaultValue" ref="VALUE_FALSE" />
+    <property name="propertyEvaluator" ref="publishEvaluator" />
+  </bean>
+  
+
   <bean id="systemJobStatusPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
     parent="abstractPropDef">
     <property name="name" value="system-job-status" />

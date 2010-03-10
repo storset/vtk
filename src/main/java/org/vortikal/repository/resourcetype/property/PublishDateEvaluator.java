@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2010, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,41 +30,36 @@
  */
 package org.vortikal.repository.resourcetype.property;
 
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.PropertyEvaluationContext.Type;
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
-public class DefaultPublishEvaluator implements PropertyEvaluator {
+public class PublishDateEvaluator implements PropertyEvaluator {
 
-    private PropertyTypeDefinition publishDatePropDef;
     private PropertyTypeDefinition creationTimePropDef;
-
-    public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
-
+    
+    @Override
+    public boolean evaluate(Property property, PropertyEvaluationContext ctx)
+            throws PropertyEvaluationException {
         Property creationTimeProp = ctx.getNewResource().getProperty(this.creationTimePropDef);
-
         if (creationTimeProp == null) {
             throw new PropertyEvaluationException("creationTimePropDef needed for evaluation");
         }
-
         if (ctx.getEvaluationType() == Type.Create) {
-            // Make sure every newly created resource is published
-            Property publishDateProp = this.publishDatePropDef.createProperty(creationTimeProp.getDateValue());
-            ctx.getNewResource().addProperty(publishDateProp);
+            property.setDateValue(creationTimeProp.getDateValue());
+        }
+        if (property.isValueInitialized()) {
             return true;
         }
-
         return false;
     }
 
+    @Required
     public void setCreationTimePropDef(PropertyTypeDefinition creationTimePropDef) {
         this.creationTimePropDef = creationTimePropDef;
-    }
-
-    public void setPublishDatePropDef(PropertyTypeDefinition publishDatePropDef) {
-        this.publishDatePropDef = publishDatePropDef;
     }
 
 }

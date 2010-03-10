@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.display.collection;
+package org.vortikal.web.display.collection.article;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +38,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Resource;
+import org.vortikal.web.display.collection.AbstractCollectionListingController;
 import org.vortikal.web.display.listing.ListingPager;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.service.URL;

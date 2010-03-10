@@ -133,26 +133,28 @@ public abstract class AbstractCollectionListingController implements ListingCont
             runSearch(request, collection, model, pageLimit);
         }
 
-        Set<Object> alt = new HashSet<Object>();
-        for (String contentType : this.alternativeRepresentations.keySet()) {
-            try {
-                Map<String, Object> m = new HashMap<String, Object>();
-                Service service = this.alternativeRepresentations.get(contentType);
-                URL url = service.constructURL(collection, principal);
-                String title = service.getName();
-                RequestContext rc = new RequestContext(request);
-                title = rc.getMessage(service.getName(), new Object[] { collection.getTitle() }, service.getName());
+        if (this.alternativeRepresentations != null) {
+            Set<Object> alt = new HashSet<Object>();
+            for (String contentType : this.alternativeRepresentations.keySet()) {
+                try {
+                    Map<String, Object> m = new HashMap<String, Object>();
+                    Service service = this.alternativeRepresentations.get(contentType);
+                    URL url = service.constructURL(collection, principal);
+                    String title = service.getName();
+                    RequestContext rc = new RequestContext(request);
+                    title = rc.getMessage(service.getName(), new Object[] { collection.getTitle() }, service.getName());
 
-                m.put("title", title);
-                m.put("url", url);
-                m.put("contentType", contentType);
+                    m.put("title", title);
+                    m.put("url", url);
+                    m.put("contentType", contentType);
 
-                alt.add(m);
-            } catch (Throwable t) {
+                    alt.add(m);
+                } catch (Throwable t) {
+                }
             }
-        }
-        if (pageLimit > 0) {
-            model.put("alternativeRepresentations", alt);
+            if (pageLimit > 0) {
+                model.put("alternativeRepresentations", alt);
+            }
         }
         return new ModelAndView(this.viewName, model);
     }

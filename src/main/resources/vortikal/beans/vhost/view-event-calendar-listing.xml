@@ -25,7 +25,7 @@
     <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
   </bean>
 
-  <bean id="eventListing.calendarHandler" class="org.vortikal.web.display.collection.EventCalendarListingController"
+  <bean id="eventListing.calendarHandler" class="org.vortikal.web.display.collection.event.EventCalendarListingController"
     parent="eventListing.handler">
     <property name="viewName" value="eventListingCalendar.view" />
     <property name="localeResolver" ref="viewServiceResourceAwareLocaleResolver" />
@@ -99,7 +99,7 @@
     <property name="handler" ref="calendarPlannedEventsHandler" />
   </bean>
 
-  <bean id="calendarPlannedEventsHandler" class="org.vortikal.web.display.collection.EventCalendarPlannedEventDatesHandler"
+  <bean id="calendarPlannedEventsHandler" class="org.vortikal.web.display.collection.event.EventCalendarPlannedEventDatesHandler"
     parent="repositoryAware">
     <property name="searcher" ref="eventListing.eventListingSearcher" />
     <property name="displayTypePropDef" ref="eventListing.displayTypePropDef" />

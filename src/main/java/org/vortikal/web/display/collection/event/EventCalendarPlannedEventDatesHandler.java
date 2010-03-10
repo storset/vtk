@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.display.collection;
+package org.vortikal.web.display.collection.event;
 
 import java.io.PrintWriter;
 import java.text.ParseException;
@@ -54,7 +54,7 @@ import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.display.collection.EventListingSearcher.SpecificDateSearchType;
+import org.vortikal.web.display.collection.event.EventListingSearcher.SpecificDateSearchType;
 import org.vortikal.web.search.Listing;
 
 /**

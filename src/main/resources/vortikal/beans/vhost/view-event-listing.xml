@@ -30,7 +30,7 @@
     <property name="handler" ref="eventListing.atomHandler" />
   </bean>
 
-  <bean id="eventListing.handler" class="org.vortikal.web.display.collection.EventListingController"
+  <bean id="eventListing.handler" class="org.vortikal.web.display.collection.event.EventListingController"
     parent="repositoryAware">
     <property name="resourceManager" ref="resourceManager" />
     <property name="sortPropDefs">
@@ -62,7 +62,7 @@
     </property>
   </bean>
 
-  <bean id="eventListing.eventListingSearcher" class="org.vortikal.web.display.collection.EventListingSearcher">
+  <bean id="eventListing.eventListingSearcher" class="org.vortikal.web.display.collection.event.EventListingSearcher">
     <property name="upcomingEventsSearch" ref="${override.listing.prefix}eventListing.upcomingEventsSearchComponent" />
     <property name="previousEventsSearch" ref="${override.listing.prefix}eventListing.previousEventsSearchComponent" />
     <property name="processedQuerySearchComponent" ref="eventListing.processedQuerySearchComponent" />

@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.display.collection;
+package org.vortikal.web.display.collection.event;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -43,8 +43,8 @@ import org.springframework.web.servlet.support.RequestContext;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.DateValueFormatter;
 import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.web.display.collection.EventListingSearcher.GroupedEvents;
-import org.vortikal.web.display.collection.EventListingSearcher.SpecificDateSearchType;
+import org.vortikal.web.display.collection.event.EventListingSearcher.GroupedEvents;
+import org.vortikal.web.display.collection.event.EventListingSearcher.SpecificDateSearchType;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;

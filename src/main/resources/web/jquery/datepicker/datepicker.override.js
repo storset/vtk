@@ -44,7 +44,7 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle) 
     }
   });
   
-  //Update datepicker() date or month with date-parameter
+  //Update datepicker() month by date parameter
   var date = new Date(findActiveDate(today, false));
   $("#datepicker").datepicker('setDate', date);
 }
@@ -63,12 +63,12 @@ function queryAllowedDates (service, year, month) {
   return allowedDates;
 }
 
-function findActiveDate(today, removeZeroes) {
+function findActiveDate(today, removeZeroesBeforeDayAndMonth) {
   var activeDate = [ today.getFullYear(), today.getMonth() + 1, today.getDate() ].join('-');
   if (location.href.indexOf('?date=') != -1) {
     var parameterDate = location.href.split('=');
     activeDate = parameterDate[(parameterDate.length - 1)];
-    if(removeZeroes) {
+    if(removeZeroesBeforeDayAndMonth) {
       activeDate = activeDate.replace(/-0/g, "-");
     }
   }

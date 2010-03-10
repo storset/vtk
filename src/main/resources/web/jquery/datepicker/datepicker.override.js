@@ -15,6 +15,7 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle) 
     onSelect : function(dateText, inst) {
       location.href = location.href.split('?')[0] + "?date=" + dateText;
     },
+    //TODO: localize according to language
     monthNames : [ 'Januar', 'Februar', 'Mars', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober',
         'November', 'Desember' ],
     dayNamesMin : [ 'Sø', 'Ma', 'Ti', 'On', 'To', 'Fr', 'Lø' ],
@@ -36,6 +37,7 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle) 
         month = "0" + month;  
       }
       allowedDates = queryAllowedDates (service, year, month);
+      //TODO: keep current selected month when click on event in that month
     }
   });
 }

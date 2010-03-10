@@ -201,8 +201,6 @@
     <property name="linkToService" ref="viewService" />
     <property name="collectionResourceTypeDef"
               ref="collectionResourceTypeDefinition" />
-    <property name="htmlParser" ref="decorating.htmlParser" />
-    <property name="htmlEntityMap" ref="transformXml.htmlEntityMap" />
   </bean>
 
 
@@ -455,120 +453,5 @@
   <bean id="manageXmlBuildErrorView" parent="freemarkerView">
     <property name="url" value="pages/error/preview-xml-error.ftl" />
   </bean>
-
-
-  <bean id="transformXml.htmlEntityMap" class="org.springframework.beans.factory.config.MapFactoryBean">
-    <property name="sourceMap">
-      <map>
-        <!-- TODO: complete this list -->
-
-        <!-- ASCII entities -->
-        <entry key="quot" value="&#34;" />
-        <entry key="apos" value="&#39;" />
-        <entry key="amp" value="&#38;" />
-        <entry key="lt" value="&#60;" />
-        <entry key="gt" value="&#62;" />
-        
-        <!-- Latin 1 entities -->
-        <entry key="nbsp" value="&#160;" />
-        <entry key="iexcl" value="¡" />
-        <entry key="cent" value="¢" />
-        <entry key="pound" value="£" />
-        <entry key="curren" value="¤" />
-        <entry key="yen" value="¥" />
-        <entry key="brvbar" value="¦" />
-        <entry key="sect" value="§" />
-        <entry key="uml" value="¨" />
-        <entry key="copy" value="©" />
-        <entry key="ordf" value="ª" />
-        <entry key="laquo" value="«" />
-        <entry key="not" value="¬" />
-        <entry key="shy" value="­" />
-        <entry key="reg" value="®" />
-        <entry key="macr" value="¯" />
-        <entry key="deg" value="°" />
-        <entry key="plusmn" value="±" />
-        <entry key="sup2" value="²" />
-        <entry key="sup3" value="³" />
-        <entry key="acute" value="´" />
-        <entry key="micro" value="µ" />
-        <entry key="para" value="¶" />
-        <entry key="middot" value="·" />
-        <entry key="cedil" value="¸" />
-        <entry key="sup1" value="¹" />
-        <entry key="ordm" value="º" />
-        <entry key="raquo" value="»" />
-        <entry key="frac14" value="¼" />
-        <entry key="frac12" value="½" />
-        <entry key="frac34" value="¾" />
-        <entry key="iquest" value="¿" />
-        <entry key="Agrave" value="À" />
-        <entry key="Aacute" value="Á" />
-        <entry key="Acirc" value="Â" />
-        <entry key="Atilde" value="Ã" />
-        <entry key="Auml" value="Ä" />
-        <entry key="Aring" value="Å" />
-        <entry key="AElig" value="Æ" />
-        <entry key="Ccedil" value="Ç" />
-        <entry key="Egrave" value="È" />
-        <entry key="Eacute" value="É" />
-        <entry key="Ecirc" value="Ê" />
-        <entry key="Euml" value="Ë" />
-        <entry key="Igrave" value="Ì" />
-        <entry key="Iacute" value="Í" />
-        <entry key="Icirc" value="Î" />
-        <entry key="Iuml" value="Ï" />
-        <entry key="ETH" value="Ð" />
-        <entry key="Ntilde" value="Ñ" />
-        <entry key="Ograve" value="Ò" />
-        <entry key="Oacute" value="Ó" />
-        <entry key="Ocirc" value="Ô" />
-        <entry key="Otilde" value="Õ" />
-        <entry key="Ouml" value="Ö" />
-        <entry key="times" value="×" />
-        <entry key="Oslash" value="Ø" />
-        <entry key="Ugrave" value="Ù" />
-        <entry key="Uacute" value="Ú" />
-        <entry key="Ucirc" value="Û" />
-        <entry key="Uuml" value="Ü" />
-        <entry key="Yacute" value="Ý" />
-        <entry key="THORN" value="Þ" />
-        <entry key="szlig" value="ß" />
-        <entry key="agrave" value="à" />
-        <entry key="aacute" value="á" />
-        <entry key="acirc" value="â" />
-        <entry key="atilde" value="ã" />
-        <entry key="auml" value="ä" />
-        <entry key="aring" value="å" />
-        <entry key="aelig" value="æ" />
-        <entry key="ccedil" value="ç" />
-        <entry key="egrave" value="è" />
-        <entry key="eacute" value="é" />
-        <entry key="ecirc" value="ê" />
-        <entry key="euml" value="ë" />
-        <entry key="igrave" value="ì" />
-        <entry key="iacute" value="í" />
-        <entry key="icirc" value="î" />
-        <entry key="iuml" value="ï" />
-        <entry key="eth" value="ð" />
-        <entry key="ntilde" value="ñ" />
-        <entry key="ograve" value="ò" />
-        <entry key="oacute" value="ó" />
-        <entry key="ocirc" value="ô" />
-        <entry key="otilde" value="õ" />
-        <entry key="ouml" value="ö" />
-        <entry key="divide" value="÷" />
-        <entry key="oslash" value="ø" />
-        <entry key="ugrave" value="ù" />
-        <entry key="uacute" value="ú" />
-        <entry key="ucirc" value="û" />
-        <entry key="uuml" value="ü" />
-        <entry key="yacute" value="ý" />
-        <entry key="thorn" value="þ" />
-        <entry key="yuml" value="ÿ" />
-      </map>
-    </property>
-  </bean>
-
 
 </beans>

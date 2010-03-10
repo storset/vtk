@@ -55,16 +55,10 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
-import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.text.html.HtmlContent;
-import org.vortikal.text.html.HtmlElement;
-import org.vortikal.text.html.HtmlFragment;
-import org.vortikal.text.html.HtmlPageParser;
-import org.vortikal.text.html.HtmlText;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -89,9 +83,6 @@ public class XmlSearcher {
     
     private static Log logger = LogFactory.getLog(XmlSearcher.class);
 
-    private HtmlPageParser htmlParser;
-    private Map<String, String> htmlEntityMap;
-    
     private Searcher searcher;
     private Parser parser;
     private ResourceTypeTree resourceTypeTree;
@@ -323,82 +314,13 @@ public class XmlSearcher {
                     logger.warn(valueString + " led to exception ", e);
                 }
             } 
-
-        } else if (format != null && propDef.getType() == PropertyType.Type.HTML) {
-            if (format.equals("flattened")) {
-                try {
-                    StringBuilder sb = new StringBuilder();
-                    HtmlFragment fragment = this.htmlParser.parseFragment(valueString);
-                    for (HtmlContent c : fragment.getContent()) {
-                        sb.append(flatten(c));
-                    }
-                    node = doc.createTextNode(sb.toString());
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        } 
-          
+        }          
         if (node == null) {
             node = doc.createTextNode(valueString);
         }
         Element valueElement = doc.createElement("value");
         valueElement.appendChild(node);
         return valueElement;
-    }
-    
-    private String flatten(HtmlContent c) {
-        StringBuilder sb = new StringBuilder();
-        if (c instanceof HtmlElement) {
-            HtmlElement htmlElement = (HtmlElement) c;
-            for (HtmlContent child : htmlElement.getChildNodes()) {
-                sb.append(flatten(child));
-            }
-        } else if (c instanceof HtmlText) {
-            String content = c.getContent();
-            sb.append(processHtmlEntities(content));
-        }
-        return sb.toString();
-    }
-    
-    private String processHtmlEntities(String content) {
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < content.length(); i++) {
-            char ch = content.charAt(i);
-            if (ch == '&') {
-                int j = i + 1;
-
-                String entity = null;
-                while (j < content.length()) {
-                    boolean validChar = validEntityCharAtIndex(content, j);
-                    if (!validChar && content.charAt(j) == ';' && j > i + 1) {
-                        entity = content.substring(i + 1, j);
-                        i = j;
-                        break;
-                    } else if (!validChar) {
-                        break;
-                    }
-                    j++;
-                }
-                if (entity != null) {
-                    if (this.htmlEntityMap.containsKey(entity)) {
-                        result.append(this.htmlEntityMap.get(entity));
-                    } else {
-                        result.append("&").append(entity).append(";");
-                    }
-                } 
-            } else {
-                result.append(ch);
-            }
-        }
-        return result.toString();
-    }
-    
-    private boolean validEntityCharAtIndex(String content, int i) {
-        if (i >= content.length()) return false;
-        char c = content.charAt(i);
-        return i < content.length() && c != ';' 
-            && (('a' <= c && 'z' >= c) || ('A' <= c && 'Z' >= c));
     }
     
 
@@ -632,13 +554,5 @@ public class XmlSearcher {
     @Required
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
-    }
-
-    public void setHtmlParser(HtmlPageParser htmlParser) {
-        this.htmlParser = htmlParser;
-    }
-
-    public void setHtmlEntityMap(Map<String, String> htmlEntityMap) {
-        this.htmlEntityMap = htmlEntityMap;
     }
 }

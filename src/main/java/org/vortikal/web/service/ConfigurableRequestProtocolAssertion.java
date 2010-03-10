@@ -49,6 +49,8 @@ import org.vortikal.security.Principal;
  * <ul>
  *   <li><code>configuration</code> - the {@link Properties} object
  *   </li>
+ *   <li><code>defaultProtocol</code> - the protocol to use if no configuration exists
+ *   </li>
  * </ul>
  */
 public class ConfigurableRequestProtocolAssertion implements Assertion, InitializingBean {
@@ -56,6 +58,7 @@ public class ConfigurableRequestProtocolAssertion implements Assertion, Initiali
     private final static String PROTO_HTTP = "http";
     private final static String PROTO_HTTPS = "https";
 
+    private String defaultProtocol = null;
     private Properties configuration;
     private boolean invert = false;
     
@@ -65,6 +68,16 @@ public class ConfigurableRequestProtocolAssertion implements Assertion, Initiali
     
     public void setInvert(boolean invert) {
         this.invert = invert;
+    }
+    
+    public void setDefaultProtocol(String defaultProtocol) {
+        if ("*".equals(defaultProtocol) || PROTO_HTTP.equals(defaultProtocol) 
+                || PROTO_HTTPS.equals(defaultProtocol)) {
+            this.defaultProtocol = defaultProtocol;
+        } else {
+            throw new IllegalArgumentException("Illegal value for default protocol: '" 
+                    + defaultProtocol + "'");
+        }
     }
     
     public void afterPropertiesSet() {
@@ -79,6 +92,11 @@ public class ConfigurableRequestProtocolAssertion implements Assertion, Initiali
     public void processURL(URL url) {
         Path uri = url.getPath();
         if (this.configuration == null || this.configuration.isEmpty()) {
+            if (this.defaultProtocol != null) {
+                if (!"*".equals(this.defaultProtocol)) {
+                    url.setProtocol(this.defaultProtocol);
+                }
+            }
             return;
         }
         
@@ -93,6 +111,12 @@ public class ConfigurableRequestProtocolAssertion implements Assertion, Initiali
             }
             uri = uri.getParent();
         }
+        if (this.defaultProtocol != null) {
+            if (!"*".equals(this.defaultProtocol)) {
+                url.setProtocol(this.defaultProtocol);
+            }
+            return;
+        } 
         url.setProtocol(PROTO_HTTP);
     }
 

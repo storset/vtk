@@ -494,6 +494,7 @@
   <bean id="webProtocolAssertion"
         class="org.vortikal.web.service.ConfigurableRequestProtocolAssertion">
     <property name="configuration" ref="ssl.configurationPropertiesFile" />
+    <property name="defaultProtocol" value="${webProtocol}" />
   </bean>
 
   <bean id="webProtocolAssertion.inverted"

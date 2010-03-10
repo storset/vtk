@@ -44,6 +44,9 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle) 
     }
   });
   
+  //TODO: init datepicker with this value,
+  //      to prevent switching from current to selected.
+  //
   //Update datepicker() month by date parameter
   var date = new Date(findActiveDate(today, false));
   $("#datepicker").datepicker('setDate', date);

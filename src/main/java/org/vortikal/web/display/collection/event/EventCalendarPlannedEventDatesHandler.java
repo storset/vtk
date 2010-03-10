@@ -54,14 +54,14 @@ import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.display.collection.event.EventListingSearcher.SpecificDateSearchType;
+import org.vortikal.web.display.collection.event.EventListingHelper.SpecificDateSearchType;
 import org.vortikal.web.search.Listing;
 
 /**
  * 
  * Prints a comma separated list of dates where there are planned events:
  * ['2010-3-22', '2010-3-25']
- *
+ * 
  */
 public class EventCalendarPlannedEventDatesHandler implements Controller {
 
@@ -90,7 +90,7 @@ public class EventCalendarPlannedEventDatesHandler implements Controller {
             cal.set(Calendar.SECOND, 0);
             cal.set(Calendar.MILLISECOND, 0);
 
-            String dateString = request.getParameter(EventCalendarListingController.REQUEST_PARAMETER_DATE);
+            String dateString = request.getParameter(EventListingHelper.REQUEST_PARAMETER_DATE);
             if (dateString != null) {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
                 try {
@@ -136,7 +136,7 @@ public class EventCalendarPlannedEventDatesHandler implements Controller {
             sb.append(it.next());
             first = false;
         }
-        //sb.append("]");
+        // sb.append("]");
         return sb.toString();
     }
 

@@ -32,12 +32,14 @@ package org.vortikal.web.display.collection;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -81,6 +83,7 @@ public abstract class AbstractCollectionListingController implements ListingCont
     protected PropertyTypeDefinition hideNumberOfComments;
     protected String viewName;
     protected Map<String, Service> alternativeRepresentations;
+    private boolean includeRequestParametersInAlternativeRepresentation;
 
     // A list of properties used when sorting the list of collections
     // @see ResourcePropertyComparator
@@ -109,6 +112,7 @@ public abstract class AbstractCollectionListingController implements ListingCont
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         Path uri = org.vortikal.web.RequestContext.getRequestContext().getResourceURI();
@@ -139,7 +143,17 @@ public abstract class AbstractCollectionListingController implements ListingCont
                 try {
                     Map<String, Object> m = new HashMap<String, Object>();
                     Service service = this.alternativeRepresentations.get(contentType);
+
                     URL url = service.constructURL(collection, principal);
+                    if (this.includeRequestParametersInAlternativeRepresentation) {
+                        Enumeration<String> requestParameters = request.getParameterNames();
+                        while (requestParameters.hasMoreElements()) {
+                            String requestParameter = requestParameters.nextElement();
+                            String parameterValue = request.getParameter(requestParameter);
+                            url.addParameter(requestParameter, parameterValue);
+                        }
+                    }
+
                     String title = service.getName();
                     RequestContext rc = new RequestContext(request);
                     title = rc.getMessage(service.getName(), new Object[] { collection.getTitle() }, service.getName());
@@ -268,6 +282,11 @@ public abstract class AbstractCollectionListingController implements ListingCont
 
     public void setAlternativeRepresentations(Map<String, Service> alternativeRepresentations) {
         this.alternativeRepresentations = alternativeRepresentations;
+    }
+
+    public void setIncludeRequestParametersInAlternativeRepresentation(
+            boolean includeRequestParametersInAlternativeRepresentation) {
+        this.includeRequestParametersInAlternativeRepresentation = includeRequestParametersInAlternativeRepresentation;
     }
 
     public void setHideNumberOfComments(PropertyTypeDefinition hideNumberOfComments) {

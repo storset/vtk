@@ -30,26 +30,72 @@
  */
 package org.vortikal.web.display.collection.event;
 
+import java.util.Date;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.abdera.model.Feed;
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.AtomFeedController;
+import org.vortikal.web.display.collection.event.EventListingHelper.SpecificDateSearchType;
+import org.vortikal.web.search.Listing;
 
 public class EventListingAsFeedController extends AtomFeedController {
 
+    private EventListingHelper helper;
     private EventListingSearcher searcher;
+    private PropertyTypeDefinition displayTypePropDef;
 
     @Override
     protected Feed createFeed(HttpServletRequest request, HttpServletResponse response, String token) throws Exception {
-        // TODO Implement
-        return null;
+        Path uri = RequestContext.getRequestContext().getResourceURI();
+        Resource collection = this.repository.retrieve(token, uri, false);
+
+        String feedTitle = getTitle(collection);
+
+        Listing feedContent = null;
+        Property displayTypeProp = collection.getProperty(this.displayTypePropDef);
+        if (displayTypeProp != null && "calendar".equals(displayTypeProp.getStringValue())) {
+            SpecificDateSearchType searchType = this.helper.getSpecificDateSearchType(request);
+            if (searchType != null) {
+                Date date = this.helper.getSpecificSearchDate(request);
+                String titleDate = this.helper.getRequestedDateAsLocalizedString(request, collection, searchType, date);
+                feedTitle = helper.getTitle(request, "eventListing.specificDateEvent", new Object[] { titleDate });
+                feedContent = this.searcher.searchSpecificDate(request, collection, date, searchType);
+            }
+        }
+        if (feedContent == null) {
+            feedContent = this.searcher.searchUpcoming(request, collection, 1, 25, 0);
+        }
+
+        Feed feed = populateFeed(collection, feedTitle);
+        for (PropertySet feedEntry : feedContent.getFiles()) {
+            addEntry(feed, token, feedEntry);
+        }
+
+        return feed;
+    }
+
+    @Required
+    public void setHelper(EventListingHelper helper) {
+        this.helper = helper;
     }
 
     @Required
     public void setSearcher(EventListingSearcher searcher) {
         this.searcher = searcher;
+    }
+
+    @Required
+    public void setDisplayTypePropDef(PropertyTypeDefinition displayTypePropDef) {
+        this.displayTypePropDef = displayTypePropDef;
     }
 
 }

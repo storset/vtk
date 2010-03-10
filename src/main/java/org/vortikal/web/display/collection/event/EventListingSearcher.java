@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Resource;
+import org.vortikal.web.display.collection.event.EventListingHelper.SpecificDateSearchType;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.ProcessedQuerySearchComponenet;
 import org.vortikal.web.search.SearchComponent;
@@ -51,10 +52,6 @@ public class EventListingSearcher {
     private String groupedEventSearchString;
     private String furtherUpcomingSearchString;
     private String specificDateEventSearchString;
-
-    public enum SpecificDateSearchType {
-        Day, Month, Year;
-    }
 
     public Listing searchUpcoming(HttpServletRequest request, Resource collection, int upcomingEventPage,
             int pageLimit, int offset) throws Exception {

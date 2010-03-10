@@ -17,13 +17,14 @@
       <map>
         <!-- TODO: complete this list -->
 
-        <!-- ASCII entities -->
-        <entry key="quot" value="&#34;" />
+        <!-- XML/XHTML: -->
         <entry key="apos" value="&#39;" />
-        <entry key="amp" value="&#38;" />
-        <entry key="lt" value="&#60;" />
-        <entry key="gt" value="&#62;" />
-        
+
+        <!-- http://www.w3.org/TR/REC-html40/sgml/entities.html -->
+
+        <!-- Section 24.2: "Character entity references for ISO 8859-1
+             characters" -->
+
         <!-- Latin 1 entities -->
         <entry key="nbsp" value="&#160;" />
         <entry key="iexcl" value="¡" />
@@ -121,6 +122,213 @@
         <entry key="yacute" value="ý" />
         <entry key="thorn" value="þ" />
         <entry key="yuml" value="ÿ" />
+
+
+        <!-- Section 24.3: "Character entity references for symbols,
+             mathematical symbols, and Greek letters" -->
+
+        <!-- Latin Extended-B -->
+        <entry key="fnof" value="&#402;" /> 
+        <!-- Greek -->
+        <entry key="Alpha" value="&#913;" />
+        <entry key="Beta" value="&#914;" />
+        <entry key="Gamma" value="&#915;" />
+        <entry key="Delta" value="&#916;" />
+        <entry key="Epsilon" value="&#917;" />
+        <entry key="Zeta" value="&#918;" />
+        <entry key="Eta" value="&#919;" />
+        <entry key="Theta" value="&#920;" />
+        <entry key="Iota" value="&#921;" />
+        <entry key="Kappa" value="&#922;" />
+        <entry key="Lambda" value="&#923;" />
+        <entry key="Mu" value="&#924;" />
+        <entry key="Nu" value="&#925;" />
+        <entry key="Xi" value="&#926;" />
+        <entry key="Omicron" value="&#927;" />
+        <entry key="Pi" value="&#928;" />
+        <entry key="Rho" value="&#929;" />
+        <!-- there is no Sigmaf, and no U+03A2 character either -->
+        <entry key="Sigma" value="&#931;" />
+        <entry key="Tau" value="&#932;" />
+        <entry key="Upsilon" value="&#933;" />
+        <entry key="Phi" value="&#934;" />
+        <entry key="Chi" value="&#935;" />
+        <entry key="Psi" value="&#936;" />
+        <entry key="Omega" value="&#937;" />
+        <entry key="alpha" value="&#945;" />
+        <entry key="beta" value="&#946;" />
+        <entry key="gamma" value="&#947;" />
+        <entry key="delta" value="&#948;" />
+        <entry key="epsilon" value="&#949;" />
+        <entry key="zeta" value="&#950;" />
+        <entry key="eta" value="&#951;" />
+        <entry key="theta" value="&#952;" />
+        <entry key="iota" value="&#953;" />
+        <entry key="kappa" value="&#954;" />
+        <entry key="lambda" value="&#955;" />
+        <entry key="mu" value="&#956;" />
+        <entry key="nu" value="&#957;" />
+        <entry key="xi" value="&#958;" />
+        <entry key="omicron" value="&#959;" />
+        <entry key="pi" value="&#960;" />
+        <entry key="rho" value="&#961;" />
+        <entry key="sigmaf" value="&#962;" />
+        <entry key="sigma" value="&#963;" />
+        <entry key="tau" value="&#964;" />
+        <entry key="upsilon" value="&#965;" />
+        <entry key="phi" value="&#966;" />
+        <entry key="chi" value="&#967;" />
+        <entry key="psi" value="&#968;" />
+        <entry key="omega" value="&#969;" />
+        <entry key="thetasym" value="&#977;" />
+        <entry key="upsih" value="&#978;" />
+        <entry key="piv" value="&#982;" />
+        <!-- General Punctuation -->
+        <entry key="bull" value="&#8226;" />
+        <!-- bullet is NOT the same as bullet operator, U+2219 -->
+        <entry key="hellip" value="&#8230;" />
+        <entry key="prime" value="&#8242;" />
+        <entry key="Prime" value="&#8243;" />
+        <entry key="oline" value="&#8254;" />
+        <entry key="frasl" value="&#8260;" />
+        <!-- Letterlike Symbols -->
+        <entry key="weierp" value="&#8472;" />
+        <entry key="image" value="&#8465;" />
+        <entry key="real" value="&#8476;" />
+        <entry key="trade" value="&#8482;" />
+        <entry key="alefsym" value="&#8501;" />
+        <!-- alef symbol is NOT the same as hebrew letter alef,
+             U+05D0 although the same glyph could be used to depict both characters -->
+        <!-- Arrows -->
+        <entry key="larr" value="&#8592;" />
+        <entry key="uarr" value="&#8593;" />
+        <entry key="rarr" value="&#8594;" />
+        <entry key="darr" value="&#8595;" />
+        <entry key="harr" value="&#8596;" />
+        <entry key="crarr" value="&#8629;" />
+        <entry key="lArr" value="&#8656;" />
+        <!-- ISO 10646 does not say that lArr is the same as the 'is implied by' arrow
+             but also does not have any other character for that function. So ? lArr can
+             be used for 'is implied by' as ISOtech suggests -->
+        <entry key="uArr" value="&#8657;" />
+        <entry key="rArr" value="&#8658;" />
+        <!-- ISO 10646 does not say this is the 'implies' character but does not have 
+             another character with this function so ?
+             rArr can be used for 'implies' as ISOtech suggests -->
+        <entry key="dArr" value="&#8659;" />
+        <entry key="hArr" value="&#8660;" />
+        <!-- Mathematical Operators -->
+        <entry key="forall" value="&#8704;" />
+        <entry key="part" value="&#8706;" />
+        <entry key="exist" value="&#8707;" />
+        <entry key="empty" value="&#8709;" />
+        <entry key="nabla" value="&#8711;" />
+        <entry key="isin" value="&#8712;" />
+        <entry key="notin" value="&#8713;" />
+        <entry key="ni" value="&#8715;" />
+        <!-- should there be a more memorable name than 'ni'? -->
+        <entry key="prod" value="&#8719;" />
+        <!-- prod is NOT the same character as U+03A0 'greek capital letter pi' though
+             the same glyph might be used for both -->
+        <entry key="sum" value="&#8721;" />
+        <!-- sum is NOT the same character as U+03A3 'greek capital letter sigma'
+             though the same glyph might be used for both -->
+        <entry key="minus" value="&#8722;" />
+        <entry key="lowast" value="&#8727;" />
+        <entry key="radic" value="&#8730;" />
+        <entry key="prop" value="&#8733;" />
+        <entry key="infin" value="&#8734;" />
+        <entry key="ang" value="&#8736;" />
+        <entry key="and" value="&#8743;" />
+        <entry key="or" value="&#8744;" />
+        <entry key="cap" value="&#8745;" />
+        <entry key="cup" value="&#8746;" />
+        <entry key="int" value="&#8747;" />
+        <entry key="there4" value="&#8756;" />
+        <entry key="sim" value="&#8764;" />
+        <!-- tilde operator is NOT the same character as the tilde, U+007E,
+             although the same glyph might be used to represent both  -->
+        <entry key="cong" value="&#8773;" />
+        <entry key="asymp" value="&#8776;" />
+        <entry key="ne" value="&#8800;" />
+        <entry key="equiv" value="&#8801;" />
+        <entry key="le" value="&#8804;" />
+        <entry key="ge" value="&#8805;" />
+        <entry key="sub" value="&#8834;" />
+        <entry key="sup" value="&#8835;" />
+        <!-- note that nsup, 'not a superset of, U+2283' is not covered by the Symbol 
+             font encoding and is not included. Should it be, for symmetry?
+             It is in ISOamsn  --> 
+        <entry key="nsub" value="&#8836;" />
+        <entry key="sube" value="&#8838;" />
+        <entry key="supe" value="&#8839;" />
+        <entry key="oplus" value="&#8853;" />
+        <entry key="otimes" value="&#8855;" />
+        <entry key="perp" value="&#8869;" />
+        <entry key="sdot" value="&#8901;" />
+        <!-- dot operator is NOT the same character as U+00B7 middle dot -->
+        <!-- Miscellaneous Technical -->
+        <entry key="lceil" value="&#8968;" />
+        <entry key="rceil" value="&#8969;" />
+        <entry key="lfloor" value="&#8970;" />
+        <entry key="rfloor" value="&#8971;" />
+        <entry key="lang" value="&#9001;" />
+        <!-- lang is NOT the same character as U+003C 'less than' 
+             or U+2039 'single left-pointing angle quotation mark' -->
+        <entry key="rang" value="&#9002;" />
+        <!-- rang is NOT the same character as U+003E 'greater than' 
+             or U+203A 'single right-pointing angle quotation mark' -->
+        <!-- Geometric Shapes -->
+        <entry key="loz" value="&#9674;" />
+        <!-- Miscellaneous Symbols -->
+        <entry key="spades" value="&#9824;" />
+        <!-- black here seems to mean filled as opposed to hollow -->
+        <entry key="clubs" value="&#9827;" />
+        <entry key="hearts" value="&#9829;" />
+        <entry key="diams" value="&#9830;" />
+
+
+
+        <!-- Section 24.4.1 ("markup-significant and
+             internationalization characters") -->
+
+        <entry key="quot" value="&#34;" />
+        <entry key="amp"  value="&#38;" />
+        <entry key="lt"   value="&#60;" />
+        <entry key="gt"   value="&#62;" />
+        <!-- Latin Extended-A -->
+        <entry key="OElig" value="&#338;" />
+        <entry key="oelig" value="&#339;" />
+        <entry key="Scaron" value="&#352;" />
+        <entry key="scaron" value="&#353;" />
+        <entry key="Yuml" value="&#376;" />
+        <!-- Spacing Modifier Letters -->
+        <entry key="circ" value="&#710;" />
+        <entry key="tilde" value="&#732;" />
+        <!-- General Punctuation -->
+        <entry key="ensp" value="&#8194;" />
+        <entry key="emsp" value="&#8195;" />
+        <entry key="thinsp" value="&#8201;" />
+        <entry key="zwnj" value="&#8204;" />
+        <entry key="zwj"  value="&#8205;" />
+        <entry key="lrm"  value="&#8206;" />
+        <entry key="rlm"  value="&#8207;" />
+        <entry key="ndash" value="&#8211;" />
+        <entry key="mdash" value="&#8212;" />
+        <entry key="lsquo" value="&#8216;" />
+        <entry key="rsquo" value="&#8217;" />
+        <entry key="sbquo" value="&#8218;" />
+        <entry key="ldquo" value="&#8220;" />
+        <entry key="rdquo" value="&#8221;" />
+        <entry key="bdquo" value="&#8222;" />
+        <entry key="dagger" value="&#8224;" />
+        <entry key="Dagger" value="&#8225;" />
+        <entry key="permil" value="&#8240;" />
+        <entry key="lsaquo" value="&#8249;" />
+        <!-- lsaquo is proposed but not yet ISO standardized -->
+        <entry key="rsaquo" value="&#8250;" />
+        <!-- rsaquo is proposed but not yet ISO standardized -->
+        <entry key="euro" value="&#8364;" />
       </map>
     </property>
   </bean>

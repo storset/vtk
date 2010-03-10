@@ -41,6 +41,8 @@ import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.display.collection.event.EventListingHelper;
+import org.vortikal.web.display.collection.event.EventListingHelper.SpecificDateSearchType;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -49,6 +51,7 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
 
     private Repository repository;
     private Service calendarPlannedEventsService;
+    private EventListingHelper helper;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -61,6 +64,14 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
 
         URL plannedEventDatesServiceBaseUrl = this.calendarPlannedEventsService.constructURL(resource, principal);
         model.put("plannedEventDatesServiceBaseUrl", plannedEventDatesServiceBaseUrl);
+
+        SpecificDateSearchType searchType = this.helper.getSpecificDateSearchType(request);
+        if (searchType != null) {
+            // valid date on request
+            String requestedDate = request.getParameter(EventListingHelper.REQUEST_PARAMETER_DATE);
+            model.put("requestedDate", requestedDate);
+        }
+
     }
 
     @Required
@@ -71,6 +82,11 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
     @Required
     public void setCalendarPlannedEventsService(Service calendarPlannedEventsService) {
         this.calendarPlannedEventsService = calendarPlannedEventsService;
+    }
+
+    @Required
+    public void setHelper(EventListingHelper helper) {
+        this.helper = helper;
     }
 
 }

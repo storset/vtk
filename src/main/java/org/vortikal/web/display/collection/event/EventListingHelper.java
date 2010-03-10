@@ -33,10 +33,14 @@ package org.vortikal.web.display.collection.event;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.support.RequestContext;
 import org.vortikal.repository.Resource;
@@ -46,7 +50,13 @@ import org.vortikal.web.servlet.ResourceAwareLocaleResolver;
 
 import com.ibm.icu.util.Calendar;
 
-public final class EventListingHelper {
+public final class EventListingHelper implements InitializingBean {
+
+    private final Pattern DATE_PATTERN = Pattern.compile("\\d{4}-\\d{2}-\\d{2}");
+    private final Pattern MONTH_PATTERN = Pattern.compile("\\d{4}-\\d{2}");
+    private final Pattern YEAR_PATTERN = Pattern.compile("\\d{4}");
+    private Map<Pattern, SimpleDateFormat> dateformats;
+    private Map<Pattern, SpecificDateSearchType> searchTypes;
 
     private DateValueFormatter dateValueFormatter;
     private ResourceAwareLocaleResolver localeResolver;
@@ -60,15 +70,25 @@ public final class EventListingHelper {
         Day, Month, Year;
     }
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        this.dateformats = new HashMap<Pattern, SimpleDateFormat>();
+        this.dateformats.put(DATE_PATTERN, new SimpleDateFormat("yyyy-MM-dd"));
+        this.dateformats.put(MONTH_PATTERN, new SimpleDateFormat("yyyy-MM"));
+        this.dateformats.put(YEAR_PATTERN, new SimpleDateFormat("yyyy-MM"));
+        this.searchTypes = new HashMap<Pattern, SpecificDateSearchType>();
+        this.searchTypes.put(DATE_PATTERN, SpecificDateSearchType.Day);
+        this.searchTypes.put(MONTH_PATTERN, SpecificDateSearchType.Month);
+        this.searchTypes.put(YEAR_PATTERN, SpecificDateSearchType.Year);
+    }
+
     public SpecificDateSearchType getSpecificDateSearchType(HttpServletRequest request) {
         String specificDate = request.getParameter(EventListingHelper.REQUEST_PARAMETER_DATE);
         if (specificDate != null && !"".equals(specificDate.trim())) {
-            if (specificDate.matches("\\d{4}-\\d{2}-\\d{2}")) {
-                return SpecificDateSearchType.Day;
-            } else if (specificDate.matches("\\d{4}-\\d{2}")) {
-                return SpecificDateSearchType.Month;
-            } else if (specificDate.matches("\\d{4}")) {
-                return SpecificDateSearchType.Year;
+            for (Pattern regex : this.searchTypes.keySet()) {
+                if (regex.matcher(specificDate).matches()) {
+                    return this.searchTypes.get(regex);
+                }
             }
         }
         return null;
@@ -78,18 +98,18 @@ public final class EventListingHelper {
         String specificDate = request.getParameter(EventListingHelper.REQUEST_PARAMETER_DATE);
         if (specificDate != null && !"".equals(specificDate.trim())) {
             SimpleDateFormat sdf = null;
-            if (specificDate.matches("\\d{4}-\\d{2}-\\d{2}")) {
-                sdf = new SimpleDateFormat("yyyy-MM-dd");
-            } else if (specificDate.matches("\\d{4}-\\d{2}")) {
-                sdf = new SimpleDateFormat("yyyy-MM");
-            } else if (specificDate.matches("\\d{4}")) {
-                sdf = new SimpleDateFormat("yyyy");
+            for (Pattern regex : this.searchTypes.keySet()) {
+                if (regex.matcher(specificDate).matches()) {
+                    sdf = this.dateformats.get(regex);
+                }
             }
-            try {
-                Date date = sdf.parse(specificDate);
-                return date;
-            } catch (ParseException pee) { // Hehe.. pee..
-                // Ignore, return null
+            if (sdf != null) {
+                try {
+                    Date date = sdf.parse(specificDate);
+                    return date;
+                } catch (ParseException pee) { // Hehe.. pee..
+                    // Ignore, return null
+                }
             }
         }
         return null;
@@ -127,4 +147,5 @@ public final class EventListingHelper {
     public void setLocaleResolver(ResourceAwareLocaleResolver localeResolver) {
         this.localeResolver = localeResolver;
     }
+
 }

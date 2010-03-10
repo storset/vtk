@@ -7,21 +7,20 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle) 
   var allowedDates = new Array();
   
   var today = new Date();
-  var activeDate = findActiveDate(today);
+  var activeDate = findActiveDate(today, true);
   
   $("#datepicker").datepicker({
-    dateFormat :'yy-mm-dd',
+    dateFormat : 'yy-mm-dd',
     onSelect : function(dateText, inst) {
       location.href = location.href.split('?')[0] + "?date=" + dateText;
-      //TODO: keep current selected month when click on event in that month
     },
     //TODO: localize according to language
     monthNames : [ 'Januar', 'Februar', 'Mars', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober',
         'November', 'Desember' ],
     dayNamesMin : [ 'Sø', 'Ma', 'Ti', 'On', 'To', 'Fr', 'Lø' ],
-    prevText: 'Tidligere',
-    nextText: 'Senere',
-    firstDay :1,
+    prevText : 'Tidligere',
+    nextText : 'Senere',
+    firstDay : 1,
     beforeShow : function(input, inst) {
     	
     },
@@ -44,6 +43,10 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle) 
       allowedDates = queryAllowedDates (service, year, month);
     }
   });
+  
+  //Update datepicker() date or month with date-parameter
+  var date = new Date(findActiveDate(today, false));
+  $("#datepicker").datepicker('setDate', date);
 }
 
 function queryAllowedDates (service, year, month) {
@@ -60,11 +63,14 @@ function queryAllowedDates (service, year, month) {
   return allowedDates;
 }
 
-function findActiveDate(today) {
+function findActiveDate(today, removeZeroes) {
   var activeDate = [ today.getFullYear(), today.getMonth() + 1, today.getDate() ].join('-');
   if (location.href.indexOf('?date=') != -1) {
     var parameterDate = location.href.split('=');
-    activeDate = parameterDate[(parameterDate.length - 1)].replace(/-0/g, "-");
+    activeDate = parameterDate[(parameterDate.length - 1)];
+    if(removeZeroes) {
+      activeDate = activeDate.replace(/-0/g, "-");
+    }
   }
   return activeDate;
 }

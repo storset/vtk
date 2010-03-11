@@ -146,6 +146,34 @@ h2 {
   clear: both;
 }
 
+/* events */
+abbr {
+	text-decoration: none;
+	border-bottom: 0 !important;
+}
+
+span.time-and-place {
+        font-weight: bold;
+}
+
+span.vrtx-add-event {
+       font-size: 11px;
+       white-space: nowrap;
+       vertical-align: 15%;
+}
+
+span.vrtx-add-event a.vrtx-ical {
+       color: #555;
+       position: relative; 
+}
+
+span.vrtx-add-event a.vrtx-ical-help {
+       background: url(icons/icon-info.gif) no-repeat;
+       background-position: 87% 50%;
+       padding: 0px 10px 0px 10px;
+       zoom: 1; /* IE hack to get background image to display. To be fixed. */
+}
+
 /* RSS - stuff */
 div.vrtx-feed-link {
 	clear: both;

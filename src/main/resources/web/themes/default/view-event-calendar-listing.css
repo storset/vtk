@@ -12,6 +12,10 @@
   padding-bottom: 65px !important;
 }
 
+div.vrtx-resource {
+  width: auto;
+}
+
 #vrtx-event-calendar .ui-datepicker {
   width: 100%;
   padding: 0px;

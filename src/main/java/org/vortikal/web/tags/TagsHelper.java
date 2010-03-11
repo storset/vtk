@@ -60,8 +60,6 @@ public final class TagsHelper {
             scopedResource = this.repository.retrieve(token, requestedScope, true);
         } catch (ResourceNotFoundException e) {
             throw new IllegalArgumentException("Scope resource doesn't exist: " + requestedScope);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Could not get scope resource");
         }
 
         if (!scopedResource.isCollection()) {

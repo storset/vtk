@@ -1,5 +1,6 @@
 /*
  * Specific behavior of datepicker for event listing
+ * TODO: look at interchange between format '2010-4-2' and '2010-04-02'
  */
 
 function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle, language) {
@@ -8,7 +9,7 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle, 
   
   var today = new Date();
   var activeDate = findActiveDate(today, true);
-  var date = new Date(findActiveDate(today, false));
+  var activeDateWithZeroesBeforeMonthAndDay = new Date(findActiveDate(today, false));
   
   // i18n (default english)
   if(language == 'no') {
@@ -23,7 +24,7 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle, 
       location.href = location.href.split('?')[0] + "?date=" + dateText;
     },
     firstDay : 1,
-    defaultDate : date,
+    defaultDate : activeDateWithZeroesBeforeMonthAndDay,
     beforeShow : function(input, inst) {
     	
     },

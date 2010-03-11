@@ -14,12 +14,6 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle) 
     onSelect : function(dateText, inst) {
       location.href = location.href.split('?')[0] + "?date=" + dateText;
     },
-    //TODO: localize according to language
-    monthNames : [ 'Januar', 'Februar', 'Mars', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober',
-        'November', 'Desember' ],
-    dayNamesMin : [ 'Sø', 'Ma', 'Ti', 'On', 'To', 'Fr', 'Lø' ],
-    prevText : 'Tidligere',
-    nextText : 'Senere',
     firstDay : 1,
     beforeShow : function(input, inst) {
     	
@@ -50,6 +44,9 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle) 
   //Update datepicker() month by date parameter
   var date = new Date(findActiveDate(today, false));
   $("#datepicker").datepicker('setDate', date);
+  
+  //Set localization language
+  $("#datepicker").datepicker($.datepicker.regional['no']);
 }
 
 function queryAllowedDates (service, year, month) {

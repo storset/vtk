@@ -113,6 +113,12 @@ div.vrtx-resource {
   clear: left;
 }
 
+#vrtx-events-nav a {
+  float: left;
+  clear: left;
+  margin-bottom: 0.5em;
+}
+
 .vrtx-daily-event {
   padding-left: 55px;	
 }

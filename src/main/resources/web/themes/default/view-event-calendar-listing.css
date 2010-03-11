@@ -71,6 +71,8 @@ div.vrtx-resource {
 
 #vrtx-event-calendar .ui-datepicker table th {
   background-color: #fff;	
+  padding-top: 0.3em;
+  padding-bottom: 0.2em;
 }
 
 #vrtx-event-calendar .ui-widget-content table .ui-datepicker-unselectable span {

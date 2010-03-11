@@ -2,12 +2,18 @@
  * Specific behavior of datepicker for event listing
  */
 
-function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle) {
+function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle, language) {
 
   var allowedDates = new Array();
   
   var today = new Date();
   var activeDate = findActiveDate(today, true);
+  
+  //i18n - default english
+  $.datepicker.setDefaults($.datepicker.regional['']);
+  if(language == 'no') {
+    $.datepicker.setDefaults($.datepicker.regional['no']);
+  }
   
   $("#datepicker").datepicker({
     dateFormat : 'yy-mm-dd',
@@ -38,15 +44,9 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle) 
     }
   });
   
-  //TODO: init datepicker with this value,
-  //      to prevent switching from current to selected.
-  //
-  //Update datepicker() month by date parameter
+  //keep month onSelect event
   var date = new Date(findActiveDate(today, false));
   $("#datepicker").datepicker('setDate', date);
-  
-  //Set localization language
-  $("#datepicker").datepicker($.datepicker.regional['no']);
 }
 
 function queryAllowedDates (service, year, month) {

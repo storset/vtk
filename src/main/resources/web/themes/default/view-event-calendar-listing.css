@@ -29,6 +29,30 @@ div.vrtx-resource {
   color: #fff;
 }
 
+#vrtx-event-calendar .ui-datepicker .ui-datepicker-prev span, 
+#vrtx-event-calendar .ui-datepicker .ui-datepicker-next span {
+  background-position: 0 0;
+  width: 19px;
+  height: 18px;
+}
+.ui-datepicker .ui-datepicker-prev-hover, 
+.ui-datepicker .ui-datepicker-next-hover {
+	top: 2px;
+	/* TODO: add hover variant of left.png and right. */
+	background: none !important;
+}
+
+.ui-datepicker .ui-datepicker-prev-hover { left:2px; }
+.ui-datepicker .ui-datepicker-next-hover { right:2px; }
+
+#vrtx-event-calendar .ui-datepicker .ui-datepicker-prev span {
+  background-image: url(../../jquery-ui-tabs-customized/css/ui-lightness/images/left.png);
+}
+
+#vrtx-event-calendar .ui-datepicker .ui-datepicker-next span {
+  background-image: url(../../jquery-ui-tabs-customized/css/ui-lightness/images/right.png);
+}
+
 #vrtx-event-calendar .ui-datepicker .ui-datepicker-header a:hover {
   background-image: none !important;	
 }

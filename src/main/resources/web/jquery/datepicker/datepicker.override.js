@@ -38,14 +38,15 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle, 
       }
     },
     onChangeMonthYear : function(year, month, inst) {
-      if(month <= 9) { 
-        month = "0" + month;  
+      if(month <= 9) {
+        month = "0" + month;
       }
       allowedDates = queryAllowedDates (service, year, month);
     }
   });
   
   //keep month onSelect event
+  //TODO: fix in IE, get undefined and NaN..
   var date = new Date(findActiveDate(today, false));
   $("#datepicker").datepicker('setDate', date);
 }

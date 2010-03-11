@@ -1,3 +1,8 @@
+#vrtx-additional-content {
+  float: left;
+  margin-left: 20px;
+}
+
 #vrtx-event-calendar {
   padding-bottom: 65px !important;
 }
@@ -70,13 +75,13 @@
 .eventListing\.calendarEventSearch,
 .structured\.eventListing\.upcomingEventsSearchComponent,
 .structured\.eventListing\.previousEventsSearchComponent {
-  width: 507px;
+  /* width: 507px; DON'T REMOVE YET! */
+  width: 70%;
   float: left;
   clear: left;
 }
 
 #vrtx-events-nav {
-  clear: left;
   padding: 10px 0;
   float: left;
 }
@@ -89,7 +94,8 @@
   background-color: #fff;
   padding: 6px 20px 20px 20px;
   border: 1px solid #ccc;
-  width: 465px;
+  /* width: 465px; DON'T REMOVE YET! */
+  width: auto;
   float: left;
 }
 
@@ -115,7 +121,6 @@ h2 {
   border: 1px solid #ccc;
   text-align: center;
   margin-right: 22px;
-  /* margin-bottom: 100%; */
 }
 
 .vrtx-daily-events-date .vrtx-daily-events-date-day {
@@ -135,4 +140,21 @@ h2 {
   font-size: 0.8em;
   background-color: #444;
   color: #fff;
+}
+
+.vrtx-paging-feed-wrapper {
+  clear: both;
+}
+
+/* RSS - stuff */
+div.vrtx-feed-link {
+	clear: both;
+	background: url(icons/rss-icon.jpg) no-repeat top left;
+	font-size: .9em;
+	height: 24px;
+	line-height: 20px;
+}
+
+div.vrtx-feed-link a {
+	padding-left: 27px;
 }

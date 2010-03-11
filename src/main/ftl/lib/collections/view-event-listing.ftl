@@ -75,12 +75,13 @@
       <h2>${furtherUpcomingTitle?html}</h2>
       <@displayStandard furtherUpcoming hideNumberOfComments displayMoreURLs=false />
     </#if>
-
+    <#-- NEED TO MOVE AFTER CALENDAR..
     <div id="vrtx-events-nav">
        <a href="${viewAllUpcomingURL}"><@vrtx.msg code="eventListing.allUpcoming" default="Upcoming events"/></a>
        <a href="${viewAllPreviousURL}"><@vrtx.msg code="eventListing.allPrevious" default="Previous events"/></a>
     </div>
-
+    -->
+    
   </#if>
 
   <div id="vrtx-additional-content">

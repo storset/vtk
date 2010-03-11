@@ -1,5 +1,5 @@
 /* New-Norwegian initialisation for the jQuery UI date picker plugin. */
-/* Written by USIT. */
+/* Written by Øyvind Hatland (oyvind.hatland@usit.uio.no). */
 jQuery(function($){
     $.datepicker.regional['nn'] = {
 		closeText: 'Lukk',

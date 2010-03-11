@@ -8,6 +8,7 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle, 
   
   var today = new Date();
   var activeDate = findActiveDate(today, true);
+  var date = new Date(findActiveDate(today, false));
   
   // i18n (default english)
   if(language == 'no') {
@@ -22,6 +23,7 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle, 
       location.href = location.href.split('?')[0] + "?date=" + dateText;
     },
     firstDay : 1,
+    defaultDate : date,
     beforeShow : function(input, inst) {
     	
     },
@@ -44,11 +46,6 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle, 
       allowedDates = queryAllowedDates (service, year, month);
     }
   });
-  
-  //keep month onSelect event
-  //TODO: fix in IE, get undefined and NaN..
-  var date = new Date(findActiveDate(today, false));
-  $("#datepicker").datepicker('setDate', date);
 }
 
 function queryAllowedDates (service, year, month) {

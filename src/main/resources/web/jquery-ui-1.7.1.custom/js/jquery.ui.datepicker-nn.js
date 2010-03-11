@@ -1,4 +1,4 @@
-/* Norwegian initialisation for the jQuery UI date picker plugin. */
+/* New-Norwegian initialisation for the jQuery UI date picker plugin. */
 /* Written by USIT. */
 jQuery(function($){
     $.datepicker.regional['nn'] = {

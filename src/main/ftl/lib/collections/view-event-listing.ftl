@@ -33,57 +33,58 @@
 
 <#macro displayCalendar hideNumberOfComments displayMoreURLs>
   
-  <#if allUpcoming?has_content>
-    <@displayStandard allUpcoming hideNumberOfComments displayMoreURLs />  
-
-  <#elseif allPrevious?has_content>
-    <@displayStandard allPrevious hideNumberOfComments displayMoreURLs />
-
-  <#elseif specificDate?has_content && specificDate>
-    <#if specificDateEvents?has_content && specificDateEvents?size &gt; 0>
-      <h2>${specificDateEventsTitle}</h2>
-      <@displayStandard specificDateEvents hideNumberOfComments displayMoreURLs=false />
-    <#else>
-      <h3>${noPlannedEventsMsg}</h3>
-    </#if>
-
-  <#elseif groupedByDayEvents?has_content || furtherUpcoming?has_content>
+  <div id="vrtx-main-content">
+	  <#if allUpcoming?has_content>
+	    <@displayStandard allUpcoming hideNumberOfComments displayMoreURLs />  
+	
+	  <#elseif allPrevious?has_content>
+	    <@displayStandard allPrevious hideNumberOfComments displayMoreURLs />
+	
+	  <#elseif specificDate?has_content && specificDate>
+	    <#if specificDateEvents?has_content && specificDateEvents?size &gt; 0>
+	      <h2>${specificDateEventsTitle}</h2>
+	      <@displayStandard specificDateEvents hideNumberOfComments displayMoreURLs=false />
+	    <#else>
+	      <h3>${noPlannedEventsMsg}</h3>
+	    </#if>
+	
+	  <#elseif groupedByDayEvents?has_content || furtherUpcoming?has_content>
+	  
+	    <#if groupedByDayEvents?has_content && groupedByDayEvents?size &gt; 0>
+	      <div id="vrtx-daily-events">
+	        <h2>${groupedEventsTitle?html}</h2>
+	      <#assign count = 1 />
+	      <#list groupedByDayEvents as groupedEvents>
+	        <div id="vrtx-daily-events-${count}">
+	          <div class="vrtx-daily-events-date">
+	            <span class="vrtx-daily-events-date-day"><@vrtx.date value=groupedEvents.day format='dd' /></span>
+	            <span class="vrtx-daily-events-date-month"><@vrtx.date value=groupedEvents.day format='MMM' /></span>
+	          </div>
+	          <div class="vrtx-daily-event">
+	          <#local eventListing = groupedEvents.events /> 
+	          <#list eventListing.files as event>
+	            <@displayEvent eventListing event hideNumberOfComments displayMoreURLs=false />
+	          </#list>
+	          </div>      
+	        </div>
+	        <#assign count = count +1 />
+	      </#list>
+	      </div>
+	    </#if>
+	    
+	    <#if furtherUpcoming?has_content && furtherUpcoming?size &gt; 0>
+	      <h2>${furtherUpcomingTitle?html}</h2>
+	      <@displayStandard furtherUpcoming hideNumberOfComments displayMoreURLs=false />
+	    </#if>
+	    
+	    <div id="vrtx-events-nav">
+	       <a href="${viewAllUpcomingURL}"><@vrtx.msg code="eventListing.allUpcoming" default="Upcoming events"/></a>
+	       <a href="${viewAllPreviousURL}"><@vrtx.msg code="eventListing.allPrevious" default="Previous events"/></a>
+	    </div>
+	    
+	  </#if>
+  </div>
   
-    <#if groupedByDayEvents?has_content && groupedByDayEvents?size &gt; 0>
-      <div id="vrtx-daily-events">
-        <h2>${groupedEventsTitle?html}</h2>
-      <#assign count = 1 />
-      <#list groupedByDayEvents as groupedEvents>
-        <div id="vrtx-daily-events-${count}">
-          <div class="vrtx-daily-events-date">
-            <span class="vrtx-daily-events-date-day"><@vrtx.date value=groupedEvents.day format='dd' /></span>
-            <span class="vrtx-daily-events-date-month"><@vrtx.date value=groupedEvents.day format='MMM' /></span>
-          </div>
-          <div class="vrtx-daily-event">
-          <#local eventListing = groupedEvents.events /> 
-          <#list eventListing.files as event>
-            <@displayEvent eventListing event hideNumberOfComments displayMoreURLs=false />
-          </#list>
-          </div>      
-        </div>
-        <#assign count = count +1 />
-      </#list>
-      </div>
-    </#if>
-    
-    <#if furtherUpcoming?has_content && furtherUpcoming?size &gt; 0>
-      <h2>${furtherUpcomingTitle?html}</h2>
-      <@displayStandard furtherUpcoming hideNumberOfComments displayMoreURLs=false />
-    </#if>
-    <#-- NEED TO MOVE AFTER CALENDAR..
-    <div id="vrtx-events-nav">
-       <a href="${viewAllUpcomingURL}"><@vrtx.msg code="eventListing.allUpcoming" default="Upcoming events"/></a>
-       <a href="${viewAllPreviousURL}"><@vrtx.msg code="eventListing.allPrevious" default="Previous events"/></a>
-    </div>
-    -->
-    
-  </#if>
-
   <div id="vrtx-additional-content">
      <div class="vrtx-frontpage-box" id="vrtx-event-calendar">
        <#local clickableDayTitle = vrtx.getMsg("eventListing.calendar.dayHasPlannedEvents", "View upcoming events this day") />

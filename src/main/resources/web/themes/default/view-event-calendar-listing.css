@@ -3,6 +3,11 @@
   margin-left: 20px;
 }
 
+#vrtx-main-content {
+  width: 70%;
+  float: left;
+}
+
 #vrtx-event-calendar {
   padding-bottom: 65px !important;
 }
@@ -72,46 +77,14 @@
   color: #fff !important;
 }
 
-.eventListing\.calendarEventSearch,
-.structured\.eventListing\.upcomingEventsSearchComponent,
-.structured\.eventListing\.previousEventsSearchComponent {
-  /* width: 507px; DON'T REMOVE YET! */
-  width: 70%;
+#vrtx-events-nav {
+  padding: 10px 0;
   float: left;
   clear: left;
 }
 
-#vrtx-events-nav {
-  padding: 10px 0;
-  float: left;
-}
-
 .vrtx-daily-event {
   padding-left: 55px;	
-}
-
-#vrtx-daily-events {
-  background-color: #fff;
-  padding: 6px 20px 20px 20px;
-  border: 1px solid #ccc;
-  /* width: 465px; DON'T REMOVE YET! */
-  width: auto;
-  float: left;
-}
-
-#vrtx-daily-events .vevent {
-  background: url(/vrtx/decorating/resources-dist/images/dot.png) repeat-x 0 100%;
-  padding-bottom: 12px;
-  margin-bottom: 20px;
-  width: 100%;
-}
-
-h2 {
-  clear: left;	
-}
-
-#vrtx-daily-events h2 {
-  margin-top: 5px;
 }
 
 .vrtx-daily-events-date {

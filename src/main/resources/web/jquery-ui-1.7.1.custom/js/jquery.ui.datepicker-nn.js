@@ -10,7 +10,7 @@ jQuery(function($){
         'Juli','August','September','Oktober','November','Desember'],
         monthNamesShort: ['Jan','Feb','Mar','Apr','Mai','Jun',
         'Jul','Aug','Sep','Okt','Nov','Des'],
-		dayNamesShort: ['Søn','Man','Tir','Ons','Tor','Fre','Lør'],
+		dayNamesShort: ['Søn','Mån','Tys','Ons','Tor','Fre','Lau'],
 		dayNames: ['Søndag','Måndag','Tysdag','Onsdag','Torsdag','Fredag','Laurdag'],
 		dayNamesMin: ['Sø','Må','Ty','On','To','Fr','La'],
 		weekHeader: 'Veke',

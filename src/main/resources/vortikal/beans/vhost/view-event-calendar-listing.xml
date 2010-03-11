@@ -66,7 +66,8 @@
       <map>
         <entry key="cssURLs">
           <list>
-            <value>${webResources.baseURL}/jquery-ui-tabs-customized/css/ui-lightness/jquery-ui-1.7.2.custom.css</value>
+            <!-- <value>${webResources.baseURL}/jquery-ui-tabs-customized/css/ui-lightness/jquery-ui-1.7.2.custom.css</value> -->
+            <value>${webResources.baseURL}/jquery-ui-1.7.1.custom/css/smoothness/jquery-ui-1.7.1.custom.css</value>
             <value>${themeBaseURL}/view-collectionlisting.css</value>
             <value>${themeBaseURL}/view-event-calendar-listing.css</value>
           </list>

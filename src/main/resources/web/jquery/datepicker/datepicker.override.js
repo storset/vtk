@@ -9,10 +9,11 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle, 
   var today = new Date();
   var activeDate = findActiveDate(today, true);
   
-  //i18n - default english
-  $.datepicker.setDefaults($.datepicker.regional['']);
+  // i18n (default english)
   if(language == 'no') {
     $.datepicker.setDefaults($.datepicker.regional['no']);
+  } else if(language == 'nn') {
+	$.datepicker.setDefaults($.datepicker.regional['nn']);
   }
   
   $("#datepicker").datepicker({

@@ -1,7 +1,7 @@
 /* Norwegian initialisation for the jQuery UI date picker plugin. */
-/* Written by Naimdjon Takhirov (naimdjon@gmail.com). */
+/* Written by USIT. */
 jQuery(function($){
-    $.datepicker.regional['no'] = {
+    $.datepicker.regional['nn'] = {
 		closeText: 'Lukk',
         prevText: '&laquo;Forrige',
 		nextText: 'Neste&raquo;',
@@ -11,9 +11,9 @@ jQuery(function($){
         monthNamesShort: ['Jan','Feb','Mar','Apr','Mai','Jun',
         'Jul','Aug','Sep','Okt','Nov','Des'],
 		dayNamesShort: ['Søn','Man','Tir','Ons','Tor','Fre','Lør'],
-		dayNames: ['Søndag','Mandag','Tirsdag','Onsdag','Torsdag','Fredag','Lørdag'],
-		dayNamesMin: ['Sø','Ma','Ti','On','To','Fr','Lø'],
-		weekHeader: 'Uke',
+		dayNames: ['Søndag','Måndag','Tysdag','Onsdag','Torsdag','Fredag','Laurdag'],
+		dayNamesMin: ['Sø','Må','Ty','On','To','Fr','La'],
+		weekHeader: 'Veke',
         dateFormat: 'yy-mm-dd',
 		firstDay: 0,
 		isRTL: false,

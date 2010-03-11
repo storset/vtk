@@ -76,6 +76,7 @@
             <value>${webResources.baseURL}/jquery/include-jquery.js</value>
             <value>${webResources.baseURL}/jquery-ui-1.7.1.custom/js/jquery-ui-1.7.1.custom.min.js</value>
             <value>${webResources.baseURL}/jquery-ui-1.7.1.custom/js/jquery.ui.datepicker-no.js</value>
+            <value>${webResources.baseURL}/jquery-ui-1.7.1.custom/js/jquery.ui.datepicker-nn.js</value>
             <value>${webResources.baseURL}/jquery/datepicker/datepicker.override.js</value>
           </list>
         </entry>

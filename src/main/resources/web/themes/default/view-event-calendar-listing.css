@@ -17,11 +17,11 @@ div.vrtx-resource {
 }
 
 #vrtx-event-calendar .ui-datepicker {
-  width: 100%;
   padding: 0px;
   background-color: #ccc;
   border: 1px solid #ccc;
   margin-top: 5px;
+  width: 200px;
 }
 
 #vrtx-event-calendar .ui-datepicker .ui-datepicker-header {

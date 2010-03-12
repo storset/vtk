@@ -53,8 +53,8 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle, 
 }
 
 function makeMonthLink(year, month) {
-	$(".ui-datepicker-month").html("<a href='" + location.href.split('?')[0] + "?date=" + year + '-' + month
-			 + "' style='color: blue !important'>" + $(".ui-datepicker-month").text() + "</a>");
+  $(".ui-datepicker-month").html("<a href='" + location.href.split('?')[0] + "?date=" + year + '-' + month + "'>" 
+		                     + $(".ui-datepicker-month").text() + "</a>");
 }
 
 function queryAllowedDates (service, year, month) {

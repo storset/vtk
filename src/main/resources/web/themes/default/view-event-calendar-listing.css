@@ -29,6 +29,10 @@ div.vrtx-resource {
   color: #fff;
 }
 
+#vrtx-event-calendar .ui-datepicker .ui-datepicker-header a {
+  color: blue;	
+}
+
 #vrtx-event-calendar .ui-datepicker .ui-datepicker-prev span, 
 #vrtx-event-calendar .ui-datepicker .ui-datepicker-next span {
   background-position: 0 0;

@@ -9,7 +9,8 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle, 
   
   var today = new Date();
   var activeDate = findActiveDate(today, true);
-  var activeDateWithZeroesBeforeMonthAndDay = new Date(findActiveDate(today, false));
+  var dateArray = findActiveDate(today, false).split('-');;
+  var activeDateWithZeroesBeforeMonthAndDay = new Date(dateArray[0], dateArray[1]-1, dateArray[2]);
   
   // i18n (default english)
   if(language == 'no') {

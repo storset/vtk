@@ -75,7 +75,7 @@ public final class EventListingHelper implements InitializingBean {
         this.dateformats = new HashMap<Pattern, SimpleDateFormat>();
         this.dateformats.put(DATE_PATTERN, new SimpleDateFormat("yyyy-MM-dd"));
         this.dateformats.put(MONTH_PATTERN, new SimpleDateFormat("yyyy-MM"));
-        this.dateformats.put(YEAR_PATTERN, new SimpleDateFormat("yyyy-MM"));
+        this.dateformats.put(YEAR_PATTERN, new SimpleDateFormat("yyyy"));
         this.searchTypes = new HashMap<Pattern, SpecificDateSearchType>();
         this.searchTypes.put(DATE_PATTERN, SpecificDateSearchType.Day);
         this.searchTypes.put(MONTH_PATTERN, SpecificDateSearchType.Month);

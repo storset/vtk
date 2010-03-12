@@ -8,8 +8,8 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle, 
   var allowedDates = new Array();
   
   var today = new Date();
-  var activeDate = findActiveDate(today);
-  var activeDateForInit = makeActiveDateForInit(removeZeroesBeforeDayAndMonth(activeDate))
+  var activeDate = removeZeroesBeforeDayAndMonth(findActiveDate(today));
+  var activeDateForInit = makeActiveDateForInit(activeDate);
   
   // i18n (default english)
   if(language == 'no') {
@@ -30,6 +30,7 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle, 
     },
     beforeShowDay : function(day) {
       var date_str = [ day.getFullYear(), day.getMonth() + 1, day.getDate()].join('-');
+      
       if ($.inArray(date_str, allowedDates) != -1) {
         if (activeDate == date_str) {
           return [ true, 'state-active', clickableDayTitle ];
@@ -86,13 +87,10 @@ function removeZeroesBeforeDayAndMonth(date) {
 
 function makeActiveDateForInit(activeDate) {
    var dateArray = activeDate.split('-');
-   // Return 'yyyy-mm-dd'
    if(dateArray.length == 3) {
      return new Date(dateArray[0], dateArray[1]-1, dateArray[2]);
-   // Return 'yyyy-mm'
    } else if(dateArray.length == 2) {
 	 return new Date(dateArray[0], dateArray[1]-1);
-   // Return 'yyyy'
    } else if(dateArray.length == 1) {
 	 return new Date(dateArray[0]);
    } else {

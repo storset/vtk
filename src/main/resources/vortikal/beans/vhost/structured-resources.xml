@@ -184,12 +184,12 @@
           <property name="path" value="${editor.fck.browseURL}" />
           <property name="modelName" value="fckBrowse" />
         </bean>
-        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+        <!-- <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
           <property name="repository" ref="repository" />
           <property name="service" ref="viewService" />
           <property name="modelName" value="fckeditorBase" />
           <property name="urlName" value="documentURL" />
-        </bean>
+        </bean> -->
         
         <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
           <property name="modelDataMap">
@@ -198,6 +198,7 @@
               <entry key="jsBaseURL" value="${jsBaseURL}" />
               <entry key="webResources" value="${webResources.baseURL}" />
               <entry key="themeBaseURL" value="${themeBaseURL}" />
+              <entry key="fckBaseHref" value= "${editor.fck.baseHref}" />
             </map>
           </property>
         </bean>

@@ -11,8 +11,8 @@
     cases delete URLs could not be generated since manageService requires read permission)
   -->
   <bean id="manageService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="webService" />
-    <property name="order" value="500" />
+    <!-- <property name="parent" ref="webService" /> -->
+    <property name="order" value="-1" />
     <property name="assertions">
       <list>
         <ref bean="manage.hostNameAssertion" />
@@ -33,6 +33,7 @@
         <entry key-ref="system.decoratorTemplateAttribute" value="admin.html" />
       </map>
     </property>
+    <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" />
   </bean>
 
   <bean id="setNorwegianNBLocaleService" class="org.vortikal.web.service.ServiceImpl">

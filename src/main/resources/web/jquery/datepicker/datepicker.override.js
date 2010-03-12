@@ -45,7 +45,7 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle, 
         month = "0" + month;
       }
       allowedDates = queryAllowedDates (service, year, month);
-      
+
       //wait.. and make link
       setTimeout(function(){makeMonthLink(year, month)}, 100);
     }
@@ -54,7 +54,7 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle, 
 
 function makeMonthLink(year, month) {
   $(".ui-datepicker-month").html("<a href='" + location.href.split('?')[0] + "?date=" + year + '-' + month + "'>" 
-		                     + $(".ui-datepicker-month").text() + "</a>");
+		                     + $(".ui-datepicker-month").text() + ' ' + $(".ui-datepicker-year").remove().text() + "</a>");
 }
 
 function queryAllowedDates (service, year, month) {
@@ -89,11 +89,14 @@ function makeActiveDateForInit(activeDate) {
    // Return 'yyyy-mm-dd'
    if(dateArray.length == 3) {
      return new Date(dateArray[0], dateArray[1]-1, dateArray[2]);
+     alert('yyyy-mm-dd');
    // Return 'yyyy-mm'
    } else if(dateArray.length == 2) {
+	   alert('yyyy-mm');
 	 return new Date(dateArray[0], dateArray[1]-1);
    // Return 'yyyy'
    } else if(dateArray.length == 1) {
+	   alert('yyyy')
 	 return new Date(dateArray[0]);
    } else {
      return new Date();

@@ -42,20 +42,20 @@
 	
 	  <#elseif specificDate?has_content && specificDate>
 	    <#if specificDateEvents?has_content && specificDateEvents?size &gt; 0>
-	      <h2>${specificDateEventsTitle}</h2>
+	      <h2 class="vrtx-events-specific-date">${specificDateEventsTitle}</h2>
 	      <@displayStandard specificDateEvents hideNumberOfComments displayMoreURLs=false />
 	    <#else>
-	      <h3>${noPlannedEventsMsg}</h3>
+	      <h3 class="vrtx-events-no-planned">${noPlannedEventsMsg}</h3>
 	    </#if>
 	
 	  <#elseif groupedByDayEvents?has_content || furtherUpcoming?has_content>
 	  
 	    <#if groupedByDayEvents?has_content && groupedByDayEvents?size &gt; 0>
 	      <div id="vrtx-daily-events">
-	        <h2>${groupedEventsTitle?html}</h2>
+	        <h2 class="vrtx-events-title">${groupedEventsTitle?html}</h2>
 	      <#assign count = 1 />
 	      <#list groupedByDayEvents as groupedEvents>
-	        <div id="vrtx-daily-events-${count}">
+	        <div id="vrtx-daily-events-${count}" class="vrtx-daily-events-listing">
 	          <div class="vrtx-daily-events-date">
 	            <span class="vrtx-daily-events-date-day"><@vrtx.date value=groupedEvents.day format='dd' /></span>
 	            <span class="vrtx-daily-events-date-month"><@vrtx.date value=groupedEvents.day format='MMM' /></span>
@@ -73,13 +73,13 @@
 	    </#if>
 	    
 	    <#if furtherUpcoming?has_content && furtherUpcoming?size &gt; 0>
-	      <h2>${furtherUpcomingTitle?html}</h2>
+	      <h2 class="vrtx-events-further-upcoming">${furtherUpcomingTitle?html}</h2>
 	      <@displayStandard furtherUpcoming hideNumberOfComments displayMoreURLs=false />
 	    </#if>
 	    
 	    <div id="vrtx-events-nav">
-	       <a href="${viewAllUpcomingURL}"><@vrtx.msg code="eventListing.allUpcoming" default="Upcoming events"/></a>
-	       <a href="${viewAllPreviousURL}"><@vrtx.msg code="eventListing.allPrevious" default="Previous events"/></a>
+	       <a href="${viewAllUpcomingURL}" id="vrtx-events-nav-all-upcoming"><@vrtx.msg code="eventListing.allUpcoming" default="Upcoming events"/></a>
+	       <a href="${viewAllPreviousURL}" id="vrtx-events-nav-all-previous"><@vrtx.msg code="eventListing.allPrevious" default="Previous events"/></a>
 	    </div>
 	    
 	  </#if>

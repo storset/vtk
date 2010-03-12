@@ -8,9 +8,8 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle, 
   var allowedDates = new Array();
   
   var today = new Date();
-  var activeDate = findActiveDate(today, true);
-  var dateArray = findActiveDate(today, false).split('-');;
-  var activeDateWithZeroesBeforeMonthAndDay = new Date(dateArray[0], dateArray[1]-1, dateArray[2]);
+  var activeDate = findActiveDate(today);
+  var activeDateForInit = makeActiveDateForInit(activeDate)
   
   // i18n (default english)
   if(language == 'no') {
@@ -25,7 +24,7 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle, 
       location.href = location.href.split('?')[0] + "?date=" + dateText;
     },
     firstDay : 1,
-    defaultDate : activeDateWithZeroesBeforeMonthAndDay,
+    defaultDate : activeDateForInit,
     beforeShow : function(input, inst) {
     	
     },
@@ -64,14 +63,28 @@ function queryAllowedDates (service, year, month) {
   return allowedDates;
 }
 
-function findActiveDate(today, removeZeroesBeforeDayAndMonth) {
+function findActiveDate(today) {
   var activeDate = [ today.getFullYear(), today.getMonth() + 1, today.getDate() ].join('-');
   if (location.href.indexOf('?date=') != -1) {
     var parameterDate = location.href.split('=');
     activeDate = parameterDate[(parameterDate.length - 1)];
-    if(removeZeroesBeforeDayAndMonth) {
-      activeDate = activeDate.replace(/-0/g, "-");
-    }
   }
   return activeDate;
+}
+
+function removeZeroesBeforeDayAndMonth(date) {
+  return date.replace(/-0/g, "-");
+}
+
+function makeActiveDateForInit(activeDate) {
+   var dateArray = removeZeroesBeforeDayAndMonth(activeDate).split('-');
+   if(dateArray.length == 3) {
+     return new Date(dateArray[0], dateArray[1]-1, dateArray[2]);  
+   } else if(dateArray.length == 2) {
+	 return new Date(dateArray[0], dateArray[1]-1);	  
+   } else if(dateArray.length == 1) {
+	 return new Date(dateArray[0]);
+   } else {
+     return new Date();
+   }
 }

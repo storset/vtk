@@ -89,14 +89,11 @@ function makeActiveDateForInit(activeDate) {
    // Return 'yyyy-mm-dd'
    if(dateArray.length == 3) {
      return new Date(dateArray[0], dateArray[1]-1, dateArray[2]);
-     alert('yyyy-mm-dd');
    // Return 'yyyy-mm'
    } else if(dateArray.length == 2) {
-	   alert('yyyy-mm');
 	 return new Date(dateArray[0], dateArray[1]-1);
    // Return 'yyyy'
    } else if(dateArray.length == 1) {
-	   alert('yyyy')
 	 return new Date(dateArray[0]);
    } else {
      return new Date();

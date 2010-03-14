@@ -15,6 +15,7 @@
     <property name="order" value="-1" />
     <property name="assertions">
       <list>
+        <ref bean="manage.portAssertion" />
         <ref bean="manage.hostNameAssertion" />
         <ref bean="manage.protocolAssertion" />
         <ref bean="adminVrtxParameterRule" />
@@ -1599,6 +1600,11 @@
   <bean id="resourceNotRootAssertion" class="org.vortikal.web.service.ResourceURIAssertion">
     <property name="uri" value="/" />
     <property name="inverted" value="true" />
+  </bean>
+
+  <bean id="manage.portAssertion"
+        class="org.vortikal.web.service.RequestPortAssertion">
+    <property name="port" value="${manage.port}" />
   </bean>
 
   <bean id="manage.hostNameAssertion" class="org.vortikal.web.service.RequestHostNameAssertion">

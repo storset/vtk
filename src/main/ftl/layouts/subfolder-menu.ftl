@@ -71,7 +71,7 @@
    <#else>
     <ul class="resultset-${currentCount?html}">
    </#if>
-    <#list menu.items as item>
+    <#list menu.itemsSorted as item>
       <li>
         <#if USE_TREE_VIEW >       
           <span class="folder">
@@ -88,15 +88,21 @@
 
 <#macro displaySubMenu menu displaySubMenu >
   <ul>
-    <#list menu.items as item>
-        <#if USE_TREE_VIEW >
-          <li class="closed">
-          <span class="folder">
-        <#else>
-          <li>
-        </#if> 
+  	<#assign i = 0 />
+    <#list menu.itemsSorted as item>
+    	<#if (i < menu.maxNumberOfItems)>
+	        <#if USE_TREE_VIEW >
+	          <li class="closed">
+	          <span class="folder">
+	        <#else>
+	          <li>
+	        </#if> 
             <@displayItem item=item />
-          </li>  
+          	</li>
+         <#else>
+         	<#break>
+         </#if>
+         <#assign i = i + 1 />
     </#list>
 	<#if (menu.totalNumberOfItems > menu.maxNumberOfItems)>
 	    <li class="vrtx-more">   

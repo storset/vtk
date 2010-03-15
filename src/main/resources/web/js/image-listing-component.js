@@ -92,6 +92,7 @@
 	      });
 	 });
 	  
+	//TODO: refactor with above code
 	function initImage() {
 	  //choose first image in <li>
 	  $(wrapper + " ul li:first a").addClass("active");

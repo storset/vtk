@@ -118,7 +118,7 @@
   <bean id="eventListing.previous.searchSorting" class="org.vortikal.web.search.SearchSorting" depends-on="resourceTypeTree">
     <property name="sortOrderPropDefPointers">
       <list>
-        <value>end-date</value>
+        <value>start-date</value>
       </list>
     </property>
     <property name="resourceTypeTree"  ref ="resourceTypeTree" />

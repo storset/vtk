@@ -86,7 +86,7 @@
   </div>
   
   <div id="vrtx-additional-content">
-     <div class="vrtx-frontpage-box" id="vrtx-event-calendar">
+     <div id="vrtx-event-calendar">
        <#local clickableDayTitle = vrtx.getMsg("eventListing.calendar.dayHasPlannedEvents", "View upcoming events this day") />
        <#local notClickableDayTitle = vrtx.getMsg("eventListing.calendar.dayHasNoPlannedEvents", "No upcoming events this day") />
        <#local language = vrtx.getMsg("eventListing.calendar.lang", "en") />
@@ -97,7 +97,6 @@
          });
        // -->
        </script>
-       <h2>Bla i arrangementer</h2>
        <div type="text" id="datepicker"></div>
      </div>
   </div>

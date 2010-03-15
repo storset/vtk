@@ -16,6 +16,24 @@
   <div class="vrtx-image-listing-include">
     <span class="vrtx-image-listing-include-title"><a href="${folderUrl}?display=gallery">${folderTitle}</a></span>
     <#if type == 'simple-gallery'>
+       <script type="text/javascript">
+       <!--
+         // ("load") so that all images is loaded before running,
+	     // and .bind for performance increase: http://jqueryfordesigners.com/demo/fade-method2.html
+		 $(window).bind("load", function () {
+				
+		   var wrapper = ".vrtx-image-listing-include";	
+		   var container = ".vrtx-image-listing-include-container";
+			  
+		   var options = {
+		     fadeInOutTime : ${fadeEffect}
+		   }
+			  
+		   $(wrapper + " ul li a").vrtxSGallery(wrapper, container, options);
+				  
+	     });
+       // -->
+       </script>
       <#list images as image>
         <div class="vrtx-image-listing-include-container-nav-pure-css">
           <a class='prev' href='#'>&lt;&lt; Forrige</a>

@@ -2,28 +2,15 @@
 // w/ paging, centered thumbnail navigation and fade effect
 // by Øyvind Hatland - UiO / USIT
 
-// ("load") so that all images is loaded before running,
-// and .bind for performance increase: http://jqueryfordesigners.com/demo/fade-method2.html
-$(window).bind("load", function () {
-	
-  var wrapper = ".vrtx-image-listing-include";	
-  var container = ".vrtx-image-listing-include-container";
-  
-  $(wrapper + " ul li a").vrtxSGallery(wrapper, container);
-	
-  //choose first image in <li>
-  $(wrapper + " ul li:first a").click();
-	  
-});
-
 (function ($) {
   $.fn.vrtxSGallery = function (wrapper, container, options) {
+	  
 	  //animation settings
 	  settings = jQuery.extend({
 		fadeInOutTime : 250,
 		fadedOutOpacity: 0
 	  }, options);
-	  
+
 	  //Unobtrusive JavaScript
 	  $(container + "-pure-css").addClass(container.substring(1));
 	  $(container + "-nav-pure-css").addClass(container.substring(1) + "-nav");
@@ -50,6 +37,8 @@ $(window).bind("load", function () {
 		  h.preventDefault(); 
 		});  
 	  }
+	  
+	  initImage();
 		  
 	  return this.each(function (i) {
 		  
@@ -74,15 +63,21 @@ $(window).bind("load", function () {
 		      link.setAttribute("className", container.substring(1) + "-link");
 		      
 		  	  //replace link and image (w/ fade effect down to fadedOutOpacity) + stop() current animation.
-		      $(wrapper + " " + container).stop().fadeTo(settings.fadeInOutTime, settings.fadedOutOpacity, function() {
-		    	  //done fade out -> remove
-		    	  $("a" + container + "-link", this).remove();
-		    	  //start fading in ...
-		    	  $(this).fadeTo(settings.fadeInOutTime, 1);
-		    	  //... before adding new image for smoother change
-		    	  $(this).prepend(link);
-		    	  $(link, this).append(img);  
-		      });
+		      if(settings.fadeInOutTime > 0) {
+			      $(wrapper + " " + container).stop().fadeTo(settings.fadeInOutTime, settings.fadedOutOpacity, function() {
+			    	  //done fade out -> remove
+			    	  $("a" + container + "-link", this).remove();
+			    	  //start fading in ...
+			    	  $(this).fadeTo(settings.fadeInOutTime, 1);
+			    	  //... before adding new image for smoother change
+			    	  $(this).prepend(link);
+			    	  $(link, this).append(img);  
+			      });
+		      } else {
+		    	  $("a" + container + "-link", wrapper + " " + container).remove();
+		    	  $(wrapper + " " + container).prepend(link);
+		    	  $(link, wrapper + " " + container).append(img);   
+		      }
 		      
 		      //remove active classes
 		      jQuery(wrapper + " ul li a").each(function(j) {
@@ -96,5 +91,26 @@ $(window).bind("load", function () {
 			  e.preventDefault(); 
 	      });
 	 });
+	  
+	function initImage() {
+	  //choose first image in <li>
+	  $(wrapper + " ul li:first a").addClass("active");
+		
+	  //change image
+	  var img = new Image();
+	  var src = $(wrapper + " ul li:first a img").attr("src").split("?")[0]; img.src = src; img.alt = src;
+	  
+      //change link
+      link = document.createElement("a"); 
+      link.setAttribute("href", $(this).attr("href"));
+      link.setAttribute("class", container.substring(1) + "-link");
+      // IE
+      link.setAttribute("className", container.substring(1) + "-link");
+      
+      $("a" + container + "-link", this).remove();
+      $(wrapper + " ul li:first a").prepend(link);
+	  $(link, wrapper + " ul li:first a").append(img);
+	}
+	
   };
 })(jQuery);

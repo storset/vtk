@@ -24,6 +24,7 @@
     <property name="query">
       <value>(uri IN {$featuredArticles}) AND (type IN structured-article)</value>
     </property>
+    <property name="searchSorting" ref="structured.articleListing.searchSorting" />
   </bean>
 
   <!-- Fetch articles from explicitly specified subfolders -->
@@ -32,6 +33,7 @@
     <property name="query">
       <value>(uri IN {$subfolders}* AND uri NOT IN {$featuredArticles}) AND (type IN structured-article)</value>
     </property>
+    <property name="searchSorting" ref="structured.articleListing.searchSorting" />
   </bean>
 
   <bean id="structured.articleListing.view" parent="freemarkerView">

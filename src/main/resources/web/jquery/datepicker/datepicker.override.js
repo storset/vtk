@@ -33,6 +33,7 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle, 
     beforeShowDay : function(day) {
       var date_str = [ day.getFullYear(), day.getMonth() + 1, day.getDate()].join('-');
       
+      //Add classes and tooltip for dates with and without events
       if ($.inArray(date_str, allowedDates) != -1) {
         if (activeDate == date_str) {
           return [ true, 'state-active', clickableDayTitle ];
@@ -46,8 +47,11 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle, 
     onChangeMonthYear : function(year, month, inst) {
       if(month <= 9) {
         month = "0" + month;
-      }	
+      }
+      //Get dates with events
       allowedDates = queryAllowedDates (service, year, month);
+      
+      //If not init (when prev / next month click), refresh page with year and month
       if(!init) {
         location.href = location.href.split('?')[0] + "?date=" + year + '-' + month;
       } else {
@@ -57,6 +61,7 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle, 
   });
 }
 
+//Get dates with events by AJAX query
 function queryAllowedDates (service, year, month) {
   var allowedDates = new Array();
   $.ajax({
@@ -71,6 +76,7 @@ function queryAllowedDates (service, year, month) {
   return allowedDates;
 }
 
+//Find current date
 function findActiveDate(today) {
   var activeDate = [ today.getFullYear(), today.getMonth() + 1, today.getDate() ].join('-');
   if (location.href.indexOf('?date=') != -1) {
@@ -84,6 +90,7 @@ function removeZeroesBeforeDayAndMonth(date) {
   return date.replace(/-0/g, "-");
 }
 
+//For init of calender / datepicker()
 function makeActiveDateForInit(activeDate) {
    var dateArray = activeDate.split('-');
    if(dateArray.length == 3) {

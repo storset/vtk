@@ -33,7 +33,7 @@
 
 <#macro displayCalendar hideNumberOfComments displayMoreURLs>
   
-  <div id="vrtx-main-content">
+  <div id="vrtx-main-content" class="vrtx-calendar-listing">
 	  <#if allUpcoming?has_content>
 	    <@displayStandard allUpcoming hideNumberOfComments displayMoreURLs />  
 	

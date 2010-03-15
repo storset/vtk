@@ -8,6 +8,13 @@
   float: left;
 }
 
+.vrtx-calendar-listing .eventListing\.upcomingEventsSearchComponent, 
+.vrtx-calendar-listing .eventListing\.previousEventsSearchComponent, 
+.vrtx-calendar-listing .structured\.eventListing\.upcomingEventsSearchComponent, 
+.vrtx-calendar-listing .structured\.eventListing\.previousEventsSearchComponent {
+  width: 100%;
+}
+
 #vrtx-event-calendar {
   padding-bottom: 65px !important;
 }

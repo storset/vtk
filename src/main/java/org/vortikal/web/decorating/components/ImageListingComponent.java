@@ -51,7 +51,7 @@ import org.vortikal.web.search.SearchSorting;
 public class ImageListingComponent extends ViewRenderingDecoratorComponent {
 
     private static final int LIMIT = 5;
-    private static final int MAX_FADE_EFFECT = 5000; //ms
+    private static final int MAX_FADE_EFFECT = 999; //ms
     private Repository repository;
 
     private SearchSorting searchSorting;

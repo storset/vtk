@@ -73,8 +73,10 @@
 	    </#if>
 	    
 	    <#if furtherUpcoming?has_content && furtherUpcoming?size &gt; 0>
-	      <h2 class="vrtx-events-further-upcoming">${furtherUpcomingTitle?html}</h2>
-	      <@displayStandard furtherUpcoming hideNumberOfComments displayMoreURLs=false />
+	      <div class="vrtx-events-further-upcoming">
+	        <h2 class="vrtx-events-further-upcoming">${furtherUpcomingTitle?html}</h2>
+	        <@displayStandard furtherUpcoming hideNumberOfComments displayMoreURLs=false />
+	      </div>
 	    </#if>
 	    
 	    <div id="vrtx-events-nav">

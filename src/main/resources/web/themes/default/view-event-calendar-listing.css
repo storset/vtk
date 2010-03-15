@@ -152,6 +152,11 @@
   color: #fff;
 }
 
+.vrtx-events-further-upcoming .description,
+.vrtx-events-further-upcoming a.vrtx-image {
+  display: none !important;
+}
+
 .vrtx-paging-feed-wrapper {
   clear: both;
 }

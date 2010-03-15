@@ -133,6 +133,11 @@
   margin-right: 22px;
 }
 
+#vrtx-daily-events #vrtx-last-daily-event .vevent {
+  background-image: none !important;
+  margin-bottom: 0px !important;	
+}
+
 .vrtx-daily-events-date .vrtx-daily-events-date-day {
   display: block;
   background-color: #ffffff;

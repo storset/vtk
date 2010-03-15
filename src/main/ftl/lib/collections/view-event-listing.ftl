@@ -61,9 +61,17 @@
 	            <span class="vrtx-daily-events-date-month"><@vrtx.date value=groupedEvents.day format='MMM' /></span>
 	          </div>
 	          <div class="vrtx-daily-event">
-	          <#local eventListing = groupedEvents.events /> 
+	          <#local eventListing = groupedEvents.events />
+	          <#assign subcount = 1 /> 
 	          <#list eventListing.files as event>
+	            <#if groupedByDayEvents?size == count && eventListing.files?size == subcount>
+	              <span id="vrtx-last-daily-event">
+	            </#if>
 	            <@displayEvent eventListing event hideNumberOfComments displayMoreURLs=false />
+	            <#if groupedByDayEvents?size == count && eventListing.files?size == subcount>
+	              </span>
+	            </#if>
+	            <#assign subcount = subcount +1 /> 
 	          </#list>
 	          </div>      
 	        </div>

@@ -102,14 +102,14 @@
 	  
       //change link
       link = document.createElement("a"); 
-      link.setAttribute("href", $(this).attr("href"));
+      link.setAttribute("href", $(wrapper + " ul li:first a").attr("href"));
       link.setAttribute("class", container.substring(1) + "-link");
       // IE
       link.setAttribute("className", container.substring(1) + "-link");
       
-      $("a" + container + "-link", this).remove();
-      $(wrapper + " ul li:first a").prepend(link);
-	  $(link, wrapper + " ul li:first a").append(img);
+      $("a" + container + "-link", wrapper + " " + container).remove();
+      $(wrapper + " " + container).prepend(link);
+	  $(link, wrapper + " " + container).append(img);
 	}
 	
   };

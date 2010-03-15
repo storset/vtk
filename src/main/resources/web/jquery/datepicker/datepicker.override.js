@@ -5,18 +5,12 @@
 
 function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle, language) {
   
+  var allowedDates = new Array();
+	
   var today = new Date();
   var activeDate = removeZeroesBeforeDayAndMonth(findActiveDate(today));
   var activeDateForInit = makeActiveDateForInit(activeDate);
-  
-  var year = activeDateForInit.getFullYear();
-  var month = activeDateForInit.getMonth() + 1;
-  if(month <= 9) {
-      month = "0" + month;
-  }
 
-  var allowedDates = queryAllowedDates (service, year, month);
-  
   var init = true;
   
   // i18n (default english)
@@ -50,10 +44,11 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle, 
       }
     },
     onChangeMonthYear : function(year, month, inst) {
+      if(month <= 9) {
+        month = "0" + month;
+      }	
+      allowedDates = queryAllowedDates (service, year, month);
       if(!init) {
-    	if(month <= 9) {
-    	  month = "0" + month;
-    	} 
         location.href = location.href.split('?')[0] + "?date=" + year + '-' + month;
       } else {
     	init = false;  

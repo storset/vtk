@@ -502,8 +502,8 @@
       <map>
         <entry key="uri" value="URI of the imagefolder to include pictures from." />
         <entry key="limit" value="Maximum number of images to show in list. Default is 5" />
-        <entry key="type" value="How to the display the list. Default is 'list'" />
-        <entry key="fade-effect" value="Seconds of fade in and out effect for choosen image. Default is 0 or off" />
+        <entry key="type" value="How to the display the list. Default is 'list' and 'simple-gallery' will generate an embedded gallery." />
+        <entry key="fade-effect" value="Milliseconds of fade in and out effect for choosen image. Default is 0 or off, and max is 5000 ms" />
       </map>
     </property>
     <property name="searchSorting" ref="collectionListing.searchSorting" />

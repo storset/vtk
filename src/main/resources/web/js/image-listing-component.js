@@ -38,7 +38,7 @@
 		});  
 	  }
 	  
-	  initImage();
+	  initFirstImage();
 		  
 	  return this.each(function (i) {
 		  
@@ -93,7 +93,7 @@
 	 });
 	  
 	//TODO: refactor with above code
-	function initImage() {
+	function initFirstImage() {
 	  //choose first image in <li>
 	  $(wrapper + " ul li:first a").addClass("active");
 		

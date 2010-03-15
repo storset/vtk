@@ -43,9 +43,8 @@ import org.vortikal.security.Principal;
 public class ResourceWrapper implements Resource {
 
     private ResourceWrapperManager resourceManager;
-    
-    private Resource resource;
 
+    private Resource resource;
 
     public ResourceWrapper(ResourceWrapperManager resourceManager) {
         super();
@@ -68,7 +67,7 @@ public class ResourceWrapper implements Resource {
         }
         return null;
     }
-    
+
     public String getValueByName(String name) {
         for (Property prop : getProperties()) {
             if (prop.getDefinition().getName().equals(name)) {
@@ -77,32 +76,42 @@ public class ResourceWrapper implements Resource {
         }
         return "";
     }
-    
+
     public String getValue(PropertyTypeDefinition propDef) {
         Property prop = resource.getProperty(propDef);
         if (prop == null) {
             return "";
         }
         return prop.getFormattedValue(null, null);
-        
+
     }
 
     public ResourceWrapper getPropResource(PropertyTypeDefinition propDef) {
         if (propDef.getType().equals(PropertyType.Type.IMAGE_REF)) {
             try {
                 String ref = resource.getProperty(propDef).getStringValue();
-                ref = URLDecoder.decode(ref, "utf-8");
-                Path uri = Path.fromString(ref);
+                // ref = URLDecoder.decode(ref, "utf-8");
+                Path uri;
+                if (ref.contains("/")) {
+                    uri = Path.fromString(ref);
+                } else {
+                    if (resource.isCollection()) {
+                        uri = resource.getURI().extend(ref);
+                    } else {
+                        uri = resource.getURI().getParent().extend(ref);
+                    }
+                }
                 return this.resourceManager.createResourceWrapper(uri);
-            } catch (Exception e) { }
+            } catch (Exception e) {
+            }
         }
-        return null; 
+        return null;
     }
-    
+
     public Locale getContentLocale() {
         return this.resource.getContentLocale();
     }
-    
+
     public Acl getAcl() {
         return this.resource.getAcl();
     }
@@ -206,7 +215,7 @@ public class ResourceWrapper implements Resource {
     public void removeProperty(PropertyTypeDefinition propDef) {
         this.resource.removeProperty(propDef);
     }
-    
+
     public void removeAllProperties() {
         this.resource.removeAllProperties();
     }
@@ -246,18 +255,18 @@ public class ResourceWrapper implements Resource {
     public Path getURI() {
         return this.resource.getURI();
     }
-    
+
     public Object clone() throws CloneNotSupportedException {
         return this.resource.clone();
     }
-    
+
     public boolean isReadRestricted() {
         return this.resource.isReadRestricted();
     }
 
     public void addProperty(Property property) {
         this.resource.addProperty(property);
-        
+
     }
 
 }

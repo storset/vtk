@@ -51,6 +51,7 @@ import org.vortikal.web.search.SearchSorting;
 public class ImageListingComponent extends ViewRenderingDecoratorComponent {
 
     private static final int LIMIT = 5;
+    private static final int MAX_FADE_EFFECT = 5000; //ms
     private Repository repository;
 
     private SearchSorting searchSorting;
@@ -72,6 +73,9 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
         } else {
             model.put("type", "list");
         }
+        
+        String fadeFx = request.getStringParameter("fade-effect");
+        int fadeEffect = getFadeEffect(fadeFx);
 
         String excludeScripts = request.getStringParameter("exclude-scripts");
         if (excludeScripts != null && "true".equalsIgnoreCase(excludeScripts.trim())) {
@@ -99,6 +103,7 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
         model.put("images", rs.getAllResults());
         model.put("folderTitle", requestedResource.getTitle());
         model.put("folderUrl", url);
+        model.put("fadeEffect", fadeEffect);
 
     }
 
@@ -120,6 +125,17 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
         } catch (NumberFormatException nfe) {
         }
         return LIMIT;
+    }
+    
+    private int getFadeEffect(String fadeEffect) {
+        try {
+            int fadeFx = Integer.parseInt(fadeEffect);
+            if (fadeFx <= MAX_FADE_EFFECT && fadeFx > 0) {
+                return fadeFx;
+            }
+        } catch (NumberFormatException nfe) {
+        }
+        return 0;
     }
 
     @Required

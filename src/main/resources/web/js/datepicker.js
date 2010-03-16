@@ -1,19 +1,29 @@
 // JavaScript Document	
-$(document).ready(function() {
-    $(".date").each(
-        function(){
-            displayDateAsMultipleInputFields(this.name);
-        }
-    );
-    // TODO !spageti 
-    if(requestFromEditor()){
-        initPropChange();
-    }
-    
-    // specific for start and end date
-    if($("#start-date-date").length == 0 || $("#end-date-date").length == 0){
-        return;
-    }
+
+function initDatePicker(language) {
+	
+	// i18n (default english)
+	if(language == 'no') {
+	  $.datepicker.setDefaults($.datepicker.regional['no']);
+	} else if(language == 'nn') {
+      $.datepicker.setDefaults($.datepicker.regional['nn']);
+	}
+	
+	$(".date").each(
+	    function(){
+	        displayDateAsMultipleInputFields(this.name);
+	    }
+	);
+	
+	// TODO !spageti 
+	if(requestFromEditor()){
+	    initPropChange();
+	}
+	
+	// specific for start and end date
+	if($("#start-date-date").length == 0 || $("#end-date-date").length == 0){
+	    return;
+	}
 	var startDate = $("#start-date-date").datepicker( 'getDate' );
 	if(startDate != null){
 		setDefaultEndDate();
@@ -23,7 +33,7 @@ $(document).ready(function() {
 			setDefaultEndDate();					
 		}
 	);
-});
+}
 
 // Stupid test to check if script is loaded from editor
 // UNSAVED_CAHANGES_CONFIRMATION is defined in "structured-resource/editor.ftl"

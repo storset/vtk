@@ -229,6 +229,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         Map<String, String> map = new LinkedHashMap<String, String>();
         map.put(PARAMETER_DISPLAY_FROM_LEVEL, PARAMETER_DISPLAY_FROM_LEVEL_DESC);
         map.put(PARAMETER_MAX_NUMBER_OF_SIBLINGS, PARAMETER_MAX_NUMBER_OF_SIBLINGS_DESC);
+        map.put(PARAMETER_LINK_TO_CURRENT_RESOURCE, PARAMETER_LINK_TO_CURRENT_RESOURCE_DESC);
         return map;
     }
 

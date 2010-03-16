@@ -106,7 +106,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     }
 
     protected static final String PARAMETER_LINK_TO_CURRENT_RESOURCE = "link-to-current-resource";
-    private static final String PARAMETER_LINK_TO_CURRENT_RESOURCE_DESC = "Set to false for no link to current resource";
+    protected static final String PARAMETER_LINK_TO_CURRENT_RESOURCE_DESC = "Set to false for no link to current resource";
 
     private static final String PARAMETER_INCLUDE_CHILDREN = "include-children";
     private static final String PARAMETER_INCLUDE_CHILDREN_DESC = "An explicit listing of the child resources to include. (Only applicable for resources at level 1.)";
@@ -454,6 +454,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             if (isActive(menuRequest.getCurrentURI(), resource.getURI())) {
                 item.setSubMenu(buildSubItems(resource.getURI(), childMap, menuRequest));
                 item.setActive(true);
+                item.setLinkToResource(menuRequest.isLinkToCurrentResource());
             }
         }
         items = sortDefaultOrder(items, menuRequest.getLocale());

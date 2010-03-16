@@ -8,7 +8,6 @@
     <property name="assertions">
       <list>
         <ref bean="getSourceParameterAssertion" />
-        <ref bean="requiresReadPermissionAssertion" />
         <ref bean="fileAssertion" />
       </list>
     </property>

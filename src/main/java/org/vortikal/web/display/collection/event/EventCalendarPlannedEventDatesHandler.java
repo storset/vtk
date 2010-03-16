@@ -136,7 +136,6 @@ public class EventCalendarPlannedEventDatesHandler implements Controller {
             sb.append(it.next());
             first = false;
         }
-        // sb.append("]");
         return sb.toString();
     }
 

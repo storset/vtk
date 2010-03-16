@@ -114,7 +114,7 @@ public class TagsController implements Controller {
                     url.addParameter(TagsHelper.RESOURCE_TYPE_PARAMETER, resourceTypeDefinition.getName());
                 }
             }
-            String title = this.tagsHelper.getTitle(request, scope, tag, this.hostName);
+            String title = this.tagsHelper.getTitle(request, scope, tag, this.hostName, true);
             scopeUp.put("url", url.toString());
             scopeUp.put("title", title);
             model.put(TagsHelper.SCOPE_UP_MODEL_KEY, scopeUp);

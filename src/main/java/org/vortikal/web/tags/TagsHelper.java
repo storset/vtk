@@ -81,10 +81,10 @@ public final class TagsHelper {
     }
 
     public String getTitle(HttpServletRequest request, Resource scope, String tag) {
-        return this.getTitle(request, scope, tag, null);
+        return this.getTitle(request, scope, tag, null, false);
     }
 
-    public String getTitle(HttpServletRequest request, Resource scope, String tag, String scopeTitle) {
+    public String getTitle(HttpServletRequest request, Resource scope, String tag, String scopeTitle, boolean scopeUp) {
         RequestContext rc = new RequestContext(request);
         if (StringUtils.isBlank(tag)) {
             return getTitle(rc, scope, scopeTitle);
@@ -92,7 +92,7 @@ public final class TagsHelper {
         if (scopeTitle == null) {
             scopeTitle = scope.getURI().isRoot() ? this.repositoryID : scope.getTitle();
         }
-        String titleKey = this.includeScopeInTitle ? "tags.scopedTitle" : "tags.title";
+        String titleKey = (this.includeScopeInTitle || scopeUp) ? "tags.scopedTitle" : "tags.title";
         String[] resourceParams = request.getParameterValues(RESOURCE_TYPE_PARAMETER);
         if (resourceParams != null && resourceParams.length == 1) {
             String tmpKey = titleKey + "." + resourceParams[0];
@@ -103,8 +103,8 @@ public final class TagsHelper {
                 // key doesn't exist, ignore it
             }
         }
-        return this.includeScopeInTitle ? rc.getMessage(titleKey, new Object[] { scopeTitle, tag }) : rc.getMessage(
-                titleKey, new Object[] { tag });
+        return (this.includeScopeInTitle || scopeUp) ? rc.getMessage(titleKey, new Object[] { scopeTitle, tag }) : rc
+                .getMessage(titleKey, new Object[] { tag });
     }
 
     private String getTitle(RequestContext rc, Resource scope, String scopeTitle) {

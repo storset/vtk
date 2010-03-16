@@ -6,13 +6,13 @@
 			<#if elem.URL?exists>
 				<li class="vrtx-ancestor"> <a href="${elem.URL}"><span>${elem.title}</span></a> </li>
 			<#else>
-				<li class="vrtx-ancestor"> <span>${elem.title}</span></li>
+				<li class="vrtx-ancestor"> <span><span>${elem.title}</span></span></li>
 			</#if>
 		<#else>
 			<#if (elem.URL?string = markedurl) && linkToMarkedURL >
 				<li class="vrtx-parent" ><a class="vrtx-marked" href="${elem.URL}"><span>${elem.title}</span></a>
 			<#elseif (elem.URL?string = markedurl) >
-				<li class="vrtx-parent" ><span class="vrtx-marked">${elem.title}</span>
+				<li class="vrtx-parent" ><span class="vrtx-marked"><span>${elem.title}</span></span>
 			<#else>
 				<li class="vrtx-parent" ><a href="${elem.URL}"><span>${elem.title}</span></a>
 			</#if>
@@ -23,21 +23,21 @@
 			<#if elem.URL?exists>
 				<li class="vrtx-ancestor"> <a href="${elem.URL}"><span>${elem.title}</span></a> </li>
 			<#else>
-				<li class="vrtx-ancestor"><span>${elem.title}</span></li>
+				<li class="vrtx-ancestor"><span><span>${elem.title}</span><span></li>
 			</#if>
 		<#else>
 			<#if (breadcrumb?size > elem_index + 1) > 
 				<#if elem.URL?exists >
 					<li  class="vrtx-parent" ><a href="${elem.URL}"><span>${elem.title}</span></a>
 				<#else>
-					<li  class="vrtx-parent" ><span>${elem.title}</span>
+					<li  class="vrtx-parent" ><span><span>${elem.title}</span></span>
 				</#if>
 			<#else>
 				<ul>
 				<#if elem.URL?exists && linkToMarkedURL>
-					<li  class="vrtx-child" ><a class="vrtx-marked" href="${elem.URL}"><span>${elem.title}</span></li>
+					<li  class="vrtx-child" ><a class="vrtx-marked" href="${elem.URL}"><span>${elem.title}</span></a></li>
 				<#else>
-					<li  class="vrtx-child" ><span class="vrtx-marked">${elem.title}</span></li>
+					<li  class="vrtx-child" ><span class="vrtx-marked"><span>${elem.title}</span></span></li>
 				</#if>
 				</ul>
 			</#if>
@@ -51,7 +51,7 @@
 			<#if (c.url?string = markedurl) && linkToMarkedURL>
 				<a class="vrtx-marked" href="${c.url?html}"><span>${c.title?html}</span></a>
 			<#elseif (c.url?string = markedurl) >
-				<span class="vrtx-marked">${c.title?html}</span>
+				<span class="vrtx-marked"><span>${c.title?html}</span></span>
 			<#else>
 				<a href="${c.url?html}"><span>${c.title?html}</span></a>
 			</#if>

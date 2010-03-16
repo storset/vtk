@@ -25,3 +25,7 @@ div.tagged-resources div.result h2 a:hover {
 div.tagged-resources div.result div.lastModified {
   padding-top: 0.5em;
 }
+
+div.vrtx-tags-scope-up {
+  padding-bottom: 1.5em;
+}

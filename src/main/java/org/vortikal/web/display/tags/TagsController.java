@@ -40,6 +40,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -82,14 +83,41 @@ public class TagsController implements Controller {
         Map<String, Object> model = new HashMap<String, Object>();
 
         /* List all known tags for the current collection */
-        if (tag != null && !tag.trim().equals("")) {
+        if (!StringUtils.isBlank(tag)) {
             handleSingleTag(request, tag, scope, model);
         } else {
             handleAllTags(token, request, scope, model);
         }
 
+        // Add scope up url if scope is not root
         if (this.servesWebRoot && !scope.getURI().equals(Path.ROOT)) {
-            // XXX add scope up uri
+            Map<String, String> scopeUp = new HashMap<String, String>();
+            Service service = org.vortikal.web.RequestContext.getRequestContext().getService();
+            URL url = service.constructURL(scope.getURI());
+            url.setPath(Path.ROOT);
+            if (!StringUtils.isBlank(tag)) {
+                url.addParameter(TagsHelper.TAG_PARAMETER, tag);
+                Object searchResult = model.get("listing");
+                if (searchResult != null && searchResult instanceof Listing) {
+                    Listing listing = (Listing) searchResult;
+                    List<String> sortFieldParams = listing.getSortFieldParams();
+                    if (sortFieldParams.size() > 0) {
+                        for (String param : sortFieldParams) {
+                            url.addParameter(Listing.SORTING_PARAM, param);
+                        }
+                    }
+                }
+            }
+            List<ResourceTypeDefinition> resourceTypes = getResourceTypes(request);
+            if (resourceTypes != null) {
+                for (ResourceTypeDefinition resourceTypeDefinition : resourceTypes) {
+                    url.addParameter(TagsHelper.RESOURCE_TYPE_PARAMETER, resourceTypeDefinition.getName());
+                }
+            }
+            String title = this.tagsHelper.getTitle(request, scope, tag, this.hostName);
+            scopeUp.put("url", url.toString());
+            scopeUp.put("title", title);
+            model.put(TagsHelper.SCOPE_UP_MODEL_KEY, scopeUp);
         }
 
         return new ModelAndView(this.viewName, model);

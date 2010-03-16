@@ -46,6 +46,7 @@ public final class TagsHelper {
     public static final String SCOPE_PARAMETER = "scope";
     public static final String RESOURCE_TYPE_PARAMETER = "resource-type";
     public static final String RESOURCE_TYPE_MODEL_KEY = "resourceType";
+    public static final String SCOPE_UP_MODEL_KEY = "scopeUp";
 
     private Repository repository;
     private String repositoryID;
@@ -80,11 +81,17 @@ public final class TagsHelper {
     }
 
     public String getTitle(HttpServletRequest request, Resource scope, String tag) {
+        return this.getTitle(request, scope, tag, null);
+    }
+
+    public String getTitle(HttpServletRequest request, Resource scope, String tag, String scopeTitle) {
         RequestContext rc = new RequestContext(request);
         if (StringUtils.isBlank(tag)) {
-            return getTitle(rc, scope);
+            return getTitle(rc, scope, scopeTitle);
         }
-        String scopeTitle = scope.getURI().isRoot() ? this.repositoryID : scope.getTitle();
+        if (scopeTitle == null) {
+            scopeTitle = scope.getURI().isRoot() ? this.repositoryID : scope.getTitle();
+        }
         String titleKey = this.includeScopeInTitle ? "tags.scopedTitle" : "tags.title";
         String[] resourceParams = request.getParameterValues(RESOURCE_TYPE_PARAMETER);
         if (resourceParams != null && resourceParams.length == 1) {
@@ -100,9 +107,10 @@ public final class TagsHelper {
                 titleKey, new Object[] { tag });
     }
 
-    private String getTitle(RequestContext rc, Resource scope) {
+    private String getTitle(RequestContext rc, Resource scope, String scopeTitle) {
         if (!scope.getURI().isRoot()) {
-            return rc.getMessage("tags.serviceTitle", new Object[] { scope.getTitle() });
+            String titleParam = StringUtils.isBlank(scopeTitle) ? scope.getTitle() : scopeTitle;
+            return rc.getMessage("tags.serviceTitle", new Object[] { titleParam });
         }
         return rc.getMessage("tags.noTagTitle");
     }

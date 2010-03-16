@@ -48,8 +48,9 @@
     </#if>
   </h1>
   
-  <#if scopeUpUrl?exists>
-  <div id="vrtx-tags-scope-up">
+  <#if scopeUp?exists>
+  <div class="vrtx-tags-scope-up">
+    <a href="${scopeUp.url}">${scopeUp.title}</a>
   </div>
   </#if>
 

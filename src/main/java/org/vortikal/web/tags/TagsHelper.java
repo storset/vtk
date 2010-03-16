@@ -45,9 +45,7 @@ public final class TagsHelper {
     public static final String TAG_PARAMETER = "tag";
     public static final String SCOPE_PARAMETER = "scope";
     public static final String RESOURCE_TYPE_PARAMETER = "resource-type";
-
-    public static final String RESOURCE_TYPES_MODEL_KEY = "resourceTypes";
-    public static final String SINGLE_RESOURCE_TYPE_MODEL_KEY = "resourceType";
+    public static final String RESOURCE_TYPE_MODEL_KEY = "resourceType";
 
     private Repository repository;
     private String repositoryID;

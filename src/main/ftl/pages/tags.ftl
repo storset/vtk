@@ -36,7 +36,7 @@
     </#list>
   </#if>
  
-  <meta name="robots" content="noindex"/> 
+  <meta name="robots" content="noindex"/>
  
 </head>
 
@@ -46,7 +46,12 @@
     <#if page?has_content>
       <#if "${page}" != "1"> - <@vrtx.msg code="viewCollectionListing.page" /> ${page}</#if>
     </#if>
-  </h1>  
+  </h1>
+  
+  <#if scopeUpUrl?exists>
+  <div id="vrtx-tags-scope-up">
+  </div>
+  </#if>
 
   <#if tagElements?exists>
     <@tags.displayTagElements tagElements />

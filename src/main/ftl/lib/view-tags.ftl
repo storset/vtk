@@ -55,14 +55,8 @@
     <#if alternativeRepresentations?exists>
       <#list alternativeRepresentations as alt>
         <#if alt.contentType = 'application/atom+xml'>
-          <#assign altUrl = alt.url />
-          <#if resourceTypes?exists>
-            <#list resourceTypes as resTyp>
-              <#assign altUrl = altUrl + "&resource-type=" + resTyp.name />
-            </#list>
-          </#if>
           <div class="vrtx-feed-link">
-            <a id="vrtx-feed-link" href="${altUrl?html}"><@vrtx.msg code="viewCollectionListing.feed.fromThis" /></a>
+            <a id="vrtx-feed-link" href="${alt.url?html}"><@vrtx.msg code="viewCollectionListing.feed.fromThis" /></a>
           </div>
           <#break />
         </#if>

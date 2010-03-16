@@ -68,6 +68,8 @@ public class TagsController implements Controller {
     private RepositoryTagElementsDataProvider tagElementsProvider;
     private ResourceTypeTree resourceTypeTree;
     private TagsHelper tagsHelper;
+    private boolean servesWebRoot;
+    private String hostName;
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
@@ -77,16 +79,24 @@ public class TagsController implements Controller {
         String tag = request.getParameter(TagsHelper.TAG_PARAMETER);
         Resource scope = this.tagsHelper.getScope(token, request);
 
+        Map<String, Object> model = new HashMap<String, Object>();
+
         /* List all known tags for the current collection */
-        if (tag == null || tag.trim().equals("")) {
-            return handleAllTags(token, request, scope);
+        if (tag != null && !tag.trim().equals("")) {
+            handleSingleTag(request, tag, scope, model);
+        } else {
+            handleAllTags(token, request, scope, model);
         }
 
-        return handleSingleTag(request, tag, scope);
+        if (this.servesWebRoot && !scope.getURI().equals(Path.ROOT)) {
+            // XXX add scope up uri
+        }
+
+        return new ModelAndView(this.viewName, model);
     }
 
-    private ModelAndView handleSingleTag(HttpServletRequest request, String tag, Resource scope) throws Exception {
-        Map<String, Object> model = new HashMap<String, Object>();
+    private void handleSingleTag(HttpServletRequest request, String tag, Resource scope, Map<String, Object> model)
+            throws Exception {
 
         model.put(TagsHelper.SCOPE_PARAMETER, scope);
         model.put(TagsHelper.TAG_PARAMETER, tag);
@@ -109,51 +119,53 @@ public class TagsController implements Controller {
         model.put("page", page);
         model.put("pageThroughUrls", urls);
 
-        Set<Object> alt = new HashSet<Object>();
-        for (String contentType : this.alternativeRepresentations.keySet()) {
-            try {
-                Map<String, Object> m = new HashMap<String, Object>();
-                Service service = this.alternativeRepresentations.get(contentType);
-                Map<String, String> parameters = new HashMap<String, String>();
-                parameters.put(TagsHelper.TAG_PARAMETER, tag);
-                URL url = service.constructURL(scope.getURI(), parameters);
-                List<String> sortFieldParams = listing.getSortFieldParams();
-                if (sortFieldParams.size() > 0) {
-                    for (String param : sortFieldParams) {
-                        url.addParameter(Listing.SORTING_PARAM, param);
-                    }
-                }
-                String title = service.getName();
-                RequestContext rc = new RequestContext(request);
-                title = rc.getMessage(service.getName(), new Object[] { scope.getTitle() }, service.getName());
-
-                m.put("title", title);
-                m.put("url", url);
-                m.put("contentType", contentType);
-
-                alt.add(m);
-            } catch (Throwable t) {
-            }
-        }
-        model.put("alternativeRepresentations", alt);
-
         List<ResourceTypeDefinition> resourceTypes = getResourceTypes(request);
-        if (resourceTypes != null) {
-            model.put(TagsHelper.RESOURCE_TYPES_MODEL_KEY, resourceTypes);
-            if (resourceTypes.size() == 1) {
-                model.put(TagsHelper.SINGLE_RESOURCE_TYPE_MODEL_KEY, resourceTypes.get(0).getName());
+        if (resourceTypes != null && resourceTypes.size() == 1) {
+            model.put(TagsHelper.RESOURCE_TYPE_MODEL_KEY, resourceTypes.get(0).getName());
+        }
+
+        if (this.alternativeRepresentations != null) {
+            Set<Object> alt = new HashSet<Object>();
+            for (String contentType : this.alternativeRepresentations.keySet()) {
+                try {
+                    Service service = this.alternativeRepresentations.get(contentType);
+                    Map<String, String> parameters = new HashMap<String, String>();
+                    parameters.put(TagsHelper.TAG_PARAMETER, tag);
+                    URL url = service.constructURL(scope.getURI(), parameters);
+                    List<String> sortFieldParams = listing.getSortFieldParams();
+                    if (sortFieldParams.size() > 0) {
+                        for (String param : sortFieldParams) {
+                            url.addParameter(Listing.SORTING_PARAM, param);
+                        }
+                    }
+                    if (resourceTypes != null) {
+                        for (ResourceTypeDefinition resourceTypeDefinition : resourceTypes) {
+                            url.addParameter(TagsHelper.RESOURCE_TYPE_PARAMETER, resourceTypeDefinition.getName());
+                        }
+                    }
+                    String title = service.getName();
+                    RequestContext rc = new RequestContext(request);
+                    title = rc.getMessage(service.getName(), new Object[] { scope.getTitle() }, service.getName());
+
+                    Map<String, Object> m = new HashMap<String, Object>();
+                    m.put("title", title);
+                    m.put("url", url);
+                    m.put("contentType", contentType);
+
+                    alt.add(m);
+                    model.put("alternativeRepresentations", alt);
+                } catch (Throwable t) {
+                }
             }
         }
 
         String title = this.tagsHelper.getTitle(request, scope, tag);
         model.put("title", title);
 
-        return new ModelAndView(this.viewName, model);
     }
 
-    private ModelAndView handleAllTags(String token, HttpServletRequest request, Resource scope) {
+    private void handleAllTags(String token, HttpServletRequest request, Resource scope, Map<String, Object> model) {
 
-        Map<String, Object> model = new HashMap<String, Object>();
         model.put(TagsHelper.SCOPE_PARAMETER, scope);
 
         Path scopeUri = scope.getURI();
@@ -165,8 +177,6 @@ public class TagsController implements Controller {
         model.put("tagElements", tagElements);
         String title = this.tagsHelper.getTitle(request, scope, null);
         model.put("title", title);
-
-        return new ModelAndView(this.viewName, model);
     }
 
     private List<ResourceTypeDefinition> getResourceTypes(HttpServletRequest request) {
@@ -218,6 +228,14 @@ public class TagsController implements Controller {
     @Required
     public void setTagsHelper(TagsHelper tagsHelper) {
         this.tagsHelper = tagsHelper;
+    }
+
+    public void setServesWebRoot(boolean servesWebRoot) {
+        this.servesWebRoot = servesWebRoot;
+    }
+
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
     }
 
 }

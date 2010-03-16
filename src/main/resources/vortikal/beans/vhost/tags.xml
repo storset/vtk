@@ -57,6 +57,8 @@
       </map>
     </property>
     <property name="tagsHelper" ref="tagsHelper" />
+    <property name="servesWebRoot" value="${servesWebRoot}" />
+    <property name="hostName" value="${fulltextSearch.hostName}" />
   </bean>
 
   <bean id="tags.tagElementsProvider"

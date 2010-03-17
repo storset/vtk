@@ -40,6 +40,7 @@
 		  h.preventDefault(); 
 		});
 	    
+	    //Fading of transparent block and prev / next image
 	    $(wrapper + " " + " a." + navClass).hover(
 	    function () {
 		  $(this).stop().fadeTo("250", 1);

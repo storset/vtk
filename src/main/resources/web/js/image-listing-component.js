@@ -114,7 +114,7 @@
 		      });
 		      
 		      var imgHeight = $(wrapper + " " + container + " img").height();
-		      $(wrapper + " " + container + "-nav a").css("top", (imgHeight / 2) - 20);
+		      $(wrapper + " " + container + "-nav a").css("top", (imgHeight / 2) - 15);
 			  $(wrapper + " " + container + "-nav span").css("height", imgHeight);
 			  $(wrapper + " " + container + "-nav span").css("top", -(imgHeight / 2) + 20);
 		     
@@ -158,7 +158,7 @@
   			  + $(wrapper + " " + container + " img").attr("alt") + "</div>")
 	  
       var imgHeight = $(wrapper + " " + container + " img").height();
-	  $(wrapper + " " + container + "-nav a").css("top", (imgHeight / 2) - 20);
+	  $(wrapper + " " + container + "-nav a").css("top", (imgHeight / 2) - 15);
 	  $(wrapper + " " + container + "-nav span").css("height", imgHeight);
 	  $(wrapper + " " + container + "-nav span").css("top", -(imgHeight / 2) + 20);
 	}

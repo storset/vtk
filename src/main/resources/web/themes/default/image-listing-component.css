@@ -117,12 +117,12 @@
 }
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.prev {
-	left: 0px;
+	left: 5px;
 	/* margin-left: 5px; */
 }
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.next {
-    right: 6px;
+    right: 5px;
     /* margin-right: 13px; */
 }
 

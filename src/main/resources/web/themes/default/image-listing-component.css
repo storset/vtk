@@ -100,7 +100,7 @@
   color: #888;
   position: absolute;
   width: 38px;
-  height: 41px;
+  top: 5px;
 }
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container-nav span.prev-transparent-block,
@@ -113,11 +113,11 @@
 }
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.prev {
-   background: url(icons/prev-gallery.png) no-repeat top left;
+   background: url(icons/prev-gallery.png) no-repeat center left;
 }
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.next {
-   background: url(icons/next-gallery.png) no-repeat top left;
+   background: url(icons/next-gallery.png) no-repeat center left;
 }
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.prev {

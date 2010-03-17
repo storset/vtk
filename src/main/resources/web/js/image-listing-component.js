@@ -135,9 +135,8 @@
 		      });
 		      
 		      var imgHeight = $(wrapper + " " + container + " img").height();
-		      $(wrapper + " " + container + "-nav a").css("top", (imgHeight / 2) - 15);
+		      $(wrapper + " " + container + "-nav a").css("height", imgHeight);
 			  $(wrapper + " " + container + "-nav span").css("height", imgHeight);
-			  $(wrapper + " " + container + "-nav span").css("top", -(imgHeight / 2) + 20);
 		     
 		      //add new active class
 		  	  $(this).addClass("active");
@@ -183,9 +182,8 @@
   			  + $(wrapper + " " + container + " img").attr("alt") + "</div>").insertAfter(wrapper + " " + container);
 	  
       var imgHeight = $(wrapper + " " + container + " img").height();
-	  $(wrapper + " " + container + "-nav a").css("top", (imgHeight / 2) - 15);
+	  $(wrapper + " " + container + "-nav a").css("height", imgHeight);
 	  $(wrapper + " " + container + "-nav span").css("height", imgHeight);
-	  $(wrapper + " " + container + "-nav span").css("top", -(imgHeight / 2) + 20);
 	  
 	  jQuery(wrapper + " ul li a").each(function(j) {
 		if(jQuery(this).hasClass("active")) {

@@ -5,6 +5,8 @@
 (function ($) {
   $.fn.vrtxSGallery = function (wrapper, container, options) {
 	  
+	  var images = new Array();
+	  
 	  //animation settings
 	  settings = jQuery.extend({
 		fadeInOutTime : 250,
@@ -49,18 +51,24 @@
 			  $("img", this).css("marginLeft", leftAdjust + "px");
 		   }
 		   
+		   //change image
+		   var img = new Image();
+		   var src = $("img", this).attr("src").split("?")[0]; img.src = src; img.alt = src;
+			  
+	       //change link
+	       link = document.createElement("a"); 
+	       link.setAttribute("href", $(this).attr("href"));
+	       link.setAttribute("class", container.substring(1) + "-link");
+	       // IE
+	       link.setAttribute("className", container.substring(1) + "-link");
+	      
+	       $(link).append(img);
+	      
+	       images[i] = link;
+		   
 		   $(this).click(function(e) {
 			  
-			  //change image
-			  var img = new Image();
-			  var src = $("img", this).attr("src").split("?")[0]; img.src = src; img.alt = src;
 			  
-		      //change link
-		      link = document.createElement("a"); 
-		      link.setAttribute("href", $(this).attr("href"));
-		      link.setAttribute("class", container.substring(1) + "-link");
-		      // IE
-		      link.setAttribute("className", container.substring(1) + "-link");
 		      
 		  	  //replace link and image (w/ fade effect down to fadedOutOpacity) + stop() current animation.
 		      if(settings.fadeInOutTime > 0) {
@@ -70,13 +78,11 @@
 			    	  //start fading in ...
 			    	  $(this).fadeTo(settings.fadeInOutTime, 1);
 			    	  //... before adding new image for smoother change
-			    	  $(this).prepend(link);
-			    	  $(link, this).append(img);  
+			    	  $(this).append(images[i]);  
 			      });
 		      } else {
 		    	  $("a" + container + "-link", wrapper + " " + container).remove();
-		    	  $(wrapper + " " + container).prepend(link);
-		    	  $(link, wrapper + " " + container).append(img);   
+		    	  $(wrapper + " " + container).append(images[i]);   
 		      }
 		      
 		      //remove active classes

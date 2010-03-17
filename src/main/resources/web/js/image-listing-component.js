@@ -57,11 +57,15 @@
 	  return this.each(function (i) {
 		  
 		   //center thumbnails images
+		  
+		   //.. first horizontal
 		   var imgWidth = $("img", this).width();
 		   if(imgWidth > $(this).width()) {
 		      var leftAdjust = -(imgWidth - $(this).width()) / 2;
 			  $("img", this).css("marginLeft", leftAdjust + "px");
 		   }
+		   
+		   //.. then vertical
 		   var imgHeight = $("img", this).height();
 		   if(imgHeight > $(this).height()) {
 			  var topAdjust = -(imgHeight - $(this).height()) / 2;

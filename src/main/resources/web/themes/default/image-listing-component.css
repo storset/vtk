@@ -33,6 +33,10 @@
   padding: 5px !important;
   border: 1px solid #ccc;
   background-color: #fff !important;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -khtml-border-radius: 5px;
+  border-radius: 5px;
 }
 
 .vrtx-image-listing-include ul li a {
@@ -66,6 +70,10 @@
   padding: 5px;
   border: 1px solid #ccc;
   background-color: #fff;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -khtml-border-radius: 5px;
+  border-radius: 5px;
 }
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container img {

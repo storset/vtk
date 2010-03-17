@@ -1,3 +1,5 @@
+<#import "/lib/vortikal.ftl" as vrtx/>
+
 <#if !excludeScripts?exists>
 <#if cssURLs?exists>
   <#list cssURLs as cssURL>
@@ -49,7 +51,8 @@
     </#if>
     <ul>
     <#list images as image>
-        <li><a href="${folderUrl}?actimg=${image.URI}&amp;display=gallery"><img src="${image.URI}?vrtx=thumbnail" /></a></li>
+        <#assign description = vrtx.propValue(image, 'description', '', 'content')?html />
+        <li><a href="${folderUrl}?actimg=${image.URI}&amp;display=gallery"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" /></a></li>
     </#list>
     </ul>
   </div>

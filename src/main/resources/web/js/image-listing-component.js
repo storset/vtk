@@ -40,7 +40,7 @@
 		  h.preventDefault(); 
 		});
 	    
-	    //Fading of transparent block and prev / next image
+	    //Fading of transparent block and prev / next icon
 	    $(wrapper + " " + " a." + navClass).hover(
 	    function () {
 		  $(this).stop().fadeTo("250", 1);
@@ -65,8 +65,10 @@
 		   
 		   //generate image
 		   var img = new Image();
-		   var src = $("img", this).attr("src").split("?")[0]; img.src = src; img.alt = src;
-			  
+		   var src = $("img", this).attr("src").split("?")[0]; 
+		   var alt = $("img", this).attr("alt");
+		   img.src = src; img.alt = alt;
+		   
 	       //generate link
 	       link = document.createElement("a"); 
 	       link.setAttribute("href", $(this).attr("href"));
@@ -109,6 +111,10 @@
 		     
 		      //add new active class
 		  	  $(this).addClass("active");
+
+		  	  $(wrapper + " " + container + "-description").remove();
+		  	  $(wrapper + " " + container).append("<div class='" + container.substring(1) + "-description'>" 
+		  			  + $(wrapper + " " + container + " img").attr("alt") + "</div>")
 		  	  
 		      //prevent default event action
 			  e.preventDefault(); 
@@ -122,7 +128,9 @@
 		
 	  //change image
 	  var img = new Image();
-	  var src = $(wrapper + " ul li:first a img").attr("src").split("?")[0]; img.src = src; img.alt = src;
+	  var src = $(wrapper + " ul li:first a img").attr("src").split("?")[0]; 
+	  var alt = $(wrapper + " ul li:first a img").attr("alt");
+	  img.src = src; img.alt = alt;
 	  
       //change link
       link = document.createElement("a"); 
@@ -136,6 +144,9 @@
       
       $("a" + container + "-link", wrapper + " " + container).remove();
       $(wrapper + " " + container).append(link);
+      
+      $(wrapper + " " + container).append("<div class='" + container.substring(1) + "-description'>" 
+  			  + $(wrapper + " " + container + " img").attr("alt") + "</div>")
 	  
       var imgHeight = $(wrapper + " " + container + " img").height();
 	  $(wrapper + " " + container + "-nav a").css("top", (imgHeight / 2) - 20);

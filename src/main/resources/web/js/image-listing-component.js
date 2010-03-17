@@ -38,7 +38,17 @@
 	          }
 	      }
 		  h.preventDefault(); 
-		});  
+		});
+	    
+	    $(wrapper + " " + " a." + navClass).hover(
+	    function () {
+		  $(this).stop().fadeTo("250", 1);
+		  $(this).children().stop().fadeTo("250", 0.2);
+		}, 
+		function () {
+		  $(this).stop().fadeTo("250", 0);
+		  $(this).children().stop().fadeTo("250", 0);
+		});
 	  }
 	  
 	  initFirstImage();
@@ -89,7 +99,12 @@
 		      //remove active classes
 		      jQuery(wrapper + " ul li a").each(function(j) {
 		    	  jQuery(this).removeClass("active");
-		      });    
+		      });
+		      
+		      var imgHeight = $(wrapper + " " + container + " img").height();
+		      $(wrapper + " " + container + "-nav a").css("top", (imgHeight / 2) - 20);
+			  $(wrapper + " " + container + "-nav span").css("height", imgHeight);
+			  $(wrapper + " " + container + "-nav span").css("top", -(imgHeight / 2) + 20);
 		     
 		      //add new active class
 		  	  $(this).addClass("active");
@@ -115,10 +130,16 @@
       // IE
       link.setAttribute("className", container.substring(1) + "-link");
       
+      //append img inside link
+      $(link).append(img);
+      
       $("a" + container + "-link", wrapper + " " + container).remove();
-      $(wrapper + " " + container).prepend(link);
-	  $(link, wrapper + " " + container).append(img);
+      $(wrapper + " " + container).append(link);
+	  
+      var imgHeight = $(wrapper + " " + container + " img").height();
+	  $(wrapper + " " + container + "-nav a").css("top", (imgHeight / 2) - 20);
+	  $(wrapper + " " + container + "-nav span").css("height", imgHeight);
+	  $(wrapper + " " + container + "-nav span").css("top", -(imgHeight / 2) + 20);
 	}
-	
   };
 })(jQuery);

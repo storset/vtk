@@ -28,24 +28,25 @@
 }
 
 .vrtx-image-listing-include ul li {
-  float:left;
+  float: left;
   margin:0 10px 10px 0;
-  padding:0;
+  padding: 5px !important;
+  border: 1px solid #ccc;
+  background-color: #fff !important;
 }
 
 .vrtx-image-listing-include ul li a {
-  border:2px solid #ccc;
   display: block;
   width:93px;
   height:62px;
   overflow:hidden;
 }
-.vrtx-image-listing-include ul li a:hover {
-  border:2px solid #0B5A9D;	
+.vrtx-image-listing-include ul li a img {
+  opacity: 0.6;
 }
 
-.vrtx-image-listing-include ul li a.active {
-  border:2px solid #222;	
+.vrtx-image-listing-include ul li a.active img {
+  opacity: 1;
 }
 
 .vrtx-image-listing-include ul img {

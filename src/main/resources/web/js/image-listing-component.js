@@ -90,6 +90,18 @@
 	      
 	       //cache
 	       images[i] = link;
+	       
+	       //Fading of transparent block and prev / next icon
+		   $("img", this).hover(
+		     function () {
+			   $(this).stop().fadeTo("250", 1);
+			 }, 
+			 function () {
+			   if($(this).parent().hasClass('.active')) {
+			   } else {
+				 $(this).stop().fadeTo("250", 0.6);
+			   }
+		   });
 		   
 		   $(this).click(function(e) {
 
@@ -110,7 +122,10 @@
 		      
 		      //remove active classes
 		      jQuery(wrapper + " ul li a").each(function(j) {
-		    	  jQuery(this).removeClass("active");
+		    	  if(jQuery(this).hasClass('.active')) {
+		    	    jQuery(this).removeClass("active");
+		    	    $(this).stop().fadeTo("250", 0.6);
+		    	  }
 		      });
 		      
 		      var imgHeight = $(wrapper + " " + container + " img").height();
@@ -128,6 +143,8 @@
 		      //prevent default event action
 			  e.preventDefault(); 
 	      });
+		   
+		 
 	 });
 	  
 	//TODO: refactor with above code

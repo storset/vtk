@@ -62,6 +62,11 @@
 		      var leftAdjust = -(imgWidth - $(this).width()) / 2;
 			  $("img", this).css("marginLeft", leftAdjust + "px");
 		   }
+		   var imgHeight = $("img", this).height();
+		   if(imgHeight > $(this).height()) {
+			  var topAdjust = -(imgHeight - $(this).height()) / 2;
+			  $("img", this).css("marginTop", leftAdjust + "px"); 
+		   }
 		   
 		   //generate image
 		   var img = new Image();

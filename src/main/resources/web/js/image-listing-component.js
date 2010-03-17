@@ -41,14 +41,17 @@
 		});
 	    
 	    //Fading of transparent block and prev / next icon
+	    $(wrapper + " " + " a." + navClass).stop().fadeTo("0", 0);
+	    $(wrapper + " " + " a." + navClass + " span").stop().fadeTo("0", 0);
+	    
 	    $(wrapper + " " + " a." + navClass).hover(
 	    function () {
 		  $(this).stop().fadeTo("250", 1);
-		  $(this).children().stop().fadeTo("250", 0.2);
+		  $("span", this).stop().fadeTo("250", 0.2);
 		}, 
 		function () {
 		  $(this).stop().fadeTo("250", 0);
-		  $(this).children().stop().fadeTo("250", 0);
+		  $("span", this).stop().fadeTo("250", 0);
 		});
 	  }
 	  
@@ -111,10 +114,10 @@
 			      $(wrapper + " " + container).stop().fadeTo(settings.fadeInOutTime, settings.fadedOutOpacity, function() {
 			    	  //done fade out -> remove
 			    	  $("a" + container + "-link", this).remove();
-			    	  //start fading in ...
-			    	  $(this).fadeTo(settings.fadeInOutTime, 1);
-			    	  //... before adding new image for smoother change
-			    	  $(this).append(images[i]);  
+			    	  //append image
+			    	  $(this).append(images[i]); 
+			    	  //fade in
+			    	  $(this).fadeTo(settings.fadeInOutTime, 1); 
 			      });
 		      } else {
 		    	  $("a" + container + "-link", wrapper + " " + container).remove();

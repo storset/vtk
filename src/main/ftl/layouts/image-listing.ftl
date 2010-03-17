@@ -50,9 +50,17 @@
       </#list>
     </#if>
     <ul>
+    <#assign count = 1 />
     <#list images as image>
         <#assign description = vrtx.propValue(image, 'description', '', 'content')?html />
-        <li><a href="${folderUrl}?actimg=${image.URI}&amp;display=gallery"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" /></a></li>
+        <#if count % 4 == 0>
+          <li class="vrtx-thumb-last">
+        <#else>
+          <li>
+        </#if>
+          <a href="${folderUrl}?actimg=${image.URI}&amp;display=gallery"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" /></a>
+        </li>
+        <#assign count = count+1 />
     </#list>
     </ul>
   </div>

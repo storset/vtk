@@ -5,6 +5,7 @@
 (function ($) {
   $.fn.vrtxSGallery = function (wrapper, container, options) {
 	  
+	  //cache
 	  var images = new Array();
 	  
 	  //animation settings
@@ -51,25 +52,25 @@
 			  $("img", this).css("marginLeft", leftAdjust + "px");
 		   }
 		   
-		   //change image
+		   //generate image
 		   var img = new Image();
 		   var src = $("img", this).attr("src").split("?")[0]; img.src = src; img.alt = src;
 			  
-	       //change link
+	       //generate link
 	       link = document.createElement("a"); 
 	       link.setAttribute("href", $(this).attr("href"));
 	       link.setAttribute("class", container.substring(1) + "-link");
 	       // IE
 	       link.setAttribute("className", container.substring(1) + "-link");
 	      
+	       //append img inside link
 	       $(link).append(img);
 	      
+	       //cache
 	       images[i] = link;
 		   
 		   $(this).click(function(e) {
-			  
-			  
-		      
+
 		  	  //replace link and image (w/ fade effect down to fadedOutOpacity) + stop() current animation.
 		      if(settings.fadeInOutTime > 0) {
 			      $(wrapper + " " + container).stop().fadeTo(settings.fadeInOutTime, settings.fadedOutOpacity, function() {

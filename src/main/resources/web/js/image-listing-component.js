@@ -137,9 +137,10 @@
 		      //add new active class
 		  	  $(this).addClass("active");
 
+		  	  //add description
 		  	  $(wrapper + " " + container + "-description").remove();
-		  	  $(wrapper + " " + container).append("<div class='" + container.substring(1) + "-description'>" 
-		  			  + $(wrapper + " " + container + " img").attr("alt") + "</div>")
+		  	  $("<div class='" + container.substring(1) + "-description'>" 
+		  			  + $(wrapper + " " + container + " img").attr("alt") + "</div>").insertAfter(wrapper + " " + container);
 		  	  
 		      //prevent default event action
 			  e.preventDefault(); 
@@ -172,8 +173,8 @@
       $("a" + container + "-link", wrapper + " " + container).remove();
       $(wrapper + " " + container).append(link);
       
-      $(wrapper + " " + container).append("<div class='" + container.substring(1) + "-description'>" 
-  			  + $(wrapper + " " + container + " img").attr("alt") + "</div>")
+      $("<div class='" + container.substring(1) + "-description'>" 
+  			  + $(wrapper + " " + container + " img").attr("alt") + "</div>").insertAfter(wrapper + " " + container);
 	  
       var imgHeight = $(wrapper + " " + container + " img").height();
 	  $(wrapper + " " + container + "-nav a").css("top", (imgHeight / 2) - 15);

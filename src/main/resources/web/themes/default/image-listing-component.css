@@ -60,13 +60,21 @@
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container {
   display: block;
-  width: 507px;
-  overflow: hidden;
+  width: 495px;
   position: relative;
+  padding: 5px;
+  border: 1px solid #ccc;
+  background-color: #fff;
 }
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container img {
   max-height: 380px;
+}
+
+.vrtx-image-listing-include-container-link {
+  width: 495px;	
+  overflow: hidden;
+  display: block;
 }
 
 /* Unobtrusive JavaScript */
@@ -76,7 +84,7 @@
 
 .vrtx-image-listing-include-container-nav {
   display: block;
-  width: 507px;
+  width: 495px;
 }
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.prev,

@@ -125,7 +125,9 @@
 		      jQuery(wrapper + " ul li a").each(function(j) {
 		    	if(jQuery(this).hasClass("active")) {
 		    	   jQuery(this).removeClass("active");
-		    	   $("img", this).stop().fadeTo("250", 0.6);
+		    	   jQuery("img", this).stop().fadeTo("250", 0.6);
+		    	} else {
+		    	   jQuery("img", this).stop().fadeTo("0", 0.6);
 		    	}
 		      });
 		      
@@ -136,6 +138,7 @@
 		     
 		      //add new active class
 		  	  $(this).addClass("active");
+		  	  $("img", this).stop().fadeTo("0", 1);
 
 		  	  //add description
 		  	  $(wrapper + " " + container + "-description").remove();
@@ -180,6 +183,13 @@
 	  $(wrapper + " " + container + "-nav a").css("top", (imgHeight / 2) - 15);
 	  $(wrapper + " " + container + "-nav span").css("height", imgHeight);
 	  $(wrapper + " " + container + "-nav span").css("top", -(imgHeight / 2) + 20);
+	  
+	  jQuery(wrapper + " ul li a").each(function(j) {
+		if(jQuery(this).hasClass("active")) {
+		} else {
+		   jQuery("img", this).stop().fadeTo("0", 0.6);
+		}
+	  });
 	}
   };
 })(jQuery);

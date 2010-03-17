@@ -45,13 +45,6 @@
   height:62px;
   overflow:hidden;
 }
-.vrtx-image-listing-include ul li a img {
-  opacity: 0.6;
-}
-
-.vrtx-image-listing-include ul li a.active img {
-  opacity: 1;
-}
 
 .vrtx-image-listing-include ul img {
   height: 92px;

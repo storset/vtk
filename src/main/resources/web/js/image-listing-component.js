@@ -84,7 +84,7 @@
 		    	if(!$(this).hasClass("active")) {
 				 $("img", this).stop().fadeTo("250", 1);
 		    	}
-		    }, 
+		    }, //on hover out
 		    function () {
 		    	if(!$(this).hasClass("active")) {
 				 $("img", this).stop().fadeTo("250", 0.6);
@@ -124,6 +124,7 @@
 		     
 		      //add new active class
 		  	  $(this).addClass("active");
+		  	  //make sure opacity is 1
 		  	  $("img", this).stop().fadeTo("0", 1);
 
 		  	  //add description
@@ -168,6 +169,7 @@
       $("a" + container + "-link", wrapper + " " + container).remove();
       $(wrapper + " " + container).append(link);
       
+      //add description
       $("<div class='" + container.substring(1) + "-description'>" 
   			  + $(wrapper + " " + container + " img").attr("alt") + "</div>").insertAfter(wrapper + " " + container);
 	  
@@ -175,6 +177,7 @@
 	  $(wrapper + " " + container + "-nav a").css("height", imgHeight);
 	  $(wrapper + " " + container + "-nav span").css("height", imgHeight);
 	  
+	  //set all thumbnails not active to 0.6 opacity
 	  jQuery(wrapper + " ul li a").each(function(j) {
 		if(jQuery(this).hasClass("active")) {
 		} else {

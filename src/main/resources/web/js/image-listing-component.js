@@ -118,14 +118,13 @@
 		    	}
 		      });
 		      
-		      positionPagingNavigation(wrapper, container);
-     
 		      //add new active class
 		  	  $(this).addClass("active");
 		  	  //make sure opacity is 1
 		  	  $("img", this).stop().fadeTo("0", 1);
 
 		  	  addDescription($("img", this));
+		  	  calculatePagingNavigationHeight();
 		  	  
 		      //prevent default event action
 			  e.preventDefault(); 
@@ -150,8 +149,7 @@
       $(wrapper + " " + container).append(link);
       
       addDescription(wrapper + " ul li:first a img");
-	  
-      positionPagingNavigation();
+      calculatePagingNavigationHeight()
 	  
 	  //set all thumbnails not active to 0.6 opacity
 	  jQuery(wrapper + " ul li a").each(function(j) {
@@ -162,7 +160,7 @@
 	  });
 	}
 	
-	function positionPagingNavigation() {
+	function calculatePagingNavigationHeight() {
 	   var imgHeight = $(wrapper + " " + container + " img").height();
 	   $(wrapper + " " + container + "-nav a").css("height", imgHeight);
 	   $(wrapper + " " + container + "-nav span").css("height", imgHeight);

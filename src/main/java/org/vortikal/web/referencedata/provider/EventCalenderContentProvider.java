@@ -49,7 +49,6 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.collection.event.EventListingHelper;
@@ -57,13 +56,10 @@ import org.vortikal.web.display.collection.event.EventListingSearcher;
 import org.vortikal.web.display.collection.event.EventListingHelper.SpecificDateSearchType;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.search.Listing;
-import org.vortikal.web.service.Service;
-import org.vortikal.web.service.URL;
 
 public class EventCalenderContentProvider implements ReferenceDataProvider {
 
     private Repository repository;
-    private Service calendarPlannedEventsService;
     private EventListingHelper helper;
     private EventListingSearcher searcher;
     private ResourceTypeTree resourceTypeTree;
@@ -73,15 +69,6 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
     @Override
     @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
-        
-        String token = SecurityContext.getSecurityContext().getToken();
-        Path resourceURI = RequestContext.getRequestContext().getResourceURI();
-
-        Resource resource = this.repository.retrieve(token, resourceURI, true);
-        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
-
-        URL plannedEventDatesServiceBaseUrl = this.calendarPlannedEventsService.constructURL(resource, principal);
-        model.put("plannedEventDatesServiceBaseUrl", plannedEventDatesServiceBaseUrl);
 
         SpecificDateSearchType searchType = this.helper.getSpecificDateSearchType(request);
         if (searchType != null) {
@@ -90,6 +77,9 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
             model.put("requestedDate", requestedDate);
         }
 
+        String token = SecurityContext.getSecurityContext().getToken();
+        Path resourceURI = RequestContext.getRequestContext().getResourceURI();
+        Resource resource = this.repository.retrieve(token, resourceURI, true);
         Property displayTypeProp = resource.getProperty(this.displayTypePropDef);
         if (displayTypeProp != null && "calendar".equals(displayTypeProp.getStringValue())) {
 
@@ -153,11 +143,6 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
     @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
-    }
-
-    @Required
-    public void setCalendarPlannedEventsService(Service calendarPlannedEventsService) {
-        this.calendarPlannedEventsService = calendarPlannedEventsService;
     }
 
     @Required

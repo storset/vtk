@@ -87,7 +87,6 @@
 
   <bean id="eventCalenderContentProvider" class="org.vortikal.web.referencedata.provider.EventCalenderContentProvider"
     parent="repositoryAware">
-    <property name="calendarPlannedEventsService" ref="calendarPlannedEventsService" />
     <property name="helper" ref="eventListingHelper" />
     <property name="searcher" ref="eventListing.eventListingSearcher" />
     <property name="displayTypePropDef" ref="eventListing.displayTypePropDef" />

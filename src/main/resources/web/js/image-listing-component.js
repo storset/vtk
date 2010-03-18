@@ -8,11 +8,8 @@
 	  //cache
 	  var images = new Array();
 	  
-	  //animation settings
-	  settings = jQuery.extend({
-		fadeInOutTime : 250,
-		fadedOutOpacity: 0
-	  }, options);
+	  //default animation settings
+	  settings = jQuery.extend({ fadeInOutTime : 250, fadedOutOpacity: 0 }, options);
 
 	  //Unobtrusive JavaScript
 	  $(container + "-pure-css").addClass(container.substring(1));

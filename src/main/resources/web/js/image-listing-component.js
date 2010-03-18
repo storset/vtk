@@ -41,12 +41,10 @@
 	    $(wrapper + " " + " a." + navClass).stop().fadeTo("0", 0);
 	    $(wrapper + " " + " a." + navClass + " span").stop().fadeTo("0", 0);
 	    
-	    $(wrapper + " " + " a." + navClass).hover(
-	    function () {
+	    $(wrapper + " " + " a." + navClass).hover(function () {
 		  $(this).stop().fadeTo("250", 1);
 		  $("span", this).stop().fadeTo("250", 0.2);
-		}, 
-		function () {
+		}, function () { //hover out
 		  $(this).stop().fadeTo("250", 0);
 		  $("span", this).stop().fadeTo("250", 0);
 		});

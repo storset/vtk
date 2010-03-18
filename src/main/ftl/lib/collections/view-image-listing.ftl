@@ -63,10 +63,14 @@
   <#if (images?size > 0)>
     <div class="vrtx-image-listing-container">
       <ul class="vrtx-image-listing">
+      <#assign count = 1 />
       <#list images as image>
         <#local title = vrtx.propValue(image, 'title')?html />
-        <li class="vrtx-image-entry">
-        
+        <#if count % 4 == 0>
+          <li class="vrtx-image-entry last">
+        <#else>
+          <li class="vrtx-image-entry">
+        </#if>
             <div class="vrtx-image-container">
                 <a href="${image.URI?html}"><img src="${image.URI?html}?vrtx=thumbnail" title="${title}" alt="${title}" /></a>
             </div>
@@ -99,6 +103,7 @@
               </div>
             </div>
         </li>
+        <#assign count = count +1 />
       </#list>
       </ul>
     </div>

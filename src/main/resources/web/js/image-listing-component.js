@@ -125,10 +125,7 @@
 		  	  //make sure opacity is 1
 		  	  $("img", this).stop().fadeTo("0", 1);
 
-		  	  //add description
-		  	  $(wrapper + " " + container + "-description").remove();
-		  	  $("<div class='" + container.substring(1) + "-description'>" 
-		  			  + $("img", this).attr("alt") + "</div>").insertAfter(wrapper + " " + container);
+		  	  addDescription($("img", this));
 		  	  
 		      //prevent default event action
 			  e.preventDefault(); 
@@ -136,6 +133,12 @@
 		   
 		 
 	 });
+	  
+	function addDescription(source) {
+	  $(wrapper + " " + container + "-description").remove();
+	  $("<div class='" + container.substring(1) + "-description'>" 
+	          + $(source).attr("alt") + "</div>").insertAfter(wrapper + " " + container);
+	}
  
 	function initFirstImage() {
 	  //choose first image in <li>
@@ -146,11 +149,9 @@
       $("a" + container + "-link", wrapper + " " + container).remove();
       $(wrapper + " " + container).append(link);
       
-      //add description
-      $("<div class='" + container.substring(1) + "-description'>" 
-  			  + $(wrapper + " ul li:first a img").attr("alt") + "</div>").insertAfter(wrapper + " " + container);
+      addDescription(wrapper + " ul li:first a img");
 	  
-      positionPagingNavigation(wrapper, container);
+      positionPagingNavigation();
 	  
 	  //set all thumbnails not active to 0.6 opacity
 	  jQuery(wrapper + " ul li a").each(function(j) {
@@ -161,20 +162,20 @@
 	  });
 	}
 	
-	function positionPagingNavigation(wrapper, container) {
+	function positionPagingNavigation() {
 	   var imgHeight = $(wrapper + " " + container + " img").height();
 	   $(wrapper + " " + container + "-nav a").css("height", imgHeight);
 	   $(wrapper + " " + container + "-nav span").css("height", imgHeight);
 	}
 	 
 	function generateLinkImage(theimage, thelink, container) {
-      //change image
+      //create image
 	  var img = new Image();
 	  var src = $(theimage).attr("src").split("?")[0]; 
 	  var alt = $(theimage).attr("alt");
 	  img.src = src; img.alt = alt;
-		  
-	  //change link
+	  
+	  //create link
 	  link = document.createElement("a"); 
 	  link.setAttribute("href", $(thelink).attr("href"));
 	  link.setAttribute("class", container.substring(1) + "-link");
@@ -186,6 +187,5 @@
 
 	  return link;
 	}
-	
   };
 })(jQuery);

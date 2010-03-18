@@ -91,6 +91,7 @@ ul.vrtx-image-listing {
 .vrtx-image-table table tr td {
   border: 1px solid #dbd8d6;
   background-color: #fff;
+  vertical-align: top;
 }
 
 .vrtx-image-table table img {

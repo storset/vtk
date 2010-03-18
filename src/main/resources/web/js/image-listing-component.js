@@ -5,7 +5,7 @@
 (function ($) {
   $.fn.vrtxSGallery = function (wrapper, container, options) {
 	  
-	  //cache
+	  //cache images
 	  var images = new Array();
 	  
 	  //default animation settings
@@ -54,7 +54,7 @@
 		  
 	  return this.each(function (i) {
 		  
-		   //center thumbnails images
+		   //center thumbnails images ..
 		   //.. first horizontal
 		   var imgWidth = $("img", this).width();
 		   if(imgWidth > $(this).width()) {
@@ -70,7 +70,7 @@
 		   
 		   var link = generateLinkImage($("img", this), $(this), container);
 	      
-	       //cache
+	       //cache images
 	       images[i] = link;
 	       
 	       //Fading of transparent block and prev / next icon
@@ -85,9 +85,8 @@
 				 $("img", this).stop().fadeTo("250", 0.6);
 		    	}
 	       });
-
+    	   
 		   $(this).click(function(e) {
-
 		  	  //replace link and image (w/ fade effect down to fadedOutOpacity) + stop() current animation.
 		      if(settings.fadeInOutTime > 0) {
 			      $(wrapper + " " + container).stop().fadeTo(settings.fadeInOutTime, settings.fadedOutOpacity, function() {
@@ -102,7 +101,6 @@
 		    	  $("a" + container + "-link", wrapper + " " + container).remove();
 		    	  $(wrapper + " " + container).append(images[i]);   
 		      }
-
 		      //remove active classes
 		      jQuery(wrapper + " ul li a").each(function(j) {
 		    	if(jQuery(this).hasClass("active")) {
@@ -112,7 +110,6 @@
 		    	   jQuery("img", this).stop().fadeTo("0", 0.6);
 		    	}
 		      });
-		      
 		      //add new active class
 		  	  $(this).addClass("active");
 		  	  //make sure opacity is 1
@@ -124,61 +121,59 @@
 		      //prevent default event action
 			  e.preventDefault(); 
 	      });
-		   
-		 
 	 });
 	  
-	function addDescription(source) {
-	  $(wrapper + " " + container + "-description").remove();
-	  $("<div class='" + container.substring(1) + "-description'>" 
-	          + $(source).attr("alt") + "</div>").insertAfter(wrapper + " " + container);
-	}
- 
-	function initFirstImage() {
-	  //choose first image in <li>
-	  $(wrapper + " ul li:first a").addClass("active");
+     function initFirstImage() {
+	   //choose first image in <li>
+	   $(wrapper + " ul li:first a").addClass("active");
 		
-	  var link = generateLinkImage(wrapper + " ul li:first a img", wrapper + " ul li:first a", container);
+	   var link = generateLinkImage(wrapper + " ul li:first a img", wrapper + " ul li:first a", container);
       
-      $("a" + container + "-link", wrapper + " " + container).remove();
-      $(wrapper + " " + container).append(link);
+       $("a" + container + "-link", wrapper + " " + container).remove();
+       $(wrapper + " " + container).append(link);
       
-      addDescription(wrapper + " ul li:first a img");
-      calculatePagingNavigationHeight()
+       addDescription(wrapper + " ul li:first a img");
+       calculatePagingNavigationHeight()
 	  
-	  //set all thumbnails not active to 0.6 opacity
-	  jQuery(wrapper + " ul li a").each(function(j) {
-		if(jQuery(this).hasClass("active")) {
-		} else {
+	   //set all thumbnails not active to 0.6 opacity
+	   jQuery(wrapper + " ul li a").each(function(j) {
+		 if(jQuery(this).hasClass("active")) {
+		 } else {
 		   jQuery("img", this).stop().fadeTo("0", 0.6);
-		}
-	  });
-	}
-	
-	function calculatePagingNavigationHeight() {
+		 }
+	   });
+	 }
+	  
+	 function addDescription(source) {
+	   $(wrapper + " " + container + "-description").remove();
+	   $("<div class='" + container.substring(1) + "-description'>" 
+	          + $(source).attr("alt") + "</div>").insertAfter(wrapper + " " + container);
+	 }
+
+	 function calculatePagingNavigationHeight() {
 	   var imgHeight = $(wrapper + " " + container + " img").height();
 	   $(wrapper + " " + container + "-nav a").css("height", imgHeight);
 	   $(wrapper + " " + container + "-nav span").css("height", imgHeight);
-	}
+	 }
 	 
-	function generateLinkImage(theimage, thelink, container) {
-      //create image
-	  var img = new Image();
-	  var src = $(theimage).attr("src").split("?")[0]; 
-	  var alt = $(theimage).attr("alt");
-	  img.src = src; img.alt = alt;
+	 function generateLinkImage(theimage, thelink) {
+       //create image
+	   var img = new Image();
+	   var src = $(theimage).attr("src").split("?")[0]; 
+	   var alt = $(theimage).attr("alt");
+	   img.src = src; img.alt = alt;
 	  
-	  //create link
-	  link = document.createElement("a"); 
-	  link.setAttribute("href", $(thelink).attr("href"));
-	  link.setAttribute("class", container.substring(1) + "-link");
-	  // IE
-	  link.setAttribute("className", container.substring(1) + "-link");
+	   //create link
+	   link = document.createElement("a"); 
+	   link.setAttribute("href", $(thelink).attr("href"));
+	   link.setAttribute("class", container.substring(1) + "-link");
+	   // IE
+	   link.setAttribute("className", container.substring(1) + "-link");
 	      
-	  //append img inside link
-	  $(link).append(img);
+	   //append img inside link
+	   $(link).append(img);
 
-	  return link;
+	   return link;
 	}
   };
 })(jQuery);

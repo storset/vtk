@@ -16,8 +16,8 @@
 	  $(container + "-nav-pure-css").addClass(container.substring(1) + "-nav");
 		  
 	  //paging (relative to li a.active)
-	  addPagingClickEvent("next", wrapper);
-	  addPagingClickEvent("prev", wrapper);  
+	  addPagingClickAndHoverEvents("next", wrapper);
+	  addPagingClickAndHoverEvents("prev", wrapper);  
 
 	  initFirstImage();
 		  
@@ -92,7 +92,7 @@
 	      });
 	 });
 	  
-	 function addPagingClickEvent(navClass, wrapper) {
+	 function addPagingClickAndHoverEvents(navClass, wrapper) {
 	    $(wrapper + " " + " a." + navClass).click(function(h) {
 	      if(navClass == "next") {
 			  if($(wrapper + " ul li a.active").parent().next().length != 0) {

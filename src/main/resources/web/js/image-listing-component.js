@@ -118,10 +118,8 @@
 		    	}
 		      });
 		      
-		      var imgHeight = $(wrapper + " " + container + " img").height();
-		      $(wrapper + " " + container + "-nav a").css("height", imgHeight);
-			  $(wrapper + " " + container + "-nav span").css("height", imgHeight);
-		     
+		      positionPagingNavigation(wrapper, container);
+     
 		      //add new active class
 		  	  $(this).addClass("active");
 		  	  //make sure opacity is 1
@@ -138,6 +136,36 @@
 		   
 		 
 	 });
+ 
+	function initFirstImage() {
+	  //choose first image in <li>
+	  $(wrapper + " ul li:first a").addClass("active");
+		
+	  var link = generateLinkImage(wrapper + " ul li:first a img", wrapper + " ul li:first a", container);
+      
+      $("a" + container + "-link", wrapper + " " + container).remove();
+      $(wrapper + " " + container).append(link);
+      
+      //add description
+      $("<div class='" + container.substring(1) + "-description'>" 
+  			  + $(wrapper + " " + container + " img").attr("alt") + "</div>").insertAfter(wrapper + " " + container);
+	  
+      positionPagingNavigation(wrapper, container);
+	  
+	  //set all thumbnails not active to 0.6 opacity
+	  jQuery(wrapper + " ul li a").each(function(j) {
+		if(jQuery(this).hasClass("active")) {
+		} else {
+		   jQuery("img", this).stop().fadeTo("0", 0.6);
+		}
+	  });
+	}
+	
+	function positionPagingNavigation(wrapper, container) {
+	   var imgHeight = $(wrapper + " " + container + " img").height();
+	   $(wrapper + " " + container + "-nav a").css("height", imgHeight);
+	   $(wrapper + " " + container + "-nav span").css("height", imgHeight);
+	}
 	 
 	function generateLinkImage(theimage, thelink, container) {
       //change image
@@ -158,32 +186,6 @@
 
 	  return link;
 	}
-	  
-	//TODO: refactor with above code
-	function initFirstImage() {
-	  //choose first image in <li>
-	  $(wrapper + " ul li:first a").addClass("active");
-		
-	  var link = generateLinkImage(wrapper + " ul li:first a img", wrapper + " ul li:first a", container);
-      
-      $("a" + container + "-link", wrapper + " " + container).remove();
-      $(wrapper + " " + container).append(link);
-      
-      //add description
-      $("<div class='" + container.substring(1) + "-description'>" 
-  			  + $(wrapper + " " + container + " img").attr("alt") + "</div>").insertAfter(wrapper + " " + container);
-	  
-      var imgHeight = $(wrapper + " " + container + " img").height();
-	  $(wrapper + " " + container + "-nav a").css("height", imgHeight);
-	  $(wrapper + " " + container + "-nav span").css("height", imgHeight);
-	  
-	  //set all thumbnails not active to 0.6 opacity
-	  jQuery(wrapper + " ul li a").each(function(j) {
-		if(jQuery(this).hasClass("active")) {
-		} else {
-		   jQuery("img", this).stop().fadeTo("0", 0.6);
-		}
-	  });
-	}
+	
   };
 })(jQuery);

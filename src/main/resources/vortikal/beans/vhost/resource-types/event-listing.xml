@@ -21,6 +21,7 @@
         <ref bean="eventListing.recursiveListingPropDef" />
         <ref bean="eventListing.hideEndDatePropDef" />
         <ref bean="eventListing.hideLocationPropDef" />
+        <ref bean="eventListing.eventTypeTitlePropDef" />
         <ref bean="eventListing.displayTypePropDef" />
       </list>
     </property>
@@ -116,6 +117,13 @@
         </entry>
       </map>
     </property>
+  </bean>
+
+  <bean id="eventListing.eventTypeTitlePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="name" value="event-type-title" />
+    <property name="type" value="STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
   </bean>
 
   <bean id="resourceIsEventListing" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">

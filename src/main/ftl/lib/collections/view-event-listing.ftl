@@ -50,7 +50,7 @@
 	
 	  <#elseif groupedByDayEvents?has_content || furtherUpcoming?has_content>
 	  
-	    <#if groupedByDayEvents?has_content && groupedByDayEvents.files?size &gt; 0>
+	    <#if groupedByDayEvents?has_content && groupedByDayEvents?size &gt; 0>
 	      <div id="vrtx-daily-events">
 	        <h2 class="vrtx-events-title">${groupedEventsTitle?html}</h2>
 	      <#assign count = 1 />

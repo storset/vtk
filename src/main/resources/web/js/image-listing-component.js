@@ -128,7 +128,7 @@
 		  	  //add description
 		  	  $(wrapper + " " + container + "-description").remove();
 		  	  $("<div class='" + container.substring(1) + "-description'>" 
-		  			  + $(wrapper + " " + container + " img").attr("alt") + "</div>").insertAfter(wrapper + " " + container);
+		  			  + $("img", this).attr("alt") + "</div>").insertAfter(wrapper + " " + container);
 		  	  
 		      //prevent default event action
 			  e.preventDefault(); 
@@ -148,7 +148,7 @@
       
       //add description
       $("<div class='" + container.substring(1) + "-description'>" 
-  			  + $(wrapper + " " + container + " img").attr("alt") + "</div>").insertAfter(wrapper + " " + container);
+  			  + $(wrapper + " ul li:first a img").attr("alt") + "</div>").insertAfter(wrapper + " " + container);
 	  
       positionPagingNavigation(wrapper, container);
 	  

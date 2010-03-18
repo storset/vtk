@@ -161,14 +161,14 @@
       <table class="rowstyle-alt colstyle-alt no-arrow" cellpadding="5" border="1">
         <thead>
           <tr>
-            <th>${vrtx.getMsg("property.resourceType.image")}</th>
-            <th class="sortable-text">${vrtx.getMsg("property.title")}</th>
-            <th class="sortable-text">${vrtx.getMsg("property.content:description")}</th>
-            <th class="sortable-numeric">${vrtx.getMsg("imageListing.width")}</th>
-            <th class="sortable-numeric">${vrtx.getMsg("imageListing.height")}</th>
-            <th class="sortable-numeric">${vrtx.getMsg("property.contentLength")}</th>
-            <th class="sortable-text">${vrtx.getMsg("article.photoprefix")}</th>
-            <th class="sortable-sortEnglishLonghandDateFormat">${vrtx.getMsg("proptype.name.creationTime")}</th>
+            <th id="vrtx-table-image">${vrtx.getMsg("property.resourceType.image")}</th>
+            <th id="vrtx-table-title" class="sortable-text">${vrtx.getMsg("property.title")}</th>
+            <th id="vrtx-table-description" class="sortable-text">${vrtx.getMsg("property.content:description")}</th>
+            <th id="vrtx-table-dimensions-width" class="sortable-numeric">${vrtx.getMsg("imageListing.width")}</th>
+            <th id="vrtx-table-dimensions-height" class="sortable-numeric">${vrtx.getMsg("imageListing.height")}</th>
+            <th id="vrtx-table-size"class="sortable-numeric">${vrtx.getMsg("property.contentLength")}</th>
+            <th id="vrtx-table-photo" class="sortable-text">${vrtx.getMsg("article.photoprefix")}</th>
+            <th id="vrtx-table-creation-time" class="sortable-sortEnglishLonghandDateFormat">${vrtx.getMsg("proptype.name.creationTime")}</th>
           </tr>
         </thead>
         <tbody>
@@ -176,19 +176,19 @@
           <tr>
             <#local title = vrtx.propValue(image, 'title')?html />
             <td class="vrtx-table-image"><a href="${image.URI}"><img src="${image.URI}?vrtx=thumbnail" alt="${title}" /></a></td>
-            <td><a href="${image.URI}">${title}</a></td>
+            <td class="vrtx-table-title"><a href="${image.URI}">${title}</a></td>
             <#local description = vrtx.propValue(image, 'description', '', 'content')?html />
-            <td>${description}</td>
+            <td class="vrtx-table-description">${description}</td>
             <#local width = vrtx.propValue(image, 'pixelWidth') />
             <#local height = vrtx.propValue(image, 'pixelHeight') />
-            <td>${width} px</td>
-            <td>${height} px</td>
+            <td class="vrtx-table-dimensions-width">${width} px</td>
+            <td class="vrtx-table-dimensions-height">${height} px</td>
             <#local contentLength = vrtx.propValue(image, 'contentLength') />
-            <td><@vrtx.calculateResourceSizeToKB contentLength?number /></td>
+            <td class="vrtx-table-size"><@vrtx.calculateResourceSizeToKB contentLength?number /></td>
             <#local photo = vrtx.propValue(image, 'authorName', '', 'content')> 
-            <td>${photo}</td>
+            <td class="vrtx-table-photo">${photo}</td>
             <#local creationTime = vrtx.propValue(image, 'creationTime', 'short', '') />
-            <td>${creationTime}</td>
+            <td class="vrtx-table-creation-time">${creationTime}</td>
           </tr>
         </#list>
         </tbody>

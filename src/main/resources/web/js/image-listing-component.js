@@ -43,7 +43,7 @@
 	       images[i] = link;
 	       
 	       //Fading of transparent block and prev / next icon
-    	   $(this).hover(
+		   $(this).hover(
 		    function () {
 		    	if(!$(this).hasClass("active")) {
 				 $("img", this).stop().fadeTo("250", 1);
@@ -54,7 +54,7 @@
 				 $("img", this).stop().fadeTo("250", 0.6);
 		    	}
 	       });
-    	   
+		   
 		   $(this).click(function(e) {
 		  	  //replace link and image (w/ fade effect down to fadedOutOpacity) + stop() current animation.
 		      if(settings.fadeInOutTime > 0) {
@@ -83,7 +83,7 @@
 		  	  $(this).addClass("active");
 		  	  //make sure opacity is 1
 		  	  $("img", this).stop().fadeTo("0", 1);
-
+	
 		  	  addDescription($("img", this));
 		  	  calculatePagingNavigationHeight();
 		  	  
@@ -164,10 +164,10 @@
   	   return link;
   	 }
 	  
-	 function addDescription(source) {
+	 function addDescription(fromSource) {
 	   $(wrapper + " " + container + "-description").remove();
 	   $("<div class='" + container.substring(1) + "-description'>" 
-	          + $(source).attr("alt") + "</div>").insertAfter(wrapper + " " + container);
+	          + $(fromSource).attr("alt") + "</div>").insertAfter(wrapper + " " + container);
 	 }
 
 	 function calculatePagingNavigationHeight() {

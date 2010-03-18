@@ -35,7 +35,7 @@ function eventListingCalendar(allowedDates, activeDate, clickableDayTitle, notCl
 
       // Add classes and tooltip for dates with and without events
     if ($.inArray(date_str, allowedDates) != -1) {
-      if (activeDate == date_str) {
+      if (removeZeroesBeforeDayAndMonth(activeDate) == date_str) {
         return [ true, 'state-active', clickableDayTitle ];
       } else {
         return [ true, '', clickableDayTitle ];

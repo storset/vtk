@@ -63,12 +63,15 @@
 			    	  $("a" + container + "-link", this).remove();
 			    	  //append image
 			    	  $(this).append(images[i]); 
-			    	  //fade in
-			    	  $(this).fadeTo(settings.fadeInOutTime, 1); 
+			    	  //fade in and make sure calculations are done after fully loaded
+			    	  $(this).fadeTo(settings.fadeInOutTime, 1, function() {
+			    		  calculatePagingNavigationHeight();
+			    	  });
 			      });
 		      } else {
 		    	  $("a" + container + "-link", wrapper + " " + container).remove();
-		    	  $(wrapper + " " + container).append(images[i]);   
+		    	  $(wrapper + " " + container).append(images[i]);
+		    	  calculatePagingNavigationHeight();
 		      }
 		      //remove active classes
 		      jQuery(wrapper + " ul li a").each(function(j) {
@@ -79,14 +82,14 @@
 		    	   jQuery("img", this).stop().fadeTo("0", 0.6);
 		    	}
 		      });
+		      
 		      //add new active class
 		  	  $(this).addClass("active");
 		  	  //make sure opacity is 1
 		  	  $("img", this).stop().fadeTo("0", 1);
 	
 		  	  addDescription($("img", this));
-		  	  calculatePagingNavigationHeight();
-		  	  
+
 		      //prevent default event action
 			  e.preventDefault(); 
 	      });

@@ -18,38 +18,7 @@
 	  //paging (relative to li a.active)
 	  addPagingClickEvent("next", wrapper);
 	  addPagingClickEvent("prev", wrapper);  
-	  
-	  function addPagingClickEvent(navClass, wrapper) {
-	    $(wrapper + " " + " a." + navClass).click(function(h) {
-	      if(navClass == "next") {
-			  if($(wrapper + " ul li a.active").parent().next().length != 0) {
-			    $(wrapper + " ul li a.active").parent().next().find("a").click();
-			  } else {
-				$(wrapper + " ul li:first a").click();
-			  }
-	      } else {
-	    	  if($(wrapper + " ul li a.active").parent().prev().length != 0) {
-	    		$(wrapper + " ul li a.active").parent().prev().find("a").click();
-	          } else {
-	    		$(wrapper + " ul li:last a").click();   
-	          }
-	      }
-		  h.preventDefault(); 
-		});
-	    
-	    //Fading of transparent block and prev / next icon
-	    $(wrapper + " " + " a." + navClass).stop().fadeTo("0", 0);
-	    $(wrapper + " " + " a." + navClass + " span").stop().fadeTo("0", 0);
-	    
-	    $(wrapper + " " + " a." + navClass).hover(function () {
-		  $(this).stop().fadeTo("250", 1);
-		  $("span", this).stop().fadeTo("250", 0.2);
-		}, function () { //hover out
-		  $(this).stop().fadeTo("250", 0);
-		  $("span", this).stop().fadeTo("250", 0);
-		});
-	  }
-	  
+
 	  initFirstImage();
 		  
 	  return this.each(function (i) {
@@ -123,6 +92,37 @@
 	      });
 	 });
 	  
+	 function addPagingClickEvent(navClass, wrapper) {
+	    $(wrapper + " " + " a." + navClass).click(function(h) {
+	      if(navClass == "next") {
+			  if($(wrapper + " ul li a.active").parent().next().length != 0) {
+			    $(wrapper + " ul li a.active").parent().next().find("a").click();
+			  } else {
+				$(wrapper + " ul li:first a").click();
+			  }
+	      } else {
+	    	  if($(wrapper + " ul li a.active").parent().prev().length != 0) {
+	    		$(wrapper + " ul li a.active").parent().prev().find("a").click();
+	          } else {
+	    		$(wrapper + " ul li:last a").click();   
+	          }
+	      }
+		  h.preventDefault(); 
+		});
+	    
+	    //Fading of transparent block and prev / next icon
+	    $(wrapper + " " + " a." + navClass).stop().fadeTo("0", 0);
+	    $(wrapper + " " + " a." + navClass + " span").stop().fadeTo("0", 0);
+	    
+	    $(wrapper + " " + " a." + navClass).hover(function () {
+		  $(this).stop().fadeTo("250", 1);
+		  $("span", this).stop().fadeTo("250", 0.2);
+		}, function () { //hover out
+		  $(this).stop().fadeTo("250", 0);
+		  $("span", this).stop().fadeTo("250", 0);
+		});
+	 }
+	  
      function initFirstImage() {
 	   //choose first image in <li>
 	   $(wrapper + " ul li:first a").addClass("active");
@@ -143,6 +143,26 @@
 		 }
 	   });
 	 }
+     
+     function generateLinkImage(theimage, thelink) {
+         //create image
+  	   var img = new Image();
+  	   var src = $(theimage).attr("src").split("?")[0]; 
+  	   var alt = $(theimage).attr("alt");
+  	   img.src = src; img.alt = alt;
+  	  
+  	   //create link
+  	   link = document.createElement("a"); 
+  	   link.setAttribute("href", $(thelink).attr("href"));
+  	   link.setAttribute("class", container.substring(1) + "-link");
+  	   // IE
+  	   link.setAttribute("className", container.substring(1) + "-link");
+  	      
+  	   //append img inside link
+  	   $(link).append(img);
+
+  	   return link;
+  	 }
 	  
 	 function addDescription(source) {
 	   $(wrapper + " " + container + "-description").remove();
@@ -155,25 +175,5 @@
 	   $(wrapper + " " + container + "-nav a").css("height", imgHeight);
 	   $(wrapper + " " + container + "-nav span").css("height", imgHeight);
 	 }
-	 
-	 function generateLinkImage(theimage, thelink) {
-       //create image
-	   var img = new Image();
-	   var src = $(theimage).attr("src").split("?")[0]; 
-	   var alt = $(theimage).attr("alt");
-	   img.src = src; img.alt = alt;
-	  
-	   //create link
-	   link = document.createElement("a"); 
-	   link.setAttribute("href", $(thelink).attr("href"));
-	   link.setAttribute("class", container.substring(1) + "-link");
-	   // IE
-	   link.setAttribute("className", container.substring(1) + "-link");
-	      
-	   //append img inside link
-	   $(link).append(img);
-
-	   return link;
-	}
   };
 })(jQuery);

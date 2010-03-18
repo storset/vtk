@@ -79,11 +79,17 @@
   
   <#assign page = page?default(1) />
 
+  <#assign isBlogListing = resource.resourceType = 'blog-listing' />
+  <#assign displayType = vrtx.propValue(resource, 'display-type', '', 'el') />
+  <#assign isEventCalendarListing = (displayType?has_content && displayType = 'calendar') />
+  
+  <#if !isEventCalendarListing>
   <h1>${title}
     <#if page?has_content>
       <#if "${page}" != "1"> - <@vrtx.msg code="viewCollectionListing.page" /> ${page}</#if>
     </#if>
   </h1>
+  </#if>
 
      <#if page == 1>
      <#-- Image -->
@@ -92,7 +98,7 @@
      <#-- Introduction -->
      <#-- @viewutils.displayIntroduction resource / -->
      <#assign introduction = vrtx.getIntroduction(resource) />
-	     <#if introduction?has_content && collection.resourceType != 'blog-listing'>
+	     <#if introduction?has_content && !(isBlogListing || isEventCalendarListing)>
 	       <div class="vrtx-introduction">
 	         ${introduction}
 	       </div>

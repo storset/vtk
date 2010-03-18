@@ -29,6 +29,7 @@
     parent="eventListing.handler">
     <property name="viewName" value="eventListingCalendar.view" />
     <property name="helper" ref="eventListingHelper" />
+    <!-- property name="eventTypeTitlePropDef" ref="eventListing.eventTypeTitlePropDef" / -->
   </bean>
 
   <bean id="eventListing.groupedByDayEventSearchQueryString" class="java.lang.String">
@@ -88,23 +89,6 @@
     parent="repositoryAware">
     <property name="calendarPlannedEventsService" ref="calendarPlannedEventsService" />
     <property name="helper" ref="eventListingHelper" />
-  </bean>
-
-  <bean id="calendarPlannedEventsService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="calendarEventListing.viewService" />
-    <property name="order" value="0" />
-    <property name="assertions">
-      <list>
-        <bean class="org.vortikal.web.service.RequestParameterExistsAssertion">
-          <property name="parameterName" value="planned-event-days" />
-        </bean>
-      </list>
-    </property>
-    <property name="handler" ref="calendarPlannedEventsHandler" />
-  </bean>
-
-  <bean id="calendarPlannedEventsHandler" class="org.vortikal.web.display.collection.event.EventCalendarPlannedEventDatesHandler"
-    parent="repositoryAware">
     <property name="searcher" ref="eventListing.eventListingSearcher" />
     <property name="displayTypePropDef" ref="eventListing.displayTypePropDef" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />

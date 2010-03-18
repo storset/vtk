@@ -3,9 +3,7 @@
  * TODO: look at interchange between format '2010-4-2' and '2010-04-02'
  */
 
-function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle, language) {
-  
-  var allowedDates = new Array();
+function eventListingCalendar(allowedDates, clickableDayTitle, notClickableDayTitle, language) {
 	
   var today = new Date();
   var activeDate = removeZeroesBeforeDayAndMonth(findActiveDate(today));
@@ -17,7 +15,7 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle, 
   if(language == 'no') {
     $.datepicker.setDefaults($.datepicker.regional['no']);
   } else if(language == 'nn') {
-	$.datepicker.setDefaults($.datepicker.regional['nn']);
+	  $.datepicker.setDefaults($.datepicker.regional['nn']);
   }
   
   $("#datepicker").datepicker({
@@ -31,7 +29,7 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle, 
       
     },
     beforeShowDay : function(day) {
-      var date_str = [ day.getFullYear(), day.getMonth() + 1, day.getDate()].join('-');
+      var date_str = [ day.getFullYear(), day.getMonth() + 1, day.getDate() ].join('-');
       
       //Add classes and tooltip for dates with and without events
       if ($.inArray(date_str, allowedDates) != -1) {
@@ -48,32 +46,15 @@ function eventListingCalendar(service, clickableDayTitle, notClickableDayTitle, 
       if(month <= 9) {
         month = "0" + month;
       }
-      //Get dates with events
-      allowedDates = queryAllowedDates (service, year, month);
       
       //If not init (when prev / next month click), refresh page with year and month
       if(!init) {
         location.href = location.href.split('?')[0] + "?date=" + year + '-' + month;
       } else {
-    	init = false;  
+    	  init = false;  
       }
     }
   });
-}
-
-//Get dates with events by AJAX query
-function queryAllowedDates (service, year, month) {
-  var allowedDates = new Array();
-  $.ajax({
-    type: 'GET',
-    url: service + "&date=" + year + '-' + month,
-    dataType: 'text',
-    async: false,
-    success: function(response) {
-	  allowedDates = response.split(',');
-    }
-  });
-  return allowedDates;
 }
 
 //Find current date

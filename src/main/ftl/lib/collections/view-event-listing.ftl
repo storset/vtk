@@ -103,7 +103,7 @@
        <script type="text/javascript">
        <!--
          $(document).ready(function() {
-           eventListingCalendar('${plannedEventDatesServiceBaseUrl}', '${clickableDayTitle}', '${notClickableDayTitle}', '${language}');
+           eventListingCalendar(${allowedDates}, '${clickableDayTitle}', '${notClickableDayTitle}', '${language}');
          });
        // -->
        </script>

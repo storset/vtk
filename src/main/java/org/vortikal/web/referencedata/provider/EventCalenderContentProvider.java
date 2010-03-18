@@ -30,20 +30,33 @@
  */
 package org.vortikal.web.referencedata.provider;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceTypeTree;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.collection.event.EventListingHelper;
+import org.vortikal.web.display.collection.event.EventListingSearcher;
 import org.vortikal.web.display.collection.event.EventListingHelper.SpecificDateSearchType;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
+import org.vortikal.web.search.Listing;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
@@ -52,10 +65,15 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
     private Repository repository;
     private Service calendarPlannedEventsService;
     private EventListingHelper helper;
+    private EventListingSearcher searcher;
+    private ResourceTypeTree resourceTypeTree;
+    private PropertyTypeDefinition displayTypePropDef;
+    private String startDatePropDefPointer;
 
     @Override
     @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
+        
         String token = SecurityContext.getSecurityContext().getToken();
         Path resourceURI = RequestContext.getRequestContext().getResourceURI();
 
@@ -72,6 +90,64 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
             model.put("requestedDate", requestedDate);
         }
 
+        Property displayTypeProp = resource.getProperty(this.displayTypePropDef);
+        if (displayTypeProp != null && "calendar".equals(displayTypeProp.getStringValue())) {
+
+            PropertyTypeDefinition startDatePropDef = this.resourceTypeTree
+                    .getPropertyDefinitionByPointer(startDatePropDefPointer);
+
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.DAY_OF_MONTH, 1);
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+
+            String dateString = request.getParameter(EventListingHelper.REQUEST_PARAMETER_DATE);
+            if (dateString != null) {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+                try {
+                    Date requestedMonth = sdf.parse(dateString);
+                    cal.setTime(requestedMonth);
+                } catch (ParseException e) {
+                    // Ignore, show current month
+                }
+            }
+
+            int limit = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+            Set<String> eventDatesList = new HashSet<String>();
+            SimpleDateFormat eventDateFormat = new SimpleDateFormat("yyyy-M-d");
+            for (int i = 0; i < limit; i++) {
+                Listing plannedEvents = this.searcher.searchSpecificDate(request, resource, cal.getTime(),
+                        SpecificDateSearchType.Month);
+                for (PropertySet propSet : plannedEvents.getFiles()) {
+                    Property startDate = propSet.getProperty(startDatePropDef);
+                    if (startDate != null) {
+                        Date eventDate = startDate.getDateValue();
+                        eventDatesList.add(String.valueOf(eventDateFormat.format(eventDate)));
+                    }
+                }
+            }
+            String eventDates = getEventDatesAsArrayString(eventDatesList);
+            model.put("allowedDates", eventDates);
+
+        }
+
+    }
+
+    private String getEventDatesAsArrayString(Set<String> eventDates) {
+        StringBuilder sb = new StringBuilder("[");
+        Iterator<String> it = eventDates.iterator();
+        boolean first = true;
+        while (it.hasNext()) {
+            if (!first) {
+                sb.append(", ");
+            }
+            sb.append("'" + it.next() + "'");
+            first = false;
+        }
+        sb.append("]");
+        return sb.toString();
     }
 
     @Required
@@ -89,4 +165,23 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
         this.helper = helper;
     }
 
+    @Required
+    public void setSearcher(EventListingSearcher searcher) {
+        this.searcher = searcher;
+    }
+
+    @Required
+    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+        this.resourceTypeTree = resourceTypeTree;
+    }
+
+    @Required
+    public void setDisplayTypePropDef(PropertyTypeDefinition displayTypePropDef) {
+        this.displayTypePropDef = displayTypePropDef;
+    }
+
+    @Required
+    public void setStartDatePropDefPointer(String startDatePropDefPointer) {
+        this.startDatePropDefPointer = startDatePropDefPointer;
+    }
 }

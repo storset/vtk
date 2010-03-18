@@ -60,14 +60,12 @@
 	  return this.each(function (i) {
 		  
 		   //center thumbnails images
-		  
 		   //.. first horizontal
 		   var imgWidth = $("img", this).width();
 		   if(imgWidth > $(this).width()) {
 		      var leftAdjust = -(imgWidth - $(this).width()) / 2;
 			  $("img", this).css("marginLeft", leftAdjust + "px");
 		   }
-		   
 		   //.. then vertical
 		   var imgHeight = $("img", this).height();
 		   if(imgHeight > $(this).height()) {
@@ -75,21 +73,7 @@
 			  $("img", this).css("marginTop", leftAdjust + "px"); 
 		   }
 		   
-		   //generate image
-		   var img = new Image();
-		   var src = $("img", this).attr("src").split("?")[0]; 
-		   var alt = $("img", this).attr("alt");
-		   img.src = src; img.alt = alt;
-		   
-	       //generate link
-	       link = document.createElement("a"); 
-	       link.setAttribute("href", $(this).attr("href"));
-	       link.setAttribute("class", container.substring(1) + "-link");
-	       // IE
-	       link.setAttribute("className", container.substring(1) + "-link");
-	      
-	       //append img inside link
-	       $(link).append(img);
+		   var link = generateLinkImage($("img", this), $(this), container);
 	      
 	       //cache
 	       images[i] = link;
@@ -153,27 +137,33 @@
 		   
 		 
 	 });
+	 
+	function generateLinkImage(theimage, thelink, container) {
+      //change image
+	  var img = new Image();
+	  var src = $(theimage).attr("src").split("?")[0]; 
+	  var alt = $(theimage).attr("alt");
+	  img.src = src; img.alt = alt;
+		  
+	  //change link
+	  link = document.createElement("a"); 
+	  link.setAttribute("href", $(thelink).attr("href"));
+	  link.setAttribute("class", container.substring(1) + "-link");
+	  // IE
+	  link.setAttribute("className", container.substring(1) + "-link");
+	      
+	  //append img inside link
+	  $(link).append(img);
+
+	  return link;
+	}
 	  
 	//TODO: refactor with above code
 	function initFirstImage() {
 	  //choose first image in <li>
 	  $(wrapper + " ul li:first a").addClass("active");
 		
-	  //change image
-	  var img = new Image();
-	  var src = $(wrapper + " ul li:first a img").attr("src").split("?")[0]; 
-	  var alt = $(wrapper + " ul li:first a img").attr("alt");
-	  img.src = src; img.alt = alt;
-	  
-      //change link
-      link = document.createElement("a"); 
-      link.setAttribute("href", $(wrapper + " ul li:first a").attr("href"));
-      link.setAttribute("class", container.substring(1) + "-link");
-      // IE
-      link.setAttribute("className", container.substring(1) + "-link");
-      
-      //append img inside link
-      $(link).append(img);
+	  var link = generateLinkImage(wrapper + " ul li:first a img", wrapper + " ul li:first a", container);
       
       $("a" + container + "-link", wrapper + " " + container).remove();
       $(wrapper + " " + container).append(link);

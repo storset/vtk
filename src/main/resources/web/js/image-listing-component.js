@@ -127,15 +127,13 @@
 	 }
 	  
      function initFirstImage() {
-	   //choose first image in <li>
-	   $(wrapper + " ul li:first a").addClass("active");
 		
-	   var link = generateLinkImage(wrapper + " ul li:first a img", wrapper + " ul li:first a", container);
+	   var link = generateLinkImage(wrapper + " ul li a.active img", wrapper + " ul li a.active", container);
       
        $("a" + container + "-link", wrapper + " " + container).remove();
        $(wrapper + " " + container).append(link);
       
-       addDescription(wrapper + " ul li:first a img");
+       addDescription(wrapper + " ul li a.active img");
        calculatePagingNavigationHeight()
 	  
 	   //set all thumbnails not active to 0.6 opacity
@@ -148,7 +146,7 @@
 	 }
      
      function generateLinkImage(theimage, thelink) {
-         //create image
+       //create image
   	   var img = new Image();
   	   var src = $(theimage).attr("src").split("?")[0]; 
   	   var alt = $(theimage).attr("alt");

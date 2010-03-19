@@ -58,7 +58,11 @@
         <#else>
           <li>
         </#if>
-          <a href="${folderUrl}?actimg=${image.URI}&amp;display=gallery"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" /></a>
+          <#if (image_index == 0) >
+            <a href="${folderUrl}?actimg=${image.URI}&amp;display=gallery" class="active"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" /></a>
+          <#else>
+            <a href="${folderUrl}?actimg=${image.URI}&amp;display=gallery"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" /></a>
+          </#if>
         </li>
         <#assign count = count+1 />
     </#list>

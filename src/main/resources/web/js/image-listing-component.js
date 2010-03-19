@@ -42,20 +42,17 @@
 	       //cache images
 	       images[i] = link;
 	       
-	       //Fading of transparent block and prev / next icon
-	       if(navFade) {
-			   $(this).hover(
-			    function () {
-			    	if(!$(this).hasClass("active")) {
-					 $("img", this).stop().fadeTo("250", 1);
-			    	}
-			    }, //on hover out
-			    function () {
-			    	if(!$(this).hasClass("active")) {
-					 $("img", this).stop().fadeTo("250", 0.6);
-			    	}
-		       });
-	       }
+		   $(this).hover(
+		    function () {
+		    	if(!$(this).hasClass("active")) {
+				 $("img", this).stop().fadeTo("250", 1);
+		    	}
+		    }, //on hover out
+		    function () {
+		    	if(!$(this).hasClass("active")) {
+				 $("img", this).stop().fadeTo("250", 0.6);
+		    	}
+	       });
 		   
 		   $(this).click(function(e) {
 		  	  //replace link and image (w/ fade effect down to fadedOutOpacity) + stop() current animation.

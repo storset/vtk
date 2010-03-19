@@ -9,7 +9,14 @@
 	  var images = new Array();
 	  
 	  //default animation settings
-	  settings = jQuery.extend({ fadeInOutTime : 250, fadedOutOpacity: 0, fadedThumbsOpacity: 0.6 }, options);
+	  settings = jQuery.extend({ 
+		  fadeInOutTime : 250, 
+		  fadedOutOpacity: 0, 
+		  fadeThumbsInOutTime: 250,
+		  fadedThumbsOutOpacity: 0.6,
+		  fadeNavInOutTime: 250
+		  }, 
+	  options);
 
 	  //Unobtrusive JavaScript
 	  $(container + "-pure-css").addClass(container.substring(1));
@@ -31,12 +38,12 @@
 		   $(this).hover(
 		    function () {
 		    	if(!$(this).hasClass("active")) {
-				 $("img", this).stop().fadeTo("250", 1);
+				 $("img", this).stop().fadeTo(settings.fadeThumbsInOutTime, 1);
 		    	}
 		    }, //on hover out
 		    function () {
 		    	if(!$(this).hasClass("active")) {
-				 $("img", this).stop().fadeTo("250", settings.fadedThumbsOpacity);
+				 $("img", this).stop().fadeTo(settings.fadeThumbsInOutTime, settings.fadedThumbsOutOpacity);
 		    	}
 	       });
 		   
@@ -62,9 +69,9 @@
 		      jQuery(wrapper + " ul li a").each(function(j) {
 		    	if(jQuery(this).hasClass("active")) {
 		    	   jQuery(this).removeClass("active");
-		    	   jQuery("img", this).stop().fadeTo("250", settings.fadedThumbsOpacity);
+		    	   jQuery("img", this).stop().fadeTo(settings.fadeThumbsInOutTime, settings.fadedThumbsOutOpacity);
 		    	} else {
-		    	   jQuery("img", this).stop().fadeTo("0", settings.fadedThumbsOpacity);
+		    	   jQuery("img", this).stop().fadeTo("0", settings.fadedThumbsOutOpacity);
 		    	}
 		      });
 		      
@@ -131,11 +138,11 @@
 		    $(wrapper + " " + " a." + navClass + " span").stop().fadeTo("0", 0);
 		    
 		    $(wrapper + " " + " a." + navClass).hover(function () {
-			  $(this).stop().fadeTo("250", 1);
-			  $("span", this).stop().fadeTo("250", 0.2);
+			  $(this).stop().fadeTo(settings.fadeNavInOutTime, 1);
+			  $("span", this).stop().fadeTo(settings.fadeNavInOutTime, 0.2);
 			}, function () { //hover out
-			  $(this).stop().fadeTo("250", 0);
-			  $("span", this).stop().fadeTo("250", 0);
+			  $(this).stop().fadeTo(settings.fadeNavInOutTime, 0);
+			  $("span", this).stop().fadeTo(settings.fadeNavInOutTime, 0);
 			});
 	    }
 	 }
@@ -154,7 +161,7 @@
 	   jQuery(wrapper + " ul li a").each(function(j) {
 		 if(jQuery(this).hasClass("active")) {
 		 } else {
-		   jQuery("img", this).stop().fadeTo("0", settings.fadedThumbsOpacity);
+		   jQuery("img", this).stop().fadeTo("0", settings.fadedThumbsOutOpacity);
 		 }
 	   });
 	 }

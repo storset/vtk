@@ -118,3 +118,16 @@ ul.vrtx-image-listing {
 .vrtx-image-listing-include ul li {
   background-image: none;
 }
+
+.vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.next {
+  right: -50px; 
+}
+
+.vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.prev {
+  left: -50px; 
+}
+
+.vrtx-image-listing-include .vrtx-image-listing-include-container-nav span.prev-transparent-block, 
+.vrtx-image-listing-include .vrtx-image-listing-include-container-nav span.next-transparent-block {
+	background: transparent;
+}

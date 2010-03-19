@@ -31,7 +31,7 @@
 		     fadeInOutTime : ${fadeEffect}
 		   }
 			  
-		   $(wrapper + " ul li a").vrtxSGallery(wrapper, container, options);
+		   $(wrapper + " ul li a").vrtxSGallery(wrapper, container, options, true);
 				  
 	     });
        // -->

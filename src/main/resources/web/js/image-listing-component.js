@@ -3,7 +3,7 @@
 // by Øyvind Hatland - UiO / USIT
 
 (function ($) {
-  $.fn.vrtxSGallery = function (wrapper, container, options) {
+  $.fn.vrtxSGallery = function (wrapper, container, options, navFade) {
 	  
 	  //cache images
 	  var images = new Array();
@@ -43,17 +43,19 @@
 	       images[i] = link;
 	       
 	       //Fading of transparent block and prev / next icon
-		   $(this).hover(
-		    function () {
-		    	if(!$(this).hasClass("active")) {
-				 $("img", this).stop().fadeTo("250", 1);
-		    	}
-		    }, //on hover out
-		    function () {
-		    	if(!$(this).hasClass("active")) {
-				 $("img", this).stop().fadeTo("250", 0.6);
-		    	}
-	       });
+	       if(navFade) {
+			   $(this).hover(
+			    function () {
+			    	if(!$(this).hasClass("active")) {
+					 $("img", this).stop().fadeTo("250", 1);
+			    	}
+			    }, //on hover out
+			    function () {
+			    	if(!$(this).hasClass("active")) {
+					 $("img", this).stop().fadeTo("250", 0.6);
+			    	}
+		       });
+	       }
 		   
 		   $(this).click(function(e) {
 		  	  //replace link and image (w/ fade effect down to fadedOutOpacity) + stop() current animation.
@@ -112,18 +114,19 @@
 	      }
 		  h.preventDefault(); 
 		});
-	    
-	    //Fading of transparent block and prev / next icon
-	    $(wrapper + " " + " a." + navClass).stop().fadeTo("0", 0);
-	    $(wrapper + " " + " a." + navClass + " span").stop().fadeTo("0", 0);
-	    
-	    $(wrapper + " " + " a." + navClass).hover(function () {
-		  $(this).stop().fadeTo("250", 1);
-		  $("span", this).stop().fadeTo("250", 0.2);
-		}, function () { //hover out
-		  $(this).stop().fadeTo("250", 0);
-		  $("span", this).stop().fadeTo("250", 0);
-		});
+	    if(navFade) {
+		    //Fading of transparent block and prev / next icon
+		    $(wrapper + " " + " a." + navClass).stop().fadeTo("0", 0);
+		    $(wrapper + " " + " a." + navClass + " span").stop().fadeTo("0", 0);
+		    
+		    $(wrapper + " " + " a." + navClass).hover(function () {
+			  $(this).stop().fadeTo("250", 1);
+			  $("span", this).stop().fadeTo("250", 0.2);
+			}, function () { //hover out
+			  $(this).stop().fadeTo("250", 0);
+			  $("span", this).stop().fadeTo("250", 0);
+			});
+	    }
 	 }
 	  
      function initFirstImage() {

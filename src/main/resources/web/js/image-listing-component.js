@@ -22,21 +22,6 @@
 	  initFirstImage();
 		  
 	  return this.each(function (i) {
-		   setTimeout(100, function () {
-			   //center thumbnails images ..
-			   //.. first horizontal
-			   var imgWidth = $("img", this).width();
-			   if(imgWidth > $(this).width()) {
-			      var leftAdjust = -(imgWidth - $(this).width()) / 2;
-				  $("img", this).css("marginLeft", leftAdjust + "px");
-			   }
-			   //.. then vertical
-			   var imgHeight = $("img", this).height();
-			   if(imgHeight > $(this).height()) {
-				  var topAdjust = -(imgHeight - $(this).height()) / 2;
-				  $("img", this).css("marginTop", leftAdjust + "px"); 
-			   }
-		   });
 		   
 		   var link = generateLinkImage($("img", this), $(this), container);
 	      
@@ -92,8 +77,28 @@
 
 		      //prevent default event action
 			  e.preventDefault(); 
+			  
 	      });
+		  centerThumbnailImage($("img", this)); 
 	 });
+	  
+	 function centerThumbnailImage(thumb) {
+		 setTimeout(function() {
+		 //center thumbnails images ..
+		 //.. first horizontal
+		 var imgWidth = $(thumb).width();
+		 if(imgWidth > $(thumb).parent().width()) {
+		    var leftAdjust = -(imgWidth - $(thumb).parent().width()) / 2;
+			$(thumb).css("marginLeft", leftAdjust + "px");
+		 }
+		 //.. then vertical
+		 var imgHeight = $(thumb).height();
+		 if(imgHeight > $(thumb).parent().height()) {
+			var topAdjust = -(imgHeight - $(thumb).parent().height()) / 2;
+			$(thumb).css("marginTop", leftAdjust + "px"); 
+		 }
+		 }, 100);
+	 }
 	  
 	 function addPagingClickAndHoverEvents(navClass, wrapper) {
 	    $(wrapper + " " + " a." + navClass).click(function(h) {

@@ -9,7 +9,7 @@
 	  var images = new Array();
 	  
 	  //default animation settings
-	  settings = jQuery.extend({ fadeInOutTime : 250, fadedOutOpacity: 0 }, options);
+	  settings = jQuery.extend({ fadeInOutTime : 250, fadedOutOpacity: 0, fadedThumbsOpacity: 0.6 }, options);
 
 	  //Unobtrusive JavaScript
 	  $(container + "-pure-css").addClass(container.substring(1));
@@ -36,7 +36,7 @@
 		    }, //on hover out
 		    function () {
 		    	if(!$(this).hasClass("active")) {
-				 $("img", this).stop().fadeTo("250", 0.6);
+				 $("img", this).stop().fadeTo("250", settings.fadedThumbsOpacity);
 		    	}
 	       });
 		   
@@ -62,9 +62,9 @@
 		      jQuery(wrapper + " ul li a").each(function(j) {
 		    	if(jQuery(this).hasClass("active")) {
 		    	   jQuery(this).removeClass("active");
-		    	   jQuery("img", this).stop().fadeTo("250", 0.6);
+		    	   jQuery("img", this).stop().fadeTo("250", settings.fadedThumbsOpacity);
 		    	} else {
-		    	   jQuery("img", this).stop().fadeTo("0", 0.6);
+		    	   jQuery("img", this).stop().fadeTo("0", settings.fadedThumbsOpacity);
 		    	}
 		      });
 		      
@@ -154,7 +154,7 @@
 	   jQuery(wrapper + " ul li a").each(function(j) {
 		 if(jQuery(this).hasClass("active")) {
 		 } else {
-		   jQuery("img", this).stop().fadeTo("0", 0.6);
+		   jQuery("img", this).stop().fadeTo("0", settings.fadedThumbsOpacity);
 		 }
 	   });
 	 }

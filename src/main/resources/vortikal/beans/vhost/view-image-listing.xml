@@ -61,13 +61,13 @@
           <map>
             <entry key="common">
               <list>
+                <value>${themeBaseURL}/image-listing-component.css</value>
                 <value>${themeBaseURL}/view-image-listing.css</value>
               </list>
             </entry>
             <entry key="gallery">
               <list>
-                <value>${webResources.baseURL}/jquery/galleria/galleria.css</value>
-                <value>${webResources.baseURL}/jquery/galleria/galleria.override.css</value>
+                
               </list>
             </entry>
           </map>
@@ -94,8 +94,7 @@
             </entry>
             <entry key="gallery">
               <list>
-                <value>${webResources.baseURL}/jquery/galleria/jquery.galleria.js</value>
-                <value>${webResources.baseURL}/jquery/galleria/galleria.js</value>
+                <value>${jsBaseURL}/image-listing-component.js</value>
               </list>
             </entry>
           </map>

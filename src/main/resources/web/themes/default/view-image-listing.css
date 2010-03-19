@@ -97,3 +97,24 @@ ul.vrtx-image-listing {
 .vrtx-image-table table img {
   width: 50px;
 }
+
+.vrtx-image-listing-include {
+  margin: 0 auto !important;
+  width: 100%;
+  text-align: center;
+}
+
+.vrtx-image-listing-include .vrtx-image-listing-include-container {
+  margin-left: auto !important;
+  margin-right: auto !important;	
+}
+
+.vrtx-image-listing-include ul {
+  margin: 0 auto !important;
+  text-align: center;	
+  width: 660px !important;
+}
+
+.vrtx-image-listing-include ul li {
+  background-image: none;
+}

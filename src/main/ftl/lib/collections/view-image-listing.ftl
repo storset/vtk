@@ -115,40 +115,70 @@
   
   <#local images=imageListing.files />
   <#if (images?size > 0)>
-    <div class="vrtx-image-gallery">
+   <div class="vrtx-image-listing-include">
       
       <#local activeImage = "" />
       <#if RequestParameters['actimg']?exists>
         <#local activeImage = RequestParameters['actimg'] />
       </#if>
       
-      <ul class="vrtx-gallery">
-        <#list images as image>
-          <#local title = vrtx.propValue(image, 'title')?html />
-            <#if activeImage != "">
-              <#if (activeImage == image.URI) >
-                <li class="active">
-              <#else>
-                <li>
-              </#if>
-            <#else>
-              <#if (image_index == 0) >
-                <li class="active">
-              <#else>
-                <li>
-              </#if>
-            </#if>
-            <a href="${image.URI?html}" title="${title}">
-              <span class="vrtx-pure-css-gallery-image">
-                <img src="${image.URI?html}" alt="${title}" />
-                <span class="vrtx-pure-css-gallery-image-caption">${title}</span>
-              </span>
-              <img class="thumbnail" src="${image.URI?html}?vrtx=thumbnail" alt="${title}" />    
-            </a>
-            </li>
-        </#list>
-      </ul>
-    </div>
+      <script type="text/javascript">
+       <!--
+         // ("load") so that all images is loaded before running,
+	     // and .bind for performance increase: http://jqueryfordesigners.com/demo/fade-method2.html
+		 $(window).bind("load", function () {
+				
+		   var wrapper = ".vrtx-image-listing-include";	
+		   var container = ".vrtx-image-listing-include-container";
+			  
+		   var options = {
+		     fadeInOutTime : 0
+		   }
+			  
+		   $(wrapper + " ul li a").vrtxSGallery(wrapper, container, options);
+				  
+	     });
+       // -->
+       </script>
+      <#list images as image>
+        <div class="vrtx-image-listing-include-container-pure-css">
+          <div class="vrtx-image-listing-include-container-nav-pure-css">
+            <a class="prev" href="#" title="&lt;&lt; Forrige"><span class="prev-transparent-block"></span></a>
+            <a class="next" href="#" title="Neste &gt;&gt;"><span class="next-transparent-block"></span></a>
+          </div>
+          <a class="vrtx-image-listing-include-container-link" href="${image.URI}">
+            <img src="${image.URI}" alt="${image.URI}" />
+          </a>
+        </div>
+        <#break />
+      </#list>
+    <ul>
+    <#assign count = 1 />
+    <#list images as image>
+        <#assign description = vrtx.propValue(image, 'description', '', 'content')?html />
+        <#if count % 5 == 0>
+          <li class="vrtx-thumb-last">
+        <#else>
+          <li>
+        </#if>
+        <#if activeImage != "">
+	      <#if (activeImage == image.URI) >
+	          <a href="${image.URI}" class="active"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" /></a>
+	        <#else>
+	          <a href="${image.URI}"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" /></a>
+	        </#if>
+	      <#else>
+	        <#if (image_index == 0) >
+	          <a href="${image.URI}" class="active"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" /></a>
+	        <#else>
+	          <a href="${image.URI}"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" /></a>
+	        </#if>
+	      </#if>
+        </li>
+        <#assign count = count+1 />
+    </#list>
+    </ul>
+  </div>
  </#if>
 
 </#macro>

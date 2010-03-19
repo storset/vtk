@@ -21,42 +21,39 @@ function eventListingCalendar(allowedDates, activeDate, clickableDayTitle, notCl
   }
 
   $("#datepicker").datepicker( {
-    dateFormat :'yy-mm-dd',
+    dateFormat : 'yy-mm-dd',
     onSelect : function(dateText, inst) {
       location.href = location.href.split('?')[0] + "?date=" + dateText;
     },
-    firstDay :1,
-    defaultDate :activeDateForInit,
-    beforeShow : function(input, inst) {
-
-    },
+    firstDay : 1,
+    defaultDate : activeDateForInit,
     beforeShowDay : function(day) {
       var date_str = [ day.getFullYear(), day.getMonth() + 1, day.getDate() ].join('-');
 
       // Add classes and tooltip for dates with and without events
-    if ($.inArray(date_str, allowedDates) != -1) {
-      if (removeZeroesBeforeDayAndMonth(activeDate) == date_str) {
-        return [ true, 'state-active', clickableDayTitle ];
+      if ($.inArray(date_str, allowedDates) != -1) {
+        if (removeZeroesBeforeDayAndMonth(activeDate) == date_str) {
+          return [ true, 'state-active', clickableDayTitle ];
+        } else {
+          return [ true, '', clickableDayTitle ];
+        }
       } else {
-        return [ true, '', clickableDayTitle ];
+        return [ false, '', notClickableDayTitle ];
       }
-    } else {
-      return [ false, '', notClickableDayTitle ];
-    }
-  },
-  onChangeMonthYear : function(year, month, inst) {
-    if (month <= 9) {
-      month = "0" + month;
-    }
+    },
+    onChangeMonthYear : function(year, month, inst) {
+      if (month <= 9) {
+        month = "0" + month;
+      }
 
-    // If not init (when prev / next month click), refresh page with year and
-    // month
-    if (!init) {
-      location.href = location.href.split('?')[0] + "?date=" + year + '-' + month;
-    } else {
-      init = false;
+      // If not init (when prev / next month click), refresh page with year and
+      // month
+      if (!init) {
+        location.href = location.href.split('?')[0] + "?date=" + year + '-' + month;
+      } else {
+        init = false;
+      }
     }
-  }
   });
 }
 

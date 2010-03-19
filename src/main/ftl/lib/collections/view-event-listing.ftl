@@ -88,8 +88,8 @@
 	    </#if>
 	    
 	    <div id="vrtx-events-nav">
-	       <a href="${viewAllUpcomingURL}" id="vrtx-events-nav-all-upcoming"><@vrtx.msg code="eventListing.allUpcoming" default="Upcoming events"/></a>
-	       <a href="${viewAllPreviousURL}" id="vrtx-events-nav-all-previous"><@vrtx.msg code="eventListing.allPrevious" default="Previous events"/></a>
+	       <a href="${viewAllUpcomingURL}" id="vrtx-events-nav-all-upcoming">${viewAllUpcomingTitle}</a>
+	       <a href="${viewAllPreviousURL}" id="vrtx-events-nav-all-previous">${viewAllPreviousTitle}</a>
 	    </div>
 	    
 	  </#if>
@@ -101,13 +101,11 @@
        <#if requestedDate?exists && requestedDate?has_content>
          <#local activeDate = requestedDate />
        </#if>
-       <#local clickableDayTitle = vrtx.getMsg("eventListing.calendar.dayHasPlannedEvents", "View upcoming events this day") />
-       <#local notClickableDayTitle = vrtx.getMsg("eventListing.calendar.dayHasNoPlannedEvents", "No upcoming events this day") />
        <#local language = vrtx.getMsg("eventListing.calendar.lang", "en") />
        <script type="text/javascript">
        <!--
          $(document).ready(function() {
-           eventListingCalendar(${allowedDates}, '${activeDate}', '${clickableDayTitle}', '${notClickableDayTitle}', '${language}');
+           eventListingCalendar(${allowedDates}, '${activeDate}', '${dayHasPlannedEventsTitle}', '${dayHasNoPlannedEventsTitle}', '${language}');
          });
        // -->
        </script>

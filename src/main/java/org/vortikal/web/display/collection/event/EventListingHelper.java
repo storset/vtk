@@ -120,43 +120,26 @@ public final class EventListingHelper implements InitializingBean {
         return null;
     }
 
-    public String getRequestedDateAsLocalizedString(HttpServletRequest request, Resource collection,
-            SpecificDateSearchType searchType, Date date) {
-        Calendar requestedCal = Calendar.getInstance();
-        requestedCal.setTime(date);
-        Calendar now = Calendar.getInstance();
-        String formatKeyYear = now.get(Calendar.YEAR) != requestedCal.get(Calendar.YEAR) ? "-year" : "";
-        if (searchType != SpecificDateSearchType.Year) {
-            Locale locale = this.localeResolver.resolveResourceLocale(request, collection.getURI());
-            String format = "full-month" + formatKeyYear + "-short";
-            if (searchType == SpecificDateSearchType.Month) {
-                format = "full-month" + formatKeyYear;
-            }
-            return this.dateValueFormatter.valueToString(new Value(date, false), format, locale);
-        }
-        return String.valueOf(requestedCal.get(Calendar.YEAR));
+    public String getEventTypeTitle(HttpServletRequest request, Resource collection, String key, boolean capitalize) {
+        return this.getEventTypeTitle(request, collection, null, null, key, capitalize);
     }
 
-    public String getTitle(HttpServletRequest request, Resource collection, boolean capitalize, String key,
-            Object[] params) {
-
+    public String getEventTypeTitle(HttpServletRequest request, Resource collection, SpecificDateSearchType searchType,
+            Date date, String key, boolean capitalize) {
+        List<Object> params = new ArrayList<Object>();
         String eventTypeTitle = this.getEventTypeTitle(collection, capitalize);
         if (eventTypeTitle != null) {
             key = key + ".overrideDefault";
-            List<Object> l = new ArrayList<Object>();
-            l.add(eventTypeTitle);
-            if (params != null) {
-                for (Object obj : params) {
-                    l.add(obj);
-                }
-            }
-            params = l.toArray();
+            params.add(eventTypeTitle);
         }
-
-        return this.getTitle(request, key, params);
+        if (searchType != null && date != null) {
+            String titleDate = this.getRequestedDateAsLocalizedString(request, collection, searchType, date);
+            params.add(titleDate);
+        }
+        return getLocalizedTitle(request, key, params.toArray());
     }
 
-    public String getTitle(HttpServletRequest request, String key, Object[] params) {
+    public String getLocalizedTitle(HttpServletRequest request, String key, Object[] params) {
         RequestContext springRequestContext = new RequestContext(request);
         if (params != null) {
             return springRequestContext.getMessage(key, params);
@@ -173,6 +156,23 @@ public final class EventListingHelper implements InitializingBean {
             return eventTypeTitle;
         }
         return null;
+    }
+
+    private String getRequestedDateAsLocalizedString(HttpServletRequest request, Resource collection,
+            SpecificDateSearchType searchType, Date date) {
+        Calendar requestedCal = Calendar.getInstance();
+        requestedCal.setTime(date);
+        Calendar now = Calendar.getInstance();
+        String formatKeyYear = now.get(Calendar.YEAR) != requestedCal.get(Calendar.YEAR) ? "-year" : "";
+        if (searchType != SpecificDateSearchType.Year) {
+            Locale locale = this.localeResolver.resolveResourceLocale(request, collection.getURI());
+            String format = "full-month" + formatKeyYear + "-short";
+            if (searchType == SpecificDateSearchType.Month) {
+                format = "full-month" + formatKeyYear;
+            }
+            return this.dateValueFormatter.valueToString(new Value(date, false), format, locale);
+        }
+        return String.valueOf(requestedCal.get(Calendar.YEAR));
     }
 
     @Required

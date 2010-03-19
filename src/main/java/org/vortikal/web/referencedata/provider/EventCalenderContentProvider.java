@@ -82,6 +82,7 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
         Resource resource = this.repository.retrieve(token, resourceURI, true);
 
         setAllowedDates(request, resource, model);
+        setCalendarTitles(request, resource, model);
 
     }
 
@@ -129,6 +130,14 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
             model.put("allowedDates", eventDates);
 
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void setCalendarTitles(HttpServletRequest request, Resource resource, Map model) {
+        model.put("dayHasPlannedEventsTitle", this.helper.getEventTypeTitle(request, resource,
+                "eventListing.calendar.dayHasPlannedEvents", false));
+        model.put("dayHasNoPlannedEventsTitle", this.helper.getEventTypeTitle(request, resource,
+                "eventListing.calendar.dayHasNoPlannedEvents", false));
     }
 
     private String getEventDatesAsArrayString(Set<String> eventDates) {

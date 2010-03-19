@@ -73,14 +73,14 @@ public class EventCalendarListingController extends EventListingController {
                 List<GroupedEvents> groupedByDayEvents = this.searcher.searchGroupedByDayEvents(request, collection,
                         this.daysAhead);
                 model.put("groupedByDayEvents", groupedByDayEvents);
-                String groupedByDayTitle = this.helper.getTitle(request, "eventListing.groupedEvents",
+                String groupedByDayTitle = this.helper.getLocalizedTitle(request, "eventListing.groupedEvents",
                         new Object[] { this.daysAhead });
                 model.put("groupedEventsTitle", groupedByDayTitle);
 
                 Listing furtherUpcoming = this.searcher.searchFurtherUpcoming(request, collection, this.daysAhead,
                         this.furtherUpcomingPageLimit);
                 model.put("furtherUpcoming", furtherUpcoming);
-                String furtherUpcomingTitle = this.helper.getTitle(request, "eventListing.furtherUpcomingEvents", null);
+                String furtherUpcomingTitle = this.helper.getLocalizedTitle(request, "eventListing.furtherUpcomingEvents", null);
                 model.put("furtherUpcomingTitle", furtherUpcomingTitle);
 
             }
@@ -89,9 +89,11 @@ public class EventCalendarListingController extends EventListingController {
         URL viewAllUpcomingURL = createURL(collection, EventListingHelper.REQUEST_PARAMETER_VIEW,
                 EventListingHelper.VIEW_TYPE_ALL_UPCOMING);
         model.put("viewAllUpcomingURL", viewAllUpcomingURL);
+        model.put("viewAllUpcomingTitle", this.helper.getEventTypeTitle(request, collection, "eventListing.allUpcoming", false));
         URL viewAllPreviousURL = createURL(collection, EventListingHelper.REQUEST_PARAMETER_VIEW,
                 EventListingHelper.VIEW_TYPE_ALL_PREVIOUS);
         model.put("viewAllPreviousURL", viewAllPreviousURL);
+        model.put("viewAllPreviousTitle", this.helper.getEventTypeTitle(request, collection, "eventListing.allPrevious", false));
 
     }
 
@@ -104,15 +106,15 @@ public class EventCalendarListingController extends EventListingController {
             Listing specificDateEvents = this.searcher.searchSpecificDate(request, collection, date, searchType);
 
             model.put("specificDate", Boolean.TRUE);
-            String titleDate = this.helper.getRequestedDateAsLocalizedString(request, collection, searchType, date);
 
             if (specificDateEvents.size() > 0) {
                 model.put("specificDateEvents", specificDateEvents);
-                model.put("specificDateEventsTitle", this.helper.getTitle(request, collection, true,
-                        "eventListing.specificDateEvent", new Object[] { titleDate }));
+                String specificDateEventsTitle = this.helper.getEventTypeTitle(request, collection, searchType, date,
+                        "eventListing.specificDateEvent", true);
+                model.put("specificDateEventsTitle", specificDateEventsTitle);
             } else {
-                model.put("noPlannedEventsMsg", this.helper.getTitle(request, collection, false,
-                        "eventListing.noPlannedEvents", new Object[] { titleDate }));
+                model.put("noPlannedEventsMsg", this.helper.getEventTypeTitle(request, collection, searchType, date,
+                        "eventListing.noPlannedEvents", false));
             }
         }
 

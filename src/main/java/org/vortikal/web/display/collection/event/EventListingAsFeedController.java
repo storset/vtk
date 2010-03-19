@@ -61,21 +61,27 @@ public class EventListingAsFeedController extends AtomFeedController {
         String feedTitle = getTitle(collection);
 
         Listing feedContent = null;
+        boolean showIntroduction = true;
         Property displayTypeProp = collection.getProperty(this.displayTypePropDef);
         if (displayTypeProp != null && "calendar".equals(displayTypeProp.getStringValue())) {
             SpecificDateSearchType searchType = this.helper.getSpecificDateSearchType(request);
             if (searchType != null) {
                 Date date = this.helper.getSpecificSearchDate(request);
                 String titleDate = this.helper.getRequestedDateAsLocalizedString(request, collection, searchType, date);
-                feedTitle = helper.getTitle(request, "eventListing.specificDateEvent", new Object[] { titleDate });
+                feedTitle = helper.getTitle(request, collection, true, "eventListing.specificDateEvent",
+                        new Object[] { titleDate });
                 feedContent = this.searcher.searchSpecificDate(request, collection, date, searchType);
+            } else {
+                String eventTypeTitle = this.helper.getEventTypeTitle(collection, true);
+                feedTitle = eventTypeTitle != null ? eventTypeTitle : feedTitle;
             }
+            showIntroduction = false;
         }
         if (feedContent == null) {
             feedContent = this.searcher.searchUpcoming(request, collection, 1, 25, 0);
         }
 
-        Feed feed = populateFeed(collection, feedTitle);
+        Feed feed = populateFeed(collection, feedTitle, showIntroduction);
         for (PropertySet feedEntry : feedContent.getFiles()) {
             addEntry(feed, token, feedEntry);
         }

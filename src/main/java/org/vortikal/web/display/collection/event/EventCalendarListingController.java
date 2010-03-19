@@ -108,11 +108,11 @@ public class EventCalendarListingController extends EventListingController {
 
             if (specificDateEvents.size() > 0) {
                 model.put("specificDateEvents", specificDateEvents);
-                model.put("specificDateEventsTitle", this.helper.getTitle(request, "eventListing.specificDateEvent",
-                        new Object[] { titleDate }));
+                model.put("specificDateEventsTitle", this.helper.getTitle(request, collection, true,
+                        "eventListing.specificDateEvent", new Object[] { titleDate }));
             } else {
-                model.put("noPlannedEventsMsg", this.helper.getTitle(request, "eventListing.noPlannedEvents",
-                        new Object[] { titleDate }));
+                model.put("noPlannedEventsMsg", this.helper.getTitle(request, collection, false,
+                        "eventListing.noPlannedEvents", new Object[] { titleDate }));
             }
         }
 

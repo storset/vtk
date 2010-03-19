@@ -80,6 +80,13 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
         String token = SecurityContext.getSecurityContext().getToken();
         Path resourceURI = RequestContext.getRequestContext().getResourceURI();
         Resource resource = this.repository.retrieve(token, resourceURI, true);
+
+        setAllowedDates(request, resource, model);
+
+    }
+
+    @SuppressWarnings("unchecked")
+    private void setAllowedDates(HttpServletRequest request, Resource resource, Map model) throws Exception {
         Property displayTypeProp = resource.getProperty(this.displayTypePropDef);
         if (displayTypeProp != null && "calendar".equals(displayTypeProp.getStringValue())) {
 
@@ -122,7 +129,6 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
             model.put("allowedDates", eventDates);
 
         }
-
     }
 
     private String getEventDatesAsArrayString(Set<String> eventDates) {

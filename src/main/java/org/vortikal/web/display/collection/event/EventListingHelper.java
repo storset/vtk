@@ -32,8 +32,10 @@ package org.vortikal.web.display.collection.event;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -43,8 +45,10 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.support.RequestContext;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.DateValueFormatter;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.web.servlet.ResourceAwareLocaleResolver;
 
@@ -60,6 +64,7 @@ public final class EventListingHelper implements InitializingBean {
 
     private DateValueFormatter dateValueFormatter;
     private ResourceAwareLocaleResolver localeResolver;
+    private PropertyTypeDefinition eventTypeTitlePropDef;
 
     public static final String REQUEST_PARAMETER_DATE = "date";
     public static final String REQUEST_PARAMETER_VIEW = "view";
@@ -132,12 +137,42 @@ public final class EventListingHelper implements InitializingBean {
         return String.valueOf(requestedCal.get(Calendar.YEAR));
     }
 
+    public String getTitle(HttpServletRequest request, Resource collection, boolean capitalize, String key,
+            Object[] params) {
+
+        String eventTypeTitle = this.getEventTypeTitle(collection, capitalize);
+        if (eventTypeTitle != null) {
+            key = key + ".overrideDefault";
+            List<Object> l = new ArrayList<Object>();
+            l.add(eventTypeTitle);
+            if (params != null) {
+                for (Object obj : params) {
+                    l.add(obj);
+                }
+            }
+            params = l.toArray();
+        }
+
+        return this.getTitle(request, key, params);
+    }
+
     public String getTitle(HttpServletRequest request, String key, Object[] params) {
         RequestContext springRequestContext = new RequestContext(request);
         if (params != null) {
             return springRequestContext.getMessage(key, params);
         }
         return springRequestContext.getMessage(key);
+    }
+
+    public String getEventTypeTitle(Resource collection, boolean capitalize) {
+        Property eventTypeTitleProp = collection.getProperty(this.eventTypeTitlePropDef);
+        if (eventTypeTitleProp != null) {
+            String eventTypeTitle = eventTypeTitleProp.getStringValue();
+            eventTypeTitle = capitalize ? eventTypeTitle.substring(0, 1).toUpperCase()
+                    + eventTypeTitle.substring(1).toLowerCase() : eventTypeTitle.toLowerCase();
+            return eventTypeTitle;
+        }
+        return null;
     }
 
     @Required
@@ -148,6 +183,11 @@ public final class EventListingHelper implements InitializingBean {
     @Required
     public void setLocaleResolver(ResourceAwareLocaleResolver localeResolver) {
         this.localeResolver = localeResolver;
+    }
+
+    @Required
+    public void setEventTypeTitlePropDef(PropertyTypeDefinition eventTypeTitlePropDef) {
+        this.eventTypeTitlePropDef = eventTypeTitlePropDef;
     }
 
 }

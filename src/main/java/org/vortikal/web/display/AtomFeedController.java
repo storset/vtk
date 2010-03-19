@@ -102,6 +102,11 @@ public abstract class AtomFeedController implements Controller {
 
     protected Feed populateFeed(Resource collection, String feedTitle) throws IOException, URIException,
             UnsupportedEncodingException {
+        return this.populateFeed(collection, feedTitle, true);
+    }
+
+    protected Feed populateFeed(Resource collection, String feedTitle, boolean showIntroduction) throws IOException,
+            URIException, UnsupportedEncodingException {
 
         Feed feed = abdera.newFeed();
         Property published = collection.getProperty(NS, PropertyType.CREATIONTIME_PROP_NAME);
@@ -110,20 +115,22 @@ public abstract class AtomFeedController implements Controller {
 
         feed.setTitle(feedTitle);
 
-        String subTitle = getIntroduction(collection);
-        if (subTitle != null) {
-            feed.setSubtitleAsXhtml(subTitle);
-        } else {
-            subTitle = getDescription(collection);
+        if (showIntroduction) {
+            String subTitle = getIntroduction(collection);
             if (subTitle != null) {
-                feed.setSubtitle(subTitle);
+                feed.setSubtitleAsXhtml(subTitle);
+            } else {
+                subTitle = getDescription(collection);
+                if (subTitle != null) {
+                    feed.setSubtitle(subTitle);
+                }
             }
-        }
 
-        Property picture = getPicture(collection);
-        if (picture != null) {
-            String val = picture.getFormattedValue("thumbnail", Locale.getDefault());
-            feed.setLogo(val);
+            Property picture = getPicture(collection);
+            if (picture != null) {
+                String val = picture.getFormattedValue("thumbnail", Locale.getDefault());
+                feed.setLogo(val);
+            }
         }
 
         Date lastModified = getLastModified(collection);

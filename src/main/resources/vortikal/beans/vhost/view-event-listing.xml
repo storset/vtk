@@ -96,6 +96,7 @@
   <bean id="eventListingHelper" class="org.vortikal.web.display.collection.event.EventListingHelper">
     <property name="localeResolver" ref="viewServiceResourceAwareLocaleResolver" />
     <property name="dateValueFormatter" ref="dateValueFormatter" />
+    <property name="eventTypeTitlePropDef" ref="eventListing.eventTypeTitlePropDef" />
   </bean>
 
   <bean id="eventListing.upcomingEventsSearchComponent" class="org.vortikal.web.search.QueryStringSearchComponent"

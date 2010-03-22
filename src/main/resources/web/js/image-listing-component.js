@@ -24,9 +24,10 @@
 		  
 	  //paging (relative to li a.active)
 	  addPagingClickAndHoverEvents("next", wrapper);
-	  addPagingClickAndHoverEvents("prev", wrapper);  
+	  addPagingClickAndHoverEvents("prev", wrapper);
 
 	  initFirstImage();
+	  addImageClickEvent();
 		  
 	  return this.each(function (i) {
 		   
@@ -57,12 +58,14 @@
 			    	  $(this).append(images[i]); 
 			    	  //fade in and make sure calculations are done after fully loaded
 			    	  $(this).fadeTo(settings.fadeInOutTime, 1, function() {
+			    		  addImageClickEvent();
 			    		  calculatePagingNavigationHeight();
 			    	  });
 			      });
 		      } else {
 		    	  $("a" + container + "-link", wrapper + " " + container).remove();
 		    	  $(wrapper + " " + container).append(images[i]);
+		    	  addImageClickEvent();
 		    	  calculatePagingNavigationHeight();
 		      }
 		      //remove active classes
@@ -79,7 +82,7 @@
 		  	  $(this).addClass("active");
 		  	  //make sure opacity is 1
 		  	  $("img", this).stop().fadeTo("0", 1);
-	
+
 		  	  addDescription($("img", this));
 
 		      //prevent default event action
@@ -146,16 +149,29 @@
 			});
 	    }
 	 }
+	 
+	 function addImageClickEvent() {
+	   $("a" + container + "-link").click(function(e) { 
+		  if($(wrapper + " ul li a.active").parent().next().length != 0) {
+		    $(wrapper + " ul li a.active").parent().next().find("a").click();
+		  } else {
+			$(wrapper + " ul li:first a").click();
+		  }
+		  //prevent default event action
+		  e.preventDefault(); 
+	   });
+	 }
 	  
      function initFirstImage() {
 		
-	   var link = generateLinkImage(wrapper + " ul li a.active img", wrapper + " ul li a.active", container);
+	   var link = generateLinkImage(wrapper + " ul li a.active img", wrapper + " ul li a.active");
       
        $("a" + container + "-link", wrapper + " " + container).remove();
        $(wrapper + " " + container).append(link);
       
+       addImageClickEvent();
+       calculatePagingNavigationHeight();
        addDescription(wrapper + " ul li a.active img");
-       calculatePagingNavigationHeight()
 	  
 	   //set all thumbnails not active to 0.6 opacity
 	   jQuery(wrapper + " ul li a").each(function(j) {

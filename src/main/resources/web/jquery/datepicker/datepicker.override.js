@@ -60,8 +60,6 @@ function eventListingCalendar(allowedDates, activeDate, clickableDayTitle, notCl
   });
 }
 
-
-
 function makeMonthLink(year, month) {
   $(".ui-datepicker-month").html("<a href='" + location.href.split('?')[0] + "?date=" + year + '-' + month + "'>" 
   + $(".ui-datepicker-month").text() + ' ' + $(".ui-datepicker-year").remove().text() + "</a>");

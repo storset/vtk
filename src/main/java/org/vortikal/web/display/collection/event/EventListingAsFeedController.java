@@ -67,8 +67,9 @@ public class EventListingAsFeedController extends AtomFeedController {
             SpecificDateSearchType searchType = this.helper.getSpecificDateSearchType(request);
             if (searchType != null) {
                 Date date = this.helper.getSpecificSearchDate(request);
-                feedTitle = this.helper.getEventTypeTitle(request, collection, searchType, date,
-                        "eventListing.specificDateEvent", true);
+                String messageKey = searchType == SpecificDateSearchType.Day ? "eventListing.specificDayEvent"
+                        : "eventListing.specificDateEvent";
+                feedTitle = this.helper.getEventTypeTitle(request, collection, searchType, date, messageKey, true);
                 feedContent = this.searcher.searchSpecificDate(request, collection, date, searchType);
             } else {
                 String eventTypeTitle = this.helper.getEventTypeTitle(collection, true);

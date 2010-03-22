@@ -80,7 +80,8 @@ public class EventCalendarListingController extends EventListingController {
                 Listing furtherUpcoming = this.searcher.searchFurtherUpcoming(request, collection, this.daysAhead,
                         this.furtherUpcomingPageLimit);
                 model.put("furtherUpcoming", furtherUpcoming);
-                String furtherUpcomingTitle = this.helper.getLocalizedTitle(request, "eventListing.furtherUpcomingEvents", null);
+                String furtherUpcomingTitle = this.helper.getEventTypeTitle(request, collection,
+                        "eventListing.furtherUpcomingEvents", false);
                 model.put("furtherUpcomingTitle", furtherUpcomingTitle);
 
             }
@@ -89,11 +90,13 @@ public class EventCalendarListingController extends EventListingController {
         URL viewAllUpcomingURL = createURL(collection, EventListingHelper.REQUEST_PARAMETER_VIEW,
                 EventListingHelper.VIEW_TYPE_ALL_UPCOMING);
         model.put("viewAllUpcomingURL", viewAllUpcomingURL);
-        model.put("viewAllUpcomingTitle", this.helper.getEventTypeTitle(request, collection, "eventListing.allUpcoming", false));
+        model.put("viewAllUpcomingTitle", this.helper.getEventTypeTitle(request, collection,
+                "eventListing.allUpcoming", false));
         URL viewAllPreviousURL = createURL(collection, EventListingHelper.REQUEST_PARAMETER_VIEW,
                 EventListingHelper.VIEW_TYPE_ALL_PREVIOUS);
         model.put("viewAllPreviousURL", viewAllPreviousURL);
-        model.put("viewAllPreviousTitle", this.helper.getEventTypeTitle(request, collection, "eventListing.allPrevious", false));
+        model.put("viewAllPreviousTitle", this.helper.getEventTypeTitle(request, collection,
+                "eventListing.allPrevious", false));
 
     }
 
@@ -109,8 +112,10 @@ public class EventCalendarListingController extends EventListingController {
 
             if (specificDateEvents.size() > 0) {
                 model.put("specificDateEvents", specificDateEvents);
+                String messageKey = searchType == SpecificDateSearchType.Day ? "eventListing.specificDayEvent"
+                        : "eventListing.specificDateEvent";
                 String specificDateEventsTitle = this.helper.getEventTypeTitle(request, collection, searchType, date,
-                        "eventListing.specificDateEvent", true);
+                        messageKey, true);
                 model.put("specificDateEventsTitle", specificDateEventsTitle);
             } else {
                 model.put("noPlannedEventsMsg", this.helper.getEventTypeTitle(request, collection, searchType, date,

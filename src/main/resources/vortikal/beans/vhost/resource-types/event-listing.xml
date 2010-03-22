@@ -21,8 +21,8 @@
         <ref bean="eventListing.recursiveListingPropDef" />
         <ref bean="eventListing.hideEndDatePropDef" />
         <ref bean="eventListing.hideLocationPropDef" />
-        <ref bean="eventListing.eventTypeTitlePropDef" />
         <ref bean="eventListing.displayTypePropDef" />
+        <ref bean="eventListing.eventTypeTitlePropDef" />
       </list>
     </property>
   </bean>

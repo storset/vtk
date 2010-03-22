@@ -91,19 +91,17 @@
   </h1>
   </#if>
 
-     <#if page == 1>
-     <#-- Image -->
-     <@viewutils.displayImage resource />
-
-     <#-- Introduction -->
-     <#-- @viewutils.displayIntroduction resource / -->
-     <#assign introduction = vrtx.getIntroduction(resource) />
-	     <#if introduction?has_content && !(isBlogListing || isEventCalendarListing)>
-	       <div class="vrtx-introduction">
-	         ${introduction}
-	       </div>
-	     </#if>
-     </#if>
+  <#if page == 1>
+    <#-- Image -->
+    <@viewutils.displayImage resource />
+    <#-- Introduction -->
+    <#assign introduction = vrtx.getIntroduction(resource) />
+    <#if introduction?has_content && !(isBlogListing || isEventCalendarListing)>
+      <div class="vrtx-introduction">
+        ${introduction}
+      </div>
+    </#if>
+  </#if>
 
      <#-- List collections: -->
      <#if page == 1>

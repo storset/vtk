@@ -490,8 +490,8 @@
             <ref bean="articleListing.hideIntroductionPropDef" />
             <ref bean="articleListing.hideIntroductionImagePropDef" />
             <ref bean="hideNumberOfCommentsPropDef" />
-            <ref bean="eventListing.eventTypeTitlePropDef" />
             <ref bean="eventListing.displayTypePropDef" />
+            <ref bean="eventListing.eventTypeTitlePropDef" />
           </list>
         </property>
       </bean>

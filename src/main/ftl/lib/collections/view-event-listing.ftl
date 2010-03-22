@@ -12,7 +12,7 @@
     <@displayCalendar hideNumberOfComments displayMoreURLs />
   </#if>
   
-</#macro>>
+</#macro>
 
 <#macro displayStandard collectionListing hideNumberOfComments displayMoreURLs >
   
@@ -21,7 +21,7 @@
 
     <div id="${collectionListing.name}" class="vrtx-resources ${collectionListing.name}">
     <#if collectionListing.title?exists && collectionListing.offset == 0>
-      <h2>${collectionListing.title?html}</h2> 
+      <h2>${collectionListing.title?html}</h2>
     </#if>
     <#list events as event>
       <@displayEvent collectionListing event hideNumberOfComments displayMoreURLs />
@@ -35,17 +35,17 @@
   
   <div id="vrtx-main-content" class="vrtx-calendar-listing">
 	  <#if allUpcoming?has_content>
-	    <@displayStandard allUpcoming hideNumberOfComments displayMoreURLs />  
+	    <@displayStandard allUpcoming hideNumberOfComments displayMoreURLs />
 	
 	  <#elseif allPrevious?has_content>
 	    <@displayStandard allPrevious hideNumberOfComments displayMoreURLs />
 	
 	  <#elseif specificDate?has_content && specificDate>
 	    <#if specificDateEvents?has_content && specificDateEvents?size &gt; 0>
-	      <h2 class="vrtx-events-specific-date">${specificDateEventsTitle}</h2>
+	      <h1 class="vrtx-events-specific-date">${specificDateEventsTitle}</h1>
 	      <@displayStandard specificDateEvents hideNumberOfComments displayMoreURLs=false />
 	    <#else>
-	      <h3 class="vrtx-events-no-planned">${noPlannedEventsMsg}</h3>
+	      <h2 class="vrtx-events-no-planned">${noPlannedEventsMsg}</h2>
 	    </#if>
 	
 	  <#elseif groupedByDayEvents?has_content || furtherUpcoming?has_content>
@@ -70,7 +70,7 @@
 	          </div>
 	          <div class="vrtx-daily-event">
 	          <#local eventListing = groupedEvents.events />
-	          <#assign subcount = 1 /> 
+	          <#assign subcount = 1 />
 	          <#list eventListing.files as event>
 	            <#if groupedByDayEvents?size == count && eventListing.files?size == subcount>
 	              <span id="vrtx-last-daily-event">
@@ -79,9 +79,9 @@
 	            <#if groupedByDayEvents?size == count && eventListing.files?size == subcount>
 	              </span>
 	            </#if>
-	            <#assign subcount = subcount +1 /> 
+	            <#assign subcount = subcount +1 />
 	          </#list>
-	          </div>      
+	          </div>
 	        </div>
 	        <#assign count = count +1 />
 	      </#list>
@@ -90,7 +90,7 @@
 	    
 	    <#if furtherUpcoming?has_content && furtherUpcoming.files?size &gt; 0>
 	      <div class="vrtx-events-further-upcoming">
-	        <h2 class="vrtx-events-further-upcoming">${furtherUpcomingTitle?html}</h2>
+	        <h1 class="vrtx-events-further-upcoming">${furtherUpcomingTitle?html}</h1>
 	        <@displayStandard furtherUpcoming hideNumberOfComments displayMoreURLs=false />
 	      </div>
 	    </#if>

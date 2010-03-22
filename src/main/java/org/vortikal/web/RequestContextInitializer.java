@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -269,8 +268,7 @@ public class RequestContextInitializer implements ContextInitializer {
         RequestContext requestContext = RequestContext.getRequestContext();
 
         try {
-            for (Iterator<Assertion> iter = service.getAssertions().iterator(); iter.hasNext();) {
-                Assertion assertion = iter.next();
+            for (Assertion assertion: service.getAssertions()) {
 
                 if (!assertion.matches(request,resource,securityContext.getPrincipal())) {
                     if (logger.isTraceEnabled()) {
@@ -302,8 +300,9 @@ public class RequestContextInitializer implements ContextInitializer {
             }
 
             for (Service child : children) {
-                if (resolveService(child, request, resource))
+                if (resolveService(child, request, resource)) {
                     return true;
+                }
             }
         }
         

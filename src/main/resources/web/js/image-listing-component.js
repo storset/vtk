@@ -3,7 +3,7 @@
 // by Øyvind Hatland - UiO / USIT
 
 (function ($) {
-  $.fn.vrtxSGallery = function (wrapper, container, options, navFade) {
+  $.fn.vrtxSGallery = function (wrapper, container, options) {
 	  
 	  //cache images
 	  var images = new Array();
@@ -21,13 +21,12 @@
 	  //Unobtrusive JavaScript
 	  $(container + "-pure-css").addClass(container.substring(1));
 	  $(container + "-nav-pure-css").addClass(container.substring(1) + "-nav");
-		  
-	  //paging (relative to li a.active)
-	  addPagingClickAndHoverEvents("next", wrapper);
-	  addPagingClickAndHoverEvents("prev", wrapper);
 
 	  initFirstImage();
-	  addImageClickEvent();
+	  
+	  //paging (relative to li a.active)
+	  addPagingClickEvents("next", wrapper);
+	  addPagingClickEvents("prev", wrapper);
 		  
 	  return this.each(function (i) {
 		   
@@ -58,14 +57,14 @@
 			    	  $(this).append(images[i]); 
 			    	  //fade in and make sure calculations are done after fully loaded
 			    	  $(this).fadeTo(settings.fadeInOutTime, 1, function() {
-			    		  addImageClickEvent();
+			    		  addImageClickAndHoverEvents();
 			    		  calculatePagingNavigationHeight();
 			    	  });
 			      });
 		      } else {
 		    	  $("a" + container + "-link", wrapper + " " + container).remove();
 		    	  $(wrapper + " " + container).append(images[i]);
-		    	  addImageClickEvent();
+		    	  addImageClickAndHoverEvents();
 		    	  calculatePagingNavigationHeight();
 		      }
 		      //remove active classes
@@ -115,7 +114,7 @@
 		 }, 100);
 	 }
 	  
-	 function addPagingClickAndHoverEvents(navClass, wrapper) {
+	 function addPagingClickEvents(navClass, wrapper) {
 	    $(wrapper + " " + " a." + navClass).click(function(h) {
 	      if(navClass == "next") {
 			  if($(wrapper + " ul li a.active").parent().next().length != 0) {
@@ -132,23 +131,20 @@
 	      }
 		  h.preventDefault(); 
 		});
-	    if(navFade) {
-		    //Fading of transparent block and prev / next icon
-		    $(wrapper + " " + " a." + navClass).stop().fadeTo("0", 0);
-		    $(wrapper + " " + " a." + navClass + " span").stop().fadeTo("0", 0);
-		    
-		    $(wrapper + " " + " a." + navClass).hover(function () {
-			  $(this).stop().fadeTo(settings.fadeNavInOutTime, 1);
-			  $("span", this).stop().fadeTo(settings.fadeNavInOutTime, 0.2);
+	    
+	    //Fading of transparent block and prev / next icon
+	    $(wrapper + " " + " a." + navClass).stop().fadeTo("0", 0);
+	    $(wrapper + " " + " a." + navClass + " span").stop().fadeTo("0", 0);
+	    $(wrapper + " " + " a." + navClass).hover(function () {
+			  $(wrapper + " " + " a." + navClass).stop().fadeTo(settings.fadeNavInOutTime, 1);
+			  $(wrapper + " " + " a." + navClass + " span").stop().fadeTo(settings.fadeNavInOutTime, 0.2);
 			}, function () { //hover out
-			  $(this).stop().fadeTo(settings.fadeNavInOutTime, 0);
-			  $("span", this).stop().fadeTo(settings.fadeNavInOutTime, 0);
-			});
-	    }
+		      $(wrapper + " " + " a." + navClass).stop().fadeTo(settings.fadeNavInOutTime, 0);
+			  $(wrapper + " " + " a." + navClass + " span").stop().fadeTo(settings.fadeNavInOutTime, 0);
+	   });
 	 }
-	 
-	 //TODO: refactor
-	 function addImageClickEvent() {
+
+	 function addImageClickAndHoverEvents() {
 	   $("a" + container + "-link").click(function(e) { 
 		  if($(wrapper + " ul li a.active").parent().next().length != 0) {
 		    $(wrapper + " ul li a.active").parent().next().find("a").click();
@@ -157,6 +153,17 @@
 		  }
 		  //prevent default event action
 		  e.preventDefault(); 
+	   });
+	   $("a" + container + "-link").hover(function () {
+			  $(wrapper + " " + " a.next").stop().fadeTo(settings.fadeNavInOutTime, 1);
+			  $(wrapper + " " + " a.prev").stop().fadeTo(settings.fadeNavInOutTime, 1);
+			  $(wrapper + " " + " a.next span").stop().fadeTo(settings.fadeNavInOutTime, 0.2);
+			  $(wrapper + " " + " a.prev span").stop().fadeTo(settings.fadeNavInOutTime, 0.2);
+			}, function () { //hover out
+		      $(wrapper + " " + " a.next").stop().fadeTo(settings.fadeNavInOutTime, 0);
+			  $(wrapper + " " + " a.prev").stop().fadeTo(settings.fadeNavInOutTime, 0);
+			  $(wrapper + " " + " a.next span").stop().fadeTo(settings.fadeNavInOutTime, 0);
+			  $(wrapper + " " + " a.prev span").stop().fadeTo(settings.fadeNavInOutTime, 0);
 	   });
 	 }
 	  
@@ -167,7 +174,7 @@
        $("a" + container + "-link", wrapper + " " + container).remove();
        $(wrapper + " " + container).append(link);
       
-       addImageClickEvent();
+       addImageClickAndHoverEvents();
        calculatePagingNavigationHeight();
        addDescription(wrapper + " ul li a.active img");
 	  

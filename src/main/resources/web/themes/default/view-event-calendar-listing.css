@@ -176,7 +176,7 @@
 #vrtx-daily-events-date-today {
   font-size: 0.75em;
   padding-top: 5px;
-  padding-bottom: 5px;
+  padding-bottom: 0px;
 }
 
 #vrtx-daily-events-date-tomorrow {

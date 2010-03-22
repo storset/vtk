@@ -97,6 +97,7 @@ public class EventCalendarListingController extends EventListingController {
         model.put("viewAllPreviousURL", viewAllPreviousURL);
         model.put("viewAllPreviousTitle", this.helper.getEventTypeTitle(request, collection,
                 "eventListing.allPrevious", false));
+        model.put("today", new Date());
 
     }
 

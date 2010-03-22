@@ -57,7 +57,15 @@
 	      <#list groupedByDayEvents as groupedEvents>
 	        <div id="vrtx-daily-events-${count}" class="vrtx-daily-events-listing">
 	          <div class="vrtx-daily-events-date">
-	            <span class="vrtx-daily-events-date-day"><@vrtx.date value=groupedEvents.day format='dd' /></span>
+	            <#local todayDate = vrtx.calcDate(today, 'dd') />
+	            <#local currentDate = vrtx.calcDate(groupedEvents.day, 'dd') />
+                <#if vrtx.parseInt(currentDate) == vrtx.parseInt(todayDate) >
+                  <span class="vrtx-daily-events-date-day" id="vrtx-daily-events-date-today">i dag</span>
+                <#elseif vrtx.parseInt(currentDate) == (vrtx.parseInt(todayDate) + 1) >
+                  <span class="vrtx-daily-events-date-day" id="vrtx-daily-events-date-tomorrow">i morgen</span>
+                <#else>
+                  <span class="vrtx-daily-events-date-day">${currentDate}</span>
+                </#if>
 	            <span class="vrtx-daily-events-date-month"><@vrtx.date value=groupedEvents.day format='MMM' /></span>
 	          </div>
 	          <div class="vrtx-daily-event">

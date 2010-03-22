@@ -171,6 +171,32 @@
 
 
 <#--
+ * calcDate
+ *
+ * Get a localized, formatted date string from a date object.
+ *
+ * Same as date macro except it returns the string instead of print it. 
+ *
+ * Examples: vrtx.date(my.date.object, 'short')
+ *           vrtx.date(my.date.object, 'yyyy-MM-dddd HH:mm:ss')
+ *
+ * @param value the date object
+ * @param format a named format, or a java DateFormat
+ *        string. See org.vortikal.repository.resourcetype.ValueFormatter
+ *
+-->
+<#function calcDate value format>
+  <#if VRTX_DATE_VALUE_FORMATTER?exists>
+	  <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />
+	  <#local val = constructor("org.vortikal.repository.resourcetype.Value", value, false) />
+	  <#local locale = springMacroRequestContext.getLocale() />
+	  <#return VRTX_DATE_VALUE_FORMATTER.valueToString(val, format, locale) />
+  <#else>
+      <#return "Undefined" />
+  </#if>
+</#function>
+
+<#--
  * parseInt
  *
  * Attempts to parse an integer from a string

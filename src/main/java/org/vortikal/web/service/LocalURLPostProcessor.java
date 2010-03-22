@@ -30,9 +30,18 @@
  */
 package org.vortikal.web.service;
 
+import org.vortikal.repository.Resource;
+
 public class LocalURLPostProcessor implements URLPostProcessor {
 
-    public void processURL(URL url) throws Exception {
+    @Override
+    public void processURL(URL url, Service service) throws Exception {
+        url.setPathOnly(true);
+    }
+
+    @Override
+    public void processURL(URL url, Resource resource, Service service)
+            throws Exception {
         url.setPathOnly(true);
     }
 }

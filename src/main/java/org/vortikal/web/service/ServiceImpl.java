@@ -257,7 +257,7 @@ public class ServiceImpl implements Service, BeanNameAware {
             constructInternal(resource, principal, parameters, getAllAssertions(), 
                     matchAssertions);
 
-        postProcess(urlObject);
+        postProcess(urlObject, resource);
 
         return urlObject;
     }
@@ -281,7 +281,7 @@ public class ServiceImpl implements Service, BeanNameAware {
             assertion.processURL(urlObject);
         }
        
-        postProcess(urlObject);
+        postProcess(urlObject, null);
         
         return urlObject;
     }
@@ -311,7 +311,7 @@ public class ServiceImpl implements Service, BeanNameAware {
             assertion.processURL(urlObject);
         }
        
-        postProcess(urlObject);
+        postProcess(urlObject, null);
         
         return urlObject;
     }
@@ -365,13 +365,17 @@ public class ServiceImpl implements Service, BeanNameAware {
     }
   
     
-    private void postProcess(URL urlObject) {
+    private void postProcess(URL urlObject, Resource resource) {
         List<URLPostProcessor> urlPostProcessors = getAllURLPostProcessors();
 
         if (urlPostProcessors != null) {
             for (URLPostProcessor urlProcessor: urlPostProcessors) {
                 try {
-                    urlProcessor.processURL(urlObject);
+                    if (resource != null) {
+                        urlProcessor.processURL(urlObject, resource, this);
+                    } else {
+                        urlProcessor.processURL(urlObject, this);
+                    }
                 } catch (Exception e) {
                     throw new ServiceUnlinkableException("URL Post processor " + urlProcessor
                                                          + " threw exception", e);

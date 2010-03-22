@@ -150,6 +150,7 @@
 	    }
 	 }
 	 
+	 //TODO: refactor
 	 function addImageClickEvent() {
 	   $("a" + container + "-link").click(function(e) { 
 		  if($(wrapper + " ul li a.active").parent().next().length != 0) {

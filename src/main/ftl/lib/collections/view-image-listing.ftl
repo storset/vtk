@@ -135,7 +135,7 @@
 		     fadeInOutTime : 0
 		   }
 			  
-		   $(wrapper + " ul li a").vrtxSGallery(wrapper, container, options, false);
+		   $(wrapper + " ul li a").vrtxSGallery(wrapper, container, options, true);
 				  
 	     });
        // -->

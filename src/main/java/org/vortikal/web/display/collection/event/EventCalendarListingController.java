@@ -63,9 +63,15 @@ public class EventCalendarListingController extends EventListingController {
                 if (EventListingHelper.VIEW_TYPE_ALL_UPCOMING.equals(viewType)) {
                     Listing upcoming = this.searcher.searchUpcoming(request, collection, 1, this.defaultPageLimit, 0);
                     model.put("allUpcoming", upcoming);
+                    String overrideDefaultTitle = this.helper.getEventTypeTitle(request, collection,
+                            "eventListing.allupcoming", false);
+                    model.put("overrideDefaultTitle", overrideDefaultTitle);
                 } else if (EventListingHelper.VIEW_TYPE_ALL_PREVIOUS.equals(viewType)) {
                     Listing previuos = this.searcher.searchPrevious(request, collection, 1, this.defaultPageLimit, 0);
                     model.put("allPrevious", previuos);
+                    String overrideDefaultTitle = this.helper.getEventTypeTitle(request, collection,
+                            "eventListing.allprevious", false);
+                    model.put("overrideDefaultTitle", overrideDefaultTitle);
                 }
 
             } else {
@@ -91,12 +97,12 @@ public class EventCalendarListingController extends EventListingController {
                 EventListingHelper.VIEW_TYPE_ALL_UPCOMING);
         model.put("viewAllUpcomingURL", viewAllUpcomingURL);
         model.put("viewAllUpcomingTitle", this.helper.getEventTypeTitle(request, collection,
-                "eventListing.allUpcoming", false));
+                "eventListing.viewAllUpcoming", false));
         URL viewAllPreviousURL = createURL(collection, EventListingHelper.REQUEST_PARAMETER_VIEW,
                 EventListingHelper.VIEW_TYPE_ALL_PREVIOUS);
         model.put("viewAllPreviousURL", viewAllPreviousURL);
         model.put("viewAllPreviousTitle", this.helper.getEventTypeTitle(request, collection,
-                "eventListing.allPrevious", false));
+                "eventListing.viewAllPrevious", false));
         model.put("today", new Date());
 
     }

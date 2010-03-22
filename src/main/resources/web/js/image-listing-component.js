@@ -133,6 +133,7 @@
 		});
 	    
 	    //Fading of transparent block and prev / next icon
+	    //TODO: possible refactor
 	    $(wrapper + " " + " a." + navClass).stop().fadeTo("0", 0);
 	    $(wrapper + " " + " a." + navClass + " span").stop().fadeTo("0", 0);
 	    $(wrapper + " " + " a." + navClass).hover(function () {
@@ -154,6 +155,7 @@
 		  //prevent default event action
 		  e.preventDefault(); 
 	   });
+	   //TODO: refactor
 	   $("a" + container + "-link").hover(function () {
 			  $(wrapper + " " + " a.next").stop().fadeTo(settings.fadeNavInOutTime, 1);
 			  $(wrapper + " " + " a.prev").stop().fadeTo(settings.fadeNavInOutTime, 1);

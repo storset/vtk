@@ -45,7 +45,7 @@
   <!-- Acts as both assertion, handler interceptor and URL post processor -->
   <bean id="manage.selectiveProtocolManager" class="org.vortikal.web.service.SelectiveProtocolManager" parent="repositoryAware">
     <property name="protocol" value="${manage.protocol}" />
-    <property name="selectiveAccessEnabled" value="${manage.previewOpenResourcesUnencrypted}" />
+    <property name="selectiveAccessEnabled" value="${manage.enableSelectiveProtocols}" />
     <property name="fileServices">
       <set>
         <ref bean="manageService" />

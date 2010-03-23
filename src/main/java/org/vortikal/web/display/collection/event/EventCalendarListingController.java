@@ -60,18 +60,21 @@ public class EventCalendarListingController extends EventListingController {
             String viewType = request.getParameter(EventListingHelper.REQUEST_PARAMETER_VIEW);
             if (viewType != null && !"".equals(viewType.trim())) {
 
+                Listing result = null;
                 if (EventListingHelper.VIEW_TYPE_ALL_UPCOMING.equals(viewType)) {
-                    Listing upcoming = this.searcher.searchUpcoming(request, collection, 1, this.defaultPageLimit, 0);
-                    model.put("allUpcoming", upcoming);
-                    String overrideDefaultTitle = this.helper.getEventTypeTitle(request, collection,
-                            "eventListing.allupcoming", false);
-                    model.put("overrideDefaultTitle", overrideDefaultTitle);
+                    result = this.searcher.searchUpcoming(request, collection, 1, this.defaultPageLimit, 0);
                 } else if (EventListingHelper.VIEW_TYPE_ALL_PREVIOUS.equals(viewType)) {
-                    Listing previuos = this.searcher.searchPrevious(request, collection, 1, this.defaultPageLimit, 0);
-                    model.put("allPrevious", previuos);
-                    String overrideDefaultTitle = this.helper.getEventTypeTitle(request, collection,
-                            "eventListing.allprevious", false);
-                    model.put("overrideDefaultTitle", overrideDefaultTitle);
+                    result = this.searcher.searchPrevious(request, collection, 1, this.defaultPageLimit, 0);
+                }
+                model.put(viewType, result);
+                String viewTypeTitle = this.helper.getEventTypeTitle(request, collection, "eventListing." + viewType,
+                        false);
+                model.put(viewType + "Title", viewTypeTitle);
+
+                if (result == null || result.getFiles().isEmpty()) {
+                    String noPlannedTitle = this.helper.getEventTypeTitle(request, collection,
+                            "eventListing.noPlanned." + viewType, false);
+                    model.put(viewType + "NoPlannedTitle", noPlannedTitle);
                 }
 
             } else {

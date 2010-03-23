@@ -216,9 +216,30 @@
 	 }
 
 	 function calculatePagingNavigationHeight() {
+	   var minHeight = 100;
+	   var minWidth = 250;
+		 
 	   var imgHeight = $(wrapper + " " + container + " img").height();
+	   var imgWidth = $(wrapper + " " + container + " img").width();
+	   var containerWidth = $(wrapper + " " + container).width();
+	   
+	   if(imgHeight < minHeight) {
+	     imgHeight = minHeight;
+	   }
 	   $(wrapper + " " + container + "-nav a").css("height", imgHeight);
 	   $(wrapper + " " + container + "-nav span").css("height", imgHeight);
+	   $(wrapper + " " + container + "-link").css("height", imgHeight);
+
+	   if(imgWidth > containerWidth) {
+		 imgWidth = containerWidth;
+	   } else if (imgWidth < 250) {
+		 imgWidth = minWidth;
+	   }
+	   var leftRightNavAdjust = (containerWidth - imgWidth) / 2;
+	   $(wrapper + " " + container + "-nav a.prev").css("left", leftRightNavAdjust);
+	   $(wrapper + " " + container + "-nav a.next").css("right", -leftRightNavAdjust);
+	   $(wrapper + " " + container + "-link").css("width", imgWidth);
+	   $(wrapper + " " + container + "-nav").css("width", imgWidth);
 	 }
   };
 })(jQuery);

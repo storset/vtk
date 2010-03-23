@@ -62,25 +62,27 @@
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container {
   display: block;
-  width: 495px;
+  overflow: hidden;
+  width: 507px;
   position: relative;
+  /*
   padding: 5px;
   border: 1px solid #ccc;
   background-color: #fff;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   -khtml-border-radius: 5px;
-  border-radius: 5px;
+  border-radius: 5px;*/
 }
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container img {
-  max-height: 380px;
+  /* max-height: 380px; */
 }
 
 .vrtx-image-listing-include-container-link {
-  width: 495px;	
-  overflow: hidden;
   display: block;
+  margin-right: auto;
+  margin-left: auto;
 }
 
 /* Unobtrusive JavaScript */
@@ -90,7 +92,7 @@
 
 .vrtx-image-listing-include-container-nav {
   display: block;
-  width: 495px;
+  position: relative;
 }
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.prev,
@@ -100,7 +102,7 @@
   color: #888;
   position: absolute;
   width: 38px;
-  top: 5px;
+  top: 0px;
 }
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container-nav span.prev-transparent-block,
@@ -121,11 +123,11 @@
 }
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.prev {
-	left: 5px;
+	left: 0px;
 }
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.next {
-    right: 5px;
+    right: 0px;
 }
 
 .vrtx-image-listing-include-container-description {

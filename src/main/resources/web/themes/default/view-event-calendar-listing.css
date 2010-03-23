@@ -30,6 +30,8 @@
 #vrtx-event-calendar .ui-datepicker .ui-datepicker-header {
   background-color: #555;
   color: #fff;
+  -moz-border-radius: 0px; 
+  -webkit-border-radius: 0px;
 }
 
 #vrtx-event-calendar .ui-datepicker .ui-datepicker-header a {

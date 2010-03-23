@@ -58,14 +58,14 @@
 			    	  //fade in and make sure calculations are done after fully loaded
 			    	  $(this).fadeTo(settings.fadeInOutTime, 1, function() {
 			    		  addImageClickAndHoverEvents();
-			    		  calculatePagingNavigationHeight();
+			    		  calculateImageAndPagingNavigationPosition();
 			    	  });
 			      });
 		      } else {
 		    	  $("a" + container + "-link", wrapper + " " + container).remove();
 		    	  $(wrapper + " " + container).append(images[i]);
 		    	  addImageClickAndHoverEvents();
-		    	  calculatePagingNavigationHeight();
+		    	  calculateImageAndPagingNavigationPosition();
 		      }
 		      //remove active classes
 		      jQuery(wrapper + " ul li a").each(function(j) {
@@ -177,7 +177,7 @@
        $(wrapper + " " + container).append(link);
       
        addImageClickAndHoverEvents();
-       calculatePagingNavigationHeight();
+       calculateImageAndPagingNavigationPosition();
        addDescription(wrapper + " ul li a.active img");
 	  
 	   //set all thumbnails not active to 0.6 opacity
@@ -215,7 +215,7 @@
 	          + $(fromSource).attr("alt") + "</div>").insertAfter(wrapper + " " + container);
 	 }
 
-	 function calculatePagingNavigationHeight() {
+	 function calculateImageAndPagingNavigationPosition() {
 	   var minHeight = 100;
 	   var minWidth = 250;
 		 

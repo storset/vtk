@@ -60,7 +60,8 @@ function eventListingCalendar(allowedDates, activeDate, clickableDayTitle, notCl
   });
   
   $("#vrtx-event-calendar tr").each(function(i){
-    $("td.ui-datepicker-other-month:last", this).append("<span class='last-other-month'></span>");
+    $("td.ui-datepicker-other-month:last", this).next().find("span").css("borderLeft","1px solid #ccc");
+    $("td.ui-datepicker-other-month:last", this).next().find("span").css("marginLeft", "-1px");
   });
 }
 

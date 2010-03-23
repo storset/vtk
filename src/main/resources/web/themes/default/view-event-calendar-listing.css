@@ -90,12 +90,6 @@
   border-top: 1px solid #ccc;
 }
 
-#vrtx-event-calendar .ui-datepicker-other-month .last-other-month {
-  border-right: 1px solid #ccc;
-  padding-bottom: 1.6em;
-  margin-top: -1.4em;
-}
-
 #vrtx-event-calendar .ui-widget-content table .ui-datepicker-unselectable span {
   border-width: thin thin 0 0;
   text-align: center;

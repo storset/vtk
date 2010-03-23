@@ -21,9 +21,9 @@
 
     <div id="${collectionListing.name}" class="vrtx-resources ${collectionListing.name}">
     <#if overrideDefaultTitle?exists>
-     <h1>${overrideDefaultTitle}</h1>
+     <h1>${overrideDefaultTitle?html}</h1>
     <#elseif collectionListing.title?exists && collectionListing.offset == 0>
-      <h2>collectionListing.title</h2>
+      <h2>${collectionListing.title?html}</h2>
     </#if>
     <#list events as event>
       <@displayEvent collectionListing event hideNumberOfComments displayMoreURLs />

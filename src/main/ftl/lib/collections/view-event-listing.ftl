@@ -43,8 +43,8 @@
 	    <@displayStandard allPrevious hideNumberOfComments displayMoreURLs />
 	
 	  <#elseif specificDate?has_content && specificDate>
-	    <#if specificDateEvents?has_content && specificDateEvents?size &gt; 0>
-	      <h1 class="vrtx-events-specific-date">${specificDateEventsTitle}</h1>
+	    <h1 class="vrtx-events-specific-date">${specificDateEventsTitle}</h1>
+	    <#if specificDateEvents?has_content && specificDateEvents.files?size &gt; 0>
 	      <@displayStandard specificDateEvents hideNumberOfComments displayMoreURLs=false />
 	    <#else>
 	      <h2 class="vrtx-events-no-planned">${noPlannedEventsMsg}</h2>

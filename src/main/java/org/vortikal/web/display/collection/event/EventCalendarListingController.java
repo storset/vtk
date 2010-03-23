@@ -116,18 +116,14 @@ public class EventCalendarListingController extends EventListingController {
             Listing specificDateEvents = this.searcher.searchSpecificDate(request, collection, date, searchType);
 
             model.put("specificDate", Boolean.TRUE);
-
-            if (specificDateEvents.size() > 0) {
-                model.put("specificDateEvents", specificDateEvents);
-                String messageKey = searchType == SpecificDateSearchType.Day ? "eventListing.specificDayEvent"
-                        : "eventListing.specificDateEvent";
-                String specificDateEventsTitle = this.helper.getEventTypeTitle(request, collection, searchType, date,
-                        messageKey, true);
-                model.put("specificDateEventsTitle", specificDateEventsTitle);
-            } else {
-                model.put("noPlannedEventsMsg", this.helper.getEventTypeTitle(request, collection, searchType, date,
-                        "eventListing.noPlannedEvents", false));
-            }
+            model.put("specificDateEvents", specificDateEvents);
+            String messageKey = searchType == SpecificDateSearchType.Day ? "eventListing.specificDayEvent"
+                    : "eventListing.specificDateEvent";
+            String specificDateEventsTitle = this.helper.getEventTypeTitle(request, collection, searchType, date,
+                    messageKey, true);
+            model.put("specificDateEventsTitle", specificDateEventsTitle);
+            model.put("noPlannedEventsMsg", this.helper.getEventTypeTitle(request, collection, searchType, date,
+                    "eventListing.noPlannedEvents", false));
         }
 
         return false;

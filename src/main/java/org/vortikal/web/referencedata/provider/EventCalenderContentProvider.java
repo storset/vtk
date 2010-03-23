@@ -112,18 +112,15 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
                 }
             }
 
-            int limit = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
             Set<String> eventDatesList = new HashSet<String>();
             SimpleDateFormat eventDateFormat = new SimpleDateFormat("yyyy-M-d");
-            for (int i = 0; i < limit; i++) {
-                Listing plannedEvents = this.searcher.searchSpecificDate(request, resource, cal.getTime(),
-                        SpecificDateSearchType.Month);
-                for (PropertySet propSet : plannedEvents.getFiles()) {
-                    Property startDate = propSet.getProperty(startDatePropDef);
-                    if (startDate != null) {
-                        Date eventDate = startDate.getDateValue();
-                        eventDatesList.add(String.valueOf(eventDateFormat.format(eventDate)));
-                    }
+            Listing plannedEvents = this.searcher.searchSpecificDate(request, resource, cal.getTime(),
+                    SpecificDateSearchType.Month);
+            for (PropertySet propSet : plannedEvents.getFiles()) {
+                Property startDate = propSet.getProperty(startDatePropDef);
+                if (startDate != null) {
+                    Date eventDate = startDate.getDateValue();
+                    eventDatesList.add(String.valueOf(eventDateFormat.format(eventDate)));
                 }
             }
             String eventDates = getEventDatesAsArrayString(eventDatesList);

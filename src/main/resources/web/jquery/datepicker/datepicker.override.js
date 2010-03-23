@@ -58,6 +58,10 @@ function eventListingCalendar(allowedDates, activeDate, clickableDayTitle, notCl
       setTimeout(function(){makeMonthLink(year, month)}, 100);
     }
   });
+  
+  $("#vrtx-event-calendar tr").each(function(i){
+    $("td.ui-datepicker-other-month:last", this).append("<span class='first-last-other-month'></span>");
+  });
 }
 
 function makeMonthLink(year, month) {

@@ -122,7 +122,7 @@ public class EventCalendarListingController extends EventListingController {
             String specificDateEventsTitle = this.helper.getEventTypeTitle(request, collection, searchType, date,
                     messageKey, true);
             model.put("specificDateEventsTitle", specificDateEventsTitle);
-            model.put("noPlannedEventsMsg", this.helper.getEventTypeTitle(request, collection, searchType, date,
+            model.put("noPlannedEventsMsg", this.helper.getEventTypeTitle(request, collection,
                     "eventListing.noPlannedEvents", false));
         }
 

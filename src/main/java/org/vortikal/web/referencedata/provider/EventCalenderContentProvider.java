@@ -135,9 +135,13 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
                     eventEndCal.set(Calendar.DAY_OF_MONTH, eventEndCal.getActualMaximum(Calendar.DAY_OF_MONTH));
                 }
 
-                while (eventStartCal.before(eventEndCal)) {
+                if (eventStartCal.equals(eventEndCal)) {
                     eventDatesList.add(eventDateFormat.format(eventStartCal.getTime()));
-                    eventStartCal.add(Calendar.DAY_OF_MONTH, 1);
+                } else {
+                    while (eventStartCal.before(eventEndCal)) {
+                        eventDatesList.add(eventDateFormat.format(eventStartCal.getTime()));
+                        eventStartCal.add(Calendar.DAY_OF_MONTH, 1);
+                    }
                 }
 
             }

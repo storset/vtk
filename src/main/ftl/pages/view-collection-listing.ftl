@@ -71,7 +71,7 @@
   </title>
   
   <#if page?has_content>
-      <#if "${page}" != "1"><meta name="robots" content="noindex, follow"/> </#if>
+    <#if "${page}" != "1"><meta name="robots" content="noindex, follow"/> </#if>
   </#if>
   
 </head>
@@ -93,7 +93,9 @@
 
   <#if page == 1>
     <#-- Image -->
-    <@viewutils.displayImage resource />
+    <#if !isEventCalendarListing>
+      <@viewutils.displayImage resource />
+    </#if>
     <#-- Introduction -->
     <#assign introduction = vrtx.getIntroduction(resource) />
     <#if introduction?has_content && !(isBlogListing || isEventCalendarListing)>

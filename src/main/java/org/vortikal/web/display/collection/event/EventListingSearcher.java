@@ -154,17 +154,17 @@ public class EventListingSearcher {
 
     @Required
     public void setGroupedEventSearchString(String groupedEventSearchString) {
-        this.groupedEventSearchString = groupedEventSearchString;
+        this.groupedEventSearchString = groupedEventSearchString.trim();
     }
 
     @Required
     public void setFurtherUpcomingSearchString(String furtherUpcomingSearchString) {
-        this.furtherUpcomingSearchString = furtherUpcomingSearchString;
+        this.furtherUpcomingSearchString = furtherUpcomingSearchString.trim();
     }
 
     @Required
     public void setSpecificDateEventSearchString(String specificDateEventSearchString) {
-        this.specificDateEventSearchString = specificDateEventSearchString;
+        this.specificDateEventSearchString = specificDateEventSearchString.trim();
     }
 
     public class GroupedEvents {

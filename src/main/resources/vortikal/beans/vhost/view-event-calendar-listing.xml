@@ -35,7 +35,10 @@
   <bean id="eventListing.groupedByDayEventSearchQueryString" class="java.lang.String">
     <constructor-arg type="java.lang.String">
       <value>
-        (uri = {$currentFolder}/* AND type IN event) AND (start-date &gt;= {$currentDate+[1]d} AND start-date &lt; {$currentDate+[2]d})
+        (uri = {$currentFolder}/* AND type IN event)
+          AND ((start-date &gt;= {$currentDate+[1]d} AND start-date &lt; {$currentDate+[2]d})
+            OR (end-date &gt;= {$currentDate+[1]d} AND end-date &lt; {$currentDate+[2]d})
+            OR (start-date &lt;= {$currentDate+[1]d} AND end-date &gt;= {$currentDate+[2]d}))
       </value>
     </constructor-arg>
   </bean>
@@ -51,7 +54,10 @@
   <bean id="eventListing.specificDateEventSearchQueryString" class="java.lang.String">
     <constructor-arg type="java.lang.String">
       <value>
-        (uri = {$currentFolder}/* AND type IN event) AND (start-date &gt;= [1] AND start-date &lt; [2])
+        (uri = {$currentFolder}/* AND type IN event)
+          AND ((start-date &gt;= [1] AND start-date &lt; [2])
+            OR (end-date &gt;= [1] AND end-date &lt; [2])
+            OR (start-date &lt;= [1] AND end-date &gt;= [2]))
       </value>
     </constructor-arg>
   </bean>
@@ -92,11 +98,18 @@
     <property name="displayTypePropDef" ref="eventListing.displayTypePropDef" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="startDatePropDefPointer" ref="${override.listing.prefix}eventListing.startDatePropDefPointer" />
+    <property name="endDatePropDefPointer" ref="${override.listing.prefix}eventListing.endDatePropDefPointer" />
   </bean>
 
   <bean id="eventListing.startDatePropDefPointer" class="java.lang.String">
     <constructor-arg type="java.lang.String">
       <value>start-date</value>
+    </constructor-arg>
+  </bean>
+
+  <bean id="eventListing.endDatePropDefPointer" class="java.lang.String">
+    <constructor-arg type="java.lang.String">
+      <value>end-date</value>
     </constructor-arg>
   </bean>
 

@@ -65,6 +65,7 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
     private ResourceTypeTree resourceTypeTree;
     private PropertyTypeDefinition displayTypePropDef;
     private String startDatePropDefPointer;
+    private String endDatePropDefPointer;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -92,7 +93,9 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
         if (displayTypeProp != null && "calendar".equals(displayTypeProp.getStringValue())) {
 
             PropertyTypeDefinition startDatePropDef = this.resourceTypeTree
-                    .getPropertyDefinitionByPointer(startDatePropDefPointer);
+                    .getPropertyDefinitionByPointer(this.startDatePropDefPointer);
+            PropertyTypeDefinition endDatePropDef = this.resourceTypeTree
+                    .getPropertyDefinitionByPointer(this.endDatePropDefPointer);
 
             Calendar cal = Calendar.getInstance();
             cal.set(Calendar.DAY_OF_MONTH, 1);
@@ -117,11 +120,26 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
             Listing plannedEvents = this.searcher.searchSpecificDate(request, resource, cal.getTime(),
                     SpecificDateSearchType.Month);
             for (PropertySet propSet : plannedEvents.getFiles()) {
-                Property startDate = propSet.getProperty(startDatePropDef);
-                if (startDate != null) {
-                    Date eventDate = startDate.getDateValue();
-                    eventDatesList.add(String.valueOf(eventDateFormat.format(eventDate)));
+                Property startDateProp = propSet.getProperty(startDatePropDef);
+                Date eventStart = startDateProp != null ? startDateProp.getDateValue() : cal.getTime();
+                Property endDateProp = propSet.getProperty(endDatePropDef);
+                Date eventEnd = endDateProp != null ? endDateProp.getDateValue() : eventStart;
+                Calendar eventStartCal = Calendar.getInstance();
+                eventStartCal.setTime(eventStart);
+                if (eventStartCal.get(Calendar.MONTH) < cal.get(Calendar.MONTH)) {
+                    eventStartCal.setTime(cal.getTime());
                 }
+                Calendar eventEndCal = Calendar.getInstance();
+                eventEndCal.setTime(eventEnd);
+                if (eventEndCal.get(Calendar.MONTH) > cal.get(Calendar.MONTH)) {
+                    eventEndCal.set(Calendar.DAY_OF_MONTH, eventEndCal.getActualMaximum(Calendar.DAY_OF_MONTH));
+                }
+
+                while (eventStartCal.before(eventEndCal)) {
+                    eventDatesList.add(eventDateFormat.format(eventStartCal.getTime()));
+                    eventStartCal.add(Calendar.DAY_OF_MONTH, 1);
+                }
+
             }
             String eventDates = getEventDatesAsArrayString(eventDatesList);
             model.put("allowedDates", eventDates);
@@ -180,5 +198,10 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
     @Required
     public void setStartDatePropDefPointer(String startDatePropDefPointer) {
         this.startDatePropDefPointer = startDatePropDefPointer;
+    }
+
+    @Required
+    public void setEndDatePropDefPointer(String endDatePropDefPointer) {
+        this.endDatePropDefPointer = endDatePropDefPointer;
     }
 }

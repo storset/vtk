@@ -58,7 +58,7 @@
     </#if>
   </#if>
 
-  <#if alternativeRepresentations?exists >
+  <#if alternativeRepresentations?exists && !(hideAlternativeRepresentation?exists && hideAlternativeRepresentation)>
     <#list alternativeRepresentations as alt>
       <link rel="alternate" type="${alt.contentType?html}" title="${alt.title?html}" href="${alt.url?html}" />
     </#list>
@@ -181,7 +181,7 @@
 			<@viewutils.displayPageThroughUrls pageThroughUrls page />
 		</#if>
         <#-- XXX: display first link with content type = atom: -->
-        <#if alternativeRepresentations?exists >
+        <#if alternativeRepresentations?exists && !(hideAlternativeRepresentation?exists && hideAlternativeRepresentation)>
 	        <#list alternativeRepresentations as alt>
 	          <#if alt.contentType = 'application/atom+xml'>
 	            <div class="vrtx-feed-link">

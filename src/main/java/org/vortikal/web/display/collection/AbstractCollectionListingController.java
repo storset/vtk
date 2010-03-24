@@ -72,6 +72,7 @@ public abstract class AbstractCollectionListingController implements ListingCont
     protected final static String MODEL_KEY_SEARCH_COMPONENTS = "searchComponents";
     protected final static String MODEL_KEY_PAGE = "page";
     protected final static String MODEL_KEY_PAGE_THROUGH_URLS = "pageThroughUrls";
+    protected final static String MODEL_KEY_HIDE_ALTERNATIVE_REP = "hideAlternativeRepresentation";
 
     protected Repository repository;
     protected ResourceWrapperManager resourceManager;

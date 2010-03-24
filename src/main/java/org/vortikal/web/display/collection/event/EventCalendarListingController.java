@@ -65,6 +65,7 @@ public class EventCalendarListingController extends EventListingController {
                     result = this.searcher.searchUpcoming(request, collection, 1, this.defaultPageLimit, 0);
                 } else if (EventListingHelper.VIEW_TYPE_ALL_PREVIOUS.equals(viewType)) {
                     result = this.searcher.searchPrevious(request, collection, 1, this.defaultPageLimit, 0);
+                    model.put(MODEL_KEY_HIDE_ALTERNATIVE_REP, Boolean.TRUE);
                 }
                 model.put(viewType, result);
                 String viewTypeTitle = this.helper.getEventTypeTitle(request, collection, "eventListing." + viewType,

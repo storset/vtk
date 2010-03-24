@@ -411,7 +411,44 @@
   </bean>
 
 
-
+  <bean id="redirectToManageService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="viewService" />
+    <property name="order" value="-100" />
+    <property name="assertions">
+      <list>
+        <!-- Assert that webHostName is different from manage.hostName -->
+        <bean class="org.vortikal.web.service.InvertAssertion">
+          <property name="assertion">
+            <bean class="org.vortikal.web.service.ConfigAssertion">
+              <property name="config" value="${webHostName}" />
+              <property name="expectedValue" value="${manage.hostName}" />
+            </bean>
+          </property>
+        </bean>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="vrtx" />
+          <property name="parameterValue" value="admin" />
+        </bean>  
+      </list>
+    </property>
+        <property name="handlerInterceptors">
+      <list>
+        <!-- Redirect to manage hostname -->
+        <bean class="org.vortikal.web.interceptors.RedirectToManageInterceptor">
+          <property name="manageProtocol" value="${manage.protocol}" />
+          <property name="manageHostName" value="${manage.hostName}" />
+          <property name="managePort" value="${manage.port}" />
+        </bean>
+        
+      </list>
+    </property>
+    <!-- Dummy handler that is never invoked (the handler interceptor will prevent it): -->
+    <property name="handler">
+      <bean class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+        <property name="viewName" value="HTTP_200_OK" />
+      </bean>
+    </property>
+  </bean>
 
   <bean id="displayResourceService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="viewService" />

@@ -1045,7 +1045,7 @@
             <value>${jquery.baseURL}/jquery-${jquery.version}.min.js</value>
             <value>${jsBaseURL}/admin-enhancements.js</value>
             <value>${jsBaseURL}/featured-articles-multiple-properties.js</value>
-            <value>${jsBaseURL}/admin-edit-display-articles.js</value>
+            <value>${jsBaseURL}/admin-edit-show-hide.js</value>
             <value>${webResources.baseURL}/thickbox-modified/thickbox.js</value>
             <value>${webResources.baseURL}/thickbox-modified/check-unsaved-changes.js</value>
           </list>

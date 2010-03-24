@@ -13,26 +13,62 @@
     </property>
   </bean>
 
-   <bean id="redirectHttpsWebService" class="org.vortikal.web.service.ServiceImpl">
-     <property name="order" value="-1" />
-     <property name="assertions">
-       <list>
-         <ref bean="webProtocolAssertion.inverted" />
-       </list>
-     </property>
-     <property name="handlerInterceptors">
-       <list>
-         <!-- Redirect to a different protocol: -->
-         <bean class="org.vortikal.web.interceptors.ProtocolInvertRedirectInterceptor" />
-       </list>
-     </property>
-     <!-- Dummy handler that is never invoked (the handler interceptor will prevent it): -->
-     <property name="handler">
-       <bean class="org.springframework.web.servlet.mvc.ParameterizableViewController">
-         <property name="viewName" value="HTTP_200_OK" />
-       </bean>
-     </property>
-   </bean>
+  <bean id="configRedirectHttpsWebService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="-2" />
+    <property name="assertions">
+      <list>
+        <ref bean="webProtocolAssertion.inverted" />
+      </list>
+    </property>
+    <property name="handlerInterceptors">
+      <list>
+        <!-- Redirect to a different protocol: -->
+        <bean class="org.vortikal.web.interceptors.ProtocolInvertRedirectInterceptor" />
+      </list>
+    </property>
+    <!-- Dummy handler that is never invoked (the handler interceptor will prevent it): -->
+    <property name="handler">
+      <bean class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+        <property name="viewName" value="HTTP_200_OK" />
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="redirectHttpsWebService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="-1" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.ConfigAssertion">
+          <property name="config" value="${webProtocolRestricted}" />
+          <property name="expectedValue" value="https" />
+        </bean>
+        <bean class="org.vortikal.web.service.RequestProtocolAssertion">
+          <property name="protocol" value="http" />
+        </bean>
+        <bean class="org.vortikal.web.service.InvertAssertion">
+          <property name="assertion">
+            <bean parent="abstractResourcePrincipalPermissionAssertion">
+              <property name="permission" ref="ACTION_READ" />
+              <property name="anonymous" value="true" />
+            </bean>
+          </property>
+        </bean>
+        <ref bean="webHostNameAssertion" />
+      </list>
+    </property>
+    <property name="handlerInterceptors">
+      <list>
+        <!-- Redirect to a different protocol: -->
+        <bean class="org.vortikal.web.interceptors.ProtocolInvertRedirectInterceptor" />
+      </list>
+    </property>
+    <!-- Dummy handler that is never invoked (the handler interceptor will prevent it): -->
+    <property name="handler">
+      <bean class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+        <property name="viewName" value="HTTP_200_OK" />
+      </bean>
+    </property>
+  </bean>
 
 
   <!-- ************************** -->

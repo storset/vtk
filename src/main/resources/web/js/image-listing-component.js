@@ -92,19 +92,18 @@
 	  
 	 function centerThumbnailImage(thumb) {
 		 setTimeout(function() {
-		   var leftAdjust = ($(thumb).width() - $(thumb).parent().width()) / 2;
-		   if($(thumb).width() > $(thumb).parent().width()) {
-			 $(thumb).css("marginLeft", -leftAdjust + "px");
-		   } else if ($(thumb).width() < $(thumb).parent().width()) {
-		     $(thumb).css("marginLeft", leftAdjust + "px"); 
-		   }
-		   var topAdjust = ($(thumb).height() - $(thumb).parent().height()) / 2;
-		   if($(thumb).height() > $(thumb).parent().height()) {
-			 $(thumb).css("marginTop", -topAdjust + "px"); 
-		   } else if($(thumb).height() < $(thumb).parent().height()) {
-		     $(thumb).css("marginTop", topAdjust + "px");  
-	       }
+		   centerDimension($(thumb), $(thumb).width(), $(thumb).parent().width(), "marginLeft"); //center horizontal
+		   centerDimension($(thumb), $(thumb).height(), $(thumb).parent().height(), "marginTop"); //center vertical
 		 }, 100);
+	 }
+	 
+	 function centerDimension(thumb, thumbDimension, thumbContainerDimension, cssProperty) {
+	   var adjust = (thumbDimension - thumbContainer) / 2;
+	   if(thumbDimension > thumbContainerDimension) {
+	     $(thumb).css(cssProperty, -adjust + "px"); 
+	   } else if(thumbDimension < thumbContainerDimension) {
+		 $(thumb).css(cssProperty, adjust + "px");  
+	   }
 	 }
 	  
 	 function addPagingClickEvents(navClass, wrapper) {

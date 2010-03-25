@@ -3,6 +3,7 @@
 
 <beans>
 
+  <!-- XXX: matcher ikke på www-adm: -->
   <bean id="delete.fromResourceMenuViewService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
     <property name="assertions">
@@ -20,7 +21,9 @@
         <ref bean="noCacheViewHandlerInterceptor" />
       </list>
     </property>
-    <property name="handler" ref="delete.fromResourceMenuHandler" />
+    <property name="urlPostProcessors">
+      <bean class="org.vortikal.web.service.LocalURLPostProcessor" />
+    </property>
     <property name="categories">
       <set>
         <value>globalMenu</value>
@@ -33,6 +36,7 @@
         <entry key-ref="system.decoratorTemplateAttribute" value="dialog-template.html" />
       </map>
     </property>
+    <property name="handler" ref="delete.fromResourceMenuHandler" />
   </bean>
 
   <bean id="delete.viewService" class="org.vortikal.web.service.ServiceImpl">

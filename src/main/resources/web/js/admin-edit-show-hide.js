@@ -21,7 +21,8 @@ $(document).ready(function() {
 function showHide(radioIds, conditionHide, conditionHideEqual, showHideProps) {
   //init
   showHideProperties(conditionHide, conditionHideEqual, showHideProps);
-	
+
+  //bind() click() events
   for(var j = 0; j < radioIds.length; j++) {
 	$(radioIds[j]).bind("click", function() {
 	  showHideProperties(conditionHide, conditionHideEqual, showHideProps);

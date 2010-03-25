@@ -157,7 +157,7 @@
        $("a" + container + "-link", wrapper + " " + container).remove();
        $(wrapper + " " + container).append(link);
       
-       addImageClickAndHoverEvents();
+       addPagingClickAndHoverEvents(container + "-link");
        calculateImageAndPagingNavigationPosition();
        addDescription(wrapper + " ul li a.active img");
 	  

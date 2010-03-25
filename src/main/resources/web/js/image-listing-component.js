@@ -98,7 +98,7 @@
 	 }
 	 
 	 function centerDimension(thumb, thumbDimension, thumbContainerDimension, cssProperty) {
-	   var adjust = (thumbDimension - thumbContainer) / 2;
+	   var adjust = (thumbDimension - thumbContainerDimension) / 2;
 	   if(thumbDimension > thumbContainerDimension) {
 	     $(thumb).css(cssProperty, -adjust + "px"); 
 	   } else if(thumbDimension < thumbContainerDimension) {

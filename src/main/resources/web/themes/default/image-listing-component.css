@@ -94,6 +94,7 @@
 }
 
 .vrtx-image-listing-include ul img {
+  max-height: 107px;
   border: none;
 }
 

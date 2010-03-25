@@ -6,8 +6,8 @@
 <!-- XML Edit services -->
 
   <bean id="editService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="webService" />
-    <property name="order" value="400" />
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-9800" />
     <property name="categories">
       <set>
         <value>tabMenu</value>
@@ -15,6 +15,7 @@
     </property>
     <property name="attributes">
       <map>
+        <entry key="disable-csrf-checking"><value type="java.lang.Boolean">true</value></entry>
         <entry key="tabOrder"><value type="java.lang.Integer">150</value></entry>
         <entry key="localeResolver" value-ref="manageLocaleResolver" />
         <entry key-ref="system.decoratorTemplateAttribute" value="admin.html" />
@@ -23,7 +24,7 @@
     <property name="assertions">
       <list>
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="vrtx" />
+          <property name="parameterName" value="mode" />
           <property name="parameterValue" value="edit" />
         </bean>
         <ref bean="resourceTypeIsManagedXml" />

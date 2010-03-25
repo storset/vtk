@@ -57,6 +57,7 @@ import org.vortikal.text.html.HtmlText;
 import org.vortikal.text.html.HtmlUtil;
 import org.vortikal.util.text.TextUtils;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 /**
@@ -109,6 +110,10 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
         HttpSession session = request.getSession(false);
         if (session == null) {
             throw new IllegalStateException("A session must be present");
+        }
+        Service service = RequestContext.getRequestContext().getService();
+        if (Boolean.TRUE.equals(service.getAttribute("disable-csrf-checking"))) {
+            return true;
         }
         SecretKey secret = (SecretKey) 
             session.getAttribute(SECRET_SESSION_ATTRIBUTE);

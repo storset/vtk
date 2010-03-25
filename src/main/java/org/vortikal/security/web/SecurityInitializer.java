@@ -33,10 +33,13 @@ package org.vortikal.security.web;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -49,6 +52,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.OrderComparator;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
+import org.vortikal.security.CookieLinkStore;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.security.token.TokenManager;
@@ -69,16 +73,30 @@ import org.vortikal.security.token.TokenManager;
  */
 public class SecurityInitializer implements InitializingBean, ApplicationContextAware {
 
-    private static final String SECURITY_TOKEN_ATTRIBUTE =
-        SecurityInitializer.class.getName() + ".SECURITY_TOKEN";
+    private static final String SECURITY_TOKEN_SESSION_ATTR = SecurityInitializer.class.getName() + ".SECURITY_TOKEN";
+    private static final String VRTXLINK_COOKIE = "VRTXLINK";
+    private static final String VRTX_AUTH_SP_COOKIE = "VRTX_AUTH_SP";
 
     private static Log logger = LogFactory.getLog(SecurityInitializer.class);
 
     private static Log authLogger = LogFactory.getLog("org.vortikal.security.web.AuthLog");
+
     private TokenManager tokenManager;
+
     private List<AuthenticationHandler> authenticationHandlers;
+    private Map<String, AuthenticationHandler> authHandlerMap;
+
     private ApplicationContext applicationContext;
 
+    private CookieLinkStore cookieLinkStore;
+
+    // Only relevant when using both https AND http and 
+    // different session cookie name for each protocol:
+    private boolean cookieLinksEnabled = false;
+    
+    // Only relevant when using secure protocol:
+    private boolean rememberAuthMethod = false;
+    
 
     @SuppressWarnings("unchecked")
     public void afterPropertiesSet() {
@@ -98,19 +116,81 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
             this.authenticationHandlers = handlers;
 
         }
-
+        this.authHandlerMap = new HashMap<String, AuthenticationHandler>();
+        for (AuthenticationHandler handler: this.authenticationHandlers) {
+            this.authHandlerMap.put(handler.getIdentifier(), handler);
+        }
         logger.info("Using authentication handlers: " + this.authenticationHandlers);
+    }
+
+
+    private static Cookie getCookie(HttpServletRequest request, String name) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            return null;
+        }
+        for (Cookie cookie : cookies) {
+            if (name.equals(cookie.getName())) {
+                return cookie;
+            }
+        }
+        return null;
+    }
+
+    protected HttpSession getSession(HttpServletRequest request) {
+        if (!this.cookieLinksEnabled) {
+            return request.getSession(false);
+        }
+        HttpSession session = request.getSession(false);
+        if (session == null && request.getCookies() != null && !request.isSecure()) {
+            Cookie c = getCookie(request, VRTXLINK_COOKIE);
+            if (c != null) {
+                UUID id;
+                try {
+                    id = UUID.fromString(c.getValue());
+                } catch (Throwable t) {
+                    return null;
+                }
+                String token = this.cookieLinkStore.getToken(request, id);
+                if (token != null) {
+                    session = request.getSession(true);
+                    session.setAttribute(SECURITY_TOKEN_SESSION_ATTR, token);
+                }
+            }
+        }
+        return session;
+    }
+
+
+    protected void onSuccessfulAuthentication(HttpServletRequest req, HttpServletResponse resp,
+            AuthenticationHandler handler, String token) {
+        if (!req.isSecure()) {
+            return;
+        }
+        if (this.cookieLinksEnabled) {
+            Cookie c = new Cookie(VRTX_AUTH_SP_COOKIE, handler.getIdentifier());
+            c.setSecure(true);
+            c.setMaxAge(Integer.MAX_VALUE);
+            resp.addCookie(c);
+        }
+        if (this.rememberAuthMethod) {
+            UUID cookieLinkID = this.cookieLinkStore.addToken(req, token);
+            Cookie c = new Cookie(VRTXLINK_COOKIE, cookieLinkID.toString());
+            resp.addCookie(c);
+        }
     }
 
 
     public boolean createContext(HttpServletRequest req, HttpServletResponse resp)
             throws AuthenticationProcessingException, ServletException, IOException {
 
-        HttpSession session = req.getSession(false);
+        // HttpSession session = req.getSession(false);
 
+        HttpSession session = getSession(req);
         String token = null;
+
         if (session != null) {
-            token = (String) session.getAttribute(SECURITY_TOKEN_ATTRIBUTE);
+            token = (String) session.getAttribute(SECURITY_TOKEN_SESSION_ATTR);
         }
 
         if (token != null) {
@@ -146,7 +226,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                     }
                     if (authLogger.isDebugEnabled()) {
                         authLogger.debug("Auth: principal: '" + principal + "' - method: '"
-                                + handler.getClass().getName() + "' - status: OK");
+                                + handler.getIdentifier() + "' - status: OK");
                     }
 
                     token = this.tokenManager.newToken(principal, handler);
@@ -154,18 +234,20 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
 
                     SecurityContext.setSecurityContext(securityContext);
                     session = req.getSession(true);
-                    session.setAttribute(SECURITY_TOKEN_ATTRIBUTE, token);
+                    session.setAttribute(SECURITY_TOKEN_SESSION_ATTR, token);
+
+                    onSuccessfulAuthentication(req, resp, handler, token);
 
                     if (!handler.postAuthentication(req, resp)) {
                         if (logger.isDebugEnabled()) {
-                            logger.debug("Authentication post-processing completed by " + "authentication handler "
+                            logger.debug("Authentication post-processing completed by authentication handler "
                                     + handler + ", request processing will proceed");
                         }
                         return true;
                     }
 
                     if (logger.isDebugEnabled()) {
-                        logger.debug("Authentication post-processing completed by " + "authentication handler "
+                        logger.debug("Authentication post-processing completed by authentication handler "
                                 + handler + ", response already committed.");
                     }
                     return false;
@@ -181,7 +263,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                     }
                     if (authLogger.isDebugEnabled()) {
                         authLogger.debug("Auth: request: '" + req.getRequestURI() + "' - method: '"
-                                + handler.getClass().getName() + "' - status: FAIL");
+                                + handler.getIdentifier() + "' - status: FAIL");
                     }
                     challenge.challenge(req, resp);
                     return false;
@@ -208,10 +290,12 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         SecurityContext.setSecurityContext(null);
     }
 
+
     /**
-     * Removes authentication state from the authentication system. The {@link SecurityContext} is cleared, 
-     * the current principal is removed from the {@link TokenManager}, but the 
-     * {@link AuthenticationHandler#logout logout} process is not initiated.
+     * Removes authentication state from the authentication system. The {@link SecurityContext} is cleared, the current
+     * principal is removed from the {@link TokenManager}, but the {@link AuthenticationHandler#logout logout} process
+     * is not initiated.
+     * 
      * @return <code>true</code> if any state was removed, <code>false</code> otherwise
      */
     public boolean removeAuthState() {
@@ -231,13 +315,16 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         return true;
     }
 
+
     /**
      * Logs out the client from the authentication system. Clears the {@link SecurityContext} and removes the principal
-     * from the {@link TokenManager}.
-     * Finally, calls the authentication handler's {@link AuthenticationHandler#logout logout} method.
+     * from the {@link TokenManager}. Finally, calls the authentication handler's {@link AuthenticationHandler#logout
+     * logout} method.
      * 
-     * @param req the request
-     * @param resp the response
+     * @param req
+     *            the request
+     * @param resp
+     *            the response
      * @return the return value of the authentication handler's <code>logout()</code> method.
      * @throws AuthenticationProcessingException
      *             if an underlying problem prevented the request from being processed
@@ -262,7 +349,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         boolean result = handler.logout(principal, req, resp);
         String status = result ? "OK" : "FAIL";
         if (authLogger.isDebugEnabled()) {
-            authLogger.debug("Logout: principal: '" + principal + "' - method: '" + handler.getClass().getName()
+            authLogger.debug("Logout: principal: '" + principal + "' - method: '" + handler.getIdentifier()
                     + "' - status: " + status);
         }
 
@@ -271,6 +358,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
 
         return result;
     }
+
 
     public String toString() {
         StringBuffer sb = new StringBuffer();
@@ -282,15 +370,32 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         return sb.toString();
     }
 
+
     public void setTokenManager(TokenManager tokenManager) {
         this.tokenManager = tokenManager;
     }
+
 
     public void setAuthenticationHandlers(List<AuthenticationHandler> authenticationHandlers) {
         this.authenticationHandlers = authenticationHandlers;
     }
 
+
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
+    }
+    
+    public void setCookieLinkStore(CookieLinkStore cookieLinkStore) {
+        this.cookieLinkStore = cookieLinkStore;
+    }
+
+
+    public void setCookieLinksEnabled(boolean cookieLinksEnabled) {
+        this.cookieLinksEnabled = cookieLinksEnabled;
+    }
+
+
+    public void setRememberAuthMethod(boolean rememberAuthMethod) {
+        this.rememberAuthMethod = rememberAuthMethod;
     }
 }

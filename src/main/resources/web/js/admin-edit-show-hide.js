@@ -31,12 +31,8 @@ function showHide(radioIds, conditionHide, conditionHideEqual, showHideProps) {
 }
 
 function showHideProperties(init, conditionHide, conditionHideEqual, showHideProps) {
-  show = true;
-  if($(conditionHide).val() == conditionHideEqual){
-    show = false;
-  }
   for(var i = 0; i < showHideProps.length; i++) {
-    showHideProperty(showHideProps[i], init, show);
+    showHideProperty(showHideProps[i], init, $(conditionHide).val() == conditionHideEqual ? false : true);
   }
 }
 

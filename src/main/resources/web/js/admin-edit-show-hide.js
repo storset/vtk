@@ -43,17 +43,17 @@ function showHideProperties(conditionHide, conditionHideEqual, showHideProps) {
 }
 
 function showHideProperty(id, init, show) {
-	if(init) {
-	  if(show) {
-		$(id).show();  
-	  } else {
-		$(id).hide();  
-	  }
+  if(init) {
+    if(show) {
+	  $(id).show();  
 	} else {
-	  if(show) {
-	    $(id).slideDown(100);  
-	  } else {
-		$(id).slideUp(100); 
-	  }
+	  $(id).hide();  
 	}
+  } else {
+    if(show) {
+	  $(id).slideDown(100);  
+	} else {
+      $(id).slideUp(100); 
+	}
+  }
 }

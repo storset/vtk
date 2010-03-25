@@ -1,35 +1,38 @@
 // JavaScript Document
-
-//init
-var init = true;
   
 $(document).ready(function() {
   
-  showHide();
-  init = false;
-  
   //bind() click events
-  $("#resource\\.recursive-listing\\.unspecified").bind("click", showHide);
-  $("#resource\\.recursive-listing\\.false").bind("click", showHide);
-  $("#resource\\.display-type\\.unspecified").bind("click", showHide);
-  $("#resource\\.display-type\\.calendar").bind("click", showHide);
-  
+  showHide(new Array("#resource\\.recursive-listing\\.unspecified", "#resource\\.recursive-listing\\.false"), "#resource\\.recursive-listing\\.false:checked", 
+		               'false', new Array("#vrtx-resource\\.aggregation", "#vrtx-resource\\.recursiveAggregation"));
+  showHide(new Array("#resource\\.display-type\\.unspecified", "#resource\\.display-type\\.calendar"), "#resource\\.display-type\\.calendar:checked",
+		  null, new Array("#vrtx-resource\\.event-type-title"));
 
 });
 
-function showHide() {
-  if($("#resource\\.recursive-listing\\.false:checked").val() == 'false'){
-	showHideProp("#vrtx-resource\\.aggregation", init, false);
-	showHideProp("#vrtx-resource\\.recursiveAggregation", init, false);
-  } else {
-	showHideProp("#vrtx-resource\\.aggregation", init, true);
-	showHideProp("#vrtx-resource\\.recursiveAggregation", init, true);
+function showHide(radioIds, condition, conditionVal, showHideProps) {
+  for(var j = 0; j < radioIds.length; j++) {
+	  $(radioIds[j]).bind("click", function() {
+	    if($(condition).val() == conditionVal){
+	      for(var i = 0; i < showHideProps.length; i++) {
+		    showHideProp(showHideProps[i], false, false);
+	      }
+	    } else {
+	      for(var i = 0; i < showHideProps.length; i++) {
+	        showHideProp(showHideProps[i], false, true);
+	      }
+	    }
+	  });
   }
-  if($("#resource\\.display-type\\.calendar:checked").val() != 'calendar') {
-	showHideProp("#vrtx-resource\\.event-type-title", init, false);
-  } else {
-	showHideProp("#vrtx-resource\\.event-type-title", init, true);
-  }
+  if($(condition).val() == conditionVal){
+      for(var i = 0; i < showHideProps.length; i++) {
+	    showHideProp(showHideProps[i], true, false);
+      }
+    } else {
+      for(var i = 0; i < showHideProps.length; i++) {
+        showHideProp(showHideProps[i], true, true);
+      }
+    }
 }
 
 function showHideProp(id, init, show) {

@@ -84,24 +84,21 @@
   <#assign isEventCalendarListing = (displayType?has_content && displayType = 'calendar') />
   
   <#if !isEventCalendarListing>
-  <h1>${title}
-    <#if page?has_content>
-      <#if "${page}" != "1"> - <@vrtx.msg code="viewCollectionListing.page" /> ${page}</#if>
-    </#if>
-  </h1>
-  </#if>
-
-  <#if page == 1>
-    <#-- Image -->
-    <#if !isEventCalendarListing>
+    <h1>${title}
+      <#if page?has_content>
+        <#if "${page}" != "1"> - <@vrtx.msg code="viewCollectionListing.page" /> ${page}</#if>
+      </#if>
+    </h1>
+    <#if page == 1>
+      <#-- Image -->
       <@viewutils.displayImage resource />
-    </#if>
-    <#-- Introduction -->
-    <#assign introduction = vrtx.getIntroduction(resource) />
-    <#if introduction?has_content && !(isBlogListing || isEventCalendarListing)>
-      <div class="vrtx-introduction">
-        ${introduction}
-      </div>
+      <#-- Introduction -->
+      <#assign introduction = vrtx.getIntroduction(resource) />
+      <#if introduction?has_content && !isBlogListing>
+        <div class="vrtx-introduction">
+          ${introduction}
+        </div>
+      </#if>
     </#if>
   </#if>
 

@@ -25,7 +25,7 @@
  * 
  * @param resource The resource to display image from
 -->
-<#macro displayImage resource>
+<#macro displayImage resource displayAsThumbnail=false>
   
   <#local imageRes = vrtx.propResource(resource, "picture") />
   <#local introductionImage = vrtx.propValue(resource, "picture") />
@@ -33,7 +33,7 @@
   
   <#-- Flattened caption for alt-tag in image -->
   <#local captionFlattened>
-        <@vrtx.flattenHtml value=caption escape=true />
+    <@vrtx.flattenHtml value=caption escape=true />
   </#local>
   
   <#if introductionImage != "">
@@ -41,39 +41,44 @@
     <#if imageRes == "">
       <img class="vrtx-introduction-image" src="${introductionImage}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
     <#else>
+
+      <#if displayAsThumbnail>
+        <#local introductionImage = vrtx.propValue(resource, "picture", "thumbnail") />
+      </#if>
+
       <#local pixelWidth = imageRes.getValueByName("pixelWidth")?default("") />
       <#local authorName = imageRes.getValueByName("authorName")?default("") />
         
       <#local style="" />
       <#if pixelWidth != "">
-         <#local style = "width:" + pixelWidth+ "px;" />
+        <#local style = "width:" + pixelWidth+ "px;" />
       </#if>
         
       <#if caption != ""><#-- Caption is set -->
         <div class="vrtx-introduction-image" <#if style?has_content>style="${style}"</#if>>
-	         <img src="${introductionImage}" alt="${captionFlattened}" />
-            <div class="vrtx-imagetext">
-                 <div class="vrtx-imagedescription">${caption}</div>
-                 <span class="vrtx-photo">
-                    <#if authorName != ""><#-- Image authors is set -->
-                      <span class="vrtx-photo-prefix"><@vrtx.msg code="article.photoprefix" />: </span>${authorName}
-                    </#if>
-                 </span>
-           </div> 
-       </div>
+	      <img src="${introductionImage}" alt="${captionFlattened}" />
+          <div class="vrtx-imagetext">
+            <div class="vrtx-imagedescription">${caption}</div>
+            <span class="vrtx-photo">
+              <#if authorName != ""><#-- Image authors is set -->
+                <span class="vrtx-photo-prefix"><@vrtx.msg code="article.photoprefix" />: </span>${authorName}
+              </#if>
+            </span>
+          </div> 
+        </div>
       <#else>
-         <#if authorName != ""><#-- No caption but image author set -->
-            <div class="vrtx-introduction-image" <#if style?has_content>style="${style}"</#if>>
+        <#if authorName != ""><#-- No caption but image author set -->
+          <div class="vrtx-introduction-image" <#if style?has_content>style="${style}"</#if>>
             <img src="${introductionImage}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />   
-              <div class="vrtx-imagetext">
-                <span class="vrtx-photo">
-                  <span class="vrtx-photo-prefix"><@vrtx.msg code="article.photoprefix" />: </span>${authorName}
-                </span>
-              </div>     
-            </div>
-         <#else><#-- No caption or image author set -->
-            <img class="vrtx-introduction-image" src="${introductionImage}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
-         </#if>
+            <div class="vrtx-imagetext">
+              <span class="vrtx-photo">
+                <span class="vrtx-photo-prefix"><@vrtx.msg code="article.photoprefix" />: </span>${authorName}
+              </span>
+            </div>     
+          </div>
+        <#else><#-- No caption or image author set -->
+          <img class="vrtx-introduction-image" src="${introductionImage}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
+        </#if>
 	  </#if>
     </#if>
    </#if>

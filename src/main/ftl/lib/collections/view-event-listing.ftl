@@ -9,7 +9,7 @@
       <@displayStandard searchComponent hideNumberOfComments displayMoreURLs />
     </#list>
   <#elseif displayType = 'calendar'>
-    <@displayCalendar hideNumberOfComments displayMoreURLs />
+    <@displayCalendar collection hideNumberOfComments displayMoreURLs />
   </#if>
   
 </#macro>
@@ -31,7 +31,7 @@
 
 </#macro>
 
-<#macro displayCalendar hideNumberOfComments displayMoreURLs>
+<#macro displayCalendar collection hideNumberOfComments displayMoreURLs>
   
   <div id="vrtx-main-content" class="vrtx-calendar-listing">
   <#if allupcoming?has_content>
@@ -39,23 +39,34 @@
 	<#if allupcoming.files?size &gt; 0 >
 	  <@displayStandard allupcoming hideNumberOfComments displayMoreURLs false />
 	<#else>
-	  <h2>${allupcomingNoPlannedTitle?html}</h2>
+	  <p class="vrtx-events-no-planned">${allupcomingNoPlannedTitle?html}</p>
 	</#if>
   <#elseif allprevious?has_content>
     <h1>${allpreviousTitle?html}</h1>
     <#if allprevious.files?size &gt; 0 >
       <@displayStandard allprevious hideNumberOfComments displayMoreURLs false />
 	<#else>
-	  <h2>${allpreviousNoPlannedTitle?html}</h2>
+	  <p class="vrtx-events-no-planned">${allpreviousNoPlannedTitle?html}</p>
 	</#if>
   <#elseif specificDate?has_content && specificDate>
     <h1 class="vrtx-events-specific-date">${specificDateEventsTitle?html}</h1>
     <#if specificDateEvents?has_content && specificDateEvents.files?size &gt; 0>
       <@displayStandard specificDateEvents hideNumberOfComments displayMoreURLs=false />
     <#else>
-      <h2 class="vrtx-events-no-planned">${noPlannedEventsMsg?html}</h2>
+      <p class="vrtx-events-no-planned">${noPlannedEventsMsg?html}</p>
     </#if>
   <#elseif groupedByDayEvents?has_content || furtherUpcoming?has_content>
+    <div class="vrtx-events-calendar-introduction">
+    <#local title = vrtx.propValue(collection, "title", "flattened") />
+    <h1>${title}</h1>
+    <@viewutils.displayImage collection true />
+    <#local introduction = vrtx.getIntroduction(collection) />
+    <#if introduction?has_content>
+      <div class="vrtx-introduction">
+        ${introduction}
+      </div>
+    </#if>
+    </div>
     <#if groupedByDayEvents?has_content && groupedByDayEvents?size &gt; 0>
       <div id="vrtx-daily-events">
         <h2 class="vrtx-events-title">${groupedEventsTitle?html}</h2>

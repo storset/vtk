@@ -33,7 +33,7 @@
 		   
 		   var link = generateLinkImage($("img", this), $(this), container);
 	      
-	       //cache images
+	       //cache image
 	       images[i] = link;
 	       
 		   $(this).hover(
@@ -85,9 +85,7 @@
 
 		  	  addDescription($("img", this));
 
-		      //prevent default event action
 			  e.preventDefault(); 
-			  
 	      });
 		  centerThumbnailImage($("img", this)); 
 	 });
@@ -150,7 +148,6 @@
 		  } else {
 			$(wrapper + " ul li:first a").click();
 		  }
-		  //prevent default event action
 		  e.preventDefault(); 
 	   });
 	   //TODO: refactor
@@ -182,10 +179,9 @@
        calculateImageAndPagingNavigationPosition();
        addDescription(wrapper + " ul li a.active img");
 	  
-	   //set all thumbnails not active to 0.6 opacity
+	   //set all thumbnails not active to settings.fadedThumbsOutOpacityopacity
 	   jQuery(wrapper + " ul li a").each(function(j) {
-		 if(jQuery(this).hasClass("active")) {
-		 } else {
+		 if(!jQuery(this).hasClass("active")) {
 		   jQuery("img", this).stop().fadeTo("0", settings.fadedThumbsOutOpacity);
 		 }
 	   });
@@ -225,9 +221,7 @@
 	   var imgWidth = $(wrapper + " " + container + " img").width();
 	   var containerWidth = $(wrapper + " " + container).width();
 	   
-	   if(imgHeight < minHeight) {
-	     imgHeight = minHeight;
-	   }
+	   var imgHeight = (imgHeight < minHeight) ? minHeight : imgHeight;
 
 	   setMultipleCSS(new Array(wrapper + " " + container + "-nav a", wrapper + " " + container + "-nav span", 
 			          wrapper + " " + container + "-link"), "height", imgHeight);

@@ -173,9 +173,9 @@
 	        <#else>
 	          <a href="${image.URI}"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" />
 	        </#if>
+	      </#if>
 	            <span><img src="${image.URI}" alt="${description}" /></span>
 	          </a>
-	      </#if>
         </li>
         <#assign count = count+1 />
     </#list>

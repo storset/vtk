@@ -160,6 +160,7 @@
 	   }
 	 }
 
+	 //TODO: try to refactor this into main loop - could possible remove lot of lines and sub-functions..
      function initFirstImage() {
 		
 	   var link = generateLinkImage(wrapper + " ul li a.active img", wrapper + " ul li a.active");

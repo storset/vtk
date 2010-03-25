@@ -221,7 +221,7 @@
 
 	   if(imgWidth > containerWidth) {
 		 imgWidth = containerWidth;
-	   } else if (imgWidth < 250) {
+	   } else if (imgWidth < minWidth) {
 		 imgWidth = minWidth;
 	   }
 	   var leftRightNavAdjust = (containerWidth - imgWidth) / 2;

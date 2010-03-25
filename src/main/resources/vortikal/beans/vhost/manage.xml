@@ -5,6 +5,34 @@
 
   <import resource="report.xml"/>
 
+  <bean id="manage.404Service" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="-2" />
+    <property name="assertions">
+      <list>
+        <!-- Assert that webHostName is different from manage.hostName and missing vrtx=admin: -->
+        <bean class="org.vortikal.web.service.InvertAssertion">
+          <property name="assertion">
+            <bean class="org.vortikal.web.service.ConfigAssertion">
+              <property name="config" value="${webHostName}" />
+              <property name="expectedValue" value="${manage.hostName}" />
+            </bean>
+          </property>
+        </bean>
+        <ref bean="manage.hostNameAssertion" />
+        <bean class="org.vortikal.web.service.InvertAssertion">
+          <property name="assertion" ref="adminVrtxParameterRule" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <bean class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+        <property name="viewName" value="manage.404" />
+      </bean>
+    </property>
+  </bean>
+
+
+
   <!-- MANAGE services -->
   <!--
     (deleteResourceService has been moved out of manageService and made a root level service because in some
@@ -958,10 +986,24 @@
   <bean id="manage.plainViewResolver" class="org.vortikal.web.decorating.MappingViewResolver">
     <property name="views">
       <map>
+        <entry key="manage.404" value-ref="manage.404View" />
         <entry key="manage.refreshLockView" value-ref="manage.refreshLockView" />
       </map>
     </property>
   </bean>
+
+  <bean id="manage.404View"
+        class="org.vortikal.web.view.SimpleHttpStatusView">
+    <property name="attributesMap">
+      <map>
+        <entry key="httpStatusCode">
+          <bean class="java.lang.Integer">
+            <constructor-arg><value>404</value></constructor-arg>
+          </bean>
+        </entry>
+      </map>  
+    </property>
+  </bean>  
 
   <bean id="expiresSecProvider" class="org.vortikal.web.referencedata.provider.ResourcePropertiesValueProvider"
     parent="repositoryAware">

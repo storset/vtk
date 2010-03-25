@@ -5,12 +5,12 @@
 <beans>
 
   <bean id="browseService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="webService" />
-    <property name="order" value="600" />
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-9800" />
     <property name="assertions">
       <list>
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="vrtx" />
+          <property name="parameterName" value="mode" />
           <property name="parameterValue" value="browse" />
         </bean>
         <ref bean="requiresReadPermissionAssertion" />

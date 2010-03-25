@@ -92,22 +92,18 @@
 	  
 	 function centerThumbnailImage(thumb) {
 		 setTimeout(function() {
-		   //.. first horizontal
 		   var imgWidth = $(thumb).width();
+		   var leftAdjust = (imgWidth - $(thumb).parent().width()) / 2;
 		   if(imgWidth > $(thumb).parent().width()) {
-			 var leftAdjust = -(imgWidth - $(thumb).parent().width()) / 2;
-			 $(thumb).css("marginLeft", leftAdjust + "px");
+			 $(thumb).css("marginLeft", -leftAdjust + "px");
 		   } else if (imgWidth < $(thumb).parent().width()) {
-			 var leftAdjust = ($(thumb).parent().width() - imgWidth) / 2;
 		     $(thumb).css("marginLeft", leftAdjust + "px"); 
 		   }
-		   //.. then vertical
 		   var imgHeight = $(thumb).height();
+		   var topAdjust = (imgHeight - $(thumb).parent().height()) / 2;
 		   if(imgHeight > $(thumb).parent().height()) {
-			 var topAdjust = -(imgHeight - $(thumb).parent().height()) / 2;
-			 $(thumb).css("marginTop", topAdjust + "px"); 
+			 $(thumb).css("marginTop", -topAdjust + "px"); 
 		   } else if(imgHeight < $(thumb).parent().height()) {
-			 var topAdjust = ($(thumb).parent().height() - imgHeight) / 2;
 		     $(thumb).css("marginTop", topAdjust + "px");  
 	       }
 		 }, 100);
@@ -150,7 +146,6 @@
 		  }
 		  e.preventDefault(); 
 	   });
-	   //TODO: refactor
 	   $("a" + container + "-link").hover(function () {
 			  fadeMultiple(new Array(wrapper + " " + " a.prev", wrapper + " " + " a.next"), settings.fadeNavInOutTime, 1)
 		      fadeMultiple(new Array(wrapper + " " + " a.next span", wrapper + " " + " a.prev span"), settings.fadeNavInOutTime, 0.2)

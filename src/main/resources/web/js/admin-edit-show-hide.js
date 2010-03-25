@@ -1,9 +1,9 @@
 $(document).ready(function() {
 
-  showHide(new Array("#resource\\.recursive-listing\\.unspecified", "#resource\\.recursive-listing\\.false"), 
+  showHide(new Array("#resource\\.recursive-listing\\.false", "#resource\\.recursive-listing\\.unspecified"), 
 		   "#resource\\.recursive-listing\\.false:checked", 
 		   'false', 
-		   new Array("#vrtx-resource\\.aggregation", "#vrtx-resource\\.recursiveAggregation"));
+		   new Array("#vrtx-resource\\.recursive-listing-subfolders"));
   
   showHide(new Array("#resource\\.display-type\\.unspecified", "#resource\\.display-type\\.calendar"), 
 		   "#resource\\.display-type\\.calendar:checked",
@@ -39,15 +39,15 @@ function showHideProperties(init, conditionHide, conditionHideEqual, showHidePro
 function showHideProperty(id, init, show) {
   if(init) {
     if(show) {
-	  $(id).show();  
+	  $(id).show();
 	} else {
-	  $(id).hide();  
+	  $(id).hide();
 	}
   } else {
     if(show) {
-	  $(id).slideDown(100);  
+	  $(id).slideDown(100);
 	} else {
-      $(id).slideUp(100); 
+      $(id).slideUp(100);
 	}
   }
 }

@@ -92,18 +92,16 @@
 	  
 	 function centerThumbnailImage(thumb) {
 		 setTimeout(function() {
-		   var imgWidth = $(thumb).width();
-		   var leftAdjust = (imgWidth - $(thumb).parent().width()) / 2;
-		   if(imgWidth > $(thumb).parent().width()) {
+		   var leftAdjust = ($(thumb).width() - $(thumb).parent().width()) / 2;
+		   if($(thumb).width() > $(thumb).parent().width()) {
 			 $(thumb).css("marginLeft", -leftAdjust + "px");
-		   } else if (imgWidth < $(thumb).parent().width()) {
+		   } else if ($(thumb).width() < $(thumb).parent().width()) {
 		     $(thumb).css("marginLeft", leftAdjust + "px"); 
 		   }
-		   var imgHeight = $(thumb).height();
-		   var topAdjust = (imgHeight - $(thumb).parent().height()) / 2;
-		   if(imgHeight > $(thumb).parent().height()) {
+		   var topAdjust = ($(thumb).height() - $(thumb).parent().height()) / 2;
+		   if($(thumb).height() > $(thumb).parent().height()) {
 			 $(thumb).css("marginTop", -topAdjust + "px"); 
-		   } else if(imgHeight < $(thumb).parent().height()) {
+		   } else if($(thumb).height() < $(thumb).parent().height()) {
 		     $(thumb).css("marginTop", topAdjust + "px");  
 	       }
 		 }, 100);

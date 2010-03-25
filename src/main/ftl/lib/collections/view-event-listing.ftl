@@ -66,6 +66,7 @@
             <#local todayDate = vrtx.calcDate(today, 'dd') />
             <#local currentDate = vrtx.calcDate(groupedEvents.day, 'dd') />
             <#local todayLocalized = vrtx.getMsg("eventListing.calendar.today", "today") />
+            <#-- TODO: fix tomorrow when new month -->
             <#local tomorrowLocalized = vrtx.getMsg("eventListing.calendar.tomorrow", "tomorrow") />
             <#if vrtx.parseInt(currentDate) == vrtx.parseInt(todayDate) >
               <span class="vrtx-daily-events-date-day" id="vrtx-daily-events-date-today">${todayLocalized}</span>

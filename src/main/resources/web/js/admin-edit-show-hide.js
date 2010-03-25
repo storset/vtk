@@ -31,14 +31,12 @@ function showHide(radioIds, conditionHide, conditionHideEqual, showHideProps) {
 }
 
 function showHideProperties(init, conditionHide, conditionHideEqual, showHideProps) {
+  show = true;
   if($(conditionHide).val() == conditionHideEqual){
-	for(var i = 0; i < showHideProps.length; i++) {
-	  showHideProperty(showHideProps[i], init, false);
-	}
-  } else {
-	for(var i = 0; i < showHideProps.length; i++) {
-	  showHideProperty(showHideProps[i], init, true);
-    }
+    show = false;
+  }
+  for(var i = 0; i < showHideProps.length; i++) {
+    showHideProperty(showHideProps[i], init, show);
   }
 }
 

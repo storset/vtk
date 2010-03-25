@@ -63,18 +63,26 @@
       <#list groupedByDayEvents as groupedEvents>
         <div id="vrtx-daily-events-${count}" class="vrtx-daily-events-listing">
           <div class="vrtx-daily-events-date">
-            <#local todayDate = vrtx.calcDate(today, 'dd') />
-            <#local currentDate = vrtx.calcDate(groupedEvents.day, 'dd') />
+            <#local todayDay = vrtx.calcDate(today, 'dd') />
+            <#local todayMonth = vrtx.calcDate(today, 'MM') />
+            <#local tomorrowDay = vrtx.calcDate(tomorrow, 'dd') />
+            <#local tomorrowMonth = vrtx.calcDate(tomorrow, 'MM') />
+            <#local currentDay = vrtx.calcDate(groupedEvents.day, 'dd') />
+            <#local currentMonth = vrtx.calcDate(groupedEvents.day, 'MM') />
+            
             <#local todayLocalized = vrtx.getMsg("eventListing.calendar.today", "today") />
-            <#-- TODO: fix tomorrow when new month -->
             <#local tomorrowLocalized = vrtx.getMsg("eventListing.calendar.tomorrow", "tomorrow") />
-            <#if vrtx.parseInt(currentDate) == vrtx.parseInt(todayDate) >
+            
+            <#if (vrtx.parseInt(currentDay) == vrtx.parseInt(todayDay)) 
+              && (vrtx.parseInt(currentMonth) == vrtx.parseInt(todayMonth)) >
               <span class="vrtx-daily-events-date-day" id="vrtx-daily-events-date-today">${todayLocalized}</span>
-            <#elseif vrtx.parseInt(currentDate) == (vrtx.parseInt(todayDate) + 1) >
+            <#elseif (vrtx.parseInt(currentDay) == vrtx.parseInt(tomorrowDay)) 
+                  && (vrtx.parseInt(currentMonth) == vrtx.parseInt(tomorrowMonth)) > 
               <span class="vrtx-daily-events-date-day" id="vrtx-daily-events-date-tomorrow">${tomorrowLocalized}</span>
             <#else>
-              <span class="vrtx-daily-events-date-day">${currentDate}</span>
+              <span class="vrtx-daily-events-date-day">${currentDay}</span>
             </#if>
+            
             <span class="vrtx-daily-events-date-month"><@vrtx.date value=groupedEvents.day format='MMM' /></span>
           </div>
           <div class="vrtx-daily-event">

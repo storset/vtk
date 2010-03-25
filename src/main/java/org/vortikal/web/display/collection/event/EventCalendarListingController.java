@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.display.collection.event;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -107,6 +108,11 @@ public class EventCalendarListingController extends EventListingController {
         model.put("viewAllPreviousURL", viewAllPreviousURL);
         model.put("viewAllPreviousTitle", this.helper.getEventTypeTitle(request, collection,
                 "eventListing.viewAllPrevious", false));
+        
+        Calendar tomorrow = Calendar.getInstance();
+        tomorrow.add(Calendar.DATE, 1);
+        
+        model.put("tomorrow", tomorrow.getTime());
         model.put("today", new Date());
 
     }

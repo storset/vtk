@@ -26,8 +26,8 @@
 	  initFirstImage();
 	  
 	  //paging (relative to li a.active)
-	  addPagingClickEvents("next", wrapper);
-	  addPagingClickEvents("prev", wrapper);
+	  addPagingClickAndHoverEvents("next");
+	  addPagingClickAndHoverEvents("prev");
 		  
 	  return this.each(function (i) {
 		   
@@ -56,14 +56,14 @@
 			    	  $(this).append(images[i]); 
 			    	  //fade in and make sure calculations are done after fully loaded
 			    	  $(this).fadeTo(settings.fadeInOutTime, 1, function() {
-			    		  addPagingClickEvents(container + "-link");
+			    		  addPagingClickAndHoverEvents(container + "-link");
 			    		  calculateImageAndPagingNavigationPosition();
 			    	  });
 			      });
 		      } else {
 		    	  $("a" + container + "-link", wrapper + " " + container).remove();
 		    	  $(wrapper + " " + container).append(images[i]);
-		    	  addPagingClickEvents(container + "-link");
+		    	  addPagingClickAndHoverEvents(container + "-link");
 		    	  calculateImageAndPagingNavigationPosition();
 		      }
 		      //remove active classes
@@ -104,7 +104,8 @@
 	   }
 	 }
 	  
-	 function addPagingClickEvents(navClass) {
+	 //TODO: refactor
+	 function addPagingClickAndHoverEvents(navClass) {
 	    $(wrapper + " " + " a." + navClass).click(function(e) {
 	      if(navClass == "next" || navClass == container + "-link") {
 			  if($(wrapper + " ul li a.active").parent().next().length != 0) {

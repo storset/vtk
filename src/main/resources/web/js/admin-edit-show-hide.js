@@ -1,11 +1,11 @@
 // JavaScript Document
 
+//init
 var init = true;
-
+  
 $(document).ready(function() {
-  //init
+  
   showHide();
-	
   init = false;
   
   //bind() click events
@@ -19,15 +19,31 @@ $(document).ready(function() {
 
 function showHide() {
   if($("#resource\\.recursive-listing\\.false:checked").val() == 'false'){
-	$("#vrtx-resource\\.aggregation").slideUp(100);
-	$("#vrtx-resource\\.recursiveAggregation").slideUp(100);
+	showHideProp("#vrtx-resource\\.aggregation", init, false);
+	showHideProp("#vrtx-resource\\.recursiveAggregation", init, false);
   } else {
-	$("#vrtx-resource\\.aggregation").slideDown(100);
-	$("#vrtx-resource\\.recursiveAggregation").slideDown(100);
+	showHideProp("#vrtx-resource\\.aggregation", init, true);
+	showHideProp("#vrtx-resource\\.recursiveAggregation", init, true);
   }
   if($("#resource\\.display-type\\.calendar:checked").val() != 'calendar') {
-	$("#vrtx-resource\\.event-type-title").slideUp(100);
+	showHideProp("#vrtx-resource\\.event-type-title", init, false);
   } else {
-	$("#vrtx-resource\\.event-type-title").slideDown(100);
+	showHideProp("#vrtx-resource\\.event-type-title", init, true);
   }
+}
+
+function showHideProp(id, init, show) {
+	if(init) {
+	  if(show) {
+		$(id).show();  
+	  } else {
+		$(id).hide();  
+	  }
+	} else {
+	  if(show) {
+	    $(id).slideDown(100);  
+	  } else {
+		$(id).slideUp(100); 
+	  }
+	}
 }

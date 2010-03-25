@@ -164,23 +164,17 @@
         <#if activeImage != "">
 	      <#if (activeImage == image.URI) >
 	          <a href="${image.URI}" class="active"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" />
-	            <span><img src="${image.URI}" alt="${description}" /></span>
-	          </a>
 	        <#else>
 	          <a href="${image.URI}"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" />
-	            <span><img src="${image.URI}" alt="${description}" /></span>
-	          </a>
 	        </#if>
 	      <#else>
 	        <#if (image_index == 0) >
 	          <a href="${image.URI}" class="active"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" />
-	            <span><img src="${image.URI}" alt="${description}" /></span>
-	          </a>
 	        <#else>
 	          <a href="${image.URI}"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" />
+	        </#if>
 	            <span><img src="${image.URI}" alt="${description}" /></span>
 	          </a>
-	        </#if>
 	      </#if>
         </li>
         <#assign count = count+1 />

@@ -19,34 +19,29 @@ $(document).ready(function() {
  * showHideProps: Multiple props / id's / classnames to show / hide (Array)
  */
 function showHide(radioIds, conditionHide, conditionHideEqual, showHideProps) {
-  for(var j = 0; j < radioIds.length; j++) {
-	  $(radioIds[j]).bind("click", function() {
-	    if($(conditionHide).val() == conditionHideEqual){
-	      for(var i = 0; i < showHideProps.length; i++) {
-		    showHideProp(showHideProps[i], false, false);
-	      }
-	    } else {
-	      for(var i = 0; i < showHideProps.length; i++) {
-	        showHideProp(showHideProps[i], false, true);
-	      }
-	    }
-	  });
-  }
-  
   //init
-  //TODO: refactor with above code
+  showHideProperties(conditionHide, conditionHideEqual, showHideProps);
+	
+  for(var j = 0; j < radioIds.length; j++) {
+	$(radioIds[j]).bind("click", function() {
+	  showHideProperties(conditionHide, conditionHideEqual, showHideProps);
+    });
+  }
+}
+
+function showHideProperties(conditionHide, conditionHideEqual, showHideProps) {
   if($(conditionHide).val() == conditionHideEqual){
-    for(var i = 0; i < showHideProps.length; i++) {
-	  showHideProp(showHideProps[i], true, false);
-    }
+	for(var i = 0; i < showHideProps.length; i++) {
+	  showHideProperty(showHideProps[i], true, false);
+	}
   } else {
-    for(var i = 0; i < showHideProps.length; i++) {
-      showHideProp(showHideProps[i], true, true);
+	for(var i = 0; i < showHideProps.length; i++) {
+	  showHideProperty(showHideProps[i], true, true);
     }
   }
 }
 
-function showHideProp(id, init, show) {
+function showHideProperty(id, init, show) {
 	if(init) {
 	  if(show) {
 		$(id).show();  

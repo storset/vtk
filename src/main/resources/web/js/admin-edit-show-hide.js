@@ -20,24 +20,24 @@ $(document).ready(function() {
  */
 function showHide(radioIds, conditionHide, conditionHideEqual, showHideProps) {
   //init
-  showHideProperties(conditionHide, conditionHideEqual, showHideProps);
+  showHideProperties(true, conditionHide, conditionHideEqual, showHideProps);
 
   //bind() click() events
   for(var j = 0; j < radioIds.length; j++) {
 	$(radioIds[j]).bind("click", function() {
-	  showHideProperties(conditionHide, conditionHideEqual, showHideProps);
+	  showHideProperties(false, conditionHide, conditionHideEqual, showHideProps);
     });
   }
 }
 
-function showHideProperties(conditionHide, conditionHideEqual, showHideProps) {
+function showHideProperties(init, conditionHide, conditionHideEqual, showHideProps) {
   if($(conditionHide).val() == conditionHideEqual){
 	for(var i = 0; i < showHideProps.length; i++) {
-	  showHideProperty(showHideProps[i], true, false);
+	  showHideProperty(showHideProps[i], init, false);
 	}
   } else {
 	for(var i = 0; i < showHideProps.length; i++) {
-	  showHideProperty(showHideProps[i], true, true);
+	  showHideProperty(showHideProps[i], init, true);
     }
   }
 }

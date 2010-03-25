@@ -167,6 +167,14 @@
 			  $(wrapper + " " + " a.next span").stop().fadeTo(settings.fadeNavInOutTime, 0);
 			  $(wrapper + " " + " a.prev span").stop().fadeTo(settings.fadeNavInOutTime, 0);
 	   });
+	   
+	   //IE 6 max-width substitute
+	   if (jQuery.browser.msie && jQuery.browser.version <= 6) {
+	     var mainImgHeight = $("a" + container + "-link img").height();
+	     if(mainImgHeight > 380) {
+		   $("a" + container + "-link img").css("height", "380px");
+	     }
+	   }
 	 }
 	  
      function initFirstImage() {

@@ -21,6 +21,7 @@
 	  //Unobtrusive JavaScript
 	  $(container + "-pure-css").addClass(container.substring(1));
 	  $(container + "-nav-pure-css").addClass(container.substring(1) + "-nav");
+	  $(wrapper + "-thumbs-pure-css").addClass(wrapper.substring(1) + "-thumbs");
 
 	  initFirstImage();
 	  

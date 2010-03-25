@@ -110,9 +110,13 @@ ul.vrtx-image-listing {
   width: 635px !important;
 }
 
-.vrtx-image-listing-include ul {
+.vrtx-image-listing-include ul.vrtx-image-listing-include-thumbs-pure-css {
+
+}
+
+.vrtx-image-listing-include ul.vrtx-image-listing-include-thumbs {
   margin: 0 auto !important;
-  text-align: center;	
+  text-align: center;
   width: 635px !important;
 }
 

@@ -152,7 +152,7 @@
         </div>
         <#break />
       </#list>
-    <ul>
+    <ul class="vrtx-image-listing-include-thumbs-pure-css">
     <#assign count = 1 />
     <#list images as image>
         <#assign description = vrtx.propValue(image, 'description', '', 'content')?html />
@@ -163,15 +163,23 @@
         </#if>
         <#if activeImage != "">
 	      <#if (activeImage == image.URI) >
-	          <a href="${image.URI}" class="active"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" /></a>
+	          <a href="${image.URI}" class="active"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" />
+	            <span><img src="${image.URI}" alt="${description}" /></span>
+	          </a>
 	        <#else>
-	          <a href="${image.URI}"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" /></a>
+	          <a href="${image.URI}"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" />
+	            <span><img src="${image.URI}" alt="${description}" /></span>
+	          </a>
 	        </#if>
 	      <#else>
 	        <#if (image_index == 0) >
-	          <a href="${image.URI}" class="active"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" /></a>
+	          <a href="${image.URI}" class="active"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" />
+	            <span><img src="${image.URI}" alt="${description}" /></span>
+	          </a>
 	        <#else>
-	          <a href="${image.URI}"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" /></a>
+	          <a href="${image.URI}"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" />
+	            <span><img src="${image.URI}" alt="${description}" /></span>
+	          </a>
 	        </#if>
 	      </#if>
         </li>

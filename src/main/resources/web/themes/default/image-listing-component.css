@@ -19,6 +19,48 @@
 .vrtx-image-listing-include-title a:hover {
   color: #666;
 }
+
+/* Unobtrusive JavaScript */
+.vrtx-image-listing-include ul.vrtx-image-listing-include-thumbs-pure-css {
+  width: 258px;
+}
+
+.vrtx-image-listing-include ul.vrtx-image-listing-include-thumbs {
+  width: auto;	
+}
+
+.vrtx-image-listing-include ul.vrtx-image-listing-include-thumbs-pure-css li {
+  position: relative;	
+}
+
+.vrtx-image-listing-include ul.vrtx-image-listing-include-thumbs li {
+  position: static;	
+}
+
+.vrtx-image-listing-include ul.vrtx-image-listing-include-thumbs-pure-css li a span {
+  display: block;
+  position: absolute;
+  left: -2000px;
+  visibility: hidden;
+}
+
+.vrtx-image-listing-include ul.vrtx-image-listing-include-thumbs-pure-css li a:hover span {
+  left: 200px;
+  top: 0;
+  visibility: visible;
+  z-index: 99999;
+}
+
+.vrtx-image-listing-include ul.vrtx-image-listing-include-thumbs-pure-css li a span img {
+  height: auto;
+  max-width: 400px;	
+}
+
+.vrtx-image-listing-include ul.vrtx-image-listing-include-thumbs li a span {
+  display: none;	
+}
+
+/* ^ Unobtrusive JavaScript */
 	
 .vrtx-image-listing-include ul {
   margin: 0;
@@ -39,7 +81,8 @@
   border-radius: 5px;
 }
 
-.vrtx-image-listing-include ul li.vrtx-thumb-last {
+/* Unobtrusive JavaScript */
+.vrtx-image-listing-include ul.vrtx-image-listing-include-thumbs li.vrtx-thumb-last {
   margin-right: 0px;	
 }
 
@@ -65,14 +108,6 @@
   overflow: hidden;
   width: 507px;
   position: relative;
-  /*
-  padding: 5px;
-  border: 1px solid #ccc;
-  background-color: #fff;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
-  -khtml-border-radius: 5px;
-  border-radius: 5px;*/
 }
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container img {

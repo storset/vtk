@@ -68,8 +68,8 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
         int searchLimit = getSearchLimit(requestLimit);
         
         String type = request.getStringParameter("type");
-        if(type != null && type.equals("simple-gallery")) {
-            model.put("type", "simple-gallery");
+        if(type != null && type.equals("gallery")) {
+            model.put("type", "gallery");
         } else {
             model.put("type", "list");
         }

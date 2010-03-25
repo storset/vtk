@@ -502,7 +502,7 @@
       <map>
         <entry key="uri" value="URI of the imagefolder to include pictures from." />
         <entry key="limit" value="Maximum number of images to show in list. Default is 5" />
-        <entry key="type" value="How to the display the component. Default is 'list'. 'simple-gallery' will display an embedded gallery." />
+        <entry key="type" value="How to the display the component. Default is 'list'. 'gallery' will display an embedded gallery." />
         <entry key="fade-effect" value="Milliseconds of fade in and out effect for choosen image. Default is 0 or off, and max is 999 ms" />
       </map>
     </property>

@@ -7,7 +7,7 @@
   </#list>
 </#if>
 
-<#if jsURLs?exists && type == 'simple-gallery'>
+<#if jsURLs?exists && type == 'gallery'>
   <#list jsURLs as jsURL>
     <script type="text/javascript" src="${jsURL}"></script>
   </#list>
@@ -17,7 +17,7 @@
 <#if images?exists>
   <div class="vrtx-image-listing-include">
     <span class="vrtx-image-listing-include-title"><a href="${folderUrl}?display=gallery">${folderTitle}</a></span>
-    <#if type == 'simple-gallery'>
+    <#if type == 'gallery'>
        <script type="text/javascript">
        <!--
          // ("load") so that all images is loaded before running,
@@ -49,7 +49,11 @@
         <#break />
       </#list>
     </#if>
-    <ul class="vrtx-image-listing-include-thumbs-pure-css">
+    <#if type == 'gallery'>
+      <ul class="vrtx-image-listing-include-thumbs-pure-css">
+    <#else>
+      <ul class="vrtx-image-listing-include-thumbs">
+    </#if>
     <#assign count = 1 />
     <#list images as image>
         <#assign description = vrtx.propValue(image, 'description', '', 'content')?html />
@@ -63,7 +67,7 @@
           <#else>
             <a href="${folderUrl}?actimg=${image.URI}&amp;display=gallery"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" /> 
           </#if>
-              <span><img src="${image.URI}" alt="${description}" /></span>
+              <#if type == 'gallery'><span><img src="${image.URI}" alt="${description}" /></span></#if>
             </a>
         </li>
         <#assign count = count+1 />

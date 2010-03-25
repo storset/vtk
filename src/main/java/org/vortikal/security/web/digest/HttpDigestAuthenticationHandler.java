@@ -93,6 +93,7 @@ public class HttpDigestAuthenticationHandler
 
     private Log logger = LogFactory.getLog(this.getClass());
 
+    private String identifier;
     private PrincipalFactory principalFactory;
     
     private String nonceKey = NetUtils.guessHostName() + "." + System.currentTimeMillis();
@@ -534,6 +535,15 @@ public class HttpDigestAuthenticationHandler
     @Required
     public void setPrincipalFactory(PrincipalFactory principalFactory) {
         this.principalFactory = principalFactory;
+    }
+    
+    @Required
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+    
+    public String getIdentifier() {
+        return this.identifier;
     }
 
 }

@@ -65,6 +65,8 @@ public class OpenIDAuthenticationHandler
     
     private static Log logger = LogFactory.getLog(OpenIDAuthenticationHandler.class);
 
+    private String identifier;
+    
     private PrincipalFactory principalFactory;
     
     private int order = Integer.MAX_VALUE;
@@ -277,6 +279,15 @@ public class OpenIDAuthenticationHandler
     @Required
     public void setPrincipalFactory(PrincipalFactory principalFactory) {
         this.principalFactory = principalFactory;
+    }
+    
+    public String getIdentifier() {
+        return this.identifier;
+    }
+    
+    @Required
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
 }

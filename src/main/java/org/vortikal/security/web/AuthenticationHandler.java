@@ -53,6 +53,8 @@ import org.vortikal.security.Principal;
  */
 public interface AuthenticationHandler {
 
+    public String getIdentifier();
+    
     /**
      * Determines whether a request is recognized by this authentication handler.
      * 

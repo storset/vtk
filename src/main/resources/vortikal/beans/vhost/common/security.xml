@@ -82,6 +82,7 @@
       A HTTP/Basic authentication manager running against a
       principal store of "local" users and groups
     </description>
+    <property name="identifier" value="HTTP/Basic" />
     <property name="order" value="100" />
     <property name="recognizedDomains">
       <set>
@@ -101,6 +102,7 @@
       A HTTP/Digest authentication manager running against a
       principal store of "local" users and groups
     </description>
+    <property name="identifier" value="HTTP/Digest" />
     <property name="order" value="0" />
     <!--      <property name="stateMap" ref="digestStateMap" />-->
     <property name="recognizedDomains">

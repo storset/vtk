@@ -53,6 +53,7 @@ import org.vortikal.web.InvalidRequestException;
  */
 public class SamlAuthenticationHandler implements AuthenticationChallenge, AuthenticationHandler, Controller {
 
+    private String identifier;
     private Challenge challenge;
     private Login login;
     private Logout logout;
@@ -155,6 +156,14 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     public void setLogout(Logout logout) {
         this.logout = logout;
     }
-
+    
+    @Required
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+    
+    public String getIdentifier() {
+        return this.identifier;
+    }
 
 }

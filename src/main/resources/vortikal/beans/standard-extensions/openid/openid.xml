@@ -68,6 +68,7 @@
 
   <bean id="openid.authenticationHandler"
         class="org.vortikal.security.web.openid.OpenIDAuthenticationHandler">
+    <property name="identifier" value="OpenID" />
     <property name="consumerManager">
       <bean class="org.openid4java.consumer.ConsumerManager" />
     </property>

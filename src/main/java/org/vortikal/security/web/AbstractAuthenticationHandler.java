@@ -40,6 +40,8 @@ public abstract class AbstractAuthenticationHandler implements
 
     protected Log logger = LogFactory.getLog(this.getClass());
 
+    private String identifier;
+    
     private PrincipalFactory principalFactory;
     
     /* Simple cache to allow for clients that don't send cookies */
@@ -161,6 +163,15 @@ public abstract class AbstractAuthenticationHandler implements
     @Required
     public void setPrincipalFactory(PrincipalFactory principalFactory) {
         this.principalFactory = principalFactory;
+    }
+
+    public String getIdentifier() {
+        return this.identifier;
+    }
+
+    @Required
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
 }

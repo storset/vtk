@@ -24,6 +24,7 @@
 
 
   <bean id="saml.authenticationHandler" class="org.vortikal.security.web.saml.SamlAuthenticationHandler">
+    <property name="identifier" value="saml:${saml.authenticationURL}" />
     <property name="principalFactory" ref="principalFactory" />
 
     <property name="challenge" ref="saml.challenge" />

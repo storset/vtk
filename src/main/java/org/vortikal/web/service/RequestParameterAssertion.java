@@ -46,15 +46,15 @@ public class RequestParameterAssertion implements Assertion {
     private String parameterName = "";
     private String parameterValue = "";
     private Set<String> legalValueParameters; 
-	
+
     public void setParameterName(String parameterName) {
         this.parameterName = parameterName;
     }
-	
+
     public void setParameterValue(String parameterValue) {
         this.parameterValue = parameterValue;
     }
-	
+
     public String getParameterName() {
         return this.parameterName;
     }
@@ -70,7 +70,7 @@ public class RequestParameterAssertion implements Assertion {
                     ((RequestParameterAssertion)assertion).getParameterName())) {
 
                 return ! (this.parameterValue.equals(
-                              ((RequestParameterAssertion)assertion).getParameterValue()));
+                        ((RequestParameterAssertion)assertion).getParameterValue()));
             }
         }
         return false;
@@ -79,7 +79,7 @@ public class RequestParameterAssertion implements Assertion {
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
-		
+
         sb.append(super.toString());
         sb.append("; parameterName = ").append(this.parameterName);
         sb.append("; parameterValue = ").append(this.parameterValue);
@@ -95,19 +95,19 @@ public class RequestParameterAssertion implements Assertion {
     public void processURL(URL url) {
         url.addParameter(this.parameterName, this.parameterValue);
     }
-    
+
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
-    	if(legalValueParameters != null){
-    		return legalValueParameters.contains(request.getParameter(this.parameterName));
-    	}
+        if (this.legalValueParameters != null) {
+            return this.legalValueParameters.contains(request.getParameter(this.parameterName));
+        }
         return this.parameterValue.equals(request.getParameter(this.parameterName)); 
     }
 
-	public void setLegalValueParameters(Set<String> legalValueParameters) {
-		this.legalValueParameters = legalValueParameters;
-	}
+    public void setLegalValueParameters(Set<String> legalValueParameters) {
+        this.legalValueParameters = legalValueParameters;
+    }
 
-	public Set<String> getLegalParameters() {
-		return legalValueParameters;
-	}
+    public Set<String> getLegalParameters() {
+        return legalValueParameters;
+    }
 }

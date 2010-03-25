@@ -36,13 +36,11 @@
 	       //cache image
 	       images[i] = link;
 	       
-		   $(this).hover(
-		    function () {
+		   $(this).hover(function () {
 		    	if(!$(this).hasClass("active")) {
 				 $("img", this).stop().fadeTo(settings.fadeThumbsInOutTime, 1);
 		    	}
-		    }, //on hover out
-		    function () {
+		    }, function () {
 		    	if(!$(this).hasClass("active")) {
 				 $("img", this).stop().fadeTo(settings.fadeThumbsInOutTime, settings.fadedThumbsOutOpacity);
 		    	}
@@ -58,14 +56,14 @@
 			    	  $(this).append(images[i]); 
 			    	  //fade in and make sure calculations are done after fully loaded
 			    	  $(this).fadeTo(settings.fadeInOutTime, 1, function() {
-			    		  addImageClickAndHoverEvents();
+			    		  addPagingClickEvents(container + "-link");
 			    		  calculateImageAndPagingNavigationPosition();
 			    	  });
 			      });
 		      } else {
 		    	  $("a" + container + "-link", wrapper + " " + container).remove();
 		    	  $(wrapper + " " + container).append(images[i]);
-		    	  addImageClickAndHoverEvents();
+		    	  addPagingClickEvents(container + "-link");
 		    	  calculateImageAndPagingNavigationPosition();
 		      }
 		      //remove active classes
@@ -106,9 +104,9 @@
 	   }
 	 }
 	  
-	 function addPagingClickEvents(navClass, wrapper) {
-	    $(wrapper + " " + " a." + navClass).click(function(h) {
-	      if(navClass == "next") {
+	 function addPagingClickEvents(navClass) {
+	    $(wrapper + " " + " a." + navClass).click(function(e) {
+	      if(navClass == "next" || navClass == container + "-link") {
 			  if($(wrapper + " ul li a.active").parent().next().length != 0) {
 			    $(wrapper + " ul li a.active").parent().next().find("a").click();
 			  } else {
@@ -121,43 +119,33 @@
 	    		$(wrapper + " ul li:last a").click();   
 	          }
 	      }
-		  h.preventDefault(); 
+		  e.preventDefault(); 
 		});
-	    
 	    //Fading of transparent block and prev / next icon
-	    fadeMultiple(wrapper + " " + " a." + navClass, wrapper + " " + " a." + navClass + " span", "0", 0);
-	    $(wrapper + " " + " a." + navClass).hover(function () {
+	    if(navClass == "next" || navClass == "prev") { 
+	      fadeMultiple(wrapper + " " + " a." + navClass, wrapper + " " + " a." + navClass + " span", "0", 0);
+	      $(wrapper + " " + " a." + navClass).hover(function () {
 			  $(wrapper + " " + " a." + navClass).stop().fadeTo(settings.fadeNavInOutTime, 1);
 			  $(wrapper + " " + " a." + navClass + " span").stop().fadeTo(settings.fadeNavInOutTime, 0.2);
 			}, function () { //hover out
 			  fadeMultiple(new Array(wrapper + " " + " a." + navClass, wrapper + " " + " a." + navClass + " span"), settings.fadeNavInOutTime, 0)
-	   });
-	 }
-
-	 function addImageClickAndHoverEvents() {
-	   $("a" + container + "-link").click(function(e) { 
-		  if($(wrapper + " ul li a.active").parent().next().length != 0) {
-		    $(wrapper + " ul li a.active").parent().next().find("a").click();
-		  } else {
-			$(wrapper + " ul li:first a").click();
+	      });
+	    } else if (navClass == container + "-link") {
+		  $("a" + container + "-link").hover(function () {
+		    fadeMultiple(new Array(wrapper + " " + " a.prev", wrapper + " " + " a.next"), settings.fadeNavInOutTime, 1)
+		    fadeMultiple(new Array(wrapper + " " + " a.next span", wrapper + " " + " a.prev span"), settings.fadeNavInOutTime, 0.2)
+		  }, function () { //hover out
+		    fadeMultiple(new Array(wrapper + " " + " a.next", wrapper + " " + " a.prev", 
+						wrapper + " " + " a.next span", wrapper + " " + " a.prev span"), settings.fadeNavInOutTime, 0)
+		  });
+		  //IE 6 max-width substitute
+		  if (jQuery.browser.msie && jQuery.browser.version <= 6) {
+		    var mainImgHeight = $("a" + container + "-link img").height();
+		    if(mainImgHeight > 380) {
+		      $("a" + container + "-link img").css("height", "380px");
+		    }
 		  }
-		  e.preventDefault(); 
-	   });
-	   $("a" + container + "-link").hover(function () {
-			  fadeMultiple(new Array(wrapper + " " + " a.prev", wrapper + " " + " a.next"), settings.fadeNavInOutTime, 1)
-		      fadeMultiple(new Array(wrapper + " " + " a.next span", wrapper + " " + " a.prev span"), settings.fadeNavInOutTime, 0.2)
-	   }, function () { //hover out
-			  fadeMultiple(new Array(wrapper + " " + " a.next", wrapper + " " + " a.prev", 
-					                 wrapper + " " + " a.next span", wrapper + " " + " a.prev span"), settings.fadeNavInOutTime, 0)
-	   });
-	   
-	   //IE 6 max-width substitute
-	   if (jQuery.browser.msie && jQuery.browser.version <= 6) {
-	     var mainImgHeight = $("a" + container + "-link img").height();
-	     if(mainImgHeight > 380) {
-		   $("a" + container + "-link img").css("height", "380px");
-	     }
-	   }
+	    }
 	 }
 
 	 //TODO: try to refactor this into main loop - could possible remove lot of lines and sub-functions..

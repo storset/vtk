@@ -134,15 +134,12 @@
 		});
 	    
 	    //Fading of transparent block and prev / next icon
-	    //TODO: possible refactor
-	    $(wrapper + " " + " a." + navClass).stop().fadeTo("0", 0);
-	    $(wrapper + " " + " a." + navClass + " span").stop().fadeTo("0", 0);
+	    fadeMultiple(wrapper + " " + " a." + navClass, wrapper + " " + " a." + navClass + " span", "0", 0);
 	    $(wrapper + " " + " a." + navClass).hover(function () {
 			  $(wrapper + " " + " a." + navClass).stop().fadeTo(settings.fadeNavInOutTime, 1);
 			  $(wrapper + " " + " a." + navClass + " span").stop().fadeTo(settings.fadeNavInOutTime, 0.2);
 			}, function () { //hover out
-		      $(wrapper + " " + " a." + navClass).stop().fadeTo(settings.fadeNavInOutTime, 0);
-			  $(wrapper + " " + " a." + navClass + " span").stop().fadeTo(settings.fadeNavInOutTime, 0);
+			  fadeMultiple(new Array(wrapper + " " + " a." + navClass, wrapper + " " + " a." + navClass + " span"), settings.fadeNavInOutTime, 0)
 	   });
 	 }
 
@@ -158,15 +155,11 @@
 	   });
 	   //TODO: refactor
 	   $("a" + container + "-link").hover(function () {
-			  $(wrapper + " " + " a.next").stop().fadeTo(settings.fadeNavInOutTime, 1);
-			  $(wrapper + " " + " a.prev").stop().fadeTo(settings.fadeNavInOutTime, 1);
-			  $(wrapper + " " + " a.next span").stop().fadeTo(settings.fadeNavInOutTime, 0.2);
-			  $(wrapper + " " + " a.prev span").stop().fadeTo(settings.fadeNavInOutTime, 0.2);
-			}, function () { //hover out
-		      $(wrapper + " " + " a.next").stop().fadeTo(settings.fadeNavInOutTime, 0);
-			  $(wrapper + " " + " a.prev").stop().fadeTo(settings.fadeNavInOutTime, 0);
-			  $(wrapper + " " + " a.next span").stop().fadeTo(settings.fadeNavInOutTime, 0);
-			  $(wrapper + " " + " a.prev span").stop().fadeTo(settings.fadeNavInOutTime, 0);
+			  fadeMultiple(new Array(wrapper + " " + " a.prev", wrapper + " " + " a.next"), settings.fadeNavInOutTime, 1)
+		      fadeMultiple(new Array(wrapper + " " + " a.next span", wrapper + " " + " a.prev span"), settings.fadeNavInOutTime, 0.2)
+	   }, function () { //hover out
+			  fadeMultiple(new Array(wrapper + " " + " a.next", wrapper + " " + " a.prev", 
+					                 wrapper + " " + " a.next span", wrapper + " " + " a.prev span"), settings.fadeNavInOutTime, 0)
 	   });
 	   
 	   //IE 6 max-width substitute
@@ -177,7 +170,7 @@
 	     }
 	   }
 	 }
-	  
+
      function initFirstImage() {
 		
 	   var link = generateLinkImage(wrapper + " ul li a.active img", wrapper + " ul li a.active");
@@ -225,7 +218,7 @@
 	 }
 
 	 function calculateImageAndPagingNavigationPosition() {
-	   var minHeight = 100;
+	   var minHeight = 100; 
 	   var minWidth = 250;
 		 
 	   var imgHeight = $(wrapper + " " + container + " img").height();
@@ -235,9 +228,9 @@
 	   if(imgHeight < minHeight) {
 	     imgHeight = minHeight;
 	   }
-	   $(wrapper + " " + container + "-nav a").css("height", imgHeight);
-	   $(wrapper + " " + container + "-nav span").css("height", imgHeight);
-	   $(wrapper + " " + container + "-link").css("height", imgHeight);
+
+	   setMultipleCSS(new Array(wrapper + " " + container + "-nav a", wrapper + " " + container + "-nav span", 
+			          wrapper + " " + container + "-link"), "height", imgHeight);
 
 	   if(imgWidth > containerWidth) {
 		 imgWidth = containerWidth;
@@ -247,8 +240,21 @@
 	   var leftRightNavAdjust = (containerWidth - imgWidth) / 2;
 	   $(wrapper + " " + container + "-nav a.prev").css("left", leftRightNavAdjust);
 	   $(wrapper + " " + container + "-nav a.next").css("right", -leftRightNavAdjust);
-	   $(wrapper + " " + container + "-link").css("width", imgWidth);
-	   $(wrapper + " " + container + "-nav").css("width", imgWidth);
+	   
+	   setMultipleCSS(new Array(wrapper + " " + container + "-link", wrapper + " " + container + "-nav"), "width", imgWidth);
 	 }
+	 
+	 function setMultipleCSS(elements, cssProperty, value) {
+	   for(var i = 0; i < elements.length; i++) {
+		   $(elements[i]).css(cssProperty, value);
+	   }
+	 }
+	 
+	 function fadeMultiple(elements, time, opacity) {
+	   for(var i = 0; i < elements.length; i++) {
+	     $(elements[i]).stop().fadeTo(time, opacity);
+	   }
+	 }
+	 
   };
 })(jQuery);

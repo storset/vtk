@@ -139,13 +139,6 @@
 		    fadeMultiple(new Array(wrapper + " " + " a.next", wrapper + " " + " a.prev", 
 						wrapper + " " + " a.next span", wrapper + " " + " a.prev span"), settings.fadeNavInOutTime, 0)
 		  });
-		  //IE 6 max-width substitute
-		  if (jQuery.browser.msie && jQuery.browser.version <= 6) {
-		    var mainImgHeight = $("a" + container + "-link img").height();
-		    if(mainImgHeight > 380) {
-		      $("a" + container + "-link img").css("height", "380px");
-		    }
-		  }
 	    }
 	 }
 
@@ -218,6 +211,14 @@
 	   $(wrapper + " " + container + "-nav a.next").css("right", -leftRightNavAdjust);
 	   
 	   setMultipleCSS(new Array(wrapper + " " + container + "-link", wrapper + " " + container + "-nav"), "width", imgWidth);
+	   
+	   //IE 6 max-width substitute
+	   if (jQuery.browser.msie && jQuery.browser.version <= 6) {
+	     var mainImgHeight = $("a" + container + "-link img").height();
+	     if(mainImgHeight > 380) {
+	       $("a" + container + "-link img").css("height", "380px");
+	     }
+	   }
 	 }
 	 
 	 function setMultipleCSS(elements, cssProperty, value) {

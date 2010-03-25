@@ -425,21 +425,17 @@
             </bean>
           </property>
         </bean>
-        <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="vrtx" />
-          <property name="parameterValue" value="admin" />
-        </bean>  
+        <ref bean="adminVrtxParameterRule" />
       </list>
     </property>
         <property name="handlerInterceptors">
       <list>
         <!-- Redirect to manage hostname -->
-        <bean class="org.vortikal.web.interceptors.RedirectToManageInterceptor">
-          <property name="manageProtocol" value="${manage.protocol}" />
-          <property name="manageHostName" value="${manage.hostName}" />
-          <property name="managePort" value="${manage.port}" />
+        <bean class="org.vortikal.web.interceptors.ConfigurableRedirectInterceptor">
+          <property name="protocol" value="${manage.protocol}" />
+          <property name="hostName" value="${manage.hostName}" />
+          <property name="port" value="${manage.port}" />
         </bean>
-        
       </list>
     </property>
     <!-- Dummy handler that is never invoked (the handler interceptor will prevent it): -->

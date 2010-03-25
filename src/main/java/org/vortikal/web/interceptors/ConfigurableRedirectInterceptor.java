@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2010, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -35,48 +35,28 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
-
 import org.vortikal.web.service.URL;
 
 /**
- * Interceptor that redirects requests to the same URL but with the manage protocol, hostname, port 
- * 
+ * Interceptor that redirects requests to the same URL but with a 
+ * configurable protocol, hostname and port 
  */
-public class RedirectToManageInterceptor implements HandlerInterceptor  {
+public class ConfigurableRedirectInterceptor implements HandlerInterceptor  {
     
-    private String manageProtocol;
- 
-    private String manageHostName;
+    private String protocol;
+    private String hostName;
+    private String port;
 
-    private String managePort;
-
-    public String getManageProtocol() {
-        return manageProtocol;
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
     }
 
-
-    public void setManageProtocol(String manageProtocol) {
-        this.manageProtocol = manageProtocol;
+    public void setHostName(String host) {
+        this.hostName = host;
     }
 
-
-    public String getManageHostName() {
-        return manageHostName;
-    }
-
-
-    public void setManageHostName(String manageHost) {
-        this.manageHostName = manageHost;
-    }
-
-
-    public String getManagePort() {
-        return managePort;
-    }
-
-
-    public void setManagePort(String managePort) {
-        this.managePort = managePort;
+    public void setPort(String port) {
+        this.port = port;
     }
 
 
@@ -84,15 +64,20 @@ public class RedirectToManageInterceptor implements HandlerInterceptor  {
                              HttpServletResponse response,
                              Object handler) throws Exception {
         URL url = URL.create(request);
-        url.setProtocol(manageProtocol);
-        url.setHost(manageHostName);
-        try {
-            Integer managePortInt = Integer.parseInt(managePort);
-            url.setPort(managePortInt);
-        } catch (NumberFormatException nfe) {   
-            // managePort might be "*", in which case we ignore it    
-        } 
-        
+        if (this.protocol != null) {
+            url.setProtocol(this.protocol);
+        }
+        if (this.hostName != null) {
+            url.setHost(this.hostName);
+        }
+        if (this.port != null) {
+            try {
+                Integer portInt = Integer.parseInt(this.port);
+                url.setPort(portInt);
+            } catch (NumberFormatException nfe) {   
+                // port might be "*", in which case we ignore it    
+            } 
+        }
         response.sendRedirect(url.toString());
         return false;
     }
@@ -107,6 +92,4 @@ public class RedirectToManageInterceptor implements HandlerInterceptor  {
                                 HttpServletResponse response,
                                 Object handler, Exception ex) {
     }
-    
-
 }

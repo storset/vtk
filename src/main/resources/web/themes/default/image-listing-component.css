@@ -138,6 +138,7 @@
   position: absolute;
   width: 38px;
   top: 0px;
+  cursor: pointer;
 }
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container-nav span.prev-transparent-block,
@@ -147,6 +148,7 @@
    width: 38px;	
    background-color: #fff;
    top: 0px;
+   cursor: pointer;
 }
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.prev {

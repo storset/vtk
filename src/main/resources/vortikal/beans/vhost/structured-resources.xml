@@ -79,7 +79,16 @@
     </property>
     <property name="handler" ref="structuredResources.editHandler" />
   </bean>
+
+
   
+  <bean id="structuredResources.defaultFunctions"
+        class="org.springframework.beans.factory.config.SetFactoryBean">
+    <property name="sourceSet">
+      <ref bean="templateLanguage.concatFunction" />
+    </property>
+  </bean>
+
   <bean id="structuredResources.displayHandler"
         class="org.vortikal.resourcemanagement.view.StructuredResourceDisplayController"
     parent="repositoryAware"
@@ -94,6 +103,7 @@
     <property name="resourceModelKey" value="structured-resource" />
     <property name="valueFormatterRegistry" ref="valueFormatterRegistry" />
     <property name="postFilter" ref="decorating.ssiNodeFilter" />
+    <property name="functions" ref="structuredResources.defaultFunctions" />
     <property name="configProviders">
       <list>
         <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">

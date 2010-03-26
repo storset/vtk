@@ -101,10 +101,8 @@
 	 }
 	  
 	 function centerThumbnailImage(thumb) {
-		 setTimeout(function() {
-		   centerDimension($(thumb), $(thumb).width(), $(thumb).parent().width(), "marginLeft"); //center horizontal
-		   centerDimension($(thumb), $(thumb).height(), $(thumb).parent().height(), "marginTop"); //center vertical
-		 }, 0); //probably don't need any delay here as .load() ensure all images are loaded
+	   centerDimension($(thumb), $(thumb).width(), $(thumb).parent().width(), "marginLeft"); //center horizontal
+	   centerDimension($(thumb), $(thumb).height(), $(thumb).parent().height(), "marginTop"); //center vertical
 	 }
 	 
 	 function centerDimension(thumb, thumbDimension, thumbContainerDimension, cssProperty) {
@@ -203,8 +201,7 @@
 		 imgWidth = minWidth;
 	   }
 	   
-	   setMultipleCSS(new Array(wrapper + " " + container, wrapper + " " + container + "-nav"), "width", imgWidth);
-	   
+	   setMultipleCSS(new Array(wrapper + " " + container, wrapper + " " + container + "-nav"), "width", imgWidth);  
 	 }
 	 
 	 function setMultipleCSS(elements, cssProperty, value) {

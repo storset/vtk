@@ -59,7 +59,10 @@ public class EventCalendarListingController extends EventListingController {
         if (!this.searchSpecificDate(request, collection, model)) {
 
             String viewType = request.getParameter(EventListingHelper.REQUEST_PARAMETER_VIEW);
-            if (viewType != null && !"".equals(viewType.trim())) {
+            if (viewType != null
+                    && !"".equals(viewType.trim())
+                    && (EventListingHelper.VIEW_TYPE_ALL_UPCOMING.equals(viewType) || EventListingHelper.VIEW_TYPE_ALL_PREVIOUS
+                            .equals(viewType))) {
 
                 Listing result = null;
                 if (EventListingHelper.VIEW_TYPE_ALL_UPCOMING.equals(viewType)) {
@@ -91,8 +94,9 @@ public class EventCalendarListingController extends EventListingController {
                 Listing furtherUpcoming = this.searcher.searchFurtherUpcoming(request, collection, this.daysAhead,
                         this.furtherUpcomingPageLimit);
                 model.put("furtherUpcoming", furtherUpcoming);
-                String furtherUpcomingTitle = this.helper.getEventTypeTitle(request, collection,
-                        "eventListing.furtherUpcomingEvents", false);
+                String titleKey = groupedByDayEvents.size() == 0 ? "eventListing.allupcoming"
+                        : "eventListing.furtherUpcomingEvents";
+                String furtherUpcomingTitle = this.helper.getEventTypeTitle(request, collection, titleKey, false);
                 model.put("furtherUpcomingTitle", furtherUpcomingTitle);
 
             }
@@ -108,10 +112,10 @@ public class EventCalendarListingController extends EventListingController {
         model.put("viewAllPreviousURL", viewAllPreviousURL);
         model.put("viewAllPreviousTitle", this.helper.getEventTypeTitle(request, collection,
                 "eventListing.viewAllPrevious", false));
-        
+
         Calendar tomorrow = Calendar.getInstance();
         tomorrow.add(Calendar.DATE, 1);
-        
+
         model.put("tomorrow", tomorrow.getTime());
         model.put("today", new Date());
 

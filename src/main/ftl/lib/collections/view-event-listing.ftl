@@ -118,7 +118,7 @@
 
     <#if furtherUpcoming?has_content && furtherUpcoming.files?size &gt; 0>
       <div class="vrtx-events-further-upcoming">
-        <h1 class="vrtx-events-further-upcoming">${furtherUpcomingTitle?html}</h1>
+        <h2 class="vrtx-events-further-upcoming">${furtherUpcomingTitle?html}</h2>
         <@displayStandard furtherUpcoming hideNumberOfComments displayMoreURLs=false />
       </div>
     </#if>

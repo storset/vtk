@@ -37,19 +37,22 @@ public class RequestInitializationException extends RuntimeException {
     private static final long serialVersionUID = 2104171866686575997L;
     private HttpServletRequest request;
     
+    public RequestInitializationException(HttpServletRequest request) {
+        this.request = request;
+    }
+
     public RequestInitializationException(String message, HttpServletRequest request) {
         super(message);
         this.request = request;
     }
     
-    public RequestInitializationException(String message, Exception wrappedException,
+    public RequestInitializationException(String message, Throwable cause,
                                           HttpServletRequest request) {
-        super(message, wrappedException);
+        super(message, cause);
         this.request = request;
     }
 
     public HttpServletRequest getRequest() {
         return this.request;
     }
-    
 }

@@ -25,6 +25,7 @@
   <import resource="repository.xml" />
   <import resource="changelog.xml" />
   <import resource="schema-registry.xml" />
+  <import resource="template-lang.xml" />
   <import resource="view.xml" />
   <import resource="decorating.xml" />
   <import resource="decorator-components.xml" />

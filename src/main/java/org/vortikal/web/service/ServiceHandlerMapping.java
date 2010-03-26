@@ -78,7 +78,7 @@ public class ServiceHandlerMapping implements HandlerMapping {
         Object handler = getController(service);
 
         if (handler == null) {
-            logger.warn("Unable resolve handler: "
+            logger.warn("Unable to resolve handler: "
                          + " requestContext: " + requestContext);
             return null;
         }

@@ -15,21 +15,21 @@
 		  fadeThumbsInOutTime: 250,
 		  fadedThumbsOutOpacity: 0.6,
 		  fadeNavInOutTime: 250
-		  }, 
+		  },
 	  options);
 
 	  //Unobtrusive JavaScript
 	  $(container + "-pure-css").addClass(container.substring(1));
 	  $(container + "-nav-pure-css").addClass(container.substring(1) + "-nav");
 	  $(wrapper + "-thumbs-pure-css").addClass(wrapper.substring(1) + "-thumbs");
-	  
+
 	  //paging (relative to li a.active)
 	  addPagingClickAndHoverEvents("next");
 	  addPagingClickAndHoverEvents("prev");
-	  
+
 	  //init
 	  calculateImage($(wrapper + " ul li a.active img"), 0, true);
-	  
+
 	  return this.each(function (i) {
 		   
 		   var link = generateLinkImage($("img", this), $(this));
@@ -49,7 +49,7 @@
 			   calculateImage($("img", this), i, false)
 	  	       $(this).addClass("active");
 	  	       $("img", this).stop().fadeTo(0, 1);
-			   e.preventDefault(); 
+			   e.preventDefault();
 	      });
 		  
 		  centerThumbnailImage($("img", this)); 
@@ -134,7 +134,7 @@
 		});
 	    //Fading of transparent block and prev / next icon
 	    if(navClass == "next" || navClass == "prev") { 
-	      fadeMultiple(wrapper + " " + " a." + navClass, wrapper + " " + " a." + navClass + " span", 0, 0);
+	      fadeMultiple(new Array(wrapper + " " + " a." + navClass, wrapper + " " + " a." + navClass + " span"), 0, 0);
 	      $(wrapper + " " + " a." + navClass).hover(function () {
 			  $(wrapper + " " + " a." + navClass).stop().fadeTo(settings.fadeNavInOutTime, 1);
 			  $(wrapper + " " + " a." + navClass + " span").stop().fadeTo(settings.fadeNavInOutTime, 0.2);

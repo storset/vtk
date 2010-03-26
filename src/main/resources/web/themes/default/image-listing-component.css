@@ -108,6 +108,7 @@
   overflow: hidden;
   width: 507px;
   position: relative;
+  margin: 0 auto;
 }
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container img {
@@ -116,8 +117,7 @@
 
 .vrtx-image-listing-include-container-link {
   display: block;
-  margin-right: auto;
-  margin-left: auto;
+  margin: 0 auto;
 }
 
 /* Unobtrusive JavaScript */

@@ -3,7 +3,7 @@
 // by Øyvind Hatland - UiO / USIT
 
 (function ($) {
-  $.fn.vrtxSGallery = function (wrapper, container, options) {
+  $.fn.vrtxSGallery = function (wrapper, container, maxWidth, options) {
 	  
 	  //cache images
 	  var images = new Array();
@@ -175,6 +175,14 @@
 	 function calculateImageAndPagingNavigationPosition() {
 	   var minHeight = 100; 
 	   var minWidth = 250;
+	   
+	   //IE 6 max-width substitute
+	   if (jQuery.browser.msie && jQuery.browser.version <= 6) {
+	     var mainImgHeight = $("a" + container + "-link img").height();
+	     if(mainImgHeight > 380) {
+	       $("a" + container + "-link img").css("height", "380px");
+	     }
+	   }
 		 
 	   var imgHeight = $(wrapper + " " + container + " img").height();
 	   var imgWidth = $(wrapper + " " + container + " img").width();
@@ -185,24 +193,15 @@
 	   setMultipleCSS(new Array(wrapper + " " + container + "-nav a", wrapper + " " + container + "-nav span", 
 			          wrapper + " " + container + "-link"), "height", imgHeight);
 
-	   if(imgWidth > containerWidth) {
-		 imgWidth = containerWidth;
+	   if(imgWidth > maxWidth) {
+		 imgWidth = maxWidth;
 	   } else if (imgWidth < minWidth) {
+		   setMultipleCSS(new Array(wrapper + " " + container + " " + container + "-link"), "width", imgWidth);
 		 imgWidth = minWidth;
 	   }
-	   var leftRightNavAdjust = (containerWidth - imgWidth) / 2;
-	   $(wrapper + " " + container + "-nav a.prev").css("left", leftRightNavAdjust);
-	   $(wrapper + " " + container + "-nav a.next").css("right", -leftRightNavAdjust);
 	   
-	   setMultipleCSS(new Array(wrapper + " " + container + "-link", wrapper + " " + container + "-nav"), "width", imgWidth);
+	   setMultipleCSS(new Array(wrapper + " " + container, wrapper + " " + container + "-nav"), "width", imgWidth);
 	   
-	   //IE 6 max-width substitute
-	   if (jQuery.browser.msie && jQuery.browser.version <= 6) {
-	     var mainImgHeight = $("a" + container + "-link img").height();
-	     if(mainImgHeight > 380) {
-	       $("a" + container + "-link img").css("height", "380px");
-	     }
-	   }
 	 }
 	 
 	 function setMultipleCSS(elements, cssProperty, value) {

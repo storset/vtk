@@ -99,15 +99,8 @@ ul.vrtx-image-listing {
 }
 
 .vrtx-image-listing-include {
-  margin: 0 auto !important;
   width: 100%;
   text-align: center;
-}
-
-.vrtx-image-listing-include .vrtx-image-listing-include-container {
-  margin-left: auto !important;
-  margin-right: auto !important;
-  width: 635px !important;
 }
 
 .vrtx-image-listing-include ul.vrtx-image-listing-include-thumbs-pure-css {
@@ -116,7 +109,6 @@ ul.vrtx-image-listing {
 
 .vrtx-image-listing-include ul.vrtx-image-listing-include-thumbs {
   margin: 0 auto !important;
-  text-align: center;
   width: 635px !important;
 }
 

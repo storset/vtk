@@ -102,14 +102,15 @@
 		 setTimeout(function() {
 		   centerDimension($(thumb), $(thumb).width(), $(thumb).parent().width(), "marginLeft"); //center horizontal
 		   centerDimension($(thumb), $(thumb).height(), $(thumb).parent().height(), "marginTop"); //center vertical
-		 }, 100);
+		 }, 0); //probably don't need any delay here as .load() ensure all images are loaded
 	 }
 	 
 	 function centerDimension(thumb, thumbDimension, thumbContainerDimension, cssProperty) {
-	   var adjust = (thumbDimension - thumbContainerDimension) / 2;
 	   if(thumbDimension > thumbContainerDimension) {
+		 var adjust = (thumbDimension - thumbContainerDimension) / 2;
 	     $(thumb).css(cssProperty, -adjust + "px"); 
 	   } else if(thumbDimension < thumbContainerDimension) {
+		 var adjust = (thumbContainerDimension - thumbDimension) / 2;
 		 $(thumb).css(cssProperty, adjust + "px");  
 	   }
 	 }
@@ -196,7 +197,7 @@
 	   if(imgWidth > maxWidth) {
 		 imgWidth = maxWidth;
 	   } else if (imgWidth < minWidth) {
-		   setMultipleCSS(new Array(wrapper + " " + container + " " + container + "-link"), "width", imgWidth);
+		 setMultipleCSS(new Array(wrapper + " " + container + " " + container + "-link"), "width", imgWidth);
 		 imgWidth = minWidth;
 	   }
 	   

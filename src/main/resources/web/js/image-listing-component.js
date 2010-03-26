@@ -110,8 +110,8 @@
 		 var adjust = (thumbDimension - thumbContainerDimension) / 2;
 	     $(thumb).css(cssProperty, -adjust + "px"); 
 	   } else if(thumbDimension < thumbContainerDimension) {
-		 var adjust = (thumbContainerDimension - thumbDimension) / 2;
-		 $(thumb).css(cssProperty, adjust + "px");  
+		 var adjust = ((thumbContainerDimension - thumbDimension) / 2);
+		 $(thumb).css(cssProperty, adjust + "px");
 	   }
 	 }
 	  

@@ -98,6 +98,11 @@
   border: none;
 }
 
+/* IE 7 better downscaling */
+*:first-child+html .vrtx-image-listing-include ul img {
+  -ms-interpolation-mode : bicubic;
+}
+
 /* Unobtrusive JavaScript */
 .vrtx-image-listing-include .vrtx-image-listing-include-container-pure-css {
   display: none;

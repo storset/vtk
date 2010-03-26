@@ -9,37 +9,46 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
-
   <!-- Transaction setup -->
   <bean id="repository.transactionManager"
         class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
     <property name="dataSource" ref="repository.dataSource"/>
   </bean>
 
-  <!-- AOP transaction advice -->
+  <!-- AOP transaction advice setup -->
   <tx:advice id="repository.txAdvice" transaction-manager="repository.transactionManager">
     <tx:attributes>
-      <!--tx:method name="get*" read-only="true" /-->
-      <tx:method name="*" no-rollback-for="org.vortikal.repository.RepositoryException,org.vortikal.security.AuthenticationException" />
-      <!--tx:method name="*" /-->
+      <!-- Avoid rollback for exceptions which originate purely from business logic, and before
+           any DAO layers have been touched. Typically this will be validation exceptions, authentication exceptions, etc.
+           This is likely not 100% bulletproof, though. Consider an exception from property evaluation during a move where
+           some DAO operations already have been performed.. The database-parts might not be rolled back, yuck.. -->
+      <tx:method name="*"
+          no-rollback-for="org.vortikal.repository.RepositoryException,org.vortikal.security.AuthenticationException" />
     </tx:attributes>
   </tx:advice>
 
-  <!-- Setup tx advice point-cut for RepositoryImpl instance.
-       Only for bean 'repository.internal', we don't want proxies around other beans implementing Repository ! -->
   <aop:config>
-    <aop:pointcut id="repository.repositoryOperationPointcut" 
+    <!-- Main pointcut for repository opertions -->
+    <aop:pointcut id="repository.repositoryOperationPointcut"
                   expression="execution(* org.vortikal.repository.Repository.*(..)) and bean(repository.internal)"/>
-    <aop:advisor advice-ref="repository.txAdvice" pointcut-ref="repository.repositoryOperationPointcut"/>
+
+    <!-- Point cut for ResourceChangeNotifier.pollChanges() -->
+    <aop:pointcut id="repository.resourceChangeNotifierPointcut"
+                  expression="execution(* org.vortikal.repository.index.observation.ResourceChangeNotifier.pollChanges(..))"/>
+
+    <!-- Repository tx advice should be run *last* (or "closest") in repository.repositoryOperationPointcut -->
+    <aop:advisor advice-ref="repository.txAdvice"
+                 pointcut-ref="repository.repositoryOperationPointcut"
+                 order="1000"/>
+
+    <!-- Tx advice for point cut 'repository.resourceChangeNotifierPointcut' -->
+    <aop:advisor advice-ref="repository.txAdvice" pointcut-ref="repository.resourceChangeNotifierPointcut"
+                 order="1000"/>
   </aop:config>
 
-  <!-- Setup tx advice point-cut for ResourceChangeNotifier.pollChanges() --> 
-  <aop:config>
-    <aop:pointcut id="repository.resourceChangeNotifierPointcut" expression="execution(* org.vortikal.repository.index.observation.ResourceChangeNotifier.pollChanges(..))"/>
-    <aop:advisor advice-ref="repository.txAdvice" pointcut-ref="repository.resourceChangeNotifierPointcut"/>
-  </aop:config>
-
-  <!-- Repository -->
+  <!-- Main repository instance.
+       Note that this instance (and only this) is proxied by various interceptors at
+       point cut 'repository.repositoryOperationPointcut -->
   <bean id="repository.internal" class="org.vortikal.repository.RepositoryImpl"
         init-method="init" destroy-method="destroy">
     <property name="id" value="${repositoryID}" />
@@ -56,19 +65,19 @@
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
-  
 
-  <!-- Wrapper around the repository that caches retrievals when executing in a servlet request: -->
-  <bean id="repository" class="org.vortikal.web.RequestLocalRepository">
-    <property name="repository" ref="repository.cachePurgeRepository"/>
-  </bean>
-  <!--  Repository cache purge control wrapper hack -->
+  <!--  Repository cache purge control wrapper -->
   <bean id="repository.cachePurgeRepository" class="org.vortikal.repository.CachePurgeControlRepositoryWrapper">
     <property name="wrappedRepository" ref="repository.internal"/>
     <property name="cache" ref="repository.cache"/>
   </bean>
 
+  <!-- Wrapper around the repository that caches retrievals when executing in a servlet request: -->
+  <bean id="repository" class="org.vortikal.web.RequestLocalRepository">
+    <property name="repository" ref="repository.cachePurgeRepository"/>
+  </bean>
 
+  <!-- Default data source setup -->
   <bean id="repository.dataSource" class="org.apache.commons.dbcp.BasicDataSource"
         destroy-method="close">
     <property name="driverClassName" value="${databaseDriver}" />
@@ -77,7 +86,7 @@
     <property name="username" value="${jdbcUsername}" />
     <property name="password"  value="${jdbcPassword}" />
     <property name="defaultAutoCommit" value="false" />
-  </bean>  
+  </bean>
 
   <!-- SqlMap setup for iBATIS Database Layer -->
   <bean id="repository.sqlMapClient"
@@ -90,7 +99,7 @@
   </bean>
 
   <bean id="repository.lobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler" />
-  
+
   <bean id="repository.binaryDao" class="org.vortikal.repository.store.db.SqlBinaryContentMapDataAccessor">
     <property name="sqlMapClient" ref="repository.sqlMapClient" />
     <property name="sqlMaps" ref="repository.statementMappings" />
@@ -112,8 +121,8 @@
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="principalFactory" ref="principalFactory" />
   </bean>
-  
-  <bean id="repository.fsContentStore" 
+
+  <bean id="repository.fsContentStore"
         class="org.vortikal.repository.store.fs.SimpleFileSystemContentStore">
     <property name="urlEncodeFileNames" value="${urlEncodeFileNames}" />
     <property name="repositoryDataDirectory" value="${repositoryDataDirectory}" />
@@ -125,7 +134,7 @@
     <property name="resourceTypeTree" ref="resourceTypeTree"/>
     <property name="principalFactory" ref="principalFactory" />
   </bean>
-  
+
   <bean id="repository.changeLogDAO" class="org.vortikal.repository.store.db.SqlMapChangeLogDAO">
     <property name="sqlMapClient" ref="repository.sqlMapClient"/>
     <property name="sqlMaps" ref="repository.statementMappings" />
@@ -164,8 +173,8 @@
     <property name="contentRepresentationRegistry" ref="contentRepresentationRegistry"/>
   </bean>
 
-  <bean id="typeLocalizationProvider" 
-    class="org.vortikal.repository.resourcetype.MessageSourceTypeLocalizationProvider">
+  <bean id="typeLocalizationProvider"
+        class="org.vortikal.repository.resourcetype.MessageSourceTypeLocalizationProvider">
     <property name="messageSource" ref="repository.typeLocalizationMessageSource" />
   </bean>
 
@@ -202,5 +211,5 @@
     <property name="principalFactory" ref="principalFactory" />
     <property name="principalManager" ref="principalManager" />
   </bean>
-	
+
 </beans>

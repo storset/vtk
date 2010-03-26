@@ -10,7 +10,8 @@
 
   <aop:config>
     <aop:advisor advice-ref="repository.sqlMapClientTimerInterceptor"
-                 pointcut-ref="operationLog.repositoryOperation"/>
+                 pointcut-ref="repository.repositoryOperationPointcut"
+                 order="-500"/>
   </aop:config>
 
 

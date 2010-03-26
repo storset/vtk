@@ -58,16 +58,18 @@ public class RepositoryOperationLogInterceptor implements MethodInterceptor {
     private TokenManager tokenManager;
     
     public Object invoke(MethodInvocation invocation) throws Throwable {
-        
-        Object repo = invocation.getThis();
-        if (!(repo instanceof RepositoryImpl)) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Not an org.vortikal.repositoryimpl.RepositoryImpl instance: "
-                             + repo + ", proceeding with invocation.");
-            }
 
-            return invocation.proceed();
-        }
+        // WTF This crap shouldn't be necessary ?? Probably left-overs from the time
+        // when we really had no control over which bean instances of Repository were wrapped *sigh* ..
+//        Object repo = invocation.getThis();
+//        if (!(repo instanceof RepositoryImpl)) {
+//            if (this.logger.isDebugEnabled()) {
+//                this.logger.debug("Not an org.vortikal.repositoryimpl.RepositoryImpl instance: "
+//                             + repo + ", proceeding with invocation.");
+//            }
+//
+//            return invocation.proceed();
+//        }
 
         RepositoryOperation operation = RepositoryOperation.byName(invocation.getMethod().getName());
         if (operation == null) {

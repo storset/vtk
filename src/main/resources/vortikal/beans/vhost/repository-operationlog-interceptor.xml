@@ -10,10 +10,9 @@
 
   <!--  Setup point-cut for operation log interceptor (only for bean 'repository.internal') -->
   <aop:config>
-    <aop:pointcut id="operationLog.repositoryOperation"
-                  expression="execution(* org.vortikal.repository.Repository.*(..)) and bean(repository.internal)" />
     <aop:advisor advice-ref="repository.repositoryOperationLogInterceptor"
-                 pointcut-ref="operationLog.repositoryOperation"/>
+                 pointcut-ref="repository.repositoryOperationPointcut"
+                 order="-1000"/> <!-- Run as early as possible, before all other interceptors -->
   </aop:config>
 
   <bean id="repository.repositoryOperationLogInterceptor"

@@ -230,8 +230,8 @@ public class RequestContextInitializer implements ContextInitializer {
         }
 
         if (RequestContext.getRequestContext() == null) {
-            throw new RequestInitializationException(
-                "Unable to map request " + request + " to a valid service", request);
+            throw new UnmappableRequestException("Unable to map request " 
+                    + url + " to a valid service", request);
         }
     }
 

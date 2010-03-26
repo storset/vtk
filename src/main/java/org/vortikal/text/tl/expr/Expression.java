@@ -195,9 +195,6 @@ public class Expression {
                 if (!stack.isEmpty()) {
                     Symbol top = stack.pop();
                     Operator op = this.operators.get(top);
-                    if (op == null) {
-                        throw new RuntimeException("Unknown operator: '" + top + "' in expression " + this);
-                    }
                     if (op instanceof Function) {
                         Function f = (Function) op;
                         int expected = f.getArgumentCount();

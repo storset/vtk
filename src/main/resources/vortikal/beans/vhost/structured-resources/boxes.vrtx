@@ -19,8 +19,15 @@ resourcetype boxes {
 
     test-include-feed (url) {
       ##
-      [def params {"url" : url}]
-      [call-component "include:feed" params]
+
+      [list {'a', 'b', 'cc'} elem]
+         elem: [val elem]
+      [endlist]
+      [def map {'a':'b', 'c':'d'}]
+      [list map entry]
+        entry: [val entry]
+      [endlist]
+      [call-component "include:feed" {"url" : url}]
       ##
     }
 
@@ -70,9 +77,9 @@ resourcetype boxes {
       <body class="foo">
         <h1><resource:property id="title" /></h1>
         <comp:box-list first-param="component-param1" second-param="component-param2" />
-        <!--
         <comp:test-include-feed url="http://www.usit.uio.no/saus/blogg/?vrtx=feed" />
         <comp:test-search  query="type IN file" />
+        <!--
         -->
       </body>
     </html>

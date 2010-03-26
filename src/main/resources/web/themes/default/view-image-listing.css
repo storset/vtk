@@ -114,6 +114,12 @@ ul.vrtx-image-listing {
 .vrtx-image-listing-include ul li {
   background-image: none;
 }
+
+.vrtx-image-listing-include-container-description {
+  margin-left: auto;
+  margin-right: auto;	
+}
+
 /*
 .vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.next {
   right: -50px; 

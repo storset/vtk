@@ -94,8 +94,10 @@
 	    	}
 	      });
 	  	  $(wrapper + " " + container + "-description").remove();
-		  $("<div class='" + container.substring(1) + "-description'>" 
-		          + $(image).attr("alt") + "</div>").insertAfter(wrapper + " " + container);
+		  $("<div class='" + container.substring(1) + "-description'>" + $(image).attr("alt") + "</div>").insertAfter(wrapper + " " + container);
+		  if($(image).attr("alt") != null && $(image).attr("alt") != "") {
+		    $(wrapper + " " + container + "-description").css("width", $(wrapper + " " + container).width());
+	  	  }
 	 }
 	  
 	 function centerThumbnailImage(thumb) {
@@ -197,7 +199,7 @@
 	   if(imgWidth > maxWidth) {
 		 imgWidth = maxWidth;
 	   } else if (imgWidth < minWidth) {
-		 setMultipleCSS(new Array(wrapper + " " + container + " " + container + "-link"), "width", imgWidth);
+		 setMultipleCSS(new Array(container + "-link"), "width", imgWidth);
 		 imgWidth = minWidth;
 	   }
 	   

@@ -10,27 +10,4 @@
     </constructor-arg>
   </bean>
 
-  <bean id="templateLanguage.listGetFunction" class="org.vortikal.text.tl.expr.ListGet">
-    <constructor-arg>
-      <bean class="org.vortikal.text.tl.Symbol">
-        <constructor-arg  value="list-get" />
-      </bean>
-    </constructor-arg>
-  </bean>
-
-  <bean id="templateLanguage.listAddFunction" class="org.vortikal.text.tl.expr.ListAdd">
-    <constructor-arg>
-      <bean class="org.vortikal.text.tl.Symbol">
-        <constructor-arg  value="list-add" />
-      </bean>
-    </constructor-arg>
-  </bean>
-
-  <bean id="templateLanguage.listRemoveFunction" class="org.vortikal.text.tl.expr.ListRemove">
-    <constructor-arg>
-      <bean class="org.vortikal.text.tl.Symbol">
-        <constructor-arg  value="list-remove" />
-      </bean>
-    </constructor-arg>
-  </bean>
 </beans>

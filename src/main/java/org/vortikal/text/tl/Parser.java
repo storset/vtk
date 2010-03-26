@@ -33,6 +33,7 @@ package org.vortikal.text.tl;
 import java.io.LineNumberReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,14 +50,55 @@ public class Parser {
         this.reader = new LineNumberReader(reader);
         this.directives = directives;
     }
+    
+    /**
+     * Parse input until EOF.
+     */
+    public ParseResult parse() throws Exception {
+        return parse(Collections.<String>emptySet());
+    }
 
+    /**
+     * Parse input until one of the supplied terminators are encountered.
+     */
+    public ParseResult parse(Set<String> terminators) throws Exception {
+        NodeList list = new NodeList();
+        while (true) {
+            ParseNode token = nextToken();
+            if (token == null) {
+                break;
+            }
+            switch (token.type) {
+            case Text:
+                list.add(new TextNode(token.value));
+                break;
+            case Directive:
+                List<String> split = token.split();
+                String name = split.remove(0);
+
+                if (this.directives.containsKey(name)) {
+                    DirectiveNodeFactory nf = this.directives.get(name);
+                    List<Argument> args = parseArguments(split);
+                    DirectiveParseContext info = new DirectiveParseContext(name, this, args, token.value);
+                    Node node = nf.create(info);
+                    list.add(node);
+                }
+
+                if (terminators.contains(name)) {
+                    return new ParseResult(list, name);
+                }
+            }
+        }
+        return new ParseResult(list);
+    }
+    
     private void illegalCharacter(int c, StringBuilder context) {
         throw new RuntimeException(
                 "Illegal character '" + (char) c + "' at line " 
                 + (this.reader.getLineNumber() + 1) + ": " 
                 + context + (char) c);
     }
-    
+
     private ParseNode nextToken() throws Exception {
 
         State state = State.Init;
@@ -158,36 +200,6 @@ public class Parser {
         return token;
     }
 
-    public ParseResult parse(Set<String> terminators) throws Exception {
-        NodeList list = new NodeList();
-        while (true) {
-            ParseNode token = nextToken();
-            if (token == null) {
-                break;
-            }
-            switch (token.type) {
-            case Text:
-                list.add(new TextNode(token.value));
-                break;
-            case Directive:
-                List<String> split = token.split();
-                String name = split.remove(0);
-
-                if (this.directives.containsKey(name)) {
-                    DirectiveNodeFactory nf = this.directives.get(name);
-                    List<Argument> args = parseArguments(split);
-                    DirectiveParseContext info = new DirectiveParseContext(name, this, args, token.value);
-                    Node node = nf.create(info);
-                    list.add(node);
-                }
-
-                if (terminators.contains(name)) {
-                    return new ParseResult(list, name);
-                }
-            }
-        }
-        return new ParseResult(list);
-    }
 
     private List<Argument> parseArguments(List<String> list) {
         List<Argument> result = new ArrayList<Argument>();

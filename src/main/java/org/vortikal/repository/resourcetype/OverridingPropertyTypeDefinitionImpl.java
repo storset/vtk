@@ -46,7 +46,7 @@ import org.vortikal.repository.resourcetype.PropertyType.Type;
 
 public class OverridingPropertyTypeDefinitionImpl implements OverridablePropertyTypeDefinition, InitializingBean {
 
-	private Map<String, Object> metadata = new HashMap<String, Object>();
+    private Map<String, Object> metadata = new HashMap<String, Object>();
 	
     private OverridablePropertyTypeDefinition overriddenPropDef;
     
@@ -114,18 +114,6 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridableProperty
         if (this.overriddenPropDef == null) {
             throw new BeanInitializationException("Java bean property 'overriddenPropDef' must be set");
         }
-
-        // XXX: The following requirement (that only properties with protection level 
-        // UNEDITABLE_ACTION may be overridden) has been removed (2009-08-13).
-        // The reason for this was the need for overriding property 'tags' 
-        // (which is a regular, user-modifiable property) with a content-derived 
-        // version of the same property.
-        
-//        if (!RepositoryAction.UNEDITABLE_ACTION.equals(this.overriddenPropDef.getProtectionLevel())) {
-//            throw new BeanInitializationException("Attempting to override property: " + this.overriddenPropDef 
-//                    + " with protection level " + this.overriddenPropDef.getProtectionLevel()
-//                    + ", should be " + RepositoryAction.UNEDITABLE_ACTION);
-//        }
     }
 
     public void setPropertyEvaluator(

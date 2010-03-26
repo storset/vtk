@@ -33,8 +33,10 @@ package org.vortikal.resourcemanagement.view;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -73,13 +75,14 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.text.html.HtmlPageParser;
+import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.DefineNodeFactory;
 import org.vortikal.text.tl.DirectiveNodeFactory;
 import org.vortikal.text.tl.IfNodeFactory;
 import org.vortikal.text.tl.ListNodeFactory;
 import org.vortikal.text.tl.Symbol;
 import org.vortikal.text.tl.ValNodeFactory;
-import org.vortikal.text.tl.expr.Concat;
+import org.vortikal.text.tl.expr.Function;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.ComponentResolver;
@@ -93,7 +96,7 @@ import org.vortikal.web.service.Service;
 public class StructuredResourceDisplayController implements Controller, InitializingBean {
 
     public static final String MVC_MODEL_KEY = "__mvc_model__";
-    public static final String TEMPLATE_EXECUTION_REQ_ATTR = "__template_execution_";
+    public static final String COMPONENT_RESOLVER = "__component_resolver__";
 
     private static final String COMPONENT_NS = "comp";
 
@@ -108,6 +111,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
     private String resourceModelKey;
     private List<ReferenceDataProvider> configProviders;
     private ValueFormatterRegistry valueFormatterRegistry;
+    private Set<Function> functions = new HashSet<Function>();
 
     private Map<String, DirectiveNodeFactory> directiveHandlers;
 
@@ -202,7 +206,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         Map<String, TemplateLanguageDecoratorComponent> components = this.components.get(res.getType());
 
         execution.setComponentResolver(new DynamicComponentResolver(COMPONENT_NS, resolver, components));
-        request.setAttribute(TEMPLATE_EXECUTION_REQ_ATTR, execution);
+        request.setAttribute(COMPONENT_RESOLVER, resolver);
         content = (HtmlPageContent) execution.render();
         return content;
     }
@@ -225,6 +229,17 @@ public class StructuredResourceDisplayController implements Controller, Initiali
 
     public void afterPropertiesSet() {
 
+        Set<Function> functions = new HashSet<Function>();
+        functions.addAll(this.functions);
+        functions.add(new RetrieveHandler(new Symbol("resource"), this.repository));
+        functions.add(new ResourcePropHandler(new Symbol("resource-prop"), this.repository));
+        functions.add(new ResourcePropObjectValueHandler(new Symbol("resource-prop-obj-val"), this.repository));
+        functions.add(new JSONDocumentProvider(new Symbol("structured-document")));
+        functions.add(new JSONAttributeHandler(new Symbol("json-attr")));
+        functions.add(new SearchResultValueProvider(new Symbol("search"), this.queryParserFactory, this.searcher));
+        functions.add(new ViewURLValueProvider(new Symbol("view-url"), this.viewService));
+        functions.add(new ToDateFunction(new Symbol("to-date")));
+
         // TODO: inject directive handlers instead of 
         // initializing all of them here:
 
@@ -237,23 +252,18 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         val.addValueFormatHandler(Value[].class, new PropertyValueFormatHandler(this.valueFormatterRegistry));
         directiveHandlers.put("val", val);
 
-        directiveHandlers.put("list", new ListNodeFactory());
+        ListNodeFactory list = new ListNodeFactory();
+        list.setFunctions(functions);
+        directiveHandlers.put("list", list);
+        
         directiveHandlers.put("resource-props", new ResourcePropsNodeFactory(this.repository));
 
         DefineNodeFactory def = new DefineNodeFactory();
-        def.addFunction(new Concat(new Symbol("concat")));
-        def.addFunction(new RetrieveHandler(new Symbol("resource"), this.repository));
-        def.addFunction(new ResourcePropHandler(new Symbol("resource-prop"), this.repository));
-        def.addFunction(new ResourcePropObjectValueHandler(new Symbol("resource-prop-obj-val"), this.repository));
-        def.addFunction(new JSONDocumentProvider(new Symbol("structured-document")));
-        def.addFunction(new JSONAttributeHandler(new Symbol("json-attr")));
-        def.addFunction(new SearchResultValueProvider(new Symbol("search"), this.queryParserFactory, this.searcher));
-        def.addFunction(new ViewURLValueProvider(new Symbol("view-url"), this.viewService));
-        def.addFunction(new ToDateFunction(new Symbol("to-date")));
+        def.setFunctions(functions);
         directiveHandlers.put("def", def);
 
         directiveHandlers.put("localized", new LocalizationNodeFactory(this.resourceModelKey));
-        directiveHandlers.put("call-component", new ComponentInvokerNodeFactory());
+        directiveHandlers.put("call-component", new ComponentInvokerNodeFactory(new ComponentSupport()));
 
         this.directiveHandlers = directiveHandlers;
 
@@ -266,6 +276,22 @@ public class StructuredResourceDisplayController implements Controller, Initiali
                 throw new BeanInitializationException("Unable to initialize component definitions "
                         + "for resource type " + desc, e);
             }
+        }
+    }
+    
+    private class ComponentSupport implements ComponentInvokerNodeFactory.ComponentSupport {
+
+        @Override
+        public ComponentResolver getComponentResolver(Context context) {
+            RequestContext requestContext = RequestContext.getRequestContext();
+            HttpServletRequest request = requestContext.getServletRequest();
+            return (ComponentResolver) request.getAttribute(COMPONENT_RESOLVER);
+        }
+
+        @Override
+        public HtmlPage getHtmlPage(Context context) {
+            // Don't allow access to HTML page in 'call-component' component..
+            return null;
         }
     }
 
@@ -319,5 +345,12 @@ public class StructuredResourceDisplayController implements Controller, Initiali
 
     public void setPostFilter(HtmlPageFilter postFilter) {
         this.postFilter = postFilter;
+    }
+    
+    public void setFunctions(Set<Function> functions) {
+        if (functions == null) {
+            throw new IllegalArgumentException("Argument is NULL");
+        }
+        this.functions = functions;
     }
 }

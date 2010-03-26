@@ -32,14 +32,20 @@ package org.vortikal.text.tl;
 
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
-public final class NodeList {
+public final class NodeList implements Iterable<Node> {
     
     private List<Node> nodes = new ArrayList<Node>();
 
     public void add(Node node) {
         this.nodes.add(node);
+    }
+    
+    public Iterator<Node> iterator() {
+        return Collections.unmodifiableList(this.nodes).iterator();
     }
 
     public void render(Context ctx, Writer out) throws Exception {

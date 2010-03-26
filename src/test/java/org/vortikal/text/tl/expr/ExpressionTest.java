@@ -32,7 +32,9 @@ package org.vortikal.text.tl.expr;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import junit.framework.TestCase;
@@ -56,8 +58,16 @@ public class ExpressionTest extends TestCase {
             public Object eval(Context ctx, Object... args) {
                 return "result";
             }});
+        s = new Symbol("map-get");
+        this.functions.add(new Function(s, 2) {
+            public Object eval(Context ctx, Object... args) {
+                Map<?,?> map = (Map<?,?>) args[0];
+                Object key = args[1];
+                return map.get(key);
+            }});
     }
 
+    
     public void testBasicExpressions() {
         Object result;
         result = eval(new Argument[] {
@@ -69,7 +79,13 @@ public class ExpressionTest extends TestCase {
                 new Symbol("null")
         });
         assertNull(result);
-
+        
+        result = eval(new Argument[] {
+           new Literal("'a'"),
+           new Symbol(":"),
+           new Literal("'b'"),
+        });
+        
         result = eval(new Argument[] {
                 new Symbol("null"),
                 new Symbol("="),
@@ -77,6 +93,15 @@ public class ExpressionTest extends TestCase {
         });
         assertEquals(true, result);
 
+        result = eval(new Argument[] {
+                new Symbol("+"),
+                new Symbol("("),
+                new Literal("2"),
+                new Symbol(","),
+                new Literal("2"),
+                new Symbol(")")
+        });
+        
         result = eval(new Argument[] {
                 new Literal("true")
         });
@@ -237,7 +262,6 @@ public class ExpressionTest extends TestCase {
         });
         assertEquals("abc", result);
 
-
         result = eval(ctx, new Argument[] {
                 new Symbol("concat"),
                 new Symbol("("),
@@ -323,6 +347,188 @@ public class ExpressionTest extends TestCase {
         } catch (RuntimeException e) {
             // Expected
         }
+    }
+    
+
+    public void testLists() {
+        Object result;
+        List<?> list;
+        result = eval(new Argument[] {
+                new Symbol("{"),
+                new Symbol("}")
+        });
+        list = (List<?>) result;
+        assertTrue(list.isEmpty());
+        
+        result = eval(new Argument[] {
+                new Symbol("{"),
+                new Literal("'a'"),
+                new Symbol("}")
+        });
+        list = (List<?>) result;
+        assertEquals(1, list.size());
+        assertEquals("a", list.get(0));
+    }
+    
+    public void testMalformedLists() {
+        try {
+            eval(new Argument[] {
+                    new Symbol("{"),
+                    new Literal("'a'"),
+                    new Literal("'b'"),
+                    new Literal("'c'"),
+                    new Symbol("}")
+            });
+            fail("Should not succeed");
+        } catch (RuntimeException e) {
+            // Expected
+        }
+    }
+    
+    public void testMalformedMaps() {
+        try {
+            eval(new Argument[] {
+                    new Symbol("{"),
+                    new Literal("'a'"),
+                    new Symbol(":"),
+                    new Symbol("}")
+            });
+            fail("Should not succeed");
+            eval(new Argument[] {
+                    new Symbol("{"),
+                    new Literal("'a'"),
+                    new Symbol(":"),
+                    new Literal("'b'"),
+                    new Literal("'c'"),
+                    new Symbol(":"),
+                    new Literal("'d'"),
+                    new Symbol("}")
+            });
+            fail("Should not succeed");
+        } catch (RuntimeException e) {
+            // Expected
+        }
+    }
+    
+    public void testBasicMaps() {
+        Object result;
+        Map<?,?> map;
+        result = eval(new Argument[] {
+                new Symbol("{"),
+                new Symbol(":"),
+                new Symbol("}")
+        });
+        map = (Map<?,?>) result;
+        assertTrue(map.isEmpty());
+
+        result = eval(new Argument[] {
+                new Symbol("{"),
+                new Literal("'a'"),
+                new Symbol(":"),
+                new Literal("'b'"),
+                new Symbol("}")
+        });
+        map = (Map<?,?>) result;
+        assertEquals(1, map.size());
+        assertEquals("b", map.get("a"));
+        
+        result = eval(new Argument[] {
+                new Symbol("{"),
+                new Literal("'a'"),
+                new Symbol(":"),
+                new Literal("'b'"),
+                new Symbol(","),
+                new Literal("'c'"),
+                new Symbol(":"),
+                new Symbol("null"),
+                new Symbol(","),
+                new Literal("'d'"),
+                new Symbol(":"),
+                new Symbol("{"),
+                new Literal("'e'"),
+                new Symbol(":"),
+                new Literal("'f'"),
+                new Symbol("}"),
+                new Symbol("}")
+        });
+        map = (Map<?,?>) result;
+        assertEquals(3, map.size());
+        assertEquals("b", map.get("a"));
+        assertNull(map.get("c"));
+        Map<?,?> submap = (Map<?,?>) map.get("d");
+        assertNotNull(submap);
+        assertEquals(1, submap.size());
+        assertEquals("f", submap.get("e"));
+        
+        result = eval(new Argument[] {
+                new Symbol("{"),
+                new Literal("'a'"),
+                new Symbol(":"),
+                new Literal("2"),
+                new Symbol("+"),
+                new Literal("2"),
+                new Symbol(","),
+                new Literal("3"),
+                new Symbol("*"),
+                new Literal("3"),
+                new Symbol(":"),
+                new Literal("'d'"),
+                new Symbol("}")
+        });
+        map = (Map<?,?>) result;
+        assertEquals(4, map.get("a"));
+        assertEquals("d", map.get(9));
+        
+
+        result = eval(new Argument[] {
+                new Symbol("{"),
+                new Literal("'a'"),
+                new Symbol(":"),
+                new Symbol("{"),
+                new Literal("'b'"),
+                new Symbol(":"),
+                new Literal("'c'"),
+                new Symbol("}"),
+                new Symbol(","),
+                new Symbol("{"),
+                new Literal("'b'"),
+                new Symbol(":"),
+                new Literal("'c'"),
+                new Symbol("}"),
+                new Symbol(":"),
+                new Literal("'a'"),
+                new Symbol("}")
+        });
+        assertTrue(result instanceof Map<?,?>);
+    }
+    
+    public void testMapsAndFunctions() {
+        Object result;
+        
+        result = eval(new Argument[] {
+                new Symbol("{"),
+                new Literal("'a'"),
+                new Symbol(":"),
+                new Symbol("concat"),
+                new Symbol("("),
+                new Literal("'b'"),
+                new Symbol(","),
+                new Symbol("map-get"),
+                new Symbol("("),
+                new Symbol("{"),
+                new Literal("'c'"),
+                new Symbol(":"),
+                new Literal("'d'"),
+                new Symbol("}"),
+                new Symbol(","),
+                new Literal("'c'"),
+                new Symbol(")"),
+                new Symbol(")"),
+                new Symbol("}")
+        });
+        assertTrue(result instanceof Map<?,?>);
+        Map<?,?> map = (Map<?,?>) result;
+        assertEquals("bd", map.get("a"));
     }
 
     public void testTooManyArguments() throws Exception {

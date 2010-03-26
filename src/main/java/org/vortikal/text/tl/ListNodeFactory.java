@@ -38,10 +38,23 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.vortikal.text.tl.expr.Expression;
+import org.vortikal.text.tl.expr.Function;
+
 public class ListNodeFactory implements DirectiveNodeFactory {
 
     private static final Set<String> LIST_TERM = new HashSet<String>(Arrays.asList("endlist"));
 
+    private Set<Function> functions = new HashSet<Function>();
+    
+    public void setFunctions(Set<Function> functions) {
+        if (functions != null) {
+            for (Function function: functions) {
+                this.functions.add(function);
+            }
+        }
+    }
+    
     /**
      * [list x varname] 
      *    .. do stuff with varname: [val varname] 
@@ -54,19 +67,16 @@ public class ListNodeFactory implements DirectiveNodeFactory {
      */
     public Node create(DirectiveParseContext ctx) throws Exception {
         List<Argument> args = ctx.getArguments();
-        if (args.size() != 2) {
+        if (args.size() < 2) {
             throw new RuntimeException("List directive: " + ctx.getNodeText() 
-            		+ ": wrong number of arguments");
+                        + ": wrong number of arguments");
+        }
+        Argument last = args.remove(args.size() - 1);
+        if (!(last instanceof Symbol)) {
+            throw new RuntimeException("Expected symbol: " + last.getRawValue());
         }
 
-        Argument arg1 = args.remove(0);
-        Argument arg2 = args.remove(0);
-        if (!(arg1 instanceof Symbol)) {
-            throw new RuntimeException("Expected symbol: " + arg1.getRawValue());
-        }
-        if (!(arg2 instanceof Symbol)) {
-            throw new RuntimeException("Expected symbol: " + arg2.getRawValue());
-        }
+        Expression expression = new Expression(this.functions, args);
         ParseResult listBlock = ctx.getParser().parse(LIST_TERM);
 
         String terminator = listBlock.getTerminator();
@@ -74,41 +84,42 @@ public class ListNodeFactory implements DirectiveNodeFactory {
             throw new RuntimeException("Unterminated directive: " + ctx.getNodeText());
         }
         NodeList nodeList = listBlock.getNodeList();
-        return new ListNode((Symbol) arg1, (Symbol) arg2, nodeList);
+        return new ListNode(expression, (Symbol) last, nodeList);
     }
 
     private class ListNode extends Node {
-        private Symbol listVar;
+        private Expression expression;
         private Symbol defVar;
         private NodeList nodeList;
 
-        public ListNode(Symbol listVar, Symbol defVar, NodeList nodeList) {
-            this.listVar = listVar;
+        public ListNode(Expression expression, Symbol defVar, NodeList nodeList) {
+            this.expression = expression;
             this.defVar = defVar;
             this.nodeList = nodeList;
         }
 
         public void render(Context ctx, Writer out) throws Exception {
-            Object var = this.listVar.getValue(ctx);
+            Object evaluated = this.expression.evaluate(ctx);
             List<Object> elements = new ArrayList<Object>();
-            if (var instanceof Iterable<?>) {
-            	Iterable<?> iterable = (Iterable<?>) var;
+            if (evaluated instanceof Iterable<?>) {
+            	Iterable<?> iterable = (Iterable<?>) evaluated;
             	for (Object o : iterable) {
             		elements.add(o);
             	}
-            } else if (var instanceof Iterator<?>) {
-            	Iterator<?> iter = (Iterator<?>) var;
+            } else if (evaluated instanceof Iterator<?>) {
+            	Iterator<?> iter = (Iterator<?>) evaluated;
             	while (iter.hasNext()) {
             		elements.add(iter.next());
             	}
-            } else if (var instanceof Object[]) {
-                for (Object o : (Object[]) var) {
+            } else if (evaluated instanceof Object[]) {
+                for (Object o : (Object[]) evaluated) {
             		elements.add(o);
                 }
             } else {
                 throw new RuntimeException(
-                		"List: Cannot iterate variable: " 
-                		+ this.listVar + ": not a list");
+                		"List: Cannot iterate expression: " 
+                		+ this.expression + ": result is not a list: " 
+                		+ evaluated);
             }
             execute(elements, ctx, out);
         }

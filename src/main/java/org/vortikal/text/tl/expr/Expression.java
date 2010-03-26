@@ -52,8 +52,14 @@ import org.vortikal.text.tl.expr.Operator.Precedence;
  */
 public class Expression {
 
+    private static final Symbol EMPTY_LIST = new Symbol("#emptylist");
+    private static final Symbol EMPTY_MAP = new Symbol("#emptymap");
+    private static final Symbol COLLECTION = new Symbol("#collection");
+    
     private static final Symbol LP = new Symbol("(");
     private static final Symbol RP = new Symbol(")");
+    private static final Symbol LCB = new Symbol("{");
+    private static final Symbol RCB = new Symbol("}");
     private static final Symbol COMMA = new Symbol(",");
 
     private static final Symbol EQ = new Symbol("=");
@@ -67,7 +73,9 @@ public class Expression {
     private static final Symbol MINUS = new Symbol("-");
     private static final Symbol MULTIPLY = new Symbol("*");
     private static final Symbol DIVIDE = new Symbol("/");
+    private static final Symbol MAPPING = new Symbol(":");
 
+    
     /**
      * The default set of operators
      */
@@ -76,28 +84,30 @@ public class Expression {
         Map<Symbol, Operator> ops = new HashMap<Symbol, Operator>();
 
         // Unary
-        ops.put(NOT, new Not(NOT, Notation.PREFIX, Precedence.TEN));
+        ops.put(NOT, new Not(NOT, Notation.PREFIX, Precedence.ELEVEN));
 
         // Multiplicative
-        ops.put(DIVIDE, new Divide(DIVIDE, Notation.INFIX, Precedence.NINE));
-        ops.put(MULTIPLY, new Multiply(MULTIPLY, Notation.INFIX, Precedence.EIGHT));
+        ops.put(DIVIDE, new Divide(DIVIDE, Notation.INFIX, Precedence.TEN));
+        ops.put(MULTIPLY, new Multiply(MULTIPLY, Notation.INFIX, Precedence.NINE));
 
         // Additive
-        ops.put(PLUS, new Plus(PLUS, Notation.INFIX, Precedence.SEVEN));
-        ops.put(MINUS, new Minus(MINUS, Notation.INFIX, Precedence.SIX));
+        ops.put(PLUS, new Plus(PLUS, Notation.INFIX, Precedence.EIGHT));
+        ops.put(MINUS, new Minus(MINUS, Notation.INFIX, Precedence.SEVEN));
 
         // Greater/less than
-        ops.put(GT, new Gt(GT, Notation.INFIX, Precedence.FIVE));
-        ops.put(LT, new Lt(LT, Notation.INFIX, Precedence.FOUR));
+        ops.put(GT, new Gt(GT, Notation.INFIX, Precedence.SIX));
+        ops.put(LT, new Lt(LT, Notation.INFIX, Precedence.FIVE));
 
         // Equality
-        ops.put(EQ, new Eq(EQ, Notation.INFIX, Precedence.THREE));
-        ops.put(NEQ, new Neq(NEQ, Notation.INFIX, Precedence.TWO));
+        ops.put(EQ, new Eq(EQ, Notation.INFIX, Precedence.FOUR));
+        ops.put(NEQ, new Neq(NEQ, Notation.INFIX, Precedence.THREE));
 
         // Logical AND/OR
-        ops.put(AND, new And(AND, Notation.INFIX, Precedence.ONE));
-        ops.put(OR, new Or(OR, Notation.INFIX, Precedence.ZERO));
+        ops.put(AND, new And(AND, Notation.INFIX, Precedence.TWO));
+        ops.put(OR, new Or(OR, Notation.INFIX, Precedence.ONE));
 
+        ops.put(MAPPING, new Mapping(MAPPING, Notation.INFIX, Precedence.ZERO));
+        
         DEFAULT_OPERATORS = Collections.unmodifiableMap(new HashMap<Symbol, Operator>(ops));
     }
 
@@ -119,11 +129,12 @@ public class Expression {
     public Expression(List<Argument> args) {
         this(null, args);
     }
-
+    
     /**
      * Constructs an expression using a supplied set of functions
      */
     public Expression(Set<Function> functions, List<Argument> args) {
+
         if (functions != null) {
             for (Function f : functions) {
                 addFunction(f);
@@ -135,10 +146,9 @@ public class Expression {
         this.infix = new ArrayList<Argument>(args);
 
         Stack<Symbol> stack = new Stack<Symbol>();
-        List<Argument> postfix = new ArrayList<Argument>();
+        List<Argument> output = new ArrayList<Argument>();
 
         Argument prev = null, next = null;
-
         for (int i = 0; i < args.size(); i++) {
             Argument arg = args.get(i);
             if (i > 0) {
@@ -151,7 +161,7 @@ public class Expression {
                 throw new RuntimeException("Malformed expression: " + this);
             }
             if (arg instanceof Literal) {
-                postfix.add(arg);
+                output.add(arg);
                 continue;
             }
             Symbol symbol = (Symbol) arg;
@@ -161,6 +171,11 @@ public class Expression {
                 continue;
             }
 
+            if (LCB.equals(symbol)) {
+                stack.push(symbol);
+                continue;
+            }
+            
             if (RP.equals(symbol)) {
                 int commas = 0;
                 while (true) {
@@ -174,12 +189,15 @@ public class Expression {
                     if (COMMA.equals(top)) {
                         commas++;
                     } else {
-                        postfix.add(top);
+                        output.add(top);
                     }
                 }
                 if (!stack.isEmpty()) {
                     Symbol top = stack.pop();
                     Operator op = this.operators.get(top);
+                    if (op == null) {
+                        throw new RuntimeException("Unknown operator: '" + top + "' in expression " + this);
+                    }
                     if (op instanceof Function) {
                         Function f = (Function) op;
                         int expected = f.getArgumentCount();
@@ -188,19 +206,64 @@ public class Expression {
                                     + f.getSymbol().getSymbol() + " (expected " + expected + ")");
                         }
                     }
-                    postfix.add(top);
+                    output.add(top);
                 }
                 continue;
             }
 
+            if (RCB.equals(symbol)) {
+                if (LCB.equals(prev)) {
+                    // Special case of empty list ('{}'):
+                    stack.pop();
+                    output.add(EMPTY_LIST);
+                    continue;
+                } else if (MAPPING.equals(prev)) {
+                    if (stack.size() > 1 && LCB.equals(stack.elementAt(stack.size() - 2))) {
+                        // Special case of empty map ('{:}')
+                        stack.pop();
+                        stack.pop();
+                        output.add(EMPTY_MAP);
+                        continue;
+                    }
+                }
+                int commas = 0;
+                while (true) {
+                    if (stack.isEmpty()) {
+                        throw new RuntimeException("Unbalanced map definition in expression " + this);
+                    }
+                    Symbol top = stack.pop();
+                    if (LCB.equals(top)) {
+                        break;
+                    }
+                    if (COMMA.equals(top)) {
+                        commas++;
+                    } else {
+                        output.add(top);
+                    }
+                }
+                output.add(new Literal(String.valueOf(commas + 1)));
+                output.add(COLLECTION);
+                continue;
+            }
+            
             if (COMMA.equals(symbol)) {
+                while (true) {
+                    if (stack.isEmpty()) {
+                        throw new RuntimeException("Malformed expression: " + this);
+                    }
+                    Symbol top = stack.peek();
+                    if (LP.equals(top) || LCB.equals(top) || COMMA.equals(top)) {
+                        break;
+                    }
+                    output.add(stack.pop());
+                }
                 stack.push(symbol);
                 continue;
             }
 
             Operator op = this.operators.get(symbol);
             if (op == null) {
-                postfix.add(symbol);
+                output.add(symbol);
                 continue;
             }
             if (op instanceof Function && !LP.equals(next)) {
@@ -213,7 +276,7 @@ public class Expression {
             Operator top = this.operators.get(stack.peek());
             int n = op.getprecedence().value();
             while (top != null && top.getprecedence().value() > n) {
-                postfix.add(top.getSymbol());
+                output.add(top.getSymbol());
                 stack.pop();
                 if (stack.isEmpty()) {
                     top = null;
@@ -228,9 +291,9 @@ public class Expression {
             if (LP.equals(top) || RP.equals(top) || COMMA.equals(top)) {
                 throw new RuntimeException("Invalid expression: " + this);
             }
-            postfix.add(top);
+            output.add(top);
         }
-        this.postfix = postfix;
+        this.postfix = output;
     }
 
     /**
@@ -244,14 +307,22 @@ public class Expression {
                     stack.push(arg.getValue(ctx));
                 } else {
                     Symbol s = (Symbol) arg;
-                    Operator op = operators.get(s);
-                    if (op == null) {
-                        // Variable:
-                        stack.push(s.getValue(ctx));
+                    if (EMPTY_MAP.equals(s)) {
+                        stack.push(new HashMap<Object, Object>());
+                    } else if (EMPTY_LIST.equals(s)) {
+                        stack.push(new ArrayList<Object>());
+                    } else if (COLLECTION.equals(s)) {
+                        stack.push(defineCollection(stack));
                     } else {
-                        // Function/operator:
-                        Object val = op.eval(ctx, stack);
-                        stack.push(val);
+                        Operator op = operators.get(s);
+                        if (op == null) {
+                            // Variable:
+                            stack.push(s.getValue(ctx));
+                        } else {
+                            // Function/operator:
+                            Object val = op.eval(ctx, stack);
+                            stack.push(val);
+                        }
                     }
                 }
             }
@@ -290,5 +361,59 @@ public class Expression {
             throw new IllegalArgumentException("Cannot re-define " + symbol.getSymbol());
         }
         this.operators.put(symbol, function);
+    }
+
+    
+    private Object defineCollection(Stack<Object> stack) {
+        if (stack.isEmpty()) {
+            throw new RuntimeException("Empty evaluation stack");
+        }
+        Object top = stack.pop();
+        if (!(top instanceof Number)) {
+            throw new RuntimeException("Number of entries not a numeric value: " + top);   
+        }
+        int n = ((Number) top).intValue();
+        List<Object> list = new ArrayList<Object>();
+        boolean allMapEntries = true;
+        for (int i = 0; i < n; i++) {
+            if (stack.isEmpty()) {
+                throw new RuntimeException("Empty evaluation stack");
+            }
+            Object o = stack.pop();
+            if (!(o instanceof MapEntry)) {
+                allMapEntries = false;
+            }
+            list.add(0, o);
+        }
+        if (!allMapEntries) {
+            return list;
+        }
+        Map<Object, Object> map = new HashMap<Object, Object>();
+        for (Object o: list) {
+            MapEntry e = (MapEntry) o;
+            map.put(e.key, e.value);
+        }
+        return map;
+    }
+    
+    private static class MapEntry {
+        public Object key;
+        public Object value;
+    }
+    
+    private static class Mapping extends Operator {
+
+        public Mapping(Symbol symbol, Notation notation, Precedence precedence) {
+            super(symbol, notation, precedence);
+        }
+
+        public Object eval(Context ctx, Stack<Object> stack) {
+            Object value = stack.pop();
+            Object key = stack.pop();
+            MapEntry entry = new MapEntry();
+            entry.key = key;
+            entry.value = value;
+            return entry;
+        }
     }
 }

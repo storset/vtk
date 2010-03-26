@@ -55,6 +55,7 @@ public abstract class Operator {
         EIGHT(8),
         NINE(9),
         TEN(10),
+        ELEVEN(11),
         FUNCTION_PRECEDENCE(100);
         private int n;
         private Precedence(int n) {

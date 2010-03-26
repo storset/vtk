@@ -31,10 +31,8 @@
 package org.vortikal.text.tl;
 
 import java.io.Writer;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.vortikal.text.tl.expr.Expression;
@@ -43,15 +41,6 @@ import org.vortikal.text.tl.expr.Function;
 public final class DefineNodeFactory implements DirectiveNodeFactory {
 
     private Set<Function> functions = new HashSet<Function>();
-    
-    public void addFunction(Function function) {
-        this.functions.add(function);
-    }
-    
-    private static final Symbol LB = new Symbol("{");
-    private static final Symbol RB = new Symbol("}");
-    private static final Symbol COLON = new Symbol(":");
-    private static final Symbol COMMA = new Symbol(",");
     
     public Node create(DirectiveParseContext ctx) throws Exception {
         List<Argument> args = ctx.getArguments();
@@ -64,41 +53,6 @@ public final class DefineNodeFactory implements DirectiveNodeFactory {
         }
         final String variable = ((Symbol) arg1).getSymbol();
 
-        // Simple literal definition (e.g. "def x 22")
-        if (args.get(0) instanceof Literal) {
-            if (args.size() > 1) {
-                throw new RuntimeException("Extra arguments after value: " + ctx.getNodeText());
-            }
-            final Argument val = args.get(0);
-            return new Node() {
-                public void render(Context ctx, Writer out) throws Exception {
-                    Object result;
-                    result = val.getValue(ctx);
-                    ctx.define(variable, result, true);
-                }
-            };
-        }
-        
-        // Map definition (e.g. "def x {a:b, c:d}")
-        // XXX: Move map parsing to expression or parser layer
-        if (LB.equals(args.get(0)) && RB.equals(args.get(args.size() - 1))) {
-
-            final Map<Argument, Argument> argMap = getMapDefinition(args);
-            return new Node() {
-                public void render(Context ctx, Writer out) throws Exception {
-                    Map<Object, Object> result = new HashMap<Object, Object>();
-                    for (Argument keyArg: argMap.keySet()) {
-                        Argument valArg = argMap.get(keyArg);
-                        Object key = keyArg.getValue(ctx);
-                        Object val = valArg.getValue(ctx);
-                        result.put(key, val);
-                    }
-                    ctx.define(variable, result, true);
-                }
-            };
-        }
-
-        // Expression:
         final Expression expression = new Expression(this.functions, args);
         return new Node() {
             public void render(Context ctx, Writer out) throws Exception {
@@ -107,44 +61,12 @@ public final class DefineNodeFactory implements DirectiveNodeFactory {
             }
         };
     }
-
-    private Map<Argument, Argument> getMapDefinition(List<Argument> args) {
-        
-        if (args.size() < 2) {
-            throw new IllegalArgumentException("Malformed map definition");
-        }
-        if (!LB.equals(args.get(0)) && !RB.equals(args.get(args.size() - 1))) {
-            throw new IllegalArgumentException("Malformed map definition");
-        }
-        args.remove(0);
-        args.remove(args.size() - 1);
-
-        Map<Argument, Argument> map = new HashMap<Argument, Argument>();
-        while (true) {
-            if (args.isEmpty()) {
-                break;
-            }
-            Argument key = args.remove(0);
-            if (args.isEmpty()) {
-                throw new RuntimeException("Malformed map definition");
-            }
-            Argument colon = args.remove(0);
-            if (!COLON.equals(colon)) {
-                throw new RuntimeException("Expected ':' in map definition");
-            }
-            if (args.isEmpty()) {
-                throw new RuntimeException("Malformed map definition");
-            }
-            Argument value = args.remove(0);
-            map.put(key, value);
-            if (args.isEmpty()) {
-                break;
-            }
-            Argument comma = args.remove(0);
-            if (!COMMA.equals(comma)) {
-                throw new RuntimeException("Entries must be comma-separated");
+    
+    public void setFunctions(Set<Function> functions) {
+        if (functions != null) {
+            for (Function function: functions) {
+                this.functions.add(function);
             }
         }
-        return map;
     }
 }

@@ -154,22 +154,15 @@
 	 }
      
      function generateLinkImage(theimage, thelink) {
-       //create image
   	   var img = new Image();
   	   var src = $(theimage).attr("src").split("?")[0];
   	   var alt = $(theimage).attr("alt");
   	   img.src = src; img.alt = alt;
-  	  
-  	   //create link
   	   link = document.createElement("a"); 
   	   link.setAttribute("href", $(thelink).attr("href"));
   	   link.setAttribute("class", container.substring(1) + "-link");
-  	   // IE
-  	   link.setAttribute("className", container.substring(1) + "-link");
-  	      
-  	   //append img inside link
+  	   link.setAttribute("className", container.substring(1) + "-link"); // IE
   	   $(link).append(img);
-
   	   return link;
   	 }
 

@@ -58,6 +58,7 @@ public class OrAssertion implements Assertion {
     
     public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
         for (int i = 0; i < this.assertions.length; i++) {
+            // Process URL only for first matching assertion:
             if (this.assertions[i].processURL(url, resource, principal, match)) {
                 return true;
             }

@@ -220,6 +220,9 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             if (isActive(currentURI, uri)) {
                 item.setActive(true);
                 menu.setActiveItem(item);
+            }
+            
+            if(currentURI.equals(uri)){
                 item.setLinkToResource(menuRequest.isLinkToCurrentResource());
             }
 
@@ -454,6 +457,9 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             if (isActive(menuRequest.getCurrentURI(), resource.getURI())) {
                 item.setSubMenu(buildSubItems(resource.getURI(), childMap, menuRequest));
                 item.setActive(true);
+            }
+            
+            if(menuRequest.getCurrentURI().equals(resource.getURI())){
                 item.setLinkToResource(menuRequest.isLinkToCurrentResource());
             }
         }

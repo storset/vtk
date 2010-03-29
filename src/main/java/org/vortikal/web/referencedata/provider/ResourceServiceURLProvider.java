@@ -91,6 +91,11 @@ public class ResourceServiceURLProvider implements ReferenceDataProvider {
     private boolean linkToParent = false;
     private String urlName = "url";
     private String titleName = "title";
+    
+    // URL "hints":
+    private String staticURLHost;
+    private String staticURLProtocol;
+    private Map<String, String> staticURLParameters;
 
     @Required public void setModelName(String modelName) {
         this.modelName = modelName;
@@ -120,6 +125,21 @@ public class ResourceServiceURLProvider implements ReferenceDataProvider {
         this.titleName = titleName;
     }
 
+
+    public void setStaticURLHost(String staticURLHost) {
+        this.staticURLHost = staticURLHost;
+    }
+
+    public void setStaticURLProtocol(String staticURLProtocol) {
+        if ("*".equals(staticURLProtocol)) {
+            staticURLProtocol = null;
+        }
+        this.staticURLProtocol = staticURLProtocol;
+    }
+
+    public void setStaticURLParameters(Map<String, String> staticURLParameters) {
+        this.staticURLParameters = staticURLParameters;
+    }
 
     @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request)
@@ -156,9 +176,20 @@ public class ResourceServiceURLProvider implements ReferenceDataProvider {
                                                  this.matchAssertions);
             }
         } catch (ServiceUnlinkableException ex) { }
-
+        
         urlMap.put(this.urlName, url);
         if (url != null) {
+            if (this.staticURLHost != null) {
+                url.setHost(this.staticURLHost);
+            }
+            if (this.staticURLProtocol != null) {
+                url.setProtocol(this.staticURLProtocol);
+            }
+            if (this.staticURLParameters != null) {
+                for (String param : this.staticURLParameters.keySet()) {
+                    url.addParameter(param, this.staticURLParameters.get(param));
+                }
+            }
             urlMap.put(this.titleName, getLocalizedTitle(request, resource, this.service));
         }
         model.put(this.modelName, urlMap);

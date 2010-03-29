@@ -15,8 +15,7 @@
 		  fadeThumbsInOutTime: 250,
 		  fadedThumbsOutOpacity: 0.6,
 		  fadeNavInOutTime: 250
-		  },
-	  options);
+		  },options||{});
 
 	  //Unobtrusive JavaScript
 	  $(container + "-pure-css").addClass(container.substring(1));

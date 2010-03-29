@@ -34,6 +34,7 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.Response;
@@ -71,11 +72,15 @@ public class Login extends SamlService {
     }
 
     public UserData login(HttpServletRequest request) throws AuthenticationException, AuthenticationProcessingException {
-        UUID expectedRequestID = (UUID) request.getSession(true).getAttribute(REQUEST_ID_SESSION_ATTR);
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            throw new InvalidRequestException("No session exists");
+        }
+        UUID expectedRequestID = (UUID) session.getAttribute(REQUEST_ID_SESSION_ATTR);
         if (expectedRequestID == null) {
             throw new InvalidRequestException("Missing request ID attribute in session");
         }
-        request.getSession().removeAttribute(REQUEST_ID_SESSION_ATTR);
+        session.removeAttribute(REQUEST_ID_SESSION_ATTR);
 
         UserData userData = getUserData(request, expectedRequestID);
         if (userData == null) {

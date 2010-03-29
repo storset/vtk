@@ -209,6 +209,7 @@
               <entry key="webResources" value="${webResources.baseURL}" />
               <entry key="themeBaseURL" value="${themeBaseURL}" />
               <entry key="fckBaseHref" value= "${editor.fck.baseHref}" />
+              <entry key="editorHelpURL" value="${editor.helpURL}" />
             </map>
           </property>
         </bean>

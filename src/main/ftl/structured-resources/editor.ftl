@@ -67,8 +67,8 @@
 <#assign locale = springMacroRequestContext.getLocale() />
 
 <#assign header = form.resource.getLocalizedMsg("header", locale, null) />
-<h2>${header}<a id="help-link" href="#">Hjelp til webredigering</a></h2>
-
+<h2>${header}</h2>
+<a id="help-link" href="${editorHelpURL?html}" target="new_window"><@vrtx.msg code="editor.help"/></a>
 <form action="${form.submitURL?html}" method="post">
 
 <#list form.elements as elementBox>

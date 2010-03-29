@@ -412,3 +412,8 @@ input.date, input.hours, input.minutes {
 }
 
 /* STOP Introduction image edit like the old one */
+
+#help-link {
+    position:absolute;
+    right:2em;
+}

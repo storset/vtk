@@ -37,6 +37,7 @@
 #vrtx-event-calendar .ui-datepicker .ui-datepicker-header a {
   color: #fff;
   text-decoration: none;
+  cursor: pointer;
 }
 
 #vrtx-event-calendar .ui-datepicker .ui-datepicker-prev span, 

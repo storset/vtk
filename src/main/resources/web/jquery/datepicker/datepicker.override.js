@@ -58,10 +58,10 @@ function eventListingCalendar(allowedDates, activeDate, clickableDayTitle, notCl
       setTimeout(function(){makeMonthLink(year, month)}, 100);
     }
   });
-  
+
   $("#vrtx-event-calendar tr").each(function(i){
-    $("td.ui-datepicker-other-month:last", this).next().find("span").css("borderLeft","1px solid #ccc");
-    $("td.ui-datepicker-other-month:last", this).next().find("span").css("marginLeft", "-1px");
+    $("td.ui-datepicker-other-month:last", this).next().find(":first-child").css("borderLeft","1px solid #ccc");
+    $("td.ui-datepicker-other-month:last", this).next().find(":first-child").css("marginLeft", "-1px");
   });
 }
 

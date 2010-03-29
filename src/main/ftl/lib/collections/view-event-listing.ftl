@@ -133,7 +133,7 @@
 
   <div id="vrtx-additional-content">
     <div id="vrtx-event-calendar">
-      <#local activeDate = "" />
+      <#local activeDate = vrtx.calcDate(today, 'yyyy-MM-dd') />
       <#if requestedDate?exists && requestedDate?has_content>
         <#local activeDate = requestedDate />
       </#if>

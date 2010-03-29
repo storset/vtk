@@ -5,12 +5,7 @@
 
 function eventListingCalendar(allowedDates, activeDate, clickableDayTitle, notClickableDayTitle, language) {
 
-  var today = new Date();
-  if (!activeDate) {
-    activeDate = [ today.getFullYear(), today.getMonth() + 1, today.getDate() ].join('-');
-  }
   var activeDateForInit = makeActiveDateForInit(activeDate);
-
   var init = true;
 
   // i18n (default english)
@@ -28,9 +23,8 @@ function eventListingCalendar(allowedDates, activeDate, clickableDayTitle, notCl
     firstDay : 1,
     defaultDate : activeDateForInit,
     beforeShowDay : function(day) {
-      var date_str = [ day.getFullYear(), day.getMonth() + 1, day.getDate() ].join('-');
-
       // Add classes and tooltip for dates with and without events
+      var date_str = $.datepicker.formatDate("yy-m-d", new Date(day)).toString();
       if ($.inArray(date_str, allowedDates) != -1) {
         if ($.datepicker.formatDate("yy-m-d", new Date(activeDate)).toString() == date_str) {
           return [ true, 'state-active', clickableDayTitle ];

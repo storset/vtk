@@ -106,13 +106,14 @@
   border-width: thin thin 0 0;
   text-align: center;
   background-image: none !important;
-  background-color: #d7e9f8 !important;
+  background-color: #d6e8f8 !important;
   border-color: #ccc !important;	
-  color: #0b5a9d !important;
+  color: #005a9f !important;
 }
 
 #vrtx-event-calendar .ui-widget-content table .ui-datepicker-today a {
-  background-color: #b7c9f8 !important;	
+  background-color: #005aab !important;
+  color: #fff !important;
 }
 
 /* Set active color */

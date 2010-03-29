@@ -117,6 +117,11 @@
   color: #fff !important;	
 }
 
+#vrtx-event-calendar .ui-widget-content table .first-date {
+    border-left: 1px solid #ccc;
+    margin-left: -1px;
+}
+
 /* hover */
 #vrtx-event-calendar .ui-widget-content table a:hover {
   background-color: #3a94e0 !important;	

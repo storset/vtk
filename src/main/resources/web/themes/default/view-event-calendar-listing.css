@@ -118,8 +118,8 @@
 }
 
 #vrtx-event-calendar .ui-widget-content table .first-date {
-    border-left: 1px solid #ccc;
-    margin-left: -1px;
+    border-left: 1px solid #ccc !important;
+    margin-left: -1px !important;
 }
 
 /* hover */

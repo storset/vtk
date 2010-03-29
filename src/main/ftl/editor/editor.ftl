@@ -184,7 +184,7 @@
 	 fck.Config.ForcePasteAsPlainText = false;
 
          fck.Config['SkinPath'] = fck.BasePath + 'editor/skins/silver/';
-         fck.Config.BaseHref = '${fckBaseHref?html}';
+         fck.Config.BaseHref = '${fckeditorBase.documentURL?html}';
 
          var cssFileList = new Array(
          <#if fckEditorAreaCSSURL?exists>

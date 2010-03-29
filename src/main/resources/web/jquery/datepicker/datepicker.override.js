@@ -3,10 +3,10 @@
  * TODO: look at interchange between format '2010-4-2' and '2010-04-02'
  */
 
-function eventListingCalendar(allowedDates, activeDate, today, clickableDayTitle, notClickableDayTitle, language) {
+function eventListingCalendar(allowedDates, activeDate, clickableDayTitle, notClickableDayTitle, language) {
 
   var init = true;
-  var activeDateForInit = makeActiveDateForInit((activeDate != "") ? activeDate : today);
+  var activeDateForInit = makeActiveDateForInit(activeDate);
 
   // i18n (default english)
   if (language == 'no') {
@@ -29,14 +29,10 @@ function eventListingCalendar(allowedDates, activeDate, today, clickableDayTitle
         if ($.datepicker.formatDate("yy-m-d", new Date(activeDate)).toString() == date_str) {
           return [ true, 'state-active', clickableDayTitle ];
         } else {
-          if($.datepicker.formatDate("yy-m-d", new Date(today)).toString() == date_str) {
-        	return [ true, 'state-today', clickableDayTitle ]; 
-          } else {
-            return [ true, '', clickableDayTitle ];
-          }
+          return [ true, '', clickableDayTitle ];
         }
       } else {
-        return [ false, '', notClickableDayTitle ];
+          return [ false, '', notClickableDayTitle ];
       }
     },
     onChangeMonthYear : function(year, month, inst) {
@@ -64,6 +60,7 @@ function makeMonthLink(date) {
 
 // For init of calender / datepicker()
 function makeActiveDateForInit(activeDate) {
+  if(activeDate == "") { return new Date(); }
   var dateArray = activeDate.split('-');
   if (dateArray.length == 3) {
     return new Date(dateArray[0], dateArray[1] - 1, dateArray[2]);
@@ -71,7 +68,5 @@ function makeActiveDateForInit(activeDate) {
     return new Date(dateArray[0], dateArray[1] - 1);
   } else if (dateArray.length == 1) {
     return new Date(dateArray[0]);
-  } else {
-    return new Date();
   }
 }

@@ -82,6 +82,9 @@
     <property name="urlPostProcessors" ref="webServiceUrlPostProcessors" />
     <property name="handlerInterceptors">
       <list>
+        <bean class="org.vortikal.web.FullDomainRedirectInterceptor">
+          <property name="hostName" value="${webHostName}" />
+        </bean>
         <bean class="org.vortikal.web.ThrottleHandlerInterceptor">
           <property name="maxConcurrentRequests" value="${webService.maxConcurrentRequests}" />
           <property name="rejectStatus" value="${webService.tooManyRequests.rejectStatus}" />

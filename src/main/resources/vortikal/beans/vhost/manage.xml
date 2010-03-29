@@ -55,6 +55,9 @@
     </property>
     <property name="handlerInterceptors">
       <list>
+        <bean class="org.vortikal.web.FullDomainRedirectInterceptor">
+          <property name="hostName" value="${manage.hostName}" />
+        </bean>
         <ref bean="manage.selectiveProtocolManager" />
         <ref bean="system.csrfPreventionHandler" />
         <ref bean="noCacheHandlerInterceptor" />

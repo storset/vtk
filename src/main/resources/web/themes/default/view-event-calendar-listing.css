@@ -111,6 +111,10 @@
   color: #0b5a9d !important;
 }
 
+#vrtx-event-calendar .ui-widget-content table .ui-datepicker-today a {
+  background-color: #b7c9f8 !important;	
+}
+
 /* Set active color */
 #vrtx-event-calendar .ui-widget-content table .state-active a {
   background-color: #3a94e0 !important;	
@@ -119,10 +123,6 @@
 
 #vrtx-event-calendar .ui-widget-content table .ui-datepicker-today span {
   background-color: #eee !important;	
-}
-
-#vrtx-event-calendar .ui-widget-content table .ui-datepicker-today a {
-  background-color: #b7c9f8 !important;	
 }
 
 #vrtx-event-calendar .ui-widget-content table .first-date {

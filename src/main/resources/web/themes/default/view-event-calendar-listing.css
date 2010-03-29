@@ -117,6 +117,10 @@
   color: #fff !important;	
 }
 
+#vrtx-event-calendar .ui-widget-content table .state-today a {
+  background-color: #b7c9f8 !important;
+}
+
 #vrtx-event-calendar .ui-widget-content table .first-date {
     border-left: 1px solid #ccc !important;
     margin-left: -1px !important;

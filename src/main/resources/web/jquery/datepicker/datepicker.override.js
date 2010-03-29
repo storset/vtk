@@ -3,10 +3,10 @@
  * TODO: look at interchange between format '2010-4-2' and '2010-04-02'
  */
 
-function eventListingCalendar(allowedDates, activeDate, clickableDayTitle, notClickableDayTitle, language) {
+function eventListingCalendar(allowedDates, activeDate, today, clickableDayTitle, notClickableDayTitle, language) {
 
-  var activeDateForInit = makeActiveDateForInit(activeDate);
   var init = true;
+  var activeDateForInit = makeActiveDateForInit((activeDate != "") ? activeDate : today);
 
   // i18n (default english)
   if (language == 'no') {
@@ -29,7 +29,11 @@ function eventListingCalendar(allowedDates, activeDate, clickableDayTitle, notCl
         if ($.datepicker.formatDate("yy-m-d", new Date(activeDate)).toString() == date_str) {
           return [ true, 'state-active', clickableDayTitle ];
         } else {
-          return [ true, '', clickableDayTitle ];
+          if($.datepicker.formatDate("yy-m-d", new Date(today)).toString() == date_str) {
+        	return [ true, 'state-today', clickableDayTitle ]; 
+          } else {
+            return [ true, '', clickableDayTitle ];
+          }
         }
       } else {
         return [ false, '', notClickableDayTitle ];

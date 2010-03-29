@@ -51,7 +51,6 @@ public class FullDomainRedirectInterceptor implements HandlerInterceptor {
             return true;
         }
         URL url = URL.create(request);
-        System.out.println("__urlxx: " + url.getHost());
         for (String hostName: this.hostNames) {
             if ("*".equals(hostName)) {
                 continue;

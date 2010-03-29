@@ -133,7 +133,8 @@
 
   <div id="vrtx-additional-content">
     <div id="vrtx-event-calendar">
-      <#local activeDate = vrtx.calcDate(today, 'yyyy-MM-dd') />
+      <#local todayFormatted = vrtx.calcDate(today, 'yyyy-MM-dd') />
+      <#local activeDate = "" />
       <#if requestedDate?exists && requestedDate?has_content>
         <#local activeDate = requestedDate />
       </#if>
@@ -141,7 +142,7 @@
       <script type="text/javascript">
       <!--
         $(document).ready(function() {
-          eventListingCalendar(${allowedDates}, '${activeDate}', '${dayHasPlannedEventsTitle}', '${dayHasNoPlannedEventsTitle}', '${language}');
+          eventListingCalendar(${allowedDates}, '${activeDate}', '${todayFormatted}', '${dayHasPlannedEventsTitle}', '${dayHasNoPlannedEventsTitle}', '${language}');
         });
       // -->
       </script>

@@ -283,6 +283,10 @@ public class BufferedResponse implements StatusAwareHttpServletResponse {
         this.headers.put(header, new Integer(value));
     }
 
+    public void setCharacterEncoding(String characterEncoding) {
+        this.characterEncoding = characterEncoding;
+    }
+    
     public void setStatus(int status) {
         this.status = status;
     }

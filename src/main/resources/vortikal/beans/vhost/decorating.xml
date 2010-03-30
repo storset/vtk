@@ -215,6 +215,36 @@
     </property>
     <property name="assertions">
       <list>
+        <bean class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
+          <property name="resourceTypeDefinition" ref="htmlResourceTypeDefinition" />
+        </bean>
+        <bean class="org.vortikal.web.service.ResourceURIRegexpAssertion">
+          <property name="pattern" value="^${decorating.templatesCollection}/.*" />
+          <property name="invert" value="true" />
+        </bean>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="list-decorator-components" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="listDocumentComponentsHandler" />
+  </bean>
+
+  <bean id="jsonDocumentsComponentsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
+    <property name="order" value="-200" />
+    <property name="categories">
+      <set>
+        <value>jsonEditTooltipService</value>
+      </set>
+    </property>
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.ResourceTypeAssertion"
+              parent="repositoryAware">
+          <property name="resourceTypeDefinition" ref="json.managedObjectResourceType" />
+        </bean>
         <bean class="org.vortikal.web.service.ResourceURIRegexpAssertion">
           <property name="pattern" value="^${decorating.templatesCollection}/.*" />
           <property name="invert" value="true" />

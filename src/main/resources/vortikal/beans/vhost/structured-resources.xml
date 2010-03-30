@@ -155,7 +155,7 @@
     <property name="repository" ref="repository" />
     <property name="formView" value="structuredResources.editView" />
     <property name="successView" value="redirectToManage" />
-    <property name="listComponentsService" ref="listDecoratorComponentsService" />
+    <property name="listComponentsService" ref="jsonDocumentsComponentsService" />
   </bean>
   
   <bean id="structuredResources.viewResolver" parent="decoratorViewResolver">

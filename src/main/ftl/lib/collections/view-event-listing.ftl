@@ -116,16 +116,17 @@
 	  </div>
     </#if>
 
-	<div class="vrtx-events-further-upcoming">
-	  <#if furtherUpcoming?has_content && furtherUpcoming.files?size &gt; 0>
-	    <h2 class="vrtx-events-further-upcoming">${furtherUpcomingTitle?html}</h2>
-	    <@displayStandard furtherUpcoming hideNumberOfComments displayMoreURLs=false />
-	  </#if>
-	  <div id="vrtx-events-nav">
-	    <a href="${viewAllUpcomingURL}" id="vrtx-events-nav-all-upcoming">${viewAllUpcomingTitle?html}</a>
-	    <a href="${viewAllPreviousURL}" id="vrtx-events-nav-all-previous">${viewAllPreviousTitle?html}</a>
-	  </div>
-	</div>
+    <#if furtherUpcoming?has_content && furtherUpcoming.files?size &gt; 0>
+      <div class="vrtx-events-further-upcoming">
+        <h2 class="vrtx-events-further-upcoming">${furtherUpcomingTitle?html}</h2>
+        <@displayStandard furtherUpcoming hideNumberOfComments displayMoreURLs=false />
+      </div>
+    </#if>
+
+    <div id="vrtx-events-nav">
+      <a href="${viewAllUpcomingURL}" id="vrtx-events-nav-all-upcoming">${viewAllUpcomingTitle?html}</a>
+      <a href="${viewAllPreviousURL}" id="vrtx-events-nav-all-previous">${viewAllPreviousTitle?html}</a>
+    </div>
 
   </#if>
   </div>

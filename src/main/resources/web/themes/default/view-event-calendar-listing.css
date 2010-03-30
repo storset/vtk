@@ -74,7 +74,6 @@
 
 #vrtx-event-calendar .ui-datepicker table {
   margin-bottom: 0;
-  border-collapse: separate !important;
 }
 
 #vrtx-event-calendar .ui-datepicker table td {
@@ -114,6 +113,7 @@
 
 #vrtx-event-calendar .ui-widget-content table td.ui-datepicker-other-month {
   text-align: center;
+  padding-top: 0.2em;
 }
 
 /* Set active color */
@@ -124,11 +124,6 @@
 
 #vrtx-event-calendar .ui-widget-content table .ui-datepicker-today span {
   background-color: #eee !important;	
-}
-
-#vrtx-event-calendar .ui-widget-content table .first-date {
-  border-left: 1px solid #ccc !important;
-  margin-left: -1px !important;
 }
 
 /* hover */

@@ -15,12 +15,15 @@ function eventListingCalendar(allowedDates, activeDate, clickableDayTitle, notCl
     $.datepicker.setDefaults($.datepicker.regional['nn']);
   }
 
+  
+  
   $("#datepicker").datepicker( {
     dateFormat : 'yy-mm-dd',
     onSelect : function(dateText, inst) {
       location.href = location.href.split('?')[0] + "?date=" + dateText;
     },
     firstDay : 1,
+    showOtherMonths: true,
     defaultDate : activeDateForInit,
     beforeShowDay : function(day) {
       // Add classes and tooltip for dates with and without events
@@ -46,10 +49,6 @@ function eventListingCalendar(allowedDates, activeDate, clickableDayTitle, notCl
       //wait.. and make month link
       setTimeout(function(){makeMonthLink(date)}, 100);
     }
-  });
-
-  $("#vrtx-event-calendar tr").each(function(i){
-    $("td.ui-datepicker-other-month:last", this).next().find(":first-child").addClass("first-date");
   });
 }
 

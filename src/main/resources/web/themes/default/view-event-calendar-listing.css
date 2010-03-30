@@ -113,21 +113,16 @@
 
 #vrtx-event-calendar .ui-widget-content table td.ui-datepicker-other-month {
   text-align: center;
-  padding-top: 0.2em;
-}
-
-/* Set active color */
-#vrtx-event-calendar .ui-widget-content table .state-active a {
-  background-color: #3a94e0 !important;	
-  color: #fff !important;	
+  padding: 0.2em;
 }
 
 #vrtx-event-calendar .ui-widget-content table .ui-datepicker-today span {
   background-color: #eee !important;	
 }
 
-/* hover */
-#vrtx-event-calendar .ui-widget-content table a:hover {
+/* hover and set active color */
+#vrtx-event-calendar .ui-widget-content table a:hover,
+#vrtx-event-calendar .ui-widget-content table .state-active a {
   background-color: #3a94e0 !important;	
   color: #fff !important;
 }

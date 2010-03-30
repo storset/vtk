@@ -215,9 +215,6 @@
     </property>
     <property name="assertions">
       <list>
-        <bean class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
-          <property name="resourceTypeDefinition" ref="htmlResourceTypeDefinition" />
-        </bean>
         <bean class="org.vortikal.web.service.ResourceURIRegexpAssertion">
           <property name="pattern" value="^${decorating.templatesCollection}/.*" />
           <property name="invert" value="true" />

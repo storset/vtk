@@ -49,9 +49,10 @@ public class FormSubmitCommand extends UpdateCancelCommand {
 
     private StructuredResource resource;
     private List<FormElementBox> elements = new ArrayList<FormElementBox>();
-
-    public FormSubmitCommand(StructuredResource resource, URL url) {
+    private URL listComponentServiceURL;
+    public FormSubmitCommand(StructuredResource resource, URL url, URL listComponentServiceURL) {
         super(url.toString());
+        this.listComponentServiceURL = listComponentServiceURL;
         this.resource = resource;
         StructuredResourceDescription type = resource.getType();
         for (PropertyDescription def : type.getAllPropertyDescriptions()) {
@@ -187,6 +188,14 @@ public class FormSubmitCommand extends UpdateCancelCommand {
 
     private boolean isEmpty(Object value) {
         return (value == null) || (value instanceof Collection<?>) && ((Collection<?>) value).isEmpty();
+    }
+
+    public void setListComponentServiceURL(URL listComponentServiceURL) {
+        this.listComponentServiceURL = listComponentServiceURL;
+    }
+
+    public URL getListComponentServiceURL() {
+        return listComponentServiceURL;
     }
 
 }

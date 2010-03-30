@@ -68,7 +68,11 @@
 
 <#assign header = form.resource.getLocalizedMsg("header", locale, null) />
 <h2>${header}</h2>
-<a id="help-link" href="${editorHelpURL?html}" target="new_window"><@vrtx.msg code="editor.help"/></a>
+<div id="help-links">
+	<a href="${editorHelpURL?html}" target="new_window"><@vrtx.msg code="editor.help"/></a><br />
+	<a href="${form.listComponentServiceURL?html}" target="new_window"><@vrtx.msg code="plaintextEdit.tooltip.listDecoratorComponentsService" /></a>
+</div>	  
+
 <form action="${form.submitURL?html}" method="post">
 
 <#list form.elements as elementBox>

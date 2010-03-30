@@ -64,6 +64,7 @@ import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.text.html.HtmlPageParserImpl;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 public class StructuredResourceEditor extends SimpleFormController {
@@ -71,6 +72,7 @@ public class StructuredResourceEditor extends SimpleFormController {
     private StructuredResourceManager resourceManager;
     private Repository repository;
     private HtmlPageFilter safeHtmlFilter;
+    private Service listComponentsService;
 
     public StructuredResourceEditor() {
         super();
@@ -94,8 +96,9 @@ public class StructuredResourceEditor extends SimpleFormController {
         structuredResource.parse(source);
 
         URL url = RequestContext.getRequestContext().getService().constructURL(uri);
+        URL listComponentServiceURL = listComponentsService.constructURL(uri);
 
-        return new FormSubmitCommand(structuredResource, url);
+        return new FormSubmitCommand(structuredResource, url, listComponentServiceURL);
     }
 
     protected ModelAndView onSubmit(Object command) throws Exception {
@@ -258,6 +261,15 @@ public class StructuredResourceEditor extends SimpleFormController {
 
     public HtmlPageFilter getSafeHtmlFilter() {
         return safeHtmlFilter;
+    }
+
+
+    public void setListComponentsService(Service listComponentsService) {
+        this.listComponentsService = listComponentsService;
+    }
+
+    public Service getListComponentsService() {
+        return listComponentsService;
     }
 
 }

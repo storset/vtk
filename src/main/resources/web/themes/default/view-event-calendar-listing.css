@@ -106,11 +106,6 @@
   color: #005a9f !important;
 }
 
-#vrtx-event-calendar .ui-widget-content table .ui-datepicker-today a {
-  background-color: #005aab !important;
-  color: #fff !important;
-}
-
 #vrtx-event-calendar .ui-widget-content table td.ui-datepicker-other-month {
   text-align: center;
   padding-top: 0.2em;
@@ -122,11 +117,21 @@
   background-color: #eee !important;	
 }
 
-/* hover and set active color */
-#vrtx-event-calendar .ui-widget-content table a:hover,
+/* active color */
 #vrtx-event-calendar .ui-widget-content table .state-active a {
   background-color: #3a94e0 !important;	
   color: #fff !important;
+}
+
+#vrtx-event-calendar .ui-widget-content table .ui-datepicker-today a {
+  background-color: #005aab !important;
+  color: #fff !important;
+}
+
+/* hover color */
+#vrtx-event-calendar .ui-widget-content table a:hover {
+  background-color: #3a94e0 !important;	
+  color: #fff !important;	
 }
 
 #vrtx-events-nav {

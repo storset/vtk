@@ -14,8 +14,6 @@ function eventListingCalendar(allowedDates, activeDate, clickableDayTitle, notCl
   } else if (language == 'nn') {
     $.datepicker.setDefaults($.datepicker.regional['nn']);
   }
-
-  
   
   $("#datepicker").datepicker( {
     dateFormat : 'yy-mm-dd',
@@ -29,7 +27,7 @@ function eventListingCalendar(allowedDates, activeDate, clickableDayTitle, notCl
       // Add classes and tooltip for dates with and without events
       var date_str = $.datepicker.formatDate("yy-m-d", new Date(day)).toString();
       if ($.inArray(date_str, allowedDates) != -1) {
-        if ($.datepicker.formatDate("yy-m-d", new Date(activeDateForInit)).toString() == date_str) {
+        if (($.datepicker.formatDate("yy-m-d", new Date(activeDateForInit)).toString() == date_str) && !init) {
           return [ true, 'state-active', clickableDayTitle ];
         } else {
           return [ true, '', clickableDayTitle ];
@@ -44,8 +42,9 @@ function eventListingCalendar(allowedDates, activeDate, clickableDayTitle, notCl
       if (!init) {
         location.href = location.href.split('?')[0] + "?date=" + date;
       } else {
-        init = false;
+    	init = false;  
       }
+      
       //wait.. and make month link
       setTimeout(function(){makeMonthLink(date)}, 100);
     }
@@ -59,7 +58,7 @@ function makeMonthLink(date) {
 
 // For init of calender / datepicker()
 function makeActiveDateForInit(activeDate) {
-  if(activeDate == "") { return new Date(); }
+  if(activeDate == "") { return null; }
   var dateArray = activeDate.split('-');
   if (dateArray.length == 3) {
     return new Date(dateArray[0], dateArray[1] - 1, dateArray[2]);

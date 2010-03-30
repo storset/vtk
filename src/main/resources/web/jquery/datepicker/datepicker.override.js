@@ -29,7 +29,7 @@ function eventListingCalendar(allowedDates, activeDate, clickableDayTitle, notCl
       // Add classes and tooltip for dates with and without events
       var date_str = $.datepicker.formatDate("yy-m-d", new Date(day)).toString();
       if ($.inArray(date_str, allowedDates) != -1) {
-        if ($.datepicker.formatDate("yy-m-d", new Date(activeDate)).toString() == date_str) {
+        if ($.datepicker.formatDate("yy-m-d", new Date(activeDateForInit)).toString() == date_str) {
           return [ true, 'state-active', clickableDayTitle ];
         } else {
           return [ true, '', clickableDayTitle ];

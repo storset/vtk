@@ -90,9 +90,8 @@ public abstract class MultiValuePropertyInExpressionEvaluator implements Express
                     if (StringUtils.isNotBlank(multiValueList.toString())) {
                         multiValueList.append(",");
                     }
-                    multiValueList.append(value.getStringValue());
+                    multiValueList.append(value.getStringValue().replaceAll(" ", "\\\\ "));
                 }
-
                 return multiValueList.toString();
             } catch (Throwable t) {
                 if (this.logger.isDebugEnabled()) {

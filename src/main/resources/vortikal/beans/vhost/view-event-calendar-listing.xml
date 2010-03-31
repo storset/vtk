@@ -29,7 +29,6 @@
     parent="eventListing.handler">
     <property name="viewName" value="eventListingCalendar.view" />
     <property name="helper" ref="eventListingHelper" />
-    <!-- property name="eventTypeTitlePropDef" ref="eventListing.eventTypeTitlePropDef" / -->
   </bean>
 
   <bean id="eventListing.groupedByDayEventSearchQueryString" class="java.lang.String">

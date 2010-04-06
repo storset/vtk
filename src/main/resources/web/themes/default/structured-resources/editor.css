@@ -187,7 +187,7 @@ input.vrtx-add-button {
 
 input.vrtx-remove-button {
     float: left;
-    margin-top:18px;
+    margin-top:16px;
 }
 
 input.vrtx-move-up-button,
@@ -211,6 +211,8 @@ input.vrtx-move-down-button  {
 #rssFeeds input.vrtx-move-down-button {
     position: static;
     margin-left: 15px;
+    float: left;
+    margin-top: 16px;
 }
 
 .vrtx-json #main-content .vrtx-json-element,

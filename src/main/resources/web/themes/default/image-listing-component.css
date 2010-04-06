@@ -25,7 +25,7 @@
 .vrtx-image-listing-include ul {
   margin: 0;
   padding: 0;
-  list-style-type: none;
+  list-style-type: none !important;
   clear: both;
 }
 
@@ -33,7 +33,7 @@
   float: left;
   margin:0 10px 10px 0;
   clear: none;
-  list-style-type: none;
+  list-style-type: none !important;
   border: 2px solid #ccc;
 }
 

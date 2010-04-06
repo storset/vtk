@@ -3,6 +3,8 @@
   clear: both;
   float: left;
   padding: 5px 10px 10px;
+  margin-bottom: 10px;
+  width: 97%;
 }
 
 .vrtx-image-listing-include-title {
@@ -59,7 +61,6 @@
 .vrtx-image-listing-include ul.vrtx-image-listing-include-thumbs li a span {
   display: none;	
 }
-
 /* ^ Unobtrusive JavaScript */
 	
 .vrtx-image-listing-include ul {
@@ -72,20 +73,12 @@
 .vrtx-image-listing-include ul li {
   float: left;
   margin:0 10px 10px 0;
-  padding: 5px !important;
-  border: 1px solid #ccc;
-  background-color: #fff !important;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
-  -khtml-border-radius: 5px;
-  border-radius: 5px;
+  clear: none;
+  list-style-type: none;
+  border: 2px solid #ccc;
 }
 
 /* Unobtrusive JavaScript */
-.vrtx-image-listing-include ul.vrtx-image-listing-include-thumbs li.vrtx-thumb-last {
-  margin-right: 0px;	
-}
-
 .vrtx-image-listing-include ul li a {
   display: block;
   width: 107px;

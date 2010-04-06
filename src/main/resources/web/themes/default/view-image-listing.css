@@ -100,6 +100,7 @@ ul.vrtx-image-listing {
 
 .vrtx-image-listing-include {
   width: 100%;
+  border: none !important;
 }
 
 .vrtx-image-listing-include ul.vrtx-image-listing-include-thumbs-pure-css {
@@ -108,7 +109,7 @@ ul.vrtx-image-listing {
 
 .vrtx-image-listing-include ul.vrtx-image-listing-include-thumbs {
   margin: 0 auto !important;
-  width: 635px !important;
+  width: 100% !important;
 }
 
 .vrtx-image-listing-include ul li {
@@ -119,17 +120,3 @@ ul.vrtx-image-listing {
   margin-left: auto;
   margin-right: auto;	
 }
-
-/*
-.vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.next {
-  right: -50px; 
-}
-
-.vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.prev {
-  left: -50px; 
-}
-
-.vrtx-image-listing-include .vrtx-image-listing-include-container-nav span.prev-transparent-block, 
-.vrtx-image-listing-include .vrtx-image-listing-include-container-nav span.next-transparent-block {
-	background: transparent;
-}*/

@@ -115,7 +115,7 @@
   
   <#local images=imageListing.files />
   <#if (images?size > 0)>
-   <div class="vrtx-image-listing-include">
+   <div class="vrtx-image-listing-include" id="vrtx-image-folder-gallery">
       
       <#local activeImage = "" />
       <#if RequestParameters['actimg']?exists>

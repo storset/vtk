@@ -99,51 +99,48 @@
           ${introduction}
         </div>
       </#if>
+      <#-- List collections: -->
+      <#if subCollections?size &gt; 0>
+        <#if subCollections?size &gt; 15>
+          <#assign splitList = ((subCollections?size/4)+0.75)?int />
+          <#assign interval = splitList />
+        <#elseif subCollections?size &gt; 8>
+          <#assign splitList = ((subCollections?size/3)+0.5)?int />
+          <#assign interval = splitList />
+        <#elseif subCollections?size &gt; 3>
+          <#assign splitList = ((subCollections?size/2)+0.5)?int />
+          <#assign interval = splitList />
+        <#else>
+          <#assign splitList = -1 />
+        </#if>
+        <div id="vrtx-collections" class="vrtx-collections">
+          <h2><@vrtx.msg code="viewCollectionListing.subareas" default="Subareas"/></h2>
+          <table>
+            <tr>
+              <td>
+                <ul>
+                  <#list subCollections as c>
+                    <#if c_index = splitList>
+                      </ul></td>
+                      <td><ul>
+                        <#assign splitList = splitList + interval />
+                    </#if>
+                    <#assign navigationTitle = vrtx.propValue(c.resource, "navigationTitle")?html />
+                    <#if navigationTitle?exists && navigationTitle != "">
+                      <li><a href="${c.URL.pathRepresentation?html}">${navigationTitle}</a></li>
+                    <#else>
+                      <li><a href="${c.URL.pathRepresentation?html}">${vrtx.propValue(c.resource, "title")?html}</a></li>
+                    </#if>
+                  </#list>
+                </ul>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </#if>
     </#if>
   </#if>
 
-     <#-- List collections: -->
-     <#if page == 1>
-	     <#if subCollections?size &gt; 0>
-	       <#if subCollections?size &gt; 15>
-	          <#assign splitList = ((subCollections?size/4)+0.75)?int />
-	          <#assign interval = splitList />
-	       <#elseif subCollections?size &gt; 8>
-	          <#assign splitList = ((subCollections?size/3)+0.5)?int />
-	          <#assign interval = splitList />
-	       <#elseif subCollections?size &gt; 3>
-	          <#assign splitList = ((subCollections?size/2)+0.5)?int />
-	          <#assign interval = splitList />
-	       <#else>
-	         <#assign splitList = -1 />
-	       </#if>
-	       <div id="vrtx-collections" class="vrtx-collections">
-	         <h2><@vrtx.msg code="viewCollectionListing.subareas" default="Subareas"/></h2>
-	         <table>
-	           <tr>
-	             <td>
-	               <ul>
-	                 <#list subCollections as c>
-	                   <#if c_index = splitList>
-	                     </ul></td>
-	                     <td><ul>
-	                     <#assign splitList = splitList + interval />
-	                   </#if>
-	                   <#assign navigationTitle = vrtx.propValue(c.resource, "navigationTitle")?html />
-	                   <#if navigationTitle?exists && navigationTitle != "">
-	                     <li><a href="${c.URL.pathRepresentation?html}">${navigationTitle}</a></li>
-	                   <#else>
-	                     <li><a href="${c.URL.pathRepresentation?html}">${vrtx.propValue(c.resource, "title")?html}</a></li>
-	                   </#if>
-	                 </#list>
-	               </ul>
-	             </td>
-	           </tr>
-	         </table>
-	       </div>
-	     </#if>
-     </#if>
-     
      <#-- XXX: "additional content" (for person listing) -->
      <#assign additionalContent = vrtx.propValue(resource, "additionalContent", "", "pl") />
      <#if additionalContent?has_content>

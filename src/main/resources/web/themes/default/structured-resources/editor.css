@@ -205,6 +205,14 @@ input.vrtx-move-down-button  {
 	bottom: 10px;
 }
 
+#participants input.vrtx-move-up-button,
+#participants input.vrtx-move-down-button,
+#rssFeeds input.vrtx-move-up-button,
+#rssFeeds input.vrtx-move-down-button {
+    position: static;
+    margin-left: 15px;
+}
+
 .vrtx-json #main-content .vrtx-json-element,
 .vrtx-json #additional-content .vrtx-json-element,
 .vrtx-json #featured-items .vrtx-json-element {

@@ -207,6 +207,8 @@ input.vrtx-move-down-button  {
 
 #participants input.vrtx-move-up-button,
 #participants input.vrtx-move-down-button,
+#projects input.vrtx-move-up-button,
+#projects input.vrtx-move-down-button,
 #rssFeeds input.vrtx-move-up-button,
 #rssFeeds input.vrtx-move-down-button {
     position: static;

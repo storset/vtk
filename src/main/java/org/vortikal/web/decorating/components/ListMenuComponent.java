@@ -105,9 +105,6 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         VALID_STYLES.add(STYLE_TABS);
     }
 
-    protected static final String PARAMETER_LINK_TO_CURRENT_RESOURCE = "link-to-current-resource";
-    protected static final String PARAMETER_LINK_TO_CURRENT_RESOURCE_DESC = "Set to false for no link to current resource";
-
     private static final String PARAMETER_INCLUDE_CHILDREN = "include-children";
     private static final String PARAMETER_INCLUDE_CHILDREN_DESC = "An explicit listing of the child resources to include. (Only applicable for resources at level 1.)";
 
@@ -138,6 +135,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     protected static final String PARAMETER_DISPLAY_FROM_LEVEL = "display-from-level";
     protected static final String PARAMETER_DISPLAY_FROM_LEVEL_DESC = "Defines the starting URI level for the menu (cannot be used with the '"
             + PARAMETER_URI + "' parameter)";
+    
 
     protected Service viewService;
     protected PropertyTypeDefinition titlePropDef;
@@ -220,10 +218,6 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             if (isActive(currentURI, uri)) {
                 item.setActive(true);
                 menu.setActiveItem(item);
-            }
-            
-            if(currentURI.equals(uri)){
-                item.setLinkToResource(menuRequest.isLinkToCurrentResource());
             }
 
             nameItemMap.put(resource.getName(), item);
@@ -458,10 +452,6 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
                 item.setSubMenu(buildSubItems(resource.getURI(), childMap, menuRequest));
                 item.setActive(true);
             }
-            
-            if(menuRequest.getCurrentURI().equals(resource.getURI())){
-                item.setLinkToResource(menuRequest.isLinkToCurrentResource());
-            }
         }
         items = sortDefaultOrder(items, menuRequest.getLocale());
         ListMenu<PropertySet> submenu = new ListMenu<PropertySet>();
@@ -514,7 +504,6 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         private Locale locale;
         private String token;
         private String[] excludedChildren;
-        private boolean linkToCurrentResource;
 
         public MenuRequest(DecoratorRequest request) {
             RequestContext requestContext = RequestContext.getRequestContext();
@@ -561,8 +550,6 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
                 SecurityContext securityContext = SecurityContext.getSecurityContext();
                 this.token = securityContext.getToken();
             }
-
-            setLinkToCurrentResource(!"false".equals(request.getStringParameter(PARAMETER_LINK_TO_CURRENT_RESOURCE)));
 
             this.style = request.getStringParameter(PARAMETER_STYLE);
             if (this.style == null) {
@@ -662,14 +649,6 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
 
         public String getToken() {
             return token;
-        }
-
-        public void setLinkToCurrentResource(boolean linkToCurrentResource) {
-            this.linkToCurrentResource = linkToCurrentResource;
-        }
-
-        public boolean isLinkToCurrentResource() {
-            return linkToCurrentResource;
         }
     }
 
@@ -803,7 +782,6 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         map.put(PARAMETER_AUTENTICATED, PARAMETER_AUTENTICATED_DESC);
         map.put(PARAMETER_DEPTH, PARAMETER_DEPTH_DESC);
         map.put(PARAMETER_DISPLAY_FROM_LEVEL, PARAMETER_DISPLAY_FROM_LEVEL_DESC);
-        map.put(PARAMETER_LINK_TO_CURRENT_RESOURCE, PARAMETER_LINK_TO_CURRENT_RESOURCE_DESC);
         return map;
     }
 

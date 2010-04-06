@@ -52,7 +52,6 @@ public class MenuItem<T> {
     private String title;
     private String label;
     private boolean active = false;
-    private boolean linkToResource = true;
     private ListMenu<T> subMenu;
 
 
@@ -143,16 +142,6 @@ public class MenuItem<T> {
         }
 
         return sb.toString();
-    }
-
-
-    public void setLinkToResource(boolean linkToCurrentResource) {
-        this.linkToResource = linkToCurrentResource;
-    }
-
-
-    public boolean isLinkToResource() {
-        return linkToResource;
     }
 
 }

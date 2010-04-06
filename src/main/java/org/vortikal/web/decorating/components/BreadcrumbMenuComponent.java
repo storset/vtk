@@ -66,31 +66,24 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         String token = getToken(request);
         int displayFromLevel = getIntegerGreaterThenZero(PARAMETER_DISPLAY_FROM_LEVEL, request, -1);
         int maxSiblings = getIntegerGreaterThenZero(PARAMETER_MAX_NUMBER_OF_SIBLINGS, request, Integer.MAX_VALUE);
-        boolean linkToCurrentResource = !"false".equals(request.getStringParameter(PARAMETER_LINK_TO_CURRENT_RESOURCE));
 
         Path uri = RequestContext.getRequestContext().getResourceURI();
         Principal principal = SecurityContext.getSecurityContext().getPrincipal();
 
         List<BreadcrumbElement> breadCrumbElements = getBreadcrumbElements();
         Resource currentResource = null;
-
+        
         currentResource = repository.retrieve(token, uri, true);
-
+        
         if ((!currentResource.isCollection() && (displayFromLevel + 1) > breadCrumbElements.size())
                 || (displayFromLevel > breadCrumbElements.size())) {
             return;
         }
-
+        
         for (int i = 0; i < displayFromLevel; i++) {
             if (breadCrumbElements.size() > 0) {
                 breadCrumbElements.remove(0);
             }
-        }
-
-        boolean linkToMarkedURL = false;
-        if (!linkToCurrentResource && !currentResource.isCollection()
-                && !RequestContext.getRequestContext().isIndexFile()) {
-            linkToMarkedURL = true;
         }
 
         if (!currentResource.isCollection()) {
@@ -99,7 +92,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
             } catch (AuthorizationException e) {
                 model.put("breadcrumb", breadCrumbElements);
                 return;
-            } catch (AuthenticationException e) {
+            } catch (AuthenticationException e){
                 model.put("breadcrumb", breadCrumbElements);
                 return;
             }
@@ -120,9 +113,9 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
             try {
                 childResource = repository.retrieve(token, currentResource.getURI().getParent(), true);
             } catch (AuthorizationException e) {
-            } catch (AuthenticationException e) {
+            } catch (AuthenticationException e){               
             }
-
+            
             if (childResource != null) {
                 childElements = generateChildElements(childResource.getChildURIs(), principal, currentResource, token);
                 breadCrumbElements.remove(breadCrumbElements.size() - 1);
@@ -138,7 +131,6 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         model.put("breadcrumb", breadCrumbElements);
         model.put("children", childElements);
         model.put("markedurl", markedUrl);
-        model.put("linkToMarkedURL", (linkToMarkedURL || linkToCurrentResource));
     }
 
     private List<BreadcrumbElement> getBreadcrumbElements() throws Exception {
@@ -173,7 +165,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
                 childResource = repository.retrieve(token, childPath, true);
             } catch (AuthorizationException e) {
                 continue; // can't access resource - not displayed in menu
-            } catch (AuthenticationException e) {
+            } catch (AuthenticationException e){
                 continue; // can't access resource - not displayed in menu
             }
             if (!childResource.isCollection()) {
@@ -196,8 +188,8 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
     }
 
     private String getToken(DecoratorRequest request) {
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        return securityContext.getToken();
+            SecurityContext securityContext = SecurityContext.getSecurityContext();
+            return securityContext.getToken();
     }
 
     private int getIntegerGreaterThenZero(String prameter, DecoratorRequest request, int returnWhenParamNotFound) {
@@ -229,7 +221,6 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         Map<String, String> map = new LinkedHashMap<String, String>();
         map.put(PARAMETER_DISPLAY_FROM_LEVEL, PARAMETER_DISPLAY_FROM_LEVEL_DESC);
         map.put(PARAMETER_MAX_NUMBER_OF_SIBLINGS, PARAMETER_MAX_NUMBER_OF_SIBLINGS_DESC);
-        map.put(PARAMETER_LINK_TO_CURRENT_RESOURCE, PARAMETER_LINK_TO_CURRENT_RESOURCE_DESC);
         return map;
     }
 

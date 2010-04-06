@@ -103,8 +103,8 @@ ul.vrtx-image-listing {
   border: none !important;
 }
 
-.vrtx-image-listing-include ul.vrtx-image-listing-include-thumbs-pure-css {
-
+.vrtx-image-listing-include ul.vrtx-image-listing-include-thumbs-pure-css li a span img {
+  max-width: 430px;
 }
 
 .vrtx-image-listing-include ul.vrtx-image-listing-include-thumbs {

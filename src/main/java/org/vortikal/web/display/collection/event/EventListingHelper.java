@@ -50,6 +50,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.DateValueFormatter;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.web.display.listing.ListingPager;
 import org.vortikal.web.servlet.ResourceAwareLocaleResolver;
 
 import com.ibm.icu.util.Calendar;
@@ -136,7 +137,13 @@ public final class EventListingHelper implements InitializingBean {
             String titleDate = this.getRequestedDateAsLocalizedString(request, collection, searchType, date);
             params.add(titleDate);
         }
-        return getLocalizedTitle(request, key, params.toArray());
+        String title = getLocalizedTitle(request, key, params.toArray());
+        int page = ListingPager.getPage(request, ListingPager.UPCOMING_PAGE_PARAM);
+        if (page > 1) {
+            String pageText = this.getLocalizedTitle(request, "viewCollectionListing.page", null);
+            title = title + " - " + pageText + " " + page;
+        }
+        return title;
     }
 
     public String getLocalizedTitle(HttpServletRequest request, String key, Object[] params) {

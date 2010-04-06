@@ -40,7 +40,7 @@
 </#macro>
 
 <#macro displayCalendar collection hideNumberOfComments displayMoreURLs>
-  
+
   <div id="vrtx-main-content" class="vrtx-calendar-listing">
   <#if allupcoming?has_content>
 	<h1>${allupcomingTitle?html}</h1>

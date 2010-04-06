@@ -41,6 +41,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Resource;
 import org.vortikal.web.display.collection.event.EventListingHelper.SpecificDateSearchType;
 import org.vortikal.web.display.collection.event.EventListingSearcher.GroupedEvents;
+import org.vortikal.web.display.listing.ListingPager;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -56,7 +57,10 @@ public class EventCalendarListingController extends EventListingController {
     public void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
             throws Exception {
 
-        if (!this.searchSpecificDate(request, collection, model)) {
+        int page = ListingPager.getPage(request, ListingPager.UPCOMING_PAGE_PARAM);
+        model.put(MODEL_KEY_PAGE, page);
+
+        if (!this.searchSpecificDate(request, collection, model, pageLimit, page)) {
 
             String viewType = request.getParameter(EventListingHelper.REQUEST_PARAMETER_VIEW);
             if (viewType != null
@@ -66,9 +70,9 @@ public class EventCalendarListingController extends EventListingController {
 
                 Listing result = null;
                 if (EventListingHelper.VIEW_TYPE_ALL_UPCOMING.equals(viewType)) {
-                    result = this.searcher.searchUpcoming(request, collection, 1, this.defaultPageLimit, 0);
+                    result = this.searcher.searchUpcoming(request, collection, page, pageLimit, 0);
                 } else if (EventListingHelper.VIEW_TYPE_ALL_PREVIOUS.equals(viewType)) {
-                    result = this.searcher.searchPrevious(request, collection, 1, this.defaultPageLimit, 0);
+                    result = this.searcher.searchPrevious(request, collection, page, pageLimit, 0);
                     model.put(MODEL_KEY_HIDE_ALTERNATIVE_REP, Boolean.TRUE);
                 }
                 model.put(viewType, result);
@@ -80,6 +84,10 @@ public class EventCalendarListingController extends EventListingController {
                     String noPlannedTitle = this.helper.getEventTypeTitle(request, collection,
                             "eventListing.noPlanned." + viewType, false);
                     model.put(viewType + "NoPlannedTitle", noPlannedTitle);
+                } else {
+                    List<URL> urls = ListingPager.generatePageThroughUrls(result.getTotalHits(), pageLimit, URL
+                            .create(request));
+                    model.put(MODEL_KEY_PAGE_THROUGH_URLS, urls);
                 }
 
             } else {
@@ -121,13 +129,14 @@ public class EventCalendarListingController extends EventListingController {
 
     }
 
-    private boolean searchSpecificDate(HttpServletRequest request, Resource collection, Map<String, Object> model)
-            throws Exception {
+    private boolean searchSpecificDate(HttpServletRequest request, Resource collection, Map<String, Object> model,
+            int pageLimit, int page) throws Exception {
 
         Date date = this.helper.getSpecificSearchDate(request);
         if (date != null) {
             SpecificDateSearchType searchType = this.helper.getSpecificDateSearchType(request);
-            Listing specificDateEvents = this.searcher.searchSpecificDate(request, collection, date, searchType);
+            Listing specificDateEvents = this.searcher.searchSpecificDate(request, collection, date, searchType,
+                    pageLimit, page);
 
             model.put("specificDate", Boolean.TRUE);
             model.put("specificDateEvents", specificDateEvents);
@@ -138,6 +147,12 @@ public class EventCalendarListingController extends EventListingController {
             model.put("specificDateEventsTitle", specificDateEventsTitle);
             model.put("noPlannedEventsMsg", this.helper.getEventTypeTitle(request, collection,
                     "eventListing.noPlannedEvents", false));
+
+            if (specificDateEvents != null && !specificDateEvents.getFiles().isEmpty()) {
+                List<URL> urls = ListingPager.generatePageThroughUrls(specificDateEvents.getTotalHits(), pageLimit, URL
+                        .create(request));
+                model.put(MODEL_KEY_PAGE_THROUGH_URLS, urls);
+            }
         }
 
         return false;

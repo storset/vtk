@@ -80,8 +80,8 @@
   <#assign page = page?default(1) />
 
   <#assign isBlogListing = resource.resourceType = 'blog-listing' />
-  <#assign displayType = vrtx.propValue(resource, 'display-type', '', 'el') />
-  <#assign isEventCalendarListing = (displayType?has_content && displayType = 'calendar') />
+  <#assign eventListingDisplayType = vrtx.propValue(resource, 'display-type', '', 'el') />
+  <#assign isEventCalendarListing = (eventListingDisplayType?has_content && eventListingDisplayType = 'calendar') />
   
   <#if !isEventCalendarListing>
     <h1>${title}

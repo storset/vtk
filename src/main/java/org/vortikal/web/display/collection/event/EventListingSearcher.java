@@ -77,9 +77,10 @@ public class EventListingSearcher {
     }
 
     public Listing searchSpecificDate(HttpServletRequest request, Resource collection, Date date,
-            SpecificDateSearchType searchType) throws Exception {
+            SpecificDateSearchType searchType, int pageLimit, int page) throws Exception {
         this.processedQuerySearchComponent.setProcessedQuery(getProcessedSpecificDayQueryString(date, searchType));
-        Listing specificDateEventListing = this.processedQuerySearchComponent.execute(request, collection, 1, 100, 0);
+        Listing specificDateEventListing = this.processedQuerySearchComponent.execute(request, collection, page,
+                pageLimit, 0);
         return specificDateEventListing;
     }
 

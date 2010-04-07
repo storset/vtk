@@ -175,14 +175,16 @@ public class PropertyDescriptionParser {
 
     @SuppressWarnings("unchecked")
     private void handleJSONAttributes(JSONPropertyDescription p, CommonTree descEntry) {
-        LinkedHashMap<String, String> attributes = new LinkedHashMap<String, String>();
         List<CommonTree> jsonSpecList = descEntry.getChildren();
-        for (CommonTree jsonSpec : jsonSpecList) {
-            String attr = jsonSpec.getText();
-            String type = jsonSpec.getChild(0).getText();
-            attributes.put(attr, type);
+        if (jsonSpecList != null) {
+            LinkedHashMap<String, String> attributes = new LinkedHashMap<String, String>();
+            for (CommonTree jsonSpec : jsonSpecList) {
+                String attr = jsonSpec.getText();
+                String type = jsonSpec.getChild(0).getText();
+                attributes.put(attr, type);
+            }
+            p.setAttributes(attributes);
         }
-        p.setAttributes(attributes);
     }
 
     @SuppressWarnings("unchecked")
@@ -222,7 +224,8 @@ public class PropertyDescriptionParser {
                 // XXX Description contains an explicit condition -> currently
                 // only applicable to one property, so no point in iterating a
                 // list and checking for quotes. This must be reconsidered.
-                // Perhaps a separate ConditionalDerivedPropertyEvaluationDescription?
+                // Perhaps a separate
+                // ConditionalDerivedPropertyEvaluationDescription?
                 evaluationDescription.setEvaluationCondition(DerivedPropertyEvaluationDescription
                         .mapEvalConditionFromDescription(condition.getText()));
             }

@@ -51,8 +51,10 @@ public class JSONPropertyDescription extends EditablePropertyDescription {
 
     public List<String> getAttributes() {
         List<String> result = new ArrayList<String>();
-        for (String attr : this.attributes.keySet()) {
-            result.add(attr);
+        if (this.attributes != null) {
+            for (String attr : this.attributes.keySet()) {
+                result.add(attr);
+            }
         }
         return result;
     }

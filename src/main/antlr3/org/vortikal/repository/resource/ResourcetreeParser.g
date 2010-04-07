@@ -114,8 +114,8 @@ defaultprop
 	:	DEFAULTPROP NAME -> ^(DEFAULTPROP NAME);
 
 jsonpropertytypedef
-	:	NAME COLON JSON jsonspec (MULTIPLE)? (NOEXTRACT)? (external)? (index)?
-		-> ^(NAME ^(JSON jsonspec) (MULTIPLE)? (NOEXTRACT)? (external)? (index)?)
+	:	NAME COLON JSON (jsonspec)* (MULTIPLE)? (NOEXTRACT)? (external)? (index)?
+		-> ^(NAME ^(JSON (jsonspec)*) (MULTIPLE)? (NOEXTRACT)? (external)? (index)?)
 	;
 
 jsonspec:	LP jsonpropspeclist RP -> jsonpropspeclist;

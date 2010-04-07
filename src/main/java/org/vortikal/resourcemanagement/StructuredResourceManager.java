@@ -434,17 +434,14 @@ public class StructuredResourceManager {
             }
 
             Object value = null;
-            if (propertyDesc instanceof SimplePropertyDescription) {
-                SimplePropertyDescription simpleDesc = (SimplePropertyDescription) propertyDesc;
-                if (simpleDesc.hasExternalService()) {
-                    Object o = ctx.getEvaluationAttribute(simpleDesc.getExternalService());
-                    if (o != null) {
-                        Map<String, Object> map = (Map<String, Object>) o;
-                        value = map.get(property.getDefinition().getName());
-                        // No value was found for this prop, don't show anything
-                        if (value == null) {
-                            return false;
-                        }
+            if (propertyDesc.hasExternalService()) {
+                Object o = ctx.getEvaluationAttribute(propertyDesc.getExternalService());
+                if (o != null) {
+                    Map<String, Object> map = (Map<String, Object>) o;
+                    value = map.get(property.getDefinition().getName());
+                    // No value was found for this prop, don't show anything
+                    if (value == null) {
+                        return false;
                     }
                 }
             }

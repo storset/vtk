@@ -14,6 +14,7 @@
         <ref bean="studieprogramProgramkodePropDef" />
         <ref bean="studieprogramProgramnavnPropDef" />
         <ref bean="studieprogramProgramtypePropDef" />
+        <ref bean="studieprogramTemaomraadePropDef" />
         <ref bean="studieprogramAntallaarPropDef" />
         <ref bean="studieprogramStudiepoengPropDef" />
         <ref bean="studieprogramOmfangoppgavePropDef" />
@@ -82,6 +83,20 @@
   <bean id="studieprogramProgramtypeEvaluator" parent="abstractXPathEvaluator">
     <property name="expression" value="/studieprogram-hjemmeside/programtype" />
   </bean>
+
+
+  <bean id="studieprogramTemaomraadePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="temaomraade" />
+    <property name="type" value="STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="propertyEvaluator" ref="studieprogramTemaomraadeEvaluator" />
+  </bean>
+
+  <bean id="studieprogramTemaomraadeEvaluator" parent="abstractXPathEvaluator">
+    <property name="expression" value="/studieprogram-hjemmeside/temaomraade" />
+  </bean>
+
 
   <bean id="studieprogramAntallaarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="antallaar" />

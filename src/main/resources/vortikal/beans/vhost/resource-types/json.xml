@@ -47,24 +47,26 @@
   <bean id="json.objectHasResourceTypeAssertion" class="org.vortikal.resourcemanagement.JSONObjectSelectAssertion">
     <property name="expression" value="resourcetype" />
   </bean>
-  
+
   <bean id="json.validDocumentAssertion" class="org.vortikal.resourcemanagement.ValidDocumentAssertion">
     <property name="resourceManager" ref="structuredResources.resourceManager" />
   </bean>
-  
 
   <bean id="overridingPublishDatePropDef" class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
     <property name="overriddenPropDef" ref="publishDatePropDef" />
     <!-- No default value, no evaluator: removes the value evaluated by publishDatePropDef on CREATE -->
   </bean>
-  
 
   <bean id="overridingPublishedPropDef" class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
     <property name="overriddenPropDef" ref="publishedPropDef" />
     <property name="defaultValue" ref="VALUE_FALSE" />
     <property name="propertyEvaluator" ref="publishEvaluator" />
   </bean>
-  
+
+  <bean id="publishEvaluator" class="org.vortikal.repository.resourcetype.property.PublishEvaluator">
+    <property name="publishDatePropDef" ref="publishDatePropDef" />
+    <property name="unpublishDatePropDef" ref="unpublishDatePropDef" />
+  </bean>
 
   <bean id="systemJobStatusPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
     parent="abstractPropDef">

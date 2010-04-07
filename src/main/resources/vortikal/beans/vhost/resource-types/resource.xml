@@ -235,7 +235,7 @@
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
     <property name="defaultValue" ref="VALUE_TRUE" />
-    <property name="propertyEvaluator" ref="defaultPublishEvaluator" />
+    <!-- No evaluator necessary, value will never be toggled -->
   </bean>
   
   <bean id="publishDatePropDef" class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl"
@@ -243,7 +243,7 @@
     <property name="name" value="publish-date" />
     <property name="type" value="TIMESTAMP" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
-    <property name="propertyEvaluator" ref="defaultPublishDateEvaluator" />
+    <property name="propertyEvaluator" ref="publishDateEvaluator" />
   </bean>
   
   <bean id="unpublishDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
@@ -253,21 +253,8 @@
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
   </bean>
   
-  <bean id="defaultPublishDateEvaluator" class="org.vortikal.repository.resourcetype.property.PublishDateEvaluator">
+  <bean id="publishDateEvaluator" class="org.vortikal.repository.resourcetype.property.PublishDateEvaluator">
     <property name="creationTimePropDef" ref="creationTimePropDef" />
-  </bean>
-
-  <!--
-  <bean id="defaultPublishEvaluator" class="org.vortikal.repository.resourcetype.property.DefaultPublishEvaluator">
-    <property name="publishDatePropDef" ref="publishDatePropDef" />
-  </bean>
-  -->
-
-  <alias name="publishEvaluator" alias="defaultPublishEvaluator" />
-
-  <bean id="publishEvaluator" class="org.vortikal.repository.resourcetype.property.PublishEvaluator">
-    <property name="publishDatePropDef" ref="publishDatePropDef" />
-    <property name="unpublishDatePropDef" ref="unpublishDatePropDef" />
   </bean>
 
 </beans>

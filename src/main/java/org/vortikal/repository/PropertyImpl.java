@@ -32,8 +32,14 @@ package org.vortikal.repository;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
+import net.sf.json.JSONObject;
 
 import org.vortikal.repository.resourcetype.Constraint;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
@@ -60,6 +66,43 @@ import org.vortikal.security.Principal;
 public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
 
     private static final long serialVersionUID = 3762531209208410417L;
+
+    private static final Map<PropertyType.Type, Set<PropertyType.Type>> compatibilityMap;
+    static {
+        compatibilityMap = new HashMap<Type, Set<Type>>();
+
+        Set<Type> STRING = new HashSet<Type>();
+        STRING.add(Type.HTML);
+        STRING.add(Type.IMAGE_REF);
+        STRING.add(Type.JSON);
+        compatibilityMap.put(Type.STRING, STRING);
+        
+        Set<Type> HTML = new HashSet<Type>();
+        HTML.add(Type.STRING);
+        HTML.add(Type.IMAGE_REF);
+        HTML.add(Type.JSON);
+        compatibilityMap.put(Type.HTML, HTML);
+
+        Set<Type> IMAGE_REF = new HashSet<Type>();
+        IMAGE_REF.add(Type.STRING);
+        IMAGE_REF.add(Type.HTML);
+        IMAGE_REF.add(Type.JSON);
+        compatibilityMap.put(Type.IMAGE_REF, IMAGE_REF);
+
+        Set<Type> JSON = new HashSet<Type>();
+        JSON.add(Type.STRING);
+        JSON.add(Type.HTML);
+        JSON.add(Type.IMAGE_REF);
+        compatibilityMap.put(Type.JSON, JSON);
+
+        Set<Type> DATE = new HashSet<Type>();
+        DATE.add(Type.TIMESTAMP);
+        compatibilityMap.put(Type.DATE, DATE);
+
+        Set<Type> TIMESTAMP = new HashSet<Type>();
+        TIMESTAMP.add(Type.DATE);
+        compatibilityMap.put(Type.TIMESTAMP, TIMESTAMP);
+    }
     
     private PropertyTypeDefinition propertyTypeDefinition;
     private Value value;
@@ -282,55 +325,30 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         }
     }
 
+    
     private void validateValue(Value value) throws ValueFormatException,
                                                 ConstraintViolationException {
         if (value == null) {
             throw new ValueFormatException("A property cannot have a null value");
         }
         
+        
         if (value.getType() != getType()) {
-        	switch (value.getType()) {
-
-            // FIXME: ugly..    
-        	case STRING:
-        	case HTML:
-        	case IMAGE_REF:
-        	case JSON:
-        		if (getType() != Type.HTML 
-        		    && getType() != Type.STRING 
-        		    && getType() != Type.IMAGE_REF
-        		    && getType() != Type.JSON) {
-                    throw new ValueFormatException("Illegal value type " + 
-                            value.getType() + 
-                            " for value [" + value + "] on property " + this 
-                            + ". Should be " +  getType());
-
-        		}
-        		break;
-        	case DATE:
-        	case TIMESTAMP:
-        	    if (getType() != Type.DATE 
-                        && getType() != Type.TIMESTAMP) {
-                    throw new ValueFormatException("Illegal value type " + 
-                            value.getType() + 
-                            " for value [" + value + "] on property " + this 
-                            + ". Should be " +  getType());
-        	    }
-        	    break;
-        	default:
+            Set<Type> compatible = compatibilityMap.get(getType());
+            if (compatible == null || !compatible.contains(value.getType())) {
                 throw new ValueFormatException("Illegal value type " + 
                         value.getType() + 
                         " for value [" + value + "] on property " + this 
                         + ". Should be " +  getType());
-        	}
+            }
         }
-        	        
+
         // Check for potential null values
         switch (value.getType()) {
         case PRINCIPAL:
             if (value.getPrincipalValue() == null) {
                 throw new ValueFormatException(
-                    "Principal value of property '" + this + "' cannot be null");
+                        "Principal value of property '" + this + "' cannot be null");
             }
             break;
         case STRING:
@@ -339,14 +357,24 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         case JSON:
             if (value.getStringValue() == null) {
                 throw new ValueFormatException(
-                    "String value of property '" + this + "' cannot be null");
+                        "String value of property '" + this + "' cannot be null");
             }
             break;
         case DATE:
         case TIMESTAMP:
             if (value.getDateValue() == null) {
                 throw new ValueFormatException(
-                    "Date value of property '" + this + "' cannot be null");
+                        "Date value of property '" + this + "' cannot be null");
+            }
+        }
+        
+        if (getType() == Type.JSON) {
+            try {
+                JSONObject.fromObject(value.getStringValue());
+            } catch (Exception e) {
+                throw new ValueFormatException(
+                        "Value of property '" + this + "': invalid JSON object: " 
+                        + value.getStringValue());
             }
         }
         

@@ -185,6 +185,12 @@ input.vrtx-add-button {
     display: block;
 }
 
+input.vrtx-remove-button,
+input.vrtx-move-up-button,
+input.vrtx-move-down-button {
+    height: 20px;	
+}
+	
 input.vrtx-remove-button {
     float: left;
     margin-top:16px;
@@ -428,5 +434,12 @@ input.date, input.hours, input.minutes {
 #help-links {
     position:absolute;
     right:2em;
+    padding-top: 1.25em;
     text-align:right;
+}
+
+#help-links a {
+    font-size: 0.8em;
+    display: inline;
+    margin-left: 5px;
 }

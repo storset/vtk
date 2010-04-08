@@ -32,8 +32,11 @@
 <#import "/lib/collections/view-blog-listing.ftl" as blogs />
 
 <#assign resource = collection />
-
 <#assign title = vrtx.propValue(resource, "title", "flattened") />
+<#if overriddenTitle?has_content>
+  <#assign title = overriddenTitle />
+</#if>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -65,7 +68,7 @@
   </#if>
 
   <title>${title?html}
-    <#if page?has_content>
+    <#if page?has_content && !overriddenTitle?has_content>
       <#if "${page}" != "1"> - <@vrtx.msg code="viewCollectionListing.page" /> ${page}</#if>
     </#if>
   </title>

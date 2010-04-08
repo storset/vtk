@@ -101,7 +101,7 @@
   border-width: thin thin 0 0;
   text-align: center;
   background-image: none !important;
-  background-color: #d6e8f8 !important;
+  background-color: #fff !important;
   border-color: #ccc !important;	
   color: #005a9f !important;
 }
@@ -115,12 +115,13 @@
 }
 
 #vrtx-event-calendar .ui-widget-content table .ui-datepicker-today a {
-  background-color: #3a94e0 !important;
-  color: #fff !important;
+  /* background-color: #3a94e0 !important; */
+  background-color: #d6e8f8 !important;
 }
 
 #vrtx-event-calendar .ui-widget-content table .ui-datepicker-today span {
-  background-color: #3a94e0 !important;	
+  /* background-color: #3a94e0 !important; */
+  background-color: #d6e8f8 !important;
 }
 
 /* active color */

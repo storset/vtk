@@ -122,11 +122,11 @@ public final class EventListingHelper implements InitializingBean {
     }
 
     public String getEventTypeTitle(HttpServletRequest request, Resource collection, String key, boolean capitalize) {
-        return this.getEventTypeTitle(request, collection, null, null, key, capitalize);
+        return this.getEventTypeTitle(request, collection, null, null, key, capitalize, true);
     }
 
     public String getEventTypeTitle(HttpServletRequest request, Resource collection, SpecificDateSearchType searchType,
-            Date date, String key, boolean capitalize) {
+            Date date, String key, boolean capitalize, boolean includePage) {
         List<Object> params = new ArrayList<Object>();
         String eventTypeTitle = this.getEventTypeTitle(collection, capitalize);
         if (eventTypeTitle != null) {
@@ -139,7 +139,7 @@ public final class EventListingHelper implements InitializingBean {
         }
         String title = getLocalizedTitle(request, key, params.toArray());
         int page = ListingPager.getPage(request, ListingPager.UPCOMING_PAGE_PARAM);
-        if (page > 1) {
+        if (includePage && page > 1) {
             String pageText = this.getLocalizedTitle(request, "viewCollectionListing.page", null);
             title = title + " - " + pageText + " " + page;
         }

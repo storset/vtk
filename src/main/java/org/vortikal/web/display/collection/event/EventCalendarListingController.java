@@ -68,6 +68,9 @@ public class EventCalendarListingController extends EventListingController {
                     && (EventListingHelper.VIEW_TYPE_ALL_UPCOMING.equals(viewType) || EventListingHelper.VIEW_TYPE_ALL_PREVIOUS
                             .equals(viewType))) {
 
+                String title = "";
+                String titleKey = viewType + "Title";
+
                 Listing result = null;
                 if (EventListingHelper.VIEW_TYPE_ALL_UPCOMING.equals(viewType)) {
                     result = this.searcher.searchUpcoming(request, collection, page, pageLimit, 0);
@@ -76,19 +79,20 @@ public class EventCalendarListingController extends EventListingController {
                     model.put(MODEL_KEY_HIDE_ALTERNATIVE_REP, Boolean.TRUE);
                 }
                 model.put(viewType, result);
-                String viewTypeTitle = this.helper.getEventTypeTitle(request, collection, "eventListing." + viewType,
-                        false);
-                model.put(viewType + "Title", viewTypeTitle);
+                title = this.helper.getEventTypeTitle(request, collection, "eventListing." + viewType, false);
 
                 if (result == null || result.getFiles().isEmpty()) {
-                    String noPlannedTitle = this.helper.getEventTypeTitle(request, collection,
-                            "eventListing.noPlanned." + viewType, false);
-                    model.put(viewType + "NoPlannedTitle", noPlannedTitle);
+                    title = this.helper.getEventTypeTitle(request, collection, "eventListing.noPlanned." + viewType,
+                            false);
+                    titleKey = viewType + "NoPlannedTitle";
                 } else {
                     List<URL> urls = ListingPager.generatePageThroughUrls(result.getTotalHits(), pageLimit, URL
                             .create(request));
                     model.put(MODEL_KEY_PAGE_THROUGH_URLS, urls);
                 }
+
+                model.put(titleKey, title);
+                model.put(MODEL_KEY_OVERRIDDEN_TITLE, title);
 
             } else {
 
@@ -139,19 +143,21 @@ public class EventCalendarListingController extends EventListingController {
                     pageLimit, page);
 
             model.put("specificDate", Boolean.TRUE);
-            model.put("specificDateEvents", specificDateEvents);
             String messageKey = searchType == SpecificDateSearchType.Day ? "eventListing.specificDayEvent"
                     : "eventListing.specificDateEvent";
             String specificDateEventsTitle = this.helper.getEventTypeTitle(request, collection, searchType, date,
-                    messageKey, true);
+                    messageKey, true, true);
             model.put("specificDateEventsTitle", specificDateEventsTitle);
-            model.put("noPlannedEventsMsg", this.helper.getEventTypeTitle(request, collection,
-                    "eventListing.noPlannedEvents", false));
+            model.put(MODEL_KEY_OVERRIDDEN_TITLE, specificDateEventsTitle);
 
             if (specificDateEvents != null && !specificDateEvents.getFiles().isEmpty()) {
+                model.put("specificDateEvents", specificDateEvents);
                 List<URL> urls = ListingPager.generatePageThroughUrls(specificDateEvents.getTotalHits(), pageLimit, URL
                         .create(request));
                 model.put(MODEL_KEY_PAGE_THROUGH_URLS, urls);
+            } else {
+                model.put("noPlannedEventsMsg", this.helper.getEventTypeTitle(request, collection,
+                        "eventListing.noPlannedEvents", false));
             }
         }
 

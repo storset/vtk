@@ -136,6 +136,14 @@
 
              //cache image instance
              var $$$ = $(wrapperContainerLink + " img");
+             
+             //IE 6 max-width substitute
+             if (jQuery.browser.msie && jQuery.browser.version <= 6) {
+               var mainImgHeight = $$$.height();
+               if(mainImgHeight > 380) {
+                 $$$.css("height", "380px");
+               }
+             }
 
 	     var imgHeight = $$$.height();
 	     var imgWidth = $$$.width();

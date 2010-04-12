@@ -1,10 +1,10 @@
 resourcetype frontpage {
 
   properties {
-    cssUrl : string,
     title : string overrides title,
-    main-content : json (boxTitle : string, boxType : string, boxContent : html, boxUrlText : string, boxUrl : string) multiple noextract,
-    additional-content : json (boxTitle : string, boxType : string, boxContent : html, boxUrlText : string,  boxUrl : string) multiple noextract
+    main-content : json (boxTitle : string, boxType : string, boxPicture : image_ref, boxContent : html, boxUrlText : string, boxUrl : string) multiple noextract,
+    additional-content : json (boxTitle : string, boxType : string, boxPicture : image_ref, boxContent : html, boxUrlText : string,  boxUrl : string) multiple noextract,
+    cssUrl : string
   }
   
   view-components {
@@ -18,15 +18,16 @@ resourcetype frontpage {
         [list boxes box]
            [def type json-attr(box, "boxType")]
            [def title json-attr(box, "boxTitle")]
+           [def picture json-attr(box, "boxPicture")]
            [def content json-attr(box, "boxContent")]
            [def url json-attr(box, "boxUrl")]
            [def urlText json-attr(box, "boxUrlText")]
            [def number _index + 1]
            
            [if type != null && type != ""]
-           <div class="vrtx-frontpage-box [val type]" id="vrtx-main-content-[val number]">
+             <div class="vrtx-frontpage-box [val type]" id="vrtx-main-content-[val number]">
            [else]
-           <div class="vrtx-frontpage-box" id="vrtx-main-content-[val number]">
+             <div class="vrtx-frontpage-box" id="vrtx-main-content-[val number]">
            [endif]
              [if title != null && title != ""]
                [if url != null && url != ""]
@@ -35,11 +36,30 @@ resourcetype frontpage {
                  <h2>[val title]</h2>
                [endif]
              [endif]
+             [if picture != null && picture != ""]
+               <div class="vrtx-frontpage-box-picture">
+                 [if url != null && url != ""]
+                   <a href="[val url]">
+                     [if title != null && title != ""] 
+                       <img src="[val picture]" alt="[val title]" />
+                     [else]
+                       <img src="[val picture]" alt="[val picture]" />
+                     [endif]
+                   </a>
+                 [else]
+                   [if title != null && title != ""] 
+                     <img src="[val picture]" alt="[val title]" />
+                   [else]
+                     <img src="[val picture]" alt="[val picture]" />
+                   [endif]
+                 [endif]
+               </div>
+             [endif]
              <div class="vrtx-box-content">
                [if content != null && content != ""]
                  [val content unescaped]
                [endif]             
-             </div>
+             </div> 
              [if urlText != null && urlText != ""]
              <div class="vrtx-more">
                 [if url != null && url != ""]
@@ -50,7 +70,6 @@ resourcetype frontpage {
               </div>
               [endif]
            </div>
-
         [endlist]
       [endif]
       ##
@@ -65,6 +84,7 @@ resourcetype frontpage {
         [list boxes box]
            [def type json-attr(box, "boxType")]
            [def title json-attr(box, "boxTitle")]
+           [def picture json-attr(box, "boxPicture")]
            [def content json-attr(box, "boxContent")]
            [def url json-attr(box, "boxUrl")]
            [def urlText json-attr(box, "boxUrlText")]
@@ -81,6 +101,25 @@ resourcetype frontpage {
                [else]
                  <h2>[val title]</h2>
                [endif]
+             [endif]
+             [if picture != null && picture != ""]
+               <div class="vrtx-frontpage-box-picture">
+                 [if url != null && url != ""]
+                   <a href="[val url]">
+                     [if title != null && title != ""] 
+                       <img src="[val picture]" alt="[val title]" />
+                     [else]
+                       <img src="[val picture]" alt="[val picture]" />
+                     [endif]
+                   </a>
+                 [else]
+                   [if title != null && title != ""] 
+                     <img src="[val picture]" alt="[val title]" />
+                   [else]
+                     <img src="[val picture]" alt="[val picture]" />
+                   [endif]
+                 [endif]
+               </div>
              [endif]
              <div class="vrtx-box-content">
                [if content != null && content != ""]
@@ -119,6 +158,7 @@ resourcetype frontpage {
       [val v]
       ##
     }
+
   }
 
   view {
@@ -131,8 +171,8 @@ resourcetype frontpage {
       </head>
       <body id="vrtx-frontpage">
         <div id="vrtx-content">
-          <h1><comp:title /></h1>
-          <div id="vrtx-main-content">        
+          <h1><comp:title /></h1>         
+          <div id="vrtx-main-content">    
             <comp:main-content />
           </div>
           <div id="vrtx-additional-content">
@@ -150,6 +190,7 @@ resourcetype frontpage {
      additional-content : (en : "Additional content (default as right-column)", no : "Relatert innhold (default som høyrespalte)", nn : "Relatert innhald (default som høyrespalte)"),
      boxTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
      boxType : (en : "Type", no : "Type", nn : "Type"),
+     boxPicture : (en: "Image", no: "Bilde", nn : "Bilete"),
      boxContent : (en : "Content", no : "Innhold", nn : "Innhald"),
      boxUrlText : (en : "Link text", no : "Lenketekst", nn : "Lenketekst"),
      boxUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),

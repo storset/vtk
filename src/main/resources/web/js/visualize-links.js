@@ -5,23 +5,14 @@ function visualizeDeadLink(that, doExternalLink, e) {
 
 	if (filteredURL != "") {
 
-		var cssRedLink = {
-			'color' :'red'
-		}
-		
-		var cssGreenLink = {
-			'color' :'green'
-		}
-		
-		// Internal link
-		if (e.hostname && e.hostname == location.hostname) {
-			$.ajax( {
-				type :"HEAD",
-				url :filteredURL,
+		    // Internal link
+		    $.ajax({
+				type : "HEAD",
+				url : filteredURL,
 				complete : function(xhr, textStatus) {
-					if (xhr.status == "404") {
-						$(that).append(" - BRUTT (404)").css(cssRedLink); //broken
-					} 
+				    if(xhr.status == "404") { 
+					  $(that).append(" - 404").css("color", "red"); //internal service error or service unavailable
+				    }	
 					/* If we want to vizualize other responses
 					else if(xhr.status == "500" || xhr.status == "503") { 
 						$(that).append(" - TJENESTE NEDE / UTILGJENGELIG").css(cssRedLink); //internal service error or service unavailable
@@ -30,23 +21,11 @@ function visualizeDeadLink(that, doExternalLink, e) {
 					} else if(xhr.status == "301") {
 						$(that).append(" - PERMANENT FLYTTET/VIDERESENDT").css(cssGreenLink); //redirects
 					} */
-				}
+				},
+                error : function (xhr, ajaxOptions, thrownError){
+                    //$(that).append(" - FEILET").css("color", "red");
+                }
 			});
-		}
-
-		// External link
-		// This is optional / experimental as it is doing external JSON requests
-		if ((e.hostname && e.hostname !== location.hostname) && doExternalLink) {
-			var url = "http://json-head.appspot.com/?url="
-					+ encodeURI(filteredURL) + "&callback=?";
-			$.getJSON(url, function(json) {
-				// returns nothing in JSON-object if 404
-					if (typeof json.status_code == "undefined") {
-						$(that).append(" - BRUTT (404) - EXT").css(cssRedLink);
-					}
-				});
-		}
-
 	}
 }
 
@@ -58,16 +37,12 @@ function filterURL(rawURL) {
 	}
 	if (rawURL.indexOf("#") != -1) { // anchor
 		if (rawURL.indexOf("http://") != -1) {
-			return rawURL.split("#", 1);
+		   return rawURL.split("#", 1);
 		} else {
-			return "";
+		   return "";	
 		}
 	} else {
 		return rawURL;
 	}
-
-	// Can also be written like this:
-	// return rawURL.indexOf("?vrtx=") != -1 ? "" : rawURL.indexOf("#") != -1
-	// ? rawURL.indexOf("http://") != -1 ? rawURL.split("#", 1) : "" : rawURL;
 
 }

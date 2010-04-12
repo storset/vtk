@@ -40,7 +40,7 @@ resourcetype contact-supervisor {
                [endif]             
              </div>
              
-             <div class="vrtx-contact-supervisor-contactInfo">
+             <div class="vrtx-contact-supervisor-contact-info">
                [if contactInfo != null && contactInfo != ""]
                  [val contactInfo unescaped]
                [endif]             

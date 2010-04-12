@@ -52,7 +52,6 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.MimeHelper;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.filter.RequestFilter;
 import org.vortikal.web.filter.UploadLimitInputStreamFilter;
 import org.vortikal.webdav.ifheader.IfHeaderImpl;
 
@@ -68,9 +67,6 @@ import org.vortikal.webdav.ifheader.IfHeaderImpl;
  *   negative number means no limit).
  *   <li><code>viewName</code> - the view name (default is
  *   <code>PUT</code>).
- *   <li><code>requestFilters</code> - an optional array of {@link
- *   RequestFilter request filters} to be executed before the PUT
- *   request is processed.
  * </ul>
  *
  */
@@ -80,7 +76,6 @@ public class PutController extends AbstractWebdavController {
     private boolean supportIfHeaders = true;
     private long maxUploadSize = -1;
     private String viewName = "PUT";
-    private RequestFilter[] requestFilters;
     private boolean obeyClientCharacterEncoding = true;
     private boolean removeUserSpecifiedCharacterEncoding = false;
     
@@ -101,10 +96,6 @@ public class PutController extends AbstractWebdavController {
     }
     
 
-    public void setRequestFilters(RequestFilter[] requestFilters) {
-        this.requestFilters = requestFilters;
-    }
-    
     public void setSupportIfHeaders(boolean supportIfHeaders) {
         this.supportIfHeaders = supportIfHeaders;
     }
@@ -124,12 +115,6 @@ public class PutController extends AbstractWebdavController {
         if (this.maxUploadSize > 0) {
             request = new UploadLimitInputStreamFilter(this.maxUploadSize).
                 filterRequest(request);
-        }
-
-        if (this.requestFilters != null) {
-            for (int i = 0; i < this.requestFilters.length; i++) {
-                request = this.requestFilters[i].filterRequest(request);
-            }
         }
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();

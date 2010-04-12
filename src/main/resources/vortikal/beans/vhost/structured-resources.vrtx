@@ -6,3 +6,4 @@ include structured-resources/structured-project.vrtx
 include structured-resources/boxes.vrtx
 include structured-resources/frontpage.vrtx
 include structured-resources/featured-content.vrtx
+include structured-resources/contact-supervisor.vrtx

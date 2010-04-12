@@ -1,0 +1,87 @@
+resourcetype contact-supervisor {
+
+  properties {
+    title : string overrides title,
+    main-content : json ( id : string, description : simple_html, contactInfo : html) multiple noextract
+  }
+  
+  view-components {
+      title {
+	    ##
+	    [def v resource-prop(".", "title")]
+	    [val v]
+	    ##
+      }
+      
+      main-content {
+      ##
+      [resource-props "."]
+      [def document structured-document()]
+      [def boxes json-attr(document, "properties.main-content")]
+      [if boxes != null]
+      
+        [list boxes box]
+           [def title json-attr(box, "boxTitle")]
+           [def description json-attr(box, "description")]
+           [def contactInfo json-attr(box, "contactInfo")]
+           [def id json-attr(box, "id")]
+           
+           [def number _index + 1]
+           
+           [if id != null && id != ""]
+           	<div class="vrtx-contact-supervisor-box" id="[val id]">
+           [else]
+            <div class="vrtx-contact-supervisor-box">
+		   [endif]
+
+             <div class="vrtx-contact-supervisor-description">
+               [if description != null && description != ""]
+                 [val description unescaped]
+               [endif]             
+             </div>
+             
+             <div class="vrtx-contact-supervisor-contactInfo">
+               [if contactInfo != null && contactInfo != ""]
+                 [val contactInfo unescaped]
+               [endif]             
+             </div>
+           
+           </div>
+
+        [endlist]
+      [endif]
+      ##
+      }
+  }
+  
+  view {
+    ##
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <title><comp:title /></title>
+      </head>
+      <body id="vrtx-contact-supervisor">
+          <div id="vrtx-content">
+          <h1><comp:title /></h1>
+            <div id="vrtx-main-content">        
+              <comp:main-content />
+            </div>
+          </div>
+      </body>
+    </html>
+    ##
+  }
+
+  localization {
+     title : (en : "Title", no : "Tittel", nn : "Tittel"),
+     id : (en : "Id", no : "Id", nn : "Id"),
+     main-content : (en : "Main content", no : "Hovedinnhold", nn : "Hovedinnhold"),
+     boxTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
+     boxType : (en : "Type", no : "Type", nn : "Type"),
+     contactInfo : (en : "Contact Info", no : "Kontaktinformasjon", nn : "Kontaktinformasjon"),
+     description : (en : "Description", no : "Beskrivelse", nn : "Beskrivelse"),
+     boxUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
+     header : (en : "Edit contact supervisor", no : "Rediger kontaktveileder", nn : "Rediger kontaktveileder")
+  }
+}

@@ -49,11 +49,9 @@ import org.vortikal.web.RequestContext;
  */
 public class RequestHostNameAssertion implements Assertion {
 
-    
     private String defaultHostName;
     private String[] hostNames;
 
-	
     public void setHostName(String hostName) {
         if (hostName == null || hostName.trim().equals("")) {
             throw new IllegalArgumentException("Illegal hostname: '" + hostName + "'");
@@ -71,40 +69,34 @@ public class RequestHostNameAssertion implements Assertion {
         }
     }
 
-
     public String[] getHostNames() {
         return this.hostNames;
     }
     
-
     public boolean conflicts(Assertion assertion) {
         if (assertion instanceof RequestHostNameAssertion) { 
             boolean conflict = true;
-
-           for (int i = 0; i < this.hostNames.length; i++) {
-                if ("*".equals(this.hostNames[i])) {
+           for (String hostName: this.hostNames) {
+                if ("*".equals(hostName)) {
                     conflict = false;
                     break;
                 }
                 String[] otherHostNames = ((RequestHostNameAssertion)assertion).getHostNames();
-                for (int j = 0; j < otherHostNames.length; j++) {
-                    if ("*".equals(otherHostNames[j])) {
+                for (String other: otherHostNames) {
+                    if ("*".equals(other)) {
                         conflict = false;
                         break;
                     }
-
-                    if (this.hostNames[i].equals(otherHostNames[j])) {
+                    if (hostName.equals(other)) {
                         conflict = false;
                         break;
                     }
                 }
             }
            return conflict;
-
         }
         return false;
     }
-
 
     public void processURL(URL url) {
         url.setHost(this.defaultHostName);
@@ -112,11 +104,10 @@ public class RequestHostNameAssertion implements Assertion {
 
         if (requestContext != null) {
             String requestHostName = requestContext.getServletRequest().getServerName();
-            for (int i = 0; i < this.hostNames.length; i++) {
+            for (String hostName: this.hostNames) {
 
-                if ("*".equals(this.hostNames[i])
-                    || requestHostName.equals(this.hostNames[i])) {
-
+                if ("*".equals(hostName)
+                    || requestHostName.equals(hostName)) {
                     url.setHost(requestHostName);
                     break;
                 }
@@ -130,33 +121,24 @@ public class RequestHostNameAssertion implements Assertion {
         return true;
     }
 
-
     public boolean matches(HttpServletRequest request,
                            Resource resource, Principal principal) {
-
-        for (int i = 0; i < this.hostNames.length; i++) {
-
-            if ("*".equals(this.hostNames[i])) {
+        for (String hostName: this.hostNames) {
+            if ("*".equals(hostName)) {
                 return true;
             }
-
             String requestHostName = request.getServerName();
-            if (this.hostNames[i].equals(requestHostName)) {
+            if (hostName.equals(requestHostName)) {
                 return true;
             }
         }
         return false;
     }
 
-
     public String toString() {
         StringBuffer sb = new StringBuffer();
-		
         sb.append(super.toString());
         sb.append("; hostNames = ").append(java.util.Arrays.asList(this.hostNames));
-
         return sb.toString();
     }
-
-
 }

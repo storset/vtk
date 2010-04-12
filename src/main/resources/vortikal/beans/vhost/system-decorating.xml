@@ -29,7 +29,9 @@
   </bean>
 
   <bean id="system.csrfPreventionHandler"
-        class="org.vortikal.security.web.CSRFPreventionHandler" />
+        class="org.vortikal.security.web.CSRFPreventionHandler">
+    <property name="tempDir" value="${repository.tempDir}" />
+  </bean>
 
 
   <bean id="system.templateDecorator"

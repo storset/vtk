@@ -117,6 +117,7 @@
       <map>
 	<entry key="\.template$" value-ref="decorating.htmlParserTemplateFactory" />
 	<entry key="\.html$" value-ref="decorating.dollarSyntaxTemplateFactory" />
+        <entry key="\.dt$" value-ref="decorating.dynamicTemplateFactory" />
       </map>
     </property>
   </bean>
@@ -136,6 +137,21 @@
 
   <bean id="decorating.dollarSyntaxTemplateParser" class="org.vortikal.web.decorating.DollarSyntaxComponentParser">
   </bean>
+
+  <bean id="decorating.dynamicTemplateFactory"
+            class="org.vortikal.web.decorating.DynamicDecoratorTemplateFactory">
+    <property name="componentResolver" ref="decorating.defaultComponentResolver" />
+    <property name="functions" ref="decorating.defaultTemplateFunctions" />
+  </bean>
+
+
+  <bean id="decorating.defaultTemplateFunctions"
+        class="org.springframework.beans.factory.config.SetFactoryBean">
+    <property name="sourceSet">
+      <ref bean="templateLanguage.concatFunction" />
+    </property>
+  </bean>
+
 
   <bean name="decorating.defaultComponentResolver"
         class="org.vortikal.web.decorating.BeanContextComponentResolver">
@@ -287,6 +303,20 @@
       <list>
       </list>
     </property>
+  </bean>
+
+  <bean id="decorating.propsConfigFile"
+        class="org.vortikal.util.repository.JSONMapResource">
+    <property name="repository" ref="repository" />
+    <property name="uri" value="/vrtx/decorating/aspects.json" />
+  </bean>
+
+  <bean id="decorating.propsConfigRefreshTrigger"
+        class="org.vortikal.util.repository.MethodInvokingRepositoryEventTrigger">
+    <property name="repository" ref="repository" />
+    <property name="uri" value="/vrtx/decorating/aspects.json" />
+    <property name="targetObject" ref="decorating.propsConfigFile" />
+    <property name="method" value="load" />
   </bean>
 
 </beans>

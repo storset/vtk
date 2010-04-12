@@ -53,13 +53,15 @@
     <property name="urlPostProcessors">
       <ref bean="manage.selectiveProtocolManager" />
     </property>
+    <property name="handlerFilters">
+        <ref bean="system.csrfPreventionHandler" />
+    </property>
     <property name="handlerInterceptors">
       <list>
         <bean class="org.vortikal.web.FullDomainRedirectInterceptor">
           <property name="hostName" value="${manage.hostName}" />
         </bean>
         <ref bean="manage.selectiveProtocolManager" />
-        <ref bean="system.csrfPreventionHandler" />
         <ref bean="noCacheHandlerInterceptor" />
       </list>
     </property>
@@ -255,16 +257,27 @@
     </property>
     <property name="assertions">
       <list>
-        <ref bean="bindPermissionAssertion" />
+        <!--
+        <ref bean="manage.postRequestAssertion" />
+        <bean class="org.vortikal.web.service.RequestContentTypeRegexpAssertion">
+          <property name="pattern" value="multipart/form-data" />
+        </bean>
+        -->
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="upload-file" />
         </bean>
+        <ref bean="bindPermissionAssertion" />
         <ref bean="resourceInCollection" />
       </list>
     </property>
     <property name="handler" ref="fileUploadHandler" />
   </bean>
+
+  <bean id="serviceHandlerFilterAdapter" class="org.vortikal.web.filter.ServiceHandlerFilterAdapter">
+  </bean>
+
+
 
   <bean id="createDocumentService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageCollectionListingService" />

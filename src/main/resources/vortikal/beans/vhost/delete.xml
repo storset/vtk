@@ -121,7 +121,7 @@
   
   <bean id="deleteFromResourceMenuHandlerResourceService"
         class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="webService" />
+    <property name="parent" ref="manageService" />
     <property name="order" value="490" />
     <property name="assertions">
       <list>

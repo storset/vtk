@@ -142,7 +142,7 @@
         </bean>
       </list>
     </property>
-    <property name="handlerInterceptors">
+    <property name="handlerFilters">
       <list>
         <ref bean="system.csrfPreventionHandler" />
       </list>

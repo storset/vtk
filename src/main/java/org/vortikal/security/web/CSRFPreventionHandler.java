@@ -30,21 +30,37 @@
  */
 package org.vortikal.security.web;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.fileupload.FileItemIterator;
+import org.apache.commons.fileupload.FileItemStream;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
 import org.vortikal.security.AuthenticationException;
@@ -55,8 +71,11 @@ import org.vortikal.text.html.HtmlContent;
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlText;
 import org.vortikal.text.html.HtmlUtil;
+import org.vortikal.util.io.StreamUtil;
 import org.vortikal.util.text.TextUtils;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.filter.HandlerFilter;
+import org.vortikal.web.filter.HandlerFilterChain;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
@@ -64,15 +83,19 @@ import org.vortikal.web.service.URL;
  * Cross Site Request Forgery (CSRF) prevention handler. 
  * This class performs two tasks: 
  * <ol> 
- *   <li>{@link #filter(HtmlContent)Generates tokens} in HTML 
+ *   <li>{@link #filter(HtmlContent) Generates tokens} in HTML 
  * 	 forms on the page being served </li>
- *   <li>{@link #preHandle(HttpServletRequest, HttpServletResponse, Object) Verifies} 
+ *   <li>{@link #filter(HttpServletRequest, HandlerFilterChain) Verifies} 
  *   that valid tokens are present in POST requests</li>
  * </ol> 
  */
 public class CSRFPreventionHandler extends AbstractHtmlPageFilter 
-    implements HandlerInterceptor {
+    implements HandlerFilter {
 
+    private File tempDir = new File(System.getProperty("java.io.tmpdir"));
+    private int maxUploadSize = 100000000;
+    
+    
     public static final String TOKEN_REQUEST_PARAMETER = "csrf-prevention-token";
 	private static final String SECRET_SESSION_ATTRIBUTE = "csrf-prevention-secret";
 	private static Log logger = LogFactory.getLog(CSRFPreventionHandler.class);
@@ -87,71 +110,33 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
     	HttpServletRequest servletRequest = requestContext.getServletRequest();
     	HttpSession session = servletRequest.getSession(false);
     	if (session == null) {
-    		throw new IllegalStateException("Session does not exist");
+    	    throw new IllegalStateException("Session does not exist");
     	}
     	url = URL.create(url);
     	url.setRef(null);
     	return generateToken(url, session);
     }
     
-    public boolean preHandle(HttpServletRequest request,
-                             HttpServletResponse response, Object handler) throws Exception {
+    
+    @Override
+    public void filter(HttpServletRequest request, HandlerFilterChain chain)
+            throws Exception {
         if (!"POST".equals(request.getMethod())) {
-            return true;
+            chain.filter(request);
+            return;
         }
         if (request.getContentType().startsWith("multipart/form-data")) {
-            // XXX: skipping multipart requests for now
-            return true;
+            MultipartWrapper multipartRequest = new MultipartWrapper(request, this.tempDir, this.maxUploadSize);
+            try {
+                verifyToken(multipartRequest);
+                chain.filter(multipartRequest);
+            } finally {
+                multipartRequest.cleanup();
+            }
+        } else {
+            verifyToken(request);
+            chain.filter(request);
         }
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        if (securityContext.getPrincipal() == null) {
-            throw new AuthenticationException("Illegal anonymous action");
-        }
-        HttpSession session = request.getSession(false);
-        if (session == null) {
-            throw new IllegalStateException("A session must be present");
-        }
-        Service service = RequestContext.getRequestContext().getService();
-        if (Boolean.TRUE.equals(service.getAttribute("disable-csrf-checking"))) {
-            return true;
-        }
-        SecretKey secret = (SecretKey) 
-            session.getAttribute(SECRET_SESSION_ATTRIBUTE);
-        if (secret == null) {
-            throw new AuthorizationException(
-            	"Missing CSRF prevention secret in session");
-        }
-
-        String suppliedToken = request.getParameter(TOKEN_REQUEST_PARAMETER);
-
-        if (suppliedToken == null) {
-            throw new AuthorizationException(
-            	"Missing CSRF prevention token in request");
-        }
-
-        URL requestURL = URL.create(request);
-        String computed =  generateToken(requestURL, session);
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("Check token: url: " + requestURL 
-                         + ", supplied token: " + suppliedToken 
-                         + ", computed token: " + computed + ", secret: " + secret);
-        }
-        if (!computed.equals(suppliedToken)) {
-            throw new AuthorizationException(
-                                             "CSRF prevention token mismatch");
-        }
-        return true;
-    }
-
-    public void postHandle(HttpServletRequest request,
-                           HttpServletResponse response, Object handler,
-                           ModelAndView modelAndView) throws Exception {
-    }
-
-    public void afterCompletion(HttpServletRequest request,
-                                HttpServletResponse response, Object handler, Exception ex)
-	throws Exception {
     }
 
 
@@ -293,6 +278,222 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
             }
         }
         return url;
+    }
+
+    
+    private void verifyToken(HttpServletRequest request) throws Exception {
+        SecurityContext securityContext = SecurityContext.getSecurityContext();
+        if (securityContext.getPrincipal() == null) {
+            throw new AuthenticationException("Illegal anonymous action");
+        }
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            throw new IllegalStateException("A session must be present");
+        }
+        Service service = RequestContext.getRequestContext().getService();
+        if (Boolean.TRUE.equals(service.getAttribute("disable-csrf-checking"))) {
+            return;
+        }
+        SecretKey secret = (SecretKey) 
+            session.getAttribute(SECRET_SESSION_ATTRIBUTE);
+        if (secret == null) {
+            throw new AuthorizationException(
+                "Missing CSRF prevention secret in session");
+        }
+
+        String suppliedToken = request.getParameter(TOKEN_REQUEST_PARAMETER);
+
+        if (suppliedToken == null) {
+            throw new AuthorizationException(
+                "Missing CSRF prevention token in request");
+        }
+
+        URL requestURL = URL.create(request);
+        String computed =  generateToken(requestURL, session);
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Check token: url: " + requestURL 
+                         + ", supplied token: " + suppliedToken 
+                         + ", computed token: " + computed + ", secret: " + secret);
+        }
+        if (!computed.equals(suppliedToken)) {
+            throw new AuthorizationException("CSRF prevention token mismatch");
+        }
+    }
+
+    
+    private class MultipartWrapper extends HttpServletRequestWrapper {
+        private HttpServletRequest request;
+        private File tempFile;
+        private int bufferSize = 1024;
+        private long fileSizeMax;
+        private Map<String, List<String>> params = new HashMap<String, List<String>>();
+
+        public MultipartWrapper(HttpServletRequest request, File tempDir, long fileSizeMax) throws Exception {
+            super(request);
+            this.request = request;
+            this.fileSizeMax = fileSizeMax;
+            
+            if (request.getContentLength() > 0) {
+                writeTempFile(request, tempDir);
+                parseRequest();
+            }
+        }
+
+        public void cleanup() {
+            if (this.tempFile != null && this.tempFile.exists()) {
+                this.tempFile.delete();
+            }
+        }
+        
+        @Override
+        public ServletInputStream getInputStream() throws IOException {
+            FileInputStream fileStream = new FileInputStream(this.tempFile);
+            return new org.vortikal.util.io.ServletInputStream(fileStream);
+        }
+
+        @Override
+        public String getParameter(String name) {
+            if (this.params.containsKey(name)) {
+                List<String> values = this.params.get(name);
+                return values.get(0);
+            }
+            return super.getParameter(name);
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public Map getParameterMap() {
+            Map<String, List<String>> combined = new HashMap<String, List<String>>();
+            Map<String, String[]> m = super.getParameterMap();
+            for (String s: m.keySet()) {
+                String[] values = m.get(s);
+                List<String> l = new ArrayList<String>();
+                for (String v: values) {
+                    l.add(v);
+                }
+                combined.put(s, l);
+            }
+            
+            for (String s: this.params.keySet()) {
+                List<String> l = combined.get(s);
+                if (l == null) {
+                    l = new ArrayList<String>();
+                }
+                for (String v: this.params.get(s)) {
+                    l.add(v);
+                }
+                combined.put(s, l);
+            }
+            Map<String, String[]> result = new HashMap<String, String[]>();
+            for (String name: combined.keySet()) {
+                List<String> values = combined.get(name);
+                result.put(name, values.toArray(new String[values.size()]));
+            }
+            return result;
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public Enumeration<String> getParameterNames() {
+            Set<String> result = new HashSet<String>();
+            Enumeration<String> names = super.getParameterNames();
+            while (names.hasMoreElements()) {
+                result.add(names.nextElement());
+            }
+            result.addAll(this.params.keySet());
+            return Collections.enumeration(result);
+        }
+
+        @Override
+        public String[] getParameterValues(String name) {
+            List<String> result = new ArrayList<String>();
+            String[] names = super.getParameterValues(name);
+            if (names != null) {
+                for (String s: names) {
+                    result.add(s);
+                }
+            }
+            List<String> thisParams = this.params.get(name);
+            if (thisParams != null) {
+                result.addAll(thisParams);
+            }
+            return result.toArray(new String[result.size()]);
+        }
+
+        @Override
+        public BufferedReader getReader() throws IOException {
+            return new BufferedReader(new InputStreamReader(getInputStream()));
+        }
+        
+        private void addParameter(String name, String value) {
+            List<String> values = this.params.get(name);
+            if (values == null) {
+                values = new ArrayList<String>();
+                this.params.put(name, values);
+            }
+            values.add(value);
+        }
+        
+        private void writeTempFile(HttpServletRequest request, File tempDir) throws IOException, FileUploadException {
+            this.tempFile = File.createTempFile("multipart-filter", null, tempDir);
+            byte[] buffer = new byte[this.bufferSize];
+            ServletInputStream in = request.getInputStream();
+            OutputStream out = new FileOutputStream(tempFile);
+            try {
+                int n = 0;
+                long total = 0L;
+                while ((n = in.read(buffer, 0, 1024)) > 0) {
+                    total += n;
+                    if (total > this.fileSizeMax) {
+                        throw new FileUploadException("Upload limit exceeded");
+                    }
+                    out.write(buffer, 0, n);
+                }
+            } finally {
+                in.close();
+                out.flush();
+                out.close();
+            }
+        }
+        
+        private void parseRequest() throws FileUploadException, IOException {
+            ServletFileUpload upload = new ServletFileUpload();
+            upload.setFileSizeMax(this.fileSizeMax);
+            FileItemIterator iter = upload.getItemIterator(this);
+            while (iter.hasNext()) {
+                FileItemStream item = iter.next();
+                if (item.isFormField()) {
+                    String name = item.getFieldName();
+                    InputStream stream = item.openStream();
+                    byte[] buf = StreamUtil.readInputStream(stream, 2000);
+                    // XXX: 
+                    String encoding = this.request.getCharacterEncoding();
+                    if (encoding == null) {
+                        encoding = "utf-8";
+                    }
+                    String value = new String(buf, encoding);
+                    addParameter(name, value);
+                }
+            }
+        }
+    }
+    
+    public void setMaxUploadSize(int maxUploadSize) {
+        this.maxUploadSize = maxUploadSize;
+    }
+    
+    public void setTempDir(String tempDirPath) {
+        File tmp = new File(tempDirPath);
+        if (!tmp.exists()) {
+            throw new IllegalArgumentException("Unable to set tempDir: file " 
+                    + tmp + " does not exist");
+        }
+        if (!tmp.isDirectory()) {
+            throw new IllegalArgumentException("Unable to set tempDir: file " 
+                    + tmp + " is not a directory");
+        }
+        this.tempDir = tmp;
     }
 
 }

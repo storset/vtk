@@ -11,7 +11,7 @@
         <ref bean="commenting.isCommentable" />
       </list>
     </property>
-    <property name="handlerInterceptors">
+    <property name="handlerFilters">
       <list>
         <ref bean="system.csrfPreventionHandler" />
       </list>
@@ -28,7 +28,7 @@
         <ref bean="commenting.hasDeletePermission" />
       </list>
     </property>
-    <property name="handlerInterceptors">
+    <property name="handlerFilters">
       <list>
         <ref bean="system.csrfPreventionHandler" />
       </list>
@@ -45,7 +45,7 @@
         <ref bean="commenting.hasDeletePermission" />
       </list>
     </property>
-    <property name="handlerInterceptors">
+    <property name="handlerFilters">
       <list>
         <ref bean="system.csrfPreventionHandler" />
       </list>

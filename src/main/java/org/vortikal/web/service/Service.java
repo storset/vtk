@@ -42,6 +42,7 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.web.AuthenticationChallenge;
+import org.vortikal.web.filter.HandlerFilter;
 
 /**
  * A service is an abstraction added to the thin web layer in web
@@ -231,6 +232,14 @@ public interface Service extends Ordered, Categorizable {
      */
     public List<HandlerInterceptor> getHandlerInterceptors();
     
+
+    /**
+     * Gets the list of handler filters for this service, if any.
+     *
+     * @return a <code>List</code> of {@link HandlerFilter} objects, 
+     * or <code>null</code> if none configured.
+     */
+    public List<HandlerFilter> getHandlerFilters();
 
     /**
      * Gets this service's authentication challenge. 

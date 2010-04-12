@@ -31,6 +31,7 @@
 package org.vortikal.web.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,7 @@ import org.vortikal.security.Principal;
 import org.vortikal.security.web.AuthenticationChallenge;
 import org.vortikal.util.net.NetUtils;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.filter.HandlerFilter;
 import org.vortikal.web.service.provider.ServiceNameProvider;
 
 
@@ -85,6 +87,7 @@ public class ServiceImpl implements Service, BeanNameAware {
     private String name;
     private Map<String, Object> attributes = new HashMap<String, Object>();
     private List<HandlerInterceptor> handlerInterceptors;
+    private List<HandlerFilter> handlerFilters;
     private int order = 0;
     private Set<String> categories = null;
     private List<URLPostProcessor> urlPostProcessors = new ArrayList<URLPostProcessor>();
@@ -322,10 +325,26 @@ public class ServiceImpl implements Service, BeanNameAware {
     
 
     public List<HandlerInterceptor> getHandlerInterceptors() {
-        return this.handlerInterceptors;
+        if (this.handlerInterceptors == null) {
+            return null;
+        }
+        return Collections.unmodifiableList(this.handlerInterceptors);
+    }
+
+    public void setHandlerFilters(List<HandlerFilter> handlerFilters) {
+        this.handlerFilters = handlerFilters;
+    }
+    
+    @Override
+    public List<HandlerFilter> getHandlerFilters() {
+        if (this.handlerFilters == null) {
+            return null;
+        }
+        return Collections.unmodifiableList(this.handlerFilters);
     }
 
     
+
     public String toString() {
         StringBuilder sb = new StringBuilder();
 		
@@ -438,5 +457,4 @@ public class ServiceImpl implements Service, BeanNameAware {
     	return null;
     }
 
-    
 }

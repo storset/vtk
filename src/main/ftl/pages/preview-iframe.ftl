@@ -41,13 +41,15 @@
 		<#if visualizeBrokenLinks?exists && visualizeBrokenLinks = 'true'>
 		  $("iframe").contents().find("body")
 		    .filter(function() {
-              return this.id.match(/^(?!vrtx-+[\S]+-listing|vrtx-collection)+[\S]+/g);
-            });
+              return this.id.match(/^(?!vrtx-[\S]+-listing|vrtx-collection)[\S]+/);
+            })
             .find("#main")
-	        .not("#left-main").find("a").each(function(i, e){
+            .not("#left-main")
+	        .find("a").each(function(i, e){
+	          alert('hei');
 		      visualizeDeadLink(this, e);
-          }); 
-		</#if>  
+          });
+       </#if>
 	});	
   });	
   </script>

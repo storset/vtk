@@ -34,15 +34,18 @@
 
   <script language="javascript" >
   $(document).ready(function(){
-	$('iframe').load(function() {
+	$("iframe").load(function() {
 		$("iframe").contents().find("a").each(function(i, e){
 			this.target = "_parent";	
 		});
-		<#if visualizeBrokenLinks?exists && visualizeBrokenLinks = 'true'>
-		  $("iframe").contents().find("#main").not("#left-main").find("a").each(function(i, e){
-			visualizeDeadLink(this, e);
-          });
-        </#if>
+		$("iframe").contents().find("body")
+		.filter(function() {
+          return this.id.match(/(?!vrtx-+[a-z]+-listing)|(?!vrtx-collection)/g);
+        });
+        .find("#main")
+	    .not("#left-main").find("a").each(function(i, e){
+		  visualizeDeadLink(this, e);
+        }); 
 	});	
   });	
   </script>

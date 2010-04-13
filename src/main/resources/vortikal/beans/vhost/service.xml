@@ -419,16 +419,7 @@
     <property name="order" value="-100" />
     <property name="assertions">
       <list>
-        <!-- Assert that webHostName is different from manage.hostName -->
-        <bean class="org.vortikal.web.service.InvertAssertion">
-          <property name="assertion">
-            <bean class="org.vortikal.web.service.ConfigAssertion">
-              <property name="config" value="${webHostName}" />
-              <property name="expectedValue" value="${manage.hostName}" />
-            </bean>
-          </property>
-        </bean>
-        <ref bean="adminVrtxParameterRule" />
+        <ref bean="redirectToManageAssertion" />
       </list>
     </property>
         <property name="handlerInterceptors">
@@ -448,6 +439,24 @@
       </bean>
     </property>
   </bean>
+
+  <bean id="redirectToManageAssertion" class="org.vortikal.web.service.AndAssertion">
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.InvertAssertion">
+          <property name="assertion">
+            <bean class="org.vortikal.web.service.ConfigAssertion">
+              <property name="config" value="${webHostName}" />
+              <property name="expectedValue" value="${manage.hostName}" />
+            </bean>
+          </property>
+        </bean>
+        <ref bean="adminVrtxParameterRule" />
+      </list>
+    </property>
+  </bean>
+
+
 
   <bean id="displayResourceService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="viewService" />

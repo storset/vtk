@@ -38,21 +38,16 @@
     (deleteResourceService has been moved out of manageService and made a root level service because in some
     cases delete URLs could not be generated since manageService requires read permission)
   -->
+
   <bean id="manageService" class="org.vortikal.web.service.ServiceImpl">
     <!-- <property name="parent" ref="webService" /> -->
     <property name="order" value="-1" />
     <property name="assertions">
       <list>
-        <ref bean="manage.portAssertion" />
-        <ref bean="manage.hostNameAssertion" />
-        <ref bean="manage.selectiveProtocolManager" />
-        <ref bean="adminVrtxParameterRule" />
-        <ref bean="requiresReadPermissionAssertion" />
+        <ref bean="manage.serviceAssertion" />
       </list>
     </property>
-    <property name="urlPostProcessors">
-      <ref bean="manage.selectiveProtocolManager" />
-    </property>
+    <property name="urlPostProcessors" ref="manage.urlPostProcessors" />
     <property name="handlerFilters">
         <ref bean="system.csrfPreventionHandler" />
     </property>
@@ -73,6 +68,27 @@
     </property>
     <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" />
   </bean>
+
+  <bean id="manage.serviceAssertion" class="org.vortikal.web.service.AndAssertion">
+    <property name="assertions">
+      <list>
+        <ref bean="manage.portAssertion" />
+        <ref bean="manage.hostNameAssertion" />
+        <ref bean="manage.selectiveProtocolManager" />
+        <ref bean="adminVrtxParameterRule" />
+        <ref bean="requiresReadPermissionAssertion" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="manage.urlPostProcessors" class="org.springframework.beans.factory.config.ListFactoryBean">
+    <property name="sourceList">
+      <list>
+        <ref bean="manage.selectiveProtocolManager" />
+      </list>
+    </property>
+  </bean>
+
 
 
   <!-- Acts as both assertion, handler interceptor and URL post processor -->

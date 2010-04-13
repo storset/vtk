@@ -2,9 +2,17 @@ resourcetype frontpage {
 
   properties {
     title : string overrides title,
+    introduction : simple_html,
+    picture : image_ref,
+    caption : simple_html,
     main-content : json (boxTitle : string, boxType : string, boxPicture : image_ref, boxContent : html, boxUrlText : string, boxUrl : string) multiple noextract,
     additional-content : json (boxTitle : string, boxType : string, boxPicture : image_ref, boxContent : html, boxUrlText : string,  boxUrl : string) multiple noextract,
     cssUrl : string
+  }
+  
+   edit-rules {
+    caption (size[small]),
+    group introImageAndCaption (picture, caption) (after introduction) vertical
   }
   
   view-components {
@@ -158,6 +166,66 @@ resourcetype frontpage {
       [val v]
       ##
     }
+    
+    introduction-image {
+      ##
+      [def img-uri resource-prop(".", "picture")]
+      [def caption resource-prop(".", "caption")]
+      [if img-uri != null]
+        [def img resource(img-uri)]
+        
+        [if img != null]
+        
+          [def pixel-width resource-prop(img-uri, "pixelWidth")]
+          
+          [if pixel-width != null]
+            [def style concat("width:", concat(pixel-width, "px"))]
+            [def img-author resource-prop(img-uri, "authorName")]
+        
+            [if caption != null]
+              <div class="vrtx-introduction-image" style="[val style]">
+                <img src="[val img-uri]" alt="[val caption unescaped 'flattened']"/>
+                <div class="vrtx-imagetext">
+                  <div class="vrtx-imagedescription">[val caption unescaped]</div>
+                  [if img-author != null]
+                    <span class="vrtx-photo">
+                      <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val img-author]
+                    </span>
+                  [endif]
+                </div>
+              </div>
+            [else]
+              [if img-author != null]
+                <div class="vrtx-introduction-image" style="[val style]">
+                  <img src="[val img-uri]" alt="[localized 'introduction-image-alt']" />
+                  <div class="vrtx-imagetext">
+                    <span class="vrtx-photo">
+                      <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val img-author]
+                    </span>
+                  </div>
+                </div>
+              [else]
+                <img class="vrtx-introduction-image" src="[val img-uri]" alt="[localized 'introduction-image-alt']" />
+              [endif]
+            [endif]
+          [else]
+            <img class="vrtx-introduction-image" src="[val img-uri]" alt="[localized 'introduction-image-alt']" />
+          [endif]
+        [else]
+          <img class="vrtx-introduction-image" src="[val img-uri]" alt="[localized 'introduction-image-alt']" />
+        [endif]
+      [endif]
+      ##
+    }
+
+    introduction {
+      ##
+      [def intro resource-prop(".", "introduction")]
+      [if intro != null]
+        <div class="vrtx-introduction">[val intro unescaped]</div>
+      [endif]
+      ##
+    }
 
   }
 
@@ -171,8 +239,10 @@ resourcetype frontpage {
       </head>
       <body id="vrtx-frontpage">
         <div id="vrtx-content">
-          <h1><comp:title /></h1>         
-          <div id="vrtx-main-content">    
+          <h1><comp:title /></h1>     
+          <comp:introduction-image />
+          <comp:introduction />    
+          <div id="vrtx-main-content">  
             <comp:main-content />
           </div>
           <div id="vrtx-additional-content">
@@ -186,6 +256,11 @@ resourcetype frontpage {
 
   localization {
      title : (en : "Title", no : "Tittel", nn : "Tittel"),
+     introduction : (en : "Introduction", no : "Innledning", nn : "Innleiing"),
+     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
+     introduction-image-alt : (en : "Image", no : "Bilde", nn : "Bilete"),
+     photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
+     caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
      main-content : (en : "Main content", no : "Hovedinnhold", nn : "Hovedinnhold"),
      additional-content : (en : "Additional content (default as right-column)", no : "Relatert innhold (default som høyrespalte)", nn : "Relatert innhald (default som høyrespalte)"),
      boxTitle : (en : "Title", no : "Tittel", nn : "Tittel"),

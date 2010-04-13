@@ -10,10 +10,10 @@
     <@autocomplete.addAutoCompleteScripts srcBase="${webResources?html}"/>
   </#if>
   <#if containsShowHideScripts>
-    <@showhide.addShowHideScripts srcBase="${webResources?html}"/>
+    <@showhide.addShowHideScripts srcBase="${jsBaseURL?html}"/>
   </#if>
   <#if containsMultipleInputFieldScripts>
-    <@multipleinputfields.addMultipleInputFieldsScripts srcBase="${webResources?html}" />
+    <@multipleinputfields.addMultipleInputFieldsScripts srcBase="${jsBaseURL?html}" />
   </#if>
   <script type="text/javascript">
     $(document).ready(function() {

@@ -1,7 +1,7 @@
 <#-- Adds the default required scripts necessary to use show and hide functionality -->
 
-<#macro addShowHideScripts srcBase="">
-  <script type="text/javascript" src="${jsBaseURL?html}/admin-showhide.js"></script>
+<#macro addShowHideScripts srcBase>
+  <script type="text/javascript" src="${srcBase}/admin-showhide.js"></script>
 </#macro>
 
 <#macro addShowHide script>
@@ -15,5 +15,6 @@
    	  </#if>
    	</#list>
   </#list>
-      setShowHide('${script.name}',[${parameters}]); 
+  <#local invert = true?string />
+      setShowHide('${script.name}', [${parameters}], ${invert});
 </#macro>

@@ -50,7 +50,6 @@ import org.vortikal.repository.resource.ResourcetreeLexer;
 import org.vortikal.repository.resource.ResourcetreeParser;
 import org.vortikal.resourcemanagement.ComponentDefinition;
 import org.vortikal.resourcemanagement.DisplayTemplate;
-import org.vortikal.resourcemanagement.PropertyDescription;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.resourcemanagement.StructuredResourceManager;
 
@@ -65,6 +64,7 @@ public class StructuredResourceParser implements InitializingBean {
     private EditRuleParser editRuleParser;
     private ScriptDefinitionParser scriptDefinitionParser;
     private ServiceDefinitionParser serviceDefinitionParser;
+    private VocabularyDefinitionParser vocabularyDefinitionParser;
 
     public void afterPropertiesSet() throws Exception {
         this.parsedResourceDescriptions = new ArrayList<ParsedResourceDescription>();
@@ -73,6 +73,7 @@ public class StructuredResourceParser implements InitializingBean {
         this.editRuleParser = new EditRuleParser();
         this.scriptDefinitionParser = new ScriptDefinitionParser();
         this.serviceDefinitionParser = new ServiceDefinitionParser();
+        this.vocabularyDefinitionParser = new VocabularyDefinitionParser();
 
         this.registerStructuredResources();
     }
@@ -171,7 +172,7 @@ public class StructuredResourceParser implements InitializingBean {
                     this.serviceDefinitionParser.parseServices(srd, descriptionEntry.getChildren());
                     break;
                 case ResourcetreeLexer.VOCABULARY:
-                    handleVocabulary(srd, descriptionEntry.getChildren());
+                    this.vocabularyDefinitionParser.handleVocabulary(srd, descriptionEntry.getChildren());
                     break;
                 default:
                     throw new IllegalStateException("Unknown token type: " + descriptionEntry.getType());
@@ -180,32 +181,6 @@ public class StructuredResourceParser implements InitializingBean {
         }
 
         return srd;
-    }
-
-    private void handleVocabulary(StructuredResourceDescription srd, List<CommonTree> propertyDescriptions) {
-        if (!hasContent(propertyDescriptions)) {
-            return;
-        }
-        for (CommonTree propName : propertyDescriptions) {
-            for (CommonTree lang : (List<CommonTree>) propName.getChildren()) {
-                for (CommonTree vocabularyName : (List<CommonTree>) lang.getChildren()) {
-                    for (CommonTree vocabularyValue : (List<CommonTree>) vocabularyName.getChildren()) {
-                        Locale locale = LocaleUtils.toLocale(lang.getText());
-                        List<PropertyDescription> propDescs = srd.getPropertyDescriptions();
-                        PropertyDescription p = null;
-                        for (PropertyDescription propDesc : propDescs) {
-                            if (propDesc.getName().equals(propName.getText())) {
-                                p = propDesc;
-                            }
-                        }
-                        if (p != null) {
-                            p.addVocabulary(locale, vocabularyName.getText(), vocabularyValue.getText());
-                        }
-                    }
-                }
-            }
-        }
-
     }
 
     private void handleLocalization(StructuredResourceDescription srd, List<CommonTree> propertyDescriptions) {

@@ -1,0 +1,90 @@
+resourcetype administrative-unit {
+
+  properties {
+    areacode : string,
+    getExternalUnitInfo : boolean,
+    name : string external:unitMetadataLdapService,
+    postalAddress : string multiple external:unitMetadataLdapService,
+    visitingAddress : string multiple external:unitMetadataLdapService,
+    phone : string multiple external:unitMetadataLdapService,
+    fax : string multiple external:unitMetadataLdapService,
+    email : string multiple external:unitMetadataLdapService,
+    title : derived (name, areacode) eval (name + "(" + areacode + ")")
+      overrides title default name,
+    picture : image_ref,
+    introduction : simple_html,
+    responsibilities : simple_html,   
+    displayEmployees : boolean,
+    selectedEmployees : string multiple,
+    numberOfEmployeesToDisplay : string,
+    urlToEmployeesList : string,
+    content : html noextract,
+    hasBodyContent : derived (content) eval (content?exists)
+    related-content : html noextract
+  }
+
+  edit-rules {
+    areacode (size[8]),
+    selectedEmployees (size[8]),
+    group employees (displayEmployees, selectedEmployees, numberOfEmployeesToDisplay, urlToEmployeesList) (after responsibilities)
+  }
+
+  scripts {
+    getExternalUnitInfo show-hide onclick (name, postalAddress, visitingAddress, phone, fax, email),
+    selectedEmployees multipleinputfields
+  }
+
+  vocabulary {
+     getExternalUnitInfo {
+       en : ("true" = "Yes", "false" = "No"),
+       no : ("true" = "Ja", "false" = "Nei"),
+       nn : ("true" = "Ja", "false" = "Nei")
+     },
+     displayEmployees {
+       en : ("true" = "Yes", "false" = "No"),
+       no : ("true" = "Ja", "false" = "Nei"),
+       nn : ("true" = "Ja", "false" = "Nei")
+     },
+     numberOfEmployeesToDisplay {
+       range : ("1..10", "15", "20", "25", "30")
+     }
+  }
+
+  localization {
+    header : (en : "", no : "Rediger administrativ enhet", nn : ""),
+    areacode : (en : "Area code", no : "Stedskode", nn : "Stadkode"),
+    getExternalUnitInfo : (
+      en : "",
+      no : "Bruk opplysninger registrert i UiOs lønns- og personalsystem",
+      nn : ""),
+    name : (en : "", no : "Navn", nn : ""),
+    postalAddress : (en : "", no : "Postadresse", nn : ""),
+    visitingAddress : (en : "", no : "Besøksadresse", nn : ""),
+    phone : (en : "", no : "Telefon", nn : ""),
+    fax : (en : "", no : "Faks", nn : ""),
+    email : (en : "", no : "E-post", nn : ""),
+    picture : (en: "", no: "Bilde av enheten", nn : ""),
+    introduction : (en: "", no: "Innledning", nn : ""),
+    responsibilities : (en : "", no : "Ansvarsområder", nn : ""),
+    employees : (en : "", no : "Ansatte", nn : ""),
+    displayEmployees : (
+      en : "",
+      no : "Vis ansatte registrert i UiOs lønns- og personalsystem",
+      nn : ""),
+    selectedEmployees : (
+      en : "",
+      no : "Ansatte som skal vises øverst i listen",
+      nn : ""),
+    numberOfEmployeesToDisplay : (
+      en : "",
+      no : "Antall ansatte som skal vises",
+      nn : ""),
+    urlToEmployeesList : (
+      en : "",
+      no : "Webadresse til liste over alle ansatte",
+      nn : ""),
+    content : (en: "", no: "Innhold", nn : ""),
+    related-content : (en: "", no: "Relatert innhold", nn : "")
+  }
+
+}

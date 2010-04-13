@@ -7,7 +7,7 @@ getUsage() {
 }
 
 void execute(context, args, out) {
-    tm = context.context.get("context").getBean("tokenManager");
+    tm = context.get("context").getBean("tokenManager");
 
     for (t: tm.getTokens()) {
         p = tm.getPrincipal(t);

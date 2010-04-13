@@ -33,9 +33,17 @@ resourcetype frontpage {
            [def number _index + 1]
            
            [if type != null && type != ""]
-             <div class="vrtx-frontpage-box [val type]" id="vrtx-main-content-[val number]">
+             [if picture != null && picture != ""]
+               <div class="vrtx-frontpage-box [val type]" id="vrtx-main-content-[val number]">
+             [else]
+               <div class="vrtx-frontpage-box no-picture [val type]" id="vrtx-main-content-[val number]">
+             [endif]
            [else]
-             <div class="vrtx-frontpage-box" id="vrtx-main-content-[val number]">
+             [if picture != null && picture != ""]
+               <div class="vrtx-frontpage-box" id="vrtx-main-content-[val number]">
+             [else]
+               <div class="vrtx-frontpage-box no-picture" id="vrtx-main-content-[val number]">
+             [endif]
            [endif]
              [if title != null && title != ""]
                [if url != null && url != ""]
@@ -99,9 +107,9 @@ resourcetype frontpage {
            [def number _index + 1]
            
            [if type != null && type != ""]
-           <div class="vrtx-frontpage-box [val type]" id="vrtx-additional-content-[val number]">
+             <div class="vrtx-frontpage-box [val type]" id="vrtx-additional-content-[val number]">
            [else]
-           <div class="vrtx-frontpage-box" id="vrtx-additional-content-[val number]">
+             <div class="vrtx-frontpage-box" id="vrtx-additional-content-[val number]">
            [endif] 
              [if title != null && title != ""]
                [if url != null && url != ""]

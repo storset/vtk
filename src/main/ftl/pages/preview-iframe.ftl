@@ -46,7 +46,6 @@
             .find("#main")
             .not("#left-main")
 	        .find("a").each(function(i, e){
-	          alert('hei');
 		      visualizeDeadLink(this, e);
           });
        </#if>

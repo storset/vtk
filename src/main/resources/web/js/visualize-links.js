@@ -1,17 +1,15 @@
-// Visualize dead links
-function visualizeDeadLink(that, doExternalLink, e) {
+function visualizeDeadLink(that, e) {
 
 	var filteredURL = filterURL($(that).attr('href') ? $(that).attr('href') : "");
 
 	if (filteredURL != "") {
-
 		    // Internal link
 		    $.ajax({
 				type : "HEAD",
 				url : filteredURL,
 				complete : function(xhr, textStatus) {
 				    if(xhr.status == "404") { 
-					  $(that).append(" - 404").css("color", "red"); //internal service error or service unavailable
+					  $(that).append(" - BRUTT (404)").css("color", "red"); //internal service error or service unavailable
 				    }	
 					/* If we want to vizualize other responses
 					else if(xhr.status == "500" || xhr.status == "503") { 

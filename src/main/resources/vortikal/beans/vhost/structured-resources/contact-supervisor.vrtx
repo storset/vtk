@@ -63,10 +63,8 @@ resourcetype contact-supervisor {
       </head>
       <body id="vrtx-contact-supervisor">
           <div id="vrtx-content">
-          <h1><comp:title /></h1>
-            <div id="vrtx-main-content">        
-              <comp:main-content />
-            </div>
+          <h1><comp:title /></h1>      
+             <comp:main-content />
           </div>
       </body>
     </html>

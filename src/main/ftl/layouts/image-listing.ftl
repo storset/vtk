@@ -36,18 +36,12 @@
 	     });
        // -->
        </script>
-      <#list images as image>
         <div class="vrtx-image-listing-include-container-pure-css">
           <div class="vrtx-image-listing-include-container-nav-pure-css">
             <a class="prev" href="#" title="&lt;&lt; Forrige"><span class="prev-transparent-block"></span></a>
             <a class="next" href="#" title="Neste &gt;&gt;"><span class="next-transparent-block"></span></a>
           </div>
-          <a class="vrtx-image-listing-include-container-link" href="${folderUrl}?actimg=${image.URI}&amp;display=gallery">
-            <img src="${image.URI}" alt="${image.URI}" />
-          </a>
         </div>
-        <#break />
-      </#list>
     </#if>
     <#if type == 'gallery'>
       <ul class="vrtx-image-listing-include-thumbs-pure-css">

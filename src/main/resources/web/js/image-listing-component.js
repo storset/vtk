@@ -1,6 +1,6 @@
 // Vortex Simple Gallery jQuery plugin v0.1b
 // w/ paging, centered thumbnail navigation and fade effect
-// by Øyvind Hatland - UiO / USIT
+// by ï¿½yvind Hatland - UiO / USIT
 
 (function ($) {
   $.fn.vrtxSGallery = function (wrapper, container, maxWidth, options) {
@@ -60,10 +60,10 @@
 	            });
 		  });
 	      } else {
+	    	  $(wrapperContainerLink).remove();
 	    	  if(init) {
-  		    $(wrapperContainer).append(generateLinkImage($(image), $(image).parent()));
+  		        $(wrapperContainer).append(generateLinkImage($(image), $(image).parent()));
 	    	  } else {
-                    $(wrapperContainerLink).remove();
 	    	    $(wrapperContainer).append(images[i]);
 	    	  }
 	    	  addPagingEvents(container.substring(1) + "-link");

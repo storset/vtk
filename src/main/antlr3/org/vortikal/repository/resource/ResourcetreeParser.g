@@ -65,7 +65,7 @@ vocabularylangentry
 	;
 	
 vocabularykeyvalue
-	: QTEXT EQ (QTEXT)* -> ^(QTEXT (QTEXT)*);
+	: QTEXT (EQ (QTEXT)*)? -> ^(QTEXT ((QTEXT)*)?);
 	
 localization
 	:	LOCALIZATION LCB

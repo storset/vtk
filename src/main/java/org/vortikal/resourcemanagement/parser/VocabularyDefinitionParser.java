@@ -30,45 +30,88 @@
  */
 package org.vortikal.resourcemanagement.parser;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import org.antlr.runtime.tree.CommonTree;
 import org.apache.commons.lang.LocaleUtils;
+import org.vortikal.repository.resource.ResourcetreeLexer;
 import org.vortikal.resourcemanagement.PropertyDescription;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
 
 public class VocabularyDefinitionParser {
 
-    @SuppressWarnings("unchecked")
-    public void handleVocabulary(StructuredResourceDescription srd, List<CommonTree> propertyDescriptions) {
-        if (propertyDescriptions == null || propertyDescriptions.isEmpty()) {
+    public void handleVocabulary(StructuredResourceDescription srd, List<CommonTree> propertyVocabularyEntries) {
+        if (propertyVocabularyEntries == null || propertyVocabularyEntries.isEmpty()) {
             return;
         }
-        for (CommonTree propName : propertyDescriptions) {
-            for (CommonTree vocab : (List<CommonTree>) propName.getChildren()) {
-                if ("range".equals(vocab.getText())) {
+        for (CommonTree propertyVocabularyEntry : propertyVocabularyEntries) {
+            this.handleVocabularyEntries(srd, propertyVocabularyEntry);
+        }
+    }
 
-                    // XXX implement
+    @SuppressWarnings("unchecked")
+    private void handleVocabularyEntries(StructuredResourceDescription srd, CommonTree propertyVocabularyEntry) {
+        for (CommonTree propertyVocabulary : (List<CommonTree>) propertyVocabularyEntry.getChildren()) {
+            this.resolveVocabulary(srd, propertyVocabularyEntry.getText(), propertyVocabulary);
+        }
+    }
 
-                } else {
-                    for (CommonTree vocabularyName : (List<CommonTree>) vocab.getChildren()) {
-                        for (CommonTree vocabularyValue : (List<CommonTree>) vocabularyName.getChildren()) {
-                            Locale locale = LocaleUtils.toLocale(vocab.getText());
-                            List<PropertyDescription> propDescs = srd.getPropertyDescriptions();
-                            PropertyDescription p = null;
-                            for (PropertyDescription propDesc : propDescs) {
-                                if (propDesc.getName().equals(propName.getText())) {
-                                    p = propDesc;
-                                }
-                            }
-                            if (p != null) {
-                                p.addVocabulary(locale, vocabularyName.getText(), vocabularyValue.getText());
-                            }
-                        }
-                    }
+    @SuppressWarnings("unchecked")
+    private void resolveVocabulary(StructuredResourceDescription srd, String propName, CommonTree propertyVocabulary) {
+        for (CommonTree vocabularyEntry : (List<CommonTree>) propertyVocabulary.getChildren()) {
+            if (vocabularyEntry.getType() == ResourcetreeLexer.RANGE) {
+                Object value = this.getRangeList(vocabularyEntry.getChild(0).getText());
+                this.addVocabulary(srd, propName, propertyVocabulary, vocabularyEntry.getText(), value);
+            } else {
+                for (CommonTree vocabularyValue : (List<CommonTree>) vocabularyEntry.getChildren()) {
+                    this.addVocabulary(srd, propName, propertyVocabulary, vocabularyEntry.getText(), vocabularyValue
+                            .getText());
                 }
             }
+        }
+    }
+
+    private void addVocabulary(StructuredResourceDescription srd, String propName, CommonTree propertyVocabulary,
+            String key, Object value) {
+        Locale locale = LocaleUtils.toLocale(propertyVocabulary.getText());
+        for (PropertyDescription propDesc : srd.getPropertyDescriptions()) {
+            if (propDesc.getName().equals(propName)) {
+                propDesc.addVocabulary(locale, key, value);
+            }
+        }
+    }
+
+    public List<Integer> getRangeList(String unprocessedList) {
+        List<Integer> rangeList = new ArrayList<Integer>();
+        if (unprocessedList == null || "".equals(unprocessedList.trim())) {
+            return rangeList;
+        }
+        String[] rangeEntries = unprocessedList.split(",");
+        for (String rangeEntry : rangeEntries) {
+            if (rangeEntry.contains("..")) {
+                Integer start = checkRangeEntry(rangeEntry.substring(0, rangeEntry.indexOf(".")));
+                Integer end = checkRangeEntry(rangeEntry
+                        .substring(rangeEntry.lastIndexOf(".") + 1, rangeEntry.length()));
+                if (start > end) {
+                    throw new IllegalArgumentException("Start cannot be greater than end in a range");
+                }
+                for (Integer i = start; i <= end; i++) {
+                    rangeList.add(i);
+                }
+            } else {
+                rangeList.add(checkRangeEntry(rangeEntry));
+            }
+        }
+        return rangeList;
+    }
+
+    private Integer checkRangeEntry(String rangeEntry) {
+        try {
+            return Integer.parseInt(rangeEntry);
+        } catch (NumberFormatException nfe) {
+            throw new IllegalArgumentException("Values in a range must be numeric, not: '" + rangeEntry + "'");
         }
     }
 

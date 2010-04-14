@@ -43,7 +43,7 @@ public abstract class PropertyDescription {
     private boolean multiple;
     private String externalService;
 
-    private Map<Locale, Map<String, String>> vocabulary = new HashMap<Locale, Map<String, String>>();
+    private Map<Locale, Map<String, Object>> vocabulary = new HashMap<Locale, Map<String, Object>>();
 
     public final void setName(String name) {
         this.name = name;
@@ -93,29 +93,29 @@ public abstract class PropertyDescription {
         return this.getClass().getName() + ": " + this.name;
     }
 
-    public void addVocabulary(Locale lang, String vocabularyKey, String vocabularyValue) {
-        Map<String, String> m = vocabulary.get(lang);
+    public void addVocabulary(Locale lang, String vocabularyKey, Object vocabularyValue) {
+        Map<String, Object> m = vocabulary.get(lang);
         if (m == null) {
-            m = new HashMap<String, String>();
+            m = new HashMap<String, Object>();
         }
         m.put(vocabularyKey, vocabularyValue);
         this.vocabulary.put(lang, m);
     }
 
-    public String getVocabularyValue(Locale lang, String vocabularyKey) {
-        Map<String, String> m = vocabulary.get(lang);
+    public Object getVocabularyValue(Locale lang, String vocabularyKey) {
+        Map<String, Object> m = vocabulary.get(lang);
         if (m == null) {
             return vocabularyKey;
         }
-        String value = m.get(vocabularyKey);
+        Object value = m.get(vocabularyKey);
         if (value != null) {
             return value;
         }
         return vocabularyKey;
     }
 
-    public Map<String, String> getValuemap(Locale local) {
-        Map<String, String> valuemap = vocabulary.get(local);
+    public Map<String, Object> getValuemap(Locale local) {
+        Map<String, Object> valuemap = vocabulary.get(local);
         return valuemap;
     }
 

@@ -39,17 +39,17 @@
 			this.target = "_parent";	
 		});
 		<#if visualizeBrokenLinks?exists && visualizeBrokenLinks = 'true'>
-		  $("iframe").contents().find("body")
-		    .filter(function() {
-              return this.id.match(/^(?!vrtx-[\S]+-listing|vrtx-collection)[\S]+/);
-            })
-            .find("#main")
-            .not("#left-main")
-	        .find("a").each(function(i, e){
-		      visualizeDeadLink(this, e);
+		$("iframe").contents().find("body")
+		  .filter(function() {
+            return this.id.match(/^(?!vrtx-[\S]+-listing|vrtx-collection)[\S]+/);
+          })
+          .find("#main")
+          .not("#left-main")
+	      .find("a").each(function(i, e){
+		    visualizeDeadLink(this, e);
           });
        </#if>
-	});	
+	});
   });	
   </script>
   

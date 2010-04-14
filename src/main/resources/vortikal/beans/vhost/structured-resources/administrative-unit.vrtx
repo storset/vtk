@@ -9,7 +9,7 @@ resourcetype administrative-unit {
     phone : string multiple external:unitMetadataLdapService,
     fax : string multiple external:unitMetadataLdapService,
     email : string multiple external:unitMetadataLdapService,
-    title : derived (name, areacode) eval (name + "(" + areacode + ")")
+    title : derived (name) eval (name)
       overrides title default name,
     picture : image_ref,
     introduction : simple_html,
@@ -39,15 +39,28 @@ resourcetype administrative-unit {
     getExternalUnitInfo unitMetadataLdapService requires(areacode)
   }
 
+  view-components {
+
+    title {
+      ##
+      [def v resource-prop(".", "title")]
+      [if v != null]
+        [val v]
+      [endif]
+      ##
+    }
+
+  }
+
   view {
     ##
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <title><resource:name /></title>
+        <title><comp:title /></title>
       </head>
       <body>
-        <title><resource:name /></title>
+        <h2><comp:title /></h2>
       </body>
     </html>
     ##

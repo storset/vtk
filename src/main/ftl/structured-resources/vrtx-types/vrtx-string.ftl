@@ -5,7 +5,14 @@
   <#if dropdown>
   <select name="${inputFieldName}">
     <#list valuemap?keys as key>
-	<option value="${key?html}" <#if value == key> selected </#if>>${valuemap[key]}</option>
+    <#if key = "range">
+      <#local rangeList = valuemap[key] />
+      <#list rangeList as rangeEntry >
+        <option value="${rangeEntry?html}" <#if value == rangeEntry?string> selected </#if>>${rangeEntry}</option>
+      </#list>
+    <#else>
+      <option value="${key?html}" <#if value == key> selected </#if>>${valuemap[key]}</option>
+    </#if>
 	</#list>
 	</select>
   <#else>

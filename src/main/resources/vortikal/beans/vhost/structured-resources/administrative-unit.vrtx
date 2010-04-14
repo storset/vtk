@@ -26,7 +26,8 @@ resourcetype administrative-unit {
   edit-rules {
     areacode (size[8]),
     selectedEmployees (size[8]),
-    group employees (displayEmployees, selectedEmployees, numberOfEmployeesToDisplay, urlToEmployeesList) (after responsibilities)
+    group employees (displayEmployees, selectedEmployees, numberOfEmployeesToDisplay, urlToEmployeesList) (after responsibilities),
+    numberOfEmployeesToDisplay (dropdown)
   }
 
   scripts {
@@ -64,7 +65,9 @@ resourcetype administrative-unit {
        nn : ("true" = "Ja", "false" = "Nei")
      },
      numberOfEmployeesToDisplay {
-       range : ("1..10", "15", "20", "25", "30")
+       en : (range = "1..10,15,20,25,30"),
+       no : (range = "1..10,15,20,25,30"),
+       nn : (range = "1..10,15,20,25,30")
      }
   }
 

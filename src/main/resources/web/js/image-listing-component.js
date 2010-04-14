@@ -72,7 +72,7 @@
 	      jQuery(wrapperThumbsLinks).each(function(j) {
 	    	if(jQuery(this).hasClass("active")) {
 	    	   if(init) {
-   		 	 $(image).stop().fadeTo(0, 1);
+   		 	     $(image).stop().fadeTo(0, 1);
 	    	   } else {
 	    	     jQuery(this).removeClass("active");
 	    	     jQuery("img", this).stop().fadeTo(settings.fadeThumbsInOutTime, settings.fadedThumbsOutOpacity);
@@ -82,11 +82,11 @@
 	    	}
 	      });
 
-             $(wrapperContainer + "-description").remove();
-	     $("<div class='" + container.substring(1) + "-description'>" + $(image).attr("alt") + "</div>").insertAfter(wrapperContainer);
-	     if($(image).attr("alt") != null && $(image).attr("alt") != "") {
-	       $(wrapperContainer + "-description").css("width", $(wrapper + " " + container).width());
-             }
+          $(wrapperContainer + "-description").remove();
+	      $("<div class='" + container.substring(1) + "-description'>" + $(image).attr("alt") + "</div>").insertAfter(wrapperContainer);
+	      if($(image).attr("alt") != null && $(image).attr("alt") != "") {
+	        $(wrapperContainer + "-description").css("width", $(wrapper + " " + container).width());
+          }
 	 }
 
          function addPagingEvents(navClass) {
@@ -95,22 +95,22 @@
               var $$ = $(wrapperThumbsLinks + ".active");
 
               if(navClass == "next" || navClass == container.substring(1) + "-link") {
-	        if($$.parent().next().length != 0) {
+	            if($$.parent().next().length != 0) {
                   $$.parent().next().find("a").click();
                 } else {
-   	          $(wrapper + " ul li:first a").click();
+   	              $(wrapper + " ul li:first a").click();
                 }
               } else {
- 	        if($$.parent().prev().length != 0) {
+ 	            if($$.parent().prev().length != 0) {
                   $$.parent().prev().find("a").click();
-	        } else {
+	            } else {
                   $(wrapper + " ul li:last a").click();
-	        }
-	      }
-	      e.preventDefault();
+	            }
+	          }
+	          e.preventDefault();
            });
            //init
-	   if(navClass == "next" || navClass == "prev") {
+	       if(navClass == "next" || navClass == "prev") {
              fadeMultiple(new Array(wrapper + " a." + navClass,
                                     wrapper + " a." + navClass + " span"), 0, 0);
            }
@@ -118,15 +118,15 @@
              fadeMultiple(new Array(wrapper + " a.next span",
                                      wrapper + " a.prev span"), settings.fadeNavInOutTime, 0.2);
              if(navClass == "prev") {
-	       $(wrapper + " a.prev").stop().fadeTo(settings.fadeNavInOutTime, 1);
-	       $(wrapper + " a.next").stop().fadeTo(settings.fadeNavInOutTime, 0.6);
+	           $(wrapper + " a.prev").stop().fadeTo(settings.fadeNavInOutTime, 1);
+	           $(wrapper + " a.next").stop().fadeTo(settings.fadeNavInOutTime, 0.6);
              } else {
                $(wrapper + " a.next").stop().fadeTo(settings.fadeNavInOutTime, 1);
-	       $(wrapper + " a.prev").stop().fadeTo(settings.fadeNavInOutTime, 0.6);
+	           $(wrapper + " a.prev").stop().fadeTo(settings.fadeNavInOutTime, 0.6);
              }
-	   }, function () {
-              fadeMultiple(new Array(wrapper + " a.next", wrapper + " a.next span",
-                                     wrapper + " a.prev", wrapper + " a.prev span"), settings.fadeNavInOutTime, 0);
+	       }, function () {
+             fadeMultiple(new Array(wrapper + " a.next", wrapper + " a.next span",
+                                    wrapper + " a.prev", wrapper + " a.prev span"), settings.fadeNavInOutTime, 0);
            });
 
 	   if(navClass != "next" && navClass != "prev") {
@@ -177,7 +177,7 @@
 	   }
 	 }
 
-         function generateLinkImage(theimage, thelink) {
+     function generateLinkImage(theimage, thelink) {
   	   var img = new Image();
   	   var src = $(theimage).attr("src").split("?")[0];
   	   var alt = $(theimage).attr("alt"); img.src = src; img.alt = alt;

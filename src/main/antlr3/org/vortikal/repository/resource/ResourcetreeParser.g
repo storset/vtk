@@ -59,10 +59,15 @@ vocabularyentry
 		-> ^(NAME (vocabularylangentry)*)
 	;
 	
-vocabularylangentry 
-	: NAME COLON LP (vocabularykeyvalue (COMMA vocabularykeyvalue)*) RP
-	  -> ^(NAME (vocabularykeyvalue)*)
+vocabularylangentry
+	:	NAME COLON LP (vocabularykeyvalue (COMMA vocabularykeyvalue)*) RP
+		-> ^(NAME (vocabularykeyvalue)*)
+	|
+		NAME COLON LP range RP
+		-> ^(NAME range)
 	;
+
+range	:	RANGE EQ QTEXT -> ^(RANGE QTEXT);
 	
 vocabularykeyvalue
 	: QTEXT (EQ (QTEXT)*)? -> ^(QTEXT ((QTEXT)*)?);

@@ -76,6 +76,7 @@ ORIENTATION
 	:	(HORIZONTAL | VERTICAL);
 BEFORE	:	'before';
 AFTER	:	'after';
+RANGE	:	'range';
 LETTER	:	('a'..'z' | 'A'..'Z');
 NUMBER	:	('0'..'9')+;
 NAME	:	(LETTER | '-' | '_')+;
@@ -134,7 +135,7 @@ fragment LARGE
 fragment HORIZONTAL 
 	:	'horizontal';
 fragment VERTICAL
-    :   'vertical';
+	:	'vertical';
 
 // Scripting
 fragment ONCLICK

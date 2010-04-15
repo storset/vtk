@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2010, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,46 +30,59 @@
  */
 package org.vortikal.repository.store;
 
-/**
- * Basic impl of <code>PrincipalMetadata</code>.
- *
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+/*
+ * Default implementation of container for metadata
  */
-public class PrincipalMetadataImpl extends MetadataImpl implements PrincipalMetadata {
-    
-    private String qualifiedName;
-    
-    public PrincipalMetadataImpl(String qualifiedName) {
-        if (qualifiedName == null) {
-            throw new IllegalArgumentException("Qualified name cannot be null");
+public class MetadataImpl implements Metadata {
+
+    private Map<String, List<Object>> attributes = new HashMap<String, List<Object>>();
+
+    public void addAttributeValue(String attribute, Object value) {
+        List<Object> values = this.attributes.get(attribute);
+        if (values == null) {
+            values = new ArrayList<Object>();
+            this.attributes.put(attribute, values);
         }
-        this.qualifiedName = qualifiedName;
-    }
-
-    public String getQualifiedName() {
-        return this.qualifiedName;
+        values.add(value);
     }
     
-    @Override
-    public String toString() {
-        StringBuilder buffer = new StringBuilder(getClass().getName());
-        buffer.append("[qualifiedName=").append(qualifiedName).append(']');
-        return buffer.toString();
-    }
-    
-    @Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-
-        if (other == null || this.getClass() != other.getClass()) {
-            return false;
+    public void setAttributeValues(String name, List<Object> values) {
+        if (values == null) {
+            this.attributes.remove(name);
+        } else {
+            this.attributes.put(name, values);
         }
-
-        return this.qualifiedName.equals(((PrincipalMetadataImpl)other).qualifiedName);
     }
     
     @Override
-    public int hashCode() {
-        return this.qualifiedName.hashCode();
+    public Object getValue(String attributeName) {
+        List<Object> values = this.attributes.get(attributeName);
+        if (values == null || values.size() == 0) {
+            return null;
+        }
+        return values.get(0);
     }
     
+    @Override
+    public List<Object> getValues(String attributeName) {
+        List<Object> values = this.attributes.get(attributeName);
+        if (values != null) {
+            return Collections.unmodifiableList(values);
+        }
+        
+        return null;
+    }
+    
+    @Override
+    public Set<String> getAttributeNames() {
+        return Collections.unmodifiableSet(this.attributes.keySet());
+    }
+
 }

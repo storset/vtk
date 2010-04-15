@@ -30,10 +30,6 @@
  */
 package org.vortikal.repository.store;
 
-
-import java.util.List;
-import java.util.Set;
-
 /**
  * Simplistic and generic interface for accessing principal metadata
  * as "attribute -> list of values"-mappings.
@@ -42,7 +38,7 @@ import java.util.Set;
  * when creating {@link org.vortikal.security.Principal} instances.
  * 
  */
-public interface PrincipalMetadata {
+public interface PrincipalMetadata extends Metadata {
 
     public static final String DESCRIPTION_ATTRIBUTE = "description";
     public static final String URL_ATTRIBUTE = "url";
@@ -56,33 +52,5 @@ public interface PrincipalMetadata {
      * @return The qualified name as a <code>String</code>.
      */
     public String getQualifiedName();
-
-    /**
-     * Get value of attribute with the given name. If
-     * the attribute has multiple values, then the first
-     * value is returned. 
-     * 
-     * @param attributeName The name of the attribute.
-     * @return An object representing the value or <code>null</code> if
-     *         there is no value(s) associated with the attribute.
-     */
-    public Object getValue(String attributeName);
-    
-    /**
-     * Get all values of attribute with the given name.
-     * 
-     * @param attributeName The name of the attribute.
-     * @return An list of objects representing the values or <code>null</code> if
-     *         there are no values associated with the attribute.
-     */
-    public List<Object> getValues(String attributeName);
-    
-
-    /**
-     * Returns set of all attribute names for this instance.
-     * 
-     * @return
-     */
-    public Set<String> getAttributeNames();
 
 }

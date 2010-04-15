@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2010, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,46 +30,40 @@
  */
 package org.vortikal.repository.store;
 
-/**
- * Basic impl of <code>PrincipalMetadata</code>.
- *
+import java.util.List;
+import java.util.Set;
+
+/*
+ * Generic interface for holding/accessing metadata
  */
-public class PrincipalMetadataImpl extends MetadataImpl implements PrincipalMetadata {
-    
-    private String qualifiedName;
-    
-    public PrincipalMetadataImpl(String qualifiedName) {
-        if (qualifiedName == null) {
-            throw new IllegalArgumentException("Qualified name cannot be null");
-        }
-        this.qualifiedName = qualifiedName;
-    }
+public interface Metadata {
 
-    public String getQualifiedName() {
-        return this.qualifiedName;
-    }
-    
-    @Override
-    public String toString() {
-        StringBuilder buffer = new StringBuilder(getClass().getName());
-        buffer.append("[qualifiedName=").append(qualifiedName).append(']');
-        return buffer.toString();
-    }
-    
-    @Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
+    /**
+     * Get value of attribute with the given name. If the attribute has multiple
+     * values, then the first value is returned.
+     * 
+     * @param attributeName
+     *            The name of the attribute.
+     * @return An object representing the value or <code>null</code> if there is
+     *         no value(s) associated with the attribute.
+     */
+    public Object getValue(String attributeName);
 
-        if (other == null || this.getClass() != other.getClass()) {
-            return false;
-        }
+    /**
+     * Get all values of attribute with the given name.
+     * 
+     * @param attributeName
+     *            The name of the attribute.
+     * @return An list of objects representing the values or <code>null</code>
+     *         if there are no values associated with the attribute.
+     */
+    public List<Object> getValues(String attributeName);
 
-        return this.qualifiedName.equals(((PrincipalMetadataImpl)other).qualifiedName);
-    }
-    
-    @Override
-    public int hashCode() {
-        return this.qualifiedName.hashCode();
-    }
-    
+    /**
+     * Returns set of all attribute names for this instance.
+     * 
+     * @return
+     */
+    public Set<String> getAttributeNames();
+
 }

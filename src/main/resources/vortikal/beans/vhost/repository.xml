@@ -30,7 +30,9 @@
   <aop:config>
     <!-- Main pointcut for repository opertions -->
     <aop:pointcut id="repository.repositoryOperationPointcut"
-                  expression="execution(* org.vortikal.repository.Repository.*(..)) and bean(repository.internal)"/>
+                  expression="bean(repository.internal)
+                              and execution(* org.vortikal.repository.Repository.*(..))
+                              and not execution(* org.vortikal.repository.Repository.search(..))"/>
 
     <!-- Point cut for ResourceChangeNotifier.pollChanges() -->
     <aop:pointcut id="repository.resourceChangeNotifierPointcut"

@@ -21,7 +21,7 @@
       </list>
     </property>
     <property name="handler">
-      <ref bean="previewIframeHandler" />
+      <ref bean="previewAdminIframeHandler" />
     </property>
   </bean>
 

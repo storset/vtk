@@ -73,7 +73,7 @@ resourcetype contact-supervisor {
 
   localization {
      title : (en : "Title", no : "Tittel", nn : "Tittel"),
-     id : (en : "Id", no : "Id", nn : "Id"),
+     id : (en : "Identifier", no : "Identifikator", nn : "Identifikator"),
      contact-supervisor-box : (en : "Content", no : "Innhold", nn : "Innhold"),
      boxTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
      boxType : (en : "Type", no : "Type", nn : "Type"),

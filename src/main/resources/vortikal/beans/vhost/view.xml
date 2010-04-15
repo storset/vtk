@@ -16,6 +16,7 @@
         <entry key="displayResource" value-ref="displayResourceView" />
         <entry key="collectionListingAsFeed" value-ref="collectionListingAsFeedView" />
         <entry key="redirectToPublish" value-ref="redirectToPublishView" />
+        <entry key="previewViewIframe" value-ref="previewViewIframeView" />
       </map>
     </property>
   </bean>
@@ -115,6 +116,21 @@
     <property name="referenceDataProviders">
       <list>
         <ref bean="redirectToPermissionsProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="previewViewIframeView" parent="freemarkerView">
+    <property name="url" value="pages/preview-view-iframe.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="visualizeBrokenLinks" value="${preview.visualizeBrokenLinks}" />
+      </map>
+    </property>
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="iframeJSProvider" />
+        <ref bean="resourceContextProvider" />
       </list>
     </property>
   </bean>

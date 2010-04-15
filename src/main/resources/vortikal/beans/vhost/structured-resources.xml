@@ -29,7 +29,7 @@
         <ref bean="structuredResources.typeAssertion" />
       </list>
     </property>
-    <property name="handler" ref="previewIframeHandler" />
+    <property name="handler" ref="previewAdminIframeHandler" />
     <property name="handlerInterceptors" ref="previewUnpublishedServiceInterceptor" />
   </bean>
 

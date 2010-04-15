@@ -439,7 +439,7 @@
       </bean>
     </property>
   </bean>
-
+  
   <bean id="redirectToManageAssertion" class="org.vortikal.web.service.AndAssertion">
     <property name="assertions">
       <list>
@@ -456,6 +456,27 @@
     </property>
   </bean>
 
+
+  <bean id="previewViewIframeService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="viewService" />
+    <property name="order" value="-90" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="vrtx" />
+          <property name="parameterValue" value="previewViewIframe" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="previewViewIframeHandler" />
+  </bean>
+
+
+  <bean id="previewViewIframeHandler" class="org.vortikal.web.display.url.ResourceServiceURLController"
+    parent="repositoryAware">
+    <property name="viewName" value="previewViewIframe" />
+    <property name="service" ref="viewService" />
+  </bean>
 
 
   <bean id="displayResourceService" class="org.vortikal.web.service.ServiceImpl">

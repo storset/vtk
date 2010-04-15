@@ -638,7 +638,7 @@
         <ref bean="contentTypeMatchesHtml" />
       </list>
     </property>
-    <property name="handler" ref="previewIframeHandler" />
+    <property name="handler" ref="previewAdminIframeHandler" />
   </bean>
 
   <bean id="previewImageService" class="org.vortikal.web.service.ServiceImpl">
@@ -686,7 +686,7 @@
         </bean>
       </list>
     </property>
-    <property name="handler" ref="previewIframeHandler" />
+    <property name="handler" ref="previewAdminIframeHandler" />
     <property name="handlerInterceptors" ref="previewCollectionListingServiceInterceptor" />
   </bean>
 
@@ -973,9 +973,9 @@
     <property name="viewName" value="manageCollectionListing" />
   </bean>
 
-  <bean id="previewIframeHandler" class="org.vortikal.web.display.url.ResourceServiceURLController"
+  <bean id="previewAdminIframeHandler" class="org.vortikal.web.display.url.ResourceServiceURLController"
     parent="repositoryAware">
-    <property name="viewName" value="previewIframe" />
+    <property name="viewName" value="previewAdminIframe" />
     <property name="service" ref="viewService" />
   </bean>
 
@@ -1007,7 +1007,7 @@
         <entry key="redirectToAbout" value-ref="redirectToAboutView" />
         <entry key="permissions" value-ref="permissionsView" />
         <entry key="previewImage" value-ref="previewImageView" />
-        <entry key="previewIframe" value-ref="previewIframeView" />
+        <entry key="previewAdminIframe" value-ref="previewAdminIframeView" />
         <entry key="previewText" value-ref="previewTextView" />
         <entry key="previewFallback" value-ref="previewFallbackView" />
         <entry key="publishing" value-ref="publishingView" />
@@ -1437,8 +1437,8 @@
     </property>
   </bean>
 
-  <bean id="previewIframeView" parent="freemarkerView">
-    <property name="url" value="pages/preview-iframe.ftl" />
+  <bean id="previewAdminIframeView" parent="freemarkerView">
+    <property name="url" value="pages/preview-admin-iframe.ftl" />
     <property name="attributesMap">
       <map>
         <entry key="visualizeBrokenLinks" value="${preview.visualizeBrokenLinks}" />

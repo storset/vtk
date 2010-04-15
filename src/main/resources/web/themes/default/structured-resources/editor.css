@@ -224,6 +224,7 @@ input.vrtx-move-down-button  {
 }
 
 .vrtx-json #main-content .vrtx-json-element,
+.vrtx-json #contact-supervisor-box .vrtx-json-element,
 .vrtx-json #additional-content .vrtx-json-element,
 .vrtx-json #featured-items .vrtx-json-element {
    width: 80%;
@@ -235,6 +236,7 @@ input.vrtx-move-down-button  {
 }
 
 .vrtx-json #main-content .vrtx-json-element input.vrtx-remove-button,
+.vrtx-json #contact-supervisor-box .vrtx-json-element input.vrtx-remove-button,
 .vrtx-json #additional-content .vrtx-json-element input.vrtx-remove-button,
 .vrtx-json #featured-items .vrtx-json-element input.vrtx-remove-button {
   position: absolute;
@@ -246,12 +248,14 @@ input.vrtx-move-down-button  {
 }
 
 .vrtx-json #main-content .vrtx-json-element .vrtx-html iframe,
+.vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-html iframe,
 .vrtx-json #additional-content .vrtx-json-element .vrtx-html iframe,
 .vrtx-json #featured-items .vrtx-json-element .vrtx-html iframe {
   height: 300px;
 }
 
 .vrtx-json #main-content .header,
+.vrtx-json #contact-supervisor-box .header,
 .vrtx-json #additional-content .header,
 .vrtx-json #featured-items  .header {
   padding-bottom:10px !important;
@@ -350,6 +354,15 @@ input.vrtx-move-down-button  {
     width: 900px;
 }
 
+#contact-supervisor-box {
+  max-width: 750px;	
+}
+
+#contact-supervisor-box iframe {
+  width: 600px !important;
+  height: 150px !important;
+}
+
 /* END Set explisit widths and heights */
 
 .submit {
@@ -368,18 +381,21 @@ h2.vrtx-title {
 }
 
 .vrtx-json #additional-content .vrtx-string,
-.vrtx-json #main-content .vrtx-string {
+.vrtx-json #main-content .vrtx-string,
+.vrtx-json #contact-supervisor-box .vrtx-string {
   clear: none;
 }
 
 /* IE7 fix */
 .vrtx-json #main-content .vrtx-json-element .vrtx-html,
+.vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-html,
 .vrtx-json #additional-content .vrtx-json-element .vrtx-html,
 .vrtx-json #featured-items .vrtx-json-element .vrtx-html {
   float: none;
 }
 
 .vrtx-json #main-content .vrtx-json-element .vrtx-html > div,
+.vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-html > div,
 .vrtx-json #additional-content .vrtx-json-element .vrtx-html > div,
 .vrtx-json #featured-items .vrtx-json-element .vrtx-html > div {
   padding-bottom: 10px;	

@@ -2,7 +2,7 @@ resourcetype contact-supervisor {
 
   properties {
     title : string overrides title,
-    main-content : json ( id : string, description : simple_html, contactInfo : html) multiple noextract
+    contact-supervisor-box : json ( id : string, description : simple_html, contactInfo : html) multiple noextract
   }
   
   view-components {
@@ -13,11 +13,11 @@ resourcetype contact-supervisor {
 	    ##
       }
       
-      main-content {
+      contact-supervisor-box {
       ##
       [resource-props "."]
       [def document structured-document()]
-      [def boxes json-attr(document, "properties.main-content")]
+      [def boxes json-attr(document, "properties.contact-supervisor-box")]
       [if boxes != null]
       
         [list boxes box]
@@ -64,7 +64,7 @@ resourcetype contact-supervisor {
       <body id="vrtx-contact-supervisor">
           <div id="vrtx-content">
           <h1><comp:title /></h1>      
-             <comp:main-content />
+             <comp:contact-supervisor-box />
           </div>
       </body>
     </html>
@@ -74,7 +74,7 @@ resourcetype contact-supervisor {
   localization {
      title : (en : "Title", no : "Tittel", nn : "Tittel"),
      id : (en : "Id", no : "Id", nn : "Id"),
-     main-content : (en : "Main content", no : "Hovedinnhold", nn : "Hovedinnhold"),
+     contact-supervisor-box : (en : "Content", no : "Innhold", nn : "Innhold"),
      boxTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
      boxType : (en : "Type", no : "Type", nn : "Type"),
      contactInfo : (en : "Contact Info", no : "Kontaktinformasjon", nn : "Kontaktinformasjon"),

@@ -49,6 +49,24 @@ resourcetype organizational-unit {
       [endif]
       ##
     }
+    
+    contact-information {
+      ##
+        [resource-props "."]
+        [if postalAddress != null && postalAddress != ""]
+         <span class="vrtx-label">[localized "postalAddress"]</span>
+         [list postalAddress postalAddressLine]
+           <span class="vrtx-address-line">[if postalAddressLine != null][val postalAddressLine][endif]</span>
+         [endlist]
+        [endif]
+        [if visitingAddress != null && visitingAddress != ""]
+          <span class="vrtx-label">[localized "visitingAddress"]</span>
+          [list visitingAddress visitingAddressLine]
+            <span class="vrtx-address-line">[if visitingAddressLine != null][val visitingAddressLine][endif]</span>
+          [endlist]
+        [endif]
+      ##
+    }
 
   }
 
@@ -60,7 +78,8 @@ resourcetype organizational-unit {
         <title><comp:title /></title>
       </head>
       <body>
-        <h2><comp:title /></h2>
+        <h1><comp:title /></h1>
+        <comp:contact-information />
       </body>
     </html>
     ##

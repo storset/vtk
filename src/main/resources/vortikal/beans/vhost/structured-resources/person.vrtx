@@ -66,7 +66,7 @@ resourcetype person {
 
     contact-information {
       ##
-       [resource-props "."] 
+       [resource-props "."]
        <div class="vrtx-person-contactinfo">
          [if email != null && email != ""]
          	<div class="vrtx-person-contact-info-line vrtx-email"><span class="vrtx-label">[localized "email"]</span>
@@ -74,10 +74,10 @@ resourcetype person {
          			<a class="vrtx-value" href="mailto:[val emailLine]">[val emailLine]</a>
          		[endlist]
          	</div>
-         [endif]      
+         [endif]
          [if phone != null && phone != ""]
            <div class="vrtx-person-contact-info-line vrtx-phone">
-           	<span class="vrtx-label">[localized "phone"]</span> 
+           	<span class="vrtx-label">[localized "phone"]</span>
            	[list phone phoneLine]
          	  <span class="vrtx-value">[val phoneLine]</span>
          	[endlist]
@@ -85,7 +85,7 @@ resourcetype person {
          [endif]
          [if mobile != null && mobile != ""]
            <div class="vrtx-person-contact-info-line vrtx-mobile">
-           	<span class="vrtx-label">[localized "mobile"]</span> 
+           	<span class="vrtx-label">[localized "mobile"]</span>
            	[list mobile mobileLine]
            		<span class="vrtx-value">[val mobileLine]</span>
            	[endlist]
@@ -93,7 +93,7 @@ resourcetype person {
          [endif]
          [if fax != null && fax != ""]
            <div class="vrtx-person-contact-info-line vrtx-fax">
-           	<span class="vrtx-label">[localized "fax"]</span> 
+           	<span class="vrtx-label">[localized "fax"]</span>
            	[list fax faxLine]
            		<span class="vrtx-value">[val faxLine]</span>
            	[endlist]
@@ -107,7 +107,7 @@ resourcetype person {
          [endif]
          [if availableHours != null && availableHours != ""]
            <div class="vrtx-person-contact-info-line vrtx-available-hours">
-           	<span class="vrtx-label">[localized "availableHours"]</span> 
+           	<span class="vrtx-label">[localized "availableHours"]</span>
            	<span class="vrtx-value">[val availableHours]</span>
            </div>
          [endif]
@@ -202,7 +202,7 @@ resourcetype person {
             [if (publications != null && publications != "")]
               [val publications unescaped]
             [else]
-              <div id="vrtx-publication-tabs" class="vrtx-person-publications">   
+              <div id="vrtx-publication-tabs" class="vrtx-person-publications">
                ${resource:publications}
               </div>
             [endif]
@@ -289,7 +289,7 @@ resourcetype person {
           <h1><comp:title /></h1>
           <comp:position />
           <div id="vrtx-person-contact-info-wrapper">
-              <comp:person-image />   
+              <comp:person-image />
               <comp:contact-information />
               <comp:contact-extras />
               <div class="vrtx-person-contact-info-wrapper-end"></div>

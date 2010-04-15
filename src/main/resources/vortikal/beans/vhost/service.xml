@@ -414,11 +414,19 @@
   </bean>
 
 
-  <bean id="redirectToManageService" class="org.vortikal.web.service.ServiceImpl">
+  <bean id="redirectToManageHTTPSService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="viewService" />
     <property name="order" value="-100" />
     <property name="assertions">
       <list>
+        <bean class="org.vortikal.web.service.InvertAssertion">
+          <property name="assertion">
+            <bean parent="abstractResourcePrincipalPermissionAssertion">
+              <property name="permission" ref="ACTION_READ" />
+              <property name="anonymous" value="true" />
+            </bean>
+          </property>
+        </bean>
         <ref bean="redirectToManageAssertion" />
       </list>
     </property>
@@ -427,6 +435,36 @@
         <!-- Redirect to manage hostname -->
         <bean class="org.vortikal.web.interceptors.ConfigurableRedirectInterceptor">
           <property name="protocol" value="${manage.protocol}" />
+          <property name="hostName" value="${manage.hostName}" />
+          <property name="port" value="${manage.port}" />
+        </bean>
+      </list>
+    </property>
+    <!-- Dummy handler that is never invoked (the handler interceptor will prevent it): -->
+    <property name="handler">
+      <bean class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+        <property name="viewName" value="HTTP_200_OK" />
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="redirectToManageHTTPService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="viewService" />
+    <property name="order" value="-100" />
+    <property name="assertions">
+      <list>
+        <bean parent="abstractResourcePrincipalPermissionAssertion">
+          <property name="permission" ref="ACTION_READ" />
+          <property name="anonymous" value="true" />
+        </bean>
+        <ref bean="redirectToManageAssertion" />
+      </list>
+    </property>
+        <property name="handlerInterceptors">
+      <list>
+        <!-- Redirect to manage hostname -->
+        <bean class="org.vortikal.web.interceptors.ConfigurableRedirectInterceptor">
+          <property name="protocol" value="http" />
           <property name="hostName" value="${manage.hostName}" />
           <property name="port" value="${manage.port}" />
         </bean>

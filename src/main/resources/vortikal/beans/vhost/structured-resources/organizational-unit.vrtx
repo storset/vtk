@@ -1,14 +1,14 @@
-resourcetype administrative-unit {
+resourcetype organizational-unit {
 
   properties {
     areacode : string,
     getExternalUnitInfo : boolean,
-    name : string external:unitMetadataLdapService,
-    postalAddress : string multiple external:unitMetadataLdapService,
-    visitingAddress : string multiple external:unitMetadataLdapService,
-    phone : string multiple external:unitMetadataLdapService,
-    fax : string multiple external:unitMetadataLdapService,
-    email : string multiple external:unitMetadataLdapService,
+    name : string external:organizationMetadataLdapService,
+    postalAddress : string multiple external:organizationMetadataLdapService,
+    visitingAddress : string multiple external:organizationMetadataLdapService,
+    phone : string multiple external:organizationMetadataLdapService,
+    fax : string multiple external:organizationMetadataLdapService,
+    email : string multiple external:organizationMetadataLdapService,
     title : derived (name) eval (name)
       overrides title default name,
     picture : image_ref,
@@ -36,7 +36,7 @@ resourcetype administrative-unit {
   }
 
   services {
-    getExternalUnitInfo unitMetadataLdapService requires(areacode)
+    getExternalUnitInfo organizationMetadataLdapService requires(areacode)
   }
 
   view-components {

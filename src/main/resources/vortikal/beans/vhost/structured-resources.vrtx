@@ -7,4 +7,4 @@ include structured-resources/boxes.vrtx
 include structured-resources/frontpage.vrtx
 include structured-resources/featured-content.vrtx
 include structured-resources/contact-supervisor.vrtx
-include structured-resources/administrative-unit.vrtx
+include structured-resources/organizational-unit.vrtx

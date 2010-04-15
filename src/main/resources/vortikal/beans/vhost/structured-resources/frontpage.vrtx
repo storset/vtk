@@ -34,15 +34,15 @@ resourcetype frontpage {
            
            [if type != null && type != ""]
              [if picture != null && picture != ""]
-               <div class="vrtx-frontpage-box [val type]" id="vrtx-main-content-[val number]">
+               <div class="vrtx-frontpage-box vrtx-frontpage-box-picture [val type]" id="vrtx-main-content-[val number]">
              [else]
-               <div class="vrtx-frontpage-box vrtx-frontpage-box-no-picture [val type]" id="vrtx-main-content-[val number]">
+               <div class="vrtx-frontpage-box [val type]" id="vrtx-main-content-[val number]">
              [endif]
            [else]
              [if picture != null && picture != ""]
-               <div class="vrtx-frontpage-box" id="vrtx-main-content-[val number]">
+               <div class="vrtx-frontpage-box vrtx-frontpage-box-picture" id="vrtx-main-content-[val number]">
              [else]
-               <div class="vrtx-frontpage-box vrtx-frontpage-box-no-picture" id="vrtx-main-content-[val number]">
+               <div class="vrtx-frontpage-box" id="vrtx-main-content-[val number]">
              [endif]
            [endif]
              [if title != null && title != ""]
@@ -247,10 +247,10 @@ resourcetype frontpage {
       </head>
       <body id="vrtx-frontpage">
         <div id="vrtx-content">
-          <h1><comp:title /></h1>     
-          <comp:introduction-image />
-          <comp:introduction />    
-          <div id="vrtx-main-content">  
+          <h1><comp:title /></h1>
+          <div id="vrtx-main-content">
+            <comp:introduction-image />
+            <comp:introduction />   
             <comp:main-content />
           </div>
           <div id="vrtx-additional-content">

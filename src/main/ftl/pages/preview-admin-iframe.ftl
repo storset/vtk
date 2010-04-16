@@ -30,6 +30,10 @@
   <#stop "Unable to render model: required submodel
   'resourceContext' missing">
 </#if>
+<#if !resourcePrincipalPermissions?exists>
+  <#stop "Unable to render model: required submodel
+  'resourcePrincipalPermissions' missing">
+</#if>
 
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -48,37 +52,43 @@
     <#else>
       <#assign url = url + "?" + previewViewParameter />
     </#if>
+    
+    <#-- Do not show preview if resource is "Allowed for all" and we are on https. Should not normally happen -->
+    <#if (resourcePrincipalPermissions.permissionsQueryResult = 'true') && (resourcePrincipalPermissions.requestScheme = 'https')>
+      <p class="previewUnavailable">${vrtx.getMsg("preview.httpOnly")}</p>
+    
+    <#else>
+      <iframe class="preview" name="previewIframe" id="previewIframe" src="${url}" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0" vspace="0" hspace="0" style="overflow:visible; width:100%; ">
+        [Your user agent does not support frames or is currently configured
+        not to display frames. However, you may visit
+        <a href="${resourceReference}">the related document.</a>]
+      </iframe>
 
-    <iframe class="preview" name="previewIframe" id="previewIframe" src="${url}" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0" vspace="0" hspace="0" style="overflow:visible; width:100%; ">
-      [Your user agent does not support frames or is currently configured
-      not to display frames. However, you may visit
-      <a href="${resourceReference}">the related document.</a>]
-    </iframe>
+      <#-- iframe name="previewIframe" id="previewIframe" class="preview" src="${url}">
+        [Your user agent does not support frames or is currently configured
+        not to display frames. However, you may visit
+       <a href="${resourceReference}">the related document.</a>]
+      </iframe -->
 
-    <#-- iframe name="previewIframe" id="previewIframe" class="preview" src="${url}">
-      [Your user agent does not support frames or is currently configured
-      not to display frames. However, you may visit
-      <a href="${resourceReference}">the related document.</a>]
-    </iframe -->
-
-    <#--
-    <noframes>
-      [Your user agent does not support frames or is currently configured
-      not to display frames. However, you may visit
-      <a href="${resourceReference}">the related document.</a>]
-    -->
+      <#--
+      <noframes>
+        [Your user agent does not support frames or is currently configured
+        not to display frames. However, you may visit
+        <a href="${resourceReference}">the related document.</a>]
+      -->
 
 
-    <#-- We could also use the 'object' tag: -->
-    <#-- 
-    <object id="previewObject" class="preview" data="${resourceReference}"
-            type="${resourceContext.currentResource.*contentType*}">
-      [Your user agent does not support frames or is currently configured
-      not to display frames. However, you may visit
-      <a href="${resourceReference}">the related document.</a>]
-    </object>
-    -->
+      <#-- We could also use the 'object' tag: -->
+      <#-- 
+      <object id="previewObject" class="preview" data="${resourceReference}"
+              type="${resourceContext.currentResource.*contentType*}">
+        [Your user agent does not support frames or is currently configured
+        not to display frames. However, you may visit
+        <a href="${resourceReference}">the related document.</a>]
+      </object>
+      -->
 
+    </#if>
 
   </body>
 </html>

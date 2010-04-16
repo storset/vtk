@@ -1448,6 +1448,10 @@
       <list>
         <ref bean="iframeJSProvider" />
         <ref bean="resourceContextProvider" />
+        <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider" parent="repositoryAware">
+          <property name="permission" ref="ACTION_READ" />
+          <property name="anonymous" value="true" />
+        </bean>
       </list>
     </property>
   </bean>

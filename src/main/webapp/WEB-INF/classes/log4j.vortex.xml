@@ -25,6 +25,8 @@
     <appender-ref ref="stdout"/>
   </logger>
 
+  <logger name="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider"><level value="debug" /></logger>
+
   <logger name="org.vortikal.aop"><level value="info" /></logger>
   <logger name="org.vortikal.edit"><level value="info" /></logger>
   <logger name="org.vortikal.repository"><level value="info" /></logger>

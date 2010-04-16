@@ -39,10 +39,10 @@ form > div {
 }
 
 .tooltip {
-    float: left;
-    font-size: 0.75em;
-    padding-left:0.35em;
-    line-height:1.85em;
+  float: left;
+  font-size: 0.75em;
+  padding-left:0.35em;
+  line-height:1.85em;
 }
 
 .vrtx-string input {
@@ -51,33 +51,32 @@ form > div {
 
 .vrtx-grouped,.vrtx-grouped-vertical,.vrtx-grouped-horizontal,.vrtx-media-ref,.vrtx-simple-html,
 .vrtx-media-ref,.vrtx-simple-html-small,.vrtx-html,.vrtx-string,.vrtx-date,.vrtx-image-ref,
-.vrtx-checkbox,.vrtx-dropdownlist,.vrtx-radio,.vrtx-json, div.vrtx-json-element
-	{
+.vrtx-checkbox,.vrtx-dropdownlist,.vrtx-radio,.vrtx-json, div.vrtx-json-element {
   clear: left;
   float: left;
 }
 
 .vrtx-grouped,.vrtx-grouped-horizontal {
-    width: 100%;
+  width: 100%;
 }
 
 .vrtx-grouped > div,.vrtx-grouped-horizontal > div {
-    padding-bottom: 10px;
+  padding-bottom: 10px;
 }
 
 .vrtx-grouped-vertical {
-    clear: none;
-    position: relative;
-    width: auto;
+  clear: none;
+  position: relative;
+  width: auto;
 }
 
 .vrtx-html > div,.vrtx-simple-html >div,.vrtx-radio {
-    float: left;
-    width: 100%;
+  float: left;
+  width: 100%;
 }
 
 .vrtx-grouped .vrtx-string {
-	width: 100%;
+  width: 100%;
 }
 
 .vrtx-grouped-horizontal > *  {
@@ -95,11 +94,10 @@ form > div {
 .vrtx-html > label,
 .vrtx-simple-html > label,
 .vrtx-media-ref * > label,
-.vrtx-radio > label
-    {
-    font-size: 1em;
-    display: block;
-    padding-bottom: 10px;
+.vrtx-radio > label {
+  font-size: 1em;
+  display: block;
+  padding-bottom: 10px;
 }
 
 /* And override for grouped sub-properties */
@@ -110,10 +108,9 @@ form > div {
 .vrtx-grouped-vertical * .header,
 .vrtx-grouped * .header,
 .vrtx-json-element * > label,
-.vrtx-radio * > label
-    {
-    font-size: 0.9em;
-    padding: 0;
+.vrtx-radio * > label {
+  font-size: 0.9em;
+  padding: 0;
 }
 
 .vrtx-string .date {
@@ -144,71 +141,71 @@ iframe, .fieldset {
   width: 100%;
 }
 .vrtx-json-element {
-    width: auto;
+  width: auto;
 }
 
 /* START JSON and multiple fields */
 
 .fieldset div.title {
-    padding: 0;
+  padding: 0;
 }
 
 .vrtx-grouped-horizontal .vrtx-json .header,
 .vrtx-grouped .vrtx-json .header {
-    padding-bottom: 5px;
+  padding-bottom: 5px;
 }
 
 .vrtx-json-element, .vrtx-multipleinputfield {
-    padding-bottom: 15px;
+  padding-bottom: 15px;
 }
 
 #cssUrls .vrtx-json-element {
-    padding-bottom: 0;	
+  padding-bottom: 0;	
 }
 
 .vrtx-multipleinputfield input {
-	margin-right: 15px;
+  margin-right: 15px;
 }
 
 .vrtx-json-element > div {
-    padding-right: 15px;
-    padding-bottom: 10px;
+  padding-right: 15px;
+  padding-bottom: 10px;
 }
 
 .vrtx-json-element > div > label {
-    width: 100%;
+  width: 100%;
 }
 
 input.vrtx-add-button {
-    clear: left;
-    float: left;
-    display: block;
+  clear: left;
+  float: left;
+  display: block;
 }
 
 input.vrtx-remove-button,
 input.vrtx-move-up-button,
 input.vrtx-move-down-button {
-    height: 20px;	
+  height: 20px;	
 }
 	
 input.vrtx-remove-button {
-    float: left;
-    margin-top:16px;
+  float: left;
+  margin-top:16px;
 }
 
 input.vrtx-move-up-button,
 input.vrtx-move-down-button {
-    position: absolute;
-    right: 10px;
-    width:70px;
+  position: absolute;
+  right: 10px;
+  width:70px;
 }
 
 input.vrtx-move-up-button {
-	top: 10px;
+  top: 10px;
 }
 	
 input.vrtx-move-down-button  {
-	bottom: 10px;
+  bottom: 10px;
 }
 
 #participants input.vrtx-move-up-button,
@@ -217,22 +214,22 @@ input.vrtx-move-down-button  {
 #projects input.vrtx-move-down-button,
 #rssFeeds input.vrtx-move-up-button,
 #rssFeeds input.vrtx-move-down-button {
-    position: static;
-    margin-left: 15px;
-    float: left;
-    margin-top: 16px;
+  position: static;
+  margin-left: 15px;
+  float: left;
+  margin-top: 16px;
 }
 
 .vrtx-json #main-content .vrtx-json-element,
 .vrtx-json #contact-supervisor-box .vrtx-json-element,
 .vrtx-json #additional-content .vrtx-json-element,
 .vrtx-json #featured-items .vrtx-json-element {
-   width: 80%;
-   min-width: 500px;
-   padding: 10px 130px 10px 10px;
-   border: 1px solid #aaa;
-   position: relative;
-   margin-bottom:15px;
+  width: 80%;
+  min-width: 500px;
+  padding: 10px 130px 10px 10px;
+  border: 1px solid #aaa;
+  position: relative;
+  margin-bottom:15px;
 }
 
 .vrtx-json #main-content .vrtx-json-element input.vrtx-remove-button,
@@ -270,88 +267,86 @@ input.vrtx-move-down-button  {
 /* START Set explisit widths and heights */
 
 .vrtx-simple-html {
-	width: 500px;
+  width: 500px;
 }
 
 .vrtx-simple-html textarea {
-	height: 22.5ex;
-	width: 500px;
+  height: 22.5ex;
+  width: 500px;
 }
 
 .vrtx-simple-html iframe {
-	height: 300px;
+  height: 300px;
 }
 
 .vrtx-simple-html-small textarea {
-	height: 12.5ex;
-	width: 350px;
+  height: 12.5ex;
+  width: 350px;
 }
 
 .vrtx-simple-html-small {
-	width: 350px;
+  width: 350px;
 }
 
 .vrtx-simple-html-small iframe {
-	height: 95px;
+  height: 95px;
 }
 
 .vrtx-html {
-	width: 98% !important;
+  width: 98% !important;
 }
 
 .vrtx-image-ref img {
-    max-height: 150px;
+  max-height: 150px;
 }
 
 .vrtx-string.title,
 .vrtx-string.name,
 .vrtx-string.status-ongoing {
-    width: 98% !important; /* catch floating vertical box in IE7 */
+  width: 98% !important; /* catch floating vertical box in IE7 */
 }
 
 .vrtx-string.title #title {
-    width: 496px;
+  width: 496px;
 }
 
 #media-ref {
-    width: 370px;
+  width: 370px;
 }
 
 .introduction {
-    padding-right: 15px;
+  padding-right: 15px;
 }
 
 .introduction iframe {
-    height: 150px;
+  height: 150px;
 }
 
 .selectedPublications,.additional-content {
-    width: 98% !important;
+  width: 98% !important;
 }
 
 .related-content iframe,
 .selectedPublications iframe {
-    height: 210px;
+  height: 210px;
 }
 
 .related-content label,.visitingAddress {
-    display: none !important;
+  display: none !important;
 }
 
 .contactInfo iframe {
-    height: 200px;
+  height: 200px;
 }
 
-#participants .vrtx-string,#projects .vrtx-string,#rssFeeds .vrtx-string
-    {
-    clear: none;
-    padding-bottom: 0;
-    width:auto;
+#participants .vrtx-string,#projects .vrtx-string,#rssFeeds .vrtx-string {
+  clear: none;
+  padding-bottom: 0;
+  width:auto;
 }
 
-.fieldset#box-list-main,.fieldset#box-list-main div.vrtx-json-element,.fieldset#box-list-side,.fieldset#box-list-side div.vrtx-json-element
-    {
-    width: 900px;
+.fieldset#box-list-main,.fieldset#box-list-main div.vrtx-json-element,.fieldset#box-list-side,.fieldset#box-list-side div.vrtx-json-element {
+  width: 900px;
 }
 
 #contact-supervisor-box {
@@ -371,14 +366,14 @@ input.vrtx-move-down-button  {
 /* END Set explisit widths and heights */
 
 .submit {
-	clear: left;
-	display: block;
+  clear: left;
+  display: block;
 }
 
 h2.vrtx-title {
-	clear: left;
-	float: left;
-	overflow: hidden;
+  clear: left;
+  float: left;
+  overflow: hidden;
 }
 
 #projects .header {
@@ -414,53 +409,53 @@ input.date, input.hours, input.minutes {
 /* START Introduction image edit like the old one */
 
 .introImageAndCaption * > label {
-	font-size: 1em !important;
+  font-size: 1em !important;
 }
 
 .introImageAndCaption .vrtx-image-ref-label label {
-	display: block;
-	padding-bottom: 10px;
+  display: block;
+  padding-bottom: 10px;
 }
 
 .introImageAndCaption .header {
-	display: none;
+  display: none;
 }
 
 .introImageAndCaption .caption {
-	position: absolute;
-	top: 65px;
-	left: 0px;
+  position: absolute;
+  top: 65px;
+  left: 0px;
 }
 
 .introImageAndCaption div.vrtx-image-ref-browse {
-	float: left;
+  float: left;
 }
 
 .introImageAndCaption div.vrtx-image-ref-browse input#picture {
-	width: 200px;
+  width: 200px;
 }
 
 .introImageAndCaption div#picture\.preview {
-	margin: 0 0 0 370px;
-	height: 150px;
-	/* same height as (label, input + image-caption) to avoid the absolute positioned image-caption to overflow into below fields */
+  margin: 0 0 0 370px;
+  height: 150px;
+  /* same height as (label, input + image-caption) to avoid the absolute positioned image-caption to overflow into below fields */
 }
 
 .introImageAndCaption div#picture\.preview img {
-	padding: 0;
+  padding: 0;
 }
 
 /* STOP Introduction image edit like the old one */
 
 #help-links {
-    position:absolute;
-    right:2em;
-    padding-top: 1.25em;
-    text-align:right;
+  position:absolute;
+  right:2em;
+  padding-top: 1.25em;
+  text-align:right;
 }
 
 #help-links a {
-    font-size: 0.8em;
-    display: inline;
-    margin-left: 5px;
+  font-size: 0.8em;
+  display: inline;
+  margin-left: 5px;
 }

@@ -358,9 +358,13 @@ input.vrtx-move-down-button  {
   max-width: 750px;	
 }
 
-#contact-supervisor-box iframe {
-  width: 600px !important;
+#contact-supervisor-box .vrtx-simple-html iframe {
+  width: 350px !important;
   height: 150px !important;
+}
+
+#contact-supervisor-box .vrtx-html iframe {
+  height: 175px !important;
 }
 
 /* END Set explisit widths and heights */

@@ -2,94 +2,103 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
                        "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
-	<bean id="emailafriendService" class="org.vortikal.web.service.ServiceImpl">
-		<property name="parent" ref="viewService" />
-		<property name="order" value="-999" />
-		<property name="handler" ref="emailafriendHandler" />
-		<property name="assertions">
-			<bean class="org.vortikal.web.service.RequestParameterAssertion">
-				<property name="parameterName" value="vrtx" />
-				<property name="parameterValue" value="email-a-friend" />
-			</bean>
-		</property>
-	</bean>
-	<bean id="emailafriend.viewResolver" parent="viewResolver">
-		<property name="views">
-			<map>
-				<entry key="emailafriend.view" value-ref="emailafriend.view" />
-			</map>
-		</property>
-	</bean>
-	<bean id="emailafriend.view" parent="freemarkerView">
-		<property name="url" value="pages/email-a-friend.ftl" />
-		<property name="referenceDataProviders">
-			<list>
-				<ref bean="resourceContextProvider" />
-			</list>
-		</property>
-	</bean>
-	<bean id="javaMailSenderImpl" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-		<property name="host" value="${emailAFriend.mailServer}" />
-		<property name="port" value="${emailAFriend.mailServerPort}" />
-		<property name="protocol" value="${emailAFriend.mailServerProtocol}" />
-		<property name="defaultEncoding" value="utf-8" />
-	</bean>
-	<bean id="emailafriendHandler" class="org.vortikal.web.actions.share.EmailAFriendController">
-		<property name="repository" ref="repository" />
-		<property name="viewService" ref="viewService" />
-		<property name="viewName" value="emailafriend.view" />
-		<property name="siteName" value="${emailAFriend.siteName}" />
-		<property name="resourceManager" ref="resourceManager" />
-		<property name="javaMailSenderImpl" ref="javaMailSenderImpl" />
-		<property name="mailExecutor" ref="emailafriend.mailExecutor" />
-		<property name="mailTemplateProvider" ref="mailTemplateProvider" />
-		<property name="localeResolver" ref="viewServiceResourceAwareLocaleResolver" />
-	</bean>
-	<bean id="emailafriend.mailExecutor" class="org.vortikal.web.actions.share.MailExecutor">
-		<constructor-arg ref="emailafriend.taskExecutor" />
-	</bean>
-	<bean id="emailafriend.taskExecutor" class="org.springframework.core.task.SimpleAsyncTaskExecutor">
-		<property name="concurrencyLimit" value="${emailAFriend.concurrencyLimit}" />
-	</bean>
-	<!--
-		<bean id="taskExecutor"
-		class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
-		<property name="corePoolSize" value="10" /> <property
-		name="maxPoolSize" value="25" /> <property name="queueCapacity"
-		value="50" /> </bean>
-	-->
-	<bean id="decorating.emailAFriendURLComponent"
-		class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
-		<property name="namespace" ref="decorating.resourceNamespace" />
-		<property name="name" value="email-friend" />
-		<property name="description" value="Inserts a URL to email-a-friend service" />
-		<property name="view" ref="decorating.emailAFriendURLComponent.view" />
-	</bean>
-	<bean name="decorating.emailAFriendURLComponent.view" parent="freemarkerView">
-		<property name="url" value="layouts/email-a-friend.ftl" />
-		<property name="referenceDataProviders">
-			<list>
-				<ref bean="decorating.emailAFriendURLComponent.urlProvider" />
-				<ref bean="resourceContextProvider" />
-			</list>
-		</property>
-		<property name="attributes">
-            <map>
-                <entry key="url" value="${jsBaseURL}/email-a-friend.js" />
-            </map>
-        </property>
-	</bean>
-	<bean id="decorating.emailAFriendURLComponent.urlProvider"
-		class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
-		parent="repositoryAware">
-		<property name="modelName" value="emailLink" />
-		<property name="urlName" value="url" />
-		<property name="service" ref="emailafriendService" />
-	</bean>
-	<bean id="mailTemplateProvider" class="org.vortikal.web.actions.share.MailTemplateProvider">
-		<property name="view" ref="emailFriend.mailTemplateView" />
-	</bean>
-	<bean id="emailFriend.mailTemplateView" parent="freemarkerView">
-		<property name="url" value="pages/mail-template.ftl"></property>
-	</bean>
+
+  <bean id="emailafriendService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="viewService" />
+    <property name="order" value="-999" />
+    <property name="handler" ref="emailafriendHandler" />
+    <property name="assertions">
+      <bean class="org.vortikal.web.service.RequestParameterAssertion">
+        <property name="parameterName" value="vrtx" />
+        <property name="parameterValue" value="email-a-friend" />
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="emailafriend.viewResolver" parent="viewResolver">
+    <property name="views">
+      <map>
+        <entry key="emailafriend.view" value-ref="emailafriend.view" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="emailafriend.view" parent="freemarkerView">
+    <property name="url" value="pages/email-a-friend.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="javaMailSenderImpl" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+    <property name="host" value="${emailAFriend.mailServer}" />
+    <property name="port" value="${emailAFriend.mailServerPort}" />
+    <property name="protocol" value="${emailAFriend.mailServerProtocol}" />
+    <property name="defaultEncoding" value="utf-8" />
+  </bean>
+
+  <bean id="emailafriendHandler" class="org.vortikal.web.actions.share.EmailAFriendController">
+    <property name="repository" ref="repository" />
+    <property name="viewService" ref="viewService" />
+    <property name="viewName" value="emailafriend.view" />
+    <property name="siteName" value="${emailAFriend.siteName}" />
+    <property name="resourceManager" ref="resourceManager" />
+    <property name="javaMailSenderImpl" ref="javaMailSenderImpl" />
+    <property name="mailExecutor" ref="emailafriend.mailExecutor" />
+    <property name="mailTemplateProvider" ref="mailTemplateProvider" />
+    <property name="localeResolver" ref="viewServiceResourceAwareLocaleResolver" />
+  </bean>
+
+  <bean id="emailafriend.mailExecutor" class="org.vortikal.web.actions.share.MailExecutor">
+    <constructor-arg ref="emailafriend.taskExecutor" />
+  </bean>
+
+  <bean id="emailafriend.taskExecutor" class="org.springframework.core.task.SimpleAsyncTaskExecutor">
+    <property name="concurrencyLimit" value="${emailAFriend.concurrencyLimit}" />
+  </bean>
+
+  <!--
+    <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+    <property name="corePoolSize" value="10" /> <property name="maxPoolSize" value="25" /> <property
+    name="queueCapacity" value="50" /> </bean>
+  -->
+  <bean id="decorating.emailAFriendURLComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.resourceNamespace" />
+    <property name="name" value="email-friend" />
+    <property name="description" value="Inserts a URL to email-a-friend service" />
+    <property name="view" ref="decorating.emailAFriendURLComponent.view" />
+  </bean>
+
+  <bean name="decorating.emailAFriendURLComponent.view" parent="freemarkerView">
+    <property name="url" value="layouts/email-a-friend.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="decorating.emailAFriendURLComponent.urlProvider" />
+        <ref bean="resourceContextProvider" />
+      </list>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="url" value="${jsBaseURL}/email-a-friend.js" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="decorating.emailAFriendURLComponent.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
+    parent="repositoryAware">
+    <property name="modelName" value="emailLink" />
+    <property name="urlName" value="url" />
+    <property name="service" ref="emailafriendService" />
+  </bean>
+
+  <bean id="mailTemplateProvider" class="org.vortikal.web.actions.share.MailTemplateProvider">
+    <property name="view" ref="emailFriend.mailTemplateView" />
+  </bean>
+
+  <bean id="emailFriend.mailTemplateView" parent="freemarkerView">
+    <property name="url" value="pages/mail-template.ftl"></property>
+  </bean>
+
 </beans>

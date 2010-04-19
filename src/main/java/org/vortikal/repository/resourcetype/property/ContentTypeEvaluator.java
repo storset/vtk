@@ -30,16 +30,30 @@
  */
 package org.vortikal.repository.resourcetype.property;
 
+import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.PropertyEvaluationContext.Type;
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
+import org.vortikal.util.io.StreamUtil;
 import org.vortikal.util.repository.MimeHelper;
 
 public class ContentTypeEvaluator implements PropertyEvaluator {
 
     private static final String X_VORTEX_COLLECTION = "application/x-vortex-collection";
 
+    // {content-type -> {regexp -> new-content-type}}
+    // Example: "{text/plain" -> {"\\<\\?php" -> "application/php"}}
+    private Map<String, Map<Pattern, String>> contentPeekRegexps;
+    private int regexpChunkSize = 1024;
+    private Charset peekCharacterEncoding = Charset.forName("utf-8");
+    
     public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
         Type evalType = ctx.getEvaluationType();
 
@@ -50,8 +64,47 @@ public class ContentTypeEvaluator implements PropertyEvaluator {
             }
             String guessedContentType = MimeHelper.map(ctx.getNewResource().getName());
             property.setStringValue(guessedContentType);
+            return true;
+        } else if (evalType == Type.ContentChange && this.contentPeekRegexps != null) {
+            String guessedContentType = MimeHelper.map(ctx.getNewResource().getName());
+            property.setStringValue(guessedContentType);
+            if (this.contentPeekRegexps.containsKey(guessedContentType)) {
+                try {
+                    InputStream inputStream = ctx.getContent().getContentInputStream();
+                    byte[] buffer = StreamUtil.readInputStream(inputStream, this.regexpChunkSize);
+                    String chunk = new String(buffer, this.peekCharacterEncoding.name());
+                    Map<Pattern, String> mapping = this.contentPeekRegexps.get(guessedContentType);
+                    for (Pattern pattern: mapping.keySet()) {
+                        Matcher m = pattern.matcher(chunk);
+                        boolean match = m.find();
+                        if (match) {
+                            property.setStringValue(mapping.get(pattern));
+                            return true;
+                        }
+                    }
+                } catch (Throwable t) {
+                }
+            }
         }
         return true;
+    }
+
+    public void setContentPeekRegexps(Map<String, Map<String, String>> contentPeekRegexps) {
+        if (contentPeekRegexps != null) {
+            this.contentPeekRegexps = new HashMap<String, Map<Pattern, String>>();
+            for (String contentType: contentPeekRegexps.keySet()) {
+                Map<String, String> mapping = contentPeekRegexps.get(contentType);
+                Map<Pattern, String> internal = this.contentPeekRegexps.get(contentType);
+                if (internal == null) {
+                    internal = new HashMap<Pattern, String>();
+                    this.contentPeekRegexps.put(contentType, internal);
+                }
+                for (String regexp: mapping.keySet()) {
+                    Pattern p = Pattern.compile(regexp, Pattern.MULTILINE | Pattern.DOTALL);
+                    internal.put(p, mapping.get(regexp));
+                }
+            }
+        }
     }
 
 }

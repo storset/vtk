@@ -7,7 +7,7 @@
   <bean id="json.resourceType" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
     <property name="name" value="json-resource" />
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
-    <property name="parentTypeDefinition" ref="fileResourceTypeDefinition" />
+    <property name="parentTypeDefinition" ref="textResourceTypeDefinition" />
     <property name="assertions">
       <list>
         <ref bean="json.contentTypeAssertion" />
@@ -15,6 +15,8 @@
     </property>
     <property name="propertyTypeDefinitions">
       <list>
+        <ref bean="jsonOverriddenGuessedCharacterEncodingPropDef" />
+        <ref bean="jsonOverriddenCharacterEncodingPropDef" />
         <ref bean="overridingPublishDatePropDef" />
         <ref bean="overridingPublishedPropDef" />
         <ref bean="systemJobStatusPropDef" />
@@ -24,6 +26,28 @@
 
   <bean id="json.contentTypeAssertion" class="org.vortikal.web.service.ResourceContentTypeAssertion">
     <property name="contentType" value="application/json" />
+  </bean>
+
+  <bean id="jsonOverriddenGuessedCharacterEncodingPropDef"
+        class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
+    <property name="overriddenPropDef" ref="guessedCharacterEncodingPropDef" />
+    <property name="propertyEvaluator" ref="jsonGuessedCharacterEncodingEvaluator" />
+  </bean>
+
+  <bean id="jsonGuessedCharacterEncodingEvaluator"
+        class="org.vortikal.repository.resourcetype.property.FixedValuePropertyEvaluator">
+    <property name="value">
+      <bean class="org.vortikal.repository.resourcetype.Value">
+        <constructor-arg type="java.lang.String"
+                         value="utf-8" />
+        <constructor-arg ref="TYPE_STRING" />
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="jsonOverriddenCharacterEncodingPropDef"
+        class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
+    <property name="overriddenPropDef" ref="characterEncodingPropDef" />
   </bean>
 
   <bean id="json.managedObjectResourceType" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">

@@ -32,7 +32,25 @@
     <property name="propertyEvaluator" ref="contentTypeEvaluator" />
   </bean>
 
-  <bean id="contentTypeEvaluator" class="org.vortikal.repository.resourcetype.property.ContentTypeEvaluator" />
+  <bean id="contentTypeEvaluator" class="org.vortikal.repository.resourcetype.property.ContentTypeEvaluator">
+    <property name="contentPeekRegexps">
+      <map>
+        <entry key="text/html">
+          <map>
+            <!-- 
+                 Explained: for resources of type text/html, 
+                 look for '{' and set content type = 'application/json'.
+
+                 (A more sophisticated (better) solution would be to
+                 use the regexp as a hint to attempt parsing the
+                 content using a JSON parser.)
+            -->
+            <entry key="^\s*\{" value="application/json" />
+          </map>
+        </entry>
+      </map>
+    </property>
+  </bean>
 
   <bean id="contentLengthPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="contentLength" />
@@ -71,7 +89,7 @@
   <!-- Assertion that matches on all textual content types: -->
   <bean id="contentTypeIsTextual" 
         class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
-    <property name="pattern" value="(application/(x-)?xml)|(application/x-php)|(text/(.+))" />
+    <property name="pattern" value="(application/(x-)?xml)|(application/x-php)|(application/json)|(text/(.+))" />
     <property name="exceptionPattern" value="text/rtf" />
   </bean>
 

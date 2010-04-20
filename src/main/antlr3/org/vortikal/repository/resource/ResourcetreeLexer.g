@@ -38,6 +38,8 @@ RP	:	')';
 LB	:	'[';
 RB	:	']';
 COLON	:	':';
+SEMICOLON
+	:	';';
 COMMA	:	',';
 PLUS	:	'+';
 DQ	:	'"';
@@ -55,7 +57,8 @@ DEFAULTPROP
 	:	'default';
 MULTIPLE:	'multiple';
 EXISTS	:	'exists';
-INDEX	:	'index';
+INDEXABLE
+	:	'indexable';
 SHOWHIDE:	'show-hide';
 MULTIPLEINPUTFIELDS
 	:	'multipleinputfields';

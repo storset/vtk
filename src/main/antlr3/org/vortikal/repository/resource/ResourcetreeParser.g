@@ -57,6 +57,8 @@ vocabulary
 vocabularyentry
 	:	NAME LCB (vocabularylangentry (COMMA vocabularylangentry)*)  RCB
 		-> ^(NAME (vocabularylangentry)*)
+	|	NAME COLON NAME LCB (vocabularylangentry (COMMA vocabularylangentry)*)  RCB
+		-> ^(NAME ^(NAME (vocabularylangentry)*))
 	;
 	
 vocabularylangentry
@@ -119,8 +121,8 @@ defaultprop
 	:	DEFAULTPROP NAME -> ^(DEFAULTPROP NAME);
 
 jsonpropertytypedef
-	:	NAME COLON JSON (jsonspec)? (MULTIPLE)? (NOEXTRACT)? (external)? (index)?
-		-> ^(NAME ^(JSON (jsonspec)?) (MULTIPLE)? (NOEXTRACT)? (external)? (index)?)
+	:	NAME COLON JSON (jsonspec)? (MULTIPLE)? (NOEXTRACT)? (external)?
+		-> ^(NAME ^(JSON (jsonspec)?) (MULTIPLE)? (NOEXTRACT)? (external)?)
 	;
 
 jsonspec:	LP jsonpropspeclist RP -> jsonpropspeclist;
@@ -129,9 +131,7 @@ jsonpropspeclist
 	:	jsonpropspec (COMMA jsonpropspec)* -> jsonpropspec+;
 
 jsonpropspec
-	:	NAME COLON PROPTYPE -> ^(NAME PROPTYPE);
-
-index	:	INDEX namelist -> ^(INDEX namelist);
+	:	NAME COLON PROPTYPE (SEMICOLON INDEXABLE)? -> ^(NAME ^(PROPTYPE (INDEXABLE)?));
 
 plainpropertytypedef
 	:	NAME COLON PROPTYPE (MULTIPLE)? (REQUIRED)? (NOEXTRACT)? (overrides)?
@@ -160,6 +160,8 @@ editruledef
 		-> ^(GROUP ^(NAME namelist) ^(position)? ^(ORIENTATION)?)
 	|	NAME TOOLTIP LP (namevaluepair (COMMA namevaluepair)*) RP
 		-> ^(NAME ^(TOOLTIP (namevaluepair)*))
+	|	NAME COLON NAME edithint
+		-> ^(NAME ^(NAME edithint))
 	;
 
 editrules

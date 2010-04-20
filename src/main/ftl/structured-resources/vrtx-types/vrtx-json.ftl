@@ -23,20 +23,18 @@
     <#if elem.value?exists && elem.value?is_enumerable>
       <#list elem.value as map>
         <div class="vrtx-json-element" id="vrtx-json-element-${inputFieldName}-${counter}">
+        <#assign arrayOfIds = "new Array(" />
         <#list elem.description.attributes as jsonAttr>
           <#assign attrName = jsonAttr.name />
           <#assign tmpName = inputFieldName + "." + attrName + "." + counter />
           <#assign jsonAttrLocalizedTitle = form.resource.getLocalizedMsg(attrName, locale, null) />
           <#if map[jsonAttr]?exists >
-            <@printJsonProperyEditView jsonAttr.type jsonAttrLocalizedTitle tmpName map[jsonAttr] elem jsonAttr />          
+            <@printJsonProperyEditView jsonAttr.type jsonAttrLocalizedTitle tmpName map[jsonAttr] elem attrName />          
           <#else>
-            <@printJsonProperyEditView jsonAttr.type jsonAttrLocalizedTitle tmpName "" elem jsonAttr />    
+            <@printJsonProperyEditView jsonAttr.type jsonAttrLocalizedTitle tmpName "" elem attrName />    
           </#if>
-        </#list>
-        <#assign arrayOfIds = "new Array(" />
-        <#list elem.description.attributes as jsonAttr>
-          <#assign tmpName = inputFieldName + '\\\\.' + jsonAttr + '\\\\.' />
-          <#assign arrayOfIds = arrayOfIds + "'" + tmpName + "'" />
+          <#assign arrayAttrName = inputFieldName + '\\\\.' + attrName + '\\\\.' />
+          <#assign arrayOfIds = arrayOfIds + "'" + arrayAttrName + "'" />
           <#if jsonAttr_has_next>
             <#assign arrayOfIds = arrayOfIds + "," />
           </#if>

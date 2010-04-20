@@ -37,6 +37,8 @@ import java.util.List;
 
 import org.vortikal.resourcemanagement.EditRule;
 import org.vortikal.resourcemanagement.EditablePropertyDescription;
+import org.vortikal.resourcemanagement.JSONPropertyAttribute;
+import org.vortikal.resourcemanagement.JSONPropertyDescription;
 import org.vortikal.resourcemanagement.PropertyDescription;
 import org.vortikal.resourcemanagement.StructuredResource;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
@@ -50,6 +52,7 @@ public class FormSubmitCommand extends UpdateCancelCommand {
     private StructuredResource resource;
     private List<FormElementBox> elements = new ArrayList<FormElementBox>();
     private URL listComponentServiceURL;
+
     public FormSubmitCommand(StructuredResource resource, URL url, URL listComponentServiceURL) {
         super(url.toString());
         this.listComponentServiceURL = listComponentServiceURL;
@@ -123,8 +126,26 @@ public class FormSubmitCommand extends UpdateCancelCommand {
             }
             for (FormElement formElement : elementBox.getFormElements()) {
                 EditablePropertyDescription pd = formElement.getDescription();
-                if (pd.getName().equals(editRule.getName())) {
-                    pd.addEdithint(editRule.getEditHintKey(), editRule.getEditHintValue());
+                if (editRule.isJsonAttributeEditHint() && pd instanceof JSONPropertyDescription) {
+                    handleJSONPropertyAttributeEditHint(pd, editRule);
+                } else {
+                    if (pd.getName().equals(editRule.getName())) {
+                        pd.addEdithint(editRule.getEditHintKey(), editRule.getEditHintValue());
+                    }
+                }
+            }
+        }
+    }
+
+    private void handleJSONPropertyAttributeEditHint(PropertyDescription pd, EditRule editRule) {
+        JSONPropertyDescription jpd = (JSONPropertyDescription) pd;
+        String[] propertyAttributeName = editRule.getName().split(":");
+        String propertyName = propertyAttributeName[0];
+        String attributeName = propertyAttributeName[1];
+        if (jpd.getName().equals(propertyName)) {
+            for (JSONPropertyAttribute jsonPropertyAttribute : jpd.getAttributes()) {
+                if (jsonPropertyAttribute.getName().equals(attributeName)) {
+                    jsonPropertyAttribute.addEdithint(editRule.getEditHintKey(), editRule.getEditHintValue());
                 }
             }
         }

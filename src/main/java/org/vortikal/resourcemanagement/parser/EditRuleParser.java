@@ -73,7 +73,7 @@ public class EditRuleParser {
                         case ResourcetreeLexer.NAME:
                             String propertyAttributeName = propName + ":" + editRule.getText();
                             srd.addEditRule(new EditRule(propertyAttributeName, EditRuleType.EDITHINT, editRule
-                                    .getChild(0).getText()));
+                                    .getChild(0).getText(), true));
                             break;
                         default:
                             throw new IllegalStateException("Unknown edit rule: " + editRuleDescription);

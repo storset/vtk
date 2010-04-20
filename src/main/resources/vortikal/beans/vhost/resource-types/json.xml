@@ -100,10 +100,22 @@
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="indexableAttributes">
       <list>
-        <value>published-status</value>
-        <value>person-external-data</value>
+        <ref bean="indexablePublishedStatusJSONAttribute"/>
+        <ref bean="indexablePersonExternalDataJSONAttribute"/>
       </list>
     </property>
+  </bean>
+
+  <bean id="abstractIndexableJSONAttribute" class="org.vortikal.resourcemanagement.JSONPropertyAttribute">
+    <property name="indexable" value="true" />
+  </bean>
+
+  <bean id="indexablePublishedStatusJSONAttribute" parent="abstractIndexableJSONAttribute">
+    <property name="name" value="published-status" />
+  </bean>
+
+  <bean id="indexablePersonExternalDataJSONAttribute" parent="abstractIndexableJSONAttribute">
+    <property name="name" value="person-external-data" />
   </bean>
 
 </beans>

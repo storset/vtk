@@ -51,6 +51,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.Repository.Depth;
 import org.vortikal.resourcemanagement.EditablePropertyDescription;
+import org.vortikal.resourcemanagement.JSONPropertyAttribute;
 import org.vortikal.resourcemanagement.JSONPropertyDescription;
 import org.vortikal.resourcemanagement.PropertyDescription;
 import org.vortikal.resourcemanagement.StructuredResource;
@@ -188,8 +189,8 @@ public class StructuredResourceEditor extends SimpleFormController {
                 int maxIndex = 0;
                 while (names.hasMoreElements()) {
                     String input = names.nextElement();
-                    for (String attr : jsonDesc.getAttributes()) {
-                        String prefix = desc.getName() + "." + attr + ".";
+                    for (JSONPropertyAttribute attr : jsonDesc.getAttributes()) {
+                        String prefix = desc.getName() + "." + attr.getName() + ".";
                         if (input.startsWith(prefix)) {
                             int i = Integer.parseInt(input.substring(prefix.length()));
                             maxIndex = Math.max(maxIndex, i);
@@ -199,8 +200,8 @@ public class StructuredResourceEditor extends SimpleFormController {
                 List<JSONObject> resultList = new ArrayList<JSONObject>();
                 for (int i = 0; i <= maxIndex; i++) {
                     JSONObject obj = new JSONObject();
-                    for (String attr : jsonDesc.getAttributes()) {
-                        String input = desc.getName() + "." + attr + "." + i;
+                    for (JSONPropertyAttribute attr : jsonDesc.getAttributes()) {
+                        String input = desc.getName() + "." + attr.getName() + "." + i;
                         String posted = request.getParameter(input);
                         if (posted != null && !"".equals(posted.trim())) {
                             obj.put(attr, posted);
@@ -213,8 +214,8 @@ public class StructuredResourceEditor extends SimpleFormController {
                 bindObjectToForm(form, desc, resultList);
             } else {
                 JSONObject obj = new JSONObject();
-                for (String attr : jsonDesc.getAttributes()) {
-                    String param = desc.getName() + "." + attr + ".0";
+                for (JSONPropertyAttribute attr : jsonDesc.getAttributes()) {
+                    String param = desc.getName() + "." + attr.getName() + ".0";
                     String posted = request.getParameter(param);
                     if (posted != null && !"".equals(posted.trim())) {
                         obj.put(attr, posted);
@@ -262,7 +263,6 @@ public class StructuredResourceEditor extends SimpleFormController {
     public HtmlPageFilter getSafeHtmlFilter() {
         return safeHtmlFilter;
     }
-
 
     public void setListComponentsService(Service listComponentsService) {
         this.listComponentsService = listComponentsService;

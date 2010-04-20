@@ -9,12 +9,12 @@ resourcetype frontpage {
     additional-content : json (boxTitle : string, boxType : string, boxPicture : image_ref, boxContent : html, boxUrlText : string,  boxUrl : string) multiple noextract,
     cssUrl : string
   }
-  
-   edit-rules {
+
+  edit-rules {
     caption (size[small]),
     group introImageAndCaption (picture, caption) (after introduction) vertical
   }
-  
+
   view-components {
   
     main-content {
@@ -261,6 +261,7 @@ resourcetype frontpage {
     </html>
     ##
   }
+
 
   localization {
      title : (en : "Title", no : "Tittel", nn : "Tittel"),

@@ -21,7 +21,7 @@
 		<#list elem.description.attributes as jsonAttr>
 			LIST_OF_JSON_ELEMENTS[${i}].a[${j}] = new Object();
 			LIST_OF_JSON_ELEMENTS[${i}].a[${j}].name = "${jsonAttr}";	      
-			LIST_OF_JSON_ELEMENTS[${i}].a[${j}].type = "${elem.description.getType(jsonAttr)}";
+			LIST_OF_JSON_ELEMENTS[${i}].a[${j}].type = "${elem.description.type}";
 			LIST_OF_JSON_ELEMENTS[${i}].a[${j}].title = "${form.resource.getLocalizedMsg(jsonAttr, locale, null)}"; 
 		    <#assign j = j + 1 />	
   	    </#list>

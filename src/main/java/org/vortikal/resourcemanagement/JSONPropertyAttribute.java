@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2010, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,30 +30,16 @@
  */
 package org.vortikal.resourcemanagement;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+public class JSONPropertyAttribute extends EditablePropertyDescription {
 
-public class JSONPropertyDescription extends EditablePropertyDescription {
+    private boolean indexable;
 
-    private List<JSONPropertyAttribute> attributes = new ArrayList<JSONPropertyAttribute>();
-
-    public void addAttribute(JSONPropertyAttribute attribute) {
-        this.attributes.add(attribute);
+    public boolean isIndexable() {
+        return indexable;
     }
 
-    public List<JSONPropertyAttribute> getAttributes() {
-        return Collections.unmodifiableList(this.attributes);
-    }
-
-    public List<JSONPropertyAttribute> getIndexableAttributes() {
-        List<JSONPropertyAttribute> indexableAttributes = new ArrayList<JSONPropertyAttribute>();
-        for (JSONPropertyAttribute attribute : this.attributes) {
-            if (attribute.isIndexable()) {
-                indexableAttributes.add(attribute);
-            }
-        }
-        return Collections.unmodifiableList(indexableAttributes);
+    public void setIndexable(boolean indexable) {
+        this.indexable = indexable;
     }
 
 }

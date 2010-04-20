@@ -47,6 +47,7 @@ import org.vortikal.repository.PropertyImpl;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Vocabulary;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
+import org.vortikal.resourcemanagement.JSONPropertyAttribute;
 import org.vortikal.security.Principal;
 
 /**
@@ -81,7 +82,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     private ContentRelation contentRelation;
     private TypeLocalizationProvider typeLocalizationProvider = null;
 
-    private List<String> indexableAttributes;
+    private List<JSONPropertyAttribute> indexableAttributes;
     
     public void setContentRelation(ContentRelation contentRelation) {
             this.contentRelation = contentRelation;
@@ -339,7 +340,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         this.valueFormatterRegistry = valueFormatterRegistry;
     }
 
-    public List<String> getIndexableAttributes() throws IllegalOperationException {
+    public List<JSONPropertyAttribute> getIndexableAttributes() throws IllegalOperationException {
         if (this.type != Type.JSON) {
             throw new IllegalOperationException("Only applicable on properties of type JSON");
         }
@@ -350,7 +351,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
      * Set a list of names for attributes that are to be indexed
      * Only valid for json properties
      */
-    public void setIndexableAttributes(final List<String> indexableAttributes) {
+    public void setIndexableAttributes(final List<JSONPropertyAttribute> indexableAttributes) {
         this.indexableAttributes = indexableAttributes;
     }
 

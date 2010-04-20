@@ -31,7 +31,6 @@
 package org.vortikal.resourcemanagement.parser;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.antlr.runtime.tree.CommonTree;
@@ -40,6 +39,7 @@ import org.vortikal.repository.resource.ResourcetreeLexer;
 import org.vortikal.resourcemanagement.BinaryPropertyDescription;
 import org.vortikal.resourcemanagement.DerivedPropertyDescription;
 import org.vortikal.resourcemanagement.DerivedPropertyEvaluationDescription;
+import org.vortikal.resourcemanagement.JSONPropertyAttribute;
 import org.vortikal.resourcemanagement.JSONPropertyDescription;
 import org.vortikal.resourcemanagement.PropertyDescription;
 import org.vortikal.resourcemanagement.SimplePropertyDescription;
@@ -140,9 +140,6 @@ public class PropertyDescriptionParser {
             case ResourcetreeLexer.EXTERNAL:
                 p.setExternalService(descEntry.getChild(0).getText());
                 break;
-            case ResourcetreeLexer.INDEX:
-                handleIndexableJSONAttributes(p, descEntry);
-                break;
             default:
                 throw new IllegalStateException("Unknown token type for derived property description: "
                         + descEntry.getType());
@@ -177,23 +174,17 @@ public class PropertyDescriptionParser {
     private void handleJSONAttributes(JSONPropertyDescription p, CommonTree descEntry) {
         List<CommonTree> jsonSpecList = descEntry.getChildren();
         if (jsonSpecList != null) {
-            LinkedHashMap<String, String> attributes = new LinkedHashMap<String, String>();
             for (CommonTree jsonSpec : jsonSpecList) {
-                String attr = jsonSpec.getText();
-                String type = jsonSpec.getChild(0).getText();
-                attributes.put(attr, type);
-            }
-            p.setAttributes(attributes);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private void handleIndexableJSONAttributes(JSONPropertyDescription p, CommonTree descEntry) {
-        List<CommonTree> indexableAttributes = descEntry.getChildren();
-        for (CommonTree indexableAttribute : indexableAttributes) {
-            String indexableAttributeName = indexableAttribute.getText();
-            if (p.getAttributes().contains(indexableAttributeName)) {
-                p.addIndexableAttribute(indexableAttributeName);
+                JSONPropertyAttribute attribute = new JSONPropertyAttribute();
+                String name = jsonSpec.getText();
+                Tree typeTree = jsonSpec.getChild(0);
+                attribute.setName(name);
+                attribute.setType(typeTree.getText());
+                Tree indexableTree = typeTree.getChild(0);
+                if (indexableTree != null && ResourcetreeLexer.INDEXABLE == indexableTree.getType()) {
+                    attribute.setIndexable(true);
+                }
+                p.addAttribute(attribute);
             }
         }
     }

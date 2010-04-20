@@ -50,15 +50,14 @@
 
 	 function calculateImage(image, i, init) {
 	      if(settings.fadeInOutTime > 0 && !init) {
-                //$(wrapperContainer).append($(images[i]).find("img"));
-                $(wrapperContainerLink).stop().fadeTo(settings.fadeInOutTime, settings.fadedOutOpacity, function() {
-                    $(wrapperContainerLink).remove();
-                    $(wrapperContainer).append(images[i]);
-                    $(wrapperContainerLink).stop().fadeTo(0, 0);
-                    $(wrapperContainerLink).stop().fadeTo(settings.fadeInOutTime, 1, function() {
+            $(wrapperContainer).stop().fadeTo(settings.fadeInOutTime, settings.fadedOutOpacity, function() {
+                $(wrapperContainerLink).remove();
+                $(wrapperContainer).append(images[i]);
+                $(wrapperContainer).stop().fadeTo(0, 0);
+                $(wrapperContainer).stop().fadeTo(settings.fadeInOutTime, 1, function() {
 	    	      addPagingEvents(container.substring(1) + "-link");
 	            });
-		  });
+		    });
 	      } else {
 	    	  $(wrapperContainerLink).remove();
 	    	  if(init) {

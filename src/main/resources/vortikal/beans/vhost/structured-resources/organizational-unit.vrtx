@@ -83,7 +83,9 @@ resourcetype organizational-unit {
             <h1><comp:title /></h1>
           </div>
           <div id="vrtx-additional-content">
-            <comp:contact-information />
+            <div class="vrtx-frontpage-box">
+              <comp:contact-information />
+            </div>
           </div>
         </div>
       </body>

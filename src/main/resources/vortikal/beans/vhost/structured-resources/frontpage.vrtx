@@ -12,6 +12,7 @@ resourcetype frontpage {
 
   edit-rules {
     caption (size[small]),
+    main-content:boxType (dropdown),
     group introImageAndCaption (picture, caption) (after introduction) vertical
   }
 

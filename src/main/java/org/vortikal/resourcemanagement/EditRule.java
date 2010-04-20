@@ -42,6 +42,14 @@ public class EditRule {
     private String name;
     private EditRuleType type;
     private Object value;
+    private boolean isJsonAttributeEditHint;
+
+    public EditRule(String name, EditRuleType type, Object value, boolean isJsonAttributeEditHint) {
+        this.name = name;
+        this.type = type;
+        this.value = value;
+        this.isJsonAttributeEditHint = isJsonAttributeEditHint;
+    }
 
     public EditRule(String name, EditRuleType type, Object value) {
         this.name = name;
@@ -69,19 +77,30 @@ public class EditRule {
         return parseEditHint(false);
     }
 
+    public boolean isJsonAttributeEditHint() {
+        return isJsonAttributeEditHint;
+    }
+
     private String parseEditHint(boolean returnKey) {
         if (EditRuleType.EDITHINT.equals(this.type)) {
             if (this.value instanceof String) {
                 String stringValue = (String) this.value;
                 if (stringValue.contains(LB) && stringValue.contains(RB)) {
-                    return returnKey ? stringValue.substring(0, stringValue.indexOf(LB))
-                            : stringValue.substring(stringValue.indexOf(LB) + 1,
-                                    stringValue.indexOf(RB));
+                    return returnKey ? stringValue.substring(0, stringValue.indexOf(LB)) : stringValue.substring(
+                            stringValue.indexOf(LB) + 1, stringValue.indexOf(RB));
                 }
                 return stringValue;
             }
         }
         return null;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder(this.name);
+        sb.append(": " + this.type + ", ");
+        sb.append("[" + this.value + "]");
+        return sb.toString();
     }
 
 }

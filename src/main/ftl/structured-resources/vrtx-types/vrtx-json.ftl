@@ -7,13 +7,13 @@
     <#local locale = springMacroRequestContext.getLocale() />
     
     <#-- Json property that has no value. We need to crate empty fields. -->
-    <#if !elem.value?exists > 
+    <#if !elem.value?exists >
       <div class="vrtx-json-element" id="vrtx-json-element-${inputFieldName}-${counter}">
         <#list elem.description.attributes as jsonAttr>
           <#assign attrName = jsonAttr.name />
           <#assign tmpName = inputFieldName + "." + attrName + "." + counter />
           <#assign jsonAttrLocalizedTitle = form.resource.getLocalizedMsg(attrName, locale, null) />
-          <@printJsonProperyEditView jsonAttr.type jsonAttrLocalizedTitle tmpName "" elem attrName />                              
+          <@printJsonProperyEditView jsonAttr.type jsonAttrLocalizedTitle tmpName "" elem attrName />
         </#list>
         <input type="button" class="vrtx-remove-button" value="${vrtx.getMsg("editor.remove")}" onClick="$('#vrtx-json-element-${inputFieldName}-${counter}').remove()" />
       </div>
@@ -29,9 +29,9 @@
           <#assign tmpName = inputFieldName + "." + attrName + "." + counter />
           <#assign jsonAttrLocalizedTitle = form.resource.getLocalizedMsg(attrName, locale, null) />
           <#if map[jsonAttr]?exists >
-            <@printJsonProperyEditView jsonAttr.type jsonAttrLocalizedTitle tmpName map[jsonAttr] elem attrName />          
+            <@printJsonProperyEditView jsonAttr.type jsonAttrLocalizedTitle tmpName map[jsonAttr] elem attrName />
           <#else>
-            <@printJsonProperyEditView jsonAttr.type jsonAttrLocalizedTitle tmpName "" elem attrName />    
+            <@printJsonProperyEditView jsonAttr.type jsonAttrLocalizedTitle tmpName "" elem attrName />
           </#if>
           <#assign arrayAttrName = inputFieldName + '\\\\.' + attrName + '\\\\.' />
           <#assign arrayOfIds = arrayOfIds + "'" + arrayAttrName + "'" />
@@ -40,12 +40,15 @@
           </#if>
         </#list>
         <#assign arrayOfIds = arrayOfIds + ")" />
-        <input type="button" class="vrtx-remove-button" value="${vrtx.getMsg("editor.remove")}" onClick="$('#vrtx-json-element-${inputFieldName}-${counter}').remove()" />
+        <input type="button" class="vrtx-remove-button" value="${vrtx.getMsg("editor.remove")}"
+          onClick="$('#vrtx-json-element-${inputFieldName}-${counter}').remove()" />
         <#if (counter > 0) >
-          <input type="button" class="vrtx-move-up-button" onClick="swapContent(${counter},${arrayOfIds},-1)"  value="&uarr; ${vrtx.getMsg("editor.move-up")}"  />	
+          <input type="button" class="vrtx-move-up-button" onClick="swapContent(${counter}, ${arrayOfIds},-1)"
+            value="&uarr; ${vrtx.getMsg("editor.move-up")}"  />	
         </#if>
         <#if map_has_next >
-          <input type="button"  class="vrtx-move-down-button" onClick="swapContent(${counter},${arrayOfIds},1)"  value="&darr; ${vrtx.getMsg("editor.move-down")}"  />
+          <input type="button"  class="vrtx-move-down-button" onClick="swapContent(${counter}, ${arrayOfIds},1)"
+            value="&darr; ${vrtx.getMsg("editor.move-down")}"  />
         </#if>
         </div>
         <#local counter = counter + 1 />
@@ -57,9 +60,9 @@
       <#list elem.description.attributes as key>
         <#assign tmpName = inputFieldName + "." + key + "." + counter />
         <#if elem.value[key]?exists >
-          <@printJsonProperyEditView elem.description.getType(key) jsonAttrLocalizedTitle tmpName elem.value[key] elem key />  
+          <@printJsonProperyEditView elem.description.getType(key) jsonAttrLocalizedTitle tmpName elem.value[key] elem key />
         <#else>
-          <@printJsonProperyEditView elem.description.getType(key) jsonAttrLocalizedTitle tmpName "" elem key />  
+          <@printJsonProperyEditView elem.description.getType(key) jsonAttrLocalizedTitle tmpName "" elem key />
         </#if>
       </#list>
     </#if>
@@ -127,7 +130,7 @@
           value=value 
           baseFolder=resourceContext.parentURI
           classes="" />
-        <#break>          
+        <#break>
       <#case "media_ref">
         <@vrtxMediaRef.printPropertyEditView 
           title=jsonAttr
@@ -142,6 +145,6 @@
         inputFieldName=tmpName
         value=value
         classes=""  />
-        <#break>   
+        <#break>
       </#switch>
 </#macro>

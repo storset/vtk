@@ -67,6 +67,48 @@ resourcetype organizational-unit {
         [endif]
       ##
     }
+    
+    introduction {
+      ##
+      [def intro resource-prop(".", "introduction")]
+      [if intro != null && intro != ""]
+        <div class="vrtx-organizational-unit-introduction">[val intro unescaped]</div>
+      [endif]
+      ##
+    }
+    
+    responsibilities {
+      ##
+      [def resp resource-prop(".", "responsibilities")]
+      [if resp != null && resp != ""]
+        <div class="vrtx-organizational-unit-responsibilities">[val resp unescaped]</div>
+      [endif]
+      ##
+    }
+    
+    introduction-image {
+      ##
+      [def img-uri resource-prop(".", "picture")]
+      [if img-uri != null]
+        [def img resource(img-uri)]
+        
+        [if img != null]
+          [def pixel-width resource-prop(img-uri, "pixelWidth")]
+          
+          [if pixel-width != null]
+            [def style concat("width:", concat(pixel-width, "px"))]
+            <div class="vrtx-frontpage-box-picture" style="[val style]">
+              <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
+            </div>
+          [else]
+            <img class="vrtx-introduction-image" src="[val img-uri]" alt="[localized 'introduction-image-alt']" />
+          [endif]
+        [else]
+          <img class="vrtx-introduction-image" src="[val img-uri]" alt="[localized 'introduction-image-alt']" />
+        [endif]
+      [endif]
+      ##
+    }
 
   }
 
@@ -77,10 +119,15 @@ resourcetype organizational-unit {
       <head>
         <title><comp:title /></title>
       </head>
-      <body>
+      <body id="vrtx-organizational-unit">
         <div id="vrtx-content">
           <div id="vrtx-main-content">
-            <h1><comp:title /></h1>
+            <div class="vrtx-frontpage-box white-box">
+              <h1><comp:title /></h1>
+              <comp:introduction-image />
+              <comp:introduction />
+              <comp:responsibilities />
+            </div>
           </div>
           <div id="vrtx-additional-content">
             <div class="vrtx-frontpage-box">
@@ -125,6 +172,7 @@ resourcetype organizational-unit {
     fax : (en : "", no : "Faks", nn : ""),
     email : (en : "", no : "E-post", nn : ""),
     picture : (en: "", no: "Bilde av enheten", nn : ""),
+    introduction-image-alt : (en : "Image", no : "Bilde", nn : "Bilete"),
     introduction : (en: "", no: "Innledning", nn : ""),
     responsibilities : (en : "", no : "Ansvarsområder", nn : ""),
     employees : (en : "", no : "Ansatte", nn : ""),

@@ -37,6 +37,8 @@ import java.util.Locale;
 import org.antlr.runtime.tree.CommonTree;
 import org.apache.commons.lang.LocaleUtils;
 import org.vortikal.repository.resource.ResourcetreeLexer;
+import org.vortikal.resourcemanagement.JSONPropertyAttribute;
+import org.vortikal.resourcemanagement.JSONPropertyDescription;
 import org.vortikal.resourcemanagement.PropertyDescription;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
 
@@ -60,14 +62,50 @@ public class VocabularyDefinitionParser {
 
     @SuppressWarnings("unchecked")
     private void resolveVocabulary(StructuredResourceDescription srd, String propName, CommonTree propertyVocabulary) {
-        for (CommonTree vocabularyEntry : (List<CommonTree>) propertyVocabulary.getChildren()) {
-            if (vocabularyEntry.getType() == ResourcetreeLexer.RANGE) {
-                Object value = this.getRangeList(vocabularyEntry.getChild(0).getText());
-                this.addVocabulary(srd, propName, propertyVocabulary, vocabularyEntry.getText(), value);
-            } else {
+        if (!isLocale(propertyVocabulary.getText())) {
+            // Assume json property:attribute vocabulary
+            this.handleJSONPropertyAttributeVocabulary(srd, propName, propertyVocabulary);
+        } else {
+            for (CommonTree vocabularyEntry : (List<CommonTree>) propertyVocabulary.getChildren()) {
+                if (vocabularyEntry.getType() == ResourcetreeLexer.RANGE) {
+                    Object value = this.getRangeList(vocabularyEntry.getChild(0).getText());
+                    this.addVocabulary(srd, propName, propertyVocabulary, vocabularyEntry.getText(), value);
+                } else {
+                    for (CommonTree vocabularyValue : (List<CommonTree>) vocabularyEntry.getChildren()) {
+                        this.addVocabulary(srd, propName, propertyVocabulary, vocabularyEntry.getText(),
+                                vocabularyValue.getText());
+                    }
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void handleJSONPropertyAttributeVocabulary(StructuredResourceDescription srd, String propName,
+            CommonTree attributeVocabulary) {
+        String attributeName = attributeVocabulary.getText();
+        for (CommonTree propertyVocabulary : (List<CommonTree>) attributeVocabulary.getChildren()) {
+            for (CommonTree vocabularyEntry : (List<CommonTree>) propertyVocabulary.getChildren()) {
                 for (CommonTree vocabularyValue : (List<CommonTree>) vocabularyEntry.getChildren()) {
-                    this.addVocabulary(srd, propName, propertyVocabulary, vocabularyEntry.getText(), vocabularyValue
-                            .getText());
+                    this.addJSONPropertyAttributeVocabulary(srd, propName, propertyVocabulary, attributeName,
+                            vocabularyEntry.getText(), vocabularyValue.getText());
+                }
+            }
+        }
+    }
+
+    private void addJSONPropertyAttributeVocabulary(StructuredResourceDescription srd, String propName,
+            CommonTree propertyVocabulary, String attributeName, String key, Object value) {
+        Locale locale = LocaleUtils.toLocale(propertyVocabulary.getText());
+        for (PropertyDescription propDesc : srd.getPropertyDescriptions()) {
+            if (propDesc instanceof JSONPropertyDescription) {
+                JSONPropertyDescription jpd = (JSONPropertyDescription) propDesc;
+                if (jpd.getName().equals(propName)) {
+                    for (JSONPropertyAttribute jsonPropertyAttribute : jpd.getAttributes()) {
+                        if (jsonPropertyAttribute.getName().equals(attributeName)) {
+                            jsonPropertyAttribute.addVocabulary(locale, key, value);
+                        }
+                    }
                 }
             }
         }
@@ -81,6 +119,10 @@ public class VocabularyDefinitionParser {
                 propDesc.addVocabulary(locale, key, value);
             }
         }
+    }
+
+    private boolean isLocale(String text) {
+        return "no".equals(text) || "nn".equals(text) || "en".equals(text);
     }
 
     public List<Integer> getRangeList(String unprocessedList) {

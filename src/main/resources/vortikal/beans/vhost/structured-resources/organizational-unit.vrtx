@@ -78,8 +78,14 @@ resourcetype organizational-unit {
         <title><comp:title /></title>
       </head>
       <body>
-        <h1><comp:title /></h1>
-        <comp:contact-information />
+        <div id="vrtx-content">
+          <div id="vrtx-main-content">
+            <h1><comp:title /></h1>
+          </div>
+          <div id="vrtx-additional-content">
+            <comp:contact-information />
+          </div>
+        </div>
       </body>
     </html>
     ##

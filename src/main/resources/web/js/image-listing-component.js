@@ -53,9 +53,8 @@
             $(wrapperContainer).stop().fadeTo(settings.fadeInOutTime, settings.fadedOutOpacity, function() {
                 $(wrapperContainerLink).remove();
                 $(wrapperContainer).append(images[i]);
-                $(wrapperContainer).stop().fadeTo(0, 0);
-                $(wrapperContainer).stop().fadeTo(settings.fadeInOutTime, 1, function() {
-	    	      addPagingEvents(container.substring(1) + "-link");
+                addPagingEvents(container.substring(1) + "-link");
+                $(wrapperContainer).fadeTo(settings.fadeInOutTime, 1, function() {
 	            });
 		    });
 	      } else {

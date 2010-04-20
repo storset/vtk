@@ -13,7 +13,7 @@ resourcetype organizational-unit {
       overrides title default name,
     picture : image_ref,
     introduction : simple_html,
-    responsibilities : simple_html,   
+    responsibilities : html noextract,   
     displayEmployees : boolean,
     selectedEmployees : string multiple,
     numberOfEmployeesToDisplay : string,
@@ -159,23 +159,23 @@ resourcetype organizational-unit {
   }
 
   localization {
-    header : (en : "", no : "Rediger administrativ enhet", nn : ""),
+    header : (en : "Edit organizational unit", no : "Rediger administrativ enhet", nn : "Rediger administrativ enhet"),
     areacode : (en : "Area code", no : "Stedskode", nn : "Stadkode"),
     getExternalUnitInfo : (
-      en : "",
+      en : "Use information registrated in UiO's payroll- and personalsystem",
       no : "Bruk opplysninger registrert i UiOs lønns- og personalsystem",
-      nn : ""),
-    name : (en : "", no : "Navn", nn : ""),
-    postalAddress : (en : "", no : "Postadresse", nn : ""),
-    visitingAddress : (en : "", no : "Besøksadresse", nn : ""),
-    phone : (en : "", no : "Telefon", nn : ""),
-    fax : (en : "", no : "Faks", nn : ""),
-    email : (en : "", no : "E-post", nn : ""),
-    picture : (en: "", no: "Bilde av enheten", nn : ""),
+      nn : "Bruk opplysingar registrerte i lønns- og personalsystemet til UiO"),
+    name : (en : "Name", no : "Navn", nn : "Namn"),
+    postalAddress : (en : "Postal address", no : "Postadresse", nn : "Postadresse"),
+    visitingAddress : (en : "Visiting address", no : "Besøksadresse", nn : "Besøksadresse"),
+    phone : (en : "Phone", no : "Telefon", nn : "Telefon"),
+    fax : (en : "Fax", no : "Faks", nn : "Faks"),
+    email : (en : "Email", no : "E-post", nn : "E-post"),
+    picture : (en: "Picture of unit", no: "Bilde av enheten", nn : "Bilde av enheten"),
     introduction-image-alt : (en : "Image", no : "Bilde", nn : "Bilete"),
-    introduction : (en: "", no: "Innledning", nn : ""),
-    responsibilities : (en : "", no : "Ansvarsområder", nn : ""),
-    employees : (en : "", no : "Ansatte", nn : ""),
+    introduction : (en: "Introduction", no: "Innledning", nn : "Innleiing"),
+    responsibilities : (en : "Responsibilities", no : "Ansvarsområder", nn : "Ansvarsområder"),
+    employees : (en : "Employees", no : "Ansatte", nn : "Ansatte"),
     displayEmployees : (
       en : "",
       no : "Vis ansatte registrert i UiOs lønns- og personalsystem",
@@ -192,8 +192,8 @@ resourcetype organizational-unit {
       en : "",
       no : "Webadresse til liste over alle ansatte",
       nn : ""),
-    content : (en: "", no: "Innhold", nn : ""),
-    related-content : (en: "", no: "Relatert innhold", nn : "")
+    content : (en: "Content", no: "Innhold", nn : "Innhald"),
+    relatedContent : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold")
   }
 
 }

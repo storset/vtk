@@ -109,7 +109,17 @@ resourcetype organizational-unit {
       [endif]
       ##
     }
-
+    
+    related-content {
+      ##
+      [def related resource-prop(".", "related-content")]
+      [if related != null && related != ""]
+        <div id="vrtx-related-content">
+          [val related unescaped]
+        </div>
+      [endif]
+      ##
+    }
   }
 
   view {
@@ -132,6 +142,7 @@ resourcetype organizational-unit {
           <div id="vrtx-additional-content">
             <div class="vrtx-frontpage-box">
               <comp:contact-information />
+              <comp:related-content />
             </div>
           </div>
         </div>
@@ -177,9 +188,9 @@ resourcetype organizational-unit {
     responsibilities : (en : "Responsibilities", no : "Ansvarsområder", nn : "Ansvarsområder"),
     employees : (en : "Employees", no : "Ansatte", nn : "Ansatte"),
     displayEmployees : (
-      en : "",
+      en : "Show employees registrated in UiO's payroll- and personalsystem",
       no : "Vis ansatte registrert i UiOs lønns- og personalsystem",
-      nn : ""),
+      nn : "Vis ansatte registrerte i lønns- og personalsystemet til UiO"),
     selectedEmployees : (
       en : "",
       no : "Ansatte som skal vises øverst i listen",
@@ -193,7 +204,7 @@ resourcetype organizational-unit {
       no : "Webadresse til liste over alle ansatte",
       nn : ""),
     content : (en: "Content", no: "Innhold", nn : "Innhald"),
-    relatedContent : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold")
+    related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold")
   }
 
 }

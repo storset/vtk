@@ -39,7 +39,7 @@ import org.vortikal.repository.resource.ResourcetreeLexer;
 import org.vortikal.resourcemanagement.BinaryPropertyDescription;
 import org.vortikal.resourcemanagement.DerivedPropertyDescription;
 import org.vortikal.resourcemanagement.DerivedPropertyEvaluationDescription;
-import org.vortikal.resourcemanagement.JSONPropertyAttribute;
+import org.vortikal.resourcemanagement.JSONPropertyAttributeDescription;
 import org.vortikal.resourcemanagement.JSONPropertyDescription;
 import org.vortikal.resourcemanagement.PropertyDescription;
 import org.vortikal.resourcemanagement.SimplePropertyDescription;
@@ -175,7 +175,7 @@ public class PropertyDescriptionParser {
         List<CommonTree> jsonSpecList = descEntry.getChildren();
         if (jsonSpecList != null) {
             for (CommonTree jsonSpec : jsonSpecList) {
-                JSONPropertyAttribute attribute = new JSONPropertyAttribute();
+                JSONPropertyAttributeDescription attribute = new JSONPropertyAttributeDescription();
                 String name = jsonSpec.getText();
                 Tree typeTree = jsonSpec.getChild(0);
                 attribute.setName(name);

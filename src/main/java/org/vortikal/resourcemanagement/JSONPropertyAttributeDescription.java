@@ -30,7 +30,7 @@
  */
 package org.vortikal.resourcemanagement;
 
-public class JSONPropertyAttribute extends EditablePropertyDescription {
+public class JSONPropertyAttributeDescription extends EditablePropertyDescription {
 
     private boolean indexable;
 

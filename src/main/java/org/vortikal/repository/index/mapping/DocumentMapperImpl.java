@@ -64,7 +64,7 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.search.PropertySelect;
 import org.vortikal.repository.search.WildcardPropertySelect;
-import org.vortikal.resourcemanagement.JSONPropertyAttribute;
+import org.vortikal.resourcemanagement.JSONPropertyAttributeDescription;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.text.JSONUtil;
@@ -470,7 +470,7 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
                     "Cannot create indexed JSON fields for property with no definition or non-JSON type");
         }
 
-        List<JSONPropertyAttribute> indexableJsonAttributes = def.getIndexableAttributes();
+        List<JSONPropertyAttributeDescription> indexableJsonAttributes = def.getIndexableAttributes();
         if (indexableJsonAttributes == null || indexableJsonAttributes.size() == 0) {
             return new Field[0]; // Nothing to index for this JSON prop
         }
@@ -485,7 +485,7 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
         }
 
         try {
-            for (JSONPropertyAttribute jsonAttribute : indexableJsonAttributes) {
+            for (JSONPropertyAttributeDescription jsonAttribute : indexableJsonAttributes) {
                 
                 String jsonAttributeName = jsonAttribute.getName();
                 

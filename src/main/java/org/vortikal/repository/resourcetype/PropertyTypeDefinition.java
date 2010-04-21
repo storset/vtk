@@ -39,7 +39,7 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Vocabulary;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
-import org.vortikal.resourcemanagement.JSONPropertyAttribute;
+import org.vortikal.resourcemanagement.JSONPropertyAttributeDescription;
 
 
 /**
@@ -132,7 +132,7 @@ public interface PropertyTypeDefinition {
      * 
      * @return a list of names for attributes of a json-property that are to be indexed
      */
-    public List<JSONPropertyAttribute> getIndexableAttributes();
+    public List<JSONPropertyAttributeDescription> getIndexableAttributes();
     
     
 }

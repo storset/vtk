@@ -43,7 +43,7 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Vocabulary;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
-import org.vortikal.resourcemanagement.JSONPropertyAttribute;
+import org.vortikal.resourcemanagement.JSONPropertyAttributeDescription;
 
 public class OverridingPropertyTypeDefinitionImpl implements OverridablePropertyTypeDefinition, InitializingBean {
 
@@ -178,7 +178,7 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridableProperty
         return sb.toString();
     }
 
-    public List<JSONPropertyAttribute> getIndexableAttributes() {
+    public List<JSONPropertyAttributeDescription> getIndexableAttributes() {
         return this.overriddenPropDef.getIndexableAttributes();
     }
 

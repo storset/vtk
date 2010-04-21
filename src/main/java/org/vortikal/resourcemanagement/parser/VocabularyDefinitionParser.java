@@ -37,7 +37,7 @@ import java.util.Locale;
 import org.antlr.runtime.tree.CommonTree;
 import org.apache.commons.lang.LocaleUtils;
 import org.vortikal.repository.resource.ResourcetreeLexer;
-import org.vortikal.resourcemanagement.JSONPropertyAttribute;
+import org.vortikal.resourcemanagement.JSONPropertyAttributeDescription;
 import org.vortikal.resourcemanagement.JSONPropertyDescription;
 import org.vortikal.resourcemanagement.PropertyDescription;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
@@ -101,7 +101,7 @@ public class VocabularyDefinitionParser {
             if (propDesc instanceof JSONPropertyDescription) {
                 JSONPropertyDescription jpd = (JSONPropertyDescription) propDesc;
                 if (jpd.getName().equals(propName)) {
-                    for (JSONPropertyAttribute jsonPropertyAttribute : jpd.getAttributes()) {
+                    for (JSONPropertyAttributeDescription jsonPropertyAttribute : jpd.getAttributes()) {
                         if (jsonPropertyAttribute.getName().equals(attributeName)) {
                             jsonPropertyAttribute.addVocabulary(locale, key, value);
                         }

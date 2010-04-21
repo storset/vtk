@@ -37,7 +37,7 @@ import java.util.List;
 
 import org.vortikal.resourcemanagement.EditRule;
 import org.vortikal.resourcemanagement.EditablePropertyDescription;
-import org.vortikal.resourcemanagement.JSONPropertyAttribute;
+import org.vortikal.resourcemanagement.JSONPropertyAttributeDescription;
 import org.vortikal.resourcemanagement.JSONPropertyDescription;
 import org.vortikal.resourcemanagement.PropertyDescription;
 import org.vortikal.resourcemanagement.StructuredResource;
@@ -143,7 +143,7 @@ public class FormSubmitCommand extends UpdateCancelCommand {
         String propertyName = propertyAttributeName[0];
         String attributeName = propertyAttributeName[1];
         if (jpd.getName().equals(propertyName)) {
-            for (JSONPropertyAttribute jsonPropertyAttribute : jpd.getAttributes()) {
+            for (JSONPropertyAttributeDescription jsonPropertyAttribute : jpd.getAttributes()) {
                 if (jsonPropertyAttribute.getName().equals(attributeName)) {
                     jsonPropertyAttribute.addEdithint(editRule.getEditHintKey(), editRule.getEditHintValue());
                 }

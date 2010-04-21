@@ -36,19 +36,19 @@ import java.util.List;
 
 public class JSONPropertyDescription extends EditablePropertyDescription {
 
-    private List<JSONPropertyAttribute> attributes = new ArrayList<JSONPropertyAttribute>();
+    private List<JSONPropertyAttributeDescription> attributes = new ArrayList<JSONPropertyAttributeDescription>();
 
-    public void addAttribute(JSONPropertyAttribute attribute) {
+    public void addAttribute(JSONPropertyAttributeDescription attribute) {
         this.attributes.add(attribute);
     }
 
-    public List<JSONPropertyAttribute> getAttributes() {
+    public List<JSONPropertyAttributeDescription> getAttributes() {
         return Collections.unmodifiableList(this.attributes);
     }
 
-    public List<JSONPropertyAttribute> getIndexableAttributes() {
-        List<JSONPropertyAttribute> indexableAttributes = new ArrayList<JSONPropertyAttribute>();
-        for (JSONPropertyAttribute attribute : this.attributes) {
+    public List<JSONPropertyAttributeDescription> getIndexableAttributes() {
+        List<JSONPropertyAttributeDescription> indexableAttributes = new ArrayList<JSONPropertyAttributeDescription>();
+        for (JSONPropertyAttributeDescription attribute : this.attributes) {
             if (attribute.isIndexable()) {
                 indexableAttributes.add(attribute);
             }

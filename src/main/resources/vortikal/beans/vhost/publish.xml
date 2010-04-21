@@ -187,8 +187,8 @@
   </bean>
 
   <bean id="viewUnpublishedAssertion" class="org.vortikal.web.service.RequestParameterAssertion">
-    <property name="parameterName" value="view" />
-    <property name="parameterValue" value="unpublished" />
+    <property name="parameterName" value="vrtxPreviewUnpublished" />
+    <property name="parameterValue" value="true" />
   </bean>
 
   <bean id="viewUnpublishedResourceAssertion" class="org.vortikal.web.service.AndAssertion">

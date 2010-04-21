@@ -76,7 +76,11 @@
   <body>
 
     <#if !previewRefreshParameter?exists>
-      <#assign previewRefreshParameter = 'force-refresh' />
+      <#assign previewRefreshParameter = 'vrtxPreviewForceRefresh' />
+    </#if>
+    
+    <#if !previewUnpublishedParameter?exists>
+      <#assign previewUnpublishedParameter = 'vrtxPreviewUnpublished' />
     </#if>
 
     <#assign constructor = "freemarker.template.utility.ObjectConstructor"?new() />
@@ -84,9 +88,9 @@
 
     <#assign url = resourceReference />
     <#if url?contains("?")>
-      <#assign url = url + "&amp;" + previewRefreshParameter + "=" + dateStr />
+      <#assign url = url + "&amp;" + previewUnpublishedParameter + "=" + "true" + "&amp;" + previewRefreshParameter + "=" + dateStr />
     <#else>
-      <#assign url = url + "?" + previewRefreshParameter + "=" + dateStr />
+      <#assign url = url + "?" + previewUnpublishedParameter + "=" + "true" + "&amp;" + previewRefreshParameter + "=" + dateStr />
     </#if>
 
     <iframe class="previewView" name="previewViewIframe" id="previewViewIframe" src="${url}" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0" vspace="0" hspace="0" style="overflow:visible; width:100%; ">

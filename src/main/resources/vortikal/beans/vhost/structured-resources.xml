@@ -30,21 +30,8 @@
       </list>
     </property>
     <property name="handler" ref="previewAdminIframeHandler" />
-    <property name="handlerInterceptors" ref="previewUnpublishedServiceInterceptor" />
   </bean>
-
-  <bean id="previewUnpublishedServiceInterceptor"
-    class="org.vortikal.web.ReferenceDataProvidingHandlerInterceptor">
-    <property name="providers" ref="previewUnpublishedConditionProvider" />
-  </bean>
-
-  <bean id="previewUnpublishedConditionProvider"
-    class="org.vortikal.web.referencedata.provider.PreviewUnpublishedConditionProvider"
-    parent="repositoryAware">
-    <property name="viewUnpublishedResourceService" ref="viewUnpublishedResourceService" />
-    <property name="assertion" ref="mayPreviewUnpublishedResourceAssertion" />
-  </bean>
-
+  
   <bean id="mayPreviewUnpublishedResourceAssertion" class="org.vortikal.web.service.AndAssertion">
     <property name="assertions">
       <list>
@@ -53,7 +40,8 @@
       </list>
     </property>
   </bean>
-
+  
+ 
   <bean id="structuredResources.editService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
     <property name="order" value="-9800" />

@@ -71,10 +71,10 @@ public class SelectiveProtocolManager extends RequestProtocolAssertion
         if (!this.selectiveAccessEnabled) {
             return;
         }
-        if (resource.isReadRestricted()) {
+        if (resource == null) {
             return;
         }
-        if (resource == null) {
+        if (resource.isReadRestricted()) {
             return;
         }
         Set<Service> services = resource.isCollection() ? 

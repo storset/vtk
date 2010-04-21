@@ -151,8 +151,8 @@
           <#assign attrName = jsonAttr.name />
           <#assign tmpName = inputFieldName + "." + attrName + "." + counter />
           <#assign jsonAttrLocalizedTitle = form.resource.getLocalizedMsg(attrName, locale, null) />
-          <#if map[jsonAttr]?exists >
-            <@printJsonProperyEditView jsonAttr.type jsonAttrLocalizedTitle tmpName map[jsonAttr] elem attrName />
+          <#if map[attrName]?exists >
+            <@printJsonProperyEditView jsonAttr.type jsonAttrLocalizedTitle tmpName map[attrName] elem attrName />
           <#else>
             <@printJsonProperyEditView jsonAttr.type jsonAttrLocalizedTitle tmpName "" elem attrName />
           </#if>

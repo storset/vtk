@@ -15,6 +15,5 @@
    	  </#if>
    	</#list>
   </#list>
-  <#local invert = true?string />
-      setShowHide('${script.name}', [${parameters}], ${invert});
+      setShowHide('${script.name}', [${parameters}]);
 </#macro>

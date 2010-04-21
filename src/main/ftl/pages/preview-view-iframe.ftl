@@ -13,13 +13,17 @@
   - visualizing broken links.
   -
   - Adds a force-refresh parameter with a timestamp to the url to prevent caching 
-  - of the contents 
+  - of the contents, and a parameter to display unpublished pages (only makes a difference for 
+  - resources that can be published).
+  - 
+  - Adds authTarget=http to ensure authenctication (e.g. needed to view unpublished). 
+  - Can be hardcoded as the value og "http" is only respected for world readable resources 
+  - (where preview should in fact be on http) 
   -
   - Directly includes"/system/javascript.ftl" since this 
   - page is not part of admin and therefore not decorated
   -
-  - TODO: Hack for NyUiO web styles with regard to visualizing broken links should ideally not be here
-  - TODO: Find better way to include basic.css (currently hardcoded)
+  - TODO: Hack based on Ny UiO web styles/structure with regard to visualizing broken links should ideally not be here in vortikal
   - 
   - Required model data:
   -   resourceReference
@@ -46,9 +50,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head><title>${(title.title)?default(resourceContext.currentResource.name)}</title>
 
-  <#-- TODO Hardcoded stylesheet reference 
-  <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/basic.css" type="text/css"/>
-  -->
   <#include "/system/javascript.ftl"/>
   
   <script language="javascript" >
@@ -88,9 +89,9 @@
 
     <#assign url = resourceReference />
     <#if url?contains("?")>
-      <#assign url = url + "&amp;" + previewUnpublishedParameter + "=" + "true" + "&amp;" + previewRefreshParameter + "=" + dateStr />
+      <#assign url = url + "&amp;" + previewUnpublishedParameter + "=" + "true" + "&amp;" + previewRefreshParameter + "=" + dateStr + "&authTarget=http" />
     <#else>
-      <#assign url = url + "?" + previewUnpublishedParameter + "=" + "true" + "&amp;" + previewRefreshParameter + "=" + dateStr />
+      <#assign url = url + "?" + previewUnpublishedParameter + "=" + "true" + "&amp;" + previewRefreshParameter + "=" + dateStr + "&authTarget=http" />
     </#if>
 
     <iframe class="previewView" name="previewViewIframe" id="previewViewIframe" src="${url}" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0" vspace="0" hspace="0" style="overflow:visible; width:100%; ">

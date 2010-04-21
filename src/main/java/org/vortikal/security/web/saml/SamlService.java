@@ -99,14 +99,18 @@ public abstract class SamlService {
             throw new IllegalStateException("Exception when trying to bootstrap OpenSAML", e);
         }
     }
-    
+
     protected static final String URL_SESSION_ATTR = SamlAuthenticationHandler.class.getName() + ".SamlSavedURL";
-    protected static final String REQUEST_ID_SESSION_ATTR = SamlAuthenticationHandler.class.getName() + ".SamlSavedRequestID";
-    
+
+    protected static final String REQUEST_ID_SESSION_ATTR = SamlAuthenticationHandler.class.getName()
+            + ".SamlSavedRequestID";
 
     private CertificateManager certificateManager;
+
     private String privateKeyAlias;
-    
+
+    private String certKey;
+
     // SP URI
     private Path serviceProviderURI;
 
@@ -115,6 +119,7 @@ public abstract class SamlService {
 
     // IDP login/logout URLs:
     private String authenticationURL;
+
     private String logoutURL;
 
 
@@ -122,41 +127,53 @@ public abstract class SamlService {
     public void setCertificateManager(CertificateManager certificateManager) {
         this.certificateManager = certificateManager;
     }
-    
+
+
     @Required
     public void setPrivateKeyAlias(String privateKeyAlias) {
         this.privateKeyAlias = privateKeyAlias;
     }
+
+
+    @Required
+    public void setCertKey(String certKey) {
+        this.certKey = certKey;
+    }
+
 
     @Required
     public void setServiceProviderURI(String serviceProviderURI) {
         this.serviceProviderURI = Path.fromString(serviceProviderURI);
     }
 
+
     public void setServiceIdentifier(String serviceIdentifier) {
         this.serviceIdentifier = serviceIdentifier;
     }
+
 
     @Required
     public void setAuthenticationURL(String authenticationURL) {
         this.authenticationURL = authenticationURL;
     }
 
+
     @Required
     public void setLogoutURL(String logoutURL) {
         this.logoutURL = logoutURL;
     }
 
+
     protected final Credential getSigningCredential() {
         Credential signingCredential = this.certificateManager.getCredential(this.privateKeyAlias);
         if (signingCredential == null) {
-            throw new IllegalStateException(
-                    "Unable to obtain credentials for signing using keystore alias '" 
-                    +  this.privateKeyAlias + "'");
+            throw new IllegalStateException("Unable to obtain credentials for signing using keystore alias '"
+                    + this.privateKeyAlias + "'");
         }
         return signingCredential;
     }
-    
+
+
     protected final SamlConfiguration newSamlConfiguration(HttpServletRequest request) {
         URL serviceIdentifierURL = getServiceProviderURL(request);
         String id = this.serviceIdentifier;
@@ -167,11 +184,12 @@ public abstract class SamlService {
             id = serviceIdentifierURL.toString();
             id = id.substring(0, id.length() - 1);
         }
-        SamlConfiguration configuration = new SamlConfiguration(this.authenticationURL, 
-                this.logoutURL, serviceIdentifierURL.toString(), id);
+        SamlConfiguration configuration = new SamlConfiguration(this.authenticationURL, this.logoutURL,
+                serviceIdentifierURL.toString(), id);
         return configuration;
     }
- 
+
+
     protected final Response decodeSamlResponse(String encodedSamlResponseXml) throws AuthenticationProcessingException {
         try {
             String samlResponseXml = new String(Base64.decode(encodedSamlResponseXml), "utf-8");
@@ -188,19 +206,24 @@ public abstract class SamlService {
             throw new AuthenticationProcessingException("Exception caught when trying to decode SAML response.", e);
         }
     }
-    
+
+
     protected final void validateAssertionContent(Assertion assertion) throws AuthenticationProcessingException {
         verifyConfirmationTimeNotExpired(assertion);
     }
-    
+
+
     protected final void verifyStatusCodeIsSuccess(Response samlResponse) throws AuthenticationProcessingException {
         String statusCode = samlResponse.getStatus().getStatusCode().getValue();
         if (!StatusCode.SUCCESS_URI.equals(statusCode)) {
-            throw new AuthenticationProcessingException("Wrong status code (" + statusCode + "),  should be: " + StatusCode.SUCCESS_URI);
+            throw new AuthenticationProcessingException("Wrong status code (" + statusCode + "),  should be: "
+                    + StatusCode.SUCCESS_URI);
         }
     }
-    
-    protected final void verifyDestinationAddressIsCorrect(Response samlResponse) throws AuthenticationProcessingException {
+
+
+    protected final void verifyDestinationAddressIsCorrect(Response samlResponse)
+            throws AuthenticationProcessingException {
         if (samlResponse.getDestination() == null) {
             return;
         }
@@ -212,14 +235,16 @@ public abstract class SamlService {
             throw new RuntimeException("Destination mismatch: " + samlResponse.getDestination());
         }
     }
-    
+
+
     protected final void verifyCryptographicAssertionSignature(Assertion assertion) {
-        X509Certificate cert = this.certificateManager.getIDPCertificate();
+        X509Certificate cert = this.certificateManager.getIDPCertificate(certKey);
         if (!verifySignature(cert, assertion)) {
             throw new AuthenticationProcessingException("Failed to verify signature of assertion: " + assertion.getID());
         }
     }
-    
+
+
     protected final LogoutResponse getLogoutResponse(HttpServletRequest request) {
         BasicSAMLMessageContext<LogoutResponse, ?, ?> messageContext = new BasicSAMLMessageContext<LogoutResponse, SAMLObject, SAMLObject>();
         messageContext.setInboundMessageTransport(new HttpServletRequestAdapter(request));
@@ -232,12 +257,15 @@ public abstract class SamlService {
         LogoutResponse logoutResponse = messageContext.getInboundSAMLMessage();
         return logoutResponse;
     }
-    
-    protected final AuthnRequest createAuthenticationRequest(SamlConfiguration config, UUID requestID) throws RuntimeException {
+
+
+    protected final AuthnRequest createAuthenticationRequest(SamlConfiguration config, UUID requestID)
+            throws RuntimeException {
         QName qname = AuthnRequest.DEFAULT_ELEMENT_NAME;
         @SuppressWarnings("unchecked")
         XMLObjectBuilder<AuthnRequest> builder = Configuration.getBuilderFactory().getBuilder(qname);
-        AuthnRequest authnRequest = builder.buildObject(qname.getNamespaceURI(), qname.getLocalPart(), qname.getPrefix());
+        AuthnRequest authnRequest = builder.buildObject(qname.getNamespaceURI(), qname.getLocalPart(), qname
+                .getPrefix());
 
         authnRequest.setID(requestID.toString());
         authnRequest.setForceAuthn(Boolean.FALSE);
@@ -255,12 +283,14 @@ public abstract class SamlService {
         return authnRequest;
     }
 
+
     protected final LogoutRequest createLogoutRequest(SamlConfiguration config, UUID requestID) {
         QName qname = LogoutRequest.DEFAULT_ELEMENT_NAME;
         @SuppressWarnings("unchecked")
         XMLObjectBuilder<LogoutRequest> builder = Configuration.getBuilderFactory().getBuilder(qname);
 
-        LogoutRequest logoutRequest = builder.buildObject(qname.getNamespaceURI(), qname.getLocalPart(), qname.getPrefix());
+        LogoutRequest logoutRequest = builder.buildObject(qname.getNamespaceURI(), qname.getLocalPart(), qname
+                .getPrefix());
         logoutRequest.setID(requestID.toString());
         logoutRequest.setIssueInstant(new DateTime(DateTimeZone.UTC));
         logoutRequest.addNamespace(new Namespace(SAMLConstants.SAML20_NS, SAMLConstants.SAML20_PREFIX));
@@ -280,29 +310,33 @@ public abstract class SamlService {
         } catch (ValidationException e) {
             throw new AuthenticationProcessingException("Unable to validate SAML logout request", e);
         }
-        
+
         return logoutRequest;
     }
-    
-    protected final LogoutResponse createLogoutResponse(SamlConfiguration config, LogoutRequest request, UUID responseID) throws Exception {
+
+
+    protected final LogoutResponse createLogoutResponse(SamlConfiguration config, LogoutRequest request, UUID responseID)
+            throws Exception {
         QName qname = LogoutResponse.DEFAULT_ELEMENT_NAME;
         @SuppressWarnings("unchecked")
         XMLObjectBuilder<LogoutResponse> builder = Configuration.getBuilderFactory().getBuilder(qname);
-        LogoutResponse logoutResponse = builder.buildObject(qname.getNamespaceURI(), qname.getLocalPart(), qname.getPrefix());
+        LogoutResponse logoutResponse = builder.buildObject(qname.getNamespaceURI(), qname.getLocalPart(), qname
+                .getPrefix());
 
         logoutResponse.setID(responseID.toString());
         logoutResponse.setIssueInstant(new DateTime(DateTimeZone.UTC));
         logoutResponse.setVersion(SAMLVersion.VERSION_20);
-        
+
         qname = Status.DEFAULT_ELEMENT_NAME;
         @SuppressWarnings("unchecked")
         XMLObjectBuilder<Status> statusBuilder = Configuration.getBuilderFactory().getBuilder(qname);
         Status status = statusBuilder.buildObject(qname.getNamespaceURI(), qname.getLocalPart(), qname.getPrefix());
-        
+
         qname = StatusCode.DEFAULT_ELEMENT_NAME;
         @SuppressWarnings("unchecked")
         XMLObjectBuilder<StatusCode> statusCodeBuilder = Configuration.getBuilderFactory().getBuilder(qname);
-        StatusCode statusCode = statusCodeBuilder.buildObject(qname.getNamespaceURI(), qname.getLocalPart(), qname.getPrefix());
+        StatusCode statusCode = statusCodeBuilder.buildObject(qname.getNamespaceURI(), qname.getLocalPart(), qname
+                .getPrefix());
         statusCode.setValue(StatusCode.SUCCESS_URI);
 
         status.setStatusCode(statusCode);
@@ -316,7 +350,8 @@ public abstract class SamlService {
         logoutResponse.validate(true);
         return logoutResponse;
     }
-    
+
+
     protected final String buildSignedAndEncodedRequestUrl(AuthnRequest authnRequest, UUID relayState) {
         try {
             Encoder enc = new Encoder();
@@ -325,6 +360,7 @@ public abstract class SamlService {
             throw new AuthenticationProcessingException("Exception caught when signing and encoding request URL", e);
         }
     }
+
 
     protected final String buildSignedAndEncodedLogoutRequestUrl(LogoutRequest logoutRequest, UUID relayState) {
         try {
@@ -335,10 +371,12 @@ public abstract class SamlService {
         }
     }
 
+
     protected final Path getServiceProviderURI() {
         return this.serviceProviderURI;
     }
-    
+
+
     private Issuer createIssuer(String serviceIdentifier) {
         QName qname = Issuer.DEFAULT_ELEMENT_NAME;
         @SuppressWarnings("unchecked")
@@ -348,14 +386,16 @@ public abstract class SamlService {
         return issuer;
     }
 
+
     private void verifyConfirmationTimeNotExpired(Assertion assertion) throws AuthenticationProcessingException {
         // TODO: check both timeouts
         DateTime confirmationTime = assertionConfirmationTime(assertion);
         if (confirmationTime == null || !confirmationTime.isAfterNow()) {
-            throw new AuthenticationProcessingException("Assertion confirmation time has expired: " + confirmationTime + " before "
-                    + new DateTime());
+            throw new AuthenticationProcessingException("Assertion confirmation time has expired: " + confirmationTime
+                    + " before " + new DateTime());
         }
     }
+
 
     private DateTime assertionConfirmationTime(Assertion assertion) {
         DateTime confirmationTime = null;
@@ -368,15 +408,16 @@ public abstract class SamlService {
         return confirmationTime;
     }
 
+
     private boolean verifySignature(X509Certificate certificate, Assertion assertion) {
         if (certificate == null) {
             throw new IllegalArgumentException("Certificate cannot be null");
         }
         if (!(assertion instanceof SignableSAMLObject)) {
             throw new IllegalArgumentException("Assertion must be an instance of SignableSAMLObject");
-        }        
+        }
         SignableSAMLObject signable = (SignableSAMLObject) assertion;
-        
+
         Signature signature = signable.getSignature();
         if (signature == null) {
             return false;
@@ -395,14 +436,15 @@ public abstract class SamlService {
             return false;
         }
     }
-    
+
+
     private URL getServiceProviderURL(HttpServletRequest request) {
         URL url = URL.create(request);
         url.clearParameters();
         url.setPath(this.serviceProviderURI);
         return url;
     }
-    
+
     protected static class Encoder extends HTTPRedirectDeflateEncoder {
 
         @Override
@@ -422,18 +464,22 @@ public abstract class SamlService {
             return Base64.encodeBytes(bytesOut.toByteArray(), Base64.DONT_BREAK_LINES);
         }
 
+
         @Override
-        public String getSignatureAlgorithmURI(Credential arg0, SecurityConfiguration arg1) throws MessageEncodingException {
+        public String getSignatureAlgorithmURI(Credential arg0, SecurityConfiguration arg1)
+                throws MessageEncodingException {
             return super.getSignatureAlgorithmURI(arg0, arg1);
         }
+
 
         @Override
         public String generateSignature(Credential arg0, String arg1, String arg2) throws MessageEncodingException {
             return super.generateSignature(arg0, arg1, arg2);
         }
 
+
         public String buildRedirectURL(Credential signingCredential, UUID relayState, RequestAbstractType request)
-        throws MessageEncodingException, IOException {
+                throws MessageEncodingException, IOException {
             SAMLMessageContext<?, RequestAbstractType, ?> messageContext = new BasicSAMLMessageContext<SAMLObject, RequestAbstractType, SAMLObject>();
             // Build the parameters for the request
             messageContext.setOutboundSAMLMessage(request);
@@ -457,6 +503,6 @@ public abstract class SamlService {
             String encoded = Base64.encodeBytes(bytesOut.toByteArray(), Base64.DONT_BREAK_LINES);
             return super.buildRedirectURL(messageContext, request.getDestination(), encoded);
         }
-        
+
     }
 }

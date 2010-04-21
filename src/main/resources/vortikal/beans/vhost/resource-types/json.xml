@@ -106,7 +106,7 @@
     </property>
   </bean>
 
-  <bean id="abstractIndexableJSONAttribute" class="org.vortikal.resourcemanagement.JSONPropertyAttribute">
+  <bean id="abstractIndexableJSONAttribute" class="org.vortikal.resourcemanagement.JSONPropertyAttributeDescription">
     <property name="indexable" value="true" />
   </bean>
 

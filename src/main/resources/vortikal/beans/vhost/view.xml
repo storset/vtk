@@ -129,7 +129,7 @@
     </property>
     <property name="referenceDataProviders">
       <list>
-        <ref bean="iframeJSProvider" />
+        <ref bean="viewIframeJSProvider" />
         <ref bean="resourceContextProvider" />
       </list>
     </property>
@@ -282,6 +282,20 @@
     <property name="skipCurrentResource" value="true" />
     <property name="skipIndexFile" value="true" />
   </bean>
+  
+  <bean id="viewIframeJSProvider" class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
+    <property name="modelDataMap">
+      <map>
+        <entry key="jsURLs">
+          <list>
+            <value>${jquery.baseURL}/jquery-${jquery.version}.min.js</value>
+            <value>${jsBaseURL}/iframe-view.js</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+  
 
  <!-- Config for view technologies -->
 

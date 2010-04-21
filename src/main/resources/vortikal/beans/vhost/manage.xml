@@ -1550,7 +1550,7 @@
             <value>${jsBaseURL}/browser-sniffer.js</value>
             <value>${jquery.baseURL}/jquery-${jquery.version}.min.js</value>
             <value>${jsBaseURL}/admin-enhancements.js</value>
-            <value>${jsBaseURL}/iframe.js</value>
+            <value>${jsBaseURL}/iframe-admin.js</value>
             <value>${webResources.baseURL}/thickbox-modified/thickbox.js</value>
             <value>${webResources.baseURL}/thickbox-modified/check-unsaved-changes.js</value>
             <value>${jsBaseURL}/visualize-links.js</value>

@@ -25,6 +25,8 @@ resourcetype person {
     selectedPublications : html noextract,
     getRelatedProjects : boolean,
     projects : json (projectName:string, projectUrl:string) multiple,
+    getRelatedGroups : boolean,
+    groups : json (groupName:string, groupUrl:string) multiple,
     rssFeeds : json (rssTitle:string, rssUrl:string) multiple,
     tags : string multiple overrides tags
   }
@@ -35,12 +37,13 @@ resourcetype person {
     group images (picture, pressPhoto) (after additionalContactInformation) horizontal,
     group combinedPublications (getExternalScientificInformation, selectedPublications) (after tags),
     group combinedProjects (getRelatedProjects, projects) (after combinedPublications),
+    group combinedGroups (getRelatedGroups, groups) (after combinedProjects),
     username (size[8]),
     content (after images),
     tags tooltip (en : "(tag1, tag2, ...)", no : "(emneord1, emneord2, ...)", nn : "(emneord1, emneord2, ...)"),
     postalAddress tooltip (en : "(postbox / streetaddress, postnumber place)", no : "(postboks / gateadresse, postnummer sted)", nn : "(postboks / gateadresse, postnummer sted)"),
     alternativeVisitingAddress tooltip (en : "(building, streetaddress, postnumber place)", no : "(bygning, gateadresse, postnummer sted)", nn : "(bygning, gateadresse, postnummer sted)"),
-	rssFeeds (after combinedProjects)
+	rssFeeds (after combinedGroups)
   }
 
   scripts {
@@ -301,6 +304,7 @@ resourcetype person {
         <div id="vrtx-additional-content">
            <comp:feeds />
            <resource:project-list />
+           <resource:resarch-group-list />
         </div>
         <comp:vrtx-date-info />
       </body>
@@ -320,6 +324,11 @@ resourcetype person {
        nn : ("true" = "Ja", "false" = "Nei")
      },
      getRelatedProjects {
+       en : ("true" = "Yes", "false" = "No"),
+       no : ("true" = "Ja", "false" = "Nei"),
+       nn : ("true" = "Ja", "false" = "Nei")
+     }
+     getRelatedGroups {
        en : ("true" = "Yes", "false" = "No"),
        no : ("true" = "Ja", "false" = "Nei"),
        nn : ("true" = "Ja", "false" = "Nei")
@@ -357,9 +366,15 @@ resourcetype person {
     getRelatedProjects : (en : "Show projects published on UiO.no where your username is registered as participant",
                            no :"Vis prosjekter publisert på UiO.no hvor ditt brukernavn er registrert som deltager",
                            nn:"Vis prosjekt publiserte på UiO.no der brukarnamnet ditt er registrert som deltakar"),
+    getRelatedGroups : (en : "Show groups published on UiO.no where your username is registered as participant",
+                           no :"Vis grupper publisert på UiO.no hvor ditt brukernavn er registrert som deltager",
+                           nn:"Vis gruppe publiserte på UiO.no der brukarnamnet ditt er registrert som deltakar"),
     projects : (en : "Other projects",no : "Andre prosjekter", nn :"Andre prosjekt"),
+    groups : (en : "Other research groups",no : "Andre forskergrupper", nn :"Andre forskargruppe"),
     projectName : (en : "Project name", no : "Prosjektnavn", nn :"Prosjektnamn"), 
+    groupName : (en : "Group name", no : "Gruppenavn", nn :"Gruppenamn"), 
     projectUrl : (en : "Web address", no : "Webadresse", nn :"Webadresse"),
+    groupUrl : (en : "Web address", no : "Webadresse", nn :"Webadresse"),
     rssFeeds : (en : "Show content from RSS-streams (from blog, Twitter or alike)", no : "Vis innhold fra RSS-strømmer (fra blogg, Twitter e.l.)", nn :"Vis innhald frå RSS-straumar (frå blogg, Twitter e.l.)"),
     rssTitle : (en : "Title",no : "Tittel", nn : "Tittel"),
     rssUrl : (en : "Web address", no : "Webadresse", nn :"Webadresse"),
@@ -370,6 +385,7 @@ resourcetype person {
     additionalContactInformation : (en : "Other contact information", no : "Andre kontaktopplysninger", nn : "Andre kontaktopplysingar"),
     combinedPublications : (en : "Publications", no : "Publikasjoner", nn : "Publikasjonar"),
     combinedProjects : (en : "Projects", no : "Prosjekter", nn : "Prosjekt"),
+    combinedGroups : (en : "Research groups", no : "Forskergrupper", nn : "Forskargruppe"),
     userVisitingAddress : (en : "Visiting address", no : "Besøksadresse", nn : "Besøksadresse"),
     header : (en : "Edit person", no : "Rediger person", nn : "Rediger person"),
     fax : (en : "Fax", no : "Faks", nn : "Faks"),

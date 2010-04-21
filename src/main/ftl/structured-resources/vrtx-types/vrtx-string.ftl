@@ -2,7 +2,7 @@
 <div class="vrtx-string ${classes}">
   <label for="${inputFieldName}">${title}</label>
   <div class="inputfield">
-  <#if dropdown>
+  <#if dropdown && valuemap?exists && valuemap?is_hash>
   <select name="${inputFieldName}">
     <#list valuemap?keys as key>
     <#if key = "range">

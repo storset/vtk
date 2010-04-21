@@ -32,7 +32,7 @@
           value=elem.getFormatedValue()
           classes=elem.name
           inputFieldSize=fieldSize 
-          tooltip=form.resource.getLocalizedTooltip(elem.name,locale)
+          tooltip=form.resource.getLocalizedTooltip(elem.name, locale)
           valuemap=elem.description.getValuemap(locale)
           dropdown=dropdown
           />
@@ -47,7 +47,7 @@
           inputFieldName=elem.name 
           value=elem.value 
           classes=cssclass 
-          tooltip=form.resource.getLocalizedTooltip(elem.name,locale)
+          tooltip=form.resource.getLocalizedTooltip(elem.name, locale)
           editor="simple-ckeditor"
           />
          <@fckEditor.insertEditor elem.name /> 
@@ -63,7 +63,7 @@
           inputFieldName=elem.name 
           value=elem.value 
           classes="vrtx-html " + elem.name  
-          tooltip=form.resource.getLocalizedTooltip(elem.name,locale)
+          tooltip=form.resource.getLocalizedTooltip(elem.name, locale)
           editor="ckeditor"
           />
         <@fckEditor.insertEditor elem.name true false /> 
@@ -75,7 +75,7 @@
           value=elem.value
           classes=elem.name
           description=elem.description 
-          tooltip=form.resource.getLocalizedTooltip(elem.name,locale)
+          tooltip=form.resource.getLocalizedTooltip(elem.name, locale)
           />
         <#break>
       <#case "image_ref">
@@ -85,7 +85,7 @@
           value=elem.value 
           baseFolder=resourceContext.parentURI
           classes=elem.name 
-          tooltip=form.resource.getLocalizedTooltip(elem.name,locale)
+          tooltip=form.resource.getLocalizedTooltip(elem.name, locale)
           />
         <#break>          
       <#case "media_ref">
@@ -95,7 +95,7 @@
           value=elem.value 
           baseFolder=resourceContext.parentURI
           classes=elem.name  
-          tooltip=form.resource.getLocalizedTooltip(elem.name,locale)
+          tooltip=form.resource.getLocalizedTooltip(elem.name, locale)
           />
         <#break>
       <#case "datetime">
@@ -104,7 +104,7 @@
           inputFieldName=elem.name 
           value=elem.value 
           classes=elem.name  
-          tooltip=form.resource.getLocalizedTooltip(elem.name,locale)
+          tooltip=form.resource.getLocalizedTooltip(elem.name, locale)
           />
         <#break>
       <#case "json">
@@ -112,8 +112,10 @@
           localizedTitle
           elem.name
           elem
-          elem.name  
-          form.resource.getLocalizedTooltip(elem.name,locale)
+          elem.name
+          ""
+          locale
+          form.resource.getLocalizedTooltip(elem.name, locale)
           />
         <#break>
       <#default>
@@ -121,7 +123,7 @@
     </#switch>
 </#macro>
 
-<#macro printJSONPropertyEditView title inputFieldName elem id tooltip inputFieldSize=20>
+<#macro printJSONPropertyEditView title inputFieldName elem id tooltip locale inputFieldSize=20>
 <div class="vrtx-json">
   <div id="${id}" class="fieldset">
   <div class="header">${title}</div>
@@ -129,7 +131,7 @@
     <#local counter = 0 />
     <#local locale = springMacroRequestContext.getLocale() />
     
-    <#-- Json property that has no value. We need to crate empty fields. -->
+    <#-- Json property that has no value. We need to create empty fields. -->
     <#if !elem.value?exists >
       <div class="vrtx-json-element" id="vrtx-json-element-${inputFieldName}-${counter}">
         <#list elem.description.attributes as jsonAttr>
@@ -152,9 +154,9 @@
           <#assign tmpName = inputFieldName + "." + attrName + "." + counter />
           <#assign jsonAttrLocalizedTitle = form.resource.getLocalizedMsg(attrName, locale, null) />
           <#if map[attrName]?exists >
-            <@printJsonProperyEditView jsonAttr.type jsonAttrLocalizedTitle tmpName map[attrName] elem attrName />
+            <@printJsonProperyEditView jsonAttr.type jsonAttrLocalizedTitle tmpName map[attrName] elem attrName jsonAttr locale />
           <#else>
-            <@printJsonProperyEditView jsonAttr.type jsonAttrLocalizedTitle tmpName "" elem attrName />
+            <@printJsonProperyEditView jsonAttr.type jsonAttrLocalizedTitle tmpName "" elem attrName jsonAttr locale />
           </#if>
           <#assign arrayAttrName = inputFieldName + '\\\\.' + attrName + '\\\\.' />
           <#assign arrayOfIds = arrayOfIds + "'" + arrayAttrName + "'" />
@@ -193,7 +195,7 @@
 </div>
 </#macro>
 
-<#macro printJsonProperyEditView type jsonAttr tmpName value elem key>
+<#macro printJsonProperyEditView type jsonAttr tmpName value elem key json locale >
 <#switch type >
   <#case "string">
     <#assign fieldSize="40" />
@@ -207,7 +209,7 @@
       </#if>
     </#if>
     <#assign dropdown = false />
-    <#if elem.description.edithints?exists && elem.description.edithints['dropdown']?exists >
+    <#if json.edithints?exists && json.edithints['dropdown']?exists >
       <#assign dropdown = true />
     </#if>
     <@vrtxString.printPropertyEditView
@@ -215,7 +217,10 @@
       inputFieldName=tmpName
       value=value
       classes=key
-      inputFieldSize=fieldSize />
+      inputFieldSize=fieldSize
+      tooltip=""
+      valuemap=json.getValuemap(locale)
+      dropdown=dropdown />
     <#break>
    <#case "simple_html">
     <#assign cssclass =  tmpName + " vrtx-simple-html" />

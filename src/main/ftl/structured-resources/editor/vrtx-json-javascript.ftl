@@ -9,7 +9,7 @@
   $(document).ready(function() {   
   
   <#assign i = 0 />
-  <#list form.elements as elementBox>  
+  <#list form.elements as elementBox>
     <#assign j = 0 />
     <#list elementBox.formElements as elem>
       <#if elem.description.type == "json" && elem.description.isMultiple() >
@@ -20,18 +20,18 @@
 
     <#list elem.description.attributes as jsonAttr>
       LIST_OF_JSON_ELEMENTS[${i}].a[${j}] = new Object();
-      LIST_OF_JSON_ELEMENTS[${i}].a[${j}].name = "${jsonAttr.name}";        
-      LIST_OF_JSON_ELEMENTS[${i}].a[${j}].type = "${elem.description.type}";
-      LIST_OF_JSON_ELEMENTS[${i}].a[${j}].title = "${form.resource.getLocalizedMsg(jsonAttr.name, locale, null)}"; 
-      <#assign j = j + 1 />  
+      LIST_OF_JSON_ELEMENTS[${i}].a[${j}].name = "${jsonAttr.name}";
+      LIST_OF_JSON_ELEMENTS[${i}].a[${j}].type = "${jsonAttr.type}";
+      LIST_OF_JSON_ELEMENTS[${i}].a[${j}].title = "${form.resource.getLocalizedMsg(jsonAttr.name, locale, null)}";
+      <#assign j = j + 1 />
     </#list>
-      <#assign i = i + 1 />  
-       </#if>      
+      <#assign i = i + 1 />
+       </#if>
     </#list>
-  </#list>  
+  </#list>
     for(i in LIST_OF_JSON_ELEMENTS){
-        $("#" + LIST_OF_JSON_ELEMENTS[i].name).append("<input type=\"button\" class=\"vrtx-add-button\" onClick=\"addNewJsonElement(LIST_OF_JSON_ELEMENTS[" + i + "])\" value=\"${vrtx.getMsg("editor.add")}\" />");      
-      }    
+        $("#" + LIST_OF_JSON_ELEMENTS[i].name).append("<input type=\"button\" class=\"vrtx-add-button\" onClick=\"addNewJsonElement(LIST_OF_JSON_ELEMENTS[" + i + "])\" value=\"${vrtx.getMsg("editor.add")}\" />");
+      }
     });
     
     function getCounterForJson(inputFieldName, jsonAttr){
@@ -81,7 +81,7 @@
      // Need a move down button for the element before the element we are inserting 
      lastElement = "vrtx-" + j.type + "-element-" + j.name + "-" + (counter-1);
      var moveDownButton = "<input type=\"button\" class=\"vrtx-move-down-button\" value=\"&darr; ${vrtx.getMsg("editor.move-down")}\" onClick=\"swapContent(" + (counter-1) + "," + arrayOfIds.toString() + "),1)\" />";
-     $("#" + lastElement).append(moveDownButton);             
+     $("#" + lastElement).append(moveDownButton);
      
      //The new element needs a move up button and also a delete button
      var moveUpButton = "<input type=\"button\" class=\"vrtx-move-up-button\" value=\"&uarr; ${vrtx.getMsg("editor.move-up")}\" onClick=\"swapContent(" + counter + "," + arrayOfIds.toString() + "),-1)\" />";
@@ -93,7 +93,7 @@
        var inputFieldName = j.name + "." + j.a[i].name + "." + counter;
        if(j.a[i].type == "simple_html"){  
          newEditor(inputFieldName,false,false,'${resourceContext.parentURI}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
-          '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', '');    
+          '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', '');
        }else if(j.a[i].type == "html"){
          newEditor(inputFieldName,true,false,'${resourceContext.parentURI}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
           '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', '');
@@ -231,7 +231,7 @@
       var fckInstanceName2 = arrayOfIds[x].replace(/\\/g,'') + (counter + move);
       if(isFckEditor(fckInstanceName1) && isFckEditor(fckInstanceName2)){
         var val1 = getFckValue(fckInstanceName1);
-        var val2 = getFckValue(fckInstanceName2);  
+        var val2 = getFckValue(fckInstanceName2);
         setFckValue(fckInstanceName1, val2);
         setFckValue(fckInstanceName2, val1);
       }else if($(elementId1).hasClass("date") && $(elementId2).hasClass("date")){    

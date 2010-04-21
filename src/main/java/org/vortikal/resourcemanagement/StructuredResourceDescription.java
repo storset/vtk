@@ -55,6 +55,8 @@ public final class StructuredResourceDescription {
     private HashMap<String, Map<Locale, String>> localization = new HashMap<String, Map<Locale, String>>();
     private HashMap<String, Map<Locale, String>> tooltips = new HashMap<String, Map<Locale, String>>();
 
+    private static final String DEFAULT_LANG = "en";
+
     public StructuredResourceDescription(StructuredResourceManager manager) {
         this.manager = manager;
     }
@@ -205,7 +207,8 @@ public final class StructuredResourceDescription {
         if (localizationMap == null) {
             return key;
         }
-        String localizedMessage = localizationMap.get(new Locale(locale.getLanguage()));
+        String lang = locale == null ? DEFAULT_LANG : locale.getLanguage();
+        String localizedMessage = localizationMap.get(new Locale(lang));
         return localizedMessage != null ? localizedMessage : key;
     }
 

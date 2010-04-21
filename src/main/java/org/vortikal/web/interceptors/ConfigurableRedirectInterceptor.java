@@ -33,6 +33,7 @@ package org.vortikal.web.interceptors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.web.service.URL;
@@ -44,17 +45,32 @@ import org.vortikal.web.service.URL;
 public class ConfigurableRedirectInterceptor implements HandlerInterceptor  {
     
     private String protocol;
-    private String hostName;
+    private String redirectToHostName;
     private String port;
 
     public void setProtocol(String protocol) {
         this.protocol = protocol;
     }
 
-    public void setHostName(String host) {
-        this.hostName = host;
-    }
+    public void setHostName(String hostName) {
+        if (hostName == null || hostName.trim().equals("")) {
+            throw new IllegalArgumentException("Illegal hostname: '" + hostName + "'");
+        }
+        
+        String[] hostNames = StringUtils.tokenizeToStringArray(hostName, ", ");
+        if (hostNames.length == 0) {
+            throw new IllegalArgumentException(
+                "Unable to find host name in argument: '" + hostName + "'");
+        }
 
+        this.redirectToHostName = hostNames[0];
+
+        // Makes no sense to redirect to *, but still OK to redirect to a different port
+        if ("*".equals(this.redirectToHostName)) {
+            this.redirectToHostName = null;
+        }
+    }
+    
     public void setPort(String port) {
         this.port = port;
     }
@@ -67,8 +83,9 @@ public class ConfigurableRedirectInterceptor implements HandlerInterceptor  {
         if (this.protocol != null) {
             url.setProtocol(this.protocol);
         }
-        if (this.hostName != null) {
-            url.setHost(this.hostName);
+        if (this.redirectToHostName != null) {
+            
+            url.setHost(this.redirectToHostName);
         }
         if (this.port != null) {
             try {

@@ -22,6 +22,11 @@
       LIST_OF_JSON_ELEMENTS[${i}].a[${j}] = new Object();
       LIST_OF_JSON_ELEMENTS[${i}].a[${j}].name = "${jsonAttr.name}";
       LIST_OF_JSON_ELEMENTS[${i}].a[${j}].type = "${jsonAttr.type}";
+      <#if jsonAttr.edithints?exists>
+      
+      <#-- XXX add edithints to json element -->
+      
+      </#if>
       LIST_OF_JSON_ELEMENTS[${i}].a[${j}].title = "${form.resource.getLocalizedMsg(jsonAttr.name, locale, null)}";
       <#assign j = j + 1 />
     </#list>
@@ -56,6 +61,8 @@
            arrayOfIds += "," 
          }
          arrayOfIds += "'" + j.name + "." + j.a[i].name + "." + "'";
+         
+         // handle edithints on json attributes
          
          switch(j.a[i].type) {
            case "string":

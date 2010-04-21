@@ -204,7 +204,7 @@ public class StructuredResourceEditor extends SimpleFormController {
                         String input = desc.getName() + "." + attr.getName() + "." + i;
                         String posted = request.getParameter(input);
                         if (posted != null && !"".equals(posted.trim())) {
-                            obj.put(attr, posted);
+                            obj.put(attr.getName(), posted);
                         }
                     }
                     if (!obj.isEmpty()) {
@@ -218,7 +218,7 @@ public class StructuredResourceEditor extends SimpleFormController {
                     String param = desc.getName() + "." + attr.getName() + ".0";
                     String posted = request.getParameter(param);
                     if (posted != null && !"".equals(posted.trim())) {
-                        obj.put(attr, posted);
+                        obj.put(attr.getName(), posted);
                     }
                 }
                 bindObjectToForm(form, desc, obj);

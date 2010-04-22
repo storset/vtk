@@ -38,7 +38,7 @@ import java.util.regex.Pattern;
 
 class HtmlSelectUtil {
 
-    private static final Pattern ID_PATTERN = Pattern.compile("([a-z0-9]+)?#(.*)");
+    private static final Pattern ID_PATTERN = Pattern.compile("([a-z0-9]+)?#(.+)");
     private static final Pattern EXP_PATTERN = Pattern.compile("([a-z0-9]+)\\(([0-9]+)\\)$");
     
     public static List<HtmlElement> select(HtmlPage page, String expression) {

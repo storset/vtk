@@ -138,7 +138,7 @@
           <#assign attrName = jsonAttr.name />
           <#assign tmpName = inputFieldName + "." + attrName + "." + counter />
           <#assign jsonAttrLocalizedTitle = form.resource.getLocalizedMsg(attrName, locale, null) />
-          <@printJsonProperyEditView jsonAttr.type jsonAttrLocalizedTitle tmpName "" elem attrName />
+          <@printJsonProperyEditView jsonAttr.type jsonAttrLocalizedTitle tmpName "" elem attrName jsonAttr locale />
         </#list>
         <input type="button" class="vrtx-remove-button" value="${vrtx.getMsg("editor.remove")}" onClick="$('#vrtx-json-element-${inputFieldName}-${counter}').remove()" />
       </div>
@@ -182,12 +182,13 @@
 
     <#-- There is at least one value and the property is not a list/multiple -->
     <#if elem.value?exists && elem.value?is_hash >
-      <#list elem.description.attributes as key>
-        <#assign tmpName = inputFieldName + "." + key + "." + counter />
-        <#if elem.value[key]?exists >
-          <@printJsonProperyEditView elem.description.getType(key) jsonAttrLocalizedTitle tmpName elem.value[key] elem key />
+      <#list elem.description.attributes as jsonAttr>
+        <#assign attrName = jsonAttr.name />
+        <#assign tmpName = inputFieldName + "." + attrName + "." + counter />
+        <#if elem.value[attrName]?exists >
+          <@printJsonProperyEditView jsonAttr.type jsonAttrLocalizedTitle tmpName elem.value[attrName] elem attrName jsonAttr locale />
         <#else>
-          <@printJsonProperyEditView elem.description.getType(key) jsonAttrLocalizedTitle tmpName "" elem key />
+          <@printJsonProperyEditView jsonAttr.type jsonAttrLocalizedTitle tmpName "" elem attrName jsonAttr locale />
         </#if>
       </#list>
     </#if>

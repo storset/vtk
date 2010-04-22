@@ -68,9 +68,6 @@ public class EventCalendarListingController extends EventListingController {
                     && (EventListingHelper.VIEW_TYPE_ALL_UPCOMING.equals(viewType) || EventListingHelper.VIEW_TYPE_ALL_PREVIOUS
                             .equals(viewType))) {
 
-                String title = "";
-                String titleKey = viewType + "Title";
-
                 Listing result = null;
                 if (EventListingHelper.VIEW_TYPE_ALL_UPCOMING.equals(viewType)) {
                     result = this.searcher.searchUpcoming(request, collection, page, pageLimit, 0);
@@ -79,19 +76,21 @@ public class EventCalendarListingController extends EventListingController {
                     model.put(MODEL_KEY_HIDE_ALTERNATIVE_REP, Boolean.TRUE);
                 }
                 model.put(viewType, result);
-                title = this.helper.getEventTypeTitle(request, collection, "eventListing." + viewType, false);
+                String title = this.helper.getEventTypeTitle(request, collection, "eventListing." + viewType, false);
+                String titleKey = viewType + "Title";
+                model.put(titleKey, title);
 
                 if (result == null || result.getFiles().isEmpty()) {
-                    title = this.helper.getEventTypeTitle(request, collection, "eventListing.noPlanned." + viewType,
-                            false);
-                    titleKey = viewType + "NoPlannedTitle";
+                    String noPlannedTitle = this.helper.getEventTypeTitle(request, collection,
+                            "eventListing.noPlanned." + viewType, false);
+                    String noPlannedTitleKey = viewType + "NoPlannedTitle";
+                    model.put(noPlannedTitleKey, noPlannedTitle);
                 } else {
                     List<URL> urls = ListingPager.generatePageThroughUrls(result.getTotalHits(), pageLimit, URL
                             .create(request));
                     model.put(MODEL_KEY_PAGE_THROUGH_URLS, urls);
                 }
 
-                model.put(titleKey, title);
                 model.put(MODEL_KEY_OVERRIDDEN_TITLE, title);
 
             } else {

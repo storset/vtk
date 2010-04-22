@@ -344,7 +344,7 @@ resourcetype person {
     visitingAddress : (en : "Unit visiting address", no : "Enhetens besøksadresse", nn : "Besøksadressa til eininga"),
     alternativeVisitingAddress: (
        en : "Visiting address (is displayed in place of visiting address registrated in UiO's saluary- and personalsystem)", 
-       no : "Besøkadresse (vises istedenfor besøksadresse registert i UiOs lønns- og personalsystem)", 
+       no : "Besøksadresse (vises istedenfor besøksadresse registert i UiOs lønns- og personalsystem)", 
        nn : "Besøksadresse (vert vist i staden for besøksadressa registrert i lønns- og personalsystemet til UiO)"),
     email : (en : "Email", no : "E-post", nn : "E-post"),
     position : (en : "Position", no : "Stillingstittel", nn : "Stillingstittel"), 

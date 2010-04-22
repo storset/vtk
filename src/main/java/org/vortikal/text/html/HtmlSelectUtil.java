@@ -36,16 +36,32 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
-
 class HtmlSelectUtil {
 
+    private static final Pattern ID_PATTERN = Pattern.compile("([a-z0-9]+)?#(.*)");
     private static final Pattern EXP_PATTERN = Pattern.compile("([a-z0-9]+)\\(([0-9]+)\\)$");
-    
     
     public static List<HtmlElement> select(HtmlPage page, String expression) {
         HtmlElement current = page.getRootElement();
-
+        if (current == null) {
+            return null;
+        }
+        Matcher matcher = ID_PATTERN.matcher(expression);
+        if (matcher.matches()) {
+            String name = null, id = null;
+            if (matcher.groupCount() == 2) {
+                name = matcher.group(1);
+                id = matcher.group(2);
+            } else {
+                id = matcher.group(1);
+            }
+            List<HtmlElement> result = new ArrayList<HtmlElement>();
+            HtmlElement selected = findById(page.getRootElement(), name, id);
+            if (selected != null) {
+                result.add(selected);
+            }
+            return result;
+        }
         String[] path = expression.split("\\.");
         if (current == null || !current.getName().equalsIgnoreCase(path[0])) {
             return new ArrayList<HtmlElement>();
@@ -61,7 +77,7 @@ class HtmlSelectUtil {
             String name = pathElement;
             int elementIdx = -1;
 
-            Matcher matcher = EXP_PATTERN.matcher(name);
+            matcher = EXP_PATTERN.matcher(name);
             if (matcher.matches()) {
                 name = matcher.group(1);
                 elementIdx = Integer.valueOf(matcher.group(2));
@@ -84,7 +100,6 @@ class HtmlSelectUtil {
         return elements;
     }
     
-
     public static HtmlElement selectSingleElement(HtmlPage page, String expression) {
         List<HtmlElement> elements = select(page, expression);
         if (elements.isEmpty()) {
@@ -92,4 +107,27 @@ class HtmlSelectUtil {
         }
         return elements.get(0);
     }
+
+    private static HtmlElement findById(HtmlElement elem, String name, String id) {
+        HtmlAttribute attr = elem.getAttribute("id");
+        if (attr != null) {
+            if (attr.getValue().equals(id)) {
+                if (name == null) {
+                    return elem;
+                }
+                if (name.equalsIgnoreCase(elem.getName())) {
+                    return elem;
+                }
+            }
+        }
+        HtmlElement[] children = elem.getChildElements();
+        for (HtmlElement child: children) {
+            HtmlElement found = findById(child, name, id);
+            if (found != null) {
+                return found;
+            }
+        }
+        return null;
+    }
+
 }

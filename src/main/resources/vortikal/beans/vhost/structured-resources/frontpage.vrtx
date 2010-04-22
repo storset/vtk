@@ -280,15 +280,18 @@ resourcetype frontpage {
        nn : ("" = "Full bredde", "half-box-left" = "Halv bredde venstre", "half-box-right" = "Halv bredde høyre")
      },
      main-content:boxCssSpecial {
-       en : ("featured-one-big-two-column" = "featured content - one big",
+       en : ("" = "Nothing",
+             "featured-one-big-two-column" = "featured content - one big",
              "featured-two-column-boxes" = "Two column boxes",
              "two-column-feed" = "RSS in two columns",
              "three-column-feed" = "RSS in three columns"),
-       no : ("featured-one-big-two-column" = "fremhevede saker - en stor",
+       no : ("" = "Ingen",
+             "featured-one-big-two-column" = "fremhevede saker - en stor",
              "featured-two-column-boxes" = "To kolonne bokser",
              "two-column-feed" = "RSS i to kolonner", 
              "three-column-feed" = "RSS i tre kolonner"),
-       nn : ("featured-one-big-two-column" = "fremhevede saker - en stor", 
+       nn : ("" = "Ingen",
+             "featured-one-big-two-column" = "fremhevede saker - en stor", 
              "featured-two-column-boxes" = "To kolonne bokser", 
              "two-column-feed" = "RSS i to kolonner", 
              "three-column-feed" = "RSS i tre kolonner")

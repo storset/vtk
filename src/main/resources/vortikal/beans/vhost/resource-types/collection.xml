@@ -269,9 +269,15 @@
       <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
         <property name="values">
           <list>
-            <bean class="org.vortikal.repository.resourcetype.Value">
+           <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>lastModified</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>name</value>
               </constructor-arg>
               <constructor-arg ref="TYPE_STRING" />
             </bean>

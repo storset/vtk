@@ -123,6 +123,7 @@
     <property name="sortOrderMapping">
       <map>
         <entry key="title" value-ref="SORT_ORDER.ASC" />
+        <entry key="name" value-ref="SORT_ORDER.ASC" />
       </map>
     </property>
   </bean>

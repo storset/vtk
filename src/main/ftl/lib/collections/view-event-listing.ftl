@@ -130,8 +130,11 @@
         <@displayStandard furtherUpcoming hideNumberOfComments displayMoreURLs=false />
       </div>
     </#if>
-
-    <div id="vrtx-events-nav">
+    <#if furtherUpcoming?has_content && furtherUpcoming.files?size &gt; 0>
+      <div id="vrtx-events-nav">
+    <#else>
+      <div id="vrtx-events-nav" class="vrtx-events-nav-top-border">
+    </#if>
       <a href="${viewAllUpcomingURL}" id="vrtx-events-nav-all-upcoming">${viewAllUpcomingTitle?html}</a>
       <a href="${viewAllPreviousURL}" id="vrtx-events-nav-all-previous">${viewAllPreviousTitle?html}</a>
     </div>

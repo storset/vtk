@@ -14,7 +14,7 @@ resourcetype frontpage {
     caption (size[small]),
     main-content:boxCssSizeAndPlacement (dropdown),
     main-content:boxCssColor (dropdown),
-    main-content:boxCssSpecial (dropdown)
+    main-content:boxCssSpecial (dropdown),
     group introImageAndCaption (picture, caption) (after introduction) vertical
   }
 
@@ -28,6 +28,9 @@ resourcetype frontpage {
       [if boxes != null]
         [list boxes box]
           [def type json-attr(box, "boxType")]
+          [def sizePlacement json-attr(box, "boxCssSizeAndPlacement")]
+          [def color json-attr(box, "boxCssColor")]
+          [def special json-attr(box, "boxCssSpecial")]
           [def title json-attr(box, "boxTitle")]
           [def picture json-attr(box, "boxPicture")]
           [def content json-attr(box, "boxContent")]
@@ -37,9 +40,9 @@ resourcetype frontpage {
            
           [if type != null && type != ""]
             [if picture != null && picture != ""]
-              <div class="vrtx-frontpage-box vrtx-frontpage-box-picture [val type]" id="vrtx-main-content-[val number]">
+              <div class="vrtx-frontpage-box vrtx-frontpage-box-picture [val type] [val color] [val sizePlacement] [val special]" id="vrtx-main-content-[val number]">
             [else]
-              <div class="vrtx-frontpage-box [val type]" id="vrtx-main-content-[val number]">
+              <div class="vrtx-frontpage-box [val type] [val color] [val sizePlacement] [val special]" id="vrtx-main-content-[val number]">
             [endif]
           [else]
             [if picture != null && picture != ""]
@@ -303,6 +306,9 @@ resourcetype frontpage {
      additional-content : (en : "Additional content (default as right-column)", no : "Relatert innhold (default som høyrespalte)", nn : "Relatert innhald (default som høyrespalte)"),
      boxTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
      boxType : (en : "Type", no : "Type", nn : "Type"),
+     boxCssSizeAndPlacement : (en : "Size and placement", no : "Størrelse og plassering", nn : "Størrelse og plassering"), 
+     boxCssColor : (en : "Color", no : "Farge", nn : "Farge"),
+     boxCssSpecial : (en : "Special settings", no : "Spesielle instillinger", nn : "Spesielle instillinger"),
      boxPicture : (en: "Image", no: "Bilde", nn : "Bilete"),
      boxContent : (en : "Content", no : "Innhold", nn : "Innhald"),
      boxUrlText : (en : "Link text", no : "Lenketekst", nn : "Lenketekst"),

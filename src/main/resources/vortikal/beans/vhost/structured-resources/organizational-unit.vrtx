@@ -15,6 +15,7 @@ resourcetype organizational-unit {
     introduction : simple_html,
     responsibilities : simple_html,   
     displayEmployees : boolean,
+    employees : binary external:listEmplyeesLdapService,
     selectedEmployees : string multiple,
     numberOfEmployeesToDisplay : string,
     urlToEmployeesList : string,
@@ -36,7 +37,8 @@ resourcetype organizational-unit {
   }
 
   services {
-    getExternalUnitInfo organizationMetadataLdapService requires(areacode)
+    getExternalUnitInfo organizationMetadataLdapService requires(areacode),
+    displayEmployees listEmplyeesLdapService requires(areacode)
   }
 
   view-components {

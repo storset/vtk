@@ -19,21 +19,63 @@
     <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
   </bean>
 
-  <bean id="projectListing.handler" class="org.vortikal.web.display.collection.CollectionListingController"
-    parent="collectionListing.handler">
+  <bean id="projectListing.viewAllProjectsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="collectionListing.viewService" />
+    <property name="order" value="-1" />
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsProjectListing" />
+        <ref bean="projectListing.viewAllProjectsAssertion" />
+      </list>
+    </property>
+    <property name="handlerInterceptors">
+      <list>
+        <ref bean="noCacheViewHandlerInterceptor" />
+      </list>
+    </property>
+    <property name="handler" ref="projectListing.viewAllProjectsHandler" />
+    <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
+  </bean>
+
+  <bean id="projectListing.viewAllProjectsAssertion" class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="view" />
+    <property name="parameterValue" value="all" />
+  </bean>
+
+  <bean id="projectListing.viewAllProjectsHandler" class="org.vortikal.web.display.collection.ProjectListingController"
+    parent="projectListing.handler">
+    <property name="searchComponents">
+      <list>
+        <ref bean="projectListing.viewAllProjectsSearchComponent" />
+      </list>
+    </property>
+  </bean>
+
+
+  <bean id="projectListing.handler" class="org.vortikal.web.display.collection.ProjectListingController" parent="collectionListing.handler">
     <property name="searchComponents">
       <list>
         <ref bean="projectListing.searchComponent" />
       </list>
     </property>
     <property name="viewName" value="projectListing.view" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="displayTypePropDef" ref="projectListing.displayTypePropDef" />
   </bean>
 
   <bean id="projectListing.searchComponent" parent="collectionListing.searchComponent">
     <property name="name" value="projectListing.defaultListing" />
     <property name="defaultRecursive" value="true" />
     <property name="query">
-      <value>(uri = {$currentFolder}/*) AND (type IN structured-project) </value>
+      <value>(uri = {$currentFolder}/*) AND (type IN structured-project) AND (resource:status-ongoing = true)</value>
+    </property>
+  </bean>
+
+  <bean id="projectListing.viewAllProjectsSearchComponent" parent="collectionListing.searchComponent">
+    <property name="name" value="projectListing.defaultListing" />
+    <property name="defaultRecursive" value="true" />
+    <property name="query">
+      <value>(uri = {$currentFolder}/*) AND (type IN structured-project)</value>
     </property>
   </bean>
 
@@ -44,14 +86,20 @@
       </map>
     </property>
   </bean>
-  
+
   <bean id="projectListing.view" parent="freemarkerView">
-  <property name="url" value="pages/view-collection-listing.ftl" />
+    <property name="url" value="pages/view-collection-listing.ftl" />
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
+        <ref bean="projectListingViewServiceURLProvider" />
       </list>
-    </property> 
+    </property>
+  </bean>
+
+  <bean id="projectListingViewServiceURLProvider" class="org.vortikal.web.referencedata.provider.ProjectListingViewServiceURLProvider"
+    parent="repositoryAware">
+    <property name="viewAllProjects" ref="projectListing.viewAllProjectsService" />
   </bean>
 
   <bean id="projectListing.feedService" parent="collectionListing.atomService">

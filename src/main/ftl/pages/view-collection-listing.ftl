@@ -151,8 +151,9 @@
          <@vrtx.invokeComponentRefs additionalContent />
        </div>
      </#if>
-     
+
      <#-- List resources: -->
+
      <#if collection.resourceType = 'event-listing'>
        <@events.displayEvents collection=collection hideNumberOfComments=hideNumberOfComments displayMoreURLs=true />
      <#elseif searchComponents?has_content>
@@ -163,7 +164,12 @@
            <#if collection.resourceType = 'person-listing'>
              <@persons.displayPersons searchComponent title />
            <#elseif collection.resourceType = 'project-listing'>
-             <@projects.displayProjects searchComponent />
+           		<#assign listingType = vrtx.propValue(collection, 'display-type', '', 'prl') />
+           	  	<#if listingType = "alphabetical" >
+           	  		<@projects.displayProjectsAlphabetical searchComponent />
+           	  	<#else>
+             		<@projects.displayProjects searchComponent />
+           		</#if>
            <#elseif collection.resourceType = 'image-listing'>
              <@images.displayImages searchComponent collection />
            <#elseif collection.resourceType = 'blog-listing'>

@@ -46,12 +46,11 @@ import org.vortikal.web.service.URL;
 
 public class CollectionListingController extends AbstractCollectionListingController {
 
-    private List<SearchComponent> searchComponents;
+    protected List<SearchComponent> searchComponents;
 
     @Override
     public void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
             throws Exception {
-
         int page = ListingPager.getPage(request, ListingPager.UPCOMING_PAGE_PARAM);
         int offset = (page - 1) * pageLimit;
         int limit = pageLimit;
@@ -86,10 +85,10 @@ public class CollectionListingController extends AbstractCollectionListingContro
 
         }
 
-        List<URL> urls = ListingPager.generatePageThroughUrls(totalHits, pageLimit, ListingPager.getBaseURL(request));
+        List<URL> urls = ListingPager.generatePageThroughUrls(totalHits, pageLimit, URL.create(request));
+        model.put(MODEL_KEY_PAGE_THROUGH_URLS, urls);
         model.put(MODEL_KEY_SEARCH_COMPONENTS, results);
         model.put(MODEL_KEY_PAGE, page);
-        model.put(MODEL_KEY_PAGE_THROUGH_URLS, urls);
         if (results.size() > 0 && results.get(0) != null) {
             model.put("numberOfRecords", getNumberOfRecords(page, pageLimit, results.get(0).size()));
         }

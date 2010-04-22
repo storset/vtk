@@ -401,6 +401,7 @@
             <ref bean="pageLimitPropDef" />
             <ref bean="aggregationPropDef" />
             <ref bean="recursiveAggregationPropDef" />
+            <ref bean="projectListing.displayTypePropDef" />
           </list>
         </property>
       </bean>

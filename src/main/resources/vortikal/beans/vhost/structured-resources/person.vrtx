@@ -297,9 +297,11 @@ resourcetype person {
               <comp:contact-extras />
               <div class="vrtx-person-contact-info-wrapper-end"></div>
           </div>
-          <json:field select="content" />
-          <resource:tags />
-          <comp:scientific-info />
+          <div id="vrtx-person-main-content-wrapper">
+            <json:field select="content" />
+            <resource:tags />
+            <comp:scientific-info />
+          </div>
         </div>
         <div id="vrtx-additional-content">
            <comp:feeds />

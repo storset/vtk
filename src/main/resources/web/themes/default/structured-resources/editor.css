@@ -213,7 +213,9 @@ input.vrtx-move-down-button  {
 #projects input.vrtx-move-up-button,
 #projects input.vrtx-move-down-button,
 #rssFeeds input.vrtx-move-up-button,
-#rssFeeds input.vrtx-move-down-button {
+#rssFeeds input.vrtx-move-down-button
+#groups input.vrtx-move-up-button,
+#groups input.vrtx-move-down-button {
   position: static;
   margin-left: 15px;
   float: left;
@@ -339,7 +341,10 @@ input.vrtx-move-down-button  {
   height: 200px;
 }
 
-#participants .vrtx-string,#projects .vrtx-string,#rssFeeds .vrtx-string {
+#participants .vrtx-string,
+#projects .vrtx-string,
+#rssFeeds .vrtx-string,
+#groups .vrtx-string {
   clear: none;
   padding-bottom: 0;
   width:auto;

@@ -130,6 +130,7 @@
         <@displayStandard furtherUpcoming hideNumberOfComments displayMoreURLs=false />
       </div>
     </#if>
+    
     <#if furtherUpcoming?has_content && furtherUpcoming.files?size &gt; 0>
       <div id="vrtx-events-nav">
     <#else>

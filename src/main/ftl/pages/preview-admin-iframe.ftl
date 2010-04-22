@@ -9,8 +9,6 @@
   - 
   - Dynamic resizing of iframe only works in IE and Firefox. 
   -
-  - TODO: Currently hard-coded additon of vrtx=previewViewIframe parameter
-  -
   - Required model data:
   -   resourceReference
   -   resourceContext
@@ -63,30 +61,6 @@
         not to display frames. However, you may visit
         <a href="${resourceReference}">the related document.</a>]
       </iframe>
-
-      <#-- iframe name="previewIframe" id="previewIframe" class="preview" src="${url}">
-        [Your user agent does not support frames or is currently configured
-        not to display frames. However, you may visit
-       <a href="${resourceReference}">the related document.</a>]
-      </iframe -->
-
-      <#--
-      <noframes>
-        [Your user agent does not support frames or is currently configured
-        not to display frames. However, you may visit
-        <a href="${resourceReference}">the related document.</a>]
-      -->
-
-
-      <#-- We could also use the 'object' tag: -->
-      <#-- 
-      <object id="previewObject" class="preview" data="${resourceReference}"
-              type="${resourceContext.currentResource.*contentType*}">
-        [Your user agent does not support frames or is currently configured
-        not to display frames. However, you may visit
-        <a href="${resourceReference}">the related document.</a>]
-      </object>
-      -->
 
     </#if>
 

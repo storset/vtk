@@ -267,14 +267,14 @@ resourcetype frontpage {
 
   vocabulary {
      main-content:boxCssColor {
-       en : ("a" = "blanc", "grey-box" = "Grey box", "white-box" = "White box", "white-box-black-header" = "White box w black header"),
-       no : ("a" = "blank", "grey-box" = "Grå boks", "white-box" = "Hvit boks", "white-box-black-header" = "Hvit boks m svart topp"),
-       nn : ("a" = "blank", "grey-box" = "Grå boks", "white-box" = "Hvit boks", "white-box-black-header" = "Hvit boks m svart topp")
+       en : ("" = "Blanc", "grey-box" = "Grey box", "white-box" = "White box", "white-box-black-header" = "White box with black header"),
+       no : ("" = "Blank", "grey-box" = "Grå boks", "white-box" = "Hvit boks", "white-box-black-header" = "Hvit boks med svart topp"),
+       nn : ("" = "Blank", "grey-box" = "Grå boks", "white-box" = "Hvit boks", "white-box-black-header" = "Hvit boks med svart topp")
      },
      main-content:boxCssSizeAndPlacement {
-       en : ("a" = "full width", "half-box-left" = "Half width left", "half-box-right" = "Half width right"),
-       no : ("a" = "full bredde", "half-box-left" = "Halv bredde venstre", "half-box-right" = "Halv bredde høyre"),
-       nn : ("a" = "full bredde", "half-box-left" = "Halv bredde venstre", "half-box-right" = "Halv bredde høyre")
+       en : ("" = "Full width", "half-box-left" = "Half width left", "half-box-right" = "Half width right"),
+       no : ("" = "Full bredde", "half-box-left" = "Halv bredde venstre", "half-box-right" = "Halv bredde høyre"),
+       nn : ("" = "Full bredde", "half-box-left" = "Halv bredde venstre", "half-box-right" = "Halv bredde høyre")
      },
      main-content:boxCssSpecial {
        en : ("featured-one-big-two-column" = "featured content - one big",

@@ -35,6 +35,7 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.opensaml.saml2.core.AuthnRequest;
 import org.vortikal.security.AuthenticationProcessingException;
@@ -44,9 +45,10 @@ public class Challenge extends SamlService {
 
     public void challenge(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationProcessingException {
-        if (request.getSession().getAttribute(URL_SESSION_ATTR) == null) {
+        HttpSession session = request.getSession(true);
+        if (session.getAttribute(URL_SESSION_ATTR) == null) {
             URL url = URL.create(request);
-            request.getSession(true).setAttribute(URL_SESSION_ATTR, url);
+            session.setAttribute(URL_SESSION_ATTR, url);
         }
 
         UUID relayState = UUID.randomUUID();
@@ -55,7 +57,7 @@ public class Challenge extends SamlService {
 
         // Generate request ID, save in session
         UUID requestID = UUID.randomUUID();
-        request.getSession().setAttribute(REQUEST_ID_SESSION_ATTR, requestID);
+        session.setAttribute(REQUEST_ID_SESSION_ATTR, requestID);
 
         String redirURL = urlToLoginServiceForDomain(samlConfiguration, requestID, relayState);
         try {

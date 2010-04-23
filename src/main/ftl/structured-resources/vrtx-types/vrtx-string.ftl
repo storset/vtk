@@ -4,6 +4,8 @@
   <div class="inputfield">
   <#if dropdown && valuemap?exists && valuemap?is_hash>
   <select name="${inputFieldName}">
+  
+    
     <#list valuemap?keys as key>
     <#if key = "range">
       <#local rangeList = valuemap[key] />
@@ -11,7 +13,11 @@
         <option value="${rangeEntry?html}" <#if value == rangeEntry?string> selected </#if>>${rangeEntry}</option>
       </#list>
     <#else>
-      <option value="${key?html}" <#if value == key> selected <#else><#if key == "undefined"> selected </#if></#if>>${valuemap[key]}</option>
+      <#if value != "">
+        <option value="${key?html}" <#if value == key> selected </#if>>${valuemap[key]}</option>
+      <#else>
+        <option value="${key?html}" <#if key == "undefined"> selected </#if>>${valuemap[key]}</option>
+      </#if>
     </#if>
 	</#list>
 	</select>

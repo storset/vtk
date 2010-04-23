@@ -29,9 +29,17 @@
       </#if>
       <#if jsonAttr.getValuemap(locale)?exists >
         <#assign valuemap = jsonAttr.getValuemap(locale) />
+        <#assign k = 0 />
+      var valuemap = new Array();
         <#list valuemap?keys as key>
-        <#-- XXX add valuemap content to json element -->
+          <#assign optionKey = key />
+          <#if optionKey = '""' >
+            <#assign optionKey = "''" />
+          </#if>
+      valuemap[${k}] = "${optionKey}$${valuemap[key]}";
+        <#assign k = k + 1 />
         </#list>
+      LIST_OF_JSON_ELEMENTS[${i}].a[${j}].valuemap = valuemap;
       </#if>
       LIST_OF_JSON_ELEMENTS[${i}].a[${j}].title = "${form.resource.getLocalizedMsg(jsonAttr.name, locale, null)}";
       <#assign j = j + 1 />
@@ -70,7 +78,7 @@
          
          switch(j.a[i].type) {
            case "string":
-             if (j.a[i].dropdown) {
+             if (j.a[i].dropdown && j.a[i].valuemap) {
                htmlTemplate += addDropdown(j.a[i], inputFieldName); break;
              } else {
                htmlTemplate += addStringField(j.a[i], inputFieldName); break
@@ -120,110 +128,111 @@
   }
   
   function addDropdown(elem, inputFieldName) {
-    // Temp just return it as string input field
-    return addStringField(elem, inputFieldName);
-  }  
+    var htmlTemplate = new String();
+    var classes = "vrtx-string" + " " + elem.name;
+    htmlTemplate = '<div class=\"' + classes + '\">';
+    htmlTemplate += '<label for=\"' + inputFieldName + '\">' + elem.title + '<\/label>';
+    htmlTemplate += '<div class=\"inputfield\">';
+    htmlTemplate += '<select name=\"' + inputFieldName + '\">';
+    for (i in elem.valuemap) {
+      var keyValuePair = elem.valuemap[i];
+      var key = keyValuePair.split("$")[0];
+      var value = keyValuePair.split("$")[1];
+      htmlTemplate += '<option value=\"' + key + '\">' + value + '<\/option>';
+    }
+    htmlTemplate += '<\/select>';
+    htmlTemplate +=  '<\/div>';
+    htmlTemplate +=  '<div class=\"tooltip\"><\/div>';
+    htmlTemplate +=  '<\/div>';
+    
+    return htmlTemplate;
+  }
 
   function addStringField(elem, inputFieldName) {
     var htmlTemplate = new String();
-    htmlTemplate = '<div class=\"{classes}\">';
-    htmlTemplate += '<label for=\"{inputFieldName}\">{title}<\/label>';
+    var classes = "vrtx-string" + " " + elem.name;
+    htmlTemplate = '<div class=\"' + classes + '\">';
+    htmlTemplate += '<label for=\"' + inputFieldName + '\">' + elem.title + '<\/label>';
     htmlTemplate += '<div class=\"inputfield\">';
-    htmlTemplate += '<input size=\"{inputFieldSize}\" type=\"text\" name=\"{inputFieldName}\" id=\"{inputFieldName}\" />';
+    htmlTemplate += '<input size=\"40\" type=\"text\" name=\"' + inputFieldName + '\" id=\"' + inputFieldName + '\" />';
     htmlTemplate +=  '<\/div>';
-    htmlTemplate +=  '<div class=\"tooltip\">{tooltip}<\/div>';
+    htmlTemplate +=  '<div class=\"tooltip\"><\/div>';
     htmlTemplate +=  '<\/div>';
-    
-    return processHtmlTemplate(elem.title, "vrtx-string" + " " + elem.name, htmlTemplate, inputFieldName);
-  }
-  
-  function addHtmlField(elem, inputFieldName, counter) {
-    var htmlTemplate = new String();
-    htmlTemplate = '<div class=\"{classes}\">';
-        htmlTemplate += '<label for=\"{inputFieldName}\">{title}<\/label>';
-        htmlTemplate += '<div>';
-        htmlTemplate += '<textarea name=\"{inputFieldName}\" id=\"{inputFieldName}\" ';
-        htmlTemplate += ' rows=\"4\" cols=\"20\" >{value}<\/textarea>';
-        htmlTemplate += '<\/div><\/div>';
-    
-    if (elem.type == "simple_html") {
-      var classes = "vrtx-simple-html";
-    } else {
-      var classes = "vrtx-html";
-    }
-    
-    return processHtmlTemplate(elem.title, classes, htmlTemplate, inputFieldName);
-  }
-  
-  function addBooleanField(elem, inputFieldName, counter) {
-    var htmlTemplate = new String();
-    htmlTemplate = '<div class=\"{classes}\">';
-      htmlTemplate += '<div><label>{title}<\/label><\/div>';
-      htmlTemplate += '<div>';
-        htmlTemplate += '<input name=\"{inputFieldName}\" id=\"{inputFieldName}-true\" type=\"radio\" value=\"true\"  \/>';
-        htmlTemplate += '<label for=\"{inputFieldName}-true\">True<\/label> ';
-        htmlTemplate += '<input name=\"{inputFieldName}\" id=\"{inputFieldName}-false\" type=\"radio\" value=\"false\" \/>';
-        htmlTemplate +=  '<label for=\"{inputFieldName}-false\">False<\/label>';
-      htmlTemplate += '<\/div><\/div>';
-      
-      return processHtmlTemplate(elem.title, "vrtx-radio", htmlTemplate, inputFieldName);
-  }
-  
-  function addImageRef(elem, inputFieldName, counter) {
-    var htmlTemplate = new String();
-    htmlTemplate = '<div class=\"{classes}\">';
-    htmlTemplate += '<div>';
-    htmlTemplate += '<label for=\"{inputFieldName}\">{title}<\/label>';
-    htmlTemplate += '<\/div><div>';
-      htmlTemplate += '<input type=\"text\" id=\"{inputFieldName}\" name=\"{inputFieldName}\" value=\"\" onblur=\"previewImage({inputFieldName});\" size=\"30\" \/>';
-        htmlTemplate += '<button type=\"button\" onclick=\"browseServer(\'{inputFieldName}\', \'${fckeditorBase.url}\', \'${resourceContext.parentURI}\', \'${fckBrowse.url.pathRepresentation}\');\"><@vrtx.msg code="editor.browseImages" /><\/button>';
-    htmlTemplate += '<\/div>';
-    htmlTemplate += '<div id=\"{inputFieldName}.preview\">';
-    htmlTemplate += '<img src=\"{value}?vrtx=thumbnail\" alt=\"Preview image\" \/>';
-    htmlTemplate += '<\/div><\/div>';
-    
-    return processHtmlTemplate(elem.title, "vrtx-image-ref", htmlTemplate, inputFieldName);
-  }
-  
-  function addDateField(elem, inputFieldName, counter) {
-    var htmlTemplate = new String();
-    htmlTemplate = '<div class=\"{classes}\">';
-    htmlTemplate += '<label for=\"{inputFieldName}\">{title}<\/label>';
-    htmlTemplate += '<div class=\"inputfield\">';
-    htmlTemplate += '<input size=\"20\" type=\"text\" name=\"{inputFieldName}\" id=\"{inputFieldName}\" value=\"{value}\" class=\"date\" \/>';
-    htmlTemplate += '<\/div>';
-    htmlTemplate += '<div class=\"tooltip\">{tooltip}<\/div>';
-    htmlTemplate += '<\/div>';
-    
-    return processHtmlTemplate(elem.title, "vrtx-string date", htmlTemplate, inputFieldName);
-  }
-
-  function addMediaRef(elem, inputFieldName, counter) {
-    var htmlTemplate = new String();
-    htmlTemplate = '<div class=\"{classes}\">';
-    htmlTemplate += '<div><label for=\"{inputFieldName}\">{title}<\/label>';
-    htmlTemplate += '<\/div><div>';
-    htmlTemplate += '<input type=\"text\" id=\"{inputFieldName}\" name=\"{inputFieldName}\" value=\"{value}\" onblur=\"previewImage({inputFieldName});\" size=\"30\"\/>';
-    htmlTemplate += '<button type=\"button\" onclick=\"browseServer(\'{inputFieldName}\', \'${fckeditorBase.url}\', \'${resourceContext.parentURI}\', \'${fckBrowse.url.pathRepresentation}\', \'Media\');\"><@vrtx.msg code="editor.browseImages" /><\/button>';
-    htmlTemplate += '<\/div><div id=\"{inputFieldName}.preview\">';
-    htmlTemplate += '<img src=\"\" \/>';
-    htmlTemplate += '<\/div><\/div>'
-    
-    return processHtmlTemplate(elem.title, "vrtx-media-ref", htmlTemplate, inputFieldName);
-  }
-
-  function processHtmlTemplate(name, classes, template, inputFieldName) {
-    var htmlTemplate = new String(template);
-    htmlTemplate = htmlTemplate.replace(/{inputFieldName}/g, inputFieldName);
-    htmlTemplate = htmlTemplate.replace(/{inputFieldSize}/g, "40");
-    htmlTemplate = htmlTemplate.replace(/{tooltip}/g, "");
-    htmlTemplate = htmlTemplate.replace(/{title}/g, name);
-    htmlTemplate = htmlTemplate.replace(/{classes}/g, classes);
-    htmlTemplate = htmlTemplate.replace(/{value}/g, "");
     
     return htmlTemplate;
   }
   
+  function addHtmlField(elem, inputFieldName) {
+    var htmlTemplate = new String();   
+    var baseclass = "vrtx-html";
+    if (elem.type == "simple_html") {
+      baseclass = "vrtx-simple-html";
+    }
+    var classes = baseclass + " " + elem.name;
+    htmlTemplate = '<div class=\"' + classes + '\">';
+    htmlTemplate += '<label for=\"' + inputFieldName + '\">' + elem.title + '<\/label>';
+    htmlTemplate += '<div>';
+    htmlTemplate += '<textarea name=\"' + inputFieldName + '\" id=\"' + inputFieldName + '\" ';
+    htmlTemplate += ' rows=\"4\" cols=\"20\" ><\/textarea>';
+    htmlTemplate += '<\/div><\/div>';
+    
+    return htmlTemplate;
+  }
+  
+  function addBooleanField(elem, inputFieldName) {
+    var htmlTemplate = new String();
+    htmlTemplate = '<div class=\"vrtx-radio\">';
+    htmlTemplate += '<div><label>elem.title<\/label><\/div>';
+    htmlTemplate += '<div>';
+    htmlTemplate += '<input name=\"' + inputFieldName + '\" id=\"' + inputFieldName + '-true\" type=\"radio\" value=\"true\" \/>';
+    htmlTemplate += '<label for=\"' + inputFieldName + '-true\">True<\/label>';
+    htmlTemplate += '<input name=\"' + inputFieldName + '\" id=\"' + inputFieldName + '-false\" type=\"radio\" value=\"false\" \/>';
+    htmlTemplate +=  '<label for=\"' + inputFieldName + '-false\">False<\/label>';
+    htmlTemplate += '<\/div><\/div>';
+      
+    return htmlTemplate;
+  }
+  
+  function addImageRef(elem, inputFieldName) {
+    var htmlTemplate = new String();
+    htmlTemplate = '<div class=\"vrtx-image-ref\">';
+    htmlTemplate += '<div>';
+    htmlTemplate += '<label for=\"' + inputFieldName+ '\">' + elem.title + '<\/label>';
+    htmlTemplate += '<\/div><div>';
+    htmlTemplate += '<input type=\"text\" id=\"' + inputFieldName+ '\" name=\"' + inputFieldName + '\" value=\"\" onblur=\"previewImage(' + inputFieldName + ');\" size=\"30\" \/>';
+    htmlTemplate += '<button type=\"button\" onclick=\"browseServer(\'' + inputFieldName + '\', \'${fckeditorBase.url}\', \'${resourceContext.parentURI}\', \'${fckBrowse.url.pathRepresentation}\');\"><@vrtx.msg code="editor.browseImages" /><\/button>';
+    htmlTemplate += '<\/div>';
+    htmlTemplate += '<div id=\"' + inputFieldName + '.preview\">';
+    htmlTemplate += '<img src=\"\" alt=\"Preview image\" \/>';
+    htmlTemplate += '<\/div><\/div>';
+    
+    return htmlTemplate;
+  }
+  
+  function addDateField(elem, inputFieldName) {
+    var htmlTemplate = new String();
+    htmlTemplate = '<div class=\"vrtx-string date\">';
+    htmlTemplate += '<label for=\"' + inputFieldName + '\">' + elem.title + '<\/label>';
+    htmlTemplate += '<div class=\"inputfield\">';
+    htmlTemplate += '<input size=\"20\" type=\"text\" name=\"' + inputFieldName + '\" id=\"' + inputFieldName + '\" value=\"\" class=\"date\" \/>';
+    htmlTemplate += '<\/div>';
+    htmlTemplate += '<div class=\"tooltip\"><\/div>';
+    htmlTemplate += '<\/div>';
+    
+    return htmlTemplate;
+  }
+
+  function addMediaRef(elem, inputFieldName) {
+    var htmlTemplate = new String();
+    htmlTemplate = '<div class=\"vrtx-media-ref\">';
+    htmlTemplate += '<div><label for=\"' + inputFieldName + '\">' + elem.title + '<\/label>';
+    htmlTemplate += '<\/div><div>';
+    htmlTemplate += '<input type=\"text\" id=\"' + inputFieldName + '\" name=\"' + inputFieldName + '\" value=\"\" onblur=\"previewImage(' + inputFieldName + ');\" size=\"30\"\/>';
+    htmlTemplate += '<button type=\"button\" onclick=\"browseServer(\'' + inputFieldName + '\', \'${fckeditorBase.url}\', \'${resourceContext.parentURI}\', \'${fckBrowse.url.pathRepresentation}\', \'Media\');\"><@vrtx.msg code="editor.browseImages" /><\/button>';
+    htmlTemplate += '<\/div><\/div>'
+    
+    return htmlTemplate;
+  }
 
   function getFckValue(instanceName) {
     var oEditor = FCKeditorAPI.GetInstance(instanceName);

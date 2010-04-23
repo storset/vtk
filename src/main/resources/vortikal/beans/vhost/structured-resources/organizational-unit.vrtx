@@ -13,7 +13,7 @@ resourcetype organizational-unit {
       overrides title default name,
     picture : image_ref,
     introduction : simple_html,
-    responsibilities : simple_html,   
+    responsibilities : html,   
     displayEmployees : boolean,
     employees : binary external:listEmplyeesLdapService,
     selectedEmployees : string multiple,

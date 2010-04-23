@@ -44,6 +44,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.View;
+import org.vortikal.util.io.SizeLimitException;
 import org.vortikal.util.repository.ContentTypeHelper;
 import org.vortikal.util.text.HtmlUtil;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
@@ -73,6 +74,7 @@ import org.vortikal.web.servlet.ConfigurableRequestWrapper;
  *
  * <p>Configurable JavaBean properties:
  * <ul>
+ *   <li><code>maxBufferSize</code> - the maximum length of a wrapped response
  *   <li><code>decorators</code> - an array of {@link
  *   Decorator decorators} to apply to the textual content
  *   that was the result of the wrapped view invocation.
@@ -93,14 +95,21 @@ import org.vortikal.web.servlet.ConfigurableRequestWrapper;
  */
 public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProviding {
 
-    protected Log logger = LogFactory.getLog(this.getClass());
+    private static Log logger = LogFactory.getLog(DecoratingViewWrapper.class);
 
+    private long maxDocumentSize = -1;
     private Decorator[] decorators;
     private ReferenceDataProvider[] referenceDataProviders;
     private String forcedOutputEncoding;
     private boolean guessCharacterEncodingFromContent = false;
     private boolean appendCharacterEncodingToContentType = true;
     private Map<String, Object> staticHeaders = null;
+    private View documentTooLargeView;
+
+    public void setMaxDocumentSize(long maxDocumentSize) {
+        this.maxDocumentSize = maxDocumentSize;
+    }
+
 
     public void setDecorators(Decorator[] decorators) {
         this.decorators = decorators;
@@ -139,6 +148,11 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
     }
     
 
+    public void setDocumentTooLargeView(View documentTooLargeView) {
+        this.documentTooLargeView = documentTooLargeView;
+    }
+
+
     @SuppressWarnings("unchecked")
     public void renderView(View view, Map model, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -160,16 +174,26 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
 
         ConfigurableRequestWrapper requestWrapper = new ConfigurableRequestWrapper(request);
         requestWrapper.setMethod("GET");
-        BufferedResponseWrapper responseWrapper = new BufferedResponseWrapper(response);
+        BufferedResponseWrapper responseWrapper = new BufferedResponseWrapper(response, this.maxDocumentSize);
  
         if (view instanceof HtmlRenderer) {
             HtmlPageContent page = ((HtmlRenderer) view).render(model, requestWrapper);
             decorate(model, request, decoratorList, page, responseWrapper);
             
         } else {
-            view.render(model, requestWrapper, responseWrapper);
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("About to post process buffered content, content type: "
+            try {
+                view.render(model, requestWrapper, responseWrapper);
+            } catch (SizeLimitException e) {
+                logger.info("Document too large to be decorated: " + request.getRequestURI());
+                responseWrapper = new BufferedResponseWrapper(response);
+                if (this.documentTooLargeView != null) {
+                    this.documentTooLargeView.render(model, requestWrapper, responseWrapper);
+                } else {
+                    throw e;
+                }
+            }
+            if (logger.isDebugEnabled()) {
+                logger.debug("About to post process buffered content, content type: "
                         + responseWrapper.getContentType()
                         + ", character encoding: "
                         + responseWrapper.getCharacterEncoding());
@@ -208,8 +232,8 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
         }
 
         if (!Charset.isSupported(characterEncoding)) {
-            if (this.logger.isInfoEnabled()) {
-                this.logger.info("Unable to perform content filtering on response  "
+            if (logger.isInfoEnabled()) {
+                logger.info("Unable to perform content filtering on response  "
                         + bufferedResponse + " for requested URL "
                         + request.getRequestURL() + ": character encoding '"
                         + characterEncoding
@@ -219,8 +243,8 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
             return;
         }
 
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("Reading buffered content using character encoding "
+        if (logger.isDebugEnabled()) {
+            logger.debug("Reading buffered content using character encoding "
                     + characterEncoding);
         }
 
@@ -232,8 +256,8 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
             for (Decorator decorator: decoratorList) {
 
                 content = decorator.decorate(model, request, content);
-                if (this.logger.isDebugEnabled()) {
-                    this.logger.debug("Invoked decorator: " + decorator);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Invoked decorator: " + decorator);
                 }
             }
         }
@@ -265,8 +289,8 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
             for (Decorator decorator: decoratorList) {
 
                 content = decorator.decorate(model, request, content);
-                if (this.logger.isDebugEnabled()) {
-                    this.logger.debug("Invoked decorator: " + decorator);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Invoked decorator: " + decorator);
                 }
             }
         }
@@ -300,8 +324,8 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
         writeStaticHeaders(response);
 
         byte[] content = responseWrapper.getContentBuffer();
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("Write response: Content-Length: " + content.length
+        if (logger.isDebugEnabled()) {
+            logger.debug("Write response: Content-Length: " + content.length
                     + ", unspecified content type");
         }
         response.setContentLength(content.length);
@@ -320,8 +344,8 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
         writeStaticHeaders(response);
         ServletOutputStream outStream = response.getOutputStream();
 
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("Write response: Content-Length: " + content.length
+        if (logger.isDebugEnabled()) {
+            logger.debug("Write response: Content-Length: " + content.length
                     + ", Content-Type: " + contentType);
         }
         response.setContentType(contentType);

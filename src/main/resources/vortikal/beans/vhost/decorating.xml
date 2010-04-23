@@ -10,6 +10,7 @@
         <ref bean="decorating.templateDecorator" />
       </list>
     </property>
+    <property name="maxDocumentSize" value="${decorating.maxDocumentSize}" />
     <property name="staticHeaders">
       <map>
         <entry key="Cache-Control" value="no-cache, must-revalidate, max-age=0" />
@@ -17,6 +18,7 @@
         <entry key="Vary" value="Cookie" />
       </map>
     </property>
+    <property name="documentTooLargeView" ref="decorating.documentTooLargeView" />
   </bean>
 
   <bean id="decorating.templateDecorator"
@@ -280,6 +282,11 @@
       </map>
     </property>
   </bean>
+
+  <bean id="decorating.documentTooLargeView" parent="freemarkerView">
+    <property name="url" value="pages/document-too-large.ftl" />
+  </bean>
+
 
   <bean id="listDecoratorComponentsView" parent="freemarkerView">
     <property name="url" value="pages/list-decorator-components.ftl" />

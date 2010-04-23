@@ -4,7 +4,7 @@
 $(document).ready(function()
 	{
 	
-		hasPostMessage = window['postMessage'] && (!($.browser.opera && $.browser.version < 9.65))
+		var hasPostMessage = window['postMessage'] && (!($.browser.opera && $.browser.version < 9.65))
 	    
 		function receiveMessage(event)
 		{
@@ -27,7 +27,12 @@ $(document).ready(function()
 		}
 		
 		if (hasPostMessage) {
-			window.addEventListener("message", receiveMessage, false);
+			if (window.addEventListener) {
+				window.addEventListener("message", receiveMessage, false);
+			} else if (window.attachEvent) {
+				// Internet Explorer
+				window.attachEvent("onmessage", receiveMessage);
+			}
 		}		
 	}
 );

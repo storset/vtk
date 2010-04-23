@@ -90,8 +90,9 @@ public class StructuredResourceEditor extends SimpleFormController {
         InputStream stream = this.repository.getInputStream(token, uri, true);
         byte[] buff = StreamUtil.readInputStream(stream);
         String encoding = resource.getCharacterEncoding();
-        if (encoding == null)
+        if (encoding == null) {
             encoding = "utf-8";
+        }
         String source = new String(buff, encoding);
         StructuredResource structuredResource = new StructuredResource(description);
         structuredResource.parse(source);

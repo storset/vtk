@@ -32,6 +32,22 @@
     </property>
   </bean>
 
+  <bean id="plaintextEdit.documentTooLargeService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="plaintextEditService" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.ResourceContentLengthAssertion">
+          <property name="greaterThanValue" value="${plaintextEdit.maxDocumentSize}" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="plaintextEdit.documentTooLargeHandler" />
+  </bean>
+
+  <bean id="plaintextEdit.documentTooLargeHandler" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+    <property name="viewName" value="plaintextEdit.documentTooLarge" />
+  </bean>
+
   <bean id="plaintextXMLEditService" parent="plaintextEditService">
     <property name="assertions">
       <list>
@@ -41,6 +57,19 @@
         <ref bean="plaintextEditPropertyIsSet" />
       </list>
     </property>
+  </bean>
+
+
+  <bean id="plaintextXMLEdit.documentTooLargeService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="plaintextXMLEditService" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.ResourceContentLengthAssertion">
+          <property name="greaterThanValue" value="${plaintextEdit.maxDocumentSize}" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="plaintextEdit.documentTooLargeHandler" />
   </bean>
 
   <bean id="resourceTypeIsText" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
@@ -68,10 +97,14 @@
     <property name="views">
       <map>
         <entry key="plaintextEdit" value-ref="plaintextEditView" />
+        <entry key="plaintextEdit.documentTooLarge" value-ref="plaintextEdit.documentTooLargeView" />
       </map>
     </property>
   </bean>
 
+  <bean id="plaintextEdit.documentTooLargeView" parent="freemarkerView">
+    <property name="url" value="pages/plaintext-edit-too-large.ftl" />
+  </bean>
 
   <bean id="plaintextEditView" parent="freemarkerView">
     <property name="url" value="pages/plaintext-edit.ftl" />

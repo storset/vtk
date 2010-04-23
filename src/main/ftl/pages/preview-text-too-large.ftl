@@ -1,10 +1,10 @@
 <#ftl strip_whitespace=true>
 
 <#--
-  - File: document-too-large.ftl
+  - File: preview-text-too-large.ftl
   - 
   - Description: Display a warning that the document is too large
-  - and cannot be decorated
+  - and cannot be previewed
   - 
   - Required model data:
   -  
@@ -21,6 +21,6 @@
   </head>
   <body>
     <h1>Document too large</h1>
-    This document is too large to be decorated.
+    This document is too large to be previewed.
   </body>
 </html>

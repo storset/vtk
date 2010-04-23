@@ -662,6 +662,24 @@
     <property name="handler" ref="previewTextHandler" />
   </bean>
 
+
+  <bean id="previewText.documentTooLargeService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="previewTextService" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.ResourceContentLengthAssertion">
+          <property name="greaterThanValue" value="${preview.text.maxDocumentSize}" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="previewText.documentTooLargeHandler" />
+  </bean>
+
+  <bean id="previewText.documentTooLargeHandler"
+        class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+    <property name="viewName" value="previewText.documentTooLarge" />
+  </bean>
+
   <bean id="previewCollectionListingService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
     <property name="order" value="-1" />
@@ -1009,6 +1027,7 @@
         <entry key="previewImage" value-ref="previewImageView" />
         <entry key="previewAdminIframe" value-ref="previewAdminIframeView" />
         <entry key="previewText" value-ref="previewTextView" />
+        <entry key="previewText.documentTooLarge" value-ref="previewText.documentTooLargeView" />
         <entry key="previewFallback" value-ref="previewFallbackView" />
         <entry key="publishing" value-ref="publishingView" />
       </map>
@@ -1464,6 +1483,11 @@
       </list>
     </property>
   </bean>
+
+  <bean id="previewText.documentTooLargeView" parent="freemarkerView">
+    <property name="url" value="pages/preview-text-too-large.ftl" />
+  </bean>
+
 
   <bean id="previewFallbackView" parent="freemarkerView">
     <property name="url" value="pages/preview-unavailable.ftl" />

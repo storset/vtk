@@ -14,7 +14,7 @@ $(document).ready(function()
 			var previewIframeMaxHeight = 20000;
 			
 		    if (vrtxViewOrigin && (event.origin == vrtxViewOrigin)) {
-				previewIframe = $("iframe#previewIframe")[0]
+				var previewIframe = $("iframe#previewIframe")[0]
 				if (previewIframe) {
 					var newHeight = previewIframeMinHeight;
 					var dataHeight = parseInt(event.data, 10);

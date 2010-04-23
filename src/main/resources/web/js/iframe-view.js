@@ -7,10 +7,21 @@
  */
 $(document).ready(function()
 	{		
-		hasPostMessage = window['postMessage'] && (!($.browser.opera && $.browser.version < 9.65))
+		var hasPostMessage = window['postMessage'] && (!($.browser.opera && $.browser.version < 9.65))
 	
 		var vrtxAdminOrigin = "*"; // TODO: TEMP Need real origin of admin
 		
+		if ($.browser.msie)
+		{
+			// iframe load event not firing in IE8 when page w. iframe is inside another iframe
+			// Setting the iframe src seems to fix the problem
+			var previewViewIframe = $("iframe#previewViewIframe")[0]
+			if (previewViewIframe) {
+				var iSource = previewViewIframe.src;
+				previewViewIframe.src = '';
+				previewViewIframe.src = iSource;
+			}
+		}				
 		$('iframe#previewViewIframe').load(function()
 			{
 				// Set inline style to equal the body height of the iframed content,
@@ -21,7 +32,7 @@ $(document).ready(function()
 					setHeight = computedHeight;
 				}
 				this.style.height = setHeight + "px";
-				if (hasPostMessage) {
+				if (hasPostMessage && parent) {
 					// Pass our height to parent since it is typically cross domain (and can't access it directly)
 					parent.postMessage(setHeight, vrtxAdminOrigin);	
 				}					

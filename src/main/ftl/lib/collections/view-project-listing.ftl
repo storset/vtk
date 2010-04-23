@@ -13,15 +13,6 @@
 	</ul>
 	
   </#list>
-  
-  <div>
-  <#if viewAllProjectsLink?exists>
-  	<a href="${viewAllProjectsLink}">${vrtx.getMsg("projects.viewAllProjectsLink")}</a>
-  </#if>
-  <#if viewOngoingProjectsLink?exists>
-  	<a href="${viewOngoingProjectsLink}">${vrtx.getMsg("projects.viewOngoingProjectsLink")}</a>
-  </#if>
-  </div>
   <@projectListingViewServiceURL />
 </#macro>
 
@@ -33,7 +24,7 @@
   <#if viewOngoingProjectsLink?exists>
   	<a href="${viewOngoingProjectsLink}">${vrtx.getMsg("projects.viewOngoingProjectsLink")}</a>
   </#if>
-  </div>
+</div>
 </#macro>
 <#macro displayProjects projectListing>
   <#local projects=projectListing.files />

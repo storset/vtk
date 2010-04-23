@@ -423,7 +423,7 @@
   </bean>
 
   <bean id="webdavPutHandler" class="org.vortikal.webdav.PutController"
-    parent="repositoryAware" >
+    parent="repositoryAware">
     <property name="maxUploadSize" value="-1" />
     <property name="supportIfHeaders" value="${webdavSupportIfHeaders}"/>
     <property name="obeyClientCharacterEncoding" value="false" />

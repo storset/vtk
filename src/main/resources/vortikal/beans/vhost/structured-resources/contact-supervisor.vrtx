@@ -2,7 +2,7 @@ resourcetype contact-supervisor {
 
   properties {
     title : string overrides title,
-    contact-supervisor-box : json ( id : string, description : simple_html, contactInfo : html) multiple noextract
+    contact-supervisor-box : json ( id : string, description : html, contactInfo : html) multiple noextract
   }
   
   view-components {

@@ -49,7 +49,6 @@ import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.util.repository.MimeHelper;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.filter.UploadLimitInputStreamFilter;
@@ -150,13 +149,6 @@ public class PutController extends AbstractWebdavController {
                     }
                 }
                 
-                /* if lock-null resource, act as if it did not exist.. */
-//                 if (resource.getContentLength() == 0 &&
-//                     resource.getLock() != null) {
-//                     exists = false;
-//                 }
-                
-
                 if (resource.isCollection()) {
                     if (this.logger.isDebugEnabled()) {
                         this.logger.debug("PUT to collection: CONFLICT");
@@ -200,20 +192,7 @@ public class PutController extends AbstractWebdavController {
             
             boolean store = false;
             
-            String contentType = getContentType(request, resource);
-            if (contentType != null && !exists) {
-                if (this.logger.isDebugEnabled()) {
-                    this.logger.debug("Setting content-type: " + contentType);
-                }
-                Property prop = typeInfo.createProperty(
-                        Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTTYPE_PROP_NAME);
-                prop.setStringValue(contentType);
-                resource.addProperty(prop);
-                store = true;
-            }
-
             // XXX: userSpecifiedCharacterEncoding is a separate issue
-
             if (this.obeyClientCharacterEncoding) {
                 String characterEncoding = request.getCharacterEncoding();
                 if (characterEncoding != null) {
@@ -292,15 +271,4 @@ public class PutController extends AbstractWebdavController {
         }
         return new ModelAndView("PUT", model);
     }
-   
-   
-    protected String getContentType(HttpServletRequest request, Resource resource) {
-        String contentType = HttpUtil.getContentType(request);
-        
-        if (contentType == null || MimeHelper.DEFAULT_MIME_TYPE.equals(contentType)) {
-            contentType = MimeHelper.map(resource.getName());
-        }
-        return contentType;
-    }
-
 }

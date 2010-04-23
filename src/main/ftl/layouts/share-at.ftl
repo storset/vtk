@@ -11,13 +11,13 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 
 <div id="vrtx-share-component">
-  <a href="#vrtx-share-link" id="vrtx-share-link" class="vrtx-share-link" onclick="share();" name="vrtx-share-link">
+  <a href="#vrtx-share-link" id="vrtx-share-link" class="vrtx-share-link" name="vrtx-share-link">
   <@vrtx.msg code="decorating.shareAtComponent.title" default="Share at" />...</a>
     <div id="vrtx-send-share">
       <div class="vrtx-send-inner">
         <div class="vrtx-share-top">
           <div class="vrtx-share-title"><@vrtx.msg code="decorating.shareAtComponent.title" default="Share at" />...</div>
-          <span><a href="#vrtx-share-link" class="vrtx-close-toolbox-send-share" onclick="share();">
+          <span><a href="#vrtx-share-link" class="vrtx-close-toolbox-send-share">
           <@vrtx.msg code="decorating.shareAtComponent.close" default="Close" /></a></span>
         </div>
         <ul>

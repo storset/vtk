@@ -11,7 +11,7 @@
         <option value="${rangeEntry?html}" <#if value == rangeEntry?string> selected </#if>>${rangeEntry}</option>
       </#list>
     <#else>
-      <option value="${key?html}" <#if value == key> selected </#if>>${valuemap[key]}</option>
+      <option value="${key?html}" <#if value == key> selected <#else><#if key == "undefined"> selected </#if></#if>>${valuemap[key]}</option>
     </#if>
 	</#list>
 	</select>

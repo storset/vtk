@@ -62,8 +62,7 @@
     <property name="privateKeyPassword" value="${saml.privateKeyPassword}"/>
     <property name="idpCertificates">
       <map>
-        <entry key="${saml.idpCertKey}" value="${saml.idpCertificate}"/>
-        <entry key="${feide.idpCertKey}" value="${feide.idpCertificate}"/>
+        <entry key="${saml.idpCertKey}" value="${saml.idpCertificate}"/>        
       </map>
     </property>
   </bean>
@@ -120,8 +119,8 @@
     </property>
     <property name="attributesMap">
       <map>
-        <entry key="singleLogoutService" value="${webHostName}${saml.serviceProviderURI}"> </entry>
-        <entry key="assertionConsumerService" value="${webHostName}${saml.serviceProviderURI}"> </entry>
+        <entry key="singleLogoutService" value="${webHostName}${feide.serviceProviderURI}"> </entry>
+        <entry key="assertionConsumerService" value="${webHostName}${feide.serviceProviderURI}"> </entry>
         <entry key="entityId" value="${webHostName}${saml.metadataServiceURI}"> </entry>
       </map>
     </property>

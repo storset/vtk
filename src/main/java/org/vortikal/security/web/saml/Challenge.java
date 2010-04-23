@@ -42,33 +42,35 @@ import org.vortikal.web.service.URL;
 
 public class Challenge extends SamlService {
 
-    public void challenge(HttpServletRequest request, HttpServletResponse response) 
-        throws AuthenticationProcessingException{
-        URL url = URL.create(request);
-        request.getSession(true).setAttribute(URL_SESSION_ATTR, url);
+    public void challenge(HttpServletRequest request, HttpServletResponse response)
+            throws AuthenticationProcessingException {
+        if (request.getSession().getAttribute(URL_SESSION_ATTR) == null) {
+            URL url = URL.create(request);
+            request.getSession(true).setAttribute(URL_SESSION_ATTR, url);
+        }
 
         UUID relayState = UUID.randomUUID();
 
         SamlConfiguration samlConfiguration = newSamlConfiguration(request);
-        
+
         // Generate request ID, save in session
         UUID requestID = UUID.randomUUID();
         request.getSession().setAttribute(REQUEST_ID_SESSION_ATTR, requestID);
-            
+
         String redirURL = urlToLoginServiceForDomain(samlConfiguration, requestID, relayState);
         try {
             response.sendRedirect(redirURL);
         } catch (IOException e) {
             throw new AuthenticationProcessingException("Unable to redirect to login service", e);
         }
-        
+
     }
+
 
     public String urlToLoginServiceForDomain(SamlConfiguration config, UUID requestID, UUID relayState) {
         AuthnRequest authnRequest = createAuthenticationRequest(config, requestID);
         String url = buildSignedAndEncodedRequestUrl(authnRequest, relayState);
         return url;
     }
-    
-    
+
 }

@@ -119,8 +119,8 @@
     </property>
     <property name="attributesMap">
       <map>
-        <entry key="singleLogoutService" value="${webHostName}${feide.serviceProviderURI}"> </entry>
-        <entry key="assertionConsumerService" value="${webHostName}${feide.serviceProviderURI}"> </entry>
+        <entry key="singleLogoutService" value="${webHostName}${saml.serviceProviderURI}"> </entry>
+        <entry key="assertionConsumerService" value="${webHostName}${saml.serviceProviderURI}"> </entry>
         <entry key="entityId" value="${webHostName}${saml.metadataServiceURI}"> </entry>
       </map>
     </property>

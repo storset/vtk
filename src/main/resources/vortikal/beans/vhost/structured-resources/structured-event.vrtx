@@ -20,9 +20,27 @@ resourcetype structured-event : structured-document {
     group organizerAndOrganizerUrl (organizer, organizer-url) (after content) horizontal,
     tags tooltip (en : "(tag1, tag2, ...)", no : "(emneord1, emneord2, ...)", nn : "(emneord1, emneord2, ...)")
   }
-  
+
   scripts {
     tags autocomplete (minChars : "1")
+  }
+  
+  view-components {
+    organizer {
+    ##
+    [def organizerName resource-prop(".", "organizer")]
+    [def organizerUrl resource-prop(".", "organizer-url")]
+    
+    [if organizerName != null && organizerName != ""]
+      <h2>[localized 'organizerAndOrganizerUrl']</h2>
+      [if organizerUrl != null && organizerUrl != ""]
+        <a href="[val organizerUrl]">[val organizerName]</a>
+      [else]
+        [val organizerName]
+      [endif]
+    [endif]
+    ##
+    }
   }
   
   view {
@@ -44,6 +62,7 @@ resourcetype structured-event : structured-document {
             </div>
             <comp:introduction-image />
             <json:field select="content" />
+            <comp:organizer />
             <resource:tags />
             <comp:vrtx-date-info />
             <div class="vrtx-social-components"

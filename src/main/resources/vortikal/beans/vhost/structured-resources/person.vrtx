@@ -301,6 +301,7 @@ resourcetype person {
             <json:field select="content" />
             <resource:tags />
             <comp:scientific-info />
+            <comp:vrtx-date-info />
           </div>
         </div>
         <div id="vrtx-additional-content">
@@ -308,7 +309,6 @@ resourcetype person {
            <resource:project-list />
            <resource:resarch-group-list />
         </div>
-        <comp:vrtx-date-info />
       </body>
     </html>
     ##

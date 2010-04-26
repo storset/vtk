@@ -152,13 +152,17 @@
 }
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.prev {
-	left: 0px;
+   left: 0px;
 }
 
 .vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.next {
-    right: 0px;
+   right: 0px;
 }
 
 .vrtx-image-listing-include-container-description {
    margin: 10px 5px 20px 5px;
+}
+
+.vrtx-image-listing-include-container-title {
+   font-size: 1.15em;
 }

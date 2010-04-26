@@ -71,9 +71,7 @@
   </bean>
   
   <bean id="collectionListing.atomHandler" class="org.vortikal.web.display.collection.CollectionListingAsAtomFeed"
-    parent="repositoryAware">
-    <property name="viewService" ref="viewService" />
-    <property name="abdera" ref="abdera" />
+    parent="viewAsFeedHandler">
     <property name="searchComponent" ref="collectionListing.searchComponent" />
     <property name="publishedDatePropDef" ref="creationTimePropDef" />
     <property name="authorPropDef" ref="createdByPropDef" />

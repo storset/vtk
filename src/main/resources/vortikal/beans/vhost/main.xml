@@ -35,6 +35,7 @@
   <import resource="article.xml" />
   <import resource="structured-resources-management.xml" />
   <import resource="structured-resources.xml" />
+  <import resource="view-feed-listing.xml" />
   <import resource="view-collection-listing.xml" />
   <import resource="view-article-listing.xml" />
   <import resource="view-event-listing.xml" />

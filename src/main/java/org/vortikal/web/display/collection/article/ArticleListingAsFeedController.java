@@ -59,12 +59,12 @@ public class ArticleListingAsFeedController extends AtomFeedController {
         Feed feed = populateFeed(collection, feedTitle);
 
         List<Listing> results = new ArrayList<Listing>();
-        Listing featuredArticles = this.searcher.getFeaturedArticles(request, collection, 1, 25, 0);
+        Listing featuredArticles = this.searcher.getFeaturedArticles(request, collection, 1, this.entryCountLimit, 0);
         if (featuredArticles.size() > 0) {
             results.add(featuredArticles);
         }
 
-        Listing articles = this.searcher.getArticles(request, collection, 1, 25, 0);
+        Listing articles = this.searcher.getArticles(request, collection, 1, this.entryCountLimit, 0);
         if (articles.size() > 0) {
             results.add(articles);
         }

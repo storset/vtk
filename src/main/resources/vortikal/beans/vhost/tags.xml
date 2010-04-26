@@ -69,9 +69,7 @@
   </bean>
 
   <bean id="tags.atomHandler" class="org.vortikal.web.display.tags.TagsAsFeedController"
-    parent="repositoryAware" depends-on="resourceTypeTree">
-    <property name="viewService" ref="viewService" />
-    <property name="abdera" ref="abdera" />
+    parent="viewAsFeedHandler">
     <property name="searchComponent" ref="tags.searchComponent" />
     <!--
       We use creationTimePropDef as publishedDatePropDef because the

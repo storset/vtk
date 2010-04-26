@@ -79,6 +79,8 @@ public abstract class AtomFeedController implements Controller {
     protected PropertyTypeDefinition authorPropDef;
     protected PropertyTypeDefinition publishedDatePropDef;
 
+    protected int entryCountLimit = 200;
+
     protected abstract Feed createFeed(HttpServletRequest request, HttpServletResponse response, String token)
             throws Exception;
 

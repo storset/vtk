@@ -85,9 +85,7 @@
   </bean>
 
   <bean id="eventListing.atomHandler" class="org.vortikal.web.display.collection.event.EventListingAsFeedController"
-    parent="repositoryAware">
-    <property name="viewService" ref="viewService" />
-    <property name="abdera" ref="abdera" />
+    parent="viewAsFeedHandler">
     <property name="helper" ref="eventListingHelper" />
     <property name="searcher" ref="eventListing.eventListingSearcher" />
     <property name="displayTypePropDef" ref="eventListing.displayTypePropDef" />

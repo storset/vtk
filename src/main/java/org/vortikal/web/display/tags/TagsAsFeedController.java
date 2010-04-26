@@ -69,7 +69,7 @@ public class TagsAsFeedController extends AtomFeedController {
         String feedTitle = service.getLocalizedName(scope, request);
         Feed feed = populateFeed(scope, feedTitle);
 
-        Listing searchResult = searchComponent.execute(request, scope, 1, 25, 0);
+        Listing searchResult = searchComponent.execute(request, scope, 1, this.entryCountLimit, 0);
 
         for (PropertySet result : searchResult.getFiles()) {
             addEntry(feed, token, result);
@@ -98,7 +98,7 @@ public class TagsAsFeedController extends AtomFeedController {
     public void setSearchComponent(SearchComponent searchComponent) {
         this.searchComponent = searchComponent;
     }
-    
+
     @Required
     public void setTagsHelper(TagsHelper tagsHelper) {
         this.tagsHelper = tagsHelper;

@@ -107,7 +107,7 @@
   <bean id="decorating.templateCollectionRefreshTrigger"
         class="org.vortikal.util.repository.MethodInvokingRepositoryEventTrigger">
     <property name="repository" ref="repository" />
-    <property name="uriPattern" value="${decorating.templatesCollection}/.*\.(html|vrtx)$" />
+    <property name="uriPattern" value="${decorating.templatesCollection}/.*\.(html|template|tmp)$" />
     <property name="targetObject" ref="decorating.templateManager" />
     <property name="method" value="load" />
   </bean>
@@ -119,6 +119,7 @@
       <map>
 	<entry key="\.template$" value-ref="decorating.htmlParserTemplateFactory" />
 	<entry key="\.html$" value-ref="decorating.dollarSyntaxTemplateFactory" />
+	<entry key="\.tmp$" value-ref="decorating.dynamicTemplateFactory" />
       </map>
     </property>
   </bean>
@@ -137,6 +138,11 @@
   </bean>
 
   <bean id="decorating.dollarSyntaxTemplateParser" class="org.vortikal.web.decorating.DollarSyntaxComponentParser">
+  </bean>
+
+  <bean id="decorating.dynamicTemplateFactory"
+            class="org.vortikal.web.decorating.DynamicDecoratorTemplateFactory">
+    <property name="componentResolver" ref="decorating.defaultComponentResolver" />
   </bean>
 
   <bean name="decorating.defaultComponentResolver"

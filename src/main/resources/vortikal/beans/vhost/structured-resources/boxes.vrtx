@@ -27,7 +27,7 @@ resourcetype boxes {
       [list map entry]
         entry: [val entry]
       [endlist]
-      [call-component "include:feed" {"url" : url}]
+      [call "include:feed" {"url" : url}]
       ##
     }
 

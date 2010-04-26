@@ -263,7 +263,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         directiveHandlers.put("def", def);
 
         directiveHandlers.put("localized", new LocalizationNodeFactory(this.resourceModelKey));
-        directiveHandlers.put("call-component", new ComponentInvokerNodeFactory(new ComponentSupport()));
+        directiveHandlers.put("call", new ComponentInvokerNodeFactory(new ComponentSupport()));
 
         this.directiveHandlers = directiveHandlers;
 

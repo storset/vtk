@@ -23,8 +23,8 @@
       Location="https://${assertionConsumerService}"/>
   </SPSSODescriptor>
   <ContactPerson contactType="technical">
-    <GivenName>USIT</GivenName> 
-    <SurName>WEB/GPL</SurName>
-    <EmailAddress></EmailAddress>
+    <GivenName>${contactPersonGivenName}</GivenName> 
+    <SurName>${contactPersonSurName}</SurName>
+    <EmailAddress>${contactPersonEmailAddress}</EmailAddress>
   </ContactPerson>
 </EntityDescriptor>

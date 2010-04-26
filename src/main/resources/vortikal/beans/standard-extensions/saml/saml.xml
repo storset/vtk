@@ -122,6 +122,9 @@
         <entry key="singleLogoutService" value="${webHostName}${saml.serviceProviderURI}"> </entry>
         <entry key="assertionConsumerService" value="${webHostName}${saml.serviceProviderURI}"> </entry>
         <entry key="entityId" value="${webHostName}${saml.metadataServiceURI}"> </entry>
+        <entry key="contactPersonGivenName" value="${saml.metadataService.contactPersonGivenName}" />
+        <entry key="contactPersonSurName" value="${saml.metadataService.contactPersonSurName}" />
+        <entry key="contactPersonEmailAddress" value="${saml.metadataService.contactPersonEmailAddress}" />
       </map>
     </property>
   </bean>

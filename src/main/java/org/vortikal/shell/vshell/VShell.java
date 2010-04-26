@@ -236,12 +236,23 @@ public class VShell extends AbstractConsole {
             if (arg.isRest()) {
                 List<Object> multiple = new ArrayList<Object>();
                 for (int i = paramIdx; i < args.size(); i++) {
-                    multiple.add(getTypedArg(args.get(i), arg.getType()));
+                    try {
+                        multiple.add(getTypedArg(args.get(i), arg.getType()));
+                    } catch (Throwable t) {
+                        out.println("Illegal value of argument: " + arg.name + ": " + t.getMessage());
+                        return null;
+                    }
                 }
                 result.put(arg.name, multiple);
                 return result;
             }
-            result.put(arg.name, getTypedArg(args.get(paramIdx++), arg.getType()));
+            try {
+                Object val = getTypedArg(args.get(paramIdx++), arg.getType());
+                result.put(arg.name, val);
+            } catch (Throwable t) {
+                out.println("Illegal value of argument: " + arg.name + ": " + t.getMessage());
+                return null;
+            }
         }
         return result;
     }

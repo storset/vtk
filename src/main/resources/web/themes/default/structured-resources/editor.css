@@ -250,7 +250,7 @@ input.vrtx-move-down-button  {
 .vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-html iframe,
 .vrtx-json #additional-content .vrtx-json-element .vrtx-html iframe,
 .vrtx-json #featured-items .vrtx-json-element .vrtx-html iframe {
-  height: 300px;
+  height: 230px;
 }
 
 .vrtx-json #main-content .header,
@@ -324,7 +324,8 @@ input.vrtx-move-down-button  {
   height: 150px;
 }
 
-.selectedPublications,.additional-content {
+.selectedPublications,
+.additional-content {
   width: 98% !important;
 }
 
@@ -333,7 +334,8 @@ input.vrtx-move-down-button  {
   height: 210px;
 }
 
-.related-content label,.visitingAddress {
+.related-content label,
+	.visitingAddress {
   display: none !important;
 }
 
@@ -350,7 +352,10 @@ input.vrtx-move-down-button  {
   width:auto;
 }
 
-.fieldset#box-list-main,.fieldset#box-list-main div.vrtx-json-element,.fieldset#box-list-side,.fieldset#box-list-side div.vrtx-json-element {
+.fieldset#box-list-main,
+.fieldset#box-list-main div.vrtx-json-element,
+.fieldset#box-list-side,
+.fieldset#box-list-side div.vrtx-json-element {
   width: 900px;
 }
 
@@ -366,6 +371,11 @@ input.vrtx-move-down-button  {
 #contact-supervisor-box .vrtx-html iframe {
   height: 150px !important;
   width: 600px !important;
+}
+
+.vrtx-json #main-content .boxType input,
+.vrtx-json #addictional-content .boxType input {
+  width: 160px;	
 }
 
 /* END Set explisit widths and heights */

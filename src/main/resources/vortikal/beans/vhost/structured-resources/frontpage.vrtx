@@ -5,7 +5,7 @@ resourcetype frontpage {
     introduction : simple_html,
     picture : image_ref,
     caption : simple_html,
-    main-content : json (boxTitle : string, boxType : string, boxCssSizeAndPlacement : string, boxCssColor : string, boxPicture : image_ref, boxContent : html, boxUrlText : string, boxUrl : string) multiple noextract,
+    main-content : json (boxTitle : string, boxCssSizeAndPlacement : string, boxCssColor : string, boxType : string, boxPicture : image_ref, boxContent : html, boxUrlText : string, boxUrl : string) multiple noextract,
     additional-content : json (boxTitle : string, boxType : string, boxPicture : image_ref, boxContent : html, boxUrlText : string,  boxUrl : string) multiple noextract,
     cssUrl : string
   }
@@ -13,7 +13,7 @@ resourcetype frontpage {
   edit-rules {
     caption (size[small]),
     main-content:boxCssSizeAndPlacement (dropdown),
-    main-content:boxCssColor (dropdown),
+    main-content:boxCssColor (dropdown), 
     group introImageAndCaption (picture, caption) (after introduction) vertical
   }
 
@@ -303,7 +303,7 @@ resourcetype frontpage {
      main-content : (en : "Main content", no : "Hovedinnhold", nn : "Hovedinnhold"),
      additional-content : (en : "Additional content (default as right-column)", no : "Relatert innhold (default som høyrespalte)", nn : "Relatert innhald (default som høyrespalte)"),
      boxTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
-     boxType : (en : "Special settings", no : "Spesielle instillinger", nn : "Spesielle instillinger"),
+     boxType : (en : "Special settings", no : "Spesielle innstillinger", nn : "Spesielle innstillinger"),
      boxCssSizeAndPlacement : (en : "Size and placement", no : "Størrelse og plassering", nn : "Størrelse og plassering"), 
      boxCssColor : (en : "Color", no : "Farge", nn : "Farge"),
      boxPicture : (en: "Image", no: "Bilde", nn : "Bilete"),

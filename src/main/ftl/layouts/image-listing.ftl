@@ -20,8 +20,6 @@
     <#if type == 'gallery'>
        <script type="text/javascript">
        <!--
-         // ("load") so that all images is loaded before running,
-	     // and .bind for performance increase: http://jqueryfordesigners.com/demo/fade-method2.html
 		 $(window).bind("load", function () {
 				
 		   var wrapper = ".vrtx-image-listing-include";	
@@ -51,17 +49,18 @@
     <#assign count = 1 />
     <#list images as image>
         <#assign description = vrtx.propValue(image, 'description', '', 'content')?html />
+        <#assign title = vrtx.propValue(image, 'userTitle')?html />
         <#if count % 4 == 0>
           <li class="vrtx-thumb-last">
         <#else>
           <li>
         </#if>
           <#if (image_index == 0) >
-            <a href="${folderUrl}?actimg=${image.URI}&amp;display=gallery" class="active"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" />
+            <a href="${folderUrl}?actimg=${image.URI}&amp;display=gallery" class="active"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" title="${title}" />
           <#else>
-            <a href="${folderUrl}?actimg=${image.URI}&amp;display=gallery"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" /> 
+            <a href="${folderUrl}?actimg=${image.URI}&amp;display=gallery"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" title="${title}" /> 
           </#if>
-              <#if type == 'gallery'><span><img src="${image.URI}" alt="${description}" /></span></#if>
+              <#if type == 'gallery'><span><img src="${image.URI}" alt="${description}" title="${title}" /></span></#if>
             </a>
         </li>
         <#assign count = count+1 />

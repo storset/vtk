@@ -124,8 +124,6 @@
       
       <script type="text/javascript">
        <!--
-         // ("load") so that all images is loaded before running,
-	     // and .bind for performance increase: http://jqueryfordesigners.com/demo/fade-method2.html
 		 $(window).bind("load", function () {
 				
 		   var wrapper = ".vrtx-image-listing-include";	
@@ -150,6 +148,7 @@
     <#assign count = 1 />
     <#list images as image>
         <#assign description = vrtx.propValue(image, 'description', '', 'content')?html />
+        <#assign title = vrtx.propValue(image, 'title')?html />
         <#if count % 5 == 0>
           <li class="vrtx-thumb-last">
         <#else>
@@ -157,18 +156,18 @@
         </#if>
         <#if activeImage != "">
 	      <#if (activeImage == image.URI) >
-	          <a href="${image.URI}" class="active"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" />
+	          <a href="${image.URI}" class="active"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" title="${title}" />
 	        <#else>
-	          <a href="${image.URI}"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" />
+	          <a href="${image.URI}"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" title="${title}" />
 	        </#if>
 	      <#else>
 	        <#if (image_index == 0) >
-	          <a href="${image.URI}" class="active"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" />
+	          <a href="${image.URI}" class="active"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" title="${title}" />
 	        <#else>
-	          <a href="${image.URI}"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" />
+	          <a href="${image.URI}"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" title="${title}" />
 	        </#if>
 	      </#if>
-	            <span><img src="${image.URI}" alt="${description}" /></span>
+	            <span><img src="${image.URI}" alt="${description}" title="${title}" /></span>
 	          </a>
         </li>
         <#assign count = count+1 />

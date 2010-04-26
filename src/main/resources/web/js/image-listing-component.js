@@ -82,9 +82,11 @@
 
           $(wrapperContainer + "-description").remove();
 	      $("<div class='" + container.substring(1) + "-description'>" + $(image).attr("alt") + "</div>").insertAfter(wrapperContainer);
-	      if($(image).attr("alt") != null && $(image).attr("alt") != "") {
+	      if(($(image).attr("alt") != null && $(image).attr("alt") != "") || ($(image).attr("title") != null && $(image).attr("title") != "")) {
 	        $(wrapperContainer + "-description").css("width", $(wrapper + " " + container).width());
           }
+	      
+	      $(container + "-description").prepend("<p>" + $(image).attr("title") + "</p>");
 	 }
 
          function addPagingEvents(navClass) {

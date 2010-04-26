@@ -89,9 +89,9 @@
 
     <#assign url = resourceReference />
     <#if url?contains("?")>
-      <#assign url = url + "&amp;" + previewUnpublishedParameter + "=" + "true" + "&amp;" + previewRefreshParameter + "=" + dateStr + "&authTarget=http" />
+      <#assign url = url + "&amp;" + previewUnpublishedParameter + "=" + "true" + "&amp;" + previewRefreshParameter + "=" + dateStr + "&amp;authTarget=http" />
     <#else>
-      <#assign url = url + "?" + previewUnpublishedParameter + "=" + "true" + "&amp;" + previewRefreshParameter + "=" + dateStr + "&authTarget=http" />
+      <#assign url = url + "?" + previewUnpublishedParameter + "=" + "true" + "&amp;" + previewRefreshParameter + "=" + dateStr + "&amp;authTarget=http" />
     </#if>
 
     <iframe class="previewView" name="previewViewIframe" id="previewViewIframe" src="${url}" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0" vspace="0" hspace="0" style="overflow:visible; width:100%; ">

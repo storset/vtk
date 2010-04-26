@@ -35,15 +35,20 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.resourcemanagement.view.tl.ComponentInvokerNodeFactory;
+import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.DefineNodeFactory;
 import org.vortikal.text.tl.DirectiveNodeFactory;
 import org.vortikal.text.tl.IfNodeFactory;
 import org.vortikal.text.tl.ListNodeFactory;
+import org.vortikal.text.tl.Symbol;
 import org.vortikal.text.tl.ValNodeFactory;
 import org.vortikal.text.tl.expr.Function;
+import org.vortikal.web.RequestContext;
 
 public class DynamicDecoratorTemplateFactory implements TemplateFactory, InitializingBean {
 
@@ -77,7 +82,11 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
         //directiveHandlers.put("resource-props", new ResourcePropsNodeFactory(this.repository));
 
         DefineNodeFactory def = new DefineNodeFactory();
-        def.setFunctions(this.functions);
+
+        Set<Function> functions = new HashSet<Function>();
+        functions.addAll(this.functions);
+        functions.add(new RequestParameterFunction(new Symbol("request-param")));
+        def.setFunctions(functions);
         directiveHandlers.put("def", def);
 
         //directiveHandlers.put("localized", new LocalizationNodeFactory(this.resourceModelKey));
@@ -91,5 +100,25 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
             throw new IllegalArgumentException("Argument is NULL");
         }
         this.functions = functions;
+    }
+
+    private class RequestParameterFunction extends Function {
+        
+        public RequestParameterFunction(Symbol symbol) {
+            super(symbol, 1);
+        }
+
+        @Override
+        public Object eval(Context ctx, Object... args) throws Exception {
+            RequestContext requestContext = RequestContext.getRequestContext();
+            HttpServletRequest request = requestContext.getServletRequest();
+            Object o = args[0];
+            if (o == null) {
+                throw new IllegalArgumentException("Argument cannot be NULL");
+            }
+            String name = o.toString();
+            return request.getParameter(name);
+        }
+        
     }
 }

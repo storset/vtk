@@ -25,6 +25,16 @@
 	  //paging (relative to li a.active)
 	  addPagingEvents("next");
 	  addPagingEvents("prev");
+	  
+	  //register arrow left and right keys as 'prev' and 'next'
+	  $(document).keydown(function(e){
+		 if (e.keyCode == 37) { 
+		   $(wrapper + " a.prev").click(); 
+		 } else if (e.keyCode == 39) {
+		   $(wrapper + " a.next").click();
+		 }
+		 return false;
+	  });
 
 	  //init first active image
 	  calculateImage($(wrapperThumbsLinks + ".active img"), 0, true);

@@ -56,13 +56,14 @@ resourcetype organizational-unit {
       ##
         [resource-props "."]
         [if postalAddress != null && postalAddress != ""]
-         <span class="vrtx-label">[localized "postalAddress"]</span>
+         <h2>[localized "contactHeader"]</h2>
+         <span class="vrtx-label vrtx-organizational-unit-postal-address">[localized "postalAddress"]</span>
          [list postalAddress postalAddressLine]
            <span class="vrtx-address-line">[if postalAddressLine != null][val postalAddressLine][endif]</span>
          [endlist]
         [endif]
         [if visitingAddress != null && visitingAddress != ""]
-          <span class="vrtx-label">[localized "visitingAddress"]</span>
+          <span class="vrtx-label vrtx-organizational-unit-visiting-address">[localized "visitingAddress"]</span>
           [list visitingAddress visitingAddressLine]
             <span class="vrtx-address-line">[if visitingAddressLine != null][val visitingAddressLine][endif]</span>
           [endlist]
@@ -144,8 +145,8 @@ resourcetype organizational-unit {
           <div id="vrtx-additional-content">
             <div class="vrtx-frontpage-box">
               <comp:contact-information />
-              <comp:related-content />
             </div>
+            <comp:related-content />
           </div>
         </div>
       </body>
@@ -179,6 +180,7 @@ resourcetype organizational-unit {
       no : "Bruk opplysninger registrert i UiOs lønns- og personalsystem",
       nn : "Bruk opplysingar registrerte i lønns- og personalsystemet til UiO"),
     name : (en : "Name", no : "Navn", nn : "Namn"),
+    contactHeader : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
     postalAddress : (en : "Postal address", no : "Postadresse", nn : "Postadresse"),
     visitingAddress : (en : "Visiting address", no : "Besøksadresse", nn : "Besøksadresse"),
     phone : (en : "Phone", no : "Telefon", nn : "Telefon"),

@@ -46,10 +46,10 @@ import org.opensaml.saml2.core.AttributeValue;
 import org.opensaml.xml.XMLObject;
 import org.opensaml.xml.schema.XSString;
 
-
 public class UserData {
 
     private Map<String, List<String>> attrs = new HashMap<String, List<String>>();
+
 
     public UserData(Assertion assertion) {
         for (AttributeStatement attrStatement : assertion.getAttributeStatements()) {
@@ -72,11 +72,16 @@ public class UserData {
         return getSimpleAttribute("cn");
     }
 
-    
+
     public List<String> getAttribute(String name) {
-        return Collections.unmodifiableList(this.attrs.get(name));
+        List<String> attributes = this.attrs.get(name);
+        if (attributes != null)
+            return Collections.unmodifiableList(attributes);
+        else
+            return null;
     }
-    
+
+
     public String getSimpleAttribute(String name) {
         List<String> list = this.attrs.get(name);
         if (list == null) {
@@ -88,8 +93,9 @@ public class UserData {
         return list.get(0);
     }
 
+
     private List<String> extractValues(Attribute attribute) {
-        
+
         List<XMLObject> values = attribute.getAttributeValues();
         List<String> result = new ArrayList<String>();
 

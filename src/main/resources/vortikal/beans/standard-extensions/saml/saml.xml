@@ -27,6 +27,7 @@
     class="org.vortikal.security.web.saml.SamlAuthenticationHandler">
     <property name="identifier" value="saml:${saml.authenticationURL}"/>
     <property name="principalFactory" ref="principalFactory"/>
+    <property name="loginListeners" ref="saml.loginListeners" />
 
     <property name="challenge" ref="saml.challenge"/>
     <property name="login" ref="saml.login"/>
@@ -49,6 +50,12 @@
   <bean id="saml.login" class="org.vortikal.security.web.saml.Login" parent="saml.abstractHandler">
     <property name="replayMinutes" value="60"/>
   </bean>
+
+  <bean id="saml.loginListeners" class="org.vortikal.context.CategoryResolvingFactoryBean">
+    <property name="clazz" value="org.vortikal.security.web.saml.LoginListener" />
+    <property name="category" value="saml.loginListener" />
+  </bean>
+
 
   <bean id="saml.logout" class="org.vortikal.security.web.saml.Logout" parent="saml.abstractHandler">
     <property name="securityInitializer" ref="securityInitializer"/>

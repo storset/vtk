@@ -31,6 +31,7 @@
 package org.vortikal.security.web.saml;
 
 import java.io.IOException;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -58,6 +59,8 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     private Login login;
     private Logout logout;
     
+    private Set<LoginListener> loginListeners;
+    
     private PrincipalFactory principalFactory;
 
     @Override
@@ -78,10 +81,22 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     @Override
     public Principal authenticate(HttpServletRequest request) throws AuthenticationProcessingException,
             AuthenticationException, InvalidAuthenticationRequestException {
+        
         UserData userData = this.login.login(request);
         if (userData != null) {
             String id = userData.getUsername();
-            return this.principalFactory.getPrincipal(id, Principal.Type.USER);
+            Principal principal = this.principalFactory.getPrincipal(id, Principal.Type.USER);
+            if (this.loginListeners != null) {
+                for (LoginListener listener : this.loginListeners) {
+                    try {
+                        listener.onLogin(principal, userData);
+                    } catch (Exception e) {
+                        throw new AuthenticationProcessingException(
+                                "Failed to invoke login listener: " + listener, e);
+                    }
+                }
+            }
+            return principal;
         } else {
             throw new AuthenticationException("Unable to authenticate request " + request);
         }
@@ -162,6 +177,10 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
         this.identifier = identifier;
     }
     
+    public void setLoginListeners(Set<LoginListener> loginListeners) {
+        this.loginListeners = loginListeners;
+    }
+
     public String getIdentifier() {
         return this.identifier;
     }

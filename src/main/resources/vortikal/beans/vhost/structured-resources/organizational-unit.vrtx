@@ -15,10 +15,10 @@ resourcetype organizational-unit {
     introduction : simple_html,
     responsibilities : html,   
     displayEmployees : boolean,
-    employees : binary external:listEmplyeesLdapService,
     selectedEmployees : string multiple,
     numberOfEmployeesToDisplay : string,
     urlToEmployeesList : string,
+    employees : binary external:listEmplyeesLdapService,
     content : html noextract,
     hasBodyContent : derived (content) eval (content?exists)
     related-content : html noextract
@@ -123,6 +123,16 @@ resourcetype organizational-unit {
       [endif]
       ##
     }
+    
+    employees {
+      ##
+      <div id="vrtx-unit-employees">
+        <h2>[localized "employees"]</h2>
+        ${resource:unit-employees}
+      </div>
+      ##
+    }
+    
   }
 
   view {
@@ -148,6 +158,7 @@ resourcetype organizational-unit {
             </div>
             <comp:related-content />
           </div>
+          <comp:employees />
         </div>
       </body>
     </html>

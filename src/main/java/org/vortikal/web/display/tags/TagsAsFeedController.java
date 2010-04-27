@@ -38,7 +38,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.abdera.model.Feed;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
 import org.vortikal.web.RequestContext;
@@ -87,11 +86,6 @@ public class TagsAsFeedController extends AtomFeedController {
     @Override
     protected Date getLastModified(Resource collection) {
         return new Date();
-    }
-
-    @Override
-    protected Property getPicture(Resource collection) {
-        return null;
     }
 
     @Required

@@ -56,6 +56,7 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.HtmlValueFormatter;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -67,19 +68,22 @@ import org.vortikal.web.service.Service;
 public abstract class AtomFeedController implements Controller {
 
     private final Log logger = LogFactory.getLog(AtomFeedController.class);
-
     private static final String TAG_PREFIX = "tag:";
-    protected static final Namespace NS = Namespace.DEFAULT_NAMESPACE;
-    protected static final Namespace SRNS = Namespace.STRUCTURED_RESOURCE_NAMESPACE;
 
     protected Repository repository;
     protected Service viewService;
     protected Abdera abdera;
-
-    protected PropertyTypeDefinition authorPropDef;
     protected PropertyTypeDefinition publishedDatePropDef;
-
     protected int entryCountLimit = 200;
+
+    private ResourceTypeTree resourceTypeTree;
+    private PropertyTypeDefinition creationTimePropDef;
+    private PropertyTypeDefinition titlePropDef;
+    private PropertyTypeDefinition lastModifiedPropDef;
+    private String authorPropDefPointer;
+    private String introductionPropDefPointer;
+    private String picturePropDefPointer;
+    private String mediaPropDefPointer;
 
     protected abstract Feed createFeed(HttpServletRequest request, HttpServletResponse response, String token)
             throws Exception;
@@ -111,7 +115,7 @@ public abstract class AtomFeedController implements Controller {
             URIException, UnsupportedEncodingException {
 
         Feed feed = abdera.newFeed();
-        Property published = collection.getProperty(NS, PropertyType.CREATIONTIME_PROP_NAME);
+        Property published = collection.getProperty(this.creationTimePropDef);
         feed.setId(getId(collection.getURI(), published, getFeedPrefix()));
         feed.addLink(viewService.constructLink(collection.getURI()), "alternate");
 
@@ -147,7 +151,7 @@ public abstract class AtomFeedController implements Controller {
 
             Entry entry = Abdera.getInstance().newEntry();
 
-            String id = getId(result.getURI(), result.getProperty(NS, PropertyType.CREATIONTIME_PROP_NAME), null);
+            String id = getId(result.getURI(), result.getProperty(this.creationTimePropDef), null);
             entry.setId(id);
             entry.addCategory(result.getResourceType());
 
@@ -226,25 +230,25 @@ public abstract class AtomFeedController implements Controller {
     }
 
     protected String prepareSummary(PropertySet resource) {
+
         StringBuilder sb = new StringBuilder();
         String summary = getIntroduction(resource);
-        Property pic = resource.getProperty(NS, PropertyType.PICTURE_PROP_NAME);
-        if (pic == null) {
-            pic = resource.getProperty(SRNS, PropertyType.PICTURE_PROP_NAME);
-        }
-        if (pic != null) {
-            String imageRef = pic.getStringValue();
+
+        Property picture = this.getPicture(resource);
+        if (picture != null) {
+            String imageRef = picture.getStringValue();
             if (!imageRef.startsWith("/") && !imageRef.startsWith("https://") && !imageRef.startsWith("https://")) {
                 try {
                     imageRef = resource.getURI().getParent().expand(imageRef).toString();
-                    pic.setValue(new Value(imageRef, PropertyType.Type.STRING));
+                    picture.setValue(new Value(imageRef, PropertyType.Type.STRING));
                 } catch (Throwable t) {
                 }
             }
-            String imgPath = pic.getFormattedValue("thumbnail", Locale.getDefault());
+            String imgPath = picture.getFormattedValue("thumbnail", Locale.getDefault());
             String imgAlt = getImageAlt(imgPath);
             sb.append("<img src=\"" + imgPath + "\" alt=\"" + imgAlt + "\"/>");
         }
+
         if (summary != null) {
             sb.append(summary);
         }
@@ -252,20 +256,21 @@ public abstract class AtomFeedController implements Controller {
     }
 
     private Property getTitle(PropertySet result) {
-        return result.getProperty(NS, PropertyType.TITLE_PROP_NAME);
+        return result.getProperty(this.titlePropDef);
     }
 
     private Property getLastModified(PropertySet result) {
-        return result.getProperty(NS, PropertyType.LASTMODIFIED_PROP_NAME);
+        return result.getProperty(this.lastModifiedPropDef);
     }
 
-    private Property getMediaRef(PropertySet result) {
-        Property mediaRef = null;
-        mediaRef = result.getProperty(NS, PropertyType.MEDIA_PROP_NAME);
-        if (mediaRef == null) {
-            mediaRef = result.getProperty(SRNS, PropertyType.MEDIA_PROP_NAME);
+    private Property getMediaRef(PropertySet resource) {
+        PropertyTypeDefinition mediaPropDef = this.resourceTypeTree
+                .getPropertyDefinitionByPointer(this.mediaPropDefPointer);
+        if (mediaPropDef != null) {
+            Property mediaProp = resource.getProperty(mediaPropDef);
+            return mediaProp;
         }
-        return mediaRef;
+        return null;
     }
 
     private Property getPublishDate(PropertySet result, String type) {
@@ -274,30 +279,32 @@ public abstract class AtomFeedController implements Controller {
             publishDate = result.getProperty(this.publishedDatePropDef);
         }
         if (publishDate == null && (type != null && type.equals("structured-event"))) {
-            publishDate = result.getProperty(SRNS, "start-date");
+            publishDate = result.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, "start-date");
         } else if (publishDate == null) {
-            publishDate = result.getProperty(NS, "publish-date");
+            publishDate = result.getProperty(Namespace.DEFAULT_NAMESPACE, "publish-date");
         }
         return publishDate;
     }
 
-    private Property getAuthor(PropertySet result) {
-        Property author = null;
-        if (this.authorPropDef != null) {
-            author = result.getProperty(this.authorPropDef);
+    private Property getAuthor(PropertySet resource) {
+        PropertyTypeDefinition authorPropDef = this.resourceTypeTree
+                .getPropertyDefinitionByPointer(this.authorPropDefPointer);
+        if (authorPropDef == null) {
+            Property author = resource.getProperty(authorPropDef);
+            return author;
         }
-        if (author == null) {
-            author = result.getProperty(SRNS, "author");
-        }
-        return author;
+        return null;
     }
 
     protected String getIntroduction(PropertySet resource) {
-        Property prop = resource.getProperty(NS, PropertyType.INTRODUCTION_PROP_NAME);
-        if (prop == null) {
-            prop = resource.getProperty(SRNS, PropertyType.INTRODUCTION_PROP_NAME);
+        PropertyTypeDefinition introductionPropDef = this.resourceTypeTree
+                .getPropertyDefinitionByPointer(this.introductionPropDefPointer);
+        Property introductionProp = null;
+        if (introductionPropDef != null) {
+            introductionProp = resource.getProperty(introductionPropDef);
+
         }
-        return prop != null ? prop.getFormattedValue() : null;
+        return introductionProp != null ? introductionProp.getFormattedValue() : null;
     }
 
     protected String getDescription(PropertySet resource) {
@@ -342,8 +349,14 @@ public abstract class AtomFeedController implements Controller {
         return collection.getLastModified();
     }
 
-    protected Property getPicture(Resource collection) {
-        return collection.getProperty(NS, PropertyType.PICTURE_PROP_NAME);
+    protected Property getPicture(PropertySet resource) {
+        PropertyTypeDefinition picturePropDef = this.resourceTypeTree
+                .getPropertyDefinitionByPointer(this.picturePropDefPointer);
+        if (picturePropDef != null) {
+            Property pic = resource.getProperty(picturePropDef);
+            return pic;
+        }
+        return null;
     }
 
     private String removeInvalid(String s) {
@@ -374,8 +387,44 @@ public abstract class AtomFeedController implements Controller {
         this.abdera = abdera;
     }
 
-    public void setAuthorPropDef(PropertyTypeDefinition authorPropDef) {
-        this.authorPropDef = authorPropDef;
+    @Required
+    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+        this.resourceTypeTree = resourceTypeTree;
+    }
+
+    @Required
+    public void setCreationTimePropDef(PropertyTypeDefinition creationTimePropDef) {
+        this.creationTimePropDef = creationTimePropDef;
+    }
+
+    @Required
+    public void setTitlePropDef(PropertyTypeDefinition titlePropDef) {
+        this.titlePropDef = titlePropDef;
+    }
+
+    @Required
+    public void setLastModifiedPropDef(PropertyTypeDefinition lastModifiedPropDef) {
+        this.lastModifiedPropDef = lastModifiedPropDef;
+    }
+
+    @Required
+    public void setAuthorPropDefPointer(String authorPropDefPointer) {
+        this.authorPropDefPointer = authorPropDefPointer;
+    }
+
+    @Required
+    public void setIntroductionPropDefPointer(String introductionPropDefPointer) {
+        this.introductionPropDefPointer = introductionPropDefPointer;
+    }
+
+    @Required
+    public void setPicturePropDefPointer(String picturePropDefPointer) {
+        this.picturePropDefPointer = picturePropDefPointer;
+    }
+
+    @Required
+    public void setMediaPropDefPointer(String mediaPropDefPointer) {
+        this.mediaPropDefPointer = mediaPropDefPointer;
     }
 
     public void setPublishedDatePropDef(PropertyTypeDefinition publishedDatePropDef) {

@@ -3,9 +3,49 @@
 <beans>
 
   <bean id="viewAsFeedHandler" class="org.vortikal.web.display.AtomFeedController" abstract="true"
-    parent="repositoryAware">
+    parent="repositoryAware" depends-on="resourceTypetree">
     <property name="viewService" ref="viewService" />
     <property name="abdera" ref="abdera" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="creationTimePropDef" ref="creationTimePropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="lastModifiedPropDef" ref="lastModifiedPropDef" />
+    <property name="authorPropDefPointer" ref="${override.listing.prefix}authorPropDefPointer" />
+    <property name="introductionPropDefPointer" ref="${override.listing.prefix}introductionPropDefPointer" />
+    <property name="picturePropDefPointer" ref="${override.listing.prefix}picturePropDefPointer" />
+    <property name="mediaPropDefPointer" ref="${override.listing.prefix}mediaPropDefPointer" />
+  </bean>
+
+  <bean id="authorPropDefPointer" class="java.lang.String">
+    <constructor-arg value="author" />
+  </bean>
+  
+  <bean id="structured.authorPropDefPointer" class="java.lang.String">
+    <constructor-arg value="resource:author" />
+  </bean>
+
+  <bean id="introductionPropDefPointer" class="java.lang.String">
+    <constructor-arg value="introduction" />
+  </bean>
+
+  <bean id="structured.introductionPropDefPointer" class="java.lang.String">
+    <constructor-arg value="resource:introduction" />
+  </bean>
+
+  <bean id="picturePropDefPointer" class="java.lang.String">
+    <constructor-arg value="picture" />
+  </bean>
+
+  <bean id="structured.picturePropDefPointer" class="java.lang.String">
+    <constructor-arg value="resource:picture" />
+  </bean>
+
+  <bean id="mediaPropDefPointer" class="java.lang.String">
+    <constructor-arg value="media" />
+  </bean>
+
+  <bean id="structured.mediaPropDefPointer" class="java.lang.String">
+    <constructor-arg value="resource:media" />
   </bean>
 
 </beans>

@@ -74,7 +74,6 @@
     parent="viewAsFeedHandler">
     <property name="searchComponent" ref="collectionListing.searchComponent" />
     <property name="publishedDatePropDef" ref="creationTimePropDef" />
-    <property name="authorPropDef" ref="createdByPropDef" />
   </bean>
   
   <bean id="collectionListing.searchComponent" class="org.vortikal.web.search.QueryStringSearchComponent"

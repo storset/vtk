@@ -66,7 +66,6 @@
     parent="viewAsFeedHandler">
     <property name="searcher" ref="articleListingSearcher" />
     <property name="publishedDatePropDef" ref="publishedDatePropDef" />
-    <property name="authorPropDef" ref="authorsPropDef" />
   </bean>
 
   <bean id="articleListingSearcher" class="org.vortikal.web.display.collection.article.ArticleListingSearcher">

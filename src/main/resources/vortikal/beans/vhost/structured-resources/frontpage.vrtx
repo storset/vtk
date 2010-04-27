@@ -13,7 +13,7 @@ resourcetype frontpage {
   edit-rules {
     caption (size[small]),
     main-content:boxCssSizeAndPlacement (dropdown),
-    main-content:boxCssColor (dropdown), 
+    main-content:boxCssColor (dropdown),
     group introImageAndCaption (picture, caption) (after introduction) vertical
   }
 
@@ -287,9 +287,9 @@ resourcetype frontpage {
        nn : ("undefined" = "Blank", "grey-box" = "Grå boks", "white-box" = "Hvit boks", "white-box-black-header" = "Hvit boks med svart topp")
      },
      main-content:boxCssSizeAndPlacement {
-       en : ("undefined" = "Full width", "half-box-left" = "Half width left", "half-box-right" = "Half width right"),
-       no : ("undefined" = "Full bredde", "half-box-left" = "Halv bredde venstre", "half-box-right" = "Halv bredde høyre"),
-       nn : ("undefined" = "Full bredde", "half-box-left" = "Halv bredde venstre", "half-box-right" = "Halv bredde høyre")
+       en : ("undefined" = "Full width", "half-box-left" = "Half width (1 of 2)", "half-box-right" = "Half width (2 of 2)"),
+       no : ("undefined" = "Full bredde", "half-box-left" = "Halv bredde (1 av 2)", "half-box-right" = "Halv bredde (2 av 2)"),
+       nn : ("undefined" = "Full bredde", "half-box-left" = "Halv bredde (1 av 2)", "half-box-right" = "Halv bredde (2 av 2)")
      }
   }
   

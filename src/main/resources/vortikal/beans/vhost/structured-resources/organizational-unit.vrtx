@@ -126,7 +126,7 @@ resourcetype organizational-unit {
     
     employees {
       ##
-      <div id="vrtx-unit-employees">
+      <div id="vrtx-organizational-unit-employees">
         <h2>[localized "employees"]</h2>
         ${resource:unit-employees}
       </div>
@@ -150,6 +150,7 @@ resourcetype organizational-unit {
               <comp:introduction-image />
               <comp:introduction />
               <comp:responsibilities />
+              <comp:employees />
             </div>
           </div>
           <div id="vrtx-additional-content">
@@ -158,7 +159,6 @@ resourcetype organizational-unit {
             </div>
             <comp:related-content />
           </div>
-          <comp:employees />
         </div>
       </body>
     </html>

@@ -71,12 +71,6 @@
   <bean id="tags.atomHandler" class="org.vortikal.web.display.tags.TagsAsFeedController"
     parent="viewAsFeedHandler">
     <property name="searchComponent" ref="tags.searchComponent" />
-    <!--
-      We use creationTimePropDef as publishedDatePropDef because the
-      controller fetches resources independent of type.
-      creationTimePropDef is used because it's common to all resources.
-    -->
-    <property name="publishedDatePropDef" ref="creationTimePropDef" />
     <property name="tagsHelper" ref="tagsHelper" />
   </bean>
 

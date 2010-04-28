@@ -73,11 +73,10 @@ public abstract class AtomFeedController implements Controller {
     protected Repository repository;
     protected Service viewService;
     protected Abdera abdera;
-    protected PropertyTypeDefinition publishedDatePropDef;
+    protected ResourceTypeTree resourceTypeTree;
+    protected PropertyTypeDefinition publishDatePropDef;
     protected int entryCountLimit = 200;
 
-    private ResourceTypeTree resourceTypeTree;
-    private PropertyTypeDefinition creationTimePropDef;
     private PropertyTypeDefinition titlePropDef;
     private PropertyTypeDefinition lastModifiedPropDef;
     private String authorPropDefPointer;
@@ -87,6 +86,13 @@ public abstract class AtomFeedController implements Controller {
 
     protected abstract Feed createFeed(HttpServletRequest request, HttpServletResponse response, String token)
             throws Exception;
+
+    protected abstract Property getPublishDate(PropertySet resource);
+
+    // To be overridden where necessary
+    protected Date getLastModified(Resource collection) {
+        return collection.getLastModified();
+    }
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String token = SecurityContext.getSecurityContext().getToken();
@@ -115,7 +121,7 @@ public abstract class AtomFeedController implements Controller {
             URIException, UnsupportedEncodingException {
 
         Feed feed = abdera.newFeed();
-        Property published = collection.getProperty(this.creationTimePropDef);
+        Property published = collection.getProperty(this.publishDatePropDef);
         feed.setId(getId(collection.getURI(), published, getFeedPrefix()));
         feed.addLink(viewService.constructLink(collection.getURI()), "alternate");
 
@@ -139,7 +145,7 @@ public abstract class AtomFeedController implements Controller {
             }
         }
 
-        Date lastModified = getLastModified(collection);
+        Date lastModified = this.getLastModified(collection);
         if (lastModified != null) {
             feed.setUpdated(lastModified);
         }
@@ -151,11 +157,11 @@ public abstract class AtomFeedController implements Controller {
 
             Entry entry = Abdera.getInstance().newEntry();
 
-            String id = getId(result.getURI(), result.getProperty(this.creationTimePropDef), null);
+            String id = getId(result.getURI(), result.getProperty(this.publishDatePropDef), null);
             entry.setId(id);
             entry.addCategory(result.getResourceType());
 
-            Property title = getTitle(result);
+            Property title = result.getProperty(this.titlePropDef);
             if (title != null) {
                 entry.setTitle(title.getFormattedValue());
             }
@@ -175,12 +181,12 @@ public abstract class AtomFeedController implements Controller {
                 }
             }
 
-            Property publishDate = getPublishDate(result, type);
+            Property publishDate = getPublishDate(result);
             if (publishDate != null) {
                 entry.setPublished(publishDate.getDateValue());
             }
 
-            Property updated = getLastModified(result);
+            Property updated = result.getProperty(this.lastModifiedPropDef);
             if (updated != null) {
                 entry.setUpdated(updated.getDateValue());
             }
@@ -255,14 +261,6 @@ public abstract class AtomFeedController implements Controller {
         return sb.toString();
     }
 
-    private Property getTitle(PropertySet result) {
-        return result.getProperty(this.titlePropDef);
-    }
-
-    private Property getLastModified(PropertySet result) {
-        return result.getProperty(this.lastModifiedPropDef);
-    }
-
     private Property getMediaRef(PropertySet resource) {
         PropertyTypeDefinition mediaPropDef = this.resourceTypeTree
                 .getPropertyDefinitionByPointer(this.mediaPropDefPointer);
@@ -273,17 +271,11 @@ public abstract class AtomFeedController implements Controller {
         return null;
     }
 
-    private Property getPublishDate(PropertySet result, String type) {
-        Property publishDate = null;
-        if (this.publishedDatePropDef != null) {
-            publishDate = result.getProperty(this.publishedDatePropDef);
+    protected Property getDefaultPublishDate(PropertySet result) {
+        if (this.publishDatePropDef != null) {
+            return result.getProperty(this.publishDatePropDef);
         }
-        if (publishDate == null && (type != null && type.equals("structured-event"))) {
-            publishDate = result.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, "start-date");
-        } else if (publishDate == null) {
-            publishDate = result.getProperty(Namespace.DEFAULT_NAMESPACE, "publish-date");
-        }
-        return publishDate;
+        return null;
     }
 
     private Property getAuthor(PropertySet resource) {
@@ -345,10 +337,6 @@ public abstract class AtomFeedController implements Controller {
         return null;
     }
 
-    protected Date getLastModified(Resource collection) {
-        return collection.getLastModified();
-    }
-
     protected Property getPicture(PropertySet resource) {
         PropertyTypeDefinition picturePropDef = this.resourceTypeTree
                 .getPropertyDefinitionByPointer(this.picturePropDefPointer);
@@ -393,11 +381,6 @@ public abstract class AtomFeedController implements Controller {
     }
 
     @Required
-    public void setCreationTimePropDef(PropertyTypeDefinition creationTimePropDef) {
-        this.creationTimePropDef = creationTimePropDef;
-    }
-
-    @Required
     public void setTitlePropDef(PropertyTypeDefinition titlePropDef) {
         this.titlePropDef = titlePropDef;
     }
@@ -427,8 +410,8 @@ public abstract class AtomFeedController implements Controller {
         this.mediaPropDefPointer = mediaPropDefPointer;
     }
 
-    public void setPublishedDatePropDef(PropertyTypeDefinition publishedDatePropDef) {
-        this.publishedDatePropDef = publishedDatePropDef;
+    public void setPublishDatePropDef(PropertyTypeDefinition publishDatePropDef) {
+        this.publishDatePropDef = publishDatePropDef;
     }
 
 }

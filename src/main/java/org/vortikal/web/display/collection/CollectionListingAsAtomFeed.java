@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.abdera.model.Feed;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
 import org.vortikal.web.RequestContext;
@@ -44,31 +45,36 @@ import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
 
 public class CollectionListingAsAtomFeed extends AtomFeedController {
-	
-	private SearchComponent searchComponent;
-    
+
+    private SearchComponent searchComponent;
+
     @Override
-	protected Feed createFeed(HttpServletRequest request, HttpServletResponse response, String token) throws Exception {
-        
-    	Path uri = RequestContext.getRequestContext().getResourceURI();
+    protected Feed createFeed(HttpServletRequest request, HttpServletResponse response, String token) throws Exception {
+
+        Path uri = RequestContext.getRequestContext().getResourceURI();
         Resource collection = this.repository.retrieve(token, uri, true);
-        
+
         String feedTitle = getTitle(collection);
         Feed feed = populateFeed(collection, feedTitle);
-        
+
         Listing searchResult = searchComponent.execute(request, collection, 1, this.entryCountLimit, 0);
 
         for (PropertySet result : searchResult.getFiles()) {
             addEntry(feed, token, result);
         }
 
-    	return feed;
-    	
+        return feed;
+
     }
-    
-	@Required
-	public void setSearchComponent(SearchComponent searchComponent) {
-		this.searchComponent = searchComponent;
-	}
-    
+
+    @Required
+    public void setSearchComponent(SearchComponent searchComponent) {
+        this.searchComponent = searchComponent;
+    }
+
+    @Override
+    protected Property getPublishDate(PropertySet resource) {
+        return this.getDefaultPublishDate(resource);
+    }
+
 }

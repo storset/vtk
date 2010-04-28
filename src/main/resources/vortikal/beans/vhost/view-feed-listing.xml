@@ -7,7 +7,7 @@
     <property name="viewService" ref="viewService" />
     <property name="abdera" ref="abdera" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
-    <property name="creationTimePropDef" ref="creationTimePropDef" />
+    <property name="publishDatePropDef" ref="publishDatePropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
     <property name="lastModifiedPropDef" ref="lastModifiedPropDef" />
     <property name="authorPropDefPointer" ref="${override.listing.prefix}authorPropDefPointer" />

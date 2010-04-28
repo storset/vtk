@@ -52,6 +52,7 @@ public class EventListingAsFeedController extends AtomFeedController {
     private EventListingHelper helper;
     private EventListingSearcher searcher;
     private PropertyTypeDefinition displayTypePropDef;
+    private String overridePublishDatePropDefPointer;
 
     @Override
     protected Feed createFeed(HttpServletRequest request, HttpServletResponse response, String token) throws Exception {
@@ -69,8 +70,10 @@ public class EventListingAsFeedController extends AtomFeedController {
                 Date date = this.helper.getSpecificSearchDate(request);
                 String messageKey = searchType == SpecificDateSearchType.Day ? "eventListing.specificDayEvent"
                         : "eventListing.specificDateEvent";
-                feedTitle = this.helper.getEventTypeTitle(request, collection, searchType, date, messageKey, true, false);
-                feedContent = this.searcher.searchSpecificDate(request, collection, date, searchType, this.entryCountLimit, 1);
+                feedTitle = this.helper.getEventTypeTitle(request, collection, searchType, date, messageKey, true,
+                        false);
+                feedContent = this.searcher.searchSpecificDate(request, collection, date, searchType,
+                        this.entryCountLimit, 1);
             } else {
                 String eventTypeTitle = this.helper.getEventTypeTitle(collection, true);
                 String viewType = request.getParameter(EventListingHelper.REQUEST_PARAMETER_VIEW);
@@ -95,6 +98,17 @@ public class EventListingAsFeedController extends AtomFeedController {
         return feed;
     }
 
+    @Override
+    protected Property getPublishDate(PropertySet resource) {
+        PropertyTypeDefinition overridePublishDatePropDef = this.resourceTypeTree
+                .getPropertyDefinitionByPointer(this.overridePublishDatePropDefPointer);
+        Property overridePublishDateProp = resource.getProperty(overridePublishDatePropDef);
+        if (overridePublishDateProp != null) {
+            return overridePublishDateProp;
+        }
+        return this.getDefaultPublishDate(resource);
+    }
+
     @Required
     public void setHelper(EventListingHelper helper) {
         this.helper = helper;
@@ -108,6 +122,11 @@ public class EventListingAsFeedController extends AtomFeedController {
     @Required
     public void setDisplayTypePropDef(PropertyTypeDefinition displayTypePropDef) {
         this.displayTypePropDef = displayTypePropDef;
+    }
+
+    @Required
+    public void setOverridePublishDatePropDefPointer(String overridePublishDatePropDefPointer) {
+        this.overridePublishDatePropDefPointer = overridePublishDatePropDefPointer;
     }
 
 }

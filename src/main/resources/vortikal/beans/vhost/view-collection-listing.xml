@@ -73,7 +73,6 @@
   <bean id="collectionListing.atomHandler" class="org.vortikal.web.display.collection.CollectionListingAsAtomFeed"
     parent="viewAsFeedHandler">
     <property name="searchComponent" ref="collectionListing.searchComponent" />
-    <property name="publishedDatePropDef" ref="creationTimePropDef" />
   </bean>
   
   <bean id="collectionListing.searchComponent" class="org.vortikal.web.search.QueryStringSearchComponent"

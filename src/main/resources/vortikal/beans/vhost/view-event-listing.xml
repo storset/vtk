@@ -89,6 +89,15 @@
     <property name="helper" ref="eventListingHelper" />
     <property name="searcher" ref="eventListing.eventListingSearcher" />
     <property name="displayTypePropDef" ref="eventListing.displayTypePropDef" />
+    <property name="overridePublishDatePropDefPointer" ref="${override.listing.prefix}overridePublishDatePropDefPointer" />
+  </bean>
+  
+  <bean id="overridePublishDatePropDefPointer" class="java.lang.String">
+    <constructor-arg value="start-date" />
+  </bean>
+  
+  <bean id="structured.overridePublishDatePropDefPointer" class="java.lang.String">
+    <constructor-arg value="resource:start-date" />
   </bean>
 
   <bean id="eventListingHelper" class="org.vortikal.web.display.collection.event.EventListingHelper">

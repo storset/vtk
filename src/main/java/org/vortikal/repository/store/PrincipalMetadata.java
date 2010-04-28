@@ -42,6 +42,7 @@ public interface PrincipalMetadata extends Metadata {
 
     public static final String DESCRIPTION_ATTRIBUTE = "description";
     public static final String URL_ATTRIBUTE = "url";
+    public static final String UID_ATTRIBUTE = "uid";
 
     /**
      * Get the qualified name of the principal to which this instance's

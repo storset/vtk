@@ -9,6 +9,7 @@
       <list>
         <ref bean="getSourceParameterAssertion" />
         <ref bean="fileAssertion" />
+        <ref bean="requiresReadPermissionAssertion" />
       </list>
     </property>
     <property name="handler" ref="getSourceHandler" />

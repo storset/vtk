@@ -15,7 +15,7 @@ resourcetype organizational-unit {
     introduction : simple_html,
     responsibilities : html,   
     selectedEmployees : string multiple,
-    numberOfEmployeesToDisplay : string,
+    numberOfEmployeesToDisplay : int,
     urlToEmployeesList : string,
     displayEmployees : boolean,
     employees : binary external:listEmplyeesLdapService,

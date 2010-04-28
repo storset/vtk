@@ -28,9 +28,13 @@
   <#stop "Unable to render model: required submodel
   'resourceContext' missing">
 </#if>
-<#if !resourcePrincipalPermissions?exists>
+<#if !permissions_ACTION_READ?exists>
   <#stop "Unable to render model: required submodel
-  'resourcePrincipalPermissions' missing">
+  'permissions_ACTION_READ' missing">
+</#if>
+<#if !permissions_ACTION_READ_PROCESSED?exists>
+  <#stop "Unable to render model: required submodel
+  'permissions_ACTION_READ_PROCESSED' missing">
 </#if>
 
 <?xml version="1.0" encoding="utf-8"?>
@@ -52,7 +56,9 @@
     </#if>
     
     <#-- Do not show preview if resource is "Allowed for all" and we are on https. Should not normally happen -->
-    <#if (resourcePrincipalPermissions.permissionsQueryResult = 'true') && (resourcePrincipalPermissions.requestScheme = 'https')>
+    <#if ((permissions_ACTION_READ.permissionsQueryResult = 'true') || 
+          (permissions_ACTION_READ_PROCESSED.permissionsQueryResult = 'true')) 
+         && (permissions_ACTION_READ.requestScheme = 'https')>
       <p class="previewUnavailable">${vrtx.getMsg("preview.httpOnly")}</p>
     
     <#else>

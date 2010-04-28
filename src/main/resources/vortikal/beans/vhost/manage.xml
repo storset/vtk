@@ -1468,7 +1468,13 @@
         <ref bean="iframeJSProvider" />
         <ref bean="resourceContextProvider" />
         <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider" parent="repositoryAware">
+          <property name="modelName" value="permissions_ACTION_READ" />
           <property name="permission" ref="ACTION_READ" />
+          <property name="anonymous" value="true" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider" parent="repositoryAware">
+          <property name="modelName" value="permissions_ACTION_READ_PROCESSED" />
+          <property name="permission" ref="ACTION_READ_PROCESSED" />
           <property name="anonymous" value="true" />
         </bean>
       </list>

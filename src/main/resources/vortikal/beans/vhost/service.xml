@@ -45,14 +45,7 @@
         <bean class="org.vortikal.web.service.RequestProtocolAssertion">
           <property name="protocol" value="http" />
         </bean>
-        <bean class="org.vortikal.web.service.InvertAssertion">
-          <property name="assertion">
-            <bean parent="abstractResourcePrincipalPermissionAssertion">
-              <property name="permission" ref="ACTION_READ" />
-              <property name="anonymous" value="true" />
-            </bean>
-          </property>
-        </bean>
+        <ref bean="isReadRestrictedAssertion" />
         <ref bean="webHostNameAssertion" />
       </list>
     </property>
@@ -419,14 +412,7 @@
     <property name="order" value="-100" />
     <property name="assertions">
       <list>
-        <bean class="org.vortikal.web.service.InvertAssertion">
-          <property name="assertion">
-            <bean parent="abstractResourcePrincipalPermissionAssertion">
-              <property name="permission" ref="ACTION_READ" />
-              <property name="anonymous" value="true" />
-            </bean>
-          </property>
-        </bean>
+        <ref bean="isReadRestrictedAssertion" />
         <ref bean="redirectToManageAssertion" />
       </list>
     </property>
@@ -453,9 +439,10 @@
     <property name="order" value="-100" />
     <property name="assertions">
       <list>
-        <bean parent="abstractResourcePrincipalPermissionAssertion">
-          <property name="permission" ref="ACTION_READ" />
-          <property name="anonymous" value="true" />
+        <bean class="org.vortikal.web.service.InvertAssertion">
+          <property name="assertion">
+            <ref bean="isReadRestrictedAssertion" />
+          </property>
         </bean>
         <ref bean="redirectToManageAssertion" />
       </list>
@@ -494,6 +481,28 @@
     </property>
   </bean>
 
+  <bean id="isReadRestrictedAssertion" class="org.vortikal.web.service.AndAssertion">
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.InvertAssertion">
+          <property name="assertion">
+            <bean parent="abstractResourcePrincipalPermissionAssertion">
+              <property name="permission" ref="ACTION_READ" />
+              <property name="anonymous" value="true" />
+            </bean>
+          </property>
+        </bean>
+        <bean class="org.vortikal.web.service.InvertAssertion">
+          <property name="assertion">
+            <bean parent="abstractResourcePrincipalPermissionAssertion">
+              <property name="permission" ref="ACTION_READ_PROCESSED" />
+              <property name="anonymous" value="true" />
+            </bean>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
 
   <bean id="previewViewIframeService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="viewService" />

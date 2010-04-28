@@ -14,10 +14,10 @@ resourcetype organizational-unit {
     picture : image_ref,
     introduction : simple_html,
     responsibilities : html,   
-    displayEmployees : boolean,
     selectedEmployees : string multiple,
     numberOfEmployeesToDisplay : string,
     urlToEmployeesList : string,
+    displayEmployees : boolean,
     employees : binary external:listEmplyeesLdapService,
     content : html noextract,
     hasBodyContent : derived (content) eval (content?exists)
@@ -26,6 +26,7 @@ resourcetype organizational-unit {
 
   edit-rules {
     areacode (size[8]),
+    displayEmployees (before selectedEmployees),
     selectedEmployees (size[8]),
     group employees (displayEmployees, selectedEmployees, numberOfEmployeesToDisplay, urlToEmployeesList) (after responsibilities),
     numberOfEmployeesToDisplay (dropdown)

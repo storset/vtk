@@ -15,6 +15,20 @@
     <property name="handler" ref="getSourceHandler" />
   </bean>
 
+<bean id="getXmlSourceService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="-1" />
+    <property name="parent" ref="webService" />
+    <property name="assertions">
+      <list>
+        <ref bean="getSourceParameterAssertion" />
+        <bean class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
+          <property name="resourceTypeDefinition" ref="xmlResource" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="getSourceHandler" />
+  </bean>
+
   <bean id="getSourceParameterAssertion" class="org.vortikal.web.service.RequestParameterAssertion">
     <property name="parameterName" value="vrtx" />
     <property name="parameterValue" value="source" />

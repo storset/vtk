@@ -64,7 +64,7 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
     
     private String storageRootPath;
     private String storageId;
-    private int optimizeInterval = 100;
+    private int optimizeInterval = 50;
     private int commitCounter = 0;
     private int mergeFactor = 10;
     private int maxBufferedDocs = 100;

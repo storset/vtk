@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <bean id="authTarget.redirectSSLService" class="org.vortikal.web.service.ServiceImpl">
+   <property name="parent" ref="webService" />
+   <property name="assertions">
+     <list>
+        <bean class="org.vortikal.web.service.RequestParameterExistsAssertion">
+          <property name="parameterName" value="authTarget" />
+        </bean>
+        <bean class="org.vortikal.web.service.InvertAssertion">
+          <property name="assertion">
+            <bean class="org.vortikal.web.service.IsAuthenticatedAssertion" />
+          </property>
+        </bean>
+        <bean class="org.vortikal.web.service.RequestProtocolAssertion">
+          <property name="protocol" value="http" />
+        </bean>
+     </list>
+   </property>
+    <property name="handler">
+      <bean class="org.vortikal.web.interceptors.ConfigurableRedirector">
+        <property name="protocol" value="https" />
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="authTarget.authService" class="org.vortikal.web.service.ServiceImpl">
+   <property name="parent" ref="webService" />
+   <property name="assertions">
+     <list>
+        <bean class="org.vortikal.web.service.RequestParameterExistsAssertion">
+          <property name="parameterName" value="authTarget" />
+        </bean>
+        <bean class="org.vortikal.web.service.InvertAssertion">
+          <property name="assertion">
+            <bean class="org.vortikal.web.service.IsAuthenticatedAssertion">
+              <property name="requiresAuthentication" value="true" />
+            </bean>
+          </property>
+        </bean>
+        <bean class="org.vortikal.web.service.RequestProtocolAssertion">
+          <property name="protocol" value="https" />
+        </bean>
+     </list>
+   </property>
+  </bean>
+
+  <bean id="authTarget.redirectRestrictedResourceService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterExistsAssertion">
+          <property name="parameterName" value="authTarget" />
+        </bean>
+        <bean class="org.vortikal.web.service.IsAuthenticatedAssertion" />
+        <bean class="org.vortikal.web.service.RequestProtocolAssertion">
+          <property name="protocol" value="https" />
+        </bean>
+        <ref bean="isReadRestrictedAssertion" />
+      </list>
+    </property>
+    <property name="handler">
+      <bean class="org.vortikal.web.interceptors.ConfigurableRedirector">
+        <property name="removedParameters" value="authTarget" />
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="authTarget.redirectOpenResourceService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterExistsAssertion">
+          <property name="parameterName" value="authTarget" />
+        </bean>
+        <bean class="org.vortikal.web.service.IsAuthenticatedAssertion" />
+        <bean class="org.vortikal.web.service.RequestProtocolAssertion">
+          <property name="protocol" value="https" />
+        </bean>
+        <bean class="org.vortikal.web.service.InvertAssertion">
+          <property name="assertion">
+            <ref bean="isReadRestrictedAssertion" />
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <bean class="org.vortikal.web.interceptors.ConfigurableRedirector">
+        <property name="removedParameters" value="authTarget" />
+        <property name="protocol" value="http" />
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="authTarget.foo" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterExistsAssertion">
+          <property name="parameterName" value="authTarget" />
+        </bean>
+        <bean class="org.vortikal.web.service.IsAuthenticatedAssertion" />
+        <bean class="org.vortikal.web.service.RequestProtocolAssertion">
+          <property name="protocol" value="http" />
+        </bean>
+        <bean class="org.vortikal.web.service.InvertAssertion">
+          <property name="assertion">
+            <ref bean="isReadRestrictedAssertion" />
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <bean class="org.vortikal.web.interceptors.ConfigurableRedirector">
+        <property name="removedParameters" value="authTarget" />
+      </bean>
+    </property>
+  </bean>
+</beans>

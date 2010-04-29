@@ -30,23 +30,29 @@
  */
 package org.vortikal.web.interceptors;
 
+import java.util.Map;
+import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.web.service.URL;
 
 /**
  * Interceptor that redirects requests to the same URL but with a 
  * configurable protocol, hostname and port 
  */
-public class ConfigurableRedirectInterceptor implements HandlerInterceptor  {
+public class ConfigurableRedirector implements HandlerInterceptor, Controller  {
     
     private String protocol;
     private String redirectToHostName;
     private String port;
+    private Map<String, String> addedParameters;
+    private Set<String> removedParameters;
 
     public void setProtocol(String protocol) {
         this.protocol = protocol;
@@ -76,9 +82,44 @@ public class ConfigurableRedirectInterceptor implements HandlerInterceptor  {
     }
 
 
+    public void setAddedParameters(Map<String, String> addedParameters) {
+        this.addedParameters = addedParameters;
+    }
+
+    public void setRemovedParameters(Set<String> removedParameters) {
+        this.removedParameters = removedParameters;
+    }
+
+    @Override
+    public ModelAndView handleRequest(HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+        redirect(request, response);
+        return null;
+    }
+
+    @Override
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response,
                              Object handler) throws Exception {
+        redirect(request, response);
+        return false;
+    }
+
+
+    @Override
+    public void postHandle(HttpServletRequest request,
+                           HttpServletResponse response,
+                           Object handler, ModelAndView modelAndView) {
+    }
+
+    @Override
+    public void afterCompletion(HttpServletRequest request,
+                                HttpServletResponse response,
+                                Object handler, Exception ex) {
+    }
+
+    private void redirect(HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
         URL url = URL.create(request);
         if (this.protocol != null) {
             url.setProtocol(this.protocol);
@@ -93,20 +134,18 @@ public class ConfigurableRedirectInterceptor implements HandlerInterceptor  {
                 url.setPort(portInt);
             } catch (NumberFormatException nfe) {   
                 // port might be "*", in which case we ignore it    
-            } 
+            }
+        }
+        if (this.addedParameters != null) {
+            for (String param : this.addedParameters.keySet()) {
+                url.addParameter(param, this.addedParameters.get(param));
+            }
+        }
+        if (this.removedParameters != null) {
+            for (String parameter : this.removedParameters) {
+                url.removeParameter(parameter);
+            }
         }
         response.sendRedirect(url.toString());
-        return false;
-    }
-    
-
-    public void postHandle(HttpServletRequest request,
-                           HttpServletResponse response,
-                           Object handler, ModelAndView modelAndView) {
-    }
-
-    public void afterCompletion(HttpServletRequest request,
-                                HttpServletResponse response,
-                                Object handler, Exception ex) {
     }
 }

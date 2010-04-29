@@ -29,6 +29,10 @@
 
   <aop:config>
     <!-- Main pointcut for repository opertions -->
+
+    <!-- TODO Consider using @Transactional-annotations in Repository-interface
+         and limiting point-cut based on these: "bean(repository.internal) and @annotation(org.springframework.transaction.annotation.Transactional)"-->
+
     <aop:pointcut id="repository.repositoryOperationPointcut"
                   expression="bean(repository.internal)
                               and execution(* org.vortikal.repository.Repository.*(..))

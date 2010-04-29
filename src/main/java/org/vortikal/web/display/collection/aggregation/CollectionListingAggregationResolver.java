@@ -200,6 +200,9 @@ public class CollectionListingAggregationResolver implements AggregationResolver
 
     private Path getValidPath(String pathValue) {
         try {
+            if (!"/".equals(pathValue) && pathValue.endsWith("/")) {
+                pathValue = pathValue.substring(0, pathValue.length() - 1);
+            }
             return Path.fromString(pathValue);
         } catch (IllegalArgumentException e) {
             // Don't do anything, the path is invalid, just ignore it

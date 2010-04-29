@@ -4,6 +4,7 @@ resourcetype organizational-unit {
     areacode : string,
     getExternalUnitInfo : boolean,
     name : string external:organizationMetadataLdapService,
+    acronym : string external:organizationMetadataLdapService,
     postalAddress : string multiple external:organizationMetadataLdapService,
     visitingAddress : string multiple external:organizationMetadataLdapService,
     phone : string multiple external:organizationMetadataLdapService,
@@ -33,7 +34,7 @@ resourcetype organizational-unit {
   }
 
   scripts {
-    getExternalUnitInfo show-hide onclick (name, postalAddress, visitingAddress, phone, fax, email),
+    getExternalUnitInfo show-hide onclick (name, acronym, postalAddress, visitingAddress, phone, fax, email),
     selectedEmployees multipleinputfields
   }
 
@@ -46,9 +47,13 @@ resourcetype organizational-unit {
 
     title {
       ##
-      [def v resource-prop(".", "title")]
-      [if v != null]
-        [val v]
+      [def title resource-prop(".", "title")]
+      [def acronym resource-prop(".", "acronym")]
+      [if title != null]
+        [val title]
+        [if acronym != null]
+          ([val acronym])
+        [endif]
       [endif]
       ##
     }
@@ -192,6 +197,7 @@ resourcetype organizational-unit {
       no : "Bruk opplysninger registrert i UiOs lønns- og personalsystem",
       nn : "Bruk opplysingar registrerte i lønns- og personalsystemet til UiO"),
     name : (en : "Name", no : "Navn", nn : "Namn"),
+    acronym : (en : "Acronym", no : "Forkortelse", nn : "Forkortelse"),
     contactHeader : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
     postalAddress : (en : "Postal address", no : "Postadresse", nn : "Postadresse"),
     visitingAddress : (en : "Visiting address", no : "Besøksadresse", nn : "Besøksadresse"),

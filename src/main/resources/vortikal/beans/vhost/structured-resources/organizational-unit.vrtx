@@ -132,9 +132,18 @@ resourcetype organizational-unit {
     
     employees {
       ##
+      [def url resource-prop(".", "urlToEmployeesList")]
+      [def title resource-prop(".", "title")]
       <div id="vrtx-organizational-unit-employees">
-        <h2>[localized "employees"]</h2>
+        [if url != null && url != ""]
+          <h2><a href="[val url]">[localized "employees"]</a></h2>
+        [else]
+          <h2>[localized "employees"]</h2>
+        [endif]
         ${resource:organization-employees}
+        [if url != null && url != ""]
+          <div class="vrtx-more"><span><a href="[val url]">[localized "employeesLink"] [val title]</a></span></div>
+        [endif]
       </div>
       ##
     }
@@ -156,6 +165,8 @@ resourcetype organizational-unit {
               <comp:introduction-image />
               <comp:introduction />
               <comp:responsibilities />
+            </div>
+            <div class="vrtx-frontpage-box white-box">
               <comp:employees />
             </div>
           </div>
@@ -209,6 +220,7 @@ resourcetype organizational-unit {
     introduction : (en: "Introduction", no: "Innledning", nn : "Innleiing"),
     responsibilities : (en : "Responsibilities", no : "Ansvarsområder", nn : "Ansvarsområder"),
     employees : (en : "Employees", no : "Ansatte", nn : "Ansatte"),
+    employeesLink : (en : "All employees in", no : "Alle ansatte i", nn : "Alle ansatte i"),
     displayEmployees : (
       en : "Show employees registrated in UiO's payroll- and personalsystem",
       no : "Vis ansatte registrert i UiOs lønns- og personalsystem",

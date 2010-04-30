@@ -74,7 +74,9 @@ import org.vortikal.security.token.TokenManager;
 public class SecurityInitializer implements InitializingBean, ApplicationContextAware {
 
     private static final String SECURITY_TOKEN_SESSION_ATTR = SecurityInitializer.class.getName() + ".SECURITY_TOKEN";
+
     private static final String VRTXLINK_COOKIE = "VRTXLINK";
+
     private static final String VRTX_AUTH_SP_COOKIE = "VRTX_AUTH_SP";
 
     private static Log logger = LogFactory.getLog(SecurityInitializer.class);
@@ -84,19 +86,20 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
     private TokenManager tokenManager;
 
     private List<AuthenticationHandler> authenticationHandlers;
+
     private Map<String, AuthenticationHandler> authHandlerMap;
 
     private ApplicationContext applicationContext;
 
     private CookieLinkStore cookieLinkStore;
 
-    // Only relevant when using both https AND http and 
+    // Only relevant when using both https AND http and
     // different session cookie name for each protocol:
     private boolean cookieLinksEnabled = false;
-    
+
     // Only relevant when using secure protocol:
     private boolean rememberAuthMethod = false;
-    
+
 
     @SuppressWarnings("unchecked")
     public void afterPropertiesSet() {
@@ -117,7 +120,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
 
         }
         this.authHandlerMap = new HashMap<String, AuthenticationHandler>();
-        for (AuthenticationHandler handler: this.authenticationHandlers) {
+        for (AuthenticationHandler handler : this.authenticationHandlers) {
             this.authHandlerMap.put(handler.getIdentifier(), handler);
         }
         logger.info("Using authentication handlers: " + this.authenticationHandlers);
@@ -136,6 +139,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         }
         return null;
     }
+
 
     protected HttpSession getSession(HttpServletRequest request) {
         if (!this.cookieLinksEnabled) {
@@ -170,12 +174,13 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         if (this.cookieLinksEnabled) {
             Cookie c = new Cookie(VRTX_AUTH_SP_COOKIE, handler.getIdentifier());
             c.setSecure(true);
-            c.setMaxAge(Integer.MAX_VALUE);
+            c.setPath("/");
             resp.addCookie(c);
         }
         if (this.rememberAuthMethod) {
             UUID cookieLinkID = this.cookieLinkStore.addToken(req, token);
             Cookie c = new Cookie(VRTXLINK_COOKIE, cookieLinkID.toString());
+            c.setPath("/");
             resp.addCookie(c);
         }
     }
@@ -225,8 +230,8 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                                 + " using authentication handler " + handler + ". " + "Setting security context.");
                     }
                     if (authLogger.isDebugEnabled()) {
-                        authLogger.debug("Auth: principal: '" + principal + "' - method: '"
-                                + handler.getIdentifier() + "' - status: OK");
+                        authLogger.debug("Auth: principal: '" + principal + "' - method: '" + handler.getIdentifier()
+                                + "' - status: OK");
                     }
 
                     token = this.tokenManager.newToken(principal, handler);
@@ -247,8 +252,8 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                     }
 
                     if (logger.isDebugEnabled()) {
-                        logger.debug("Authentication post-processing completed by authentication handler "
-                                + handler + ", response already committed.");
+                        logger.debug("Authentication post-processing completed by authentication handler " + handler
+                                + ", response already committed.");
                     }
                     return false;
 
@@ -384,7 +389,8 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
-    
+
+
     public void setCookieLinkStore(CookieLinkStore cookieLinkStore) {
         this.cookieLinkStore = cookieLinkStore;
     }

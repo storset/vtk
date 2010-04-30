@@ -45,6 +45,20 @@ public class Challenge extends SamlService {
 
     public void challenge(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationProcessingException {
+
+        if (request.getScheme().equals("http")) {
+            URL url = URL.create(request);
+            url.setProtocol("https");
+            url.addParameter("authTarget", "http");
+            try {
+                response.sendRedirect(url.toString());
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            return;
+        }
+
         HttpSession session = request.getSession(true);
         if (session.getAttribute(URL_SESSION_ATTR) == null) {
             URL url = URL.create(request);

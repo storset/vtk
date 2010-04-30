@@ -32,9 +32,7 @@
   <import resource="system-decorating.xml" />
   <import resource="controllers.xml" />
   <import resource="service.xml" />
-  <!--
   <import resource="auth-target.xml" />
-  -->
   <import resource="article.xml" />
   <import resource="structured-resources-management.xml" />
   <import resource="structured-resources.xml" />

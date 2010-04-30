@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
-
+  
   <bean id="authTarget.redirectSSLService" class="org.vortikal.web.service.ServiceImpl">
-   <property name="parent" ref="webService" />
-   <property name="assertions">
-     <list>
+    <property name="parent" ref="webService" />
+    <property name="assertions">
+      <list>
+        <ref bean="authTarget.enabledAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterExistsAssertion">
           <property name="parameterName" value="authTarget" />
         </bean>
@@ -17,8 +18,8 @@
         <bean class="org.vortikal.web.service.RequestProtocolAssertion">
           <property name="protocol" value="http" />
         </bean>
-     </list>
-   </property>
+      </list>
+    </property>
     <property name="handler">
       <bean class="org.vortikal.web.interceptors.ConfigurableRedirector">
         <property name="protocol" value="https" />
@@ -30,6 +31,7 @@
    <property name="parent" ref="webService" />
    <property name="assertions">
      <list>
+        <ref bean="authTarget.enabledAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterExistsAssertion">
           <property name="parameterName" value="authTarget" />
         </bean>
@@ -51,6 +53,7 @@
     <property name="parent" ref="webService" />
     <property name="assertions">
       <list>
+        <ref bean="authTarget.enabledAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterExistsAssertion">
           <property name="parameterName" value="authTarget" />
         </bean>
@@ -72,6 +75,7 @@
     <property name="parent" ref="webService" />
     <property name="assertions">
       <list>
+        <ref bean="authTarget.enabledAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterExistsAssertion">
           <property name="parameterName" value="authTarget" />
         </bean>
@@ -94,10 +98,11 @@
     </property>
   </bean>
 
-  <bean id="authTarget.foo" class="org.vortikal.web.service.ServiceImpl">
+  <bean id="authTarget.removeRequestParameterService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="webService" />
     <property name="assertions">
       <list>
+        <ref bean="authTarget.enabledAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterExistsAssertion">
           <property name="parameterName" value="authTarget" />
         </bean>
@@ -118,4 +123,13 @@
       </bean>
     </property>
   </bean>
+
+  <!-- XXX: verify this assertion: when should authTarget have effect? -->
+  <!-- XXX: verify that this works when webProtocol = manageProtocol = ssl  -->
+  <bean id="authTarget.enabledAssertion" class="org.vortikal.web.service.ConfigAssertion">
+    <property name="config" value="${webProtocolRestricted}" />
+    <property name="expectedValue" value="https" />
+  </bean>
+
+
 </beans>

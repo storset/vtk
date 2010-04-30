@@ -33,7 +33,6 @@
 		 } else if (e.keyCode == 39) {
 		   $(wrapper + " a.next").click();
 		 }
-		 return false;
 	  });
 
 	  //init first active image

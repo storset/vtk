@@ -4,10 +4,7 @@
 
 <#if tabMessagePublishPermissionState?exists>
   <div class="tabMessagePublishPermission">
-     <#assign t = tabMessagePublishPermissionResourceType />
-     <#if t == 'structured-article' || t == 'structured-event' ||
-     t == 'structured-project' || t == 'person' || t == 'structured-document' ||
-     t == 'frontpage' || t == 'featured-content'> <#-- only show published on a chosen "few" -->
+     <#if tabMessagePublishPermissionState?exists && tabMessagePublishPermissionPublish?exists>
        ${tabMessagePublishPermissionState?html}:
        <span id="vrtx-${tabMessagePublishPermissionPublish?html?lower_case}-message">${tabMessagePublishPermissionPublish?html}</span>&nbsp;
      </#if>

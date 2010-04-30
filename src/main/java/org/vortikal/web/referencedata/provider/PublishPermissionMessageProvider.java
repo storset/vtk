@@ -39,6 +39,8 @@ import org.springframework.web.servlet.support.RequestContext;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceTypeTree;
+import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
@@ -74,16 +76,8 @@ public class PublishPermissionMessageProvider implements ReferenceDataProvider {
     private String modelName;
     private Repository repository;
     private Assertion assertion;
-
-    @Required
-    public void setLocalizationKey(String localizationKey) {
-        this.localizationKey = localizationKey;
-    }
-
-    @Required
-    public void setModelName(String modelName) {
-        this.modelName = modelName;
-    }
+    private ResourceTypeTree resourceTypeTree;
+    private ResourceTypeDefinition jsonResourceTypeDefinition;
 
     // TODO: this whole file is kinda muddy. but wanted as a tabMessage..
     @SuppressWarnings("unchecked")
@@ -104,24 +98,25 @@ public class PublishPermissionMessageProvider implements ReferenceDataProvider {
         RequestContext springContext = new RequestContext(request);
         String messagePermission = springContext.getMessage(this.localizationKey + permission, new Object[] {},
                 this.localizationKey);
-
-        String publishStatus = "published";
-        if (assertion.matches(request, resource, principal)) {
-            publishStatus = "unpublished";
-        }
-
-        String messagePublishState = springContext.getMessage(this.localizationKey + ".state", new Object[] {},
-                this.localizationKey);
-        String messagePublish = springContext.getMessage(this.localizationKey + "." + publishStatus, new Object[] {},
-                this.localizationKey);
-
-        // hmm..
-        model.put(this.modelName + "State", messagePublishState);
-        model.put(this.modelName + "Publish", messagePublish);
         model.put(this.modelName + "Permission", messagePermission);
 
-        // even more hmm..
-        model.put(this.modelName + "ResourceType", resource.getResourceType());
+        boolean isJsonResourceType = this.resourceTypeTree.isContainedType(this.jsonResourceTypeDefinition, resource
+                .getResourceType());
+
+        if (isJsonResourceType) {
+            String publishStatus = "published";
+            if (assertion.matches(request, resource, principal)) {
+                publishStatus = "unpublished";
+            }
+
+            String messagePublishState = springContext.getMessage(this.localizationKey + ".state", new Object[] {},
+                    this.localizationKey);
+            String messagePublish = springContext.getMessage(this.localizationKey + "." + publishStatus,
+                    new Object[] {}, this.localizationKey);
+            model.put(this.modelName + "State", messagePublishState);
+            model.put(this.modelName + "Publish", messagePublish);
+        }
+
     }
 
     public String toString() {
@@ -133,20 +128,34 @@ public class PublishPermissionMessageProvider implements ReferenceDataProvider {
         return sb.toString();
     }
 
-    public Repository getRepository() {
-        return repository;
-    }
-
+    @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
-    public Assertion getAssertion() {
-        return assertion;
-    }
-
+    @Required
     public void setAssertion(Assertion assertion) {
         this.assertion = assertion;
+    }
+
+    @Required
+    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+        this.resourceTypeTree = resourceTypeTree;
+    }
+
+    @Required
+    public void setJsonResourceTypeDefinition(ResourceTypeDefinition jsonResourceTypeDefinition) {
+        this.jsonResourceTypeDefinition = jsonResourceTypeDefinition;
+    }
+
+    @Required
+    public void setLocalizationKey(String localizationKey) {
+        this.localizationKey = localizationKey;
+    }
+
+    @Required
+    public void setModelName(String modelName) {
+        this.modelName = modelName;
     }
 
 }

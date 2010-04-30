@@ -121,9 +121,8 @@ public class ComponentInvokerNodeFactory implements DirectiveNodeFactory {
                     if (entry.getKey() == null || entry.getValue() == null) {
                         throw new RuntimeException("NULL values not allowed in parametermap");
                     }
-                    if (!(entry.getKey() instanceof String)
-                            || !(entry.getValue() instanceof String)) {
-                        throw new RuntimeException("Parameter map values must be strings");
+                    if (!(entry.getKey() instanceof String)) {
+                        throw new RuntimeException("Parameter names must be strings");
                     }
                 }
 

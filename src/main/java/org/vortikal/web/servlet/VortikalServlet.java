@@ -68,6 +68,7 @@ import org.vortikal.web.filter.RequestFilter;
 import org.vortikal.web.filter.ResponseFilter;
 import org.vortikal.web.filter.StandardRequestFilter;
 import org.vortikal.web.service.Service;
+import org.vortikal.web.service.URL;
 
 
 /**
@@ -516,13 +517,9 @@ public class VortikalServlet extends DispatcherServlet {
 
         String remoteHost = req.getRemoteHost();
 
-        String requestURI = req.getRequestURI();
-        String queryString = req.getQueryString();
-        if (queryString != null) {
-            requestURI += ("?"  + queryString);
-        }
+        URL requestURL = URL.create(req);
 
-        String request = req.getMethod() + " " + requestURI + " "
+        String request = req.getMethod() + " " + requestURL + " "
             + req.getProtocol() + " - status: " + resp.getStatus();
 
         Principal principal = null;

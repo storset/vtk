@@ -50,10 +50,12 @@ resourcetype organizational-unit {
       [def title resource-prop(".", "title")]
       [def acronym resource-prop(".", "acronym")]
       [if title != null]
+        <span class="fn org">
         [val title]
         [if acronym != null]
           ([val acronym])
         [endif]
+        </span>
       [endif]
       ##
     }
@@ -61,18 +63,23 @@ resourcetype organizational-unit {
     contact-information {
       ##
         [resource-props "."]
+        
         [if postalAddress != null && postalAddress != ""]
-         <h2>[localized "contactHeader"]</h2>
-         <span class="vrtx-label vrtx-organizational-unit-postal-address">[localized "postalAddress"]</span>
-         [list postalAddress postalAddressLine]
-           <span class="vrtx-address-line">[if postalAddressLine != null][val postalAddressLine][endif]</span>
-         [endlist]
+          <h2>[localized "contactHeader"]</h2>
+          <span class="vrtx-organizational-unit-postal-address adr">
+            <span class="vrtx-label">[localized "postalAddress"]</span>
+            [list postalAddress postalAddressLine]
+              <span class="vrtx-address-line">[if postalAddressLine != null][val postalAddressLine][endif]</span>
+            [endlist]
+          </span>
         [endif]
         [if visitingAddress != null && visitingAddress != ""]
-          <span class="vrtx-label vrtx-organizational-unit-visiting-address">[localized "visitingAddress"]</span>
-          [list visitingAddress visitingAddressLine]
-            <span class="vrtx-address-line">[if visitingAddressLine != null][val visitingAddressLine][endif]</span>
-          [endlist]
+          <span class="vrtx-organizational-unit-visiting-address adr">
+            <span class="vrtx-label">[localized "visitingAddress"]</span>
+            [list visitingAddress visitingAddressLine]
+              <span class="vrtx-address-line">[if visitingAddressLine != null][val visitingAddressLine][endif]</span>
+            [endlist]
+          </span>
         [endif]
       ##
     }

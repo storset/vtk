@@ -222,7 +222,9 @@ public class SubFolderMenuComponent extends ListMenuComponent {
             List<MenuItem<PropertySet>> subList = allItems.subList(startIdx, endIdx);
             ListMenu<PropertySet> m = new ListMenu<PropertySet>();
             m.setComparator(new ListMenuComparator(menuRequest.getLocale(), menuRequest.getImportancePropDef(),
-                    this.navigationTitlePropDef));
+                    this.navigationTitlePropDef, menuRequest.isAscendingSort(), menuRequest.isSortByName(), menuRequest
+                            .getSortProperty()));
+
             m.setTitle(menu.getTitle());
             m.setLabel(menu.getLabel());
             m.addAllItems(subList);

@@ -155,6 +155,7 @@
          if (jQuery.browser.msie && jQuery.browser.version <= 6) {
            if(imgHeight > 380) {
              $$$.css("height", "380px");
+             imgHeight = 380;
            }
          }
      

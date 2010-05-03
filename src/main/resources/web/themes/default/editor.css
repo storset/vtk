@@ -507,8 +507,10 @@ div.start-date,div.end-date {
 }
 
 /* START time and place ie7 hack */
-* :first-child+html div.start-date,* :first-child+html div.end-date,*
-  :first-child+html div.location,* :first-child+html div.mapurl {
+*:first-child+html div.start-date,
+*:first-child+html div.end-date,
+*:first-child+html div.location,
+*:first-child+html div.mapurl {
   width: 100%;
 }
 

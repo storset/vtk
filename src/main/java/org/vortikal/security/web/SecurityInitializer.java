@@ -433,12 +433,20 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                 c.setDomain(this.spCookieDomain);
             }
             resp.addCookie(c);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Setting cookie: " + VRTX_AUTH_SP_COOKIE 
+                        + ": " + handler.getIdentifier());
+            }
         }
         if (this.cookieLinksEnabled) {
             UUID cookieLinkID = this.cookieLinkStore.addToken(req, token);
             Cookie c = new Cookie(VRTXLINK_COOKIE, cookieLinkID.toString());
             c.setPath("/");
             resp.addCookie(c);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Setting cookie: " + VRTXLINK_COOKIE 
+                        + ": " + cookieLinkID.toString());
+            }
         }
     }
     

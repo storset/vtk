@@ -177,12 +177,18 @@ public abstract class SamlService {
     protected final SamlConfiguration newSamlConfiguration(HttpServletRequest request) {
         URL serviceIdentifierURL = getServiceProviderURL(request);
         String id = this.serviceIdentifier;
-        if (id == null || "".equals(id.trim())) {
+        if (id == null || "".equals(id.trim()) || id.startsWith("/")) {
             serviceIdentifierURL = URL.create(request);
             serviceIdentifierURL.clearParameters();
-            serviceIdentifierURL.setPath(Path.ROOT);
+            if (id == null || "".equals(id.trim())) {
+                serviceIdentifierURL.setPath(Path.ROOT);
+            } else {
+                serviceIdentifierURL.setPath(Path.fromString(id));
+            }
             id = serviceIdentifierURL.toString();
-            id = id.substring(0, id.length() - 1);
+            if (id.endsWith("/")) {
+                id = id.substring(0, id.length() - 1);
+            }
         }
         SamlConfiguration configuration = new SamlConfiguration(this.authenticationURL, this.logoutURL,
                 serviceIdentifierURL.toString(), id);

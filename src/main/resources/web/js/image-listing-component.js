@@ -137,36 +137,40 @@
            });
 
 	   if(navClass != "next" && navClass != "prev") {
-
-	         var minHeight = 100;
-             var minWidth = 250;
-
-             //cache image instance
-             var $$$ = $(wrapperContainerLink + " img");
-             
-             //IE 6 max-width substitute
-             if (jQuery.browser.msie && jQuery.browser.version <= 6) {
-               var mainImgHeight = $$$.height();
-               if(mainImgHeight > 380) {
-                 $$$.css("height", "380px");
-               }
-             }
-	     var imgHeight = $$$.height();
-	     var imgWidth = $$$.width();
-	     var imgHeight = (imgHeight < minHeight) ? minHeight : imgHeight;
-	     
-	     setMultipleCSS(new Array(wrapperContainer + "-nav a", wrapperContainer + "-nav span", 
-                                      wrapperContainerLink), "height", imgHeight);
-	     
-	     if(imgWidth > maxWidth) {
-               imgWidth = maxWidth;
-	     } else if (imgWidth < minWidth) {
-               setMultipleCSS(new Array(wrapperContainerLink, wrapperContainerLink + " img"), "width", imgWidth);
-               imgWidth = minWidth;
-	     }
-	     
-	     setMultipleCSS(new Array(wrapperContainer, wrapperContainer + "-nav"), "width", imgWidth);
+           scaleAndCalculatePosition();
 	   }
+     }
+         
+     function scaleAndCalculatePosition() {
+
+         var minHeight = 100;
+         var minWidth = 250;
+
+         //cache image instance
+         var $$$ = $(wrapperContainerLink + " img");
+         var imgHeight = $$$.height();
+	     var imgWidth = $$$.width();
+	     
+         //IE 6 max-width substitute
+         if (jQuery.browser.msie && jQuery.browser.version <= 6) {
+           if(imgHeight > 380) {
+             $$$.css("height", "380px");
+           }
+         }
+     
+       var imgHeight = (imgHeight < minHeight) ? minHeight : imgHeight;
+     
+       setMultipleCSS(new Array(wrapperContainer + "-nav a", wrapperContainer + "-nav span", 
+                                  wrapperContainerLink), "height", imgHeight);
+     
+       if(imgWidth > maxWidth) {
+           imgWidth = maxWidth;
+       } else if (imgWidth < minWidth) {
+           setMultipleCSS(new Array(wrapperContainerLink), "width", imgWidth);
+           imgWidth = minWidth;
+       }
+
+       setMultipleCSS(new Array(wrapperContainer, wrapperContainer + "-nav"), "width", imgWidth); 
      }
          
      function centerThumbnailImage(thumb) {

@@ -62,10 +62,9 @@
                 $(wrapperContainer).stop().fadeTo(settings.fadeInOutTime, settings.fadedOutOpacity, function() {
                   $(wrapperContainerLink).remove();
                   $(wrapperContainer).append(images[i]);
-                  $(wrapperContainer).fadeTo(settings.fadeInOutTime, 1, function() {
-                	 $(wrapperContainer + " img").fadeTo(0, 1)
-                	 addPagingEvents(container.substring(1) + "-link");
-                  });  
+                  $(wrapperContainer).fadeTo(settings.fadeInOutTime, 1, function() {});
+                  $(wrapperContainer + " img").fadeTo(0, 1)
+                  addPagingEvents(container.substring(1) + "-link");
 		});
 	      } else {
 	    	  $(wrapperContainerLink).remove();

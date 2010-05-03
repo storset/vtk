@@ -28,11 +28,11 @@
 	  
 	  //register arrow left and right keys as 'prev' and 'next'
 	  $(document).keydown(function(e){
-		 if (e.keyCode == 37) { 
-		   $(wrapper + " a.prev").click(); 
-		 } else if (e.keyCode == 39) {
-		   $(wrapper + " a.next").click();
-		 }
+	    if (e.keyCode == 37) { 
+	      $(wrapper + " a.prev").click(); 
+	    } else if (e.keyCode == 39) {
+	      $(wrapper + " a.next").click();
+	    }
 	  });
 
 	  //init first active image
@@ -59,17 +59,18 @@
 
 	 function calculateImage(image, i, init) {
 	      if(settings.fadeInOutTime > 0 && !init) {
-            $(wrapperContainer).stop().fadeTo(settings.fadeInOutTime, settings.fadedOutOpacity, function() {
-                $(wrapperContainerLink).remove();
-                $(wrapperContainer).append(images[i]);
-                addPagingEvents(container.substring(1) + "-link");
-                $(wrapperContainer).fadeTo(settings.fadeInOutTime, 1, function() {
-	            });
-		    });
+                $(wrapperContainer).stop().fadeTo(settings.fadeInOutTime, settings.fadedOutOpacity, function() {
+                  $(wrapperContainerLink).remove();
+                  $(wrapperContainer).append(images[i]);
+                  $(wrapperContainer).fadeTo(settings.fadeInOutTime, 1, function() {
+                	 $(wrapperContainer + " img").fadeTo(0, 1)
+                	 addPagingEvents(container.substring(1) + "-link");
+                  });  
+		});
 	      } else {
 	    	  $(wrapperContainerLink).remove();
 	    	  if(init) {
-  		        $(wrapperContainer).append(generateLinkImage($(image), $(image).parent()));
+  		    $(wrapperContainer).append(generateLinkImage($(image), $(image).parent()));
 	    	  } else {
 	    	    $(wrapperContainer).append(images[i]);
 	    	  }
@@ -102,7 +103,7 @@
               var $$ = $(wrapperThumbsLinks + ".active");
 
               if(navClass == "next" || navClass == container.substring(1) + "-link") {
-	            if($$.parent().next().length != 0) {
+	        if($$.parent().next().length != 0) {
                   $$.parent().next().find("a").click();
                 } else {
    	              $(wrapper + " ul li:first a").click();
@@ -117,7 +118,7 @@
 	          e.preventDefault();
            });
            //init
-	       if(navClass == "next" || navClass == "prev") {
+	   if(navClass == "next" || navClass == "prev") {
              fadeMultiple(new Array(wrapper + " a." + navClass,
                                     wrapper + " a." + navClass + " span"), 0, 0);
            }
@@ -138,7 +139,7 @@
 
 	   if(navClass != "next" && navClass != "prev") {
 
-	     var minHeight = 100;
+	         var minHeight = 100;
              var minWidth = 250;
 
              //cache image instance
@@ -151,30 +152,30 @@
                  $$$.css("height", "380px");
                }
              }
-
 	     var imgHeight = $$$.height();
 	     var imgWidth = $$$.width();
-	     var containerWidth = $(wrapperContainer).width();
 	     var imgHeight = (imgHeight < minHeight) ? minHeight : imgHeight;
-
+	     
 	     setMultipleCSS(new Array(wrapperContainer + "-nav a", wrapperContainer + "-nav span", 
                                       wrapperContainerLink), "height", imgHeight);
+	     
 	     if(imgWidth > maxWidth) {
                imgWidth = maxWidth;
 	     } else if (imgWidth < minWidth) {
-               setMultipleCSS(new Array(wrapperContainerLink), "width", imgWidth);
+               setMultipleCSS(new Array(wrapperContainerLink, wrapperContainerLink + " img"), "width", imgWidth);
                imgWidth = minWidth;
 	     }
+	     
 	     setMultipleCSS(new Array(wrapperContainer, wrapperContainer + "-nav"), "width", imgWidth);
 	   }
-         }
+     }
          
      function centerThumbnailImage(thumb) {
 	   centerDimension($(thumb), $(thumb).width(), $(thumb).parent().width(), "marginLeft"); //center horizontal
 	   centerDimension($(thumb), $(thumb).height(), $(thumb).parent().height(), "marginTop"); //center vertical
 	 }
 	 
-	 function centerDimension(thumb, thumbDimension, thumbContainerDimension, cssProperty) {
+     function centerDimension(thumb, thumbDimension, thumbContainerDimension, cssProperty) {
 	   if(thumbDimension > thumbContainerDimension) {
 	     var adjust = (thumbDimension - thumbContainerDimension) / 2;
 	     $(thumb).css(cssProperty, -adjust + "px"); 

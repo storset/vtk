@@ -263,7 +263,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
      * 
      * @return <code>true</code> if any state was removed, <code>false</code> otherwise
      */
-    public boolean removeAuthState() {
+    public boolean removeAuthState(HttpServletRequest request, HttpServletResponse response) {
         if (!SecurityContext.exists()) {
             return false;
         }
@@ -277,6 +277,22 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         if (authLogger.isDebugEnabled()) {
             authLogger.debug("Logout: principal: '" + principal + "' - method: '<none>' - status: OK");
         }
+        if (this.rememberAuthMethod) {
+            Cookie c = getCookie(request, VRTX_AUTH_SP_COOKIE);
+            if (c != null) {
+                c = new Cookie(VRTX_AUTH_SP_COOKIE, c.getValue());
+                c.setSecure(true);
+                c.setPath("/");
+                if (this.spCookieDomain != null) {
+                    c.setDomain(this.spCookieDomain);
+                }
+                c.setMaxAge(0);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Deleting cookie " + VRTX_AUTH_SP_COOKIE);
+                }
+                response.addCookie(c);
+            }
+        }
         return true;
     }
 
@@ -286,9 +302,9 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
      * from the {@link TokenManager}. Finally, calls the authentication handler's {@link AuthenticationHandler#logout
      * logout} method.
      * 
-     * @param req
+     * @param request
      *            the request
-     * @param resp
+     * @param response
      *            the response
      * @return the return value of the authentication handler's <code>logout()</code> method.
      * @throws AuthenticationProcessingException
@@ -297,7 +313,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
      * @throws ServletException
      * @see AuthenticationHandler#logout
      */
-    public boolean logout(HttpServletRequest req, HttpServletResponse resp) throws AuthenticationProcessingException,
+    public boolean logout(HttpServletRequest request, HttpServletResponse response) throws AuthenticationProcessingException,
             ServletException, IOException {
 
         if (!SecurityContext.exists()) {
@@ -311,7 +327,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         AuthenticationHandler handler = this.tokenManager.getAuthenticationHandler(securityContext.getToken());
 
         // FIXME: what if handler.isLogoutSupported() == false?
-        boolean result = handler.logout(principal, req, resp);
+        boolean result = handler.logout(principal, request, response);
         String status = result ? "OK" : "FAIL";
         if (authLogger.isDebugEnabled()) {
             authLogger.debug("Logout: principal: '" + principal + "' - method: '" + handler.getIdentifier()
@@ -320,6 +336,23 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
 
         this.tokenManager.removeToken(securityContext.getToken());
         SecurityContext.setSecurityContext(null);
+        
+        if (this.rememberAuthMethod) {
+            Cookie c = getCookie(request, VRTX_AUTH_SP_COOKIE);
+            if (c != null) {
+                c = new Cookie(VRTX_AUTH_SP_COOKIE, c.getValue());
+                c.setSecure(true);
+                c.setPath("/");
+                if (this.spCookieDomain != null) {
+                    c.setDomain(this.spCookieDomain);
+                }
+                c.setMaxAge(0);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Deleting cookie " + VRTX_AUTH_SP_COOKIE);
+                }
+                response.addCookie(c);
+            }
+        }
 
         return result;
     }
@@ -328,12 +361,12 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
      * @see org.vortikal.web.ContextInitializer#destroyContext()
      */
     public void destroyContext() {
-        if (logger.isDebugEnabled())
-            logger.debug("Destroying security context: " + SecurityContext.getSecurityContext());
+        if (logger.isDebugEnabled()) {
+            logger.debug("Destroying security context: " 
+                    + SecurityContext.getSecurityContext());
+        }
         SecurityContext.setSecurityContext(null);
     }
-
-
 
     public String toString() {
         StringBuffer sb = new StringBuffer();
@@ -432,6 +465,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
             if (this.spCookieDomain != null) {
                 c.setDomain(this.spCookieDomain);
             }
+            
             resp.addCookie(c);
             if (logger.isDebugEnabled()) {
                 logger.debug("Setting cookie: " + VRTX_AUTH_SP_COOKIE 

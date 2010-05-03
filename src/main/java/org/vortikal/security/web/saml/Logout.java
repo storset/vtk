@@ -101,7 +101,7 @@ public class Logout extends SamlService {
         String redirectURL = buildRedirectURL(logoutResponse, relayState, signingCredential);
 
         // Remove authentication state
-        this.securityInitializer.removeAuthState();
+        this.securityInitializer.removeAuthState(request, response);
         
         // Handle the response ourselves.
         response.sendRedirect(redirectURL);

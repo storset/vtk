@@ -56,6 +56,8 @@ import org.vortikal.security.CookieLinkStore;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.security.token.TokenManager;
+import org.vortikal.web.RequestContext;
+import org.vortikal.web.service.Service;
 
 /**
  * Initializer for the {@link SecurityContext security context}. A security context is created for every request. Also
@@ -93,6 +95,8 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
 
     private CookieLinkStore cookieLinkStore;
 
+    private String spCookieDomain = null;
+    
     // Only relevant when using both https AND http and
     // different session cookie name for each protocol:
     private boolean cookieLinksEnabled = false;
@@ -124,65 +128,6 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
             this.authHandlerMap.put(handler.getIdentifier(), handler);
         }
         logger.info("Using authentication handlers: " + this.authenticationHandlers);
-    }
-
-
-    private static Cookie getCookie(HttpServletRequest request, String name) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
-            return null;
-        }
-        for (Cookie cookie : cookies) {
-            if (name.equals(cookie.getName())) {
-                return cookie;
-            }
-        }
-        return null;
-    }
-
-
-    protected HttpSession getSession(HttpServletRequest request) {
-        if (!this.cookieLinksEnabled) {
-            return request.getSession(false);
-        }
-        HttpSession session = request.getSession(false);
-        if (session == null && request.getCookies() != null && !request.isSecure()) {
-            Cookie c = getCookie(request, VRTXLINK_COOKIE);
-            if (c != null) {
-                UUID id;
-                try {
-                    id = UUID.fromString(c.getValue());
-                } catch (Throwable t) {
-                    return null;
-                }
-                String token = this.cookieLinkStore.getToken(request, id);
-                if (token != null) {
-                    session = request.getSession(true);
-                    session.setAttribute(SECURITY_TOKEN_SESSION_ATTR, token);
-                }
-            }
-        }
-        return session;
-    }
-
-
-    protected void onSuccessfulAuthentication(HttpServletRequest req, HttpServletResponse resp,
-            AuthenticationHandler handler, String token) {
-        if (!req.isSecure()) {
-            return;
-        }
-        if (this.cookieLinksEnabled) {
-            Cookie c = new Cookie(VRTX_AUTH_SP_COOKIE, handler.getIdentifier());
-            c.setSecure(true);
-            c.setPath("/");
-            resp.addCookie(c);
-        }
-        if (this.rememberAuthMethod) {
-            UUID cookieLinkID = this.cookieLinkStore.addToken(req, token);
-            Cookie c = new Cookie(VRTXLINK_COOKIE, cookieLinkID.toString());
-            c.setPath("/");
-            resp.addCookie(c);
-        }
     }
 
 
@@ -219,7 +164,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
 
             if (handler.isRecognizedAuthenticationRequest(req)) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Request " + req + " is recognized as an authentication " + "attempt by handler "
+                    logger.debug("Request " + req + " is recognized as an authentication attempt by handler "
                             + handler + ", will try to authenticate");
                 }
 
@@ -286,16 +231,31 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
     }
 
 
-    /**
-     * @see org.vortikal.web.ContextInitializer#destroyContext()
-     */
-    public void destroyContext() {
-        if (logger.isDebugEnabled())
-            logger.debug("Destroying security context: " + SecurityContext.getSecurityContext());
-        SecurityContext.setSecurityContext(null);
+    
+    public void challenge(HttpServletRequest request, HttpServletResponse response, 
+            AuthenticationException ex) throws AuthenticationProcessingException {
+        Service service = RequestContext.getRequestContext()
+                .getService();
+        AuthenticationChallenge challenge = getAuthenticationChallenge(request, service);
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Authentication required for request "
+                         + request + ", service " + service + ". "
+                         + "Using challenge " + challenge, ex);
+        }
+        if (challenge == null) {
+            throw new IllegalStateException(
+                "Authentication challenge for service " + service
+                + " (or any of its ancestors) is not specified.");
+        }
+        try {
+            challenge.challenge(request, response);
+        } catch (Exception e) {
+            throw new AuthenticationProcessingException(
+                    "Unable to present authentication challenge " + challenge, e);
+        }
     }
-
-
+    
     /**
      * Removes authentication state from the authentication system. The {@link SecurityContext} is cleared, the current
      * principal is removed from the {@link TokenManager}, but the {@link AuthenticationHandler#logout logout} process
@@ -364,6 +324,16 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         return result;
     }
 
+    /**
+     * @see org.vortikal.web.ContextInitializer#destroyContext()
+     */
+    public void destroyContext() {
+        if (logger.isDebugEnabled())
+            logger.debug("Destroying security context: " + SecurityContext.getSecurityContext());
+        SecurityContext.setSecurityContext(null);
+    }
+
+
 
     public String toString() {
         StringBuffer sb = new StringBuffer();
@@ -403,5 +373,95 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
 
     public void setRememberAuthMethod(boolean rememberAuthMethod) {
         this.rememberAuthMethod = rememberAuthMethod;
+    }
+
+
+    public void setSpCookieDomain(String spCookieDomain) {
+        if (spCookieDomain != null && !"".equals(spCookieDomain.trim())) {
+            this.spCookieDomain = spCookieDomain;
+        }
+    }
+
+    private static Cookie getCookie(HttpServletRequest request, String name) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            return null;
+        }
+        for (Cookie cookie : cookies) {
+            if (name.equals(cookie.getName())) {
+                return cookie;
+            }
+        }
+        return null;
+    }
+
+    private HttpSession getSession(HttpServletRequest request) {
+        if (!this.cookieLinksEnabled) {
+            return request.getSession(false);
+        }
+        HttpSession session = request.getSession(false);
+        if (session == null && request.getCookies() != null && !request.isSecure()) {
+            Cookie c = getCookie(request, VRTXLINK_COOKIE);
+            if (c != null) {
+                UUID id;
+                try {
+                    id = UUID.fromString(c.getValue());
+                } catch (Throwable t) {
+                    return null;
+                }
+                String token = this.cookieLinkStore.getToken(request, id);
+                if (token != null) {
+                    session = request.getSession(true);
+                    session.setAttribute(SECURITY_TOKEN_SESSION_ATTR, token);
+                }
+            }
+        }
+        return session;
+    }
+
+
+    private void onSuccessfulAuthentication(HttpServletRequest req, HttpServletResponse resp,
+            AuthenticationHandler handler, String token) {
+        if (!req.isSecure()) {
+            return;
+        }
+        if (this.rememberAuthMethod) {
+            Cookie c = new Cookie(VRTX_AUTH_SP_COOKIE, handler.getIdentifier());
+            c.setSecure(true);
+            c.setPath("/");
+            if (this.spCookieDomain != null) {
+                c.setDomain(this.spCookieDomain);
+            }
+            resp.addCookie(c);
+        }
+        if (this.cookieLinksEnabled) {
+            UUID cookieLinkID = this.cookieLinkStore.addToken(req, token);
+            Cookie c = new Cookie(VRTXLINK_COOKIE, cookieLinkID.toString());
+            c.setPath("/");
+            resp.addCookie(c);
+        }
+    }
+    
+
+    private AuthenticationChallenge getAuthenticationChallenge(HttpServletRequest request, Service service) {
+        if (this.rememberAuthMethod) {
+            Cookie c = getCookie(request, VRTXLINK_COOKIE);
+            if (c != null) {
+                String id = c.getValue();
+                AuthenticationHandler handler = this.authHandlerMap.get(id);
+                if (handler != null) {
+                    AuthenticationChallenge challenge = handler.getAuthenticationChallenge();
+                    if (challenge != null) {
+                        return challenge;
+                    }
+                }
+            }
+        }
+        AuthenticationChallenge challenge = service.getAuthenticationChallenge();
+        
+        if (challenge == null && service.getParent() != null) { 
+            return getAuthenticationChallenge(request, service.getParent());
+        }
+        return challenge;
     }
 }

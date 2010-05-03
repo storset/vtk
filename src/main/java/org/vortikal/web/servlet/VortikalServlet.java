@@ -30,7 +30,6 @@
  */
 package org.vortikal.web.servlet;
 
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -56,7 +55,6 @@ import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.security.web.AuthenticationChallenge;
 import org.vortikal.security.web.InvalidAuthenticationRequestException;
 import org.vortikal.security.web.SecurityInitializer;
 import org.vortikal.util.Version;
@@ -383,11 +381,8 @@ public class VortikalServlet extends DispatcherServlet {
             }
 
         } catch (AuthenticationException ex) {
-            try {
-                authenticationChallenge(request, responseWrapper, ex);
-            } catch (IOException e) {
-                logError(request, e);
-            }
+            this.securityInitializer.challenge(request, responseWrapper, ex);
+
         } catch (AuthenticationProcessingException e) {
             handleAuthenticationProcessingError(request, responseWrapper, e);
         	
@@ -453,32 +448,6 @@ public class VortikalServlet extends DispatcherServlet {
         return response;
     }
 
-    private void authenticationChallenge(HttpServletRequest request, HttpServletResponse response, 
-            AuthenticationException ex) throws ServletException, IOException {
-        Service service = RequestContext.getRequestContext()
-                .getService();
-        AuthenticationChallenge challenge = getAuthenticationChallenge(service);
-
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("Authentication required for request "
-                         + request + ", service " + service + ". "
-                         + "Using challenge " + challenge, ex);
-        }
-        if (challenge == null) {
-            throw new ServletException(
-                "Authentication challenge for service " + service
-                + " (or any of its ancestors) is not specified.");
-        }
-
-        try {
-            challenge.challenge(request, response);
-        } catch (AuthenticationProcessingException e) {
-            logError(request, e);
-            throw new ServletException(
-                "Fatal processing error while performing " +
-                "authentication challenge", e);
-        }
-    }
 
     /**
      * Sets the Last-Modified entity header field, if it has not
@@ -498,15 +467,6 @@ public class VortikalServlet extends DispatcherServlet {
             resp.setDateHeader(HEADER_LASTMOD, lastModified);
     }
    
-    private AuthenticationChallenge getAuthenticationChallenge(Service service) {
-        AuthenticationChallenge challenge = service.getAuthenticationChallenge();
-        
-        if (challenge == null && service.getParent() != null) 
-            return getAuthenticationChallenge(service.getParent());
-        return challenge;
-    }
-
-
     private void logRequest(HttpServletRequest req, StatusAwareResponseWrapper resp,
                             long processingTime, boolean wasCacheRequest) {
         if (!this.requestLogger.isInfoEnabled()) {

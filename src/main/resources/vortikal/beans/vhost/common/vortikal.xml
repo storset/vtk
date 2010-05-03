@@ -43,6 +43,7 @@
     <property name="cookieLinkStore" ref="cookieLinkStore" />
     <property name="cookieLinksEnabled" value="${security.sessionCookieLinksEnabled}" />
     <property name="rememberAuthMethod" value="${security.rememberAuthMethod}" />
+    <property name="spCookieDomain" value="${security.spCookieDomain}" />
   </bean>
 
   <bean id="cookieLinkStore" class="org.vortikal.security.CookieLinkStore">

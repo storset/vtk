@@ -30,7 +30,6 @@
  */
 package org.vortikal.security.web.saml;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -75,11 +74,9 @@ public class Logout extends SamlService {
         UUID relayState = UUID.randomUUID();
         SamlConfiguration samlConfiguration = newSamlConfiguration(request);
         String url = urlToLogoutServiceForDomain(samlConfiguration, requestID, relayState);
-        try {
-            response.sendRedirect(url);
-        } catch (IOException e) {
-            throw new AuthenticationProcessingException(e);
-        }
+        
+        response.setStatus(HttpServletResponse.SC_FOUND);
+        response.setHeader("Location", url.toString());
     }
     
     public void handleLogoutRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -104,7 +101,8 @@ public class Logout extends SamlService {
         this.securityInitializer.removeAuthState(request, response);
         
         // Handle the response ourselves.
-        response.sendRedirect(redirectURL);
+        response.setStatus(HttpServletResponse.SC_FOUND);
+        response.setHeader("Location", redirectURL);
     }
 
     

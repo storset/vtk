@@ -445,13 +445,18 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
 
     private AuthenticationChallenge getAuthenticationChallenge(HttpServletRequest request, Service service) {
         if (this.rememberAuthMethod) {
-            Cookie c = getCookie(request, VRTXLINK_COOKIE);
+            Cookie c = getCookie(request, VRTX_AUTH_SP_COOKIE);
             if (c != null) {
                 String id = c.getValue();
                 AuthenticationHandler handler = this.authHandlerMap.get(id);
                 if (handler != null) {
                     AuthenticationChallenge challenge = handler.getAuthenticationChallenge();
+                    
                     if (challenge != null) {
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("Using challenge from cookie " 
+                                    + VRTX_AUTH_SP_COOKIE + ": " + challenge);
+                        }
                         return challenge;
                     }
                 }

@@ -115,6 +115,7 @@ resourcetype frontpage {
       [def document structured-document()]
       [def boxes json-attr(document, "properties.additional-content")]
       [if boxes != null]
+      <div id="vrtx-additional-content">
         [list boxes box]
            [def type json-attr(box, "boxType")]
            [def title json-attr(box, "boxTitle")]
@@ -170,7 +171,8 @@ resourcetype frontpage {
               </div>
               [endif]
            </div>      
-        [endlist]
+          [endlist]
+      </div>
       [endif]
       ##
     }
@@ -252,6 +254,19 @@ resourcetype frontpage {
       [endif]
       ##
     }
+    
+    wide-or-not {
+      ##
+      [resource-props "."]
+      [def document structured-document()]
+      [def boxes json-attr(document, "properties.additional-content")]
+      [if boxes != null]
+        <div id="vrtx-content">       
+      [else]
+        <div id="vrtx-content" class="vrtx-frontpage-wide">
+      [endif]
+      ##
+    }
 
   }
 
@@ -264,16 +279,14 @@ resourcetype frontpage {
         <title><comp:title /></title>
       </head>
       <body id="vrtx-frontpage">
-        <div id="vrtx-content">
+        <comp:wide-or-not />
           <h1><comp:title /></h1>
           <div id="vrtx-main-content">
             <comp:introduction-image />
             <comp:introduction />   
             <comp:main-content />
           </div>
-          <div id="vrtx-additional-content">
-            <comp:additional-content />
-          </div>
+          <comp:additional-content />
         </div>
       </body>
     </html>
@@ -282,14 +295,14 @@ resourcetype frontpage {
   
   vocabulary {
      main-content:boxCssColor {
-       en : ("undefined" = "Blanc", "grey-box" = "Grey box", "white-box" = "White box", "white-box-black-header" = "White box with black header"),
-       no : ("undefined" = "Blank", "grey-box" = "Grå boks", "white-box" = "Hvit boks", "white-box-black-header" = "Hvit boks med svart topp"),
-       nn : ("undefined" = "Blank", "grey-box" = "Grå boks", "white-box" = "Hvit boks", "white-box-black-header" = "Hvit boks med svart topp")
+       en : ("undefined" = "Blanc", "grey-box" = "Grey box", "white-box" = "White box"),
+       no : ("undefined" = "Blank", "grey-box" = "Grå boks", "white-box" = "Hvit boks"),
+       nn : ("undefined" = "Blank", "grey-box" = "Grå boks", "white-box" = "Hvit boks")
      },
      main-content:boxCssSizeAndPlacement {
-       en : ("undefined" = "Full width", "half-box-left" = "Half width (1 of 2)", "half-box-right" = "Half width (2 of 2)"),
-       no : ("undefined" = "Full bredde", "half-box-left" = "Halv bredde (1 av 2)", "half-box-right" = "Halv bredde (2 av 2)"),
-       nn : ("undefined" = "Full bredde", "half-box-left" = "Halv bredde (1 av 2)", "half-box-right" = "Halv bredde (2 av 2)")
+       en : ("undefined" = "Full width", "half-box-left" = "Half width (1 of 2)", "half-box-right" = "Half width (2 of 2)", "third-box-left" = "Third width (1 of 3)", "third-box-middle" = "Third width (2 of 3)", "third-box-right" = "Third width (3 of 3)"),
+       no : ("undefined" = "Full bredde", "half-box-left" = "Halv bredde (1 av 2)", "half-box-right" = "Halv bredde (2 av 2)", "third-box-left" = "Tredjedel bredde (1 av 3)", "third-box-middle" = "Tredjedel bredde (2 av 3)", "third-box-right" = "Tredjedel bredde (3 av 3)"),
+       nn : ("undefined" = "Full bredde", "half-box-left" = "Halv bredde (1 av 2)", "half-box-right" = "Halv bredde (2 av 2)", "third-box-left" = "Tredjedel bredde (1 av 3)", "third-box-middle" = "Tredjedel bredde (2 av 3)", "third-box-right" = "Tredjedel bredde (3 av 3)")
      }
   }
   

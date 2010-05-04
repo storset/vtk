@@ -203,9 +203,9 @@ resourcetype organizational-unit {
        nn : ("true" = "Ja", "false" = "Nei")
      },
      numberOfEmployeesToDisplay {
-       en : (range = "1..10,15,20,25,30"),
-       no : (range = "1..10,15,20,25,30"),
-       nn : (range = "1..10,15,20,25,30")
+       en : (range = "1..10,15,20,25,30,35,40,45,50"),
+       no : (range = "1..10,15,20,25,30,35,40,45,50"),
+       nn : (range = "1..10,15,20,25,30,35,40,45,50")
      }
   }
 

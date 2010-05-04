@@ -38,6 +38,13 @@ resourcetype frontpage {
           
           [def cssClasses ""]
           
+          [if picture != null && picture != ""]
+            [def cssClasses concat(cssClasses, "vrtx-frontpage-box-picture")]
+          [endif]
+          [if urlText != null && urlText != ""]
+            [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
+            [def cssClasses concat(cssClasses, "vrtx-more-false")]
+          [endif]
           [if sizePlacement != null && sizePlacement != "undefined"]
             [def cssClasses concat(cssClasses, sizePlacement)]
           [endif]
@@ -49,20 +56,14 @@ resourcetype frontpage {
             [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
             [def cssClasses concat(cssClasses, type)]
           [endif]
+          
 
           [if cssClasses != null && cssClasses != ""]
-            [if picture != null && picture != ""]
-              <div class="vrtx-frontpage-box vrtx-frontpage-box-picture [val cssClasses]" id="vrtx-main-content-[val number]">
-            [else]
               <div class="vrtx-frontpage-box [val cssClasses]" id="vrtx-main-content-[val number]">
-            [endif]
           [else]
-            [if picture != null && picture != ""]
-              <div class="vrtx-frontpage-box vrtx-frontpage-box-picture" id="vrtx-main-content-[val number]">
-            [else]
               <div class="vrtx-frontpage-box" id="vrtx-main-content-[val number]">
-            [endif]
           [endif]
+          
           [if title != null && title != ""]
             [if url != null && url != ""]
               <h2><a href="[val url]">[val title]</a></h2>

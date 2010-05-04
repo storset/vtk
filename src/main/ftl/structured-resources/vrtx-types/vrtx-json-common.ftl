@@ -166,7 +166,7 @@
         </#list>
         <#assign arrayOfIds = arrayOfIds + ")" />
         <input type="button" class="vrtx-remove-button" value="${vrtx.getMsg("editor.remove")}"
-          onClick="$('#vrtx-json-element-${inputFieldName}-${counter}').remove()" />
+          onClick="removeNode('${inputFieldName}',${counter},${arrayOfIds})" />
         <#if (counter > 0) >
           <input type="button" class="vrtx-move-up-button" onClick="swapContent(${counter}, ${arrayOfIds},-1)"
             value="&uarr; ${vrtx.getMsg("editor.move-up")}"  /> 

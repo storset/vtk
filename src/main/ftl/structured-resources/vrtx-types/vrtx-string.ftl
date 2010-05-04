@@ -3,7 +3,7 @@
   <label for="${inputFieldName}">${title}</label>
   <div class="inputfield">
   <#if dropdown && valuemap?exists && valuemap?is_hash>
-  <select name="${inputFieldName}">
+  <select name="${inputFieldName}" id="${inputFieldName}">
     <#list valuemap?keys as key>
     <#if key = "range">
       <#local rangeList = valuemap[key] />

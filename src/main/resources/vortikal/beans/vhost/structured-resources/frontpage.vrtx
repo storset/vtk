@@ -42,6 +42,7 @@ resourcetype frontpage {
             [def cssClasses concat(cssClasses, "vrtx-frontpage-box-picture")]
           [endif]
           [if urlText != null && urlText != ""]
+          [else]
             [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
             [def cssClasses concat(cssClasses, "vrtx-more-false")]
           [endif]

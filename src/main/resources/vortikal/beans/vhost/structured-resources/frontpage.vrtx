@@ -47,6 +47,7 @@ resourcetype frontpage {
             [def cssClasses concat(cssClasses, "vrtx-more-false")]
           [endif]
           [if sizePlacement != null && sizePlacement != "undefined"]
+            [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
             [def cssClasses concat(cssClasses, sizePlacement)]
           [endif]
           [if color != null && color != "undefined"]

@@ -115,64 +115,64 @@ resourcetype frontpage {
       [def document structured-document()]
       [def boxes json-attr(document, "properties.additional-content")]
       [if boxes != null]
-      <div id="vrtx-additional-content">
-        [list boxes box]
-           [def type json-attr(box, "boxType")]
-           [def title json-attr(box, "boxTitle")]
-           [def picture json-attr(box, "boxPicture")]
-           [def content json-attr(box, "boxContent")]
-           [def url json-attr(box, "boxUrl")]
-           [def urlText json-attr(box, "boxUrlText")]
-           [def number _index + 1]
+        <div id="vrtx-additional-content">
+          [list boxes box]
+            [def type json-attr(box, "boxType")]
+            [def title json-attr(box, "boxTitle")]
+            [def picture json-attr(box, "boxPicture")]
+            [def content json-attr(box, "boxContent")]
+            [def url json-attr(box, "boxUrl")]
+            [def urlText json-attr(box, "boxUrlText")]
+            [def number _index + 1]
            
-           [if type != null && type != ""]
-             <div class="vrtx-frontpage-box [val type]" id="vrtx-additional-content-[val number]">
-           [else]
-             <div class="vrtx-frontpage-box" id="vrtx-additional-content-[val number]">
-           [endif] 
-             [if title != null && title != ""]
-               [if url != null && url != ""]
-                 <h2><a href="[val url]">[val title]</a></h2>
-               [else]
-                 <h2>[val title]</h2>
-               [endif]
-             [endif]
-             [if picture != null && picture != ""]
-               <div class="vrtx-frontpage-box-picture">
-                 [if url != null && url != ""]
-                   <a href="[val url]">
-                     [if title != null && title != ""] 
-                       <img src="[val picture]" alt="[val title]" />
-                     [else]
-                       <img src="[val picture]" alt="[val picture]" />
-                     [endif]
-                   </a>
-                 [else]
-                   [if title != null && title != ""] 
-                     <img src="[val picture]" alt="[val title]" />
-                   [else]
-                     <img src="[val picture]" alt="[val picture]" />
-                   [endif]
-                 [endif]
-               </div>
-             [endif]
-             <div class="vrtx-box-content">
-               [if content != null && content != ""]
-                 [val content unescaped]
-               [endif]
-             </div>
-             [if urlText != null && urlText != ""]
-             <div class="vrtx-more">
+            [if type != null && type != ""]
+              <div class="vrtx-frontpage-box [val type]" id="vrtx-additional-content-[val number]">
+            [else]
+              <div class="vrtx-frontpage-box" id="vrtx-additional-content-[val number]">
+            [endif] 
+              [if title != null && title != ""]
+                [if url != null && url != ""]
+                  <h2><a href="[val url]">[val title]</a></h2>
+                [else]
+                  <h2>[val title]</h2>
+                [endif]
+              [endif]
+              [if picture != null && picture != ""]
+                <div class="vrtx-frontpage-box-picture">
+                  [if url != null && url != ""]
+                    <a href="[val url]">
+                      [if title != null && title != ""] 
+                        <img src="[val picture]" alt="[val title]" />
+                      [else]
+                        <img src="[val picture]" alt="[val picture]" />
+                      [endif]
+                    </a>
+                  [else]
+                    [if title != null && title != ""] 
+                      <img src="[val picture]" alt="[val title]" />
+                    [else]
+                      <img src="[val picture]" alt="[val picture]" />
+                    [endif]
+                  [endif]
+                </div>
+              [endif]
+              <div class="vrtx-box-content">
+                [if content != null && content != ""]
+                  [val content unescaped]
+                [endif]
+              </div>
+              [if urlText != null && urlText != ""]
+                <div class="vrtx-more">
                 [if url != null && url != ""]
                   <span><a href="[val url]">[val urlText]</a></span>
                 [else]
                   <span>[val urlText]</span>
                 [endif]
-              </div>
+                </div>
               [endif]
-           </div>      
+            </div>      
           [endlist]
-      </div>
+        </div>
       [endif]
       ##
     }

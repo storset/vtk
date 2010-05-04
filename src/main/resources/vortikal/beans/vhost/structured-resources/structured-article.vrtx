@@ -102,8 +102,8 @@ resourcetype structured-article : structured-document {
             <comp:author />
  		    <comp:vrtx-date-info />
             <div class="vrtx-social-components"
-            	 <resource:email-friend />
-             	<resource:share-at />
+              <resource:email-friend />
+              <resource:share-at />
           	</div>
           	<resource:comments />
           </div>

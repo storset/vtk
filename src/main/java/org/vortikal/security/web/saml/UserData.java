@@ -75,10 +75,10 @@ public class UserData {
 
     public List<String> getAttribute(String name) {
         List<String> attributes = this.attrs.get(name);
-        if (attributes != null)
-            return Collections.unmodifiableList(attributes);
-        else
+        if (attributes == null) {
             return null;
+        }
+        return Collections.unmodifiableList(attributes);
     }
 
 

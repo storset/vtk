@@ -95,11 +95,8 @@ public class Login extends SamlService {
         if (url == null) {
             throw new AuthenticationProcessingException("Missing URL attribute in session");
         }
-        try {
-            response.sendRedirect(url.toString());
-        } catch (Exception e) {
-            throw new AuthenticationProcessingException(e);
-        }
+        response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+        response.setHeader("Location", url.toString());
     }
     
     UserData getUserData(HttpServletRequest request, UUID expectedRequestID) {
@@ -111,7 +108,8 @@ public class Login extends SamlService {
         
         String inResponseToID = samlResponse.getInResponseTo();
         if (!expectedRequestID.toString().equals(inResponseToID)) {
-            throw new InvalidRequestException("Request ID mismatch");
+            throw new AuthenticationException("Request ID mismatch");
+            //throw new InvalidRequestException("Request ID mismatch");
         }
         
         verifyStatusCodeIsSuccess(samlResponse);

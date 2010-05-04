@@ -131,7 +131,8 @@ public class Logout extends SamlService {
         session.removeAttribute(URL_SESSION_ATTR);
         session.removeAttribute(REQUEST_ID_SESSION_ATTR);
 
-        response.sendRedirect(url.toString());
+        response.setStatus(HttpServletResponse.SC_FOUND);
+        response.setHeader("Location", url.toString());
     }
     
     private String urlToLogoutServiceForDomain(SamlConfiguration config, UUID requestID, UUID relayState) {

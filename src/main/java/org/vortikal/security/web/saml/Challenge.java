@@ -30,7 +30,6 @@
  */
 package org.vortikal.security.web.saml;
 
-import java.io.IOException;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -47,15 +46,12 @@ public class Challenge extends SamlService {
             throws AuthenticationProcessingException {
 
         if (request.getScheme().equals("http")) {
-            URL url = URL.create(request);
-            url.setProtocol("https");
-            url.addParameter("authTarget", "http");
-            try {
-                response.sendRedirect(url.toString());
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            // XXX: move redirect to SecurityInitializer
+            URL redirectURL = URL.create(request);
+            redirectURL.setProtocol("https");
+            redirectURL.setParameter("authTarget", "http");
+            response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+            response.setHeader("Location", redirectURL.toString());
             return;
         }
 
@@ -73,13 +69,9 @@ public class Challenge extends SamlService {
         UUID requestID = UUID.randomUUID();
         session.setAttribute(REQUEST_ID_SESSION_ATTR, requestID);
 
-        String redirURL = urlToLoginServiceForDomain(samlConfiguration, requestID, relayState);
-        try {
-            response.sendRedirect(redirURL);
-        } catch (IOException e) {
-            throw new AuthenticationProcessingException("Unable to redirect to login service", e);
-        }
-
+        String redirectURL = urlToLoginServiceForDomain(samlConfiguration, requestID, relayState);
+        response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+        response.setHeader("Location", redirectURL.toString());
     }
 
 

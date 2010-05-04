@@ -142,6 +142,7 @@
 	    	var elementId1 = '#' + arrayOfIds[x] + i; 
 	  		$(elementId1).attr("id",arrayOfIds[x].replace(/\\/g, "") + (i-1));
 	  		$('label[for='+ arrayOfIds[x] + i +']').attr("for", arrayOfIds[x].replace(/\\/g, "") + (i-1));
+	  		$('div'+elementId1+'\\.preview').attr("id",arrayOfIds[x].replace(/\\/g, "") + (i-1) + '.preview');	
 	  	}
 
 		var remove2 = $(elementId).find(".vrtx-remove-button");
@@ -256,7 +257,7 @@
     htmlTemplate += '<div>';
     htmlTemplate += '<label for=\"' + inputFieldName+ '\">' + elem.title + '<\/label>';
     htmlTemplate += '<\/div><div>';
-    htmlTemplate += '<input type=\"text\" id=\"' + inputFieldName+ '\" name=\"' + inputFieldName + '\" value=\"\" onblur=\"previewImage(\'' + inputFieldName + '\');\" size=\"30\" \/>';
+    htmlTemplate += '<input type=\"text\" id=\"' + inputFieldName+ '\" name=\"' + inputFieldName + '\" value=\"\" onblur=\"previewImage($(this).parent().find(\'input\').attr(\'id\'));\" size=\"30\" \/>';
     htmlTemplate += '<button type=\"button\" onclick=\"browseServer(\'' + inputFieldName + '\', \'${fckeditorBase.url}\', \'${resourceContext.parentURI}\', \'${fckBrowse.url.pathRepresentation}\');\"><@vrtx.msg code="editor.browseImages" /><\/button>';
     htmlTemplate += '<\/div>';
     htmlTemplate += '<div id=\"' + inputFieldName + '.preview\">';

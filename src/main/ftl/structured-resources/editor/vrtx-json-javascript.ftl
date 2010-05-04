@@ -256,11 +256,10 @@
     htmlTemplate += '<div>';
     htmlTemplate += '<label for=\"' + inputFieldName+ '\">' + elem.title + '<\/label>';
     htmlTemplate += '<\/div><div>';
-    htmlTemplate += '<input type=\"text\" id=\"' + inputFieldName+ '\" name=\"' + inputFieldName + '\" value=\"\" onblur=\"previewImage(' + inputFieldName + ');\" size=\"30\" \/>';
+    htmlTemplate += '<input type=\"text\" id=\"' + inputFieldName+ '\" name=\"' + inputFieldName + '\" value=\"\" onblur=\"previewImage(\'' + inputFieldName + '\');\" size=\"30\" \/>';
     htmlTemplate += '<button type=\"button\" onclick=\"browseServer(\'' + inputFieldName + '\', \'${fckeditorBase.url}\', \'${resourceContext.parentURI}\', \'${fckBrowse.url.pathRepresentation}\');\"><@vrtx.msg code="editor.browseImages" /><\/button>';
     htmlTemplate += '<\/div>';
     htmlTemplate += '<div id=\"' + inputFieldName + '.preview\">';
-    htmlTemplate += '<img src=\"\" alt=\"Preview image\" \/>';
     htmlTemplate += '<\/div><\/div>';
     
     return htmlTemplate;

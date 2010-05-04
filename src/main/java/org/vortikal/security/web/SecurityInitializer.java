@@ -134,8 +134,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
     public boolean createContext(HttpServletRequest req, HttpServletResponse resp)
             throws AuthenticationProcessingException, ServletException, IOException {
 
-        // HttpSession session = req.getSession(false);
-
+        /**
         HttpSession session = getSession(req);
         String token = null;
 
@@ -143,6 +142,8 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
             token = (String) session.getAttribute(SECURITY_TOKEN_SESSION_ATTR);
         }
 
+        */
+        String token = getToken(req, resp);
         if (token != null) {
             Principal principal = this.tokenManager.getPrincipal(token);
             if (principal != null) {
@@ -151,6 +152,17 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                             + " in request session, setting security context");
                 }
                 SecurityContext.setSecurityContext(new SecurityContext(token, principal));
+
+                if (getCookie(req, VRTXLINK_COOKIE) == null && this.cookieLinksEnabled) {
+                    UUID cookieLinkID = this.cookieLinkStore.addToken(req, token);
+                    Cookie c = new Cookie(VRTXLINK_COOKIE, cookieLinkID.toString());
+                    c.setPath("/");
+                    resp.addCookie(c);
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Setting cookie: " + VRTXLINK_COOKIE 
+                                + ": " + cookieLinkID.toString());
+                    }
+                }
                 return true;
             }
             if (logger.isDebugEnabled()) {
@@ -182,7 +194,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                     SecurityContext securityContext = new SecurityContext(token, this.tokenManager.getPrincipal(token));
 
                     SecurityContext.setSecurityContext(securityContext);
-                    session = req.getSession(true);
+                    HttpSession session = req.getSession(true);
                     session.setAttribute(SECURITY_TOKEN_SESSION_ATTR, token);
 
                     onSuccessfulAuthentication(req, resp, handler, token);
@@ -214,7 +226,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                         authLogger.debug("Auth: request: '" + req.getRequestURI() + "' - method: '"
                                 + handler.getIdentifier() + "' - status: FAIL");
                     }
-                    challenge.challenge(req, resp);
+                    doChallenge(req, resp, challenge);
                     return false;
                 }
             }
@@ -229,8 +241,6 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         return true;
     }
 
-
-    
     public void challenge(HttpServletRequest request, HttpServletResponse response, 
             AuthenticationException ex) throws AuthenticationProcessingException {
         Service service = RequestContext.getRequestContext()
@@ -247,23 +257,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                 "Authentication challenge for service " + service
                 + " (or any of its ancestors) is not specified.");
         }
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            Object token = session.getAttribute(SECURITY_TOKEN_SESSION_ATTR);
-            if (token != null) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Removing invalid token '" + token + "' from session");
-                }
-                session.removeAttribute(SECURITY_TOKEN_SESSION_ATTR);
-            }
-
-        }
-        try {
-            challenge.challenge(request, response);
-        } catch (Exception e) {
-            throw new AuthenticationProcessingException(
-                    "Unable to present authentication challenge " + challenge, e);
-        }
+        doChallenge(request, response, challenge);
     }
     
     /**
@@ -290,16 +284,10 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         if (this.rememberAuthMethod) {
             Cookie c = getCookie(request, VRTX_AUTH_SP_COOKIE);
             if (c != null) {
-                c = new Cookie(VRTX_AUTH_SP_COOKIE, c.getValue());
-                c.setSecure(true);
-                c.setPath("/");
-                if (this.spCookieDomain != null) {
-                    c.setDomain(this.spCookieDomain);
-                }
-                c.setMaxAge(0);
                 if (logger.isDebugEnabled()) {
                     logger.debug("Deleting cookie " + VRTX_AUTH_SP_COOKIE);
                 }
+                c.setMaxAge(0);
                 response.addCookie(c);
             }
         }
@@ -350,20 +338,13 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         if (this.rememberAuthMethod) {
             Cookie c = getCookie(request, VRTX_AUTH_SP_COOKIE);
             if (c != null) {
-                c = new Cookie(VRTX_AUTH_SP_COOKIE, c.getValue());
-                c.setSecure(true);
-                c.setPath("/");
-                if (this.spCookieDomain != null) {
-                    c.setDomain(this.spCookieDomain);
-                }
-                c.setMaxAge(0);
                 if (logger.isDebugEnabled()) {
                     logger.debug("Deleting cookie " + VRTX_AUTH_SP_COOKIE);
                 }
+                c.setMaxAge(0);
                 response.addCookie(c);
             }
         }
-
         return result;
     }
 
@@ -425,44 +406,53 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         }
     }
 
-    private static Cookie getCookie(HttpServletRequest request, String name) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
-            return null;
-        }
-        for (Cookie cookie : cookies) {
-            if (name.equals(cookie.getName())) {
-                return cookie;
-            }
-        }
-        return null;
-    }
-
-    private HttpSession getSession(HttpServletRequest request) {
-        if (!this.cookieLinksEnabled) {
-            return request.getSession(false);
-        }
+    private String getToken(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession(false);
-        if (session != null) {
-            return session;
+        if (!this.cookieLinksEnabled) {
+            if (session == null) {
+                return null;
+            }
+            return (String) session.getAttribute(SECURITY_TOKEN_SESSION_ATTR);
+        }
+        if (session != null && session.getAttribute(SECURITY_TOKEN_SESSION_ATTR) != null) {
+            return (String) session.getAttribute(SECURITY_TOKEN_SESSION_ATTR);
         }
         if (request.getCookies() != null && !request.isSecure()) {
             Cookie c = getCookie(request, VRTXLINK_COOKIE);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Cookie: " + VRTXLINK_COOKIE + ": " + c);
+            }
             if (c != null) {
                 UUID id;
                 try {
                     id = UUID.fromString(c.getValue());
                 } catch (Throwable t) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Invalid UUID cookie value: " + c.getValue(), t);
+                    }
                     return null;
                 }
                 String token = this.cookieLinkStore.getToken(request, id);
-                if (token != null) {
+                if (token == null) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("No token found from cookie " + VRTXLINK_COOKIE + ", deleting cookie");
+                    }
+                    c = new Cookie(VRTXLINK_COOKIE, c.getValue());
+                    c.setPath("/");
+                    c.setMaxAge(0);
+                    response.addCookie(c);
+                } else {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Found token " + token + " from cookie " + VRTXLINK_COOKIE);
+                    }
                     session = request.getSession(true);
                     session.setAttribute(SECURITY_TOKEN_SESSION_ATTR, token);
+                    return token;
                 }
             }
         }
-        return session;
+        return null;
+        
     }
 
 
@@ -497,6 +487,25 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         }
     }
     
+    private void doChallenge(HttpServletRequest request, HttpServletResponse response, AuthenticationChallenge challenge) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            Object token = session.getAttribute(SECURITY_TOKEN_SESSION_ATTR);
+            if (token != null) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Removing invalid token '" + token + "' from session");
+                }
+                session.removeAttribute(SECURITY_TOKEN_SESSION_ATTR);
+            }
+        }
+        try {
+            challenge.challenge(request, response);
+        } catch (Exception e) {
+            throw new AuthenticationProcessingException(
+                    "Unable to present authentication challenge " + challenge, e);
+        }
+    }
+    
 
     private AuthenticationChallenge getAuthenticationChallenge(HttpServletRequest request, Service service) {
         if (this.rememberAuthMethod) {
@@ -524,4 +533,18 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         }
         return challenge;
     }
+    
+    private static Cookie getCookie(HttpServletRequest request, String name) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            return null;
+        }
+        for (Cookie cookie : cookies) {
+            if (name.equals(cookie.getName())) {
+                return cookie;
+            }
+        }
+        return null;
+    }
+
 }

@@ -46,7 +46,8 @@ public class Challenge extends SamlService {
             throws AuthenticationProcessingException {
 
         if (request.getScheme().equals("http")) {
-            // XXX: move redirect to SecurityInitializer
+            // XXX: remove hard-coded 'authTarget' parameter:
+            // XXX: move redirect -> ssl elsewhere
             URL redirectURL = URL.create(request);
             redirectURL.setProtocol("https");
             redirectURL.setParameter("authTarget", "http");

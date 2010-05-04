@@ -88,6 +88,7 @@
     <#assign dateStr = constructor("java.util.Date")?string("yyyymmddhhmmss") />
 
     <#assign url = resourceReference />
+    <#-- XXX: remove hard-coded 'authTarget' parameter: -->
     <#if url?contains("?")>
       <#assign url = url + "&amp;" + previewUnpublishedParameter + "=" + "true" + "&amp;" + previewRefreshParameter + "=" + dateStr + "&amp;authTarget=http" />
     <#else>

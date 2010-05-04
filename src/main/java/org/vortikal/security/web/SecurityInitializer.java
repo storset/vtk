@@ -145,18 +145,17 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
 
         if (token != null) {
             Principal principal = this.tokenManager.getPrincipal(token);
-            if (principal == null) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Invalid token '" + token + "' in request session, "
-                            + "will proceed to check authentication");
-                }
-            } else {
+            if (principal != null) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Found valid token '" + token + "', principal " + principal
                             + " in request session, setting security context");
                 }
                 SecurityContext.setSecurityContext(new SecurityContext(token, principal));
                 return true;
+            }
+            if (logger.isDebugEnabled()) {
+                logger.debug("Invalid token '" + token + "' in request session, "
+                        + "will proceed to check authentication");
             }
         }
 
@@ -247,6 +246,17 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
             throw new IllegalStateException(
                 "Authentication challenge for service " + service
                 + " (or any of its ancestors) is not specified.");
+        }
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            Object token = session.getAttribute(SECURITY_TOKEN_SESSION_ATTR);
+            if (token != null) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Removing invalid token '" + token + "' from session");
+                }
+                session.removeAttribute(SECURITY_TOKEN_SESSION_ATTR);
+            }
+
         }
         try {
             challenge.challenge(request, response);
@@ -433,7 +443,10 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
             return request.getSession(false);
         }
         HttpSession session = request.getSession(false);
-        if (session == null && request.getCookies() != null && !request.isSecure()) {
+        if (session != null) {
+            return session;
+        }
+        if (request.getCookies() != null && !request.isSecure()) {
             Cookie c = getCookie(request, VRTXLINK_COOKIE);
             if (c != null) {
                 UUID id;

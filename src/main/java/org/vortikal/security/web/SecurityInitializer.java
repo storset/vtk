@@ -287,6 +287,12 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                 if (logger.isDebugEnabled()) {
                     logger.debug("Deleting cookie " + VRTX_AUTH_SP_COOKIE);
                 }
+                c = new Cookie(VRTX_AUTH_SP_COOKIE, c.getValue());
+                c.setSecure(true);
+                c.setPath("/");
+                if (this.spCookieDomain != null) {
+                    c.setDomain(this.spCookieDomain);
+                }
                 c.setMaxAge(0);
                 response.addCookie(c);
             }
@@ -340,6 +346,12 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
             if (c != null) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Deleting cookie " + VRTX_AUTH_SP_COOKIE);
+                }
+                c = new Cookie(VRTX_AUTH_SP_COOKIE, c.getValue());
+                c.setSecure(true);
+                c.setPath("/");
+                if (this.spCookieDomain != null) {
+                    c.setDomain(this.spCookieDomain);
                 }
                 c.setMaxAge(0);
                 response.addCookie(c);

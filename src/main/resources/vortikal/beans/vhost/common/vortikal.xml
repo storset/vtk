@@ -88,5 +88,22 @@
     <description> The service handler mapping must be set in order for the
       service framework to function. </description>
   </bean>
+
+  <!-- Custom and required Spring HandlerAdapter instances defined here. -->
+  <!-- Note that defining even a single instance of a custom HandlerAdapter in will cause
+       Spring to disregard its default set of handler adapters, and thus all required
+       handler-adapters must be defined here. The Spring (2.5.x) default adapters are:
+        - org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter
+        - org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter
+        - org.springframework.web.servlet.mvc.throwaway.ThrowawayControllerHandlerAdapter
+        - org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter
+
+       Source: org/springframework/web/servlet/DispatcherServlet.properties -->
+
+  <!-- Custom handlerAdapter for all Controller instances: -->
+  <bean class="org.vortikal.web.filter.ServiceHandlerFilterAdapter" />
+
+  <!-- Spring HandlerAdapter for all HttpRequestHandler instances: -->
+  <bean class="org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter" />
   
 </beans>

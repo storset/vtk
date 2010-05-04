@@ -540,7 +540,7 @@ public class VortikalServlet extends DispatcherServlet {
         String httpMethod = req.getMethod();
 
         Map requestParameters = req.getParameterMap();
-        StringBuffer params = new StringBuffer("{");
+        StringBuilder params = new StringBuilder("{");
         for (Iterator iter = requestParameters.keySet().iterator(); iter.hasNext();) {
             String name = (String) iter.next();
             params.append(name).append("=[");

@@ -290,11 +290,6 @@
     <property name="handler" ref="fileUploadHandler" />
   </bean>
 
-  <bean id="serviceHandlerFilterAdapter" class="org.vortikal.web.filter.ServiceHandlerFilterAdapter">
-  </bean>
-
-
-
   <bean id="createDocumentService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageCollectionListingService" />
     <property name="order" value="-970" />

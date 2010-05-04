@@ -184,5 +184,9 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     public String getIdentifier() {
         return this.identifier;
     }
+    
+    public String toString() {
+        return this.getClass().getName() + ":" + this.identifier;
+    }
 
 }

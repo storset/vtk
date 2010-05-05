@@ -99,6 +99,7 @@ resourcetype organizational-unit {
       ##
       [def resp resource-prop(".", "responsibilities")]
       [if resp != null && resp != ""]
+        <h2>[localized 'responsibilitiesHeader']</h2>
         <div class="vrtx-organizational-unit-responsibilities">[val resp unescaped]</div>
       [endif]
       ##
@@ -228,6 +229,7 @@ resourcetype organizational-unit {
     introduction-image-alt : (en : "Image", no : "Bilde", nn : "Bilete"),
     introduction : (en: "Introduction", no: "Innledning", nn : "Innleiing"),
     responsibilities : (en : "Responsibilities", no : "Ansvarsområder", nn : "Ansvarsområder"),
+    responsibilitiesHeader : (en : "We have responsibility for:", no : "Vi har ansvaret for:", nn : "Me har ansvaret for:"),
     employees : (en : "Employees", no : "Ansatte", nn : "Ansatte"),
     employeesLink : (en : "All employees in", no : "Alle ansatte i", nn : "Alle ansatte i"),
     displayEmployees : (

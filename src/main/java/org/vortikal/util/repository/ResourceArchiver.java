@@ -83,13 +83,15 @@ public class ResourceArchiver {
     private Repository repository;
     private ResourceTypeTree resourceTypeTree;
     private File tempDir = new File(System.getProperty("java.io.tmpdir"));
-    
+
     private final String dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ";
     private final String commentPath = "META-INF/COMMENTS/";
 
     public interface EventListener {
         public void expanded(Path uri);
+
         public void archived(Path uri);
+
         public void warn(Path uri, String msg);
     }
 
@@ -124,11 +126,9 @@ public class ResourceArchiver {
         JarInputStream jarIn = new JarInputStream(new BufferedInputStream(source));
         Manifest manifest = jarIn.getManifest();
         if (manifest != null) {
-            String archiveVersion = manifest.getMainAttributes().getValue(
-                    "X-vrtx-archive-version");
+            String archiveVersion = manifest.getMainAttributes().getValue("X-vrtx-archive-version");
             if (archiveVersion != null && !"1.0".equals(archiveVersion)) {
-                throw new RuntimeException("Incompatible archive version: "
-                        + archiveVersion);
+                throw new RuntimeException("Incompatible archive version: " + archiveVersion);
             }
         }
 
@@ -146,18 +146,18 @@ public class ResourceArchiver {
         List<Comment> comments = new ArrayList<Comment>();
         while ((entry = jarIn.getNextJarEntry()) != null) {
             String entryPath = entry.getName();
-            
-            // Keep comments for later processing, add them after resources 
+
+            // Keep comments for later processing, add them after resources
             // have been expanded
             if (entryPath.startsWith(commentPath)) {
-            	try {
-            		comments.add(getArchivedComment(jarIn, base));
-            	} catch (Throwable t) {
-            		t.printStackTrace();
-            	}
-            	continue;
+                try {
+                    comments.add(getArchivedComment(jarIn, base));
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                }
+                continue;
             }
-            
+
             String resourceURI = getExpandedEntryUri(base, entryPath);
 
             Path uri = Path.fromString(resourceURI);
@@ -172,63 +172,64 @@ public class ResourceArchiver {
                 listener.expanded(uri);
         }
         jarIn.close();
-        
-        // We restore comments after everything else, since comments aren't crucial
+
+        // We restore comments after everything else, since comments aren't
+        // crucial
         // And we don't break the archiving if something should go wrong here
         for (Comment comment : comments) {
             try {
-            	this.repository.addComment(token, comment);
+                this.repository.addComment(token, comment);
             } catch (Throwable t) {
-            	t.printStackTrace();
+                t.printStackTrace();
             }
         }
     }
-    
+
     private Comment getArchivedComment(JarInputStream jarIn, Path base) throws Exception {
-    	
-    	BufferedReader reader = new BufferedReader(new InputStreamReader(jarIn));
-    	
-    	String entryLinePrefix = "X-vrtx-comment-";
-		String entryLine = null;
-		String entryKey = null;
-		Map<String, StringBuilder> commentContent = new HashMap<String, StringBuilder>();
-    	while ((entryLine = reader.readLine()) != null) {
-    		entryKey = entryLine.startsWith(entryLinePrefix) ? entryLine.substring(0, entryLine.indexOf(":")) : entryKey;
-    		StringBuilder content = commentContent.get(entryKey);
-    		if (content == null) {
-    			commentContent.put(entryKey, new StringBuilder(entryLine.substring(entryLine.indexOf(":") + 1).trim()));
-    		} else {
-    			content.append("\n" + entryLine);
-    		}
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(jarIn));
+
+        String entryLinePrefix = "X-vrtx-comment-";
+        String entryLine = null;
+        String entryKey = null;
+        Map<String, StringBuilder> commentContent = new HashMap<String, StringBuilder>();
+        while ((entryLine = reader.readLine()) != null) {
+            entryKey = entryLine.startsWith(entryLinePrefix) ? entryLine.substring(0, entryLine.indexOf(":"))
+                    : entryKey;
+            StringBuilder content = commentContent.get(entryKey);
+            if (content == null) {
+                commentContent.put(entryKey, new StringBuilder(entryLine.substring(entryLine.indexOf(":") + 1).trim()));
+            } else {
+                content.append("\n" + entryLine);
+            }
         }
-    	
-    	String path = commentContent.get(entryLinePrefix + "parent").toString();
-    	String author = commentContent.get(entryLinePrefix + "author").toString();
-    	String time = commentContent.get(entryLinePrefix + "time").toString();
-    	String title = null;
-    	if (commentContent.containsKey(entryLinePrefix + "title")) {
-    		title = commentContent.get(entryLinePrefix + "title").toString();
-    	}
-    	String content = commentContent.get(entryLinePrefix + "content").toString();
-    	
-		Comment comment = new Comment();
-    	comment.setURI(Path.fromString(getExpandedEntryUri(base, path)));
-    	comment.setAuthor(this.principalFactory.getPrincipal(author, Type.USER));
-    	comment.setTitle(title);
-    	comment.setTime(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(time.toString()));
-    	comment.setContent(content.toString());
-        
-		return comment;
-	}
-    
+
+        String path = commentContent.get(entryLinePrefix + "parent").toString();
+        String author = commentContent.get(entryLinePrefix + "author").toString();
+        String time = commentContent.get(entryLinePrefix + "time").toString();
+        String title = null;
+        if (commentContent.containsKey(entryLinePrefix + "title")) {
+            title = commentContent.get(entryLinePrefix + "title").toString();
+        }
+        String content = commentContent.get(entryLinePrefix + "content").toString();
+
+        Comment comment = new Comment();
+        comment.setURI(Path.fromString(getExpandedEntryUri(base, path)));
+        comment.setAuthor(this.principalFactory.getPrincipal(author, Type.USER));
+        comment.setTitle(title);
+        comment.setTime(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(time.toString()));
+        comment.setContent(content.toString());
+
+        return comment;
+    }
+
     private String getExpandedEntryUri(Path base, String entryPath) {
-    	String resourceURI = entryPath.startsWith("/") ? base + entryPath : base + "/" + entryPath;
+        String resourceURI = entryPath.startsWith("/") ? base + entryPath : base + "/" + entryPath;
         if (resourceURI.endsWith("/")) {
-            resourceURI = resourceURI
-                    .substring(0, resourceURI.length() - 1);
+            resourceURI = resourceURI.substring(0, resourceURI.length() - 1);
         }
-		return resourceURI;
-	}
+        return resourceURI;
+    }
 
     private void writeManifest(String token, int rootLevel, Resource r, PrintWriter out) throws Exception {
 
@@ -269,15 +270,14 @@ public class ResourceArchiver {
         addAcl(r, out);
 
         if (r.isCollection()) {
-            Resource[] children = this.repository.listChildren(token, r
-                    .getURI(), false);
+            Resource[] children = this.repository.listChildren(token, r.getURI(), false);
             for (Resource child : children) {
                 addManifestEntry(token, fromLevel, child, out);
             }
         }
     }
 
-	private void addProperties(Resource r, PrintWriter out) throws Exception {
+    private void addProperties(Resource r, PrintWriter out) throws Exception {
         List<Property> properties = r.getProperties();
         int propCounter = 0;
         for (Property property : properties) {
@@ -292,8 +292,7 @@ public class ResourceArchiver {
             }
             entry.append(" ");
             entry.append("name:").append(propDef.getName()).append(" ");
-            if (propDef.getType() == PropertyType.Type.DATE
-                    || propDef.getType() == PropertyType.Type.TIMESTAMP) {
+            if (propDef.getType() == PropertyType.Type.DATE || propDef.getType() == PropertyType.Type.TIMESTAMP) {
                 entry.append(property.getFormattedValue(dateFormat, null));
             } else if (propDef.getType() != PropertyType.Type.BINARY) {
                 entry.append(property.getFormattedValue());
@@ -333,8 +332,7 @@ public class ResourceArchiver {
                     empty = false;
                 }
 
-                Principal[] pseudos = acl
-                        .listPrivilegedPseudoPrincipals(action);
+                Principal[] pseudos = acl.listPrivilegedPseudoPrincipals(action);
                 for (int i = 0; i < pseudos.length; i++) {
                     Principal pseudo = pseudos[i];
                     if (!empty || i > 0)
@@ -401,22 +399,20 @@ public class ResourceArchiver {
         }
     }
 
-    private void addEntry(String token, int fromLevel, Resource r,
-            JarOutputStream jarOut, EventListener listener) throws Exception {
+    private void addEntry(String token, int fromLevel, Resource r, JarOutputStream jarOut, EventListener listener)
+            throws Exception {
 
         String path = getJarPath(r, fromLevel);
 
         JarEntry je = new JarEntry(path);
         jarOut.putNextEntry(je);
         if (r.isCollection()) {
-            Resource[] children = this.repository.listChildren(token, r
-                    .getURI(), false);
+            Resource[] children = this.repository.listChildren(token, r.getURI(), false);
             for (Resource child : children) {
                 addEntry(token, fromLevel, child, jarOut, listener);
             }
         } else {
-            InputStream is = this.repository.getInputStream(token, r.getURI(),
-                    false);
+            InputStream is = this.repository.getInputStream(token, r.getURI(), false);
             BufferedInputStream bi = new BufferedInputStream(is);
 
             byte[] buf = new byte[1024];
@@ -425,44 +421,46 @@ public class ResourceArchiver {
                 jarOut.write(buf, 0, n);
             }
             bi.close();
-            
-            // We don't break the archiving if something should go wrong with comments
+
+            // We don't break the archiving if something should go wrong with
+            // comments
             try {
-            	archiveComments(token, r, jarOut);
+                archiveComments(token, r, jarOut);
             } catch (Throwable t) {
-            	t.printStackTrace();
+                t.printStackTrace();
             }
-            
+
         }
         if (listener != null)
             listener.archived(r.getURI());
     }
-    
-    private void archiveComments(String token, Resource r, JarOutputStream jo) throws IOException {
-		List<Comment> comments = this.repository.getComments(token, r);
-		for (Comment comment : comments) {
-	        JarEntry je = new JarEntry(commentPath + comment.getID() + ".txt");
-	        jo.putNextEntry(je);
-	        StringBuilder sb = new StringBuilder();
-	        RequestContext rc = RequestContext.getRequestContext();
-	        Path currentCollection = rc.getCurrentCollection();
-	        Path archivedResourcePath = r.getURI();
-	        String archivedCommentParentPath = archivedResourcePath.toString().substring(
-	                currentCollection.toString().length() + 1);
-	        sb.append("X-vrtx-comment-parent: " + archivedCommentParentPath + "\n");
-	        sb.append("X-vrtx-comment-author: " + comment.getAuthor() + "\n");
-	        String title = comment.getTitle();
-	        if (title != null && !"".equals(title.trim())) {
-	        	sb.append("X-vrtx-comment-title: " + comment.getTitle() + "\n");
-	        }
-	        sb.append("X-vrtx-comment-time: " + comment.getTime() + "\n");
-	        sb.append("X-vrtx-comment-content: " + comment.getContent());
-	        jo.write(sb.toString().getBytes());
-		}
-	}
 
-    private void storePropsAndPermissions(String token, JarEntry entry,
-            Path resourceURI, boolean decode, EventListener listener) throws Exception {
+    private void archiveComments(String token, Resource r, JarOutputStream jo) throws IOException {
+        List<Comment> comments = this.repository.getComments(token, r);
+        for (Comment comment : comments) {
+            JarEntry je = new JarEntry(commentPath + comment.getID() + ".txt");
+            jo.putNextEntry(je);
+            StringBuilder sb = new StringBuilder();
+            RequestContext rc = RequestContext.getRequestContext();
+            Path currentCollection = rc.getCurrentCollection();
+            Path archivedResourcePath = r.getURI();
+            int subStringIndex = currentCollection.isRoot() ? currentCollection.toString().length() : currentCollection
+                    .toString().length() + 1;
+            String archivedCommentParentPath = archivedResourcePath.toString().substring(subStringIndex);
+            sb.append("X-vrtx-comment-parent: " + archivedCommentParentPath + "\n");
+            sb.append("X-vrtx-comment-author: " + comment.getAuthor() + "\n");
+            String title = comment.getTitle();
+            if (title != null && !"".equals(title.trim())) {
+                sb.append("X-vrtx-comment-title: " + comment.getTitle() + "\n");
+            }
+            sb.append("X-vrtx-comment-time: " + comment.getTime() + "\n");
+            sb.append("X-vrtx-comment-content: " + comment.getContent());
+            jo.write(sb.toString().getBytes());
+        }
+    }
+
+    private void storePropsAndPermissions(String token, JarEntry entry, Path resourceURI, boolean decode,
+            EventListener listener) throws Exception {
         Attributes attributes = entry.getAttributes();
         if (attributes == null) {
             return;
@@ -502,9 +500,8 @@ public class ResourceArchiver {
         }
     }
 
-    private boolean setProperty(Resource resource, String name,
-            Attributes attributes, boolean decode, EventListener listener) 
-        throws Exception {
+    private boolean setProperty(Resource resource, String name, Attributes attributes, boolean decode,
+            EventListener listener) throws Exception {
         String valueString = attributes.getValue(name);
         if (decode) {
             valueString = decodeValue(valueString);
@@ -518,9 +515,7 @@ public class ResourceArchiver {
         String rawValue = parseRawValue(valueString);
         if (rawValue == null || "".equals(rawValue.trim())) {
             if (listener != null) {
-                listener.warn(resource.getURI(), 
-                        "empty value for property '" 
-                        + propDef.getName() + "', skipping");
+                listener.warn(resource.getURI(), "empty value for property '" + propDef.getName() + "', skipping");
             }
             return false;
         }
@@ -531,8 +526,7 @@ public class ResourceArchiver {
         }
         ValueFormatter valueFormatter = propDef.getValueFormatter();
         String format = null;
-        if (propDef.getType() == PropertyType.Type.DATE
-                || propDef.getType() == PropertyType.Type.TIMESTAMP) {
+        if (propDef.getType() == PropertyType.Type.DATE || propDef.getType() == PropertyType.Type.TIMESTAMP) {
             format = dateFormat;
         }
 
@@ -540,13 +534,11 @@ public class ResourceArchiver {
             List<Value> values = new ArrayList<Value>();
             String[] splitValues = rawValue.split(",");
             for (String val : splitValues) {
-                values.add(valueFormatter.stringToValue(val.trim(), format,
-                        null));
+                values.add(valueFormatter.stringToValue(val.trim(), format, null));
             }
             prop.setValues(values.toArray(new Value[values.size()]));
         } else {
-            prop.setValue(valueFormatter.stringToValue(rawValue.trim(), format,
-                    null));
+            prop.setValue(valueFormatter.stringToValue(rawValue.trim(), format, null));
         }
         return true;
     }
@@ -580,8 +572,7 @@ public class ResourceArchiver {
             nameEndIdx++;
         }
         name = valueString.substring(idx, nameEndIdx);
-        return this.resourceTypeTree
-                .getPropertyDefinitionByPrefix(prefix, name);
+        return this.resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
     }
 
     private String parseRawValue(String valueString) {
@@ -597,8 +588,8 @@ public class ResourceArchiver {
         return valueString.substring(idx);
     }
 
-    private boolean setAclEntry(Resource resource, String name,
-            Attributes attributes, boolean decode, EventListener listener) throws Exception {
+    private boolean setAclEntry(Resource resource, String name, Attributes attributes, boolean decode,
+            EventListener listener) throws Exception {
         String actionName = name.substring("X-vrtx-acl-".length());
         RepositoryAction action = Privilege.getActionByName(actionName);
 
@@ -635,15 +626,12 @@ public class ResourceArchiver {
                         acl.addEntry(action, p);
                     } else {
                         if (listener != null) {
-                            listener.warn(resource.getURI(), 
-                                    "Invalid acl entry: " 
-                                    + p + ":" + action + ", skipping");
+                            listener.warn(resource.getURI(), "Invalid acl entry: " + p + ":" + action + ", skipping");
                         }
                     }
                 } else {
                     if (listener != null) {
-                        listener.warn(resource.getURI(), 
-                                "Invalid principal: " + p + ", skipping");
+                        listener.warn(resource.getURI(), "Invalid principal: " + p + ", skipping");
                     }
                 }
             }
@@ -664,8 +652,7 @@ public class ResourceArchiver {
         return false;
     }
 
-    private void writeFile(String token, Path uri, ZipInputStream is)
-            throws Exception {
+    private void writeFile(String token, Path uri, ZipInputStream is) throws Exception {
         this.repository.createDocument(token, uri);
         this.repository.storeContent(token, uri, new PartialZipStream(is));
     }
@@ -677,8 +664,7 @@ public class ResourceArchiver {
         return s;
     }
 
-    private void createDirectoryStructure(String token, Path dir,
-            Set<Path> dirCache) throws Exception {
+    private void createDirectoryStructure(String token, Path dir, Set<Path> dirCache) throws Exception {
         List<Path> path = dir.getPaths();
         for (Path p : path) {
             if (!dirCache.contains(p)) {
@@ -734,12 +720,10 @@ public class ResourceArchiver {
     public void setTempDir(String tempDirPath) {
         File tmp = new File(tempDirPath);
         if (!tmp.exists()) {
-            throw new IllegalArgumentException("Unable to set tempDir: file "
-                    + tmp + " does not exist");
+            throw new IllegalArgumentException("Unable to set tempDir: file " + tmp + " does not exist");
         }
         if (!tmp.isDirectory()) {
-            throw new IllegalArgumentException("Unable to set tempDir: file "
-                    + tmp + " is not a directory");
+            throw new IllegalArgumentException("Unable to set tempDir: file " + tmp + " is not a directory");
         }
         this.tempDir = tmp;
     }

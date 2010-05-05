@@ -128,6 +128,8 @@ public class Logout extends SamlService {
         if (url == null) {
             throw new InvalidRequestException("No URL session attribute exists, nowhere to redirect");
         }
+        this.securityInitializer.removeAuthState(request, response);
+        
         session.removeAttribute(URL_SESSION_ATTR);
         session.removeAttribute(REQUEST_ID_SESSION_ATTR);
 

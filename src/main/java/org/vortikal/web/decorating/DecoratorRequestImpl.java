@@ -90,7 +90,10 @@ public class DecoratorRequestImpl implements DecoratorRequest {
     
     public String getStringParameter(String name) {
         Object value = getParameter(name);
-        return (String) value;
+        if (value == null) {
+            return null;
+        }
+        return value.toString();
     }
     
     public String getDoctype() {

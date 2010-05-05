@@ -210,7 +210,7 @@ resourcetype organizational-unit {
   }
 
   localization {
-    header : (en : "Edit organizational unit", no : "Rediger administrativ enhet", nn : "Rediger administrativ enhet"),
+    header : (en : "Edit organizational unit", no : "Rediger organisatorisk enhet", nn : "Rediger organisatorisk enhet"),
     areacode : (en : "Area code", no : "Stedskode", nn : "Stadkode"),
     getExternalUnitInfo : (
       en : "Use information registrated in UiO's payroll- and personalsystem",

@@ -66,6 +66,26 @@ public class SelectiveProtocolManager extends RequestProtocolAssertion
     private boolean selectiveAccessEnabled = false;
     
     
+    /**
+     * {@link RequestProtocolAssertion#processURL(URL, Resource, Principal, boolean)}
+     */
+    @Override
+    public boolean processURL(URL url, Resource resource, Principal principal,
+            boolean match) {
+        return super.processURL(url, resource, principal, match);
+    }
+
+    /**
+     * {@link RequestProtocolAssertion#processURL(URL)}
+     */
+    @Override
+    public void processURL(URL url) {
+        super.processURL(url);
+    }
+
+    /**
+     * {@link URLPostProcessor#processURL(URL, Resource, Service)}
+     */
     @Override
     public void processURL(URL url, Resource resource, Service service) throws Exception {
         if (!this.selectiveAccessEnabled) {
@@ -88,9 +108,13 @@ public class SelectiveProtocolManager extends RequestProtocolAssertion
         url.setProtocol("http");
     }
 
+    /**
+     * {@link URLPostProcessor#processURL(URL, Service)}
+     */
     @Override
     public void processURL(URL url, Service service) throws Exception {
     }
+    
 
     @Override
     public boolean matches(HttpServletRequest request, Resource resource,
@@ -117,7 +141,7 @@ public class SelectiveProtocolManager extends RequestProtocolAssertion
         Resource resource = retrieveResource();
 
         if (resource.isReadRestricted()) {
-            redirect(request, response);
+            redirectSSL(request, response);
             return false;
         }
 
@@ -129,11 +153,11 @@ public class SelectiveProtocolManager extends RequestProtocolAssertion
                 return true;
             }
         }
-        redirect(request, response);
+        redirectSSL(request, response);
         return false;
     }
     
-    private void redirect(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    private void redirectSSL(HttpServletRequest request, HttpServletResponse response) throws Exception {
         URL url = URL.create(request);
         url.setProtocol("https");
         response.sendRedirect(url.toString());

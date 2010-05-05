@@ -30,7 +30,9 @@ resourcetype organizational-unit {
     displayEmployees (before selectedEmployees),
     selectedEmployees (size[8]),
     group employees (displayEmployees, selectedEmployees, numberOfEmployeesToDisplay, urlToEmployeesList) (after responsibilities),
-    numberOfEmployeesToDisplay (dropdown)
+    numberOfEmployeesToDisplay (dropdown),
+    postalAddress tooltip (en : "(postbox / streetaddress, postnumber place)", no : "(postboks / gateadresse, postnummer sted)", nn : "(postboks / gateadresse, postnummer sted)"),
+    visitingAddress tooltip (en : "(building, streetaddress, postnumber place)", no : "(bygning, gateadresse, postnummer sted)", nn : "(bygning, gateadresse, postnummer sted)")
   }
 
   scripts {

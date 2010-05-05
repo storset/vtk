@@ -130,13 +130,28 @@ resourcetype organizational-unit {
       [endif]
       ##
     }
-    
+
     related-content {
       ##
-      [def related resource-prop(".", "related-content")]
+      [resource-props "."]
+      [def document structured-document()]
+      [def related json-attr(document, "properties.related-content")]
       [if related != null && related != ""]
         <div id="vrtx-related-content">
           [val related unescaped]
+        </div>
+      [endif]
+      ##
+    }
+    
+    content {
+      ##
+      [resource-props "."]
+      [def document structured-document()]
+      [def theContent json-attr(document, "properties.content")]
+      [if theContent != null && theContent != ""]
+        <div class="vrtx-frontpage-box white-box">
+          [val theContent unescaped]
         </div>
       [endif]
       ##
@@ -146,7 +161,7 @@ resourcetype organizational-unit {
       ##
       [def url resource-prop(".", "urlToEmployeesList")]
       [def title resource-prop(".", "title")]
-      <div id="vrtx-organizational-unit-employees">
+      <div id="vrtx-organizational-unit-employees" class="vrtx-frontpage-box white-box">
         [if url != null && url != ""]
           <h2><a href="[val url]">[localized "employees"]</a></h2>
         [else]
@@ -178,9 +193,8 @@ resourcetype organizational-unit {
               <comp:introduction />
               <comp:responsibilities />
             </div>
-            <div class="vrtx-frontpage-box white-box">
-              <comp:employees />
-            </div>
+            <comp:employees />
+            <comp:content />
           </div>
           <div id="vrtx-additional-content">
             <div class="vrtx-frontpage-box">

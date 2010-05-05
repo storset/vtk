@@ -14,7 +14,7 @@ resourcetype organizational-unit {
       overrides title default name,
     picture : image_ref,
     introduction : simple_html,
-    responsibilities : html,
+    responsibilities : html,   
     selectedEmployees : string multiple,
     numberOfEmployeesToDisplay : string,
     urlToEmployeesList : string,

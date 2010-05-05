@@ -35,17 +35,26 @@
     <property name="order" value="-1000" />
     <property name="assertions">
       <list>
-        <bean class="org.vortikal.web.service.IsAuthenticatedAssertion" />
-        <ref bean="logoutIsSupported" />
-        <ref bean="vrtxParameterEqualsLogout" />
+        <ref bean="logoutRequestParameter" />
         <bean class="org.vortikal.web.service.RequestMethodAssertion">
           <property name="method" value="POST" />
+        </bean>
+        <bean class="org.vortikal.web.service.IsAuthenticatedAssertion">
+          <property name="requiresAuthentication" value="true" />
+        </bean>
+        <ref bean="logoutIsSupported" />
+        <bean class="org.vortikal.web.service.RequestProtocolAssertion">
+          <property name="protocol" value="${logout.protocol}" />
         </bean>
       </list>
     </property>
     <property name="handlerFilters">
       <list>
-        <ref bean="system.csrfPreventionHandler" />
+        <!-- XXX: temporarily disabled: will not work
+             when using different session cookie setup to
+             store CSRF prevention secret: -->
+
+        <!--ref bean="system.csrfPreventionHandler" /-->
       </list>
     </property>
     <property name="handler" ref="logoutHandler" />
@@ -262,8 +271,6 @@
     <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" />
   </bean>
 
-  <!-- XXX: verify this assertion: when should authTarget have effect? -->
-  <!-- XXX: verify that this works when webProtocol = manageProtocol = ssl  -->
   <bean id="authTarget.enabledAssertion" class="org.vortikal.web.service.ConfigAssertion">
     <property name="config" value="${webProtocolRestricted}" />
     <property name="expectedValue" value="https" />
@@ -278,8 +285,8 @@
 
   <!-- Logout -->
 
-  <bean id="vrtxParameterEqualsLogout" 
-        parent="vrtxParameterEquals">
+  <bean id="logoutRequestParameter" class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="action" />
     <property name="parameterValue" value="logout" />
   </bean>
 

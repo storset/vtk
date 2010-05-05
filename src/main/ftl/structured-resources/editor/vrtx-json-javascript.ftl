@@ -140,6 +140,7 @@
 	  while($(elementId).length){	  	
 	  	for(x in arrayOfIds){
 	    	var elementId1 = '#' + arrayOfIds[x] + i; 
+	    	$(elementId1).attr("name",arrayOfIds[x].replace(/\\/g, "") + (i-1));
 	  		$(elementId1).attr("id",arrayOfIds[x].replace(/\\/g, "") + (i-1));
 	  		$('label[for='+ arrayOfIds[x] + i +']').attr("for", arrayOfIds[x].replace(/\\/g, "") + (i-1));
 	  		$('div'+elementId1+'\\.preview').attr("id",arrayOfIds[x].replace(/\\/g, "") + (i-1) + '.preview');	

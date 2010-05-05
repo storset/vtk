@@ -116,8 +116,11 @@
 
 
   <bean id="authTarget.redirectSSLService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="webService" />
+    <!--
+   <property name="parent" ref="webService" />
     <property name="order" value="-10000" />
+   -->
+    <property name="order" value="-2" />
     <property name="assertions">
       <list>
         <ref bean="authTarget.enabledAssertion" />
@@ -139,13 +142,17 @@
         <property name="protocol" value="https" />
       </bean>
     </property>
+    <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" />
   </bean>
 
   <bean id="authTarget.authService" class="org.vortikal.web.service.ServiceImpl">
+    <!--
    <property name="parent" ref="webService" />
     <property name="order" value="-10000" />
-   <property name="assertions">
-     <list>
+   -->
+    <property name="order" value="-2" />
+    <property name="assertions">
+      <list>
         <ref bean="authTarget.enabledAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterExistsAssertion">
           <property name="parameterName" value="authTarget" />
@@ -160,13 +167,17 @@
         <bean class="org.vortikal.web.service.RequestProtocolAssertion">
           <property name="protocol" value="https" />
         </bean>
-     </list>
-   </property>
+      </list>
+    </property>
+    <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" />
   </bean>
 
   <bean id="authTarget.redirectRestrictedResourceService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="webService" />
+    <!--
+   <property name="parent" ref="webService" />
     <property name="order" value="-10000" />
+   -->
+    <property name="order" value="-2" />
     <property name="assertions">
       <list>
         <ref bean="authTarget.enabledAssertion" />
@@ -185,11 +196,15 @@
         <property name="removedParameters" value="authTarget" />
       </bean>
     </property>
+    <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" />
   </bean>
 
   <bean id="authTarget.redirectOpenResourceService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="webService" />
+    <!--
+   <property name="parent" ref="webService" />
     <property name="order" value="-10000" />
+   -->
+    <property name="order" value="-2" />
     <property name="assertions">
       <list>
         <ref bean="authTarget.enabledAssertion" />
@@ -213,11 +228,15 @@
         <property name="protocol" value="http" />
       </bean>
     </property>
+    <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" />
   </bean>
 
   <bean id="authTarget.removeRequestParameterService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="webService" />
+    <!--
+   <property name="parent" ref="webService" />
     <property name="order" value="-10000" />
+   -->
+    <property name="order" value="-2" />
     <property name="assertions">
       <list>
         <ref bean="authTarget.enabledAssertion" />
@@ -240,6 +259,7 @@
         <property name="removedParameters" value="authTarget" />
       </bean>
     </property>
+    <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" />
   </bean>
 
   <!-- XXX: verify this assertion: when should authTarget have effect? -->

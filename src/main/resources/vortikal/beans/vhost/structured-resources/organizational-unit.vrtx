@@ -267,5 +267,5 @@ resourcetype organizational-unit {
     content : (en: "Content", no: "Innhold", nn : "Innhald"),
     related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold")
   }
-
+  
 }

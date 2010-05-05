@@ -104,10 +104,14 @@
      // Need a move down button for the element before the element we are inserting 
      lastElement = "vrtx-" + j.type + "-element-" + j.name + "-" + (counter-1);
      var moveDownButton = "<input type=\"button\" class=\"vrtx-move-down-button\" value=\"&darr; ${vrtx.getMsg("editor.move-down")}\" onClick=\"swapContent(" + (counter-1) + ", " + arrayOfIds.toString() + "), 1)\" />";
-     $("#" + lastElement).append(moveDownButton);
-     
+     if(counter > 0){
+     	$("#" + lastElement).append(moveDownButton);
+     }
      //The new element needs a move up button and also a delete button
-     var moveUpButton = "<input type=\"button\" class=\"vrtx-move-up-button\" value=\"&uarr; ${vrtx.getMsg("editor.move-up")}\" onClick=\"swapContent(" + counter + ", " + arrayOfIds.toString() + "), -1)\" />";
+     var moveUpButton = "";
+     if(counter > 0){
+     	moveUpButton ="<input type=\"button\" class=\"vrtx-move-up-button\" value=\"&uarr; ${vrtx.getMsg("editor.move-up")}\" onClick=\"swapContent(" + counter + ", " + arrayOfIds.toString() + "), -1)\" />";
+     }
      var deleteButton = "<input type=\"button\" class=\"vrtx-remove-button\" value=\"${vrtx.getMsg("editor.remove")}\" onClick=\"removeNode('" + j.name + "'," + counter + ", " + arrayOfIds.toString() + "))\" \/>";
      $("#" + j.name +" .vrtx-add-button").before("<div class=\"vrtx-json-element\" id=\"vrtx-json-element-" + j.name + "-" + counter + "\">" +  htmlTemplate + deleteButton + moveUpButton + "<\/div>");
      

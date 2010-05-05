@@ -140,7 +140,7 @@
           <#assign jsonAttrLocalizedTitle = form.resource.getLocalizedMsg(attrName, locale, null) />
           <@printJsonProperyEditView jsonAttr.type jsonAttrLocalizedTitle tmpName "" elem attrName jsonAttr locale />
         </#list>
-        <input type="button" class="vrtx-remove-button" value="${vrtx.getMsg("editor.remove")}" onClick="$('#vrtx-json-element-${inputFieldName}-${counter}').remove()" />
+        <input type="button" class="vrtx-remove-button" value="${vrtx.getMsg("editor.remove")}" onClick="removeNode('${inputFieldName}',${counter},${arrayOfIds})" />
       </div>
     </#if>
 

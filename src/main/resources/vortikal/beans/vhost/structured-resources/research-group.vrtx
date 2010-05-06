@@ -156,13 +156,13 @@ resourcetype research-group {
             <comp:introduction-image />
             <json:field select="content" />
             <resource:tags />
+            <comp:vrtx-date-info />
           </div>
           <div id="vrtx-additional-content">
             <comp:contact-info />
             <resource:person-list />
             <comp:feeds />
-          </div>
-          <comp:vrtx-date-info />
+          </div> 
         </div>
       </body>
     </html>

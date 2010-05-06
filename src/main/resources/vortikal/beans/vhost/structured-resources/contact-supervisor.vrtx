@@ -37,13 +37,13 @@ resourcetype contact-supervisor {
              <div class="vrtx-contact-supervisor-description">
                [if description != null && description != ""]
                  [val description unescaped]
-               [endif]             
+               [endif]
              </div>
              
              <div class="vrtx-contact-supervisor-contact-info">
                [if contactInfo != null && contactInfo != ""]
                  [val contactInfo unescaped]
-               [endif]             
+               [endif]
              </div>
            
            </div>
@@ -64,7 +64,7 @@ resourcetype contact-supervisor {
       <body id="vrtx-contact-supervisor">
           <div id="vrtx-content">
             <div id="vrtx-main-content">
-              <h1><comp:title /></h1>      
+              <h1><comp:title /></h1>
               <comp:contact-supervisor-box />
             </div>
           </div>

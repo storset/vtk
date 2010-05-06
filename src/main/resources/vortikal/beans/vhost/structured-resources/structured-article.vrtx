@@ -28,13 +28,13 @@ resourcetype structured-article : structured-document {
       ##
       [def authors resource-prop(".", "author")]
       [if authors != null && authors != ""]
-        <span class="vrtx-authors"><span class="vrtx-authors-prefix">[localized "by-line"]</span> 
+        <span class="vrtx-authors"><span class="vrtx-authors-prefix">[localized "by-line"]</span>
         [list authors author]
           [if _first]
           [else]
             [if _last] [localized "authorsAnd"] [else], [endif]
           [endif]
-        [val author]  
+        [val author]
         [endlist]
         </span>
       [endif]
@@ -55,7 +55,7 @@ resourcetype structured-article : structured-document {
               [val theRelated-content unescaped]
             </div>
           [endif]
-        </div> 
+        </div>
       [endif]
       ##
     }
@@ -90,7 +90,7 @@ resourcetype structured-article : structured-document {
         <title><comp:title /></title>
       </head>
       <body id="vrtx-structured-article">
-        <div id="vrtx-content"> 
+        <div id="vrtx-content">
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-${resource:property id=[resource:hideAdditionalContent]}">
             <h1><comp:title /></h1>
             <comp:introduction />

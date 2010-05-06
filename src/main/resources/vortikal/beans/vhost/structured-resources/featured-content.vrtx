@@ -54,7 +54,7 @@ resourcetype featured-content {
                  [endif]
                  [if content != null && content != ""]
                    <div class="vrtx-box-sub-content">[val content unescaped]</div>
-                 [endif]  
+                 [endif]
                </div>
                [if urlText != null && urlText != ""]
                  <div class="vrtx-more">
@@ -100,7 +100,7 @@ resourcetype featured-content {
      title : (en : "Title", no : "Tittel", nn : "Tittel"),
      featured-items : (en : "Featured items", no : "Fremhevede saker", nn : "Fremhevede saker"),
      featuredStickTitle : (en : "Sticktitle", no : "Stikktittel", nn : "Stikktittel"),
-     featuredTitle : (en : "Title", no : "Tittel", nn : "Tittel"), 
+     featuredTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
      featuredDate : (en : "Date", no : "Dato", nn : "Dato"),
      featuredPicture : (en : "Picture", no : "Bilde", nn : "Bilete"),
      featuredPictureAlt : (en : "Picture to ", no : "Bilde til ", nn : "Bilete til "),

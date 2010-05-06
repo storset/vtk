@@ -6,7 +6,7 @@
   <script language="Javascript" type="text/javascript">
   
   LIST_OF_JSON_ELEMENTS = new Array();
-  $(document).ready(function() {   
+  $(document).ready(function() {
   
   <#assign i = 0 />
   <#list form.elements as elementBox>
@@ -55,7 +55,7 @@
     
     function getCounterForJson(inputFieldName, jsonAttr) {
       var i = 0;
-      while( $("#" + inputFieldName + "\\." + jsonAttr + "\\." + i).size() > 0 ) {   
+      while( $("#" + inputFieldName + "\\." + jsonAttr + "\\." + i).size() > 0 ) {
         i++;
       }
       return i;
@@ -104,13 +104,13 @@
      // Need a move down button for the element before the element we are inserting 
      lastElement = "vrtx-" + j.type + "-element-" + j.name + "-" + (counter-1);
      var moveDownButton = "<input type=\"button\" class=\"vrtx-move-down-button\" value=\"&darr; ${vrtx.getMsg("editor.move-down")}\" onClick=\"swapContent(" + (counter-1) + ", " + arrayOfIds.toString() + "), 1)\" />";
-     if(counter > 0){
-     	$("#" + lastElement).append(moveDownButton);
+     if (counter > 0){
+        $("#" + lastElement).append(moveDownButton);
      }
      //The new element needs a move up button and also a delete button
      var moveUpButton = "";
-     if(counter > 0){
-     	moveUpButton ="<input type=\"button\" class=\"vrtx-move-up-button\" value=\"&uarr; ${vrtx.getMsg("editor.move-up")}\" onClick=\"swapContent(" + counter + ", " + arrayOfIds.toString() + "), -1)\" />";
+     if (counter > 0){
+        moveUpButton ="<input type=\"button\" class=\"vrtx-move-up-button\" value=\"&uarr; ${vrtx.getMsg("editor.move-up")}\" onClick=\"swapContent(" + counter + ", " + arrayOfIds.toString() + "), -1)\" />";
      }
      var deleteButton = "<input type=\"button\" class=\"vrtx-remove-button\" value=\"${vrtx.getMsg("editor.remove")}\" onClick=\"removeNode('" + j.name + "'," + counter + ", " + arrayOfIds.toString() + "))\" \/>";
      $("#" + j.name +" .vrtx-add-button").before("<div class=\"vrtx-json-element\" id=\"vrtx-json-element-" + j.name + "-" + counter + "\">" +  htmlTemplate + deleteButton + moveUpButton + "<\/div>");
@@ -118,7 +118,7 @@
      // Fck.........
      for (i in j.a) {
        var inputFieldName = j.name + "." + j.a[i].name + "." + counter;
-       if (j.a[i].type == "simple_html") {  
+       if (j.a[i].type == "simple_html") {
          newEditor(inputFieldName, false, false, '${resourceContext.parentURI}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
           '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', '');
        } else if (j.a[i].type == "html") {
@@ -132,62 +132,62 @@
   }
   
   function removeNode(name,counter,arrayOfIds){
-	  var removeElementId = '#vrtx-json-element-' + name + '-' + counter;
-	  var up = $(removeElementId).find(".vrtx-move-up-button"); 
-	  var down = $(removeElementId).find(".vrtx-move-down-button"); 
-	  var remove = $(removeElementId).find(".vrtx-remove-button"); 	  
-	  $(removeElementId).remove();	  	
-	  
-	  var i = counter+1;	  
-	  var elementId = '#vrtx-json-element-' + name + '-' + i;
+     var removeElementId = '#vrtx-json-element-' + name + '-' + counter;
+     var up = $(removeElementId).find(".vrtx-move-up-button");
+     var down = $(removeElementId).find(".vrtx-move-down-button");
+     var remove = $(removeElementId).find(".vrtx-remove-button");
+     $(removeElementId).remove();
+     
+     var i = counter+1;
+     var elementId = '#vrtx-json-element-' + name + '-' + i;
 
-	  while($(elementId).length){	  	
-	  	for(x in arrayOfIds){
-	    	var elementId1 = '#' + arrayOfIds[x] + i; 
-	    	$(elementId1).attr("name",arrayOfIds[x].replace(/\\/g, "") + (i-1));
-	  		$(elementId1).attr("id",arrayOfIds[x].replace(/\\/g, "") + (i-1));
-	  		$('label[for='+ arrayOfIds[x] + i +']').attr("for", arrayOfIds[x].replace(/\\/g, "") + (i-1));
-	  		$('div'+elementId1+'\\.preview').attr("id",arrayOfIds[x].replace(/\\/g, "") + (i-1) + '.preview');	
-	  	}
+     while($(elementId).length) {
+        for(x in arrayOfIds){
+          var elementId1 = '#' + arrayOfIds[x] + i;
+          $(elementId1).attr("name", arrayOfIds[x].replace(/\\/g, "") + (i-1));
+           $(elementId1).attr("id", arrayOfIds[x].replace(/\\/g, "") + (i-1));
+           $('label[for='+ arrayOfIds[x] + i +']').attr("for", arrayOfIds[x].replace(/\\/g, "") + (i-1));
+           $('div'+elementId1+'\\.preview').attr("id", arrayOfIds[x].replace(/\\/g, "") + (i-1) + '.preview');
+        }
 
-		var remove2 = $(elementId).find(".vrtx-remove-button");
-		$(elementId).find(".vrtx-remove-button").remove();
-		$(elementId).append(remove);
-		remove = remove2;
-		
-		var previousElementId = 'vrtx-json-element-' + name + '-' + (i-1);
-	  	var up2 = $(elementId).find(".vrtx-move-up-button");
-	  	$(elementId).find(".vrtx-move-up-button").remove();
-		$(elementId).append(up);
-	  	up=up2;
-		
-		var nextElementId = '#vrtx-json-element-' + name + '-' + (i+1);
-	  	var down2 = $(elementId).find(".vrtx-move-down-button");
-	  	$(elementId).find(".vrtx-move-down-button").remove();
-		if($(nextElementId).length){
-		  	$(elementId).append(down);
-		}
-		down = down2;	  	
-	  	  	
-	  	if((i-1) == 0 && !$(nextElementId)){
-	  		$(previousElementId).find(".vrtx-move-down-button").remove();
-	  	} 
+      var remove2 = $(elementId).find(".vrtx-remove-button");
+      $(elementId).find(".vrtx-remove-button").remove();
+      $(elementId).append(remove);
+      remove = remove2;
+      
+      var previousElementId = 'vrtx-json-element-' + name + '-' + (i-1);
+        var up2 = $(elementId).find(".vrtx-move-up-button");
+        $(elementId).find(".vrtx-move-up-button").remove();
+      $(elementId).append(up);
+        up=up2;
+      
+      var nextElementId = '#vrtx-json-element-' + name + '-' + (i+1);
+        var down2 = $(elementId).find(".vrtx-move-down-button");
+        $(elementId).find(".vrtx-move-down-button").remove();
+      if ($(nextElementId).length){
+           $(elementId).append(down);
+      }
+      down = down2;
+             
+        if ((i-1) == 0 && !$(nextElementId)){
+           $(previousElementId).find(".vrtx-move-down-button").remove();
+        }
 
-	  	$(elementId).attr("id",previousElementId);
-	    elementId = nextElementId;
-	   	i++;
-	  }  
-	  
-	  if(i == (counter+1)){ // when removing the last element in the list
-	  	var nextElementId = '#vrtx-json-element-' + name + '-' + (i+1);
-	  	var previousElementId = '#vrtx-json-element-' + name + '-' + (i-2);
-	  	if(!$(nextElementId).length){
-	  		$(previousElementId).find(".vrtx-move-down-button").remove();
-	  	}
-	  	if(!$(previousElementId).length){
-	  		$(elementId).find(".vrtx-move-up-button").remove();
-	  	}	  	
-	  }
+        $(elementId).attr("id",previousElementId);
+       elementId = nextElementId;
+         i++;
+     }
+     
+     if (i == (counter+1)){ // when removing the last element in the list
+        var nextElementId = '#vrtx-json-element-' + name + '-' + (i+1);
+        var previousElementId = '#vrtx-json-element-' + name + '-' + (i-2);
+        if (!$(nextElementId).length){
+           $(previousElementId).find(".vrtx-move-down-button").remove();
+        }
+        if (!$(previousElementId).length){
+           $(elementId).find(".vrtx-move-up-button").remove();
+        }
+     }
   }
   
   function addDropdown(elem, inputFieldName) {
@@ -226,7 +226,7 @@
   }
   
   function addHtmlField(elem, inputFieldName) {
-    var htmlTemplate = new String();   
+    var htmlTemplate = new String();
     var baseclass = "vrtx-html";
     if (elem.type == "simple_html") {
       baseclass = "vrtx-simple-html";
@@ -311,8 +311,8 @@
     return oEditor != null;
   }
   
-  function swapContent(counter, arrayOfIds, move) {  
-    for (x in arrayOfIds) {  
+  function swapContent(counter, arrayOfIds, move) {
+    for (x in arrayOfIds) {
       var elementId1 = '#' + arrayOfIds[x] + counter;
       var elementId2 = '#' + arrayOfIds[x] + (counter + move);
 
@@ -324,7 +324,7 @@
         var val2 = getFckValue(fckInstanceName2);
         setFckValue(fckInstanceName1, val2);
         setFckValue(fckInstanceName2, val1);
-      } else if ($(elementId1).hasClass("date") && $(elementId2).hasClass("date")) {    
+      } else if ($(elementId1).hasClass("date") && $(elementId2).hasClass("date")) {
         var date1 = $(elementId1 + '-date');
         var hours1 = $(elementId1 + '-hours');
         var minutes1 = $(elementId1 + '-minutes');
@@ -357,10 +357,10 @@
       element1.val(val2);
       element2.val(val1);
 
-	  element1.blur();
-	  element2.blur();
-	  element1.change();
-	  element2.change();
+     element1.blur();
+     element2.blur();
+     element1.change();
+     element2.change();
     }
   }
 

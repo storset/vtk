@@ -6,7 +6,7 @@ resourcetype frontpage {
     picture : image_ref,
     caption : simple_html,
     main-content : json (boxTitle : string, boxCssSizeAndPlacement : string, boxCssColor : string, boxType : string, boxPicture : image_ref, boxContent : html, boxUrlText : string, boxUrl : string) multiple noextract,
-    additional-content : json (boxTitle : string, boxType : string, boxPicture : image_ref, boxContent : html, boxUrlText : string,  boxUrl : string) multiple noextract,
+    additional-content : json (boxTitle : string, boxType : string, boxPicture : image_ref, boxContent : html, boxUrlText : string, boxUrl : string) multiple noextract,
     cssUrl : string
   }
 
@@ -77,14 +77,14 @@ resourcetype frontpage {
             <div class="vrtx-frontpage-box-picture">
               [if url != null && url != ""]
                 <a href="[val url]">
-                [if title != null && title != ""] 
+                [if title != null && title != ""]
                   <img src="[val picture]" alt="[val title]" />
                 [else]
                   <img src="[val picture]" alt="[val picture]" />
                 [endif]
                  </a>
               [else]
-                [if title != null && title != ""] 
+                [if title != null && title != ""]
                   <img src="[val picture]" alt="[val title]" />
                 [else]
                   <img src="[val picture]" alt="[val picture]" />
@@ -95,8 +95,8 @@ resourcetype frontpage {
             <div class="vrtx-box-content">
               [if content != null && content != ""]
                 [val content unescaped]
-              [endif]             
-            </div> 
+              [endif]
+            </div>
             [if urlText != null && urlText != ""]
               <div class="vrtx-more">
               [if url != null && url != ""]
@@ -132,7 +132,7 @@ resourcetype frontpage {
               <div class="vrtx-frontpage-box [val type]" id="vrtx-additional-content-[val number]">
             [else]
               <div class="vrtx-frontpage-box" id="vrtx-additional-content-[val number]">
-            [endif] 
+            [endif]
               [if title != null && title != ""]
                 [if url != null && url != ""]
                   <h2><a href="[val url]">[val title]</a></h2>
@@ -144,14 +144,14 @@ resourcetype frontpage {
                 <div class="vrtx-frontpage-box-picture">
                   [if url != null && url != ""]
                     <a href="[val url]">
-                      [if title != null && title != ""] 
+                      [if title != null && title != ""]
                         <img src="[val picture]" alt="[val title]" />
                       [else]
                         <img src="[val picture]" alt="[val picture]" />
                       [endif]
                     </a>
                   [else]
-                    [if title != null && title != ""] 
+                    [if title != null && title != ""]
                       <img src="[val picture]" alt="[val title]" />
                     [else]
                       <img src="[val picture]" alt="[val picture]" />
@@ -173,7 +173,7 @@ resourcetype frontpage {
                 [endif]
                 </div>
               [endif]
-            </div>      
+            </div>
           [endlist]
         </div>
       [endif]
@@ -274,7 +274,7 @@ resourcetype frontpage {
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <comp:css-link />   
+        <comp:css-link />
         <title><comp:title /></title>
       </head>
       <body id="vrtx-frontpage">
@@ -282,7 +282,7 @@ resourcetype frontpage {
           <h1><comp:title /></h1>
           <div id="vrtx-main-content">
             <comp:introduction-image />
-            <comp:introduction />   
+            <comp:introduction />
             <comp:main-content />
           </div>
           <comp:additional-content />
@@ -316,7 +316,7 @@ resourcetype frontpage {
      additional-content : (en : "Additional content (default as right-column)", no : "Relatert innhold (default som høyrespalte)", nn : "Relatert innhald (default som høyrespalte)"),
      boxTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
      boxType : (en : "Special settings", no : "Spesielle innstillinger", nn : "Spesielle innstillinger"),
-     boxCssSizeAndPlacement : (en : "Size and placement", no : "Størrelse og plassering", nn : "Størrelse og plassering"), 
+     boxCssSizeAndPlacement : (en : "Size and placement", no : "Størrelse og plassering", nn : "Størrelse og plassering"),
      boxCssColor : (en : "Color", no : "Farge", nn : "Farge"),
      boxPicture : (en: "Image", no: "Bilde", nn : "Bilete"),
      boxContent : (en : "Content", no : "Innhold", nn : "Innhald"),

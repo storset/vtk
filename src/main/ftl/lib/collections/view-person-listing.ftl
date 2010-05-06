@@ -60,7 +60,7 @@
          </td>
          <td class="vrtx-person-listing-email">
             <#if emails != "" >
-         	  <#list emails?split(",") as email >
+         	  <#list emails?split(",") as email>
          	    <#if (email?string?length > 25) >
                   <#if email?string?contains('@') >
                     <#assign eS = email?string?split('@') />

@@ -140,53 +140,90 @@
      
      var i = counter+1;
      var elementId = '#vrtx-json-element-' + name + '-' + i;
-
-	  while($(elementId).length){	  	
+	 currentElement = $(elementId);
+	 while(currentElement.length){	  	 	
 	  	for(x in arrayOfIds){
-	    	var elementId1 = '#' + arrayOfIds[x] + i; 
-	    	$(elementId1).attr("name",arrayOfIds[x].replace(/\\/g, "") + (i-1));
-	  		$(elementId1).attr("id",arrayOfIds[x].replace(/\\/g, "") + (i-1));
-	  		$('label[for='+ arrayOfIds[x] + i +']').attr("for", arrayOfIds[x].replace(/\\/g, "") + (i-1));
-	  		$('div'+elementId1+'\\.preview').attr("id",arrayOfIds[x].replace(/\\/g, "") + (i-1) + '.preview');
-	  	}
+	  		var currentChildElementId = '#' + arrayOfIds[x] + i;
+	    	var currentChildElement = $(currentChildElementId);
+	    		    	
+	    	if(currentChildElement.parent().parent().hasClass("vrtx-html")){
+	  			var fckInstanceName = currentChildElement.attr("id");
+	  		    var editor = FCKeditorAPI.GetInstance(fckInstanceName);
+			    if (editor) {
+			      currentChildElement.val(editor.GetXHTML());
+			      $(currentChildElementId + '___Config').remove();
+			      $(currentChildElementId + '___Frame').remove();
+			      delete FCKeditorAPI.Instances[fckInstanceName];
+			    }    
+	  		}
+	  		
+	  		if(currentChildElement.parent().parent().hasClass("vrtx-simple-html")){
+	  			var fckInstanceName = currentChildElement.attr("id");
+	  		    var editor = FCKeditorAPI.GetInstance(fckInstanceName);
+			    if (editor) {
+			      currentChildElement.val(editor.GetXHTML());
+			      $(currentChildElementId + '___Config').remove();
+			      $(currentChildElementId + '___Frame').remove();
+			      delete FCKeditorAPI.Instances[fckInstanceName];
+			    }    
+	  		}
+	  		
+	  		var newId = arrayOfIds[x].replace(/\\/g, "") + (i-1);
+	    	currentChildElement.attr("name",newId);
+	  		currentChildElement.attr("id",newId);	
+	  		$('label[for='+ arrayOfIds[x] + i +']').attr("for", newId);
+	  		$('div'+ currentChildElementId +'\\.preview').attr("id", newId + '.preview');
+	  		
+	  		if(currentChildElement.parent().parent().hasClass("vrtx-html")){
+	  			newEditor(newId, true, false, '${resourceContext.parentURI}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
+         					 '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', '');
+			}
+			if(currentChildElement.parent().parent().hasClass("vrtx-simple-html")){
+       			newEditor(newId, false, false, '${resourceContext.parentURI}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
+          			'${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', '');
+			}
+	  		
+	  	  }
 
-      var remove2 = $(elementId).find(".vrtx-remove-button");
-      $(elementId).find(".vrtx-remove-button").remove();
-      $(elementId).append(remove);
-      remove = remove2;
+	      var remove2 = currentElement.find(".vrtx-remove-button");
+	      currentElement.find(".vrtx-remove-button").remove();
+	      currentElement.append(remove);
+	      remove = remove2;
+	      
+	      var previousElementId = 'vrtx-json-element-' + name + '-' + (i-1);
+       	  var up2 = currentElement.find(".vrtx-move-up-button");
+          currentElement.find(".vrtx-move-up-button").remove();
+      	  currentElement.append(up);
+          up=up2;
       
-      var previousElementId = 'vrtx-json-element-' + name + '-' + (i-1);
-        var up2 = $(elementId).find(".vrtx-move-up-button");
-        $(elementId).find(".vrtx-move-up-button").remove();
-      $(elementId).append(up);
-        up=up2;
-      
-      var nextElementId = '#vrtx-json-element-' + name + '-' + (i+1);
-        var down2 = $(elementId).find(".vrtx-move-down-button");
-        $(elementId).find(".vrtx-move-down-button").remove();
-      if ($(nextElementId).length){
-           $(elementId).append(down);
-      }
-      down = down2;
+          var nextElementId = '#vrtx-json-element-' + name + '-' + (i+1);
+          var down2 = currentElement.find(".vrtx-move-down-button");
+          currentElement.find(".vrtx-move-down-button").remove();
+          if ($(nextElementId).length){
+          	currentElement.append(down);
+          }
+      	  down = down2;
              
-        if ((i-1) == 0 && !$(nextElementId)){
-           $(previousElementId).find(".vrtx-move-down-button").remove();
-        }
-	  	$(elementId).attr("id",previousElementId);
-	    elementId = nextElementId;
-	   	i++;
-	  }  
+          if ((i-1) == 0 && !$(nextElementId).length){
+            $(previousElementId).find(".vrtx-move-down-button").remove();
+          }
+	  	  currentElement.attr("id",previousElementId);
+	  	  
+	   	  i++;
+	   	  currentElement = currentElement.nextUntil("input");
+	 }  
 	  
-	  if(i == (counter+1)){ // when removing the last element in the list
+	 if(i == (counter+1)){ 
 	  	var nextElementId = '#vrtx-json-element-' + name + '-' + (i+1);
 	  	var previousElementId = '#vrtx-json-element-' + name + '-' + (i-2);
 	  	if(!$(nextElementId).length){
 	  		$(previousElementId).find(".vrtx-move-down-button").remove();
-	  	}
-	  	if(!$(previousElementId).length){
-	  		$(elementId).find(".vrtx-move-up-button").remove();
-	  	}
-	  }
+	 	}
+	 	if(!$(previousElementId).length){
+		 	$(elementId).find(".vrtx-move-up-button").remove();
+		}
+	  	$(elementId).attr("id",previousElementId);
+	 }
   }
   
   function addDropdown(elem, inputFieldName) {

@@ -334,8 +334,8 @@ input.vrtx-move-down-button  {
   height: 210px;
 }
 
-.related-content label, /*article*/
-.contactInformation .visitingAddress { /*person*/
+.relatedContent .related-content label, /* article */
+.contactInformation .visitingAddress { /* person */
   display: none !important;
 }
 

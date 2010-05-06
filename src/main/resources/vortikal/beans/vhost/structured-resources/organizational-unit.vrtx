@@ -253,17 +253,17 @@ resourcetype organizational-unit {
       no : "Vis ansatte registrert i UiOs lønns- og personalsystem",
       nn : "Vis ansatte registrerte i lønns- og personalsystemet til UiO"),
     selectedEmployees : (
-      en : "",
+      en : "Employees to display at the top of the list",
       no : "Ansatte som skal vises øverst i listen",
-      nn : ""),
+      nn : "Ansatte som skal visast øverst i lista"),
     numberOfEmployeesToDisplay : (
-      en : "",
+      en : "Number of employees to show",
       no : "Antall ansatte som skal vises",
-      nn : ""),
+      nn : "Antall ansatte som skal visast"),
     urlToEmployeesList : (
-      en : "",
+      en : "Web address to list over all employees",
       no : "Webadresse til liste over alle ansatte",
-      nn : ""),
+      nn : "Webadresse til liste over alle ansatte"),
     content : (en: "Content", no: "Innhold", nn : "Innhald"),
     related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold")
   }

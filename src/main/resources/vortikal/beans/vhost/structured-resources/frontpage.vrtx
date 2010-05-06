@@ -263,7 +263,7 @@ resourcetype frontpage {
       [resource-props "."]
       [def document structured-document()]
       [def boxes json-attr(document, "properties.additional-content")]
-      [if boxes != null][else]class="vrtx-frontpage-wide"[endif]
+      [if boxes != null][else]"vrtx-frontpage-wide"[endif]
       ##
     }
 
@@ -278,7 +278,7 @@ resourcetype frontpage {
         <title><comp:title /></title>
       </head>
       <body id="vrtx-frontpage">
-        <div id="vrtx-content">
+        <div id="vrtx-content" class="<comp:wide-or-not />">
           <h1><comp:title /></h1>
           <div id="vrtx-main-content">
             <comp:introduction-image />

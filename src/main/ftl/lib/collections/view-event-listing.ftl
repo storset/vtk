@@ -112,7 +112,9 @@
                 <span id="vrtx-last-daily-event">
               </#if>
               <@displayEvent eventListing event hideNumberOfComments displayMoreURLs=false />
-              <#if groupedByDayEvents?size == count && eventListing.files?size == subcount></span></#if>
+              <#if groupedByDayEvents?size == count && eventListing.files?size == subcount>
+                </span>
+              </#if>
 	          <#assign subcount = subcount +1 />
 	        </#list>
 	      </div>

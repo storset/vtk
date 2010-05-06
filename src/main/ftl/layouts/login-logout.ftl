@@ -7,7 +7,7 @@
   <#else>
     <#assign url = url + "?authTarget=http" + previewUnpublishedParameter + "=" + "true" + "&amp;" + previewRefreshParameter + "=" + dateStr + "&amp;authTarget=http" />
   </#if>
-<div class="vrtx-login"><a href="${url?html}"><@vrtx.msg code="decorating.authenticationComponent.login" default="Log in"/></a></div>
+<div class="vrtx-login"><a href="${url}"><@vrtx.msg code="decorating.authenticationComponent.login" default="Log in"/></a></div>
 <#elseif logoutURL?exists>
 <div class="vrtx-logout" id="vrtx-logout">
   <span class="vrtx-user">${principal.description?html}</span>

@@ -19,7 +19,7 @@
         </bean>
       </list>
     </property>
-    <property name="urlPostProcessors" ref="authTarget.urlPostProcessor" />
+    <!--property name="urlPostProcessors" ref="authTarget.urlPostProcessor" /-->
     <property name="handler" ref="requireAuthenticationController" />
   </bean>
   

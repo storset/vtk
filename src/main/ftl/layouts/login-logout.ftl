@@ -1,6 +1,13 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 <#if loginURL?exists>
-<div class="vrtx-login"><a href="${loginURL?html}"><@vrtx.msg code="decorating.authenticationComponent.login" default="Log in"/></a></div>
+  <#assign url = loginURL?html />
+  <#-- XXX: remove hard-coded 'authTarget' parameter: -->
+  <#if url?contains("?")>
+    <#assign url = url + "&amp;authTarget=http" />
+  <#else>
+    <#assign url = url + "?authTarget=http" + previewUnpublishedParameter + "=" + "true" + "&amp;" + previewRefreshParameter + "=" + dateStr + "&amp;authTarget=http" />
+  </#if>
+<div class="vrtx-login"><a href="${url?html}"><@vrtx.msg code="decorating.authenticationComponent.login" default="Log in"/></a></div>
 <#elseif logoutURL?exists>
 <div class="vrtx-logout" id="vrtx-logout">
   <span class="vrtx-user">${principal.description?html}</span>

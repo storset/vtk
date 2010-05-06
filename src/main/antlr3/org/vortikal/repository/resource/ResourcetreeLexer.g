@@ -100,7 +100,7 @@ DEF	:	'##' .* '##'
 		  setText(s.trim());
         };
 
-WS	:	(' ' | '\t' | '\n')+ {$channel=HIDDEN;};
+WS	:	(' ' | '\t' | '\n' | '\r')+ {$channel=HIDDEN;};
 
 // Propertytypes
 fragment STRING

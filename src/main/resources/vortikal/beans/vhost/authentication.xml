@@ -19,6 +19,7 @@
         </bean>
       </list>
     </property>
+    <property name="urlPostProcessors" ref="authTarget.urlPostProcessor" />
     <property name="handler" ref="requireAuthenticationController" />
   </bean>
   
@@ -271,6 +272,17 @@
     <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" />
   </bean>
 
+  <bean id="authTarget.urlPostProcessor" class="org.vortikal.web.service.ConfigurableURLPostProcessor">
+    <property name="parameters">
+      <map>
+        <entry key="authTarget" value="http" />
+      </map>
+    </property>
+  </bean>
+
+
+  <!-- XXX: verify this assertion: when should authTarget have effect? -->
+  <!-- XXX: verify that this works when webProtocol = manageProtocol = ssl  -->
   <bean id="authTarget.enabledAssertion" class="org.vortikal.web.service.ConfigAssertion">
     <property name="config" value="${webProtocolRestricted}" />
     <property name="expectedValue" value="https" />

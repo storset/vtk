@@ -20,9 +20,6 @@
         <ref bean="noCacheViewHandlerInterceptor" />
       </list>
     </property>
-    <property name="urlPostProcessors">
-      <bean class="org.vortikal.web.service.LocalURLPostProcessor" />
-    </property>
     <property name="categories">
       <set>
         <value>globalMenu</value>

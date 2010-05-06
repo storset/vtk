@@ -101,8 +101,10 @@ resourcetype organizational-unit {
       ##
       [def resp resource-prop(".", "responsibilities")]
       [if resp != null && resp != ""]
-        <h2>[localized 'responsibilitiesHeader']</h2>
-        <div class="vrtx-organizational-unit-responsibilities">[val resp unescaped]</div>
+        <div class="vrtx-organizational-unit-responsibilities">
+          <h2>[localized 'responsibilitiesHeader']</h2>
+          [val resp unescaped]
+        </div>
       [endif]
       ##
     }

@@ -141,14 +141,16 @@
      var i = counter+1;
      var elementId = '#vrtx-json-element-' + name + '-' + i;
 
-     while($(elementId).length) {
-        for(x in arrayOfIds){
-          var elementId1 = '#' + arrayOfIds[x] + i;
-          $(elementId1).attr("name", arrayOfIds[x].replace(/\\/g, "") + (i-1));
-           $(elementId1).attr("id", arrayOfIds[x].replace(/\\/g, "") + (i-1));
-           $('label[for='+ arrayOfIds[x] + i +']').attr("for", arrayOfIds[x].replace(/\\/g, "") + (i-1));
-           $('div'+elementId1+'\\.preview').attr("id", arrayOfIds[x].replace(/\\/g, "") + (i-1) + '.preview');
-        }
+	  while($(elementId).length){	  	
+	  	for(x in arrayOfIds){
+	    	var elementId1 = '#' + arrayOfIds[x] + i; 
+	    	$(elementId1).attr("name",arrayOfIds[x].replace(/\\/g, "") + (i-1));
+	  		$(elementId1).attr("id",arrayOfIds[x].replace(/\\/g, "") + (i-1));
+	  		$(elementId1 + '___Frame').attr("id",arrayOfIds[x].replace(/\\/g, "") + (i-1) + '___Fram');
+	  		$(elementId1 + '___Config').attr("id",arrayOfIds[x].replace(/\\/g, "") + (i-1) + '___Config');
+	  		$('label[for='+ arrayOfIds[x] + i +']').attr("for", arrayOfIds[x].replace(/\\/g, "") + (i-1));
+	  		$('div'+elementId1+'\\.preview').attr("id",arrayOfIds[x].replace(/\\/g, "") + (i-1) + '.preview');
+	  	}
 
       var remove2 = $(elementId).find(".vrtx-remove-button");
       $(elementId).find(".vrtx-remove-button").remove();
@@ -172,22 +174,21 @@
         if ((i-1) == 0 && !$(nextElementId)){
            $(previousElementId).find(".vrtx-move-down-button").remove();
         }
-
-        $(elementId).attr("id",previousElementId);
-       elementId = nextElementId;
-         i++;
-     }
-     
-     if (i == (counter+1)){ // when removing the last element in the list
-        var nextElementId = '#vrtx-json-element-' + name + '-' + (i+1);
-        var previousElementId = '#vrtx-json-element-' + name + '-' + (i-2);
-        if (!$(nextElementId).length){
-           $(previousElementId).find(".vrtx-move-down-button").remove();
-        }
-        if (!$(previousElementId).length){
-           $(elementId).find(".vrtx-move-up-button").remove();
-        }
-     }
+	  	$(elementId).attr("id",previousElementId);
+	    elementId = nextElementId;
+	   	i++;
+	  }  
+	  
+	  if(i == (counter+1)){ // when removing the last element in the list
+	  	var nextElementId = '#vrtx-json-element-' + name + '-' + (i+1);
+	  	var previousElementId = '#vrtx-json-element-' + name + '-' + (i-2);
+	  	if(!$(nextElementId).length){
+	  		$(previousElementId).find(".vrtx-move-down-button").remove();
+	  	}
+	  	if(!$(previousElementId).length){
+	  		$(elementId).find(".vrtx-move-up-button").remove();
+	  	}
+	  }
   }
   
   function addDropdown(elem, inputFieldName) {

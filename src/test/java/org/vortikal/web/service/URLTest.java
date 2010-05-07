@@ -96,6 +96,11 @@ public class URLTest extends TestCase {
         assertEquals("http", url.getProtocol());
         assertEquals(Path.fromString("/baz"), url.getPath());
         assertFalse(url.isCollection());
+
+        url = URL.parse("http://foo.bar:8080/baz/?param1&param2=abc");
+        assertEquals("", url.getParameter("param1"));
+        assertEquals("abc", url.getParameter("param2"));
+        assertEquals("http://foo.bar:8080/baz/?param1&param2=abc", url.toString());
         
         url = URL.parse("http://foo.bar:8080/baz/?xyz=abc");
         assertEquals(Integer.valueOf(8080), url.getPort());

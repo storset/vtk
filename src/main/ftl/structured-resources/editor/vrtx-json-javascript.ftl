@@ -68,13 +68,11 @@
      // Add opp og ned knapp...blah
      
      var htmlTemplate = "";
-     var arrayOfIds = "new Array("
+     var arrayOfIds = new Array();
+   
      for (i in j.a) {
-         var inputFieldName = j.name + "." + j.a[i].name + "." + counter;
-         if (i > 0) {
-           arrayOfIds += ", " 
-         }
-         arrayOfIds += "'" + j.name + "." + j.a[i].name + "." + "'";
+         var inputFieldName = j.name + "." + j.a[i].name + "." + counter;         
+         arrayOfIds[i] = new String(j.name + "." + j.a[i].name + ".").replace(/\./g, "\\.");
          
          switch(j.a[i].type) {
            case "string":
@@ -99,21 +97,49 @@
              htmlTemplate += ""; break
          }
      }
-     arrayOfIds = arrayOfIds.replace(/\./g, "\\\\.");
+
+  	 var moveDownButton = "<input type=\"button\" class=\"vrtx-move-down-button\" value=\"&darr; ${vrtx.getMsg("editor.move-down")}\" />";    
+     var moveUpButton = "<input type=\"button\" class=\"vrtx-move-up-button\" value=\"&uarr; ${vrtx.getMsg("editor.move-up")}\" />";
+     var deleteButton = "<input type=\"button\" class=\"vrtx-remove-button\" value=\"${vrtx.getMsg("editor.remove")}\" \/>";
+   	 var id = "<input type=\"hidden\" class=\"id\" value=\"" + counter +"\" />";
      
-     // Need a move down button for the element before the element we are inserting 
-     lastElement = "vrtx-" + j.type + "-element-" + j.name + "-" + (counter-1);
-     var moveDownButton = "<input type=\"button\" class=\"vrtx-move-down-button\" value=\"&darr; ${vrtx.getMsg("editor.move-down")}\" onClick=\"swapContent(" + (counter-1) + ", " + arrayOfIds.toString() + "), 1)\" />";
-     if (counter > 0){
-        $("#" + lastElement).append(moveDownButton);
+     var newElementId = "vrtx-json-element-" + j.name + "-" + counter; 
+     $("#" + j.name +" .vrtx-add-button").before("<div class=\"vrtx-json-element\" id=\"" + newElementId +  "\"><\/div>");
+     
+     var newElement = $("#" + newElementId);
+     
+     newElement.append(htmlTemplate);  
+     newElement.append(id);
+     
+     if (counter > 0 && newElement.prev().length){
+       newElement.prev().append(moveDownButton);
      }
-     //The new element needs a move up button and also a delete button
-     var moveUpButton = "";
+     
+	 newElement.append(deleteButton);
+     
      if (counter > 0){
-        moveUpButton ="<input type=\"button\" class=\"vrtx-move-up-button\" value=\"&uarr; ${vrtx.getMsg("editor.move-up")}\" onClick=\"swapContent(" + counter + ", " + arrayOfIds.toString() + "), -1)\" />";
+        newElement.append(moveUpButton);
      }
-     var deleteButton = "<input type=\"button\" class=\"vrtx-remove-button\" value=\"${vrtx.getMsg("editor.remove")}\" onClick=\"removeNode('" + j.name + "'," + counter + ", " + arrayOfIds.toString() + "))\" \/>";
-     $("#" + j.name +" .vrtx-add-button").before("<div class=\"vrtx-json-element\" id=\"vrtx-json-element-" + j.name + "-" + counter + "\">" +  htmlTemplate + deleteButton + moveUpButton + "<\/div>");
+     
+     newElement.find(".vrtx-remove-button").click(
+     	function(){
+     		removeNode( j.name, counter ,  arrayOfIds );
+     	}
+     );
+     
+     newElement.find(".vrtx-move-up-button").click(
+    	function(){
+     		swapContent(counter, arrayOfIds, -1);
+     	}
+     );
+     
+     if(newElement.prev().length){
+	     newElement.prev().find(".vrtx-move-down-button").click(
+	     	function(){
+	     		swapContent(counter-1, arrayOfIds, 1);
+	     	}
+	     );
+     }
      
      // Fck.........
      for (i in j.a) {
@@ -132,98 +158,107 @@
   }
   
   function removeNode(name,counter,arrayOfIds){
-     var removeElementId = '#vrtx-json-element-' + name + '-' + counter;
-     var up = $(removeElementId).find(".vrtx-move-up-button");
-     var down = $(removeElementId).find(".vrtx-move-down-button");
-     var remove = $(removeElementId).find(".vrtx-remove-button");
-     $(removeElementId).remove();
+    var removeElementId = '#vrtx-json-element-' + name + '-' + counter;
+    $(removeElementId).remove();
      
-     var i = counter+1;
-     var elementId = '#vrtx-json-element-' + name + '-' + i;
-	 currentElement = $(elementId);
-	 while(currentElement.length){	  	 	
-	  	for(x in arrayOfIds){
-	  		var currentChildElementId = '#' + arrayOfIds[x] + i;
-	    	var currentChildElement = $(currentChildElementId);
-	    		    	
-	    	if(currentChildElement.parent().parent().hasClass("vrtx-html")){
-	  			var fckInstanceName = currentChildElement.attr("id");
-	  		    var editor = FCKeditorAPI.GetInstance(fckInstanceName);
-			    if (editor) {
-			      currentChildElement.val(editor.GetXHTML());
-			      $(currentChildElementId + '___Config').remove();
-			      $(currentChildElementId + '___Frame').remove();
-			      delete FCKeditorAPI.Instances[fckInstanceName];
-			    }    
-	  		}
-	  		
-	  		if(currentChildElement.parent().parent().hasClass("vrtx-simple-html")){
-	  			var fckInstanceName = currentChildElement.attr("id");
-	  		    var editor = FCKeditorAPI.GetInstance(fckInstanceName);
-			    if (editor) {
-			      currentChildElement.val(editor.GetXHTML());
-			      $(currentChildElementId + '___Config').remove();
-			      $(currentChildElementId + '___Frame').remove();
-			      delete FCKeditorAPI.Instances[fckInstanceName];
-			    }    
-	  		}
-	  		
-	  		var newId = arrayOfIds[x].replace(/\\/g, "") + (i-1);
-	    	currentChildElement.attr("name",newId);
-	  		currentChildElement.attr("id",newId);	
-	  		$('label[for='+ arrayOfIds[x] + i +']').attr("for", newId);
-	  		$('div'+ currentChildElementId +'\\.preview').attr("id", newId + '.preview');
-	  		
-	  		if(currentChildElement.parent().parent().hasClass("vrtx-html")){
-	  			newEditor(newId, true, false, '${resourceContext.parentURI}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
-         					 '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', '');
-			}
-			if(currentChildElement.parent().parent().hasClass("vrtx-simple-html")){
-       			newEditor(newId, false, false, '${resourceContext.parentURI}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
-          			'${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', '');
-			}
-	  		
-	  	  }
-
-	      var remove2 = currentElement.find(".vrtx-remove-button");
-	      currentElement.find(".vrtx-remove-button").remove();
-	      currentElement.append(remove);
-	      remove = remove2;
-	      
-	      var previousElementId = 'vrtx-json-element-' + name + '-' + (i-1);
-       	  var up2 = currentElement.find(".vrtx-move-up-button");
-          currentElement.find(".vrtx-move-up-button").remove();
-      	  currentElement.append(up);
-          up=up2;
-      
-          var nextElementId = '#vrtx-json-element-' + name + '-' + (i+1);
-          var down2 = currentElement.find(".vrtx-move-down-button");
-          currentElement.find(".vrtx-move-down-button").remove();
-          if ($(nextElementId).length){
-          	currentElement.append(down);
-          }
-      	  down = down2;
-             
-          if ((i-1) == 0 && !$(nextElementId).length){
-            $(previousElementId).find(".vrtx-move-down-button").remove();
-          }
-	  	  currentElement.attr("id",previousElementId);
-	  	  
-	   	  i++;
-	   	  currentElement = currentElement.nextUntil("input");
-	 }  
-	  
-	 if(i == (counter+1)){ 
-	  	var nextElementId = '#vrtx-json-element-' + name + '-' + (i+1);
-	  	var previousElementId = '#vrtx-json-element-' + name + '-' + (i-2);
-	  	if(!$(nextElementId).length){
-	  		$(previousElementId).find(".vrtx-move-down-button").remove();
-	 	}
-	 	if(!$(previousElementId).length){
-		 	$(elementId).find(".vrtx-move-up-button").remove();
-		}
-	  	$(elementId).attr("id",previousElementId);
+    var i = counter+1;
+    var elementId = '#vrtx-json-element-' + name + '-' + i;
+	currentElement = $(elementId);
+	 
+	if(currentElement.nextUntil("input").length){
+		 while(currentElement.length){	  	 	 		
+	    	renameBoxIds(arrayOfIds,i);		
+			currentElement.find(".id").val(i-1);
+			addEventsToButtons(currentElement,name,arrayOfIds);
+			
+		    var previousElementId = 'vrtx-json-element-' + name + '-' + (i-1);
+		  	currentElement.attr("id",previousElementId);
+		   	i++;
+		   	currentElement = currentElement.nextUntil("input");
+		 }  
+	 }else{ 
+		currentElement.find(".id").val(i-1);		
+		renameBoxIds(arrayOfIds,i);
+		addEventsToButtons(currentElement,name,arrayOfIds)
+	  	$(elementId).attr("id","vrtx-json-element-" + name + "-" + (i-1));
 	 }
+	 removeUnwantedButtons(name);
+  }
+  
+  function addEventsToButtons(currentElement,name,arrayOfIds){
+	currentElement.find(".vrtx-remove-button").unbind('click');		   
+	currentElement.find(".vrtx-remove-button").click(function(){ 	   
+	 		removeNode( name, parseInt($(this).parent().find(".id").val()),  arrayOfIds );
+	});
+		   
+	currentElement.find(".vrtx-move-up-button").unbind('click');
+	currentElement.find(".vrtx-move-up-button").click(function(){
+			swapContent(parseInt($(this).parent().find(".id").val()), arrayOfIds, -1);
+	});
+	     
+    if(currentElement.prev().length){
+     	 currentElement.prev().find(".vrtx-move-down-button").unbind('click');
+	     currentElement.prev().find(".vrtx-move-down-button").click(function(){
+	     		swapContent(parseInt($(this).parent().find(".id").val()), arrayOfIds, 1);
+	     });
+    }
+  }
+  
+  function removeUnwantedButtons(name){
+  	var firstElement = $('#vrtx-json-element-' + name + '-0');
+  	firstElement.find(".vrtx-move-up-button").remove();
+  	
+  	var tmpElement = firstElement; 
+  	while(tmpElement.nextUntil("input").length){
+  		
+  		tmpElement = tmpElement.nextUntil("input");
+  	}
+  	tmpElement.find(".vrtx-move-down-button").remove();
+  }
+  
+  function renameBoxIds(arrayOfIds,i){
+  
+  	for(x in arrayOfIds){
+		  		var currentChildElementId = '#' + arrayOfIds[x] + i;
+		    	var currentChildElement = $(currentChildElementId);
+		    		    	
+		    	if(currentChildElement.parent().parent().hasClass("vrtx-html")){
+		  			var fckInstanceName = currentChildElement.attr("id");
+		  		    var editor = FCKeditorAPI.GetInstance(fckInstanceName);
+				    if (editor) {
+				      currentChildElement.val(editor.GetXHTML());
+				      $(currentChildElementId + '___Config').remove();
+				      $(currentChildElementId + '___Frame').remove();
+				      delete FCKeditorAPI.Instances[fckInstanceName];
+				    }    
+		  		}
+		  		
+		  		if(currentChildElement.parent().parent().hasClass("vrtx-simple-html")){
+		  			var fckInstanceName = currentChildElement.attr("id");
+		  		    var editor = FCKeditorAPI.GetInstance(fckInstanceName);
+				    if (editor) {
+				      currentChildElement.val(editor.GetXHTML());
+				      $(currentChildElementId + '___Config').remove();
+				      $(currentChildElementId + '___Frame').remove();
+				      delete FCKeditorAPI.Instances[fckInstanceName];
+				    }    
+		  		}
+		  		
+		  		var newId = arrayOfIds[x].replace(/\\/g, "") + (i-1);
+		    	currentChildElement.attr("name",newId);
+		  		currentChildElement.attr("id",newId);	
+		  		$('label[for='+ arrayOfIds[x] + i +']').attr("for", newId);
+		  		$('div'+ currentChildElementId +'\\.preview').attr("id", newId + '.preview');
+		  		
+		  		if(currentChildElement.parent().parent().hasClass("vrtx-html")){
+		  			newEditor(newId, true, false, '${resourceContext.parentURI}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
+	         					 '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', '');
+				}
+				if(currentChildElement.parent().parent().hasClass("vrtx-simple-html")){
+	       			newEditor(newId, false, false, '${resourceContext.parentURI}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
+	          			'${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', '');
+				}  		
+		}
   }
   
   function addDropdown(elem, inputFieldName) {
@@ -299,7 +334,7 @@
     htmlTemplate += '<label for=\"' + inputFieldName+ '\">' + elem.title + '<\/label>';
     htmlTemplate += '<\/div><div>';
     htmlTemplate += '<input type=\"text\" id=\"' + inputFieldName+ '\" name=\"' + inputFieldName + '\" value=\"\" onblur=\"previewImage($(this).parent().find(\'input\').attr(\'id\'));\" size=\"30\" \/>';
-    htmlTemplate += '<button type=\"button\" onclick=\"browseServer(\'' + inputFieldName + '\', \'${fckeditorBase.url}\', \'${resourceContext.parentURI}\', \'${fckBrowse.url.pathRepresentation}\');\"><@vrtx.msg code="editor.browseImages" /><\/button>';
+    htmlTemplate += '<button type=\"button\" onclick=\"browseServer($(this).parent().find(\'input\').attr(\'id\'), \'${fckeditorBase.url}\', \'${resourceContext.parentURI}\', \'${fckBrowse.url.pathRepresentation}\');\"><@vrtx.msg code="editor.browseImages" /><\/button>';
     htmlTemplate += '<\/div>';
     htmlTemplate += '<div id=\"' + inputFieldName + '.preview\">';
     htmlTemplate += '<\/div><\/div>';
@@ -325,8 +360,8 @@
     htmlTemplate = '<div class=\"vrtx-media-ref\">';
     htmlTemplate += '<div><label for=\"' + inputFieldName + '\">' + elem.title + '<\/label>';
     htmlTemplate += '<\/div><div>';
-    htmlTemplate += '<input type=\"text\" id=\"' + inputFieldName + '\" name=\"' + inputFieldName + '\" value=\"\" onblur=\"previewImage(' + inputFieldName + ');\" size=\"30\"\/>';
-    htmlTemplate += '<button type=\"button\" onclick=\"browseServer(\'' + inputFieldName + '\', \'${fckeditorBase.url}\', \'${resourceContext.parentURI}\', \'${fckBrowse.url.pathRepresentation}\', \'Media\');\"><@vrtx.msg code="editor.browseImages" /><\/button>';
+    htmlTemplate += '<input type=\"text\" id=\"' + inputFieldName + '\" name=\"' + inputFieldName + '\" value=\"\" onblur=\"previewImage($(this).parent().find(\'input\').attr(\'id\'));\" size=\"30\"\/>';
+    htmlTemplate += '<button type=\"button\" onclick=\"browseServer($(this).parent().find(\'input\').attr(\'id\'), \'${fckeditorBase.url}\', \'${resourceContext.parentURI}\', \'${fckBrowse.url.pathRepresentation}\', \'Media\');\"><@vrtx.msg code="editor.browseImages" /><\/button>';
     htmlTemplate += '<\/div><\/div>'
     
     return htmlTemplate;
@@ -348,10 +383,11 @@
   }
   
   function swapContent(counter, arrayOfIds, move) {
+  	
     for (x in arrayOfIds) {
       var elementId1 = '#' + arrayOfIds[x] + counter;
       var elementId2 = '#' + arrayOfIds[x] + (counter + move);
-
+	  
       /* We need to handle special cases like date and fck fields  */
       var fckInstanceName1 = arrayOfIds[x].replace(/\\/g, '') + counter;
       var fckInstanceName2 = arrayOfIds[x].replace(/\\/g, '') + (counter + move);

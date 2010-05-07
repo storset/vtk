@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
@@ -92,7 +93,10 @@ public class UserData {
         }
         return list.get(0);
     }
-
+    
+    public Set<String> getAttributeNames() {
+        return Collections.unmodifiableSet(this.attrs.keySet());
+    }
 
     private List<String> extractValues(Attribute attribute) {
 

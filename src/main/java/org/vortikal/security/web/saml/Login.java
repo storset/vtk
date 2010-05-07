@@ -36,6 +36,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.Response;
 import org.opensaml.util.storage.MapBasedStorageService;
@@ -49,6 +51,8 @@ import org.vortikal.web.service.URL;
 
 public class Login extends SamlService {
 
+    private static Log logger = LogFactory.getLog(Login.class);
+    
     int replayMinutes = 60;
     private StorageService<String, ReplayCacheEntry> replayStorage = new MapBasedStorageService<String, ReplayCacheEntry>();
     private ReplayCache replayCache = new ReplayCache(replayStorage, 60 * 1000 * replayMinutes);
@@ -85,6 +89,9 @@ public class Login extends SamlService {
         UserData userData = getUserData(request, expectedRequestID);
         if (userData == null) {
             throw new AuthenticationException("Unable to authenticate request " + request);
+        }
+        if (logger.isDebugEnabled()) {
+            debugLogin(userData);
         }
         return userData;
     }
@@ -139,5 +146,18 @@ public class Login extends SamlService {
         response.getID();
     }
 
-    
+    private void debugLogin(UserData userData) {
+        StringBuilder message = new StringBuilder("Login: " + userData.getUsername());
+        message.append(", attributes: [");
+        String separator = "";
+        for (String attr: userData.getAttributeNames()) {
+            message.append(separator).append(attr).append(":");
+            message.append(userData.getAttribute(attr));
+            if ("".equals(separator)) {
+                separator = ",";
+            }
+        }
+        message.append("]");
+        logger.debug(message);
+    }
 }

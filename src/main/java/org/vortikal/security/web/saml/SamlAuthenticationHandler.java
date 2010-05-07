@@ -31,6 +31,8 @@
 package org.vortikal.security.web.saml;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletException;
@@ -59,6 +61,8 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     private Login login;
     private Logout logout;
     
+    private Map<String, String> staticHeaders = new HashMap<String, String>();
+    
     private Set<LoginListener> loginListeners;
     
     private PrincipalFactory principalFactory;
@@ -67,6 +71,7 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     public void challenge(HttpServletRequest request, HttpServletResponse response) throws AuthenticationProcessingException,
             ServletException, IOException {
         this.challenge.challenge(request, response);
+        setHeaders(response);
     }
 
     @Override
@@ -109,6 +114,7 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     public boolean postAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationProcessingException, InvalidAuthenticationRequestException {
         this.login.redirectAfterLogin(request, response);
+        setHeaders(response);
         return true;
     }
 
@@ -119,6 +125,7 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     public boolean logout(Principal principal, HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationProcessingException, ServletException, IOException {
         this.logout.initiateLogout(request, response);
+        setHeaders(response);
         return true;
     }
 
@@ -138,6 +145,7 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
             // Logout response (based on our request) from IDP
             this.logout.handleLogoutResponse(request, response);
         }
+        setHeaders(response);
         return null;
     }
     
@@ -181,6 +189,10 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
         this.loginListeners = loginListeners;
     }
 
+    public void setStaticHeaders(Map<String, String> staticHeaders) {
+        this.staticHeaders = staticHeaders;
+    }
+
     public String getIdentifier() {
         return this.identifier;
     }
@@ -189,4 +201,9 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
         return this.getClass().getName() + ":" + this.identifier;
     }
 
+    private void setHeaders(HttpServletResponse response) {
+        for (String header : this.staticHeaders.keySet()) {
+            response.setHeader(header, this.staticHeaders.get(header));
+        }
+    }
 }

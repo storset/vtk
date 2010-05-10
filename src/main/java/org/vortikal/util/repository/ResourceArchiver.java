@@ -54,6 +54,8 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipInputStream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Comment;
@@ -77,6 +79,8 @@ import org.vortikal.security.Principal.Type;
 import org.vortikal.web.RequestContext;
 
 public class ResourceArchiver {
+
+    private static Log logger = LogFactory.getLog(ResourceArchiver.class);
 
     private PrincipalFactory principalFactory;
     private PrincipalManager principalManager;
@@ -102,6 +106,8 @@ public class ResourceArchiver {
     public void createArchive(String token, Resource r, OutputStream out, EventListener listener) throws Exception {
         int rootLevel = r.getURI().getDepth() + 1;
 
+        logger.info("Creating archive '" + r.getURI() + "'");
+
         File tmp = null;
         try {
             tmp = File.createTempFile("tmp-manifest", "vrtx", this.tempDir);
@@ -116,6 +122,8 @@ public class ResourceArchiver {
             if (tmp != null)
                 tmp.delete();
         }
+
+        logger.info("Done creating archive");
     }
 
     public void expandArchive(String token, InputStream source, Path base) throws Exception {
@@ -153,7 +161,7 @@ public class ResourceArchiver {
                 try {
                     comments.add(getArchivedComment(jarIn, base));
                 } catch (Throwable t) {
-                    t.printStackTrace();
+                    logger.error("Could not handle comment", t);
                 }
                 continue;
             }
@@ -174,13 +182,12 @@ public class ResourceArchiver {
         jarIn.close();
 
         // We restore comments after everything else, since comments aren't
-        // crucial
-        // And we don't break the archiving if something should go wrong here
+        // crucial. And we don't break the archiving if something should go wrong here
         for (Comment comment : comments) {
             try {
                 this.repository.addComment(token, comment);
             } catch (Throwable t) {
-                t.printStackTrace();
+                logger.error("Could not add comment", t);
             }
         }
     }
@@ -261,19 +268,25 @@ public class ResourceArchiver {
 
     private void addManifestEntry(String token, int fromLevel, Resource r, PrintWriter out) throws Exception {
         StringBuilder path = new StringBuilder(getJarPath(r, fromLevel));
-        ensure72Bytes(path);
+        try {
+            ensure72Bytes(path);
 
-        out.println("");
-        out.println("Name: " + path);
+            out.println("");
+            out.println("Name: " + path);
 
-        addProperties(r, out);
-        addAcl(r, out);
+            addProperties(r, out);
+            addAcl(r, out);
 
-        if (r.isCollection()) {
-            Resource[] children = this.repository.listChildren(token, r.getURI(), false);
-            for (Resource child : children) {
-                addManifestEntry(token, fromLevel, child, out);
+            if (r.isCollection()) {
+                Resource[] children = this.repository.listChildren(token, r.getURI(), false);
+                for (Resource child : children) {
+                    addManifestEntry(token, fromLevel, child, out);
+                }
             }
+        } catch (Exception e) {
+            // We'll ignore resources that fail and continue. Log broken
+            // resources an handle them some other way later.
+            logger.error("Error writing manifest entry for '" + path.toString() + "'\n", e);
         }
     }
 
@@ -427,7 +440,7 @@ public class ResourceArchiver {
             try {
                 archiveComments(token, r, jarOut);
             } catch (Throwable t) {
-                t.printStackTrace();
+                logger.error("Could not archive comment", t);
             }
 
         }

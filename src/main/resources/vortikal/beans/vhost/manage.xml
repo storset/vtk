@@ -5,6 +5,49 @@
 
   <import resource="report.xml"/>
 
+
+
+
+  <!-- Temporarily redirect ?vrtx=thumbnail on manage hostname to view hostname
+       until editor is fixed to use thumbnail service to generate image URLs -->
+  <bean id="manage.redirectThumbnails" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="-2" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.InvertAssertion">
+          <property name="assertion">
+            <bean class="org.vortikal.web.service.ConfigAssertion">
+              <property name="config" value="${webHostName}" />
+              <property name="expectedValue" value="${manage.hostName}" />
+            </bean>
+          </property>
+        </bean>
+        <ref bean="manage.hostNameAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="vrtx" />
+          <property name="parameterValue" value="thumbnail" />
+        </bean>
+      </list>
+    </property>
+        <property name="handlerInterceptors">
+      <list>
+        <!-- Redirect to view hostname -->
+        <bean class="org.vortikal.web.interceptors.ConfigurableRedirector">
+          <property name="protocol" value="${webProtocol}" />
+          <property name="hostName" value="${webHostName}" />
+        </bean>
+      </list>
+    </property>
+    <!-- Dummy handler that is never invoked (the handler interceptor will prevent it): -->
+    <property name="handler">
+      <bean class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+        <property name="viewName" value="HTTP_200_OK" />
+      </bean>
+    </property>
+  </bean>
+
+
+  <!-- Kicks in when webHostName != manage.hostName and missing ?vrtx=admin: -->
   <bean id="manage.404Service" class="org.vortikal.web.service.ServiceImpl">
     <property name="order" value="-2" />
     <property name="assertions">
@@ -34,13 +77,7 @@
 
 
   <!-- MANAGE services -->
-  <!--
-    (deleteResourceService has been moved out of manageService and made a root level service because in some
-    cases delete URLs could not be generated since manageService requires read permission)
-  -->
-
   <bean id="manageService" class="org.vortikal.web.service.ServiceImpl">
-    <!-- <property name="parent" ref="webService" /> -->
     <property name="order" value="-1" />
     <property name="assertions">
       <list>
@@ -49,7 +86,7 @@
     </property>
     <property name="urlPostProcessors" ref="manage.urlPostProcessors" />
     <property name="handlerFilters">
-        <ref bean="system.csrfPreventionHandler" />
+      <ref bean="system.csrfPreventionHandler" />
     </property>
     <property name="handlerInterceptors">
       <list>

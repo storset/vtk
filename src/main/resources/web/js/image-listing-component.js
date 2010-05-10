@@ -210,6 +210,9 @@
   };
 })(jQuery)
 
+// Used easing algorithms follows below. 
+// TODO: Probably include the whole library (it is very small) in Vortex instead later.
+
 /*
  * jQuery Easing v1.3 - http://gsgd.co.uk/sandbox/jquery/easing/
  *

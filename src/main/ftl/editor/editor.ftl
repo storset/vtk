@@ -409,7 +409,7 @@
           </div>
           <div id="resource.${name}.preview">
             <#if value != ''>
-              <img src="${value}" alt="preview" />
+              <img src="${value}?vrtx=thumbnail" alt="preview" />
             <#else>
               <img src="" alt="no-image" style="visibility: hidden; width: 10px;" />
             </#if>

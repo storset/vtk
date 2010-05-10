@@ -23,7 +23,7 @@
     <#if collectionListing.title?exists && collectionListing.offset == 0 && showTitle>
       <h2>${collectionListing.title?html}</h2>
     </#if>
-    <#local count = 1 />
+    <#assign count = 1 />
     <#list events as event>
       <#if events?size == count>
         <span id="vrtx-last-event">

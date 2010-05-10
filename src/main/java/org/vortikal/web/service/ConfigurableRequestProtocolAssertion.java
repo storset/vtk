@@ -47,6 +47,8 @@ import org.vortikal.security.Principal;
  * 
  * <p>Configurable properties:
  * <ul>
+ *   <li><code>restrictedProtocol</code> - the protocol to use if the resource is 
+ *   {@link Resource#isReadRestricted() read restricted} (overrides the other options)</li>
  *   <li><code>configuration</code> - the {@link Properties} object
  *   </li>
  *   <li><code>defaultProtocol</code> - the protocol to use if no configuration exists
@@ -59,6 +61,7 @@ public class ConfigurableRequestProtocolAssertion implements Assertion, Initiali
     private final static String PROTO_HTTPS = "https";
 
     private String defaultProtocol = null;
+    private String restrictedProtocol = null;
     private Properties configuration;
     private boolean invert = false;
     
@@ -80,6 +83,10 @@ public class ConfigurableRequestProtocolAssertion implements Assertion, Initiali
         }
     }
     
+    public void setRestrictedProtocol(String restrictedProtocol) {
+        this.restrictedProtocol = restrictedProtocol;
+    }
+
     public void afterPropertiesSet() {
         if (this.configuration == null) throw new IllegalArgumentException(
             "JavaBean property 'configuration' not specified");
@@ -90,14 +97,24 @@ public class ConfigurableRequestProtocolAssertion implements Assertion, Initiali
     }
 
     public void processURL(URL url) {
+        processURL(url, null, null, true);
+    }
+
+    public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
         Path uri = url.getPath();
+        if (resource != null && resource.isReadRestricted()) {
+            if (this.restrictedProtocol != null && !"*".equals(this.restrictedProtocol)) {
+                url.setProtocol(this.restrictedProtocol);
+                return true;
+            }
+        }
         if (this.configuration == null || this.configuration.isEmpty()) {
             if (this.defaultProtocol != null) {
                 if (!"*".equals(this.defaultProtocol)) {
                     url.setProtocol(this.defaultProtocol);
                 }
             }
-            return;
+            return true;
         }
         
         while (uri != null) {
@@ -106,7 +123,7 @@ public class ConfigurableRequestProtocolAssertion implements Assertion, Initiali
                 value = value.trim();
                 if (PROTO_HTTP.equals(value) || PROTO_HTTPS.equals(value)) {
                     url.setProtocol(invertProtocol(value, this.invert));
-                    return;
+                    return true;
                 }
             }
             uri = uri.getParent();
@@ -115,14 +132,9 @@ public class ConfigurableRequestProtocolAssertion implements Assertion, Initiali
             if (!"*".equals(this.defaultProtocol)) {
                 url.setProtocol(this.defaultProtocol);
             }
-            return;
+            return true;
         } 
         url.setProtocol(PROTO_HTTP);
-    }
-
-
-    public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
-        processURL(url);
         return true;
     }
 

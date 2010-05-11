@@ -3,8 +3,8 @@
 -->
 <#macro script >
   <#assign locale = springMacroRequestContext.getLocale() />
-  <script language="Javascript" type="text/javascript">
-  
+  <script language="Javascript" type="text/javascript"> <!-- 
+   
   LIST_OF_JSON_ELEMENTS = new Array();
   $(document).ready(function() {
   
@@ -49,21 +49,17 @@
     </#list>
   </#list>
     for (i in LIST_OF_JSON_ELEMENTS) {
-        $("#" + LIST_OF_JSON_ELEMENTS[i].name).append("<input type=\"button\" class=\"vrtx-add-button\" onClick=\"addNewJsonElement(LIST_OF_JSON_ELEMENTS[" + i + "])\" value=\"${vrtx.getMsg("editor.add")}\" />");
+        $("#" + LIST_OF_JSON_ELEMENTS[i].name).append("<input type=\"button\" class=\"vrtx-add-button\" onClick=\"addNewJsonElement(LIST_OF_JSON_ELEMENTS[" + i + "],this)\" value=\"${vrtx.getMsg("editor.add")}\" />");
       }
     });
     
-    function getCounterForJson(inputFieldName, jsonAttr) {
-      var i = 0;
-      while( $("#" + inputFieldName + "\\." + jsonAttr + "\\." + i).size() > 0 ) {
-        i++;
-      }
-      return i;
-    }
     
-  function addNewJsonElement(j) {
+  function addNewJsonElement(j,button) {
   
-     var counter = getCounterForJson(j.name, j.a[0].name);
+     var counter = parseInt($(button).prev(".vrtx-json-element").find(".id").val())+1;     
+     if(isNaN(counter)){
+     	counter = 0;
+     }
      
      // Add opp og ned knapp...blah
      
@@ -111,8 +107,8 @@
      newElement.append(htmlTemplate);  
      newElement.append(id);
      
-     if (counter > 0 && newElement.prev().length){
-       newElement.prev().append(moveDownButton);
+     if (counter > 0 && newElement.prev(".vrtx-json-element").length){
+       newElement.prev(".vrtx-json-element").append(moveDownButton);
      }
      
 	 newElement.append(deleteButton);
@@ -133,8 +129,8 @@
      	}
      );
      
-     if(newElement.prev().length){
-	     newElement.prev().find(".vrtx-move-down-button").click(
+     if(newElement.prev(".vrtx-json-element").length){
+	     newElement.prev(".vrtx-json-element").find(".vrtx-move-down-button").click(
 	     	function(){
 	     		swapContent(counter-1, arrayOfIds, 1);
 	     	}
@@ -159,106 +155,30 @@
   
   function removeNode(name,counter,arrayOfIds){
     var removeElementId = '#vrtx-json-element-' + name + '-' + counter;
-    $(removeElementId).remove();
-     
-    var i = counter+1;
-    var elementId = '#vrtx-json-element-' + name + '-' + i;
-	currentElement = $(elementId);
-	 
-	if(currentElement.nextUntil("input").length){
-		 while(currentElement.length){	  	 	 		
-	    	renameBoxIds(arrayOfIds,i);		
-			currentElement.find(".id").val(i-1);
-			addEventsToButtons(currentElement,name,arrayOfIds);
-			
-		    var previousElementId = 'vrtx-json-element-' + name + '-' + (i-1);
-		  	currentElement.attr("id",previousElementId);
-		   	i++;
-		   	currentElement = currentElement.nextUntil("input");
-		 }  
-	 }else{ 
-		currentElement.find(".id").val(i-1);		
-		renameBoxIds(arrayOfIds,i);
-		addEventsToButtons(currentElement,name,arrayOfIds)
-	  	$(elementId).attr("id","vrtx-json-element-" + name + "-" + (i-1));
-	 }
-	 removeUnwantedButtons(name);
-  }
+    var removeElement = $(removeElementId);
   
-  function addEventsToButtons(currentElement,name,arrayOfIds){
-	currentElement.find(".vrtx-remove-button").unbind('click');		   
-	currentElement.find(".vrtx-remove-button").click(function(){ 	   
-	 		removeNode( name, parseInt($(this).parent().find(".id").val()),  arrayOfIds );
-	});
-		   
-	currentElement.find(".vrtx-move-up-button").unbind('click');
-	currentElement.find(".vrtx-move-up-button").click(function(){
-			swapContent(parseInt($(this).parent().find(".id").val()), arrayOfIds, -1);
-	});
-	     
-    if(currentElement.prev().length){
-     	 currentElement.prev().find(".vrtx-move-down-button").unbind('click');
-	     currentElement.prev().find(".vrtx-move-down-button").click(function(){
-	     		swapContent(parseInt($(this).parent().find(".id").val()), arrayOfIds, 1);
-	     });
-    }
+	var siblingElement;
+	if(removeElement.prev(".vrtx-json-element").length){
+		siblingElement = removeElement.prev(".vrtx-json-element");	
+	}else if(removeElement.next(".vrtx-json-element").length){
+		siblingElement = removeElement.next(".vrtx-json-element");
+	}
+    $(removeElementId).remove(); 	
+	removeUnwantedButtons(siblingElement);
   }
+ 
   
-  function removeUnwantedButtons(name){
-  	var firstElement = $('#vrtx-json-element-' + name + '-0');
-  	firstElement.find(".vrtx-move-up-button").remove();
-  	
-  	var tmpElement = firstElement; 
-  	while(tmpElement.nextUntil("input").length){
-  		
-  		tmpElement = tmpElement.nextUntil("input");
+  function removeUnwantedButtons(siblingElement){
+  	var e = siblingElement.parents(".vrtx-json").find(".vrtx-json-element");
+  	while(e.prev(".vrtx-json-element").length){
+  		e = e.prev(".vrtx-json-element");
   	}
-  	tmpElement.find(".vrtx-move-down-button").remove();
-  }
-  
-  function renameBoxIds(arrayOfIds,i){
-  
-  	for(x in arrayOfIds){
-		  		var currentChildElementId = '#' + arrayOfIds[x] + i;
-		    	var currentChildElement = $(currentChildElementId);
-		    		    	
-		    	if(currentChildElement.parent().parent().hasClass("vrtx-html")){
-		  			var fckInstanceName = currentChildElement.attr("id");
-		  		    var editor = FCKeditorAPI.GetInstance(fckInstanceName);
-				    if (editor) {
-				      currentChildElement.val(editor.GetXHTML());
-				      $(currentChildElementId + '___Config').remove();
-				      $(currentChildElementId + '___Frame').remove();
-				      delete FCKeditorAPI.Instances[fckInstanceName];
-				    }    
-		  		}
-		  		
-		  		if(currentChildElement.parent().parent().hasClass("vrtx-simple-html")){
-		  			var fckInstanceName = currentChildElement.attr("id");
-		  		    var editor = FCKeditorAPI.GetInstance(fckInstanceName);
-				    if (editor) {
-				      currentChildElement.val(editor.GetXHTML());
-				      $(currentChildElementId + '___Config').remove();
-				      $(currentChildElementId + '___Frame').remove();
-				      delete FCKeditorAPI.Instances[fckInstanceName];
-				    }    
-		  		}
-		  		
-		  		var newId = arrayOfIds[x].replace(/\\/g, "") + (i-1);
-		    	currentChildElement.attr("name",newId);
-		  		currentChildElement.attr("id",newId);	
-		  		$('label[for='+ arrayOfIds[x] + i +']').attr("for", newId);
-		  		$('div'+ currentChildElementId +'\\.preview').attr("id", newId + '.preview');
-		  		
-		  		if(currentChildElement.parent().parent().hasClass("vrtx-html")){
-		  			newEditor(newId, true, false, '${resourceContext.parentURI}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
-	         					 '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', '');
-				}
-				if(currentChildElement.parent().parent().hasClass("vrtx-simple-html")){
-	       			newEditor(newId, false, false, '${resourceContext.parentURI}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
-	          			'${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', '');
-				}  		
-		}
+  	e.find(".vrtx-move-up-button").remove();
+  	
+  	while(e.next(".vrtx-json-element").length){
+  		e = e.next(".vrtx-json-element");
+  	}
+  	e.find(".vrtx-move-down-button").remove();
   }
   
   function addDropdown(elem, inputFieldName) {
@@ -386,11 +306,19 @@
   	
     for (x in arrayOfIds) {
       var elementId1 = '#' + arrayOfIds[x] + counter;
-      var elementId2 = '#' + arrayOfIds[x] + (counter + move);
-	  
+      
+      var moveToId;
+      if(move > 0){  
+      	moveToId = parseInt( $(elementId1).parents(".vrtx-json-element").next(".vrtx-json-element").find(".id").val() );
+	  }else{
+	  	moveToId = parseInt( $(elementId1).parents(".vrtx-json-element").prev(".vrtx-json-element").find(".id").val() );
+	  }
+	         
+      var elementId2 = '#' + arrayOfIds[x] + moveToId;
+     
       /* We need to handle special cases like date and fck fields  */
       var fckInstanceName1 = arrayOfIds[x].replace(/\\/g, '') + counter;
-      var fckInstanceName2 = arrayOfIds[x].replace(/\\/g, '') + (counter + move);
+      var fckInstanceName2 = arrayOfIds[x].replace(/\\/g, '') + moveToId;
       if (isFckEditor(fckInstanceName1) && isFckEditor(fckInstanceName2)) {
         var val1 = getFckValue(fckInstanceName1);
         var val2 = getFckValue(fckInstanceName2);
@@ -435,6 +363,6 @@
      element2.change();
     }
   }
-
+  // -->
   </script>
 </#macro>

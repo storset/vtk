@@ -3,15 +3,10 @@
 "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
-  <import resource="report.xml"/>
-
-
-
-
   <!-- Temporarily redirect ?vrtx=thumbnail on manage hostname to view hostname
        until editor is fixed to use thumbnail service to generate image URLs -->
   <bean id="manage.redirectThumbnails" class="org.vortikal.web.service.ServiceImpl">
-    <property name="order" value="-2" />
+    <property name="order" value="-3" />
     <property name="assertions">
       <list>
         <bean class="org.vortikal.web.service.InvertAssertion">
@@ -29,7 +24,7 @@
         </bean>
       </list>
     </property>
-        <property name="handlerInterceptors">
+    <property name="handlerInterceptors">
       <list>
         <!-- Redirect to view hostname -->
         <bean class="org.vortikal.web.interceptors.ConfigurableRedirector">
@@ -48,7 +43,7 @@
 
 
   <!-- Kicks in when webHostName != manage.hostName and missing ?vrtx=admin: -->
-  <bean id="manage.404Service" class="org.vortikal.web.service.ServiceImpl">
+  <bean id="manage.redirectService" class="org.vortikal.web.service.ServiceImpl">
     <property name="order" value="-2" />
     <property name="assertions">
       <list>
@@ -67,9 +62,22 @@
         </bean>
       </list>
     </property>
+    <property name="handlerInterceptors">
+      <list>
+        <!-- Redirect to admin hostname with ?vrtx=admin -->
+        <bean class="org.vortikal.web.interceptors.ConfigurableRedirector">
+          <property name="addedParameters">
+            <map>
+              <entry key="vrtx" value="admin" />
+            </map>
+          </property>
+        </bean>
+      </list>
+    </property>
+    <!-- Dummy handler that is never invoked (the handler interceptor will prevent it): -->
     <property name="handler">
       <bean class="org.springframework.web.servlet.mvc.ParameterizableViewController">
-        <property name="viewName" value="manage.404" />
+        <property name="viewName" value="HTTP_200_OK" />
       </bean>
     </property>
   </bean>
@@ -1070,24 +1078,10 @@
   <bean id="manage.plainViewResolver" class="org.vortikal.web.decorating.MappingViewResolver">
     <property name="views">
       <map>
-        <entry key="manage.404" value-ref="manage.404View" />
         <entry key="manage.refreshLockView" value-ref="manage.refreshLockView" />
       </map>
     </property>
   </bean>
-
-  <bean id="manage.404View"
-        class="org.vortikal.web.view.SimpleHttpStatusView">
-    <property name="attributesMap">
-      <map>
-        <entry key="httpStatusCode">
-          <bean class="java.lang.Integer">
-            <constructor-arg><value>404</value></constructor-arg>
-          </bean>
-        </entry>
-      </map>  
-    </property>
-  </bean>  
 
   <bean id="expiresSecProvider" class="org.vortikal.web.referencedata.provider.ResourcePropertiesValueProvider"
     parent="repositoryAware">

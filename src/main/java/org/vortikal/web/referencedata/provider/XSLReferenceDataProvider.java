@@ -249,8 +249,9 @@ public class XSLReferenceDataProvider implements ReferenceDataProvider {
           String title = element.getTitle();
           if (title == null) title = "";
           pathElement.setAttribute("title", title);
-          String url = element.getURL();
-          if (url == null) url = "";
+          String url = "";
+          if(element.getURL() != null)
+              url = element.getURL().toString();
           pathElement.setAttribute("URL", url);
           pathElements.addContent(0, pathElement);
             if (logger.isDebugEnabled()) {

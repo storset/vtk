@@ -51,6 +51,7 @@ import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
 import org.vortikal.web.referencedata.provider.BreadCrumbProvider;
 import org.vortikal.web.referencedata.provider.BreadcrumbElement;
+import org.vortikal.web.service.URL;
 import org.vortikal.web.view.components.menu.MenuItem;
 
 public class BreadcrumbMenuComponent extends ListMenuComponent {
@@ -100,7 +101,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
                 breadCrumbElements.remove(breadCrumbElements.size() - 1);
             }
         }
-        String markedUrl = this.viewService.constructLink(currentResource, principal, false);
+        URL markedUrl = this.viewService.constructURL(currentResource, principal, false);
         breadCrumbElements.add(new BreadcrumbElement(markedUrl, getMenuTitle(currentResource)));
 
         List<MenuItem<PropertySet>> childElements = null;

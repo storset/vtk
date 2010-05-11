@@ -51,6 +51,7 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
+import org.vortikal.web.service.URL;
 
 
 /**
@@ -246,7 +247,7 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
             	}
             	title = StringUtils.isBlank(navigationTitle) ? title : navigationTitle;
             	
-            	String url = this.service.constructLink(r, principal, false);
+            	URL url = this.service.constructURL(r, principal, false);
             	if (!skipLastElement) {
                     if (i == length - 1) {
                     	if (serviceNameCrumb != null) {

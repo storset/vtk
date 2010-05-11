@@ -9,7 +9,7 @@
 				<li class="vrtx-ancestor"> <span>${elem.title}</span></li>
 			</#if>
 		<#else>
-			<#if (elem.URL?string = markedurl)  >
+			<#if (elem.URL.path = markedurl.path)  >
 				<li class="vrtx-parent" ><a class="vrtx-marked" href="${elem.URL}"><span>${elem.title}</span></a>
 			<#else>
 				<li class="vrtx-parent" ><a href="${elem.URL}"><span>${elem.title}</span></a>
@@ -45,7 +45,7 @@
 	<#if children?exists >
     	<ul>
      	<#list children as c>
-			<li class="vrtx-child"><a <#if (c.url?string = markedurl) >class="vrtx-marked"</#if> href="${c.url?html}"><span>${c.title?html}</span></a></li>
+			<li class="vrtx-child"><a <#if (c.url.path = markedurl.path) >class="vrtx-marked"</#if> href="${c.url?html}"><span>${c.title?html}</span></a></li>
 	 	</#list>
      	</ul>
    	 </#if>

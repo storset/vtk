@@ -30,25 +30,27 @@
  */
 package org.vortikal.web.referencedata.provider;
 
+import org.vortikal.web.service.URL;
+
 
 public class BreadcrumbElement {
 
-    private String url = null;
+    private URL url = null;
     private String title = null;
     private String delimiter = ">";
 
-    public BreadcrumbElement(String url, String title) {
+    public BreadcrumbElement(URL url, String title) {
         this.url = url;
         this.title = title;
     }
     
-    public BreadcrumbElement(String url, String title, String delimiter) {
+    public BreadcrumbElement(URL url, String title, String delimiter) {
         this.url = url;
         this.title = title;
         this.delimiter = delimiter;
     }
     
-    public String getURL() {
+    public URL getURL() {
         return this.url;
     }
 

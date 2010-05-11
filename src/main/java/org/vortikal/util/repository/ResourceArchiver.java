@@ -104,28 +104,34 @@ public class ResourceArchiver {
     }
 
     public void createArchive(String token, Resource r, OutputStream out, EventListener listener) throws Exception {
-        int rootLevel = r.getURI().getDepth() + 1;
-
-        logger.info("Creating archive '" + r.getURI() + "'");
-
-        File tmp = null;
         try {
-            tmp = File.createTempFile("tmp-manifest", "vrtx", this.tempDir);
-            PrintWriter manifestOut = new PrintWriter(new FileOutputStream(tmp));
-            writeManifest(token, rootLevel, r, manifestOut);
-            logger.info("Writing manifest...");
-            Manifest manifest = new Manifest(new FileInputStream(tmp));
-            logger.info("Manifest written, creating jar...");
-            JarOutputStream jo = new JarOutputStream(out, manifest);
-            addEntry(token, rootLevel, r, jo, listener);
-            jo.close();
-            out.close();
-        } finally {
-            if (tmp != null)
-                tmp.delete();
-        }
+            int rootLevel = r.getURI().getDepth() + 1;
 
-        logger.info("Done creating archive '" + r.getURI() + "'");
+            logger.info("Creating archive '" + r.getURI() + "'");
+
+            File tmp = null;
+            try {
+                tmp = File.createTempFile("tmp-manifest", "vrtx", this.tempDir);
+                PrintWriter manifestOut = new PrintWriter(new FileOutputStream(tmp));
+                writeManifest(token, rootLevel, r, manifestOut);
+                logger.info("Writing manifest...");
+                Manifest manifest = new Manifest(new FileInputStream(tmp));
+                logger.info("Manifest written, creating jar...");
+                JarOutputStream jo = new JarOutputStream(out, manifest);
+                addEntry(token, rootLevel, r, jo, listener);
+                jo.close();
+                out.close();
+            } finally {
+                if (tmp != null)
+                    tmp.delete();
+            }
+
+            logger.info("Done creating archive '" + r.getURI() + "'");
+        } catch (Exception e) {
+            // Log the exception and throw it up the chain to break properly
+            logger.error("An error occured while creating archive '" + r.getURI() + "'", e);
+            throw e;
+        }
 
     }
 
@@ -432,22 +438,28 @@ public class ResourceArchiver {
                 addEntry(token, fromLevel, child, jarOut, listener);
             }
         } else {
-            InputStream is = this.repository.getInputStream(token, r.getURI(), false);
-            BufferedInputStream bi = new BufferedInputStream(is);
 
-            byte[] buf = new byte[1024];
-            int n;
-            while ((n = bi.read(buf)) != -1) {
-                jarOut.write(buf, 0, n);
-            }
-            bi.close();
-
-            // We don't break the archiving if something should go wrong with
-            // comments
             try {
-                archiveComments(token, r, jarOut);
+                InputStream is = this.repository.getInputStream(token, r.getURI(), false);
+                BufferedInputStream bi = new BufferedInputStream(is);
+
+                byte[] buf = new byte[1024];
+                int n;
+                while ((n = bi.read(buf)) != -1) {
+                    jarOut.write(buf, 0, n);
+                }
+                bi.close();
+
+                // We don't break the archiving if something should go wrong
+                // with comments
+                try {
+                    archiveComments(token, r, jarOut);
+                } catch (Throwable t) {
+                    logger.error("Could not archive comment for resource '" + r.getURI() + "': " + t.getMessage());
+                }
+
             } catch (Throwable t) {
-                logger.error("Could not archive comment", t);
+                logger.error("Colud not archive resource '" + r.getURI() + "': " + t.getMessage());
             }
 
         }

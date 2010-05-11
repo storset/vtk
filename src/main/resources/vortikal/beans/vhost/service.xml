@@ -196,6 +196,9 @@
       </list>
     </property>
     <property name="handler" ref="displayThumbnailHandler" />
+    <property name="urlPostProcessors">
+      <bean class="org.vortikal.web.service.LocalURLPostProcessor" />
+    </property>
   </bean>
 
   <bean id="displayThumbnailHandler"

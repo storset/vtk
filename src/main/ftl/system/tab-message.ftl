@@ -2,7 +2,7 @@
 
 <#assign locale = springMacroRequestContext.getLocale() />
 
-<#if tabMessagePublishPermissionState?exists>
+<#if tabMessagePublishPermissionPermission?exists>
   <div class="tabMessagePublishPermission">
      <#if tabMessagePublishPermissionState?exists && tabMessagePublishPermissionPublish?exists>
        ${tabMessagePublishPermissionState?html}:

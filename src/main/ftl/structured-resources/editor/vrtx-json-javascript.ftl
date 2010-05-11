@@ -187,7 +187,7 @@
     htmlTemplate = '<div class=\"' + classes + '\">';
     htmlTemplate += '<label for=\"' + inputFieldName + '\">' + elem.title + '<\/label>';
     htmlTemplate += '<div class=\"inputfield\">';
-    htmlTemplate += '<select name=\"' + inputFieldName + '\">';
+    htmlTemplate += '<select id=\"' + inputFieldName + '\" name=\"' + inputFieldName + '\">';
     for (i in elem.valuemap) {
       var keyValuePair = elem.valuemap[i];
       var key = keyValuePair.split("$")[0];

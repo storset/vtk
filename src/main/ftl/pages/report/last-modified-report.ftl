@@ -72,7 +72,7 @@
 	    </#if>
           <td class="vrtx-report-title"><a href="${url?html}">${title?html}</a></td>
           <td class="vrtx-report-last-modified">${lastModifiedTime?html}</td>
-          <td class="vrtx-report-last-modified-by">${modifiedBy?html}</td>
+          <td class="vrtx-report-last-modified-by">${modifiedBy}</td>
           <td class="vrtx-report-permission-set">${aclIsInherited?html}</td> 
           <td class="vrtx-report-permissions">${isReadRestricted?html}</td>  
           <td class="vrtx-report-published">${publishedStatus?html}</td>

@@ -70,12 +70,12 @@
 	    <#else>
 	      <tr class="odd"> 
 	    </#if>
-          <td class="vrtx-report-title"><a href="${url}">${title}</a></td>
-          <td class="vrtx-report-last-modified">${lastModifiedTime}</td>
-          <td class="vrtx-report-last-modified-by">${modifiedBy}</td>
-          <td class="vrtx-report-permission-set">${aclIsInherited}</td> 
-          <td class="vrtx-report-permissions">${isReadRestricted}</td>  
-          <td class="vrtx-report-published">${publishedStatus}</td>
+          <td class="vrtx-report-title"><a href="${url?html}">${title?html}</a></td>
+          <td class="vrtx-report-last-modified">${lastModifiedTime?html}</td>
+          <td class="vrtx-report-last-modified-by">${modifiedBy?html}</td>
+          <td class="vrtx-report-permission-set">${aclIsInherited?html}</td> 
+          <td class="vrtx-report-permissions">${isReadRestricted?html}</td>  
+          <td class="vrtx-report-published">${publishedStatus?html}</td>
         </tr>
         <#assign count = count + 1 />
       </#list>

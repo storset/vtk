@@ -48,6 +48,8 @@ import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
+import org.vortikal.web.service.Service;
+import org.vortikal.web.service.URL;
 
 public class LastModifiedReporter extends AbstractReporter {
 
@@ -55,6 +57,7 @@ public class LastModifiedReporter extends AbstractReporter {
     private PropertyTypeDefinition titlePropDef;
     private PropertyTypeDefinition sortPropDef;
     private SortFieldDirection sortOrder;
+    private Service viewService;
 
     public Map<String, Object> getReportContent(String token, Resource currentResource, HttpServletRequest request) {
         Map<String, Object> result = new HashMap<String, Object>();
@@ -74,17 +77,19 @@ public class LastModifiedReporter extends AbstractReporter {
         result.put("lastModifiedList", rs.getAllResults());
 
         boolean[] isReadRestricted = new boolean[rs.getSize()];
+        URL[] viewURLs = new URL[rs.getSize()];
 
         for (int i = 0; i < rs.getSize(); i++) {
             PropertySet p = rs.getResult(i);
             try {
-                Resource r = repository.retrieve(token, p.getURI(), true);
+                Resource r = this.repository.retrieve(token, p.getURI(), true);
                 isReadRestricted[i] = r.isReadRestricted();
+                viewURLs[i] = this.viewService.constructURL(p.getURI());
             } catch (Exception e) {
-                e.printStackTrace();
             }
         }
         result.put("isReadRestricted", isReadRestricted);
+        result.put("viewURLs", viewURLs);
         return result;
     }
 
@@ -106,4 +111,7 @@ public class LastModifiedReporter extends AbstractReporter {
         return titlePropDef;
     }
 
+    public void setViewService(Service viewService) {
+        this.viewService = viewService;
+    }
 }

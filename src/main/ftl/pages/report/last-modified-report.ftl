@@ -55,6 +55,10 @@
         <#if report.isReadRestricted[lastModified_index] >
         	<#assign isReadRestricted = vrtx.getMsg("collectionListing.permissions.restricted")>
         </#if>
+        <#assign url = "">
+        <#if report.viewURLs[lastModified_index]?exists>
+          <#assign url = report.viewURLs[lastModified_index]?html />
+        </#if>
         <#assign published = vrtx.propValue(lastModified, 'published') />
 	<#assign publishedStatus = vrtx.getMsg("report.yes", "Yes")>
 	  <#if published = "false">
@@ -66,7 +70,7 @@
 	    <#else>
 	      <tr class="odd"> 
 	    </#if>
-          <td class="vrtx-report-title"><a href="${lastModified.URI}">${title}</a></td>
+          <td class="vrtx-report-title"><a href="${url}">${title}</a></td>
           <td class="vrtx-report-last-modified">${lastModifiedTime}</td>
           <td class="vrtx-report-last-modified-by">${modifiedBy}</td>
           <td class="vrtx-report-permission-set">${aclIsInherited}</td> 

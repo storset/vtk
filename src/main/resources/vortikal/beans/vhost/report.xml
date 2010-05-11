@@ -64,6 +64,7 @@
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
+    <property name="viewService" ref="viewService" />
   </bean>
 
   <bean id="report.viewResolver" parent="system.decoratingViewResolver">

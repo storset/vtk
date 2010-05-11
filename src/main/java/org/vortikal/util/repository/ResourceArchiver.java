@@ -54,8 +54,6 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipInputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Comment;
@@ -80,8 +78,6 @@ import org.vortikal.web.RequestContext;
 
 public class ResourceArchiver {
 
-    private static Log logger = LogFactory.getLog(ResourceArchiver.class);
-
     private PrincipalFactory principalFactory;
     private PrincipalManager principalManager;
     private Repository repository;
@@ -104,35 +100,22 @@ public class ResourceArchiver {
     }
 
     public void createArchive(String token, Resource r, OutputStream out, EventListener listener) throws Exception {
+        int rootLevel = r.getURI().getDepth() + 1;
+
+        File tmp = null;
         try {
-            int rootLevel = r.getURI().getDepth() + 1;
-
-            logger.info("Creating archive '" + r.getURI() + "'");
-
-            File tmp = null;
-            try {
-                tmp = File.createTempFile("tmp-manifest", "vrtx", this.tempDir);
-                PrintWriter manifestOut = new PrintWriter(new FileOutputStream(tmp));
-                writeManifest(token, rootLevel, r, manifestOut);
-                logger.info("Writing manifest...");
-                Manifest manifest = new Manifest(new FileInputStream(tmp));
-                logger.info("Manifest written, creating jar...");
-                JarOutputStream jo = new JarOutputStream(out, manifest);
-                addEntry(token, rootLevel, r, jo, listener);
-                jo.close();
-                out.close();
-            } finally {
-                if (tmp != null)
-                    tmp.delete();
-            }
-
-            logger.info("Done creating archive '" + r.getURI() + "'");
-        } catch (Exception e) {
-            // Log the exception and throw it up the chain to break properly
-            logger.error("An error occured while creating archive '" + r.getURI() + "'", e);
-            throw e;
+            tmp = File.createTempFile("tmp-manifest", "vrtx", this.tempDir);
+            PrintWriter manifestOut = new PrintWriter(new FileOutputStream(tmp));
+            writeManifest(token, rootLevel, r, manifestOut);
+            Manifest manifest = new Manifest(new FileInputStream(tmp));
+            JarOutputStream jo = new JarOutputStream(out, manifest);
+            addEntry(token, rootLevel, r, jo, listener);
+            jo.close();
+            out.close();
+        } finally {
+            if (tmp != null)
+                tmp.delete();
         }
-
     }
 
     public void expandArchive(String token, InputStream source, Path base) throws Exception {
@@ -163,7 +146,6 @@ public class ResourceArchiver {
         List<Comment> comments = new ArrayList<Comment>();
         while ((entry = jarIn.getNextJarEntry()) != null) {
             String entryPath = entry.getName();
-            decodeValue(entryPath);
 
             // Keep comments for later processing, add them after resources
             // have been expanded
@@ -171,7 +153,7 @@ public class ResourceArchiver {
                 try {
                     comments.add(getArchivedComment(jarIn, base));
                 } catch (Throwable t) {
-                    logger.error("Could not handle comment", t);
+                    t.printStackTrace();
                 }
                 continue;
             }
@@ -192,13 +174,13 @@ public class ResourceArchiver {
         jarIn.close();
 
         // We restore comments after everything else, since comments aren't
-        // crucial. And we don't break the archiving if something should go
-        // wrong here
+        // crucial
+        // And we don't break the archiving if something should go wrong here
         for (Comment comment : comments) {
             try {
                 this.repository.addComment(token, comment);
             } catch (Throwable t) {
-                logger.error("Could not add comment", t);
+                t.printStackTrace();
             }
         }
     }
@@ -279,28 +261,19 @@ public class ResourceArchiver {
 
     private void addManifestEntry(String token, int fromLevel, Resource r, PrintWriter out) throws Exception {
         StringBuilder path = new StringBuilder(getJarPath(r, fromLevel));
-        encode(path);
-        try {
+        ensure72Bytes(path);
 
-            out.println("");
-            StringBuilder name = new StringBuilder("Name: ");
-            name.append(path.toString());
-            ensure72Bytes(name);
-            out.println(name);
+        out.println("");
+        out.println("Name: " + path);
 
-            addProperties(r, out);
-            addAcl(r, out);
+        addProperties(r, out);
+        addAcl(r, out);
 
-            if (r.isCollection()) {
-                Resource[] children = this.repository.listChildren(token, r.getURI(), false);
-                for (Resource child : children) {
-                    addManifestEntry(token, fromLevel, child, out);
-                }
+        if (r.isCollection()) {
+            Resource[] children = this.repository.listChildren(token, r.getURI(), false);
+            for (Resource child : children) {
+                addManifestEntry(token, fromLevel, child, out);
             }
-        } catch (Exception e) {
-            // We'll ignore resources that fail and continue. Log broken
-            // resources an handle them some other way later.
-            logger.error("Error writing manifest entry for '" + path.toString() + "'\n", e);
         }
     }
 
@@ -382,13 +355,14 @@ public class ResourceArchiver {
         int count = 0;
         while (i < s.length()) {
             int delta = s.substring(i, i + 1).getBytes("utf-8").length;
-            if (count + delta >= 72) {
+            if (count + delta > 72) {
                 s.insert(i, "\n ");
+                i += 2;
                 count = 0;
             } else {
+                i++;
                 count += delta;
             }
-            i++;
         }
     }
 
@@ -438,28 +412,22 @@ public class ResourceArchiver {
                 addEntry(token, fromLevel, child, jarOut, listener);
             }
         } else {
+            InputStream is = this.repository.getInputStream(token, r.getURI(), false);
+            BufferedInputStream bi = new BufferedInputStream(is);
 
+            byte[] buf = new byte[1024];
+            int n;
+            while ((n = bi.read(buf)) != -1) {
+                jarOut.write(buf, 0, n);
+            }
+            bi.close();
+
+            // We don't break the archiving if something should go wrong with
+            // comments
             try {
-                InputStream is = this.repository.getInputStream(token, r.getURI(), false);
-                BufferedInputStream bi = new BufferedInputStream(is);
-
-                byte[] buf = new byte[1024];
-                int n;
-                while ((n = bi.read(buf)) != -1) {
-                    jarOut.write(buf, 0, n);
-                }
-                bi.close();
-
-                // We don't break the archiving if something should go wrong
-                // with comments
-                try {
-                    archiveComments(token, r, jarOut);
-                } catch (Throwable t) {
-                    logger.error("Could not archive comment for resource '" + r.getURI() + "': " + t.getMessage());
-                }
-
+                archiveComments(token, r, jarOut);
             } catch (Throwable t) {
-                logger.error("Colud not archive resource '" + r.getURI() + "': " + t.getMessage());
+                t.printStackTrace();
             }
 
         }
@@ -513,7 +481,7 @@ public class ResourceArchiver {
                 if (setProperty(resource, name, attributes, decode, listener)) {
                     propsModified = true;
                 }
-            } else if (name.startsWith("X-vrtx-acl-")) {
+            } else if (name.startsWith("X-vrtx-acl")) {
                 if (setAclEntry(resource, name, attributes, decode, listener)) {
                     aclModified = true;
                 }
@@ -524,8 +492,9 @@ public class ResourceArchiver {
         }
         if (aclModified) {
             // XXX: Repository API not "friendly" to special clients like
-            // resource archiver/expander wrt. ACL modifications. One shouldn't
-            // have to call storeACL twice.
+            // resource archiver/expander
+            // wrt. ACL modifications. One shouldn't have to call storeACL
+            // twice.
             this.repository.storeACL(token, resource); // Switch inheritance off
             this.repository.storeACL(token, resource); // Store new ACL
         }

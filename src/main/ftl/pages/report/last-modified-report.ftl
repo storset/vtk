@@ -57,7 +57,7 @@
         </#if>
         <#assign url = "">
         <#if report.viewURLs[lastModified_index]?exists>
-          <#assign url = report.viewURLs[lastModified_index]?html />
+          <#assign url = report.viewURLs[lastModified_index] />
         </#if>
         <#assign published = vrtx.propValue(lastModified, 'published') />
 	<#assign publishedStatus = vrtx.getMsg("report.yes", "Yes")>

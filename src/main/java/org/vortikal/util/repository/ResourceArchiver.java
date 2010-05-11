@@ -113,7 +113,9 @@ public class ResourceArchiver {
             tmp = File.createTempFile("tmp-manifest", "vrtx", this.tempDir);
             PrintWriter manifestOut = new PrintWriter(new FileOutputStream(tmp));
             writeManifest(token, rootLevel, r, manifestOut);
+            logger.info("Writing manifest...");
             Manifest manifest = new Manifest(new FileInputStream(tmp));
+            logger.info("Manifest written, creating jar...");
             JarOutputStream jo = new JarOutputStream(out, manifest);
             addEntry(token, rootLevel, r, jo, listener);
             jo.close();
@@ -123,7 +125,8 @@ public class ResourceArchiver {
                 tmp.delete();
         }
 
-        logger.info("Done creating archive");
+        logger.info("Done creating archive '" + r.getURI() + "'");
+
     }
 
     public void expandArchive(String token, InputStream source, Path base) throws Exception {
@@ -154,6 +157,7 @@ public class ResourceArchiver {
         List<Comment> comments = new ArrayList<Comment>();
         while ((entry = jarIn.getNextJarEntry()) != null) {
             String entryPath = entry.getName();
+            decodeValue(entryPath);
 
             // Keep comments for later processing, add them after resources
             // have been expanded
@@ -182,7 +186,8 @@ public class ResourceArchiver {
         jarIn.close();
 
         // We restore comments after everything else, since comments aren't
-        // crucial. And we don't break the archiving if something should go wrong here
+        // crucial. And we don't break the archiving if something should go
+        // wrong here
         for (Comment comment : comments) {
             try {
                 this.repository.addComment(token, comment);
@@ -268,11 +273,14 @@ public class ResourceArchiver {
 
     private void addManifestEntry(String token, int fromLevel, Resource r, PrintWriter out) throws Exception {
         StringBuilder path = new StringBuilder(getJarPath(r, fromLevel));
+        encode(path);
         try {
-            ensure72Bytes(path);
 
             out.println("");
-            out.println("Name: " + path);
+            StringBuilder name = new StringBuilder("Name: ");
+            name.append(path.toString());
+            ensure72Bytes(name);
+            out.println(name);
 
             addProperties(r, out);
             addAcl(r, out);
@@ -368,14 +376,13 @@ public class ResourceArchiver {
         int count = 0;
         while (i < s.length()) {
             int delta = s.substring(i, i + 1).getBytes("utf-8").length;
-            if (count + delta > 72) {
+            if (count + delta >= 72) {
                 s.insert(i, "\n ");
-                i += 2;
                 count = 0;
             } else {
-                i++;
                 count += delta;
             }
+            i++;
         }
     }
 
@@ -494,7 +501,7 @@ public class ResourceArchiver {
                 if (setProperty(resource, name, attributes, decode, listener)) {
                     propsModified = true;
                 }
-            } else if (name.startsWith("X-vrtx-acl")) {
+            } else if (name.startsWith("X-vrtx-acl-")) {
                 if (setAclEntry(resource, name, attributes, decode, listener)) {
                     aclModified = true;
                 }
@@ -505,9 +512,8 @@ public class ResourceArchiver {
         }
         if (aclModified) {
             // XXX: Repository API not "friendly" to special clients like
-            // resource archiver/expander
-            // wrt. ACL modifications. One shouldn't have to call storeACL
-            // twice.
+            // resource archiver/expander wrt. ACL modifications. One shouldn't
+            // have to call storeACL twice.
             this.repository.storeACL(token, resource); // Switch inheritance off
             this.repository.storeACL(token, resource); // Store new ACL
         }

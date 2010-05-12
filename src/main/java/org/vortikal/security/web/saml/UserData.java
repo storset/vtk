@@ -65,7 +65,11 @@ public class UserData {
 
 
     public String getUsername() {
-        return getSimpleAttribute("uid");
+        if (getSimpleAttribute("eduPersonPrincipalName") != null) {
+            return getSimpleAttribute("eduPersonPrincipalName");
+        } else {
+            return getSimpleAttribute("uid");
+        }
     }
 
 
@@ -93,10 +97,12 @@ public class UserData {
         }
         return list.get(0);
     }
-    
+
+
     public Set<String> getAttributeNames() {
         return Collections.unmodifiableSet(this.attrs.keySet());
     }
+
 
     private List<String> extractValues(Attribute attribute) {
 

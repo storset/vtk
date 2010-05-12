@@ -36,6 +36,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
@@ -45,10 +47,12 @@ import org.vortikal.util.repository.ResourceArchiver;
 
 public class CreateArchiveAction implements CopyAction {
 
+    private static Log logger = LogFactory.getLog(CreateArchiveAction.class);
+
     private Repository repository;
     private File tempDir = new File(System.getProperty("java.io.tmpdir"));
     private ResourceArchiver archiver;
-    
+
     public void process(Path uri, Path copyUri) throws Exception {
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
@@ -63,24 +67,37 @@ public class CreateArchiveAction implements CopyAction {
         BufferedOutputStream bo = new BufferedOutputStream(out);
         try {
             this.archiver.createArchive(token, resource, bo);
+
+            logger.info("Storing archive contents to '" + copyUri + "'");
+
             Resource dest = this.repository.createDocument(token, copyUri);
+
+            if (!dest.isReadRestricted()) {
+                logger.warn("The destination '" + copyUri + "' is open for access to all!");
+            }
+
             InputStream in = new FileInputStream(outFile);
             this.repository.storeContent(token, dest.getURI(), in);
+
+            logger.info("Done storing archive to '" + copyUri + "'");
+
         } finally {
             outFile.delete();
         }
     }
 
-    @Required public void setArchiver(ResourceArchiver archiver) {
+    @Required
+    public void setArchiver(ResourceArchiver archiver) {
         this.archiver = archiver;
     }
 
-    @Required public void setRepository(Repository repository) {
+    @Required
+    public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
     public void setTempDir(File tempDir) {
         this.tempDir = tempDir;
     }
-    
+
 }

@@ -32,6 +32,8 @@ package org.vortikal.web.actions.convert;
 
 import java.io.InputStream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
@@ -41,13 +43,17 @@ import org.vortikal.util.repository.ResourceArchiver;
 
 public class ExpandArchiveAction implements CopyAction {
 
+    private static Log logger = LogFactory.getLog(CreateArchiveAction.class);
+
     private Repository repository;
     private ResourceArchiver archiver;
-    
+
     public void process(Path uri, Path copyUri) throws Exception {
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
+
+        logger.info("Expanding archive '" + uri + "' to '" + copyUri.toString() + "'");
 
         Resource resource = this.repository.retrieve(token, uri, false);
         if (resource.isCollection()) {
@@ -55,16 +61,19 @@ public class ExpandArchiveAction implements CopyAction {
         }
         InputStream source = this.repository.getInputStream(token, uri, false);
         this.archiver.expandArchive(token, source, copyUri);
-        
+
+        logger.info("Done expanding archive '" + uri + "' to '" + copyUri.toString() + "'");
+
     }
 
-    @Required public void setArchiver(ResourceArchiver archiver) {
+    @Required
+    public void setArchiver(ResourceArchiver archiver) {
         this.archiver = archiver;
     }
 
-    @Required public void setRepository(Repository repository) {
+    @Required
+    public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
 }
-

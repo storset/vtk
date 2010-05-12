@@ -280,14 +280,10 @@
     </property>
   </bean>
 
-
-  <!-- XXX: verify this assertion: when should authTarget have effect? -->
-  <!-- XXX: verify that this works when webProtocol = manageProtocol = ssl  -->
   <bean id="authTarget.enabledAssertion" class="org.vortikal.web.service.ConfigAssertion">
-    <property name="config" value="${webProtocolRestricted}" />
-    <property name="expectedValue" value="https" />
+    <property name="config" value="${manage.enableSelectiveProtocols}" />
+    <property name="expectedValue" value="true" />
   </bean>
-
 
   <bean id="isAuthenticatedAssertion" class="org.vortikal.web.service.IsAuthenticatedAssertion">
     <property name="requiresAuthentication" value="true" />

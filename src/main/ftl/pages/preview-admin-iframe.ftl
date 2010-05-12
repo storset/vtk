@@ -36,6 +36,10 @@
   <#stop "Unable to render model: required submodel
   'permissions_ACTION_READ_PROCESSED' missing">
 </#if>
+<#if !enableSelectiveProtocols?exists>
+  <#stop "Unable to render model: required submodel
+  'enableSelectiveProtocols' missing">
+</#if>
 
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -58,7 +62,8 @@
     <#-- Do not show preview if resource is "Allowed for all" and we are on https. Should not normally happen -->
     <#if ((permissions_ACTION_READ.permissionsQueryResult = 'true') || 
           (permissions_ACTION_READ_PROCESSED.permissionsQueryResult = 'true')) 
-         && (permissions_ACTION_READ.requestScheme = 'https')>
+         && (permissions_ACTION_READ.requestScheme = 'https')
+         && (enableSelectiveProtocols = 'true')>
       <p class="previewUnavailable">${vrtx.getMsg("preview.httpOnly")}</p>
     
     <#else>

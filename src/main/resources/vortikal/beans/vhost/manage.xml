@@ -66,7 +66,7 @@
       <list>
         <!-- Redirect to admin hostname with ?vrtx=admin -->
         <bean class="org.vortikal.web.interceptors.ConfigurableRedirector">
-          <property name="addedParameters">
+          <property name="replacedParameters">
             <map>
               <entry key="vrtx" value="admin" />
             </map>

@@ -52,6 +52,7 @@ public class ConfigurableRedirector implements HandlerInterceptor, Controller  {
     private String redirectToHostName;
     private String port;
     private Map<String, String> addedParameters;
+    private Map<String, String> replacedParameters;
     private Set<String> removedParameters;
 
     public void setProtocol(String protocol) {
@@ -84,6 +85,10 @@ public class ConfigurableRedirector implements HandlerInterceptor, Controller  {
 
     public void setAddedParameters(Map<String, String> addedParameters) {
         this.addedParameters = addedParameters;
+    }
+
+    public void setReplacedParameters(Map<String, String> replacedParameters) {
+        this.replacedParameters = replacedParameters;
     }
 
     public void setRemovedParameters(Set<String> removedParameters) {
@@ -141,9 +146,14 @@ public class ConfigurableRedirector implements HandlerInterceptor, Controller  {
                 url.addParameter(param, this.addedParameters.get(param));
             }
         }
+        if (this.replacedParameters != null) {
+            for (String param : this.replacedParameters.keySet()) {
+                url.setParameter(param, this.replacedParameters.get(param));
+            }
+        }
         if (this.removedParameters != null) {
-            for (String parameter : this.removedParameters) {
-                url.removeParameter(parameter);
+            for (String param : this.removedParameters) {
+                url.removeParameter(param);
             }
         }
         response.sendRedirect(url.toString());

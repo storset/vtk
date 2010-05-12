@@ -100,7 +100,7 @@ resourcetype organizational-unit {
               
           [if email != null && email != ""]
             <span class="vrtx-organizational-unit-email">
-              [localized 'email']: <span class="email">[val email]</span>
+              [localized 'email']: <a href="mailto:[val email]"><span class="email">[val email]</span></a>
             </span>
           [endif]
         </span>

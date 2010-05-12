@@ -32,7 +32,6 @@ package org.vortikal.web.actions.convert;
 
 import org.vortikal.repository.Path;
 
-
 public interface CopyAction {
 
     public void process(Path originalUri, Path copyUri) throws Exception;

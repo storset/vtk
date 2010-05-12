@@ -30,9 +30,7 @@
  */
 package org.vortikal.web.actions.convert;
 
-
 import org.vortikal.web.actions.UpdateCancelCommand;
-
 
 public class CopyCommand extends UpdateCancelCommand {
 
@@ -47,8 +45,8 @@ public class CopyCommand extends UpdateCancelCommand {
         return this.name;
     }
 
-    public void setName(String name)  {
+    public void setName(String name) {
         this.name = name;
     }
-}
 
+}

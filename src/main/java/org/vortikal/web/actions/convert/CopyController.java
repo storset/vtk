@@ -45,62 +45,58 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
-
 public class CopyController extends SimpleFormController {
 
     private String cancelView;
-    
+
     private CopyAction copyAction;
     private Repository repository = null;
     private String extension;
     private String resourceName;
 
     private boolean parentViewOnSuccess = false;
-    
+
     @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
-    
-    public void setResourceName(String resourceName) {
-		this.resourceName = resourceName;
-	}
 
+    public void setResourceName(String resourceName) {
+        this.resourceName = resourceName;
+    }
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
-        
-        Resource resource = repository.retrieve(securityContext.getToken(),
-                                                requestContext.getResourceURI(), false);
+
+        Resource resource = repository.retrieve(securityContext.getToken(), requestContext.getResourceURI(), false);
         String url = service.constructLink(resource, securityContext.getPrincipal());
-        
+
         String name = resource.getName();
         if (name.indexOf(".") > 0)
             name = name.substring(0, name.lastIndexOf("."));
-        
+
         if (this.extension != null)
-                name += this.extension;
-        
-        if(this.resourceName != null)
-        		name = this.resourceName;
+            name += this.extension;
+
+        if (this.resourceName != null)
+            name = this.resourceName;
 
         CopyCommand command = new CopyCommand(name, url);
         return command;
     }
 
-	protected ModelAndView onSubmit(Object command) throws Exception {
+    protected ModelAndView onSubmit(Object command) throws Exception {
 
         Map<String, Object> model = new HashMap<String, Object>();
 
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = SecurityContext.getSecurityContext().getToken();
-        
+
         Path uri = requestContext.getResourceURI();
 
-        CopyCommand copyCommand =
-            (CopyCommand) command;
+        CopyCommand copyCommand = (CopyCommand) command;
 
         if (copyCommand.getCancelAction() != null) {
             copyCommand.setDone(true);
@@ -108,18 +104,19 @@ public class CopyController extends SimpleFormController {
         }
 
         Path copyToCollection = uri.getParent();
-        if (copyToCollection == null) copyToCollection = Path.fromString("/");
+        if (copyToCollection == null)
+            copyToCollection = Path.fromString("/");
         Path copyUri = copyToCollection.extend(copyCommand.getName());
         copyAction.process(uri, copyUri);
-        copyCommand.setDone(true);        
-        
+        copyCommand.setDone(true);
+
         Resource resource = null;
-        
+
         if (this.parentViewOnSuccess)
             resource = this.repository.retrieve(token, copyToCollection, false);
         else
             resource = this.repository.retrieve(token, copyUri, false);
-        
+
         model.put("resource", resource);
 
         return new ModelAndView(getSuccessView(), model);
@@ -141,7 +138,5 @@ public class CopyController extends SimpleFormController {
     public void setParentViewOnSuccess(boolean parentViewOnSuccess) {
         this.parentViewOnSuccess = parentViewOnSuccess;
     }
-    
 
 }
-

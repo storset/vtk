@@ -30,8 +30,6 @@
  */
 package org.vortikal.web.actions.convert;
 
-
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
@@ -43,7 +41,6 @@ import org.vortikal.repository.Repository;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 
-
 public class CopyCommandValidator implements Validator, InitializingBean {
 
     private static Log logger = LogFactory.getLog(CopyCommandValidator.class);
@@ -54,20 +51,16 @@ public class CopyCommandValidator implements Validator, InitializingBean {
         this.repository = repository;
     }
 
-    
     public void afterPropertiesSet() throws Exception {
         if (repository == null) {
-            throw new BeanInitializationException(
-                "Property 'repository' cannot be null");
+            throw new BeanInitializationException("Property 'repository' cannot be null");
         }
     }
-
 
     @SuppressWarnings("unchecked")
     public boolean supports(Class clazz) {
         return (clazz == CopyCommand.class);
     }
-
 
     public void validate(Object command, Errors errors) {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -76,27 +69,22 @@ public class CopyCommandValidator implements Validator, InitializingBean {
         Path parentCollection = requestContext.getCurrentCollection();
         String token = securityContext.getToken();
 
-        CopyCommand copyCommand =
-            (CopyCommand) command;
-        if (copyCommand.getCancelAction() != null) return;
+        CopyCommand copyCommand = (CopyCommand) command;
+        if (copyCommand.getCancelAction() != null)
+            return;
 
         String name = copyCommand.getName();
         if (null == name || "".equals(name.trim())) {
-                errors.rejectValue("name",
-                                   "manage.rename.invalid.name",
-                                   "The name is not valid for this resource");
-                copyCommand.setName("");
+            errors.rejectValue("name", "manage.rename.invalid.name", "The name is not valid for this resource");
+            copyCommand.setName("");
         }
 
         Path newURI = parentCollection.extend(name);
 
-
         try {
             boolean exists = repository.exists(token, newURI);
             if (exists) {
-                errors.rejectValue("name",
-                                   "manage.rename.resource.exists",
-                                   "A resource with this name already exists");
+                errors.rejectValue("name", "manage.rename.resource.exists", "A resource with this name already exists");
             }
 
         } catch (Exception e) {

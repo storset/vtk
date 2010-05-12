@@ -84,6 +84,32 @@ resourcetype organizational-unit {
               [endlist]
             </span>
           [endif]
+          
+          [if phone != null && phone != "" && fax != null && fax != ""]
+            <span class="vrtx-organizational-unit-phone-fax">
+              [if phone != null && phone != ""]
+                [localized 'phone']:
+                <span class="tel">
+                  <span class="type" style="display: none">Work</span>:
+                  <span class="value">[val phone]</span>
+                </span>
+              [endif]
+              [if fax != null && fax != ""]
+                [localized 'fax']:
+                <span class="tel">
+                  <span class="type" style="display: none">Fax</span>:
+                  <span class="value">[val fax]</span>
+                </span>
+              [endif]
+            </span>
+          [endif]
+              
+              
+          [if email != null && email != ""]
+            <span class="vrtx-organizational-unit-email">
+              [localized 'email']: <span class="email">[val email]</span>
+            </span>
+          [endif]
         </span>
       ##
     }

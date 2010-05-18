@@ -56,11 +56,11 @@
     
   function addNewJsonElement(j,button) {
   
-     var counter = parseInt($(button).prev(".vrtx-json-element").find(".id").val())+1;     
+     var counter = parseInt($(button).prev(".vrtx-json-element").find("input.id").val())+1;     
      if(isNaN(counter)){
      	counter = 0;
      }
-     
+        
      // Add opp og ned knapp...blah
      
      var htmlTemplate = "";

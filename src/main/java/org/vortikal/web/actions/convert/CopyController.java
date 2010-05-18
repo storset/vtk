@@ -107,7 +107,19 @@ public class CopyController extends SimpleFormController {
         if (copyToCollection == null)
             copyToCollection = Path.fromString("/");
         Path copyUri = copyToCollection.extend(copyCommand.getName());
-        copyAction.process(uri, copyUri);
+        // HACK VTK-1712
+        if (this.copyAction instanceof CreateArchiveAction) {
+            CreateArchiveAction archiveAction = (CreateArchiveAction) this.copyAction;
+            archiveAction.setIgnorableResources(copyCommand.getIgnorableResources());
+            archiveAction.process(uri, copyUri);
+        } else if (this.copyAction instanceof ExpandArchiveAction) {
+            ExpandArchiveAction archiveAction = (ExpandArchiveAction) this.copyAction;
+            archiveAction.setIgnorableResources(copyCommand.getIgnorableResources());
+            archiveAction.process(uri, copyUri);
+        } else {
+        // END HACK
+            this.copyAction.process(uri, copyUri);
+        }
         copyCommand.setDone(true);
 
         Resource resource = null;

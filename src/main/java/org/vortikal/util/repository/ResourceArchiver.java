@@ -99,13 +99,19 @@ public class ResourceArchiver {
         public void warn(Path uri, String msg);
     }
 
-    public void createArchive(String token, Resource r, OutputStream out) throws Exception {
-        createArchive(token, r, out, null);
+    public void createArchive(String token, Resource r, OutputStream out, String ignorableResources) throws Exception {
+        createArchive(token, r, out, ignorableResources, null);
     }
 
-    public void createArchive(String token, Resource r, OutputStream out, EventListener listener) throws Exception {
+    public void createArchive(String token, Resource r, OutputStream out, String ignorableResources,
+            EventListener listener) throws Exception {
+
+        // HACK VTK-1712
+        List<String> ignoreList = getIgnoreList(ignorableResources);
+        // END HACK
 
         logger.info("Creating archive '" + r.getURI() + "'");
+        this.logIgnoredResources(ignoreList);
 
         try {
             int rootLevel = r.getURI().getDepth() + 1;
@@ -113,12 +119,12 @@ public class ResourceArchiver {
             try {
                 tmp = File.createTempFile("tmp-manifest", "vrtx", this.tempDir);
                 PrintWriter manifestOut = new PrintWriter(new FileOutputStream(tmp));
-                writeManifest(token, rootLevel, r, manifestOut);
+                writeManifest(token, rootLevel, r, manifestOut, ignoreList);
                 logger.info("Writing manifest...");
                 Manifest manifest = new Manifest(new FileInputStream(tmp));
                 logger.info("Manifest written, creating jar...");
                 JarOutputStream jo = new JarOutputStream(out, manifest);
-                addEntry(token, rootLevel, r, jo, listener);
+                addEntry(token, rootLevel, r, jo, listener, ignoreList);
                 jo.close();
                 out.close();
             } finally {
@@ -134,11 +140,19 @@ public class ResourceArchiver {
         logger.info("Done creating archive '" + r.getURI() + "'");
     }
 
-    public void expandArchive(String token, InputStream source, Path base) throws Exception {
-        expandArchive(token, source, base, null);
+    public void expandArchive(String token, InputStream source, Path base, String ignorableResources) throws Exception {
+        expandArchive(token, source, base, ignorableResources, null);
     }
 
-    public void expandArchive(String token, InputStream source, Path base, EventListener listener) throws Exception {
+    public void expandArchive(String token, InputStream source, Path base, String ignorableResources,
+            EventListener listener) throws Exception {
+
+        // HACK VTK-1712
+        List<String> ignoreList = getIgnoreList(ignorableResources);
+        // END HACK
+
+        this.logIgnoredResources(ignoreList);
+
         JarInputStream jarIn = new JarInputStream(new BufferedInputStream(source));
         Manifest manifest = jarIn.getManifest();
         if (manifest != null) {
@@ -164,6 +178,10 @@ public class ResourceArchiver {
         while ((entry = jarIn.getNextJarEntry()) != null) {
             String entryPath = entry.getName();
             decodeValue(entryPath);
+
+            if (isIgnorableResource(entryPath, ignoreList)) {
+                continue;
+            }
 
             // Keep comments for later processing, add them after resources
             // have been expanded
@@ -254,14 +272,15 @@ public class ResourceArchiver {
         return resourceURI;
     }
 
-    private void writeManifest(String token, int rootLevel, Resource r, PrintWriter out) throws Exception {
+    private void writeManifest(String token, int rootLevel, Resource r, PrintWriter out, List<String> ignoreList)
+            throws Exception {
 
         out.println("Manifest-Version: 1.0");
         out.println("Created-By: vrtx");
         out.println("X-vrtx-archive-version: 1.0");
         out.println("X-vrtx-archive-encoded: true");
 
-        addManifestEntry(token, rootLevel, r, out);
+        addManifestEntry(token, rootLevel, r, out, ignoreList);
         out.flush();
         out.close();
 
@@ -282,8 +301,15 @@ public class ResourceArchiver {
         return result.toString();
     }
 
-    private void addManifestEntry(String token, int fromLevel, Resource r, PrintWriter out) throws Exception {
+    private void addManifestEntry(String token, int fromLevel, Resource r, PrintWriter out, List<String> ignoreList)
+            throws Exception {
+
         StringBuilder path = new StringBuilder(getJarPath(r, fromLevel));
+
+        if (isIgnorableResource(path.toString(), ignoreList)) {
+            return;
+        }
+
         encode(path);
         try {
 
@@ -299,7 +325,7 @@ public class ResourceArchiver {
             if (r.isCollection()) {
                 Resource[] children = this.repository.listChildren(token, r.getURI(), false);
                 for (Resource child : children) {
-                    addManifestEntry(token, fromLevel, child, out);
+                    addManifestEntry(token, fromLevel, child, out, ignoreList);
                 }
             }
         } catch (Exception e) {
@@ -430,17 +456,21 @@ public class ResourceArchiver {
         }
     }
 
-    private void addEntry(String token, int fromLevel, Resource r, JarOutputStream jarOut, EventListener listener)
-            throws Exception {
+    private void addEntry(String token, int fromLevel, Resource r, JarOutputStream jarOut, EventListener listener,
+            List<String> ignoreList) throws Exception {
 
         String path = getJarPath(r, fromLevel);
+
+        if (isIgnorableResource(path, ignoreList)) {
+            return;
+        }
 
         JarEntry je = new JarEntry(path);
         jarOut.putNextEntry(je);
         if (r.isCollection()) {
             Resource[] children = this.repository.listChildren(token, r.getURI(), false);
             for (Resource child : children) {
-                addEntry(token, fromLevel, child, jarOut, listener);
+                addEntry(token, fromLevel, child, jarOut, listener, ignoreList);
             }
         } else {
 
@@ -789,5 +819,49 @@ public class ResourceArchiver {
     public void setPrincipalManager(PrincipalManager principalManager) {
         this.principalManager = principalManager;
     }
+
+    // HACK VTK-1712
+    private List<String> getIgnoreList(String ignorableResources) {
+        List<String> ignoreList = null;
+        if (ignorableResources != null) {
+            ignoreList = new ArrayList<String>();
+            String[] ss = ignorableResources.split(",");
+            for (String s : ss) {
+                s = s.trim();
+                if (!"".equals(s)) {
+                    ignoreList.add(s);
+                }
+            }
+        }
+        return ignoreList;
+    }
+
+    private boolean isIgnorableResource(String resourcePath, List<String> ignoreList) {
+        if (ignoreList != null && ignoreList.size() > 0) {
+            for (String ignorableResource : ignoreList) {
+                if (ignorableResource.equals(resourcePath)
+                        || (ignorableResource.endsWith("/") && resourcePath.startsWith(ignorableResource))) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void logIgnoredResources(List<String> ignoreList) {
+        if (ignoreList != null && ignoreList.size() > 0) {
+            StringBuilder ignored = new StringBuilder();
+            for (String ignorableResource : ignoreList) {
+                if (!"".equals(ignorableResource.trim())) {
+                    if (ignored.toString().equals("")) {
+                        ignored.append("Ignoring the following resources:");
+                    }
+                    ignored.append("\n  " + ignorableResource);
+                }
+            }
+            logger.info(ignored);
+        }
+    }
+    // END HACK
 
 }

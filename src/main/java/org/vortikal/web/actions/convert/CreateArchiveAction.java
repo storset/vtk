@@ -53,6 +53,13 @@ public class CreateArchiveAction implements CopyAction {
     private File tempDir = new File(System.getProperty("java.io.tmpdir"));
     private ResourceArchiver archiver;
 
+    // HACK VTK-1712
+    private String ignorableResources;
+    public void setIgnorableResources(String ignorableResources) {
+        this.ignorableResources = ignorableResources;
+    }
+    // END HACK
+
     public void process(Path uri, Path copyUri) throws Exception {
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
@@ -66,12 +73,10 @@ public class CreateArchiveAction implements CopyAction {
         FileOutputStream out = new FileOutputStream(outFile);
         BufferedOutputStream bo = new BufferedOutputStream(out);
         try {
-            this.archiver.createArchive(token, resource, bo);
-
-            logger.info("Storing archive contents to '" + copyUri + "'");
-
+            this.archiver.createArchive(token, resource, bo, this.ignorableResources);
             Resource dest = this.repository.createDocument(token, copyUri);
 
+            logger.info("Storing archive contents to '" + copyUri + "'");
             if (!dest.isReadRestricted()) {
                 logger.warn("The destination '" + copyUri + "' is open for access to all!");
             }

@@ -8,14 +8,21 @@
     <h3 class="nonul"><@vrtx.msg code="actions.expandArchive"
     default="Expand archive"/>:</h3>
     <@spring.bind "command.name" /> 
-      <#if spring.status.errorMessages?size &gt; 0>
-        <ul class="errors">
-          <#list spring.status.errorMessages as error> 
-            <li>${error}</li> 
-          </#list>
-	</ul>
-      </#if>
+    <#if spring.status.errorMessages?size &gt; 0>
+      <ul class="errors">
+      <#list spring.status.errorMessages as error> 
+        <li>${error}</li> 
+      </#list>
+	  </ul>
+    </#if>
     <div><input type="text" size="30" name="${spring.status.expression}" value="${spring.status.value?if_exists}"></div>
+    
+    <p>
+    <div>Enter comma separated list of relative paths to ignore. Collections <b>MUST</b> be terminated with a slash "/".<br/>
+    <input type="text" size="30" name="ignorableResources" id="ignorableResources" value=""></div>
+    <div style="font-size: 6px">Disclaimer: If you don't know what the contents of this field does, then for the love of God don't put anything in it.</div>
+    </p>
+    
     <div id="submitButtons">
       <input type="submit" name="save" value="<@vrtx.msg code="actions.expandArchive.save" default="Expand"/>">
       <input type="submit" name="cancelAction" value="<@vrtx.msg code="actions.expandArchive.cancel" default="Cancel"/>">

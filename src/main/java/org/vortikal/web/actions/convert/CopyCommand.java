@@ -35,6 +35,16 @@ import org.vortikal.web.actions.UpdateCancelCommand;
 public class CopyCommand extends UpdateCancelCommand {
 
     private String name;
+    
+    // HACK VTK-1712
+    private String ignorableResources;
+    public String getIgnorableResources() {
+        return ignorableResources;
+    }
+    public void setIgnorableResources(String ignorableResources) {
+        this.ignorableResources = ignorableResources;
+    }
+    // END HACK
 
     public CopyCommand(String name, String submitURL) {
         super(submitURL);

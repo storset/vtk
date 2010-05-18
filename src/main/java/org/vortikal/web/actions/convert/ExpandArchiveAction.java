@@ -48,6 +48,13 @@ public class ExpandArchiveAction implements CopyAction {
     private Repository repository;
     private ResourceArchiver archiver;
 
+    // HACK VTK-1712
+    private String ignorableResources;
+    public void setIgnorableResources(String ignorableResources) {
+        this.ignorableResources = ignorableResources;
+    }
+    // END HACK
+
     public void process(Path uri, Path copyUri) throws Exception {
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
@@ -60,7 +67,7 @@ public class ExpandArchiveAction implements CopyAction {
             throw new RuntimeException("Cannot unzip a collection");
         }
         InputStream source = this.repository.getInputStream(token, uri, false);
-        this.archiver.expandArchive(token, source, copyUri);
+        this.archiver.expandArchive(token, source, copyUri, this.ignorableResources);
 
         logger.info("Done expanding archive '" + uri + "' to '" + copyUri.toString() + "'");
 

@@ -693,7 +693,7 @@ public class ResourceArchiver {
             this.repository.createDocument(token, uri);
             this.repository.storeContent(token, uri, new PartialZipStream(is));
         } catch (Exception e) {
-            logger.error("Error writing resource '" + uri + "'");
+            logger.error("Error writing resource '" + uri + "': " + e.getMessage());
             return false;
         }
         return true;

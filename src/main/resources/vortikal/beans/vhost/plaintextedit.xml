@@ -25,6 +25,7 @@
 
         <ref bean="resourceTypeIsText" />
         <ref bean="resourceTypeIsNotManagedXml" />
+        <ref bean="resourceTypeIsNotJSON" />
       </list>
     </property>
     <property name="handler">
@@ -74,6 +75,11 @@
 
   <bean id="resourceTypeIsText" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
     <property name="resourceTypeDefinition" ref="textResourceTypeDefinition" />
+  </bean>
+
+  <bean id="resourceTypeIsNotJSON" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
+    <property name="resourceTypeDefinition" ref="json.resourceType" />
+    <property name="invert" value="true" />
   </bean>
 
   <bean id="resourceTypeIsNotManagedXml" parent="resourceTypeIsManagedXml">

@@ -78,8 +78,14 @@ public class ContentTypeEvaluator implements PropertyEvaluator {
                         Matcher m = pattern.matcher(chunk);
                         boolean match = m.find();
                         if (match) {
-                            property.setStringValue(mapping.get(pattern));
-                            return true;
+                            // XXX: temporary hack:
+                            if ("application/json".equals(mapping.get(pattern))) {
+                                try {
+                                    ctx.getContent().getContentRepresentation(net.sf.json.JSONObject.class);
+                                    property.setStringValue(mapping.get(pattern));
+                                    return true;
+                                } catch (Exception e) { }
+                            }
                         }
                     }
                 } catch (Throwable t) {

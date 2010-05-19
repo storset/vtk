@@ -60,7 +60,6 @@ public abstract class AbstractHttpBasicAuthenticationHandler extends AbstractAut
         this.challenge = challenge;
     }
     
-
     public boolean isRecognizedAuthenticationRequest(HttpServletRequest req)
     throws AuthenticationProcessingException {
 
@@ -107,7 +106,7 @@ public abstract class AbstractHttpBasicAuthenticationHandler extends AbstractAut
         if (authHeader == null || !authHeader.startsWith("Basic ")) {
             throw new IllegalArgumentException(
                 "No valid 'Authorization' header in request");
-        } 
+        }
 
         String encodedString = authHeader.substring(
             "Basic ".length(), authHeader.length());

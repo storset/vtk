@@ -1,5 +1,6 @@
 package org.vortikal.security.web;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -52,6 +53,8 @@ public abstract class AbstractAuthenticationHandler implements
     private Set<String> recognizedDomains = null;
 
     private int order = Integer.MAX_VALUE;
+    
+    private Set<?> categories = Collections.EMPTY_SET;
 
     public void setCache(SimpleCache<String, Principal> cache) {
         this.cache = cache;
@@ -67,6 +70,15 @@ public abstract class AbstractAuthenticationHandler implements
 
     public int getOrder() {
         return this.order;
+    }
+
+    public void setCategories(Set<?> categories) {
+        this.categories = categories;
+    }
+    
+    @Override
+    public Set<?> getCategories() {
+        return this.categories;
     }
 
     public boolean isRecognizedAuthenticationRequest(HttpServletRequest req)

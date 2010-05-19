@@ -40,6 +40,7 @@
         <entry key="Pragma" value="no-cache" />
       </map>
     </property>
+    <property name="categories" value="spCookie" />
   </bean>
 
   <bean id="saml.abstractHandler" abstract="true">

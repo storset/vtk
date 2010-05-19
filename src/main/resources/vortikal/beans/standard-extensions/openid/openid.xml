@@ -75,6 +75,7 @@
     <property name="openIDAuthenticationService" ref="webService" />
     <property name="formService" ref="openid.authenticationFormService" />
     <property name="principalFactory" ref="principalFactory" />
+    <property name="categories" value="spCookie" />
   </bean>
 
 

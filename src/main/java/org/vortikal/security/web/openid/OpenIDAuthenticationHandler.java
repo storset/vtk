@@ -25,9 +25,11 @@
  */
 package org.vortikal.security.web.openid;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -75,6 +77,9 @@ public class OpenIDAuthenticationHandler
     private Service formService;
     private Service openIDAuthenticationService;
     
+    private Set<?> categories = Collections.EMPTY_SET;
+
+    
     public void setConsumerManager(ConsumerManager consumerManager) {
         this.consumerManager = consumerManager;
     }
@@ -95,6 +100,15 @@ public class OpenIDAuthenticationHandler
         return this.order;
     }
 
+    public void setCategories(Set<?> categories) {
+        this.categories = categories;
+    }
+
+    @Override
+    public Set<?> getCategories() {
+        return this.categories;
+    }
+    
     public void afterPropertiesSet() {
         if (this.consumerManager == null) {
             throw new BeanInitializationException(

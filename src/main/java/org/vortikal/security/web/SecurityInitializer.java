@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.servlet.ServletException;
@@ -80,6 +81,8 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
     private static final String VRTXLINK_COOKIE = "VRTXLINK";
 
     private static final String VRTX_AUTH_SP_COOKIE = "VRTX_AUTH_SP";
+
+    private static final String AUTH_HANDLER_SP_COOKIE_CATEGORY = "spCookie";
 
     private static Log logger = LogFactory.getLog(SecurityInitializer.class);
 
@@ -473,7 +476,9 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         if (!req.isSecure()) {
             return;
         }
-        if (this.rememberAuthMethod) {
+        Set<?> categories = handler.getCategories();
+        if (categories == null) categories = Collections.EMPTY_SET;
+        if (this.rememberAuthMethod && categories.contains(AUTH_HANDLER_SP_COOKIE_CATEGORY)) {
             Cookie c = new Cookie(VRTX_AUTH_SP_COOKIE, handler.getIdentifier());
             c.setSecure(true);
             c.setPath("/");
@@ -525,7 +530,11 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
             if (c != null) {
                 String id = c.getValue();
                 AuthenticationHandler handler = this.authHandlerMap.get(id);
-                if (handler != null) {
+                Set<?> categories = handler.getCategories();
+                if (categories == null) {
+                    categories = Collections.EMPTY_SET;
+                }
+                if (handler != null && categories.contains(AUTH_HANDLER_SP_COOKIE_CATEGORY)) {
                     AuthenticationChallenge challenge = handler.getAuthenticationChallenge();
                     
                     if (challenge != null) {

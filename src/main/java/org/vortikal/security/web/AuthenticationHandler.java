@@ -36,6 +36,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.vortikal.context.Categorizable;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.Principal;
@@ -51,7 +52,7 @@ import org.vortikal.security.Principal;
  * Implementors of this interface must supply an authentication challenge that is used when authentication is required.
  * In addition, they should provide a way of logging out authenticated users, if possible.
  */
-public interface AuthenticationHandler {
+public interface AuthenticationHandler extends Categorizable {
 
     public String getIdentifier();
     

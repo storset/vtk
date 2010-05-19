@@ -31,6 +31,7 @@
 package org.vortikal.security.web.saml;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -67,6 +68,8 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     
     private PrincipalFactory principalFactory;
 
+    private Set<?> categories = Collections.EMPTY_SET;
+    
     @Override
     public void challenge(HttpServletRequest request, HttpServletResponse response) throws AuthenticationProcessingException,
             ServletException, IOException {
@@ -205,5 +208,14 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
         for (String header : this.staticHeaders.keySet()) {
             response.setHeader(header, this.staticHeaders.get(header));
         }
+    }
+    
+    public void setCategories(Set<?> categories) {
+        this.categories = categories;
+    }
+    
+    @Override
+    public Set<?> getCategories() {
+        return this.categories;
     }
 }

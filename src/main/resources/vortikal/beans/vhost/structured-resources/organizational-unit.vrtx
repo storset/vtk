@@ -111,7 +111,7 @@ resourcetype organizational-unit {
               [localized 'areacode']: [val areacode]
             </span>
           [endif]
-        </span>
+        </div>
       ##
     }
     

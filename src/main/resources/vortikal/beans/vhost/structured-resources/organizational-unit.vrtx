@@ -98,12 +98,17 @@ resourcetype organizational-unit {
                 </span>
               [endif]
             </span>
-          [endif]
-              
+          [endif]   
               
           [if email != null && email != ""]
             <span class="vrtx-organizational-unit-email">
               [localized 'email']: <a href="mailto:[val email]"><span class="email">[val email]</span></a>
+            </span>
+          [endif]
+          
+          [if areacode != null && areacode != ""]
+            <span class="vrtx-organizational-unit-areacode">
+              [localized 'areacode']: [val areacode]
             </span>
           [endif]
         </span>
@@ -184,17 +189,7 @@ resourcetype organizational-unit {
       ##
       [def url resource-prop(".", "urlToEmployeesList")]
       [def title resource-prop(".", "title")]
-      <div id="vrtx-organizational-unit-employees" class="vrtx-frontpage-box white-box">
-        [if url != null && url != ""]
-          <h2><a href="[val url]">[localized "employees"]</a></h2>
-        [else]
-          <h2>[localized "employees"]</h2>
-        [endif]
-        ${resource:organization-employees}
-        [if url != null && url != ""]
-          <div class="vrtx-more"><span><a href="[val url]">[localized "employeesLink"] [val title]</a></span></div>
-        [endif]
-      </div>
+      ${resource:organization-employees}
       ##
     }
     
@@ -251,7 +246,7 @@ resourcetype organizational-unit {
 
   localization {
     header : (en : "Edit organizational unit", no : "Rediger organisatorisk enhet", nn : "Rediger organisatorisk enhet"),
-    areacode : (en : "Area code", no : "Stedskode", nn : "Stadkode"),
+    areacode : (en : "Area code", no : "Stedkode", nn : "Stadkode"),
     getExternalUnitInfo : (
       en : "Use information registrated in UiO's payroll- and personalsystem",
       no : "Bruk opplysninger registrert i UiOs lønns- og personalsystem",

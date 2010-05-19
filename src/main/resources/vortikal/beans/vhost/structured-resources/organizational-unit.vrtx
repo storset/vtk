@@ -63,7 +63,7 @@ resourcetype organizational-unit {
     contact-information {
       ##
         [resource-props "."]
-        <span class="vcard">
+        <div class="vcard">
           [if title != null]
             <span class="fn org" style="display:none">[val title]</span>
           [endif]
@@ -88,10 +88,13 @@ resourcetype organizational-unit {
           [if phone != null && phone != "" && fax != null && fax != ""]
             <span class="vrtx-organizational-unit-phone-fax">
               [if phone != null && phone != ""]
-                [localized 'phone']: <span class="tel"><span class="type" style="display: none">Work</span><span class="value">[val phone]</span></span>
+                <span class="vrtx-organizational-unit-phone">
+                  [localized 'phone']: <span class="tel"><span class="type" style="display: none">Work</span><span class="value">[val phone]</span></span>
+                </span>
               [endif]
               [if fax != null && fax != ""]
-                [localized 'fax']: <span class="tel"><span class="type" style="display: none">Fax</span><span class="value">[val fax]</span>
+                <span class="vrtx-organizational-unit-fax">
+                  [localized 'fax']: <span class="tel"><span class="type" style="display: none">Fax</span><span class="value">[val fax]</span></span>
                 </span>
               [endif]
             </span>
@@ -121,7 +124,6 @@ resourcetype organizational-unit {
       [def resp resource-prop(".", "responsibilities")]
       [if resp != null && resp != ""]
         <div class="vrtx-organizational-unit-responsibilities">
-          <h2>[localized 'responsibilitiesHeader']</h2>
           [val resp unescaped]
         </div>
       [endif]
@@ -266,7 +268,6 @@ resourcetype organizational-unit {
     introduction-image-alt : (en : "Image", no : "Bilde", nn : "Bilete"),
     introduction : (en: "Introduction", no: "Innledning", nn : "Innleiing"),
     responsibilities : (en : "Responsibilities", no : "Ansvarsområder", nn : "Ansvarsområder"),
-    responsibilitiesHeader : (en : "We have responsibility for:", no : "Vi har ansvaret for:", nn : "Me har ansvaret for:"),
     employees : (en : "Employees", no : "Ansatte", nn : "Ansatte"),
     employeesLink : (en : "All employees in", no : "Alle ansatte i", nn : "Alle ansatte i"),
     displayEmployees : (

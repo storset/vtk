@@ -31,6 +31,7 @@
   <bean id="system.csrfPreventionHandler"
         class="org.vortikal.security.web.CSRFPreventionHandler">
     <property name="tempDir" value="${repository.tempDir}" />
+    <property name="maxUploadSize" value="${upload.maxFileSize}" />
   </bean>
 
 

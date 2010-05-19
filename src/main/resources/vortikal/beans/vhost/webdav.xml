@@ -424,7 +424,7 @@
 
   <bean id="webdavPutHandler" class="org.vortikal.webdav.PutController"
     parent="repositoryAware">
-    <property name="maxUploadSize" value="-1" />
+    <property name="maxUploadSize" value="${upload.maxFileSize}" />
     <property name="supportIfHeaders" value="${webdavSupportIfHeaders}"/>
     <property name="obeyClientCharacterEncoding" value="false" />
     <property name="deniedFileNames" ref="webdav.deniedFileNamePatterns" />

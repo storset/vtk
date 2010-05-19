@@ -445,7 +445,7 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
                 long total = 0L;
                 while ((n = in.read(buffer, 0, 1024)) > 0) {
                     total += n;
-                    if (total > this.fileSizeMax) {
+                    if (this.fileSizeMax > 0 && total > this.fileSizeMax) {
                         throw new FileUploadException("Upload limit exceeded");
                     }
                     out.write(buffer, 0, n);

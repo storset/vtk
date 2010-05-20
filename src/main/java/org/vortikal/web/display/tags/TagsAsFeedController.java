@@ -41,6 +41,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.AtomFeedController;
 import org.vortikal.web.search.Listing;
@@ -50,6 +51,7 @@ import org.vortikal.web.tags.TagsHelper;
 
 public class TagsAsFeedController extends AtomFeedController {
 
+    private PropertyTypeDefinition overridePublishDatePropDef;
     private SearchComponent searchComponent;
     private TagsHelper tagsHelper;
 
@@ -98,10 +100,22 @@ public class TagsAsFeedController extends AtomFeedController {
     public void setTagsHelper(TagsHelper tagsHelper) {
         this.tagsHelper = tagsHelper;
     }
-
+    
     @Override
     protected Property getPublishDate(PropertySet resource) {
+        Property overridePublishDateProp = resource.getProperty(this.getOverridePublishDatePropDef());
+        if (overridePublishDateProp != null) {
+            return overridePublishDateProp;
+        }
         return this.getDefaultPublishDate(resource);
+    }
+
+    public void setOverridePublishDatePropDef(PropertyTypeDefinition overridePublishDatePropDef) {
+        this.overridePublishDatePropDef = overridePublishDatePropDef;
+    }
+
+    public PropertyTypeDefinition getOverridePublishDatePropDef() {
+        return overridePublishDatePropDef;
     }
 
 }

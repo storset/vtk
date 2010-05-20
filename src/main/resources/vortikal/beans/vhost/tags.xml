@@ -70,6 +70,7 @@
 
   <bean id="tags.atomHandler" class="org.vortikal.web.display.tags.TagsAsFeedController"
     parent="viewAsFeedHandler">
+    <property name="overridePublishDatePropDef" ref="publishedDatePropDef" />
     <property name="searchComponent" ref="tags.searchComponent" />
     <property name="tagsHelper" ref="tagsHelper" />
   </bean>

@@ -114,6 +114,12 @@ resourcetype person {
            	<span class="vrtx-value">[val availableHours]</span>
            </div>
          [endif]
+         [if username != null && username != ""]
+           <div class="vrtx-person-contact-info-line vrtx-username">
+           	<span class="vrtx-label">[localized "username"]</span>
+           	<span class="vrtx-value">[val username]</span>
+           </div>
+         [endif]
 		 [if alternativeVisitingAddress != null && alternativeVisitingAddress != ""]
              <div class="vrtx-person-visiting-address"><span class="vrtx-label">[localized "userVisitingAddress"]</span>
                [list alternativeVisitingAddress alternativeVisitingAddressLine]

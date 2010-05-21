@@ -45,7 +45,12 @@
                  use the regexp as a hint to attempt parsing the
                  content using a JSON parser.)
             -->
-            <entry key="^\s*\{" value="application/json" />
+            <entry key="\A\s*\{" value="application/json" />
+          </map>
+        </entry>
+        <entry key="application/octet-stream">
+          <map>
+            <entry key="\A\s*\{" value="application/json" />
           </map>
         </entry>
       </map>

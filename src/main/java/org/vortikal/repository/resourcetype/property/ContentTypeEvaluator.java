@@ -65,11 +65,24 @@ public class ContentTypeEvaluator implements PropertyEvaluator {
             String guessedContentType = MimeHelper.map(ctx.getNewResource().getName());
             property.setStringValue(guessedContentType);
             return true;
-        } else if (evalType == Type.ContentChange && this.contentPeekRegexps != null) {
+        } 
+        
+        if (this.contentPeekRegexps == null) {
+            return true;
+        }
+        
+        if (evalType == Type.ContentChange) {
+            
+            // Initial guess:
             String guessedContentType = MimeHelper.map(ctx.getNewResource().getName());
+            if (guessedContentType.equals("application/octet-stream")) {
+                guessedContentType = ctx.getOriginalResource().getContentType();
+            }
             property.setStringValue(guessedContentType);
+
             if (this.contentPeekRegexps.containsKey(guessedContentType)) {
                 try {
+                    // Peek in content:
                     InputStream inputStream = ctx.getContent().getContentInputStream();
                     byte[] buffer = StreamUtil.readInputStream(inputStream, this.regexpChunkSize);
                     String chunk = new String(buffer, this.peekCharacterEncoding.name());
@@ -88,8 +101,7 @@ public class ContentTypeEvaluator implements PropertyEvaluator {
                             }
                         }
                     }
-                } catch (Throwable t) {
-                }
+                } catch (Throwable t) { }
             }
         }
         return true;

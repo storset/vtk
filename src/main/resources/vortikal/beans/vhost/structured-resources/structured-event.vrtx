@@ -32,7 +32,7 @@ resourcetype structured-event : structured-document {
     [def organizerUrl resource-prop(".", "organizer-url")]
     
     [if organizerName != null && organizerName != ""]
-      <span class="vrtx-event-organizer">
+      <span class="vrtx-event-organizers">
         <h2>[localized 'organizerAndOrganizerUrl']</h2>
         [if organizerUrl != null && organizerUrl != ""]
           <a href="[val organizerUrl]"><span class="organizer">[val organizerName]</span></a>

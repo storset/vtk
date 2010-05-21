@@ -143,7 +143,7 @@ public class PropertyEvaluationContext {
     }
 
     public Type getEvaluationType() {
-        return evaluationType;
+        return this.evaluationType;
     }
 
     public Content getContent() {
@@ -155,7 +155,7 @@ public class PropertyEvaluationContext {
     }
 
     public Date getTime() {
-        return time;
+        return this.time;
     }
 
     public void addPropertyValue(String propertyName, Object value) {

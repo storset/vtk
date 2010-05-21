@@ -281,8 +281,10 @@ resourcetype frontpage {
         <div id="vrtx-content">
           <h1><comp:title /></h1>
           <div id="vrtx-main-content">
-            <comp:introduction-image />
-            <comp:introduction />
+            <div id="frontpage-introduction">
+              <comp:introduction-image />
+              <comp:introduction />
+            </div>
             <comp:main-content />
           </div>
           <comp:additional-content />

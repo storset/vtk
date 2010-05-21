@@ -67,6 +67,9 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
     private ContentRepresentationRegistry contentRepresentationRegistry;
 
     public ResourceImpl create(Principal principal, Path uri, boolean collection) throws IOException {
+        if (logger.isDebugEnabled()) {
+            logger.debug("Evaluate create: " + uri);
+        }
         ResourceImpl resource = new ResourceImpl(uri);
         if (collection) {
             resource.setChildURIs(new ArrayList<Path>());
@@ -80,6 +83,9 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
     public ResourceImpl propertiesChange(ResourceImpl originalResource, Principal principal,
             ResourceImpl suppliedResource) throws AuthenticationException, AuthorizationException,
             InternalRepositoryException, IOException {
+        if (logger.isDebugEnabled()) {
+            logger.debug("Evaluate properties change: " + originalResource.getURI());
+        }
 
         Content content = getContent(originalResource);
         PropertyEvaluationContext ctx = PropertyEvaluationContext.propertiesChangeContext(originalResource,
@@ -92,6 +98,9 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
     public ResourceImpl commentsChange(ResourceImpl originalResource, Principal principal, ResourceImpl suppliedResource)
             throws AuthenticationException, AuthorizationException, InternalRepositoryException, IOException {
 
+        if (logger.isDebugEnabled()) {
+            logger.debug("Evaluate comments change: " + originalResource.getURI());
+        }
         Content content = getContent(originalResource);
         PropertyEvaluationContext ctx = PropertyEvaluationContext.commentsChangeContext(originalResource,
                 suppliedResource, principal, content);
@@ -101,6 +110,9 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
     }
 
     public ResourceImpl contentModification(ResourceImpl resource, Principal principal) throws IOException {
+        if (logger.isDebugEnabled()) {
+            logger.debug("Evaluate content modification: " + resource.getURI());
+        }
         Content content = getContent(resource);
         PropertyEvaluationContext ctx = PropertyEvaluationContext.contentChangeContext(resource, principal, content);
         recursiveTreeEvaluation(ctx, this.resourceTypeTree.getRoot());
@@ -110,6 +122,9 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
 
     public ResourceImpl nameChange(ResourceImpl original, ResourceImpl resource, Principal principal)
             throws IOException {
+        if (logger.isDebugEnabled()) {
+            logger.debug("Evaluate name change: " + resource.getURI());
+        }
         Content content = getContent(original);
         PropertyEvaluationContext ctx = PropertyEvaluationContext.nameChangeContext(original, resource, principal,
                 content);
@@ -121,6 +136,9 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
     public ResourceImpl systemChange(ResourceImpl originalResource, Principal principal, ResourceImpl suppliedResource)
             throws AuthenticationException, AuthorizationException, InternalRepositoryException, IOException {
 
+        if (logger.isDebugEnabled()) {
+            logger.debug("Evaluate system change: " + originalResource.getURI());
+        }
         Content content = getContent(originalResource);
         PropertyEvaluationContext ctx = PropertyEvaluationContext.systemChangeContext(originalResource,
                 suppliedResource, principal, content);
@@ -282,6 +300,9 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         if (evaluatedProp != null) {
             newResource.addProperty(evaluatedProp);
         }
+        if (evaluatedProp == null) {
+            newResource.removeProperty(propDef);
+        }
     }
 
     private Property doEvaluate(PropertyEvaluationContext ctx, PropertyTypeDefinition propDef) throws IOException {
@@ -353,7 +374,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
             try {
                 property = (Property) property.clone();
             } catch (CloneNotSupportedException e) {
-                throw new InternalRepositoryException("Couldn't clone property " + propDef + "on resource '"
+                throw new InternalRepositoryException("Error: unable to clone property " + propDef + "on resource '"
                         + newResource.getURI() + "'", e);
             }
         }
@@ -419,7 +440,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
                 return (Property) suppliedProp.clone();
             }
         } catch (CloneNotSupportedException e) {
-            throw new InternalRepositoryException("Couldn't clone property " + suppliedProp + "on resource '"
+            throw new InternalRepositoryException("Error: unable to clone property " + suppliedProp + "on resource '"
                     + ctx.getNewResource().getURI() + "'", e);
         }
         return null;

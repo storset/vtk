@@ -30,42 +30,33 @@
  */
 package org.vortikal.repository.resourcetype.property;
 
-import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
-import org.vortikal.repository.PropertyEvaluationContext.Type;
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
-public class PublishDateEvaluator implements PropertyEvaluator {
+/**
+ * "Null" property evaluator. This evaluator returns <code>false</code> when evaluating, 
+ * leading to the removal of the property from the resource being evaluated. This is 
+ * useful when overriding property definitions. The evaluator can be configured to keep
+ * the property if it already existed on the resource (before this evaluation).
+ */
+public class NullEvaluator implements PropertyEvaluator {
 
-    private PropertyTypeDefinition creationTimePropDef;
+    private boolean keepExistingValues = false;
     
     @Override
     public boolean evaluate(Property property, PropertyEvaluationContext ctx)
             throws PropertyEvaluationException {
-        Property creationTimeProp = ctx.getNewResource().getProperty(this.creationTimePropDef);
-        if (creationTimeProp == null) {
-            throw new PropertyEvaluationException("creationTimePropDef needed for evaluation");
-        }
-        if (ctx.getEvaluationType() == Type.Create) {
-            if (ctx.getNewResource().isCollection()) {
-                property.setDateValue(creationTimeProp.getDateValue());
+        if (this.keepExistingValues) {
+            if (ctx.getOriginalResource().getProperty(property.getDefinition()) != null) {
                 return true;
             }
         }
-        if (ctx.getEvaluationType() == Type.ContentChange) {
-            property.setDateValue(creationTimeProp.getDateValue());
-        }
-        if (property.isValueInitialized()) {
-            return true;
-        }
         return false;
     }
-
-    @Required
-    public void setCreationTimePropDef(PropertyTypeDefinition creationTimePropDef) {
-        this.creationTimePropDef = creationTimePropDef;
+    
+    public void setKeepExistingValues(boolean keepExistingValues) {
+        this.keepExistingValues = keepExistingValues;
     }
-
+    
 }

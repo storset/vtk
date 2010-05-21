@@ -78,7 +78,12 @@
 
   <bean id="overridingPublishDatePropDef" class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
     <property name="overriddenPropDef" ref="publishDatePropDef" />
-    <!-- No default value, no evaluator: removes the value evaluated by publishDatePropDef on CREATE -->
+    <property name="propertyEvaluator">
+      <!-- NullEvaluator removes the property evaluated the first time by publishDateEvaluator -->
+      <bean class="org.vortikal.repository.resourcetype.property.NullEvaluator">
+        <property name="keepExistingValues" value="true" />
+      </bean>
+    </property>
   </bean>
 
   <bean id="overridingPublishedPropDef" class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">

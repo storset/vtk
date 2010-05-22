@@ -2,14 +2,15 @@
 
 <#macro displayProjectsAlphabetical projectListing>
   <#list alpthabeticalOrdredResult?keys as key >
-	<ul>
-		<li>${key}</li>
+	<ul  class="vrtx-alphabetical-project-listing">
+		<li>${key}
 		<ul>
 		<#list alpthabeticalOrdredResult[key] as project>
 			<#local title = vrtx.propValue(project, 'title') />
-			<li><a class="vrtx-image" href="${projectListing.urls[project.URI]?html}">${title}</a></li>
+			<li><a href="${projectListing.urls[project.URI]?html}">${title}</a></li>
 		</#list>
 		</ul>
+		</li>
 	</ul>
 	
   </#list>
@@ -17,15 +18,17 @@
 </#macro>
 
 <#macro projectListingViewServiceURL >
-<div>
-  <#if viewAllProjectsLink?exists>
-  	<a href="${viewAllProjectsLink}">${vrtx.getMsg("projects.viewAllProjectsLink")}</a>
-  </#if>
-  <#if viewOngoingProjectsLink?exists>
-  	<a href="${viewOngoingProjectsLink}">${vrtx.getMsg("projects.viewOngoingProjectsLink")}</a>
-  </#if>
-</div>
+	<div>
+	  <#if viewAllProjectsLink?exists>
+	  	<a href="${viewAllProjectsLink}">${vrtx.getMsg("projects.viewCompletedProjects")}</a>
+	  </#if>
+	  <#if viewOngoingProjectsLink?exists>
+	  	<a href="${viewOngoingProjectsLink}">${vrtx.getMsg("projects.viewOngoingProjects")}</a>
+	  </#if>
+	</div>
 </#macro>
+
+
 <#macro displayProjects projectListing>
   <#local projects=projectListing.files />
   <#if (projects?size > 0) >

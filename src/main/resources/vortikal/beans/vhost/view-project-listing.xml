@@ -19,7 +19,7 @@
     <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
   </bean>
 
-  <bean id="projectListing.viewAllProjectsService" class="org.vortikal.web.service.ServiceImpl">
+  <bean id="projectListing.viewComplitedProjectsService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="collectionListing.viewService" />
     <property name="order" value="-1" />
     <property name="assertions">
@@ -46,7 +46,7 @@
     parent="projectListing.handler">
     <property name="searchComponents">
       <list>
-        <ref bean="projectListing.viewAllProjectsSearchComponent" />
+        <ref bean="projectListing.viewComplitedProjectsSearchComponent" />
       </list>
     </property>
   </bean>
@@ -71,11 +71,11 @@
     </property>
   </bean>
 
-  <bean id="projectListing.viewAllProjectsSearchComponent" parent="collectionListing.searchComponent">
+  <bean id="projectListing.viewComplitedProjectsSearchComponent" parent="collectionListing.searchComponent">
     <property name="name" value="projectListing.defaultListing" />
     <property name="defaultRecursive" value="true" />
     <property name="query">
-      <value>(uri = {$currentFolder}/*) AND (type IN structured-project)</value>
+      <value>(uri = {$currentFolder}/*) AND (type IN structured-project) AND (resource:status-ongoing = false)</value>
     </property>
   </bean>
 
@@ -99,7 +99,7 @@
 
   <bean id="projectListingViewServiceURLProvider" class="org.vortikal.web.referencedata.provider.ProjectListingViewServiceURLProvider"
     parent="repositoryAware">
-    <property name="viewAllProjects" ref="projectListing.viewAllProjectsService" />
+    <property name="viewAllProjects" ref="projectListing.viewComplitedProjectsService" />
   </bean>
 
   <bean id="projectListing.feedService" parent="collectionListing.atomService">

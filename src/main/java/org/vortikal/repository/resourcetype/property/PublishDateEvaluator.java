@@ -54,8 +54,12 @@ public class PublishDateEvaluator implements PropertyEvaluator {
                 return true;
             }
         }
-        if (ctx.getEvaluationType() == Type.ContentChange) {
-            property.setDateValue(creationTimeProp.getDateValue());
+        Property existing = ctx.getOriginalResource().getProperty(property.getDefinition());
+        if (existing != null && ctx.getEvaluationType() == Type.ContentChange) {
+            // If existing published date < creation time, update it:
+            if (existing.getDateValue().getTime() < creationTimeProp.getDateValue().getTime()) {
+                property.setDateValue(creationTimeProp.getDateValue());
+            }
         }
         if (property.isValueInitialized()) {
             return true;

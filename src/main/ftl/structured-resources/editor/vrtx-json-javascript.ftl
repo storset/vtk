@@ -309,9 +309,9 @@
       
       var moveToId;
       if(move > 0){  
-      	moveToId = parseInt( $(elementId1).parents(".vrtx-json-element").next(".vrtx-json-element").find(".id").val() );
+      	moveToId = parseInt( $(elementId1).parents(".vrtx-json-element").next(".vrtx-json-element").find("input.id").val() );
 	  }else{
-	  	moveToId = parseInt( $(elementId1).parents(".vrtx-json-element").prev(".vrtx-json-element").find(".id").val() );
+	  	moveToId = parseInt( $(elementId1).parents(".vrtx-json-element").prev(".vrtx-json-element").find("input.id").val() );
 	  }
 	         
       var elementId2 = '#' + arrayOfIds[x] + moveToId;

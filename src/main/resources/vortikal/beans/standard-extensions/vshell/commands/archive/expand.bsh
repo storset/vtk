@@ -41,8 +41,10 @@ void execute(context, args, out) {
         return;
     }
 
+    ignored = "";
+
     try {
-        archiver.expandArchive(token, stream, uri, listener);
+        archiver.expandArchive(token, stream, uri, ignored, listener);
     } catch (e) {
         out.println("Unable to expand archive: " + file
                     + ": " + e.getMessage());

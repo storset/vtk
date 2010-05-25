@@ -47,8 +47,9 @@ void execute(context, args, out) {
         return;
     }
 
+    ignored = "";
     try {
-        archiver.createArchive(token, resource, stream, listener);
+        archiver.createArchive(token, resource, stream, ignored, listener);
     } catch (e) {
         out.println("Unable to create archive: "
                     + file + ": " + e.getMessage());

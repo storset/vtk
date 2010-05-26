@@ -107,6 +107,7 @@
       <list>
         <ref bean="indexablePublishedStatusJSONAttribute"/>
         <ref bean="indexablePersonExternalDataJSONAttribute"/>
+        <ref bean="indexableOrganizationlUnitExternalDataJSONAttribute"/>
       </list>
     </property>
   </bean>
@@ -121,6 +122,10 @@
 
   <bean id="indexablePersonExternalDataJSONAttribute" parent="abstractIndexableJSONAttribute">
     <property name="name" value="person-external-data" />
+  </bean>
+
+  <bean id="indexableOrganizationlUnitExternalDataJSONAttribute" parent="abstractIndexableJSONAttribute">
+    <property name="name" value="organizational-unit-external-data" />
   </bean>
 
 </beans>

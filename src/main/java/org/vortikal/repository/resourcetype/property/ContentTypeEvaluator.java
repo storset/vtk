@@ -77,8 +77,8 @@ public class ContentTypeEvaluator implements PropertyEvaluator {
             String guessedContentType = MimeHelper.map(ctx.getNewResource().getName());
             if (guessedContentType.equals("application/octet-stream")) {
                 guessedContentType = ctx.getOriginalResource().getContentType();
+                property.setStringValue(guessedContentType);
             }
-            property.setStringValue(guessedContentType);
 
             if (this.contentPeekRegexps.containsKey(guessedContentType)) {
                 try {

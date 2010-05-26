@@ -198,62 +198,64 @@ resourcetype frontpage {
       ##
     }
     
-    introduction-image {
+    frontpage-introduction {
       ##
+      [def intro resource-prop(".", "introduction")]
       [def img-uri resource-prop(".", "picture")]
       [def caption resource-prop(".", "caption")]
-      [if img-uri != null]
-        [def img resource(img-uri)]
+      
+      [if (img-uri != null && img-uri != "") || (intro != null && intro != "")]
+      
+        <div id="vrtx-frontpage-introduction">
+      
+        [if intro != null]
+          <div class="vrtx-introduction">[val intro unescaped]</div>
+        [endif]
+      
+        [if img-uri != null]
+          [def img resource(img-uri)]
         
-        [if img != null]
+          [if img != null]
         
-          [def pixel-width resource-prop(img-uri, "pixelWidth")]
+            [def pixel-width resource-prop(img-uri, "pixelWidth")]
           
-          [if pixel-width != null]
-            [def style concat("width:", concat(pixel-width, "px"))]
-            [def img-author resource-prop(img-uri, "authorName")]
+            [if pixel-width != null]
+              [def style concat("width:", concat(pixel-width, "px"))]
+              [def img-author resource-prop(img-uri, "authorName")]
         
-            [if caption != null]
-              <div class="vrtx-introduction-image" style="[val style]">
-                <img src="[val img-uri]" alt="[val caption unescaped 'flattened']"/>
-                <div class="vrtx-imagetext">
-                  <div class="vrtx-imagedescription">[val caption unescaped]</div>
-                  [if img-author != null]
-                    <span class="vrtx-photo">
-                      <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val img-author]
-                    </span>
-                  [endif]
-                </div>
-              </div>
-            [else]
-              [if img-author != null]
+              [if caption != null]
                 <div class="vrtx-introduction-image" style="[val style]">
-                  <img src="[val img-uri]" alt="[localized 'introduction-image-alt']" />
+                  <img src="[val img-uri]" alt="[val caption unescaped 'flattened']"/>
                   <div class="vrtx-imagetext">
-                    <span class="vrtx-photo">
-                      <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val img-author]
-                    </span>
+                    <div class="vrtx-imagedescription">[val caption unescaped]</div>
+                    [if img-author != null]
+                      <span class="vrtx-photo">
+                        <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val img-author]
+                      </span>
+                    [endif]
                   </div>
                 </div>
               [else]
-                <img class="vrtx-introduction-image" src="[val img-uri]" alt="[localized 'introduction-image-alt']" />
+                [if img-author != null]
+                  <div class="vrtx-introduction-image" style="[val style]">
+                    <img src="[val img-uri]" alt="[localized 'introduction-image-alt']" />
+                    <div class="vrtx-imagetext">
+                      <span class="vrtx-photo">
+                        <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val img-author]
+                      </span>
+                    </div>
+                  </div>
+                [else]
+                  <img class="vrtx-introduction-image" src="[val img-uri]" alt="[localized 'introduction-image-alt']" />
+                [endif]
               [endif]
+            [else]
+              <img class="vrtx-introduction-image" src="[val img-uri]" alt="[localized 'introduction-image-alt']" />
             [endif]
           [else]
             <img class="vrtx-introduction-image" src="[val img-uri]" alt="[localized 'introduction-image-alt']" />
           [endif]
-        [else]
-          <img class="vrtx-introduction-image" src="[val img-uri]" alt="[localized 'introduction-image-alt']" />
         [endif]
-      [endif]
-      ##
-    }
-
-    introduction {
-      ##
-      [def intro resource-prop(".", "introduction")]
-      [if intro != null]
-        <div class="vrtx-introduction">[val intro unescaped]</div>
       [endif]
       ##
     }
@@ -281,10 +283,7 @@ resourcetype frontpage {
         <div id="vrtx-content">
           <h1><comp:title /></h1>
           <div id="vrtx-main-content">
-            <div id="vrtx-frontpage-introduction">
-              <comp:introduction-image />
-              <comp:introduction />
-            </div>
+            <comp:frontpage-introduction />
             <comp:main-content />
           </div>
           <comp:additional-content />

@@ -214,11 +214,10 @@ public class ResourceArchiver {
         // crucial. And we don't break the archiving if something should go
         // wrong here
         for (Comment comment : comments) {
-            logger.info("Adding archived comments");
             try {
                 this.repository.addComment(token, comment);
             } catch (Throwable t) {
-                logger.error("Could not add comment", t);
+                logger.error("Could not add comment to resource '" + comment.getURI() + "': " + t.getMessage());
             }
         }
     }

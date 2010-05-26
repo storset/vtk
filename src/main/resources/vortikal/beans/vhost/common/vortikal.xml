@@ -44,6 +44,27 @@
     <property name="cookieLinksEnabled" value="${security.sessionCookieLinksEnabled}" />
     <property name="rememberAuthMethod" value="${security.rememberAuthMethod}" />
     <property name="spCookieDomain" value="${security.spCookieDomain}" />
+    <property name="spCookieAssertion" ref="securityInitializer.spCookieAssertion" />
+  </bean>
+
+  <bean id="securityInitializer.spCookieAssertion" class="org.vortikal.web.service.AndAssertion">
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.InvertAssertion">
+          <property name="assertion">
+            <ref bean="webdavHostNameAssertion" />
+          </property>
+        </bean>
+        <bean class="org.vortikal.web.service.InvertAssertion">
+          <property name="assertion">
+            <bean class="org.vortikal.web.service.ConfigAssertion">
+              <property name="config" value="${webdavHostName}" />
+              <property name="expectedValue" value="${webHostName}" />
+            </bean>
+          </property>
+        </bean>
+      </list>
+    </property>
   </bean>
 
   <bean id="cookieLinkStore" class="org.vortikal.security.CookieLinkStore">

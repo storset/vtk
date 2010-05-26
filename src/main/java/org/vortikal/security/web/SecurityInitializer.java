@@ -58,6 +58,7 @@ import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.security.token.TokenManager;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.service.Assertion;
 import org.vortikal.web.service.Service;
 
 /**
@@ -106,6 +107,9 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
 
     // Only relevant when using secure protocol:
     private boolean rememberAuthMethod = false;
+
+    // Assertion that must match in order to use authentication challenge from cookie:
+    private Assertion spCookieAssertion;
 
 
     @SuppressWarnings("unchecked")
@@ -421,6 +425,11 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         }
     }
 
+    public void setSpCookieAssertion(Assertion spCookieAssertion) {
+        this.spCookieAssertion = spCookieAssertion;
+    }
+
+
     private String getToken(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession(false);
         if (!this.cookieLinksEnabled) {
@@ -525,6 +534,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
     
 
     private AuthenticationChallenge getAuthenticationChallenge(HttpServletRequest request, Service service) {
+        AuthenticationChallenge challenge = null;
         if (this.rememberAuthMethod) {
             Cookie c = getCookie(request, VRTX_AUTH_SP_COOKIE);
             if (c != null) {
@@ -535,19 +545,28 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                     categories = Collections.EMPTY_SET;
                 }
                 if (handler != null && categories.contains(AUTH_HANDLER_SP_COOKIE_CATEGORY)) {
-                    AuthenticationChallenge challenge = handler.getAuthenticationChallenge();
-                    
-                    if (challenge != null) {
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("Using challenge from cookie " 
-                                    + VRTX_AUTH_SP_COOKIE + ": " + challenge);
-                        }
-                        return challenge;
-                    }
+                    challenge = handler.getAuthenticationChallenge();                    
                 }
             }
         }
-        AuthenticationChallenge challenge = service.getAuthenticationChallenge();
+        if (challenge != null) {
+            if (this.spCookieAssertion != null) {
+                boolean match = this.spCookieAssertion.matches(request, null, null);
+                if (!match) {
+                    challenge = null;
+                }
+            }
+        }
+        
+        if (challenge != null) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Using challenge from cookie " 
+                        + VRTX_AUTH_SP_COOKIE + ": " + challenge);
+            }
+            return challenge;
+        }
+
+        challenge = service.getAuthenticationChallenge();
         
         if (challenge == null && service.getParent() != null) { 
             return getAuthenticationChallenge(request, service.getParent());

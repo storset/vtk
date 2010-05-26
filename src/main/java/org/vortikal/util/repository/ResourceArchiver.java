@@ -175,7 +175,6 @@ public class ResourceArchiver {
         logger.info("Writing jar entries");
         while ((entry = jarIn.getNextJarEntry()) != null) {
             String entryPath = entry.getName();
-            decodeValue(entryPath);
 
             if (isIgnorableResource(entryPath, ignoreList)) {
                 continue;
@@ -308,7 +307,6 @@ public class ResourceArchiver {
             return;
         }
 
-        encode(path);
         try {
 
             out.println("");

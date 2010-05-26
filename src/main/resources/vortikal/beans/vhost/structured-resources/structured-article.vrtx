@@ -49,13 +49,13 @@ resourcetype structured-article : structured-document {
       [def theRelated-content json-attr(document, "properties.related-content")]
       
       [if (thehideAdditionalContent = "false")]
-        <div id="vrtx-additional-content">
-          [if theRelated-content != null]
+        [if theRelated-content != null]
+          <div id="vrtx-additional-content">
             <div id="vrtx-related-content">
               [val theRelated-content unescaped]
             </div>
-          [endif]
-        </div>
+          </div>
+        [endif]
       [endif]
       ##
     }

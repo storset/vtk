@@ -215,7 +215,6 @@
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="tempDir" value="${repository.tempDir}" />
     <property name="principalFactory" ref="principalFactory" />
-    <property name="principalManager" ref="principalManager" />
   </bean>
 
 </beans>

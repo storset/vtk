@@ -74,7 +74,6 @@ import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
-import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.Principal.Type;
 import org.vortikal.web.RequestContext;
 
@@ -83,7 +82,6 @@ public class ResourceArchiver {
     private static Log logger = LogFactory.getLog(ResourceArchiver.class);
 
     private PrincipalFactory principalFactory;
-    private PrincipalManager principalManager;
     private Repository repository;
     private ResourceTypeTree resourceTypeTree;
     private File tempDir = new File(System.getProperty("java.io.tmpdir"));
@@ -687,35 +685,20 @@ public class ResourceArchiver {
             }
             if (p != null) {
                 resource.setInheritedAcl(false);
-                if (isValidPrincipal(p, p.getType())) {
-                    if (acl.isValidEntry(action, p)) {
-                        acl.addEntry(action, p);
-                    } else {
-                        if (listener != null) {
-                            listener.warn(resource.getURI(), "Invalid acl entry: " + p + ":" + action + ", skipping");
-                        }
-                    }
+                if (acl.isValidEntry(action, p)) {
+                    acl.addEntry(action, p);
                 } else {
                     if (listener != null) {
-                        listener.warn(resource.getURI(), "Invalid principal: " + p + ", skipping");
+                        listener.warn(resource.getURI(), "Invalid acl entry: " + p + ":" + action + ", skipping");
                     }
+                }
+            } else {
+                if (listener != null) {
+                    listener.warn(resource.getURI(), "Invalid principal: " + p + ", skipping");
                 }
             }
         }
         return !resource.isInheritedAcl();
-    }
-
-    private boolean isValidPrincipal(Principal p, Type type) {
-        // Don't add invalid/unknown principals to acl
-        // Don't validate pseudo principals
-        if (Type.PSEUDO.equals(type)) {
-            return true;
-        } else if (Type.USER.equals(type)) {
-            return this.principalManager.validatePrincipal(p);
-        } else if (Type.GROUP.equals(type)) {
-            return this.principalManager.validateGroup(p);
-        }
-        return false;
     }
 
     private boolean writeFile(String token, Path uri, ZipInputStream is) {
@@ -813,11 +796,6 @@ public class ResourceArchiver {
     @Required
     public void setPrincipalFactory(PrincipalFactory principalFactory) {
         this.principalFactory = principalFactory;
-    }
-
-    @Required
-    public void setPrincipalManager(PrincipalManager principalManager) {
-        this.principalManager = principalManager;
     }
 
     // HACK VTK-1712

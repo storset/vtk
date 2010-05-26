@@ -18,9 +18,9 @@
         <ref bean="studieprogramAntallaarPropDef" />
         <ref bean="studieprogramStudiepoengPropDef" />
         <ref bean="studieprogramOmfangoppgavePropDef" />
-        <ref bean="studieprogramSoknadsfristPropDef" />
-        <ref bean="studieprogramStudieplasserPropDef" />
-        <ref bean="studieprogramSokodePropDef" />
+        <ref bean="studieprogramProgramversjonPropDef" />
+        <ref bean="studieprogramStikkordProgramvelgerPropDef" />
+        <ref bean="studieprogramProgramstatusPropDef" />
       </list>
     </property>
     <property name="assertions">
@@ -54,7 +54,7 @@
   </bean>
 
   <bean id="studieprogramProgramkodeEvaluator" parent="abstractXPathEvaluator">
-    <property name="expression" value="/studieprogram-hjemmeside/programkode" />
+    <property name="expression" value="/studieprogram-hjemmeside/FS-programkode" />
   </bean>
 
 
@@ -134,40 +134,42 @@
     <property name="expression" value="/studieprogram-hjemmeside/faktaboks/omfang-oppgave" />
   </bean>
 
-  <bean id="studieprogramSoknadsfristPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="name" value="soknadsfrist" />
+  <bean id="studieprogramProgramversjonPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="programversjon" />
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="propertyEvaluator" ref="studieprogramSoknadsfristEvaluator" />
+    <property name="propertyEvaluator" ref="studieprogramProgramversjonEvaluator" />
   </bean>
 
-  <bean id="studieprogramSoknadsfristEvaluator" parent="abstractXPathEvaluator">
-    <property name="expression" value="/studieprogram-hjemmeside/faktaboks/soknadsfrist" />
+  <bean id="studieprogramProgramversjonEvaluator" parent="abstractXPathEvaluator">
+    <property name="expression" value="/studieprogram-hjemmeside/programversjon/@versjon" />
   </bean>
 
-  <bean id="studieprogramStudieplasserPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="name" value="studieplasser" />
+
+  <bean id="studieprogramStikkordProgramvelgerPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="stikkord-programvelger" />
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="propertyEvaluator" ref="studieprogramStudieplasserEvaluator" />
+    <property name="propertyEvaluator" ref="studieprogramStikkordProgramvelgerEvaluator" />
   </bean>
 
-  <bean id="studieprogramStudieplasserEvaluator" parent="abstractXPathEvaluator">
-    <property name="expression" value="/studieprogram-hjemmeside/faktaboks/studieplasser" />
+  <bean id="studieprogramStikkordProgramvelgerEvaluator" parent="abstractXPathEvaluator">
+    <property name="expression" value="/studieprogram-hjemmeside/stikkord-programvelger" />
   </bean>
 
-  <bean id="studieprogramSokodePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="name" value="sokode" />
+
+  <bean id="studieprogramProgramstatusPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="programstatus" />
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="propertyEvaluator" ref="studieprogramSokodeEvaluator" />
+    <property name="propertyEvaluator" ref="studieprogramProgramstatusEvaluator" />
   </bean>
 
-  <bean id="studieprogramSokodeEvaluator" parent="abstractXPathEvaluator">
-    <property name="expression" value="/studieprogram-hjemmeside/faktaboks/so-kode" />
+  <bean id="studieprogramProgramstatusEvaluator" parent="abstractXPathEvaluator">
+    <property name="expression" value="/studieprogram-hjemmeside/programstatus/@status" />
   </bean>
 
 </beans>

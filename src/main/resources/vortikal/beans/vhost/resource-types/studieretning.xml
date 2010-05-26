@@ -14,6 +14,7 @@
         <ref bean="studieretningStudieretningskodePropDef" />
         <ref bean="studieretningStudieretningsnavnPropDef" />
         <ref bean="studieretningProgramkodeReferansePropDef" />
+        <ref bean="studieretningStudieretningstatusPropDef" />
       </list>
     </property>
     <property name="assertions">
@@ -47,7 +48,7 @@
   </bean>
 
   <bean id="studieretningStudieretningskodeEvaluator" parent="abstractXPathEvaluator">
-    <property name="expression" value="/studieretning-hjemmeside/studieretningskode" />
+    <property name="expression" value="/studieretning-hjemmeside/FS-studieretningskode" />
   </bean>
 
  
@@ -75,7 +76,21 @@
   </bean>
 
   <bean id="studieretningProgramkodeEvaluator" parent="abstractXPathEvaluator">
-    <property name="expression" value="/studieretning-hjemmeside/programkode" />
+    <property name="expression" value="/studieretning-hjemmeside/FS-programkode" />
+  </bean>
+
+
+  <bean id="studieretningStudieretningstatusPropDef" 
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="studieretningstatus" />
+    <property name="type" value="STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="propertyEvaluator" ref="studieretningStudieretningstatusEvaluator" />
+  </bean>
+
+  <bean id="studieretningStudieretningstatusEvaluator" parent="abstractXPathEvaluator">
+    <property name="expression" value="/studieretning-hjemmeside/studieretningstatus/@status" />
   </bean>
 
 </beans>

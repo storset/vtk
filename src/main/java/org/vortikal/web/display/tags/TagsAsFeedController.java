@@ -100,10 +100,10 @@ public class TagsAsFeedController extends AtomFeedController {
     public void setTagsHelper(TagsHelper tagsHelper) {
         this.tagsHelper = tagsHelper;
     }
-    
+
     @Override
     protected Property getPublishDate(PropertySet resource) {
-        Property overridePublishDateProp = resource.getProperty(this.getOverridePublishDatePropDef());
+        Property overridePublishDateProp = resource.getProperty(this.overridePublishDatePropDef);
         if (overridePublishDateProp != null) {
             return overridePublishDateProp;
         }
@@ -112,10 +112,6 @@ public class TagsAsFeedController extends AtomFeedController {
 
     public void setOverridePublishDatePropDef(PropertyTypeDefinition overridePublishDatePropDef) {
         this.overridePublishDatePropDef = overridePublishDatePropDef;
-    }
-
-    public PropertyTypeDefinition getOverridePublishDatePropDef() {
-        return overridePublishDatePropDef;
     }
 
 }

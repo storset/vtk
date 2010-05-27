@@ -524,13 +524,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
     }
 
-    // Exposed through interface
     public void storeACL(String token, Resource resource) throws ResourceNotFoundException, AuthorizationException,
             AuthenticationException, IllegalOperationException, ReadOnlyException, IOException {
         this.storeACL(token, resource, true);
     }
 
-    // Hidden, exposed only by hard ref to class
     public void storeACL(String token, Resource resource, boolean validateACL) throws ResourceNotFoundException,
             AuthorizationException, AuthenticationException, IllegalOperationException, ReadOnlyException, IOException {
 

@@ -275,6 +275,13 @@ public class CachePurgeControlRepositoryWrapper implements Repository {
             ReadOnlyException, Exception {
         this.wrappedRepository.storeACL(token, resource); // Tx
     }
+    
+    public void storeACL(String token, Resource resource, boolean validateACL)
+            throws ResourceNotFoundException, AuthorizationException,
+            AuthenticationException, IllegalOperationException,
+            ReadOnlyException, Exception {
+        this.wrappedRepository.storeACL(token, resource, validateACL);
+    }
 
     public Resource storeContent(String token, Path uri, InputStream byteStream)
             throws AuthorizationException, AuthenticationException,

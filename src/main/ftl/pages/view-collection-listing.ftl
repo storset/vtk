@@ -27,6 +27,7 @@
 <#import "/lib/collections/view-article-listing.ftl" as articles />
 <#import "/lib/collections/view-event-listing.ftl" as events />
 <#import "/lib/collections/view-project-listing.ftl" as projects />
+<#import "/lib/collections/view-research-group-listing.ftl" as groups />
 <#import "/lib/collections/view-person-listing.ftl" as persons />
 <#import "/lib/collections/view-image-listing.ftl" as images />
 <#import "/lib/collections/view-blog-listing.ftl" as blogs />
@@ -92,6 +93,7 @@
   
   <#if !isEventCalendarListing>
     <h1>${title}
+      <@projects.completed />
       <#if page?has_content>
         <#if "${page}" != "1"> - <@vrtx.msg code="viewCollectionListing.page" /> ${page}</#if>
       </#if>
@@ -174,6 +176,13 @@
            	  	<#else>
              		<@projects.displayProjects searchComponent />
            		</#if>
+            <#elseif collection.resourceType = 'research-group-listing'>
+           		<#assign listingType = vrtx.propValue(collection, 'display-type', '', 'rg') />
+           	  	<#if listingType = "alphabetical" >
+           	  		<@groups.displayResearchGroupsAlphabetical searchComponent />
+           	  	<#else>
+             		<@groups.displayResearchGroups searchComponent />
+           		</#if>
            <#elseif collection.resourceType = 'image-listing'>
              <@images.displayImages searchComponent collection />
            <#elseif collection.resourceType = 'blog-listing'>
@@ -201,8 +210,10 @@
 	        </#list>
 	    </#if>
      </div>
+     <@projects.projectListingViewServiceURL />
      <#if isEventCalendarListing>
        </div>
     </#if>
   </body>
 </html>
+

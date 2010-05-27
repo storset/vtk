@@ -70,6 +70,16 @@
     <property name="handler" ref="editor.projectEditHandler" />
   </bean>
 
+  <bean id="editor.researchGroupListingEditService" parent="editor.abstractEditService">
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsResearchGroupListing" />
+      </list>
+    </property>
+    <property name="handler" ref="editor.researchGroupEditHandler" />
+  </bean>
+
+
   <bean id="editor.imageListingEditService" parent="editor.abstractEditService">
     <property name="assertions">
       <list>
@@ -279,6 +289,12 @@
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToManage" />
   </bean>
+  
+  <bean id="editor.researchGroupEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+    <property name="resourceManager" ref="editor.researchGroupResourceManager" />
+    <property name="formView" value="editor.editView" />
+    <property name="successView" value="redirectToManage" />
+  </bean>
 
   <bean id="editor.imageEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
     <property name="resourceManager" ref="editor.imageResourceManager" />
@@ -402,6 +418,32 @@
             <ref bean="aggregationPropDef" />
             <ref bean="recursiveAggregationPropDef" />
             <ref bean="projectListing.displayTypePropDef" />
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+  
+    <bean id="editor.researchGroupResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager"
+    parent="repositoryAware">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
+    <property name="contentResourceType" ref="documentResourceTypeDefinition" />
+    <property name="editPropertyProvider">
+      <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
+        <property name="preContentProperties">
+          <list>
+            <ref bean="userTitlePropDef" />
+            <ref bean="introductionPropDef" />
+            <ref bean="introductionImagePropDef" />
+            <ref bean="introductionImageCaptionPropDef" />
+            <ref bean="navigationTitlePropDef" />
+            <ref bean="importancePropDef" />
+            <ref bean="hiddenPropDef" />
+            <ref bean="pageLimitPropDef" />
+            <ref bean="aggregationPropDef" />
+            <ref bean="recursiveAggregationPropDef" />
+            <ref bean="researchGroupListing.displayTypePropDef" />
           </list>
         </property>
       </bean>

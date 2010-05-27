@@ -16,7 +16,7 @@ import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.service.URL;
 
-public class ProjectListingController extends CollectionListingController {
+public class AlphabeticalCollectionListingController extends CollectionListingController {
 
     private PropertyTypeDefinition titlePropDef;
     private PropertyTypeDefinition displayTypePropDef;

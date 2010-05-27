@@ -255,6 +255,7 @@ div.article-listing,
 div.event-listing,
 div.person-listing,
 div.project-listing,
+div.research-group-listing,
 div.blog-listing,
 div.image-listing {
   background: transparent url(icons/dir.png) no-repeat 0px 5px;
@@ -265,6 +266,7 @@ div.article-listing h1,
 div.event-listing h1,
 div.person-listing h1,
 div.project-listing h1,
+div.research-group-listing h1,
 div.blog-listing h1,
 div.image-listing h1 {
   margin: 0 0 0 38px;
@@ -778,6 +780,7 @@ table.directoryListing tr.article-listing td.name,
 table.directoryListing tr.event-listing td.name,
 table.directoryListing tr.person-listing td.name,
 table.directoryListing tr.project-listing td.name,
+table.directoryListing tr.research-group-listing td.name,
 table.directoryListing tr.blog-listing td.name,
 table.directoryListing tr.image-listing td.name
   {

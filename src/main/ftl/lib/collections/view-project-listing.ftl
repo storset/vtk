@@ -12,9 +12,7 @@
 		</ul>
 		</li>
 	</ul>
-	
   </#list>
-  <@projectListingViewServiceURL />
 </#macro>
 
 <#macro projectListingViewServiceURL >
@@ -28,7 +26,6 @@
 	</div>
 </#macro>
 
-
 <#macro displayProjects projectListing>
   <#local projects=projectListing.files />
   <#if (projects?size > 0) >
@@ -41,11 +38,7 @@
       <#local title = vrtx.propValue(project, 'title') />
       <#local introImg = vrtx.prop(project, 'picture')  />
       <#local intro = vrtx.prop(project, 'introduction')  />
-      <#local location  = vrtx.prop(project, 'location')  />
       <#local caption = vrtx.propValue(project, 'caption')  />
-      <#local endDate = vrtx.prop(project, 'end-date') />
-      <#local hideEndDate = !endDate?has_content || !projectListing.hasDisplayPropDef(endDate.definition.name) />
-      <#local hideLocation = !location?has_content || !projectListing.hasDisplayPropDef(location.definition.name) />
       <#-- Flattened caption for alt-tag in image -->
       <#local captionFlattened>
       <@vrtx.flattenHtml value=caption escape=true />
@@ -76,5 +69,10 @@
     </#list>
    </div>
   </#if>
-  <@projectListingViewServiceURL />
+</#macro>
+
+<#macro completed >
+	<#if viewOngoingProjectsLink?exists>
+		<span>(${vrtx.getMsg("projects.completed")})</span>
+	</#if>
 </#macro>

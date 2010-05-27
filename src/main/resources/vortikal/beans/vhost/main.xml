@@ -44,6 +44,8 @@
   <import resource="view-blog-listing.xml" />
   <import resource="view-person-listing.xml" />
   <import resource="view-project-listing.xml" />
+  <import resource="view-research-group-listing.xml" />
+  
   <import resource="view-image-listing.xml" />
   
   <!-- Beans to override default listing of events and articles -->

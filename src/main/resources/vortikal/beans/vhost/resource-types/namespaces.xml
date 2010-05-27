@@ -39,7 +39,12 @@
     <constructor-arg value="prl" />
     <constructor-arg value="http://www.uio.no/resource-types/project-listing" />
   </bean>
-
+  
+  <bean id="RESEARCH_GROUP_LISTING_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="rg" />
+    <constructor-arg value="http://www.uio.no/resource-types/research-group-listing" />
+  </bean>
+  
   <bean id="BLOG_LISTING_NAMESPACE" class="org.vortikal.repository.Namespace">
     <constructor-arg value="bl" />
     <constructor-arg value="http://www.uio.no/resource-types/blog-listing" />

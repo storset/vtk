@@ -11,6 +11,7 @@
   <import resource="event-listing.xml" />
   <import resource="person-listing.xml" />
   <import resource="project-listing.xml" />
+  <import resource="research-group-listing.xml" />
   <import resource="image-listing.xml" />
   <import resource="image.xml" />
   <import resource="audio.xml" />

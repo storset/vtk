@@ -39,10 +39,10 @@
 
   <bean id="projectListing.viewAllProjectsAssertion" class="org.vortikal.web.service.RequestParameterAssertion">
     <property name="parameterName" value="view" />
-    <property name="parameterValue" value="all" />
+    <property name="parameterValue" value="completed" />
   </bean>
 
-  <bean id="projectListing.viewAllProjectsHandler" class="org.vortikal.web.display.collection.ProjectListingController"
+  <bean id="projectListing.viewAllProjectsHandler" class="org.vortikal.web.display.collection.AlphabeticalCollectionListingController"
     parent="projectListing.handler">
     <property name="searchComponents">
       <list>
@@ -52,7 +52,7 @@
   </bean>
 
 
-  <bean id="projectListing.handler" class="org.vortikal.web.display.collection.ProjectListingController" parent="collectionListing.handler">
+  <bean id="projectListing.handler" class="org.vortikal.web.display.collection.AlphabeticalCollectionListingController" parent="collectionListing.handler">
     <property name="searchComponents">
       <list>
         <ref bean="projectListing.searchComponent" />

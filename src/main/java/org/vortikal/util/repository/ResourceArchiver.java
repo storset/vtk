@@ -559,7 +559,7 @@ public class ResourceArchiver {
             // have to call storeACL twice. And don't validate acl when writing acl
             // to db, add it the same way it was 
             RepositoryImpl repositoryImpl = (RepositoryImpl) repository;
-            repositoryImpl.storeACL(token, resource, false); // Switchinheritance off
+            repositoryImpl.storeACL(token, resource, false); // Switch inheritance off
             repositoryImpl.storeACL(token, resource, false); // Store new ACL
         }
     }

@@ -65,6 +65,7 @@ import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryAction;
+import org.vortikal.repository.RepositoryImpl;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyType;
@@ -555,9 +556,11 @@ public class ResourceArchiver {
         if (aclModified) {
             // XXX: Repository API not "friendly" to special clients like
             // resource archiver/expander wrt. ACL modifications. One shouldn't
-            // have to call storeACL twice.
-            this.repository.storeACL(token, resource); // Switch inheritance off
-            this.repository.storeACL(token, resource); // Store new ACL
+            // have to call storeACL twice. And don't validate acl when writing acl
+            // to db, add it the same way it was 
+            RepositoryImpl repositoryImpl = (RepositoryImpl) repository;
+            repositoryImpl.storeACL(token, resource, false); // Switchinheritance off
+            repositoryImpl.storeACL(token, resource, false); // Store new ACL
         }
     }
 

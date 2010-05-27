@@ -31,6 +31,7 @@
 package org.vortikal.web.decorating;
 
 import java.util.List;
+import java.util.Map;
 
 public interface DecorationDescriptor {
 
@@ -41,4 +42,6 @@ public interface DecorationDescriptor {
     public boolean parse();
 
     public List<Template> getTemplates();
+    
+    public Map<String, Object> getParameters(Template template);
 }

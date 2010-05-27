@@ -153,9 +153,9 @@ public class TextualDecoratorTemplate implements Template {
         
     }
     
-    public TemplateExecution newTemplateExecution(
-            HtmlPageContent html, HttpServletRequest request,
-            Map<Object, Object> model) throws Exception {
+    public TemplateExecution newTemplateExecution(HtmlPageContent html,
+            HttpServletRequest request, Map<Object, Object> model,
+            Map<String, Object> templateParameters) throws Exception {
 
         if (this.templateSource.getLastModified() > this.lastModified) {
             compile();
@@ -197,4 +197,5 @@ public class TextualDecoratorTemplate implements Template {
     public String toString() {
         return this.getClass().getName() + ": " + this.templateSource;
     }
+
 }

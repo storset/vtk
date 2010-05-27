@@ -43,6 +43,7 @@ import org.vortikal.resourcemanagement.view.tl.ComponentInvokerNodeFactory;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.DirectiveNodeFactory;
+import org.vortikal.text.tl.Node;
 import org.vortikal.text.tl.NodeList;
 import org.vortikal.text.tl.ParseResult;
 import org.vortikal.text.tl.Parser;
@@ -59,6 +60,7 @@ public class DynamicDecoratorTemplate implements Template {
     
     private static final String CR_REQ_ATTR = "__component_resolver__";
     private static final String HTML_REQ_ATTR = "__html_page__";
+    private static final String PARAMS_REQ_ATTR = "__template_params__";
 
     public static class ComponentSupport implements ComponentInvokerNodeFactory.ComponentSupport {
 
@@ -96,21 +98,34 @@ public class DynamicDecoratorTemplate implements Template {
         }
     }
 
+    static Object getTemplateParam(HttpServletRequest request, String name) {
+        Object attr = request.getAttribute(PARAMS_REQ_ATTR);
+        if (attr == null) {
+            return null;
+        }
+        @SuppressWarnings("unchecked")
+        Map<String, Object> parameters = (Map<String, Object>) attr;
+
+        return parameters.get(name);
+    }
+    
     public class Execution implements TemplateExecution {
         private HtmlPageContent content;
         private ParseResult compiledTemplate;
         private ComponentResolver componentResolver;
         private HttpServletRequest request;
         private Map<Object, Object> model;
+        private Map<String, Object> templateParameters;
 
         public Execution(HtmlPageContent content, ParseResult compiledTemplate, 
                 ComponentResolver componentResolver, HttpServletRequest request,
-                Map<Object, Object> model) {
+                Map<Object, Object> model, Map<String, Object> templateParameters) {
             this.content = content;
             this.componentResolver = componentResolver;
             this.compiledTemplate = compiledTemplate;
             this.request = request;
             this.model = model;
+            this.templateParameters = templateParameters;
         }
         
         public void setComponentResolver(ComponentResolver componentResolver) {
@@ -125,8 +140,12 @@ public class DynamicDecoratorTemplate implements Template {
             HtmlPage html = this.content.getHtmlContent();
             Locale locale = this.request.getLocale(); // XXX
             Context context = new Context(locale);
+            for (String name : this.templateParameters.keySet()) {
+                context.define(name, this.templateParameters.get(name), true);
+            }
             context.define(CR_REQ_ATTR, this.componentResolver, true);
             context.define(HTML_REQ_ATTR, html, true);
+            this.request.setAttribute(PARAMS_REQ_ATTR, this.templateParameters);
             Writer writer = new StringWriter();
             NodeList nodeList = this.compiledTemplate.getNodeList();
             nodeList.render(context, writer);
@@ -136,12 +155,12 @@ public class DynamicDecoratorTemplate implements Template {
     
     public TemplateExecution newTemplateExecution(
             HtmlPageContent html, HttpServletRequest request,
-            Map<Object, Object> model) throws Exception {
+            Map<Object, Object> model, Map<String, Object> templateParameters) throws Exception {
 
         if (this.templateSource.getLastModified() > this.lastModified) {
             compile();
         }
-        return new Execution(html, this.compiledTemplate, this.componentResolver, request, model);
+        return new Execution(html, this.compiledTemplate, this.componentResolver, request, model, templateParameters);
     }
 
     
@@ -156,11 +175,27 @@ public class DynamicDecoratorTemplate implements Template {
                 this.templateSource.getCharacterEncoding());
 
         this.parser = new Parser(reader, this.directiveHandlers);
-        this.compiledTemplate = this.parser.parse();
+        try {
+            this.compiledTemplate = this.parser.parse();
+        } catch (Throwable t) {
+            this.compiledTemplate = getErrorTemplate(t);
+        }
         this.lastModified = templateSource.getLastModified();
     }
     
     public String toString() {
         return this.getClass().getName() + ": " + this.templateSource;
+    }
+    
+    private ParseResult getErrorTemplate(Throwable t) {
+        final String message = t.getMessage();
+        final TemplateSource template = this.templateSource;
+        NodeList nodeList = new NodeList();
+        nodeList.add(new Node() {
+            public void render(Context ctx, Writer out) throws Exception {
+                out.write("Error compiling template " + template.getID() + ": " + message);
+            }
+        });
+        return new ParseResult(nodeList);
     }
 }

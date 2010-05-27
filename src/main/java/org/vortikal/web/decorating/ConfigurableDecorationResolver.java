@@ -62,6 +62,7 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.PathMappingConfig.ConfigEntry;
 import org.vortikal.web.decorating.PathMappingConfig.Predicate;
 import org.vortikal.web.service.Service;
+import org.vortikal.web.service.URL;
 import org.vortikal.web.servlet.StatusAwareHttpServletResponse;
 
 
@@ -143,7 +144,6 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
 
     public DecorationDescriptor resolve(HttpServletRequest request,
                                         HttpServletResponse response) throws Exception {
-
         
         InternalDescriptor descriptor = new InternalDescriptor();
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -342,38 +342,72 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
     }
     
     private void populateDescriptor(InternalDescriptor descriptor, Locale locale, 
-                                    String paramString) throws Exception {
-        String[] params = paramString.split(",");
-        for (String param : params) {
-            param = param.trim();
-            if ("NONE".equals(param)) {
+                                    String entry) throws Exception {
+        String[] directives = entry.split(",");
+        for (String directive : directives) {
+            directive = directive.trim();
+            if ("NONE".equals(directive)) {
                 descriptor.tidy = false;
                 descriptor.parse = false;
                 descriptor.templates.clear();
                 break;
-            } else if ("TIDY".equals(param)) {
+            } else if ("TIDY".equals(directive)) {
                 descriptor.tidy = true;
-            } else if ("NOPARSING".equals(param)) {
+            } else if ("NOPARSING".equals(directive)) {
                 descriptor.parse = false;
             } else {
-                Template t = resolveTemplateReferences(locale, param);
+                String name = directive;
+                Map<String, Object> parameters = new HashMap<String, Object>();
+                int queryIndex = name.indexOf('?');
+                if (queryIndex > 0) {
+                    String query = name.substring(queryIndex);
+                    name = name.substring(0, queryIndex);
+                    parameters = splitParameters(query);
+                }
+                
+                Template t = resolveTemplateReferences(locale, name);
 
                 if (t != null) {
                     if (!this.supportMultipleTemplates) {
                         descriptor.templates.clear();
                     }
                     descriptor.templates.add(t);
+                    descriptor.templateParameters.put(t, parameters);
                 }
             }
         }
-        
     }
     
 
+    private Map<String, Object> splitParameters(String paramString) {
+        Map<String, String[]> params = URL.splitQueryString(paramString);
+        Map<String, Object> result = new HashMap<String, Object>();
+
+        for (String name: params.keySet()) {
+            String[] values = params.get(name);
+
+            if (values == null || values.length == 0) {
+                result.put(name, null);
+
+            } else if (values.length > 1) {
+                List<Object> list = new ArrayList<Object>();
+                for (int i = 0; i < values.length; i++) {
+                    list.add(values[i]);
+                }
+                result.put(name, list);
+
+            } else {
+              result.put(name, values[0]);  
+            }
+        }
+        return result;
+    }
+    
     private class InternalDescriptor implements DecorationDescriptor {
         private boolean tidy = false;
         private boolean parse = true;
         private List<Template> templates = new ArrayList<Template>();
+        private Map<Template, Map<String, Object>> templateParameters = new HashMap<Template, Map<String, Object>>();
         
         public boolean decorate() {
             return !this.templates.isEmpty() || this.tidy || this.parse;
@@ -382,11 +416,17 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
         public boolean tidy() {
             return this.tidy;
         }
+        
         public boolean parse() {
             return this.parse;
         }
+        
         public List<Template> getTemplates() {
             return this.templates;
+        }
+        
+        public Map<String, Object> getParameters(Template t) {
+            return Collections.unmodifiableMap(this.templateParameters.get(t));
         }
         
         public String toString() {

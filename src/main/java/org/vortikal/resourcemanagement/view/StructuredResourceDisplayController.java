@@ -200,7 +200,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         }
         ParsedHtmlDecoratorTemplate template = (ParsedHtmlDecoratorTemplate) t;
         ParsedHtmlDecoratorTemplate.Execution execution = (ParsedHtmlDecoratorTemplate.Execution) template
-        .newTemplateExecution(content, request, model);
+        .newTemplateExecution(content, request, model, new HashMap<String, Object>());
 
         ComponentResolver resolver = execution.getComponentResolver();
         Map<String, TemplateLanguageDecoratorComponent> components = this.components.get(res.getType());

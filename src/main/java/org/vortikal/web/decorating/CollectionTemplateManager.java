@@ -163,8 +163,11 @@ public class CollectionTemplateManager implements TemplateManager, InitializingB
                 new RepositoryTemplateSource(resource.getURI(), this.repository, null);
 
             try {
-                Template template = this.templateFactory.newTemplate(templateSource);
                 String identifier = resource.getURI().toString().substring(this.collectionName.length() + 1);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Attempt to load template '" + identifier + "'");
+                }
+                Template template = this.templateFactory.newTemplate(templateSource);
 
                 if (logger.isDebugEnabled()) {
                     logger.debug("Loaded template '" + identifier + "'");

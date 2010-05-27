@@ -38,5 +38,6 @@ public interface Template {
 
     public TemplateExecution newTemplateExecution(
             HtmlPageContent html, HttpServletRequest request,
-            Map<Object, Object> model) throws Exception;
+            Map<Object, Object> model, 
+            Map<String, Object> templateParameters) throws Exception;
 }

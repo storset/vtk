@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.decorating;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
@@ -71,7 +72,8 @@ public class TemplateView implements HtmlRenderer, InitializingBean {
         
         ParsedHtmlDecoratorTemplate template = getTemplate();
         ParsedHtmlDecoratorTemplate.Execution execution = 
-            (ParsedHtmlDecoratorTemplate.Execution) template.newTemplateExecution(content, request, model);
+            (ParsedHtmlDecoratorTemplate.Execution) 
+            template.newTemplateExecution(content, request, model, new HashMap<String, Object>());
         return execution.render();
     }
     

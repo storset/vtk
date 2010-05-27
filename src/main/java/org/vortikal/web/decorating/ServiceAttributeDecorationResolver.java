@@ -32,6 +32,7 @@ package org.vortikal.web.decorating;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -89,9 +90,14 @@ public class ServiceAttributeDecorationResolver implements DecorationResolver {
                 return false;
             }
             
+            public Map<String, Object> getParameters(Template template) {
+                return Collections.emptyMap();
+            }
+            
             public String toString() {
                 return this.getClass().getName() + ": [template: " + t + "]";
             }
+
         };
     }
 }

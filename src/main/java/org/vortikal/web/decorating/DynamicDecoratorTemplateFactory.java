@@ -86,6 +86,7 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
         Set<Function> functions = new HashSet<Function>();
         functions.addAll(this.functions);
         functions.add(new RequestParameterFunction(new Symbol("request-param")));
+        functions.add(new TemplateParameterFunction(new Symbol("template-param")));
         def.setFunctions(functions);
         directiveHandlers.put("def", def);
 
@@ -102,6 +103,24 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
         this.functions = functions;
     }
 
+    private class TemplateParameterFunction extends Function {
+        public TemplateParameterFunction(Symbol symbol) {
+            super(symbol, 1);
+        }
+
+        @Override
+        public Object eval(Context ctx, Object... args) throws Exception {
+            RequestContext requestContext = RequestContext.getRequestContext();
+            HttpServletRequest request = requestContext.getServletRequest();
+            Object o = args[0];
+            if (o == null) {
+                throw new IllegalArgumentException("Argument cannot be NULL");
+            }
+            String name = o.toString();
+            return DynamicDecoratorTemplate.getTemplateParam(request, name);
+        }
+    }
+    
     private class RequestParameterFunction extends Function {
         
         public RequestParameterFunction(Symbol symbol) {

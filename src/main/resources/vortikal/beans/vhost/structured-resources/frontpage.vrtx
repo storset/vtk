@@ -206,12 +206,8 @@ resourcetype frontpage {
       
       [if (img-uri != null && img-uri != "") || (intro != null && intro != "")]
       
-        <div id="vrtx-frontpage-introduction">
-      
-        [if intro != null]
-          <div class="vrtx-introduction">[val intro unescaped]</div>
-        [endif]
-      
+      <div id="vrtx-frontpage-introduction">
+            
         [if img-uri != null]
           [def img resource(img-uri)]
         
@@ -256,6 +252,12 @@ resourcetype frontpage {
             <img class="vrtx-introduction-image" src="[val img-uri]" alt="[localized 'introduction-image-alt']" />
           [endif]
         [endif]
+      
+        [if intro != null]
+          <div class="vrtx-introduction">[val intro unescaped]</div>
+        [endif]
+
+      </div>
       [endif]
       ##
     }

@@ -41,6 +41,11 @@ resourcetype frontpage {
           [if picture != null && picture != ""]
             [def cssClasses concat(cssClasses, "vrtx-frontpage-box-picture")]
           [endif]
+          [if title != null && title != ""]
+          [else]
+            [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
+            [def cssClasses concat(cssClasses, "vrtx-header-false")]
+          [endif]
           [if urlText != null && urlText != ""]
           [else]
             [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
@@ -57,8 +62,7 @@ resourcetype frontpage {
           [if type != null && type != ""]
             [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
             [def cssClasses concat(cssClasses, type)]
-          [endif]
-          
+          [endif]          
 
           [if cssClasses != null && cssClasses != ""]
               <div class="vrtx-frontpage-box [val cssClasses]" id="vrtx-main-content-[val number]">

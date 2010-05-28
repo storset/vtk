@@ -101,6 +101,7 @@ public class ExpressionTest extends TestCase {
                 new Literal("2"),
                 new Symbol(")")
         });
+        assertEquals(4, result);
         
         result = eval(new Argument[] {
                 new Literal("true")

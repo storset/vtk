@@ -79,7 +79,7 @@ public class ListNodeFactory implements DirectiveNodeFactory {
         Expression expression = new Expression(this.functions, args);
         ParseResult listBlock = ctx.getParser().parse(LIST_TERM);
 
-        String terminator = listBlock.getTerminator();
+        DirectiveParseContext terminator = listBlock.getTerminator();
         if (terminator == null) {
             throw new RuntimeException("Unterminated directive: " + ctx.getNodeText());
         }

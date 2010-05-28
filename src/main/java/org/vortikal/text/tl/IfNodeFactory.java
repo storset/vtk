@@ -33,6 +33,7 @@ package org.vortikal.text.tl;
 import java.io.Writer;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -40,72 +41,79 @@ import org.vortikal.text.tl.expr.Expression;
 
 public class IfNodeFactory implements DirectiveNodeFactory {
 
-    private static final Set<String> IF_ELSE_TERM =
-        new HashSet<String>(Arrays.asList("else", "endif"));
-
-    private static final Set<String> IF_TERM =
-        new HashSet<String>(Arrays.asList("endif"));
+    private static final Set<String> TERMS = 
+        new HashSet<String>(Arrays.asList("elseif", "else", "endif"));
 
     public Node create(DirectiveParseContext ctx) throws Exception {
+        LinkedHashMap<Expression, NodeList> expressions = new LinkedHashMap<Expression, NodeList>();
 
-        ParseResult trueBranch = ctx.getParser().parse(IF_ELSE_TERM);
-        ParseResult falseBranch = null;
-
-        String terminator = trueBranch.getTerminator();
-        if (terminator == null) {
-            throw new RuntimeException("Unterminated directive: " + ctx.getName());
-        }
-        if (terminator.equals("else")) {
-            falseBranch = ctx.getParser().parse(IF_TERM);
-            terminator = falseBranch.getTerminator();
-            if (terminator == null) {
-                throw new RuntimeException("Unterminated directive: " + ctx.getNodeText());
+        Parser parser = ctx.getParser();
+        int line = parser.getLineNumber();
+        String cur = ctx.getName();
+        List<Argument> curArgs = ctx.getArguments();
+        while (true) {
+            ParseResult parsed = parser.parse(TERMS);
+            DirectiveParseContext info = parsed.getTerminator();
+            if (info == null) {
+                throw new RuntimeException("Unterminated directive at line " 
+                        + line + ": " + "[" + ctx.getNodeText() + "...");
             }
-        }
-        NodeList trueNodeList = trueBranch.getNodeList();
-        NodeList falseNodeList = falseBranch != null ? falseBranch.getNodeList() : null;
+            String terminator = info.getName();
 
-        List<Argument> args = ctx.getArguments();
-        if (args.isEmpty()) {
-            throw new RuntimeException("Missing condition: "
-                    + ctx.getNodeText());
+            if (curArgs.isEmpty()) {
+                curArgs.add(new Literal("true"));
+            }
+            Expression expression = new Expression(curArgs);
+            expressions.put(expression, parsed.getNodeList());
+
+            if ("endif".equals(terminator)) {
+                break;
+            }
+
+            if ("elseif".equals(terminator)) {
+                if (!("if".equals(cur) || "elseif".equals(cur))) {
+                    throw new RuntimeException("elseif can only follow if or elseif");
+                }
+                cur = "elseif";
+            } else if ("else".equals(terminator)) {
+                cur = "else";
+            }
+            curArgs = info.getArguments();
         }
-        
-        Expression expression = new Expression(args);
-        return new IfNode(expression, trueNodeList, falseNodeList);
+        return new IfNode(expressions);
     }
 
-
     private class IfNode extends Node {
-        private Expression expression = null;
-        private NodeList trueBranch;
-        private NodeList falseBranch;
+        private LinkedHashMap<Expression, NodeList> branches;
 
-        public IfNode(Expression expression, NodeList trueBranch, NodeList falseBranch) {
-            this.expression = expression;
-            this.trueBranch = trueBranch;
-            this.falseBranch = falseBranch;
+        public IfNode(LinkedHashMap<Expression, NodeList> branches) {
+            this.branches = branches;
         }
 
         public void render(Context ctx, Writer out) throws Exception {
+            NodeList branch = null;
+            for (Expression exp : this.branches.keySet()) {
+                if (eval(exp, ctx)) {
+                    branch = this.branches.get(exp);
+                    break;
+                }
+            }
+            if (branch != null) {
+                ctx.push();
+                branch.render(ctx, out);
+                ctx.pop();
+            }
+        }
 
-            boolean result;
-            Object o = this.expression.evaluate(ctx);
+        private boolean eval(Expression expression, Context ctx) {
+            Object o = expression.evaluate(ctx);
             if (o == null) {
-                result = false;
+                return false;
             } else if (o instanceof Boolean) {
-                result = ((Boolean) o).booleanValue();
+                return ((Boolean) o).booleanValue();
             } else {
-                result = true;
+                return true;
             }
-            
-            ctx.push();
-            if (result) {
-                this.trueBranch.render(ctx, out);
-            } else if (this.falseBranch != null) {
-                this.falseBranch.render(ctx, out);
-            }
-            ctx.pop();
         }
         
         public String toString() {

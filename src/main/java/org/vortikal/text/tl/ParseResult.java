@@ -33,13 +33,13 @@ package org.vortikal.text.tl;
 public class ParseResult {
 
     private NodeList nodeList;
-    private String terminator;
+    private DirectiveParseContext terminator;
 
     public ParseResult(NodeList nodeList) {
         this(nodeList, null);
     }
 
-    public ParseResult(NodeList nodeList, String terminator) {
+    public ParseResult(NodeList nodeList, DirectiveParseContext terminator) {
         this.nodeList = nodeList;
         this.terminator = terminator;
     }
@@ -48,7 +48,7 @@ public class ParseResult {
         return this.nodeList;
     }
 
-    public String getTerminator() {
+    public DirectiveParseContext getTerminator() {
         return this.terminator;
     }
 

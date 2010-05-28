@@ -64,42 +64,46 @@ public class Parser {
     public ParseResult parse(Set<String> terminators) throws Exception {
         NodeList list = new NodeList();
         while (true) {
-            ParseNode token = nextToken();
-            if (token == null) {
+            ParseNode parseNode = nextNode();
+            if (parseNode == null) {
                 break;
             }
-            switch (token.type) {
+            switch (parseNode.type) {
             case Text:
-                list.add(new TextNode(token.value));
+                list.add(new TextNode(parseNode.value));
                 break;
             case Directive:
-                List<String> split = token.split();
+                List<String> split = parseNode.split();
                 String name = split.remove(0);
+
+                List<Argument> args = parseArguments(split);
+                DirectiveParseContext info = new DirectiveParseContext(name, this, args, parseNode.value);
 
                 if (this.directives.containsKey(name)) {
                     DirectiveNodeFactory nf = this.directives.get(name);
-                    List<Argument> args = parseArguments(split);
-                    DirectiveParseContext info = new DirectiveParseContext(name, this, args, token.value);
                     Node node = nf.create(info);
                     list.add(node);
                 }
-
                 if (terminators.contains(name)) {
-                    return new ParseResult(list, name);
+                    return new ParseResult(list, info);
                 }
             }
         }
         return new ParseResult(list);
     }
-    
+
+    public int getLineNumber() {
+        return this.reader.getLineNumber() + 1;
+    }
+
     private void illegalCharacter(int c, StringBuilder context) {
         throw new RuntimeException(
                 "Illegal character '" + (char) c + "' at line " 
-                + (this.reader.getLineNumber() + 1) + ": " 
-                + context + (char) c);
+                + getLineNumber() + ": " + context + (char) c);
     }
-
-    private ParseNode nextToken() throws Exception {
+    
+    
+    private ParseNode nextNode() throws Exception {
 
         State state = State.Init;
         boolean escape = false;
@@ -130,7 +134,7 @@ public class Parser {
 
                 } else if (state == State.Text) {
                     if (escape) {
-                        buffer.append("[");
+                        buffer.append('[');
                         escape = false;
                     } else {
                         this.reader.reset();
@@ -155,7 +159,7 @@ public class Parser {
                     }
                 } else if (state == State.Text) {
                     if (escape) {
-                        buffer.append("]");
+                        buffer.append(']');
                         escape = false;
                     } else {
                         illegalCharacter(c, buffer);
@@ -194,7 +198,7 @@ public class Parser {
             if (token.value.trim().length() == 0) {
                 throw new IllegalStateException(
                         "Empty directive encountered at line " 
-                        + (this.reader.getLineNumber() + 1));
+                        + getLineNumber());
             }
         }
         return token;

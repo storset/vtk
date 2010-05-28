@@ -231,7 +231,7 @@
     <property name="attributes">
       <map>
         <entry key="tabOrder">
-          <value type="java.lang.Integer">300</value>
+          <value type="java.lang.Integer">400</value>
         </entry>
       </map>
     </property>

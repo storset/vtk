@@ -302,7 +302,7 @@
         <ref bean="redirectToManageAssertion" />
       </list>
     </property>
-        <property name="handlerInterceptors">
+    <property name="handlerInterceptors">
       <list>
         <!-- Redirect to manage hostname -->
         <bean class="org.vortikal.web.interceptors.ConfigurableRedirector">

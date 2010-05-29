@@ -32,6 +32,8 @@ package org.vortikal.repository.resourcetype;
 
 import java.util.Date;
 
+import net.sf.json.JSONObject;
+
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.security.Principal;
 
@@ -106,6 +108,11 @@ public class Value implements Cloneable, Comparable<Value> {
         this.type = PropertyType.Type.PRINCIPAL;
         this.principalValue = principalValue;
     }
+    
+    public Value(JSONObject value) {
+        this.type = Type.JSON;
+        this.stringValue = value.toString();
+    }
 
     public Type getType() {
         return this.type;
@@ -133,6 +140,10 @@ public class Value implements Cloneable, Comparable<Value> {
 
     public String getStringValue() {
         return this.stringValue;
+    }
+    
+    public JSONObject getJSONValue() {
+        return JSONObject.fromObject(this.stringValue);
     }
 
     public Object getObjectValue() {

@@ -33,6 +33,8 @@ package org.vortikal.repository;
 import java.util.Date;
 import java.util.Locale;
 
+import net.sf.json.JSONObject;
+
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatException;
@@ -82,6 +84,10 @@ public interface Property extends Cloneable {
     
     public Principal getPrincipalValue() throws IllegalOperationException;
     
+    public JSONObject getJSONValue() throws IllegalOperationException;
+    
+    public void setJSONValue(JSONObject value);
+
     public PropertyTypeDefinition getDefinition();
     
     public boolean isValueInitialized();

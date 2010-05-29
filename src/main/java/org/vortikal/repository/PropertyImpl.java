@@ -219,6 +219,18 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         Value v = new Value(booleanValue);
         setValue(v);
     }
+    
+    public JSONObject getJSONValue() throws IllegalOperationException {
+        if (this.value == null || getType() != PropertyType.Type.JSON) {
+            throw new IllegalOperationException("Property " + this + " not of type JSON");
+        }
+        return this.value.getJSONValue();
+    }
+    
+    public void setJSONValue(JSONObject value) {
+        Value v = new Value(value);
+        setValue(v);
+    }
 
     public Principal getPrincipalValue() throws IllegalOperationException {
         if (this.value == null || getType() != PropertyType.Type.PRINCIPAL) {

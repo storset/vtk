@@ -58,7 +58,6 @@ public class RepositoryOperationLogInterceptor implements MethodInterceptor {
     private TokenManager tokenManager;
     
     public Object invoke(MethodInvocation invocation) throws Throwable {
-
         // WTF This crap shouldn't be necessary ?? Probably left-overs from the time
         // when we really had no control over which bean instances of Repository were wrapped *sigh* ..
 //        Object repo = invocation.getThis();
@@ -135,6 +134,8 @@ public class RepositoryOperationLogInterceptor implements MethodInterceptor {
         		uri = ((Comment) o).getURI();
         	}
         	params = "(" + uri + ")";
+        } else if (RepositoryOperation.SEARCH == operation) {
+            params = "(...)";
         }
         
         // Dispatch to intercepted method and log result

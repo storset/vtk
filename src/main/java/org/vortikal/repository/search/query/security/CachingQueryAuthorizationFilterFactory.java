@@ -38,8 +38,10 @@ import org.vortikal.context.BaseContext;
 /**
  * A filter-factory which does caching of filters.
  * 
- * Currently, caching is only done for ACL read for all filter. The cached
- * filter bits are keyed on IndexReader instance, so old bitsets are automatically
+ * Currently, global caching is only done for ACL read for all filter.
+ * Per principal ACL filters are cached only through-out a single request thread.
+ *
+ * The cached filter bits are keyed on IndexReader instance, so old bitsets are automatically
  * discarded when a new index reader instance is used. This is
  * done in {@link CachingWrapperFilter}. A <code>Map</code> with weak keys
  * is used internally, so it does not leak old <code>IndexReader</code> references.

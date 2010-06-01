@@ -81,6 +81,7 @@
     <property name="storageId" value="property_index"/>
     <property name="forceUnlock" value="true"/>
     <property name="maxLockAcquireTimeOnShutdown" value="30"/>
+    <property name="maxReadOnlyReaders" value="${indexMaxReadOnlyReaders}" />
   </bean>
 
   <!-- Property set index based on primary Lucene index accessor instance.  -->

@@ -70,6 +70,7 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
     private int maxBufferedDocs = 100;
     private int maxMergeDocs = 10000;
     private int maxLockAcquireTimeOnShutdown = 30; // 30 seconds max to wait for lock when shutting down
+    private int maxReadOnlyReaders = 1;
     private boolean eraseExistingIndex = false;
     private boolean forceUnlock = false;
     
@@ -103,6 +104,7 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
             this.niofsIndex.setMaxMergeDocs(this.maxMergeDocs);
             this.niofsIndex.setMergeFactor(this.mergeFactor);
             this.niofsIndex.setMaxBufferedDocs(this.maxBufferedDocs);
+            this.niofsIndex.setMaxReadOnlyReaderInstances(this.maxReadOnlyReaders);
             
             LOG.info("Initialization of index '" + this.getStorageId() + "' complete.");
             
@@ -372,6 +374,10 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
 
     public void setCloseAfterInitialization(boolean closeAfterInitialization) {
         this.closeAfterInitialization = closeAfterInitialization;
+    }
+
+    public void setMaxReadOnlyReaders(int maxReadOnlyReaders) {
+        this.maxReadOnlyReaders = maxReadOnlyReaders;
     }
     
 }

@@ -44,6 +44,9 @@ import org.apache.lucene.store.NIOFSDirectory;
 
 /**
  * File system backed Lucene index.
+ *
+ * DON'T USE; FSDirectory sucks at concurrency.
+ *
  * @author oyviste
  * @deprecated
  */

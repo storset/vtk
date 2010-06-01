@@ -33,6 +33,7 @@ package org.vortikal.repository.search.query.security;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.CachingWrapperFilter;
 import org.apache.lucene.search.Filter;
+import org.vortikal.context.BaseContext;
 
 /**
  * A filter-factory which does caching of filters.
@@ -42,21 +43,42 @@ import org.apache.lucene.search.Filter;
  * discarded when a new index reader instance is used. This is
  * done in {@link CachingWrapperFilter}. A <code>Map</code> with weak keys
  * is used internally, so it does not leak old <code>IndexReader</code> references.
- * 
+ *
  */
-public class CachingQueryAuthorizationFilterFactory extends
-        SimpleQueryAuthorizationFilterFactory {
-    
+public class CachingQueryAuthorizationFilterFactory extends SimpleQueryAuthorizationFilterFactory {
+
+    private static final String CACHED_FILTER_THREADLOCAL_ATTRIBUTE_NAME =
+            CachingQueryAuthorizationFilterFactory.class.getName() + ".CACHED_ACL_FILTER";
+
     private Filter cachingAclReadForAllFilter = new CachingWrapperFilter(
-                   SimpleQueryAuthorizationFilterFactory.ACL_READ_FOR_ALL_FILTER);
-    
+            SimpleQueryAuthorizationFilterFactory.ACL_READ_FOR_ALL_FILTER);
+
     @Override
     public Filter authorizationQueryFilter(String token, IndexReader reader) {
+
         if (token == null) {
             return this.cachingAclReadForAllFilter;
         } else {
-            return super.authorizationQueryFilter(token, reader);
+            // Check if any thread-local filter has been cached
+            BaseContext baseContext = BaseContext.getContext();
+
+            Filter aclFilter = (Filter) baseContext.getAttribute(CACHED_FILTER_THREADLOCAL_ATTRIBUTE_NAME);
+            if (aclFilter != null) {
+                return aclFilter;
+            }
+
+            // Need to build ACL filter, it will be null for principals with read-all role
+            aclFilter = super.authorizationQueryFilter(token, reader);
+
+            if (aclFilter != null) {
+                // CachingWrapperFilter necessary here, because we might get a new index reader instance during
+                // execution of thread (for different queries)
+                // and the CachingWrapperFilter will automatically refresh the filter from the source if that happens.
+                aclFilter = new CachingWrapperFilter(aclFilter);
+                baseContext.setAttribute(CACHED_FILTER_THREADLOCAL_ATTRIBUTE_NAME, aclFilter);
+            }
+
+            return aclFilter;
         }
     }
-
 }

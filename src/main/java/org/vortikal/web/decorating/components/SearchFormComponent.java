@@ -32,21 +32,32 @@ package org.vortikal.web.decorating.components;
 
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
+import org.vortikal.web.service.Service;
+import org.vortikal.web.service.URL;
 
 public class SearchFormComponent extends ViewRenderingDecoratorComponent {
 
+    private Service service;
+
+    @Override
     protected void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
 
+        Path resourceURI = RequestContext.getRequestContext().getCurrentCollection();
+
         String uri = request.getStringParameter("uri");
-        if (uri == null || "".equals(uri.trim()) || !isValidPath(uri)) {
-            uri = "./"; //currentUri
+        if (isValidPath(uri)) {
+            resourceURI = Path.fromString(uri);
         }
-        
-        model.put("uri", uri);
+
+        URL searchURL = service.constructURL(resourceURI);
+        model.put("url", searchURL);
+
     }
 
     private boolean isValidPath(String uri) {
@@ -57,5 +68,10 @@ public class SearchFormComponent extends ViewRenderingDecoratorComponent {
         }
         return false;
     }
-    
+
+    @Required
+    public void setService(Service service) {
+        this.service = service;
+    }
+
 }

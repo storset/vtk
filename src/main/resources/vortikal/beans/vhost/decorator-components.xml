@@ -491,22 +491,6 @@
     <property name="readTimeoutSeconds" value="${decorating.includeComponent.readTimeoutSeconds}" />
     <property name="clientIdentifier" value="${decorating.includeComponent.identifier}" />
   </bean>
-  
-  <bean id="decorating.searchFormComponent" class="org.vortikal.web.decorating.components.SearchFormComponent">
-    <property name="namespace" ref="decorating.includeNamespace" />
-    <property name="name" value="search-form" />
-    <property name="view" ref="decorating.searchForm.view" />
-    <property name="description" value="Inserts a search form." />
-    <property name="parameterDescriptions">
-      <map>
-        <entry key="uri" value="URI / action for the search form. Default is currentUri (./)" />
-      </map>
-    </property>
-  </bean>
-  
-  <bean name="decorating.searchForm.view" parent="freemarkerView">
-    <property name="url" value="layouts/search-form.ftl" />
-  </bean>
 
   <bean id="decorating.imageListingComponent" class="org.vortikal.web.decorating.components.ImageListingComponent"
     parent="repositoryAware">
@@ -542,6 +526,17 @@
         </entry>
       </map>
     </property>
+  </bean>
+
+  <!-- ######## Specialize where necessary ######## -->
+  <bean id="decorating.abstractSearchFormComponent" abstract="true" class="org.vortikal.web.decorating.components.SearchFormComponent">
+    <property name="namespace" ref="decorating.includeNamespace" />
+    <property name="view" ref="decorating.searchForm.view" />
+    <property name="description" value="Inserts a search form." />
+  </bean>
+
+  <bean name="decorating.searchForm.view" parent="freemarkerView">
+    <property name="url" value="layouts/search-form.ftl" />
   </bean>
 
 </beans>

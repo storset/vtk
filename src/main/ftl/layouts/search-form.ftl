@@ -9,10 +9,16 @@
   -->
 <#import "../lib/vortikal.ftl" as vrtx />
 
-<form method="get" action="${uri}" class="vrtx-search-form">
+<form method="get" action="${url?html}" class="vrtx-search-form">
    <fieldset>
-    <input type="hidden" name="vrtx" value="search"/>
     <input type="text" name="query" value="" class="vrtx-search-field" />
-    <button type="submit"><span><@vrtx.msg code="decorating.searchFormComponent.search" default="Search"/></span></button>
+    <button type="submit">
+      <span><@vrtx.msg code="decorating.searchFormComponent.search" default="Search"/></span>
+    </button>
+    <#list url.parameterNames as param>
+      <#if url.getParameter(param)?exists>
+    <input type="hidden" name="${param}" value="${url.getParameter(param)}" />
+      </#if>
+    </#list>
   </fieldset>
 </form>

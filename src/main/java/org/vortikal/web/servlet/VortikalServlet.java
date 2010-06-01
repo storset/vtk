@@ -117,7 +117,7 @@ public class VortikalServlet extends DispatcherServlet {
     private static final String METHOD_GET = "GET";
 
     /**	Method name for HEAD request */
-    private static final String METHOD_HEAD = "HEAD";    
+    private static final String METHOD_HEAD = "HEAD";
     
     /** Header parameter asking for service if modified since the given date */
     private static final String HEADER_IFMODSINCE = "If-Modified-Since";    

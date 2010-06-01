@@ -62,6 +62,13 @@ public class CachingQueryAuthorizationFilterFactory extends SimpleQueryAuthoriza
             return this.cachingAclReadForAllFilter;
         } else {
             // Check if any thread-local filter has been cached
+            if (! BaseContext.exists()) {
+                // Don't try this if there is no base context setup for current thread.
+                // (And we don't bother setting up our own thread local storage,
+                // since this caching mostly helps for web request threads.)
+                return super.authorizationQueryFilter(token, reader);
+            }
+
             BaseContext baseContext = BaseContext.getContext();
 
             Filter aclFilter = (Filter) baseContext.getAttribute(CACHED_FILTER_THREADLOCAL_ATTRIBUTE_NAME);
@@ -73,9 +80,10 @@ public class CachingQueryAuthorizationFilterFactory extends SimpleQueryAuthoriza
             aclFilter = super.authorizationQueryFilter(token, reader);
 
             if (aclFilter != null) {
-                // CachingWrapperFilter necessary here, because we might get a new index reader instance during
-                // execution of thread (for different queries)
-                // and the CachingWrapperFilter will automatically refresh the filter from the source if that happens.
+                // CachingWrapperFilter necessary here, because we might get a
+                // new index reader instance during execution of thread (for
+                // different queries) and the CachingWrapperFilter will automatically
+                // refresh the filter from the source if that happens.
                 aclFilter = new CachingWrapperFilter(aclFilter);
                 baseContext.setAttribute(CACHED_FILTER_THREADLOCAL_ATTRIBUTE_NAME, aclFilter);
             }

@@ -31,6 +31,7 @@
 package org.vortikal.web.context;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -58,10 +59,12 @@ public class ChildDelegatingMessageSource
     private String beanName;
     private ApplicationContext applicationContext;
     private List<MessageSource> children;
+    private Map<String, Locale> localeTranslationMap = new HashMap<String, Locale>();
     
     public String getMessage(String code, Object[] args, String defaultMessage,
             Locale locale) {
         try {
+            locale = mapLocale(locale);
             return getMessage(code, args, locale);
         } catch (NoSuchMessageException e) {
             return defaultMessage;
@@ -71,6 +74,7 @@ public class ChildDelegatingMessageSource
     public String getMessage(String code, Object[] args, Locale locale) throws NoSuchMessageException {
         for (MessageSource messageSource: this.children) {
             try {
+                locale = mapLocale(locale);
                 return messageSource.getMessage(code, args, locale);
             } catch (NoSuchMessageException e) {
             }
@@ -80,6 +84,7 @@ public class ChildDelegatingMessageSource
 
     public String getMessage(MessageSourceResolvable resolvable, Locale locale) throws NoSuchMessageException {
         String[] codes = resolvable.getCodes();
+        locale = mapLocale(locale);
         if (codes == null) {
             throw new NoSuchMessageException(null, locale);
         }
@@ -113,4 +118,15 @@ public class ChildDelegatingMessageSource
         this.beanName = beanName;
     }
 
+    public void setLocaleTranslationMap(Map<String, Locale> localeTranslationMap) {
+        this.localeTranslationMap = localeTranslationMap;
+    }
+
+    private Locale mapLocale(Locale locale) {
+        if (this.localeTranslationMap != null && this.localeTranslationMap.containsKey(locale.toString())) {
+            locale = this.localeTranslationMap.get(locale.toString());
+        }
+        return locale;
+    }
+    
 }

@@ -89,55 +89,6 @@ public class ConfigurableJSONPropertyEditor extends SimpleFormController {
         }
     }
     
-    public ConfigurableJSONPropertyEditor() {
-//        super();
-//        String json = 
-//            "{"
-//            +  "'disable-breadcrumb-menu' : {"
-//            +    "'type': 'flag',"
-//            +    "'i18n': {"
-//            +       "'{name}' : 'Disable breadcrumb menu',"
-//            +       "'{name}_no': 'Skru av br¿dsmulesti'"
-//            +    "}"
-//            +  "}"
-//            + "}";
-//        
-//        JSONObject obj = JSONObject.fromObject(json);
-//        this.fieldConfig = new JSONFieldConfig(obj);
-
-        /*
-        this.fieldConfig = new JSONFieldConfig() {
-
-            @Override
-            public List<JSONField> getFields() {
-                List<JSONField> fields = new ArrayList<JSONField>();
-                // {
-                //  disable-breadcrumb-menu { 
-                //    type: flag,
-                //     i18n: {
-                //      {name}: Disable breadcrumb menu
-                //      {name}_no: Skru av br¿dsmulesti
-                //     }
-                //    }
-                //  }
-                //
-                Map<String, String> i18n = new HashMap<String, String>();
-                i18n.put("{name}", "Disable breadcrumb menu");
-                i18n.put("{name}_no", "Skru av br¿dsmulesti");
-                i18n.put("{name}_nn", "Skruva att br¿dsmulesti");
-                fields.add(new JSONField("disable-breadcrumb-menu", "flag", i18n));
-                i18n = new HashMap<String, String>();
-                i18n.put("{name}", "Contact email");
-                i18n.put("{name}_no", "Kontaktadresse (epost)");
-                i18n.put("{name}_nn", "Kontaktadressa (e-m¾il)");
-                fields.add(new JSONField("contact-email", "string", i18n));
-                return fields;
-            }
-        };
-        */
-    }
-    
-
     protected Object formBackingObject(HttpServletRequest request)
     throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();

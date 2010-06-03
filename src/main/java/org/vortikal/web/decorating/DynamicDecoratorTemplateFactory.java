@@ -37,9 +37,19 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import net.sf.json.JSONObject;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
+import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.resourcemanagement.view.tl.ComponentInvokerNodeFactory;
+import org.vortikal.resourcemanagement.view.tl.JSONAttributeHandler;
+import org.vortikal.security.SecurityContext;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.DefineNodeFactory;
 import org.vortikal.text.tl.DirectiveNodeFactory;
@@ -52,12 +62,23 @@ import org.vortikal.web.RequestContext;
 
 public class DynamicDecoratorTemplateFactory implements TemplateFactory, InitializingBean {
 
+    private Repository repository;
+    private PropertyTypeDefinition aspectsPropdef;
+    
     private Map<String, DirectiveNodeFactory> directiveHandlers;
     private Set<Function> functions = new HashSet<Function>();
     private ComponentResolver componentResolver;
 
     public Template newTemplate(TemplateSource templateSource) throws InvalidTemplateException {
         return new DynamicDecoratorTemplate(templateSource, this.componentResolver, this.directiveHandlers);
+    }
+
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
+
+    public void setAspectsPropdef(PropertyTypeDefinition aspectsPropdef) {
+        this.aspectsPropdef = aspectsPropdef;
     }
 
     @Required public void setComponentResolver(ComponentResolver componentResolver) {
@@ -87,6 +108,8 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
         functions.addAll(this.functions);
         functions.add(new RequestParameterFunction(new Symbol("request-param")));
         functions.add(new TemplateParameterFunction(new Symbol("template-param")));
+        functions.add(new ResourceAspectFunction(new Symbol("resource-aspect"), this.aspectsPropdef));
+        functions.add(new JSONAttributeHandler(new Symbol("json-attr")));
         def.setFunctions(functions);
         directiveHandlers.put("def", def);
 
@@ -140,4 +163,57 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
         }
         
     }
+    
+    private class ResourceAspectFunction extends Function {
+        private PropertyTypeDefinition aspectsPropdef;
+
+        public ResourceAspectFunction(Symbol symbol, PropertyTypeDefinition aspectsPropdef) {
+            super(symbol, 1);
+            this.aspectsPropdef = aspectsPropdef;
+        }
+        
+        @Override
+        public Object eval(Context ctx, Object... args) throws Exception {
+            RequestContext requestContext = RequestContext.getRequestContext();
+            SecurityContext securityContext = SecurityContext.getSecurityContext();
+            String token = securityContext.getToken();
+            
+            Object o = args[0];
+            if (o == null) {
+                throw new IllegalArgumentException("Argument must be a valid name");
+            }
+            String aspect = o.toString();
+            
+            JSONObject result = new JSONObject();
+            traverse(result, aspect, requestContext.getResourceURI(), token);
+            return result;
+        }
+
+        private void traverse(JSONObject result, String aspect, Path uri, String token) {
+            while (true) {
+                Resource r = null;
+                try {
+                    r = repository.retrieve(token, uri, true);
+                } catch (Throwable t) { }
+                if (r != null) {
+                    Property property = r.getProperty(aspectsPropdef);
+                    if (property != null && property.getType() == PropertyType.Type.JSON) {
+                        JSONObject value = property.getJSONValue();
+                        if (value.get(aspect) != null) {
+                            value = value.getJSONObject(aspect);
+                            for (Object key: value.keySet()) {
+                                if (result.get(key) == null) {
+                                    result.put(key, value.get(key));
+                                }
+                            }
+                        }
+                    }
+                }
+                uri = uri.getParent();
+                if (uri == null) {
+                    break;
+                }
+            }
+        }
+     }
 }

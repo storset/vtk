@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+  
+  <bean id="visualProfileAspect.editService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="categories">
+      <set>
+        <value>tabMenu</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="tabOrder">
+          <value type="java.lang.Integer">250</value>
+        </entry>
+      </map>
+    </property>
+    <property name="assertions">
+      <list>
+        <ref bean="visualProfileAspect.resourceTypeAssertion" />
+        <ref bean="visualProfileAspect.configFile.notEmptyAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="mode" />
+          <property name="parameterValue" value="aspects" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="visualProfileAspect.editor" />
+  </bean>
+
+
+  <bean id="visualProfileAspect.configFile"
+        class="org.vortikal.util.repository.JSONBackedMapResource"  parent="repositoryAware">
+    <property name="uri" value="${visualProfileAspect.configFile}" />
+  </bean>
+
+  <bean id="visualProfileAspect.configFile.notEmptyAssertion"
+        class="org.vortikal.web.service.MethodInvocationResultAssertion">
+    <property name="target" ref="visualProfileAspect.configFile" />
+    <property name="method" value="size" />
+    <property name="result">
+      <value type="int">0</value>
+    </property>
+    <property name="operator" value="NEQ" />
+  </bean>
+        
+  <bean id="visualProfileAspect.resourceTypeAssertion" class="org.vortikal.web.service.OrAssertion">
+    <property name="assertions">
+      <list>
+        <ref bean="resourceInCollection" />
+        <ref bean="resourceTypeIsManagedXml" />
+        <ref bean="structuredResources.typeAssertion" />
+        <ref bean="resourceTypeIsHtml" />
+        <!--ref bean="resourceIsApt" /-->
+      </list>
+    </property>
+  </bean>
+
+  <bean id="visualProfileAspect.editor" class="org.vortikal.web.actions.properties.ConfigurableJSONPropertyEditor"
+        parent="repositoryAware">
+    <property name="propertyDefinition" ref="resourceAspectsPropDef" />
+    <property name="toplevelField" value="visual-profile" />
+    <property name="commandName" value="form" />
+    <property name="commandClass" value="org.vortikal.web.actions.properties.ConfigurableJSONPropertyEditor$Form" />
+    <property name="formView" value="visualProfileAspect.form" />
+    <property name="successView" value="redirectToManage" />
+    <property name="configFile" ref="visualProfileAspect.configFile" />
+  </bean>
+
+
+  <bean id="visualProfileAspect.editor.configRefreshTrigger"
+        class="org.vortikal.util.repository.MethodInvokingRepositoryEventTrigger">
+    <property name="repository" ref="repository" />
+    <property name="uri" value="${visualProfileAspect.configFile}" />
+    <property name="targetObject" ref="visualProfileAspect.editor" />
+    <property name="method" value="reloadConfig" />
+  </bean>
+
+
+
+  <bean id="visualProfileAspect.viewResolver" parent="system.decoratingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="visualProfileAspect.form" value-ref="visualProfileAspect.formView" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="visualProfileAspect.formView" parent="freemarkerView">
+    <property name="url" value="pages/visual-profile-aspect.ftl" />
+  </bean>
+
+</beans>

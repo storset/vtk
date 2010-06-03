@@ -18,7 +18,7 @@ resourcetype structured-project {
   edit-rules {
     caption (size[small]),
     group introImageAndCaption (picture, caption) (after introduction) vertical,
-    tags tooltip (en : "(tag1, tag2, ...)", no : "(emneord1, emneord2, ...)", nn : "(emneord1, emneord2, ...)")
+    tags tooltip (en : "(Tag1, Tag2, ...)", no : "(Emneord1, Emneord2, ...)", nn : "(Emneord1, Emneord2, ...)")
   }
 
   scripts {

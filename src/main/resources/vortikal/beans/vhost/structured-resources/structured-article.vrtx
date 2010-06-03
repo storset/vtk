@@ -14,7 +14,7 @@ resourcetype structured-article : structured-document {
     group relatedContent (related-content, hideAdditionalContent) (after tags),
     author (after introImageAndCaption),
     title (size[large]),
-    tags tooltip (en : "(tag1, tag2, ...)", no : "(emneord1, emneord2, ...)", nn : "(emneord1, emneord2, ...)"),
+    tags tooltip (en : "(Tag1, Tag2, ...)", no : "(Emneord1, Emneord2, ...)", nn : "(Emneord1, Emneord2, ...)"),
     author tooltip (en : "(author1, author2, ...)", no : "(forfatter1, forfatter2, ...)", nn : "(forfatter1, forfatter2, ...)")
   }
 

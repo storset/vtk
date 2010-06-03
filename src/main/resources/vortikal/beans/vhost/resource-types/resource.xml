@@ -44,6 +44,7 @@
         <ref bean="publishDatePropDef" />
         <ref bean="unpublishDatePropDef" />
         <ref bean="publishedPropDef" />
+        <ref bean="resourceAspectsPropDef" />
       </list>
     </property>
   </bean>
@@ -116,6 +117,7 @@
   </bean>
   
   <bean id="collectionEvaluator" class="org.vortikal.repository.resourcetype.property.CollectionEvaluator" />
+
   <bean id="creationTimePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
     parent="abstractPropDef">
     <property name="name" value="creationTime" />
@@ -254,7 +256,17 @@
   </bean>
   
   <bean id="publishDateEvaluator" class="org.vortikal.repository.resourcetype.property.PublishDateEvaluator">
+    <!-- Evaluates to creationTime on CONTENT_CHANGE (for collections on CREATE) -->
     <property name="creationTimePropDef" ref="creationTimePropDef" />
+  </bean>
+
+
+  <bean id="resourceAspectsPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="name" value="aspects" />
+    <property name="type" value="JSON" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
   </bean>
 
 </beans>

@@ -131,7 +131,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
     private static Log logger = LogFactory.getLog(SubFolderMenuComponent.class);
 
     private ResourceTypeTree resourceTypeTree;
-    
+
     protected Service reportService;
 
     public void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
@@ -263,16 +263,15 @@ public class SubFolderMenuComponent extends ListMenuComponent {
             mainQuery.add(new UriDepthQuery(depth));
         }
 
-        /**
-         * TODO: Maybe add inversion filter for whole set rather than and'ing a
-         * ton of inverted queries?
-         */
-        if (menuRequest.getExcludeURIs() != null && !menuRequest.getExcludeURIs().isEmpty()) {
-            for (Iterator<Path> i = menuRequest.getExcludeURIs().iterator(); i.hasNext();) {
+        OrQuery includeFolders = new OrQuery();
+        if (menuRequest.getIncludeURIs() != null && !menuRequest.getIncludeURIs().isEmpty()) {
+            for (Iterator<Path> i = menuRequest.getIncludeURIs().iterator(); i.hasNext();) {
                 Path exUri = i.next();
-                mainQuery.add(new UriPrefixQuery(exUri.toString(), true));
+                includeFolders.add(new UriPrefixQuery(exUri.toString(), false));
             }
         }
+
+        mainQuery.add(includeFolders);
 
         mainQuery.add(new TypeTermQuery(this.collectionResourceType.getName(), TermOperator.IN));
 
@@ -331,14 +330,14 @@ public class SubFolderMenuComponent extends ListMenuComponent {
     private MenuItem<PropertySet> buildItem(PropertySet resource, Map<Path, List<PropertySet>> childMap,
             MenuRequest menuRequest) {
         Path uri = resource.getURI();
-        
+
         URL url = null;
-        
-        if(menuRequest.generateStructuredCollectionReportLink()) {
-          url = this.reportService.constructURL(uri);
-          url.addParameter("report-type", "collection-structure");
+
+        if (menuRequest.generateStructuredCollectionReportLink()) {
+            url = this.reportService.constructURL(uri);
+            url.addParameter("report-type", "collection-structure");
         } else {
-          url = this.viewService.constructURL(uri); 
+            url = this.viewService.constructURL(uri);
         }
         url.setCollection(true);
 
@@ -374,6 +373,22 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         return item;
     }
 
+    private Search getSearchForCollectionChildren(Path currentCollectionUri, int searchLimit) {
+        Path uri = currentCollectionUri;
+        int depth = uri.getDepth() + 1;
+        AndQuery mainQuery = new AndQuery();
+        mainQuery.add(new UriDepthQuery(depth));
+        mainQuery.add(new UriPrefixQuery(uri.toString()));
+        mainQuery.add(new TypeTermQuery(this.collectionResourceType.getName(), TermOperator.IN));
+        WildcardPropertySelect select = new WildcardPropertySelect();
+
+        Search search = new Search();
+        search.setQuery(mainQuery);
+        search.setLimit(searchLimit);
+        search.setPropertySelect(select);
+        return search;
+    }
+
     public class MenuRequest {
 
         private Path currentCollectionUri;
@@ -387,16 +402,16 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         private int depth = 1;
         private int displayFromLevel = -1;
         private int maxNumberOfChildren = Integer.MAX_VALUE;
-        private ArrayList<Path> excludeURIs;
         private Locale locale;
         private String token;
         private int searchLimit = DEFAULT_SEARCH_LIMIT;
         private boolean structuredCollectionReportLink = false;
+        private List<Path> includeURIs;
 
         public MenuRequest(Path currentCollectionUri, String title, PropertyTypeDefinition sortProperty,
                 boolean ascendingSort, boolean sortByName, int resultSets, int groupResultSetsBy, int freezeAtLevel,
-                int depth, int displayFromLevel, int maxNumberOfChildren, ArrayList<Path> excludeURIs, Locale locale,
-                String token, int searchLimit, boolean structuredCollectionReportLink) {
+                int depth, int displayFromLevel, int maxNumberOfChildren, Locale locale, String token, int searchLimit,
+                boolean structuredCollectionReportLink, ArrayList<Path> includeURIs) {
             super();
             this.currentCollectionUri = currentCollectionUri;
             this.title = title;
@@ -409,11 +424,11 @@ public class SubFolderMenuComponent extends ListMenuComponent {
             this.depth = depth;
             this.displayFromLevel = displayFromLevel;
             this.maxNumberOfChildren = maxNumberOfChildren;
-            this.excludeURIs = excludeURIs;
             this.locale = locale;
             this.token = token;
             this.searchLimit = searchLimit;
             this.structuredCollectionReportLink = structuredCollectionReportLink;
+            this.includeURIs = includeURIs;
         }
 
         public MenuRequest(DecoratorRequest request) {
@@ -557,18 +572,25 @@ public class SubFolderMenuComponent extends ListMenuComponent {
                 }
             }
 
-            // ArrayList excludeFolders = new ArrayList<String>();
             String excludeFolders = request.getStringParameter(PARAMETER_EXCLUDE_FOLDERS);
+
+            List<Path> children = new ArrayList<Path>();
+            Search search = getSearchForCollectionChildren(currentCollectionUri, searchLimit);
+            ResultSet rs = repository.search(token, search);
+            for (Iterator<PropertySet> child = rs.iterator(); child.hasNext();) {
+                PropertySet p = child.next();
+                children.add(p.getURI());
+            }
+
             if (excludeFolders != null) {
                 try {
                     StringTokenizer excludeFoldersTokenized = new StringTokenizer(excludeFolders, ",");
-                    ArrayList<Path> excludeUIRs = new ArrayList<Path>();
                     while (excludeFoldersTokenized.hasMoreTokens()) {
                         String excludedFolder = excludeFoldersTokenized.nextToken().trim();
                         Path theUri = this.currentCollectionUri.extend(excludedFolder);
-                        excludeUIRs.add(theUri);
+                        children.remove(theUri);
                     }
-                    this.excludeURIs = excludeUIRs;
+                    this.includeURIs = children;
                 } catch (Throwable t) {
                     throw new DecoratorComponentException("Illegal value for parameter '" + PARAMETER_EXCLUDE_FOLDERS
                             + "': " + depthStr);
@@ -626,10 +648,6 @@ public class SubFolderMenuComponent extends ListMenuComponent {
             return this.depth;
         }
 
-        public ArrayList<Path> getExcludeURIs() {
-            return excludeURIs;
-        }
-
         private void initSortField(DecoratorRequest request) {
             String sortFieldParam = request.getStringParameter(PARAMETER_SORT);
             if (sortFieldParam != null) {
@@ -673,12 +691,20 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         public boolean isSortByName() {
             return sortByName;
         }
-        
+
         public boolean generateStructuredCollectionReportLink() {
             return this.structuredCollectionReportLink;
         }
+
+        public void setIncludeURIs(List<Path> includeURIs) {
+            this.includeURIs = includeURIs;
+        }
+
+        public List<Path> getIncludeURIs() {
+            return includeURIs;
+        }
     }
-    
+
     public void setReportService(Service reportService) {
         this.reportService = reportService;
     }
@@ -734,11 +760,11 @@ public class SubFolderMenuComponent extends ListMenuComponent {
 
     public MenuRequest getNewMenuRequest(Path currentCollectionUri, String title, PropertyTypeDefinition sortProperty,
             boolean ascendingSort, boolean sortByName, int resultSets, int groupResultSetsBy, int freezeAtLevel,
-            int depth, int displayFromLevel, int maxNumberOfChildren, ArrayList<Path> excludeURIs, Locale locale,
-            String token, int searchLimit, boolean structuredCollectionReportLink) {
+            int depth, int displayFromLevel, int maxNumberOfChildren, Locale locale, String token, int searchLimit,
+            boolean structuredCollectionReportLink, ArrayList<Path> includeURIs) {
         return new MenuRequest(currentCollectionUri, title, sortProperty, ascendingSort, sortByName, resultSets,
-                groupResultSetsBy, freezeAtLevel, depth, displayFromLevel, maxNumberOfChildren, excludeURIs, locale,
-                token, searchLimit, structuredCollectionReportLink);
+                groupResultSetsBy, freezeAtLevel, depth, displayFromLevel, maxNumberOfChildren, locale, token,
+                searchLimit, structuredCollectionReportLink, includeURIs);
     }
 
 }

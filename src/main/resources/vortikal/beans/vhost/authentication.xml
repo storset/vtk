@@ -89,6 +89,29 @@
     </property>    
   </bean>
   
+  <!-- Explicit authentication with HTTP Digest over  SSL-secured (requires parameter 'challenge=digest') -->
+  <bean id="authenticateDigestSSLService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="authenticateService" />
+    <property name="order" value="99" />
+    <property name="authenticationChallenge" 
+              ref="httpDigestAuthenticationChallenge" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="challenge" />
+          <property name="parameterValue" value="digest" />
+        </bean>
+        <bean class="org.vortikal.web.service.RequestProtocolAssertion">
+          <property name="protocol" value="https" />
+        </bean>        
+        <bean class="org.vortikal.web.service.IsAuthenticatedAssertion">
+          <property name="invert" value="true" />
+          <property name="requiresAuthentication" value="true" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
   <!-- Explicit authentication with HTTP Basic if the connection is SSL-secured -->
   <bean id="authenticateBasicSSLService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="authenticateService" />

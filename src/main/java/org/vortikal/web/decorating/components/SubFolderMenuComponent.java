@@ -581,16 +581,16 @@ public class SubFolderMenuComponent extends ListMenuComponent {
                 PropertySet p = child.next();
                 children.add(p.getURI());
             }
-
+            this.includeURIs = children;
+            
             if (excludeFolders != null) {
                 try {
                     StringTokenizer excludeFoldersTokenized = new StringTokenizer(excludeFolders, ",");
                     while (excludeFoldersTokenized.hasMoreTokens()) {
                         String excludedFolder = excludeFoldersTokenized.nextToken().trim();
                         Path theUri = this.currentCollectionUri.extend(excludedFolder);
-                        children.remove(theUri);
+                        includeURIs.remove(theUri);
                     }
-                    this.includeURIs = children;
                 } catch (Throwable t) {
                     throw new DecoratorComponentException("Illegal value for parameter '" + PARAMETER_EXCLUDE_FOLDERS
                             + "': " + depthStr);

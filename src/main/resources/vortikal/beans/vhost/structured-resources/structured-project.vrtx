@@ -28,7 +28,7 @@ resourcetype structured-project {
     
   view-components {
   
-    introduction {
+      introduction {
       ##
       [def intro resource-prop(".", "introduction")]
       [if intro != null]
@@ -36,6 +36,19 @@ resourcetype structured-project {
       [endif]
       ##
     }
+  
+    completed {
+      ##
+      [resource-props "."]
+      [def document structured-document()]
+      [def ongoing json-attr(document, "properties.status-ongoing")]
+      [if (ongoing = "false")]
+           ([localized "completed"])
+      [endif]
+      ##
+    }
+    
+
     
     introduction-image {
       ##
@@ -147,12 +160,12 @@ resourcetype structured-project {
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <title><json:field select="name" /></title>
+        <title><json:field select="name" /> <comp:completed /></title>
       </head>
       <body id="vrtx-structured-project">
         <div id="vrtx-content">
           <div id="vrtx-main-content">
-            <h1><json:field select="name" /></h1>
+            <h1><json:field select="name" /> <comp:completed /></h1>
             <comp:introduction />
             <comp:introduction-image />
             <json:field select="content" />
@@ -172,9 +185,9 @@ resourcetype structured-project {
   
   vocabulary {
      status-ongoing {
-       en : ("true" = "Ongoing", "false" = "Finished"),
+       en : ("true" = "Ongoing", "false" = "Completed"),
        no : ("true" = "Pågående", "false" = "Avsluttet"),
-       nn : ("true" = "Pågående", "false" = "Avsluttet")
+       nn : ("true" = "Pågående", "false" = "Avslutta")
      }
   }
   
@@ -200,6 +213,7 @@ resourcetype structured-project {
     contactInfoView : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
     header : (en : "Edit project", no : "Rediger prosjekt", nn : "Rediger prosjekt"),
     publishedDate : (en : "Published", no :"Publisert", nn:"Publisert"),
-    contentLastModifiedDate : (en : "Last modified", no : "Sist endret", nn : "Sist endra")
+    contentLastModifiedDate : (en : "Last modified", no : "Sist endret", nn : "Sist endra"),
+    completed : (en : "Completed", no : "Avluttet", nn : "Avlutta")
   }
 }

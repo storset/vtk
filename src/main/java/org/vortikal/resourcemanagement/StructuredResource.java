@@ -49,9 +49,9 @@ public class StructuredResource {
     private Map<String, Object> properties = new HashMap<String, Object>();
 
     public StructuredResource(StructuredResourceDescription desc) {
-    	if (desc == null) {
-    		throw new IllegalArgumentException("Description cannot be null");
-    	}
+        if (desc == null) {
+            throw new IllegalArgumentException("Description cannot be null");
+        }
         this.desc = desc;
     }
 
@@ -60,7 +60,7 @@ public class StructuredResource {
         JSONObject json = JSONObject.fromObject(source);
         ValidationResult validation = validateInternal(json);
         if (!validation.isValid()) {
-        	throw new RuntimeException("Invalid document: " + validation.getErrors());
+            throw new RuntimeException("Invalid document: " + validation.getErrors());
         }
         JSONObject object = json.getJSONObject("properties");
         for (Iterator<String> iter = object.keys(); iter.hasNext();) {
@@ -68,7 +68,7 @@ public class StructuredResource {
             this.properties.put(name, object.get(name));
         }
     }
-    
+
     public boolean isValidDocument(JSONObject document) {
         try {
             ValidationResult validation = validateInternal(document);
@@ -85,21 +85,21 @@ public class StructuredResource {
 
         JSONObject props = new JSONObject();
         for (String name : this.properties.keySet()) {
-        	Object value = this.properties.get(name);
-        	if (value != null) {
-        		if (value instanceof String) {
-        			String s = (String) value;
-        			if (s.trim().equals("")) {
-        				continue;
-        			}
-        		}
-        		props.put(name, this.properties.get(name));
-        	}
+            Object value = this.properties.get(name);
+            if (value != null) {
+                if (value instanceof String) {
+                    String s = (String) value;
+                    if (s.trim().equals("")) {
+                        continue;
+                    }
+                }
+                props.put(name, this.properties.get(name));
+            }
         }
         json.put("properties", props);
         return json;
     }
-    
+
     private ValidationResult validateInternal(JSONObject json) {
         if (json == null) {
             throw new IllegalStateException("Input is NULL");
@@ -107,27 +107,27 @@ public class StructuredResource {
         String type = json.getString("resourcetype");
         if (type == null) {
             throw new IllegalStateException(
-                    "Unable to validate: missing 'resourcetype' element");
+            "Unable to validate: missing 'resourcetype' element");
         }
         JSONObject properties = json.getJSONObject("properties");
         if (properties == null) {
             throw new IllegalStateException(
-                    "Unable to validate: missing 'properties' element");
+            "Unable to validate: missing 'properties' element");
         }
         List<ValidationError> errors = new ArrayList<ValidationError>();
         for (PropertyDescription propDesc : this.desc.getPropertyDescriptions()) {
-			if (propDesc instanceof SimplePropertyDescription) {
-				if (((SimplePropertyDescription) propDesc).isRequired()) {
+            if (propDesc instanceof SimplePropertyDescription) {
+                if (((SimplePropertyDescription) propDesc).isRequired()) {
 
-					Object value = JSONUtil.select(json, "properties." + propDesc.getName());
-					if (value == null) {
-						errors.add(new ValidationError(propDesc.getName(), 
-								"property is required"));
-					}
-					// TODO: validate types and multiple properties
-				}
-			}
-		}
+                    Object value = JSONUtil.select(json, "properties." + propDesc.getName());
+                    if (value == null) {
+                        errors.add(new ValidationError(propDesc.getName(), 
+                        "property is required"));
+                    }
+                    // TODO: validate types and multiple properties
+                }
+            }
+        }
         ValidationResult result = new ValidationResult(errors);
         return result;
     }
@@ -139,9 +139,9 @@ public class StructuredResource {
     public Object getProperty(String name) {
         return this.properties.get(name);
     }
-    
+
     public void addProperty(String name, Object value) {
-            this.properties.put(name, value);
+        this.properties.put(name, value);
     }
 
     public void addProperty(String name, Object[] values) {
@@ -159,7 +159,7 @@ public class StructuredResource {
     public String getLocalizedMsg(String key, Locale locale, Object[] param) {
         return this.desc.getLocalizedMsg(key, locale, param);
     }
-    
+
     public String getLocalizedTooltip(String key, Locale locale) {
         return this.desc.getLocalizedTooltip(key, locale);
     }

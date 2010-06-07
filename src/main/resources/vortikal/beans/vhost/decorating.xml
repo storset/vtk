@@ -141,8 +141,9 @@
   </bean>
 
   <bean id="decorating.dynamicTemplateFactory"
-            class="org.vortikal.web.decorating.DynamicDecoratorTemplateFactory">
+            class="org.vortikal.web.decorating.DynamicDecoratorTemplateFactory" parent="repositoryAware">
     <property name="componentResolver" ref="decorating.defaultComponentResolver" />
+    <property name="aspectsPropdef" ref="resourceAspectsPropDef" />
   </bean>
 
   <bean name="decorating.defaultComponentResolver"

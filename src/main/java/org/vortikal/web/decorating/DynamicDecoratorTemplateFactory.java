@@ -41,6 +41,7 @@ import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.web.servlet.support.RequestContextUtils;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
@@ -49,6 +50,7 @@ import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.resourcemanagement.view.tl.ComponentInvokerNodeFactory;
 import org.vortikal.resourcemanagement.view.tl.JSONAttributeHandler;
+import org.vortikal.resourcemanagement.view.tl.ResourcePropObjectValueHandler;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.DefineNodeFactory;
@@ -107,8 +109,10 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
         Set<Function> functions = new HashSet<Function>();
         functions.addAll(this.functions);
         functions.add(new RequestParameterFunction(new Symbol("request-param")));
+        functions.add(new ResourceLocaleFunction(new Symbol("resource-locale")));
         functions.add(new TemplateParameterFunction(new Symbol("template-param")));
         functions.add(new ResourceAspectFunction(new Symbol("resource-aspect"), this.aspectsPropdef));
+        functions.add(new ResourcePropObjectValueHandler(new Symbol("resource-prop"), this.repository));
         functions.add(new JSONAttributeHandler(new Symbol("json-attr")));
         def.setFunctions(functions);
         directiveHandlers.put("def", def);
@@ -160,6 +164,21 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
             }
             String name = o.toString();
             return request.getParameter(name);
+        }
+        
+    }
+    
+    private class ResourceLocaleFunction extends Function {
+        
+        public ResourceLocaleFunction(Symbol symbol) {
+            super(symbol, 0);
+        }
+
+        @Override
+        public Object eval(Context ctx, Object... args) throws Exception {
+            RequestContext requestContext = RequestContext.getRequestContext();
+            HttpServletRequest request = requestContext.getServletRequest();
+            return RequestContextUtils.getLocale(request).toString();
         }
         
     }

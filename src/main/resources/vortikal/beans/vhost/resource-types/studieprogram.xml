@@ -12,10 +12,10 @@
     <property name="propertyTypeDefinitions">
       <list>
         <ref bean="studieprogramProgramkodePropDef" />
-        <ref bean="studieprogramProgramnavnPropDef" />
         <ref bean="studieprogramProgramnavnBokmaalPropDef" />
         <ref bean="studieprogramProgramnavnNynorskPropDef" />
         <ref bean="studieprogramProgramnavnEngelskPropDef" />
+        <ref bean="studieprogramProgramnavnPropDef" />
         <ref bean="studieprogramProgramtypePropDef" />
         <ref bean="studieprogramProgramtypeOversattPropDef" />
         <ref bean="studieprogramTemaomraadePropDef" />
@@ -62,20 +62,6 @@
   </bean>
 
 
-  <bean id="studieprogramProgramnavnPropDef" 
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="name" value="programnavn" /> 
-    <property name="type" value="STRING" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
-    <property name="mandatory" value="false" />
-    <property name="propertyEvaluator" ref="studieprogramProgramnavnEvaluator" />
-  </bean>
-
-  <bean id="studieprogramProgramnavnEvaluator" parent="abstractXPathEvaluator">
-    <property name="expression" value="/studieprogram-hjemmeside/programnavn" />
-  </bean>
-
-
   <bean id="studieprogramProgramnavnBokmaalPropDef" 
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="programnavn-bokmaal" /> 
@@ -116,6 +102,21 @@
   <bean id="studieprogramProgramnavnEngelskEvaluator" parent="abstractXPathEvaluator">
     <property name="expression" value="/studieprogram-hjemmeside/programnavn/engelsk" />
   </bean>
+
+
+  <bean id="studieprogramProgramnavnPropDef" 
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="programnavn" /> 
+    <property name="type" value="STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="propertyEvaluator" ref="studieprogramProgramnavnEvaluator" />
+  </bean>
+
+  <bean id="studieprogramProgramnavnEvaluator" parent="abstractXPathEvaluator">
+    <property name="expression" value="/studieprogram-hjemmeside/programnavn/*[local-name()=vrtx:localize('programnavn-elementnavn')]" />
+  </bean>
+
 
 
   <bean id="studieprogramProgramtypePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">

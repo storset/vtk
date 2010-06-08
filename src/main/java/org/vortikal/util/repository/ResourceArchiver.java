@@ -310,7 +310,7 @@ public class ResourceArchiver {
 
             out.println("");
             StringBuilder name = new StringBuilder("Name: ");
-            name.append(path.toString());
+            name.append(path.toString().replaceAll("\\r|\\n", ""));
             ensure72Bytes(name);
             out.println(name);
 
@@ -325,7 +325,7 @@ public class ResourceArchiver {
             }
         } catch (Exception e) {
             // We'll ignore resources that fail and continue. Log broken
-            // resources an handle them some other way later.
+            // resources and handle them manually some other way later.
             logger.error("Error writing manifest entry for '" + path.toString() + "'\n", e);
         }
     }

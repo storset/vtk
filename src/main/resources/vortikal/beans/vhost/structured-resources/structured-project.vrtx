@@ -214,6 +214,6 @@ resourcetype structured-project {
     header : (en : "Edit project", no : "Rediger prosjekt", nn : "Rediger prosjekt"),
     publishedDate : (en : "Published", no :"Publisert", nn:"Publisert"),
     contentLastModifiedDate : (en : "Last modified", no : "Sist endret", nn : "Sist endra"),
-    completed : (en : "Completed", no : "Avluttet", nn : "Avlutta")
+    completed : (en : "Completed", no : "Avsluttet", nn : "Avlutta")
   }
 }

@@ -45,7 +45,7 @@
 	<#if children?exists >
     	<ul>
      	<#list children as c>
-			<li class="vrtx-child"><a <#if (c.url.path = markedurl.path) >class="vrtx-marked"</#if> href="${c.url?html}"><span>${c.title?html}</span></a></li>
+			<li class="vrtx-child"><a <#if (c.url.path = markedurl.path) >class="vrtx-marked"</#if> href="${c.url?html}"><span>${c.title}</span></a></li>
 	 	</#list>
      	</ul>
    	 </#if>

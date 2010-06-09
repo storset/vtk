@@ -97,12 +97,12 @@ public class RenameController extends SimpleFormController {
 
         try {
             Path newUri = uri.getParent().extend(rename.getName());
-            
+
             if (repository.exists(token, newUri)) {
                 Resource resource2 = repository.retrieve(token, newUri, false);
                 if (rename.getOverwrite() == null) {
-                    errors.rejectValue("name", "manage.rename.resource.exists",
-                            "A resource with this name already exists");
+                    errors.rejectValue("name", "manage.rename.resource.overwrite",
+                            "A resource of this name already exists, do you want to overwrite it?");
                     model = errors.getModel();
                     if (!(resource.isCollection() || resource2.isCollection())) {
                         model.put("confirm", true);

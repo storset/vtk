@@ -93,23 +93,22 @@ public class ServiceImpl implements Service, BeanNameAware {
     private List<URLPostProcessor> urlPostProcessors = new ArrayList<URLPostProcessor>();
     private List<URLPostProcessor> accumulatedUrlPostProcessors = null;
     private ServiceNameProvider serviceNameProvider;
-    	
     
     public List<Assertion> getAllAssertions() {
-        if (allAssertions == null) {
+        if (this.allAssertions == null) {
             synchronized (this) {
-                if (allAssertions != null) {
-                    return allAssertions;
+                if (this.allAssertions != null) {
+                    return this.allAssertions;
                 }
-                allAssertions = new ArrayList<Assertion>();
+                this.allAssertions = new ArrayList<Assertion>();
                 if (this.parent != null) {
-                    allAssertions.addAll(parent.getAllAssertions());
+                    this.allAssertions.addAll(parent.getAllAssertions());
                 }
-                allAssertions.addAll(this.assertions);
+                this.allAssertions.addAll(this.assertions);
             }
         }
         
-        return allAssertions;
+        return this.allAssertions;
     }
 
     public void setHandler(Object handler) {

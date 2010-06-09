@@ -30,7 +30,6 @@
  */
 package org.vortikal.web.actions.copymove;
 
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
@@ -42,7 +41,6 @@ import org.vortikal.repository.Repository;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 
-
 public class RenameCommandValidator implements Validator, InitializingBean {
 
     private static Log logger = LogFactory.getLog(RenameCommandValidator.class);
@@ -53,20 +51,16 @@ public class RenameCommandValidator implements Validator, InitializingBean {
         this.repository = repository;
     }
 
-    
     public void afterPropertiesSet() throws Exception {
         if (this.repository == null) {
-            throw new BeanInitializationException(
-                "Property 'repository' cannot be null");
+            throw new BeanInitializationException("Property 'repository' cannot be null");
         }
     }
-
 
     @SuppressWarnings("unchecked")
     public boolean supports(Class clazz) {
         return (clazz == RenameCommand.class);
     }
-
 
     public void validate(Object command, Errors errors) {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -77,32 +71,19 @@ public class RenameCommandValidator implements Validator, InitializingBean {
         if (uri.equals(parentCollection)) {
             parentCollection = parentCollection.getParent();
         }
-        String token = securityContext.getToken();
 
-        RenameCommand renameCommand =
-            (RenameCommand) command;
-        if (renameCommand.getCancel() != null) return;
+        RenameCommand renameCommand = (RenameCommand) command;
+        if (renameCommand.getCancel() != null)
+            return;
 
         String name = renameCommand.getName();
+
         if (null == name || "".equals(name.trim())) {
-                errors.rejectValue("name",
-                                   "manage.rename.invalid.name",
-                                   "The name is not valid for this resource");
-                renameCommand.setName("");
+            errors.rejectValue("name", "manage.rename.invalid.name", "The name is not valid for this resource");
+            renameCommand.setName("");
         }
 
-        Path newURI = parentCollection.extend(name);
-        
-        try {
-            boolean exists = this.repository.exists(token, newURI);
-            if (exists) {
-                errors.rejectValue("name",
-                                   "manage.rename.resource.exists",
-                                   "A resource with this name already exists");
-            }
-        } catch (Exception e) {
-            logger.warn("Unable to validate resource rename input", e);
-        }
+
     }
 
 }

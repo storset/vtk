@@ -37,6 +37,7 @@ public class RenameCommand {
     private String submitURL = null;
     private boolean done = false;
     private String cancel;
+    private String overwrite;
     
     /**
      * Gets the value of cancel
@@ -113,6 +114,14 @@ public class RenameCommand {
      */
     public void setDone(boolean done) {
         this.done = done;
+    }
+
+    public void setOverwrite(String overwrite) {
+        this.overwrite = overwrite;
+    }
+
+    public String getOverwrite() {
+        return overwrite;
     }
 }
 

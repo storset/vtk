@@ -12,12 +12,16 @@
           <#list spring.status.errorMessages as error> 
             <li>${error}</li> 
           </#list>
-	</ul>
+		</ul>
       </#if>
-      <input type="text" size="20" name="name" value="${renameForm.name}">
+      <input type="text" size="20" name="name" value="${renameForm.name}" <#if confirm?exists> readonly="readonly" </#if> />
       <div id="submitButtons">
-        <input type="submit" name="save" value="<@vrtx.msg code="actions.renameService.save" default="Save"/>">
-        <input type="submit" name="cancel" value="<@vrtx.msg code="actions.renameService.cancel" default="Cancel"/>"/>
+      	<#if confirm?exists>
+      		<input type="submit" name="overwrite" value="<@vrtx.msg code="actions.renameService.overwrite" default="Overwrite"/>">
+      	<#else>
+        	<input type="submit" name="save" value="<@vrtx.msg code="actions.renameService.save" default="Save"/>">
+        </#if>
+        	<input type="submit" name="cancel" value="<@vrtx.msg code="actions.renameService.cancel" default="Cancel"/>"/>
       </div>
     </form>
   </#if>

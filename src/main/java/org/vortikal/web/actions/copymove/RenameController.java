@@ -48,12 +48,12 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
-
 public class RenameController extends SimpleFormController {
 
+    private String confirmView;
     private static Log logger = LogFactory.getLog(RenameController.class);
     private Repository repository = null;
-    
+
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
@@ -62,22 +62,19 @@ public class RenameController extends SimpleFormController {
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
-        
-        Resource resource = this.repository.retrieve(
-            securityContext.getToken(), requestContext.getResourceURI(), false);
+
+        Resource resource = this.repository
+                .retrieve(securityContext.getToken(), requestContext.getResourceURI(), false);
         String url = service.constructLink(resource, securityContext.getPrincipal());
-         
-        RenameCommand command =
-            new RenameCommand(resource.getName(), url);
+
+        RenameCommand command = new RenameCommand(resource.getName(), url);
         return command;
     }
 
-    
-    protected ModelAndView onSubmit(Object command, BindException errors)
-            throws Exception {
+    protected ModelAndView onSubmit(Object command, BindException errors) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
-        
+
         Path uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
 
@@ -95,15 +92,35 @@ public class RenameController extends SimpleFormController {
         String name = resource.getName();
 
         Map<String, Object> model = null;
-        
+
+        boolean overwrite = false;
+
         try {
+            Path newUri = uri.getParent().extend(rename.getName());
+            
+            if (repository.exists(token, newUri)) {
+                Resource resource2 = repository.retrieve(token, newUri, false);
+                if (rename.getOverwrite() == null) {
+                    errors.rejectValue("name", "manage.rename.resource.exists",
+                            "A resource with this name already exists");
+                    model = errors.getModel();
+                    if (!(resource.isCollection() || resource2.isCollection())) {
+                        model.put("confirm", true);
+                    }
+                    return new ModelAndView(getFormView(), model);
+                } else {
+                    if (!(resource.isCollection() || resource2.isCollection())) {
+                        overwrite = true;
+                    }
+                }
+            }
+
             if (!name.equals(rename.getName())) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Setting new name '" + rename.getName()
-                                 + "' for resource " + uri);
+                    logger.debug("Setting new name '" + rename.getName() + "' for resource " + uri);
                 }
-                Path newUri = uri.getParent().extend(rename.getName());
-                this.repository.move(token, uri, newUri, false);
+
+                this.repository.move(token, uri, newUri, overwrite);
                 Resource newResource = this.repository.retrieve(token, newUri, false);
                 model = new HashMap<String, Object>();
                 model.put("resource", newResource);
@@ -112,10 +129,16 @@ public class RenameController extends SimpleFormController {
             return new ModelAndView(getSuccessView(), model);
 
         } catch (IllegalOperationException e) {
-            errors.rejectValue("name", "manage.rename.invalid.name",
-                               "The name is not valid for this resource");
+            errors.rejectValue("name", "manage.rename.invalid.name", "The name is not valid for this resource");
             return new ModelAndView(getFormView(), errors.getModel());
         }
     }
-}
 
+    public void setConfirmView(String confirmView) {
+        this.confirmView = confirmView;
+    }
+
+    public String getConfirmView() {
+        return confirmView;
+    }
+}

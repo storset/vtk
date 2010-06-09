@@ -123,4 +123,10 @@
               value="org.vortikal.repository.RepositoryAction.EDIT_COMMENT" />
   </bean>
 
+  <bean id="ACTION_ALL"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField"
+              value="org.vortikal.repository.RepositoryAction.ALL" />
+  </bean>
+
 </beans>

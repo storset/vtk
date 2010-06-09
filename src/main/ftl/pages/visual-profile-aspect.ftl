@@ -20,6 +20,9 @@
   <title>Visual profile</title>
 </head>
 <body>
+  <#if form.configError?exists>
+    Error in configuration file: ${form.configError?html}
+  <#else>
   <form action="${form.submitURL}" method="post">
     <#list form.elements as element>
       <#if element.type == 'flag'>
@@ -30,6 +33,14 @@
         <div>${element.label?html} <input type="text" name="${element.identifier?html}" value="${element.value?default('')?html}" /></div>
       <#elseif element.type == 'html'>
         HTML
+      <#elseif element.type == 'enum'>
+          ${element.label?html} : 
+        <#if element.possibleValues?exists>
+        <#list element.possibleValues as value>
+          <input type="radio" name="${element.identifier?html}" value="${value.value?default('')?html}"<#if value.selected>checked="checked"</#if> />
+          ${value.label?html} <#-- (${value.value?default('null')}, ${value.selected?string}) -->
+        </#list>
+        </#if>
       <#else>
         unknown type: ${element.type?html}
       </#if>
@@ -37,5 +48,7 @@
     <input type="submit" id="saveAction" name="saveAction" value="Save" default="Save" />
     <input type="submit" id="cancelAction" name="cancelAction" value="Cancel" default="Cancel" />
   </form>
+  </#if>
 </body>
 </html>
+

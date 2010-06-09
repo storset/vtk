@@ -1761,6 +1761,10 @@
     <property name="permission" ref="ACTION_WRITE_ACL" />
   </bean>
 
+  <bean id="adminPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
+    <property name="permission" ref="ACTION_ALL" />
+  </bean>
+
   <bean id="resourceNotRootAssertion" class="org.vortikal.web.service.ResourceURIAssertion">
     <property name="uri" value="/" />
     <property name="inverted" value="true" />

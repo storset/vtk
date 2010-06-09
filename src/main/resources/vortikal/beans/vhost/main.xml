@@ -53,6 +53,7 @@
   <import resource="view-structured-event-listing.xml" />
   
   <import resource="manage.xml" />
+  <import resource="visual-profile-aspect.xml" />
   <import resource="report.xml"/>
   <import resource="commenting.xml" />
   <import resource="root-management.xml" />

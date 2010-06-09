@@ -144,6 +144,7 @@
             class="org.vortikal.web.decorating.DynamicDecoratorTemplateFactory" parent="repositoryAware">
     <property name="componentResolver" ref="decorating.defaultComponentResolver" />
     <property name="aspectsPropdef" ref="resourceAspectsPropDef" />
+    <property name="fieldConfig" ref="visualProfileAspect.fieldConfig" />
   </bean>
 
   <bean name="decorating.defaultComponentResolver"

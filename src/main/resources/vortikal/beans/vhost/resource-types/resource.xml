@@ -265,7 +265,7 @@
     parent="abstractPropDef">
     <property name="name" value="aspects" />
     <property name="type" value="JSON" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_ADMIN" />
     <property name="mandatory" value="false" />
   </bean>
 

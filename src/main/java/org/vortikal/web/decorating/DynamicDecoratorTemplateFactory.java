@@ -60,12 +60,15 @@ import org.vortikal.text.tl.ListNodeFactory;
 import org.vortikal.text.tl.Symbol;
 import org.vortikal.text.tl.ValNodeFactory;
 import org.vortikal.text.tl.expr.Function;
+import org.vortikal.util.repository.PropertyAspectDescription;
+import org.vortikal.util.repository.PropertyAspectField;
 import org.vortikal.web.RequestContext;
 
 public class DynamicDecoratorTemplateFactory implements TemplateFactory, InitializingBean {
 
     private Repository repository;
     private PropertyTypeDefinition aspectsPropdef;
+    PropertyAspectDescription fieldConfig;
     
     private Map<String, DirectiveNodeFactory> directiveHandlers;
     private Set<Function> functions = new HashSet<Function>();
@@ -75,12 +78,16 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
         return new DynamicDecoratorTemplate(templateSource, this.componentResolver, this.directiveHandlers);
     }
 
-    public void setRepository(Repository repository) {
+    @Required public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
-    public void setAspectsPropdef(PropertyTypeDefinition aspectsPropdef) {
+    @Required public void setAspectsPropdef(PropertyTypeDefinition aspectsPropdef) {
         this.aspectsPropdef = aspectsPropdef;
+    }
+    
+    public void setFieldConfig(PropertyAspectDescription fieldConfig) {
+        this.fieldConfig = fieldConfig;
     }
 
     @Required public void setComponentResolver(ComponentResolver componentResolver) {
@@ -111,7 +118,7 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
         functions.add(new RequestParameterFunction(new Symbol("request-param")));
         functions.add(new ResourceLocaleFunction(new Symbol("resource-locale")));
         functions.add(new TemplateParameterFunction(new Symbol("template-param")));
-        functions.add(new ResourceAspectFunction(new Symbol("resource-aspect"), this.aspectsPropdef));
+        functions.add(new ResourceAspectFunction(new Symbol("resource-aspect"), this.aspectsPropdef, this.fieldConfig));
         functions.add(new ResourcePropObjectValueHandler(new Symbol("resource-prop"), this.repository));
         functions.add(new JSONAttributeHandler(new Symbol("json-attr")));
         def.setFunctions(functions);
@@ -185,10 +192,12 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
     
     private class ResourceAspectFunction extends Function {
         private PropertyTypeDefinition aspectsPropdef;
+        private PropertyAspectDescription fieldConfig;
 
-        public ResourceAspectFunction(Symbol symbol, PropertyTypeDefinition aspectsPropdef) {
+        public ResourceAspectFunction(Symbol symbol, PropertyTypeDefinition aspectsPropdef, PropertyAspectDescription fieldConfig) {
             super(symbol, 1);
             this.aspectsPropdef = aspectsPropdef;
+            this.fieldConfig = fieldConfig;
         }
         
         @Override
@@ -209,10 +218,13 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
         }
 
         private void traverse(JSONObject result, String aspect, Path uri, String token) {
+            
+            Path traversalURI = Path.fromString(uri.toString());
+
             while (true) {
                 Resource r = null;
                 try {
-                    r = repository.retrieve(token, uri, true);
+                    r = repository.retrieve(token, traversalURI, true);
                 } catch (Throwable t) { }
                 if (r != null) {
                     Property property = r.getProperty(aspectsPropdef);
@@ -220,16 +232,23 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
                         JSONObject value = property.getJSONValue();
                         if (value.get(aspect) != null) {
                             value = value.getJSONObject(aspect);
-                            for (Object key: value.keySet()) {
-                                if (result.get(key) == null) {
-                                    result.put(key, value.get(key));
+
+                            for (PropertyAspectField field : this.fieldConfig.getFields()) {
+                                Object key = field.getIdentifier();
+                                Object newValue = value.get(key);
+                                if (!field.isInherited() && traversalURI.equals(uri)) {
+                                    result.put(key, newValue);
+                                } else {
+                                    if (result.get(key) == null) {
+                                        result.put(key, newValue);
+                                    }
                                 }
                             }
                         }
                     }
                 }
-                uri = uri.getParent();
-                if (uri == null) {
+                traversalURI = traversalURI.getParent();
+                if (traversalURI == null) {
                     break;
                 }
             }

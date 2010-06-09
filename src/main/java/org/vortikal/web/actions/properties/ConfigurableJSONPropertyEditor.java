@@ -31,9 +31,7 @@
 package org.vortikal.web.actions.properties;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -41,10 +39,10 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.context.ApplicationContext;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -55,8 +53,8 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.text.JSONUtil;
-import org.vortikal.util.repository.JSONBackedMapResource;
+import org.vortikal.util.repository.PropertyAspectDescription;
+import org.vortikal.util.repository.PropertyAspectField;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.actions.UpdateCancelCommand;
 import org.vortikal.web.service.URL;
@@ -66,31 +64,14 @@ public class ConfigurableJSONPropertyEditor extends SimpleFormController {
     private Repository repository;
     private PropertyTypeDefinition propertyDefinition;
     private String toplevelField;
-    private JSONBackedMapResource mapResource;
-    private JSONFieldConfig fieldConfig;
-
-    @Override
-    protected void initApplicationContext(ApplicationContext context) {
-        super.initApplicationContext(context);
-        if (this.mapResource == null) {
-            throw new IllegalStateException("Javabean property 'mapResource' not configured");
-        }
-        try {
-            this.fieldConfig = new JSONFieldConfig(mapResource);
-        } catch (Throwable t) { }
-    }
-
-    public void reloadConfig() throws Exception {
-        try {
-            this.mapResource.load();
-            this.fieldConfig = new JSONFieldConfig(mapResource);
-        } catch (Throwable t) {
-            this.fieldConfig = new JSONFieldConfig(Collections.<JSONField>emptyList());
-        }
-    }
+    private PropertyAspectDescription fieldConfig;
     
     protected Object formBackingObject(HttpServletRequest request)
     throws Exception {
+        if (this.fieldConfig.getError() != null) {
+            return new Form(this.fieldConfig.getError().getMessage());
+        }
+        
         RequestContext requestContext = RequestContext.getRequestContext();
         Path uri = requestContext.getResourceURI();
         String token = SecurityContext.getSecurityContext().getToken();
@@ -106,10 +87,14 @@ public class ConfigurableJSONPropertyEditor extends SimpleFormController {
         Locale requestLocale = RequestContextUtils.getLocale(request);
         
         List<FormElement> elements = new ArrayList<FormElement>();
-        for (JSONField field: this.fieldConfig.getFields()) {
+        for (PropertyAspectField field: this.fieldConfig.getFields()) {
             FormElement element = new FormElement(field, requestLocale);
             if (toplevel != null && !toplevel.isNullObject()) {
-                element.setValue(toplevel.get(field.getIdentifier()));
+                Object object = toplevel.get(field.getIdentifier());
+                if (object instanceof JSONNull) {
+                    object = null;
+                }
+                element.setValue(object);
             }
             elements.add(element);
         }
@@ -123,9 +108,12 @@ public class ConfigurableJSONPropertyEditor extends SimpleFormController {
             Object object, BindException errors) throws Exception {
         Locale requestLocale = RequestContextUtils.getLocale(request);
         List<FormElement> elements = new ArrayList<FormElement>();
-        for (JSONField field: this.fieldConfig.getFields()) {
+        for (PropertyAspectField field: this.fieldConfig.getFields()) {
             String input = request.getParameter(field.getIdentifier());
             FormElement element = new FormElement(field, requestLocale);
+            if (input != null && "".equals(input.trim())) {
+                input = null;
+            }
             element.setValue(input);
             elements.add(element);
         }
@@ -180,10 +168,15 @@ public class ConfigurableJSONPropertyEditor extends SimpleFormController {
     
     
     public class Form extends UpdateCancelCommand {
+        private String configError = null;
         private List<FormElement> elements;
+        
         public Form(URL url, List<FormElement> elements) {
             super(url.toString());
             this.elements = elements;
+        }
+        public Form(String configError) {
+            this.configError = configError;
         }
         public void setElements(List<FormElement> elements) {
             this.elements = elements;
@@ -191,20 +184,23 @@ public class ConfigurableJSONPropertyEditor extends SimpleFormController {
         public List<FormElement> getElements() {
             return this.elements;
         }
+        public String getConfigError() {
+            return this.configError;
+        }
     }
     
     public class FormElement {
-        private JSONField desc;
+        private PropertyAspectField desc;
         private Locale locale;
         private Object value;
         
-        public FormElement(JSONField desc, Locale locale) {
+        public FormElement(PropertyAspectField desc, Locale locale) {
             this.desc = desc;
             this.locale = locale;
         }
         
         public Object getIdentifier() {
-            return this.desc.identifier;
+            return this.desc.getIdentifier();
         }
         
         public String getLabel() {
@@ -212,7 +208,7 @@ public class ConfigurableJSONPropertyEditor extends SimpleFormController {
         }
         
         public String getType() {
-            return this.desc.type;
+            return this.desc.getType();
         }
         
         public Object getValue() {
@@ -221,6 +217,23 @@ public class ConfigurableJSONPropertyEditor extends SimpleFormController {
         
         public void setValue(Object value) {
             this.value = value;
+        }
+
+        public List<Map<String, Object>> getPossibleValues() {
+            if (!"enum".equals(this.desc.getType())) {
+                return null;
+            }
+            List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+            List<?> values = this.desc.getValues();
+            for (Object object : values) {
+                Map<String, Object> map = new HashMap<String, Object>();
+                map.put("label", this.desc.getLocalizedValue(object, this.locale));
+                map.put("value", object);
+                boolean selected = this.value == null ? object == null : this.value.equals(object);
+                map.put("selected", selected);
+                result.add(map);
+            }
+            return result;
         }
     }
     
@@ -238,141 +251,9 @@ public class ConfigurableJSONPropertyEditor extends SimpleFormController {
     public void setToplevelField(String toplevelField) {
         this.toplevelField = toplevelField;
     }
-
+    
     @Required
-    public void setConfigFile(JSONBackedMapResource mapResource) {
-        this.mapResource = mapResource;
+    public void setFieldConfig(PropertyAspectDescription fieldConfig) {
+        this.fieldConfig = fieldConfig;
     }
-
-
-    public class JSONFieldConfig {
-        private List<JSONField> fields = new ArrayList<JSONField>();
-
-        public JSONFieldConfig(List<JSONField> fields) {
-            this.fields = fields;
-        }
-        
-        public JSONFieldConfig(Map<?, ?> config) {
-            for (Object identifier: config.keySet()) {
-                Object o = config.get(identifier);
-                if (!(o instanceof Map<?, ?>)) {
-                    throw new IllegalArgumentException("Invalid configuration: " + config);
-                }
-                Map<?, ?> descriptor = (Map<?, ?>) o;
-                o = descriptor.get("type");
-                if (o == null) {
-                    throw new IllegalArgumentException("Missing 'type' attribute: " + descriptor);
-                }
-                String type = o.toString();
-                o = descriptor.get("i18n");
-                if (o != null) {
-                    if (!(o instanceof Map<?, ?>)) {
-                        throw new IllegalArgumentException("Attribute 'i18n' must be a map: " + o);
-                    }
-                }
-                Map<?, ?> i18n = (Map<?, ?>) o;
-                JSONField field = new JSONField(identifier.toString(), type.toString(), i18n);
-                this.fields.add(field);
-            }
-            
-        }
-        
-        
-        public JSONFieldConfig(JSONObject config) {
-            if (config == null || config.isEmpty() || config.isArray() || config.isNullObject()) {
-                throw new IllegalArgumentException("Invalid JSON structure: " + config);
-            }
-
-            for (Iterator<?> iterator = config.keys(); iterator.hasNext();) {
-                Object identifier = iterator.next();
-                JSONObject descriptor = (JSONObject) config.get(identifier);
-                Object type = JSONUtil.select(config, identifier + ".type");
-                if (type == null) {
-                    throw new IllegalArgumentException("Missing 'type' attribute: " + descriptor);
-                }
-                Object map = JSONUtil.select(config, identifier + ".i18n");
-                Map<String, String> i18n = null;
-                if (map != null) {
-                    if (!(map instanceof Map<?,?>)) {
-                        throw new IllegalArgumentException("Invalid JSON structure: not a map: " + i18n);
-                    }
-                    i18n = toStringMap((Map<?, ?>) map);
-                }
-                JSONField field = new JSONField(identifier.toString(), type.toString(), i18n);
-                this.fields.add(field);
-            }
-        }
-
-        public List<JSONField> getFields() {
-            return Collections.unmodifiableList(this.fields);
-        }
-
-        // Shallow conversion of map entries:
-        private Map<String, String> toStringMap(Map<?, ?> map) {
-            Map<String, String> result = new HashMap<String, String>();
-            for (Object o: map.keySet()) {
-                Object v = map.get(o);
-                String key = o != null ? o.toString() : null;
-                String val = v != null ? v.toString() : null;
-                result.put(key, val);
-            }
-            return result;
-        }
-
-    }
-    
-    public class JSONField {
-        private String identifier;
-        private String type;
-        private Map<?, ?> i18n;
-        
-        public JSONField(String identifier, String type, Map<?, ?> i18n) {
-            if (!("string".equals(type) || "flag".equals(type))) {
-                throw new IllegalArgumentException("Illegal type: " + type);
-            }
-            this.identifier = identifier;
-            this.type = type;
-            this.i18n = i18n;
-        }
-        
-        public String getIdentifier() {
-            return this.identifier;
-        }
-        
-        public String getType() {
-            return this.type;
-        }
-        
-        public String getLocalizedName(Locale locale) {
-            return getLocalizedString("name", locale);
-        }
-        
-        private String getLocalizedString(String str, Locale locale) {
-            if (this.i18n == null) {
-                return str;
-            }
-            String key = "{" + str + "}_" + locale.toString();
-            Object o = this.i18n.get(key);
-            if (o != null) {
-                return o.toString();
-            }
-            key = "{" + str + "}_" + locale.getLanguage() + "_" + locale.getCountry();
-            o = this.i18n.get(key);
-            if (o != null) {
-                return o.toString();
-            }
-            key = "{" + str + "}_" + locale.getLanguage();
-            o = this.i18n.get(key);
-            if (o != null) {
-                return o.toString();
-            }
-            key = "{" + str + "}";
-            o = this.i18n.get(key);
-            if (o != null) {
-                return o.toString();
-            }
-            return str;
-        }
-    }
-    
 }

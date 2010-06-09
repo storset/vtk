@@ -31,6 +31,7 @@
 package org.vortikal.util.repository;
 
 import java.lang.reflect.Method;
+import java.util.LinkedHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -61,25 +62,29 @@ public class MethodInvokingRepositoryEventTrigger
     private Pattern uriPattern;
     private Object targetObject;
     private String method;
-    private Method targetMethod;
 
+    private LinkedHashMap<Object, String> multipleInvocations;
+    private LinkedHashMap<Object, Method> methodInvocations;
+    
     @Required
     public void setRepository(Repository repository)  {
         this.repository = repository;
     }
     
-    @Required
     public void setTargetObject(Object targetObject) {
         this.targetObject = targetObject;
     }
-
+    
     /**
      * Only methods which take no arguments are supported for resolving ! 
      * @param method
      */
-    @Required
     public void setMethod(String method) {
         this.method = method;
+    }
+
+    public void setMultipleInvocations(LinkedHashMap<Object, String> multipleInvocations) {
+        this.multipleInvocations = multipleInvocations;
     }
 
     public void setUri(String uri) {
@@ -96,17 +101,35 @@ public class MethodInvokingRepositoryEventTrigger
             throw new BeanInitializationException(
                 "One of JavaBean properties 'uri' or 'uriPattern' must be specified.");
         }
-
+        if (this.multipleInvocations != null && this.targetObject != null) {
+            throw new BeanInitializationException("Specify only one of properties 'targetMethod' or 'multipleInvocations'");
+        }
+        if (this.multipleInvocations == null && (this.targetObject == null || this.method == null)) {
+            throw new BeanInitializationException("Specify one of properties 'targetMethod' or 'multipleInvocations'");
+        }
+        this.methodInvocations = new LinkedHashMap<Object, Method>();
+        if (this.multipleInvocations == null) {
+            initMethodInvocation(this.targetObject, this.method);
+        } else {
+            for (Object target : this.multipleInvocations.keySet()) {
+                String methodName = this.multipleInvocations.get(target);
+                initMethodInvocation(target, methodName);
+            }
+        }
+    }
+    
+    private void initMethodInvocation(Object target, String methodName) {
         // Resolving only methods that take no arguments.
-        this.targetMethod = 
-            BeanUtils.findMethod(this.targetObject.getClass(), 
-                    this.method, new Class[0]);
+        Method method = 
+            BeanUtils.findMethod(target.getClass(), 
+                    methodName, new Class[0]);
         
-        if (this.targetMethod == null) {
+        if (method == null) {
             throw new BeanInitializationException("Unable to resolve method with name '"
-                    + this.method + "' for class " + this.targetObject.getClass() 
+                    + methodName + "' for class " + target.getClass() 
                     + ". Only methods that take no arguments are supported.");
         }
+        this.methodInvocations.put(target, method);
     }
 
     
@@ -141,15 +164,18 @@ public class MethodInvokingRepositoryEventTrigger
 
 
     private void invoke() {
-        try {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Invoking method " + this.targetMethod + " on object "
-                             + this.targetObject);
+        for (Object target : this.methodInvocations.keySet()) {
+            Method method = this.methodInvocations.get(target);
+            try {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Invoking method " + method + " on object "
+                            + this.targetObject);
+                }
+                method.invoke(target, new Object[0]);
+            } catch (Throwable t) {
+                logger.warn("Error occurred while invoking method '" + method +
+                        "' on object '" + target+ "'", t);
             }
-            this.targetMethod.invoke(this.targetObject, new Object[0]);
-        } catch (Throwable t) {
-            logger.warn("Error occurred while invoking method '" + this.method +
-                             "' on object '" + this.targetObject + "'", t);
         }
     }
     

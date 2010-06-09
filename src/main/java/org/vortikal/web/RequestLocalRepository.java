@@ -245,6 +245,15 @@ public class RequestLocalRepository implements Repository {
         this.repository.storeACL(token, resource);
     }
 
+    public void storeACL(String token, Resource resource, boolean validateACL) throws Exception {
+
+        RepositoryContext ctx = RepositoryContext.getRepositoryContext();
+        if (ctx != null) {
+            ctx.clear();
+        }
+        this.repository.storeACL(token, resource, validateACL);
+    }
+
     public List<Comment> getComments(String token, Resource resource)
         throws RepositoryException, AuthenticationException {
         return this.repository.getComments(token, resource);

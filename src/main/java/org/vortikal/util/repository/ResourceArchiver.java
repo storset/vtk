@@ -214,11 +214,10 @@ public class ResourceArchiver {
         // crucial. And we don't break the archiving if something should go
         // wrong here
         for (Comment comment : comments) {
-            logger.info("Adding archived comments");
             try {
                 this.repository.addComment(token, comment);
             } catch (Throwable t) {
-                logger.error("Could not add comment", t);
+                logger.error("Could not add comment to resource '" + comment.getURI() + "': " + t.getMessage());
             }
         }
     }
@@ -311,7 +310,7 @@ public class ResourceArchiver {
 
             out.println("");
             StringBuilder name = new StringBuilder("Name: ");
-            name.append(path.toString());
+            name.append(path.toString().replaceAll("\\r|\\n", ""));
             ensure72Bytes(name);
             out.println(name);
 
@@ -326,7 +325,7 @@ public class ResourceArchiver {
             }
         } catch (Exception e) {
             // We'll ignore resources that fail and continue. Log broken
-            // resources an handle them some other way later.
+            // resources and handle them manually some other way later.
             logger.error("Error writing manifest entry for '" + path.toString() + "'\n", e);
         }
     }
@@ -556,9 +555,10 @@ public class ResourceArchiver {
         if (aclModified) {
             // XXX: Repository API not "friendly" to special clients like
             // resource archiver/expander wrt. ACL modifications. One shouldn't
-            // have to call storeACL twice.
-            this.repository.storeACL(token, resource); // Switch inheritance off
-            this.repository.storeACL(token, resource); // Store new ACL
+            // have to call storeACL twice. And don't validate acl when writing acl
+            // to db, add it the same way it was 
+            this.repository.storeACL(token, resource, false); // Switch inheritance off
+            this.repository.storeACL(token, resource, false); // Store new ACL
         }
     }
 

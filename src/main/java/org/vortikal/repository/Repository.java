@@ -505,6 +505,14 @@ public interface Repository {
         throws ResourceNotFoundException, AuthorizationException, 
             AuthenticationException, IllegalOperationException, 
             ReadOnlyException, Exception;
+    
+    // HACK
+    // Add this for now to be used in ResourceArchiver when expanding archive
+    public void storeACL(String token, Resource resource, boolean validateACL)
+        throws ResourceNotFoundException, AuthorizationException, 
+            AuthenticationException, IllegalOperationException, 
+            ReadOnlyException, Exception;
+    // END HACK
 
     /**
      * Checks whether a principal is allowed to perform 

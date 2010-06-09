@@ -4,8 +4,9 @@ var FCKLang    = oEditor.FCKLang ;
 var FCKConfig  = oEditor.FCKConfig ;
 var oMovie     = null;
 var isNew	   = true;
-var flashPlayer =  FCKConfig.PluginsPath + '/movieplayer/player_flv_maxi.swf';
-var mp3Player =  FCKConfig.PluginsPath + '/movieplayer/player_mp3_maxi.swf';
+var pluginsPath =  document.location.pathname.substring(0,document.location.pathname.lastIndexOf('editor')) + 'editor/plugins/' ;
+var flashPlayer =  pluginsPath + '/movieplayer/player_flv_maxi.swf';
+var mp3Player =  pluginsPath + '/movieplayer/player_mp3_maxi.swf';
 
 
 

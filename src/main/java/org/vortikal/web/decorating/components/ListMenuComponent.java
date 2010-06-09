@@ -52,7 +52,6 @@ import org.vortikal.repository.search.ConfigurablePropertySelect;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.query.AndQuery;
-import org.vortikal.repository.search.query.NameTermQuery;
 import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.TermOperator;
@@ -87,7 +86,7 @@ import org.vortikal.web.view.components.menu.MenuItem;
 public class ListMenuComponent extends ViewRenderingDecoratorComponent {
 
     private static final int DEFAULT_DEPTH = 1;
-    protected static final int DEFAULT_SEARCH_LIMIT = 500;
+    protected static final int DEFAULT_SEARCH_LIMIT = 1000;
 
     private static final String STYLE_NONE = "none";
     private static final String STYLE_VERTICAL = "vertical";
@@ -135,7 +134,6 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     protected static final String PARAMETER_DISPLAY_FROM_LEVEL = "display-from-level";
     protected static final String PARAMETER_DISPLAY_FROM_LEVEL_DESC = "Defines the starting URI level for the menu (cannot be used with the '"
             + PARAMETER_URI + "' parameter)";
-    
 
     protected Service viewService;
     protected PropertyTypeDefinition titlePropDef;
@@ -190,6 +188,11 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
 
         for (int i = 0; i < rs.getSize(); i++) {
             PropertySet resource = rs.getResult(i);
+
+            // Exclude?
+            if (menuRequest.getExcludedChildren().contains(resource.getName())) {
+                continue;
+            }
 
             MenuItem<PropertySet> item = buildItem(resource);
             Path uri = resource.getURI();
@@ -258,13 +261,6 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         if (childNames == null) {
             // Get all children
             query.add(getChildrenQuery(uri, startDepth));
-
-            // Excluded children?
-            String[] excludedChildren = menuRequest.getExcludedChildren();
-            if (excludedChildren != null) {
-                query.add(getExcludedChildrenQuery(excludedChildren));
-            }
-
         } else {
             query.add(getRequestedChildren(uri, childNames));
         }
@@ -301,20 +297,6 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         }
         String childURI = uri.extend(name.trim()).toString();
         return new UriTermQuery(childURI, TermOperator.EQ);
-    }
-
-    private Query getExcludedChildrenQuery(String[] excludedChildren) {
-        AndQuery query = new AndQuery();
-
-        for (String child : excludedChildren) {
-            if (child.indexOf("/") != -1) {
-                throw new DecoratorComponentException("Invalid excluded child name: '" + child + "'");
-            }
-            child = child.trim();
-            query.add(new NameTermQuery(child, TermOperator.NE));
-        }
-
-        return query;
     }
 
     // List all children based on depth:
@@ -419,6 +401,11 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
                 childMap.put(parentURI, childList);
             }
 
+            // Exclude?
+            if (menuRequest.getExcludedChildren().contains(resource.getName())) {
+                continue;
+            }
+
             // Hidden?
             if (this.hiddenPropDef != null && resource.getProperty(this.hiddenPropDef) != null) {
                 continue;
@@ -444,6 +431,12 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         }
 
         for (PropertySet resource : children) {
+
+            // Exclude?
+            if (menuRequest.getExcludedChildren().contains(resource.getName())) {
+                continue;
+            }
+
             MenuItem<PropertySet> item = buildItem(resource);
 
             items.add(item);
@@ -503,7 +496,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         private int depth = DEFAULT_DEPTH;
         private Locale locale;
         private String token;
-        private String[] excludedChildren;
+        private List<String> excludedChildren = new ArrayList<String>();
 
         public MenuRequest(DecoratorRequest request) {
             RequestContext requestContext = RequestContext.getRequestContext();
@@ -582,8 +575,10 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
                     throw new DecoratorComponentException("Cannot use both parameters '" + PARAMETER_INCLUDE_CHILDREN
                             + "' and '" + PARAMETER_EXCLUDE_CHILDREN + "'");
                 }
-                this.excludedChildren = excludeChildrenParam.split(",");
-                if (this.excludedChildren.length == 0) {
+                for (String s : excludeChildrenParam.split(",")) {
+                    getExcludedChildren().add(s);
+                }
+                if (this.getExcludedChildren().size() == 0) {
                     throw new DecoratorComponentException("Invalid value for parameter '" + PARAMETER_EXCLUDE_CHILDREN
                             + "': must provide at least one child name");
                 }
@@ -601,10 +596,6 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
                             + depthStr);
                 }
             }
-        }
-
-        public String[] getExcludedChildren() {
-            return this.excludedChildren;
         }
 
         public Path getURI() {
@@ -649,6 +640,10 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
 
         public String getToken() {
             return token;
+        }
+
+        public List<String> getExcludedChildren() {
+            return excludedChildren;
         }
     }
 

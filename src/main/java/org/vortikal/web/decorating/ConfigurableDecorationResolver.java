@@ -49,6 +49,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.web.servlet.LocaleResolver;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
@@ -80,7 +81,8 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
     private Repository repository; 
     private boolean supportMultipleTemplates = false;
     private Map<String, RegexpCacheItem> regexpCache = new HashMap<String, RegexpCacheItem>();
-
+    private LocaleResolver localeResolver = null;
+    
     private class RegexpCacheItem {
         String string;
         Pattern compiled;
@@ -109,6 +111,10 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
     
     public void setConfig(String config) {
         this.configPath = Path.fromString(config);
+    }
+    
+    public void setLocaleResolver(LocaleResolver localeResolver) {
+        this.localeResolver = localeResolver;
     }
     
     public void afterPropertiesSet() {
@@ -325,6 +331,22 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
                     return false;
                 }
                 currentService = currentService.getParent();
+            }
+        } else if ("lang".equals(predicate.getName())) {
+            if (this.localeResolver != null) {
+                RequestContext requestContext = RequestContext.getRequestContext();
+                HttpServletRequest request = requestContext.getServletRequest();
+                Locale locale = this.localeResolver.resolveLocale(request);
+                String value = predicate.getValue();
+                if (value.equals(locale.getLanguage() + "_" + locale.getCountry() + "_" + locale.getVariant())) {
+                    return true;
+                }
+                if (value.equals(locale.getLanguage() + "_" + locale.getCountry())) {
+                    return true;
+                }
+                if (value.equals(locale.getLanguage())) {
+                    return true;
+                }
             }
         }
         return false;

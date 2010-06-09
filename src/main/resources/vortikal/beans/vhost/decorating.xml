@@ -72,6 +72,7 @@
     <property name="templateManager" ref="decorating.templateManager" />
     <property name="decorationConfiguration" ref="decorating.configurationPropertiesFile" />
     <property name="parseableContentPropDef" ref="containsSSIDirectivesPropDef" />
+    <property name="localeResolver" ref="viewServiceResourceAwareLocaleResolver" />
   </bean>
 
   <bean id="decorating.configurationPropertiesFile"

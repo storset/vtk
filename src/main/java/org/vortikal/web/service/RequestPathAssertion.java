@@ -40,7 +40,9 @@ import org.vortikal.security.Principal;
 
 /**
  * Assertion that matches when the request URI matches a specified uri
- * 
+ *
+ * FIXME: This assertion cannot match folder URIs != root and ending with slash.
+ *
  * <p>Properties:
  * 
  * <ul><li><code>path</code> - the path string to match against
@@ -74,7 +76,7 @@ public class RequestPathAssertion implements Assertion {
     }    
     
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         
         sb.append(super.toString());
         sb.append("; path = ").append(this.path);

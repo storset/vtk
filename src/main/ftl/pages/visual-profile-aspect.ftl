@@ -50,11 +50,9 @@
       <#else>
         unknown type: ${element.type?html}
       </#if>
-      <#--
-      <#if element.inheritable>
-        Inherited: ${element.inheritedValue?if_exists}
+      <#if element.inheritable && element.inheritedValue?exists>
+        (<@vrtx.msg code="default.inheritsValue" args=[element.inheritedValue?html] default="inherits" + element.inheritedValue?html />)
       </#if>
-      -->
       </div>
     </#list>
     <input type="submit" id="saveAction" name="saveAction" onclick="checkSubmit()" value="<@vrtx.msg code="editor.save" default="Save"/>" />

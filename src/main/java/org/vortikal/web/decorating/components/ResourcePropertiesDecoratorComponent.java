@@ -119,6 +119,9 @@ public class ResourcePropertiesDecoratorComponent extends AbstractDecoratorCompo
                     uri = Path.fromString(uriString);                    
                 } else {
                     uri = uri.expand(uriString);
+                    if (uri == null) {
+                        throw new IllegalArgumentException("Unable to expand URI: " + uriString);
+                    }
                 }
             }
         }

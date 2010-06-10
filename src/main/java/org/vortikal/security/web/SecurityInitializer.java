@@ -540,12 +540,14 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
             if (c != null) {
                 String id = c.getValue();
                 AuthenticationHandler handler = this.authHandlerMap.get(id);
-                Set<?> categories = handler.getCategories();
-                if (categories == null) {
-                    categories = Collections.EMPTY_SET;
-                }
-                if (handler != null && categories.contains(AUTH_HANDLER_SP_COOKIE_CATEGORY)) {
-                    challenge = handler.getAuthenticationChallenge();                    
+                if (handler != null) {
+                    Set<?> categories = handler.getCategories();
+                    if (categories == null) {
+                        categories = Collections.EMPTY_SET;
+                    }
+                    if (handler != null && categories.contains(AUTH_HANDLER_SP_COOKIE_CATEGORY)) {
+                        challenge = handler.getAuthenticationChallenge();                    
+                    }
                 }
             }
         }

@@ -55,6 +55,7 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.PropertyAspectDescription;
 import org.vortikal.util.repository.PropertyAspectField;
+import org.vortikal.util.repository.PropertyAspectResolver;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.actions.UpdateCancelCommand;
 import org.vortikal.web.service.URL;
@@ -78,6 +79,7 @@ public class ConfigurableJSONPropertyEditor extends SimpleFormController {
         Resource resource = this.repository.retrieve(token, uri, false);
         Property property = resource.getProperty(this.propertyDefinition);
         JSONObject toplevel = null;
+        
         if (property != null) {
             JSONObject propertyValue = property.getJSONValue();
             if (propertyValue != null && !propertyValue.isNullObject()) {
@@ -85,6 +87,11 @@ public class ConfigurableJSONPropertyEditor extends SimpleFormController {
             }
         }
         Locale requestLocale = RequestContextUtils.getLocale(request);
+        
+        PropertyAspectResolver resolver = new PropertyAspectResolver(
+                this.repository, this.propertyDefinition, this.fieldConfig);
+        JSONObject combined = uri == Path.ROOT ? null 
+                : resolver.resolve(uri.getParent(), this.toplevelField);
         
         List<FormElement> elements = new ArrayList<FormElement>();
         for (PropertyAspectField field: this.fieldConfig.getFields()) {
@@ -96,6 +103,11 @@ public class ConfigurableJSONPropertyEditor extends SimpleFormController {
                 }
                 element.setValue(object);
             }
+            if (field.isInherited()) {
+                if (combined != null && combined.get(field.getIdentifier()) != null) {
+                    element.setInheritedValue(combined.get(field.getIdentifier()));
+                }
+            }
             elements.add(element);
         }
         URL url = requestContext.getService().constructURL(uri);
@@ -106,8 +118,10 @@ public class ConfigurableJSONPropertyEditor extends SimpleFormController {
     @Override
     protected void onBindAndValidate(HttpServletRequest request,
             Object object, BindException errors) throws Exception {
+        
         Locale requestLocale = RequestContextUtils.getLocale(request);
         List<FormElement> elements = new ArrayList<FormElement>();
+        
         for (PropertyAspectField field: this.fieldConfig.getFields()) {
             String input = request.getParameter(field.getIdentifier());
             FormElement element = new FormElement(field, requestLocale);
@@ -193,6 +207,7 @@ public class ConfigurableJSONPropertyEditor extends SimpleFormController {
         private PropertyAspectField desc;
         private Locale locale;
         private Object value;
+        private Object inheritedValue;
         
         public FormElement(PropertyAspectField desc, Locale locale) {
             this.desc = desc;
@@ -201,6 +216,10 @@ public class ConfigurableJSONPropertyEditor extends SimpleFormController {
         
         public Object getIdentifier() {
             return this.desc.getIdentifier();
+        }
+
+        public boolean isInheritable() {
+            return this.desc.isInherited();
         }
         
         public String getLabel() {
@@ -234,6 +253,14 @@ public class ConfigurableJSONPropertyEditor extends SimpleFormController {
                 result.add(map);
             }
             return result;
+        }
+
+        public void setInheritedValue(Object inheritedValue) {
+            this.inheritedValue = inheritedValue;
+        }
+
+        public Object getInheritedValue() {
+            return this.inheritedValue;
         }
     }
     

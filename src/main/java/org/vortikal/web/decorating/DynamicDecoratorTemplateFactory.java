@@ -37,21 +37,14 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-import net.sf.json.JSONObject;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.support.RequestContextUtils;
-import org.vortikal.repository.Path;
-import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.Resource;
-import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.resourcemanagement.view.tl.ComponentInvokerNodeFactory;
 import org.vortikal.resourcemanagement.view.tl.JSONAttributeHandler;
 import org.vortikal.resourcemanagement.view.tl.ResourcePropObjectValueHandler;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.DefineNodeFactory;
 import org.vortikal.text.tl.DirectiveNodeFactory;
@@ -61,7 +54,7 @@ import org.vortikal.text.tl.Symbol;
 import org.vortikal.text.tl.ValNodeFactory;
 import org.vortikal.text.tl.expr.Function;
 import org.vortikal.util.repository.PropertyAspectDescription;
-import org.vortikal.util.repository.PropertyAspectField;
+import org.vortikal.util.repository.PropertyAspectResolver;
 import org.vortikal.web.RequestContext;
 
 public class DynamicDecoratorTemplateFactory implements TemplateFactory, InitializingBean {
@@ -191,66 +184,60 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
     }
     
     private class ResourceAspectFunction extends Function {
-        private PropertyTypeDefinition aspectsPropdef;
-        private PropertyAspectDescription fieldConfig;
+//        private PropertyTypeDefinition aspectsPropdef;
+//        private PropertyAspectDescription fieldConfig;
+        private PropertyAspectResolver resolver = null;
 
         public ResourceAspectFunction(Symbol symbol, PropertyTypeDefinition aspectsPropdef, PropertyAspectDescription fieldConfig) {
             super(symbol, 1);
-            this.aspectsPropdef = aspectsPropdef;
-            this.fieldConfig = fieldConfig;
+            this.resolver = new PropertyAspectResolver(repository, aspectsPropdef, fieldConfig);
         }
         
         @Override
         public Object eval(Context ctx, Object... args) throws Exception {
             RequestContext requestContext = RequestContext.getRequestContext();
-            SecurityContext securityContext = SecurityContext.getSecurityContext();
-            String token = securityContext.getToken();
-            
             Object o = args[0];
             if (o == null) {
                 throw new IllegalArgumentException("Argument must be a valid name");
             }
             String aspect = o.toString();
-            
-            JSONObject result = new JSONObject();
-            traverse(result, aspect, requestContext.getResourceURI(), token);
-            return result;
+            return this.resolver.resolve(requestContext.getResourceURI(), aspect);
         }
 
-        private void traverse(JSONObject result, String aspect, Path uri, String token) {
-            
-            Path currentURI = Path.fromString(uri.toString());
-
-            while (true) {
-                Resource r = null;
-                try {
-                    r = repository.retrieve(token, currentURI, true);
-                } catch (Throwable t) { }
-                if (r != null) {
-                    Property property = r.getProperty(aspectsPropdef);
-                    if (property != null && property.getType() == PropertyType.Type.JSON) {
-                        JSONObject value = property.getJSONValue();
-                        if (value.get(aspect) != null) {
-                            value = value.getJSONObject(aspect);
-
-                            for (PropertyAspectField field : this.fieldConfig.getFields()) {
-                                Object key = field.getIdentifier();
-                                Object newValue = value.get(key);
-
-                                if (currentURI.equals(uri)) {
-                                    result.put(key, newValue);
-                                } else if (field.isInherited() && result.get(key) == null) {
-                                    result.put(key, newValue);
-                                }
-                            }
-                        }
-                    }
-                }
-                currentURI = currentURI.getParent();
-                if (currentURI == null) {
-                    break;
-                }
-            }
-        }
+//        private void traverse(JSONObject result, String aspect, Path uri, String token) {
+//            
+//            Path currentURI = Path.fromString(uri.toString());
+//
+//            while (true) {
+//                Resource r = null;
+//                try {
+//                    r = repository.retrieve(token, currentURI, true);
+//                } catch (Throwable t) { }
+//                if (r != null) {
+//                    Property property = r.getProperty(aspectsPropdef);
+//                    if (property != null && property.getType() == PropertyType.Type.JSON) {
+//                        JSONObject value = property.getJSONValue();
+//                        if (value.get(aspect) != null) {
+//                            value = value.getJSONObject(aspect);
+//
+//                            for (PropertyAspectField field : this.fieldConfig.getFields()) {
+//                                Object key = field.getIdentifier();
+//                                Object newValue = value.get(key);
+//
+//                                if (currentURI.equals(uri)) {
+//                                    result.put(key, newValue);
+//                                } else if (field.isInherited() && result.get(key) == null) {
+//                                    result.put(key, newValue);
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//                currentURI = currentURI.getParent();
+//                if (currentURI == null) {
+//                    break;
+//                }
+//            }
+//        }
      }
 }

@@ -219,12 +219,12 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
 
         private void traverse(JSONObject result, String aspect, Path uri, String token) {
             
-            Path traversalURI = Path.fromString(uri.toString());
+            Path currentURI = Path.fromString(uri.toString());
 
             while (true) {
                 Resource r = null;
                 try {
-                    r = repository.retrieve(token, traversalURI, true);
+                    r = repository.retrieve(token, currentURI, true);
                 } catch (Throwable t) { }
                 if (r != null) {
                     Property property = r.getProperty(aspectsPropdef);
@@ -236,19 +236,18 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
                             for (PropertyAspectField field : this.fieldConfig.getFields()) {
                                 Object key = field.getIdentifier();
                                 Object newValue = value.get(key);
-                                if (!field.isInherited() && traversalURI.equals(uri)) {
+
+                                if (currentURI.equals(uri)) {
                                     result.put(key, newValue);
-                                } else {
-                                    if (result.get(key) == null) {
-                                        result.put(key, newValue);
-                                    }
+                                } else if (field.isInherited() && result.get(key) == null) {
+                                    result.put(key, newValue);
                                 }
                             }
                         }
                     }
                 }
-                traversalURI = traversalURI.getParent();
-                if (traversalURI == null) {
+                currentURI = currentURI.getParent();
+                if (currentURI == null) {
                     break;
                 }
             }

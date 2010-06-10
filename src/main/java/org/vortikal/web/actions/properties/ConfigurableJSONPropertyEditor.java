@@ -119,9 +119,17 @@ public class ConfigurableJSONPropertyEditor extends SimpleFormController {
     protected void onBindAndValidate(HttpServletRequest request,
             Object object, BindException errors) throws Exception {
         
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Path uri = requestContext.getResourceURI();
+
         Locale requestLocale = RequestContextUtils.getLocale(request);
         List<FormElement> elements = new ArrayList<FormElement>();
         
+        PropertyAspectResolver resolver = new PropertyAspectResolver(
+                this.repository, this.propertyDefinition, this.fieldConfig);
+        JSONObject combined = uri == Path.ROOT ? null 
+                : resolver.resolve(uri.getParent(), this.toplevelField);
+
         for (PropertyAspectField field: this.fieldConfig.getFields()) {
             String input = request.getParameter(field.getIdentifier());
             FormElement element = new FormElement(field, requestLocale);
@@ -129,6 +137,11 @@ public class ConfigurableJSONPropertyEditor extends SimpleFormController {
                 input = null;
             }
             element.setValue(input);
+            if (field.isInherited()) {
+                if (combined != null && combined.get(field.getIdentifier()) != null) {
+                    element.setInheritedValue(combined.get(field.getIdentifier()));
+                }
+            }
             elements.add(element);
         }
         ((Form) object).setElements(elements);

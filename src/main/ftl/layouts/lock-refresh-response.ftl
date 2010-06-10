@@ -5,6 +5,6 @@
   </head>
 </head>
 <body>
-  Dummy body
+  Lock has been refreshed
 </body>
 </html>

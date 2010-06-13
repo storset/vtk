@@ -50,6 +50,7 @@ import org.vortikal.text.tl.DefineNodeFactory;
 import org.vortikal.text.tl.DirectiveNodeFactory;
 import org.vortikal.text.tl.IfNodeFactory;
 import org.vortikal.text.tl.ListNodeFactory;
+import org.vortikal.text.tl.StripNodeFactory;
 import org.vortikal.text.tl.Symbol;
 import org.vortikal.text.tl.ValNodeFactory;
 import org.vortikal.text.tl.expr.Function;
@@ -91,6 +92,7 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
     public void afterPropertiesSet() throws Exception {
         Map<String, DirectiveNodeFactory> directiveHandlers = new HashMap<String, DirectiveNodeFactory>();
         directiveHandlers.put("if", new IfNodeFactory());
+        directiveHandlers.put("strip", new StripNodeFactory());
 
         ValNodeFactory val = new ValNodeFactory();
         //val.addValueFormatHandler(PropertyImpl.class, new PropertyValueFormatHandler(this.valueFormatterRegistry));

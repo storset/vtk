@@ -40,8 +40,11 @@
 </#macro>
 
 <#macro displayCalendar collection hideNumberOfComments displayMoreURLs>
-
-  <div id="vrtx-main-content" class="vrtx-calendar-listing">
+  <#if groupedByDayEvents?has_content && groupedByDayEvents?size &gt; 0>
+    <div id="vrtx-main-content" class="vrtx-calendar-listing">
+  <#else>
+    <div id="vrtx-main-content" class="vrtx-calendar-listing vrtx-no-daily-events">
+  </#if>
   <#if allupcoming?has_content>
 	<h1>${allupcomingTitle?html}</h1>
 	<#if allupcoming.files?size &gt; 0 >

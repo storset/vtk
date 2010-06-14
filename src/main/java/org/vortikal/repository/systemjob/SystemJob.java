@@ -123,6 +123,7 @@ public abstract class SystemJob implements InitializingBean {
                     Resource resource = this.repository.retrieve(token, propSet.getURI(), true);
                     if (resource.getLock() == null) {
 
+                        // XXX
                         // Explicit cast to ResourceImpl because we don't want
                         // to expose this further up the chain. This whole thing
                         // can suck monkey ballsack

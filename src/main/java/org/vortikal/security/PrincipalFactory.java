@@ -101,7 +101,7 @@ public class PrincipalFactory {
         
         return principal;
     }
-    
+
     public List<Principal> search(final String filter, final Type type) throws RepositoryException {
         List<Principal> retval = null;
         if (this.principalMetadataDao != null) {

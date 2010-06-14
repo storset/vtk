@@ -34,6 +34,14 @@ import java.util.List;
 import java.util.Set;
 
 /*
+ * XXX We need to take a few steps back, look at the situation
+ *     and simplify some things. This interface is only used for principal attributes/info
+ *     and other data about organizational units at UiO. It's really just a very simple
+ *     map interface, perhaps plain java.util.Map should be used instead.. Think
+ *     more about this whole principal metadata thing, I think we need to
+ *     redo some things in our model of repository principals and related
+ *     classes.
+ *
  * Generic interface for holding/accessing metadata
  */
 public interface Metadata {

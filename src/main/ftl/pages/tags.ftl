@@ -48,12 +48,6 @@
     </#if>
   </h1>
   
-  <#if scopeUp?exists>
-  <div class="vrtx-tags-scope-up">
-    <a href="${scopeUp.url}">${scopeUp.title}</a>
-  </div>
-  </#if>
-
   <#if tagElements?exists>
     <@tags.displayTagElements tagElements />
   <#else>
@@ -62,6 +56,12 @@
     <#else>
       <p>${vrtx.getMsg("tags.notFound")} <span class="italic">${tag?html}</span>.</p>
     </#if>
+  </#if>
+
+  <#if scopeUp?exists>
+    <div class="vrtx-tags-scope-up">
+      <a href="${scopeUp.url}">${scopeUp.title}</a>
+    </div>
   </#if>
 
 </body>

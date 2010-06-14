@@ -866,9 +866,9 @@
       <map>
         <entry key="\s+" value="-" />
         <entry key="%" value="" />
-        <entry key="æ" value="ae" />
-        <entry key="ø" value="oe" />
-        <entry key="å" value="aa" />
+        <entry key="æ" value="e" />
+        <entry key="ø" value="o" />
+        <entry key="å" value="a" />
         <entry key="\?" value="" />
       </map>
     </constructor-arg>

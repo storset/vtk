@@ -30,7 +30,6 @@
  */
 package org.vortikal.web.filter;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -96,8 +95,8 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
             
             if (expiresProp != null && anonymousReadable) {
                 long expiresMilliseconds = expiresProp.getLongValue() * 1000;
-                Date expires = new Date(new Date().getTime() + expiresMilliseconds);
-                return new ExpiresResponseWrapper(response, expires);
+                //Date expires = new Date(new Date().getTime() + expiresMilliseconds);
+                return new ExpiresResponseWrapper(response, expiresProp.getLongValue());
             }
         } catch (Throwable t) { }
         return response;
@@ -119,12 +118,13 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
 
         private HttpServletResponse response;
         
-        public ExpiresResponseWrapper(HttpServletResponse response, Date expires) {
+        public ExpiresResponseWrapper(HttpServletResponse response, long seconds) {
             super(response);
             this.response = response;
-            this.response.setDateHeader("Expires", expires.getTime());
+            //this.response.setDateHeader("Expires", expires.getTime());
             // XXX: 
             this.response.setHeader("Cache-Control", "x-anonymous");
+            this.response.addHeader("Cache-Control", "max-age=" + seconds);
         }
 
         @Override

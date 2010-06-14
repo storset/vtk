@@ -131,9 +131,21 @@ resourcetype frontpage {
             [def url json-attr(box, "boxUrl")]
             [def urlText json-attr(box, "boxUrlText")]
             [def number _index + 1]
-           
+             
+            [def cssClasses ""]
+
+            [if urlText != null && urlText != ""]
+            [else]
+              [def cssClasses concat(cssClasses, "vrtx-more-false")]
+            [endif]
+            
             [if type != null && type != ""]
-              <div class="vrtx-frontpage-box [val type]" id="vrtx-additional-content-[val number]">
+              [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
+              [def cssClasses concat(cssClasses, type)]
+            [endif]
+
+            [if cssClasses != null && cssClasses != ""]
+              <div class="vrtx-frontpage-box [val cssClasses]" id="vrtx-additional-content-[val number]">
             [else]
               <div class="vrtx-frontpage-box" id="vrtx-additional-content-[val number]">
             [endif]

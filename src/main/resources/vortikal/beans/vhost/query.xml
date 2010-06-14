@@ -120,7 +120,7 @@
   <!-- Searcher implementation (wrapped in throttler)-->
   <bean id="systemIndexSearcher"
         class="org.vortikal.repository.search.ThrottlingSearcherWrapper">
-    <property name="maxConcurrentQueries" value="8" />
+    <property name="maxConcurrentQueries" value="${indexMaxConcurrentQueries}" />
     <property name="searcher">
       <bean class="org.vortikal.repository.search.SearcherImpl">
         <property name="indexAccessor" ref="systemIndexAccessor"/>

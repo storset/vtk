@@ -56,6 +56,8 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
         DROPPED_HEADERS.add("Cache-Control");
         DROPPED_HEADERS.add("Pragma");
         DROPPED_HEADERS.add("Last-Modified");
+        // XXX:
+        DROPPED_HEADERS.add("Vary");
     }
     
     private Repository repository;
@@ -121,6 +123,8 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
             super(response);
             this.response = response;
             this.response.setDateHeader("Expires", expires.getTime());
+            // XXX: 
+            this.response.setHeader("Cache-Control", "x-anonymous");
         }
 
         @Override

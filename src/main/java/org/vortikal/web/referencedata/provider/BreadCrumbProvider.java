@@ -187,6 +187,13 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
             displayServiceName = false;
         }
         
+        boolean displayHidden = false;
+        Object displayHiddenFromNavigation = model.get("display-folders-hidden-from-navigation");
+        if (displayHiddenFromNavigation != null 
+                && ("true".equals(displayHiddenFromNavigation) || Boolean.TRUE.equals(displayHiddenFromNavigation))) {
+            displayHidden = true;
+        }
+        
         String serviceName = null;
         if (!skipLastElement && displayServiceName) {
         	try {
@@ -201,13 +208,13 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
         }
         
         List<BreadcrumbElement> breadCrumb = 
-            generateBreadcrumb(token, principal, uri, skipLastElement, requestContext.isIndexFile(), serviceName);
+            generateBreadcrumb(token, principal, uri, skipLastElement, requestContext.isIndexFile(), displayHidden, serviceName);
         model.put(this.breadcrumbName, breadCrumb.toArray(new BreadcrumbElement[breadCrumb.size()]));
     }
 
 
     private List<BreadcrumbElement> generateBreadcrumb(String token, Principal principal, Path uri, boolean skipLastElement,
-    		boolean isIndexFile, String serviceName) {
+    		boolean isIndexFile, boolean displayHidden, String serviceName) {
         
         List<BreadcrumbElement> breadCrumb = new ArrayList<BreadcrumbElement>();
         if (uri.isRoot()) {
@@ -237,7 +244,7 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
             try {
                 Resource r = this.repository.retrieve(token, incrementalPath.get(i), true);
 
-                if (hasIgnoreProperty(r)) {
+                if (!displayHidden && hasIgnoreProperty(r)) {
                     continue;
                 }
                 String title = getTitle(r);

@@ -285,6 +285,7 @@
         <value>stop-at-level</value>
         <value>display-from-level</value>
         <value>display-services</value>
+        <value>display-folders-hidden-from-navigation</value>
       </set>
     </property>
     <property name="parameterDescriptions">
@@ -294,7 +295,8 @@
         <entry key="hide-prefix" value="If set to 'true', the prefix 'You are here:' will be hidden. The default is 'false'." />
         <entry key="stop-at-level" value="This stops the breadcrumb generation at a certain number of levels. The default is none." />
         <entry key="display-from-level" value="Defines the starting URI level for the breadcrumb" />
-        <entry key="display-services" value="Display name of service. Default true." />
+        <entry key="display-services" value="Display name of service. The default is 'true'." />
+        <entry key="display-folders-hidden-from-navigation" value="Display folders hidden from navigation in breadcrumb trail. The default is 'false'." />
       </map>
     </property>
   </bean>

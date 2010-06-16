@@ -36,7 +36,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLConnection;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,21 +57,17 @@ import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.mvc.LastModified;
 import org.vortikal.repository.Path;
 import org.vortikal.util.repository.MimeHelper;
-import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.StaticResourceLocation;
 import org.vortikal.web.service.URL;
 
-
-
 /**
- * Controller that serves classpath resources.
+ * Controller that serves class path resources.
  *
  * <p>Configurable JavaBean properties:
  * <ul>
- *   <lI><code>expiresSeconds</code> - optional integer, will be sent
- *   as the <code>Expires</code> HTTP header
- *   XXX: expiresSec should be specified per location
+ *   <li><code>headers</code> - map of (name, value) pairs that will 
+ *   be sent as response headers</li> 
  * </ul>
  */
 public class DisplayClassPathResourceController 
@@ -80,19 +75,17 @@ public class DisplayClassPathResourceController
 
     private Log logger = LogFactory.getLog(this.getClass());
     private Map<String, String> locationsMap;
+    private Map<String, String> headers;
     private ApplicationContext applicationContext;
 
-    private int expiresSeconds = -1;
-    
-    public void setApplicationContext(ApplicationContext applicationContext) {
+      public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
     
-    public void setExpiresSeconds(int expiresSeconds) {
-        this.expiresSeconds = expiresSeconds;
+    public void setHeaders(Map<String, String> headers) {
+        this.headers = headers;
     }
     
-
     @SuppressWarnings("unchecked")
     public void afterPropertiesSet() throws Exception {
 
@@ -135,12 +128,7 @@ public class DisplayClassPathResourceController
         InputStream inStream = null;
         OutputStream outStream = null;
         int contentLength = -1;
-        Date expires = null;
         try {
-            if (this.expiresSeconds >= 0) {
-                long expiresMilliseconds = this.expiresSeconds * 1000;
-                expires = new Date(System.currentTimeMillis() + expiresMilliseconds);
-            }
 
             if (resource instanceof ClassPathResource) {
             	java.net.URL url = resource.getURL();
@@ -154,13 +142,12 @@ public class DisplayClassPathResourceController
             } else {
             	inStream = resource.getInputStream();
             }
-
             response.setContentType(MimeHelper.map(request.getRequestURI()));
             if (contentLength != -1) {
             	response.setContentLength(contentLength);
             }
-            if (expires != null) {
-            	response.setHeader("Expires", HttpUtil.getHttpDateString(expires));
+            for (String header: this.headers.keySet()) {
+                response.addHeader(header, this.headers.get(header));
             }
             
             if ("GET".equals(request.getMethod())) {
@@ -178,15 +165,12 @@ public class DisplayClassPathResourceController
                 this.logger.debug("Successfully served resource: " + resource
                                   + " from " + resource.getDescription());
             }
-
         } catch (Exception e) {
-
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Unable to serve resource: " + resource
                                   + " from " + resource.getDescription(), e);
             }
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
-
         } finally {
             if (inStream != null) {
             	inStream.close();
@@ -200,7 +184,7 @@ public class DisplayClassPathResourceController
 
 
     public long getLastModified(HttpServletRequest request) {
-        if (!"GET".equals(request.getMethod())) {
+        if (!("GET".equals(request.getMethod()) || "HEAD".equals(request.getMethod()))) {
             return -1;
         }
 
@@ -213,7 +197,6 @@ public class DisplayClassPathResourceController
                 return this.applicationContext.getStartupDate();
             }
         }
-
         return -1;
     }
 

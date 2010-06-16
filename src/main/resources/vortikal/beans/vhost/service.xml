@@ -180,7 +180,11 @@
 
   <bean id="displayClassPathResourceHandler"
         class="org.vortikal.web.display.classpath.DisplayClassPathResourceController">
-    <property name="expiresSeconds" value="${staticResourcesCacheSeconds}" />
+    <property name="headers">
+      <map>
+        <entry key="Cache-Control" value="public,max-age=${staticResourcesCacheSeconds}" />
+      </map>
+    </property>
   </bean>
 
 
@@ -246,7 +250,6 @@
     <property name="staticHeaders">
       <map>
         <entry key="Cache-Control" value="no-cache, must-revalidate, max-age=0" />
-        <entry key="Expires" value="0" />
         <entry key="Pragma" value="no-cache" />
       </map>
     </property>

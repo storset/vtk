@@ -42,7 +42,7 @@
       <h2>
         ${header}
       </h2>
-        <#assign isPublished = vrtx.propValue(resource, "published") == "true" />
+        <#assign isPublished = resource.isPublished() />
         <#assign publishedStatusMsgKey = "publishing.status." + isPublished?string />
         <h3><@vrtx.msg code="publishing.status" default="Status" /></h3>
         <div>

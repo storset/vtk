@@ -235,6 +235,14 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         return LocaleHelper.getLocale(this.getContentLanguage());
     }
 
+    public boolean isReadRestricted() {
+        return !this.getAcl().hasPrivilege(RepositoryAction.READ, PrincipalFactory.ALL)
+                && !this.getAcl().hasPrivilege(RepositoryAction.READ_PROCESSED, PrincipalFactory.ALL);
+    }
+    
+    public boolean isPublished() {
+        return getBooleanPropValue(PropertyType.PUBLISHED_PROP_NAME);
+    }
 
     public Object clone() throws CloneNotSupportedException {
         LockImpl lock = null;
@@ -271,35 +279,44 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
 
 
     private String getPropValue(String name) {
-        Property prop = this.propertyMap.get(Namespace.DEFAULT_NAMESPACE).get(name);
+        Property prop = this.getProp(name);
         if (prop == null) return null;
         return prop.getStringValue();
     }
 
 
     private Date getDatePropValue(String name) {
-        Property prop = this.propertyMap.get(Namespace.DEFAULT_NAMESPACE).get(name);
+        Property prop = this.getProp(name);
         if (prop == null) return null;
         return prop.getDateValue();
     }
 
 
     private long getLongPropValue(String name) {
-        Property prop = this.propertyMap.get(Namespace.DEFAULT_NAMESPACE).get(name);
+        Property prop = this.getProp(name);
         if (prop == null) return -1;
         return prop.getLongValue();
     }
 
 
     private boolean getBooleanPropValue(String name) {
-        Property prop = this.propertyMap.get(Namespace.DEFAULT_NAMESPACE).get(name);
+        Property prop = this.getProp(name);
+        if (prop == null) return false; 
         return prop.getBooleanValue();
     }
 
 
     private Principal getPrincipalPropValue(String name) {
-        Property prop = this.propertyMap.get(Namespace.DEFAULT_NAMESPACE).get(name);
+        Property prop = this.getProp(name);
+        if (prop == null) return null; 
         return prop.getPrincipalValue();
+    }
+    
+    private Property getProp(String name) {
+        Property prop = this.propertyMap.get(Namespace.DEFAULT_NAMESPACE).get(name);
+        prop = prop == null ? this.propertyMap.get(
+                Namespace.STRUCTURED_RESOURCE_NAMESPACE).get(name) : prop;
+        return prop;
     }
 
 
@@ -366,13 +383,6 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
 
         return true;
     }
-
-
-    public boolean isReadRestricted() {
-        return !this.getAcl().hasPrivilege(RepositoryAction.READ, PrincipalFactory.ALL)
-                && !this.getAcl().hasPrivilege(RepositoryAction.READ_PROCESSED, PrincipalFactory.ALL);
-    }
-
 
     public String toString() {
         StringBuilder sb = new StringBuilder();

@@ -30,7 +30,6 @@
  */
 package org.vortikal.repository;
 
-import java.net.URLDecoder;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -262,6 +261,10 @@ public class ResourceWrapper implements Resource {
 
     public boolean isReadRestricted() {
         return this.resource.isReadRestricted();
+    }
+    
+    public boolean isPublished() {
+        return this.resource.isPublished();
     }
 
     public void addProperty(Property property) {

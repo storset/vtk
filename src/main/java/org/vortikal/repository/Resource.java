@@ -248,5 +248,10 @@ public interface Resource extends PropertySet, Cloneable {
      *         the resource in some way is read restricted.
      */
     public boolean isReadRestricted();
+    
+    /**
+     * @return Boolean indicating if the resource is published
+     */
+    public boolean isPublished();
 
 }

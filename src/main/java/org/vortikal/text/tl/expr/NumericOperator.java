@@ -31,17 +31,14 @@
 package org.vortikal.text.tl.expr;
 
 import java.math.BigDecimal;
-import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.Stack;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Symbol;
 
 public abstract class NumericOperator extends Operator {
 
-    private NumberFormat format = NumberFormat.getNumberInstance();
-    
     public NumericOperator(Symbol symbol, Notation notation, Precedence precedence) {
         super(symbol, notation, precedence);
     }
@@ -70,15 +67,13 @@ public abstract class NumericOperator extends Operator {
         if (obj == null) {
             throw new IllegalArgumentException("Argument is NULL");
         }
-
         if (obj instanceof Number) {
             return (Number) obj;
         } else if (obj instanceof String) {
             try {
                 String s = (String) obj;
-                return format.parse(s);
-            } catch (ParseException e) { 
-            }
+                return NumberUtils.createNumber(s);
+            } catch (Throwable t) { }
         }
         throw new IllegalArgumentException("Not a number: " + obj);
     }

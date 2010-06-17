@@ -175,11 +175,11 @@ resourcetype frontpage {
                   [endif]
                 </div>
               [endif]
-              <div class="vrtx-box-content">
-                [if content != null && content != ""]
+              [if content != null && content != ""]
+                <div class="vrtx-box-content">
                   [val content unescaped]
-                [endif]
-              </div>
+                </div>
+              [endif]
               [if urlText != null && urlText != ""]
                 <div class="vrtx-more">
                 [if url != null && url != ""]

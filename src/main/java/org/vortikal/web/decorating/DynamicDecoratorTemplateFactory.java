@@ -40,11 +40,17 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.support.RequestContextUtils;
+import org.vortikal.repository.Namespace;
+import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.resourcemanagement.view.tl.ComponentInvokerNodeFactory;
 import org.vortikal.resourcemanagement.view.tl.JSONAttributeHandler;
-import org.vortikal.resourcemanagement.view.tl.ResourcePropObjectValueHandler;
+import org.vortikal.security.SecurityContext;
+import org.vortikal.text.tl.CaptureNodeFactory;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.DefineNodeFactory;
 import org.vortikal.text.tl.DirectiveNodeFactory;
@@ -114,10 +120,12 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
         functions.add(new ResourceLocaleFunction(new Symbol("resource-locale")));
         functions.add(new TemplateParameterFunction(new Symbol("template-param")));
         functions.add(new ResourceAspectFunction(new Symbol("resource-aspect"), this.aspectsPropdef, this.fieldConfig));
-        functions.add(new ResourcePropObjectValueHandler(new Symbol("resource-prop"), this.repository));
+        functions.add(new ResourcePropHandler(new Symbol("resource-prop"), this.repository));
         functions.add(new JSONAttributeHandler(new Symbol("json-attr")));
         def.setFunctions(functions);
         directiveHandlers.put("def", def);
+        
+        directiveHandlers.put("capture", new CaptureNodeFactory());
 
         //directiveHandlers.put("localized", new LocalizationNodeFactory(this.resourceModelKey));
         directiveHandlers.put("call", new ComponentInvokerNodeFactory(new DynamicDecoratorTemplate.ComponentSupport()));
@@ -186,8 +194,6 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
     }
     
     private class ResourceAspectFunction extends Function {
-//        private PropertyTypeDefinition aspectsPropdef;
-//        private PropertyAspectDescription fieldConfig;
         private PropertyAspectResolver resolver = null;
 
         public ResourceAspectFunction(Symbol symbol, PropertyTypeDefinition aspectsPropdef, PropertyAspectDescription fieldConfig) {
@@ -205,41 +211,76 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
             String aspect = o.toString();
             return this.resolver.resolve(requestContext.getResourceURI(), aspect);
         }
-
-//        private void traverse(JSONObject result, String aspect, Path uri, String token) {
-//            
-//            Path currentURI = Path.fromString(uri.toString());
-//
-//            while (true) {
-//                Resource r = null;
-//                try {
-//                    r = repository.retrieve(token, currentURI, true);
-//                } catch (Throwable t) { }
-//                if (r != null) {
-//                    Property property = r.getProperty(aspectsPropdef);
-//                    if (property != null && property.getType() == PropertyType.Type.JSON) {
-//                        JSONObject value = property.getJSONValue();
-//                        if (value.get(aspect) != null) {
-//                            value = value.getJSONObject(aspect);
-//
-//                            for (PropertyAspectField field : this.fieldConfig.getFields()) {
-//                                Object key = field.getIdentifier();
-//                                Object newValue = value.get(key);
-//
-//                                if (currentURI.equals(uri)) {
-//                                    result.put(key, newValue);
-//                                } else if (field.isInherited() && result.get(key) == null) {
-//                                    result.put(key, newValue);
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//                currentURI = currentURI.getParent();
-//                if (currentURI == null) {
-//                    break;
-//                }
-//            }
-//        }
      }
+    
+    
+    private class ResourcePropHandler extends Function {
+
+        private Repository repository;
+
+        public ResourcePropHandler(Symbol symbol, Repository repository) {
+            super(symbol, 2);
+            this.repository = repository;
+        }
+
+        @Override
+        public Object eval(Context ctx, Object... args) throws Exception {
+            final Object arg1 = args[0];
+            final Object arg2 = args[1];
+            PropertySet resource = null;
+            String ref = null;
+
+            if (arg1 instanceof PropertySet) {
+                resource = (PropertySet) arg1;
+            } else {
+                ref = arg1.toString();
+            }
+
+            if (resource == null) {
+                Path uri = ".".equals(ref) 
+                ? RequestContext.getRequestContext().getResourceURI()
+                        : Path.fromString(ref);
+                String token = SecurityContext.getSecurityContext().getToken();
+                resource = this.repository.retrieve(token, uri, true);
+            }
+            String propName = arg2.toString();
+            if ("uri".equals(propName)) {
+                return resource.getURI();
+            }
+
+            Property property = resource.getProperty(Namespace.DEFAULT_NAMESPACE, propName);
+            if (property == null) {
+                for (Property prop : resource.getProperties()) {
+                    if (propName.equals(prop.getDefinition().getName())) {
+                        property = prop;
+                    }
+                }
+            }
+            if (property == null) {
+                return null;
+            }
+            if (property.getDefinition().isMultiple()) {
+                return getObjectValue(property.getValues());
+            } else {
+                return getObjectValue(property.getValue());
+            }
+        }
+
+    }
+    
+    private Object getObjectValue(Object obj) {        
+        if (obj instanceof Value) 
+            return ((Value)obj).getObjectValue();
+        
+        if (obj instanceof Value[]) {
+            Value[] values = (Value[])obj;
+            Object[] objValues = new Object[values.length];
+            for (int i=0; i<values.length; i++) {
+                objValues[i] = values[i].getObjectValue();
+            }
+            return objValues;
+        }
+        return obj;
+    }
+
 }

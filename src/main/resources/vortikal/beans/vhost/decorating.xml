@@ -146,6 +146,14 @@
     <property name="componentResolver" ref="decorating.defaultComponentResolver" />
     <property name="aspectsPropdef" ref="resourceAspectsPropDef" />
     <property name="fieldConfig" ref="visualProfileAspect.fieldConfig" />
+    <property name="functions" ref="decrating.defaultFunctions" />
+  </bean>
+
+  <bean id="decrating.defaultFunctions"
+        class="org.springframework.beans.factory.config.SetFactoryBean">
+    <property name="sourceSet">
+      <ref bean="templateLanguage.concatFunction" />
+    </property>
   </bean>
 
   <bean name="decorating.defaultComponentResolver"

@@ -10,6 +10,7 @@
     <property name="publishDatePropDef" ref="publishDatePropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
     <property name="lastModifiedPropDef" ref="lastModifiedPropDef" />
+    <property name="creationTimePropDef" ref="creationTimePropDef" />
     <property name="authorPropDefPointer" ref="${override.listing.prefix}authorPropDefPointer" />
     <property name="introductionPropDefPointer" ref="${override.listing.prefix}introductionPropDefPointer" />
     <property name="picturePropDefPointer" ref="${override.listing.prefix}picturePropDefPointer" />

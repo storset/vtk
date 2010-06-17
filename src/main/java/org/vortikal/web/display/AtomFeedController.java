@@ -79,6 +79,7 @@ public abstract class AtomFeedController implements Controller {
 
     private PropertyTypeDefinition titlePropDef;
     private PropertyTypeDefinition lastModifiedPropDef;
+    private PropertyTypeDefinition creationTimePropDef;
     private String authorPropDefPointer;
     private String introductionPropDefPointer;
     private String picturePropDefPointer;
@@ -121,8 +122,10 @@ public abstract class AtomFeedController implements Controller {
             URIException, UnsupportedEncodingException {
 
         Feed feed = abdera.newFeed();
-        Property published = collection.getProperty(this.publishDatePropDef);
-        feed.setId(getId(collection.getURI(), published, getFeedPrefix()));
+        Property publishedDateProp = getPublishDate(collection);
+        publishedDateProp = publishedDateProp == null ? collection.getProperty(this.creationTimePropDef)
+                : publishedDateProp;
+        feed.setId(getId(collection.getURI(), publishedDateProp, getFeedPrefix()));
         feed.addLink(viewService.constructLink(collection.getURI()), "alternate");
 
         feed.setTitle(feedTitle);
@@ -157,7 +160,10 @@ public abstract class AtomFeedController implements Controller {
 
             Entry entry = Abdera.getInstance().newEntry();
 
-            String id = getId(result.getURI(), result.getProperty(this.publishDatePropDef), null);
+            Property publishedDateProp = getPublishDate(result);
+            publishedDateProp = publishedDateProp == null ? result.getProperty(this.creationTimePropDef)
+                    : publishedDateProp;
+            String id = getId(result.getURI(), publishedDateProp, null);
             entry.setId(id);
             entry.addCategory(result.getResourceType());
 
@@ -312,12 +318,12 @@ public abstract class AtomFeedController implements Controller {
         return resource.getURI().extend(val);
     }
 
-    protected String getId(Path resourceUri, Property published, String prefix) throws URIException,
+    protected String getId(Path resourceUri, Property publishedDateProp, String prefix) throws URIException,
             UnsupportedEncodingException {
         String host = viewService.constructURL(resourceUri).getHost();
         StringBuilder sb = new StringBuilder(TAG_PREFIX);
         sb.append(host + ",");
-        sb.append(published.getFormattedValue("iso-8601-short", null) + ":");
+        sb.append(publishedDateProp.getFormattedValue("iso-8601-short", null) + ":");
         if (prefix != null) {
             sb.append(prefix);
         }
@@ -412,6 +418,10 @@ public abstract class AtomFeedController implements Controller {
 
     public void setPublishDatePropDef(PropertyTypeDefinition publishDatePropDef) {
         this.publishDatePropDef = publishDatePropDef;
+    }
+
+    public void setCreationTimePropDef(PropertyTypeDefinition creationTimePropDef) {
+        this.creationTimePropDef = creationTimePropDef;
     }
 
 }

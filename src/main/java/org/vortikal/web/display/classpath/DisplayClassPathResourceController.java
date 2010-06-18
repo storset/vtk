@@ -77,13 +77,18 @@ public class DisplayClassPathResourceController
     private Map<String, String> locationsMap;
     private Map<String, String> headers;
     private ApplicationContext applicationContext;
+    private boolean handleLastModified;
 
-      public void setApplicationContext(ApplicationContext applicationContext) {
+    public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
     
     public void setHeaders(Map<String, String> headers) {
         this.headers = headers;
+    }
+
+    public void setHandleLastModified(boolean handleLastModified) {
+        this.handleLastModified = handleLastModified;
     }
     
     @SuppressWarnings("unchecked")
@@ -184,6 +189,9 @@ public class DisplayClassPathResourceController
 
 
     public long getLastModified(HttpServletRequest request) {
+        if (!this.handleLastModified) {
+            return -1;
+        }
         if (!("GET".equals(request.getMethod()) || "HEAD".equals(request.getMethod()))) {
             return -1;
         }

@@ -185,6 +185,7 @@
         <entry key="Cache-Control" value="public,max-age=${staticResourcesCacheSeconds}" />
       </map>
     </property>
+    <property name="handleLastModified" value="${staticResources.handleLastModified}" />
   </bean>
 
 

@@ -278,48 +278,6 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
     }
 
 
-    private String getPropValue(String name) {
-        Property prop = this.getProp(name);
-        if (prop == null) return null;
-        return prop.getStringValue();
-    }
-
-
-    private Date getDatePropValue(String name) {
-        Property prop = this.getProp(name);
-        if (prop == null) return null;
-        return prop.getDateValue();
-    }
-
-
-    private long getLongPropValue(String name) {
-        Property prop = this.getProp(name);
-        if (prop == null) return -1;
-        return prop.getLongValue();
-    }
-
-
-    private boolean getBooleanPropValue(String name) {
-        Property prop = this.getProp(name);
-        if (prop == null) return false; 
-        return prop.getBooleanValue();
-    }
-
-
-    private Principal getPrincipalPropValue(String name) {
-        Property prop = this.getProp(name);
-        if (prop == null) return null; 
-        return prop.getPrincipalValue();
-    }
-    
-    private Property getProp(String name) {
-        Property prop = this.propertyMap.get(Namespace.DEFAULT_NAMESPACE).get(name);
-        prop = prop == null ? this.propertyMap.get(
-                Namespace.STRUCTURED_RESOURCE_NAMESPACE).get(name) : prop;
-        return prop;
-    }
-
-
     // Mumble mumble. this.childURIs should never be null if this method is
     // called.
     // However, this method is only called from RepositoryImpl.create*().
@@ -408,4 +366,53 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
 
     // END HACK
 
+    private String getPropValue(String name) {
+        Property prop = this.getProp(name);
+        if (prop == null) return null;
+        return prop.getStringValue();
+    }
+
+
+    private Date getDatePropValue(String name) {
+        Property prop = this.getProp(name);
+        if (prop == null) return null;
+        return prop.getDateValue();
+    }
+
+
+    private long getLongPropValue(String name) {
+        Property prop = this.getProp(name);
+        if (prop == null) return -1;
+        return prop.getLongValue();
+    }
+
+
+    private boolean getBooleanPropValue(String name) {
+        Property prop = this.getProp(name);
+        if (prop == null) return false; 
+        return prop.getBooleanValue();
+    }
+
+
+    private Principal getPrincipalPropValue(String name) {
+        Property prop = this.getProp(name);
+        if (prop == null) return null; 
+        return prop.getPrincipalValue();
+    }
+    
+    private Property getProp(String name) {
+        Map<String, Property> props = this.propertyMap.get(Namespace.DEFAULT_NAMESPACE);
+        if (props == null) {
+            return null;
+        }
+        Property prop = props.get(name);
+        if (prop != null) {
+            return prop;
+        }
+        props = this.propertyMap.get(Namespace.STRUCTURED_RESOURCE_NAMESPACE);
+        if (props == null) {
+            return null;
+        }
+        return props.get(name);
+    }
 }

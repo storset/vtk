@@ -366,6 +366,7 @@
   <bean id="isReadRestrictedAssertion" class="org.vortikal.web.service.AndAssertion">
     <property name="assertions">
       <list>
+        <bean class="org.vortikal.web.service.ResourceExistsAssertion" />
         <bean class="org.vortikal.web.service.InvertAssertion">
           <property name="assertion">
             <bean parent="abstractResourcePrincipalPermissionAssertion">

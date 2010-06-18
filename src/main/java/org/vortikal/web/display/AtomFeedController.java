@@ -315,7 +315,11 @@ public abstract class AtomFeedController implements Controller {
         if (val.startsWith("/")) {
             return Path.fromString(val);
         }
-        return resource.getURI().extend(val);
+        Property collectionProp = resource.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.COLLECTION_PROP_NAME);
+        if (collectionProp != null && collectionProp.getBooleanValue() == true) {
+            return resource.getURI().extend(val);
+        }
+        return resource.getURI().getParent().extend(val);
     }
 
     protected String getId(Path resourceUri, Property publishedDateProp, String prefix) throws URIException,

@@ -228,8 +228,6 @@ final class ReadOnlyIndexReaderPool {
             i = (this.counter++ & 0x7FFFFFFF) % this.items.length;
         }
 
-        PoolItem item = this.items[i];
-
         return this.items[i];
     }
 

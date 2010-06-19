@@ -62,15 +62,16 @@ final class ReadOnlyIndexReaderPool {
      * <code>IndexReader</code> instances.
      *
      * @param directory   The {@link Directory} which holds the index data.
+     *                    The pool is only valid as long as the directory remains open.
+     *                    If it's closed, then any pools using it must be discarded.
      * @param size        Maximum number of IndexReader instances to keep. The will
      *                    be distributed in a round-robin fashion to improve concurrency on
      *                    queries upon a single index directory.
-     * @param maxDirtyAge Maximum number of seconds to keep an IndexReader open
-     *                    after it has been detected that it is dirty. Detection
-     *                    is synchronous, and therefore time starts counting from
-     *                    first call to {@link #borrowReader() } if the <code>IndexReader</code> has become dirty.
-     *                    If zero or negative, then no aging of dirty readers are allowed, and a refresh
-     *                    will always be done for dirty readers.
+     * @param maxDirtyAge Maximum number of seconds to keep an outdated IndexReader open
+     *                    before doing refresh. Theoretically, it can go longer than this
+     *                    before refresh, but chances of that happening is probably rather slim.
+     *                    If zero or negative, then no aging of dirty readers are allowed at all,
+     *                    and a refresh will always be done for dirty readers.
      */
     public ReadOnlyIndexReaderPool(Directory directory, int size, int maxDirtyAge) {
         if (size <= 0) {
@@ -90,15 +91,15 @@ final class ReadOnlyIndexReaderPool {
      * Construct a new pool with no aging of dirty readers allowed.
      *
      * @param directory   The {@link Directory} which holds the index data.
-     * @param size        Maximum number of IndexReader instances to keep. The will
-     *                    be distributed in a round-robin fashion to improve concurrency on
-     *                    queries upon a single index directory.
+     * @param size        Maximum number of IndexReader instances to keep.
      */
     public ReadOnlyIndexReaderPool(Directory directory, int size) {
         this(directory, size, DEFAULT_MAX_DIRTY_AGE);
     }
 
     /**
+     * Get a reader from the pool, selected in round-robin fashion.
+     *
      * @see #borrowReader(boolean)
      * @return
      * @throws IOException
@@ -122,7 +123,7 @@ final class ReadOnlyIndexReaderPool {
      */
     public IndexReader borrowReader(boolean selectByThread) throws IOException {
 
-        logger.debug("borrow request, byThread=" + selectByThread);
+        this.logger.debug("borrow request, byThread=" + selectByThread);
 
         final PoolItem item = getPoolItem(selectByThread);
 
@@ -131,14 +132,14 @@ final class ReadOnlyIndexReaderPool {
         synchronized(item) {
             try {
                 if (item.reader == null) {
-                    logger.debug("reader was null, creating new");
+                    this.logger.debug("reader was null, creating new");
                     item.reader = IndexReader.open(this.directory, true);
                     item.version = item.reader.getVersion();
                     item.refresh = false;
                 } else if (!item.reader.isCurrent()) {
-                    logger.debug("reader not current");
+                    this.logger.debug("reader not current");
                     if (item.refresh) {
-                        logger.debug("reader refresh hint set, re-opening.");
+                        this.logger.debug("reader refresh hint set, re-opening.");
                         // Pool refresh is over age limit or no dirty time acceptable, time to refresh.
                         IndexReader oldReader = item.reader;
                         item.reader = item.reader.reopen();
@@ -147,7 +148,7 @@ final class ReadOnlyIndexReaderPool {
                         oldReader.decRef();
                     }
                 } else {
-                    logger.debug("setting reader refresh hint to false, since reader is current");
+                    this.logger.debug("setting reader refresh hint to false, since reader is current");
                     item.refresh = false;
                 }
             } catch (IOException io) {
@@ -155,7 +156,7 @@ final class ReadOnlyIndexReaderPool {
                 throw io;
             }
 
-            logger.debug("Returning reader instance");
+            this.logger.debug("Returning reader instance");
             item.reader.incRef();
             return item.reader;
         }
@@ -234,7 +235,7 @@ final class ReadOnlyIndexReaderPool {
 
     private boolean setPoolRefreshHint() {
         if (this.maxDirtyAge <= 0) {
-            logger.debug("setPoolRefreshInt(): refresh required because maxDirtyAge <= 0");
+            this.logger.debug("setPoolRefreshInt(): refresh required because maxDirtyAge <= 0");
             return true;
         }
 
@@ -244,7 +245,7 @@ final class ReadOnlyIndexReaderPool {
         // This is done on a global basis to keep pooled IndexReader instances in sync on version.
         // That's important for consistency if there are more than one reader instances in the pool.
         if (System.currentTimeMillis() - this.poolRefreshTimestamp > this.maxDirtyAge) {
-            logger.debug("setPoolRefreshHint(): refresh required because of pool age");
+            this.logger.debug("setPoolRefreshHint(): refresh required because of pool age");
             return true;
         } else {
             // Inside potential dirty time window. If there are version differences
@@ -253,19 +254,20 @@ final class ReadOnlyIndexReaderPool {
             // 1. One reader has been refreshed early in dirty window
             // 2. Another one is still waiting to get refreshed, and does so later in the window.
             // 3. The index gets modified between events 1 og 2.
-            // Preventing version mismatches that stick during timeframe of one window is important
-            // because it can result in bouncing results based on what version of reader is handed out.
+            // Preventing version mismatches that stick until next time-based refresh is important
+            // because it can often result in bouncing results based on what
+            // version of reader is handed out.
             long v = this.items[0].version;
             for (int i=1; i<this.items.length; i++) {
                 if (this.items[i].version != v) {
-                    logger.debug("setPoolRefreshHint(): refresh required because of version mismatches in pool");
+                    this.logger.debug("setPoolRefreshHint(): refresh required because of version mismatches in pool");
                     return true;
                 }
             }
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("setPoolRefreshHint(): no refresh required yet, age = "
+            this.logger.debug("setPoolRefreshHint(): no refresh required yet, age = "
                     + (System.currentTimeMillis() - this.poolRefreshTimestamp));
         }
 

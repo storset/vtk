@@ -58,7 +58,8 @@ public class SearcherImpl implements Searcher {
     private LuceneIndexManager indexAccessor;
     private DocumentMapper documentMapper;
     private LuceneQueryBuilder queryBuilder;
-    
+
+    private int unauthenticatedQueryMaxDirtyAge = 0;
     private long totalQueryTimeWarnThreshold = 15000; // Warning threshold in milliseconds
     
     /**
@@ -75,6 +76,7 @@ public class SearcherImpl implements Searcher {
         }
     }
 
+    @Override
     public ResultSet execute(String token, Search search) throws QueryException {
         Query query = search.getQuery();
         Sorting sorting = search.getSorting();
@@ -84,7 +86,13 @@ public class SearcherImpl implements Searcher {
 
         IndexSearcher searcher = null;
         try {
-            searcher = this.indexAccessor.getIndexSearcher();
+            if (token == null && this.unauthenticatedQueryMaxDirtyAge > 0) {
+                // Accept higher dirty age for speedier queries when token is null
+                searcher = this.indexAccessor.getIndexSearcher(this.unauthenticatedQueryMaxDirtyAge);
+            } else {
+                // Authenticated query, no dirty age acceptable.
+                searcher = this.indexAccessor.getIndexSearcher();
+            }
 
             org.apache.lucene.search.Query luceneQuery =
                 this.queryBuilder.buildQuery(query, searcher.getIndexReader());
@@ -96,9 +104,8 @@ public class SearcherImpl implements Searcher {
             org.apache.lucene.search.Sort luceneSort = 
                 this.queryBuilder.buildSort(sorting);
 
-            FieldSelector selector = selectedProperties != null ? this.documentMapper
-                    .getDocumentFieldSelector(selectedProperties)
-                    : null;
+            FieldSelector selector = selectedProperties != null ? 
+                  this.documentMapper.getDocumentFieldSelector(selectedProperties) : null;
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Built Lucene query '" + luceneQuery
@@ -215,6 +222,17 @@ public class SearcherImpl implements Searcher {
         }
         
         this.totalQueryTimeWarnThreshold = totalQueryTimeWarnThreshold;
+    }
+
+    /**
+     * Set maximum acceptable dirty age when acquiring index searcher for
+     * unauthenticated queries. Value is in seconds.
+     *
+     * To get any effect, it should be equal or higher than value set in
+     * {@link org.vortikal.repository.index.LuceneIndexManager#setAgingReadOnlyReaderThreshold(int)}
+     */
+    public void setUnauthenticatedQueryMaxDirtyAge(int unauthenticatedQueryMaxDirtyAge) {
+        this.unauthenticatedQueryMaxDirtyAge = unauthenticatedQueryMaxDirtyAge;
     }
 
 }

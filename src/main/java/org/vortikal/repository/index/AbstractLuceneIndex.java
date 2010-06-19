@@ -40,10 +40,11 @@ import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriter.MaxFieldLength;
+import org.apache.lucene.index.LogMergePolicy;
 import org.apache.lucene.store.Directory;
 
 /**
- * TODO: This JavaDoc description is outdated. Some common Lucene index
+ * Some common Lucene index
  * functionality. This class does not handle locking explicitly, but returns
  * IndexWriter/IndexReader instances in a mutually exclusive fashion,
  * automatically closing one or the other. It is, by itself, synchronized, and
@@ -56,11 +57,8 @@ public abstract class AbstractLuceneIndex {
     private final Log logger = LogFactory.getLog(AbstractLuceneIndex.class);
 
     /* Lucene tunables */
-    private int mergeFactor = 6;
-
-    private int maxBufferedDocs = 100;
-
-    private int maxMergeDocs = 10000;
+    private int mergeFactor = LogMergePolicy.DEFAULT_MERGE_FACTOR;
+    private int maxMergeDocs = LogMergePolicy.DEFAULT_MAX_MERGE_DOCS;
 
     /**
      * Specifies if any existing index should be forcibly unlocked, if it was
@@ -86,18 +84,19 @@ public abstract class AbstractLuceneIndex {
     /** Default Lucene <code>Analyzer</code> implementation used. */
     private Analyzer analyzer = null;
 
-    /** Shared read-only index reader instance */
-//    private IndexReader roReader = null;
+    // Aging/possibly dirty read-only index reader instances
+    private int maxAgingReadOnlyReaders = 0;
+    private int agingReadOnlyReaderThreshold = 30;
+    private ReadOnlyIndexReaderPool agingReadOnlyReaders;
 
-    /** Shared read-only index reader instances */
-    private int maxReadOnlyReaderInstances = 1;
-    private IndexReader[] readOnlyReaders = null;
-    private int nextReader;
-
+    // Normal always update-to-date read only index reader instances
+    private int maxReadOnlyReaders = 1;
+    private ReadOnlyIndexReaderPool readOnlyReaders;
 
     /**
      * Constructor with some sensible defaults.
-     * 
+     *
+     * Note that #reinitialize must be called before index can be used.
      */
     public AbstractLuceneIndex() {
         this(new KeywordAnalyzer(), false, false);
@@ -107,6 +106,8 @@ public abstract class AbstractLuceneIndex {
      * Constructor with selectable analyzer implementation and some parameters
      * controlling initialization.
      * 
+     * Note that #reinitialize() must be called before index can be used.
+     *
      * @param analyzer
      * @param eraseExistingIndex
      * @param forceUnlock
@@ -119,26 +120,50 @@ public abstract class AbstractLuceneIndex {
     }
 
     /**
-     * Should be called <em>once</em> before any of the other methods.
-     * 
-     * @throws IOException
-     */
-    protected void initialize() throws IOException {
-        this.directory = createDirectory();
-        if (this.directory == null) {
-            throw new IOException("Directory provided by subclass was null");
-        }
-
-        initializeIndexDirectory(this.directory, this.eraseExistingIndex);
-    }
-
-    /**
      * This method must be implemented by subclasses to provide a
      * {@link org.apache.lucene.store.Directory} implementation.
      */
     protected abstract Directory createDirectory() throws IOException;
 
-    protected synchronized IndexWriter getIndexWriter() throws IOException {
+    /**
+     * Re-initialize/open index.
+     *
+     * This method must be called to open the underlying index, even at
+     * first time initialization !
+     *
+     * @throws IOException
+     */
+    protected final synchronized void reinitialize() throws IOException {
+        if (this.reader != null) {
+            this.reader.close();
+            this.reader = null;
+        }
+
+        if (this.writer != null) {
+            this.writer.close();
+            this.writer = null;
+        }
+
+        closeAllReadOnlyReaders();
+
+        if (this.directory != null) {
+            this.directory.close();
+            this.directory = null;
+        }
+
+        this.directory = createDirectory();
+        if (this.directory == null) {
+            throw new IOException("Directory provided by subclass was null");
+        }
+
+        initializeIndexDirectory(this.directory, false);
+
+        initializeReadOnlyReaderPooling();
+
+        logger.info("Opened and initialized index at directory '" + this.directory + "'");
+    }
+
+    protected final synchronized IndexWriter getIndexWriter() throws IOException {
         if (this.directory == null) {
             throw new IOException("Index is closed");
         }
@@ -153,7 +178,6 @@ public abstract class AbstractLuceneIndex {
         if (this.writer == null) {
             this.writer = new IndexWriter(this.directory, this.analyzer, false,
                     MaxFieldLength.LIMITED);
-            this.writer.setMaxBufferedDocs(this.maxBufferedDocs);
             this.writer.setMaxMergeDocs(this.maxMergeDocs);
             this.writer.setMergeFactor(this.mergeFactor);
         }
@@ -161,7 +185,7 @@ public abstract class AbstractLuceneIndex {
         return this.writer;
     }
 
-    protected synchronized IndexReader getIndexReader() throws IOException {
+    protected final synchronized IndexReader getIndexReader() throws IOException {
         if (this.directory == null) {
             throw new IOException("Index is closed");
         }
@@ -173,110 +197,67 @@ public abstract class AbstractLuceneIndex {
 
         if (this.reader == null) {
             this.reader = IndexReader.open(this.directory);
+            this.reader.setTermInfosIndexDivisor(2); // This reader is typically not used for queries, so
+                                                     // decrease RAM usage by setting TermInfosIndexDivisor to 2.
         }
 
         return this.reader;
     }
 
-    protected synchronized IndexReader getReadOnlyIndexReader()
-        throws IOException {
-
-        if (this.directory == null) {
-            throw new IOException("Index is closed");
+    // Method is intentionally *not* synchronized
+    protected final IndexReader getReadOnlyIndexReader() throws IOException {
+        if (isClosed()) {
+            throw new IOException("Index is closed.");
         }
-        
-        if (this.readOnlyReaders == null) {
-            this.readOnlyReaders = new IndexReader[this.maxReadOnlyReaderInstances];
-            this.nextReader = 0;
-        }
-
-        IndexReader roReader = this.readOnlyReaders[this.nextReader];
-        if (roReader == null) {
-            roReader = IndexReader.open(this.directory, true);
-            this.readOnlyReaders[this.nextReader] = roReader;
-        } else if (! roReader.isCurrent()) {
-            // Need reader refresh
-            IndexReader oldReader = roReader;
-
-            // Swap in new reader before we decrease refCount on the old one, in
-            // case closing it results in IOException. Then we have a new one
-            // open no matter what happens with the old one upon doClose().
-            roReader = roReader.reopen();
-            this.readOnlyReaders[this.nextReader] = roReader;
-
-            // Decrease "our own" instantiation-ref for the old read-only index reader.
-            // This will close it only if it is not currently in use. Otherwise
-            // it will be closed when last thread using it releases it in
-            // #releaseReadOnlyIndexReader(IndexReader)
-            oldReader.decRef();
-        }
-        
-        if (++this.nextReader == this.readOnlyReaders.length) {
-            this.nextReader = 0; // Round robin hand-out of read-only readers
-        }
-
-        // Bump reader ref-count and return
-        roReader.incRef(); 
-
-        return roReader;
+        return this.readOnlyReaders.borrowReader(false);
     }
 
-//    protected synchronized IndexReader getReadOnlyIndexReader__OLD()
-//            throws IOException {
-//        logger.debug("getReadOnlyIndexReader()");
-//
-//        if (this.directory == null) {
-//            throw new IOException("Index is closed");
-//        }
-//
-//        if (this.roReader == null) {
-//            logger.debug("Instantiating new read-only index reader");
-//
-//            // No read-only reader has been instantiated yet, create new.
-//            this.roReader = IndexReader.open(this.directory, true);
-//        } else {
-//            if (! this.roReader.isCurrent()) {
-//                logger.debug("Current read-only index reader is outdated, re-opening ..");
-//
-//                IndexReader oldReader = this.roReader;
-//
-//                // Swap in new reader before we decrease refCount on the old one, in
-//                // case closing it results in IOException. Then we have a new one
-//                // open no matter what happens with the old one upon doClose().
-//                this.roReader = this.roReader.reopen();
-//
-//                // Decrease "our own" instantiation-ref for the old read-only index reader.
-//                // This will close it only if it is not currently in use. Otherwise
-//                // it will be closed when last thread using it releases it in
-//                // #releaseReadOnlyIndexReader(IndexReader)
-//                oldReader.decRef();
-//            } else {
-//                logger.debug("Read-only index reader up-to-date");
-//            }
-//        }
-//
-//        // Increase ref-count and return instance
-//        this.roReader.incRef();
-//
-//        return this.roReader;
-//    }
+    // Method is intentionally *not* synchronized
+    protected final IndexReader getReadOnlyIndexReader(int maxDirtyAge)
+        throws IOException {
+        if (isClosed()) {
+            throw new IOException("Index is closed.");
+        }
 
-    protected synchronized void releaseReadOnlyIndexReader(
-            IndexReader readOnlyReader) throws IOException {
-        logger.debug("releaseReadOnlyIndexReader()");
-        
+        if (this.agingReadOnlyReaders != null
+                && maxDirtyAge >= this.agingReadOnlyReaderThreshold) {
+
+            // Use aging readers and thread stickyness
+            return this.agingReadOnlyReaders.borrowReader(true);
+        }
+
+        return this.readOnlyReaders.borrowReader(false);
+    }
+
+    // Method is intentionally *not* synchronized
+    protected final void releaseReadOnlyIndexReader(IndexReader reader)
+            throws IOException {
         // Decrease ref-count (it will be closed if refCount hits zero)
-        readOnlyReader.decRef();
+        reader.decRef();
     }
 
     private void closeAllReadOnlyReaders() throws IOException {
         if (this.readOnlyReaders != null) {
-            for (IndexReader roReader: this.readOnlyReaders) {
-                if (roReader != null) {
-                    roReader.decRef();
-                }
-            }
-            this.readOnlyReaders = null;
+            this.readOnlyReaders.closeAll();
+        }
+        if (this.agingReadOnlyReaders != null) {
+            this.agingReadOnlyReaders.closeAll();
+        }
+    }
+
+    private void initializeReadOnlyReaderPooling() throws IOException {
+        if (isClosed()) {
+            // This shouldn't happen, but still ..
+            throw new IOException("Unable to initialize read-only reader pools: index is closed.");
+        }
+
+        this.readOnlyReaders = new ReadOnlyIndexReaderPool(this.directory,
+                                                           this.maxReadOnlyReaders);
+        if (this.maxAgingReadOnlyReaders > 0) {
+            this.agingReadOnlyReaders = new ReadOnlyIndexReaderPool(this.directory,
+                    this.maxAgingReadOnlyReaders, this.agingReadOnlyReaderThreshold);
+        } else {
+            this.agingReadOnlyReaders = null;
         }
     }
 
@@ -285,7 +266,7 @@ public abstract class AbstractLuceneIndex {
      * 
      * @throws IOException
      */
-    protected synchronized void commit() throws IOException {
+    protected final synchronized void commit() throws IOException {
         if (this.directory == null) {
             throw new IOException("Index is closed");
         }
@@ -299,15 +280,17 @@ public abstract class AbstractLuceneIndex {
             this.writer.close();
             this.writer = null;
         }
+
+        // XXX Could signal possible dirty-state to read-only reader pools dirty at this point.
     }
 
     /**
      * Close down the managed Lucene index.
      * 
-     * This will also forcefully close all active read-only readers.
+     * This will also gracefully close all active read-only readers.
      * 
      **/
-    protected synchronized void close() throws IOException {
+    protected final synchronized void close() throws IOException {
         if (this.reader != null) {
             this.reader.close();
             this.reader = null;
@@ -318,50 +301,20 @@ public abstract class AbstractLuceneIndex {
             this.writer = null;
         }
 
+        closeAllReadOnlyReaders();
+
         if (this.directory != null) {
             this.directory.close();
             this.directory = null;
         }
 
-        closeAllReadOnlyReaders();
-
-        logger.info("Index closed");
+        logger.info("Index closed for business.");
     }
 
-    protected synchronized boolean isClosed() {
+    protected final synchronized boolean isClosed() {
         return (this.directory == null);
     }
 
-    /**
-     * Re-initialize index resources.
-     * 
-     * @throws IOException
-     */
-    protected synchronized void reinitialize() throws IOException {
-        if (this.reader != null) {
-            this.reader.close();
-            this.reader = null;
-        }
-
-        if (this.writer != null) {
-            this.writer.close();
-            this.writer = null;
-        }
-
-        if (this.directory != null) {
-            this.directory.close();
-            this.directory = null;
-        }
-
-        this.directory = createDirectory();
-        initializeIndexDirectory(this.directory, false);
-
-        closeAllReadOnlyReaders();
-        
-        //this.roReader = IndexReader.open(this.directory, true);
-
-        logger.info("Re-initialized index at directory '" + this.directory + "'");
-    }
 
     /**
      * Clear existing index directory contents, and create a new one. This
@@ -369,7 +322,7 @@ public abstract class AbstractLuceneIndex {
      * 
      * @throws IOException
      */
-    protected synchronized void createNewIndex() throws IOException {
+    protected final synchronized void createNewIndex() throws IOException {
 
         if (this.reader != null) {
             this.reader.close();
@@ -380,6 +333,8 @@ public abstract class AbstractLuceneIndex {
             this.writer.close();
             this.writer = null;
         }
+
+        closeAllReadOnlyReaders();
 
         if (this.directory != null) {
             this.directory.close();
@@ -389,9 +344,7 @@ public abstract class AbstractLuceneIndex {
         this.directory = createDirectory();
         initializeIndexDirectory(this.directory, true);
 
-        closeAllReadOnlyReaders();
-
-//        this.roReader = IndexReader.open(this.directory, true);
+        initializeReadOnlyReaderPooling();
 
         logger.info("Created new index at directory '" + this.directory + "'");
     }
@@ -401,12 +354,11 @@ public abstract class AbstractLuceneIndex {
             throws IOException {
 
         if (createNew || !IndexReader.indexExists(directory)) {
-            IndexWriter writer = new IndexWriter(directory, this.analyzer,
+            IndexWriter w = new IndexWriter(directory, this.analyzer,
                     true, MaxFieldLength.LIMITED);
-            writer.setUseCompoundFile(true);
-            writer.close();
-            logger.info("Empty new index created in directory '" + directory
-                    + "'");
+            w.setUseCompoundFile(true);
+            w.close();
+            logger.info("Empty new index created in directory '" + directory + "'");
         } else {
             checkIndexLock(directory);
         }
@@ -426,35 +378,42 @@ public abstract class AbstractLuceneIndex {
         }
     }
 
-    public int getMergeFactor() {
-        return this.mergeFactor;
-    }
-
+    /** @see org.apache.lucene.index.IndexWriter#setMergeFactor(int)  */
     public void setMergeFactor(int mergeFactor) {
         this.mergeFactor = mergeFactor;
     }
 
-    public int getMaxBufferedDocs() {
-        return this.maxBufferedDocs;
-    }
-
-    public void setMaxBufferedDocs(int maxBufferedDocs) {
-        this.maxBufferedDocs = maxBufferedDocs;
-    }
-
-    public int getMaxMergeDocs() {
-        return this.maxMergeDocs;
-    }
-
+    /** @see org.apache.lucene.index.IndexWriter#setMaxMergeDocs(int) */
     public void setMaxMergeDocs(int maxMergeDocs) {
         this.maxMergeDocs = maxMergeDocs;
     }
 
-    public void setMaxReadOnlyReaderInstances(int maxReadOnlyReaderInstances) {
-        if (maxReadOnlyReaderInstances < 1) {
-            throw new IllegalArgumentException("maxReadOnlyReaderInstances must be >= 1");
+    public void setMaxReadOnlyReaders(int maxReadOnlyReaders) {
+        if (maxReadOnlyReaders < 1) {
+            throw new IllegalArgumentException("maxReadOnlyReaders must be >= 1");
         }
-        this.maxReadOnlyReaderInstances = maxReadOnlyReaderInstances;
+        this.maxReadOnlyReaders = maxReadOnlyReaders;
+    }
+
+    public void setMaxAgingReadOnlyReaders(int maxAgingReadOnlyReaders) {
+        if (maxAgingReadOnlyReaders < 0) {
+            throw new IllegalArgumentException("maxAgingReadOnlyReaders must be >= 0");
+        }
+        this.maxAgingReadOnlyReaders = maxAgingReadOnlyReaders;
+    }
+
+    /**
+     * When requestion a read-only reader, at what max dirty age should we
+     * return an aging (and possibly dirty) reader instead of a refreshed one.
+     * The value is in seconds.
+     *
+     * @param agingReadOnlyReaderThreshold the agingReadOnlyReaderThreshold to set
+     */
+    public void setAgingReadOnlyReaderThreshold(int agingReadOnlyReaderThreshold) {
+        if (maxAgingReadOnlyReaders < 0) {
+            throw new IllegalArgumentException("agingReadOnlyReaderThreshold must be >= 0");
+        }
+        this.agingReadOnlyReaderThreshold = agingReadOnlyReaderThreshold;
     }
 
 }

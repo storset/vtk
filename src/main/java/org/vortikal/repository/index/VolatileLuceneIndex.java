@@ -49,10 +49,9 @@ public class VolatileLuceneIndex extends AbstractLuceneIndex  {
                                boolean forceUnlock) throws IOException {
         
         super(analyzer, eraseExistingIndex, forceUnlock);
-        super.initialize();
-        
     }
     
+    @Override
     protected Directory createDirectory()
             throws IOException {
         return new RAMDirectory();

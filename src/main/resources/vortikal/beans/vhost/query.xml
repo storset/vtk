@@ -80,8 +80,11 @@
     <property name="storageRootPath" value="${indexStorageRootPath}"/>
     <property name="storageId" value="property_index"/>
     <property name="forceUnlock" value="true"/>
-    <property name="maxLockAcquireTimeOnShutdown" value="30"/>
+    <property name="maxLockAcquireTimeOnShutdown" value="20"/>
     <property name="maxReadOnlyReaders" value="${indexMaxReadOnlyReaders}" />
+    <property name="maxAgingReadOnlyReaders" value="${indexMaxAgingReadOnlyReaders}" />
+    <property name="agingReadOnlyReaderThreshold" value="${indexAgingReadOnlyReaderThreshold}" />
+    <property name="mergeFactor" value="4" />
   </bean>
 
   <!-- Property set index based on primary Lucene index accessor instance.  -->
@@ -94,11 +97,9 @@
   <bean id="secondarySystemIndexAccessor" class="org.vortikal.repository.index.LuceneIndexManager">
     <property name="storageRootPath" value="${indexStorageRootPath}"/>
     <property name="storageId" value="property_index.secondary"/>
-    <property name="maxBufferedDocs" value="100"/>
     <property name="mergeFactor" value="100"/>
-    <property name="maxMergeDocs" value="15000"/>
     <property name="forceUnlock" value="true"/>
-    <property name="maxLockAcquireTimeOnShutdown" value="30"/>
+    <property name="maxLockAcquireTimeOnShutdown" value="20"/>
     <property name="closeAfterInitialization" value="true"/>
   </bean>
 
@@ -126,6 +127,7 @@
         <property name="indexAccessor" ref="systemIndexAccessor"/>
         <property name="documentMapper" ref="documentMapper"/>
         <property name="queryBuilder" ref="queryBuilder"/>
+        <property name="unauthenticatedQueryMaxDirtyAge" value="${indexUnauthenticatedQueryMaxDirtyAge}" />
       </bean>
     </property>
   </bean>

@@ -64,10 +64,7 @@ public class FSBackedLuceneIndex extends AbstractLuceneIndex {
                                boolean eraseExistingIndex,
                                boolean forceUnlock) throws IOException {
         super(analyzer, eraseExistingIndex, forceUnlock);
-        
         this.storageDirectory = storageDirectory;
-        
-        super.initialize();
     }
     
     /**

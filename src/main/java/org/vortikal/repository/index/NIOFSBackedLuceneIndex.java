@@ -21,18 +21,13 @@ public class NIOFSBackedLuceneIndex extends AbstractLuceneIndex {
         
     private File storageDirectory;
     
-    
     public NIOFSBackedLuceneIndex(File storageDirectory, 
                                Analyzer analyzer, 
                                boolean eraseExistingIndex,
                                boolean forceUnlock) throws IOException {
         super(analyzer, eraseExistingIndex, forceUnlock);
-        
         this.storageDirectory = storageDirectory;
-        
-        super.initialize();
     }
-
     
 	@Override
 	protected Directory createDirectory() throws IOException {
@@ -61,5 +56,4 @@ public class NIOFSBackedLuceneIndex extends AbstractLuceneIndex {
         
         super.commit(); // Close reader
     }
-
 }

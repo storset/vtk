@@ -87,11 +87,11 @@ public abstract class AbstractLuceneIndex {
     // Aging/possibly dirty read-only index reader instances
     private int maxAgingReadOnlyReaders = 0;
     private int agingReadOnlyReaderThreshold = 30;
-    private ReadOnlyIndexReaderPool agingReadOnlyReaders;
+    private ReadOnlyIndexReaderPool agingReadOnlyReaderPool;
 
     // Normal always update-to-date read only index reader instances
     private int maxReadOnlyReaders = 1;
-    private ReadOnlyIndexReaderPool readOnlyReaders;
+    private ReadOnlyIndexReaderPool readOnlyReaderPool;
 
     /**
      * Constructor with some sensible defaults.
@@ -209,7 +209,7 @@ public abstract class AbstractLuceneIndex {
         if (isClosed()) {
             throw new IOException("Index is closed.");
         }
-        return this.readOnlyReaders.borrowReader(false);
+        return this.readOnlyReaderPool.getReader(false);
     }
 
     // Method is intentionally *not* synchronized
@@ -219,14 +219,14 @@ public abstract class AbstractLuceneIndex {
             throw new IOException("Index is closed.");
         }
 
-        if (this.agingReadOnlyReaders != null
+        if (this.agingReadOnlyReaderPool != null
                 && maxDirtyAge >= this.agingReadOnlyReaderThreshold) {
 
             // Use aging readers and thread stickyness
-            return this.agingReadOnlyReaders.borrowReader(true);
+            return this.agingReadOnlyReaderPool.getReader(true);
         }
 
-        return this.readOnlyReaders.borrowReader(false);
+        return this.readOnlyReaderPool.getReader(false);
     }
 
     // Method is intentionally *not* synchronized
@@ -237,11 +237,11 @@ public abstract class AbstractLuceneIndex {
     }
 
     private void closeAllReadOnlyReaders() throws IOException {
-        if (this.readOnlyReaders != null) {
-            this.readOnlyReaders.closeAll();
+        if (this.readOnlyReaderPool != null) {
+            this.readOnlyReaderPool.closeAll();
         }
-        if (this.agingReadOnlyReaders != null) {
-            this.agingReadOnlyReaders.closeAll();
+        if (this.agingReadOnlyReaderPool != null) {
+            this.agingReadOnlyReaderPool.closeAll();
         }
     }
 
@@ -251,13 +251,13 @@ public abstract class AbstractLuceneIndex {
             throw new IOException("Unable to initialize read-only reader pools: index is closed.");
         }
 
-        this.readOnlyReaders = new ReadOnlyIndexReaderPool(this.directory,
+        this.readOnlyReaderPool = new ReadOnlyIndexReaderPool(this.directory,
                                                            this.maxReadOnlyReaders);
         if (this.maxAgingReadOnlyReaders > 0) {
-            this.agingReadOnlyReaders = new ReadOnlyIndexReaderPool(this.directory,
+            this.agingReadOnlyReaderPool = new ReadOnlyIndexReaderPool(this.directory,
                     this.maxAgingReadOnlyReaders, this.agingReadOnlyReaderThreshold);
         } else {
-            this.agingReadOnlyReaders = null;
+            this.agingReadOnlyReaderPool = null;
         }
     }
 

@@ -100,12 +100,12 @@ final class ReadOnlyIndexReaderPool {
     /**
      * Get a reader from the pool, selected in round-robin fashion.
      *
-     * @see #borrowReader(boolean)
+     * @see #getReader(boolean)
      * @return
      * @throws IOException
      */
-    public IndexReader borrowReader() throws IOException {
-        return borrowReader(false);
+    public IndexReader getReader() throws IOException {
+        return getReader(false);
     }
 
     /**
@@ -121,7 +121,7 @@ final class ReadOnlyIndexReaderPool {
      *                 the same thread always gets the same reader through-out
      *                 its processeing, to improve consistency.
      */
-    public IndexReader borrowReader(boolean selectByThread) throws IOException {
+    public IndexReader getReader(boolean selectByThread) throws IOException {
 
         this.logger.debug("borrow request, byThread=" + selectByThread);
 
@@ -178,8 +178,8 @@ final class ReadOnlyIndexReaderPool {
      * Close all index readers in pool.
      *
      * New instances will be automatically re-created on-demand for sub-sequent calls
-     * to {@link #borrowReader(boolean) }, so to avoid spawning new readers, you'll
-     * have to make sure not to call {@link #borrowReader(boolean)} after this method
+     * to {@link #getReader(boolean) }, so to avoid spawning new readers, you'll
+     * have to make sure not to call {@link #getReader(boolean)} after this method
      * has been called.
      *
      * Should be called before provided <code>Directory</code> is closed.

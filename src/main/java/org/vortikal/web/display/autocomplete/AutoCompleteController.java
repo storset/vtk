@@ -152,14 +152,17 @@ public abstract class AutoCompleteController implements Controller {
             this.token = token;
         }
 
+        @Override
         public Locale getPreferredLocale() {
             return this.preferredLocale;
         }
 
+        @Override
         public Path getContextUri() {
             return this.contextUri;
         }
 
+        @Override
         public String getToken() {
             return this.token;
         }

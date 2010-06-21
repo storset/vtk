@@ -58,14 +58,17 @@ public class PrincipalSearchImpl implements PrincipalSearch {
         this.preferredLocale = preferredLocale;
     }
 
+    @Override
     public Type getPrincipalType() {
         return this.principalType;
     }
 
+    @Override
     public String getSearchString() {
         return this.searchString;
     }
 
+    @Override
     public Locale getPreferredLocale() {
         return this.preferredLocale;
     }

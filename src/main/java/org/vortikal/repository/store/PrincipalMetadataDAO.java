@@ -73,6 +73,13 @@ public interface PrincipalMetadataDAO {
      */
     List<PrincipalMetadata> search(PrincipalSearch search);
 
+    /**
+     * List all employees for a given unit and all its sub-units.
+     *
+     * @param areacodeOrDn
+     * @return
+     */
+    List<PrincipalMetadata> listPrincipalsInUnit(String areacodeOrDn);
 
     /**
      * Return set of supported principal domains for this DAO.

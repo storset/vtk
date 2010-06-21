@@ -102,6 +102,11 @@ public class PrincipalMetadataDAOCacheWrapper implements PrincipalMetadataDAO,
     public Set<String> getSupportedPrincipalDomains() {
         return this.wrappedDao.getSupportedPrincipalDomains();
     }
+
+    @Override
+    public List<PrincipalMetadata> listPrincipalsInUnit(String areacodeOrDn) {
+        return this.wrappedDao.listPrincipalsInUnit(areacodeOrDn);
+    }
     
     private static final class CacheItem {
         PrincipalMetadata value;

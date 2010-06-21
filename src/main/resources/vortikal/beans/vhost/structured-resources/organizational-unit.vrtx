@@ -19,7 +19,7 @@ resourcetype organizational-unit {
     numberOfEmployeesToDisplay : string,
     urlToEmployeesList : string,
     displayEmployees : boolean,
-    employees : binary external:listEmplyeesLdapService,
+    employees : binary external:listEmployeesLdapService,
     content : html noextract,
     hasBodyContent : derived (content) eval (content?exists)
     related-content : html noextract
@@ -42,7 +42,7 @@ resourcetype organizational-unit {
 
   services {
     getExternalUnitInfo organizationMetadataLdapService requires(areacode),
-    displayEmployees listEmplyeesLdapService requires(areacode)
+    displayEmployees listEmployeesLdapService requires(areacode)
   }
 
   view-components {

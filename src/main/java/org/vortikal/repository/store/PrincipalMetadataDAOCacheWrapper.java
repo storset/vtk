@@ -92,13 +92,12 @@ public class PrincipalMetadataDAOCacheWrapper implements PrincipalMetadataDAO,
         return result;
     }
     
-    /* (non-Javadoc)
-     * @see org.vortikal.repository.store.PrincipalMetadataDAO#search(PrincipalMetadataDAO.Search)
-     */
+    @Override
     public List<PrincipalMetadata> search(PrincipalSearch search) {
         return this.wrappedDao.search(search);
     }
 
+    @Override
     public Set<String> getSupportedPrincipalDomains() {
         return this.wrappedDao.getSupportedPrincipalDomains();
     }

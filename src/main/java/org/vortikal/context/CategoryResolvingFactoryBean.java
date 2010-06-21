@@ -85,6 +85,9 @@ public class CategoryResolvingFactoryBean extends AbstractFactoryBean implements
     
         List<Categorizable> result = new ArrayList<Categorizable>();
         for (Categorizable categorizable: matchingBeans.values()) {
+            if (categorizable == null) {
+                continue;
+            }
             if (categorizable.getCategories() != null
                 && categorizable.getCategories().contains(this.category)) {
                 result.add(categorizable);

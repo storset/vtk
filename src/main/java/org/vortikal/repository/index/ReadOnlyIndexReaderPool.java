@@ -153,6 +153,7 @@ final class ReadOnlyIndexReaderPool {
                 }
             } catch (IOException io) {
                 item.reader = null; // Something went wrong, throw away the reader.
+                this.logger.warn("Got an IOException when attempting to open/refresh or close a reader", io);
                 throw io;
             }
 

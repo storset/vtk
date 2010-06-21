@@ -102,25 +102,30 @@ public class PrincipalFactory {
         return principal;
     }
 
-    public List<Principal> search(final String filter, final Type type) throws RepositoryException {
+    public List<Principal> search(final String filter, final Type type) {
         List<Principal> retval = null;
-        if (this.principalMetadataDao != null) {
 
+        if (this.principalMetadataDao != null) {
             PrincipalSearch search = new PrincipalSearchImpl(type, filter);
 
-            List<PrincipalMetadata> results = this.principalMetadataDao.search(search);
-            if (results != null) {
-                retval = new ArrayList<Principal>(results.size());
-                for (PrincipalMetadata metadata: results) {
-                    PrincipalImpl principal = new PrincipalImpl(metadata.getQualifiedName());
-                    principal.setType(type);
-                    principal.setDescription((String)metadata.getValue(PrincipalMetadata.DESCRIPTION_ATTRIBUTE));
-                    principal.setURL((String)metadata.getValue(PrincipalMetadata.URL_ATTRIBUTE));
-                    principal.setMetadata(metadata);
-                    retval.add(principal);
+            try {
+                List<PrincipalMetadata> results = this.principalMetadataDao.search(search);
+                if (results != null) {
+                    retval = new ArrayList<Principal>(results.size());
+                    for (PrincipalMetadata metadata : results) {
+                        PrincipalImpl principal = new PrincipalImpl(metadata.getQualifiedName());
+                        principal.setType(type);
+                        principal.setDescription((String) metadata.getValue(PrincipalMetadata.DESCRIPTION_ATTRIBUTE));
+                        principal.setURL((String) metadata.getValue(PrincipalMetadata.URL_ATTRIBUTE));
+                        principal.setMetadata(metadata);
+                        retval.add(principal);
+                    }
                 }
-            }
+            } catch (Exception e) {} // Just keep old behaviour of not propagating
+                                     // any size limit exceeded exceptions from this method ...
+                                     // XXX remove/refactor this method or fixup client code to handle it.
         }
+
         return retval;
     }
 

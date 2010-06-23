@@ -80,6 +80,7 @@ public class IndexDataReportDAO implements DataReportDAO {
     private DocumentMapper documentMapper;
     private FieldValueMapper fieldValueMapper;
     private IndexDataReportScopeFilterFactory scopeFilterFactory;
+    private int maxIndexDirtyAge = 0;
 
     @SuppressWarnings("unchecked")
     public List<Pair<Value, Integer>>
@@ -88,9 +89,9 @@ public class IndexDataReportDAO implements DataReportDAO {
 
         IndexReader reader = null;
         try {
-            reader = systemIndexAccessor.getReadOnlyIndexReader();
+            reader = systemIndexAccessor.getReadOnlyIndexReader(this.maxIndexDirtyAge);
 
-            PropertyTypeDefinition def = query.getPropertyTypeDefintion();
+            final PropertyTypeDefinition def = query.getPropertyTypeDefintion();
 
             BooleanFilter mainFilter = new BooleanFilter();
 
@@ -109,13 +110,14 @@ public class IndexDataReportDAO implements DataReportDAO {
             selector.addPropertyDefinition(def);
             FieldSelector fieldSelector = this.documentMapper.getDocumentFieldSelector(selector);
 
-            FastMap valFreqMap = new FastMap(reader.numDocs() / 3);
+            FastMap valFreqMap = new FastMap(1024);
 
             DocIdSet allowedDocs = mainFilter.getDocIdSet(reader);
             DocIdSetIterator iterator = allowedDocs.iterator();
+            final String fieldName = FieldNameMapping.getStoredFieldName(def);
             while (iterator.next()) {
                 Document doc = reader.document(iterator.doc(), fieldSelector);
-                Field[] fields = doc.getFields(FieldNameMapping.getStoredFieldName(def));
+                Field[] fields = doc.getFields(fieldName);
 
                 if (fields.length == 0) { // This check should be unnecessary
                     // now, since we're always using term
@@ -124,8 +126,9 @@ public class IndexDataReportDAO implements DataReportDAO {
                 }
 
                 if (def.isMultiple()) {
-                    Value[] values = this.fieldValueMapper.getValuesFromStoredBinaryFields(Arrays.asList(fields), def
-                            .getType());
+                    Value[] values = this.fieldValueMapper.getValuesFromStoredBinaryFields(
+                                                                          Arrays.asList(fields),
+                                                                          def.getType());
                     for (Value value : values) {
                         addValue(valFreqMap, value);
                     }
@@ -211,5 +214,12 @@ public class IndexDataReportDAO implements DataReportDAO {
     @Required
     public void setScopeFilterFactory(IndexDataReportScopeFilterFactory scopeFilterFactory) {
         this.scopeFilterFactory = scopeFilterFactory;
+    }
+
+    /**
+     * @param maxIndexDirtyAge the maxIndexDirtyAge to set
+     */
+    public void setMaxIndexDirtyAge(int maxIndexDirtyAge) {
+        this.maxIndexDirtyAge = maxIndexDirtyAge;
     }
 }

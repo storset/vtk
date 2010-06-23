@@ -78,6 +78,7 @@ public class IndexDataReportScopeFilterFactoryImpl
     private QueryAuthorizationFilterFactory queryAuthorizationFilterFactory;
     private FieldValueMapper fieldValueMapper;
 
+    @Override
     public Filter getScopeFilter(List<ReportScope> scoping, IndexReader reader) throws IOException {
 
         if (scoping.isEmpty()) return null;

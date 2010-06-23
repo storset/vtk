@@ -71,10 +71,12 @@ import org.vortikal.security.token.TokenManager;
  * A (still non-transactional) implementation of the
  * <code>org.vortikal.repository.Repository</code> interface.
  * 
- * XXX: implement locking of depth 'infinity' XXX: namespace locking/concurrency
- * XXX: Evaluate exception practice, handling and propagation XXX: transaction
- * demarcation XXX: externalize caching XXX: duplication of owner and inherited
- * between resource and acl.
+ * XXX: implement locking of depth 'infinity'
+ * XXX: namespace locking/concurrency
+ * XXX: Evaluate exception practice, handling and propagation
+ * XXX: transaction demarcation
+ * XXX: externalize caching
+ * XXX: duplication of owner and inherited between resource and acl.
  * 
  */
 public class RepositoryImpl implements Repository, ApplicationContextAware {

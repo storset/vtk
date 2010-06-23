@@ -47,7 +47,7 @@ public class LockManager {
 
     private long lockDefaultTimeout = LOCK_DEFAULT_TIMEOUT;
     private long lockMaxTimeout = LOCK_DEFAULT_TIMEOUT;
-    
+
     private DataAccessor dao;
 
     public void lockAuthorize(Resource resource, Principal principal,
@@ -115,9 +115,6 @@ public class LockManager {
             throw new ResourceLockedException();
         }
     }
-
-
-
     
     public void setLockMaxTimeout(long lockMaxTimeout) {
         this.lockMaxTimeout = lockMaxTimeout;

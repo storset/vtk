@@ -386,7 +386,7 @@ public final class FieldValueMapper {
     public Value getValueFromStoredBinaryField(Field field, Type type) throws FieldDataEncodingException,
             ValueFormatException {
 
-        byte[] value = field.getBinaryValue();
+        byte[] valueBuf = field.getBinaryValue();
 
         switch (type) {
         case PRINCIPAL:
@@ -395,7 +395,7 @@ public final class FieldValueMapper {
         case STRING:
         case JSON:
             try {
-                String stringValue = new String(value, field.getBinaryOffset(), 
+                String stringValue = new String(valueBuf, field.getBinaryOffset(),
                                                        field.getBinaryLength(),
                                                        STRING_VALUE_ENCODING);
                 return this.valueFactory.createValue(stringValue, type);
@@ -403,31 +403,31 @@ public final class FieldValueMapper {
             } // Won't happen.
 
         case BOOLEAN:
-            boolean b = FieldDataEncoder.decodeBooleanFromBinary(value, 
+            boolean b = FieldDataEncoder.decodeBooleanFromBinary(valueBuf,
                                                                  field.getBinaryOffset(),
                                                                  field.getBinaryLength());
             return new Value(b);
 
         case DATE:
-            long time = FieldDataEncoder.decodeDateValueFromBinary(value,
+            long time = FieldDataEncoder.decodeDateValueFromBinary(valueBuf,
                                                                    field.getBinaryOffset(),
                                                                    field.getBinaryLength());
             return new Value(new Date(time), true);
 
         case TIMESTAMP:
-            long time2 = FieldDataEncoder.decodeDateValueFromBinary(value,
+            long time2 = FieldDataEncoder.decodeDateValueFromBinary(valueBuf,
                                                                     field.getBinaryOffset(),
                                                                     field.getBinaryLength());
             return new Value(new Date(time2), false);
 
         case INT:
-            int n = FieldDataEncoder.decodeIntegerFromBinary(value,
+            int n = FieldDataEncoder.decodeIntegerFromBinary(valueBuf,
                                                              field.getBinaryOffset(),
                                                              field.getBinaryLength());
             return new Value(n);
 
         case LONG:
-            long l = FieldDataEncoder.decodeLongFromBinary(value,
+            long l = FieldDataEncoder.decodeLongFromBinary(valueBuf,
                                                            field.getBinaryOffset(),
                                                            field.getBinaryLength());
             return new Value(l);
@@ -440,7 +440,7 @@ public final class FieldValueMapper {
     public Value[] getValuesFromStoredBinaryFields(List<Field> fields, Type type)
             throws FieldDataEncodingException, ValueFormatException {
 
-        if (fields.size() == 0) {
+        if (fields.isEmpty()) {
             throw new IllegalArgumentException("Length of fields must be greater than zero");
         }
 
@@ -452,7 +452,6 @@ public final class FieldValueMapper {
 
         return values;
     }
-
 
     public Field getStoredBinaryIntegerField(String name, int value)
         throws FieldValueMappingException {

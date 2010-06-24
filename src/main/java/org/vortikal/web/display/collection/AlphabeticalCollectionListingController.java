@@ -11,9 +11,11 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.listing.ListingPager;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
+import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 public class AlphabeticalCollectionListingController extends CollectionListingController {
@@ -84,8 +86,11 @@ public class AlphabeticalCollectionListingController extends CollectionListingCo
             }
         }
 
+        Service service = RequestContext.getRequestContext().getService();
+        URL baseURL = service.constructURL(RequestContext.getRequestContext().getResourceURI());
+       
         model.put("alpthabeticalOrdredResult", alpthabeticalOrdredResult);
-        List<URL> urls = ListingPager.generatePageThroughUrls(totalHits, pageLimit, URL.create(request));
+        List<URL> urls = ListingPager.generatePageThroughUrls(totalHits, pageLimit, baseURL);
         model.put(MODEL_KEY_PAGE_THROUGH_URLS, urls);
         model.put(MODEL_KEY_PAGE, page);
         model.put(MODEL_KEY_SEARCH_COMPONENTS, results);

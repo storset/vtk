@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Resource;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.collection.event.EventListingHelper.SpecificDateSearchType;
 import org.vortikal.web.display.collection.event.EventListingSearcher.GroupedEvents;
 import org.vortikal.web.display.listing.ListingPager;
@@ -86,8 +87,10 @@ public class EventCalendarListingController extends EventListingController {
                     String noPlannedTitleKey = viewType + "NoPlannedTitle";
                     model.put(noPlannedTitleKey, noPlannedTitle);
                 } else {
-                    List<URL> urls = ListingPager.generatePageThroughUrls(result.getTotalHits(), pageLimit, URL
-                            .create(request));
+                    Service service = RequestContext.getRequestContext().getService();
+                    URL baseURL = service.constructURL(RequestContext.getRequestContext().getResourceURI());
+                    
+                    List<URL> urls = ListingPager.generatePageThroughUrls(result.getTotalHits(), pageLimit, baseURL);
                     model.put(MODEL_KEY_PAGE_THROUGH_URLS, urls);
                 }
 
@@ -151,8 +154,11 @@ public class EventCalendarListingController extends EventListingController {
 
             if (specificDateEvents != null && !specificDateEvents.getFiles().isEmpty()) {
                 model.put("specificDateEvents", specificDateEvents);
-                List<URL> urls = ListingPager.generatePageThroughUrls(specificDateEvents.getTotalHits(), pageLimit, URL
-                        .create(request));
+                
+                Service service = RequestContext.getRequestContext().getService();
+                URL baseURL = service.constructURL(RequestContext.getRequestContext().getResourceURI());
+                
+                List<URL> urls = ListingPager.generatePageThroughUrls(specificDateEvents.getTotalHits(), pageLimit, baseURL);
                 model.put(MODEL_KEY_PAGE_THROUGH_URLS, urls);
             } else {
                 model.put("noPlannedEventsMsg", this.helper.getEventTypeTitle(request, collection,

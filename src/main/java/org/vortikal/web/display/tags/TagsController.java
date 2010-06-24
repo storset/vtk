@@ -141,7 +141,10 @@ public class TagsController implements Controller {
             totalHits = listing.getTotalHits();
         }
 
-        List<URL> urls = ListingPager.generatePageThroughUrls(totalHits, pageLimit, URL.create(request));
+        Service service = org.vortikal.web.RequestContext.getRequestContext().getService();
+        URL baseURL = service.constructURL(org.vortikal.web.RequestContext.getRequestContext().getResourceURI());
+
+        List<URL> urls = ListingPager.generatePageThroughUrls(totalHits, pageLimit, baseURL);
 
         model.put("listing", listing);
         model.put("page", page);
@@ -156,10 +159,10 @@ public class TagsController implements Controller {
             Set<Object> alt = new HashSet<Object>();
             for (String contentType : this.alternativeRepresentations.keySet()) {
                 try {
-                    Service service = this.alternativeRepresentations.get(contentType);
+                    Service altService = this.alternativeRepresentations.get(contentType);
                     Map<String, String> parameters = new HashMap<String, String>();
                     parameters.put(TagsHelper.TAG_PARAMETER, tag);
-                    URL url = service.constructURL(scope.getURI(), parameters);
+                    URL url = altService.constructURL(scope.getURI(), parameters);
                     List<String> sortFieldParams = listing.getSortFieldParams();
                     if (sortFieldParams.size() > 0) {
                         for (String param : sortFieldParams) {
@@ -171,9 +174,9 @@ public class TagsController implements Controller {
                             url.addParameter(TagsHelper.RESOURCE_TYPE_PARAMETER, resourceTypeDefinition.getName());
                         }
                     }
-                    String title = service.getName();
+                    String title = altService.getName();
                     RequestContext rc = new RequestContext(request);
-                    title = rc.getMessage(service.getName(), new Object[] { scope.getTitle() }, service.getName());
+                    title = rc.getMessage(altService.getName(), new Object[] { scope.getTitle() }, altService.getName());
 
                     Map<String, Object> m = new HashMap<String, Object>();
                     m.put("title", title);

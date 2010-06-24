@@ -38,9 +38,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Resource;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.collection.AbstractCollectionListingController;
 import org.vortikal.web.display.listing.ListingPager;
 import org.vortikal.web.search.Listing;
+import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 public class ArticleListingController extends AbstractCollectionListingController {
@@ -109,9 +111,11 @@ public class ArticleListingController extends AbstractCollectionListingControlle
             totalHits += defaultArticles.getTotalHits();
             defaultArticles = null;
         }
-
+        Service service = RequestContext.getRequestContext().getService();
+        URL baseURL = service.constructURL(RequestContext.getRequestContext().getResourceURI());
+        
         List<URL> urls = ListingPager.generatePageThroughUrls(totalHits, pageLimit, featuredArticlesTotalHits,
-                ListingPager.getBaseURL(request), true);
+                baseURL, true);
         model.put(MODEL_KEY_SEARCH_COMPONENTS, results);
         model.put(MODEL_KEY_PAGE, userDisplayPage);
         model.put(MODEL_KEY_PAGE_THROUGH_URLS, urls);

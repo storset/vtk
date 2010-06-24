@@ -90,9 +90,4 @@ public class ListingPager {
         }
         return page;
     }
-
-    public static URL getBaseURL(HttpServletRequest request) {
-        return URL.parse(URL.create(request).getBase());
-    }
-
 }

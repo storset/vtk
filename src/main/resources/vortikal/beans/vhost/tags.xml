@@ -58,7 +58,7 @@
     </property>
     <property name="tagsHelper" ref="tagsHelper" />
     <property name="servesWebRoot" value="${servesWebRoot}" />
-    <property name="hostName" value="${fulltextSearch.hostName}" />
+    <property name="hostName" value="${repositoryID}" />
   </bean>
 
   <bean id="tags.tagElementsProvider"

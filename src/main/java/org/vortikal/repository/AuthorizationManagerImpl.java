@@ -501,7 +501,10 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
 
         checkReadOnly(principal);
 
-        authorizeCopy(srcUri, destUri, principal, deleteDestination);
+        // XXX: in order to move a collection, read permission is required for 
+        // the entire subtree (commented out):
+        //authorizeCopy(srcUri, destUri, principal, deleteDestination);
+
         authorizeDelete(srcUri, principal);
     }
 

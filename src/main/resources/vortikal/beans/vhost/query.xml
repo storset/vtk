@@ -84,6 +84,11 @@
     <property name="maxReadOnlyReaders" value="${indexMaxReadOnlyReaders}" />
     <property name="maxAgingReadOnlyReaders" value="${indexMaxAgingReadOnlyReaders}" />
     <property name="agingReadOnlyReaderThreshold" value="${indexAgingReadOnlyReaderThreshold}" />
+    <property name="indexReaderWarmup">
+      <bean class="org.vortikal.repository.index.StaticQueryIndexReaderWarmup">
+        <property name="lastModifiedPropDef" ref="lastModifiedPropDef" />
+      </bean>
+    </property>
     <property name="mergeFactor" value="4" />
   </bean>
 

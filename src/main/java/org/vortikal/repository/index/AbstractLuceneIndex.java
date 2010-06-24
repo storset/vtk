@@ -66,9 +66,6 @@ public abstract class AbstractLuceneIndex {
      **/
     private boolean forceUnlock = false;
 
-    /** Erase existing index upon first initialization */
-    private boolean eraseExistingIndex = false;
-
     /** Main <code>IndexWriter</code> instance. */
     private IndexWriter writer = null;
 
@@ -93,13 +90,16 @@ public abstract class AbstractLuceneIndex {
     private int maxReadOnlyReaders = 1;
     private ReadOnlyIndexReaderPool readOnlyReaderPool;
 
+    // Reader warmup delegate
+    private IndexReaderWarmup irw;
+
     /**
      * Constructor with some sensible defaults.
      *
      * Note that #reinitialize must be called before index can be used.
      */
     public AbstractLuceneIndex() {
-        this(new KeywordAnalyzer(), false, false);
+        this(new KeywordAnalyzer(), false);
     }
 
     /**
@@ -109,14 +109,11 @@ public abstract class AbstractLuceneIndex {
      * Note that #reinitialize() must be called before index can be used.
      *
      * @param analyzer
-     * @param eraseExistingIndex
      * @param forceUnlock
      */
-    public AbstractLuceneIndex(Analyzer analyzer, boolean eraseExistingIndex,
-            boolean forceUnlock) {
+    public AbstractLuceneIndex(Analyzer analyzer, boolean forceUnlock) {
         this.analyzer = analyzer;
         this.forceUnlock = forceUnlock;
-        this.eraseExistingIndex = eraseExistingIndex;
     }
 
     /**
@@ -144,7 +141,7 @@ public abstract class AbstractLuceneIndex {
             this.writer = null;
         }
 
-        closeAllReadOnlyReaders();
+        closeReadOnlyReaderPools();
 
         if (this.directory != null) {
             this.directory.close();
@@ -158,7 +155,7 @@ public abstract class AbstractLuceneIndex {
 
         initializeIndexDirectory(this.directory, false);
 
-        initializeReadOnlyReaderPooling();
+        initializeReadOnlyReaderPools();
 
         logger.info("Opened and initialized index at directory '" + this.directory + "'");
     }
@@ -206,18 +203,16 @@ public abstract class AbstractLuceneIndex {
 
     // Method is intentionally *not* synchronized
     protected final IndexReader getReadOnlyIndexReader() throws IOException {
-        if (isClosed()) {
-            throw new IOException("Index is closed.");
-        }
+        if (isClosed()) throw new IOException("Index is closed.");
+
         return this.readOnlyReaderPool.getReader(false);
     }
 
     // Method is intentionally *not* synchronized
     protected final IndexReader getReadOnlyIndexReader(int maxDirtyAge)
         throws IOException {
-        if (isClosed()) {
-            throw new IOException("Index is closed.");
-        }
+
+        if (isClosed()) throw new IOException("Index is closed.");
 
         if (this.agingReadOnlyReaderPool != null
                 && maxDirtyAge >= this.agingReadOnlyReaderThreshold) {
@@ -236,16 +231,18 @@ public abstract class AbstractLuceneIndex {
         reader.decRef();
     }
 
-    private void closeAllReadOnlyReaders() throws IOException {
+    private void closeReadOnlyReaderPools() throws IOException {
         if (this.readOnlyReaderPool != null) {
-            this.readOnlyReaderPool.closeAll();
+            this.readOnlyReaderPool.close();
+            this.readOnlyReaderPool = null;
         }
         if (this.agingReadOnlyReaderPool != null) {
-            this.agingReadOnlyReaderPool.closeAll();
+            this.agingReadOnlyReaderPool.close();
+            this.agingReadOnlyReaderPool = null;
         }
     }
 
-    private void initializeReadOnlyReaderPooling() throws IOException {
+    private void initializeReadOnlyReaderPools() throws IOException {
         if (isClosed()) {
             // This shouldn't happen, but still ..
             throw new IOException("Unable to initialize read-only reader pools: index is closed.");
@@ -253,9 +250,12 @@ public abstract class AbstractLuceneIndex {
 
         this.readOnlyReaderPool = new ReadOnlyIndexReaderPool(this.directory,
                                                            this.maxReadOnlyReaders);
+        this.readOnlyReaderPool.setIndexReaderWarmup(this.irw);
+
         if (this.maxAgingReadOnlyReaders > 0) {
             this.agingReadOnlyReaderPool = new ReadOnlyIndexReaderPool(this.directory,
                     this.maxAgingReadOnlyReaders, this.agingReadOnlyReaderThreshold);
+            this.agingReadOnlyReaderPool.setIndexReaderWarmup(this.irw);
         } else {
             this.agingReadOnlyReaderPool = null;
         }
@@ -281,7 +281,8 @@ public abstract class AbstractLuceneIndex {
             this.writer = null;
         }
 
-        // XXX Could signal possible dirty-state to read-only reader pools dirty at this point.
+        // Initiate instant refresh of read-only reader pool with no allowed dirty-time
+        this.readOnlyReaderPool.refreshPoolNow();
     }
 
     /**
@@ -301,7 +302,7 @@ public abstract class AbstractLuceneIndex {
             this.writer = null;
         }
 
-        closeAllReadOnlyReaders();
+        closeReadOnlyReaderPools();
 
         if (this.directory != null) {
             this.directory.close();
@@ -334,7 +335,7 @@ public abstract class AbstractLuceneIndex {
             this.writer = null;
         }
 
-        closeAllReadOnlyReaders();
+        closeReadOnlyReaderPools();
 
         if (this.directory != null) {
             this.directory.close();
@@ -344,7 +345,7 @@ public abstract class AbstractLuceneIndex {
         this.directory = createDirectory();
         initializeIndexDirectory(this.directory, true);
 
-        initializeReadOnlyReaderPooling();
+        initializeReadOnlyReaderPools();
 
         logger.info("Created new index at directory '" + this.directory + "'");
     }
@@ -414,6 +415,10 @@ public abstract class AbstractLuceneIndex {
             throw new IllegalArgumentException("agingReadOnlyReaderThreshold must be >= 0");
         }
         this.agingReadOnlyReaderThreshold = agingReadOnlyReaderThreshold;
+    }
+
+    public void setIndexReaderWarmup(IndexReaderWarmup irw) {
+        this.irw = irw;
     }
 
 }

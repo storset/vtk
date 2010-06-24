@@ -23,9 +23,8 @@ public class NIOFSBackedLuceneIndex extends AbstractLuceneIndex {
     
     public NIOFSBackedLuceneIndex(File storageDirectory, 
                                Analyzer analyzer, 
-                               boolean eraseExistingIndex,
                                boolean forceUnlock) throws IOException {
-        super(analyzer, eraseExistingIndex, forceUnlock);
+        super(analyzer, forceUnlock);
         this.storageDirectory = storageDirectory;
     }
     

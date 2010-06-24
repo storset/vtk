@@ -121,6 +121,7 @@
         <ref bean="manage.hostNameAssertion" />
         <ref bean="manage.selectiveProtocolManager" />
         <ref bean="adminVrtxParameterRule" />
+        <ref bean="readProcessedPermissionAssertion" />
       </list>
     </property>
   </bean>

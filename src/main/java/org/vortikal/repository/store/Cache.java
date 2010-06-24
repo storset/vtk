@@ -35,6 +35,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,8 +45,6 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.ResourceImpl;
 import org.vortikal.security.Principal;
-
-import EDU.oswego.cs.dl.util.concurrent.ConcurrentReaderHashMap;
 
 
 /**
@@ -111,7 +110,7 @@ public class Cache implements DataAccessor, InitializingBean {
     private int maxItems = 1000;
     private double evictionRatio = 0.1;
     private int removeItems;
-    private final Items items = new Items();
+    private Items items = new Items(this.maxItems);
 
     private boolean gatherStatistics = false;
     private long hits = 0;
@@ -128,8 +127,8 @@ public class Cache implements DataAccessor, InitializingBean {
         if (maxItems <= 0) {
             throw new IllegalArgumentException("Cache size must be a positive number");
         }
-
         this.maxItems = maxItems;
+        this.items = new Items(this.maxItems);
     }
 
     public void setEvictionRatio(double evictionRatio) {
@@ -636,11 +635,14 @@ public class Cache implements DataAccessor, InitializingBean {
     }
 
     private class Items {
-        @SuppressWarnings("unchecked")
-        private Map<Path, Item> map = new ConcurrentReaderHashMap();
+        private Map<Path, Item> map;
         private Item in = null; // Item eviction list head (newest item)
         private Item out = null;// Item eviction list tail (oldest item)
 
+        public Items(int initialCapacity) {
+            this.map = new ConcurrentHashMap<Path, Item>(initialCapacity);
+        }
+        
         public void clear() { // Synchronized externally
             this.map.clear();
             this.in = this.out = null;

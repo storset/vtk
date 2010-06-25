@@ -73,9 +73,9 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
     private int maxReadOnlyReaders = 1;
     private int maxAgingReadOnlyReaders = 0;
     private int agingReadOnlyReaderThreshold = 30;
+    private IndexReaderWarmup irw;
 
     private int maxLockAcquireTimeOnShutdown = 30; // 30 seconds max to wait for lock when shutting down
-    private boolean eraseExistingIndex = false;
     private boolean forceUnlock = false;
     
     /** If <code>true</code>, the underlying index will be explicitly closed 
@@ -88,9 +88,9 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
     
     /* Internal mutex write lock backing the public locking functions of this class. */
     /* The lock disregards any thread-ownership, and it need not be released by
-     * the same thread that acquired it.
+     * the same thread that acquired it. The only thing it stores is the locking state itself.
      */
-    private Mutex lock = new Mutex();
+    private final Mutex lock = new Mutex();
     
     @Override
     public void afterPropertiesSet() throws BeanInitializationException {
@@ -103,7 +103,6 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
             // Initialization of file-system backed Lucene index
             this.niofsIndex = new NIOFSBackedLuceneIndex(storageDirectory, 
                                                    new KeywordAnalyzer(),
-                                                   this.eraseExistingIndex,
                                                    this.forceUnlock);
             
             this.niofsIndex.setMaxMergeDocs(this.maxMergeDocs);
@@ -111,6 +110,7 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
             this.niofsIndex.setMaxReadOnlyReaders(this.maxReadOnlyReaders);
             this.niofsIndex.setMaxAgingReadOnlyReaders(this.maxAgingReadOnlyReaders);
             this.niofsIndex.setAgingReadOnlyReaderThreshold(this.agingReadOnlyReaderThreshold);
+            this.niofsIndex.setIndexReaderWarmup(this.irw);
             this.niofsIndex.reinitialize();
             
             LOG.info("Initialization of index '" + this.getStorageId() + "' complete.");
@@ -162,7 +162,7 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
     }
 
     public void releaseIndexSearcher(IndexSearcher searcher) throws IOException {
-        releaseReadOnlyIndexReader(searcher.getIndexReader());
+        if (searcher != null) releaseReadOnlyIndexReader(searcher.getIndexReader());
     }
     
     public IndexReader getReadOnlyIndexReader() throws IOException {
@@ -174,7 +174,9 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
     }
     
     public void releaseReadOnlyIndexReader(IndexReader readOnlyReader) throws IOException {
-        this.niofsIndex.releaseReadOnlyIndexReader(readOnlyReader);
+        if (readOnlyReader != null) {
+            this.niofsIndex.releaseReadOnlyIndexReader(readOnlyReader);
+        }
     }
 
     // CAN ONLY BE CALLED IF THREAD HAS ACQUIRED THE WRITE LOCK !!
@@ -309,10 +311,6 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
         }
     }
     
-    public void setEraseExistingIndex(boolean eraseExistingIndex) {
-        this.eraseExistingIndex = eraseExistingIndex;
-    }
-
     public void setForceUnlock(boolean forceUnlock) {
         this.forceUnlock = forceUnlock;
     }
@@ -365,6 +363,10 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
 
     public void setAgingReadOnlyReaderThreshold(int agingReadOnlyReaderThreshold) {
         this.agingReadOnlyReaderThreshold = agingReadOnlyReaderThreshold;
+    }
+
+    public void setIndexReaderWarmup(IndexReaderWarmup irw) {
+        this.irw = irw;
     }
     
 }

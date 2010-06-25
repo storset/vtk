@@ -33,7 +33,7 @@
   <!-- A SimpleCache instance for the data report manager -->
   <bean id="dataReportManagerCache" class="org.vortikal.util.cache.SimpleCacheImpl">
     <property name="refreshTimestampOnGet" value="false" />
-    <property name="timeoutSeconds" value="60" />
+    <property name="timeoutSeconds" value="45" />
   </bean>
 
   <!-- Data report DAO using system index -->
@@ -42,6 +42,7 @@
     <property name="documentMapper" ref="documentMapper" />
     <property name="fieldValueMapper" ref="fieldValueMapper" />
     <property name="scopeFilterFactory" ref="repository.indexDataReportDAOScopeFilterFactory" />
+    <property name="maxIndexDirtyAge" value="${indexDataReportingMaxDirtyAge}" />
   </bean>
 
   <bean id="repository.indexDataReportDAOScopeFilterFactory"

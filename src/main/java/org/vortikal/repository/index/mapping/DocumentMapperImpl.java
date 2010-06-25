@@ -34,6 +34,7 @@ import static org.vortikal.repository.resourcetype.PropertyType.Type.BINARY;
 import static org.vortikal.repository.resourcetype.PropertyType.Type.JSON;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -51,7 +52,6 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldSelector;
 import org.apache.lucene.document.FieldSelectorResult;
-import org.apache.lucene.index.IndexReader;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Namespace;
@@ -277,6 +277,7 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
             selector = new FieldSelector() {
                 private static final long serialVersionUID = -8502087584408029619L;
 
+                @Override
                 public FieldSelectorResult accept(String fieldName) {
                     return FieldSelectorResult.LOAD;
                 }
@@ -286,6 +287,7 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
             selector = new FieldSelector() {
                 private static final long serialVersionUID = 3919989917870796613L;
 
+                @Override
                 public FieldSelectorResult accept(String fieldName) {
                     PropertyTypeDefinition def = DocumentMapperImpl.this.storedFieldNamePropDefMap.get(fieldName);
 
@@ -471,7 +473,7 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
         }
 
         List<JSONPropertyAttributeDescription> indexableJsonAttributes = def.getIndexableAttributes();
-        if (indexableJsonAttributes == null || indexableJsonAttributes.size() == 0) {
+        if (indexableJsonAttributes == null || indexableJsonAttributes.isEmpty()) {
             return new Field[0]; // Nothing to index for this JSON prop
         }
 
@@ -547,6 +549,7 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
         return singleField;
     }
 
+    @Override
     public Set<String> getACLReadPrincipalNames(Document doc) throws DocumentMappingException {
 
         Field[] fields = doc.getFields(FieldNameMapping.STORED_ACL_READ_PRINCIPALS_FIELD_NAME);
@@ -556,12 +559,8 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
                     + " does not exist or is not loaded for document: " + doc);
         }
 
-        String[] qualifiedNames = this.fieldValueMapper.getStringsFromStoredBinaryFields(fields);
-
-        Set<String> retval = new HashSet<String>(qualifiedNames.length);
-        for (String name : qualifiedNames) {
-            retval.add(name);
-        }
+        Set<String> retval = new HashSet<String>(
+                  Arrays.asList(this.fieldValueMapper.getStringsFromStoredBinaryFields(fields)));
 
         return retval;
     }

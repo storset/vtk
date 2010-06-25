@@ -32,6 +32,9 @@
 package org.vortikal.repository.index;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.index.IndexReader;
@@ -39,12 +42,19 @@ import org.apache.lucene.store.Directory;
 
 /**
  * Pooling of Lucene read-only IndexReader instances with support
- * for aging (that is allowing dirty readers for some time to increase performance).
- * It uses round-robin or optionally thread-sticky hand-out of readers if pool size > 1.
+ * for aging (that is allowing dirty readers for some time to increase performance)
+ * and asynchronous refresh and warmup. It uses round-robin or optionally thread-sticky
+ * hand-out of readers if pool size > 1.
+ *
+ * Refresh of <code>IndexReader</code> instances is done asynchronously in background
+ * threads to avoid blocking callers. While refreshing, <code>IndexReader</code>
+ * instances can be optionally warmed up by 
+ * (warmup details delegated to a configured <code>IndexReaderWarmup</code> instance).
  *
  * The pool is thread safe and does not require external synchronization. It allows
- * parallel opening/refresh of readers while trying to keep readers in sync on index version
- * for best possible consistency and concurrency.
+ * asynchronous and parallel opening/refresh of readers while trying to keep
+ * readers in sync on index version for best possible consistency, concurrency and
+ * response time.
  */
 final class ReadOnlyIndexReaderPool {
 
@@ -52,10 +62,12 @@ final class ReadOnlyIndexReaderPool {
 
     public static final int DEFAULT_MAX_DIRTY_AGE = 0;
 
-    private final Directory directory;
     private final PoolItem[] items;
     private final long maxDirtyAge;
+    private Directory directory;
     private long poolRefreshTimestamp;
+    private final ExecutorService refreshExecutorService;
+    private IndexReaderWarmup irw;
 
     /**
      * Construct a new pool with a maximum allowed dirty-age for the managed
@@ -85,6 +97,7 @@ final class ReadOnlyIndexReaderPool {
             this.items[i] = new PoolItem();
         }
         this.poolRefreshTimestamp = System.currentTimeMillis();
+        this.refreshExecutorService = Executors.newFixedThreadPool(size);
     }
 
     /**
@@ -108,6 +121,7 @@ final class ReadOnlyIndexReaderPool {
         return getReader(false);
     }
 
+
     /**
      * Get a reader from the pool. Caller should decrease ref-count of IndexReader
      * when it is no longer in use, or return the IndexReader through method 
@@ -123,37 +137,33 @@ final class ReadOnlyIndexReaderPool {
      */
     public IndexReader getReader(boolean selectByThread) throws IOException {
 
-        this.logger.debug("borrow request, byThread=" + selectByThread);
+        this.logger.debug("borrow request, selectByThread=" + selectByThread);
 
-        final PoolItem item = getPoolItem(selectByThread);
+        final PoolItem item;
+        synchronized (this) {
+            if (this.directory == null) throw new IOException("This ReadOnlyIndexReaderPool instance is closed");
+            item = getPoolItem(selectByThread);
+        }
 
-        // Synchronize only per item to allow parallel opening or refresh of
-        // IndexReader instances.
         synchronized(item) {
             try {
                 if (item.reader == null) {
-                    this.logger.debug("reader was null, creating new");
+                    this.logger.debug("Reader was null, creating new");
                     item.reader = IndexReader.open(this.directory, true);
                     item.version = item.reader.getVersion();
-                    item.refresh = false;
                 } else if (!item.reader.isCurrent()) {
-                    this.logger.debug("reader not current");
-                    if (item.refresh) {
-                        this.logger.debug("reader refresh hint set, re-opening.");
-                        // Pool refresh is over age limit or no dirty time acceptable, time to refresh.
-                        IndexReader oldReader = item.reader;
-                        item.reader = item.reader.reopen();
-                        item.version = item.reader.getVersion();
-                        item.refresh = false;
-                        oldReader.decRef();
+                    this.logger.debug("Reader not current");
+                    if (item.refreshHint) {
+                        this.logger.debug("Reader refresh hint set, submitting background refresh task.");
+                        refreshAsynchronously(item);
                     }
                 } else {
-                    this.logger.debug("setting reader refresh hint to false, since reader is current");
-                    item.refresh = false;
+                    this.logger.debug("Setting reader refresh hint to false, since reader is current");
+                    item.refreshHint = false;
                 }
             } catch (IOException io) {
                 item.reader = null; // Something went wrong, throw away the reader.
-                this.logger.warn("Got an IOException when attempting to open/refresh or close a reader", io);
+                this.logger.warn("IOException when attempting to open a new reader on directory", io);
                 throw io;
             }
 
@@ -176,18 +186,51 @@ final class ReadOnlyIndexReaderPool {
     }
 
     /**
-     * Close all index readers in pool.
-     *
-     * New instances will be automatically re-created on-demand for sub-sequent calls
-     * to {@link #getReader(boolean) }, so to avoid spawning new readers, you'll
-     * have to make sure not to call {@link #getReader(boolean)} after this method
-     * has been called.
-     *
-     * Should be called before provided <code>Directory</code> is closed.
+     * Send signal to immediately refresh pool, unconditionally. Client code
+     * is not obligated to call this, but can do so to ensure freshness of
+     * readers right after index has been modified.
+     */
+    public void refreshPoolNow() {
+        // NOTE: could have used thread calling this method to drive
+        // warm-up of readers, instead of dedicated background threads.
+        // The thread that will typically call this method is the scheduled indexupdater thread.
+        synchronized(this) {
+            if (this.directory == null) return;
+        }
+
+        for (int i = 0; i < this.items.length; i++) {
+            final PoolItem item = this.items[i];
+            synchronized (item) {
+                if (item.reader != null) {
+                    refreshAsynchronously(item);
+                }
+            }
+        }
+    }
+
+    /**
+     * Close all index readers and shuts down pool. Does not close provided
+     * <code>Directory</code>, which should be controlled externally.
      *
      * @throws IOException
      */
-    public void closeAll() throws IOException {
+    public void close() throws IOException {
+        synchronized (this) {
+            if (this.directory == null)
+                throw new IOException("This ReadOnlyIndexReaderPool instance is already closed or currently closing down.");
+            this.directory = null;
+        }
+
+        // Shut down refresh executor service and wait for any background refreshes to complete.
+        this.logger.debug("Shutting down refresh executor service pool ..");
+        this.refreshExecutorService.shutdown();
+        try {
+            this.logger.debug("Awaiting refresh executor service pool termination..");
+            this.refreshExecutorService.awaitTermination(15, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            this.logger.warn("Interrupted while shutting down background refresh thread pool service");
+        }
+
         for (int i = 0; i < this.items.length; i++) {
             PoolItem item = this.items[i];
             synchronized (item) {
@@ -204,18 +247,98 @@ final class ReadOnlyIndexReaderPool {
         }
     }
 
+    // Should be called only from item-synchronized context
+    private void refreshAsynchronously(final PoolItem item) {
+        if (item.refreshInProgress) {
+            this.logger.debug("Item reader refresh already in progress");
+            return; // Refresh already in progress
+        }
+
+        if (item.reader == null) {
+            throw new IllegalStateException("Can only refresh an existing reader");
+        }
+
+        item.refreshInProgress = true;
+        this.refreshExecutorService.execute(new ReaderWarmupAndReplaceTask(item));
+    }
+
+    // A background refresh task.
+    private final class ReaderWarmupAndReplaceTask implements Runnable {
+
+        final PoolItem item;
+        final IndexReader oldReader;
+
+        // Constructor should only be called from item-synchronized context
+        ReaderWarmupAndReplaceTask(final PoolItem item) {
+            this.item = item;
+            this.oldReader = item.reader;
+        }
+
+        @Override
+        public void run() {
+            IndexReader reader = null;
+            try {
+                ReadOnlyIndexReaderPool.this.logger.debug("RWAPT: Re-opening oldReader");
+                reader = this.oldReader.reopen();
+
+                if (ReadOnlyIndexReaderPool.this.irw != null) {
+                    ReadOnlyIndexReaderPool.this.logger.debug("RWAPT: Executing new reader warmup");
+                    ReadOnlyIndexReaderPool.this.irw.warmup(reader);
+                } else {
+                    ReadOnlyIndexReaderPool.this.logger.warn("No IndexReaderWarmupQueryFactory configured, skipping warmup.");
+                }
+
+                ReadOnlyIndexReaderPool.this.logger.debug("RWAPT: Replacing reader NOW");
+                synchronized (this.item) {
+                    this.item.reader = reader;
+                    this.item.version = reader.getVersion();
+                }
+
+                this.oldReader.decRef();
+            } catch (IOException io) {
+                // Here be dragons (unstested code path).
+                ReadOnlyIndexReaderPool.this.logger.warn("IOException while refreshing reader", io);
+                try {
+                    // Try to shut down the old one, if a new reader was actually re-opened
+                    if (reader != null) {
+                        // Could theoretically throw AlreadyClosedException, but we don't care.
+                        ReadOnlyIndexReaderPool.this.logger.warn("Cleanup: Closing down new reader");
+                        reader.decRef();
+                    } else {
+                        ReadOnlyIndexReaderPool.this.logger.warn("Failed to re-open new reader");
+                    }
+                    ReadOnlyIndexReaderPool.this.logger.warn("Cleanup: Closing down old reader");
+                    this.oldReader.decRef();
+                } catch (IOException io2) {
+                    ReadOnlyIndexReaderPool.this.logger.warn("Cleanup: IOException while closing down reader", io2);
+                }
+                synchronized (this.item) {
+                    this.item.reader = null; // Throw away any current reader to force re-creation.
+                }
+            } finally {
+                // Make sure we flag properly that refresh task is over.
+                synchronized (this.item) {
+                    this.item.refreshInProgress = false; 
+                }
+            }
+        }
+    }
+
     private static final class PoolItem {
         IndexReader reader;
-        volatile boolean refresh = true; // Item refresh hint. Modified and read concurrently without locking.
-        volatile long version;           // Index version for current item reader. Modified atomically, but read without locking.
+        volatile long version; // Index version for current item reader. Modified atomically, but read without locking.
+
+        // Status flags
+        boolean refreshInProgress = false;
+        volatile boolean refreshHint = false; // Item refresh hint. Modified and read concurrently without locking.
     }
 
     private int counter = 0;
-    private synchronized PoolItem getPoolItem(boolean selectByThread) {
+    private PoolItem getPoolItem(boolean selectByThread) {
         if (setPoolRefreshHint()) {
             // Set refresh hint on all pool items
             for (int i = 0; i < this.items.length; i++) {
-                this.items[i].refresh = true; // Intentionally unsynchronized modification of item refresh hint
+                this.items[i].refreshHint = true; // Intentionally unsynchronized modification of item refresh hint
             }
             this.poolRefreshTimestamp = System.currentTimeMillis(); // Update pool refresh hint timestamp
         }
@@ -271,6 +394,10 @@ final class ReadOnlyIndexReaderPool {
         }
 
         return false;
+    }
+
+    public void setIndexReaderWarmup(IndexReaderWarmup irw) {
+        this.irw = irw;
     }
 
 }

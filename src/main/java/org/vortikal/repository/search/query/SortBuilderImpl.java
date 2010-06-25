@@ -73,12 +73,12 @@ public class SortBuilderImpl implements SortBuilder {
 
         int j = 0;
         for (Iterator<SortField> i = sort.getSortFields().iterator(); i.hasNext(); j++) {
-            SortField f = i.next();
+            SortField sortField = i.next();
             String fieldName = null;
-            boolean reverse = f.getDirection() != SortFieldDirection.ASC;
+            boolean reverse = sortField.getDirection() != SortFieldDirection.ASC;
 
-            if (f instanceof TypedSortField) {
-                TypedSortField tsf =  (TypedSortField)f;
+            if (sortField instanceof TypedSortField) {
+                TypedSortField tsf =  (TypedSortField)sortField;
                 if (PropertySet.TYPE_IDENTIFIER.equals(tsf.getType())) {
                     fieldName = FieldNameMapping.RESOURCETYPE_FIELD_NAME;
                 } else if (PropertySet.URI_IDENTIFIER.equals(tsf.getType())) {
@@ -91,9 +91,9 @@ public class SortBuilderImpl implements SortBuilder {
                 
                 // Special fields, do locale-sensitive lexicographic sorting (uri, name or type) 
                 luceneSortFields[j] = new org.apache.lucene.search.SortField(
-                                            fieldName, f.getLocale(), reverse);
-            } else if (f instanceof PropertySortField) {
-                PropertySortField psf = (PropertySortField)f;
+                                            fieldName, sortField.getLocale(), reverse);
+            } else if (sortField instanceof PropertySortField) {
+                PropertySortField psf = (PropertySortField)sortField;
                 PropertyTypeDefinition def = psf.getDefinition();
 
                 fieldName = FieldNameMapping.getSearchFieldName(def, false);
@@ -121,11 +121,11 @@ public class SortBuilderImpl implements SortBuilder {
                 default:
                     // Sort field according to locale, typically STRING properties (slower)
                     luceneSortFields[j] = new org.apache.lucene.search.SortField(
-                            fieldName, f.getLocale(), reverse);
+                            fieldName, sortField.getLocale(), reverse);
                 }
             } else {
                 throw new SortBuilderException("Unknown sorting type "
-                        + f.getClass().getName());
+                        + sortField.getClass().getName());
             }
 
             //luceneSortFields[j] = new org.apache.lucene.search.SortField(fieldName, sortComparatorSource, direction);

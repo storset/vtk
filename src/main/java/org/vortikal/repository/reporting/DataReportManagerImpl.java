@@ -58,8 +58,9 @@ public class DataReportManagerImpl implements
     private SimpleCache<ReportQuery, ReportResult> cache = null;
     private List<ReportScope> defaultStaticScoping;
 
+    @Override
     public ReportResult executeReportQuery(ReportQuery query, String token) {
-        if (query == null){
+        if (query == null) {
             throw new IllegalArgumentException("Query cannot be null");
         }
 
@@ -99,7 +100,7 @@ public class DataReportManagerImpl implements
                 List<Pair<Value, Integer>> result = 
                     this.dao.executePropertyFrequencyValueQuery((PropertyValueFrequencyQuery)query);
                 
-                PropertyValueFrequencyQueryResultImpl res = 
+                PropertyValueFrequencyQueryResultImpl res =
                     new PropertyValueFrequencyQueryResultImpl(
                             (PropertyValueFrequencyQuery)query);
                 

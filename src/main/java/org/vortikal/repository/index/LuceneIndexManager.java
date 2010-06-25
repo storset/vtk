@@ -32,6 +32,7 @@ package org.vortikal.repository.index;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,8 +45,9 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 
-import EDU.oswego.cs.dl.util.concurrent.Mutex;
+
 import org.apache.lucene.index.LogMergePolicy;
+import org.vortikal.util.threads.Mutex;
 
 /**
  * Manages access to a single file-system based Lucene index instance.
@@ -94,7 +96,6 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
     
     @Override
     public void afterPropertiesSet() throws BeanInitializationException {
-
         try {
             // Initialization of physical storage directory
             File storageDirectory = initializeStorageDirectory(this.storageRootPath, 
@@ -258,55 +259,47 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
      * operations on index, using either the reader or the writer.
      */
     public boolean writeLockAcquire() {
-        try {
-            this.lock.acquire();
-        } catch (InterruptedException ie) {
-            return false;
+        if (this.lock.lock()) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Thread '" + Thread.currentThread().getName()
+                        + "' got write lock on index '"
+                        + this.storageId + "'.");
+            }
+            return true;
         }
-        
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Thread '" + Thread.currentThread().getName() + 
-                         "' got write lock on index '" 
-                    + this.storageId + "'.");
-        }
-        
-        return true;
+
+        return false;
     }
 
     /**
      * Attempt write lock with timeout 
      */
     public boolean writeLockAttempt(long timeout) {
-        try {
-            boolean acquired = this.lock.attempt(timeout);
-            
+        if (this.lock.tryLock(timeout, TimeUnit.MILLISECONDS)) {
             if (LOG.isDebugEnabled()) {
-                if (acquired) {
-                    LOG.debug("Thread '" + Thread.currentThread().getName() + 
-                    "' got write lock on index '" + this.storageId + "'.");
-                } else {
-                    LOG.debug("Thread '" + Thread.currentThread().getName() + 
-                      "' failed to acquire write lock on index '" 
-                            + this.storageId 
-                            + "' after waiting for " + timeout + " ms");
-                }
+                LOG.debug("Thread '" + Thread.currentThread().getName()
+                        + "' got write lock on index '" + this.storageId + "'.");
             }
-            
-            return acquired;
-        } catch (InterruptedException ie) {
-            return false;
+            return true;
+
+        } else if (LOG.isDebugEnabled()) {
+            LOG.debug("Thread '" + Thread.currentThread().getName()
+                    + "' failed to acquire write lock on index '"
+                    + this.storageId
+                    + "' after waiting for " + timeout + " ms");
         }
+
+        return false;
     }
 
     /**
      * Write lock release.
      */
     public void writeLockRelease() {
-        this.lock.release();
-        
+        this.lock.unlock();
         if (LOG.isDebugEnabled()) {
             LOG.debug("Thread '" + Thread.currentThread().getName() + 
-                         "' released write lock on index '" 
+                         "' unlocked write lock on index '"
                     + this.storageId + "'.");
         }
     }

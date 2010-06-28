@@ -117,6 +117,7 @@ public final class ContentCache<K, V> implements InitializingBean, DisposableBea
     }
     
 
+    @Override
     public void afterPropertiesSet() {
         if (this.name == null) {
             throw new BeanInitializationException("JavaBean property 'name' not set");
@@ -132,10 +133,12 @@ public final class ContentCache<K, V> implements InitializingBean, DisposableBea
 
         if (this.refreshInterval > 0) {
             this.refreshThread = new RefreshThread(this.refreshInterval);
+            this.refreshThread.setName(this.name + ".periodic-refresh");
             this.refreshThread.start();
         }
     }
     
+    @Override
     public void destroy() {
         if (this.refreshThread != null) {
             this.refreshThread.interrupt();
@@ -203,7 +206,7 @@ public final class ContentCache<K, V> implements InitializingBean, DisposableBea
               }
            }
         };
-        new Thread(fetcher, this.name).start();
+        new Thread(fetcher, this.name + ".async-refresh").start();
     }
 
 
@@ -218,6 +221,7 @@ public final class ContentCache<K, V> implements InitializingBean, DisposableBea
             new ArrayList<Map.Entry<K, Item>>(this.cache.entrySet());
 
         Collections.sort(sortedList, new Comparator<Map.Entry<K, Item>>() {
+                @Override
                 public int compare(Map.Entry<K, Item> entry1, Map.Entry<K, Item> entry2) {
                     Item i1 = entry1.getValue();
                     Item i2 = entry2.getValue();
@@ -300,8 +304,9 @@ public final class ContentCache<K, V> implements InitializingBean, DisposableBea
             return this.timestamp;
         }
 
+        @Override
         public String toString() {
-            StringBuffer sb = new StringBuffer("item: [");
+            StringBuilder sb = new StringBuilder("item: [");
             sb.append(this.key.toString()).append("=");
             sb.append(this.object.getClass().getName());
             sb.append("; timestamp=").append(this.timestamp);

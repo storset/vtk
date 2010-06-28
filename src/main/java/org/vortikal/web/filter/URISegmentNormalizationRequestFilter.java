@@ -95,8 +95,8 @@ public class URISegmentNormalizationRequestFilter extends AbstractRequestFilter 
          * @return The normalized URI. 
          */
         private String removeDotSegments(String uri) {
-            StringBuffer input = new StringBuffer(uri);
-            StringBuffer output = new StringBuffer();
+            StringBuilder input = new StringBuilder(uri);
+            StringBuilder output = new StringBuilder();
 
             while (input.length() > 0) {
                 if (input.length() >= 3 && "../".equals(input.substring(0,3))) {
@@ -127,7 +127,7 @@ public class URISegmentNormalizationRequestFilter extends AbstractRequestFilter 
             return output.toString();
         }
 
-        private void moveNextSegment(StringBuffer input, StringBuffer output) {
+        private void moveNextSegment(StringBuilder input, StringBuilder output) {
             int next = input.indexOf("/", 1);
             if (next != -1) {
                 output.append(input.substring(0, next));
@@ -138,7 +138,7 @@ public class URISegmentNormalizationRequestFilter extends AbstractRequestFilter 
             }
         }
         
-        private void removeLastSegment(StringBuffer uri) {
+        private void removeLastSegment(StringBuilder uri) {
             int last = uri.lastIndexOf("/");
             if (last != -1) {
                 uri.delete(last, uri.length());

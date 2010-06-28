@@ -54,12 +54,14 @@ public class SyndFeedLoader extends URLConnectionCacheLoader<SyndFeed> {
         this.builder = builder;
     }
     
+    @Override
     protected void setConnectionProperties(URLConnection connection) {
         super.setConnectionProperties(connection);
         connection.setRequestProperty("User-Agent", this.clientIdentifier);
     }
 
     
+    @Override
     protected SyndFeed handleConnection(URLConnection connection) throws Exception {
         InputStream stream = connection.getInputStream();
         SyndFeed feed = this.builder.build(stream);

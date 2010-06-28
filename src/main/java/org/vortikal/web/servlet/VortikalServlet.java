@@ -501,7 +501,7 @@ public class VortikalServlet extends DispatcherServlet {
         if (session != null) {
             jSession = session.getId(); 
         }
-        StringBuffer msg = new StringBuffer();
+        StringBuilder msg = new StringBuilder();
         msg.append(remoteHost).append(" - ").append(request);
         msg.append(" - principal: ").append(principal);
         msg.append(" - token: ").append(token);

@@ -38,6 +38,10 @@ import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
+//
+// XXX this test fails with a NPE.
+//
+
 public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
 
     private CollectionListingAsAtomFeed controller;

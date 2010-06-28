@@ -61,7 +61,7 @@ import org.vortikal.util.threads.Mutex;
  */
 public class LuceneIndexManager implements InitializingBean, DisposableBean {
     
-    private final Log LOG = LogFactory.getLog(LuceneIndexManager.class);
+    private final Log logger = LogFactory.getLog(LuceneIndexManager.class);
 
     private NIOFSBackedLuceneIndex niofsIndex;
     
@@ -114,15 +114,15 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
             this.niofsIndex.setIndexReaderWarmup(this.irw);
             this.niofsIndex.reinitialize();
             
-            LOG.info("Initialization of index '" + this.getStorageId() + "' complete.");
+            logger.info("Initialization of index '" + this.getStorageId() + "' complete.");
             
             if (this.closeAfterInitialization) {
-                LOG.info("Closing instance after initialization.");
+                logger.info("Closing instance after initialization.");
                 this.niofsIndex.close();
             }
             
         } catch (IOException io) {
-            LOG.error("Got IOException while initializing index: " + io.getMessage());
+            logger.error("Got IOException while initializing index: " + io.getMessage());
             throw new BeanInitializationException("Got IOException while initializing index", io);
         }
     }
@@ -220,10 +220,10 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
     public void commit() throws IOException {
         // Optimize index, if we've reached 'optimizeInterval' number of commits.
         if (++this.commitCounter % this.optimizeInterval == 0) {
-            LOG.info("Reached " + this.commitCounter 
+            logger.info("Reached " + this.commitCounter
                                         + " commits, auto-optimizing index ..");
             this.niofsIndex.getIndexWriter().optimize();
-            LOG.info("Auto-optimization completed.");
+            logger.info("Auto-optimization completed.");
         }
         
         this.niofsIndex.commit();
@@ -238,14 +238,14 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
      * @see org.springframework.beans.factory.DisposableBean#destroy()
      */
     public void destroy() throws Exception {
-       LOG.info("Graceful index shutdown, waiting for write lock on index '" 
+       logger.info("Graceful index shutdown, waiting for write lock on index '"
                + this.storageId + "' ..");
        if (writeLockAttempt(this.maxLockAcquireTimeOnShutdown * 1000)) {
-           LOG.info("Got write lock on index '" + this.storageId 
+           logger.info("Got write lock on index '" + this.storageId
                    + "', closing down.");
            this.niofsIndex.close();
        } else {
-           LOG.warn("Failed to acquire the write lock on index '" 
+           logger.warn("Failed to acquire the write lock on index '"
               + this.storageId + "' within "
               + " the time limit of " + this.maxLockAcquireTimeOnShutdown 
               + " seconds, index might be corrupted.");
@@ -260,8 +260,8 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
      */
     public boolean writeLockAcquire() {
         if (this.lock.lock()) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Thread '" + Thread.currentThread().getName()
+            if (logger.isDebugEnabled()) {
+                logger.debug("Thread '" + Thread.currentThread().getName()
                         + "' got write lock on index '"
                         + this.storageId + "'.");
             }
@@ -276,14 +276,14 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
      */
     public boolean writeLockAttempt(long timeout) {
         if (this.lock.tryLock(timeout, TimeUnit.MILLISECONDS)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Thread '" + Thread.currentThread().getName()
+            if (logger.isDebugEnabled()) {
+                logger.debug("Thread '" + Thread.currentThread().getName()
                         + "' got write lock on index '" + this.storageId + "'.");
             }
             return true;
 
-        } else if (LOG.isDebugEnabled()) {
-            LOG.debug("Thread '" + Thread.currentThread().getName()
+        } else if (logger.isDebugEnabled()) {
+            logger.debug("Thread '" + Thread.currentThread().getName()
                     + "' failed to acquire write lock on index '"
                     + this.storageId
                     + "' after waiting for " + timeout + " ms");
@@ -297,8 +297,8 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
      */
     public void writeLockRelease() {
         this.lock.unlock();
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Thread '" + Thread.currentThread().getName() + 
+        if (logger.isDebugEnabled()) {
+            logger.debug("Thread '" + Thread.currentThread().getName() +
                          "' unlocked write lock on index '"
                     + this.storageId + "'.");
         }
@@ -361,5 +361,5 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
     public void setIndexReaderWarmup(IndexReaderWarmup irw) {
         this.irw = irw;
     }
-    
+
 }

@@ -190,7 +190,7 @@ final class ReadOnlyIndexReaderPool {
      * is not obligated to call this, but can do so to ensure freshness of
      * readers right after index has been modified.
      */
-    public void refreshPoolNow() {
+    public void refreshPoolNow() throws IOException {
         // NOTE: could have used thread calling this method to drive
         // warm-up of readers, instead of dedicated background threads.
         // The thread that will typically call this method is the scheduled indexupdater thread.
@@ -201,7 +201,8 @@ final class ReadOnlyIndexReaderPool {
         for (int i = 0; i < this.items.length; i++) {
             final PoolItem item = this.items[i];
             synchronized (item) {
-                if (item.reader != null) {
+                // Obey contract for calling #refreshAsynchronously(PoolItem)
+                if (item.reader != null && !item.reader.isCurrent()) {
                     refreshAsynchronously(item);
                 }
             }
@@ -247,7 +248,9 @@ final class ReadOnlyIndexReaderPool {
         }
     }
 
-    // Should be called only from item-synchronized context
+    // Before calling this method, make sure:
+    // 1. It should only be called from item-synchronized context
+    // 2. It must never be called when item reader is current.
     private void refreshAsynchronously(final PoolItem item) {
         if (item.refreshInProgress) {
             this.logger.debug("Item reader refresh already in progress");
@@ -257,6 +260,10 @@ final class ReadOnlyIndexReaderPool {
         if (item.reader == null) {
             throw new IllegalStateException("Can only refresh an existing reader");
         }
+
+        // Note, could check reader.isCurrent here and throw IllegalStateException
+        // if it's current, but avoid it, since that call always goes to disk
+        // and is already done by all methods that call this method.
 
         item.refreshInProgress = true;
         this.refreshExecutorService.execute(new ReaderWarmupAndReplaceTask(item));
@@ -280,6 +287,18 @@ final class ReadOnlyIndexReaderPool {
             try {
                 ReadOnlyIndexReaderPool.this.logger.debug("RWAPT: Re-opening oldReader");
                 reader = this.oldReader.reopen();
+
+                if (reader == this.oldReader) {
+                    // This should never happen. Warm-up and replace task should only be started
+                    // when the item's reader is actually dirty, never otherwise. Log a warning
+                    // and deploy parachute (return).
+
+                    // [the IndexReader.reopen method can return the same instance back, if
+                    // there is no need to do re-open (that's documented and correct).]
+                    ReadOnlyIndexReaderPool.this.logger.warn(
+                            "RWAPT: Was going to do background-refresh, but reader was already current. Fix code please.");
+                    return; // Don't proceed, or we end up closing a current reader.
+                }
 
                 if (ReadOnlyIndexReaderPool.this.irw != null) {
                     ReadOnlyIndexReaderPool.this.logger.debug("RWAPT: Executing new reader warmup");

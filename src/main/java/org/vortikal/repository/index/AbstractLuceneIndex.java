@@ -281,8 +281,14 @@ public abstract class AbstractLuceneIndex {
             this.writer = null;
         }
 
-        // Initiate instant refresh of read-only reader pool with no allowed dirty-time
-        this.readOnlyReaderPool.refreshPoolNow();
+        try {
+            // Initiate instant refresh of read-only reader pool with no allowed dirty-time.
+            // Catch any IOException, since we don't want to disturb index update thread
+            // with potential pooling problems.
+            this.readOnlyReaderPool.refreshPoolNow();
+        } catch (IOException io) {
+            this.logger.warn("IOException while calling ReadOnlyIndexReaderPool#refreshPoolNow()", io);
+        }
     }
 
     /**

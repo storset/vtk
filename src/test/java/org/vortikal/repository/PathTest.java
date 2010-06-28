@@ -68,7 +68,7 @@ public class PathTest extends TestCase {
         assertInvalid("/invalid//path");
         assertInvalid("/invalid/../path");
         assertInvalid("/invalid.path/");
-        assertInvalid(getString("i", 1500));
+        assertInvalid(getString("i", Path.MAX_LENGTH));
 
         Path p = Path.fromString("/");
         assertEquals(p.toString(), "/");

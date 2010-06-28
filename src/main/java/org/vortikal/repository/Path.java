@@ -47,7 +47,7 @@ import org.apache.commons.lang.StringUtils;
  */
 public final class Path implements Comparable<Path> {
 
-    private static final int MAX_LENGTH = 1500;
+    public static final int MAX_LENGTH = 1500;
 
     /**
      * Represents the root path (<code>/</code>).
@@ -114,6 +114,7 @@ public final class Path implements Comparable<Path> {
     /**
      * Compares this path to another path.
      */
+    @Override
     public int compareTo(Path path) {
         return this.path.compareTo(path.path);
     }

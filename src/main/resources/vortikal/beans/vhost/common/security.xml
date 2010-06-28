@@ -129,13 +129,6 @@
     </property>
   </bean>
 
-  <bean id="principalDomainURLMap" class="java.util.HashMap">
-    <constructor-arg>
-      <map>
-      </map>
-    </constructor-arg>
-  </bean>
-
   <bean id="domainGroupStore"
     class="org.vortikal.security.store.DomainGroupStore">
     <property name="order" value="0" />

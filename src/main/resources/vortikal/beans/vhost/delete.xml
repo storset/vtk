@@ -29,12 +29,12 @@
       <map>
         <entry key="globalMenuOrder"><value type="java.lang.Integer">100</value></entry>
         <entry key="decorating.servicePredicateName" value="delete" />
-        <entry key-ref="system.decoratorTemplateAttribute" value="dialog-template.html" />
       </map>
     </property>
     <property name="handler" ref="delete.fromResourceMenuHandler" />
   </bean>
 
+  
   <bean id="delete.viewService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
     <property name="assertions">
@@ -65,7 +65,7 @@
   <bean id="delete.fromResourceMenuHandler" 
         class="org.vortikal.web.actions.delete.ConfirmDeleteController"
         parent="repositoryAware">
-    <property name="viewName" value="delete.confirm" />
+    <property name="viewName" value="admin" />
     <property name="deleteService" ref="deleteFromResourceMenuHandlerResourceService" />
   </bean>
   

@@ -121,6 +121,7 @@
     <property name="fieldValueMapper" ref="fieldValueMapper"/>
     <property name="queryAuthorizationFilterFactory" ref="queryAuthorizationFilterFactory"/>
     <property name="publishedPropDef" ref="publishedPropDef" />
+    <property name="hiddenPropDef" ref="hiddenPropDef" />
   </bean>
 
   <!-- Searcher implementation (wrapped in throttler)-->

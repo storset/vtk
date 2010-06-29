@@ -31,6 +31,7 @@
 package org.vortikal.repository.search.query;
 
 
+import org.vortikal.repository.search.query.filter.TermExistsFilter;
 import static org.vortikal.repository.search.query.TermOperator.EQ;
 import static org.vortikal.repository.search.query.TermOperator.NE;
 
@@ -49,6 +50,7 @@ import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanFilter;
 import org.apache.lucene.search.CachingWrapperFilter;
+import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.FilterClause;
 import org.apache.lucene.search.TermsFilter;
@@ -101,7 +103,10 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
     private QueryAuthorizationFilterFactory queryAuthorizationFilterFactory;
     private Filter onlyPublishedFilter;
     private PropertyTypeDefinition publishedPropDef;
+    private PropertyTypeDefinition hiddenPropDef;
+    private Filter cachedHiddenPropDefNotExistsFilter;
 
+    @Override
     public void afterPropertiesSet() {
         // Setup filter for published resources
         TermsFilter tf = new TermsFilter();
@@ -110,11 +115,19 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         Term publishedTrueTerm = new Term(searchFieldName, searchFieldValue);
         tf.addTerm(publishedTrueTerm);
         this.onlyPublishedFilter = new CachingWrapperFilter(tf);
+
+        if (this.hiddenPropDef != null) {
+            // Special case caching for common "navigation:hidden !exists" query clause
+            TermExistsFilter te = new TermExistsFilter(
+                    FieldNameMapping.getSearchFieldName(this.hiddenPropDef, false), true);
+            this.cachedHiddenPropDefNotExistsFilter = new CachingWrapperFilter(te);
+        }
     }
     
     /* (non-Javadoc)
      * @see org.vortikal.repository.search.query.LuceneQueryBuilder#buildQuery(org.vortikal.repository.search.query.Query, org.apache.lucene.index.IndexReader)
      */
+    @Override
     public org.apache.lucene.search.Query buildQuery(Query query, IndexReader reader) throws QueryBuilderException {
         
         QueryBuilder builder = null;
@@ -272,7 +285,22 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         }
         
         if (query instanceof PropertyExistsQuery) {
-            return new PropertyExistsQueryBuilder((PropertyExistsQuery)query);
+
+            PropertyExistsQuery peq = (PropertyExistsQuery)query;
+            if (peq.getPropertyDefinition() == this.hiddenPropDef  // XXX "Resource type def config pointer init racing" ..
+                   && peq.isInverted()
+                   && peq.getComplexValueAttributeSpecifier() == null) {
+
+                // Special case optimization by caching of filter for common "navigation:hidden !exists" query.
+                return new QueryBuilder() {
+                    @Override
+                    public org.apache.lucene.search.Query buildQuery() throws QueryBuilderException {
+                        return new ConstantScoreQuery(LuceneQueryBuilderImpl.this.cachedHiddenPropDefNotExistsFilter);
+                    }
+                };
+            }
+
+            return new PropertyExistsQueryBuilder(peq);
         }
         
             throw new QueryBuilderException("Unsupported property query type: " 
@@ -283,6 +311,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
     private static final FieldSelector ID_FIELD_SELECTOR = new FieldSelector() {
         private static final long serialVersionUID = 3456052507152239972L;
 
+        @Override
         public FieldSelectorResult accept(String fieldName) {
             if (FieldNameMapping.STORED_ID_FIELD_NAME == fieldName) { // Interned string comparison
                 return FieldSelectorResult.LOAD;
@@ -331,6 +360,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
     /* (non-Javadoc)
      * @see org.vortikal.repository.search.query.LuceneQueryBuilder#buildSearchFilter(org.vortikal.repository.search.Search, org.apache.lucene.index.IndexReader)
      */
+    @Override
     public Filter buildSearchFilter(String token, Search search, IndexReader reader)
             throws QueryBuilderException {
         
@@ -395,6 +425,10 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
     @Required
     public void setPublishedPropDef(PropertyTypeDefinition publishedPropDef) {
         this.publishedPropDef = publishedPropDef;
+    }
+
+    public void setHiddenPropDef(PropertyTypeDefinition hiddenPropDef) {
+        this.hiddenPropDef = hiddenPropDef;
     }
 
 }

@@ -2,6 +2,77 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
+
+  <bean id="publish.globalPublishService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="assertions">
+      <list>
+        <ref bean="writePermissionAssertion" />
+        <ref bean="structuredResources.typeAssertion" />
+        <ref bean="resourceIsNotPublishedAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="g-publish" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="publish.globalConfirmPublishHandler" />
+    <property name="categories">
+      <set>
+        <value>globalMenu</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="globalMenuOrder">
+          <value type="java.lang.Integer">300</value>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="publish.globalUnpublishService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="assertions">
+      <list>
+        <ref bean="writePermissionAssertion" />
+        <ref bean="structuredResources.typeAssertion" />
+        <ref bean="resourceIsPublishedAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="g-unpublish" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="publish.globalConfirmUnpublishHandler" />
+    <property name="categories">
+      <set>
+        <value>globalMenu</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="globalMenuOrder">
+          <value type="java.lang.Integer">300</value>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+
+  <bean id="publish.globalConfirmPublishHandler" class="org.vortikal.web.actions.publish.ConfirmPublishController"
+    parent="repositoryAware">
+    <property name="viewName" value="admin" />
+    <property name="publishService" ref="publish.publishResourceConfirmedService" />
+  </bean>
+
+  <bean id="publish.globalConfirmUnpublishHandler" class="org.vortikal.web.actions.publish.ConfirmPublishController"
+    parent="repositoryAware">
+    <property name="viewName" value="admin" />
+    <property name="publishService" ref="publish.unpublishResourceConfirmedService" />
+  </bean>
+
+
   <bean id="publish.publishResourceService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
     <property name="assertions">
@@ -16,17 +87,8 @@
       </list>
     </property>
     <property name="handler" ref="confirmPublishResourceHandler" />
-    <property name="categories">
-      <set>
-        <value>globalMenu</value>
-      </set>
-    </property>
     <property name="attributes">
       <map>
-        <entry key="globalMenuOrder">
-          <value type="java.lang.Integer">300</value>
-        </entry>
-        <entry key="decorating.servicePredicateName" value="publish" />
         <entry key-ref="system.decoratorTemplateAttribute" value="dialog-template.html" />
       </map>
     </property>
@@ -46,17 +108,8 @@
       </list>
     </property>
     <property name="handler" ref="confirmUnpublishResourceHandler" />
-    <property name="categories">
-      <set>
-        <value>globalMenu</value>
-      </set>
-    </property>
     <property name="attributes">
       <map>
-        <entry key="globalMenuOrder">
-          <value type="java.lang.Integer">300</value>
-        </entry>
-        <entry key="decorating.servicePredicateName" value="publish" />
         <entry key-ref="system.decoratorTemplateAttribute" value="dialog-template.html" />
       </map>
     </property>

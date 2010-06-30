@@ -132,6 +132,7 @@ public final class Search {
         this.sorting = sorting;
     }
     
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(this.getClass().getName()).append(": [");

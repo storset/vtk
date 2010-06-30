@@ -36,6 +36,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
@@ -45,25 +46,52 @@ import org.apache.lucene.search.TopFieldDocs;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.index.mapping.FieldNameMapping;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.search.Search;
+import org.vortikal.repository.search.query.LuceneQueryBuilder;
+import org.vortikal.repository.search.query.PropertyExistsQuery;
 
 /**
  * Just warms up by static hard-coded queries and sortings ...
  */
-public class StaticQueryIndexReaderWarmup implements IndexReaderWarmup {
+public class IndexReaderWarmupImpl implements IndexReaderWarmup {
 
     private PropertyTypeDefinition lastModifiedPropDef;
+    private PropertyTypeDefinition hiddenPropDef;
+    private LuceneQueryBuilder luceneQueryBuilder;
 
     @Override
     public void warmup(IndexReader reader) throws IOException {
-        IndexSearcher searcher = new IndexSearcher(reader);
-        Query query = getWarmupQuery();
-        Sort sorting = getWarmupSorting();
-        TopFieldDocs docs = searcher.search(query, null, 5000, sorting);
 
+        // Do a simple warmup first with basic query
+        IndexSearcher searcher = new IndexSearcher(reader);
+        Query luceneQuery = getWarmupQuery();
+        Sort luceneSorting = getWarmupSorting();
+        Filter luceneFilter = null;
+        TopFieldDocs docs = searcher.search(luceneQuery, luceneFilter, 5000, luceneSorting);
         int max = Math.min(500, docs.scoreDocs.length);
         for (int i = 0; i < max; i++) {
             searcher.doc(docs.scoreDocs[i].doc);
         }
+        docs = null; // Garbage
+
+        // Implicitly warm up query builder internal filter caching for the new reader instance.
+        // This should warm up:
+        // 1. Inverted hidden-prop existence query filter cache
+        // 2. Published-prop filter cache
+        // 3. ACL filter for anonymous user
+        // Enabling pre-building of this caching should be very good for performance of new reader
+        // after warmup.
+        System.out.println("WWWWWWWWWWWWW doing superwarmup now");
+        Search search = new Search();
+        search.setLimit(5000);
+        search.setOnlyPublishedResources(true);
+        PropertyExistsQuery peq = new PropertyExistsQuery(this.hiddenPropDef, true);
+        search.setQuery(peq);
+        luceneQuery = this.luceneQueryBuilder.buildQuery(search.getQuery(), reader);
+        luceneSorting = this.luceneQueryBuilder.buildSort(search.getSorting());
+        luceneFilter = this.luceneQueryBuilder.buildSearchFilter(null, search, reader);
+        searcher.search(luceneQuery, luceneFilter, search.getLimit(), luceneSorting);
+        System.out.println("Finished superwarming, cache primed !");
     }
 
     private Query getWarmupQuery() {
@@ -87,4 +115,13 @@ public class StaticQueryIndexReaderWarmup implements IndexReaderWarmup {
         this.lastModifiedPropDef = lastModifiedPropDef;
     }
 
+    @Required
+    public void setHiddenPropDef(PropertyTypeDefinition hiddenPropDef) {
+        this.hiddenPropDef = hiddenPropDef;
+    }
+
+    @Required
+    public void setLuceneQueryBuilder(LuceneQueryBuilder luceneQueryBuilder) {
+        this.luceneQueryBuilder = luceneQueryBuilder;
+    }
 }

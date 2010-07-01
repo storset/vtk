@@ -155,13 +155,13 @@ Movie.prototype.getInnerHTML = function (objectId){
 	if(this.contentType == "application/x-shockwave-flash") {
 		if(getExtension(this.url) == 'flv') {
 			// Flash video (FLV)
-			s += '<OBJECT id="movie' + rnd + '" ';
+			s += '<OBJECT class="vrtx-flv-movie" id="movie' + rnd + '" ';
 			s += '        type="application/x-shockwave-flash" ';
 			s += '        data="'+ flashPlayer +'" ';
 			s += '        width="'+this.width+'" height="'+this.height+'" >';
 		    s += '  <PARAM name="allowFullScreen" value="true" />';
 		    s += '  <PARAM name="movie" value="'+ flashPlayer +'" />';
-		    s += '  <PARAM name="FlashVars" value="flv='+this.url+'&amp;showplayer=always&amp;width='+this.width+'&amp;height='+this.height+'&amp;showiconplay=true&amp;autoplay='+this.autoplay+'&amp;showstop=1&amp;showvolume=1&amp;showtime=1&amp;showfullscreen=1&amp;bgcolor1=189ca8&amp;bgcolor2=a0befd&amp;playercolor=a0befd&amp;volume=100" />';
+		    s += '  <PARAM name="FlashVars" value="flv='+this.url+'&amp;showplayer=always&amp;width='+this.width+'&amp;height='+this.height+'&amp;showiconplay=true&amp;autoplay='+this.autoplay+'&amp;showstop=1&amp;showvolume=1&amp;showtime=1&amp;showfullscreen=1&amp;bgcolor1=d0d0d0&amp;bgcolor2=888888&amp;playercolor=888888&amp;volume=100" />';
 		    s += '</OBJECT>';
 		    
 		}else{

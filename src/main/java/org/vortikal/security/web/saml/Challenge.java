@@ -57,10 +57,8 @@ public class Challenge extends SamlService {
         }
 
         HttpSession session = request.getSession(true);
-        if (session.getAttribute(URL_SESSION_ATTR) == null) {
-            URL url = URL.create(request);
-            session.setAttribute(URL_SESSION_ATTR, url);
-        }
+        URL url = URL.create(request);
+        session.setAttribute(URL_SESSION_ATTR, url);
 
         UUID relayState = UUID.randomUUID();
 

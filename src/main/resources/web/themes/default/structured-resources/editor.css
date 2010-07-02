@@ -1,5 +1,7 @@
 @charset "UTF-8";
 
+/* START contents, header, h2, help-links */
+
 #contents {
   background-color: #efefef;
   padding-left: 1.2em !important;
@@ -32,6 +34,26 @@
   padding-bottom: 0 !important;
   border: none;
 }
+
+#help-links {
+  position:absolute;
+  right:2em;
+  padding-top: 1.25em;
+  text-align:right;
+}
+
+#help-links a {
+  font-size: 0.8em;
+  display: inline;
+  margin-left: 5px;
+}
+
+/* END contents, header, h2, help-links */
+
+/* START forms */
+/* TODO: direct child does not work in IE 6. Try to avoid. */
+/* TODO: cleanup and refactor */
+/* TODO: Any special cases in own file pr. documenttype */
 
 form > div {
   padding-bottom: 15px;
@@ -465,15 +487,4 @@ input.date, input.hours, input.minutes {
 
 /* STOP Introduction image edit like the old one */
 
-#help-links {
-  position:absolute;
-  right:2em;
-  padding-top: 1.25em;
-  text-align:right;
-}
-
-#help-links a {
-  font-size: 0.8em;
-  display: inline;
-  margin-left: 5px;
-}
+/* END forms */

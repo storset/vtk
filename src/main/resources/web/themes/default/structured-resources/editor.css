@@ -91,11 +91,13 @@ div.vrtx-json-element {
   float: left;
 }
 
-.vrtx-grouped,.vrtx-grouped-horizontal {
+.vrtx-grouped,
+.vrtx-grouped-horizontal {
   width: 100%;
 }
 
-.vrtx-grouped > div,.vrtx-grouped-horizontal > div {
+.vrtx-grouped > div,
+.vrtx-grouped-horizontal > div {
   padding-bottom: 10px;
 }
 
@@ -245,8 +247,9 @@ input.vrtx-move-down-button  {
   bottom: 10px;
 }
 
-/* Special case for multiple JSON when no box */
+/* Special case for multiple JSON move-buttons when no box */
 /* TODO: should reverse so that frontpage boxes is the special case */
+
 #participants input.vrtx-move-up-button,
 #participants input.vrtx-move-down-button,
 #projects input.vrtx-move-up-button,
@@ -272,7 +275,7 @@ input.vrtx-move-down-button  {
   padding: 10px 130px 10px 10px;
   border: 1px solid #aaa;
   position: relative;
-  margin-bottom:15px;
+  margin-bottom: 15px;
 }
 
 .vrtx-json #main-content .vrtx-json-element input.vrtx-remove-button,

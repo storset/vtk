@@ -48,7 +48,7 @@
   margin-left: 5px;
 }
 
-/* END contents, header, h2, help-links */
+/* STOP contents, header, h2, help-links */
 
 /* START forms */
 /* TODO: direct child does not work in IE 6. Try to avoid. */
@@ -71,9 +71,22 @@ form > div {
   float: left;	
 }
 
-.vrtx-grouped,.vrtx-grouped-vertical,.vrtx-grouped-horizontal,.vrtx-media-ref,.vrtx-simple-html,
-.vrtx-media-ref,.vrtx-simple-html-small,.vrtx-html,.vrtx-string,.vrtx-date,.vrtx-image-ref,
-.vrtx-checkbox,.vrtx-dropdownlist,.vrtx-radio,.vrtx-json, div.vrtx-json-element {
+.vrtx-grouped,
+.vrtx-grouped-vertical,
+.vrtx-grouped-horizontal,
+.vrtx-media-ref,
+.vrtx-simple-html,
+.vrtx-media-ref,
+.vrtx-simple-html-small,
+.vrtx-html,
+.vrtx-string,
+.vrtx-date,
+.vrtx-image-ref,
+.vrtx-checkbox,
+.vrtx-dropdownlist,
+.vrtx-radio,
+.vrtx-json,
+div.vrtx-json-element {
   clear: left;
   float: left;
 }
@@ -92,7 +105,9 @@ form > div {
   width: auto;
 }
 
-.vrtx-html > div,.vrtx-simple-html >div,.vrtx-radio {
+.vrtx-html > div,
+.vrtx-simple-html >div,
+.vrtx-radio {
   float: left;
   width: 100%;
 }
@@ -230,6 +245,8 @@ input.vrtx-move-down-button  {
   bottom: 10px;
 }
 
+/* Special case for multiple JSON when no box */
+/* TODO: should reverse so that frontpage boxes is the special case */
 #participants input.vrtx-move-up-button,
 #participants input.vrtx-move-down-button,
 #projects input.vrtx-move-up-button,
@@ -288,7 +305,7 @@ input.vrtx-move-down-button  {
   clear: none;
 }
 
-/* END JSON and multiple fields */
+/* STOP JSON and multiple fields */
 
 /* START Set explisit widths and heights */
 
@@ -403,7 +420,7 @@ input.vrtx-move-down-button  {
   width: 160px;	
 }
 
-/* END Set explisit widths and heights */
+/* STOP Set explisit widths and heights */
 
 .submit {
   clear: left;
@@ -446,7 +463,7 @@ input.date, input.hours, input.minutes {
   float: none;	
 }
 
-/* START Introduction image edit like the old one */
+/* START Introduction image edit (like the old one) */
 
 .introImageAndCaption * > label {
   font-size: 1em !important;
@@ -478,13 +495,14 @@ input.date, input.hours, input.minutes {
 .introImageAndCaption div#picture\.preview {
   margin: 0 0 0 370px;
   height: 150px;
-  /* same height as (label, input + image-caption) to avoid the absolute positioned image-caption to overflow into below fields */
+  /* same height as (label, input + image-caption) to avoid 
+   * absolute positioned image-caption to overflow into below fields */
 }
 
 .introImageAndCaption div#picture\.preview img {
   padding: 0;
 }
 
-/* END Introduction image edit like the old one */
+/* STOP Introduction image edit (like the old one) */
 
-/* END forms */
+/* STOP forms */

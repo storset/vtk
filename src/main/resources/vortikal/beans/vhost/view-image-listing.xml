@@ -83,7 +83,7 @@
             </entry>
             <entry key="list">
               <list>
-                <value>${jsBaseURL}/image-listing.js</value>
+                <value>${jsBaseURL}/ie6-image-listing.js</value>
               </list>
             </entry>
             <entry key="table">

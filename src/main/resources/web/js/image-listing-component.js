@@ -151,7 +151,7 @@
          var imgHeight = $$$.height();
 	     var imgWidth = $$$.width();
 	     
-         //IE 6 max-width substitute
+         //IE 6 max-height substitute
          if (jQuery.browser.msie && jQuery.browser.version <= 6) {
            if(imgHeight > 380) {
              $$$.css("height", "380px");

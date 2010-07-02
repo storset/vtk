@@ -576,7 +576,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
                             + "' and '" + PARAMETER_EXCLUDE_CHILDREN + "'");
                 }
                 for (String s : excludeChildrenParam.split(",")) {
-                    getExcludedChildren().add(s);
+                    getExcludedChildren().add(s.trim());
                 }
                 if (this.getExcludedChildren().size() == 0) {
                     throw new DecoratorComponentException("Invalid value for parameter '" + PARAMETER_EXCLUDE_CHILDREN

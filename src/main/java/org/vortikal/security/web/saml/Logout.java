@@ -65,13 +65,12 @@ public class Logout extends SamlService {
         if (this.redirectService != null) {
             savedURL = this.redirectService.constructURL(savedURL.getPath());
         }
-        request.getSession(true).setAttribute(URL_SESSION_ATTR, savedURL);
     
         // Generate request ID, save in session
         UUID requestID = UUID.randomUUID();
         request.getSession().setAttribute(REQUEST_ID_SESSION_ATTR, requestID);
         
-        UUID relayState = UUID.randomUUID();
+        String relayState = savedURL.toString();
         SamlConfiguration samlConfiguration = newSamlConfiguration(request);
         String url = urlToLogoutServiceForDomain(samlConfiguration, requestID, relayState);
         
@@ -105,7 +104,19 @@ public class Logout extends SamlService {
         response.setHeader("Location", redirectURL);
     }
 
+    public boolean isLogoutRequest(HttpServletRequest request) {
+        if (request.getParameter("SAMLRequest") == null) {
+            return false;
+        }
+        return true;
+    }
     
+    public boolean isLogoutResponse(HttpServletRequest request) {
+        if (request.getParameter("SAMLResponse") == null) {
+            return false;
+        }
+        return true;
+    }
     
     public void handleLogoutResponse(HttpServletRequest request, HttpServletResponse response) throws Exception {
         HttpSession session = request.getSession(false);
@@ -115,6 +126,7 @@ public class Logout extends SamlService {
         if (request.getParameter("SAMLResponse") == null) {
             throw new InvalidRequestException("Not a SAML logout request");
         }
+
         UUID expectedRequestID = (UUID) session.getAttribute(REQUEST_ID_SESSION_ATTR);
         if (expectedRequestID == null) {
             throw new InvalidRequestException("Missing request ID attribute in session");
@@ -124,20 +136,23 @@ public class Logout extends SamlService {
         LogoutResponse logoutResponse = getLogoutResponse(request);
         logoutResponse.validate(true);
         
-        URL url = (URL) session.getAttribute(URL_SESSION_ATTR);
+        String relayState = request.getParameter("RelayState");
+        if (relayState == null) {
+            throw new InvalidRequestException("Missing RelayState parameter");
+        }
+        URL url = URL.parse(relayState);
         if (url == null) {
             throw new InvalidRequestException("No URL session attribute exists, nowhere to redirect");
         }
         this.securityInitializer.removeAuthState(request, response);
         
-        session.removeAttribute(URL_SESSION_ATTR);
         session.removeAttribute(REQUEST_ID_SESSION_ATTR);
 
         response.setStatus(HttpServletResponse.SC_FOUND);
         response.setHeader("Location", url.toString());
     }
     
-    private String urlToLogoutServiceForDomain(SamlConfiguration config, UUID requestID, UUID relayState) {
+    private String urlToLogoutServiceForDomain(SamlConfiguration config, UUID requestID, String relayState) {
         LogoutRequest logoutRequest = createLogoutRequest(config, requestID);
         String url = buildSignedAndEncodedLogoutRequestUrl(logoutRequest, relayState);
         return url;
@@ -146,14 +161,15 @@ public class Logout extends SamlService {
     
     private LogoutRequest logoutRequestFromServletRequest(HttpServletRequest request) {
         BasicSAMLMessageContext<LogoutRequest, ?, ?> messageContext = new BasicSAMLMessageContext<LogoutRequest, SAMLObject, SAMLObject>();
-        messageContext.setInboundMessageTransport(new HttpServletRequestAdapter(request));
+        HttpServletRequestAdapter adapter = new HttpServletRequestAdapter(request);
+        messageContext.setInboundMessageTransport(adapter);
 
         HTTPRedirectDeflateDecoder decoder = new HTTPRedirectDeflateDecoder();
 
         try {
             decoder.decode(messageContext);
         } catch (Exception e) {
-            throw new InvalidRequestException("Invalid SAML request: unable to decode LogoutResponse", e);
+            throw new InvalidRequestException("Invalid SAML request: unable to decode LogoutRequest", e);
         }
         LogoutRequest logoutRequest = messageContext.getInboundSAMLMessage();
         return logoutRequest;

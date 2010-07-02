@@ -58,9 +58,8 @@ public class Challenge extends SamlService {
 
         HttpSession session = request.getSession(true);
         URL url = URL.create(request);
-        session.setAttribute(URL_SESSION_ATTR, url);
 
-        UUID relayState = UUID.randomUUID();
+        String relayState = url.toString();
 
         SamlConfiguration samlConfiguration = newSamlConfiguration(request);
 
@@ -74,7 +73,7 @@ public class Challenge extends SamlService {
     }
 
 
-    public String urlToLoginServiceForDomain(SamlConfiguration config, UUID requestID, UUID relayState) {
+    public String urlToLoginServiceForDomain(SamlConfiguration config, UUID requestID, String relayState) {
         AuthnRequest authnRequest = createAuthenticationRequest(config, requestID);
         String url = buildSignedAndEncodedRequestUrl(authnRequest, relayState);
         return url;

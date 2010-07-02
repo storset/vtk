@@ -100,8 +100,6 @@ public abstract class SamlService {
         }
     }
 
-    protected static final String URL_SESSION_ATTR = SamlAuthenticationHandler.class.getName() + ".SamlSavedURL";
-
     protected static final String REQUEST_ID_SESSION_ATTR = SamlAuthenticationHandler.class.getName()
             + ".SamlSavedRequestID";
 
@@ -358,7 +356,7 @@ public abstract class SamlService {
     }
 
 
-    protected final String buildSignedAndEncodedRequestUrl(AuthnRequest authnRequest, UUID relayState) {
+    protected final String buildSignedAndEncodedRequestUrl(AuthnRequest authnRequest, String relayState) {
         try {
             Encoder enc = new Encoder();
             return enc.buildRedirectURL(getSigningCredential(), relayState, authnRequest);
@@ -368,7 +366,7 @@ public abstract class SamlService {
     }
 
 
-    protected final String buildSignedAndEncodedLogoutRequestUrl(LogoutRequest logoutRequest, UUID relayState) {
+    protected final String buildSignedAndEncodedLogoutRequestUrl(LogoutRequest logoutRequest, String relayState) {
         try {
             Encoder enc = new Encoder();
             return enc.buildRedirectURL(getSigningCredential(), relayState, logoutRequest);
@@ -484,12 +482,12 @@ public abstract class SamlService {
         }
 
 
-        public String buildRedirectURL(Credential signingCredential, UUID relayState, RequestAbstractType request)
+        public String buildRedirectURL(Credential signingCredential, String relayState, RequestAbstractType request)
                 throws MessageEncodingException, IOException {
             SAMLMessageContext<?, RequestAbstractType, ?> messageContext = new BasicSAMLMessageContext<SAMLObject, RequestAbstractType, SAMLObject>();
             // Build the parameters for the request
             messageContext.setOutboundSAMLMessage(request);
-            messageContext.setRelayState(relayState.toString());
+            messageContext.setRelayState(relayState);
 
             // Sign the parameters
             messageContext.setOutboundSAMLMessageSigningCredential(signingCredential);

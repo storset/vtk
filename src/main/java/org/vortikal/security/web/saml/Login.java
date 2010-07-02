@@ -30,6 +30,7 @@
  */
 package org.vortikal.security.web.saml;
 
+import java.util.List;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -58,7 +59,7 @@ public class Login extends SamlService {
     private ReplayCache replayCache = new ReplayCache(replayStorage, 60 * 1000 * replayMinutes);
     
 
-    public boolean isLoginRequest(HttpServletRequest req) {
+    public boolean isLoginResponse(HttpServletRequest req) {
         URL url = URL.create(req);
         if (!url.getPath().equals(getServiceProviderURI())) {
             return false;
@@ -72,7 +73,15 @@ public class Login extends SamlService {
         if (req.getParameter("RelayState") == null) {
             return false;
         }
-        return true;
+        try {
+            Response samlResponse = decodeSamlResponse(req.getParameter("SAMLResponse"));
+            List<Assertion> assertions = samlResponse.getAssertions();
+            if (assertions == null || assertions.isEmpty()) {
+                return false;
+            }
+            return true;
+        } catch (Throwable t) { }
+        return false;
     }
 
     public UserData login(HttpServletRequest request) throws AuthenticationException, AuthenticationProcessingException {
@@ -98,10 +107,11 @@ public class Login extends SamlService {
     
     public void redirectAfterLogin(HttpServletRequest request, HttpServletResponse response) throws AuthenticationProcessingException {
         // Get original request URL (saved in challenge()) from session, redirect to it
-        URL url = (URL) request.getSession(true).getAttribute(URL_SESSION_ATTR);
-        if (url == null) {
-            throw new AuthenticationProcessingException("Missing URL attribute in session");
+        String relayState = request.getParameter("RelayState");
+        if (relayState == null) {
+            throw new InvalidRequestException("Missing RelayState parameter");
         }
+        URL url = URL.parse(relayState);
         response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
         response.setHeader("Location", url.toString());
     }

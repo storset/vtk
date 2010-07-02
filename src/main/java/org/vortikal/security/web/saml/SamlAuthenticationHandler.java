@@ -51,6 +51,7 @@ import org.vortikal.security.web.AuthenticationChallenge;
 import org.vortikal.security.web.AuthenticationHandler;
 import org.vortikal.security.web.InvalidAuthenticationRequestException;
 import org.vortikal.web.InvalidRequestException;
+import org.vortikal.web.service.URL;
 
 /**
  * Skeleton of what will be a SAML Web browser SSO authentication handler/challenge
@@ -80,7 +81,7 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     @Override
     public boolean isRecognizedAuthenticationRequest(HttpServletRequest req) throws AuthenticationProcessingException,
             InvalidAuthenticationRequestException {
-        return this.login.isLoginRequest(req);
+        return this.login.isLoginResponse(req);
     }
 
     /**
@@ -141,15 +142,32 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
         if (request.getParameter("SAMLResponse") == null && request.getParameter("SAMLRequest") == null) {
             throw new InvalidRequestException("Invalid SAML request: expected one of 'SAMLRequest' or 'SAMLResponse' parameters");
         }
-        if (request.getParameter("SAMLResponse") == null) {
+        URL url = null;
+        if (login.isLoginResponse(request)) {
+            // User typically hit 'back' button after logging in and got sent here from IDP:
+            String relayState = request.getParameter("RelayState");
+            if (relayState != null) {
+                url = URL.parse(relayState);
+            }
+            if (url != null) {
+                response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+                response.setHeader("Location", url.toString());
+                setHeaders(response);
+                return null;
+            }
+        } else if (logout.isLogoutRequest(request)) {
             // Logout request from IDP (based on some other SP's request)
             this.logout.handleLogoutRequest(request, response);
-        } else {
+            setHeaders(response);
+            return null;
+        } else if (this.logout.isLogoutResponse(request)) {
             // Logout response (based on our request) from IDP
             this.logout.handleLogoutResponse(request, response);
+            setHeaders(response);
+            return null;
         }
-        setHeaders(response);
-        return null;
+        // Request is neither logout request nor logout response nor login response.
+        throw new InvalidRequestException("Invalid SAML request: ");
     }
     
 

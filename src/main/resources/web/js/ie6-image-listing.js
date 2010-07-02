@@ -1,5 +1,6 @@
+// IE 6 max-height CSS substitute
+
 $(document).ready( function() {
-  //only affects IE 6 as max-width
   if (jQuery.browser.msie && jQuery.browser.version <= 6) {
     $(".vrtx-image-container").each( function(i) {
 

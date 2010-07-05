@@ -100,10 +100,12 @@
     </h1>
     <#if page == 1>
       <#-- Image -->
-      <@viewutils.displayImage resource />
+      <#if !viewOngoingProjectsLink?exists>
+      	<@viewutils.displayImage resource />
+      </#if>
       <#-- Introduction -->
       <#assign introduction = vrtx.getIntroduction(resource) />
-      <#if introduction?has_content && !isBlogListing>
+      <#if introduction?has_content && !isBlogListing &&!viewOngoingProjectsLink?exists>
         <div class="vrtx-introduction">
           ${introduction}
         </div>

@@ -81,7 +81,6 @@ public class IndexReaderWarmupImpl implements IndexReaderWarmup {
         // 3. ACL filter for anonymous user
         // Enabling pre-building of this caching should be very good for performance of new reader
         // after warmup.
-        System.out.println("WWWWWWWWWWWWW doing superwarmup now");
         Search search = new Search();
         search.setLimit(5000);
         search.setOnlyPublishedResources(true);
@@ -91,7 +90,6 @@ public class IndexReaderWarmupImpl implements IndexReaderWarmup {
         luceneSorting = this.luceneQueryBuilder.buildSort(search.getSorting());
         luceneFilter = this.luceneQueryBuilder.buildSearchFilter(null, search, reader);
         searcher.search(luceneQuery, luceneFilter, search.getLimit(), luceneSorting);
-        System.out.println("Finished superwarming, cache primed !");
     }
 
     private Query getWarmupQuery() {

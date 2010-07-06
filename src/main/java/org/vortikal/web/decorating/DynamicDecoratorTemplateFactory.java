@@ -63,6 +63,7 @@ import org.vortikal.text.tl.expr.Function;
 import org.vortikal.util.repository.PropertyAspectDescription;
 import org.vortikal.util.repository.PropertyAspectResolver;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.service.URL;
 
 public class DynamicDecoratorTemplateFactory implements TemplateFactory, InitializingBean {
 
@@ -116,6 +117,8 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
 
         Set<Function> functions = new HashSet<Function>();
         functions.addAll(this.functions);
+        //functions.add(new RequestURLFunction(new Symbol("request-url")));
+        functions.add(new RepositoryIDFunction(new Symbol("repo-id")));
         functions.add(new RequestParameterFunction(new Symbol("request-param")));
         functions.add(new ResourceLocaleFunction(new Symbol("resource-locale")));
         functions.add(new TemplateParameterFunction(new Symbol("template-param")));
@@ -140,6 +143,37 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
         this.functions = functions;
     }
 
+    private class RepositoryIDFunction extends Function {
+        public RepositoryIDFunction(Symbol symbol) {
+            super(symbol, 0);
+        }
+        @Override
+        public Object eval(Context ctx, Object... args) throws Exception {
+            return repository.getId();
+        }        
+    }
+    
+    private class RequestURLFunction extends Function {
+        public RequestURLFunction(Symbol symbol) {
+            super(symbol, 0);
+        }
+
+        @Override
+        public Object eval(Context ctx, Object... args) throws Exception {
+            RequestContext requestContext = RequestContext.getRequestContext();
+            HttpServletRequest request = requestContext.getServletRequest();
+            URL url = URL.create(request);
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("url", url);
+            map.put("scheme", url.getProtocol());
+            map.put("host", url.getHost());
+            map.put("port", url.getPort());
+            map.put("path", url.getPath());
+            map.put("query", url.getQueryString());
+            return map;
+        }
+    }
+    
     private class TemplateParameterFunction extends Function {
         public TemplateParameterFunction(Symbol symbol) {
             super(symbol, 1);

@@ -28,6 +28,57 @@
   </bean>
 
 
+  <!-- Catch logout requests when user is not authenticated: redirect to view -->
+  <bean id="logout.noopService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="-1001" />
+    <property name="assertions">
+      <list>
+        <ref bean="logoutRequestParameter" />
+        <bean class="org.vortikal.web.service.InvertAssertion">
+          <property name="assertion">
+            <bean class="org.vortikal.web.service.ConfigAssertion">
+              <property name="config" value="${webHostName}" />
+              <property name="expectedValue" value="${manage.hostName}" />
+            </bean>
+          </property>
+        </bean>
+        <bean class="org.vortikal.web.service.RequestProtocolAssertion">
+          <property name="protocol" value="${logout.protocol}" />
+        </bean>
+        <bean class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="method" value="POST" />
+        </bean>
+        <bean class="org.vortikal.web.service.RequestHostNameAssertion">
+          <property name="hostName" value="${manage.hostName}" />
+        </bean>
+        <bean class="org.vortikal.web.service.InvertAssertion">
+          <property name="assertion">
+            <bean class="org.vortikal.web.service.IsAuthenticatedAssertion" />
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="handlerInterceptors">
+      <list>
+        <bean class="org.vortikal.web.interceptors.ConfigurableRedirector">
+          <property name="protocol" value="${webProtocol}" />
+          <property name="hostName" value="${webHostName}" />
+          <property name="removedParameters">
+            <set>
+              <value>action</value>
+            </set>
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <bean class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+        <property name="viewName" value="HTTP_200_OK" />
+      </bean>
+    </property>
+  </bean>
+
+
   <!-- Logout service -->
   
   <bean id="logoutService" class="org.vortikal.web.service.ServiceImpl">
@@ -60,7 +111,6 @@
     </property>
     <property name="handler" ref="logoutHandler" />
   </bean>
-
 
   <!-- Service for explicitly requesting authentication. This service 
        will not match requests that are already authenticated.

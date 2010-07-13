@@ -48,9 +48,6 @@
         <bean class="org.vortikal.web.service.RequestMethodAssertion">
           <property name="method" value="POST" />
         </bean>
-        <bean class="org.vortikal.web.service.RequestHostNameAssertion">
-          <property name="hostName" value="${manage.hostName}" />
-        </bean>
         <bean class="org.vortikal.web.service.InvertAssertion">
           <property name="assertion">
             <bean class="org.vortikal.web.service.IsAuthenticatedAssertion" />

@@ -32,6 +32,7 @@ package org.vortikal.repository.resourcetype.property;
 
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
+import org.vortikal.repository.PropertyEvaluationContext.Type;
 import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
 
@@ -44,7 +45,7 @@ public class ContentLengthEvaluator implements PropertyEvaluator {
         if (ctx.isCollection()) {
             return false;
         }
-        if (ctx.getEvaluationType() != PropertyEvaluationContext.Type.ContentChange) {
+        if (ctx.getEvaluationType() != Type.ContentChange && ctx.getEvaluationType() != Type.Create) {
             return true;
         }
         Content content = ctx.getContent();

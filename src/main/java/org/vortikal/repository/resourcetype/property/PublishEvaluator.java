@@ -48,10 +48,7 @@ public class PublishEvaluator implements PropertyEvaluator {
     public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
 
         if (ctx.getEvaluationType() == Type.Create) {
-            // Make sure there's no publish/unpublish date on creation
-            ctx.getNewResource().removeProperty(this.publishDatePropDef);
-            ctx.getNewResource().removeProperty(this.unpublishDatePropDef);
-            return true;
+            return false;
         }
 
         Property publishDateProp = ctx.getNewResource().getProperty(this.publishDatePropDef);

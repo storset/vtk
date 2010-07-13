@@ -40,6 +40,7 @@ import org.vortikal.graphics.ScaledImage;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
+import org.vortikal.repository.PropertyEvaluationContext.Type;
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyType;
 
@@ -54,10 +55,9 @@ public class ThumbnailEvaluator implements PropertyEvaluator {
 
     public boolean evaluate(Property property, PropertyEvaluationContext ctx)
             throws PropertyEvaluationException {
-        if (ctx.getEvaluationType() == PropertyEvaluationContext.Type.Create) {
-            return false;
-        } else if (property.isValueInitialized()
-                && ctx.getEvaluationType() != PropertyEvaluationContext.Type.ContentChange) {
+        if (property.isValueInitialized()
+                && ctx.getEvaluationType() != Type.ContentChange 
+                && ctx.getEvaluationType() != Type.Create) {
             return true;
         }
 

@@ -32,31 +32,25 @@ package org.vortikal.repository.resourcetype.property;
 
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
+import org.vortikal.repository.PropertyEvaluationContext.Type;
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
 
 /**
- * "Null" property evaluator. This evaluator returns <code>false</code> when evaluating, 
- * leading to the removal of the property from the resource being evaluated. This is 
- * useful when overriding property definitions. The evaluator can be configured to keep
- * the property if it already existed on the resource (before this evaluation).
+ * "Null" property evaluator. This evaluator returns <code>false</code> on <code>Create</code>, 
+ * leading to the removal of the property set by higher level (overridden) evaluators. For 
+ * evaluation types other than <code>Create</code> the property is kept as it was.
  */
 public class NullEvaluator implements PropertyEvaluator {
 
-    private boolean keepExistingValues = false;
-    
     @Override
     public boolean evaluate(Property property, PropertyEvaluationContext ctx)
             throws PropertyEvaluationException {
-        if (this.keepExistingValues) {
-            if (ctx.getOriginalResource().getProperty(property.getDefinition()) != null) {
-                return true;
-            }
+        if (ctx.getEvaluationType() == Type.Create) {
+            return false;
+        }
+        if (ctx.getOriginalResource().getProperty(property.getDefinition()) != null) {
+            return true;
         }
         return false;
     }
-    
-    public void setKeepExistingValues(boolean keepExistingValues) {
-        this.keepExistingValues = keepExistingValues;
-    }
-    
 }

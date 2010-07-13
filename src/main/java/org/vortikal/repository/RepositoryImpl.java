@@ -118,6 +118,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     @Override
     public Resource retrieve(String token, Path uri, boolean forProcessing) throws ResourceNotFoundException,
             AuthorizationException, AuthenticationException, IOException {
+        // XXX: check uri not null
         Principal principal = this.tokenManager.getPrincipal(token);
 
         ResourceImpl resource = null;
@@ -215,17 +216,50 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     }
 
     @Override
-    public Resource createDocument(String token, Path uri) throws IllegalOperationException, AuthorizationException,
-            AuthenticationException, ResourceLockedException, ReadOnlyException, IOException {
-
-        return create(token, uri, false);
-    }
-
-    @Override
     public Resource createCollection(String token, Path uri) throws IllegalOperationException, AuthorizationException,
             AuthenticationException, ResourceLockedException, ReadOnlyException, IOException {
+        Principal principal = this.tokenManager.getPrincipal(token);
+        ResourceImpl resource = this.dao.load(uri);
+        if (resource != null) {
+            throw new ResourceOverwriteException(uri);
+        }
+        ResourceImpl parent = this.dao.load(uri.getParent());
+        if ((parent == null) || !parent.isCollection()) {
+            throw new IllegalOperationException("Either parent doesn't exist " + "or parent is document");
+        }
 
-        return create(token, uri, true);
+        this.authorizationManager.authorizeCreate(parent.getURI(), principal);
+        checkMaxChildren(parent);
+
+        ResourceImpl newResource = this.resourceHelper.create(principal, uri, true);
+
+        try {
+            // Store parent first to avoid transactional dead-lock-problems
+            // between Cache
+            // locking and database inter-transactional synchronization (which
+            // leads to "11-iteration" problems).
+            parent.addChildURI(uri);
+            parent = this.resourceHelper.contentModification(parent, principal);
+            this.dao.store(parent);
+
+            // Store new resource
+            Acl newAcl = (Acl) parent.getAcl().clone();
+            newResource.setAcl(newAcl);
+            newResource.setInheritedAcl(true);
+            int aclIneritedFrom = parent.isInheritedAcl() ? parent.getAclInheritedFrom() : parent.getID();
+            newResource.setAclInheritedFrom(aclIneritedFrom);
+            this.dao.store(newResource);
+            this.contentStore.createResource(newResource.getURI(), true);
+
+            newResource = this.dao.load(uri);
+
+            newResource = (ResourceImpl) newResource.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new IOException("An internal error occurred: unable to " + "clone() resource: " + uri);
+        }
+
+        this.context.publishEvent(new ResourceCreationEvent(this, newResource));
+        return newResource;
     }
 
     @Override
@@ -486,6 +520,58 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
     }
 
+    @Override
+    public Resource createDocument(String token, Path uri, InputStream inStream) throws IllegalOperationException, AuthorizationException,
+    AuthenticationException, ResourceLockedException, ReadOnlyException, IOException {
+
+        Principal principal = this.tokenManager.getPrincipal(token);
+        ResourceImpl resource = this.dao.load(uri);
+        if (resource != null) {
+            throw new ResourceOverwriteException(uri);
+        }
+        ResourceImpl parent = this.dao.load(uri.getParent());
+        if ((parent == null) || !parent.isCollection()) {
+            throw new IllegalOperationException("Either parent doesn't exist " + "or parent is document");
+        }
+
+        this.authorizationManager.authorizeCreate(parent.getURI(), principal);
+        checkMaxChildren(parent);
+
+        // Write to a temporary file to avoid locking:
+        File tempFile = writeTempFile(uri.getName(), inStream);
+
+        this.contentStore.storeContent(uri, new java.io.BufferedInputStream(new java.io.FileInputStream(tempFile)));
+        ResourceImpl newResource = this.resourceHelper.create(principal, uri, false);
+
+        try {
+            // Store parent first to avoid transactional dead-lock-problems
+            // between Cache
+            // locking and database inter-transactional synchronization (which
+            // leads to "11-iteration" problems).
+            parent.addChildURI(uri);
+            parent = this.resourceHelper.contentModification(parent, principal);
+            this.dao.store(parent);
+
+            // Store new resource
+            Acl newAcl = (Acl) parent.getAcl().clone();
+            newResource.setAcl(newAcl);
+            newResource.setInheritedAcl(true);
+            int aclIneritedFrom = parent.isInheritedAcl() ? parent.getAclInheritedFrom() : parent.getID();
+            newResource.setAclInheritedFrom(aclIneritedFrom);
+            this.dao.store(newResource);
+
+            newResource = this.dao.load(uri);
+
+            newResource = (ResourceImpl) newResource.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new IOException("An internal error occurred: unable to " + "clone() resource: " + uri);
+        }
+
+        this.context.publishEvent(new ResourceCreationEvent(this, newResource));
+        return newResource;
+    }
+
+    
     /**
      * Requests that an InputStream be written to a resource.
      */
@@ -826,52 +912,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
     }
 
-    private Resource create(String token, Path uri, boolean collection) throws AuthorizationException,
-            AuthenticationException, IllegalOperationException, ResourceLockedException, ReadOnlyException, IOException {
-
-        Principal principal = this.tokenManager.getPrincipal(token);
-        ResourceImpl resource = this.dao.load(uri);
-        if (resource != null) {
-            throw new ResourceOverwriteException(uri);
-        }
-        ResourceImpl parent = this.dao.load(uri.getParent());
-        if ((parent == null) || !parent.isCollection()) {
-            throw new IllegalOperationException("Either parent doesn't exist " + "or parent is document");
-        }
-
-        this.authorizationManager.authorizeCreate(parent.getURI(), principal);
-        checkMaxChildren(parent);
-
-        ResourceImpl newResource = this.resourceHelper.create(principal, uri, collection);
-
-        try {
-            // Store parent first to avoid transactional dead-lock-problems
-            // between Cache
-            // locking and database inter-transactional synchronization (which
-            // leads to "11-iteration" problems).
-            parent.addChildURI(uri);
-            parent = this.resourceHelper.contentModification(parent, principal);
-            this.dao.store(parent);
-
-            // Store new resource
-            Acl newAcl = (Acl) parent.getAcl().clone();
-            newResource.setAcl(newAcl);
-            newResource.setInheritedAcl(true);
-            int aclIneritedFrom = parent.isInheritedAcl() ? parent.getAclInheritedFrom() : parent.getID();
-            newResource.setAclInheritedFrom(aclIneritedFrom);
-            this.dao.store(newResource);
-            this.contentStore.createResource(newResource.getURI(), collection);
-
-            newResource = this.dao.load(uri);
-
-            newResource = (ResourceImpl) newResource.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new IOException("An internal error occurred: unable to " + "clone() resource: " + uri);
-        }
-
-        this.context.publishEvent(new ResourceCreationEvent(this, newResource));
-        return newResource;
-    }
 
     private void checkMaxChildren(ResourceImpl resource) {
         if (resource.getChildURIs().size() > this.maxResourceChildren) {

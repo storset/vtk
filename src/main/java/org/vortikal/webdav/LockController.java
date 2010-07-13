@@ -30,6 +30,7 @@
  */
 package org.vortikal.webdav;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -156,7 +157,7 @@ public class LockController extends AbstractWebdavController {
                 if (this.logger.isDebugEnabled()) {
                     this.logger.debug("Creating null resource");
                 }
-                this.repository.createDocument(token, uri);
+                this.repository.createDocument(token, uri, new ByteArrayInputStream(new byte[0]));
                 
                 // Should get real lockOwnerInfo, even if resource don't exist when locked
                 if (request.getContentLength() > 0) {

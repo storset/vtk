@@ -429,10 +429,6 @@ public class StructuredResourceManager {
         @SuppressWarnings("unchecked")
         public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
 
-            if (ctx.getEvaluationType() == PropertyEvaluationContext.Type.Create) {
-                return false;
-            }
-
             Object value = null;
             if (propertyDesc.hasExternalService()) {
                 Object o = ctx.getEvaluationAttribute(propertyDesc.getExternalService());
@@ -520,11 +516,9 @@ public class StructuredResourceManager {
 
         public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
 
-            if (ctx.getEvaluationType() == PropertyEvaluationContext.Type.Create) {
-                return false;
-            }
             if (ctx.getEvaluationType() != PropertyEvaluationContext.Type.ContentChange
-                    && ctx.getEvaluationType() != PropertyEvaluationContext.Type.SystemPropertiesChange) {
+                    && ctx.getEvaluationType() != PropertyEvaluationContext.Type.SystemPropertiesChange
+                    && ctx.getEvaluationType() != PropertyEvaluationContext.Type.Create) {
                 return ctx.getOriginalResource().getProperty(property.getDefinition()) != null;
             }
 
@@ -614,10 +608,9 @@ public class StructuredResourceManager {
         @SuppressWarnings("unchecked")
         public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
 
-            if (ctx.getEvaluationType() == PropertyEvaluationContext.Type.Create) {
-                return false;
-            } else if (property.isValueInitialized()
-                    && ctx.getEvaluationType() != PropertyEvaluationContext.Type.ContentChange) {
+            if (property.isValueInitialized()
+                    && ctx.getEvaluationType() != PropertyEvaluationContext.Type.ContentChange
+                    && ctx.getEvaluationType() != PropertyEvaluationContext.Type.Create) {
                 return true;
             }
 

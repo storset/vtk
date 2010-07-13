@@ -156,6 +156,8 @@ public class PutController extends AbstractWebdavController {
                     throw new WebdavConflictException(
                         "Trying to PUT to collection resource '" + uri + "'");
                 }
+                InputStream inStream = request.getInputStream();
+                this.repository.storeContent(token, resource.getURI(), inStream);
 
             } else {
 
@@ -181,14 +183,12 @@ public class PutController extends AbstractWebdavController {
                 if (this.logger.isDebugEnabled()) {
                     this.logger.debug("Resource does not exist (creating)");
                 }
-                resource = this.repository.createDocument(token, uri);
+                InputStream inStream = request.getInputStream();
+                resource = this.repository.createDocument(token, uri, inStream);
             }
 
-            InputStream inStream = request.getInputStream();
-            this.repository.storeContent(token, resource.getURI(), inStream);
-
             resource = this.repository.retrieve(token, resource.getURI(), false);
-            TypeInfo typeInfo = this.repository.getTypeInfo(token, resource.getURI());
+            TypeInfo typeInfo = this.repository.getTypeInfo(resource);
             
             boolean store = false;
             

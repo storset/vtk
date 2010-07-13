@@ -701,8 +701,7 @@ public class ResourceArchiver {
 
     private boolean writeFile(String token, Path uri, ZipInputStream is) {
         try {
-            this.repository.createDocument(token, uri);
-            this.repository.storeContent(token, uri, new PartialZipStream(is));
+            this.repository.createDocument(token, uri, new PartialZipStream(is));
         } catch (Exception e) {
             logger.error("Error writing resource '" + uri + "': " + e.getMessage());
             return false;

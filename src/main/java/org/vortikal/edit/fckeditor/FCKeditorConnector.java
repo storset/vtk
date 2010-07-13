@@ -237,10 +237,8 @@ public class FCKeditorConnector implements Controller {
                 uri = newFileName(command, token, uploadItem);
             }
 
-            this.repository.createDocument(token, uri);
-
             InputStream inStream = uploadItem.getInputStream();
-            this.repository.storeContent(token, uri, inStream);
+            this.repository.createDocument(token, uri, inStream);
 
             Resource newResource = this.repository.retrieve(token, uri, true);
             TypeInfo typeInfo = this.repository.getTypeInfo(token, uri);

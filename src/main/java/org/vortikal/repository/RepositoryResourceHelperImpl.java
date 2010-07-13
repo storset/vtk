@@ -74,8 +74,9 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         if (collection) {
             resource.setChildURIs(new ArrayList<Path>());
         }
+        Content content = getContent(resource);
         PropertyEvaluationContext ctx = PropertyEvaluationContext
-                .createResourceContext(resource, collection, principal);
+                .createResourceContext(resource, collection, principal, content);
         recursiveTreeEvaluation(ctx, this.resourceTypeTree.getRoot());
         return ctx.getNewResource();
     }
@@ -408,7 +409,8 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
             property.setValue(defaultValue);
         }
         if (logger.isDebugEnabled()) {
-            logger.debug("Property evaluated: " + property + " by evaluator " + evaluator + " for resource "
+            logger.debug("[" + ctx.getEvaluationType() + "] evaluated: " + property 
+                    + ", evaluator " + evaluator + ", resource "
                     + ctx.getNewResource() + ", type " + ctx.getNewResource().getResourceType());
         }
         return property;

@@ -40,6 +40,7 @@ import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.PropertyEvaluationContext.Type;
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
@@ -71,7 +72,7 @@ public abstract class AbstractJerichoHtmlContentEvaluator
             return false;
         }
         
-        if (ctx.getEvaluationType() != PropertyEvaluationContext.Type.ContentChange) {
+        if (ctx.getEvaluationType() != Type.ContentChange && ctx.getEvaluationType() != Type.Create) {
             boolean exists = ctx.getOriginalResource().getProperty(property.getDefinition()) != null;
             return exists; 
         }

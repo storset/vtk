@@ -64,29 +64,27 @@ public class ContentTypeEvaluator implements PropertyEvaluator {
             }
             String guessedContentType = MimeHelper.map(ctx.getNewResource().getName());
             property.setStringValue(guessedContentType);
-            return true;
         } 
-        
         if (this.contentPeekRegexps == null) {
             return true;
         }
         
-        if (evalType == Type.ContentChange) {
-            
+        if (evalType == Type.Create || evalType == Type.ContentChange) {
             // Initial guess:
-            String guessedContentType = MimeHelper.map(ctx.getNewResource().getName());
-            if (guessedContentType.equals("application/octet-stream")) {
-                guessedContentType = ctx.getOriginalResource().getContentType();
-                property.setStringValue(guessedContentType);
+            String resourceContentType = ctx.getOriginalResource().getContentType();
+            if (resourceContentType == null || resourceContentType.isEmpty() 
+                    || "application/octet-stream".equals(resourceContentType)) {
+                resourceContentType = MimeHelper.map(ctx.getNewResource().getName());
+                property.setStringValue(resourceContentType);
             }
-
-            if (this.contentPeekRegexps.containsKey(guessedContentType)) {
+            
+            if (this.contentPeekRegexps.containsKey(resourceContentType)) {
                 try {
                     // Peek in content:
                     InputStream inputStream = ctx.getContent().getContentInputStream();
                     byte[] buffer = StreamUtil.readInputStream(inputStream, this.regexpChunkSize);
                     String chunk = new String(buffer, this.peekCharacterEncoding.name());
-                    Map<Pattern, String> mapping = this.contentPeekRegexps.get(guessedContentType);
+                    Map<Pattern, String> mapping = this.contentPeekRegexps.get(resourceContentType);
                     for (Pattern pattern: mapping.keySet()) {
                         Matcher m = pattern.matcher(chunk);
                         boolean match = m.find();

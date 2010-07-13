@@ -69,6 +69,7 @@ public class RequestLocalRepository implements Repository {
         this.repository = repository;
     }
 
+    @Override
     public TypeInfo getTypeInfo(String token, Path uri) throws Exception {
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();
         if (ctx == null) {
@@ -115,11 +116,13 @@ public class RequestLocalRepository implements Repository {
         }
     }
     
+    @Override
     public TypeInfo getTypeInfo(Resource resource) {
         return this.repository.getTypeInfo(resource);
     }
 
 
+    @Override
     public Resource retrieve(String token, Path uri, boolean forProcessing)
         throws Exception {
 
@@ -170,12 +173,14 @@ public class RequestLocalRepository implements Repository {
         }
     }
 
+    @Override
     public Resource[] listChildren(String token, Path uri,
                                    boolean forProcessing)
         throws Exception {
         return this.repository.listChildren(token, uri, forProcessing);
     }
 
+    @Override
     public Resource store(String token, Resource resource)
         throws Exception {
 
@@ -187,6 +192,7 @@ public class RequestLocalRepository implements Repository {
         return this.repository.store(token, resource);
     }
 
+    @Override
     public Resource storeContent(String token, Path uri, InputStream byteStream)
         throws Exception {
 
@@ -197,6 +203,7 @@ public class RequestLocalRepository implements Repository {
         return this.repository.storeContent(token, uri, byteStream);
     }
 
+    @Override
     public InputStream getInputStream(String token, Path uri,
                                       boolean forProcessing)
         throws Exception {
@@ -204,21 +211,24 @@ public class RequestLocalRepository implements Repository {
         return this.repository.getInputStream(token, uri, forProcessing);
     }
 
-    public Resource createDocument(String token, Path uri)
+    @Override
+    public Resource createDocument(String token, Path uri, InputStream inStream)
         throws Exception {
 
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();
         if (ctx != null) {
             ctx.clear();
         }        
-        return this.repository.createDocument(token, uri);
+        return this.repository.createDocument(token, uri, inStream);
     }
 
+    @Override
     public Resource createCollection(String token, Path uri)
         throws Exception {
         return this.repository.createCollection(token, uri);
     }
 
+    @Override
     public void copy(String token, Path srcUri, Path destUri, Depth depth,
                      boolean overwrite, boolean preserveACL)
         throws Exception {
@@ -230,6 +240,7 @@ public class RequestLocalRepository implements Repository {
         this.repository.copy(token, srcUri, destUri, depth, overwrite, preserveACL);
     }
 
+    @Override
     public void move(String token, Path srcUri, Path destUri,
                      boolean overwrite)
         throws Exception {
@@ -241,6 +252,7 @@ public class RequestLocalRepository implements Repository {
         this.repository.move(token, srcUri, destUri, overwrite);
     }
 
+    @Override
     public void delete(String token, Path uri)
         throws Exception {
 
@@ -251,6 +263,7 @@ public class RequestLocalRepository implements Repository {
         this.repository.delete(token, uri);
     }
 
+    @Override
     public boolean exists(String token, Path uri)
         throws Exception {
 
@@ -262,6 +275,7 @@ public class RequestLocalRepository implements Repository {
         return this.repository.exists(token, uri);
     }
 
+    @Override
     public Resource lock(String token, Path uri, String ownerInfo,
                          Depth depth, int requestedTimoutSeconds,
                          String lockToken)
@@ -275,6 +289,7 @@ public class RequestLocalRepository implements Repository {
                                requestedTimoutSeconds, lockToken);
     }
 
+    @Override
     public void unlock(String token, Path uri, String lockToken)
         throws Exception {
 
@@ -285,6 +300,7 @@ public class RequestLocalRepository implements Repository {
         this.repository.unlock(token, uri, lockToken);
     }
 
+    @Override
     public void storeACL(String token, Resource resource)
         throws Exception {
 
@@ -295,6 +311,7 @@ public class RequestLocalRepository implements Repository {
         this.repository.storeACL(token, resource);
     }
 
+    @Override
     public void storeACL(String token, Resource resource, boolean validateACL) throws Exception {
 
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();
@@ -304,43 +321,73 @@ public class RequestLocalRepository implements Repository {
         this.repository.storeACL(token, resource, validateACL);
     }
 
+    @Override
     public List<Comment> getComments(String token, Resource resource)
         throws RepositoryException, AuthenticationException {
         return this.repository.getComments(token, resource);
     }
     
+    @Override
     public List<Comment> getComments(String token, Resource resource,
             boolean deep, int max) throws RepositoryException,
             AuthenticationException {
         return this.repository.getComments(token, resource, deep, max);
     }
 
+    @Override
     public Comment addComment(String token, Resource resource, String title, String text)
         throws RepositoryException, AuthenticationException {
         return this.repository.addComment(token, resource, title, text);
     }
     
+    @Override
     public Comment addComment(String token, Comment comment) {
     	return this.repository.addComment(token, comment);
     }
 
+    @Override
     public void deleteComment(String token, Resource resource, Comment comment)
         throws RepositoryException, AuthenticationException {
         this.repository.deleteComment(token, resource, comment);
     }
     
+    @Override
     public void deleteAllComments(String token, Resource resource)
         throws RepositoryException, AuthenticationException {
         this.repository.deleteAllComments(token, resource);
     }
 
+    @Override
     public Comment updateComment(String token, Resource resource, Comment comment)
         throws RepositoryException, AuthenticationException {
         return this.repository.updateComment(token, resource, comment);
     }
     
+    @Override
+    public String getId() {
+        return this.repository.getId();
+    }
 
+    @Override
+    public boolean isReadOnly() {
+        return this.repository.isReadOnly();
+    }
 
+    @Override
+    public void setReadOnly(String token, boolean readOnly) throws Exception {
+        this.repository.setReadOnly(token, readOnly);
+    }
+
+    @Override
+    public ResultSet search(String token, Search search) throws QueryException {
+        return this.repository.search(token, search);
+    }
+
+    @Override
+    public boolean isAuthorized(Resource resource, RepositoryAction action,
+            Principal principal) throws Exception {
+        return this.repository.isAuthorized(resource, action, principal);
+    }
     // XXX: Losing stack traces unnecessary
     private void throwAppropriateException(Throwable t) 
         throws AuthenticationException, AuthorizationException,
@@ -387,29 +434,6 @@ public class RequestLocalRepository implements Repository {
         throw new RuntimeException(t);
     }
     
-    public String getId() {
-        return this.repository.getId();
-    }
-
-
-    public boolean isReadOnly() {
-        return this.repository.isReadOnly();
-    }
-
-
-    public void setReadOnly(String token, boolean readOnly) throws Exception {
-        this.repository.setReadOnly(token, readOnly);
-    }
-
     public void init() throws Exception {    
-    }
-
-    public ResultSet search(String token, Search search) throws QueryException {
-        return this.repository.search(token, search);
-    }
-
-    public boolean isAuthorized(Resource resource, RepositoryAction action,
-            Principal principal) throws Exception {
-        return this.repository.isAuthorized(resource, action, principal);
     }
 }

@@ -49,10 +49,8 @@ public class PublishDateEvaluator implements PropertyEvaluator {
             throw new PropertyEvaluationException("creationTimePropDef needed for evaluation");
         }
         if (ctx.getEvaluationType() == Type.Create) {
-            if (ctx.getNewResource().isCollection()) {
-                property.setDateValue(creationTimeProp.getDateValue());
-                return true;
-            }
+            property.setDateValue(creationTimeProp.getDateValue());
+            return true;
         }
         Property existing = ctx.getOriginalResource().getProperty(property.getDefinition());
         if (existing != null && ctx.getEvaluationType() == Type.ContentChange) {

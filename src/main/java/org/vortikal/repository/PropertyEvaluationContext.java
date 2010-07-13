@@ -73,8 +73,8 @@ public class PropertyEvaluationContext {
     }
 
     public static PropertyEvaluationContext createResourceContext(ResourceImpl originalResource, boolean collection,
-            Principal principal) throws InternalRepositoryException {
-        PropertyEvaluationContext ctx = new PropertyEvaluationContext(originalResource, collection, principal, null,
+            Principal principal, Content content) throws InternalRepositoryException {
+        PropertyEvaluationContext ctx = new PropertyEvaluationContext(originalResource, collection, principal, content,
                 Type.Create);
         return ctx;
     }

@@ -36,6 +36,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
+import org.vortikal.repository.PropertyEvaluationContext.Type;
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
 
 
@@ -49,10 +50,9 @@ public class ImageDimensionEvaluator implements PropertyEvaluator {
     }
     
     public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
-        if (ctx.getEvaluationType() == PropertyEvaluationContext.Type.Create) {
-            return false;
-        } else if (property.isValueInitialized()
-                && ctx.getEvaluationType() != PropertyEvaluationContext.Type.ContentChange) {
+        if (property.isValueInitialized()
+                && ctx.getEvaluationType() != Type.ContentChange
+                && ctx.getEvaluationType() != Type.Create) {
             return true;
         }
         try {

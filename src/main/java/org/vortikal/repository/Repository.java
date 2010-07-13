@@ -193,10 +193,11 @@ public interface Repository {
             AuthenticationException, Exception;
 
     /**
-     * Creates a new empty (document) resource in the repository.
+     * Creates a new document in the repository.
      *
      * @param token identifies the client's authenticated session
      * @param uri the resource identifier to be created
+     * @param inputStream the resource's content
      * @return a <code>Resource</code> representing metadata about
      * the newly created resource
      * @exception IllegalOperationException if the resource identified
@@ -211,7 +212,7 @@ public interface Repository {
      * the repository is in read-only mode
      * @exception Exception if an I/O error occurs
      */
-    public Resource createDocument(String token, Path uri)
+    public Resource createDocument(String token, Path uri, InputStream inputStream)
         throws IllegalOperationException, AuthorizationException, 
             AuthenticationException, ResourceLockedException, ReadOnlyException, 
             Exception;

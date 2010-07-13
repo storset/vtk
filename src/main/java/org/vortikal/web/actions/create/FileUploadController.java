@@ -41,21 +41,15 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
-import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.TypeInfo;
-import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.util.repository.MimeHelper;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
@@ -159,7 +153,6 @@ public class FileUploadController extends SimpleFormController {
         String token = SecurityContext.getSecurityContext().getToken();
 
         try {
-
             boolean exists = this.repository.exists(token, itemURI);
             if (exists) {
                 errors.rejectValue("file",
@@ -167,25 +160,8 @@ public class FileUploadController extends SimpleFormController {
                                    "A resource with this name already exists");
                 return showForm(request, response, errors);
             }
-
-            Resource newResource = this.repository.createDocument(token, itemURI);
-            TypeInfo typeInfo = this.repository.getTypeInfo(token, uri);
-
-            String contentType = uploadItem.getContentType();
-            
-            if (StringUtils.isBlank(contentType) || 
-            		MimeHelper.DEFAULT_MIME_TYPE.equals(StringUtils.trim(contentType))) {
-                contentType = MimeHelper.map(newResource.getName());
-            }
-            Property prop = typeInfo.createProperty(
-                    Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTTYPE_PROP_NAME);
-            prop.setStringValue(contentType);
-            newResource.addProperty(prop);
-            this.repository.store(token, newResource);
-
             InputStream inStream = uploadItem.getInputStream();
-            this.repository.storeContent(token, itemURI, inStream);
-
+            this.repository.createDocument(token, itemURI, inStream);
         } catch (Exception e) {
             logger.warn("Caught exception while performing file upload", e);
             errors.rejectValue("file",

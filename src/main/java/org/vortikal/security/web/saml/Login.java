@@ -58,6 +58,13 @@ public class Login extends SamlService {
     private StorageService<String, ReplayCacheEntry> replayStorage = new MapBasedStorageService<String, ReplayCacheEntry>();
     private ReplayCache replayCache = new ReplayCache(replayStorage, 60 * 1000 * replayMinutes);
     
+    private String urlSessionAttribute = null;
+    
+    public void setUrlSessionAttribute(String urlSessionAttribute) {
+        if (urlSessionAttribute != null && !"".equals(urlSessionAttribute.trim())) {
+            this.urlSessionAttribute = urlSessionAttribute;
+        }
+    }
 
     public boolean isLoginResponse(HttpServletRequest req) {
         URL url = URL.create(req);
@@ -112,6 +119,12 @@ public class Login extends SamlService {
             throw new InvalidRequestException("Missing RelayState parameter");
         }
         URL url = URL.parse(relayState);
+        if (this.urlSessionAttribute != null) {
+            HttpSession session = request.getSession(false);
+            if (session != null && session.getAttribute(this.urlSessionAttribute) != null) {
+                url = (URL) session.getAttribute(this.urlSessionAttribute);
+            }
+        }
         response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
         response.setHeader("Location", url.toString());
     }

@@ -42,6 +42,14 @@ import org.vortikal.web.service.URL;
 
 public class Challenge extends SamlService {
 
+    private String urlSessionAttribute = null;
+    
+    public void setUrlSessionAttribute(String urlSessionAttribute) {
+        if (urlSessionAttribute != null && !"".equals(urlSessionAttribute.trim())) {
+            this.urlSessionAttribute = urlSessionAttribute;
+        }
+    }
+    
     public void challenge(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationProcessingException {
 
@@ -58,9 +66,11 @@ public class Challenge extends SamlService {
 
         HttpSession session = request.getSession(true);
         URL url = URL.create(request);
-
+        if (this.urlSessionAttribute != null) {
+            session.setAttribute(this.urlSessionAttribute, url);
+        }
         String relayState = url.toString();
-
+        
         SamlConfiguration samlConfiguration = newSamlConfiguration(request);
 
         // Generate request ID, save in session

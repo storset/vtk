@@ -54,7 +54,9 @@
   </bean>
 
   <bean id="saml.challenge" class="org.vortikal.security.web.saml.Challenge"
-    parent="saml.abstractHandler"/>
+    parent="saml.abstractHandler">
+    <property name="urlSessionAttribute" value="${saml.urlSessionAttribute}" />
+  </bean>
 
   <bean id="saml.login" class="org.vortikal.security.web.saml.Login" parent="saml.abstractHandler">
     <property name="replayMinutes" value="60"/>

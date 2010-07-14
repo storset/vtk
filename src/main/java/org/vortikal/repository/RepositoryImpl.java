@@ -98,6 +98,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     private PeriodicThread periodicThread;
     private int maxResourceChildren = 3000;
 
+    private static Log searchLogger = LogFactory.getLog(RepositoryImpl.class.getName() + ".Search");
+    
+
     @Override
     public boolean isReadOnly() {
         return this.authorizationManager.isReadOnly();
@@ -1133,7 +1136,18 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             // Enforce searching in published resources only when going through
             // Repository.search(String, Search)
             search.setOnlyPublishedResources(true);
-            return this.searcher.execute(token, search);
+            long before = System.currentTimeMillis();
+            try {
+                return this.searcher.execute(token, search);
+            } finally {
+                long duration = System.currentTimeMillis() - before;
+                if (searchLogger.isTraceEnabled()) {
+                    searchLogger.trace("search: " + search.toString() + ": " + duration + " ms");
+                } else if (searchLogger.isDebugEnabled()) {
+                    searchLogger.debug("search: " + duration + " ms");
+                }
+            }
+            
         } else {
             throw new IllegalStateException("No repository searcher has been configured.");
         }

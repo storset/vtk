@@ -33,8 +33,7 @@
         <!-- Wrap CurrentFolderExpressionEvaluator to get escaped output -->
         <bean class="org.vortikal.repository.search.preprocessor.OutputEscapingExpressionEvaluatorWrapper">
           <property name="wrappedEvaluator">
-            <bean class="org.vortikal.repository.search.preprocessor.CurrentFolderExpressionEvaluator"
-              parent="repositoryAware" />
+            <bean class="org.vortikal.repository.search.preprocessor.CurrentFolderExpressionEvaluator" />
           </property>
         </bean>
         
@@ -48,6 +47,10 @@
               parent="repositoryAware">
           <property name="recursiveListingPropDef" ref="articleListing.recursiveListingPropDef" />
           <property name="subfolderPropDef" ref="articleListing.recursiveListingSubfoldersPropDef" />
+        </bean>
+
+        <bean class="org.vortikal.repository.search.preprocessor.AggregatedFoldersExpressionEvaluator">
+          <property name="aggregationResolver" ref="aggregationResolver" />
         </bean>
 
         <bean class="org.vortikal.repository.search.preprocessor.CurrentTimeExpressionEvaluator" />

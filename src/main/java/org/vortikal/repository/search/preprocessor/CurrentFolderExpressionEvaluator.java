@@ -30,31 +30,16 @@
  */
 package org.vortikal.repository.search.preprocessor;
 
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.vortikal.repository.Path;
-import org.vortikal.repository.Repository;
-import org.vortikal.repository.Resource;
 import org.vortikal.repository.search.QueryException;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
-
 
 public class CurrentFolderExpressionEvaluator implements ExpressionEvaluator {
     
-    private Log logger = LogFactory.getLog(this.getClass());
-    private Repository repository;
     private String variableName = "currentFolder";
     
     public void setVariableName(String variableName) {
         this.variableName = variableName;
     }
-
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-    
 
     public boolean matches(String token) {
         return this.variableName.equals(token);
@@ -62,37 +47,14 @@ public class CurrentFolderExpressionEvaluator implements ExpressionEvaluator {
     
     public String evaluate(String token) throws QueryException {
 
-        if (this.repository == null) {
-            throw new IllegalStateException("JavaBean property 'repository' not set");
-        }
-
-
         if (!this.variableName.equals(token)) {
             throw new QueryException("Unknown query token: '" + token + "'");
         }
 
-        RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        if (requestContext != null && securityContext != null) {
-
-            String securityToken = securityContext.getToken();
-            Path uri = requestContext.getResourceURI();
-
-            try {
-                Resource resource = this.repository.retrieve(securityToken, uri, true);
-                
-                Path currentFolderUri = resource.getURI();
-                if (!resource.isCollection()) { 
-                    currentFolderUri = resource.getURI().getParent();
-                }
-                return currentFolderUri.toString();
-            } catch (Throwable t) {
-                if (this.logger.isDebugEnabled()) {
-                    this.logger.debug("Unable to resolve current URI", t);
-                }
-            }
+        if (RequestContext.exists()) {
+            RequestContext requestContext = RequestContext.getRequestContext();
+            return requestContext.getCurrentCollection().toString();
         }
-
         return token;
     }
 }

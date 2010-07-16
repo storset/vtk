@@ -49,10 +49,6 @@
           <property name="subfolderPropDef" ref="articleListing.recursiveListingSubfoldersPropDef" />
         </bean>
 
-        <bean class="org.vortikal.repository.search.preprocessor.AggregatedFoldersExpressionEvaluator">
-          <property name="aggregationResolver" ref="aggregationResolver" />
-        </bean>
-
         <bean class="org.vortikal.repository.search.preprocessor.CurrentTimeExpressionEvaluator" />
         
         <bean class="org.vortikal.repository.search.preprocessor.CurrentDateExpressionEvaluator">

@@ -1601,7 +1601,7 @@
   </bean>
 
   <!-- Static files for manage service: -->
-  <bean id="managetStaticResourceLocation" class="org.vortikal.web.StaticResourceLocation">
+  <bean id="manageStaticResourceLocation" class="org.vortikal.web.StaticResourceLocation">
     <property name="uriPrefix" value="${webResources.baseURL}" />
     <property name="resourceLocation" value="${webResources.physicalLocation}" />
   </bean>

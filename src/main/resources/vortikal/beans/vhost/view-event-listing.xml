@@ -115,11 +115,11 @@
     <property name="defaultRecursive" value="true" />
     <property name="recursivePropDef" ref="eventListing.recursiveListingPropDef" />
     <property name="query">
-      <value>(uri = {$currentFolder}/* AND type IN event) AND (start-date &gt;= {$currentDate} OR end-date &gt;= {$currentDate})</value>
+      <value>({$aggregatedFolders} AND type IN event) AND (start-date &gt;= {$currentDate} OR end-date &gt;= {$currentDate})</value>
     </property>
     <property name="queryParser" ref="searchParser" />
     <property name="listableProperties" ref="eventListing.listableProperties" />
-    <property name="aggregationResolver" ref="aggregationResolver" />
+    <!--property name="aggregationResolver" ref="aggregationResolver" /-->
     <property name="searchSorting" ref="eventListing.upcoming.searchSorting" />
   </bean>
 
@@ -142,11 +142,11 @@
     <property name="defaultRecursive" value="true" />
     <property name="recursivePropDef" ref="eventListing.recursiveListingPropDef" />
     <property name="query">
-      <value>(uri = {$currentFolder}/* AND type IN event) AND (end-date &lt; {$currentDate} OR (end-date not exists AND start-date &lt; {$currentDate}))</value>
+      <value>({$aggregatedFolders} AND type IN event) AND (end-date &lt; {$currentDate} OR (end-date not exists AND start-date &lt; {$currentDate}))</value>
     </property>
     <property name="queryParser" ref="searchParser" />
     <property name="listableProperties" ref="eventListing.listableProperties" />
-    <property name="aggregationResolver" ref="aggregationResolver" />
+    <!--property name="aggregationResolver" ref="aggregationResolver" /-->
     <property name="searchSorting" ref="eventListing.previous.searchSorting" />
   </bean>
 

@@ -473,7 +473,7 @@
   <bean id="uriPreProcessor" class="org.vortikal.repository.search.preprocessor.QueryStringPreProcessorImpl">
     <property name="expressionEvaluators">
       <list>
-        <bean class="org.vortikal.repository.search.preprocessor.CurrentFolderExpressionEvaluator" parent="repositoryAware" />
+        <bean class="org.vortikal.repository.search.preprocessor.CurrentFolderExpressionEvaluator" />
         <bean class="org.vortikal.repository.search.preprocessor.CurrentUriExpressionEvaluator" />
       </list>
     </property>

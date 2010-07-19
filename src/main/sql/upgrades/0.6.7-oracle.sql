@@ -7,7 +7,6 @@ select extra_prop_entry_seq_pk.nextval,
        null,
        'publish-date',
        to_char(creation_time, 'YYYY-MM-DD HH24:MI:SS'),
-       vrtx_unix_time(creation_time),
        null,
        null
 from vortex_resource 

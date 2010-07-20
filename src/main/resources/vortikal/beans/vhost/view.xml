@@ -14,7 +14,6 @@
         <entry key="redirectToPermissions" value-ref="redirectToPermissionView" />
         <entry key="redirectToPreviewCollection" value-ref="redirectToPreviewCollectionView" />
         <entry key="displayResource" value-ref="displayResourceView" />
-        <entry key="collectionListingAsFeed" value-ref="collectionListingAsFeedView" />
         <entry key="redirectToPublish" value-ref="redirectToPublishView" />
         <entry key="previewViewIframe" value-ref="previewViewIframeView" />
       </map>
@@ -329,23 +328,7 @@
 
   <bean id="romeFeedView" class="org.vortikal.web.view.RomeFeedView"  abstract="true" />
 
-  <bean id="collectionListingAsFeedView" parent="romeFeedView">
-    <property name="browsingService" ref="viewService" />
-    <property name="defaultFeedType" value="atom_1.0" />
-    <property name="useTimestampInIdentifier" value="false" />
-    <property name="referenceDataProviders">
-      <list>
-        <ref bean="viewCollectionListingAsFeedProvider"/>
-      </list>
-    </property>
-  </bean>
-  
-  <bean id="viewCollectionListingAsFeedProvider"
-    class="org.vortikal.web.referencedata.provider.CollectionListingAsFeedProvider"
-    parent="repositoryAware" >
-    <property name="browsingService" ref="viewService" />
-  </bean>
-  
+ 
   <bean id="redirectToPublishProvider" 
         class="org.vortikal.web.referencedata.provider.RedirectProvider"
         parent="repositoryAware">

@@ -30,7 +30,6 @@
  */
 package org.vortikal.util.repository;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -41,47 +40,50 @@ import org.vortikal.security.PrincipalFactory;
 
 /**
  * Utility class for sorting a set of resources in various ways.
- * 
+ *
+ * NB String value order is not locale-aware.
  */
 public class ResourceSorter {
 
-    public static final int ORDER_BY_NAME = 0;
-    public static final int ORDER_BY_DATE = 1;
-    public static final int ORDER_BY_OWNER = 2;
-    public static final int ORDER_BY_LOCKS = 3;
-    public static final int ORDER_BY_FILESIZE = 4;
-    public static final int ORDER_BY_CONTENT_TYPE = 5;
-    public static final int ORDER_BY_PERMISSIONS = 6;
+    public static enum Order {
+        BY_NAME,
+        BY_DATE,
+        BY_OWNER,
+        BY_LOCKS,
+        BY_FILESIZE,
+        BY_CONTENT_TYPE,
+        BY_PERMISSIONS
+    }
 
-    public static void sort(Resource[] resources, int order, boolean inverted) {
+    public static void sort(Resource[] resources, Order order, boolean inverted) {
         Comparator<Resource> comparator = null;
 
         switch (order) {
-        case ORDER_BY_NAME:
+        case BY_NAME:
             comparator = new ResourceNameComparator(inverted);
             break;
 
-        case ORDER_BY_DATE:
+        case BY_DATE:
             comparator = new ResourceDateComparator(inverted);
             break;
 
-        case ORDER_BY_OWNER:
+        case BY_OWNER:
             comparator = new ResourceOwnerComparator(inverted);
             break;
 
-        case ORDER_BY_LOCKS:
+        case BY_LOCKS:
             comparator = new ResourceLockComparator(inverted);
             break;
 
-        case ORDER_BY_FILESIZE:
+        case BY_FILESIZE:
             comparator = new FileSizeComparator(inverted);
             break;
 
-        case ORDER_BY_CONTENT_TYPE:
+        case BY_CONTENT_TYPE:
             comparator = new ContentTypeComparator(inverted);
             break;
 
-        case ORDER_BY_PERMISSIONS:
+        case BY_PERMISSIONS:
             comparator = new PermissionsComparator(inverted);
             break;
 
@@ -100,6 +102,7 @@ public class ResourceSorter {
             this.invert = invert;
         }
 
+        @Override
         public int compare(Resource r1, Resource r2) {
             if (!this.invert) {
                 return r1.getName().compareTo(r2.getName());
@@ -115,6 +118,7 @@ public class ResourceSorter {
             this.invert = invert;
         }
 
+        @Override
         public int compare(Resource r1, Resource r2) {
             if (!this.invert) {
                 return r1.getLastModified().compareTo(r2.getLastModified());
@@ -130,6 +134,7 @@ public class ResourceSorter {
             this.invert = invert;
         }
 
+        @Override
         public int compare(Resource r1, Resource r2) {
             if (!this.invert) {
                 return r1.getOwner().getQualifiedName().compareTo(
@@ -147,6 +152,7 @@ public class ResourceSorter {
             this.invert = invert;
         }
 
+        @Override
         public int compare(Resource r1, Resource r2) {
 
             String owner1 = "";
@@ -174,9 +180,10 @@ public class ResourceSorter {
             this.invert = invert;
         }
 
+        @Override
         public int compare(Resource r1, Resource r2) {
-            Long size1 = new Long(r1.getContentLength());
-            Long size2 = new Long(r2.getContentLength());
+            Long size1 = r1.getContentLength();
+            Long size2 = r2.getContentLength();
 
             if (!this.invert) {
                 return size1.compareTo(size2);
@@ -192,6 +199,7 @@ public class ResourceSorter {
             this.invert = invert;
         }
 
+        @Override
         public int compare(Resource r1, Resource r2) {
             if (r1.isCollection() && r2.isCollection()) {
                 return this.invert ? r2.getName().compareTo(r1.getName()) : r1.getName()
@@ -218,21 +226,17 @@ public class ResourceSorter {
             this.invert = invert;
         }
 
+        @Override
         public int compare(Resource r1, Resource r2) {
-
-            try {
-                boolean r1ReadAll = isReadAll(r1);
-                boolean r2ReadAll = isReadAll(r2);
-                if (!this.invert) {
-                    return compare(r1ReadAll, r2ReadAll);
-                }
-                return compare(r2ReadAll, r1ReadAll);
-            } catch (IOException e) {
-                return 0;
+            boolean r1ReadAll = isReadAll(r1);
+            boolean r2ReadAll = isReadAll(r2);
+            if (!this.invert) {
+                return compare(r1ReadAll, r2ReadAll);
             }
+            return compare(r2ReadAll, r1ReadAll);
         }
 
-        private boolean isReadAll(Resource r) throws IOException {
+        private boolean isReadAll(Resource r) {
             Acl acl = r.getAcl();
             return acl.containsEntry(RepositoryAction.READ, PrincipalFactory.ALL)
                 || acl.containsEntry(RepositoryAction.READ_PROCESSED, PrincipalFactory.ALL);

@@ -417,11 +417,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         this.dao.delete(r);
         this.contentStore.deleteResource(r.getURI());
 
-        // ResourceImpl parentCollection = this.dao.load(uri.getParent());
-        // parentCollection =
-        // this.resourceHelper.contentModification(parentCollection, principal);
-        // this.dao.store(parentCollection);
-
         ResourceDeletionEvent event = new ResourceDeletionEvent(this, uri, r.getID(), r.isCollection());
         this.context.publishEvent(event);
     }

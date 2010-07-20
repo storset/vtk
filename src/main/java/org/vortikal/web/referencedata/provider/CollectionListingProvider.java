@@ -51,6 +51,7 @@ import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.ResourceSorter;
+import org.vortikal.util.repository.ResourceSorter.Order;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
@@ -215,7 +216,7 @@ public class CollectionListingProvider implements ReferenceDataProvider {
         if (!validSortByParameter) sortBy = DEFAULT_SORT_BY_PARAMETER;
         sortChildren(children, sortBy, invertedSort);
         collectionListingModel.put("sortedBy", sortBy);
-        collectionListingModel.put("invertedSort", new Boolean(invertedSort));
+        collectionListingModel.put("invertedSort", invertedSort);
         collectionListingModel.put("children", children);
         
         List<String> linkedServiceNames = new ArrayList<String>();
@@ -302,25 +303,20 @@ public class CollectionListingProvider implements ReferenceDataProvider {
     
 
     private void sortChildren(Resource[] children, String sortBy, boolean invert) {
-        int order = ResourceSorter.ORDER_BY_NAME;
+        Order order = ResourceSorter.Order.BY_NAME;
 
         if ("content-length".equals(sortBy)) {
-            order = ResourceSorter.ORDER_BY_FILESIZE;
-        }
-        if ("last-modified".equals(sortBy)) {
-            order = ResourceSorter.ORDER_BY_DATE;
-        }
-        if ("locked".equals(sortBy)) {
-            order = ResourceSorter.ORDER_BY_LOCKS;
-        }
-        if ("content-type".equals(sortBy)) {
-            order = ResourceSorter.ORDER_BY_CONTENT_TYPE;
-        }
-        if ("owner".equals(sortBy)) {
-            order = ResourceSorter.ORDER_BY_OWNER;
-        }
-        if ("permissions".equals(sortBy)) {
-            order = ResourceSorter.ORDER_BY_PERMISSIONS;
+            order = ResourceSorter.Order.BY_FILESIZE;
+        } else if ("last-modified".equals(sortBy)) {
+            order = ResourceSorter.Order.BY_DATE;
+        } else if ("locked".equals(sortBy)) {
+            order = ResourceSorter.Order.BY_LOCKS;
+        } else if ("content-type".equals(sortBy)) {
+            order = ResourceSorter.Order.BY_CONTENT_TYPE;
+        } else if ("owner".equals(sortBy)) {
+            order = ResourceSorter.Order.BY_OWNER;
+        } else if ("permissions".equals(sortBy)) {
+            order = ResourceSorter.Order.BY_PERMISSIONS;
         }
         
         ResourceSorter.sort(children, order, invert);
@@ -330,6 +326,5 @@ public class CollectionListingProvider implements ReferenceDataProvider {
             Set<ResourceTypeDefinition> matchingResourceTypes) {
         this.matchingResourceTypes = matchingResourceTypes;
     }
-
 
 }

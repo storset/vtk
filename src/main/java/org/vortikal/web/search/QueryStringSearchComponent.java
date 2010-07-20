@@ -36,7 +36,6 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.search.QueryParser;
 import org.vortikal.repository.search.query.AndQuery;
-import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.UriDepthQuery;
 
@@ -49,12 +48,10 @@ public class QueryStringSearchComponent extends QuerySearchComponent {
     protected Query getQuery(Resource collection, HttpServletRequest request, boolean recursive) {
         Query query = this.queryParser.parse(this.query);
 
-        Query aggregationQuery = null;
-        boolean aggregate = false;
         if (this.aggregationResolver != null) {
-            aggregationQuery = this.aggregationResolver.getAggregationQuery(query, collection);
+            Query aggregationQuery = this.aggregationResolver.getAggregationQuery(query, collection);
             if (!query.equals(aggregationQuery)) {
-                aggregate = true;
+                query = aggregationQuery;
             }
         }
 
@@ -63,13 +60,6 @@ public class QueryStringSearchComponent extends QuerySearchComponent {
             andQuery.add(query);
             andQuery.add(new UriDepthQuery(collection.getURI().getDepth() + 1));
             query = andQuery;
-        }
-
-        if (aggregate) {
-            OrQuery orQuery = new OrQuery();
-            orQuery.add(query);
-            orQuery.add(aggregationQuery);
-            return orQuery;
         }
 
         return query;

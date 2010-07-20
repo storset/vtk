@@ -99,6 +99,10 @@ public class CollectionListingAggregationResolver implements AggregationResolver
             // aggregate from
             Query aggregatedQuery = createAggregationQuery(collection, aggregationProp);
 
+            if (aggregatedQuery == null) {
+                return originalQuery;
+            }
+
             // originalQuery is a simple UriPrefixQuery and we aggregate from
             // only ONE other collection
             if (isExtendableUriPrefixQuery(originalQuery) && aggregatedQuery instanceof UriPrefixQuery) {
@@ -126,6 +130,11 @@ public class CollectionListingAggregationResolver implements AggregationResolver
 
         String token = SecurityContext.getSecurityContext().getToken();
         getAggregationPaths(paths, collection.getURI(), collection, token, 0);
+
+        // no valid paths to aggregate from were supplied
+        if (paths.size() == 0) {
+            return null;
+        }
 
         if (paths.size() == 1) {
             return new UriPrefixQuery(paths.get(0).toString(), TermOperator.EQ, false);
@@ -218,7 +227,15 @@ public class CollectionListingAggregationResolver implements AggregationResolver
             }
             for (Query q : ((AbstractMultipleQuery) query).getQueries()) {
                 if (isExtendableUriPrefixQuery(q)) {
-                    q = aggregatedQuery;
+                    OrQuery uriPrefixOrQuery = null;
+                    if (aggregatedQuery instanceof UriPrefixQuery) {
+                        uriPrefixOrQuery = new OrQuery();
+                        uriPrefixOrQuery.add(aggregatedQuery);
+                    } else {
+                        uriPrefixOrQuery = (OrQuery) aggregatedQuery;
+                    }
+                    uriPrefixOrQuery.add(q);
+                    q = uriPrefixOrQuery;
                 } else if (q instanceof AbstractMultipleQuery) {
                     q = aggregate(q, aggregatedQuery, getExtendableQuery(q));
                 }
@@ -226,7 +243,10 @@ public class CollectionListingAggregationResolver implements AggregationResolver
             }
             return extendable;
         } else if (isExtendableUriPrefixQuery(query)) {
-            query = aggregatedQuery;
+            OrQuery uriPrefixOrQuery = new OrQuery();
+            uriPrefixOrQuery.add(query);
+            uriPrefixOrQuery.add(aggregatedQuery);
+            return uriPrefixOrQuery;
         }
 
         return query;

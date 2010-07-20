@@ -5,7 +5,7 @@
   <bean id="structured.eventListing.upcomingEventsSearchComponent" parent="eventListing.upcomingEventsSearchComponent">
     <property name="name" value="structured.eventListing.upcomingEventsSearchComponent" />
     <property name="query">
-      <value>({$aggregatedFolders} AND type IN structured-event) AND (resource:start-date &gt;= {$currentDate} OR resource:end-date &gt;= {$currentDate})</value>
+      <value>(uri = {$currentFolder}/* AND type IN structured-event) AND (resource:start-date &gt;= {$currentDate} OR resource:end-date &gt;= {$currentDate})</value>
     </property>
     <property name="searchSorting" ref="structured.eventListing.upcoming.searchSorting" />
   </bean>
@@ -21,7 +21,7 @@
   <bean id="structured.eventListing.previousEventsSearchComponent" parent="eventListing.previousEventsSearchComponent" >
     <property name="name" value="structured.eventListing.previousEventsSearchComponent" />
     <property name="query">
-      <value>({$aggregatedFolders} AND type IN structured-event) AND (resource:end-date &lt; {$currentDate} OR (resource:end-date not exists AND resource:start-date &lt; {$currentDate}))</value>
+      <value>(uri = {$currentFolder}/* AND type IN structured-event) AND (resource:end-date &lt; {$currentDate} OR (resource:end-date not exists AND resource:start-date &lt; {$currentDate}))</value>
     </property>
     <property name="searchSorting" ref="structured.eventListing.previous.searchSorting" />
   </bean>
@@ -37,7 +37,7 @@
   <bean id="structured.eventListing.groupedByDayEventSearchQueryString" class="java.lang.String">
     <constructor-arg type="java.lang.String">
       <value>
-        ({$aggregatedFolders}  AND type IN structured-event)
+        (uri = {$currentFolder}/* AND type IN structured-event)
           AND ((resource:start-date &gt;= {$currentDate+[1]d} AND resource:start-date &lt; {$currentDate+[2]d})
             OR (resource:end-date &gt;= {$currentDate+[1]d} AND resource:end-date &lt; {$currentDate+[2]d})
             OR (resource:start-date &lt;= {$currentDate+[1]d} AND resource:end-date &gt;= {$currentDate+[2]d}))
@@ -56,7 +56,7 @@
   <bean id="structured.eventListing.specificDateEventSearchQueryString" class="java.lang.String">
     <constructor-arg type="java.lang.String">
       <value>
-        ({$aggregatedFolders} AND type IN structured-event)
+        (uri = {$currentFolder}/* AND type IN structured-event)
           AND ((resource:start-date &gt;= [1] AND resource:start-date &lt; [2])
             OR (resource:end-date &gt;= [1] AND resource:end-date &lt; [2])
             OR (resource:start-date &lt;= [1] AND resource:end-date &gt;= [2]))

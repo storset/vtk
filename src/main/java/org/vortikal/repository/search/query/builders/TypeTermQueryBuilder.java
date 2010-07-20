@@ -55,7 +55,7 @@ public class TypeTermQueryBuilder implements QueryBuilder {
         this.term = term;
 
         if (EQ != op && NE != op) {
-            throw new QueryBuilderException("Unsupported type operator: " + this.op);
+            throw new QueryBuilderException("Unsupported type operator: " + op);
         }
         
         this.op = op;

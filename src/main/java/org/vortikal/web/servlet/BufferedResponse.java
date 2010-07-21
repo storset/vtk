@@ -47,6 +47,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 import org.vortikal.util.io.BoundedOutputStream;
+import org.vortikal.util.io.StreamUtil;
 
 
 
@@ -370,15 +371,8 @@ public class BufferedResponse implements StatusAwareHttpServletResponse {
         }
 
         // Write/copy content
-        OutputStream out = null;
-        try {
-            out = response.getOutputStream();
-            out.write(this.getContentBuffer());
-        } finally {
-            if (closeOutputStream && out != null){
-                out.close();
-            }
-        }
+        StreamUtil.dump(this.getContentBuffer(),
+                response.getOutputStream(), closeOutputStream);
     }
     
 }

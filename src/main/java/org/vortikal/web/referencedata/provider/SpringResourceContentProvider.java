@@ -66,8 +66,8 @@ public class SpringResourceContentProvider implements ReferenceDataProvider, App
         try {
             Resource resource = getResource(fileLocaltions);
             if (resource != null) {
-                byte[] buffer = StreamUtil.readInputStream(resource.getInputStream());
-                String content = new String(buffer, this.encoding);
+                String content = StreamUtil.streamToString(
+                                resource.getInputStream(), this.encoding);
                 model.put(this.modelKey, content);
             }
         } catch (Exception e) {

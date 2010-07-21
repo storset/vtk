@@ -241,7 +241,7 @@ public class CollectionListingProvider implements ReferenceDataProvider {
                     // do nothing
                 }
             }
-            childLinks[i] = linkMap; 
+            childLinks[i] = linkMap;
             
             try {
                 browsingLinks[i] = 

@@ -176,7 +176,7 @@ final class ReadOnlyIndexReaderPool {
     /**
      * Release a reader. Client code can use this method, if it's not
      * IndexReader ref-counting aware. Client code should never try
-     * to close IndexReader instances gotting from this pool.
+     * to directly close IndexReader instances borrowed from this pool.
      *
      * @param reader
      * @throws IOException
@@ -304,7 +304,7 @@ final class ReadOnlyIndexReaderPool {
                     ReadOnlyIndexReaderPool.this.logger.debug("RWAPT: Executing new reader warmup");
                     ReadOnlyIndexReaderPool.this.irw.warmup(reader);
                 } else {
-                    ReadOnlyIndexReaderPool.this.logger.warn("No IndexReaderWarmupQueryFactory configured, skipping warmup.");
+                    ReadOnlyIndexReaderPool.this.logger.warn("No IndexReaderWarmup configured, skipping warmup.");
                 }
 
                 ReadOnlyIndexReaderPool.this.logger.debug("RWAPT: Replacing reader NOW");

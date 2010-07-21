@@ -70,7 +70,7 @@ public final class BinaryValue extends Value {
             return this.valueRef.getValue();
         }
     }
-    
+
     public String getContentType() {
         if (this.buffer != null) {
             return this.contentType;
@@ -87,6 +87,7 @@ public final class BinaryValue extends Value {
     
     @Override
     public Object clone() {
+        // XXX this is not proper cloning (only shallow copying of data buffer):
         if (this.buffer != null) {
             return new BinaryValue(this.buffer, this.contentType);
         } else {

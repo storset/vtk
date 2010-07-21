@@ -55,6 +55,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceNotModifiedException;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.webdav.PreconditionFailedException;
 import org.vortikal.webdav.ifheader.IfMatchHeader;
@@ -180,6 +181,7 @@ public class DisplayResourceController
     }
 
 
+    @Override
     public void afterPropertiesSet() throws Exception {
         if (this.unsupportedResourceTypes == null) {
             this.unsupportedResourceTypes = new HashSet<String>();
@@ -196,6 +198,7 @@ public class DisplayResourceController
     }
 
 
+    @Override
     public ModelAndView handleRequest(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
@@ -250,20 +253,7 @@ public class DisplayResourceController
                 characterEncoding = defaultCharacterEncoding;
             }
 
-            ByteArrayOutputStream contentStream = new ByteArrayOutputStream();
-            try {
-                
-                byte[] buffer = new byte[5000];
-                int n = 0;
-                while (((n = stream.read(buffer, 0, 5000)) > 0)) {
-                    contentStream.write(buffer, 0, n);
-                }
-            } finally {
-                if (stream != null) stream.close();
-            }
-
-            String content = new String(contentStream.toByteArray(),
-                                        characterEncoding);
+            String content = StreamUtil.streamToString(stream, characterEncoding);
             model.put("resourceString", content);
         
         }
@@ -274,6 +264,7 @@ public class DisplayResourceController
     }
 
 
+    @Override
     public long getLastModified(HttpServletRequest request) {
 
         if (this.ignoreLastModified) {

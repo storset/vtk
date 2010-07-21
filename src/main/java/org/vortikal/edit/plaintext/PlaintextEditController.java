@@ -276,9 +276,8 @@ public class PlaintextEditController extends SimpleFormController
         }
         InputStream is = this.repository.getInputStream(token, resource.getURI(),
                                                    false);
-        byte[] bytes = StreamUtil.readInputStream(is);
-        String content = new String(bytes, encoding);
-        return content;
+
+        return StreamUtil.streamToString(is, encoding);
     }
 
 

@@ -41,6 +41,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.view.AbstractView;
 import org.vortikal.repository.Resource;
+import org.vortikal.util.io.StreamUtil;
 import org.vortikal.util.repository.ContentTypeHelper;
 import org.vortikal.web.InvalidModelException;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
@@ -189,29 +190,12 @@ public class DisplayResourceView extends AbstractView
     protected void writeResponse(Resource resource, InputStream resourceStream,
                                  Map model, HttpServletRequest request,
                                  HttpServletResponse response) throws Exception {
-        OutputStream out = null;
-        int bytesWritten = 0;
-        try {
-            out = response.getOutputStream();
-            byte[] buffer = new byte[this.streamBufferSize];
-            int n = 0;
-            while (((n = resourceStream.read(buffer, 0, this.streamBufferSize)) > 0)) {
-                out.write(buffer, 0, n);
-                bytesWritten += n;
-            }
 
-        } finally {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Wrote a total of " + bytesWritten
-                             + " bytes to response");
-            }
-
-            if (out != null) {
-                out.flush();
-                out.close();
-            }
-            if (resourceStream != null) resourceStream.close();
+        long bytesWritten = StreamUtil.pipe(resourceStream, response.getOutputStream(), this.streamBufferSize, true);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Wrote a total of " + bytesWritten + " bytes to response");
         }
+
     }
 
     /**

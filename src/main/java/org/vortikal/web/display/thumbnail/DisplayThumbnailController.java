@@ -30,10 +30,8 @@
  */
 package org.vortikal.web.display.thumbnail;
 
-import java.io.BufferedInputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 
+import java.io.OutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -51,6 +49,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.RequestContext;
 
 public class DisplayThumbnailController implements Controller, LastModified {
@@ -59,6 +58,7 @@ public class DisplayThumbnailController implements Controller, LastModified {
 	
 	private Repository repository;
 
+    @Override
     public long getLastModified(HttpServletRequest request) {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -72,6 +72,7 @@ public class DisplayThumbnailController implements Controller, LastModified {
         }
     }
 
+    @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		
 		String token = SecurityContext.getSecurityContext().getToken();
@@ -88,33 +89,14 @@ public class DisplayThumbnailController implements Controller, LastModified {
         	response.sendRedirect(uri.toString());
         	return null;
         }
-        
-        InputStream in = null;
-        try {
-            
-            ContentStream binaryStream = thumbnail.getBinaryStream();
-            in = new BufferedInputStream(binaryStream.getStream());
-            
-            String mimetype = thumbnail.getBinaryMimeType();
-            response.setContentType(mimetype);
-            
-            int length = (int) binaryStream.getLength();
-            response.setContentLength(length);
-            
-            byte[] buf = new byte[length];
-            int n = in.read(buf);
-            
-            OutputStream out = response.getOutputStream();
-            out.write(buf, 0, n);
-            out.flush();
-            out.close();
-            
-        } finally {
-            if (in != null) {
-                in.close();
-            }
-        }
-        
+
+        ContentStream binaryStream = thumbnail.getBinaryStream();
+        String mimetype = thumbnail.getBinaryMimeType();
+        response.setContentType(mimetype);
+        int length = (int) binaryStream.getLength();
+        response.setContentLength(length);
+        StreamUtil.pipe(binaryStream.getStream(), response.getOutputStream(), length, true);
+
 		return null;
 	}
 

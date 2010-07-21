@@ -60,7 +60,7 @@ public class ResourceAwareParameterizableViewController
     public void setRepository(Repository repository)  {
         this.repository = repository;
     }
-    
+
     protected void initApplicationContext() {
         super.initApplicationContext();
         if (this.repository == null) {

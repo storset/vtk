@@ -12,6 +12,7 @@ resourcetype person {
     email : string multiple external:userMetadataLdapService,
     postalAddress : string multiple external:userMetadataLdapService,
     visitingAddress : string multiple external:userMetadataLdapService,
+    externalUserMetaData : derived external:userMetadataLdapService,
     alternativeVisitingAddress : string multiple,
     title : derived (firstName, surname) eval (firstName + " " + surname)
       overrides title default username,
@@ -69,80 +70,88 @@ resourcetype person {
 
     contact-information {
       ##
-       [resource-props "."]
-       <div class="vrtx-person-contactinfo">
-         [if email != null && email != ""]
-         	<div class="vrtx-person-contact-info-line vrtx-email"><span class="vrtx-label">[localized "email"]</span>
-         		[list email emailLine]
-         			<a class="vrtx-value" href="mailto:[val emailLine]">[val emailLine]</a>
-         		[endlist]
-         	</div>
-         [endif]
-         [if phone != null && phone != ""]
-           <div class="vrtx-person-contact-info-line vrtx-phone">
-           	<span class="vrtx-label">[localized "phone"]</span>
-           	[list phone phoneLine]
-         	  <span class="vrtx-value">[val phoneLine]</span>
-         	[endlist]
-         </div>
-         [endif]
-         [if mobile != null && mobile != ""]
-           <div class="vrtx-person-contact-info-line vrtx-mobile">
-           	<span class="vrtx-label">[localized "mobile"]</span>
-           	[list mobile mobileLine]
-           		<span class="vrtx-value">[val mobileLine]</span>
-           	[endlist]
-           </div>
-         [endif]
-         [if fax != null && fax != ""]
-           <div class="vrtx-person-contact-info-line vrtx-fax">
-           	<span class="vrtx-label">[localized "fax"]</span>
-           	[list fax faxLine]
-           		<span class="vrtx-value">[val faxLine]</span>
-           	[endlist]
-           </div>
-         [endif]
-         [if room != null && room != ""]
-          <div class="vrtx-person-contact-info-line vrtx-room">
-          	<span class="vrtx-label">[localized "room"]</span>
-          	<span class="vrtx-value">[val room]</span>
-          </div>
-         [endif]
-         [if availableHours != null && availableHours != ""]
-           <div class="vrtx-person-contact-info-line vrtx-available-hours">
-           	<span class="vrtx-label">[localized "availableHours"]</span>
-           	<span class="vrtx-value">[val availableHours]</span>
-           </div>
-         [endif]
-         [if username != null && username != ""]
-           <div class="vrtx-person-contact-info-line vrtx-username">
-           	<span class="vrtx-label">[localized "username"]</span>
-           	<span class="vrtx-value">[val username]</span>
-           </div>
-         [endif]
-		 [if alternativeVisitingAddress != null && alternativeVisitingAddress != ""]
-             <div class="vrtx-person-visiting-address"><span class="vrtx-label">[localized "userVisitingAddress"]</span>
-               [list alternativeVisitingAddress alternativeVisitingAddressLine]
-                  <span class="vrtx-address-line">[if alternativeVisitingAddressLine != null][val alternativeVisitingAddressLine][endif]</span>
-               [endlist]
-             </div>
-		 [else]
-		 	[if visitingAddress != null && visitingAddress != ""]
+        [resource-props "."]
+        <div class="vrtx-person-contactinfo">
+          
+          [def getExternal resource-prop-obj-val(".", "getExternalPersonInfo")]
+          [if getExternal = true && externalUserMetaData = null]
+            [localized 'no-external-user-metadata']
+          [else]
+        
+          [if email != null && email != ""]
+          	<div class="vrtx-person-contact-info-line vrtx-email"><span class="vrtx-label">[localized "email"]</span>
+          	  [list email emailLine]
+          	    <a class="vrtx-value" href="mailto:[val emailLine]">[val emailLine]</a>
+          	  [endlist]
+          	</div>
+          [endif]
+          [if phone != null && phone != ""]
+            <div class="vrtx-person-contact-info-line vrtx-phone">
+              <span class="vrtx-label">[localized "phone"]</span>
+              [list phone phoneLine]
+                <span class="vrtx-value">[val phoneLine]</span>
+         	  [endlist]
+            </div>
+          [endif]
+          [if mobile != null && mobile != ""]
+            <div class="vrtx-person-contact-info-line vrtx-mobile">
+              <span class="vrtx-label">[localized "mobile"]</span>
+                [list mobile mobileLine]
+                  <span class="vrtx-value">[val mobileLine]</span>
+                [endlist]
+            </div>
+          [endif]
+          [if fax != null && fax != ""]
+            <div class="vrtx-person-contact-info-line vrtx-fax">
+              <span class="vrtx-label">[localized "fax"]</span>
+              [list fax faxLine]
+                <span class="vrtx-value">[val faxLine]</span>
+              [endlist]
+            </div>
+          [endif]
+          [if room != null && room != ""]
+            <div class="vrtx-person-contact-info-line vrtx-room">
+              <span class="vrtx-label">[localized "room"]</span>
+              <span class="vrtx-value">[val room]</span>
+            </div>
+          [endif]
+          [if availableHours != null && availableHours != ""]
+            <div class="vrtx-person-contact-info-line vrtx-available-hours">
+              <span class="vrtx-label">[localized "availableHours"]</span>
+              <span class="vrtx-value">[val availableHours]</span>
+            </div>
+          [endif]
+          [if username != null && username != ""]
+            <div class="vrtx-person-contact-info-line vrtx-username">
+           	  <span class="vrtx-label">[localized "username"]</span>
+           	  <span class="vrtx-value">[val username]</span>
+            </div>
+          [endif]
+		  [if alternativeVisitingAddress != null && alternativeVisitingAddress != ""]
 		    <div class="vrtx-person-visiting-address"><span class="vrtx-label">[localized "userVisitingAddress"]</span>
-		      [list visitingAddress visitingAddressLine]
-		        <span class="vrtx-address-line">[if visitingAddressLine != null][val visitingAddressLine][endif]</span>
+		      [list alternativeVisitingAddress alternativeVisitingAddressLine]
+		        <span class="vrtx-address-line">[if alternativeVisitingAddressLine != null][val alternativeVisitingAddressLine][endif]</span>
 		      [endlist]
 		    </div>
-         	[endif]
-         [endif]
-         [if postalAddress != null && postalAddress != ""]
-         <div class="vrtx-person-postal-address"><span class="vrtx-label"> [localized "postalAddress"]</span>
-             [list postalAddress postalAddressLine]
-               <span class="vrtx-address-line">[if postalAddressLine != null][val postalAddressLine][endif]</span>
-             [endlist]
-         </div>
-         [endif]
-         </div>
+		  [else]
+		    [if visitingAddress != null && visitingAddress != ""]
+		      <div class="vrtx-person-visiting-address"><span class="vrtx-label">[localized "userVisitingAddress"]</span>
+		        [list visitingAddress visitingAddressLine]
+		          <span class="vrtx-address-line">[if visitingAddressLine != null][val visitingAddressLine][endif]</span>
+		        [endlist]
+		      </div>
+		    [endif]
+          [endif]
+          [if postalAddress != null && postalAddress != ""]
+            <div class="vrtx-person-postal-address"><span class="vrtx-label"> [localized "postalAddress"]</span>
+              [list postalAddress postalAddressLine]
+                <span class="vrtx-address-line">[if postalAddressLine != null][val postalAddressLine][endif]</span>
+              [endlist]
+            </div>
+          [endif]
+          
+          [endif]
+        </div>
       ##
     }
     
@@ -222,11 +231,14 @@ resourcetype person {
     
     position {
       ##
-      [resource-props "."]
-        [if position != null]
-          <div id="vrtx-person-position">
-            [val position]
-          </div>
+        [resource-props "."]
+        [def getExternal resource-prop-obj-val(".", "getExternalPersonInfo")]
+        [if getExternal != true || (getExternal = true && externalUserMetaData != null)]
+          [if position != null]
+            <div id="vrtx-person-position">
+              [val position]
+            </div>
+          [endif]
         [endif]
       ##
     }
@@ -398,6 +410,9 @@ resourcetype person {
     header : (en : "Edit person", no : "Rediger person", nn : "Rediger person"),
     fax : (en : "Fax", no : "Faks", nn : "Faks"),
     publishedDate : (en : "Published", no :"Publisert", nn:"Publisert"),
-    contentLastModifiedDate : (en : "Last modified", no : "Sist endret", nn : "Sist endra")
+    contentLastModifiedDate : (en : "Last modified", no : "Sist endret", nn : "Sist endra"),
+    no-external-user-metadata : (en : "Could not get user data from external service",
+                                 no : "Kan ikke hente personopplysninger fra ekstern kilde",
+                                 nn : "Kan ikkje hente personopplysningar frå ekstern kilde")
   }
 }

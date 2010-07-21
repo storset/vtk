@@ -244,6 +244,10 @@ public final class StructuredResourceDescription {
 
             if (d instanceof DerivedPropertyDescription) {
                 DerivedPropertyDescription derived = (DerivedPropertyDescription) d;
+                
+                if (derived.hasExternalService()) {
+                    return;
+                }
 
                 List<String> dependentProperties = new ArrayList<String>();
                 dependentProperties.addAll(derived.getDependentProperties());

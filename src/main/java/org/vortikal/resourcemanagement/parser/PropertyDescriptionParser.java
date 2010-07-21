@@ -190,8 +190,14 @@ public class PropertyDescriptionParser {
     }
 
     private void handleDerivedProperty(DerivedPropertyDescription p, CommonTree descEntry) {
-        List<String> dependentFields = new ArrayList<String>();
         Tree fields = descEntry.getChild(0);
+
+        if (fields.getType() == ResourcetreeLexer.EXTERNAL) {
+            p.setExternalService(fields.getChild(0).getText());
+            return;
+        }
+
+        List<String> dependentFields = new ArrayList<String>();
         for (int i = 0; i < fields.getChildCount(); i++) {
             dependentFields.add(fields.getChild(i).getText());
         }

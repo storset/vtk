@@ -523,7 +523,7 @@ public class StructuredResourceManager {
             }
 
             try {
-                Object value = getEvaluatedValue(desc.getEvaluationDescription(), ctx);
+                Object value = getEvaluatedValue(desc, property, ctx);
                 if (emptyValue(value)) {
                     // Evaluated value returned empty, check any default
                     // value that might exist, than finally check for any
@@ -550,9 +550,19 @@ public class StructuredResourceManager {
             }
         }
 
-        private Object getEvaluatedValue(DerivedPropertyEvaluationDescription evaluationDescription,
+        @SuppressWarnings("unchecked")
+        private Object getEvaluatedValue(DerivedPropertyDescription desc, Property property,
                 PropertyEvaluationContext ctx) {
 
+            if (desc.hasExternalService()) {
+                Object o = ctx.getEvaluationAttribute(desc.getExternalService());
+                if (o != null) {
+                    Map<String, Object> map = (Map<String, Object>) o;
+                    return map.get(property.getDefinition().getName());
+                }
+            }
+
+            DerivedPropertyEvaluationDescription evaluationDescription = desc.getEvaluationDescription();
             if (evaluationDescription.getEvaluationCondition() != null) {
                 String propName = evaluationDescription.getEvaluationElements().get(0).getValue();
                 return getEvaluatedConditionalValue(ctx, propName);

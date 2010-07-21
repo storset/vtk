@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004,2010 University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -42,6 +41,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang.time.FastDateFormat;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -92,6 +92,7 @@ public class PropfindView implements View, InitializingBean {
     }
     
 
+    @Override
     public void afterPropertiesSet() {
         if (this.webdavService == null) {
             throw new BeanInitializationException(
@@ -111,6 +112,7 @@ public class PropfindView implements View, InitializingBean {
      * @exception Exception if an error occurs
      */
     @SuppressWarnings({ "unchecked", "deprecation" })
+    @Override
     public void render(Map model, HttpServletRequest request,
                        HttpServletResponse response) throws Exception {
 
@@ -619,10 +621,9 @@ public class PropfindView implements View, InitializingBean {
 
     private String formatCreationTime(Date date) {
         /* example: 1970-01-01T12:00:00Z */
+        FastDateFormat formatter = FastDateFormat.getInstance(
+                "yyyy-MM-dd'T'HH:mm:ss'Z'", java.util.TimeZone.getTimeZone("UTC"));
 
-        SimpleDateFormat formatter =
-            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        formatter.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
         return formatter.format(date);
     }
 
@@ -690,6 +691,7 @@ public class PropfindView implements View, InitializingBean {
         return e;
     }
 
+    @Override
     public String getContentType() {
         return null;
     }

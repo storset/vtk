@@ -35,6 +35,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
+import org.apache.commons.lang.time.FastDateFormat;
 
 import org.vortikal.util.web.HttpUtil;
 
@@ -57,7 +58,7 @@ public final class WebdavUtil {
      */
     public static String getStatusMessage(int statusCode) {
 
-        StringBuffer message = new StringBuffer("HTTP/");
+        StringBuilder message = new StringBuilder("HTTP/");
         message.append(WebdavConstants.HTTP_VERSION_USED).append(" ");
         message.append(statusCode).append(" ");
         message.append(HttpUtil.getStatusMessage(statusCode));
@@ -90,12 +91,11 @@ public final class WebdavUtil {
      * @return
      */
     public static String formatPropertyDateValue(Date date) {
-        SimpleDateFormat formatter =
-            new SimpleDateFormat(WebdavConstants.WEBDAV_PROPERTY_DATE_VALUE_FORMAT, 
-                    Locale.US);
-        
-        formatter.setTimeZone(TimeZone.getTimeZone(WebdavConstants.WEBDAV_PROPERTY_DATE_VALUE_TIMEZONE));
-        
+
+        FastDateFormat formatter = FastDateFormat.getInstance(WebdavConstants.WEBDAV_PROPERTY_DATE_VALUE_FORMAT,
+                TimeZone.getTimeZone(WebdavConstants.WEBDAV_PROPERTY_DATE_VALUE_TIMEZONE),
+                Locale.US);
+
         return formatter.format(date);
     }
 

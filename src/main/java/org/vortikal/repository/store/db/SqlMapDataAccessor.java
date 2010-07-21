@@ -30,8 +30,6 @@
  */
 package org.vortikal.repository.store.db;
 
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -73,6 +71,7 @@ import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.Principal.Type;
 
 import com.ibatis.sqlmap.client.SqlMapExecutor;
+import org.vortikal.util.io.StreamUtil;
 
 
 /**
@@ -701,11 +700,12 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         final String sqlMap = getSqlMap("insertAclEntry");
 
         getSqlMapClientTemplate().execute(new SqlMapClientCallback() {
+            @Override
             public Object doInSqlMapClient(SqlMapExecutor executor) throws SQLException {
                 executor.startBatch();
+                Map<String, Object> parameters = new HashMap<String, Object>();
                 for (RepositoryAction action: actions) {
                     String actionName = Privilege.getActionName(action);
-            
                     for (Principal p: newAcl.getPrincipalSet(action)) {
 
                         Integer actionID = actionTypes.get(actionName);
@@ -714,7 +714,6 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
                                                    + "find id for action '" + action + "'");
                         }
 
-                        Map<String, Object> parameters = new HashMap<String, Object>();
                         parameters.put("actionId", actionID);
                         parameters.put("resourceId", r.getID());
                         parameters.put("principal", p.getQualifiedName());
@@ -760,7 +759,6 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
 
     private int findNearestACL(Path uri) {
         
-//        List<String> path = java.util.Arrays.asList(URLUtil.splitUriIncrementally(uri.toString()));
         List<Path> path = uri.getPaths();
         
         // Reverse list to get deepest URI first
@@ -942,12 +940,12 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             final String batchSqlMap = getSqlMap("insertPropertyEntry");
 
             getSqlMapClientTemplate().execute(new SqlMapClientCallback() {
+                @Override
                 public Object doInSqlMapClient(SqlMapExecutor executor) throws SQLException {
                     executor.startBatch();
+                    Map<String, Object> parameters = new HashMap<String, Object>();
                     for (Property property: properties) {
-                    	
                     	if (!PropertyType.SPECIAL_PROPERTIES_SET.contains(property.getDefinition().getName())) {
-                            Map<String, Object> parameters = new HashMap<String, Object>();
                             parameters.put("namespaceUri", property.getDefinition().getNamespace().getUri());
                             parameters.put("name", property.getDefinition().getName());
                             parameters.put("resourceId", r.getID());
@@ -962,7 +960,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
                                 }
                             } else {
                                 Value value = property.getValue();
-                                if (PropertyType.Type.BINARY.equals(value.getType())) {
+                                if (value.getType() == PropertyType.Type.BINARY) {
                                     BinaryValue binaryValue = (BinaryValue) value;
                                 	parameters.put("value", "#binary");
                                 	parameters.put("binaryContent", binaryValue.getContentStream());
@@ -973,6 +971,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
                                 executor.update(batchSqlMap, parameters);
                             }
                         }
+                        parameters.clear();
                     }
                     executor.executeBatch();
                     return null;
@@ -1201,6 +1200,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
     
 
     
+    @Override
     public Set<Principal> discoverGroups() {
         String sqlMap = getSqlMap("discoverGroups");
         @SuppressWarnings("unchecked")
@@ -1217,13 +1217,8 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
 
     private void copyBinaryPropValueToMemory(Property prop) {
         try {
-        	InputStream in = prop.getBinaryStream().getStream();
-        	ByteArrayOutputStream out = new ByteArrayOutputStream();
-			int i;
-			while ((i = in.read()) != -1) {
-				out.write(i);
-			}
-			prop.setBinaryValue(out.toByteArray(), prop.getBinaryMimeType());
+            byte[] data = StreamUtil.readInputStream(prop.getBinaryStream().getStream());
+			prop.setBinaryValue(data, prop.getBinaryMimeType());
 		} catch (Exception e) {
 			logger.error("Could not read binary stream for property " + prop.getDefinition().getName(), e);
 		}

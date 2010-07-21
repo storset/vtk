@@ -113,7 +113,7 @@
       typeHandler="org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback"/>
     <result property="timestamp" column="timestamp" javaType="date"/>
   </resultMap>
-  
+
 
   <select id="loadResourceByUri" resultMap="Resource">
     select * from vortex_resource where uri = #value#
@@ -371,13 +371,13 @@
   <resultMap id="BinaryStream" class="java.util.HashMap">
     <result property="binaryStream" column="binary_content" typeHandler="org.vortikal.repository.store.db.ibatis.BinaryContentTypeHandlerCallBack" />
   </resultMap>
-  
-  <select id="selectBinaryPropertyEntry" parameterClass="java.util.Map" resultMap="BinaryStream">
-    select binary_content from extra_prop_entry where extra_prop_entry_id = #binaryRef#
+
+  <select id="selectBinaryPropertyEntry" parameterClass="java.lang.Integer" resultMap="BinaryStream">
+    select binary_content from extra_prop_entry where extra_prop_entry_id = #value#
   </select>
   
-  <select id="selectBinaryMimeTypeEntry" parameterClass="java.util.Map" resultClass="string">
-    select binary_mimetype from extra_prop_entry where extra_prop_entry_id = #binaryRef#
+  <select id="selectBinaryMimeTypeEntry" parameterClass="java.lang.Integer" resultClass="java.lang.String">
+    select binary_mimetype from extra_prop_entry where extra_prop_entry_id = #value#
   </select>
 
   <insert id="copyProperties" parameterClass="java.util.Map">

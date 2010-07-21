@@ -1,6 +1,5 @@
 package org.vortikal.repository.store.db.ibatis;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.PreparedStatement;
@@ -9,6 +8,7 @@ import java.sql.SQLException;
 import org.springframework.jdbc.support.lob.LobCreator;
 import org.springframework.orm.ibatis.support.BlobByteArrayTypeHandler;
 import org.vortikal.repository.ContentStream;
+import org.vortikal.util.io.StreamUtil;
 
 public class BlobByteArrayTypeHandlerCallBack extends BlobByteArrayTypeHandler {
 
@@ -18,15 +18,12 @@ public class BlobByteArrayTypeHandlerCallBack extends BlobByteArrayTypeHandler {
 
         ContentStream cs = (ContentStream) value;
         InputStream in = cs.getStream();
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        int i;
         try {
-            while ((i = in.read()) != -1) {
-                out.write(i);
-            }
-        } catch (IOException e) {
+            byte[] data = StreamUtil.readInputStream(in);
+            super.setParameterInternal(ps, index, data, jdbcType, lobCreator);
+        } catch (IOException io) {
+            throw new SQLException(io);
         }
-        super.setParameterInternal(ps, index, out.toByteArray(), jdbcType, lobCreator);
     }
 
 }

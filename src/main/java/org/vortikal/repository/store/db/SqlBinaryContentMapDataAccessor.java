@@ -30,8 +30,6 @@
  */
 package org.vortikal.repository.store.db;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -42,33 +40,29 @@ public class SqlBinaryContentMapDataAccessor extends AbstractSqlMapDataAccessor 
 
     private static final Logger log = Logger.getLogger(SqlBinaryContentMapDataAccessor.class);
 
+    @Override
     public ContentStream getBinaryStream(String binaryRef) {
         try {
             Integer binaryId = Integer.valueOf(binaryRef);
             String sqlMap = getSqlMap("selectBinaryPropertyEntry");
-            Map<String, Object> params = new HashMap<String, Object>();
-            params.put("binaryRef", binaryId);
             @SuppressWarnings("unchecked")
-            List<Map<String, Object>> resultList = getSqlMapClientTemplate().queryForList(sqlMap, params);
-            return (ContentStream) resultList.get(0).get("binaryStream");
+            Map result = (Map) getSqlMapClientTemplate().queryForObject(sqlMap, binaryId);
+            return (ContentStream) result.get("binaryStream");
         } catch (Exception e) {
             log.error("An error occured while getting the binary stream for property with id: " + binaryRef, e);
         }
         return null;
     }
 
+    @Override
     public String getBinaryMimeType(String binaryRef) {
         try {
             Integer binaryId = Integer.valueOf(binaryRef);
             String sqlMap = getSqlMap("selectBinaryMimeTypeEntry");
-            Map<String, Object> params = new HashMap<String, Object>();
-            params.put("binaryRef", binaryId);
-            String binaryMimeType = (String) getSqlMapClientTemplate().queryForObject(sqlMap, params);
-            return binaryMimeType;
+            return (String) getSqlMapClientTemplate().queryForObject(sqlMap, binaryId);
         } catch (Exception e) {
             log.error("An error occured while getting the binary mimetype for property with id: " + binaryRef, e);
         }
         return null;
     }
-
 }

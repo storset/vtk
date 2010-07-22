@@ -588,7 +588,7 @@ public class StructuredResourceManager {
         private Object getEvaluatedConditionalValue(PropertyEvaluationContext ctx, String propName) {
             Property prop = getProperty(ctx.getNewResource(), propName);
             if (prop != null) {
-                return new Boolean(true);
+                return Boolean.valueOf(true);
             } else {
                 JSONObject json;
                 try {
@@ -598,7 +598,7 @@ public class StructuredResourceManager {
                 }
                 String expression = "properties." + propName;
                 Object jsonObject = JSONUtil.select(json, expression);
-                return new Boolean(jsonObject != null);
+                return Boolean.valueOf(jsonObject != null);
             }
         }
     }

@@ -58,6 +58,7 @@ public abstract class AbstractQueryAuthorizationFilterFactory implements
     private RoleManager roleManager;
     
     
+    @Override
     public abstract Filter authorizationQueryFilter(String token, IndexReader reader);
     
     protected Principal getPrincipal(String token) {

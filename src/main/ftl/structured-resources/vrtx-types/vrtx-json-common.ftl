@@ -72,29 +72,27 @@
         <@vrtxBoolean.printPropertyEditView 
           title=localizedTitle
           inputFieldName=elem.name 
-          value=elem
+          value=elem.value
           classes=elem.name
           description=elem.description 
           tooltip=form.resource.getLocalizedTooltip(elem.name, locale)
           />
         <#break>
       <#case "image_ref">
-         <#local param = "thumbnail" />
         <@vrtxImageRef.printPropertyEditView 
           title=localizedTitle
           inputFieldName=elem.name 
-		  value= vrtx.linkConstructor(elem.value, 'displayThumbnailService')
+          value= vrtx.linkConstructor(elem.value, 'displayThumbnailService')
           baseFolder=resourceContext.parentURI
           classes=elem.name 
           tooltip=form.resource.getLocalizedTooltip(elem.name, locale)
           />
         <#break>          
       <#case "media_ref">
-
         <@vrtxMediaRef.printPropertyEditView 
           title=localizedTitle
           inputFieldName=elem.name 
-      	value=elem.value 
+          value=elem.value 
           baseFolder=resourceContext.parentURI
           classes=elem.name  
           tooltip=form.resource.getLocalizedTooltip(elem.name, locale)

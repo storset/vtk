@@ -43,7 +43,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.View;
-
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.servlet.ConfigurableRequestWrapper;
@@ -84,7 +83,6 @@ public class WrappingView implements View, InitializingBean {
     @SuppressWarnings("unchecked")
     public void render(Map model, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-
         if (this.referenceDataProviders != null && this.referenceDataProviders.length > 0) {
 
             if (model == null) {
@@ -94,7 +92,7 @@ public class WrappingView implements View, InitializingBean {
             for (int i = 0; i < this.referenceDataProviders.length; i++) {
                 ReferenceDataProvider provider = this.referenceDataProviders[i];
                 if (logger.isDebugEnabled())
-                    logger.debug("Invoking reference data provider '" + provider + "'");
+                    logger.debug("Invoking reference data provider: " + provider);
                 provider.referenceData(model, request);
             }
         }
@@ -108,8 +106,14 @@ public class WrappingView implements View, InitializingBean {
         requestWrapper.setMethod(method);
         
         if (this.viewWrapper != null) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Rendering response " + response + " with view wrapper " + this.viewWrapper);
+            }
             this.viewWrapper.renderView(this.view, model, requestWrapper, response);
         } else {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Rendering response " + response + " with view: " + this.view);
+            }
             this.view.render(model, requestWrapper, response);
         }
         
@@ -182,7 +186,6 @@ public class WrappingView implements View, InitializingBean {
             this.referenceDataProviders = (ReferenceDataProvider[]) providerList.
                 toArray(new ReferenceDataProvider[providerList.size()]);
         }        
-        
     }
 
 }

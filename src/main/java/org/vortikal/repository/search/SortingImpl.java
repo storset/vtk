@@ -49,10 +49,12 @@ public class SortingImpl implements Sorting {
         this.sortFields.add(sortField);
     }
     
+    @Override
     public List<SortField> getSortFields() {
         return this.sortFields;
     }
     
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(this.getClass().getName());
         sb.append(": ").append(this.sortFields);

@@ -30,42 +30,50 @@
  */
 package org.vortikal.repository.search;
 
+import java.util.Locale;
 import org.vortikal.repository.PropertySet;
 
-
+/**
+ * Typed sort fields are for special non-property repository types:
+ * URI, name and resource type.
+ */
 public class TypedSortField extends AbstractSortField {
 
     private String type;
     
     public TypedSortField(String type) {
-        if (!(PropertySet.NAME_IDENTIFIER.equals(type) ||
-                PropertySet.URI_IDENTIFIER.equals(type) || 
-                PropertySet.TYPE_IDENTIFIER.equals(type)))
-            throw new IllegalArgumentException("Type must be one of " + 
-                PropertySet.NAME_IDENTIFIER + ", " +
-                PropertySet.URI_IDENTIFIER + ", " +
-                PropertySet.TYPE_IDENTIFIER);
-
+        validateType(type);
         this.type = type;
     }
     
     public TypedSortField(String type, SortFieldDirection direction) {
         super(direction);
-        if (!(PropertySet.NAME_IDENTIFIER.equals(type) ||
-                PropertySet.URI_IDENTIFIER.equals(type) || 
-                PropertySet.TYPE_IDENTIFIER.equals(type)))
-            throw new IllegalArgumentException("Type must be one of " + 
-                PropertySet.NAME_IDENTIFIER + ", " +
-                PropertySet.URI_IDENTIFIER + ", " +
-                PropertySet.TYPE_IDENTIFIER);
-
+        validateType(type);
         this.type = type;
     }
     
+    public TypedSortField(String type, SortFieldDirection direction, Locale locale) {
+        super(direction, locale);
+        validateType(type);
+        this.type = type;
+    }
+
+    private void validateType(String type) throws IllegalArgumentException {
+        if (!(PropertySet.NAME_IDENTIFIER.equals(type)
+                || PropertySet.URI_IDENTIFIER.equals(type)
+                || PropertySet.TYPE_IDENTIFIER.equals(type))) {
+            throw new IllegalArgumentException("Type must be one of "
+                    + PropertySet.NAME_IDENTIFIER + ", "
+                    + PropertySet.URI_IDENTIFIER + ", "
+                    + PropertySet.TYPE_IDENTIFIER);
+        }
+    }
+
     public String getType() {
         return this.type;
     }
     
+    @Override
     public String toString() {
         return this.type + " " + getDirection().toString();
     }

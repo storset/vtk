@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.search;
 
+import java.util.Locale;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
 public class PropertySortField extends AbstractSortField {
@@ -49,10 +50,19 @@ public class PropertySortField extends AbstractSortField {
         this.definition = def;
     }
     
+    public PropertySortField(PropertyTypeDefinition def, SortFieldDirection direction, Locale locale) {
+        super(direction, locale);
+        if (def == null) {
+            throw new IllegalArgumentException("Argument 'def' cannot be NULL");
+        }
+        this.definition = def;
+    }
+
     public PropertyTypeDefinition getDefinition() {
         return this.definition;
     }
 
+    @Override
     public String toString() {
         if (this.complexValueAttributeSpecifier != null){
             return this.definition.getName() + "@"

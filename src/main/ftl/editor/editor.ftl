@@ -409,7 +409,7 @@
           </div>
           <div id="resource.${name}.preview">
             <#if value != ''>
-              <img src="${value}?vrtx=thumbnail" alt="preview" />
+              <img src="${vrtx.linkConstructor(value, 'displayThumbnailService')?html}" alt="preview" />
             <#else>
               <img src="" alt="no-image" style="visibility: hidden; width: 10px;" />
             </#if>

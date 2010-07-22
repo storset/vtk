@@ -10,7 +10,7 @@
 
 	<div id="${inputFieldName}.preview">
 		<#if value?has_content >
-			<img src="${value?html}?vrtx=thumbnail" alt="" />
+			<img src="${value?html}" alt=""/>
 		</#if>
 	</div>
 

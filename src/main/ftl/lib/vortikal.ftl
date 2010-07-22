@@ -170,6 +170,13 @@
 </#macro>
 
 
+<#function linkConstructor resourceUri serviceName >
+	<#if VRTX_LINK_CONSTRUCTOR?exists> 
+		<#return VRTX_LINK_CONSTRUCTOR.construct(resourceUri,null,serviceName) />
+	</#if>
+	<#return "" />
+</#function>
+
 <#--
  * calcDate
  *
@@ -328,7 +335,7 @@
 </#function>
 
 <#function propValue resource name format='long' prefix=''>
-in  <#local propVal = getPropValue(resource, name, format, prefix) />
+  <#local propVal = getPropValue(resource, name, format, prefix) />
   <#if !propVal?has_content>
     <#local propVal = getPropValue(resource, name, format, 'resource') />
   </#if>

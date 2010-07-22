@@ -61,9 +61,9 @@
           <li>
         </#if>
           <#if (image_index == 0) >
-            <a href="${folderUrl}?actimg=${image.URI}&amp;display=gallery" class="active"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" title="${title}" />
+            <a href="${folderUrl}?actimg=${image.URI}&amp;display=gallery" class="active"><img src="${vrtx.linkConstructor(image.URI.toString(), 'displayThumbnailService')?html}" alt="${description}" title="${title}" />
           <#else>
-            <a href="${folderUrl}?actimg=${image.URI}&amp;display=gallery"><img src="${image.URI}?vrtx=thumbnail" alt="${description}" title="${title}" /> 
+            <a href="${folderUrl}?actimg=${image.URI}&amp;display=gallery"><img src="${vrtx.linkConstructor(image.URI.toString(), 'displayThumbnailService')?html}" alt="${description}" title="${title}" /> 
           </#if>
               <#if type == 'gallery'><span><img src="${image.URI}" alt="${description}" title="${title}" /></span></#if>
             </a>

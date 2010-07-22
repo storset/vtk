@@ -56,6 +56,7 @@ public class UriPrefixQueryBuilder implements QueryBuilder {
     private String uri;
     private final boolean inverted;
     private TermOperator operator;
+    private Filter deletedDocsFilter;
     
     /**
      * 
@@ -69,6 +70,12 @@ public class UriPrefixQueryBuilder implements QueryBuilder {
         this.operator = operator;
     }
     
+    public UriPrefixQueryBuilder(String uri, TermOperator operator, List<Term>  idTerms, boolean inverted, Filter deletedDocs) {
+        this(uri, operator, idTerms, inverted);
+        this.deletedDocsFilter = deletedDocs;
+    }
+
+    @Override
     public Query buildQuery() throws QueryBuilderException {
         // Use ancestor ids field from index to get all descendants
     	
@@ -100,13 +107,11 @@ public class UriPrefixQueryBuilder implements QueryBuilder {
             }
             
             if (this.inverted) {
-                Filter filter = new InversionFilter(new QueryWrapperFilter(query));
+                Filter filter = new InversionFilter(new QueryWrapperFilter(query), this.deletedDocsFilter);
                 return new ConstantScoreQuery(filter);
             }
     		
             return query;
     	}
-    	
     }
-
 }

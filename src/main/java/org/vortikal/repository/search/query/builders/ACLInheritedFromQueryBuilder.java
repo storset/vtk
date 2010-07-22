@@ -32,6 +32,7 @@ package org.vortikal.repository.search.query.builders;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.ConstantScoreQuery;
+import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
@@ -47,16 +48,23 @@ public class ACLInheritedFromQueryBuilder implements QueryBuilder {
 
     private int resourceId;
     private boolean invert = false;
+    private Filter deletedDocsFilter;
     
     public ACLInheritedFromQueryBuilder(int resourceId) {
         this.resourceId = resourceId;
     }
     
     public ACLInheritedFromQueryBuilder(int resourceId, boolean invert) {
-        this.resourceId = resourceId;
+        this(resourceId);
         this.invert = invert;
     }
 
+    public ACLInheritedFromQueryBuilder(int resourceId, boolean invert, Filter deletedDocs) {
+        this(resourceId, invert);
+        this.deletedDocsFilter = deletedDocs;
+    }
+
+    @Override
     public Query buildQuery() throws QueryBuilderException {
         
         Term aclInheritedFromTerm = 
@@ -68,7 +76,7 @@ public class ACLInheritedFromQueryBuilder implements QueryBuilder {
         if (this.invert) {
             query = new ConstantScoreQuery(
                       new InversionFilter(
-                        new QueryWrapperFilter(query)));
+                        new QueryWrapperFilter(query), this.deletedDocsFilter));
         }
 
         return query;

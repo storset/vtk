@@ -32,6 +32,7 @@ package org.vortikal.repository.search.query.builders;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.ConstantScoreQuery;
+import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
 import org.vortikal.repository.index.mapping.FieldNameMapping;
@@ -49,10 +50,18 @@ import org.vortikal.repository.search.query.filter.InversionFilter;
 public class UriTermQueryBuilder implements QueryBuilder {
 
     private UriTermQuery query;
+    private Filter deletedDocsFilter;
+
     public UriTermQueryBuilder(UriTermQuery query) {
         this.query = query;
     }
     
+    public UriTermQueryBuilder(UriTermQuery query, Filter deletedDocs) {
+        this(query);
+        this.deletedDocsFilter = deletedDocs;
+    }
+
+    @Override
     public org.apache.lucene.search.Query buildQuery() throws QueryBuilderException {
         String uri = this.query.getUri();
         
@@ -67,7 +76,7 @@ public class UriTermQueryBuilder implements QueryBuilder {
             // URI NOT equal
             TermQuery tq = 
                 new TermQuery(new Term(FieldNameMapping.URI_FIELD_NAME, uri));
-            return new ConstantScoreQuery(new InversionFilter(new QueryWrapperFilter(tq)));
+            return new ConstantScoreQuery(new InversionFilter(new QueryWrapperFilter(tq), this.deletedDocsFilter));
         }
         
         throw new QueryBuilderException("Operator '" + operator + "' not legal for UriTermQuery.");

@@ -33,6 +33,7 @@ package org.vortikal.repository.search.query.builders;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.ConstantScoreRangeQuery;
+import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
 import org.vortikal.repository.index.mapping.FieldNameMapping;
@@ -49,12 +50,19 @@ import org.vortikal.repository.search.query.filter.InversionFilter;
  */
 public class NameTermQueryBuilder implements QueryBuilder {
 
-    NameTermQuery ntq;
+    private NameTermQuery ntq;
+    private Filter deletedDocsFilter;
     
     public NameTermQueryBuilder(NameTermQuery q) {
         this.ntq = q;
     }
     
+    public NameTermQueryBuilder(NameTermQuery q, Filter deletedDocs) {
+        this(q);
+        this.deletedDocsFilter = deletedDocs;
+    }
+
+    @Override
     public org.apache.lucene.search.Query buildQuery() {
         String term = this.ntq.getTerm();
         TermOperator op = this.ntq.getOperator();
@@ -65,7 +73,7 @@ public class NameTermQueryBuilder implements QueryBuilder {
             if (op == TermOperator.EQ){
                 return tq;
             } else {
-                return new ConstantScoreQuery(new InversionFilter(new QueryWrapperFilter(tq)));
+                return new ConstantScoreQuery(new InversionFilter(new QueryWrapperFilter(tq), this.deletedDocsFilter));
             }
         }
 
@@ -75,7 +83,7 @@ public class NameTermQueryBuilder implements QueryBuilder {
             if (op == TermOperator.EQ_IGNORECASE) {
                 return tq;
             } else {
-                return new ConstantScoreQuery(new InversionFilter(new QueryWrapperFilter(tq)));
+                return new ConstantScoreQuery(new InversionFilter(new QueryWrapperFilter(tq), this.deletedDocsFilter));
             }
         }
 
@@ -103,10 +111,10 @@ public class NameTermQueryBuilder implements QueryBuilder {
         }
         
         return new ConstantScoreRangeQuery(FieldNameMapping.NAME_FIELD_NAME, 
-                                           lowerTerm, 
-                                           upperTerm, 
-                                           includeLower, 
-                                           includeUpper);
+                                                                    lowerTerm,
+                                                                    upperTerm,
+                                                                    includeLower,
+                                                                    includeUpper);
     }
 
 }

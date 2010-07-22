@@ -53,7 +53,6 @@ public class TermExistsFilter extends Filter {
     
     private static final long serialVersionUID = 6676434194690479831L;
     private String fieldName;
-    private boolean invert = false;
 
     /**
      * Construct a filter for the given fieldName.
@@ -62,11 +61,6 @@ public class TermExistsFilter extends Filter {
      */
     public TermExistsFilter(String fieldName) {
         this.fieldName = fieldName;
-    }
-
-    public TermExistsFilter(String fieldName, boolean invert) {
-        this.fieldName = fieldName;
-        this.invert = invert;
     }
     
     @Override
@@ -79,17 +73,6 @@ public class TermExistsFilter extends Filter {
                 bits.set(doc);
             }
         }.generate(reader);
-
-        if (this.invert) {
-            bits.flip(0, reader.maxDoc());
-            if (reader.hasDeletions()) {
-                for (int doc = bits.nextSetBit(0); doc != -1; doc = bits.nextSetBit(doc+1)) {
-                    if (reader.isDeleted(doc)) {
-                        bits.clear(doc);
-                    }
-                }
-            }
-        }
 
         return bits;
     }
@@ -104,20 +87,8 @@ public class TermExistsFilter extends Filter {
             }
         }.generate(reader);
 
-        if (this.invert) {
-            bits.flip(0, reader.maxDoc());
-            if (reader.hasDeletions()) {
-                for (DocIdSetIterator i = bits.iterator(); i.next();) {
-                    if (reader.isDeleted(i.doc())) {
-                        bits.fastClear(i.doc());
-                    }
-                }
-            }
-        }
-
         return bits;
     }
-
 
     private static abstract class ExistsIdGenerator {
         private Term exists;

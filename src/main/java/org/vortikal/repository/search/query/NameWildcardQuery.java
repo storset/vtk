@@ -34,7 +34,7 @@ package org.vortikal.repository.search.query;
 public class NameWildcardQuery implements NameQuery {
 
     private String term;
-    
+
     public NameWildcardQuery(String term) {
         this.term = term;
     }

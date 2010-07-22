@@ -51,14 +51,21 @@ import org.vortikal.repository.search.query.filter.InversionFilter;
 public class NamePrefixQueryBuilder implements QueryBuilder {
 
     private NamePrefixQuery query;
+    private Filter deletedDocsFilter;
+
     public NamePrefixQueryBuilder(NamePrefixQuery query) {
         this.query = query;
-        
     }
     
+    public NamePrefixQueryBuilder(NamePrefixQuery query, Filter deletedDocs) {
+        this(query);
+        this.deletedDocsFilter = deletedDocs;
+    }
+
     /* (non-Javadoc)
      * @see org.vortikal.repository.query.QueryBuilder#buildQuery()
      */
+    @Override
     public Query buildQuery() throws QueryBuilderException {
         
         Term prefixTerm = new Term(FieldNameMapping.NAME_FIELD_NAME, 
@@ -67,10 +74,9 @@ public class NamePrefixQueryBuilder implements QueryBuilder {
         Filter filter = new PrefixFilter(prefixTerm);
         
         if (query.isInverted()) {
-            filter = new InversionFilter(filter);
+            filter = new InversionFilter(filter, this.deletedDocsFilter);
         }
 
-        
         ConstantScoreQuery csq = new ConstantScoreQuery(filter);
         
         return csq;

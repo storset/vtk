@@ -50,6 +50,7 @@ public class HierarchicalTermQueryBuilder<T> implements QueryBuilder {
     private final TermOperator operator;
     private final String fieldName;
     private final T term;
+    private Filter deletedDocsFilter;
     
     public HierarchicalTermQueryBuilder(HierarchicalVocabulary<T> hierarchicalVocabulary,
                                         TermOperator operator, String fieldName, T term) {
@@ -59,16 +60,23 @@ public class HierarchicalTermQueryBuilder<T> implements QueryBuilder {
         this.term = term; 
     }
 
+    public HierarchicalTermQueryBuilder(HierarchicalVocabulary<T> hierarchicalVocabulary,
+                                        TermOperator operator, String fieldName, T term,
+                                        Filter deletedDocs) {
+        this(hierarchicalVocabulary, operator, fieldName, term);
+        this.deletedDocsFilter = deletedDocs;
+    }
+
+    @Override
     public Query buildQuery() {
         if (this.operator == TermOperator.IN) {
             return new ConstantScoreQuery(getInFilter());
         } else if (this.operator == TermOperator.NI) {
-            Filter filter = new InversionFilter(getInFilter());
+            Filter filter = new InversionFilter(getInFilter(), this.deletedDocsFilter);
             return new ConstantScoreQuery(filter);
         } else {
             throw new QueryBuilderException("Unsupported type operator: " + this.operator);
         }
-
     }
 
     private Filter getInFilter() {

@@ -53,6 +53,7 @@ public class PropertyRangeQueryBuilder implements QueryBuilder {
         this.fieldValueMapper = mapper;
     }
 
+    @Override
     public Query buildQuery() throws QueryBuilderException {
         
         String from = this.prq.getFromTerm();

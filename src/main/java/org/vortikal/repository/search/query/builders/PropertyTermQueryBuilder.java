@@ -33,6 +33,7 @@ package org.vortikal.repository.search.query.builders;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.ConstantScoreRangeQuery;
+import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
@@ -51,6 +52,7 @@ public class PropertyTermQueryBuilder implements QueryBuilder {
     private TermOperator op;
     private String fieldName;
     private String fieldValue;
+    private Filter deletedDocsFilter;
     
     public PropertyTermQueryBuilder(TermOperator op, String fieldName, String fieldValue) {
         this.op = op;
@@ -58,6 +60,12 @@ public class PropertyTermQueryBuilder implements QueryBuilder {
         this.fieldValue = fieldValue;
     }
 
+    public PropertyTermQueryBuilder(TermOperator op, String fieldName, String fieldValue, Filter deletedDocs) {
+        this(op, fieldName, fieldValue);
+        this.deletedDocsFilter = deletedDocs;
+    }
+
+    @Override
     public Query buildQuery() throws QueryBuilderException {
         
         // XXX: LuceneQueryBuilderImpl does the necessary downcasing and field name selection
@@ -69,7 +77,7 @@ public class PropertyTermQueryBuilder implements QueryBuilder {
         
         if (op == TermOperator.NE || op == TermOperator.NE_IGNORECASE) {
             TermQuery tq = new TermQuery(new Term(this.fieldName, this.fieldValue));
-            return new ConstantScoreQuery(new InversionFilter(new QueryWrapperFilter(tq)));
+            return new ConstantScoreQuery(new InversionFilter(new QueryWrapperFilter(tq), this.deletedDocsFilter));
         }
 
         boolean includeLower = false;

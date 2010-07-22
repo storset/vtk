@@ -38,6 +38,8 @@ import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.DocIdSetIterator;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.util.OpenBitSet;
+import org.apache.lucene.util.OpenBitSetDISI;
+import org.vortikal.repository.search.query.filter.DeletedDocsFilter;
 
 /**
  * A {@link org.apache.lucene.search.Filter} that inverts the result of 
@@ -46,13 +48,6 @@ import org.apache.lucene.util.OpenBitSet;
  * 
  * It basically flips all bits provided by the wrapped filter, while
  * making sure that bits for deleted documents are not set.
- * <p>
- * 
- * It is a non-thread safe, per-query dynamic filter. It will directly alter the 
- * <code>BitSet</code> provided by the wrapped filter to avoid double 
- * memory allocation and copying. Beware of this if wrapping
- * re-usable (long-lived) filters that cache their own bitset and expect it
- * not to change.
  * <p>
  * 
  * NOTE: It may be more efficient to code inversion-logic directly into
@@ -66,49 +61,80 @@ public class InversionFilter extends Filter {
     private static final long serialVersionUID = -8133303000593033686L;
 
     private Filter wrappedFilter;
+    private Filter deletedDocsFilter;
     
     public InversionFilter(Filter wrappedFilter) {
         this.wrappedFilter = wrappedFilter;
     }
-    
+
+    /**
+     * Constructor with provided filter for deleted docs. This filter can be
+     * cached and if pre-built makes the inversion go faster.
+     *
+     * @param wrappedFilter
+     * @param deletedDocsFilter
+     */
+    public InversionFilter(Filter wrappedFilter, Filter deletedDocsFilter) {
+        this.wrappedFilter = wrappedFilter;
+        this.deletedDocsFilter = deletedDocsFilter;
+    }
+
     @Override
     @Deprecated
     public BitSet bits(IndexReader reader) throws IOException {
-        BitSet bits = this.wrappedFilter.bits(reader);
-        bits.flip(0, reader.maxDoc());
-        for (int i = bits.nextSetBit(0); i >= 0; i = bits.nextSetBit(i + 1)) {
-            if (reader.isDeleted(i)) {
-                bits.clear(i);
+        final BitSet inverted = new BitSet(reader.maxDoc());
+        inverted.or(this.wrappedFilter.bits(reader));
+        inverted.flip(0, reader.maxDoc());
+
+        if (reader.hasDeletions()) {
+            if (this.deletedDocsFilter != null) {
+                inverted.andNot(this.deletedDocsFilter.bits(reader));
+            } else {
+                for (int i = inverted.nextSetBit(0); i >= 0; i = inverted.nextSetBit(i + 1)) {
+                    if (reader.isDeleted(i)) {
+                        inverted.clear(i);
+                    }
+                }
             }
         }
 
-        return bits;
+        return inverted;
     }
     
     @Override
     public DocIdSet getDocIdSet(IndexReader reader) throws IOException {
-        int maxDoc = reader.maxDoc();
-        OpenBitSet docIdSet = new OpenBitSet(maxDoc);
 
-        DocIdSetIterator iterator = this.wrappedFilter.getDocIdSet(reader).iterator();
-        int prevDocId = -1;
-        while (iterator.next()) {
-            int currentDocId = iterator.doc();
-            for (int i = prevDocId + 1; i < currentDocId; i++) {
-                if (!reader.isDeleted(i)) {
-                    docIdSet.fastSet(i);
-                }
-            }
-            prevDocId = currentDocId;
+        final int maxDoc = reader.maxDoc();
+        final OpenBitSetDISI inverted = new OpenBitSetDISI(maxDoc);
+        final DocIdSet wrappedSet = this.wrappedFilter.getDocIdSet(reader);
+        if (wrappedSet instanceof OpenBitSet) {
+            // Optimized case for OpenBitSet
+            inverted.or((OpenBitSet)wrappedSet);
+        } else {
+            inverted.inPlaceOr(wrappedSet.iterator());
         }
 
-        // Flip the rest of the bits (last doc id+1 to maxdoc())
-        for (int i = prevDocId + 1; i < maxDoc; i++) {
-            if (!reader.isDeleted(i)) {
-                docIdSet.fastSet(i);
+        inverted.flip(0, maxDoc);
+
+        // Filters used as part of query tree cannot return deleted docs, so
+        // we need to remove any set bits for such doc ids
+        if (reader.hasDeletions()) {
+            DocIdSet deletedSet;
+            if (this.deletedDocsFilter != null) {
+                // Use provided and possibly cached filter for better efficiency
+                deletedSet = this.deletedDocsFilter.getDocIdSet(reader);
+            } else {
+                deletedSet = new DeletedDocsFilter().getDocIdSet(reader);
+            }
+
+            if (deletedSet instanceof OpenBitSet) {
+                // Optimized case for OpenBitSet
+                inverted.andNot((OpenBitSet) deletedSet);
+            } else {
+                inverted.inPlaceNot(deletedSet.iterator());
             }
         }
 
-        return docIdSet;
+        return inverted;
     }
 }

@@ -30,14 +30,19 @@
  */
 package org.vortikal.repository.search.query.builders;
 
+
+
 import org.apache.lucene.search.ConstantScoreQuery;
+import org.apache.lucene.search.Filter;
 import org.vortikal.repository.index.mapping.FieldNameMapping;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.query.PropertyExistsQuery;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
+import org.vortikal.repository.search.query.filter.InversionFilter;
 import org.vortikal.repository.search.query.filter.TermExistsFilter;
+
 
 /**
  * XXX: Experimental, might be slow to execute, especially in the
@@ -48,10 +53,18 @@ import org.vortikal.repository.search.query.filter.TermExistsFilter;
 public class PropertyExistsQueryBuilder implements QueryBuilder {
 
     private PropertyExistsQuery query;
+    private Filter deletedDocsFilter;
+
     public PropertyExistsQueryBuilder(PropertyExistsQuery query) {
         this.query = query;
     }
 
+    public PropertyExistsQueryBuilder(PropertyExistsQuery query, Filter deletedDocs) {
+        this(query);
+        this.deletedDocsFilter = deletedDocs;
+    }
+
+    @Override
     public org.apache.lucene.search.Query buildQuery() throws QueryBuilderException {
         
         PropertyTypeDefinition def = this.query.getPropertyDefinition();
@@ -61,7 +74,11 @@ public class PropertyExistsQueryBuilder implements QueryBuilder {
             fieldName = FieldNameMapping.getJSONSearchFieldName(def, query.getComplexValueAttributeSpecifier(), false);
         }
 
-        return new ConstantScoreQuery(new TermExistsFilter(fieldName, query.isInverted()));
+        if (query.isInverted()) {
+            return new ConstantScoreQuery(new InversionFilter(new TermExistsFilter(fieldName), this.deletedDocsFilter));
+        } else {
+            return new ConstantScoreQuery(new TermExistsFilter(fieldName));
+        }
     }
 
 }

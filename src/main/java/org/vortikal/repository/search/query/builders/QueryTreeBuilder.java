@@ -57,6 +57,7 @@ public class QueryTreeBuilder implements QueryBuilder {
         this.reader = reader;
     }
 
+    @Override
     public org.apache.lucene.search.Query buildQuery() {
         return buildInternal(this.query);
     }

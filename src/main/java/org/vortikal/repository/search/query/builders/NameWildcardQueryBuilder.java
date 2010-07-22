@@ -39,6 +39,7 @@ import org.vortikal.repository.index.mapping.FieldNameMapping;
 import org.vortikal.repository.search.query.NameWildcardQuery;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
+import org.vortikal.repository.search.query.filter.InversionFilter;
 import org.vortikal.repository.search.query.filter.WildcardTermFilter;
 
 /**
@@ -49,11 +50,24 @@ import org.vortikal.repository.search.query.filter.WildcardTermFilter;
 public class NameWildcardQueryBuilder implements QueryBuilder {
 
     private NameWildcardQuery nwq;
-    public NameWildcardQueryBuilder(NameWildcardQuery nwq) { 
-        this.nwq = nwq;
+    private boolean invert = false;
+    private Filter deletedDocsFilter;
 
+    public NameWildcardQueryBuilder(NameWildcardQuery nwq) {
+        this.nwq = nwq;
     }
 
+    public NameWildcardQueryBuilder(NameWildcardQuery nwq, boolean invert) {
+        this(nwq);
+        this.invert = invert;
+    }
+
+    public NameWildcardQueryBuilder(NameWildcardQuery nwq, boolean invert, Filter deletedDocs) {
+        this(nwq, invert);
+        this.deletedDocsFilter = deletedDocs;
+    }
+
+    @Override
     public Query buildQuery() throws QueryBuilderException {
         
         String wildcard = this.nwq.getTerm();
@@ -67,6 +81,10 @@ public class NameWildcardQueryBuilder implements QueryBuilder {
         Term wTerm = new Term(FieldNameMapping.NAME_FIELD_NAME, wildcard);
         
         Filter filter = new WildcardTermFilter(wTerm);
+
+        if (this.invert) {
+            filter = new InversionFilter(filter, this.deletedDocsFilter);
+        }
         
         return new ConstantScoreQuery(filter);
         

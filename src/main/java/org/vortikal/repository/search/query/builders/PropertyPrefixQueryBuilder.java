@@ -52,10 +52,18 @@ import org.vortikal.repository.search.query.filter.InversionFilter;
 public class PropertyPrefixQueryBuilder implements QueryBuilder {
 
     private PropertyPrefixQuery ppq;
+    private Filter deletedDocsFilter;
+
     public PropertyPrefixQueryBuilder(PropertyPrefixQuery ppq) {
         this.ppq = ppq;
     }
 
+    public PropertyPrefixQueryBuilder(PropertyPrefixQuery ppq, Filter deletedDocs) {
+        this(ppq);
+        this.deletedDocsFilter = deletedDocs;
+    }
+
+    @Override
     public Query buildQuery() throws QueryBuilderException {
         
         PropertyTypeDefinition def = this.ppq.getPropertyDefinition();
@@ -88,7 +96,7 @@ public class PropertyPrefixQueryBuilder implements QueryBuilder {
         Filter filter = new PrefixFilter(new Term(fieldName, term));
 
         if (inverted) {
-            filter = new InversionFilter(filter);
+            filter = new InversionFilter(filter, this.deletedDocsFilter);
         }
         
         return new ConstantScoreQuery(filter);

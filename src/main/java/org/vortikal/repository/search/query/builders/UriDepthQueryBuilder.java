@@ -52,6 +52,7 @@ public class UriDepthQueryBuilder implements QueryBuilder {
         this.query = query;
     }
     
+    @Override
     public Query buildQuery() throws QueryBuilderException {
         
         Term uriDepthTerm = new Term(
@@ -59,7 +60,6 @@ public class UriDepthQueryBuilder implements QueryBuilder {
                 Integer.toString(query.getDepth()));
         
         return new TermQuery(uriDepthTerm);
-
     }
 
 }

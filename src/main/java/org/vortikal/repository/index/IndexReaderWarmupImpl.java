@@ -76,10 +76,11 @@ public class IndexReaderWarmupImpl implements IndexReaderWarmup {
 
         // Implicitly warm up query builder internal filter caching for the new reader instance.
         // This should warm up:
+        // 0. Deleted docs filter cache
         // 1. Inverted hidden-prop existence query filter cache
         // 2. Published-prop filter cache
-        // 3. ACL filter for anonymous user
-        // Enabling pre-building of this caching should be very good for performance of new reader
+        // 3. ACL filter cache for anonymous user
+        // Enabling pre-building of all this caching should be very good for performance of new reader
         // after warmup.
         Search search = new Search();
         search.setLimit(5000);

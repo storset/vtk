@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.search.query.builders;
 
+import org.apache.lucene.search.Filter;
 import static org.vortikal.repository.search.query.TermOperator.EQ;
 import static org.vortikal.repository.search.query.TermOperator.NE;
 
@@ -49,6 +50,7 @@ public class TypeTermQueryBuilder implements QueryBuilder {
     private String fieldName = FieldNameMapping.RESOURCETYPE_FIELD_NAME;
     private Object term;
     private TermOperator op;
+    private Filter deletedDocsFilter;
 
     
     public TypeTermQueryBuilder(Object term, TermOperator op) {
@@ -61,12 +63,17 @@ public class TypeTermQueryBuilder implements QueryBuilder {
         this.op = op;
     }
 
+    public TypeTermQueryBuilder(Object term, TermOperator op, Filter deletedDocs) {
+        this(term, op);
+        this.deletedDocsFilter = deletedDocs;
+    }
 
+    @Override
     public Query buildQuery() throws QueryBuilderException {
         TermQuery tq = new TermQuery(new Term(fieldName, this.term.toString()));
 
         if (op == TermOperator.NE) {
-            return new ConstantScoreQuery(new InversionFilter(new QueryWrapperFilter(tq)));
+            return new ConstantScoreQuery(new InversionFilter(new QueryWrapperFilter(tq), this.deletedDocsFilter));
         } 
 
         return tq;

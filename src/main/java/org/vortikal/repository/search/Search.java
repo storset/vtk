@@ -81,7 +81,7 @@ public final class Search {
     }
 
     public int getCursor() {
-        return cursor;
+        return this.cursor;
     }
     
     public void setCursor(int cursor) {
@@ -95,7 +95,7 @@ public final class Search {
     }
     
     public int getLimit() {
-        return limit;
+        return this.limit;
     }
     
     public void setLimit(int limit) {

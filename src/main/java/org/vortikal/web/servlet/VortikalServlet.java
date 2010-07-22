@@ -345,8 +345,8 @@ public class VortikalServlet extends DispatcherServlet {
         }
 
         boolean proceedService = true;
-        StatusAwareResponseWrapper responseWrapper = 
-            new StatusAwareResponseWrapper(servletResponse);
+        HeaderAwareResponseWrapper responseWrapper = 
+            new HeaderAwareResponseWrapper(servletResponse);
 
         try {
 
@@ -372,7 +372,7 @@ public class VortikalServlet extends DispatcherServlet {
 
             servletResponse = filterResponse(request, servletResponse);
             responseWrapper = 
-                new StatusAwareResponseWrapper(servletResponse);
+                new HeaderAwareResponseWrapper(servletResponse);
 
             proceedService = checkLastModified(request, responseWrapper);
 
@@ -418,7 +418,7 @@ public class VortikalServlet extends DispatcherServlet {
         }
     }
 
-    private void handleAuthenticationProcessingError(HttpServletRequest request, StatusAwareResponseWrapper responseWrapper, AuthenticationProcessingException e) throws ServletException {
+    private void handleAuthenticationProcessingError(HttpServletRequest request, HeaderAwareResponseWrapper responseWrapper, AuthenticationProcessingException e) throws ServletException {
         if (HttpServletResponse.SC_OK == responseWrapper.getStatus()) {
             responseWrapper.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
@@ -467,7 +467,7 @@ public class VortikalServlet extends DispatcherServlet {
             resp.setDateHeader(HEADER_LASTMOD, lastModified);
     }
    
-    private void logRequest(HttpServletRequest req, StatusAwareResponseWrapper resp,
+    private void logRequest(HttpServletRequest req, HeaderAwareResponseWrapper resp,
                             long processingTime, boolean wasCacheRequest) {
         if (!this.requestLogger.isInfoEnabled()) {
             return;
@@ -496,19 +496,21 @@ public class VortikalServlet extends DispatcherServlet {
         }
 
         String userAgent = req.getHeader("User-Agent");
-        String jSession = null;
+        String sessionID = null;
         HttpSession session = req.getSession(false);
         if (session != null) {
-            jSession = session.getId(); 
+            sessionID = session.getId(); 
         }
         StringBuilder msg = new StringBuilder();
         msg.append(remoteHost).append(" - ").append(request);
         msg.append(" - principal: ").append(principal);
         msg.append(" - token: ").append(token);
-        msg.append(" - jsession: ").append(jSession);
+        msg.append(" - session: ").append(sessionID);
         msg.append(" - service: ").append(service);
-        msg.append(" - user agent: ").append(userAgent);
-        msg.append(" - cached: ").append(wasCacheRequest);
+        msg.append(" - user-agent: ").append(userAgent);
+        msg.append(" - lastmod: ").append(wasCacheRequest);
+        msg.append(" - referrer: ").append(req.getHeader("Referer"));
+        msg.append(" - bytes: ").append(resp.getHeaderValue("Content-Length"));
         msg.append(" - time: ").append(processingTime);
         this.requestLogger.info(msg);
     }

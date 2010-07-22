@@ -30,13 +30,13 @@
  */
 package org.vortikal.web.servlet;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
+
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -45,7 +45,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class HeaderAwareResponseWrapper extends StatusAwareResponseWrapper {
 
-    private Map<String, Set<Object>> headerMap = new HashMap<String, Set<Object>>();
+    private Map<String, List<Object>> headers = new HashMap<String, List<Object>>();
     
     public HeaderAwareResponseWrapper(HttpServletResponse response) {
         super(response);
@@ -67,7 +67,7 @@ public class HeaderAwareResponseWrapper extends StatusAwareResponseWrapper {
     }
     
     public void setDateHeader(String name, long value) {
-        addHeaderInternal(name, new Long(value), true);
+        addHeaderInternal(name, new Date(value), true);
         super.setDateHeader(name, value);
     }
     
@@ -77,26 +77,21 @@ public class HeaderAwareResponseWrapper extends StatusAwareResponseWrapper {
     }
 
     private void addHeaderInternal(String name, Object value, boolean overwrite) {
-        Set<Object> values = this.headerMap.get(name);
+        List<Object> values = this.headers.get(name);
         if (values == null || overwrite) {
-            values = new HashSet<Object>();
+            values = new ArrayList<Object>();
         }
         values.add(value);
-        this.headerMap.put(name, values);
+        this.headers.put(name, values);
     }
 
     public Iterator<String> getHeaderNames() {
-        return this.headerMap.keySet().iterator();
+        return this.headers.keySet().iterator();
     }
     
-    public Set<Object> getHeaderValues(String name) {
-        return this.headerMap.get(name);
+    public List<Object> getHeaderValues(String name) {
+        return this.headers.get(name);
     }
-
-    public Map<String, Set<Object>> getHeaderMap() {
-        return Collections.unmodifiableMap(this.headerMap);
-    }
-    
 
     public void setContentLength(int length) {
         addHeaderInternal("Content-Length", String.valueOf(length), true);
@@ -108,26 +103,22 @@ public class HeaderAwareResponseWrapper extends StatusAwareResponseWrapper {
         super.setContentType(contentType);
     }
     
-
-
     public Object getHeaderValue(String name) {
-        Set<Object> set = this.headerMap.get(name);
-        if (set == null) {
-            throw new IllegalArgumentException("No header exists for name '" + name + "'");
+        List<Object> list = this.headers.get(name);
+        if (list == null) {
+            return null;
         }
-        if (set.size() != -1) {
-            throw new IllegalArgumentException("Not a single-valued header: '" + name + "'");
+        if (list.size() != 1) {
+            throw new IllegalArgumentException("Not a single-valued header: '" + name + "': values: " + list);
         }
-        return set.toArray()[0];
+        return list.get(0);
     }
 
     public boolean isSingleValued(String name) {
-        if (!this.headerMap.containsKey(name)) {
+        if (!this.headers.containsKey(name)) {
             throw new IllegalArgumentException("No header exists for name '" + name + "'");
         }
-        Set<Object> set = this.headerMap.get(name);
-        return set.size() == 1;
+        List<Object> list = this.headers.get(name);
+        return list.size() == 1;
     }
-
 }
-

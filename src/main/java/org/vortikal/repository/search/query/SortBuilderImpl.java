@@ -63,11 +63,6 @@ public class SortBuilderImpl implements SortBuilder {
     public org.apache.lucene.search.Sort buildSort(Sorting sort)
             throws SortBuilderException {
 
-        if (sort == null) {
-            return new org.apache.lucene.search.Sort(
-                    new org.apache.lucene.search.SortField[0]);
-        }
-
         org.apache.lucene.search.SortField[] luceneSortFields =
             new org.apache.lucene.search.SortField[sort.getSortFields().size()];
 

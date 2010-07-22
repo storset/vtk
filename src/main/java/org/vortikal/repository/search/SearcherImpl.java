@@ -65,7 +65,7 @@ public class SearcherImpl implements Searcher {
     /**
      * The internal maximum number of hits allowed for any
      * query <em>before</em> processing of the results by layers above Lucene. A result set will
-     * never be larger than this.
+     * never be larger than this, no matter what client code requests.
      */
     private int luceneSearchLimit = 60000;
     
@@ -94,6 +94,7 @@ public class SearcherImpl implements Searcher {
                 searcher = this.indexAccessor.getIndexSearcher();
             }
 
+            // Build Lucene query
             org.apache.lucene.search.Query luceneQuery =
                 this.queryBuilder.buildQuery(query, searcher.getIndexReader());
 
@@ -101,9 +102,11 @@ public class SearcherImpl implements Searcher {
             org.apache.lucene.search.Filter luceneFilter = 
                 this.queryBuilder.buildSearchFilter(token, search, searcher.getIndexReader());
 
+            // Build Lucene sorting
             org.apache.lucene.search.Sort luceneSort = 
                 this.queryBuilder.buildSort(sorting);
 
+            // Get Lucene document field selector
             FieldSelector selector = selectedProperties != null ? 
                   this.documentMapper.getDocumentFieldSelector(selectedProperties) : null;
 

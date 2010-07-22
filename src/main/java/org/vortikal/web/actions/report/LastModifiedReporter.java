@@ -59,6 +59,7 @@ public class LastModifiedReporter extends AbstractReporter {
     private SortFieldDirection sortOrder;
     private Service viewService;
 
+    @Override
     public Map<String, Object> getReportContent(String token, Resource currentResource, HttpServletRequest request) {
         Map<String, Object> result = new HashMap<String, Object>();
 

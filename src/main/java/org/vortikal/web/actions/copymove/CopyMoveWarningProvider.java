@@ -68,6 +68,7 @@ public class CopyMoveWarningProvider implements CategorizableReferenceDataProvid
     private Set<?> categories;
     
     @SuppressWarnings("unchecked")
+    @Override
     public void referenceData(Map model, HttpServletRequest request)
             throws Exception {
         SecurityContext securityContext = SecurityContext.getSecurityContext();

@@ -79,10 +79,14 @@
           />
         <#break>
       <#case "image_ref">
+      	<#local thumbnail = '' />
+      	<#if elem.value?exists >
+      		<#local thumbnail = vrtx.linkConstructor(elem.value, 'displayThumbnailService') />
+      	</#if>
         <@vrtxImageRef.printPropertyEditView 
           title=localizedTitle
           inputFieldName=elem.name 
-          value= vrtx.linkConstructor(elem.value, 'displayThumbnailService')
+          value=thumbnail
           baseFolder=resourceContext.parentURI
           classes=elem.name 
           tooltip=form.resource.getLocalizedTooltip(elem.name, locale)

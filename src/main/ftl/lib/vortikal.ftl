@@ -171,7 +171,7 @@
 
 
 <#function linkConstructor resourceUri serviceName >
-	<#if VRTX_LINK_CONSTRUCTOR?exists> 
+	<#if VRTX_LINK_CONSTRUCTOR?exists && resourceUri?exists && serviceName?exists > 
 		<#return VRTX_LINK_CONSTRUCTOR.construct(resourceUri,null,serviceName) />
 	</#if>
 	<#return "" />

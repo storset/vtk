@@ -65,6 +65,7 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
 
     private PrincipalFactory principalFactory;
     
+    @Override
     public void orderedPropertySetIteration(PropertySetHandler handler) 
         throws DataAccessException { 
 
@@ -80,6 +81,7 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
         rowHandler.handleLastBufferedRows();
     }
     
+    @Override
     public void orderedPropertySetIteration(Path startUri, PropertySetHandler handler) 
         throws DataAccessException {
         
@@ -101,11 +103,12 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
         rowHandler.handleLastBufferedRows();
     }
     
+    @Override
     public void orderedPropertySetIterationForUris(final List<Path> uris, 
                                               PropertySetHandler handler)
         throws DataAccessException {
         
-        if (uris.size() == 0) {
+        if (uris.isEmpty()) {
             return;
         }
         
@@ -118,31 +121,30 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
 
         final String insertUriTempTableStatement = getSqlMap("insertUriIntoTempTable");
 
-        Integer batchCount = (Integer) client
-                .execute(new SqlMapClientCallback() {
+        Integer batchCount = (Integer) client.execute(new SqlMapClientCallback() {
+            @Override
+            public Object doInSqlMapClient(SqlMapExecutor sqlMapExec)
+                    throws SQLException {
 
-                    public Object doInSqlMapClient(SqlMapExecutor sqlMapExec)
-                            throws SQLException {
+                int rowsUpdated = 0;
+                int statementCount = 0;
+                Map<String, Object> params = new HashMap<String, Object>();
+                params.put("sessionId", sessionId);
+                sqlMapExec.startBatch();
+                for (Path uri : uris) {
+                    params.put("uri", uri.toString());
+                    sqlMapExec.insert(insertUriTempTableStatement, params);
 
-                        int rowsUpdated = 0;
-                        int statementCount = 0;
-                        Map<String, Object> params = new HashMap<String, Object>();
-                        params.put("sessionId", sessionId);
-                        sqlMapExec.startBatch();
-                        for (Path uri : uris) {
-                            params.put("uri", uri.toString());
-                            sqlMapExec.insert(insertUriTempTableStatement, params);
-                            
-                            if (++statementCount % UPDATE_BATCH_SIZE_LIMIT == 0) {
-                            	// Reached limit of how many inserts we batch, execute current batch immediately
-                            	rowsUpdated += sqlMapExec.executeBatch();
-                            	sqlMapExec.startBatch();
-                            }
-                        }
+                    if (++statementCount % UPDATE_BATCH_SIZE_LIMIT == 0) {
+                        // Reached limit of how many inserts we batch, execute current batch immediately
                         rowsUpdated += sqlMapExec.executeBatch();
-                        return new Integer(rowsUpdated);
+                        sqlMapExec.startBatch();
                     }
-                });
+                }
+                rowsUpdated += sqlMapExec.executeBatch();
+                return new Integer(rowsUpdated);
+            }
+        });
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Number of inserts batched (uri list): " + batchCount);
@@ -216,7 +218,7 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
         
         return aclReadPrincipals;
     }
-    
+
     @Required
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
@@ -228,4 +230,3 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
     }
 
 }
-

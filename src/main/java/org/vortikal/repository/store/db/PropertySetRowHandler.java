@@ -90,6 +90,7 @@ class PropertySetRowHandler implements RowHandler {
     /**
      * iBATIS callback
      */
+    @Override
     public void handleRow(Object valueObject) {
         
         @SuppressWarnings("unchecked")

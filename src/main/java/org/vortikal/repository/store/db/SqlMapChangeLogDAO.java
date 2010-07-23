@@ -47,7 +47,8 @@ public class SqlMapChangeLogDAO extends AbstractSqlMapDataAccessor
     implements ChangeLogDAO {
 	
     @SuppressWarnings("unchecked")
-    public void removeChangeLogEntries(final List<ChangeLogEntry> entries) 
+    @Override
+    public void removeChangeLogEntries(final List<ChangeLogEntry> entries)
         throws DataAccessException {
     	
         final SqlMapClientTemplate client = getSqlMapClientTemplate();
@@ -58,6 +59,7 @@ public class SqlMapChangeLogDAO extends AbstractSqlMapDataAccessor
         
         final SqlMapClientCallback callback = new SqlMapClientCallback() {
 
+            @Override
             public Object doInSqlMapClient(SqlMapExecutor executor)
                     throws SQLException {
 
@@ -100,6 +102,7 @@ public class SqlMapChangeLogDAO extends AbstractSqlMapDataAccessor
     }
 
     @SuppressWarnings("unchecked")
+    @Override
     public List<ChangeLogEntry> getChangeLogEntries(int loggerType, int loggerId) 
         throws DataAccessException {
         
@@ -115,6 +118,7 @@ public class SqlMapChangeLogDAO extends AbstractSqlMapDataAccessor
     }
 
     @SuppressWarnings("unchecked")
+    @Override
     public List<ChangeLogEntry> getChangeLogEntries(int loggerType, int loggerId, int limit) 
         throws DataAccessException {
         
@@ -132,6 +136,7 @@ public class SqlMapChangeLogDAO extends AbstractSqlMapDataAccessor
         return retlist;
     }
 
+    @Override
     public void addChangeLogEntry(ChangeLogEntry entry, boolean recurse) 
         throws DataAccessException {
         String sqlMap = null;

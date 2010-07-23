@@ -95,11 +95,13 @@ public class HeaderAwareResponseWrapper extends StatusAwareResponseWrapper {
 
     public void setContentLength(int length) {
         addHeaderInternal("Content-Length", String.valueOf(length), true);
+        super.setHeader("Content-Length", String.valueOf(length));
         super.setContentLength(length);
     }
     
     public void setContentType(String contentType) {
         addHeaderInternal("Content-Type", contentType, true);
+        super.setHeader("Content-Type", contentType);
         super.setContentType(contentType);
     }
     

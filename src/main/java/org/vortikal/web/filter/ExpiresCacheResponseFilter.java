@@ -37,6 +37,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
@@ -49,18 +51,20 @@ import org.vortikal.web.service.Service;
 
 public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
 
+    private static Log logger = LogFactory.getLog(ExpiresCacheResponseFilter.class);
+    
     private static final Set<String> DROPPED_HEADERS = new HashSet<String>();
     static {
         DROPPED_HEADERS.add("Expires");
         DROPPED_HEADERS.add("Cache-Control");
         DROPPED_HEADERS.add("Pragma");
         DROPPED_HEADERS.add("Last-Modified");
-        // XXX:
         DROPPED_HEADERS.add("Vary");
     }
     
     private Repository repository;
     private PropertyTypeDefinition expiresPropDef;
+    private int globalMaxAge = -1;
     private Service rootService;
     
     public HttpServletResponse filter(HttpServletRequest request,
@@ -92,13 +96,25 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
             Property expiresProp = resource.getProperty(this.expiresPropDef);
             boolean anonymousReadable = 
                 this.repository.isAuthorized(resource, RepositoryAction.READ_PROCESSED, null);
-            
-            if (expiresProp != null && anonymousReadable) {
-                long expiresMilliseconds = expiresProp.getLongValue() * 1000;
-                //Date expires = new Date(new Date().getTime() + expiresMilliseconds);
+            if (!anonymousReadable) {
+                logger.debug("Cache: " + uri + ": not cacheable: restricted");
+                return response;
+            }
+
+            if (expiresProp != null) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Cache: " + uri + ": property max-age=" + expiresProp.getLongValue());
+                }
                 return new ExpiresResponseWrapper(response, expiresProp.getLongValue());
             }
+            if (this.globalMaxAge > 0) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Cache: " + uri + ": default max-age=" + this.globalMaxAge);
+                }
+                return new ExpiresResponseWrapper(response, this.globalMaxAge);
+            }
         } catch (Throwable t) { }
+        logger.debug("Cache: " + uri + ": not cacheable");
         return response;
     }
 
@@ -114,6 +130,10 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
         this.rootService = rootService;
     }
 
+    public void setGlobalMaxAge(int globalMaxAge) {
+        this.globalMaxAge = globalMaxAge;
+    }
+    
     private class ExpiresResponseWrapper extends HttpServletResponseWrapper {
 
         private HttpServletResponse response;
@@ -121,10 +141,8 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
         public ExpiresResponseWrapper(HttpServletResponse response, long seconds) {
             super(response);
             this.response = response;
-            //this.response.setDateHeader("Expires", expires.getTime());
-            // XXX: 
-            this.response.setHeader("Cache-Control", "x-anonymous");
             this.response.addHeader("Cache-Control", "max-age=" + seconds);
+            this.response.setHeader("Vary", "Cookie");
         }
 
         @Override
@@ -181,6 +199,11 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
                 return;
             }
             super.setIntHeader(name, value);
+        }
+        
+        @Override
+        public String toString() {
+            return "ExpiresCacheResponseFilter.Response: " + super.toString();
         }
     }
 

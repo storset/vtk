@@ -72,6 +72,7 @@ public class PropertySetIndexUpdater implements BeanNameAware,
     private IndexDao indexDao;
     private boolean enabled;
     
+    @Override
     public void afterPropertiesSet() throws BeanInitializationException {
         // If a notifier is configured, we register ourselves.
         enable();
@@ -80,6 +81,7 @@ public class PropertySetIndexUpdater implements BeanNameAware,
     /**
      * @see org.vortikal.repository.index.observation.ResourceChangeObserver#disable()
      */
+    @Override
     public synchronized void disable() {
         if (this.notifier != null) {
             if (this.notifier.unregisterObserver(this)) {
@@ -93,6 +95,7 @@ public class PropertySetIndexUpdater implements BeanNameAware,
     /**
      * @see org.vortikal.repository.index.observation.ResourceChangeObserver#enable()
      */
+    @Override
     public synchronized void enable() {
         if (this.notifier != null) {
             if (this.notifier.registerObserver(this)) {
@@ -106,6 +109,7 @@ public class PropertySetIndexUpdater implements BeanNameAware,
     /**
      * @see org.vortikal.repository.index.observation.ResourceChangeObserver#isEnabled()
      */
+    @Override
     public boolean isEnabled() {
         return this.enabled;
     }
@@ -113,11 +117,13 @@ public class PropertySetIndexUpdater implements BeanNameAware,
     /**
      * 
      */
+    @Override
     public void setBeanName(String beanName) {
         this.beanName = beanName;
         
     }
     
+    @Override
     public void notifyResourceChanges(final List<ChangeLogEntry> changes) {
 
         synchronized (this) {
@@ -183,6 +189,7 @@ public class PropertySetIndexUpdater implements BeanNameAware,
                 // need updating.
                 class CountingPropertySetHandler implements PropertySetHandler {
                     int count = 0;
+                    @Override
                     public void handlePropertySet(PropertySet propertySet,
                             Set<Principal> aclReadPrincipals) {
   
@@ -194,7 +201,7 @@ public class PropertySetIndexUpdater implements BeanNameAware,
                         PropertySetIndexUpdater.this.index.addPropertySet(propertySet, 
                                                             aclReadPrincipals);
                         if (++count % 10000 == 0) {
-                            // Logg some progress to update
+                            // Log some progress to update
                             PropertySetIndexUpdater.this.logger.info(
                                     "Incremental index update progress: "  + count + " resources indexed of "
                                     + updateUris.size() + " total in current update batch.");
@@ -203,7 +210,7 @@ public class PropertySetIndexUpdater implements BeanNameAware,
                 }
                 
                 CountingPropertySetHandler handler = new CountingPropertySetHandler();
-                
+
                 this.indexDao.orderedPropertySetIterationForUris(updateUris, handler);
 
                 if (this.logger.isInfoEnabled()) {
@@ -231,6 +238,7 @@ public class PropertySetIndexUpdater implements BeanNameAware,
         }
     }
 
+    @Override
     public String getObserverId() {
         return this.beanName;
     }

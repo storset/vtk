@@ -59,6 +59,7 @@ public class ResourceChangeNotifierImpl implements ResourceChangeNotifier {
     /**
      * This method should be periodically called to poll for resource changes.
      */
+    @Override
     public synchronized void pollChanges() {
         
         try {
@@ -108,7 +109,7 @@ public class ResourceChangeNotifierImpl implements ResourceChangeNotifier {
                 // Remove changelog entries from DAO
                 this.changeLogDAO.removeChangeLogEntries(changes);
                 
-                if (this.observers.size() == 0 && this.logger.isDebugEnabled()) {
+                if (this.logger.isDebugEnabled() && this.observers.isEmpty()) {
                     this.logger.debug("Changelog contents discarded, no observers are registered.");
                 }
                 
@@ -127,6 +128,7 @@ public class ResourceChangeNotifierImpl implements ResourceChangeNotifier {
         }
     }
     
+    @Override
     public synchronized boolean registerObserver(ResourceChangeObserver observer) {
         if (this.observers.add(observer)) {
             this.logger.info("An observer with id '" + observer.getObserverId() + "' was registered.");
@@ -135,6 +137,7 @@ public class ResourceChangeNotifierImpl implements ResourceChangeNotifier {
         return false;
     }
     
+    @Override
     public synchronized boolean unregisterObserver(ResourceChangeObserver observer) {
         if (this.observers.remove(observer)) {
             this.logger.info("An observer with id '" + observer.getObserverId() + "' was removed.");

@@ -287,7 +287,7 @@ public abstract class AtomFeedController implements Controller {
     private Property getAuthor(PropertySet resource) {
         PropertyTypeDefinition authorPropDef = this.resourceTypeTree
                 .getPropertyDefinitionByPointer(this.authorPropDefPointer);
-        if (authorPropDef == null) {
+        if (authorPropDef != null) {
             Property author = resource.getProperty(authorPropDef);
             return author;
         }

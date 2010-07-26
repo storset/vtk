@@ -32,6 +32,7 @@ package org.vortikal.repository.resourcetype.property;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -72,11 +73,9 @@ public class PropertyValueConditionalEvaluator implements PropertyEvaluator {
 
     public void setConditionalValueEvaluatorMap(Map<String, PropertyEvaluator> conditionalValueEvaluatorMap) {
         this.conditionalValueEvaluatorMap = new HashMap<Pattern, PropertyEvaluator>();
-        for (String key: conditionalValueEvaluatorMap.keySet()) {
-            PropertyEvaluator evaluator = conditionalValueEvaluatorMap.get(key);
-            Pattern pattern = Pattern.compile(key, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-            this.conditionalValueEvaluatorMap.put(pattern, evaluator);
+        for (Entry<String, PropertyEvaluator> entry : conditionalValueEvaluatorMap.entrySet()) {
+            Pattern pattern = Pattern.compile(entry.getKey(), Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+            this.conditionalValueEvaluatorMap.put(pattern, entry.getValue());
         }
-
     }
 }

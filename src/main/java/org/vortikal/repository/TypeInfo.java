@@ -54,7 +54,7 @@ public final class TypeInfo {
     public PrimaryResourceTypeDefinition getResourceType() {
         return this.resourceTypeDefinition;
     }
-
+    
     /**
      * Determines whether this type is of a given resource type. 
      *
@@ -66,6 +66,20 @@ public final class TypeInfo {
      */
     public boolean isOfType(ResourceTypeDefinition type) {
         return this.resourceTypeTree.isContainedType(type, this.resourceTypeDefinition.getName());
+    }
+    
+    /**
+     * Determines whether this type is of a given resource type. 
+     *
+     * @param name the name of the resource type
+     * @return <code>true</code> if this type's definition is the
+     * same as or a descendant of the supplied resource type or the
+     * supplied definition is one of this type's mixin types,
+     * <code>false</code> otherwise.
+     */
+    public boolean isOfType(String name) {
+        ResourceTypeDefinition type = this.resourceTypeTree.getResourceTypeDefinitionByName(name);
+        return isOfType(type);
     }
     
     /**

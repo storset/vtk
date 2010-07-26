@@ -49,13 +49,13 @@
 <#-- MACROS: -->
 <#macro displayItem item >
   <#if item.menu?exists>
-    <a href="${item.url?html}">${item.label}</a>
+    <a href="${item.url?html}">${item.label?html}</a>
     <#if USE_TREE_VIEW>
        </span>
      </#if>
     <@displaySubMenu item.menu displaySubMenu />
   <#else>
-    <a href="${item.url?html}">${item.label}</a>
+    <a href="${item.url?html}">${item.label?html}</a>
   </#if>
 </#macro>
 

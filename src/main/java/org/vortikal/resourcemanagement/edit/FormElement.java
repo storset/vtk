@@ -96,15 +96,15 @@ public class FormElement {
     @SuppressWarnings("unchecked")
     public Object getFormatedValue() {
         if (value instanceof List) {
-            String result = "";
+            StringBuilder result = new StringBuilder();
             List<String> l = (List<String>) value;
             for (int i = 0; i < l.size(); i++) {
                 if (i > 0) {
-                    result += ", ";
+                    result.append(", ");
                 }
-                result += l.get(i);
+                result.append(l.get(i));
             }
-            return result;
+            return result.toString();
         }
         return value;
     }

@@ -44,6 +44,7 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
@@ -66,6 +67,7 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
     private PropertyTypeDefinition expiresPropDef;
     private int globalMaxAge = -1;
     private Service rootService;
+    private Set<String> excludedResourceTypes;
     
     public HttpServletResponse filter(HttpServletRequest request,
             HttpServletResponse response) {
@@ -93,11 +95,25 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
 
         try {
             Resource resource = this.repository.retrieve(token, uri, true);
+            if (this.excludedResourceTypes != null) {
+                TypeInfo typeInfo = this.repository.getTypeInfo(resource);
+                
+                for (String t: this.excludedResourceTypes) {
+                    if (typeInfo.isOfType(t)) {
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("Cache " + uri + ": not cacheable: type=" + t);
+                        }
+                        return response;
+                    }
+                }
+            }
             Property expiresProp = resource.getProperty(this.expiresPropDef);
             boolean anonymousReadable = 
                 this.repository.isAuthorized(resource, RepositoryAction.READ_PROCESSED, null);
             if (!anonymousReadable) {
-                logger.debug("Cache: " + uri + ": not cacheable: restricted");
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Cache: " + uri + ": not cacheable: restricted");
+                }
                 return response;
             }
 
@@ -113,7 +129,9 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
                 }
                 return new ExpiresResponseWrapper(response, this.globalMaxAge);
             }
-        } catch (Throwable t) { }
+        } catch (Throwable t) { 
+            System.out.println("__t: " + t);
+        }
         logger.debug("Cache: " + uri + ": not cacheable");
         return response;
     }
@@ -132,6 +150,10 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
 
     public void setGlobalMaxAge(int globalMaxAge) {
         this.globalMaxAge = globalMaxAge;
+    }
+    
+    public void setExcludedResourceTypes(Set<String> excludedResourceTypes) {
+        this.excludedResourceTypes = excludedResourceTypes;
     }
     
     private class ExpiresResponseWrapper extends HttpServletResponseWrapper {

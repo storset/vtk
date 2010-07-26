@@ -130,7 +130,6 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
                 return new ExpiresResponseWrapper(response, this.globalMaxAge);
             }
         } catch (Throwable t) { 
-            System.out.println("__t: " + t);
         }
         logger.debug("Cache: " + uri + ": not cacheable");
         return response;

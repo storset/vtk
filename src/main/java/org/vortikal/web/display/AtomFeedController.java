@@ -129,6 +129,7 @@ public abstract class AtomFeedController implements Controller {
         feed.addLink(viewService.constructLink(collection.getURI()), "alternate");
 
         feed.setTitle(feedTitle);
+        feed.addAuthor("");
 
         if (showIntroduction) {
             String subTitle = getIntroduction(collection);
@@ -207,8 +208,6 @@ public abstract class AtomFeedController implements Controller {
                 } else {
                     entry.addAuthor(author.getFormattedValue("name", null));
                 }
-            } else {
-                entry.addAuthor("");
             }
 
             Link link = abdera.getFactory().newLink();

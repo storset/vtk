@@ -87,6 +87,7 @@
           title=localizedTitle
           inputFieldName=elem.name 
           value=thumbnail
+          name=elem.value
           baseFolder=resourceContext.parentURI
           classes=elem.name 
           tooltip=form.resource.getLocalizedTooltip(elem.name, locale)

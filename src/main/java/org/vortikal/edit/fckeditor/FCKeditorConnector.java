@@ -258,8 +258,9 @@ public class FCKeditorConnector implements Controller {
 
             model.put("existed", existed);
             model.put("fileName", name);
-            model.put("fileURL", fileURL);
+            model.put("newFileName", fileURL.getPath().getName());
             model.put("error", existed ? 201 : 0);
+            
 
         } catch (AuthorizationException e) {
             model.put("error", 203);
@@ -297,7 +298,8 @@ public class FCKeditorConnector implements Controller {
             dot = ".";
             name = name.substring(0, name.lastIndexOf("."));
         }
-        Path newURI = base.extend(name);
+        Path newURI = base.extend(name + "(" + number + ")" + dot + extension);
+        number++;
         while (this.repository.exists(token, newURI)) {
             newURI = base.extend(name + "(" + number + ")" + dot + extension);
             number++;

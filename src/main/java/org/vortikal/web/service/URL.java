@@ -256,11 +256,11 @@ public class URL {
             for (Iterator<String> j = values.iterator(); j.hasNext();) {
                 String val = j.next();
                 val = encode(val);
-//                if ("".equals(val)) {
-//                    qs.append(encodedParam);
-//                } else {
+                if ("".equals(val)) {
+                    qs.append(encodedParam);
+                } else {
                     qs.append(encodedParam).append("=").append(val);    
-//                }
+                }
                 if (j.hasNext()) {
                     qs.append("&");
                 }

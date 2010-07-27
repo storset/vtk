@@ -75,23 +75,37 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
 
-        if (!requestContext.isInRepository()) {
+        Path uri = requestContext.getResourceURI();
+        
+        if (securityContext.getPrincipal() != null) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Cache " + uri + ": not cacheable: principal!=null");
+            }
             return response;
         }
 
         Service service = requestContext.getService();
         if (!service.isDescendantOf(this.rootService)) {
+            if (!requestContext.isInRepository()) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Cache " + uri + ": not cacheable: service=" + service.getName());
+                }
+                return response;
+            }
+            
             return response;
         }
         
         boolean hasIndexFile = requestContext.getIndexFileURI() != null 
             && !requestContext.isIndexFile();
         if (hasIndexFile) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Cache " + uri + ": not cacheable: indexfile");
+            }
             return response;
         }
         
         String token = securityContext.getToken();
-        Path uri = requestContext.getResourceURI();
 
         try {
             Resource resource = this.repository.retrieve(token, uri, true);

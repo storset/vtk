@@ -83,6 +83,9 @@
         <Style name="Img &amp; capt left (200px)" element="div">
                 <Attribute name="class" value="vrtx-container vrtx-container-size-xxs vrtx-container-left" />
         </Style>
+        <Style name="Img &amp; capt center (full)" element="div">
+                <Attribute name="class" value="vrtx-container vrtx-container-size-full vrtx-container-middle" />
+        </Style>
         <Style name="Img &amp; capt center (800px)" element="div">
                 <Attribute name="class" value="vrtx-container vrtx-container-size-xxl vrtx-container-middle" />
         </Style>

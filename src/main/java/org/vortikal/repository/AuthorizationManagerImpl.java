@@ -195,7 +195,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
 
         ResourceImpl resource = loadResource(uri);
         
-        this.lockManager.lockAuthorize(resource, principal, false);
+        this.lockManager.lockAuthorize(resource, principal);
         
         if (this.roleManager.hasRole(principal, RoleManager.ROOT))
             return;
@@ -224,7 +224,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
 
         ResourceImpl resource = loadResource(uri);
         
-        this.lockManager.lockAuthorize(resource, principal, false);
+        this.lockManager.lockAuthorize(resource, principal);
 
         if (this.roleManager.hasRole(principal, RoleManager.ROOT))
             return;
@@ -252,7 +252,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
 
         ResourceImpl resource = loadResource(uri);
         
-        this.lockManager.lockAuthorize(resource, principal, false);
+        this.lockManager.lockAuthorize(resource, principal);
 
         if (this.roleManager.hasRole(principal, RoleManager.ROOT))
             return;
@@ -282,7 +282,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
 
         ResourceImpl resource = loadResource(uri);
         
-        this.lockManager.lockAuthorize(resource, principal, false);
+        this.lockManager.lockAuthorize(resource, principal);
 
         if (this.roleManager.hasRole(principal, RoleManager.ROOT))
             return;
@@ -314,7 +314,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
         
         ResourceImpl resource = loadResource(uri);
         
-        this.lockManager.lockAuthorize(resource, principal, false);
+        this.lockManager.lockAuthorize(resource, principal);
         
         if (this.roleManager.hasRole(principal, RoleManager.ROOT))
             return;
@@ -348,7 +348,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
         
         ResourceImpl resource = loadResource(uri);
         
-        this.lockManager.lockAuthorize(resource, principal, false);
+        this.lockManager.lockAuthorize(resource, principal);
 
         aclAuthorize(principal, resource, UNLOCK_AUTH_PRIVILEGES);
     }
@@ -374,27 +374,25 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
 
         checkReadOnly(principal);
 
-        Resource resource = loadResource(uri);
-        
-        this.lockManager.lockAuthorize(resource, principal, true);
-        
         if (uri.isRoot()) {
             // Not allowed to delete root resource.
             // Avoid sending null as Path to DAO layer (uri.getParent() below ..),
             // which results in a NullPointerException in Cache, hidden by catch(Exception) below.
-            throw new AuthorizationException();
+            throw new AuthorizationException("Not allowed to delete root resource");
         }
         
+        Resource resource = loadResource(uri);
+
+        // Delete is authorized if either of these conditions hold:
         try {
+            // 1. Principal has write permission on the parent resource, or
             authorizeWrite(uri.getParent(), principal);
             return;
-        } catch (Exception e) {
-            aclAuthorize(principal, resource, DELETE_AUTH_PRIVILEGES);
-            // Kanskje "unlink"?
-            // Continue..          <--- XXX: Missing explanation for this. Some comments would be nice. 
+        } catch (AuthorizationException e) {
+            // Continue to #2
         }
-
-        
+        // 2. Principal has delete permission directly on the resource itself
+        aclAuthorize(principal, resource, DELETE_AUTH_PRIVILEGES);
     }
     
 

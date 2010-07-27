@@ -50,20 +50,9 @@ public class LockManager {
 
     private DataAccessor dao;
 
-    public void lockAuthorize(Resource resource, Principal principal,
-            boolean deep) throws ResourceLockedException, IOException,
+    public void lockAuthorize(Resource resource, Principal principal) throws ResourceLockedException, IOException,
             AuthenticationException {
-
         lockAuthorize(resource.getLock(), principal);
-
-        if (resource.isCollection() && deep) {
-            Path[] uris = this.dao.discoverLocks(resource.getURI());
-
-            for (int i = 0; i < uris.length; i++) {
-                Resource ancestor = this.dao.load(uris[i]);
-                lockAuthorize(ancestor.getLock(), principal);
-            }
-        }
     }
 
     public String lockResource(ResourceImpl resource, Principal principal,

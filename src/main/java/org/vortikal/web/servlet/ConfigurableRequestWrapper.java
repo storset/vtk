@@ -388,8 +388,13 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
     private Cookie[] filterAnonymousCookies() {
         List<Cookie> result = new ArrayList<Cookie>();
         Cookie[] cookies = super.getCookies();
+        String sessionID = null;
+        HttpSession session = super.getSession(false);
+        if (session != null) {
+            sessionID = session.getId();
+        }
         for (Cookie cookie: cookies) {
-            if ("JSESSIONID".equalsIgnoreCase(cookie.getName())) {
+            if (sessionID != null && sessionID.equalsIgnoreCase(cookie.getName())) {
                 continue;
             }
             result.add(cookie);

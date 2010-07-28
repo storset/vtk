@@ -31,7 +31,6 @@
 package org.vortikal.web.display.thumbnail;
 
 
-import java.io.OutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -54,9 +53,9 @@ import org.vortikal.web.RequestContext;
 
 public class DisplayThumbnailController implements Controller, LastModified {
 	
-	private static final Logger log = Logger.getLogger(DisplayThumbnailController.class);
+    private static final Logger log = Logger.getLogger(DisplayThumbnailController.class);
 	
-	private Repository repository;
+    private Repository repository;
 
     @Override
     public long getLastModified(HttpServletRequest request) {
@@ -74,20 +73,20 @@ public class DisplayThumbnailController implements Controller, LastModified {
 
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		
-		String token = SecurityContext.getSecurityContext().getToken();
+
+        String token = SecurityContext.getSecurityContext().getToken();
         Path uri = RequestContext.getRequestContext().getResourceURI();
 
         Resource image = this.repository.retrieve(token, uri, true);
         Property thumbnail = image.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.THUMBNAIL_PROP_NAME);
-        
+
         if (thumbnail == null || StringUtils.isBlank(thumbnail.getBinaryMimeType())) {
             if (log.isDebugEnabled()) {
                 String detailedMessage = thumbnail == null ? "no thumbnail found (null)" : "no mimetype set";
                 log.debug("Cannot display thumbnail for image: " + uri + ", " + detailedMessage);
             }
-        	response.sendRedirect(uri.toString());
-        	return null;
+            response.sendRedirect(uri.toString());
+            return null;
         }
 
         ContentStream binaryStream = thumbnail.getBinaryStream();
@@ -95,13 +94,14 @@ public class DisplayThumbnailController implements Controller, LastModified {
         response.setContentType(mimetype);
         int length = (int) binaryStream.getLength();
         response.setContentLength(length);
+
         StreamUtil.pipe(binaryStream.getStream(), response.getOutputStream(), length, true);
 
-		return null;
-	}
+        return null;
+    }
 
-	@Required
-	public void setRepository(Repository repository) {
-		this.repository = repository;
-	}
+    @Required
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
 }

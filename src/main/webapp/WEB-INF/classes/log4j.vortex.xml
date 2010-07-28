@@ -30,23 +30,28 @@
   <logger name="org.vortikal.aop"><level value="info" /></logger>
   <logger name="org.vortikal.edit"><level value="info" /></logger>
   <logger name="org.vortikal.repository"><level value="info" /></logger>
+  <logger name="org.vortikal.repository.RepositoryImpl.Search"><level value="info" /></logger>
   <logger name="org.vortikal.repository.OperationLog"><level value="info" /></logger>
   <logger name="org.vortikal.repository.ChangeHistoryLog"><level value="debug" /></logger>
   <logger name="org.vortikal.repository.store.db.SqlMapIndexDao"><level value="info" /></logger>
   <logger name="org.vortikal.repository.search.SearcherImpl"><level value="info" /></logger>
-
+  <logger name="org.vortikal.repository.RepositoryResourceHelperImpl"><level value="info" /></logger>
+  <logger name="org.vortikal.web.filter.ExpiresCacheResponseFilter"><level value="info" /></logger>
   <logger name="org.vortikal.util.cache"><level value="info" /></logger>
   <logger name="org.vortikal.security"><level value="info" /></logger>
+  <logger name="org.vortikal.security.web.saml"><level value="info" /></logger>
   <logger name="org.vortikal.shell"><level value="info" /></logger>
   <logger name="org.vortikal.web"><level value="info" /></logger>
+  <logger name="org.vortikal.web.RequestContextInitializer"><level value="info" /></logger>
   <logger name="org.vortikal.web.RequestLocalRepository"><level value="info" /></logger>
   <logger name="org.vortikal.webdav"><level value="info" /></logger>
+
+  <logger name="org.vortikal.web.decorating"><level value="info" /></logger>
 
   <logger name="freemarker"><level value="fatal" /></logger>
   <logger name="org.springframework"><level value="warn" /></logger>
   <logger name="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"><level value="info" /></logger>
 
-  <logger name="com.ibatis"><level value="info" /></logger>
   <logger name="java.sql"><level value="info" /></logger>
   <logger name="org.apache.commons.dbcp"><level value="info" /></logger>
   

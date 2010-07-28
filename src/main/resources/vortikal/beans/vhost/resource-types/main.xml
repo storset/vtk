@@ -58,7 +58,7 @@
   <import resource="portal.xml" />
   
   <!-- Romskjema -->
-  <import resource="romskjema.xml" />
+  <import resource="deprecated/romskjema.xml" />
 
   <!-- MUV -->
   <import resource="muv-artikkel.xml" />

@@ -1,7 +1,7 @@
 To set up a minimal version of the Vortikal server the following steps
 are necessary:
 
-1. Download and install Maven 2 (2.0.9)
+1. Download and install Maven 2
    ( http://maven.apache.org/download.html )
 
 2. Create a database using the DDL in the
@@ -33,13 +33,12 @@ are necessary:
    descriptions of the various configuration settings.
 
 7. Custom bean definitions and overriding can be placed in the file
-   ~/vrtx-context.xml (loaded if it exists).
+   ~/.vrtx-context.xml (loaded if it exists).
 
 8. Serving static resources from the file system: add an entry to the
-   ~/vrtx-context.xml file:
+   ~/.vrtx-context.xml file:
 
   <bean class="org.vortikal.web.StaticResourceLocation">
     <property name="uriPrefix" value="/my/uri/prefix" />
     <property name="resourceLocation" value="file:///my/file/path" />
   </bean>
-

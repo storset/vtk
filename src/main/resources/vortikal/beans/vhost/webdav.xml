@@ -415,6 +415,7 @@
   <bean id="webdavLockHandler" class="org.vortikal.webdav.LockController"
         parent="repositoryAware">
     <property name="supportIfHeaders" value="${webdavSupportIfHeaders}" />
+    <property name="deniedFileNames" ref="webdav.deniedFileNamePatterns" />
   </bean>
 
   <bean id="webdavUnlockHandler" class="org.vortikal.webdav.UnlockController"

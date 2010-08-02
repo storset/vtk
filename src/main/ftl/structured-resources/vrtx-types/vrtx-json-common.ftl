@@ -297,13 +297,19 @@
       classes=""  />
     <#break>
   <#case "image_ref">
+    <#local thumbnail = '' />
+    <#if elem.value?exists >
+    		<#local thumbnail = vrtx.linkConstructor(value, 'displayThumbnailService') />
+    </#if>
     <@vrtxImageRef.printPropertyEditView 
       title=jsonAttr
       inputFieldName=tmpName
-      value=value 
+      value=thumbnail
+      name=value 
       baseFolder=resourceContext.parentURI
       classes="" />
     <#break>
+    
   <#case "media_ref">
     <@vrtxMediaRef.printPropertyEditView 
       title=jsonAttr

@@ -385,6 +385,12 @@ ul.tabMenu2 li.moveResourcesService {
   padding-bottom: 1px;
 }
 
+ul.tabMenu2 li.deleteResourcesService {
+  background: transparent url(icons/delete.png) no-repeat 0px 2px;
+  padding-top: 4px; /* Taller icon*/
+  padding-bottom: 1px;
+}
+
 ul.tabMenu2 li.copyResourcesService {
   background: transparent url(icons/copy.png) no-repeat 0px 2px;
   padding-top: 4px; /* Taller icon*/
@@ -394,7 +400,7 @@ ul.tabMenu2 li.copyResourcesService {
 ul.tabMenu2 li.createCollectionService {
   background: transparent url(icons/nymappe.gif) no-repeat 0px -2px;
 }
-
+ul.tabMenu2 li.deleteResourcesService a,
 ul.tabMenu2 li.fileUploadService a,
 ul.tabMenu2 li.createDocumentService a
   { /* Move link text 22px right (away from the icon) */

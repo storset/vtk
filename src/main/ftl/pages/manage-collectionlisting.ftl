@@ -23,10 +23,11 @@
 <body id="vrtx-manage-collectionlisting">
   <#assign copyTitle = vrtx.getMsg("tabMenu2.copyResourcesService") />
   <#assign moveTitle = vrtx.getMsg("tabMenu2.moveResourcesService") />
+  <#assign deleteTitle = vrtx.getMsg("tabMenu2.deleteResourcesService") />
 
   <@col.listCollection
      withForm=true
      action=action.submitURL?string
-     submitActions={"copy-resources":copyTitle, "move-resources":moveTitle}/>
+     submitActions={"copy-resources":copyTitle, "move-resources":moveTitle,"delete-resources":deleteTitle}/>
 </body>
 </html>

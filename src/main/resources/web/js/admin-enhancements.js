@@ -17,38 +17,31 @@ function enableInput() {
 }
 
 /*
-// Used by copyResourceService available from "manageCollectionListingService"
-
-
-function copyMoveAction(action) {
-    copyMoveAction(action, 'DEPRECATED: Du må markere minst ett element for flytting eller kopiering');
-}
-
-function copyMoveAction(action, unCheckedMessage) {
- // document.collectionListingForm.target = "_blank";
- document.collectionListingForm.action = action;
-
- var checked = false;
-
- for (var e = 0; e < document.collectionListingForm.elements.length; e++) {
-    if (document.collectionListingForm.elements[e].type == 'checkbox' && document.collectionListingForm.elements[e].checked) {
-       checked = true;
-    }
- }
-
- if (checked) {
-   document.collectionListingForm.submit();
- } else {
-   alert(unCheckedMessage);
- }
-
-}
-*/
+ * // Used by copyResourceService available from
+ * "manageCollectionListingService"
+ * 
+ * 
+ * function copyMoveAction(action) { copyMoveAction(action, 'DEPRECATED: Du må
+ * markere minst ett element for flytting eller kopiering'); }
+ * 
+ * function copyMoveAction(action, unCheckedMessage) { //
+ * document.collectionListingForm.target = "_blank";
+ * document.collectionListingForm.action = action;
+ * 
+ * var checked = false;
+ * 
+ * for (var e = 0; e < document.collectionListingForm.elements.length; e++) { if
+ * (document.collectionListingForm.elements[e].type == 'checkbox' &&
+ * document.collectionListingForm.elements[e].checked) { checked = true; } }
+ * 
+ * if (checked) { document.collectionListingForm.submit(); } else {
+ * alert(unCheckedMessage); } }
+ */
 
 function interceptEnterKey() {
 	$("form").bind("keypress", function(e) {
             if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
-               return false; //cancel the default browser click
+               return false; // cancel the default browser click
            }
       });
 }
@@ -56,8 +49,8 @@ function interceptEnterKey() {
 function interceptEnterKeyAndReroute(txt, btn) {
 	$("form " + txt).bind("keypress", function(e) {
             if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
-              $(btn).click(); //click the associated button
-              return false; //cancel the default browser click
+              $(btn).click(); // click the associated button
+              return false; // cancel the default browser click
            }
       });
 }
@@ -151,6 +144,33 @@ function placeCopyButtonInActiveTab() {
     });
 }
 
+function placeDeleteButtonInActiveTab() {
+    var btn = $('#collectionListing\\.action\\.delete-resources');
+    btn.hide();
+    var li = $('li.deleteResourcesService');
+    li.html('<a id="deleteResourceService" href="javascript:void(0);">' + btn.attr('title') + '</a>');
+    $('#deleteResourceService').click(function() {
+        var boxes = $('form[name=collectionListingForm] input[type=checkbox]:checked');
+        
+        if (boxes.size() == 0) {
+            alert(deleteUncheckedMessage);
+        } else {
+            var list = new String("");
+            for(i = 0; i < boxes.size() && i < 10;i++){
+                list += boxes[i].name + '\n';
+            }
+            if(boxes.size() > 10){
+                list += "...";
+            }
+            if(confirm(confirmDelete.replace("(1)",boxes.size()) + '\n\n' +  list)){
+                $('#collectionListing\\.action\\.delete-resources').click();
+            }
+        }
+        return false;
+    });
+}
+
+
 function unlockButtonAsLink() {
     var btn = $('#vrtx-unlock-resource-form\\.submit');
     if (btn.size() == 0) {
@@ -202,6 +222,7 @@ $(document).ready(logoutButtonAsLink);
 $(document).ready(copyMoveButtonsAsLinks);
 $(document).ready(placeMoveButtonInActiveTab);
 $(document).ready(placeCopyButtonInActiveTab);
+$(document).ready(placeDeleteButtonInActiveTab);
 $(document).ready(unlockButtonAsLink);
 $(document).ready(toggleAclInheritanceButtonAsLink);
 $(document).ready(takeOwnershipButtonAsLink);

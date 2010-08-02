@@ -2,7 +2,6 @@
 <#macro displayPersons personListing title="">
   <#local persons=personListing.files />
   <#if (persons?size > 0)>
-  <!--stopindex-->
   <table class="vrtx-person-listing" summary="${vrtx.getMsg("person-listing.overview-of")} ${title?html}">
     <#if numberOfRecords?exists>
     <caption>
@@ -94,6 +93,5 @@
     </#list>
     </tbody>
   </table>
-  <!--startindex-->
   </#if>
 </#macro>

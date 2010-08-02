@@ -161,7 +161,7 @@
      </#if>
 
      <#-- List resources: -->
-
+  	 <!--stopindex-->
      <#if collection.resourceType = 'event-listing'>
        <@events.displayEvents collection=collection hideNumberOfComments=hideNumberOfComments displayMoreURLs=true />
      <#elseif searchComponents?has_content>
@@ -216,6 +216,7 @@
      <#if isEventCalendarListing>
        </div>
     </#if>
+    <!--startindex-->
   </body>
 </html>
 

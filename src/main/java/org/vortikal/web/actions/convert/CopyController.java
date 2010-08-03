@@ -45,25 +45,19 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
-public class CopyController extends SimpleFormController {
+public abstract class CopyController extends SimpleFormController {
 
     private String cancelView;
-
-    private CopyAction copyAction;
-    private Repository repository = null;
+    private Repository repository;
     private String extension;
     private String resourceName;
+    private boolean parentViewOnSuccess;
 
-    private boolean parentViewOnSuccess = false;
+    protected CopyAction copyAction;
 
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
+    protected abstract void processCopyAction(Path originalUri, Path copyUri, CopyCommand copyCommand) throws Exception;
 
-    public void setResourceName(String resourceName) {
-        this.resourceName = resourceName;
-    }
+    protected abstract Object createCommand(String name, String url);
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -83,8 +77,7 @@ public class CopyController extends SimpleFormController {
         if (this.resourceName != null)
             name = this.resourceName;
 
-        CopyCommand command = new CopyCommand(name, url);
-        return command;
+        return this.createCommand(name, url);
     }
 
     protected ModelAndView onSubmit(Object command) throws Exception {
@@ -107,19 +100,10 @@ public class CopyController extends SimpleFormController {
         if (copyToCollection == null)
             copyToCollection = Path.fromString("/");
         Path copyUri = copyToCollection.extend(copyCommand.getName());
-        // HACK VTK-1712
-        if (this.copyAction instanceof CreateArchiveAction) {
-            CreateArchiveAction archiveAction = (CreateArchiveAction) this.copyAction;
-            archiveAction.setIgnorableResources(copyCommand.getIgnorableResources());
-            archiveAction.process(uri, copyUri);
-        } else if (this.copyAction instanceof ExpandArchiveAction) {
-            ExpandArchiveAction archiveAction = (ExpandArchiveAction) this.copyAction;
-            archiveAction.setIgnorableResources(copyCommand.getIgnorableResources());
-            archiveAction.process(uri, copyUri);
-        } else {
-        // END HACK
-            this.copyAction.process(uri, copyUri);
-        }
+
+        // perform the actual copy action
+        this.processCopyAction(uri, copyUri, copyCommand);
+
         copyCommand.setDone(true);
 
         Resource resource = null;
@@ -134,13 +118,22 @@ public class CopyController extends SimpleFormController {
         return new ModelAndView(getSuccessView(), model);
     }
 
-    public void setCancelView(String cancelView) {
-        this.cancelView = cancelView;
+    @Required
+    public void setRepository(Repository repository) {
+        this.repository = repository;
     }
 
     @Required
     public void setCopyAction(CopyAction copyAction) {
         this.copyAction = copyAction;
+    }
+
+    public void setCancelView(String cancelView) {
+        this.cancelView = cancelView;
+    }
+
+    public void setResourceName(String resourceName) {
+        this.resourceName = resourceName;
     }
 
     public void setExtension(String extension) {

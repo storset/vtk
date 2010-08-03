@@ -31,6 +31,7 @@
 package org.vortikal.web.actions.convert;
 
 import java.io.InputStream;
+import java.util.Map;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
@@ -45,7 +46,7 @@ public class SimpleFilteringCopyAction implements CopyAction, InitializingBean {
     private Repository repository;
     private Filter filter;
 
-    public void process(Path originalUri, Path copyUri) throws Exception{
+    public void process(Path originalUri, Path copyUri, Map<String, Object> properties) throws Exception {
         String token = SecurityContext.getSecurityContext().getToken();
 
         this.repository.copy(token, originalUri, copyUri, Depth.ZERO, false, true);
@@ -80,8 +81,7 @@ public class SimpleFilteringCopyAction implements CopyAction, InitializingBean {
 
     public void afterPropertiesSet() throws Exception {
         if (this.repository == null)
-            throw new BeanInitializationException(
-                    "Required Java Bean Property 'repository' not set");
+            throw new BeanInitializationException("Required Java Bean Property 'repository' not set");
     }
 
 }

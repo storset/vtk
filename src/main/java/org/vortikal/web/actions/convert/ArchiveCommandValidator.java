@@ -30,23 +30,12 @@
  */
 package org.vortikal.web.actions.convert;
 
-import org.vortikal.web.actions.UpdateCancelCommand;
+public class ArchiveCommandValidator extends CopyResourceCommandValidator {
 
-public class CopyCommand extends UpdateCancelCommand {
-
-    private String name;
-
-    public CopyCommand(String name, String submitURL) {
-        super(submitURL);
-        this.name = name;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    @Override
+    @SuppressWarnings("unchecked")
+    protected boolean supportsClass(Class clazz) {
+        return clazz == ArchiveCommand.class;
     }
 
 }

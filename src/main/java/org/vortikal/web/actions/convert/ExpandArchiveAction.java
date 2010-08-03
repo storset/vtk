@@ -31,6 +31,7 @@
 package org.vortikal.web.actions.convert;
 
 import java.io.InputStream;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,14 +49,7 @@ public class ExpandArchiveAction implements CopyAction {
     private Repository repository;
     private ResourceArchiver archiver;
 
-    // HACK VTK-1712
-    private String ignorableResources;
-    public void setIgnorableResources(String ignorableResources) {
-        this.ignorableResources = ignorableResources;
-    }
-    // END HACK
-
-    public void process(Path uri, Path copyUri) throws Exception {
+    public void process(Path uri, Path copyUri, Map<String, Object> properties) throws Exception {
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
@@ -67,7 +61,7 @@ public class ExpandArchiveAction implements CopyAction {
             throw new RuntimeException("Cannot unzip a collection");
         }
         InputStream source = this.repository.getInputStream(token, uri, false);
-        this.archiver.expandArchive(token, source, copyUri, this.ignorableResources);
+        this.archiver.expandArchive(token, source, copyUri, properties);
 
         logger.info("Done expanding archive '" + uri + "' to '" + copyUri.toString() + "'");
 

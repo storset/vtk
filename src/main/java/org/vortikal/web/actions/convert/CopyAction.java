@@ -30,10 +30,21 @@
  */
 package org.vortikal.web.actions.convert;
 
+import java.util.Map;
+
 import org.vortikal.repository.Path;
 
 public interface CopyAction {
 
-    public void process(Path originalUri, Path copyUri) throws Exception;
+    /**
+     * @param originalUri
+     *            Path to resource to copy from
+     * @param copyUri
+     *            Path to location to copy to
+     * @param properties
+     *            Special properties to consider/process during copy
+     * @throws Exception
+     */
+    public void process(Path originalUri, Path copyUri, Map<String, Object> properties) throws Exception;
 
 }

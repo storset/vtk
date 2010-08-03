@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -53,14 +54,7 @@ public class CreateArchiveAction implements CopyAction {
     private File tempDir = new File(System.getProperty("java.io.tmpdir"));
     private ResourceArchiver archiver;
 
-    // HACK VTK-1712
-    private String ignorableResources;
-    public void setIgnorableResources(String ignorableResources) {
-        this.ignorableResources = ignorableResources;
-    }
-    // END HACK
-
-    public void process(Path uri, Path copyUri) throws Exception {
+    public void process(Path uri, Path copyUri, Map<String, Object> properties) throws Exception {
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
@@ -73,14 +67,14 @@ public class CreateArchiveAction implements CopyAction {
         FileOutputStream out = new FileOutputStream(outFile);
         BufferedOutputStream bo = new BufferedOutputStream(out);
         try {
-            this.archiver.createArchive(token, resource, bo, this.ignorableResources);
+            this.archiver.createArchive(token, resource, bo, properties);
             logger.info("Storing archive contents to '" + copyUri + "'");
             InputStream in = new FileInputStream(outFile);
             Resource dest = this.repository.createDocument(token, copyUri, in);
             if (!dest.isReadRestricted()) {
                 logger.warn("The destination '" + copyUri + "' is open for access to all!");
             }
-            //this.repository.storeContent(token, dest.getURI(), in);
+            // this.repository.storeContent(token, dest.getURI(), in);
             logger.info("Done storing archive to '" + copyUri + "'");
 
         } finally {

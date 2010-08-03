@@ -32,41 +32,31 @@ package org.vortikal.web.actions.convert;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.web.RequestContext;
 
-public class CopyCommandValidator implements Validator, InitializingBean {
+public abstract class CopyCommandValidator implements Validator {
 
     private static Log logger = LogFactory.getLog(CopyCommandValidator.class);
 
-    private Repository repository = null;
+    protected Repository repository;
 
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
+    @SuppressWarnings("unchecked")
+    protected abstract boolean supportsClass(Class clazz);
 
-    public void afterPropertiesSet() throws Exception {
-        if (repository == null) {
-            throw new BeanInitializationException("Property 'repository' cannot be null");
-        }
-    }
+    protected abstract Path getCopyToURI(String name);
 
     @SuppressWarnings("unchecked")
     public boolean supports(Class clazz) {
-        return (clazz == CopyCommand.class);
+        return this.supportsClass(clazz);
     }
 
     public void validate(Object command, Errors errors) {
-        RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
-
-        Path parentCollection = requestContext.getCurrentCollection();
         String token = securityContext.getToken();
 
         CopyCommand copyCommand = (CopyCommand) command;
@@ -79,7 +69,7 @@ public class CopyCommandValidator implements Validator, InitializingBean {
             copyCommand.setName("");
         }
 
-        Path newURI = parentCollection.extend(name);
+        Path newURI = this.getCopyToURI(name);
 
         try {
             boolean exists = repository.exists(token, newURI);
@@ -90,6 +80,11 @@ public class CopyCommandValidator implements Validator, InitializingBean {
         } catch (Exception e) {
             logger.warn("Unable to validate resource rename input", e);
         }
+    }
+
+    @Required
+    public void setRepository(Repository repository) {
+        this.repository = repository;
     }
 
 }

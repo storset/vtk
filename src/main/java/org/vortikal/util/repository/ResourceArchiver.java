@@ -97,19 +97,17 @@ public class ResourceArchiver {
         public void warn(Path uri, String msg);
     }
 
-    public void createArchive(String token, Resource r, OutputStream out, String ignorableResources) throws Exception {
-        createArchive(token, r, out, ignorableResources, null);
+    public void createArchive(String token, Resource r, OutputStream out, Map<String, Object> properties)
+            throws Exception {
+        createArchive(token, r, out, properties, null);
     }
 
-    public void createArchive(String token, Resource r, OutputStream out, String ignorableResources,
+    public void createArchive(String token, Resource r, OutputStream out, Map<String, Object> properties,
             EventListener listener) throws Exception {
 
-        // HACK VTK-1712
-        List<String> ignoreList = getIgnoreList(ignorableResources);
-        // END HACK
+        List<String> ignoreList = this.getIgnoreList(properties);
 
         logger.info("Creating archive '" + r.getURI() + "'");
-        this.logIgnoredResources(ignoreList);
 
         try {
             int rootLevel = r.getURI().getDepth() + 1;
@@ -138,18 +136,15 @@ public class ResourceArchiver {
         logger.info("Done creating archive '" + r.getURI() + "'");
     }
 
-    public void expandArchive(String token, InputStream source, Path base, String ignorableResources) throws Exception {
-        expandArchive(token, source, base, ignorableResources, null);
+    public void expandArchive(String token, InputStream source, Path base, Map<String, Object> properties)
+            throws Exception {
+        expandArchive(token, source, base, properties, null);
     }
 
-    public void expandArchive(String token, InputStream source, Path base, String ignorableResources,
+    public void expandArchive(String token, InputStream source, Path base, Map<String, Object> properties,
             EventListener listener) throws Exception {
 
-        // HACK VTK-1712
-        List<String> ignoreList = getIgnoreList(ignorableResources);
-        // END HACK
-
-        this.logIgnoredResources(ignoreList);
+        List<String> ignoreList = this.getIgnoreList(properties);
 
         JarInputStream jarIn = new JarInputStream(new BufferedInputStream(source));
         Manifest manifest = jarIn.getManifest();
@@ -555,9 +550,11 @@ public class ResourceArchiver {
         if (aclModified) {
             // XXX: Repository API not "friendly" to special clients like
             // resource archiver/expander wrt. ACL modifications. One shouldn't
-            // have to call storeACL twice. And don't validate acl when writing acl
-            // to db, add it the same way it was 
-            this.repository.storeACL(token, resource, false); // Switch inheritance off
+            // have to call storeACL twice. And don't validate acl when writing
+            // acl
+            // to db, add it the same way it was
+            this.repository.storeACL(token, resource, false); // Switch
+            // inheritance off
             this.repository.storeACL(token, resource, false); // Store new ACL
         }
     }
@@ -795,18 +792,12 @@ public class ResourceArchiver {
         this.principalFactory = principalFactory;
     }
 
-    // HACK VTK-1712
-    private List<String> getIgnoreList(String ignorableResources) {
+    @SuppressWarnings("unchecked")
+    private List<String> getIgnoreList(Map<String, Object> properties) {
         List<String> ignoreList = null;
-        if (ignorableResources != null) {
-            ignoreList = new ArrayList<String>();
-            String[] ss = ignorableResources.split(",");
-            for (String s : ss) {
-                s = s.trim();
-                if (!"".equals(s)) {
-                    ignoreList.add(s);
-                }
-            }
+        if (properties != null) {
+            ignoreList = (List<String>) properties.get("ignore");
+            this.logIgnoredResources(ignoreList);
         }
         return ignoreList;
     }
@@ -837,6 +828,5 @@ public class ResourceArchiver {
             logger.info(ignored);
         }
     }
-    // END HACK
 
 }

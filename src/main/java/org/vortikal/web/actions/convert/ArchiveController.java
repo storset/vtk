@@ -30,23 +30,43 @@
  */
 package org.vortikal.web.actions.convert;
 
-import org.vortikal.web.actions.UpdateCancelCommand;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class CopyCommand extends UpdateCancelCommand {
+import org.vortikal.repository.Path;
 
-    private String name;
+public class ArchiveController extends CopyController {
 
-    public CopyCommand(String name, String submitURL) {
-        super(submitURL);
-        this.name = name;
+    @Override
+    protected Object createCommand(String name, String url) {
+        return new ArchiveCommand(name, url);
     }
 
-    public String getName() {
-        return this.name;
+    @Override
+    protected void processCopyAction(Path originalUri, Path copyUri, CopyCommand copyCommand) throws Exception {
+        ArchiveCommand archiveCommand = (ArchiveCommand) copyCommand;
+        Map<String, Object> properties = null;
+        String ignorableResources = archiveCommand.getIgnorableResources();
+        if (ignorableResources != null) {
+            properties = new HashMap<String, Object>();
+            properties.put("ignore", this.getIgnoreList(ignorableResources));
+        }
+
+        this.copyAction.process(originalUri, copyUri, properties);
     }
 
-    public void setName(String name) {
-        this.name = name;
+    private List<String> getIgnoreList(String ignorableResources) {
+        List<String> ignoreList = new ArrayList<String>();
+        String[] ss = ignorableResources.split(",");
+        for (String s : ss) {
+            s = s.trim();
+            if (!"".equals(s)) {
+                ignoreList.add(s);
+            }
+        }
+        return ignoreList;
     }
 
 }

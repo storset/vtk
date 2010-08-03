@@ -30,23 +30,16 @@
  */
 package org.vortikal.web.actions.convert;
 
-import org.vortikal.web.actions.UpdateCancelCommand;
+import org.vortikal.repository.Path;
 
-public class CopyCommand extends UpdateCancelCommand {
+public class CreateArchiveCommandValidator extends ArchiveCommandValidator {
 
-    private String name;
-
-    public CopyCommand(String name, String submitURL) {
-        super(submitURL);
-        this.name = name;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    @Override
+    protected Path getCopyToURI(String name) {
+        if (name.startsWith("/")) {
+            return Path.fromString(name);
+        }
+        return Path.ROOT.extend(name);
     }
 
 }

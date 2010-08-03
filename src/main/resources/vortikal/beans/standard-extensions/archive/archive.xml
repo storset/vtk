@@ -34,7 +34,7 @@
   </bean>
   
   <bean id="manage.createArchiveHandler"
-        class="org.vortikal.web.actions.convert.CopyController"
+        class="org.vortikal.web.actions.convert.ArchiveController"
         parent="repositoryAware">
     <property name="extension" value=".jar" />
     <property name="parentViewOnSuccess" value="true" />
@@ -43,10 +43,10 @@
     <property name="successView" value="redirectToManage" />
     <property name="cancelView" value="redirectToManage" />
     <property name="commandClass"
-              value="org.vortikal.web.actions.convert.CopyCommand" />
+              value="org.vortikal.web.actions.convert.ArchiveCommand" />
     <property name="validator">
       <bean
-          class="org.vortikal.web.actions.convert.CopyCommandValidator"
+          class="org.vortikal.web.actions.convert.CreateArchiveCommandValidator"
           parent="repositoryAware" />
     </property>
   </bean>
@@ -90,7 +90,7 @@
   </bean>
   
   <bean id="manage.expandArchiveHandler"
-        class="org.vortikal.web.actions.convert.CopyController"
+        class="org.vortikal.web.actions.convert.ArchiveController"
         parent="repositoryAware">
     <property name="parentViewOnSuccess" value="true" />
     <property name="copyAction" ref="manage.expandArchiveAction" />
@@ -98,10 +98,10 @@
     <property name="successView" value="redirectToManage" />
     <property name="cancelView" value="redirectToManage" />
     <property name="commandClass"
-              value="org.vortikal.web.actions.convert.CopyCommand" />
+              value="org.vortikal.web.actions.convert.ArchiveCommand" />
     <property name="validator">
       <bean
-          class="org.vortikal.web.actions.convert.CopyCommandValidator"
+          class="org.vortikal.web.actions.convert.ArchiveCommandValidator"
           parent="repositoryAware" />
     </property>
   </bean>

@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2010, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,23 +30,18 @@
  */
 package org.vortikal.web.actions.convert;
 
-import org.vortikal.web.actions.UpdateCancelCommand;
+import org.vortikal.repository.Path;
 
-public class CopyCommand extends UpdateCancelCommand {
+public class CopyResourceController extends CopyController {
 
-    private String name;
-
-    public CopyCommand(String name, String submitURL) {
-        super(submitURL);
-        this.name = name;
+    @Override
+    protected Object createCommand(String name, String url) {
+        return new CopyCommand(name, url);
     }
 
-    public String getName() {
-        return this.name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    @Override
+    protected void processCopyAction(Path originalUri, Path copyUri, CopyCommand copyCommand) throws Exception {
+        this.copyAction.process(originalUri, copyUri, null);
     }
 
 }

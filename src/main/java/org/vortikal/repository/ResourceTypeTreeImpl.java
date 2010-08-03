@@ -452,7 +452,7 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
     }
     
     @SuppressWarnings("unchecked")
-    private  void init() {
+    private void init() {
 
         this.primaryTypes = 
             BeanFactoryUtils.beansOfTypeIncludingAncestors(this.applicationContext, 

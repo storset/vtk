@@ -243,18 +243,6 @@
      </property>
    </bean>
 
-  <!-- Not comfortable with this. This interceptor will also be added
-  for child services. -->
-  <bean id="noCacheViewHandlerInterceptor"
-        class="org.vortikal.web.interceptors.HeaderControlHandlerInterceptor"
-        parent="repositoryAware">
-    <property name="staticHeaders">
-      <map>
-        <entry key="Cache-Control" value="no-cache, must-revalidate, max-age=0" />
-        <entry key="Pragma" value="no-cache" />
-      </map>
-    </property>
-  </bean>
 
   <bean id="collectionListingAsFeedService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="collectionListing.viewService" />

@@ -76,21 +76,27 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
 
         Path uri = requestContext.getResourceURI();
-        
+
+        /*
         if (securityContext.getPrincipal() != null) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Cache " + uri + ": not cacheable: principal!=null");
             }
             return response;
         }
+        */
 
         Service service = requestContext.getService();
+        if (!requestContext.isInRepository()) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Cache " + uri + ": not cacheable: not-repository");
+            }
+            return response;
+        }
+        
         if (!service.isDescendantOf(this.rootService)) {
-            if (!requestContext.isInRepository()) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Cache " + uri + ": not cacheable: service=" + service.getName());
-                }
-                return response;
+            if (logger.isDebugEnabled()) {
+                logger.debug("Cache " + uri + ": not cacheable: service=" + service.getName());
             }
             
             return response;
@@ -126,7 +132,7 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
                 this.repository.isAuthorized(resource, RepositoryAction.READ_PROCESSED, null);
             if (!anonymousReadable) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Cache: " + uri + ": not cacheable: restricted");
+                    logger.debug("Cache " + uri + ": not cacheable: restricted");
                 }
                 return response;
             }
@@ -145,7 +151,7 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
             }
         } catch (Throwable t) { 
         }
-        logger.debug("Cache: " + uri + ": not cacheable");
+        logger.debug("Cache " + uri + ": not cacheable");
         return response;
     }
 

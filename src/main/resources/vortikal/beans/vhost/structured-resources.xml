@@ -14,11 +14,6 @@
         <ref bean="structuredResources.typeAssertion" />
       </list>
     </property>
-    <property name="handlerInterceptors">
-      <list>
-        <ref bean="noCacheViewHandlerInterceptor" />
-      </list>
-    </property>
     <property name="handler" ref="structuredResources.displayHandler" />
   </bean>
   

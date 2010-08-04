@@ -35,6 +35,8 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.search.Searcher;
 
 public abstract class AbstractReporter implements Reporter {
+    
+    public static final int DEFAULT_SEARCH_LIMIT = 100;
 
     private String name;
     private String viewName;

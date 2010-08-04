@@ -30,17 +30,10 @@
  */
 package org.vortikal.web.actions.report;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.PropertySortField;
-import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.SortFieldDirection;
 import org.vortikal.repository.search.SortingImpl;
@@ -48,50 +41,26 @@ import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
-import org.vortikal.web.service.Service;
-import org.vortikal.web.service.URL;
 
-public class LastModifiedReporter extends AbstractReporter {
+public class LastModifiedReporter extends DocumentReporter {
 
-    private static final int LIMIT = 100;
     private PropertyTypeDefinition titlePropDef;
     private PropertyTypeDefinition sortPropDef;
     private SortFieldDirection sortOrder;
-    private Service viewService;
-
+    
     @Override
-    public Map<String, Object> getReportContent(String token, Resource currentResource, HttpServletRequest request) {
-        Map<String, Object> result = new HashMap<String, Object>();
-
+    protected Search getSearch(String token, Resource currentResource) {
         AndQuery query = new AndQuery();
         query.add(new TypeTermQuery("file", TermOperator.IN));
         query.add(new UriPrefixQuery(currentResource.getURI().toString()));
 
         Search search = new Search();
-        search.setLimit(LIMIT);
+        search.setLimit(DEFAULT_SEARCH_LIMIT);
         SortingImpl sorting = new SortingImpl();
         sorting.addSortField(new PropertySortField(this.sortPropDef, this.sortOrder));
         search.setSorting(sorting);
         search.setQuery(query);
-
-        ResultSet rs = this.searcher.execute(token, search);
-        result.put("lastModifiedList", rs.getAllResults());
-
-        boolean[] isReadRestricted = new boolean[rs.getSize()];
-        URL[] viewURLs = new URL[rs.getSize()];
-
-        for (int i = 0; i < rs.getSize(); i++) {
-            PropertySet p = rs.getResult(i);
-            try {
-                Resource r = this.repository.retrieve(token, p.getURI(), true);
-                isReadRestricted[i] = r.isReadRestricted();
-                viewURLs[i] = this.viewService.constructURL(p.getURI());
-            } catch (Exception e) {
-            }
-        }
-        result.put("isReadRestricted", isReadRestricted);
-        result.put("viewURLs", viewURLs);
-        return result;
+        return search;
     }
 
     @Required
@@ -112,7 +81,4 @@ public class LastModifiedReporter extends AbstractReporter {
         return titlePropDef;
     }
 
-    public void setViewService(Service viewService) {
-        this.viewService = viewService;
-    }
 }

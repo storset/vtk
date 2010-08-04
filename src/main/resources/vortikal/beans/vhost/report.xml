@@ -33,12 +33,6 @@
   <bean id="reportHandler" class="org.vortikal.web.actions.report.ReportHandler"
     parent="repositoryAware">
     <property name="viewName" value="report" />
-    <property name="reporters">
-      <list>
-        <ref bean="collectionStructureReporter" />
-        <ref bean="lastModifiedReporter" />
-      </list>
-    </property>
   </bean>
 
   <bean id="reporter" abstract="true" class="org.vortikal.web.actions.report.AbstractReporter" parent="repositoryAware">
@@ -58,13 +52,16 @@
     <property name="collectionResourceType" ref="collectionResourceTypeDefinition" />
   </bean>
 
-  <bean id="lastModifiedReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="reporter">
+  <bean id="documentReporter" abstract="true" class="org.vortikal.web.actions.report.DocumentReporter" parent="reporter">
+    <property name="viewService" ref="viewService" />
+    <property name="viewName" value="documentReport" />
+  </bean>
+
+  <bean id="lastModifiedReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
     <property name="name" value="last-modified" />
-    <property name="viewName" value="lastModified" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
-    <property name="viewService" ref="viewService" />
   </bean>
 
   <bean id="report.viewResolver" parent="system.decoratingViewResolver">
@@ -72,7 +69,7 @@
       <map>
         <entry key="report" value-ref="reportView" />
         <entry key="collectionStructure" value-ref="collectionStructureView" />
-        <entry key="lastModified" value-ref="lastModifiedView" />
+        <entry key="documentReport" value-ref="documentReportView" />
       </map>
     </property>
     <property name="referenceDataProviders">
@@ -115,8 +112,8 @@
     </property> 
   </bean>
 
-  <bean id="lastModifiedView" parent="freemarkerView">
-    <property name="url" value="pages/report/last-modified-report.ftl" />
+  <bean id="documentReportView" parent="freemarkerView">
+    <property name="url" value="pages/report/document-report.ftl" />
     <property name="attributesMap">
       <map>
         <entry key="cssURLs">

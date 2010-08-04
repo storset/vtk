@@ -11,7 +11,7 @@ div.vrtx-report div.vrtx-subfolder-menu {
   border: none;
 }
 
-div.vrtx-report table#vrtx-report-last-modified-list {
+div.vrtx-report table#vrtx-report-document-table {
   clear: both;
   font-weight: normal;
   font-size: 100%;
@@ -20,7 +20,7 @@ div.vrtx-report table#vrtx-report-last-modified-list {
   border: 1px solid #b0e0e6;
 }
 
-div.vrtx-report table#vrtx-report-last-modified-list th {
+div.vrtx-report table#vrtx-report-document-table th {
   padding: 3px;
   text-align: left;
   font-weight: bold;
@@ -29,21 +29,21 @@ div.vrtx-report table#vrtx-report-last-modified-list th {
   border: none;
 }
 
-div.vrtx-report table#vrtx-report-last-modified-list td {
+div.vrtx-report table#vrtx-report-document-table td {
   background-color: #fff;
   padding: 3px;
   padding-right: 15px;
   border: none;
 }
 
-div.vrtx-report table#vrtx-report-last-modified-list tr {
+div.vrtx-report table#vrtx-report-document-table tr {
   border: none;
 }
 
-div.vrtx-report table#vrtx-report-last-modified-list td.vrtx-report-last-modified {
+div.vrtx-report table#vrtx-report-document-table td.vrtx-report-last-modified {
   white-space: nowrap;
 }
 
-div.vrtx-report table#vrtx-report-last-modified-list tr.even td {
+div.vrtx-report table#vrtx-report-document-table tr.even td {
   background-color: #eeeeee;
 }

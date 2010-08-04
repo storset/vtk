@@ -19,62 +19,62 @@
   <body>
   <div class="resourceInfo">
     <div class="vrtx-report-nav">
-  	  <div class="back"> 
+      <div class="back">
         <a href="${serviceURL}" ><@vrtx.msg code="report.back" default="Back" /></a>
       </div>
     </div>
-    <h2><@vrtx.msg code="report.last-modified" /></h2>
+    <h2><@vrtx.msg code="report.${report.reportname}" /></h2>
     <p>
-      <@vrtx.msg code="report.last-modified.about" />
+      <@vrtx.msg code="report.${report.reportname}.about" />
     </p>
   <div class="vrtx-report">
 
-<#if report.lastModifiedList?exists >
-    <table id="vrtx-report-last-modified-list">
+  <#if report.result?exists >
+    <table id="vrtx-report-document-table">
       <thead>
         <tr>
           <th id="vrtx-report-title"><@vrtx.msg code="report.title" default="Title" /></th>
           <th id="vrtx-report-last-modified"><@vrtx.msg code="report.last-modified" default="Last modified" /></th>
           <th id="vrtx-report-modified-by"><@vrtx.msg code="report.modified-by" default="Modified by" /></th>
-          <th id="vrtx-report-permission-set"><@vrtx.msg code="report.permission-set" default="Permissions set" /></th> 
+          <th id="vrtx-report-permission-set"><@vrtx.msg code="report.permission-set" default="Permissions set" /></th>
           <th id="vrtx-report-permissions"><@vrtx.msg code="collectionListing.permissions" default="Permissions"/></th>
-          <th id="vrtx-report-published"><@vrtx.msg code="report.published" default="Published" /> </th>
+          <th id="vrtx-report-published"><@vrtx.msg code="report.published" default="Published" /></th>
         </tr>
       </thead>
-      <tbody>   
+      <tbody>
       <#assign count = 1 />
-      <#list report.lastModifiedList as lastModified>
-      	<#assign title= vrtx.propValue(lastModified, 'title') />
-      	<#assign lastModifiedTime = vrtx.propValue(lastModified, 'lastModified') />
-        <#assign modifiedBy = vrtx.propValue(lastModified, 'modifiedBy', 'name-link') />
+      <#list report.result as res >
+        <#assign title= vrtx.propValue(res, 'title') />
+        <#assign lastModifiedTime = vrtx.propValue(res, 'lastModified') />
+        <#assign modifiedBy = vrtx.propValue(res, 'modifiedBy', 'name-link') />
         <#assign aclIsInherited = vrtx.getMsg("report.yes", "Yes")>
-        <#if lastModified.isInheritedAcl() >
-        	<#assign aclIsInherited = vrtx.getMsg("report.no", "No")>
+        <#if res.isInheritedAcl() >
+          <#assign aclIsInherited = vrtx.getMsg("report.no", "No")>
         </#if>
         <#assign isReadRestricted = vrtx.getMsg("collectionListing.permissions.readAll") >
-        <#if report.isReadRestricted[lastModified_index] >
-        	<#assign isReadRestricted = vrtx.getMsg("collectionListing.permissions.restricted")>
+        <#if report.isReadRestricted[res_index] >
+          <#assign isReadRestricted = vrtx.getMsg("collectionListing.permissions.restricted")>
         </#if>
         <#assign url = "">
-        <#if report.viewURLs[lastModified_index]?exists>
-          <#assign url = report.viewURLs[lastModified_index] />
+        <#if report.viewURLs[res_index]?exists>
+          <#assign url = report.viewURLs[res_index] />
         </#if>
-        <#assign published = vrtx.propValue(lastModified, 'published') />
-	<#assign publishedStatus = vrtx.getMsg("report.yes", "Yes")>
-	  <#if published = "false">
-	    <#assign publishedStatus = vrtx.getMsg("report.no", "No")>
-	    </#if>
-		
-	    <#if (count % 2 == 0) >
-	      <tr class="even">
-	    <#else>
-	      <tr class="odd"> 
-	    </#if>
+        <#assign published = vrtx.propValue(res, 'published') />
+        <#assign publishedStatus = vrtx.getMsg("report.yes", "Yes")>
+        <#if published = "false">
+          <#assign publishedStatus = vrtx.getMsg("report.no", "No")>
+        </#if>
+        
+        <#if (count % 2 == 0) >
+          <tr class="even">
+        <#else>
+          <tr class="odd">
+        </#if>
           <td class="vrtx-report-title"><a href="${url?html}">${title?html}</a></td>
           <td class="vrtx-report-last-modified">${lastModifiedTime?html}</td>
           <td class="vrtx-report-last-modified-by">${modifiedBy}</td>
-          <td class="vrtx-report-permission-set">${aclIsInherited?html}</td> 
-          <td class="vrtx-report-permissions">${isReadRestricted?html}</td>  
+          <td class="vrtx-report-permission-set">${aclIsInherited?html}</td>
+          <td class="vrtx-report-permissions">${isReadRestricted?html}</td>
           <td class="vrtx-report-published">${publishedStatus?html}</td>
         </tr>
         <#assign count = count + 1 />

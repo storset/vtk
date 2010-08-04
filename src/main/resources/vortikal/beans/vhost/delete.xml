@@ -15,11 +15,6 @@
         </bean>
       </list>
     </property>
-    <property name="handlerInterceptors">
-      <list>
-        <ref bean="noCacheViewHandlerInterceptor" />
-      </list>
-    </property>
     <property name="categories">
       <set>
         <value>globalMenu</value>
@@ -45,11 +40,6 @@
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="confirm-delete" />
         </bean>
-      </list>
-    </property>
-    <property name="handlerInterceptors">
-      <list>
-        <ref bean="noCacheViewHandlerInterceptor" />
       </list>
     </property>
     <property name="handler" ref="delete.handler" />
@@ -123,11 +113,6 @@
           <property name="parameterValue" value="delete-from-resource-menu" />
         </bean>
         <ref bean="deleteResourcePermissionAssertion" />
-      </list>
-    </property>
-    <property name="handlerInterceptors">
-      <list>
-        <ref bean="noCacheHandlerInterceptor" />
       </list>
     </property>
     <property name="handler" ref="deleteFromResourceMenuHandler" />

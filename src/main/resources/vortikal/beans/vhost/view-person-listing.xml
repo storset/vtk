@@ -10,11 +10,6 @@
         <ref bean="resourceIsPersonListing" />
       </list>
     </property>
-    <property name="handlerInterceptors">
-      <list>
-        <ref bean="noCacheViewHandlerInterceptor" />
-      </list>
-    </property>
     <property name="handler" ref="personListing.handler" />
     <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
   </bean>

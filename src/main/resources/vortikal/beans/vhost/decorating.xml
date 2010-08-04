@@ -11,13 +11,6 @@
       </list>
     </property>
     <property name="maxDocumentSize" value="${decorating.maxDocumentSize}" />
-    <property name="staticHeaders">
-      <map>
-        <entry key="Cache-Control" value="no-cache, must-revalidate, max-age=0" />
-        <entry key="Pragma" value="no-cache" />
-        <entry key="Vary" value="Cookie" />
-      </map>
-    </property>
     <property name="documentTooLargeView" ref="decorating.documentTooLargeView" />
   </bean>
 

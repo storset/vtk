@@ -15,11 +15,6 @@
         </bean>
       </list>
     </property>
-    <property name="handlerInterceptors">
-      <list>
-        <ref bean="noCacheViewHandlerInterceptor" />
-      </list>
-    </property>
     <property name="categories">
       <set>
         <value>globalMenu</value>

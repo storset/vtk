@@ -10,11 +10,6 @@
         <ref bean="tags.tagsParameterAssertion" />
       </list>
     </property>
-    <property name="handlerInterceptors">
-      <list>
-        <ref bean="noCacheViewHandlerInterceptor" />
-      </list>
-    </property>
     <property name="handler" ref="tags.handler" />
     <property name="attributes">
       <map>

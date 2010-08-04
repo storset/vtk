@@ -14,7 +14,7 @@
     <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
   </bean>
 
-  <bean id="projectListing.viewComplitedProjectsService" class="org.vortikal.web.service.ServiceImpl">
+  <bean id="projectListing.viewCompletedProjectsService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="collectionListing.viewService" />
     <property name="order" value="-1" />
     <property name="assertions">
@@ -36,7 +36,7 @@
     parent="projectListing.handler">
     <property name="searchComponents">
       <list>
-        <ref bean="projectListing.viewComplitedProjectsSearchComponent" />
+        <ref bean="projectListing.viewCompletedProjectsSearchComponent" />
       </list>
     </property>
   </bean>
@@ -61,7 +61,7 @@
     </property>
   </bean>
 
-  <bean id="projectListing.viewComplitedProjectsSearchComponent" parent="collectionListing.searchComponent">
+  <bean id="projectListing.viewCompletedProjectsSearchComponent" parent="collectionListing.searchComponent">
     <property name="name" value="projectListing.defaultListing" />
     <property name="defaultRecursive" value="true" />
     <property name="query">
@@ -89,7 +89,7 @@
 
   <bean id="projectListingViewServiceURLProvider" class="org.vortikal.web.referencedata.provider.ProjectListingViewServiceURLProvider"
     parent="repositoryAware">
-    <property name="viewAllProjects" ref="projectListing.viewComplitedProjectsService" />
+    <property name="viewAllProjects" ref="projectListing.viewCompletedProjectsService" />
   </bean>
 
   <bean id="projectListing.feedService" parent="collectionListing.atomService">

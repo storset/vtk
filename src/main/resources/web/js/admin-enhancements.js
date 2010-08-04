@@ -160,7 +160,7 @@ function placeDeleteButtonInActiveTab() {
                 list += boxes[i].name + '\n';
             }
             if(boxes.size() > 10){
-                list += "...";
+                list += "... " + confirmDeleteAnd + " " + (boxes.size() - 10) + " " + confirmDeleteMore;
             }
             if(confirm(confirmDelete.replace("(1)",boxes.size()) + '\n\n' +  list)){
                 $('#collectionListing\\.action\\.delete-resources').click();

@@ -3,12 +3,14 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 
 
-<script type="text/javascript" language="Javascript"><!--  
-  var deleteUncheckedMessage = '${vrtx.getMsg("tabMenu2.deleteUnCheckedMessage",
-         "You must check at least one element to delete")}';
-         
-  var confirmDelete = '${vrtx.getMsg("tabMenu2.deleteResourcesMessage",
-         "Are you sure you want to delete (1) resource(s): ")}';
+<script type="text/javascript" language="Javascript">
+<!--  
+
+  var deleteUncheckedMessage = '${vrtx.getMsg("tabMenu2.deleteUnCheckedMessage")}';         
+  var confirmDelete = '${vrtx.getMsg("tabMenu2.deleteResourcesMessage")}';         
+  var confirmDeleteAnd = '${vrtx.getMsg("tabMenu2.deleteResourcesAnd")}';
+  var confirmDeleteMore = '${vrtx.getMsg("tabMenu2.deleteResourcesMore")}';
+  
  //-->
 </script>
 

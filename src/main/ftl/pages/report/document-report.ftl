@@ -24,12 +24,18 @@
       </div>
     </div>
     <h2><@vrtx.msg code="report.${report.reportname}" /></h2>
+    
     <p>
+    <#if report.result?exists && report.result?size &gt; 0 >
       <@vrtx.msg code="report.${report.reportname}.about" />
+    <#else>
+      <@vrtx.msg code="report.document-reporter.no.documents.found" />
+    </#if>
     </p>
+    
   <div class="vrtx-report">
-
-  <#if report.result?exists >
+  
+  <#if report.result?exists && report.result?size &gt; 0 >
     <table id="vrtx-report-document-table">
       <thead>
         <tr>
@@ -81,9 +87,8 @@
       </#list>
       </tbody>
     </table>
-  </div>
-  
   </#if>
+  </div>
   
   
   </div>

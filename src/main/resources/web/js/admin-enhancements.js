@@ -231,6 +231,11 @@ function uncheckAll(){
 }
 
 function checkedClass(){
+    if(this.checked){
+        this.checked = false;
+    }else{
+        this.checked = true;
+    }
     switchCheckedClasslass(this);
 }
 
@@ -260,13 +265,6 @@ $(document).ready(function(){
     $(".checkbox input").click(checkedClass);
     $(".checkbox").click(
         function(){
-            $(this).find("input").each(function(){
-                if(this.checked){
-                    this.checked = false;
-                }else{
-                    this.checked = true;
-                }
-                switchCheckedClasslass(this)
-            });
+            $(this).find("input").each(checkedClass);
     });
 });

@@ -273,7 +273,7 @@
         parent="defaultResponseFilterCategoryBean">
     <property name="expiresPropDef" ref="expiresSecPropDef" />
     <property name="repository" ref="repository" />
-    <property name="rootService" ref="viewService" />
+    <!--property name="rootService" ref="viewService" /-->
     <property name="globalMaxAge" value="${webCache.globalMaxAge}" />
     <property name="excludedResourceTypes">
       <bean class="org.vortikal.context.CSVSetFactoryBean">

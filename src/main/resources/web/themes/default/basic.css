@@ -1014,3 +1014,7 @@ div.resourceInfo div.back {
 div.vrtx-subfolder-menu {
   border:none;
 } 
+
+#vrtx-directoryListing .checked {
+    background-color:darkgray;
+}

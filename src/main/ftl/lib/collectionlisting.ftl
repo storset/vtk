@@ -83,6 +83,8 @@
               <@vrtx.msg code="collectionListing.${item}" default="${item?cap_first}"/></a>
                <#if withForm>
                  </th><th class="checkbox">
+                 <a href="#" class="vrtx-check-all" > <@vrtx.msg code="collectionListing.all" default="All"/></a> | 
+                 <a href="#" class="vrtx-uncheck-all"> <@vrtx.msg code="collectionListing.none" default="None"/></a>
                </#if>
             <#break>
 

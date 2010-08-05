@@ -216,6 +216,32 @@ function leftAdjustTabMessagePublishPermissionIfRootFolder() {
 	}
 }
 
+function checkAll(){
+    $(".checkbox input").each(function(){
+        this.checked = true;
+        switchCheckedClasslass(this);
+    });
+}
+
+function uncheckAll(){
+    $(".checkbox input").each(function(){
+        this.checked = false;
+        switchCheckedClasslass(this);
+    });
+}
+
+function checkedClass(){
+    switchCheckedClasslass(this);
+}
+
+function switchCheckedClasslass(obj){
+    if(obj.checked){
+        $(obj).parent().parent().addClass("checked");
+    }else{
+        $(obj).parent().parent().removeClass("checked");
+    }
+}
+
 // Add callbacks for the above methods:
 
 $(document).ready(logoutButtonAsLink);
@@ -227,3 +253,20 @@ $(document).ready(unlockButtonAsLink);
 $(document).ready(toggleAclInheritanceButtonAsLink);
 $(document).ready(takeOwnershipButtonAsLink);
 $(document).ready(leftAdjustTabMessagePublishPermissionIfRootFolder);
+
+$(document).ready(function(){    
+    $(".vrtx-check-all").click(checkAll);
+    $(".vrtx-uncheck-all").click(uncheckAll);
+    $(".checkbox input").click(checkedClass);
+    $(".checkbox").click(
+        function(){
+            $(this).find("input").each(function(){
+                if(this.checked){
+                    this.checked = false;
+                }else{
+                    this.checked = true;
+                }
+                switchCheckedClasslass(this)
+            });
+    });
+});

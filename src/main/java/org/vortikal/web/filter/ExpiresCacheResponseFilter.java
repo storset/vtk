@@ -77,36 +77,29 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
 
         Path uri = requestContext.getResourceURI();
 
-        /*
-        if (securityContext.getPrincipal() != null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Cache " + uri + ": not cacheable: principal!=null");
-            }
-            return response;
-        }
-        */
-
-        Service service = requestContext.getService();
         if (!requestContext.isInRepository()) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Cache " + uri + ": not cacheable: not-repository");
+                logger.debug(uri + ": ignore: not in repository");
             }
             return response;
         }
-        
-        if (!service.isDescendantOf(this.rootService)) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Cache " + uri + ": not cacheable: service=" + service.getName());
+
+        if (this.rootService != null) {
+            Service service = requestContext.getService();
+            if (!service.isDescendantOf(this.rootService)) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug(uri + ": ignore: service=" + service.getName());
+                }
+
+                return response;
             }
-            
-            return response;
         }
         
         boolean hasIndexFile = requestContext.getIndexFileURI() != null 
             && !requestContext.isIndexFile();
         if (hasIndexFile) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Cache " + uri + ": not cacheable: indexfile");
+                logger.debug(uri + ": ignore: index file");
             }
             return response;
         }
@@ -121,7 +114,7 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
                 for (String t: this.excludedResourceTypes) {
                     if (typeInfo.isOfType(t)) {
                         if (logger.isDebugEnabled()) {
-                            logger.debug("Cache " + uri + ": not cacheable: type=" + t);
+                            logger.debug(uri + ": ignore: type=" + t);
                         }
                         return response;
                     }
@@ -132,26 +125,26 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
                 this.repository.isAuthorized(resource, RepositoryAction.READ_PROCESSED, null);
             if (!anonymousReadable) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Cache " + uri + ": not cacheable: restricted");
+                    logger.debug(uri + ": ignore: restricted");
                 }
                 return response;
             }
 
             if (expiresProp != null) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Cache: " + uri + ": property max-age=" + expiresProp.getLongValue());
+                    logger.debug(uri + ": property max-age=" + expiresProp.getLongValue());
                 }
                 return new ExpiresResponseWrapper(response, expiresProp.getLongValue());
             }
             if (this.globalMaxAge > 0) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Cache: " + uri + ": default max-age=" + this.globalMaxAge);
+                    logger.debug(uri + ": default max-age=" + this.globalMaxAge);
                 }
                 return new ExpiresResponseWrapper(response, this.globalMaxAge);
             }
         } catch (Throwable t) { 
         }
-        logger.debug("Cache " + uri + ": not cacheable");
+        logger.debug(uri + ": ignore");
         return response;
     }
 

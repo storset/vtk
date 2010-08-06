@@ -30,25 +30,21 @@
  */
 package org.vortikal.web.display.collection.event;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Resource;
-import org.vortikal.web.display.collection.event.EventListingSearcher.GroupedEvents;
+import org.vortikal.web.RequestContext;
+import org.vortikal.web.display.collection.event.EventListingHelper.SpecificDateSearchType;
 import org.vortikal.web.display.listing.ListingPager;
 import org.vortikal.web.search.Listing;
+import org.vortikal.web.service.Service;
+import org.vortikal.web.service.URL;
 
-public class EventCalendarListingController extends EventListingController {
-
-    protected EventListingHelper helper;
-
-    private final int daysAhead = 5; // 5 days ahead
-    private final int furtherUpcomingPageLimit = 3; // 3 events on 1 page
+public class EventCalendarSpecificDateListingController extends EventCalendarListingController {
 
     @Override
     public void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
@@ -57,32 +53,38 @@ public class EventCalendarListingController extends EventListingController {
         int page = ListingPager.getPage(request, ListingPager.UPCOMING_PAGE_PARAM);
         model.put(MODEL_KEY_PAGE, page);
 
-        List<GroupedEvents> groupedByDayEvents = this.searcher.searchGroupedByDayEvents(request, collection,
-                this.daysAhead);
-        model.put("groupedByDayEvents", groupedByDayEvents);
-        String groupedByDayTitle = this.helper.getLocalizedTitle(request, "eventListing.groupedEvents",
-                new Object[] { this.daysAhead });
-        model.put("groupedEventsTitle", groupedByDayTitle);
+        Date date = this.helper.getSpecificSearchDate(request);
+        if (date != null) {
+            SpecificDateSearchType searchType = this.helper.getSpecificDateSearchType(request);
+            Listing specificDateEvents = this.searcher.searchSpecificDate(request, collection, date, searchType,
+                    pageLimit, page);
 
-        Listing furtherUpcoming = this.searcher.searchFurtherUpcoming(request, collection, this.daysAhead,
-                this.furtherUpcomingPageLimit);
-        model.put("furtherUpcoming", furtherUpcoming);
-        String titleKey = groupedByDayEvents.size() == 0 ? "eventListing.allupcoming"
-                : "eventListing.furtherUpcomingEvents";
-        String furtherUpcomingTitle = this.helper.getEventTypeTitle(request, collection, titleKey, false);
-        model.put("furtherUpcomingTitle", furtherUpcomingTitle);
+            model.put("specificDate", Boolean.TRUE);
+            String messageKey = searchType == SpecificDateSearchType.Day ? "eventListing.specificDayEvent"
+                    : "eventListing.specificDateEvent";
+            String specificDateEventsTitle = this.helper.getEventTypeTitle(request, collection, searchType, date,
+                    messageKey, true, true);
+            model.put("specificDateEventsTitle", specificDateEventsTitle);
+            model.put(MODEL_KEY_OVERRIDDEN_TITLE, specificDateEventsTitle);
 
-        Calendar tomorrow = Calendar.getInstance();
-        tomorrow.add(Calendar.DATE, 1);
+            if (specificDateEvents != null && !specificDateEvents.getFiles().isEmpty()) {
+                model.put("specificDateEvents", specificDateEvents);
 
-        model.put("tomorrow", tomorrow.getTime());
-        model.put("today", new Date());
+                Service service = RequestContext.getRequestContext().getService();
+                URL baseURL = service.constructURL(RequestContext.getRequestContext().getResourceURI());
 
-    }
+                List<URL> urls = ListingPager.generatePageThroughUrls(specificDateEvents.getTotalHits(), pageLimit,
+                        baseURL);
+                model.put(MODEL_KEY_PAGE_THROUGH_URLS, urls);
+            } else {
+                model.put("noPlannedEventsMsg", this.helper.getEventTypeTitle(request, collection,
+                        "eventListing.noPlannedEvents", false));
+            }
+        } else {
+            // invalid date given in request, run default search
+            super.runSearch(request, collection, model, pageLimit);
+        }
 
-    @Required
-    public void setHelper(EventListingHelper helper) {
-        this.helper = helper;
     }
 
 }

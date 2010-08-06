@@ -30,25 +30,22 @@
  */
 package org.vortikal.web.display.collection.event;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Resource;
-import org.vortikal.web.display.collection.event.EventListingSearcher.GroupedEvents;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.listing.ListingPager;
 import org.vortikal.web.search.Listing;
+import org.vortikal.web.service.Service;
+import org.vortikal.web.service.URL;
 
-public class EventCalendarListingController extends EventListingController {
+public abstract class EventCalendarAllListingController extends EventCalendarListingController {
 
-    protected EventListingHelper helper;
-
-    private final int daysAhead = 5; // 5 days ahead
-    private final int furtherUpcomingPageLimit = 3; // 3 events on 1 page
+    protected abstract Listing getSearchResult(HttpServletRequest request, Resource collection,
+            Map<String, Object> model, int page, int pageLimit) throws Exception;
 
     @Override
     public void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
@@ -57,32 +54,26 @@ public class EventCalendarListingController extends EventListingController {
         int page = ListingPager.getPage(request, ListingPager.UPCOMING_PAGE_PARAM);
         model.put(MODEL_KEY_PAGE, page);
 
-        List<GroupedEvents> groupedByDayEvents = this.searcher.searchGroupedByDayEvents(request, collection,
-                this.daysAhead);
-        model.put("groupedByDayEvents", groupedByDayEvents);
-        String groupedByDayTitle = this.helper.getLocalizedTitle(request, "eventListing.groupedEvents",
-                new Object[] { this.daysAhead });
-        model.put("groupedEventsTitle", groupedByDayTitle);
+        Listing result = this.getSearchResult(request, collection, model, page, pageLimit);
 
-        Listing furtherUpcoming = this.searcher.searchFurtherUpcoming(request, collection, this.daysAhead,
-                this.furtherUpcomingPageLimit);
-        model.put("furtherUpcoming", furtherUpcoming);
-        String titleKey = groupedByDayEvents.size() == 0 ? "eventListing.allupcoming"
-                : "eventListing.furtherUpcomingEvents";
-        String furtherUpcomingTitle = this.helper.getEventTypeTitle(request, collection, titleKey, false);
-        model.put("furtherUpcomingTitle", furtherUpcomingTitle);
+        Service service = RequestContext.getRequestContext().getService();
+        URL serviceURL = service.constructURL(collection.getURI());
+        String viewType = serviceURL.getParameter(EventListingHelper.REQUEST_PARAMETER_VIEW);
 
-        Calendar tomorrow = Calendar.getInstance();
-        tomorrow.add(Calendar.DATE, 1);
+        model.put(viewType, result);
+        String title = this.helper.getEventTypeTitle(request, collection, "eventListing." + viewType, false);
+        String titleKey = viewType + "Title";
+        model.put(titleKey, title);
 
-        model.put("tomorrow", tomorrow.getTime());
-        model.put("today", new Date());
-
-    }
-
-    @Required
-    public void setHelper(EventListingHelper helper) {
-        this.helper = helper;
+        if (result == null || result.getFiles().isEmpty()) {
+            String noPlannedTitle = this.helper.getEventTypeTitle(request, collection, "eventListing.noPlanned."
+                    + viewType, false);
+            String noPlannedTitleKey = viewType + "NoPlannedTitle";
+            model.put(noPlannedTitleKey, noPlannedTitle);
+        } else {
+            List<URL> urls = ListingPager.generatePageThroughUrls(result.getTotalHits(), pageLimit, serviceURL);
+            model.put(MODEL_KEY_PAGE_THROUGH_URLS, urls);
+        }
     }
 
 }

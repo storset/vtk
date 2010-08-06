@@ -2,6 +2,8 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
+  <!-- ### Default service, grouped view ###-->
+
   <bean id="calendarEventListing.viewService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="eventListing.viewService" />
     <property name="order" value="0" />
@@ -25,6 +27,91 @@
     <property name="viewName" value="eventListingCalendar.view" />
     <property name="helper" ref="eventListingHelper" />
   </bean>
+
+  <!-- ### View specific date ###-->
+
+  <bean id="calendarEventListing.viewSpecificDateService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="calendarEventListing.viewService" />
+    <property name="order" value="0" />
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsEventListing" />
+        <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
+          <property name="namespace" ref="EVENT_LISTING_NAMESPACE" />
+          <property name="name" value="display-type" />
+          <property name="value" value="calendar" />
+          <property name="checkExistenceOnly" value="false" />
+        </bean>
+        <bean class="org.vortikal.web.service.RequestParameterExistsAssertion">
+          <property name="parameterName" value="date" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="eventListing.calendarSpecificDateHandler" />
+    <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
+  </bean>
+
+  <bean id="eventListing.calendarSpecificDateHandler" class="org.vortikal.web.display.collection.event.EventCalendarSpecificDateListingController"
+    parent="eventListing.calendarHandler">
+  </bean>
+  
+  <!-- ### View all upcoming and all previous ### -->
+
+  <bean id="calendarEventListing.viewAllUpcomingService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="calendarEventListing.viewService" />
+    <property name="order" value="0" />
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsEventListing" />
+        <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
+          <property name="namespace" ref="EVENT_LISTING_NAMESPACE" />
+          <property name="name" value="display-type" />
+          <property name="value" value="calendar" />
+          <property name="checkExistenceOnly" value="false" />
+        </bean>
+        <bean parent="viewParameterEquals">
+          <property name="parameterValue" value="allupcoming" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="eventListing.calendarAllUpcomingHandler" />
+    <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
+  </bean>
+
+  <bean id="calendarEventListing.viewAllPreviousService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="calendarEventListing.viewService" />
+    <property name="order" value="0" />
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsEventListing" />
+        <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
+          <property name="namespace" ref="EVENT_LISTING_NAMESPACE" />
+          <property name="name" value="display-type" />
+          <property name="value" value="calendar" />
+          <property name="checkExistenceOnly" value="false" />
+        </bean>
+        <bean parent="viewParameterEquals">
+          <property name="parameterValue" value="allprevious" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="eventListing.calendarAllPreviousHandler" />
+    <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
+  </bean>
+
+  <bean id="eventListing.calendarAllPreviousHandler" class="org.vortikal.web.display.collection.event.EventCalendarAllPreviousListingController"
+    parent="eventListing.calendarHandler">
+  </bean>
+
+  <bean id="eventListing.calendarAllUpcomingHandler" class="org.vortikal.web.display.collection.event.EventCalendarAllUpcomingListingController"
+    parent="eventListing.calendarHandler">
+  </bean>
+
+  <bean id="viewParameterEquals" class="org.vortikal.web.service.RequestParameterAssertion" abstract="true">
+    <property name="parameterName" value="view" />
+  </bean>
+
+  <!-- ### Queries ### -->
 
   <bean id="eventListing.groupedByDayEventSearchQueryString" class="java.lang.String">
     <constructor-arg type="java.lang.String">
@@ -93,6 +180,8 @@
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="startDatePropDefPointer" ref="${override.listing.prefix}eventListing.startDatePropDefPointer" />
     <property name="endDatePropDefPointer" ref="${override.listing.prefix}eventListing.endDatePropDefPointer" />
+    <property name="viewAllUpcomingService" ref="calendarEventListing.viewAllUpcomingService" />
+    <property name="viewAllPreviousService" ref="calendarEventListing.viewAllPreviousService" />
   </bean>
 
   <bean id="eventListing.startDatePropDefPointer" class="java.lang.String">

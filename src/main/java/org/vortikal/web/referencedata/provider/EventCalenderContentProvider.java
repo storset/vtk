@@ -56,6 +56,8 @@ import org.vortikal.web.display.collection.event.EventListingSearcher;
 import org.vortikal.web.display.collection.event.EventListingHelper.SpecificDateSearchType;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.search.Listing;
+import org.vortikal.web.service.Service;
+import org.vortikal.web.service.URL;
 
 public class EventCalenderContentProvider implements ReferenceDataProvider {
 
@@ -66,6 +68,8 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
     private PropertyTypeDefinition displayTypePropDef;
     private String startDatePropDefPointer;
     private String endDatePropDefPointer;
+    private Service viewAllUpcomingService;
+    private Service viewAllPreviousService;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -84,6 +88,16 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
 
         setAllowedDates(request, resource, model);
         setCalendarTitles(request, resource, model);
+
+        URL viewAllUpcomingURL = this.viewAllUpcomingService.constructURL(resourceURI);
+        model.put("viewAllUpcomingURL", viewAllUpcomingURL);
+        model.put("viewAllUpcomingTitle", this.helper.getEventTypeTitle(request, resource,
+                "eventListing.viewAllUpcoming", false));
+
+        URL viewAllPreviousURL = this.viewAllPreviousService.constructURL(resourceURI);
+        model.put("viewAllPreviousURL", viewAllPreviousURL);
+        model.put("viewAllPreviousTitle", this.helper.getEventTypeTitle(request, resource,
+                "eventListing.viewAllPrevious", false));
 
     }
 
@@ -208,4 +222,15 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
     public void setEndDatePropDefPointer(String endDatePropDefPointer) {
         this.endDatePropDefPointer = endDatePropDefPointer;
     }
+
+    @Required
+    public void setViewAllUpcomingService(Service viewAllUpcomingService) {
+        this.viewAllUpcomingService = viewAllUpcomingService;
+    }
+
+    @Required
+    public void setViewAllPreviousService(Service viewAllPreviousService) {
+        this.viewAllPreviousService = viewAllPreviousService;
+    }
+
 }

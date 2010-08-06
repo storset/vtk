@@ -99,6 +99,11 @@
       </list>
     </property>
     <property name="handler" ref="saml.authenticationHandler"/>
+    <property name="attributes">
+      <map>
+        <entry key="inhibit-caching" value="true" />
+      </map>
+    </property>
   </bean>
 
   <bean id="saml.metadataService" class="org.vortikal.web.service.ServiceImpl">
@@ -114,6 +119,11 @@
       <bean class="org.springframework.web.servlet.mvc.ParameterizableViewController">
         <property name="viewName" value="saml.metadata"/>
       </bean>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="inhibit-caching" value="true" />
+      </map>
     </property>
   </bean>
 

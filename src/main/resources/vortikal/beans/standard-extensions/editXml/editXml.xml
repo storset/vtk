@@ -34,7 +34,6 @@
     </property>
     <property name="handlerInterceptors">
       <list>
-        <ref bean="noCacheHandlerInterceptor" />
         <ref bean="editTabHelpURLServiceInterceptor" />
       </list>
     </property>

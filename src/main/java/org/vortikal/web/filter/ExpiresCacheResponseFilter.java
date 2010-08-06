@@ -67,6 +67,7 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
     private PropertyTypeDefinition expiresPropDef;
     private int globalMaxAge = -1;
     private Service rootService;
+    private Set<Service> excludedServices;
     private Set<String> excludedResourceTypes;
     
     public HttpServletResponse filter(HttpServletRequest request,
@@ -95,13 +96,27 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
             }
         }
         
-        boolean hasIndexFile = requestContext.getIndexFileURI() != null 
-            && !requestContext.isIndexFile();
-        if (hasIndexFile) {
-            if (logger.isDebugEnabled()) {
-                logger.debug(uri + ": ignore: index file");
+        if (this.excludedServices != null) {
+            Service service = requestContext.getService();
+            for (Service excluded : this.excludedServices) {
+                if (service.isDescendantOf(excluded)) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug(uri + ": ignore: service=" + service.getName());
+                    }
+                    return response;
+                }
             }
-            return response;
+        }
+
+        Service service = requestContext.getService();
+        while (service != null) {
+            if ("true".equals(service.getAttribute("inhibit-caching"))) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug(uri + ": ignore: service-attr inhibit-caching=true");
+                }
+                return response;
+            }
+            service = service.getParent();
         }
         
         String token = securityContext.getToken();
@@ -160,6 +175,10 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
         this.rootService = rootService;
     }
 
+    public void setExcludedServices(Set<Service> excludedServices) {
+        this.excludedServices = excludedServices;
+    }
+
     public void setGlobalMaxAge(int globalMaxAge) {
         this.globalMaxAge = globalMaxAge;
     }
@@ -175,7 +194,7 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
         public ExpiresResponseWrapper(HttpServletResponse response, long seconds) {
             super(response);
             this.response = response;
-            this.response.addHeader("Cache-Control", "max-age=" + seconds);
+            this.response.setHeader("Cache-Control", "max-age=" + seconds);
             this.response.setHeader("Vary", "Cookie");
         }
 

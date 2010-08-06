@@ -34,6 +34,11 @@
     </property>
     <property name="urlPostProcessors" ref="webdavServiceUrlPostProcessors" />
     <property name="authenticationChallenge" ref="${webdavAuthenticationChallenge}" />
+    <property name="attributes">
+      <map>
+        <entry key="inhibit-caching" value="true" />
+      </map>
+    </property>
   </bean>
   
   <bean id="webdav.davMountService" class="org.vortikal.web.service.ServiceImpl">

@@ -176,6 +176,11 @@
 
     <property name="handler" ref="displayClassPathResourceHandler" />
     <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" />
+    <property name="attributes">
+      <map>
+        <entry key="inhibit-caching" value="true" />
+      </map>
+    </property>
   </bean>
 
   <bean id="displayClassPathResourceHandler"

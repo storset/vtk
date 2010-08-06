@@ -67,11 +67,6 @@
         <ref bean="deleteResourcePermissionAssertion" />
       </list>
     </property>
-    <property name="handlerInterceptors">
-      <list>
-        <ref bean="noCacheHandlerInterceptor" />
-      </list>
-    </property>
     <property name="handler" ref="deleteFromResourceMenuHandler" />
   </bean>
 

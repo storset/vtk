@@ -102,13 +102,13 @@
           <property name="hostName" value="${manage.hostName}" />
         </bean>
         <ref bean="manage.selectiveProtocolManager" />
-        <ref bean="noCacheHandlerInterceptor" />
       </list>
     </property>
     <property name="attributes">
       <map>
         <entry key="localeResolver" value-ref="manageLocaleResolver" />
         <entry key-ref="system.decoratorTemplateAttribute" value="admin.html" />
+        <entry key="inhibit-caching" value="true" />
       </map>
     </property>
     <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" />

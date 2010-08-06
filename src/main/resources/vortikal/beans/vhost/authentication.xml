@@ -223,6 +223,11 @@
       </bean>
     </property>
     <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" />
+    <property name="attributes">
+      <map>
+        <entry key="inhibit-caching" value="true" />
+      </map>
+    </property>
   </bean>
 
   <bean id="authTarget.authService" class="org.vortikal.web.service.ServiceImpl">

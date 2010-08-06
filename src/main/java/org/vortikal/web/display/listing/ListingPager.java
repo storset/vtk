@@ -73,7 +73,7 @@ public class ListingPager {
     }
 
     public static int getPage(HttpServletRequest request, String parameter) {
-        int page = 0;
+        int page = 1;
         String pageParam = request.getParameter(parameter);
         if (StringUtils.isNotBlank(pageParam)) {
             try {
@@ -83,10 +83,6 @@ public class ListingPager {
                 }
             } catch (Throwable t) {
             }
-        }
-
-        if (page == 0) {
-            page = 1;
         }
         return page;
     }

@@ -20,7 +20,8 @@ function loadMultipleInputFields(name,addName, removeName) {
                 addName + "</button></div>");
 
     var l = $(id).val().split(",");
-    for (i in l) {
+    var lLen = l.length;
+    for (var i = 0; i < lLen; i++) {
         addFormField(name,jQuery.trim(l[i]), removeName,size);    
     }
 }
@@ -53,9 +54,10 @@ function formatMultipleInputFields(name) {
     
     var allFields = $.find("input[id^='vrtx-" + name + "']");
     var result = "";
-    for (i in allFields) {
+    var allFieldsLength = allFields.length;
+    for (var i = 0; i < allFieldsLength; i++) {
         result += allFields[i].value;
-        if (i < (allFields.length-1)) {
+        if (i < (allFieldsLength-1)) {
             result += ",";
         }
     }

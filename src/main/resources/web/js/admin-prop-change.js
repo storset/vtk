@@ -15,7 +15,8 @@ function unsavedChangesInEditor() {
         return false;
     var dirtyState = false;
     currentStateOfInputFields = $("input");
-    for (i = 0; i < INITIAL_INPUT_FIELDS.length; i++) {
+    var INITIAL_INPUT_FIELDS_LENGTH = INITIAL_INPUT_FIELDS.length;
+    for (i = 0; i < INITIAL_INPUT_FIELDS_LENGTH; i++) {
         if (currentStateOfInputFields[i].value != INITIAL_INPUT_FIELDS[i]) {
             dirtyState = true;
             break;

@@ -11,14 +11,16 @@ function setShowHide(name, parameters) {
 function toggle(name, parameters) {
   $('#' + name + '-true').each( function() {
     if (this.checked) {
-      for (i = 0; i < parameters.length; i++) {
+      var parametersLength = parameters.length;
+      for (i = 0; i < parametersLength; i++) {
         $('div.' + parameters[i]).hide("fast");
       }
     }
   });
   $('#' + name + '-false').each( function() {
     if (this.checked) {
-      for (i = 0; i < parameters.length; i++) {
+      var parametersLength = parameters.length;
+      for (i = 0; i < parametersLength; i++) {
         $('div.' + parameters[i]).show("fast");
       }
     }

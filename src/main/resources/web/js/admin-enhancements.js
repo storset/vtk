@@ -156,7 +156,8 @@ function placeDeleteButtonInActiveTab() {
             alert(deleteUncheckedMessage);
         } else {
             var list = new String("");
-            for(i = 0; i < boxes.size() && i < 10;i++){
+            var boxesSize = boxes.size();
+            for(i = 0; i < boxesSize && i < 10;i++){
                 list += boxes[i].name + '\n';
             }
             if(boxes.size() > 10){

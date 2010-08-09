@@ -23,7 +23,8 @@ function showHide(radioIds, conditionHide, conditionHideEqual, showHideProps) {
   showHideProperties(true, conditionHide, conditionHideEqual, showHideProps);
 
   //bind() click() events
-  for(var j = 0; j < radioIds.length; j++) {
+  var radioIdsLength = radioIds.length;
+  for(var j = 0; j < radioIdsLength; j++) {
 	$(radioIds[j]).bind("click", function() {
 	  showHideProperties(false, conditionHide, conditionHideEqual, showHideProps);
     });
@@ -31,8 +32,10 @@ function showHide(radioIds, conditionHide, conditionHideEqual, showHideProps) {
 }
 
 function showHideProperties(init, conditionHide, conditionHideEqual, showHideProps) {
-  for(var i = 0; i < showHideProps.length; i++) {
-    showHideProperty(showHideProps[i], init, $(conditionHide).val() == conditionHideEqual ? false : true);
+  var showHidePropsLength = showHideProps.length;
+  var conditionHideVal = $(conditionHide).val();
+  for(var i = 0; i < showHidePropsLength; i++) {
+    showHideProperty(showHideProps[i], init, conditionHideVal == conditionHideEqual ? false : true);
   }
 }
 
@@ -47,7 +50,7 @@ function showHideProperty(id, init, show) {
     if(show) {
 	  $(id).slideDown(100);
 	} else {
-      $(id).slideUp(100);
+          $(id).slideUp(100);
 	}
   }
 }

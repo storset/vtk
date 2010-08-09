@@ -20,17 +20,22 @@
     <#if type == 'gallery'>
        <script type="text/javascript">
        <!--
-		 $(window).bind("load", function () {
-				
-		   var wrapper = ".vrtx-image-listing-include";	
-		   var container = ".vrtx-image-listing-include-container";
-			  
+
+            var wrapper = ".vrtx-image-listing-include";	
+            var container = ".vrtx-image-listing-include-container";
+
+            $(function(){ 
+              $(wrapper).prepend("<span class='vrtx-image-listing-include-loader-msg'>Laster bildegalleri...</span>");
+            });
+
+	    $(window).bind("load", function () {
+							  
 		   var options = {
 		     fadeInOutTime : ${fadeEffect}
 		   }
 			  
 		   $(wrapper + " ul li a").vrtxSGallery(wrapper, container, 507, options);
-				  
+		   $(".vrtx-image-listing-include-loader-msg").remove();
 	     });
        // -->
        </script>

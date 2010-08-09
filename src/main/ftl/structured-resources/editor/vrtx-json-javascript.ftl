@@ -48,7 +48,8 @@
        </#if>
     </#list>
   </#list>
-    for (i in LIST_OF_JSON_ELEMENTS) {
+    var LIST_OF_JSON_ELEMENTS_LENGTH = LIST_OF_JSON_ELEMENTS.length;
+    for (var i = 0; i < LIST_OF_JSON_ELEMENTS_LENGTH; i++) {
         $("#" + LIST_OF_JSON_ELEMENTS[i].name).append("<input type=\"button\" class=\"vrtx-add-button\" onClick=\"addNewJsonElement(LIST_OF_JSON_ELEMENTS[" + i + "],this)\" value=\"${vrtx.getMsg("editor.add")}\" />");
       }
     });
@@ -94,7 +95,7 @@
          }
      }
 
-  	 var moveDownButton = "<input type=\"button\" class=\"vrtx-move-down-button\" value=\"&darr; ${vrtx.getMsg("editor.move-down")}\" />";    
+     var moveDownButton = "<input type=\"button\" class=\"vrtx-move-down-button\" value=\"&darr; ${vrtx.getMsg("editor.move-down")}\" />";    
      var moveUpButton = "<input type=\"button\" class=\"vrtx-move-up-button\" value=\"&uarr; ${vrtx.getMsg("editor.move-up")}\" />";
      var deleteButton = "<input type=\"button\" class=\"vrtx-remove-button\" value=\"${vrtx.getMsg("editor.remove")}\" \/>";
    	 var id = "<input type=\"hidden\" class=\"id\" value=\"" + counter +"\" />";
@@ -147,7 +148,7 @@
          newEditor(inputFieldName, true, false, '${resourceContext.parentURI}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
           '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', '');
        } else if (j.a[i].type == "datetime") {
-      displayDateAsMultipleInputFields(inputFieldName);
+         displayDateAsMultipleInputFields(inputFieldName);
      }
      
     }
@@ -303,16 +304,17 @@
   }
   
   function swapContent(counter, arrayOfIds, move) {
-  	
-    for (x in arrayOfIds) {
+     
+    var arrayOfIdsLength = arrayOfIds.length;
+    for (var x = 0; x < arrayOfIdsLength; x++) {
       var elementId1 = '#' + arrayOfIds[x] + counter;
       
       var moveToId;
       if(move > 0){  
       	moveToId = parseInt( $(elementId1).parents(".vrtx-json-element").next(".vrtx-json-element").find("input.id").val() );
-	  }else{
-	  	moveToId = parseInt( $(elementId1).parents(".vrtx-json-element").prev(".vrtx-json-element").find("input.id").val() );
-	  }
+      } else {
+	moveToId = parseInt( $(elementId1).parents(".vrtx-json-element").prev(".vrtx-json-element").find("input.id").val() );
+      }
 	         
       var elementId2 = '#' + arrayOfIds[x] + moveToId;
      
@@ -357,10 +359,10 @@
       element1.val(val2);
       element2.val(val1);
 
-     element1.blur();
-     element2.blur();
-     element1.change();
-     element2.change();
+      element1.blur();
+      element2.blur();
+      element1.change();
+      element2.change();
     }
   }
   // -->

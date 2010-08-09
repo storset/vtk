@@ -169,3 +169,10 @@
    font-size: 1.15em;
    font-style: italic;
 }
+
+.vrtx-image-listing-include .vrtx-image-listing-include-loader-msg {
+  font-size: 1.15em;
+  display: block;
+  padding: 0px 0 15px 20px;
+  background: url(icons/spinner.gif) no-repeat top left;
+}

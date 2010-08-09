@@ -704,7 +704,6 @@ table.directoryListing {
   font-size: 100%;
   width: 100%;
   border-collapse: collapse;
-  border: 1px solid #b0e0e6;
 }
 
 table.directoryListing th {
@@ -1022,4 +1021,8 @@ div.vrtx-subfolder-menu {
 
 table.directoryListing tr td {
     border-top:1px solid white;
+}
+
+#vrtx-manage-collectionlisting form{
+    border:1px solid #B0E0E6;
 }

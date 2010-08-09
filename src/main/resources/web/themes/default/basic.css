@@ -1018,3 +1018,8 @@ div.vrtx-subfolder-menu {
 #vrtx-directoryListing .checked {
     background-color:darkgray;
 }
+
+
+table.directoryListing tr td {
+    border-top:1px solid white;
+}

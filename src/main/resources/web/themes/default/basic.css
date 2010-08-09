@@ -1026,3 +1026,7 @@ table.directoryListing tr td {
 #vrtx-manage-collectionlisting form{
     border:1px solid #B0E0E6;
 }
+
+.directoryListingHeader .checkbox{
+    text-align:center;
+}

@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.text.html.HtmlPageFilter;
@@ -108,19 +109,20 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
         return resultOrder;
     }
 
-    protected Map<String,String> excludeEverythingButFirstTag(Map<String,String> list) {
-        for (String x : list.keySet()) {
-            String s = list.get(x);
+    protected Map<String, String> excludeEverythingButFirstTag(Map<String, String> list) {
+        for (Entry<String, String> entry : list.entrySet()) {
+            String value = entry.getValue();
             int l_index = -1;
             int r_index = -1;
-            if (s != null) {
-                l_index = s.indexOf("<");
-                r_index = s.indexOf(">");
+            if (value != null) {
+                l_index = value.indexOf("<");
+                r_index = value.indexOf(">");
             }
+            String key = entry.getKey();
             if (r_index > -1 && l_index > -1) {
-                list.put(x,s.subSequence(l_index, r_index + 1).toString());
+                list.put(key, value.subSequence(l_index, r_index + 1).toString());
             } else {
-                list.put(x,null);
+                list.put(key, null);
             }
         }
         return list;

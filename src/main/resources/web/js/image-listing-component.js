@@ -108,13 +108,13 @@
    	              $(wrapper + " ul li:first a").click();
                 }
               } else {
- 	            if($$.parent().prev().length != 0) {
+ 	        if($$.parent().prev().length != 0) {
                   $$.parent().prev().find("a").click();
-	            } else {
+	        } else {
                   $(wrapper + " ul li:last a").click();
-	            }
-	          }
-	          e.preventDefault();
+	        }
+	      }
+	      e.preventDefault();
            });
            //init
 	   if(navClass == "next" || navClass == "prev") {
@@ -131,13 +131,13 @@
                $(wrapper + " a.next").stop().fadeTo(settings.fadeNavInOutTime, 1);
 	           $(wrapper + " a.prev").stop().fadeTo(settings.fadeNavInOutTime, 0.5);
              }
-	       }, function () {
+	   }, function () {
              fadeMultiple(new Array(wrapper + " a.next", wrapper + " a.next span",
                                     wrapper + " a.prev", wrapper + " a.prev span"), settings.fadeNavInOutTime, 0);
            });
 
 	   if(navClass != "next" && navClass != "prev") {
-           scaleAndCalculatePosition();
+             scaleAndCalculatePosition();
 	   }
      }
          
@@ -149,7 +149,7 @@
          //cache image instance
          var $$$ = $(wrapperContainerLink + " img");
          var imgHeight = $$$.height();
-	     var imgWidth = $$$.width();
+	 var imgWidth = $$$.width();
 	     
          //IE 6 max-height substitute
          if (jQuery.browser.msie && jQuery.browser.version <= 6) {
@@ -197,15 +197,17 @@
   	   link.setAttribute("href", $(thelink).attr("href"));
   	   link.setAttribute("class", container.substring(1) + "-link");
   	   link.setAttribute("className", container.substring(1) + "-link"); // IE
-  	   return  $(link).append(img);
+  	   return $(link).append(img);
   	 }
 
 	 function setMultipleCSS(elements, cssProperty, value) {
-	   for(var i = 0; i < elements.length; i++) { $(elements[i]).css(cssProperty, value);}
+           var elementsLength = elements.length;
+	   for(var i = 0; i < elementsLength; i++) { $(elements[i]).css(cssProperty, value);}
 	 }
 
 	 function fadeMultiple(elements, time, opacity) {
-	   for(var i = 0; i < elements.length; i++) {$(elements[i]).stop().fadeTo(time, opacity); }
+           var elementsLength = elements.length;
+	   for(var i = 0; i < elementsLength; i++) {$(elements[i]).stop().fadeTo(time, opacity); }
 	 }
   };
 })(jQuery)

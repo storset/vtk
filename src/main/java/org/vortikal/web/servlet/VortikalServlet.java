@@ -670,7 +670,6 @@ public class VortikalServlet extends DispatcherServlet {
         }
 
         resp.setStatus(statusCode);
-        resp.setHeader("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0");        
         try {
 
             if (this.logger.isDebugEnabled()) {

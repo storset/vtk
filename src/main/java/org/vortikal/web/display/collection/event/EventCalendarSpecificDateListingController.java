@@ -72,6 +72,8 @@ public class EventCalendarSpecificDateListingController extends EventCalendarLis
 
                 Service service = RequestContext.getRequestContext().getService();
                 URL baseURL = service.constructURL(RequestContext.getRequestContext().getResourceURI());
+                baseURL.setParameter(EventListingHelper.REQUEST_PARAMETER_DATE, request
+                        .getParameter(EventListingHelper.REQUEST_PARAMETER_DATE));
 
                 List<URL> urls = ListingPager.generatePageThroughUrls(specificDateEvents.getTotalHits(), pageLimit,
                         baseURL);

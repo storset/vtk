@@ -34,6 +34,8 @@ import java.io.Writer;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
@@ -48,6 +50,7 @@ import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.DirectiveNodeFactory;
 import org.vortikal.text.tl.DirectiveParseContext;
 import org.vortikal.text.tl.Node;
+import org.vortikal.web.RequestContext;
 
 public class ResourcePropsNodeFactory implements DirectiveNodeFactory {
 
@@ -71,10 +74,12 @@ public class ResourcePropsNodeFactory implements DirectiveNodeFactory {
                 String ref = arg1.getValue(ctx).toString();
 
                 if (ref.equals(".")) {
-                    Object o = ctx.get(StructuredResourceDisplayController.MVC_MODEL_KEY);
+                    RequestContext requestContext = RequestContext.getRequestContext();
+                    HttpServletRequest request = requestContext.getServletRequest();
+                    Object o = request.getAttribute(StructuredResourceDisplayController.MVC_MODEL_REQ_ATTR);
                     if (o == null) {
                         throw new Exception("Unable to locate resource: no model: " 
-                                + StructuredResourceDisplayController.MVC_MODEL_KEY);
+                                + StructuredResourceDisplayController.MVC_MODEL_REQ_ATTR);
                     }
                     @SuppressWarnings("unchecked")
                     Map<String, Object> model = (Map<String, Object>) o;

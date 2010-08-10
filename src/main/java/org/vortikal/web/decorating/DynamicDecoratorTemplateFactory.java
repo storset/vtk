@@ -76,7 +76,7 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
     private ComponentResolver componentResolver;
 
     public Template newTemplate(TemplateSource templateSource) throws InvalidTemplateException {
-        return new DynamicDecoratorTemplate(templateSource, this.componentResolver, this.directiveHandlers);
+        return new DynamicDecoratorTemplate(templateSource, this.componentResolver, this.directiveHandlers, null);
     }
 
     @Required public void setRepository(Repository repository) {

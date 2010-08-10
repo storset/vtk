@@ -85,29 +85,29 @@ resourcetype structured-article : structured-document {
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <resource:comments-feed-link />
-        <structured-article:javascript />
-        <title><comp:title /></title>
+        [call "resource:comments-feed-link"]
+        [call "structured-article:javascript"]
+        <title>[call "comp:title"]</title>
       </head>
       <body id="vrtx-structured-article">
         <div id="vrtx-content">
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-${resource:property id=[resource:hideAdditionalContent]}">
-            <h1><comp:title /></h1>
-            <comp:introduction />
-            <comp:introduction-image />
-            <resource:media-player />
-            <json:field select="content" />
-            <comp:related-content-in-main-column />
-            <resource:tags />
-            <comp:author />
- 		    <comp:vrtx-date-info />
+            <h1>[call "comp:title"]</h1>
+            [call "comp:introduction"]
+            [call "comp:introduction-image"]
+            [call "resource:media-player"]
+            [call "json:field" {"select":"content"}]
+            [call "comp:related-content-in-main-column"]
+            [call "resource:tags"]
+            [call "comp:author"]
+            [call "comp:vrtx-date-info"]
             <div class="vrtx-social-components"
-              <resource:email-friend />
-              <resource:share-at />
-          	</div>
-          	<resource:comments />
+              [call "resource:email-friend"]
+              [call "resource:share-at"]
+            </div>
+            [call "resource:comments"]
           </div>
-          <comp:related-content-in-additional-column  />
+          [call "comp:related-content-in-additional-column"]
         </div>
       </body>
     </html>

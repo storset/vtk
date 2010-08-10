@@ -61,28 +61,28 @@ resourcetype structured-event : structured-document {
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <resource:comments-feed-link />
-        <structured-article:javascript />
-        <title><comp:title /></title>
+        [call "resource:comments-feed-link"]
+        [call "structured-article:javascript"]
+        <title>[call "comp:title"]</title>
       </head>
       <body id="vrtx-structured-event">
        <div id="vrtx-content">
          <div id="vrtx-main-content">
-            <h1><comp:title /></h1>
-            <comp:introduction />
+            <h1>[call "comp:title"]</h1>
+            [call "comp:introduction"]
             <div class="vrtx-byline">
-              <resource:time-and-place />
+              [call "resource:time-and-place"]
             </div>
-            <comp:introduction-image />
-            <json:field select="content" />
-            <comp:organizer />
-            <resource:tags />
-            <comp:vrtx-date-info />
-            <div class="vrtx-social-components"
-              <resource:email-friend />
-              <resource:share-at />
+            [call "comp:introduction-image"]
+            [call "json:field" {"select":"content"}]
+            [call "comp:organizer"]
+            [call "resource:tags"]
+            [call "comp:vrtx-date-info"]
+            <div class="vrtx-social-components">
+              [call "resource:email-friend"]
+              [call "resource:share-at"]
             </div>
-            <resource:comments />
+            [call "resource:comments"]
           </div>
        </div>
       </body>

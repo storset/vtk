@@ -80,20 +80,19 @@ resourcetype structured-document {
       ##
     }
     
-    vrtx-date-info{
-    	##
-    	[resource-props "."]
-    	[if publish-date != null]
-	    	<div class="vrtx-date-info">
-	    	<span class="published-date-label">[localized "publishedDate"]</span> <span class="published-date">[val publish-date] </span>
-	    	[if publish-date < contentLastModified]
-	    		- <span class="last-modified-date">[localized "contentLastModifiedDate"]</span> <span class="last-modified-date">[val contentLastModified]</span>
-	    	[endif]
-	    	</div>
-    	[endif]
-    	##
+    vrtx-date-info {
+      ##
+      [resource-props "."]
+      [if publish-date != null]
+        <div class="vrtx-date-info">
+        <span class="published-date-label">[localized "publishedDate"]</span> <span class="published-date">[val publish-date] </span>
+        [if publish-date < contentLastModified]
+          - <span class="last-modified-date">[localized "contentLastModifiedDate"]</span> <span class="last-modified-date">[val contentLastModified]</span>
+        [endif]
+        </div>
+      [endif]
+      ##
     }
-    
   }
 
   view {
@@ -101,15 +100,15 @@ resourcetype structured-document {
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <title><comp:title /></title>
+        <title>[call "comp:title"]</title>
       </head>
       <body>
-        <h1><comp:title /></h1>
-        <comp:introduction-image />
-        <comp:introduction />
-        <json:field select="content" />
-        <resource:tags />
-        <resource:comments />
+        <h1>[call "comp:title"]></h1>
+        [call "<comp:introduction-image"]
+        [call "comp:introduction"]
+        [call "json:field" {"select":"content"}]
+        [call "resource:tags"]
+        [call "resource:comments"]
       </body>
     </html>
     ##

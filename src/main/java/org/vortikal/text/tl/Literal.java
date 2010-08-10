@@ -42,12 +42,30 @@ public class Literal implements Argument {
     private Type type;
     private Object value;
     
+    /**
+     * Literal: "string", 'string', true, false, <number>
+     * @param rawValue
+     */
     public Literal(String rawValue) {
+        if (rawValue == null) {
+            throw new IllegalArgumentException("Null");
+        }
+        if (rawValue.length() == 0) {
+            throw new IllegalArgumentException("Empty value");
+        }
         this.rawValue = rawValue;
+        
         String stringValue = getStringValue(rawValue);
         if (stringValue != null) {
             this.type = Type.STRING;
             this.value = stringValue;
+            return;
+        }
+        
+        Boolean booleanValue = getBooleanValue(rawValue);
+        if (booleanValue != null) {
+            this.type = Type.BOOLEAN;
+            this.value = booleanValue;
             return;
         }
         
@@ -58,12 +76,6 @@ public class Literal implements Argument {
             return;
         }
         
-        Boolean booleanValue = getBooleanValue(rawValue);
-        if (booleanValue != null) {
-            this.type = Type.BOOLEAN;
-            this.value = booleanValue;
-            return;
-        }
         throw new IllegalArgumentException("Unsupported value type: " + rawValue);
     }
     
@@ -101,13 +113,37 @@ public class Literal implements Argument {
     }
     
     private String getStringValue(String token) {
-        if (token.startsWith("\"") && token.endsWith("\"")) {
-            return token.substring(1, token.length() - 1);
-
-        } else if (token.startsWith("'") && token.endsWith("'")) {
-            return token.substring(1, token.length() - 1);
+        if (!(token.startsWith("\"") || token.startsWith("'"))) {
+            return null;
         }
-        return null;
+        if (token.length() == 1) {
+            throw new IllegalArgumentException("Unterminated string: " + rawValue);
+        }
+        StringBuilder sb = new StringBuilder();
+        int len = token.length();
+        boolean escape = false;
+        for (int i = 1; i < len - 1; i++) {
+            char c = token.charAt(i);
+            if (c == '\\' && !escape) {
+                escape = true;
+                continue;
+            }
+            if (escape) {
+                if (!(c == '\\' || c == '\'' || c == '"')) {
+                    throw new IllegalArgumentException("Illegal escape sequence: \\" + c 
+                            + " in string: " + token);
+                }
+            }
+            sb.append(c);
+            escape = false;
+        }
+        if (escape) {
+            throw new IllegalArgumentException("Unterminated escape sequence in string: " + token);
+        }
+        if (token.charAt(0) != token.charAt(len - 1)) {
+            throw new IllegalArgumentException("Unterminated string: " + token);
+        }
+        return sb.toString();
     }
     
     private Number getNumberValue(String token) {
@@ -135,4 +171,35 @@ public class Literal implements Argument {
     public String toString() {
         return "literal:" + this.value;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + this.type.hashCode();
+        result = prime * result + this.value.hashCode();
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Literal other = (Literal) obj;
+        if (!this.type.equals(other.type)) {
+            return false;
+        }
+        if (!this.value.equals(other.value)) {
+            return false;
+        }
+        return true;
+    }
+    
 }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2010, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,39 +28,38 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.resourcemanagement.view.tl;
+package org.vortikal.web.decorating;
 
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
+import org.vortikal.text.html.HtmlPageParser;
+import org.vortikal.text.tl.DirectiveNodeFactory;
 
-import org.vortikal.resourcemanagement.StructuredResource;
-import org.vortikal.resourcemanagement.view.StructuredResourceDisplayController;
-import org.vortikal.text.tl.Context;
-import org.vortikal.text.tl.Symbol;
-import org.vortikal.text.tl.expr.Function;
-import org.vortikal.web.RequestContext;
+public class SimpleDynamicDecoratorTemplateFactory implements TemplateFactory {
 
-public class JSONDocumentProvider extends Function {
+    private ComponentResolver componentResolver;
+    private Map<String, DirectiveNodeFactory> directiveHandlers;
+    private HtmlPageParser htmlParser = null;
 
-    public JSONDocumentProvider(Symbol symbol) {
-        super(symbol, 0);
-    }
-
+    
     @Override
-    public Object eval(Context ctx, Object... args) {
-        RequestContext requestContext = RequestContext.getRequestContext();
-        HttpServletRequest request = requestContext.getServletRequest();
-        Object o = request.getAttribute(StructuredResourceDisplayController.MVC_MODEL_REQ_ATTR);
-        if (o == null) {
-            throw new RuntimeException("Unable to access MVC model");
-        }
-        @SuppressWarnings("unchecked")
-        Map<String, Object> model = (Map<String, Object>) o;
-        StructuredResource res = (StructuredResource) model.get("structured-resource");
-        if (res == null) {
-            throw new RuntimeException("No structured resource found in MVC model");
-        }
-        return res.toJSON();
+    public Template newTemplate(TemplateSource templateSource)
+            throws InvalidTemplateException {
+        return new DynamicDecoratorTemplate(templateSource, this.componentResolver, 
+                this.directiveHandlers, this.htmlParser);
     }
+
+    public void setComponentResolver(ComponentResolver componentResolver) {
+        this.componentResolver = componentResolver;
+    }
+
+    public void setDirectiveHandlers(
+            Map<String, DirectiveNodeFactory> directiveHandlers) {
+        this.directiveHandlers = directiveHandlers;
+    }
+    
+    public void setHtmlParser(HtmlPageParser htmlParser) {
+        this.htmlParser = htmlParser;
+    }
+
 }

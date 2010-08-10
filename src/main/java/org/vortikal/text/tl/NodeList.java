@@ -47,6 +47,10 @@ public final class NodeList implements Iterable<Node> {
     public Iterator<Node> iterator() {
         return Collections.unmodifiableList(this.nodes).iterator();
     }
+    
+    public List<Node> getNodes() {
+        return Collections.unmodifiableList(this.nodes);
+    }
 
     public void render(Context ctx, Writer out) throws Exception {
         for (Node node: this.nodes) {

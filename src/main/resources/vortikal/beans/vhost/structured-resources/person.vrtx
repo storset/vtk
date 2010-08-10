@@ -44,7 +44,7 @@ resourcetype person {
     tags tooltip (en : "(Tag1, Tag2, ...)", no : "(Emneord1, Emneord2, ...)", nn : "(Emneord1, Emneord2, ...)"),
     postalAddress tooltip (en : "(postbox / streetaddress, postnumber place)", no : "(postboks / gateadresse, postnummer sted)", nn : "(postboks / gateadresse, postnummer sted)"),
     alternativeVisitingAddress tooltip (en : "(building, streetaddress, postnumber place)", no : "(bygning, gateadresse, postnummer sted)", nn : "(bygning, gateadresse, postnummer sted)"),
-	rssFeeds (after combinedGroups)
+  rssFeeds (after combinedGroups)
   }
 
   scripts {
@@ -79,18 +79,18 @@ resourcetype person {
           [else]
         
           [if email != null && email != ""]
-          	<div class="vrtx-person-contact-info-line vrtx-email"><span class="vrtx-label">[localized "email"]</span>
-          	  [list email emailLine]
-          	    <a class="vrtx-value" href="mailto:[val emailLine]">[val emailLine]</a>
-          	  [endlist]
-          	</div>
+            <div class="vrtx-person-contact-info-line vrtx-email"><span class="vrtx-label">[localized "email"]</span>
+              [list email emailLine]
+                <a class="vrtx-value" href="mailto:[val emailLine]">[val emailLine]</a>
+              [endlist]
+            </div>
           [endif]
           [if phone != null && phone != ""]
             <div class="vrtx-person-contact-info-line vrtx-phone">
               <span class="vrtx-label">[localized "phone"]</span>
               [list phone phoneLine]
                 <span class="vrtx-value">[val phoneLine]</span>
-         	  [endlist]
+             [endlist]
             </div>
           [endif]
           [if mobile != null && mobile != ""]
@@ -123,24 +123,24 @@ resourcetype person {
           [endif]
           [if username != null && username != ""]
             <div class="vrtx-person-contact-info-line vrtx-username">
-           	  <span class="vrtx-label">[localized "username"]</span>
-           	  <span class="vrtx-value">[val username]</span>
+               <span class="vrtx-label">[localized "username"]</span>
+               <span class="vrtx-value">[val username]</span>
             </div>
           [endif]
-		  [if alternativeVisitingAddress != null && alternativeVisitingAddress != ""]
-		    <div class="vrtx-person-visiting-address"><span class="vrtx-label">[localized "userVisitingAddress"]</span>
-		      [list alternativeVisitingAddress alternativeVisitingAddressLine]
-		        <span class="vrtx-address-line">[if alternativeVisitingAddressLine != null][val alternativeVisitingAddressLine][endif]</span>
-		      [endlist]
-		    </div>
-		  [else]
-		    [if visitingAddress != null && visitingAddress != ""]
-		      <div class="vrtx-person-visiting-address"><span class="vrtx-label">[localized "userVisitingAddress"]</span>
-		        [list visitingAddress visitingAddressLine]
-		          <span class="vrtx-address-line">[if visitingAddressLine != null][val visitingAddressLine][endif]</span>
-		        [endlist]
-		      </div>
-		    [endif]
+          [if alternativeVisitingAddress != null && alternativeVisitingAddress != ""]
+            <div class="vrtx-person-visiting-address"><span class="vrtx-label">[localized "userVisitingAddress"]</span>
+              [list alternativeVisitingAddress alternativeVisitingAddressLine]
+                <span class="vrtx-address-line">[if alternativeVisitingAddressLine != null][val alternativeVisitingAddressLine][endif]</span>
+              [endlist]
+            </div>
+          [else]
+            [if visitingAddress != null && visitingAddress != ""]
+              <div class="vrtx-person-visiting-address"><span class="vrtx-label">[localized "userVisitingAddress"]</span>
+                [list visitingAddress visitingAddressLine]
+                  <span class="vrtx-address-line">[if visitingAddressLine != null][val visitingAddressLine][endif]</span>
+                [endlist]
+              </div>
+            [endif]
           [endif]
           [if postalAddress != null && postalAddress != ""]
             <div class="vrtx-person-postal-address"><span class="vrtx-label"> [localized "postalAddress"]</span>
@@ -150,8 +150,8 @@ resourcetype person {
             </div>
           [endif]
           
-          [endif]
-        </div>
+        [endif]
+      </div>
       ##
     }
     
@@ -167,9 +167,9 @@ resourcetype person {
               [def theurl json-attr(feed, "rssUrl")]
               [if theurl != null && theurl != ""]
                 [if thetitle != null && thetitle != ""]
-                  ${include:feed url=\[[val theurl]\] override-feed-title=\[[val thetitle]\] feed-title=\[true\] max-messages=\[3\] include-if-empty=\[false\]}
+                  [call "include:feed" {"url":theurl, "override-feed-title":thetitle, "feed-title":true, "max-messages":3, "include-if-empty":false}]
                 [else]
-                  ${include:feed url=\[[val theurl]\] feed-title=\[true\] max-messages=\[3\] include-if-empty=\[false\]}
+                  [call "include:feed" {"url":theurl, "feed-title":true, "max-messages":3, "include-if-empty":false}]
                 [endif]
               [endif]
             [endlist]
@@ -214,14 +214,14 @@ resourcetype person {
           <h2>[localized "scientificInformation"]</h2>
           [if (publications != null && publications != "") && (externalPublications != null && externalPublications != "")]
             <div id="vrtx-publication-tabs" class="vrtx-person-publications">
-               ${resource:publications}
+               [call "resource:publications"]
             </div>
           [else]
             [if (publications != null && publications != "")]
               [val publications unescaped]
             [else]
               <div id="vrtx-publication-tabs" class="vrtx-person-publications">
-               ${resource:publications}
+               [call "resource:publications"]
               </div>
             [endif]
           [endif]
@@ -244,9 +244,9 @@ resourcetype person {
     }
     
     vrtx-date-info {
-    	##
-    	[resource-props "."]
-    	[if publish-date != null]
+      ##
+      [resource-props "."]
+      [if publish-date != null]
            <div class="vrtx-date-info">
            <span class="published-date-label">[localized "publishedDate"]</span> <span class="published-date">[val publish-date] </span>
            [if publish-date < contentLastModified]
@@ -302,30 +302,30 @@ resourcetype person {
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
         <head profile="http://microformats.org/profile/hcard">
-        <title><comp:title /></title>
+        <title>[call "comp:title"]</title>
       </head>
       <body id="vrtx-person">
       <div id="vrtx-content">
         <div id="vrtx-main-content">
-          <h1><comp:title /></h1>
-          <comp:position />
+          <h1>[call "comp:title"]</h1>
+          [call "comp:position"]
           <div id="vrtx-person-contact-info-wrapper">
-              <comp:person-image />
-              <comp:contact-information />
-              <comp:contact-extras />
+              [call "comp:person-image"]
+              [call "comp:contact-information"]
+              [call "comp:contact-extras"]
               <div class="vrtx-person-contact-info-wrapper-end"></div>
           </div>
           <div id="vrtx-person-main-content-wrapper">
-            <json:field select="content" />
-            <resource:tags />
-            <comp:scientific-info />
-            <comp:vrtx-date-info />
+            [call "json:field" {"select":"content"}]
+            [call "resource:tags"]
+            [call "comp:scientific-info"]
+            [call "comp:vrtx-date-info"]
           </div>
         </div>
         <div id="vrtx-additional-content">
-           <comp:feeds />
-           <resource:project-list />
-           <resource:resarch-group-list />
+           [call "comp:feeds"]
+           [call "resource:project-list"]
+           [call "resource:resarch-group-list"]
         </div>
       </body>
     </html>

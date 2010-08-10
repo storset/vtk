@@ -40,10 +40,12 @@ public class TextNode extends Node {
         this.text = text;
     }
 
+    @Override
     public void render(Context ctx, Writer out) throws Exception {
         out.write(this.text);
     }
 
+    @Override
     public String toString() {
         return "textnode#" + this.text + "#";
     }

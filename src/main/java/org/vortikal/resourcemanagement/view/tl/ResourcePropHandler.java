@@ -32,6 +32,8 @@ package org.vortikal.resourcemanagement.view.tl;
 
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
@@ -43,6 +45,7 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Symbol;
 import org.vortikal.text.tl.expr.Function;
+import org.vortikal.web.RequestContext;
 
 public class ResourcePropHandler extends Function {
 
@@ -68,10 +71,12 @@ public class ResourcePropHandler extends Function {
 
         if (resource == null) {
             if (ref.equals(".")) {
-                Object o = ctx.get(StructuredResourceDisplayController.MVC_MODEL_KEY);
+                RequestContext requestContext = RequestContext.getRequestContext();
+                HttpServletRequest request = requestContext.getServletRequest();
+                Object o = request.getAttribute(StructuredResourceDisplayController.MVC_MODEL_REQ_ATTR);
                 if (o == null) {
                     throw new RuntimeException("Unable to access MVC model: "
-                            + StructuredResourceDisplayController.MVC_MODEL_KEY);
+                            + StructuredResourceDisplayController.MVC_MODEL_REQ_ATTR);
                 }
                 @SuppressWarnings("unchecked")
                 Map<String, Object> model = (Map<String, Object>) o;

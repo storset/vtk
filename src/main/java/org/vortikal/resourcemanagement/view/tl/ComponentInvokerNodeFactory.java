@@ -78,9 +78,6 @@ public class ComponentInvokerNodeFactory implements DirectiveNodeFactory {
         ComponentResolver componentResolver = this.componentSupport.getComponentResolver(context);
         
         DecoratorComponent component = componentResolver.resolveComponent(namespace, name);
-        if (component == null) {
-            throw new RuntimeException("Unable to resolve component '" + namespace + ":" + name + "'");
-        }
         return component;
     }
     
@@ -90,7 +87,6 @@ public class ComponentInvokerNodeFactory implements DirectiveNodeFactory {
     
     public Node create(DirectiveParseContext ctx) throws Exception {
         List<Argument> args = ctx.getArguments();
-        
         
         if (args.size() == 0) {
             throw new RuntimeException(
@@ -118,9 +114,9 @@ public class ComponentInvokerNodeFactory implements DirectiveNodeFactory {
                     throw new RuntimeException("Second argument must be a map");
                 }
                 for (Map.Entry<?, ?> entry : ((Map<?, ?>) parameterMap).entrySet()) {
-                    if (entry.getKey() == null || entry.getValue() == null) {
-                        throw new RuntimeException("NULL values not allowed in parametermap");
-                    }
+//                    if (entry.getKey() == null || entry.getValue() == null) {
+//                        throw new RuntimeException("NULL values not allowed in parameter map: " + entry.getKey() + " = " + entry.getValue());
+//                    }
                     if (!(entry.getKey() instanceof String)) {
                         throw new RuntimeException("Parameter names must be strings");
                     }
@@ -134,6 +130,10 @@ public class ComponentInvokerNodeFactory implements DirectiveNodeFactory {
                 }
 
                 DecoratorComponent component = resolveComponent(ctx, namespace, name);
+                if (component == null) {
+                    out.write("Unable to resolve component '" + namespace + ":" + name + "'");
+                    return;
+                }
                 
                 RequestContext requestContext = RequestContext.getRequestContext();
                 HttpServletRequest servletRequest = requestContext.getServletRequest();
@@ -146,8 +146,8 @@ public class ComponentInvokerNodeFactory implements DirectiveNodeFactory {
                 
                 for (DecoratorComponent c : componentStack) {
                     if (c == component) {
-                        throw new RuntimeException("Component invocation loop detected: " 
-                                + c.getNamespace() + ":" + c.getName());
+                        out.write("Component invocation loop detected: '" + c.getNamespace() + ":" + c.getName()+ "'");
+                        return;
                     }
                 }
                 componentStack.push(component);
@@ -155,7 +155,7 @@ public class ComponentInvokerNodeFactory implements DirectiveNodeFactory {
                     Locale locale = ctx.getLocale();
                     final String doctype = "";
 
-                    Map<Object, Object> mvcModel = (Map<Object, Object>) ctx.get(StructuredResourceDisplayController.MVC_MODEL_KEY);
+                    Map<Object, Object> mvcModel = (Map<Object, Object>) servletRequest.getAttribute(StructuredResourceDisplayController.MVC_MODEL_REQ_ATTR);
                     DecoratorRequest decoratorRequest = new DecoratorRequestImpl(
                             getHtmlPage(ctx), servletRequest, mvcModel, 
                             (Map<String, Object>) parameterMap, doctype, locale);

@@ -21,7 +21,7 @@ resourcetype research-group {
   }
 
   scripts {
-  	participantsUsernames multipleinputfields,
+    participantsUsernames multipleinputfields,
     tags autocomplete (minChars : "1")
   }
     
@@ -114,9 +114,9 @@ resourcetype research-group {
               
               [if theurl != null && theurl != ""]         
                 [if thetitle != null && thetitle != ""]
-                  ${include:feed url=\[[val theurl]\] override-feed-title=\[[val thetitle]\] feed-title=\[true\] max-messages=\[3\] include-if-empty=\[false\]}
+                  [call "include:feed" {"url":theurl, "override-feed-title":thetitle, "feed-title":true, "max-messages":3, "include-if-empty":false}]
                 [else]
-                  ${include:feed url=\[[val theurl]\] feed-title=\[true\] max-messages=\[3\] include-if-empty=\[false\]}
+                  [call "include:feed" {"url":theurl, "feed-title":true, "max-messages":3, "include-if-empty":false}]
                 [endif]
               [endif]
           [endlist]
@@ -125,20 +125,19 @@ resourcetype research-group {
       ##
     }
     
-     vrtx-date-info{
-    	##
-    	[resource-props "."]
-    	[if publish-date != null]
-	    	<div class="vrtx-date-info">
-	    	<span class="published-date-label">[localized "publishedDate"]</span> <span class="published-date">[val publish-date] </span>
-	    	[if publish-date < contentLastModified]
-	    		- <span class="last-modified-date">[localized "contentLastModifiedDate"]</span> <span class="last-modified-date">[val contentLastModified]</span>
-	    	[endif]
-	    	</div>
-    	[endif]
-    	##
+    vrtx-date-info {
+      ##
+      [resource-props "."]
+      [if publish-date != null]
+         <div class="vrtx-date-info">
+         <span class="published-date-label">[localized "publishedDate"]</span> <span class="published-date">[val publish-date] </span>
+         [if publish-date < contentLastModified]
+            - <span class="last-modified-date">[localized "contentLastModifiedDate"]</span> <span class="last-modified-date">[val contentLastModified]</span>
+         [endif]
+         </div>
+      [endif]
+      ##
     }
-    
   }
 
   view {
@@ -146,22 +145,22 @@ resourcetype research-group {
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <title><json:field select="name" /></title>
+        <title>[call "json:field" {"select":"name"}]</title>
       </head>
       <body id="vrtx-structured-project">
         <div id="vrtx-content">
           <div id="vrtx-main-content">
-            <h1><json:field select="name" /></h1>
-            <comp:introduction />
-            <comp:introduction-image />
-            <json:field select="content" />
-            <resource:tags />
-            <comp:vrtx-date-info />
+            <h1>[call "json:field" {"select":"name"}]</h1>
+            [call "comp:introduction"]
+            [call "comp:introduction-image"]
+            [call "json:field" {"select":"content"}]
+            [call "resource:tags"]
+            [call "comp:vrtx-date-info"]
           </div>
           <div id="vrtx-additional-content">
-            <comp:contact-info />
-            <resource:person-list />
-            <comp:feeds />
+            [call "comp:contact-info"]
+            [call "resource:person-list"]
+            [call "comp:feeds"]
           </div> 
         </div>
       </body>

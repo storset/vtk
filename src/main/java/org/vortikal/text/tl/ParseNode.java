@@ -30,92 +30,28 @@
  */
 package org.vortikal.text.tl;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
 
 public class ParseNode {
-    public enum Type {Text, Directive};
+    public enum Type {Text, Directive, Comment, Raw};
     public Type type;
-    public String value;
-
-    public String toString() {
-        if (this.type == Type.Text) {
-            return "text('" + this.value + "')";
-        }
-        return "directive('" + this.value + "')";
-    }
-
-    /**
-     * The set of characters that are reserved 
-     * (i.e. treated as separate symbols and thus 
-     * not allowed to be part of other symbols)
-     */
-    public static final Set<Character> RESERVED_CHARS; 
+    public String name;
+    public String text;
+    public List<Argument> arguments;
     
-    static {
-        RESERVED_CHARS = new HashSet<Character>();
-        RESERVED_CHARS.add('(');
-        RESERVED_CHARS.add(')');
-        RESERVED_CHARS.add('{');
-        RESERVED_CHARS.add('}');
-        RESERVED_CHARS.add(':');
-        RESERVED_CHARS.add(',');
+    public ParseNode(String text, Type type) {
+        if (type == Type.Directive) {
+            throw new IllegalArgumentException("Directives must have a name");
+        }
+        this.text = text;
+        this.type = type;
     }
     
-    public List<String> split() {
-        if (this.type != Type.Directive) {
-            throw new IllegalStateException("Cannot split a text token");
-        }
-        List<String> tokenList = new ArrayList<String>();
-        
-        boolean dquote = false, squote = false;
-
-        StringBuilder cur = new StringBuilder();
-
-        for (int i = 0; i < this.value.length(); i++) {
-            char c = this.value.charAt(i);
-
-            if (c == '"') {
-                if (!squote) {
-                    dquote = !dquote;
-                }
-                cur.append(c);
-                
-            } else if (c == '\'') {
-                if (!dquote) {
-                    squote = !squote;
-                }
-                cur.append(c);
-                
-            } else if (c == ' ' || c == '\n' || c == '\r') {
-                if (dquote || squote) {
-                    cur.append(c);
-                } else {
-                    if (cur.length() > 0) {
-                        tokenList.add(cur.toString());
-                        cur.delete(0, cur.length());
-                    }
-                }
-            } else if (RESERVED_CHARS.contains(c)) {
-                if (dquote || squote) {
-                    cur.append(c);
-                } else {
-                    if (cur.length() > 0) {
-                        tokenList.add(cur.toString());
-                        cur.delete(0, cur.length());
-                    }
-                    tokenList.add(String.valueOf(c));
-                }
-            } else {
-                cur.append(c);
-            }
-        }
-
-        if (cur.length() > 0) {
-            tokenList.add(cur.toString());
-        }
-        return tokenList;
+    public ParseNode(String name, String text, List<Argument> arguments) {
+        this.name = name;
+        this.text = text;
+        this.arguments = arguments;
+        this.type = Type.Directive;
     }
 }

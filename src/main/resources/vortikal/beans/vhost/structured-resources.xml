@@ -65,28 +65,17 @@
 
 
   
-  <bean id="structuredResources.defaultFunctions"
-        class="org.springframework.beans.factory.config.SetFactoryBean">
-    <property name="sourceSet">
-      <ref bean="templateLanguage.concatFunction" />
-    </property>
-  </bean>
-
   <bean id="structuredResources.displayHandler"
         class="org.vortikal.resourcemanagement.view.StructuredResourceDisplayController"
     parent="repositoryAware"
     depends-on="structuredResource.parser">
     <property name="viewName" value="structuredResources.displayView" />
-    <property name="viewService" ref="viewService" />
-    <property name="queryParserFactory" ref="queryParserFactory" />
-    <property name="searcher" ref="systemIndexSearcher" />
     <property name="resourceManager" ref="structuredResources.resourceManager" />
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="templateManager" ref="structuredResources.templateManager" />
     <property name="resourceModelKey" value="structured-resource" />
-    <property name="valueFormatterRegistry" ref="valueFormatterRegistry" />
     <property name="postFilter" ref="decorating.ssiNodeFilter" />
-    <property name="functions" ref="structuredResources.defaultFunctions" />
+    <property name="directiveHandlers" ref="structuredResources.directives" />
     <property name="configProviders">
       <list>
         <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
@@ -115,11 +104,170 @@
   </bean>
   
   <bean id="structuredResources.decoratorTemplateFactory"
-        class="org.vortikal.web.decorating.ParsedHtmlDecoratorTemplateFactory">
-    <property name="htmlParser" ref="decorating.htmlParser" />
+            class="org.vortikal.web.decorating.SimpleDynamicDecoratorTemplateFactory">
+    <property name="directiveHandlers" ref="structuredResources.directives" />
     <property name="componentResolver" ref="decorating.defaultComponentResolver" />
-    <property name="componentParser" ref="decorating.dollarSyntaxTemplateParser" />
+    <property name="htmlParser" ref="decorating.htmlParser" />
   </bean>
+
+  <bean id="structuredResources.directives"
+        class="org.springframework.beans.factory.config.MapFactoryBean">
+    <property name="sourceMap">
+      <map>
+        <entry key="if" value-ref="structuredResources.ifDirective" />
+        <entry key="val" value-ref="structuredResources.valDirective" />
+        <entry key="list" value-ref="structuredResources.listDirective" />
+        <entry key="def" value-ref="structuredResources.defDirective" />
+        <entry key="resource-props" value-ref="structuredResources.resourcePropsDirective" />
+        <entry key="localized" value-ref="structuredResources.localizedDirective" />
+        <entry key="call" value-ref="structuredResources.callDirective" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="structuredResources.ifDirective" class="org.vortikal.text.tl.IfNodeFactory" />
+
+  <bean id="structuredResources.valDirective" class="org.vortikal.text.tl.ValNodeFactory">
+    <constructor-arg>
+      <map>
+        <entry>
+          <key><value type="java.lang.Class">org.vortikal.repository.PropertyImpl</value></key>
+          <bean class="org.vortikal.resourcemanagement.view.tl.PropertyValueFormatHandler">
+            <constructor-arg>
+              <ref bean="valueFormatterRegistry" />
+            </constructor-arg>
+          </bean>
+        </entry>
+        <entry>
+          <key><value type="java.lang.Class">org.vortikal.repository.resourcetype.Value</value></key>
+          <bean class="org.vortikal.resourcemanagement.view.tl.PropertyValueFormatHandler">
+            <constructor-arg ref="valueFormatterRegistry" />
+          </bean>
+        </entry>
+        <entry>
+          <key>
+            <value type="java.lang.Class">org.vortikal.repository.resourcetype.Value[]</value>
+          </key>
+          <bean class="org.vortikal.resourcemanagement.view.tl.PropertyValueFormatHandler">
+            <constructor-arg ref="valueFormatterRegistry" />
+          </bean>
+        </entry>
+      </map>
+    </constructor-arg>
+  </bean>
+
+  <bean id="structuredResources.listDirective" class="org.vortikal.text.tl.ListNodeFactory">
+    <property name="functions" ref="structuredResources.defaultFunctions" />
+  </bean>
+
+  <bean id="structuredResources.defDirective" class="org.vortikal.text.tl.DefineNodeFactory">
+    <property name="functions" ref="structuredResources.defaultFunctions" />
+  </bean>
+
+  <bean id="structuredResources.resourcePropsDirective" class="org.vortikal.resourcemanagement.view.tl.ResourcePropsNodeFactory">
+    <constructor-arg ref="repository" />
+  </bean>
+
+  <bean id="structuredResources.localizedDirective" class="org.vortikal.resourcemanagement.view.tl.LocalizationNodeFactory">
+    <constructor-arg value="structured-resource" />
+  </bean>
+
+  <bean id="structuredResources.callDirective" class="org.vortikal.resourcemanagement.view.tl.ComponentInvokerNodeFactory">
+    <constructor-arg>
+      <bean class="org.vortikal.resourcemanagement.view.StructuredResourceDisplayController$ComponentSupport" />
+    </constructor-arg>
+  </bean>
+
+  <bean id="structuredResources.defaultFunctions"
+        class="org.springframework.beans.factory.config.SetFactoryBean">
+    <property name="sourceSet">
+      <set>
+        <ref bean="templateLanguage.concatFunction" />
+        <ref bean="structuredResources.resourceFunction" />
+        <ref bean="structuredResources.resourcePropFunction" />
+        <ref bean="structuredResources.resourcePropObjValFunction" />
+        <ref bean="structuredResources.structuredDocumentFunction" />
+        <ref bean="structuredResources.jsonAttrFunction" />
+        <ref bean="structuredResources.searchFunction" />
+        <ref bean="structuredResources.viewURLFunction" />
+        <ref bean="structuredResources.toDateFunction" />
+      </set>
+    </property>
+  </bean>
+
+  <bean id="structuredResources.resourceFunction" class="org.vortikal.resourcemanagement.view.tl.RetrieveHandler">
+    <constructor-arg>
+      <bean class="org.vortikal.text.tl.Symbol">
+        <constructor-arg value="resource" />
+      </bean>
+    </constructor-arg>
+    <constructor-arg ref="repository" />
+  </bean>
+
+  <bean id="structuredResources.resourcePropFunction" class="org.vortikal.resourcemanagement.view.tl.ResourcePropHandler">
+    <constructor-arg>
+      <bean class="org.vortikal.text.tl.Symbol">
+        <constructor-arg value="resource-prop" />
+      </bean>
+    </constructor-arg>
+    <constructor-arg ref="repository" />
+  </bean>
+
+  <bean id="structuredResources.resourcePropObjValFunction" class="org.vortikal.resourcemanagement.view.tl.ResourcePropObjectValueHandler">
+    <constructor-arg>
+      <bean class="org.vortikal.text.tl.Symbol">
+        <constructor-arg value="resource-prop-obj-value" />
+      </bean>
+    </constructor-arg>
+    <constructor-arg ref="repository" />
+  </bean>
+
+  <bean id="structuredResources.structuredDocumentFunction" class="org.vortikal.resourcemanagement.view.tl.JSONDocumentProvider">
+    <constructor-arg>
+      <bean class="org.vortikal.text.tl.Symbol">
+        <constructor-arg value="structured-document" />
+      </bean>
+    </constructor-arg>
+  </bean>
+
+  <bean id="structuredResources.jsonAttrFunction" class="org.vortikal.resourcemanagement.view.tl.JSONAttributeHandler">
+    <constructor-arg>
+      <bean class="org.vortikal.text.tl.Symbol">
+        <constructor-arg value="json-attr" />
+      </bean>
+    </constructor-arg>
+  </bean>
+
+  <bean id="structuredResources.searchFunction" class="org.vortikal.resourcemanagement.view.tl.SearchResultValueProvider">
+    <constructor-arg>
+      <bean class="org.vortikal.text.tl.Symbol">
+        <constructor-arg value="search" />
+      </bean>
+    </constructor-arg>
+    <constructor-arg ref="queryParserFactory" />
+    <constructor-arg ref="systemIndexSearcher" />
+  </bean>
+
+  <bean id="structuredResources.viewURLFunction" class="org.vortikal.resourcemanagement.view.tl.ViewURLValueProvider">
+    <constructor-arg>
+      <bean class="org.vortikal.text.tl.Symbol">
+        <constructor-arg value="view-url" />
+      </bean>
+    </constructor-arg>
+    <constructor-arg ref="viewService" />
+  </bean>
+
+  <bean id="structuredResources.toDateFunction" class="org.vortikal.resourcemanagement.view.tl.ToDateFunction">
+    <constructor-arg>
+      <bean class="org.vortikal.text.tl.Symbol">
+        <constructor-arg value="to-date" />
+      </bean>
+    </constructor-arg>
+  </bean>
+
+
+
+
 
   <bean id="structuredResources.componentNamespace" class="java.lang.String">
     <constructor-arg type="java.lang.String" value="json" />

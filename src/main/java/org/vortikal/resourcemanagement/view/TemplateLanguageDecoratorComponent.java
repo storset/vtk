@@ -104,9 +104,10 @@ implements HtmlDecoratorComponent {
             return fragment.getContent();
         } catch (Throwable t) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Error rendering component " + getName(), t);
+                logger.debug("Error rendering component '" + getName() + "'", t);
             }
-            throw new DecoratorComponentException(t.getMessage(), t);
+            throw new DecoratorComponentException("Error rendering component '" 
+                    + getName() + "': " + t.getMessage(), t);
         }
     }
 
@@ -121,9 +122,10 @@ implements HtmlDecoratorComponent {
             writer.close();
         } catch (Throwable t) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Error rendering component " + getName(), t);
+                logger.debug("Error rendering component '" + getName() + "'", t);
             }
-            throw new DecoratorComponentException(t.getMessage(), t);
+            throw new DecoratorComponentException("Error rendering component '" 
+                    + getName() + "': " + t.getMessage(), t);
         }
     }
     

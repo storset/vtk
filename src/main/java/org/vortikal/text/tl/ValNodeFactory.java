@@ -42,6 +42,14 @@ public class ValNodeFactory implements DirectiveNodeFactory {
     
     private static final Symbol UNESCAPED = new Symbol("unescaped");
     
+    public ValNodeFactory() {
+        
+    }
+    
+    public ValNodeFactory(Map<Class<?>, ValueFormatHandler> valueFormatHandlers) {
+        this.valueFormatHandlers = valueFormatHandlers;
+    }
+    
     public Node create(DirectiveParseContext ctx) throws Exception {
     
         // [val obj ["unescaped"]? [format]?]

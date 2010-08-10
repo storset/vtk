@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.decorating;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
@@ -41,6 +42,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.resourcemanagement.view.tl.ComponentInvokerNodeFactory;
 import org.vortikal.text.html.HtmlPage;
+import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.DirectiveNodeFactory;
 import org.vortikal.text.tl.Node;
@@ -57,6 +59,7 @@ public class DynamicDecoratorTemplate implements Template {
     private TemplateSource templateSource;
     private long lastModified = -1;
     private Map<String, DirectiveNodeFactory> directiveHandlers;
+    private HtmlPageParser htmlParser;
     
     private static final String CR_REQ_ATTR = "__component_resolver__";
     private static final String HTML_REQ_ATTR = "__html_page__";
@@ -77,7 +80,8 @@ public class DynamicDecoratorTemplate implements Template {
     
     public DynamicDecoratorTemplate(TemplateSource templateSource,
                                      ComponentResolver componentResolver,
-                                     Map<String, DirectiveNodeFactory> directiveHandlers) throws InvalidTemplateException {
+                                     Map<String, DirectiveNodeFactory> directiveHandlers, 
+                                     HtmlPageParser htmlParser) throws InvalidTemplateException {
         if (templateSource == null) {
             throw new IllegalArgumentException("Argument 'templateSource' is NULL");
         }
@@ -90,6 +94,7 @@ public class DynamicDecoratorTemplate implements Template {
         this.templateSource = templateSource;
         this.componentResolver = componentResolver;
         this.directiveHandlers = directiveHandlers;
+        this.htmlParser = htmlParser;
         try {
             compile();
         } catch (Exception e) {
@@ -114,17 +119,15 @@ public class DynamicDecoratorTemplate implements Template {
         private ParseResult compiledTemplate;
         private ComponentResolver componentResolver;
         private HttpServletRequest request;
-        private Map<Object, Object> model;
         private Map<String, Object> templateParameters;
 
         public Execution(HtmlPageContent content, ParseResult compiledTemplate, 
                 ComponentResolver componentResolver, HttpServletRequest request,
-                Map<Object, Object> model, Map<String, Object> templateParameters) {
+                Map<String, Object> templateParameters) {
             this.content = content;
             this.componentResolver = componentResolver;
             this.compiledTemplate = compiledTemplate;
             this.request = request;
-            this.model = model;
             this.templateParameters = templateParameters;
         }
         
@@ -146,10 +149,16 @@ public class DynamicDecoratorTemplate implements Template {
             context.define(CR_REQ_ATTR, this.componentResolver, true);
             context.define(HTML_REQ_ATTR, html, true);
             this.request.setAttribute(PARAMS_REQ_ATTR, this.templateParameters);
-            Writer writer = new StringWriter();
+            StringWriter writer = new StringWriter();
             NodeList nodeList = this.compiledTemplate.getNodeList();
             nodeList.render(context, writer);
-            return new ContentImpl(writer.toString(), this.content.getOriginalCharacterEncoding());
+            
+            if (htmlParser == null) {
+                return new ContentImpl(writer.toString(), this.content.getOriginalCharacterEncoding());
+            }
+            HtmlPage page = htmlParser.parse(
+                    new ByteArrayInputStream(writer.toString().getBytes("utf-8")), "utf-8");
+            return new HtmlPageContentImpl(page.getCharacterEncoding(), page);
         }
     }
     
@@ -160,7 +169,7 @@ public class DynamicDecoratorTemplate implements Template {
         if (this.templateSource.getLastModified() > this.lastModified) {
             compile();
         }
-        return new Execution(html, this.compiledTemplate, this.componentResolver, request, model, templateParameters);
+        return new Execution(html, this.compiledTemplate, this.componentResolver, request, templateParameters);
     }
 
     

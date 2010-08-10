@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2010, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,39 +28,25 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.resourcemanagement.view.tl;
+package org.vortikal.text.tl;
 
-import java.util.Map;
+import java.io.Writer;
 
-import javax.servlet.http.HttpServletRequest;
+public class CommentNode extends Node {
 
-import org.vortikal.resourcemanagement.StructuredResource;
-import org.vortikal.resourcemanagement.view.StructuredResourceDisplayController;
-import org.vortikal.text.tl.Context;
-import org.vortikal.text.tl.Symbol;
-import org.vortikal.text.tl.expr.Function;
-import org.vortikal.web.RequestContext;
-
-public class JSONDocumentProvider extends Function {
-
-    public JSONDocumentProvider(Symbol symbol) {
-        super(symbol, 0);
+    private String text;
+    
+    public CommentNode(String text) {
+        this.text = text;
+    }
+    
+    @Override
+    public void render(Context ctx, Writer out) throws Exception {
     }
 
     @Override
-    public Object eval(Context ctx, Object... args) {
-        RequestContext requestContext = RequestContext.getRequestContext();
-        HttpServletRequest request = requestContext.getServletRequest();
-        Object o = request.getAttribute(StructuredResourceDisplayController.MVC_MODEL_REQ_ATTR);
-        if (o == null) {
-            throw new RuntimeException("Unable to access MVC model");
-        }
-        @SuppressWarnings("unchecked")
-        Map<String, Object> model = (Map<String, Object>) o;
-        StructuredResource res = (StructuredResource) model.get("structured-resource");
-        if (res == null) {
-            throw new RuntimeException("No structured resource found in MVC model");
-        }
-        return res.toJSON();
+    public String toString() {
+        return "commentnode#" + this.text + "#";
     }
+    
 }

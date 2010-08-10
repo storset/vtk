@@ -6,10 +6,10 @@ resourcetype boxes {
     simplebox : json (foo : string, bar : html) noextract,
     nedtrekk : string
   }
-	
-	
+  
+  
   edit-rules {
-  	simplebox tooltip (en : "Tooltip for simple box", no : "Tips for enkel boks", nn : "Taps for enekl boks"),
+    simplebox tooltip (en : "Tooltip for simple box", no : "Tips for enkel boks", nn : "Taps for enekl boks"),
     title tooltip (en : "Tooltip for title", no : "Tooltip for tittel", nn : "Tooltip for tittel"),
     box-list tooltip (en : "Tooltip for box list", no : "Tooltip for liste med bokser", nn : "Tooltip for liste med bokser"),
     nedtrekk (dropdown)
@@ -72,32 +72,30 @@ resourcetype boxes {
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <title><resource:property id="title" /></title>
+        <title>[call "resource:property" {"id":"title"}]</title>
       </head>
       <body class="foo">
-        <h1><resource:property id="title" /></h1>
-        <comp:box-list first-param="component-param1" second-param="component-param2" />
-        <comp:test-include-feed url="http://www.usit.uio.no/saus/blogg/?vrtx=feed" />
-        <comp:test-search  query="type IN file" />
-        <!--
-        -->
+        <h1>[call "resource:property" {"id":"title"}]</h1>
+        [call "comp:box-list" {"first-param":"component-param1", "second-param":"component-param2"}]
+        [call "comp:test-include-feed" {"url":"http://www.usit.uio.no/saus/blogg/?vrtx=feed"}]
+        [call "comp:test-search" {"query":"type IN file"}]
       </body>
     </html>
     ##
   }
   
     vocabulary {
-     	nedtrekk {
-	       en : ("true" = "Yes", "false" = "No"),
-	       no : ("true" = "Ja", "false" = "Nei"),
-	       nn : ("true" = "Ja", "false" = "Nei")
-	  	}
-  	}
-  	
+       nedtrekk {
+         en : ("true" = "Yes", "false" = "No"),
+         no : ("true" = "Ja", "false" = "Nei"),
+         nn : ("true" = "Ja", "false" = "Nei")
+      }
+    }
+    
     localization {
-    	title : (en : "Title", no : "Tittel", nn : "Tittel"),
-    	box-list : (en : "Box list", no : "Liste med bokser", nn : "Liste med bokser"),
-    	simplebox : (en : "Simple box", no : "Enkel boks", nn : "Enkel boks"),
-    	content : (en : "Content", no : "Innhold", nn : "Innhold")
+      title : (en : "Title", no : "Tittel", nn : "Tittel"),
+      box-list : (en : "Box list", no : "Liste med bokser", nn : "Liste med bokser"),
+      simplebox : (en : "Simple box", no : "Enkel boks", nn : "Enkel boks"),
+      content : (en : "Content", no : "Innhold", nn : "Innhold")
     }
 }

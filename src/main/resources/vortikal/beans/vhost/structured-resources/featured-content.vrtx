@@ -26,13 +26,13 @@ resourcetype featured-content {
            <div class="vrtx-featured-item" id="vrtx-featured-item-[val number]">
              [if picture != null && picture != ""]
                <div class="vrtx-featured-item-picture">
-				 [if webaddress != null && webaddress != ""]
-                 	<a href="[val webaddress]">
+                 [if webaddress != null && webaddress != ""]
+                   <a href="[val webaddress]">
                  [endif]
                  <img src="[val picture]" alt="[localized 'featuredPictureAlt'] [val thetitle]" />
                  [if webaddress != null && webaddress != ""]
-                 	</a>
-				 [endif]
+                   </a>
+                 [endif]
                </div>
              [endif]
              [if (sticktitle != null && sticktitle != "") || (thetitle != null && thetitle != "")
@@ -87,10 +87,10 @@ resourcetype featured-content {
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <title><comp:title /></title>
+        <title>[call "comp:title"]</title>
       </head>
       <body id="vrtx-featured-content">
-         <comp:featured-items />
+         [call "comp:featured-items"]
       </body>
     </html>
     ##

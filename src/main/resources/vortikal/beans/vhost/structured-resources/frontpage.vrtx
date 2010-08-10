@@ -294,17 +294,17 @@ resourcetype frontpage {
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <comp:css-link />
-        <title><comp:title /></title>
+        [call "comp:css-link"]
+        <title>[call "comp:title"]</title>
       </head>
       <body id="vrtx-frontpage">
         <div id="vrtx-content">
-          <h1><comp:title /></h1>
+          <h1>[call "comp:title"]</h1>
           <div id="vrtx-main-content">
-            <comp:frontpage-introduction />
-            <comp:main-content />
+            [call "comp:frontpage-introduction"]
+            [call "comp:main-content"]
           </div>
-          <comp:additional-content />
+          [call "comp:additional-content"]
         </div>
       </body>
     </html>

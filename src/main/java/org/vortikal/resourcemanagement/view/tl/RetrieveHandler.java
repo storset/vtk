@@ -32,6 +32,8 @@ package org.vortikal.resourcemanagement.view.tl;
 
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -41,6 +43,7 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Symbol;
 import org.vortikal.text.tl.expr.Function;
+import org.vortikal.web.RequestContext;
 
 public class RetrieveHandler extends Function {
 
@@ -59,7 +62,9 @@ public class RetrieveHandler extends Function {
         String ref = arg.toString();
 
         if (ref.equals(".")) {
-            Object o = ctx.get(StructuredResourceDisplayController.MVC_MODEL_KEY);
+            RequestContext requestContext = RequestContext.getRequestContext();
+            HttpServletRequest request = requestContext.getServletRequest();
+            Object o = request.getAttribute(StructuredResourceDisplayController.MVC_MODEL_REQ_ATTR);
             if (o == null) {
                 return null;
             }

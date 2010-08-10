@@ -211,12 +211,8 @@
     </property>
   </bean>
 
-  <bean id="displayThumbnailHandler"
-    class="org.vortikal.web.display.thumbnail.DisplayThumbnailController">
-    <property name="repository" ref="repository" />
-  </bean>
-  
-
+  <bean id="displayThumbnailHandler" class="org.vortikal.web.display.thumbnail.DisplayThumbnailController"
+    parent="repositoryAware" />  
 
    <!-- Resource-aware locale resolver (for viewService)  -->
 

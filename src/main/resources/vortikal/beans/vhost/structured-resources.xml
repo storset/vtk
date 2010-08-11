@@ -216,7 +216,7 @@
   <bean id="structuredResources.resourcePropObjValFunction" class="org.vortikal.resourcemanagement.view.tl.ResourcePropObjectValueHandler">
     <constructor-arg>
       <bean class="org.vortikal.text.tl.Symbol">
-        <constructor-arg value="resource-prop-obj-value" />
+        <constructor-arg value="resource-prop-obj-val" />
       </bean>
     </constructor-arg>
     <constructor-arg ref="repository" />

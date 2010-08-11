@@ -40,6 +40,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.vortikal.resourcemanagement.view.tl.ComponentInvokerNodeFactory;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageParser;
@@ -52,7 +54,8 @@ import org.vortikal.text.tl.Parser;
 
 
 public class DynamicDecoratorTemplate implements Template {
-
+    private static Log logger = LogFactory.getLog(DynamicDecoratorTemplate.class);
+    
     private Parser parser;
     private ParseResult compiledTemplate;
     private ComponentResolver componentResolver;
@@ -141,7 +144,10 @@ public class DynamicDecoratorTemplate implements Template {
 
         public PageContent render() throws Exception {
             HtmlPage html = this.content.getHtmlContent();
-            Locale locale = this.request.getLocale(); // XXX
+
+            Locale locale = 
+                new org.springframework.web.servlet.support.RequestContext(this.request).getLocale();
+
             Context context = new Context(locale);
             for (String name : this.templateParameters.keySet()) {
                 context.define(name, this.templateParameters.get(name), true);
@@ -186,7 +192,11 @@ public class DynamicDecoratorTemplate implements Template {
         this.parser = new Parser(reader, this.directiveHandlers);
         try {
             this.compiledTemplate = this.parser.parse();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Successfully compiled template " + this);
+            }
         } catch (Throwable t) {
+            logger.warn("Failed to compile template " + this, t);
             this.compiledTemplate = getErrorTemplate(t);
         }
         this.lastModified = templateSource.getLastModified();
@@ -196,7 +206,7 @@ public class DynamicDecoratorTemplate implements Template {
         return this.getClass().getName() + ": " + this.templateSource;
     }
     
-    private ParseResult getErrorTemplate(Throwable t) {
+    private ParseResult getErrorTemplate(final Throwable t) {
         final String message = t.getMessage();
         final TemplateSource template = this.templateSource;
         NodeList nodeList = new NodeList();

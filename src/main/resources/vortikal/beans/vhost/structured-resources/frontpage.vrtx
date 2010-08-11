@@ -298,7 +298,14 @@ resourcetype frontpage {
         <title>[call "comp:title"]</title>
       </head>
       <body id="vrtx-frontpage">
-        <div id="vrtx-content">
+        [resources-props "."]
+        [def document structured-document()]
+        [def boxes json-attr(document, "properties.additional-content")]
+        [if boxes != null]
+          <div id="vrtx-content">
+        [else]
+          <div id="vrtx-content" class="vrtx-frontpage-wide">
+        [endif]
           <h1>[call "comp:title"]</h1>
           <div id="vrtx-main-content">
             [call "comp:frontpage-introduction"]

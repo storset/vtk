@@ -108,17 +108,23 @@ public class ComponentInvokerNodeFactory implements DirectiveNodeFactory {
 
                 Object parameterMap = Collections.<String, Object>emptyMap();
                 if (expression != null) {
-                    parameterMap = expression.evaluate(ctx);
+                    try {
+                        parameterMap = expression.evaluate(ctx);
+                    } catch (Throwable t) {
+                        out.write(componentRef + ":" + t.getMessage());
+                        return;
+                    }
                 }
                 if (!(parameterMap instanceof Map<?, ?>)) {
-                    throw new RuntimeException("Second argument must be a map");
+                    out.write(componentRef + ": second argument must be a map: " + parameterMap);
+                    return;
                 }
                 for (Map.Entry<?, ?> entry : ((Map<?, ?>) parameterMap).entrySet()) {
 //                    if (entry.getKey() == null || entry.getValue() == null) {
 //                        throw new RuntimeException("NULL values not allowed in parameter map: " + entry.getKey() + " = " + entry.getValue());
 //                    }
                     if (!(entry.getKey() instanceof String)) {
-                        throw new RuntimeException("Parameter names must be strings");
+                        out.write(componentRef + ": parameter name must be string: " + entry.getKey());
                     }
                 }
 
@@ -163,6 +169,9 @@ public class ComponentInvokerNodeFactory implements DirectiveNodeFactory {
                             doctype, locale, "utf-8");
                     component.render(decoratorRequest, decoratorResponse);
                     out.write(decoratorResponse.getContentAsString());
+                } catch (Throwable t) {
+                    out.write(component.getNamespace() + ":" + component.getName()+ ": " + t.getMessage());
+                    
                 } finally {
                     componentStack.pop();
                 }

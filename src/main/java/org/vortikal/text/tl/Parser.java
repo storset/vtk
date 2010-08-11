@@ -127,7 +127,10 @@ public class Parser {
     }
     
     private ParseNode parseComment() throws IOException {
-        this.reader.skip("[!--".length());
+        // reader.skip() does not work after "\r\n":
+        for (int i = 0; i < "[!--".length(); i++) {
+            this.reader.read();
+        }
         StringBuilder buf = new StringBuilder();
         while (true) {
             int c = this.reader.read();
@@ -166,7 +169,10 @@ public class Parser {
 
 
     private ParseNode parseRawNode() throws IOException {
-        this.reader.skip("[#--".length());
+        // reader.skip() does not work after "\r\n":
+        for (int i = 0; i < "[#--".length(); i++) {
+            this.reader.read();
+        }
         StringBuilder buf = new StringBuilder();
         while (true) {
             int c = this.reader.read();

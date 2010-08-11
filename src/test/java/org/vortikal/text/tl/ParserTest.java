@@ -87,7 +87,12 @@ public class ParserTest extends TestCase {
         
         result = parseAndRender("\r\n[!--comment--]", ctx);
         assertEquals("\n", result);
+
+        result = parseAndRender("\r\n[#--<!-- HTML comment --> --]", ctx);
+        assertEquals("\n<!-- HTML comment --> ", result);
+
         
+   
         result = parseAndRender("\r\n[def x-x \"22\"]\r\n[def x-y x-x]\r\n[val x-y]", ctx);
         assertEquals("\n\n\n22", result);
 

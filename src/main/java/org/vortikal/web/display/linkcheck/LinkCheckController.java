@@ -51,6 +51,11 @@ import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceNotFoundException;
+import org.vortikal.repository.search.ResultSet;
+import org.vortikal.repository.search.Search;
+import org.vortikal.repository.search.query.TermOperator;
+import org.vortikal.repository.search.query.UriTermQuery;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.io.StreamUtil;
@@ -154,19 +159,29 @@ public class LinkCheckController implements Controller {
     }
 
     private boolean isBrokenInternal(String link, String token) {
-        try {
-            Path path = Path.fromString(link);
-            boolean exists = this.repository.exists(token, path);
-            return !exists;
-        } catch (IllegalArgumentException e) {
-            return true;
-        } catch (AuthorizationException e) {
-            return true;
-        } catch (AuthenticationException e) {
-            return true;
-        } catch (Exception e) {
-            return true;
+        UriTermQuery uriQuery = new UriTermQuery(link, TermOperator.EQ);
+        Search search = new Search();
+        search.setQuery(uriQuery);
+        ResultSet rs = this.repository.search(token, search);
+        boolean broken = rs.getSize() == 0;
+        if (broken) {
+            try {
+                Path path = Path.fromString(link);
+                this.repository.retrieve(token, path, false);
+                return false;
+            } catch (IllegalArgumentException e) {
+                return true;
+            } catch (ResourceNotFoundException e) {
+                return true;
+            } catch (AuthorizationException e) {
+                return false;
+            } catch (AuthenticationException e) {
+                return false;
+            } catch (Exception e) {
+                return true;
+            }
         }
+        return broken;
     }
 
     @Required

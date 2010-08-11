@@ -54,4 +54,11 @@ public class ParseNode {
         this.arguments = arguments;
         this.type = Type.Directive;
     }
+    
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(this.type.name()).append(":");
+        sb.append(this.text);
+        return sb.toString();
+    }
 }

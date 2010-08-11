@@ -201,7 +201,10 @@ public class Parser {
     
     
     private ParseNode parseDirective() throws Exception {
-        this.reader.skip(1);
+        // skip(1) does not work properly after reading "\r\n",
+        // so use read() instead:
+        this.reader.read();
+        
         StringBuilder nodeText = new StringBuilder();
         StringBuilder curToken = new StringBuilder();
         List<String> tokens = new ArrayList<String>();
@@ -225,7 +228,7 @@ public class Parser {
                     error("Illegal escape sequence: '\\" + c + "'");
                 }
             }
-            if (c == ' ' || c == '\n' || c == '\r') {
+            if (c == ' ' || c == '\t' || c == '\n') {
                 if (dquote || squote) {
                     curToken.append(c);
                 } else {
@@ -269,8 +272,8 @@ public class Parser {
             } else if (c == ']' && !dquote && !squote) {
                 if (curToken.length() > 0) {
                     tokens.add(curToken.toString());
-                    nodeText.deleteCharAt(nodeText.length() - 1);
                 }
+                nodeText.deleteCharAt(nodeText.length() - 1);
                 break;
                 
             } else {
@@ -390,7 +393,7 @@ public class Parser {
          * @throws IOException
          */
         public int peek(int n) throws IOException {
-            mark(n);
+            mark(n + 1);
             try {
                 for (int i = 0; i < n - 1; i++) {
                     int c = read();
@@ -417,7 +420,7 @@ public class Parser {
          */
         public boolean lookingAt(String str) throws IOException {
             int n = str.length();
-            this.mark(n);
+            this.mark(n + 1);
             try {
                 for (int i = 0; i < n; i++) {
                     int c = read();

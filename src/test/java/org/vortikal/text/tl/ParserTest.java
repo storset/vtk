@@ -58,11 +58,11 @@ public class ParserTest extends TestCase {
         directiveHandlers.put("def", def);
         this.directiveHandlers = directiveHandlers;
     }
-
+    
     public void testBasicSyntax() throws Exception {
         
         Context ctx = new Context(Locale.getDefault());
-        
+
         String result = parseAndRender("[def x 22][val x]", ctx);
         assertEquals("22", result);
         
@@ -78,6 +78,18 @@ public class ParserTest extends TestCase {
 
         result = parseAndRender("[def x \"22\"][val x]", ctx);
         assertEquals("22", result);
+        
+        result = parseAndRender(" [def x 2][val x]", ctx);
+        assertEquals(" 2", result);
+
+        result = parseAndRender("\r\n[def x 2]\r[val x]", ctx);
+        assertEquals("\n\n2", result);
+        
+        result = parseAndRender("\r\n[!--comment--]", ctx);
+        assertEquals("\n", result);
+        
+        result = parseAndRender("\r\n[def x-x \"22\"]\r\n[def x-y x-x]\r\n[val x-y]", ctx);
+        assertEquals("\n\n\n22", result);
 
         result = parseAndRender("[def x \"[ab\\\"c\\\"]\"][val x unescaped]", ctx);
         assertEquals("[ab\"c\"]", result);
@@ -154,7 +166,6 @@ public class ParserTest extends TestCase {
         result = parseAndRender("[if var1]var1[elseif var2][if var1]var1[elseif var2]var2[endif][else]none[endif]", ctx);
         assertEquals("var2", result);
     }
-
     public void testDirectiveArgs() {
         List<Argument> args = parseDirective("[test arg1 \"arg2\" 100]");
         assertEquals(args.size(), 3);
@@ -222,5 +233,4 @@ public class ParserTest extends TestCase {
         }
     }
 
-    
 }

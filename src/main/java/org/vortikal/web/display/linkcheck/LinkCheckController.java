@@ -82,6 +82,10 @@ public class LinkCheckController implements Controller {
         for (int i = 0; i < linkList.size(); i++) {
             LinkTag linkTag = (LinkTag) linkList.elementAt(i);
             String link = getLink(linkTag.getLink());
+            // linkTag.isMailLink is buggy
+            if (link.startsWith("mailto")) {
+                continue;
+            }
             if (isBroken(resourceURI, link, token)) {
                 brokenLinks.add(link);
             }
@@ -119,6 +123,9 @@ public class LinkCheckController implements Controller {
         }
         if (link.contains("?")) {
             link = link.substring(0, link.indexOf("?"));
+        }
+        if (link.endsWith("/") && !Path.ROOT.toString().equals(link)) {
+            link = link.substring(0, link.lastIndexOf("/"));
         }
         if (!link.startsWith("/")) {
             link = resourceURI.getParent().extend(link).toString();

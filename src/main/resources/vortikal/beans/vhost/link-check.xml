@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+                       "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <bean id="linkCheckService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="viewService" />
+    <property name="order" value="-999" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="vrtx" />
+          <property name="parameterValue" value="link-check" />
+        </bean>
+        <ref bean="htmlOrJsonContentTypeAssertion" />
+      </list>
+    </property>
+    <property name="handler" ref="linkCheckHandler" />
+  </bean>
+
+  <bean id="linkCheckHandler" class="org.vortikal.web.display.linkcheck.LinkCheckController" parent="repositoryAware" />
+
+  <bean id="htmlOrJsonContentTypeAssertion" class="org.vortikal.web.service.OrAssertion">
+    <property name="assertions">
+      <list>
+        <ref bean="contentTypeMatchesHtml" />
+        <ref bean="json.contentTypeAssertion" />
+      </list>
+    </property>
+  </bean>
+
+</beans>

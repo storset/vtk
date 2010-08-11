@@ -72,6 +72,7 @@
   <import resource="delete.xml" />
   <import resource="vocabulary.xml" />
   <import resource="publish.xml" />
+  <import resource="link-check.xml" />
 
   <!-- OperationLog interceptor for Repository -->
   <import resource="repository-operationlog-interceptor.xml" />

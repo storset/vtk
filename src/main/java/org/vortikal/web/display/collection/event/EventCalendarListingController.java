@@ -47,8 +47,10 @@ public class EventCalendarListingController extends EventListingController {
 
     protected EventListingHelper helper;
 
-    private final int daysAhead = 5; // 5 days ahead
-    private final int furtherUpcomingPageLimit = 3; // 3 events on 1 page
+    // 5 days ahead
+    private final int daysAhead = 5;
+    // max 5 further upcoming events on 1 page
+    private final int furtherUpcomingLimit = 5;
 
     @Override
     public void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
@@ -65,7 +67,7 @@ public class EventCalendarListingController extends EventListingController {
         model.put("groupedEventsTitle", groupedByDayTitle);
 
         Listing furtherUpcoming = this.searcher.searchFurtherUpcoming(request, collection, this.daysAhead,
-                this.furtherUpcomingPageLimit);
+                this.furtherUpcomingLimit);
         model.put("furtherUpcoming", furtherUpcoming);
         String titleKey = groupedByDayEvents.size() == 0 ? "eventListing.allupcoming"
                 : "eventListing.furtherUpcomingEvents";

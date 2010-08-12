@@ -4,7 +4,7 @@
 <beans>
 
   <bean id="linkCheckService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="viewService" />
+    <property name="parent" ref="manageService" />
     <property name="order" value="-999" />
     <property name="assertions">
       <list>

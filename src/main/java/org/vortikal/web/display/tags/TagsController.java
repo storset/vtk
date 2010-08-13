@@ -142,7 +142,8 @@ public class TagsController implements Controller {
         }
 
         Service service = org.vortikal.web.RequestContext.getRequestContext().getService();
-        URL baseURL = service.constructURL(org.vortikal.web.RequestContext.getRequestContext().getResourceURI());
+        URL baseURL = service.constructURL(scope.getURI());
+        baseURL.addParameter(TagsHelper.TAG_PARAMETER, tag);
 
         List<URL> urls = ListingPager.generatePageThroughUrls(totalHits, pageLimit, baseURL);
 

@@ -170,14 +170,15 @@ public class TagsController implements Controller {
                             url.addParameter(Listing.SORTING_PARAM, param);
                         }
                     }
-                    if (resourceTypes != null) {
+                    if (resourceTypes != null && !url.getParameterNames().contains(TagsHelper.RESOURCE_TYPE_PARAMETER)) {
                         for (ResourceTypeDefinition resourceTypeDefinition : resourceTypes) {
                             url.addParameter(TagsHelper.RESOURCE_TYPE_PARAMETER, resourceTypeDefinition.getName());
                         }
                     }
                     String title = altService.getName();
                     RequestContext rc = new RequestContext(request);
-                    title = rc.getMessage(altService.getName(), new Object[] { scope.getTitle() }, altService.getName());
+                    title = rc
+                            .getMessage(altService.getName(), new Object[] { scope.getTitle() }, altService.getName());
 
                     Map<String, Object> m = new HashMap<String, Object>();
                     m.put("title", title);

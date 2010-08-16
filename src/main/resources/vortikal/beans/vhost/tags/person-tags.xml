@@ -45,9 +45,6 @@
     <property name="queryBuilders">
       <list>
         <bean class="org.vortikal.web.search.ScopeQueryBuilder" />
-        <bean class="org.vortikal.web.search.ResourceTypeQueryBuilder">
-          <property name="resourceTypeTree" ref="resourceTypeTree" />
-        </bean>
         <bean class="org.vortikal.web.search.PropertyTermQueryBuilder">
           <property name="parameterName" value="tag" />
           <property name="propertyTypeDefinition" ref="tagsPropDef" />

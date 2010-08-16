@@ -82,11 +82,13 @@ public class TagsController implements Controller {
 
         Map<String, Object> model = new HashMap<String, Object>();
 
+        List<ResourceTypeDefinition> resourceTypes = getResourceTypes(request);
+
         /* List all known tags for the current collection */
         if (!StringUtils.isBlank(tag)) {
-            handleSingleTag(request, tag, scope, model);
+            handleSingleTag(request, tag, scope, model, resourceTypes);
         } else {
-            handleAllTags(token, request, scope, model);
+            handleAllTags(token, request, scope, model, resourceTypes);
         }
 
         // Add scope up url if scope is not root
@@ -95,25 +97,15 @@ public class TagsController implements Controller {
             Service service = org.vortikal.web.RequestContext.getRequestContext().getService();
             URL url = service.constructURL(scope.getURI());
             url.setPath(Path.ROOT);
+            List<String> sortFieldParams = null;
             if (!StringUtils.isBlank(tag)) {
-                url.addParameter(TagsHelper.TAG_PARAMETER, tag);
                 Object searchResult = model.get("listing");
                 if (searchResult != null && searchResult instanceof Listing) {
                     Listing listing = (Listing) searchResult;
-                    List<String> sortFieldParams = listing.getSortFieldParams();
-                    if (sortFieldParams.size() > 0) {
-                        for (String param : sortFieldParams) {
-                            url.addParameter(Listing.SORTING_PARAM, param);
-                        }
-                    }
+                    sortFieldParams = listing.getSortFieldParams();
                 }
             }
-            List<ResourceTypeDefinition> resourceTypes = getResourceTypes(request);
-            if (resourceTypes != null) {
-                for (ResourceTypeDefinition resourceTypeDefinition : resourceTypes) {
-                    url.addParameter(TagsHelper.RESOURCE_TYPE_PARAMETER, resourceTypeDefinition.getName());
-                }
-            }
+            this.processUrl(url, tag, resourceTypes, sortFieldParams);
             String title = this.tagsHelper.getTitle(request, scope, tag, this.hostName, true);
             scopeUp.put("url", url.toString());
             scopeUp.put("title", title);
@@ -123,8 +115,8 @@ public class TagsController implements Controller {
         return new ModelAndView(this.viewName, model);
     }
 
-    private void handleSingleTag(HttpServletRequest request, String tag, Resource scope, Map<String, Object> model)
-            throws Exception {
+    private void handleSingleTag(HttpServletRequest request, String tag, Resource scope, Map<String, Object> model,
+            List<ResourceTypeDefinition> resourceTypes) throws Exception {
 
         model.put(TagsHelper.SCOPE_PARAMETER, scope);
         model.put(TagsHelper.TAG_PARAMETER, tag);
@@ -141,9 +133,14 @@ public class TagsController implements Controller {
             totalHits = listing.getTotalHits();
         }
 
+        if (resourceTypes != null && resourceTypes.size() == 1) {
+            model.put(TagsHelper.RESOURCE_TYPE_MODEL_KEY, resourceTypes.get(0).getName());
+        }
+
         Service service = org.vortikal.web.RequestContext.getRequestContext().getService();
         URL baseURL = service.constructURL(scope.getURI());
-        baseURL.addParameter(TagsHelper.TAG_PARAMETER, tag);
+        List<String> sortFieldParams = listing.getSortFieldParams();
+        this.processUrl(baseURL, tag, resourceTypes, sortFieldParams);
 
         List<URL> urls = ListingPager.generatePageThroughUrls(totalHits, pageLimit, baseURL);
 
@@ -151,30 +148,13 @@ public class TagsController implements Controller {
         model.put("page", page);
         model.put("pageThroughUrls", urls);
 
-        List<ResourceTypeDefinition> resourceTypes = getResourceTypes(request);
-        if (resourceTypes != null && resourceTypes.size() == 1) {
-            model.put(TagsHelper.RESOURCE_TYPE_MODEL_KEY, resourceTypes.get(0).getName());
-        }
-
         if (this.alternativeRepresentations != null) {
             Set<Object> alt = new HashSet<Object>();
             for (String contentType : this.alternativeRepresentations.keySet()) {
                 try {
                     Service altService = this.alternativeRepresentations.get(contentType);
-                    Map<String, String> parameters = new HashMap<String, String>();
-                    parameters.put(TagsHelper.TAG_PARAMETER, tag);
-                    URL url = altService.constructURL(scope.getURI(), parameters);
-                    List<String> sortFieldParams = listing.getSortFieldParams();
-                    if (sortFieldParams.size() > 0) {
-                        for (String param : sortFieldParams) {
-                            url.addParameter(Listing.SORTING_PARAM, param);
-                        }
-                    }
-                    if (resourceTypes != null && !url.getParameterNames().contains(TagsHelper.RESOURCE_TYPE_PARAMETER)) {
-                        for (ResourceTypeDefinition resourceTypeDefinition : resourceTypes) {
-                            url.addParameter(TagsHelper.RESOURCE_TYPE_PARAMETER, resourceTypeDefinition.getName());
-                        }
-                    }
+                    URL url = altService.constructURL(scope.getURI());
+                    this.processUrl(url, tag, resourceTypes, sortFieldParams);
                     String title = altService.getName();
                     RequestContext rc = new RequestContext(request);
                     title = rc
@@ -197,13 +177,30 @@ public class TagsController implements Controller {
 
     }
 
-    private void handleAllTags(String token, HttpServletRequest request, Resource scope, Map<String, Object> model) {
+    private void processUrl(URL url, String tag, List<ResourceTypeDefinition> resourceTypes,
+            List<String> sortFieldParams) {
+        if (!StringUtils.isBlank(tag)) {
+            url.addParameter(TagsHelper.TAG_PARAMETER, tag);
+        }
+        if (sortFieldParams != null && sortFieldParams.size() > 0) {
+            for (String param : sortFieldParams) {
+                url.addParameter(Listing.SORTING_PARAM, param);
+            }
+        }
+        if (resourceTypes != null && !url.getParameterNames().contains(TagsHelper.RESOURCE_TYPE_PARAMETER)) {
+            for (ResourceTypeDefinition resourceTypeDefinition : resourceTypes) {
+                url.addParameter(TagsHelper.RESOURCE_TYPE_PARAMETER, resourceTypeDefinition.getName());
+            }
+        }
+    }
+
+    private void handleAllTags(String token, HttpServletRequest request, Resource scope, Map<String, Object> model,
+            List<ResourceTypeDefinition> resourceTypes) {
 
         model.put(TagsHelper.SCOPE_PARAMETER, scope);
 
         Path scopeUri = scope.getURI();
 
-        List<ResourceTypeDefinition> resourceTypes = getResourceTypes(request);
         List<TagElement> tagElements = this.tagElementsProvider.getTagElements(scopeUri, resourceTypes, token, 1, 1,
                 Integer.MAX_VALUE, 1);
 

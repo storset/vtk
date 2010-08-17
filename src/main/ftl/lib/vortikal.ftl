@@ -433,3 +433,11 @@
 <#macro calculateResourceSizeToKB contentLength>
   ${(contentLength / 1000)?string("#")} KB
 </#macro>
+
+<#function getMetadata metadata key >
+  <#assign value = "" />
+  <#if metadata.getValue(key)?exists>
+    <#assign value = metadata.getValue(key) />
+  </#if>
+  <#return value />
+</#function>

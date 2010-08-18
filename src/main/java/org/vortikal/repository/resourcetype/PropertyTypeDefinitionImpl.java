@@ -64,7 +64,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     private String name;
     private Type type = PropertyType.Type.STRING;
     private ValueFormatter valueFormatter;
-    private ValueSeparator defaultValueSeparator = new CommaValueSeparator();
+    private ValueSeparator defaultValueSeparator = new ConfigurableValueSeparator();
     private Map<String, ValueSeparator> valueSeparators = new HashMap<String, ValueSeparator>();
     
     private boolean multiple = false;
@@ -326,6 +326,10 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         return this.defaultValueSeparator;
     }
     
+    public void setDefaultValueSeparator(ValueSeparator defaultValueSeparator) {
+        this.defaultValueSeparator = defaultValueSeparator;
+    }
+
     public void setValueSeparators(Map<String, ValueSeparator> valueSeparators) {
         this.valueSeparators = valueSeparators;
     }

@@ -179,6 +179,8 @@ public class XPathEvaluator implements PropertyEvaluator {
             stringVal = ((Attribute) o).getValue();
         } else if (o instanceof String) {
             stringVal = (String) o;
+        } else if (o instanceof Boolean) {
+            stringVal = String.valueOf((Boolean) o);
         } else {
             throw new IllegalArgumentException(
                 "Unsupported class: " + o.getClass());

@@ -114,6 +114,7 @@
 	<entry key="\.template$" value-ref="decorating.htmlParserTemplateFactory" />
 	<entry key="\.html$" value-ref="decorating.dollarSyntaxTemplateFactory" />
 	<entry key="\.tmp$" value-ref="decorating.dynamicTemplateFactory" />
+	<entry key="\.tpl$" value-ref="decorating.dynamicTemplateFactory" />
       </map>
     </property>
   </bean>
@@ -139,10 +140,10 @@
     <property name="componentResolver" ref="decorating.defaultComponentResolver" />
     <property name="aspectsPropdef" ref="resourceAspectsPropDef" />
     <property name="fieldConfig" ref="visualProfileAspect.fieldConfig" />
-    <property name="functions" ref="decrating.defaultFunctions" />
+    <property name="functions" ref="decorating.defaultFunctions" />
   </bean>
 
-  <bean id="decrating.defaultFunctions"
+  <bean id="decorating.defaultFunctions"
         class="org.springframework.beans.factory.config.SetFactoryBean">
     <property name="sourceSet">
       <ref bean="templateLanguage.concatFunction" />

@@ -19,11 +19,13 @@
         <ref bean="studieprogramProgramtypePropDef" />
         <ref bean="studieprogramProgramtypeOversattPropDef" />
         <ref bean="studieprogramTemaomraadePropDef" />
+        <ref bean="studieprogramTemaomraaderPropDef" />
         <ref bean="studieprogramAntallaarPropDef" />
         <ref bean="studieprogramStudiepoengPropDef" />
         <ref bean="studieprogramOmfangoppgavePropDef" />
         <ref bean="studieprogramProgramversjonPropDef" />
         <ref bean="studieprogramStikkordProgramvelgerPropDef" />
+        <ref bean="studieprogramHasProgramInfoPropDef" />
         <ref bean="studieprogramProgramstatusPropDef" />
       </list>
     </property>
@@ -158,6 +160,26 @@
   </bean>
 
 
+  <bean id="studieprogramTemaomraaderPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="temaomraader" />
+    <property name="type" value="STRING" />
+    <property name="multiple" value="true" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="propertyEvaluator" ref="studieprogramTemaomraaderEvaluator" />
+    <property name="defaultValueSeparator">
+      <bean class="org.vortikal.repository.resourcetype.ConfigurableValueSeparator">
+        <property name="intermediateSeparator" value=" "/>
+        <property name="finalSeparator" value=" "/>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="studieprogramTemaomraaderEvaluator" parent="abstractXPathEvaluator">
+    <property name="expression" value="/studieprogram-hjemmeside/temaomraade/omraade" />
+  </bean>
+
+
   <bean id="studieprogramAntallaarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="antallaar" />
     <property name="type" value="STRING" />
@@ -217,6 +239,18 @@
 
   <bean id="studieprogramStikkordProgramvelgerEvaluator" parent="abstractXPathEvaluator">
     <property name="expression" value="/studieprogram-hjemmeside/stikkord-programvelger" />
+  </bean>
+
+  <bean id="studieprogramHasProgramInfoPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="has-program-info" />
+    <property name="type" value="BOOLEAN" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="propertyEvaluator" ref="studieprogramHasProgramInfoEvaluator" />
+  </bean>
+
+  <bean id="studieprogramHasProgramInfoEvaluator" parent="abstractXPathEvaluator">
+    <property name="expression" value="/studieprogram-hjemmeside/stikkord-programvelger/text() != ''" />
   </bean>
 
 

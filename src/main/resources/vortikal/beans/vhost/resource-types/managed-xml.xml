@@ -394,7 +394,7 @@
           </bean>
         </entry>
 
-        <entry key="http://www.uio.no/xsd/studier/studieprogram-hjemmeside/v004/studieprogram-hjemmeside.xsd">
+        <entry key="http://www.uio.no/xsd/studier/studieprogram-hjemmeside/v00.*/studieprogram-hjemmeside.xsd">
           <bean parent="abstractXPathEvaluator">
             <property name="expression"
               value="concat(/studieprogram-hjemmeside/programnavn, ' (', vrtx:localize(/studieprogram-hjemmeside/programtype), ')')" />

@@ -40,10 +40,15 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
+
 import org.htmlparser.Parser;
 import org.htmlparser.filters.NodeClassFilter;
 import org.htmlparser.tags.LinkTag;
 import org.htmlparser.util.NodeList;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -61,17 +66,41 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.RequestContext;
 
-public class LinkCheckController implements Controller {
+public class LinkCheckController implements Controller, InitializingBean {
 
     private Repository repository;
+    private CacheManager cacheManager;
+    private Cache cache;
 
     @Override
+    @SuppressWarnings("unchecked")
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         String token = SecurityContext.getSecurityContext().getToken();
         Path resourceURI = RequestContext.getRequestContext().getResourceURI();
         Resource resource = this.repository.retrieve(token, resourceURI, false);
-        InputStream stream = this.repository.getInputStream(token, resourceURI, false);
+
+        String cacheKey = resourceURI.toString() + resource.getLastModified();
+        Element cached = this.cache.get(cacheKey);
+        List<String> brokenLinks = null;
+        if (cached != null) {
+            brokenLinks = (List<String>) cached.getObjectValue();
+        } else {
+            brokenLinks = this.getBrokenLinks(resource, token);
+            cache.put(new Element(cacheKey, brokenLinks));
+        }
+
+        PrintWriter writer = response.getWriter();
+        for (String brokenLink : brokenLinks) {
+            writer.print(brokenLink);
+            writer.print("\n");
+        }
+
+        return null;
+    }
+
+    private List<String> getBrokenLinks(Resource resource, String token) throws Exception {
+        InputStream stream = this.repository.getInputStream(token, resource.getURI(), false);
         String content = StreamUtil.streamToString(stream, resource.getCharacterEncoding());
 
         Parser parser = new Parser();
@@ -86,18 +115,11 @@ public class LinkCheckController implements Controller {
             if (link.startsWith("mailto")) {
                 continue;
             }
-            if (isBroken(resourceURI, link, token)) {
+            if (isBroken(resource.getURI(), link, token)) {
                 brokenLinks.add(link);
             }
         }
-
-        PrintWriter writer = response.getWriter();
-        for (String brokenLink : brokenLinks) {
-            writer.print(brokenLink);
-            writer.print("\n");
-        }
-
-        return null;
+        return brokenLinks;
     }
 
     private String getLink(String link) {
@@ -194,6 +216,16 @@ public class LinkCheckController implements Controller {
     @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
+    }
+
+    @Required
+    public void setCacheManager(CacheManager cacheManager) {
+        this.cacheManager = cacheManager;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        this.cache = this.cacheManager.getCache("org.vortikal.LINK_CHECK_CACHE");
     }
 
 }

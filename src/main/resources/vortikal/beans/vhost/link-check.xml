@@ -18,8 +18,6 @@
     <property name="handler" ref="linkCheckHandler" />
   </bean>
 
-  <bean id="linkCheckHandler" class="org.vortikal.web.display.linkcheck.LinkCheckController" parent="repositoryAware" />
-
   <bean id="htmlOrJsonContentTypeAssertion" class="org.vortikal.web.service.OrAssertion">
     <property name="assertions">
       <list>
@@ -27,6 +25,10 @@
         <ref bean="json.contentTypeAssertion" />
       </list>
     </property>
+  </bean>
+
+  <bean id="linkCheckHandler" class="org.vortikal.web.display.linkcheck.LinkCheckController" parent="repositoryAware">
+    <property name="cacheManager" ref="ehCacheManager" />
   </bean>
 
 </beans>

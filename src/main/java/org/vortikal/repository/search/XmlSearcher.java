@@ -270,19 +270,24 @@ public class XmlSearcher {
         }
 
         for (String format: formatSet) {
-            if (propDef.isMultiple()) {
+            if (propDef.isMultiple() && format == null) {
                 Element valuesElement = doc.createElement("values");
-                if (format != null) {
-                    valuesElement.setAttribute("format", format);
-                }
                 for (Value v: prop.getValues()) {
-                    Element valueElement = getPropertyElement(propDef,uri, v, format, locale, doc);
+                    String valueString = propDef.getValueFormatter().valueToString(v, null, locale);
+                    Element valueElement = getValueElement(propDef, uri, valueString, null, doc);
                     valuesElement.appendChild(valueElement);
                 }
                 propertyElement.appendChild(valuesElement);
+
+            } else if (propDef.isMultiple()) {
+                String value = prop.getFormattedValue(format, locale);
+                Element valueElement = getValueElement(propDef, uri, value, format, doc);
+                valueElement.setAttribute("format", format);
+                propertyElement.appendChild(valueElement);
+
             } else {
-                Value value = prop.getValue();
-                Element valueElement = getPropertyElement(propDef,uri, value, format, locale, doc);
+                String value = prop.getFormattedValue(format, locale);
+                Element valueElement = getValueElement(propDef, uri, value, format, doc);
                 if (format != null) {
                     valueElement.setAttribute("format", format);
                 }
@@ -292,13 +297,14 @@ public class XmlSearcher {
         propSetElement.appendChild(propertyElement);
     }
 
+
     
 
-    private Element getPropertyElement(PropertyTypeDefinition propDef, 
-                                             Path uri, Value value, String format, 
-                                             Locale locale, Document doc) {
+    private Element getValueElement(PropertyTypeDefinition propDef, 
+                                    Path uri, String valueString, String format, 
+                                    Document doc) {
 
-        String valueString = propDef.getValueFormatter().valueToString(value, format, locale);
+        //String valueString = propDef.getValueFormatter().valueToString(value, format, locale);
 
         Node node = null;
         // If string value and format is url, try to create url (if it doesn't start with http?)
@@ -456,6 +462,7 @@ public class XmlSearcher {
                 if (def != null) {
                     selectedFields.addPropertyDefinition(def);
                 }
+                System.out.println("__formats: " + this.formats);
             }
             
         }

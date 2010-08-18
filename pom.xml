@@ -347,6 +347,15 @@
     </plugins>
   </build>
   <dependencies>
+
+    <!-- ehcache -->
+    <dependency>
+      <groupId>net.sf.ehcache</groupId>
+      <artifactId>ehcache-core</artifactId>
+      <version>2.2.0</version>
+    </dependency>
+
+    <!-- Joda -->
     <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>

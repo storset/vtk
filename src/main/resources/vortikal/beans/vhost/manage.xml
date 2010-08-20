@@ -28,7 +28,6 @@
       <list>
         <!-- Redirect to view hostname -->
         <bean class="org.vortikal.web.interceptors.ConfigurableRedirector">
-          <property name="protocol" value="${webProtocol}" />
           <property name="hostName" value="${webHostName}" />
         </bean>
       </list>

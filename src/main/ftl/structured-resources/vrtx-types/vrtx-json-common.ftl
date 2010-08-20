@@ -298,7 +298,7 @@
     <#break>
   <#case "image_ref">
     <#local thumbnail = '' />
-    <#if elem.value?exists >
+    <#if elem.value?exists && value?exists && value != "">
     		<#local thumbnail = vrtx.linkConstructor(value, 'displayThumbnailService') />
     </#if>
     <@vrtxImageRef.printPropertyEditView 

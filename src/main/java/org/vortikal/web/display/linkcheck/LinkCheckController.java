@@ -100,6 +100,15 @@ public class LinkCheckController implements Controller, InitializingBean {
     }
 
     private List<String> getBrokenLinks(Resource resource, String token) throws Exception {
+
+        if (resource.isCollection()) {
+            RequestContext requestContext = RequestContext.getRequestContext();
+            Path indexURI = requestContext.getIndexFileURI();
+            if (indexURI != null) {
+                resource = this.repository.retrieve(token, indexURI, false);
+            }
+        }
+
         InputStream stream = this.repository.getInputStream(token, resource.getURI(), false);
         String content = StreamUtil.streamToString(stream, resource.getCharacterEncoding());
 
@@ -169,11 +178,14 @@ public class LinkCheckController implements Controller, InitializingBean {
         try {
             URL url = new URL(processedLink);
             urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestMethod("HEAD");
-            // if it doesn't answer within 5sec, mark it as broken
-            urlConnection.setConnectTimeout(5000);
+            this.prepareConnection(urlConnection);
             urlConnection.connect();
-            return urlConnection.getResponseCode() != HttpURLConnection.HTTP_OK;
+            int responseCode = urlConnection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_MOVED_PERM || responseCode == HttpURLConnection.HTTP_MOVED_TEMP) {
+                // check if moved location is valid
+                responseCode = this.checkMoved(urlConnection, responseCode);
+            }
+            return responseCode != HttpURLConnection.HTTP_OK;
         } catch (Exception e) {
             return true;
         } finally {
@@ -181,6 +193,28 @@ public class LinkCheckController implements Controller, InitializingBean {
                 urlConnection.disconnect();
             }
         }
+    }
+
+    private int checkMoved(HttpURLConnection urlConnection, int responseCode) throws Exception {
+        int retry = 0;
+        // try a maximum of three times
+        while (retry < 3
+                && (responseCode == HttpURLConnection.HTTP_MOVED_PERM || responseCode == HttpURLConnection.HTTP_MOVED_TEMP)) {
+            String location = urlConnection.getHeaderField("Location");
+            urlConnection.disconnect();
+            urlConnection = (HttpURLConnection) new URL(location).openConnection();
+            this.prepareConnection(urlConnection);
+            urlConnection.connect();
+            responseCode = urlConnection.getResponseCode();
+            retry++;
+        }
+        return responseCode;
+    }
+
+    private void prepareConnection(HttpURLConnection urlConnection) throws Exception {
+        urlConnection.setRequestMethod("HEAD");
+        // if it doesn't answer within 5sec, mark it as broken
+        urlConnection.setConnectTimeout(5000);
     }
 
     private boolean isWebLink(String link) {

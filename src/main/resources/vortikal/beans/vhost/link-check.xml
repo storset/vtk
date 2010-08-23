@@ -12,7 +12,14 @@
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="link-check" />
         </bean>
-        <ref bean="htmlOrJsonContentTypeAssertion" />
+        <bean class="org.vortikal.web.service.OrAssertion">
+          <property name="assertions">
+            <list>
+              <ref bean="htmlOrJsonContentTypeAssertion" />
+              <ref bean="hasIndexFileAssertion" />
+            </list>
+          </property>
+        </bean>
       </list>
     </property>
     <property name="handler" ref="linkCheckHandler" />

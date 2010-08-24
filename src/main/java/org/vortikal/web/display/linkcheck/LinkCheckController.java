@@ -125,7 +125,9 @@ public class LinkCheckController implements Controller, InitializingBean {
                 continue;
             }
             if (isBroken(resource.getURI(), link, token)) {
-                brokenLinks.add(link);
+                if(!brokenLinks.contains(link)) {
+                  brokenLinks.add(link);
+                }
             }
         }
         return brokenLinks;
@@ -167,7 +169,7 @@ public class LinkCheckController implements Controller, InitializingBean {
     private boolean isBroken(Path resourceURI, String link, String token) {
         // get the processed link to check
         String processedLink = getProcessedLink(resourceURI, link);
-
+        
         // link to internal resource, check for existence
         if (!isWebLink(processedLink)) {
             return this.isBrokenInternal(processedLink, token);

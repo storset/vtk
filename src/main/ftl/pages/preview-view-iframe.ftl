@@ -54,22 +54,33 @@
   
   <script language="javascript" >
   $(document).ready(function(){
+  
+    <#if visualizeBrokenLinks?exists && visualizeBrokenLinks = 'true'>
+  
+      var deadLinks = visualizeDeadLinkInit();
+    
+    </#if>
+  
 	$('iframe').load(function() {
+	
 		$("iframe").contents().find("a").each(function(i, e){
-  		  this.target = "_top";	
+  		  this.target = "_top";
 		});
+		
 		<#if visualizeBrokenLinks?exists && visualizeBrokenLinks = 'true'>
-		$("iframe").contents().find("body")
-          .filter(function() {
-            return this.id.match(/^(?!vrtx-[\S]+-listing|vrtx-collection)[\S]+/);
-          })
-          .find("#main")
-          .not("#left-main")
+		
+		  $("iframe").contents().find("body")
+            .filter(function() {
+              return this.id.match(/^(?!vrtx-[\S]+-listing|vrtx-collection)[\S]+/);
+            })
+            .find("#main")
+            .not("#left-main")
               .find("a").each(function(i, e){
-                    visualizeDeadLink(this, e);
-          });
+                visualizeDeadLink(this, deadLinks);
+              });
+            
         </#if>
-	});	
+	});
   });	
   </script>
 

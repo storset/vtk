@@ -1,37 +1,44 @@
-function visualizeDeadLink(that, e) {
-
-	var filteredURL = filterURL($(that).attr('href') ? $(that).attr('href') : "");
-
-	if (filteredURL != "") {
-		    $.ajax({
-				type : "HEAD",
-				url : filteredURL,
-				complete : function(xhr, textStatus) {
-				    if(xhr.status == "404") { 
-					  $(that).append(" - BRUTT (404)").css("color", "red"); //internal service error or service unavailable
-				    }	
-				},
-                error : function (xhr, ajaxOptions, thrownError){
-                    //$(that).append(" - FEILET").css("color", "red");
-                }
-			});
+// AJAX request against link-check action
+// that returns links seperated by new line
+// Return array of dead links
+function visualizeDeadLinkInit() {
+	
+	var deadLinks = [];
+	
+	var LINK_CHECK_URL = "?vrtx=admin&action=link-check";
+	var URL = $(location).attr('href');
+	
+	if ((URL.indexOf("?") != -1)) {
+		URL = URL.split("?")[0];
 	}
+	
+	URL = URL + LINK_CHECK_URL;
+	
+	$.ajax({
+		type : "GET",
+		url : URL,
+		dataType : "text",
+		async : false,
+		complete : function(msg) { 
+		  deadLinks = msg.responseText.split("\n");
+		},
+        error : function (xhr, ajaxOptions, thrownError){
+        }
+	});
+	
+	return deadLinks;
 }
 
-// Remove "?vrtx=" URL and extract URL in anchor
-function filterURL(rawURL) {
-
-	if ((rawURL.indexOf("?") != -1) || (rawURL.indexOf("&") != -1)) {
-		return ""; //do nothing
+// Check if current link is in array of dead links
+function visualizeDeadLink(that, deadLinks) {
+	
+	var TARGET_URL = $(that).attr("href");
+	
+	for(var i = 0; i < deadLinks.length; i++) {
+	  if(TARGET_URL == deadLinks[i]) {
+	    $(that).append(" - 404");  
+	    $(that).css("color", "red"); 
+	  }
 	}
-	if (rawURL.indexOf("#") != -1) { // anchor
-		if (rawURL.indexOf("http://") != -1) {
-		   return rawURL.split("#", 1);
-		} else {
-		   return "";	
-		}
-	} else {
-		return rawURL;
-	}
-
+	
 }

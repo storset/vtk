@@ -18,9 +18,19 @@ function visualizeDeadLinkInit() {
 	  type : "GET",
 	  url : URL,
 	  dataType : "text",
-	  async : false,
 	  complete : function(msg) { 
         deadLinks = msg.responseText.split("\n");
+        
+		$("iframe").contents().find("body")
+          .filter(function() {
+            return this.id.match(/^(?!vrtx-[\S]+-listing|vrtx-collection)[\S]+/);
+          })
+          .find("#main")
+          .not("#left-main")
+            .find("a").each(function(i, e){
+              visualizeDeadLink(this, deadLinks);
+            });
+        
 	  },
       error : function (xhr, ajaxOptions, thrownError){}
 	});

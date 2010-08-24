@@ -46,8 +46,7 @@ function visualizeDeadLink(that, deadLinks) {
 	var deadLinksLength = deadLinks.length;
 	for(var i = 0; i < deadLinksLength; i++) {
 	  if(TARGET_URL == deadLinks[i]) {
-	    $(that).append(" - 404");  
-	    $(that).css("color", "red"); 
+	    $(that).append(" - 404").css("color", "red"); 
 	  }
 	}
 	

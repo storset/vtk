@@ -54,14 +54,11 @@
   
   <script language="javascript" >
   $(document).ready(function(){
-  
-    <#if visualizeBrokenLinks?exists && visualizeBrokenLinks = 'true'>
-  
-      var deadLinks = visualizeDeadLinkInit();
-    
-    </#if>
-  
 	$('iframe').load(function() {
+	
+	    <#if visualizeBrokenLinks?exists && visualizeBrokenLinks = 'true'>
+          var deadLinks = visualizeDeadLinkInit();
+        </#if>
 	
 		$("iframe").contents().find("a").each(function(i, e){
   		  this.target = "_top";

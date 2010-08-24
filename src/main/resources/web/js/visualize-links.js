@@ -15,15 +15,14 @@ function visualizeDeadLinkInit() {
 	URL = URL + LINK_CHECK_URL;
 	
 	$.ajax({
-		type : "GET",
-		url : URL,
-		dataType : "text",
-		async : false,
-		complete : function(msg) { 
-		  deadLinks = msg.responseText.split("\n");
-		},
-        error : function (xhr, ajaxOptions, thrownError){
-        }
+	  type : "GET",
+	  url : URL,
+	  dataType : "text",
+	  async : false,
+	  complete : function(msg) { 
+        deadLinks = msg.responseText.split("\n");
+	  },
+      error : function (xhr, ajaxOptions, thrownError){}
 	});
 	
 	return deadLinks;
@@ -34,7 +33,8 @@ function visualizeDeadLink(that, deadLinks) {
 	
 	var TARGET_URL = $(that).attr("href");
 	
-	for(var i = 0; i < deadLinks.length; i++) {
+	var deadLinksLength = deadLinks.length;
+	for(var i = 0; i < deadLinksLength; i++) {
 	  if(TARGET_URL == deadLinks[i]) {
 	    $(that).append(" - 404");  
 	    $(that).css("color", "red"); 

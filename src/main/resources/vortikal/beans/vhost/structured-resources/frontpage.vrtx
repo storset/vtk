@@ -201,7 +201,7 @@ resourcetype frontpage {
       [resource-props "."]
       [if cssUrl != null && cssUrl != ""]
          <!-- begin custom frontpage css -->
-         <link rel="stylesheet" href="[val cssUrl]" type="text/css" media="screen" />
+         <link rel="stylesheet" href="[val cssUrl]" type="text/css" media="all" />
          <!-- end custom frontpage css -->
       [endif]
       ##  
@@ -275,15 +275,6 @@ resourcetype frontpage {
 
       </div>
       [endif]
-      ##
-    }
-    
-    wide-or-not {
-      ##
-      [resource-props "."]
-      [def document structured-document()]
-      [def boxes json-attr(document, "properties.additional-content")]
-      [if boxes != null][else]"vrtx-frontpage-wide"[endif]
       ##
     }
 

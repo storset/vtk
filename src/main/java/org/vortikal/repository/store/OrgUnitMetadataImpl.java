@@ -33,7 +33,7 @@ package org.vortikal.repository.store;
 public class OrgUnitMetadataImpl extends MetadataImpl implements OrgUnitMetadata {
 
     public String getAreacode() {
-        return (String) this.getValue("areacode");
+        return (String) this.getValue(OrgUnitMetadata.AREACODE_ATTRIBUTE);
     }
 
     @Override

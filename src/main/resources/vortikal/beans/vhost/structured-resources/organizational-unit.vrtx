@@ -33,7 +33,7 @@ resourcetype organizational-unit {
     numberOfEmployeesToDisplay (dropdown),
     postalAddress tooltip (en : "(postbox / streetaddress, postnumber place)", no : "(postboks / gateadresse, postnummer sted)", nn : "(postboks / gateadresse, postnummer sted)"),
     visitingAddress tooltip (en : "(building, streetaddress, postnumber place)", no : "(bygning, gateadresse, postnummer sted)", nn : "(bygning, gateadresse, postnummer sted)"),
-    getExternalUnitInfo tooltip (en : "(report <a class='contact-info' href='http://www.uio.no/tjenester/it/applikasjoner/sok/kontakt/'>changes in person information</a>.)",
+    getExternalUnitInfo tooltip (en : "(report <a class='contact-info' href='http://www.uio.no/tjenester/it/applikasjoner/sok/kontakt/'>changes in information</a>.)",
                                  no : "(meld fra om <a class='contact-info' href='http://www.uio.no/tjenester/it/applikasjoner/sok/kontakt/'>feil eller mangler i opplysningene</a>.)",
                                  nn : "(meld frå om <a class='contact-info' href='http://www.uio.no/tjenester/it/applikasjoner/sok/kontakt/'>feil eller manglar i opplysningane</a>.)")
   }

@@ -40,7 +40,7 @@ function visualizeDeadLinkInit() {
         
 	  },
       error : function (xhr, ajaxOptions, thrownError){
-	    $("iframe").contents().find("body").append(" " + thrownError);
+	    $("iframe").contents().find("body").append(" " + thrownError + " ");
 	  }
 	});
 

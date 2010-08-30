@@ -12,13 +12,15 @@ function visualizeDeadLinkInit() {
 		URL = URL.split("?")[0];
 	}
 	
-	var URL_TWO_SPLIT = URL.split(".");
-	URL_TWO_SPLIT[0] = URL_TWO_SPLIT[0] + "-adm";
-	URL = URL_TWO_SPLIT.shift() + "." + URL_TWO_SPLIT.join(".");
+	if(URL.indexOf("localhost") == -1) {
+	
+	  URL = URL.split(".");
+	  URL[0] = URL[0] + "-adm";
+	  URL = URL.shift() + "." + URL.join(".");
+	
+	}
 	
 	URL = URL + LINK_CHECK_URL;
-	
-	var errorMsg = "";
 	
 	$.ajax({
 	  type : "GET",

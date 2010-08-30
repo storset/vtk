@@ -1,7 +1,7 @@
 // AJAX request against link-check action
 // that returns links seperated by new line
 // Return array of dead links
-function visualizeDeadLinkInit() {
+function visualizeDeadLinks {
 	
 	var deadLinks = [];
 	
@@ -49,8 +49,6 @@ function visualizeDeadLinkInit() {
 	    $("iframe").contents().find("body").append(" " + thrownError + " ");
 	  }
 	});
-
-	return deadLinks;
 }
 
 // Check if current link is in array of dead links

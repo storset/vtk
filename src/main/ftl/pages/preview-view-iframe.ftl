@@ -57,7 +57,7 @@
 	$('iframe').load(function() {
 	
 	    <#if visualizeBrokenLinks?exists && visualizeBrokenLinks = 'true'>
-          var deadLinks = visualizeDeadLinkInit();
+          visualizeDeadLinks();
         </#if>
 	
 		$("iframe").contents().find("a").each(function(i, e){

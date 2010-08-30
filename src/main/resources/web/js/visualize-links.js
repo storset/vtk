@@ -41,7 +41,7 @@ function visualizeDeadLinks {
               });
 		
 		  if(msg.status != 200) {
-		    $("iframe").contents().find("body").append(msg.status);
+		    $("iframe").contents().find("body").append(msg.status + " " + msg.statusText);
 		  }
         
 	  },

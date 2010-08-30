@@ -1,7 +1,7 @@
 // AJAX request against link-check action
 // that returns links seperated by new line
 // Return array of dead links
-function visualizeDeadLinks {
+function visualizeDeadLinks() {
 	
 	var deadLinks = [];
 	

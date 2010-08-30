@@ -12,6 +12,8 @@ function visualizeDeadLinkInit() {
 		URL = URL.split("?")[0];
 	}
 	
+	URL = URL.replace(/www/, "www-adm");
+	
 	URL = URL + LINK_CHECK_URL;
 	
 	var errorMsg = "";

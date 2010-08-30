@@ -13,8 +13,10 @@ function visualizeDeadLinkInit() {
 	}
 	
 	var URL_TWO_SPLIT = URL.split(".", 1);
-	URL_TWO_SPLIT[0] += URL_TWO_SPLIT[0] + "-adm";
-	URL = URL_TWO_SPLIT[0] + URL_TWO_SPLIT[1];
+	
+	var URL_TWO_SPLIT = URL.split(".", 2);
+	URL_TWO_SPLIT[0] = URL_TWO_SPLIT[0] + "-adm";
+	URL = URL_TWO_SPLIT[0] + "." + URL_TWO_SPLIT[1];
 	
 	URL = URL + LINK_CHECK_URL;
 	

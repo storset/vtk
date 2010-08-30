@@ -14,27 +14,36 @@ function visualizeDeadLinkInit() {
 	
 	URL = URL + LINK_CHECK_URL;
 	
+	var errorMsg = "";
+	
 	$.ajax({
 	  type : "GET",
 	  url : URL,
 	  dataType : "text",
-	  complete : function(msg) { 
-        deadLinks = msg.responseText.split("\n");
+	  complete : function(msg) {
+		
+          deadLinks = msg.responseText.split("\n");
         
-		$("iframe").contents().find("body")
-          .filter(function() {
-            return this.id.match(/^(?!vrtx-[\S]+-listing|vrtx-collection)[\S]+/);
-          })
-          .find("#main")
-          .not("#left-main")
-            .find("a").each(function(i, e){
-              visualizeDeadLink(this, deadLinks);
-            });
+		  $("iframe").contents().find("body")
+            .filter(function() {
+              return this.id.match(/^(?!vrtx-[\S]+-listing|vrtx-collection)[\S]+/);
+            })
+            .find("#main")
+            .not("#left-main")
+              .find("a").each(function(i, e){
+                visualizeDeadLink(this, deadLinks);
+              });
+		
+		  if(msg.status != 200) {
+		    $("iframe").contents().find("body").append(msg.status);
+		  }
         
 	  },
-      error : function (xhr, ajaxOptions, thrownError){}
+      error : function (xhr, ajaxOptions, thrownError){
+	    $("iframe").contents().find("body").append(" " + thrownError);
+	  }
 	});
-	
+
 	return deadLinks;
 }
 

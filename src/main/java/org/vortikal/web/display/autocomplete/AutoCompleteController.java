@@ -32,6 +32,8 @@ package org.vortikal.web.display.autocomplete;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.Locale;
 
@@ -53,14 +55,15 @@ public abstract class AutoCompleteController implements Controller {
     protected static final String PARAM_CONTEXT_URI_OVERRIDE = "context";
     protected static final String PARAM_PREFERRED_LANG = "lang";
     protected static final String RESPONSE_CONTENT_TYPE = "text/plain;charset=utf-8";
-    
+
     private boolean useRootContext;
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         String query = request.getParameter(PARAM_QUERY);
         if (query == null) {
-            return null; // Global policy: No query results in no auto-complete suggestions
+            return null; // Global policy: No query results in no auto-complete
+            // suggestions
         }
 
         CompletionContext context = getCompletionContext(request);
@@ -74,11 +77,10 @@ public abstract class AutoCompleteController implements Controller {
         return null;
     }
 
-    protected void writeSuggestions(List<Suggestion> suggestions, HttpServletResponse response)
-        throws IOException {
+    protected void writeSuggestions(List<Suggestion> suggestions, HttpServletResponse response) throws IOException {
         response.setContentType(RESPONSE_CONTENT_TYPE);
         PrintWriter writer = response.getWriter();
-        for (Suggestion suggestion: suggestions) {
+        for (Suggestion suggestion : suggestions) {
             writer.print(suggestion);
             writer.print(SUGGESTION_DELIMITER);
         }
@@ -94,26 +96,41 @@ public abstract class AutoCompleteController implements Controller {
 
     private Path getContextUri(HttpServletRequest request) {
         Path contextUri = null;
-        
+
         if (this.useRootContext) {
             return Path.ROOT;
         }
-        
+
+        String contextParam = request.getParameter(PARAM_CONTEXT_URI_OVERRIDE);
+
+        // Check if it's a complete url
         try {
-            // Try getting from overriding parameter first
-            String contextParam = request.getParameter(PARAM_CONTEXT_URI_OVERRIDE);
-            // Be gentle and snip trailing slash if necessary:
-            if (contextParam != null && contextParam.endsWith("/") && contextParam.length() > 1) {
+            URL url = new URL(contextParam);
+            contextParam = url.getPath();
+        } catch (MalformedURLException e) {
+            // Ignore
+        }
+
+        if (contextParam != null) {
+            // Remove parameters
+            if (contextParam.contains("?")) {
+                contextParam = contextParam.substring(0, contextParam.indexOf("?"));
+            }
+            // Be gentle and snip trailing slash if necessary
+            if (contextParam.endsWith("/") && contextParam.length() > 1) {
                 contextParam = contextParam.substring(0, contextParam.length() - 1);
             }
+        }
 
+        try {
             contextUri = Path.fromString(contextParam);
         } catch (IllegalArgumentException ie) {
             // Ignore.
         }
 
         if (contextUri == null) {
-            // No luck (invalid path or missing override param), try request context ..
+            // No luck (invalid path or missing override param), try request
+            // context ..
             RequestContext requestContext = RequestContext.getRequestContext();
             contextUri = requestContext.getResourceURI();
         }
@@ -185,13 +202,13 @@ public abstract class AutoCompleteController implements Controller {
         @Override
         public String toString() {
             StringBuilder builder = new StringBuilder();
-            for (int i=0; i<this.fields.length; i++) {
+            for (int i = 0; i < this.fields.length; i++) {
                 // Render null as empty string instead of "null"
                 if (this.fields[i] != null) {
                     builder.append(escapeFieldValue(this.fields[i].toString()));
-                } 
+                }
 
-                if (i < this.fields.length-1) {
+                if (i < this.fields.length - 1) {
                     builder.append(FIELD_SEPARATOR);
                 }
             }
@@ -200,7 +217,7 @@ public abstract class AutoCompleteController implements Controller {
 
         private String escapeFieldValue(String value) {
             StringBuilder escapedValue = new StringBuilder(value.length());
-            for (int i=0; i<value.length(); i++) {
+            for (int i = 0; i < value.length(); i++) {
                 char c = value.charAt(i);
                 switch (c) {
                 case FIELD_SEPARATOR:
@@ -214,7 +231,7 @@ public abstract class AutoCompleteController implements Controller {
             return escapedValue.toString();
         }
     }
-    
+
     public void setUseRootContext(boolean useRootContext) {
         this.useRootContext = useRootContext;
     }

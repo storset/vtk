@@ -139,6 +139,14 @@ div.vrtx-json-element {
   padding-bottom: 10px;
 }
 
+.vrtx-radio > label {
+  float: left;
+}
+
+.vrtx-radio > .vrtx-radio-buttons {
+  clear: left;
+}
+
 /* And override for grouped sub-properties */
 .vrtx-grouped-horizontal * > label,
 .vrtx-grouped-vertical * > label,

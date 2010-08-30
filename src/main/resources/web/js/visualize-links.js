@@ -12,7 +12,9 @@ function visualizeDeadLinkInit() {
 		URL = URL.split("?")[0];
 	}
 	
-	URL = URL.replace(/www/, "www-adm");
+	var URL_TWO_SPLIT = URL.split(".", 1);
+	URL_TWO_SPLIT[0] += URL_TWO_SPLIT[0] + "-adm";
+	URL = URL_TWO_SPLIT[0] + URL_TWO_SPLIT[1];
 	
 	URL = URL + LINK_CHECK_URL;
 	

@@ -12,11 +12,9 @@ function visualizeDeadLinkInit() {
 		URL = URL.split("?")[0];
 	}
 	
-	var URL_TWO_SPLIT = URL.split(".", 1);
-	
-	var URL_TWO_SPLIT = URL.split(".", 2);
+	var URL_TWO_SPLIT = URL.split(".");
 	URL_TWO_SPLIT[0] = URL_TWO_SPLIT[0] + "-adm";
-	URL = URL_TWO_SPLIT[0] + "." + URL_TWO_SPLIT[1];
+	URL = URL_TWO_SPLIT.shift() + "." + URL_TWO_SPLIT.join(".");
 	
 	URL = URL + LINK_CHECK_URL;
 	

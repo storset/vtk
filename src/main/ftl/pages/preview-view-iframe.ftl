@@ -52,12 +52,12 @@
 
   <#include "/system/javascript.ftl"/>
   
-  <script language="javascript" >
+  <script language="javascript">
   $(document).ready(function(){
 	$('iframe').load(function() {
 	
 	    <#if visualizeBrokenLinks?exists && visualizeBrokenLinks = 'true'>
-          visualizeDeadLinks(${resourceReference});
+          visualizeDeadLinks("${resourceReference}");
         </#if>
 	
 		$("iframe").contents().find("a").each(function(i, e){

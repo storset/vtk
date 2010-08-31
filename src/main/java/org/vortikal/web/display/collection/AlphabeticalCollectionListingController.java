@@ -58,28 +58,28 @@ public class AlphabeticalCollectionListingController extends CollectionListingCo
             List<PropertySet> tmpFiles = new ArrayList<PropertySet>();
 
             // array is convenient for string constructors 
-            char currentFirstCharInTitle[] = new char[1];
+            char currentIndexChar[] = new char[1];
             for (int i = 0; i < files.size(); i++) {
                 PropertySet file = files.get(i);
                 Property title = file.getProperty(this.titlePropDef);
                 char firstCharInTitle = title.getStringValue().trim().charAt(0);
                 if (i == 0) {
-                    currentFirstCharInTitle[0] = firstCharInTitle;
+                    currentIndexChar[0] = firstCharInTitle;
                 }
-                if (currentFirstCharInTitle[0] != firstCharInTitle) {
-                    String key = new String(currentFirstCharInTitle).toUpperCase();
+                if (currentIndexChar[0] != firstCharInTitle) {
+                    String key = new String(currentIndexChar).toUpperCase();
                     if (alpthabeticalOrdredResult.get(key) != null) {
                         alpthabeticalOrdredResult.get(key).addAll(tmpFiles);
                     } else {
                         alpthabeticalOrdredResult.put(key, tmpFiles);
                     }
-                    currentFirstCharInTitle[0] = firstCharInTitle;
+                    currentIndexChar[0] = firstCharInTitle;
                     tmpFiles = new ArrayList<PropertySet>();
                 }
                 tmpFiles.add(file);
             }
             if (tmpFiles.size() > 0) {
-                String key = new String(currentFirstCharInTitle).toUpperCase();
+                String key = new String(currentIndexChar).toUpperCase();
                 if (alpthabeticalOrdredResult.get(key) != null) {
                     alpthabeticalOrdredResult.get(key).addAll(tmpFiles);
                 } else {

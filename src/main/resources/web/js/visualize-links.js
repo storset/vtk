@@ -7,9 +7,9 @@ function visualizeDeadLinks(resourceUrl) {
   var LINK_CHECK_URL = resourceUrl + "?vrtx=link-check";
 
   $.ajax( {
-    type :"GET",
-    url :URL,
-    dataType :"text",
+    type : "GET",
+    url : LINK_CHECK_URL,
+    dataType : "text",
     complete : function(msg) {
 
       deadLinks = msg.responseText.split("\n");

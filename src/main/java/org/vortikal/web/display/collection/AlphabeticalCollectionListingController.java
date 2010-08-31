@@ -57,27 +57,29 @@ public class AlphabeticalCollectionListingController extends CollectionListingCo
             List<PropertySet> files = listing.getFiles();
             List<PropertySet> tmpFiles = new ArrayList<PropertySet>();
 
-            char firstCharInTitle[] = new char[1];
+            // array is convenient for string constructors 
+            char currentFirstCharInTitle[] = new char[1];
             for (int i = 0; i < files.size(); i++) {
                 PropertySet file = files.get(i);
                 Property title = file.getProperty(this.titlePropDef);
+                char firstCharInTitle = title.getStringValue().trim().charAt(0);
                 if (i == 0) {
-                    firstCharInTitle[0] = title.getStringValue().charAt(0);
+                    currentFirstCharInTitle[0] = firstCharInTitle;
                 }
-                if (firstCharInTitle[0] != title.getStringValue().charAt(0)) {
-                    String key = new String(firstCharInTitle).toUpperCase();
+                if (currentFirstCharInTitle[0] != firstCharInTitle) {
+                    String key = new String(currentFirstCharInTitle).toUpperCase();
                     if (alpthabeticalOrdredResult.get(key) != null) {
                         alpthabeticalOrdredResult.get(key).addAll(tmpFiles);
                     } else {
                         alpthabeticalOrdredResult.put(key, tmpFiles);
                     }
-                    firstCharInTitle[0] = title.getStringValue().charAt(0);
+                    currentFirstCharInTitle[0] = firstCharInTitle;
                     tmpFiles = new ArrayList<PropertySet>();
                 }
                 tmpFiles.add(file);
             }
             if (tmpFiles.size() > 0) {
-                String key = new String(firstCharInTitle).toUpperCase();
+                String key = new String(currentFirstCharInTitle).toUpperCase();
                 if (alpthabeticalOrdredResult.get(key) != null) {
                     alpthabeticalOrdredResult.get(key).addAll(tmpFiles);
                 } else {

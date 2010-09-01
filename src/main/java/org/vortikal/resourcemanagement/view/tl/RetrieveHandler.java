@@ -48,7 +48,7 @@ import org.vortikal.web.RequestContext;
 public class RetrieveHandler extends Function {
 
     private Repository repository;
-    
+
     public RetrieveHandler(Symbol symbol, Repository repository) {
         super(symbol, 1);
         this.repository = repository;
@@ -56,13 +56,12 @@ public class RetrieveHandler extends Function {
 
     @Override
     public Object eval(Context ctx, Object... args) throws Exception {
-        
+
         Object arg = args[0];
         Resource resource;
         String ref = arg.toString();
-
+        RequestContext requestContext = RequestContext.getRequestContext();
         if (ref.equals(".")) {
-            RequestContext requestContext = RequestContext.getRequestContext();
             HttpServletRequest request = requestContext.getServletRequest();
             Object o = request.getAttribute(StructuredResourceDisplayController.MVC_MODEL_REQ_ATTR);
             if (o == null) {
@@ -71,17 +70,13 @@ public class RetrieveHandler extends Function {
             @SuppressWarnings("unchecked")
             Map<String, Object> model = (Map<String, Object>) o;
             resource = (Resource) model.get("resource");
-        } else if (!ref.startsWith("/")) {
-            Object o = ctx.get(ref);
-            if (o == null) {
-                return null;
-            }
-            String s = o.toString();
-            Path uri = Path.fromString(s);
-            String token = SecurityContext.getSecurityContext().getToken();
-            resource = repository.retrieve(token, uri, true);
         } else {
-            Path uri = Path.fromString(ref);
+            Path uri;
+            if (!ref.startsWith("/")) {
+                uri = requestContext.getResourceURI().getParent().expand(ref);
+            } else {
+                uri = Path.fromString(ref);
+            }
             String token = SecurityContext.getSecurityContext().getToken();
             try {
                 resource = repository.retrieve(token, uri, true);

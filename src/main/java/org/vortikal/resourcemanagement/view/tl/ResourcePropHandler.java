@@ -70,8 +70,8 @@ public class ResourcePropHandler extends Function {
         }
 
         if (resource == null) {
+            RequestContext requestContext = RequestContext.getRequestContext();
             if (ref.equals(".")) {
-                RequestContext requestContext = RequestContext.getRequestContext();
                 HttpServletRequest request = requestContext.getServletRequest();
                 Object o = request.getAttribute(StructuredResourceDisplayController.MVC_MODEL_REQ_ATTR);
                 if (o == null) {
@@ -82,7 +82,12 @@ public class ResourcePropHandler extends Function {
                 Map<String, Object> model = (Map<String, Object>) o;
                 resource = (Resource) model.get("resource");
             } else {
-                Path uri = Path.fromString(ref);
+                Path uri;
+                if (!ref.startsWith("/")) {
+                    uri = requestContext.getResourceURI().getParent().expand(ref);
+                } else {
+                    uri = Path.fromString(ref);
+                }
                 String token = SecurityContext.getSecurityContext().getToken();
                 resource = this.repository.retrieve(token, uri, true);
             }

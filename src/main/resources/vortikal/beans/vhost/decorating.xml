@@ -10,8 +10,6 @@
         <ref bean="decorating.templateDecorator" />
       </list>
     </property>
-    <property name="maxDocumentSize" value="${decorating.maxDocumentSize}" />
-    <property name="documentTooLargeView" ref="decorating.documentTooLargeView" />
   </bean>
 
   <bean id="decorating.templateDecorator"
@@ -66,6 +64,7 @@
     <property name="decorationConfiguration" ref="decorating.configurationPropertiesFile" />
     <property name="parseableContentPropDef" ref="containsSSIDirectivesPropDef" />
     <property name="localeResolver" ref="viewServiceResourceAwareLocaleResolver" />
+    <property name="maxDocumentSize" value="${decorating.maxDocumentSize}" />
   </bean>
 
   <bean id="decorating.configurationPropertiesFile"
@@ -293,11 +292,6 @@
       </map>
     </property>
   </bean>
-
-  <bean id="decorating.documentTooLargeView" parent="freemarkerView">
-    <property name="url" value="pages/document-too-large.ftl" />
-  </bean>
-
 
   <bean id="listDecoratorComponentsView" parent="freemarkerView">
     <property name="url" value="pages/list-decorator-components.ftl" />

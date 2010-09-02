@@ -82,7 +82,8 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
     private boolean supportMultipleTemplates = false;
     private Map<String, RegexpCacheItem> regexpCache = new HashMap<String, RegexpCacheItem>();
     private LocaleResolver localeResolver = null;
-    
+    private long maxDocumentSize = -1;
+
     private class RegexpCacheItem {
         String string;
         Pattern compiled;
@@ -117,6 +118,10 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
         this.localeResolver = localeResolver;
     }
     
+    public void setMaxDocumentSize(long maxDocumentSize) {
+        this.maxDocumentSize = maxDocumentSize;
+    }
+
     public void afterPropertiesSet() {
         if (this.configPath == null) {
             throw new BeanInitializationException(
@@ -163,6 +168,17 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
         } catch (Throwable t) {
             throw new RuntimeException(
                     "Unrecoverable error when decorating '" + uri + "'", t);
+        }
+        
+        if (resource != null && this.maxDocumentSize > 0 
+                && resource.getContentLength() >= this.maxDocumentSize) {
+            descriptor.parse = false;
+            descriptor.tidy = false;
+            if (logger.isInfoEnabled()) {
+                logger.info("Not decorating " + request.getRequestURI() 
+                        + ": document size too large: " + resource.getContentLength());
+            }
+            return descriptor;
         }
         
         String paramString = null;

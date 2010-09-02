@@ -535,13 +535,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         this.authorizationManager.authorizeCreate(parent.getURI(), principal);
         checkMaxChildren(parent);
 
-        // Write to a temporary file to avoid locking:
-        File tempFile = writeTempFile(uri.getName(), inStream);
-
-        this.contentStore.storeContent(uri, new java.io.BufferedInputStream(new java.io.FileInputStream(tempFile)));
-        ResourceImpl newResource = this.resourceHelper.create(principal, uri, false);
-
+        File tempFile = null;
         try {
+            // Write to a temporary file to avoid locking:
+            tempFile = writeTempFile(uri.getName(), inStream);
+
+            this.contentStore.storeContent(uri, new java.io.BufferedInputStream(new java.io.FileInputStream(tempFile)));
+            ResourceImpl newResource = this.resourceHelper.create(principal, uri, false);
+
             // Store parent first to avoid transactional dead-lock-problems
             // between Cache
             // locking and database inter-transactional synchronization (which
@@ -561,12 +562,16 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             newResource = this.dao.load(uri);
 
             newResource = (ResourceImpl) newResource.clone();
+
+            this.context.publishEvent(new ResourceCreationEvent(this, newResource));
+            return newResource;
         } catch (CloneNotSupportedException e) {
             throw new IOException("An internal error occurred: unable to " + "clone() resource: " + uri);
+        } finally {
+            if (tempFile != null) {
+                tempFile.delete();
+            }
         }
-
-        this.context.publishEvent(new ResourceCreationEvent(this, newResource));
-        return newResource;
     }
 
     
@@ -609,9 +614,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         } catch (CloneNotSupportedException e) {
             throw new IOException("An internal error occurred: unable to " + "clone() resource: " + r);
         } finally {
-
-            if (tempFile != null)
+            if (tempFile != null) {
                 tempFile.delete();
+            }
         }
     }
 

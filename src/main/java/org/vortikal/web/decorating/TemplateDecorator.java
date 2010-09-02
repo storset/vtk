@@ -73,8 +73,8 @@ public class TemplateDecorator implements Decorator {
     public boolean match(HttpServletRequest request, HttpServletResponse response) throws Exception {
         DecorationDescriptor descriptor = resolveDecorationDescriptor(request, response);
         if (descriptor != null) {
-        	request.setAttribute(DECORATION_DESCRIPTOR_REQ_ATTR, descriptor);
-        	return descriptor.decorate();
+            request.setAttribute(DECORATION_DESCRIPTOR_REQ_ATTR, descriptor);
+            return descriptor.decorate();
         }
         return false;
     }

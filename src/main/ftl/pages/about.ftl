@@ -104,8 +104,9 @@
               <@vrtx.msg code="propertyEditor.takeOwnershipWarning"
                          default="Are you sure you want to take ownership of this resource?" />
             </#assign>
-            <form id="vrtx-admin-ownership-form" action="${ownerItem.toggleURL?html}" method="post">
-              <button id="vrtx-admin-ownership-button" type="submit" onclick="return confirm('${warning}')"
+            <form id="vrtx-admin-ownership-form" action="${ownerItem.toggleURL?html}"
+                  method="post" onsubmit="return confirm('${warning}')">
+              <button id="vrtx-admin-ownership-button" type="submit" 
                       name="confirmation">${editAction}</button>
             </form>
           </#if>

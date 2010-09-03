@@ -48,6 +48,10 @@
   </head>
   <body>
 
+    <#assign previewRefreshParameter = 'outer-iframe-refresh' />
+    <#assign constructor = "freemarker.template.utility.ObjectConstructor"?new() />
+    <#assign dateStr = constructor("java.util.Date")?string("yyyymmddhhmmss") />
+
     <#if !previewViewParameter?exists>
       <#assign previewViewParameter = 'vrtx=previewViewIframe' />
     </#if>
@@ -58,6 +62,7 @@
     <#else>
       <#assign url = url + "?" + previewViewParameter />
     </#if>
+    <#assign url = url + "&amp;" + previewRefreshParameter + "=" + dateStr />
     
     <#-- Do not show preview if resource is "Allowed for all" and we are on https. Should not normally happen -->
     <#if ((permissions_ACTION_READ.permissionsQueryResult = 'true') || 

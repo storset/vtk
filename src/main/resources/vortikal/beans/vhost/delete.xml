@@ -3,78 +3,6 @@
 
 <beans>
 
-  <bean id="delete.fromResourceMenuViewService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="manageService" />
-    <property name="assertions">
-      <list>
-        <ref bean="resourceNotRootAssertion" />
-        <ref bean="deleteResourcePermissionAssertion" />
-        <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="action" />
-          <property name="parameterValue" value="confirm-delete-from-resource-menu" />
-        </bean>
-      </list>
-    </property>
-    <property name="categories">
-      <set>
-        <value>globalMenu</value>
-      </set>
-    </property>
-    <property name="attributes">
-      <map>
-        <entry key="globalMenuOrder">
-          <value type="java.lang.Integer">100</value>
-        </entry>
-        <entry key="decorating.servicePredicateName" value="delete" />
-      </map>
-    </property>
-    <property name="handler" ref="delete.fromResourceMenuHandler" />
-  </bean>
-
-  <bean id="delete.fromResourceMenuHandler" class="org.vortikal.web.actions.delete.ConfirmDeleteController" parent="repositoryAware">
-    <property name="viewName" value="admin" />
-    <property name="deleteService" ref="deleteFromResourceMenuHandlerResourceService" />
-  </bean>
-
-  <bean id="delete.viewResolver" parent="system.decoratingViewResolver">
-    <property name="views">
-      <map>
-        <entry key="delete.confirm" value-ref="delete.confirmView" />
-      </map>
-    </property>
-  </bean>
-
-  <bean id="delete.confirmView" parent="freemarkerView">
-    <property name="url" value="pages/confirm-delete.ftl" />
-    <property name="referenceDataProviders">
-      <list>
-        <ref bean="resourceContextProvider" />
-      </list>
-    </property>
-  </bean>
-
-  <bean id="deleteFromResourceMenuHandlerResourceService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="manageService" />
-    <property name="assertions">
-      <list>
-        <ref bean="manage.postRequestAssertion" />
-        <ref bean="resourceNotRootAssertion" />
-        <ref bean="adminVrtxParameterRule" />
-        <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="action" />
-          <property name="parameterValue" value="delete-from-resource-menu" />
-        </bean>
-        <ref bean="deleteResourcePermissionAssertion" />
-      </list>
-    </property>
-    <property name="handler" ref="deleteFromResourceMenuHandler" />
-  </bean>
-
-  <bean id="deleteFromResourceMenuHandler" class="org.vortikal.web.actions.delete.DeleteResourceController" parent="repositoryAware">
-    <property name="viewName" value="redirectToManage" />
-    <property name="requestFromResourceMenu" value="true" />
-  </bean>
-
   <bean id="deleteResourcesService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageCollectionListingService" />
     <property name="order" value="-1001" />
@@ -97,7 +25,7 @@
     <property name="handler" ref="deleteResourcesHandler" />
   </bean>
 
-  <bean id="deleteResourcesHandler" class="org.vortikal.web.actions.delete.DeleteResourcesController"  parent="repositoryAware">
+  <bean id="deleteResourcesHandler" class="org.vortikal.web.actions.delete.DeleteResourcesController" parent="repositoryAware">
     <property name="viewName" value="manageCollectionListing" />
   </bean>
 

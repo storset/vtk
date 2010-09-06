@@ -95,7 +95,7 @@
       </div>
       <div class="comment-info">
         <#if comment.author.URL?exists>
-         <span class="comment-author"><a href="${comment.author.URL?html}">${comment.author.description?html}</a> -</span>
+         <span class="comment-author"><a href="${comment.author.URL?html}">${comment.author.description?html}</a><span class="comment-author-line"> -</span>
         <#else>
          <span class="comment-author">${comment.author.description?html}</span><span class="comment-author-line"> -</span>
         </#if>

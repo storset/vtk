@@ -341,6 +341,10 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
         }
 
         public void cleanup() {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Cleanup temp file: " + this.tempFile 
+                        + ", exists: " + this.tempFile.exists());
+            }
             if (this.tempFile != null && this.tempFile.exists()) {
                 this.tempFile.delete();
             }
@@ -437,6 +441,9 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
         
         private void writeTempFile(HttpServletRequest request, File tempDir) throws IOException, FileUploadException {
             this.tempFile = File.createTempFile("multipart-filter", null, tempDir);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Create temp file: " + tempFile);
+            }
             byte[] buffer = new byte[this.bufferSize];
             ServletInputStream in = request.getInputStream();
             OutputStream out = new FileOutputStream(tempFile);

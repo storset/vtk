@@ -70,7 +70,7 @@
     <div class="vrtx-events-calendar-introduction">
     <#local title = vrtx.propValue(collection, "title", "flattened") />
     <h1>${title}</h1>
-    <@viewutils.displayImage collection true />
+    <@viewutils.displayImage collection false />
     <#local introduction = vrtx.getIntroduction(collection) />
     <#if introduction?has_content>
       <div class="vrtx-introduction">

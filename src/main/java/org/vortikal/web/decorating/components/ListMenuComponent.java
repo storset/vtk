@@ -199,7 +199,9 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
 
             // Hidden?
             if (this.hiddenPropDef != null && resource.getProperty(this.hiddenPropDef) != null) {
-                continue;
+                if(!uri.equals(menuRequest.getURI())) {
+                  continue;
+                }
             }
             
             // Parent?

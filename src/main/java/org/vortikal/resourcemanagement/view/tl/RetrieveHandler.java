@@ -37,7 +37,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.resourcemanagement.view.StructuredResourceDisplayController;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.text.tl.Context;
@@ -71,16 +70,16 @@ public class RetrieveHandler extends Function {
             Map<String, Object> model = (Map<String, Object>) o;
             resource = (Resource) model.get("resource");
         } else {
-            Path uri;
-            if (!ref.startsWith("/")) {
-                uri = requestContext.getResourceURI().getParent().expand(ref);
-            } else {
-                uri = Path.fromString(ref);
-            }
-            String token = SecurityContext.getSecurityContext().getToken();
             try {
+                Path uri;
+                if (!ref.startsWith("/")) {
+                    uri = requestContext.getResourceURI().getParent().expand(ref);
+                } else {
+                    uri = Path.fromString(ref);
+                }
+                String token = SecurityContext.getSecurityContext().getToken();
                 resource = repository.retrieve(token, uri, true);
-            } catch (ResourceNotFoundException rnfe) {
+            } catch (Throwable t) {
                 return null;
             }
         }

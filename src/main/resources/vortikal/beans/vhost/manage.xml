@@ -768,7 +768,7 @@
     parent="repositoryAware">
     <property name="modelName" value="tabMessagePublishPermission" />
     <property name="localizationKey" value="publish.permission" />
-    <property name="assertion" ref="mayPreviewUnpublishedResourceAssertion" />
+    <property name="publishedPropDef" ref="publishedPropDef" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="jsonResourceTypeDefinition" ref="json.resourceType" />
   </bean>

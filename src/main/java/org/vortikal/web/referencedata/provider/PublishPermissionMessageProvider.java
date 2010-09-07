@@ -40,11 +40,11 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
-import org.vortikal.web.service.Assertion;
 
 /**
  * A reference data provider that puts a message in the model, based on
@@ -75,9 +75,9 @@ public class PublishPermissionMessageProvider implements ReferenceDataProvider {
     private String localizationKey;
     private String modelName;
     private Repository repository;
-    private Assertion assertion;
     private ResourceTypeTree resourceTypeTree;
     private ResourceTypeDefinition jsonResourceTypeDefinition;
+    private PropertyTypeDefinition publishedPropDef;
 
     // TODO: this whole file is kinda muddy. but wanted as a tabMessage..
     @SuppressWarnings("unchecked")
@@ -105,7 +105,8 @@ public class PublishPermissionMessageProvider implements ReferenceDataProvider {
 
         if (isJsonResourceType) {
             String publishStatus = "published";
-            if (assertion.matches(request, resource, principal)) {
+            
+            if (!resource.getProperty(this.publishedPropDef).getBooleanValue()) {
                 publishStatus = "unpublished";
             }
 
@@ -134,11 +135,6 @@ public class PublishPermissionMessageProvider implements ReferenceDataProvider {
     }
 
     @Required
-    public void setAssertion(Assertion assertion) {
-        this.assertion = assertion;
-    }
-
-    @Required
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
     }
@@ -146,6 +142,11 @@ public class PublishPermissionMessageProvider implements ReferenceDataProvider {
     @Required
     public void setJsonResourceTypeDefinition(ResourceTypeDefinition jsonResourceTypeDefinition) {
         this.jsonResourceTypeDefinition = jsonResourceTypeDefinition;
+    }
+
+    @Required
+    public void setPublishedPropDef(PropertyTypeDefinition publishedPropDef) {
+        this.publishedPropDef = publishedPropDef;
     }
 
     @Required

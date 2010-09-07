@@ -73,7 +73,8 @@
   <import resource="delete.xml" />
   <import resource="vocabulary.xml" />
   <import resource="publish.xml" />
-  <import resource="link-check.xml" />
+  
+  <!--import resource="link-check.xml" /-->
   
   <import resource="tags/tags.xml" />
 

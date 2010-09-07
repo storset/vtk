@@ -47,7 +47,7 @@ resourcetype structured-article : structured-document {
       [def document structured-document()]
       [def thehideAdditionalContent json-attr(document, "properties.hideAdditionalContent")]
       [def theRelated-content json-attr(document, "properties.related-content")]
-      
+
       [if (thehideAdditionalContent = "false")]
         [if theRelated-content != null]
           <div id="vrtx-additional-content">
@@ -90,8 +90,8 @@ resourcetype structured-article : structured-document {
         <title>[call "comp:title"]</title>
       </head>
       <body id="vrtx-structured-article">
-        <div id="vrtx-content">
-          <div id="vrtx-main-content" class="vrtx-hide-additional-content-${resource:property id=[resource:hideAdditionalContent]}">
+        <div id="vrtx-content">       
+            <div id="vrtx-main-content" class="vrtx-hide-additional-content-[call "resource:property" {"id":"resource:hideAdditionalContent"}]">
             <h1>[call "comp:title"]</h1>
             [call "comp:introduction"]
             [call "comp:introduction-image"]

@@ -105,7 +105,7 @@ implements ServletContextAware {
     
     private ServletContext servletContext;
 
-    private ContentCache<String, String> httpIncludeCache;
+    private ContentCache<String, Object> httpIncludeCache;
 
     private Repository repository;
 
@@ -121,7 +121,7 @@ implements ServletContextAware {
         this.servletContext = servletContext;
     }
 
-    @Required public void setHttpIncludeCache(ContentCache<String, String> httpIncludeCache) {
+    @Required public void setHttpIncludeCache(ContentCache<String, Object> httpIncludeCache) {
         this.httpIncludeCache = httpIncludeCache;
     }
 
@@ -164,7 +164,7 @@ implements ServletContextAware {
             if (!uri.startsWith("/")) {
                 Path currentCollection = RequestContext.getRequestContext().getCurrentCollection();
                 uri = currentCollection.expand(uri).toString();
-            } 
+            }
             handleDirectInclude(uri, request, response, ignoreNotFound);
             return;
         }
@@ -180,7 +180,7 @@ implements ServletContextAware {
         }
 
         if (uri.startsWith("http:") || uri.startsWith("https:")) {
-            handleHttpInclude(uri, response);
+            handleHttpInclude(uri, request, response);
             return;
         }
 
@@ -353,8 +353,23 @@ implements ServletContextAware {
 
 
     private void handleHttpInclude(String uri,
-            DecoratorResponse response) throws Exception {
-        String result = this.httpIncludeCache.get(uri);
+            DecoratorRequest request, DecoratorResponse response) throws Exception {
+        Object obj = this.httpIncludeCache.get(uri);
+        String result = "";
+        if (obj instanceof HtmlPage) {
+            HtmlPage page = (HtmlPage) obj;
+            String elementParam = request.getStringParameter(PARAMETER_ELEMENT);
+            if (elementParam == null) {
+                result = page.getStringRepresentation();
+            } else {
+                List<HtmlElement> elements = page.select(elementParam);
+                if (elements.size() > 0) {
+                    result = elements.get(0).getContent();
+                }
+            }
+        } else {
+            result = obj.toString();
+        }
         Writer writer = response.getWriter();
         writer.write(result);
         writer.close();

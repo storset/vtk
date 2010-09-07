@@ -488,10 +488,11 @@
     <property name="maxItems" value="${decorating.includeComponent.maxCachedItems}" />
   </bean>
 
-  <bean id="decorating.includeComponent.httpIncludeCache.loader" class="org.vortikal.web.decorating.components.URLToStringLoader">
+  <bean id="decorating.includeComponent.httpIncludeCache.loader" class="org.vortikal.web.decorating.components.URLObjectLoader">
     <property name="connectTimeoutSeconds" value="${decorating.includeComponent.connectTimeoutSeconds}" />
     <property name="readTimeoutSeconds" value="${decorating.includeComponent.readTimeoutSeconds}" />
     <property name="clientIdentifier" value="${decorating.includeComponent.identifier}" />
+    <property name="htmlParser" ref="decorating.htmlParser" />
   </bean>
 
   <bean id="decorating.imageListingComponent" class="org.vortikal.web.decorating.components.ImageListingComponent"

@@ -30,36 +30,44 @@
  */
 package org.vortikal.web.decorating.components;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URLConnection;
 
+import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.util.cache.loaders.URLConnectionCacheLoader;
 import org.vortikal.util.io.StreamUtil;
+import org.vortikal.util.repository.ContentTypeHelper;
 import org.vortikal.util.text.TextUtils;
 
 
 /**
- * A cache loader that reads the content of a network resource into a
- * string.
+ * A cache loader that reads the content of a network resource into 
+ * either a {@link HtmlPage} (for HTML resources), or a string.
  */
-public class URLToStringLoader extends URLConnectionCacheLoader<String> {
+public class URLObjectLoader extends URLConnectionCacheLoader<Object> {
 
     private int maxLength = -1;
     private String defaultCharset = "iso-8859-1";
     private String clientIdentifier = "Anonymous URL retriever";
-
+    private HtmlPageParser htmlParser;
+    
     public void setClientIdentifier(String clientIdentifier) {
         this.clientIdentifier = clientIdentifier;
     }
-    
+
+    public void setHtmlParser(HtmlPageParser htmlParser) {
+        this.htmlParser = htmlParser;
+    }
+
     protected void setConnectionProperties(URLConnection connection) {
         super.setConnectionProperties(connection);
         connection.setRequestProperty("User-Agent", this.clientIdentifier);
         connection.setRequestProperty("Accept", "text/*");
     }
-
-    protected String handleConnection(URLConnection connection) throws Exception {
+    
+    protected Object handleConnection(URLConnection connection) throws Exception {
         if (!(connection instanceof HttpURLConnection)) {
             throw new IllegalArgumentException("Only HTTP addresses are supported");
         }
@@ -72,6 +80,7 @@ public class URLToStringLoader extends URLConnectionCacheLoader<String> {
         String contentType = urlConnection.getHeaderField("Content-Type");
         if (contentType != null && contentType.indexOf("charset") > 0) {
             charset = TextUtils.extractField(contentType, "charset", ";");
+            contentType = contentType.substring(0, contentType.indexOf(";")).trim();
         }
 
         InputStream stream = connection.getInputStream();
@@ -81,6 +90,14 @@ public class URLToStringLoader extends URLConnectionCacheLoader<String> {
         } else {
             buf = StreamUtil.readInputStream(stream);
         }
-        return new String(buf, charset);
+        
+        Object item = null;
+        if (this.htmlParser != null && contentType != null &&  
+                ContentTypeHelper.isHTMLOrXHTMLContentType(contentType)) {
+            item = this.htmlParser.parse(new ByteArrayInputStream(buf), charset);
+        } else {
+            item = new String(buf, charset);
+        }
+        return item;
     }
 }

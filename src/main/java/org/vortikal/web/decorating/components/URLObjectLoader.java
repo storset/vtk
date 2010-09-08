@@ -34,6 +34,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URLConnection;
+import org.htmlparser.visitors.HtmlPage;
 
 import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.util.cache.loaders.URLConnectionCacheLoader;
@@ -90,14 +91,25 @@ public class URLObjectLoader extends URLConnectionCacheLoader<Object> {
         } else {
             buf = StreamUtil.readInputStream(stream);
         }
+
+        // Temporary quick-fix to avoid breaking include of non-self-contained
+        // HTML fragments that declare type as text/html
+        // Conversion from String->HtmlPage->String will often be "lossy"
+        // in this case, giving unexpected results when fragments
+        // are included as parts of a complete HTML document.
+
+        // This breaks the 'element' parameter functionality of the include:file component,
+        // because parsing is never attempted.
+        return new String(buf, charset);
         
-        Object item = null;
-        if (this.htmlParser != null && contentType != null &&  
-                ContentTypeHelper.isHTMLOrXHTMLContentType(contentType)) {
-            item = this.htmlParser.parse(new ByteArrayInputStream(buf), charset);
-        } else {
-            item = new String(buf, charset);
-        }
-        return item;
+//        Object item = null;
+//        if (this.htmlParser != null && contentType != null &&
+//                ContentTypeHelper.isHTMLOrXHTMLContentType(contentType)) {
+//            item = this.htmlParser.parse(new ByteArrayInputStream(buf), charset);
+//
+//        } else {
+//            item = new String(buf, charset);
+//        }
+//        return item;
     }
 }

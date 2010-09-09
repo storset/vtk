@@ -325,7 +325,6 @@ resourcetype person {
             [call "comp:vrtx-date-info"]
           </div>
         </div>
-        [resource-props "."]
         <div id="vrtx-additional-content">
           [call "comp:feeds"]
           [call "resource:project-list"]

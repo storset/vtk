@@ -53,5 +53,11 @@ public interface PrincipalMetadata extends Metadata {
      * @return The qualified name as a <code>String</code>.
      */
     public String getQualifiedName();
+    
+    /**
+     * 
+     * @return The user id as a <code>String</code>
+     */
+    public String getUid();
 
 }

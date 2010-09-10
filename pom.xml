@@ -24,37 +24,37 @@
     <developer>
       <id>gormap</id>
       <name>Gorm Paulsen</name>
-      <url>http://www.uio.no/sok?person=gormap</url>
+      <url>http://www.uio.no/?vrtx=person-view=gormap</url>
     </developer>
     <developer>
       <id>oyviste</id>
       <name>Øyvind Stegard</name>
-      <url>http://www.uio.no/sok?person=oyviste</url>
+      <url>http://www.uio.no/?vrtx=person-view=oyviste</url>
     </developer>
     <developer>
       <id>evenh</id>
       <name>Even Halvorsen</name>
-      <url>http://www.uio.no/sok?person=evenh</url>
+      <url>http://www.uio.no/?vrtx=person-view=evenh</url>
     </developer>
     <developer>
       <id>tommae</id>
       <name>Tomm Anders Eriksen</name>
-      <url>http://www.uio.no/sok?person=tommae</url>
+      <url>http://www.uio.no/?vrtx=person-view=tommae</url>
     </developer>
     <developer>
       <id>rezam</id>
       <name>Reza Mirzaei</name>
-      <url>http://www.uio.no/sok?person=rezam</url>
+      <url>http://www.uio.no/?vrtx=person-view=rezam</url>
     </developer>
     <developer>
       <id>korvald</id>
       <name>Magnus Korvald</name>
-      <url>http://www.uio.no/sok?person=korvald</url>
+      <url>http://www.uio.no/?vrtx=person-view=korvald</url>
     </developer>
     <developer>
       <id>oyvihatl</id>
       <name>Øyvind Hatland</name>
-      <url>http://www.uio.no/sok?person=oyvihatl</url>
+      <url>http://www.uio.no/?vrtx=person-view=oyvihatl</url>
     </developer>
   </developers>
   <mailingLists>

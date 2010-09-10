@@ -49,6 +49,14 @@ public class PrincipalMetadataImpl extends MetadataImpl implements PrincipalMeta
         return this.qualifiedName;
     }
     
+    public String getUid() {
+        String uid = (String) this.getValue(PrincipalMetadata.UID_ATTRIBUTE);
+        if (uid == null) {
+            uid = (String) this.getValue("username");
+        }
+        return uid;
+    }
+    
     @Override
     public String toString() {
         StringBuilder buffer = new StringBuilder(getClass().getName());

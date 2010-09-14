@@ -4,7 +4,7 @@
 <beans>
 
   <bean id="ehCacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
-    <property name="configLocation" value="classpath:/vortikal/beans/vhost/ehcache/ehcache.xml" />
+    <property name="configLocation" value="classpath:ehcache.xml" />
   </bean>
 
 </beans>

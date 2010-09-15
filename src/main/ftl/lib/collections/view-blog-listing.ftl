@@ -1,13 +1,19 @@
 <#import "/layouts/tag-cloud.ftl" as tagCloud />
+<#assign resource = collection />
 
 <#macro displayBlogs blogListing collection>
 	<#assign introduction = vrtx.getIntroduction(collection) />
 	<div class="container">
 		<div class="main-article-listing">
 		<#if page == 1>
-		<div class="vrtx-introduction">
-	         ${introduction}
-	    </div>
+	      <div class="vrtx-introduction">
+            <#-- Image -->
+      	    <@viewutils.displayImage resource />
+            <#-- Introduction -->
+            <#if introduction?has_content>
+              ${introduction}
+            </#if>
+          </div>
 		</#if>
 		<@articles.displayArticles page=page collectionListings=searchComponents hideNumberOfComments=hideNumberOfComments displayMoreURLs=true />
 		</div>

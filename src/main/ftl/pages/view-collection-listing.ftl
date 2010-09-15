@@ -99,15 +99,16 @@
       </#if>
     </h1>
     <#if page == 1>
-      <#-- Image -->
-      <#if !viewOngoingProjectsLink?exists>
-      	<@viewutils.displayImage resource />
-      </#if>
-      <#-- Introduction -->
+      <#-- Introduction and image -->
       <#assign introduction = vrtx.getIntroduction(resource) />
-      <#if introduction?has_content && !isBlogListing &&!viewOngoingProjectsLink?exists>
+      <#if !viewOngoingProjectsLink?exists && !isBlogListing>
         <div class="vrtx-introduction">
-          ${introduction}
+          <#-- Image -->
+      	  <@viewutils.displayImage resource />
+          <#-- Introduction -->
+          <#if introduction?has_content>
+            ${introduction}
+          </#if>
         </div>
       </#if>
       <#-- List collections: -->

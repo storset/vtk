@@ -142,7 +142,7 @@
       </map>
     </property>
   </bean>
-
+  
   <bean id="decorating.timeAndPlaceComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="time-and-place" />
@@ -225,7 +225,11 @@
 
   <bean name="decorating.shareAtComponent.view" parent="freemarkerView">
     <property name="url" value="layouts/share-at.ftl" />
-
+    <property name="attributes">
+      <map>
+        <entry key="url" value="${jsBaseURL}/share.js" />
+      </map>
+    </property>
     <property name="referenceDataProviders">
       <list>
         <!--        <ref bean="resourceContextProvider" />-->

@@ -10,6 +10,10 @@
   -->
 <#import "/lib/vortikal.ftl" as vrtx />
 
+<!-- begin share-at js -->
+<script type="text/javascript" src="${url?html}"></script>
+<!-- end share-at js -->
+
 <div id="vrtx-share-component">
   <a href="#vrtx-share-link" id="vrtx-share-link" class="vrtx-share-link" name="vrtx-share-link">
   <@vrtx.msg code="decorating.shareAtComponent.title" default="Share at" />...</a>

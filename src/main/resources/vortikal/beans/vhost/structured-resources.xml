@@ -400,30 +400,8 @@
       </map>
     </property>
   </bean>
-
-  <bean id="structured-article.javascriptComponent"
-        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
-    <property name="namespace" ref="structured-article.componentNamespace" />
-    <property name="name" value="javascript" />
-    <property name="description" value="Inserts the default article/event javascript references" />
-    <property name="view" ref="structured-article.javascriptView" />
-    <property name="exposeMvcModel" value="true" />
-  </bean>
-
-  <bean id="structured-article.javascriptView" parent="freemarkerView">
-    <property name="url" value="system/javascript.ftl" />
-    <property name="attributesMap">
-      <map>
-        <entry key="jsURLs">
-          <list>    
-            <value>${webResources.baseURL}/js/share.js</value>
-          </list>
-        </entry>
-      </map>
-    </property>
-  </bean>
   
-      <bean id="frontpage.cssComponent"
+  <bean id="frontpage.cssComponent"
         class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="frontpage.componentNamespace" />
     <property name="name" value="css" />

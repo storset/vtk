@@ -75,7 +75,7 @@
     <#if introduction?has_content || introductionImage != "">
       <div class="vrtx-introduction">
         <#-- Image -->
-        <@viewutils.displayImage collection false />
+        <@viewutils.displayImage collection />
         <#-- Introduction -->
         <#if introduction?has_content>
           ${introduction}

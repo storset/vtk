@@ -35,7 +35,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.store.PrincipalMetadata;
 import org.vortikal.repository.store.PrincipalMetadataDAO;
 import org.vortikal.repository.store.PrincipalSearch;

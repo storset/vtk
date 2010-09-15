@@ -81,7 +81,7 @@ resourcetype person {
             [localized 'no-external-user-metadata']
           [else]
           
-          <span class="vrtx-person-another-language-link">[call "resource:person-language-link"]</span>
+          [call "resource:person-language-link"]
         
           [if email != null && email != ""]
             <div class="vrtx-person-contact-info-line vrtx-email"><span class="vrtx-label">[localized "email"]</span>

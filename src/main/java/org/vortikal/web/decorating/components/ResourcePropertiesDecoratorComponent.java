@@ -89,10 +89,8 @@ public class ResourcePropertiesDecoratorComponent extends AbstractDecoratorCompo
             throws Exception {
         String token = SecurityContext.getSecurityContext().getToken();
         Path uri = RequestContext.getRequestContext().getResourceURI();
-
         String format = request.getStringParameter(PARAMETER_FORMAT);
-        
-        
+       
         if (this.relative) {
             String uriString = request.getStringParameter(PARAMETER_URI);
             String uriLevelString = request.getStringParameter(PARAMETER_URI_LEVEL);
@@ -118,6 +116,7 @@ public class ResourcePropertiesDecoratorComponent extends AbstractDecoratorCompo
                 if (uriString != null && uriString.startsWith("/")) {
                     uri = Path.fromString(uriString);                    
                 } else {
+                    uri = RequestContext.getRequestContext().getCurrentCollection();
                     uri = uri.expand(uriString);
                     if (uri == null) {
                         throw new IllegalArgumentException("Unable to expand URI: " + uriString);
@@ -134,7 +133,7 @@ public class ResourcePropertiesDecoratorComponent extends AbstractDecoratorCompo
         if (id == null || id.trim().equals("")) {
             return;
         }
-
+ 
         if (URI_IDENTIFIER.equals(id)) {
             result = uri.toString();
         } else if (NAME_IDENTIFIER.equals(id)) {

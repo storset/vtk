@@ -10,6 +10,7 @@ resourcetype organizational-unit {
     phone : string multiple external:organizationMetadataLdapService,
     fax : string multiple external:organizationMetadataLdapService,
     email : string multiple external:organizationMetadataLdapService,
+    externalUnitMetaData : derived external:organizationMetadataLdapService,
     title : derived (name) eval (name)
       overrides title default name,
     picture : image_ref,
@@ -66,55 +67,62 @@ resourcetype organizational-unit {
     contact-information {
       ##
         [resource-props "."]
-        <div class="vcard">
-          [if title != null]
-            <span class="fn org" style="display:none">[val title]</span>
-          [endif]
-          [if postalAddress != null && postalAddress != ""]
-            <h2>[localized "contactHeader"]</h2>
-            <span class="vrtx-organizational-unit-postal-address adr">
-              <span class="vrtx-label">[localized "postalAddress"]</span>
-              [list postalAddress postalAddressLine]
-                <span class="vrtx-address-line">[if postalAddressLine != null][val postalAddressLine][endif]</span>
-              [endlist]
-            </span>
-          [endif]
-          [if visitingAddress != null && visitingAddress != ""]
-            <span class="vrtx-organizational-unit-visiting-address adr">
-              <span class="vrtx-label">[localized "visitingAddress"]</span>
-              [list visitingAddress visitingAddressLine]
-                <span class="vrtx-address-line">[if visitingAddressLine != null][val visitingAddressLine][endif]</span>
-              [endlist]
-            </span>
-          [endif]
+
+        [def getExternal resource-prop-obj-val(".", "getExternalUnitInfo")]
+        [if getExternal = true && externalUnitMetaData = null]
+          [localized 'no-external-unit-metadata']
+        [else]
+        
+          <div class="vcard">
+            [if title != null]
+              <span class="fn org" style="display:none">[val title]</span>
+            [endif]
+            [if postalAddress != null && postalAddress != ""]
+              <h2>[localized "contactHeader"]</h2>
+              <span class="vrtx-organizational-unit-postal-address adr">
+                <span class="vrtx-label">[localized "postalAddress"]</span>
+                [list postalAddress postalAddressLine]
+                  <span class="vrtx-address-line">[if postalAddressLine != null][val postalAddressLine][endif]</span>
+                [endlist]
+              </span>
+            [endif]
+            [if visitingAddress != null && visitingAddress != ""]
+              <span class="vrtx-organizational-unit-visiting-address adr">
+                <span class="vrtx-label">[localized "visitingAddress"]</span>
+                [list visitingAddress visitingAddressLine]
+                  <span class="vrtx-address-line">[if visitingAddressLine != null][val visitingAddressLine][endif]</span>
+                [endlist]
+              </span>
+            [endif]
           
-          [if (phone != null && phone != "") || (fax != null && fax != "")]
-            <span class="vrtx-organizational-unit-phone-fax">
-              [if phone != null && phone != ""]
-                <span class="vrtx-organizational-unit-phone">
-                  [localized 'phone']: <span class="tel"><span class="type" style="display: none">Work</span><span class="value">[val phone]</span></span>
-                </span>
-              [endif]
-              [if fax != null && fax != ""]
-                <span class="vrtx-organizational-unit-fax">
-                  [localized 'fax']: <span class="tel"><span class="type" style="display: none">Fax</span><span class="value">[val fax]</span></span>
-                </span>
-              [endif]
-            </span>
-          [endif]   
+            [if (phone != null && phone != "") || (fax != null && fax != "")]
+              <span class="vrtx-organizational-unit-phone-fax">
+                [if phone != null && phone != ""]
+                  <span class="vrtx-organizational-unit-phone">
+                    [localized 'phone']: <span class="tel"><span class="type" style="display: none">Work</span><span class="value">[val phone]</span></span>
+                  </span>
+                [endif]
+                [if fax != null && fax != ""]
+                  <span class="vrtx-organizational-unit-fax">
+                    [localized 'fax']: <span class="tel"><span class="type" style="display: none">Fax</span><span class="value">[val fax]</span></span>
+                  </span>
+                [endif]
+              </span>
+            [endif]
               
-          [if email != null && email != ""]
-            <span class="vrtx-organizational-unit-email">
-              [localized 'email']: <a href="mailto:[val email]"><span class="email">[val email]</span></a>
-            </span>
-          [endif]
-          
-          [if areacode != null && areacode != ""]
-            <span class="vrtx-organizational-unit-areacode">
-              [localized 'areacode']: [val areacode]
-            </span>
-          [endif]
-        </div>
+            [if email != null && email != ""]
+              <span class="vrtx-organizational-unit-email">
+                [localized 'email']: <a href="mailto:[val email]"><span class="email">[val email]</span></a>
+              </span>
+            [endif]
+        
+            [if areacode != null && areacode != ""]
+              <span class="vrtx-organizational-unit-areacode">
+                [localized 'areacode']: [val areacode]
+              </span>
+            [endif]
+          </div>
+        [endif]
       ##
     }
     
@@ -292,7 +300,10 @@ resourcetype organizational-unit {
       no : "Webadresse til liste over alle ansatte",
       nn : "Webadresse til liste over alle ansatte"),
     content : (en: "Content", no: "Innhold", nn : "Innhald"),
-    related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold")
+    related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold"),
+    no-external-unit-metadata : (en : "Could not get unit data from external service",
+                                 no : "Kan ikke hente opplysninger om enhet fra ekstern kilde",
+                                 nn : "Kan ikkje hente opplysningar om eining frå ekstern kilde")
   }
   
 }

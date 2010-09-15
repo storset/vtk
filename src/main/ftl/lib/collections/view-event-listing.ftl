@@ -71,7 +71,7 @@
     <#local title = vrtx.propValue(collection, "title", "flattened") />
     <h1>${title}</h1>
     <#local introduction = vrtx.getIntroduction(collection) />
-    <#local introductionImage = vrtx.propValue(resource, "picture") />
+    <#local introductionImage = vrtx.propValue(collection, "picture") />
     <#if introduction?has_content || introductionImage != "">
       <div class="vrtx-introduction">
         <#-- Image -->

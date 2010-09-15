@@ -1,9 +1,8 @@
 <#import "/layouts/tag-cloud.ftl" as tagCloud />
-<#assign resource = collection />
 
 <#macro displayBlogs blogListing collection>
 	<#assign introduction = vrtx.getIntroduction(collection) />
-	<#assign introductionImage = vrtx.propValue(resource, "picture") />
+	<#assign introductionImage = vrtx.propValue(collection, "picture") />
 	<div class="container">
 		<div class="main-article-listing">
 		<#if page == 1>

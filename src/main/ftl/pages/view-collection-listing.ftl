@@ -101,7 +101,9 @@
     <#if page == 1>
       <#-- Introduction and image -->
       <#assign introduction = vrtx.getIntroduction(resource) />
-      <#if !viewOngoingProjectsLink?exists && !isBlogListing>
+      <#assign introductionImage = vrtx.propValue(resource, "picture") />
+      <#if !viewOngoingProjectsLink?exists && !isBlogListing &&
+           (introduction?has_content || introductionImage != "")>
         <div class="vrtx-introduction">
           <#-- Image -->
       	  <@viewutils.displayImage resource />

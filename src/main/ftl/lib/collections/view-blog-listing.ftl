@@ -3,17 +3,20 @@
 
 <#macro displayBlogs blogListing collection>
 	<#assign introduction = vrtx.getIntroduction(collection) />
+	<#assign introductionImage = vrtx.propValue(resource, "picture") />
 	<div class="container">
 		<div class="main-article-listing">
 		<#if page == 1>
-	      <div class="vrtx-introduction">
-            <#-- Image -->
-      	    <@viewutils.displayImage resource />
-            <#-- Introduction -->
-            <#if introduction?has_content>
-              ${introduction}
-            </#if>
-          </div>
+		  <#if introduction?has_content || introductionImage != "">
+	        <div class="vrtx-introduction">
+              <#-- Image -->
+      	      <@viewutils.displayImage resource />
+              <#-- Introduction -->
+              <#if introduction?has_content>
+                ${introduction}
+              </#if>
+            </div>
+          </#if>
 		</#if>
 		<@articles.displayArticles page=page collectionListings=searchComponents hideNumberOfComments=hideNumberOfComments displayMoreURLs=true />
 		</div>

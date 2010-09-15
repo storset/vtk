@@ -71,12 +71,15 @@
     <#local title = vrtx.propValue(collection, "title", "flattened") />
     <h1>${title}</h1>
     <#local introduction = vrtx.getIntroduction(collection) />
-    <#if introduction?has_content>
+    <#local introductionImage = vrtx.propValue(resource, "picture") />
+    <#if introduction?has_content || introductionImage != "">
       <div class="vrtx-introduction">
         <#-- Image -->
         <@viewutils.displayImage collection false />
         <#-- Introduction -->
-        ${introduction}
+        <#if introduction?has_content>
+          ${introduction}
+        </#if>
       </div>
     </#if>
     </div>

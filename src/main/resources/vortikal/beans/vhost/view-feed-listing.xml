@@ -11,10 +11,16 @@
     <property name="titlePropDef" ref="titlePropDef" />
     <property name="lastModifiedPropDef" ref="lastModifiedPropDef" />
     <property name="creationTimePropDef" ref="creationTimePropDef" />
-    <property name="authorPropDefPointer" ref="${override.listing.prefix}authorPropDefPointer" />
-    <property name="introductionPropDefPointer" ref="${override.listing.prefix}introductionPropDefPointer" />
-    <property name="picturePropDefPointer" ref="${override.listing.prefix}picturePropDefPointer" />
-    <property name="mediaPropDefPointer" ref="${override.listing.prefix}mediaPropDefPointer" />
+    
+    <property name="structuredAuthorPropDefPointer" ref="structured.authorPropDefPointer" />
+    <property name="structuredIntroductionPropDefPointer" ref="structured.introductionPropDefPointer" />
+    <property name="structuredPicturePropDefPointer" ref="structured.picturePropDefPointer" />
+    <property name="structuredMediaPropDefPointer" ref="structured.mediaPropDefPointer" />
+    
+    <property name="authorPropDefPointer" ref="authorPropDefPointer" />
+    <property name="introductionPropDefPointer" ref="introductionPropDefPointer" />
+    <property name="picturePropDefPointer" ref="picturePropDefPointer" />
+    <property name="mediaPropDefPointer" ref="mediaPropDefPointer" />
   </bean>
 
   <bean id="authorPropDefPointer" class="java.lang.String">

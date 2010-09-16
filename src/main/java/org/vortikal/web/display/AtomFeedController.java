@@ -80,10 +80,16 @@ public abstract class AtomFeedController implements Controller {
     private PropertyTypeDefinition titlePropDef;
     private PropertyTypeDefinition lastModifiedPropDef;
     private PropertyTypeDefinition creationTimePropDef;
+
     private String authorPropDefPointer;
     private String introductionPropDefPointer;
     private String picturePropDefPointer;
     private String mediaPropDefPointer;
+
+    private String structuredAuthorPropDefPointer;
+    private String structuredIntroductionPropDefPointer;
+    private String structuredPicturePropDefPointer;
+    private String structuredMediaPropDefPointer;
 
     protected abstract Feed createFeed(HttpServletRequest request, HttpServletResponse response, String token)
             throws Exception;
@@ -271,6 +277,12 @@ public abstract class AtomFeedController implements Controller {
                 .getPropertyDefinitionByPointer(this.mediaPropDefPointer);
         if (mediaPropDef != null) {
             Property mediaProp = resource.getProperty(mediaPropDef);
+            if (mediaProp != null)
+                return mediaProp;
+        }
+        mediaPropDef = this.resourceTypeTree.getPropertyDefinitionByPointer(this.structuredMediaPropDefPointer);
+        if (mediaPropDef != null) {
+            Property mediaProp = resource.getProperty(mediaPropDef);
             return mediaProp;
         }
         return null;
@@ -288,8 +300,16 @@ public abstract class AtomFeedController implements Controller {
                 .getPropertyDefinitionByPointer(this.authorPropDefPointer);
         if (authorPropDef != null) {
             Property author = resource.getProperty(authorPropDef);
+            if (author != null)
+                return author;
+        }
+
+        authorPropDef = this.resourceTypeTree.getPropertyDefinitionByPointer(this.structuredAuthorPropDefPointer);
+        if (authorPropDef != null) {
+            Property author = resource.getProperty(authorPropDef);
             return author;
         }
+
         return null;
     }
 
@@ -297,6 +317,14 @@ public abstract class AtomFeedController implements Controller {
         PropertyTypeDefinition introductionPropDef = this.resourceTypeTree
                 .getPropertyDefinitionByPointer(this.introductionPropDefPointer);
         Property introductionProp = null;
+        if (introductionPropDef != null) {
+            introductionProp = resource.getProperty(introductionPropDef);
+            if (introductionProp != null)
+                return introductionProp.getFormattedValue();
+        }
+
+        introductionPropDef = this.resourceTypeTree
+                .getPropertyDefinitionByPointer(this.structuredIntroductionPropDefPointer);
         if (introductionPropDef != null) {
             introductionProp = resource.getProperty(introductionPropDef);
 
@@ -349,6 +377,12 @@ public abstract class AtomFeedController implements Controller {
     protected Property getPicture(PropertySet resource) {
         PropertyTypeDefinition picturePropDef = this.resourceTypeTree
                 .getPropertyDefinitionByPointer(this.picturePropDefPointer);
+        if (picturePropDef != null) {
+            Property pic = resource.getProperty(picturePropDef);
+            if (pic != null)
+                return pic;
+        }
+        picturePropDef = this.resourceTypeTree.getPropertyDefinitionByPointer(this.structuredPicturePropDefPointer);
         if (picturePropDef != null) {
             Property pic = resource.getProperty(picturePropDef);
             return pic;
@@ -425,6 +459,38 @@ public abstract class AtomFeedController implements Controller {
 
     public void setCreationTimePropDef(PropertyTypeDefinition creationTimePropDef) {
         this.creationTimePropDef = creationTimePropDef;
+    }
+
+    public void setStructuredAuthorPropDefPointer(String structuredAuthorPropDefPointer) {
+        this.structuredAuthorPropDefPointer = structuredAuthorPropDefPointer;
+    }
+
+    public String getStructuredAuthorPropDefPointer() {
+        return structuredAuthorPropDefPointer;
+    }
+
+    public void setStructuredIntroductionPropDefPointer(String structuredIntroductionPropDefPointer) {
+        this.structuredIntroductionPropDefPointer = structuredIntroductionPropDefPointer;
+    }
+
+    public String getStructuredIntroductionPropDefPointer() {
+        return structuredIntroductionPropDefPointer;
+    }
+
+    public void setStructuredPicturePropDefPointer(String structuredPicturePropDefPointer) {
+        this.structuredPicturePropDefPointer = structuredPicturePropDefPointer;
+    }
+
+    public String getStructuredPicturePropDefPointer() {
+        return structuredPicturePropDefPointer;
+    }
+
+    public void setStructuredMediaPropDefPointer(String structuredMediaPropDefPointer) {
+        this.structuredMediaPropDefPointer = structuredMediaPropDefPointer;
+    }
+
+    public String getStructuredMediaPropDefPointer() {
+        return structuredMediaPropDefPointer;
     }
 
 }

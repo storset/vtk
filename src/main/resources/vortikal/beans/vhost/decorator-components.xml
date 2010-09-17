@@ -496,6 +496,7 @@
     <property name="connectTimeoutSeconds" value="${decorating.includeComponent.connectTimeoutSeconds}" />
     <property name="readTimeoutSeconds" value="${decorating.includeComponent.readTimeoutSeconds}" />
     <property name="clientIdentifier" value="${decorating.includeComponent.identifier}" />
+    <property name="maxLength" value="${decorating.includeComponent.maxDocumentSize}" />
   </bean>
 
   <bean id="decorating.imageListingComponent" class="org.vortikal.web.decorating.components.ImageListingComponent"

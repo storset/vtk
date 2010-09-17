@@ -105,7 +105,7 @@ implements ServletContextAware {
     
     private ServletContext servletContext;
 
-    private ContentCache<String, Object> httpIncludeCache;
+    private ContentCache<String, URLObject> httpIncludeCache;
 
     private Repository repository;
 
@@ -121,7 +121,7 @@ implements ServletContextAware {
         this.servletContext = servletContext;
     }
 
-    @Required public void setHttpIncludeCache(ContentCache<String, Object> httpIncludeCache) {
+    @Required public void setHttpIncludeCache(ContentCache<String, URLObject> httpIncludeCache) {
         this.httpIncludeCache = httpIncludeCache;
     }
 
@@ -354,21 +354,22 @@ implements ServletContextAware {
 
     private void handleHttpInclude(String uri,
             DecoratorRequest request, DecoratorResponse response) throws Exception {
-        Object obj = this.httpIncludeCache.get(uri);
+        URLObject obj = this.httpIncludeCache.get(uri);
         String result = "";
-        if (obj instanceof HtmlPage) {
-            HtmlPage page = (HtmlPage) obj;
-            String elementParam = request.getStringParameter(PARAMETER_ELEMENT);
-            if (elementParam == null) {
-                result = page.getStringRepresentation();
-            } else {
+        String elementParam = request.getStringParameter(PARAMETER_ELEMENT);
+        if (elementParam != null) {
+            try {
+                // XXX: cache results
+                HtmlPage page = this.htmlParser.parse(obj.getInputStream(), obj.getCharacterEncoding());
                 List<HtmlElement> elements = page.select(elementParam);
                 if (elements.size() > 0) {
                     result = elements.get(0).getContent();
                 }
+            } catch (Exception e) {
+                result = e.getMessage();
             }
         } else {
-            result = obj.toString();
+            result = obj.getContent();
         }
         Writer writer = response.getWriter();
         writer.write(result);

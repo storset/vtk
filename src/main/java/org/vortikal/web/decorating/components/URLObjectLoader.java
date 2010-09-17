@@ -30,16 +30,13 @@
  */
 package org.vortikal.web.decorating.components;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URLConnection;
-import org.htmlparser.visitors.HtmlPage;
 
-import org.vortikal.text.html.HtmlPageParser;
+import org.vortikal.text.html.HtmlPage;
 import org.vortikal.util.cache.loaders.URLConnectionCacheLoader;
 import org.vortikal.util.io.StreamUtil;
-import org.vortikal.util.repository.ContentTypeHelper;
 import org.vortikal.util.text.TextUtils;
 
 
@@ -47,19 +44,17 @@ import org.vortikal.util.text.TextUtils;
  * A cache loader that reads the content of a network resource into 
  * either a {@link HtmlPage} (for HTML resources), or a string.
  */
-public class URLObjectLoader extends URLConnectionCacheLoader<Object> {
-
+public class URLObjectLoader extends URLConnectionCacheLoader<URLObject> {
     private int maxLength = -1;
     private String defaultCharset = "iso-8859-1";
     private String clientIdentifier = "Anonymous URL retriever";
-    private HtmlPageParser htmlParser;
+
+    public void setMaxLength(int maxLength) {
+        this.maxLength = maxLength;
+    }
     
     public void setClientIdentifier(String clientIdentifier) {
         this.clientIdentifier = clientIdentifier;
-    }
-
-    public void setHtmlParser(HtmlPageParser htmlParser) {
-        this.htmlParser = htmlParser;
     }
 
     protected void setConnectionProperties(URLConnection connection) {
@@ -68,7 +63,7 @@ public class URLObjectLoader extends URLConnectionCacheLoader<Object> {
         connection.setRequestProperty("Accept", "text/*");
     }
     
-    protected Object handleConnection(URLConnection connection) throws Exception {
+    protected URLObject handleConnection(URLConnection connection) throws Exception {
         if (!(connection instanceof HttpURLConnection)) {
             throw new IllegalArgumentException("Only HTTP addresses are supported");
         }
@@ -91,25 +86,7 @@ public class URLObjectLoader extends URLConnectionCacheLoader<Object> {
         } else {
             buf = StreamUtil.readInputStream(stream);
         }
-
-        // Temporary quick-fix to avoid breaking include of non-self-contained
-        // HTML fragments that declare type as text/html
-        // Conversion from String->HtmlPage->String will often be "lossy"
-        // in this case, giving unexpected results when fragments
-        // are included as parts of a complete HTML document.
-
-        // This breaks the 'element' parameter functionality of the include:file component,
-        // because parsing is never attempted.
-        return new String(buf, charset);
-        
-//        Object item = null;
-//        if (this.htmlParser != null && contentType != null &&
-//                ContentTypeHelper.isHTMLOrXHTMLContentType(contentType)) {
-//            item = this.htmlParser.parse(new ByteArrayInputStream(buf), charset);
-//
-//        } else {
-//            item = new String(buf, charset);
-//        }
-//        return item;
+        String content = new String(buf, charset);
+        return new URLObject(content, contentType, charset);
     }
 }

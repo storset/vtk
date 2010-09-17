@@ -45,17 +45,18 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
+
 public class LinkConstructorImpl implements LinkConstructor, ApplicationContextAware {
 
     private static Log logger = LogFactory.getLog(LinkConstructorImpl.class);
     
 	private ApplicationContext context;
 	
-    public String construct(String resourceUri, String parametersCSV, String serviceName) {
+    public URL construct(String resourceUri, String parametersCSV, String serviceName) {
         try {
             if (resourceUri != null && resourceUri.contains("://")) {
                 URL url = getUrlFromUrl(resourceUri);
-                return url.toString();
+                return url;
             }
 
             Path uri = RequestContext.getRequestContext().getResourceURI();
@@ -73,11 +74,11 @@ public class LinkConstructorImpl implements LinkConstructor, ApplicationContextA
             if (isSet(serviceName)) {
                 service = getService(serviceName);
             }
-            return service.constructLink(uri, getParametersMap(parametersCSV));
+            return service.constructURL(uri, getParametersMap(parametersCSV));
 		
 		} catch (Exception e) {
             logger.info("Caught exception on link construction", e);
-            return "";
+            return null;
 		}
 	}
 

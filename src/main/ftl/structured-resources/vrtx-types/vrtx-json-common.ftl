@@ -81,7 +81,7 @@
       <#case "image_ref">
       	<#local thumbnail = '' />
       	<#if elem.value?exists >
-      		<#local thumbnail = vrtx.linkConstructor(elem.value, 'displayThumbnailService') />
+      		<#local thumbnail = vrtx.linkConstructor(elem.value, 'displayThumbnailService').getPathRepresentation() />
       	</#if>
         <@vrtxImageRef.printPropertyEditView 
           title=localizedTitle

@@ -30,12 +30,15 @@
  */
 package org.vortikal.web.view;
 
+import org.vortikal.web.service.URL;
+
+
 /**
  * Utility wrapper for constructing URLs based on services/resources
  *
  */
 public interface LinkConstructor {
 
-	public String construct(String resourceURI, String parametersCSV, String serviceName);
+	public URL construct(String resourceURI, String parametersCSV, String serviceName);
 	
 }

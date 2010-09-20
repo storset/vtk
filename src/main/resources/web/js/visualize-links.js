@@ -35,6 +35,17 @@ function visualizeDeadLinks(resourceUrl) {
 function visualizeDeadLink(that, deadLinks) {
 
   var TARGET_URL = $(that).attr("href");
+  
+  // Fix .attr() returns "&" for "&amp;"
+  var paramStart = TARGET_URL.indexOf("?");
+  if(paramStart != -1) {
+	var params = TARGET_URL.split("?")[1];
+    if(params.indexOf("&") != -1) {
+      params = params.replace(/&/g, "&amp;");
+      TARGET_URL = TARGET_URL.split("?")[0];
+      TARGET_URL += "?" + params;
+    }
+  }
 
   var deadLinksLength = deadLinks.length;
   for ( var i = 0; i < deadLinksLength; i++) {

@@ -157,6 +157,9 @@ public class LinkCheckController implements Controller, InitializingBean {
         if (link.contains("?")) {
             link = link.substring(0, link.indexOf("?"));
         }
+        if (link.contains("#")) {
+            link = link.substring(0, link.indexOf("#"));
+        }
         if (link.endsWith("/") && !Path.ROOT.toString().equals(link)) {
             link = link.substring(0, link.lastIndexOf("/"));
         }

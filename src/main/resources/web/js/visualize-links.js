@@ -36,21 +36,24 @@ function visualizeDeadLink(that, deadLinks) {
 
   var TARGET_URL = $(that).attr("href");
   
-  // Fix .attr() returns "&" for "&amp;"
-  var paramStart = TARGET_URL.indexOf("?");
-  if(paramStart != -1) {
-	var params = TARGET_URL.split("?")[1];
-    if(params.indexOf("&") != -1) {
-      params = params.replace(/&/g, "&amp;");
-      TARGET_URL = TARGET_URL.split("?")[0] + "?" + params;
+  if(typeof(TARGET_URL) != "undefined") {
+  
+    // Fix .attr() returns "&" for "&amp;"
+    if(TARGET_URL.indexOf("?") != -1) {
+	  var params = TARGET_URL.split("?")[1];
+      if(params.indexOf("&") != -1) {
+        params = params.replace(/&/g, "&amp;");
+        TARGET_URL = TARGET_URL.split("?")[0] + "?" + params;
+      }
     }
-  }
 
-  var deadLinksLength = deadLinks.length;
-  for ( var i = 0; i < deadLinksLength; i++) {
-    if (TARGET_URL == deadLinks[i]) {
-      $(that).append(" - 404").css("color", "red");
+    var deadLinksLength = deadLinks.length;
+    for ( var i = 0; i < deadLinksLength; i++) {
+      if (TARGET_URL == deadLinks[i]) {
+        $(that).append(" - 404").css("color", "red");
+      }
     }
+  
   }
 
 }

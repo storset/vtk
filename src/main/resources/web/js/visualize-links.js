@@ -42,8 +42,7 @@ function visualizeDeadLink(that, deadLinks) {
 	var params = TARGET_URL.split("?")[1];
     if(params.indexOf("&") != -1) {
       params = params.replace(/&/g, "&amp;");
-      TARGET_URL = TARGET_URL.split("?")[0];
-      TARGET_URL += "?" + params;
+      TARGET_URL = TARGET_URL.split("?")[0] + "?" + params;
     }
   }
 

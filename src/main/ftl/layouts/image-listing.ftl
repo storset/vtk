@@ -20,7 +20,7 @@
     <#if type == 'gallery'>
        <script type="text/javascript">
        <!--
-		 $(window).bind("load", function () {
+		 $(window).load(function () {
 				
 		   var wrapper = ".vrtx-image-listing-include";	
 		   var container = ".vrtx-image-listing-include-container";

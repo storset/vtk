@@ -68,7 +68,7 @@ import org.vortikal.web.service.Service;
 public abstract class AtomFeedController implements Controller {
 
     private final Log logger = LogFactory.getLog(AtomFeedController.class);
-    private static final String TAG_PREFIX = "tag:";
+    public static final String TAG_PREFIX = "tag:";
 
     protected Repository repository;
     protected Service viewService;

@@ -479,11 +479,11 @@
     <property name="parameterName" value="vrtx" />
     <property name="parameterValue" value="feed" />
     <property name="legalValueParameters">
-        <set>
+      <set>
 	    <value>rss</value>
 	    <value>feed</value>
 	    <value>atom</value>
-        </set>
+      </set>
     </property>
   </bean>
 

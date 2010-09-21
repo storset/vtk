@@ -113,6 +113,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
 
 
     @SuppressWarnings("unchecked")
+    @Override
     public void afterPropertiesSet() {
         if (this.authenticationHandlers == null) {
             logger.info("No authentication handlers specified, looking in context");
@@ -138,6 +139,18 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
     }
 
 
+    /**
+     *
+     * @param req
+     * @param resp
+     * @return <code>true</code> if request processing should continue after context has been created,
+     *         <code>false</code> otherwise (which means that security context initialization handles
+     *                            a challenge or any authentication post-processing requests by itself).
+     *
+     * @throws AuthenticationProcessingException
+     * @throws ServletException
+     * @throws IOException
+     */
     public boolean createContext(HttpServletRequest req, HttpServletResponse resp)
             throws AuthenticationProcessingException, ServletException, IOException {
 
@@ -378,8 +391,9 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         SecurityContext.setSecurityContext(null);
     }
 
+    @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(getClass().getName());
         sb.append(": ").append(System.identityHashCode(this));
         sb.append(", authenticationHandlers: [");
@@ -399,6 +413,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
     }
 
 
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }

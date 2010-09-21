@@ -70,8 +70,6 @@
           <li class="vrtx-image-entry last last-four">
         <#elseif count % 5 == 0>
           <li class="vrtx-image-entry last-five">
-        <#elseif count % 6 == 0>
-          <li class="vrtx-image-entry last-six">
         <#else>
           <li class="vrtx-image-entry">
         </#if>
@@ -162,8 +160,6 @@
           <li class="vrtx-thumb-last vrtx-thumb-last-five">
         <#elseif count % 6 == 0>
           <li class="vrtx-thumb-last-six">
-        <#elseif count % 7 == 0>
-          <li class="vrtx-thumb-last-seven">
         <#else>
           <li>
         </#if>

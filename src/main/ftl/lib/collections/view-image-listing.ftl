@@ -67,7 +67,11 @@
       <#list images as image>
         <#local title = vrtx.propValue(image, 'title')?html />
         <#if count % 4 == 0>
-          <li class="vrtx-image-entry last">
+          <li class="vrtx-image-entry last last-four">
+        <#elseif count % 5 == 0>
+          <li class="vrtx-image-entry last-five">
+        <#elseif count % 6 == 0>
+          <li class="vrtx-image-entry last-six">
         <#else>
           <li class="vrtx-image-entry">
         </#if>
@@ -124,7 +128,7 @@
       
       <script type="text/javascript">
        <!--
-		 $(window).bind("load", function () {
+		 $(window).load(function () {
 				
 		   var wrapper = ".vrtx-image-listing-include";	
 		   var container = ".vrtx-image-listing-include-container";
@@ -155,7 +159,11 @@
         </#if> -->
         <#assign title = vrtx.propValue(image, 'title')?html />
         <#if count % 5 == 0>
-          <li class="vrtx-thumb-last">
+          <li class="vrtx-thumb-last vrtx-thumb-last-five">
+        <#elseif count % 6 == 0>
+          <li class="vrtx-thumb-last-six">
+        <#elseif count % 7 == 0>
+          <li class="vrtx-thumb-last-seven">
         <#else>
           <li>
         </#if>

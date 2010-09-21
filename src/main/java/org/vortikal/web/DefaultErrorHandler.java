@@ -219,8 +219,9 @@ public class DefaultErrorHandler
         }
     }
     
+    @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(this.getClass().getName()).append(":").append(this.beanName);
         sb.append(": [");
         if (this.errorView != null) {

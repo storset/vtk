@@ -38,6 +38,7 @@ import javax.servlet.http.HttpSession;
 
 import org.opensaml.saml2.core.AuthnRequest;
 import org.vortikal.security.AuthenticationProcessingException;
+import org.vortikal.security.UnsupportedRequestMethodAPE;
 import org.vortikal.web.service.URL;
 
 public class Challenge extends SamlService {
@@ -52,6 +53,15 @@ public class Challenge extends SamlService {
     
     public void challenge(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationProcessingException {
+
+        if ("POST".equals(request.getMethod())) {
+            // VTK-1896
+            // Can't challenge POST requests, because the POST data gets lost in cyberspace if
+            // we do. And that fact becomes invisble (in the sense that no warning is given)
+            // to end users if their session was somehow invalidated, and they are re-logged in
+            // through authentication point SSO mechanism.
+            throw new UnsupportedRequestMethodAPE("SamlService: Challenge in response to POST requests is not supported");
+        }
 
         if (request.getScheme().equals("http")) {
             // XXX: remove hard-coded 'authTarget' parameter:

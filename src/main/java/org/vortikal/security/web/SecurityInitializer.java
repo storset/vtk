@@ -541,6 +541,11 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         }
         try {
             challenge.challenge(request, response);
+
+        } catch (AuthenticationProcessingException ape) {
+          // VTK-1896
+          // Avoid wrapping APE in another APE, otherwise we get banana dance.
+          throw ape;
         } catch (Exception e) {
             throw new AuthenticationProcessingException(
                     "Unable to present authentication challenge " + challenge, e);

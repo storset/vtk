@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.servlet;
 
+import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -55,6 +56,7 @@ import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.security.UnsupportedRequestMethodAPE;
 import org.vortikal.security.web.InvalidAuthenticationRequestException;
 import org.vortikal.security.web.SecurityInitializer;
 import org.vortikal.util.Version;
@@ -138,11 +140,13 @@ public class VortikalServlet extends DispatcherServlet {
         VortikalServlet.class.getName() + ".servlet_name";
 
     
-
-    
     private Log logger = LogFactory.getLog(this.getClass().getName());
     private Log requestLogger = LogFactory.getLog(this.getClass().getName() + ".Request");
     private Log errorLogger = LogFactory.getLog(this.getClass().getName() + ".Error");
+
+    // XXX temporary hack to log data of POST requests that are lost due to SAML challenge
+    // VTK-1896
+    private Log lostPOSTRequestLogger = LogFactory.getLog(this.getClass().getName() + ".LostPOST");
 
     private RequestFilter[] requestFilters = new RequestFilter[0];
     private ResponseFilter[] responseFilters = new ResponseFilter[0];
@@ -330,6 +334,7 @@ public class VortikalServlet extends DispatcherServlet {
      * performed by the doService() method in DispatcherServlet.
      * 
      */
+    @Override
     protected void service(HttpServletRequest request,
                                  HttpServletResponse servletResponse) 
         throws ServletException {
@@ -381,7 +386,19 @@ public class VortikalServlet extends DispatcherServlet {
             }
 
         } catch (AuthenticationException ex) {
-            this.securityInitializer.challenge(request, responseWrapper, ex);
+            try {
+                this.securityInitializer.challenge(request, responseWrapper, ex);
+                
+            } catch (UnsupportedRequestMethodAPE urmape) {
+                // VTK-1896
+                // I know, ugly, but what ISN'T ugly about VTK-1896 ? And besides, I don't care, since
+                // it needs to fixed in a proper way later on, anyway.
+                if ("POST".equals(request.getMethod())) {
+                    handleLostPOSTDuringAuthenticationChallenge(request, responseWrapper, urmape);
+                } else {
+                    throw urmape;
+                }
+            }
 
         } catch (AuthenticationProcessingException e) {
             handleAuthenticationProcessingError(request, responseWrapper, e);
@@ -418,7 +435,36 @@ public class VortikalServlet extends DispatcherServlet {
         }
     }
 
+    // XXX temporary handling of lost POSTs due to authentication challenge being presented.
+    // VTK-1896
+    private void handleLostPOSTDuringAuthenticationChallenge(HttpServletRequest request,
+            HeaderAwareResponseWrapper responseWrapper, Throwable ape) throws ServletException {
+
+        // Log error info (includes POST data fields)
+        this.lostPOSTRequestLogger.warn("Lost POST due to authentication challenge, "
+                + getErrorLogInfo(request, ape));
+
+        responseWrapper.setStatus(483); // grep for status 483 in access log to detect incidents.
+        String msg =
+                  "Unable to process POST request due to missing or invalid session (you are not logged in).\n\n"
+                + "===========================================================================\n"
+                + "This can typically happen in the following situations:\n"
+                + "* Logging out in a different browser window/tab while editing a document.\n"
+                + "* Switching internet connection while editing a document.\n"
+                + "* Leaving the editor open without any activity for a long time.\n\n"
+
+                + "If you lost any unsaved data, please contact:   vortex-hjelp@usit.uio.no\n"
+                + "We might be able to help you get it back.\n\n"
+                + "Work is being done to avoid this from happening and improve the situation when it does. "
+                + "In the mean time, please try to avoid the situations described above.\n"
+                + "We apologize for any inconvenience.\n"
+                + "===========================================================================\n\n\n";
+
+        throw new ServletException(msg);
+    }
+
     private void handleAuthenticationProcessingError(HttpServletRequest request, HeaderAwareResponseWrapper responseWrapper, AuthenticationProcessingException e) throws ServletException {
+
         if (HttpServletResponse.SC_OK == responseWrapper.getStatus()) {
             responseWrapper.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
@@ -537,6 +583,13 @@ public class VortikalServlet extends DispatcherServlet {
     @SuppressWarnings("unchecked")
     private void logError(String message, HttpServletRequest req, Throwable t) {
             
+        StringBuilder sb = new StringBuilder();
+        if (message != null) sb.append(message).append(" ");
+        sb.append(getErrorLogInfo(req, t));
+        this.errorLogger.error(sb.toString(), t);
+    }
+
+    private String getErrorLogInfo(HttpServletRequest req, Throwable t) {
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String httpMethod = req.getMethod();
@@ -559,16 +612,14 @@ public class VortikalServlet extends DispatcherServlet {
             }
         }
         params.append("}");
-            
+
         StringBuffer requestURL = req.getRequestURL();
         String queryString = req.getQueryString();
         if (queryString != null) {
             requestURL.append("?").append(queryString);
         }
 
-
         StringBuilder sb = new StringBuilder();
-        if (message != null) sb.append(message).append(" ");
         sb.append("Message: ").append(t.getMessage()).append(" - ");
         sb.append("Full request URL: [").append(requestURL).append("], ");
         sb.append("Request context: [").append(requestContext).append("], ");
@@ -578,8 +629,7 @@ public class VortikalServlet extends DispatcherServlet {
         sb.append("user agent: [").append(req.getHeader("User-Agent")).append("], ");
         sb.append("host: [").append(req.getServerName()).append("], ");
         sb.append("remote host: [").append(req.getRemoteHost()).append("]");
-
-        this.errorLogger.error(sb.toString(), t);
+        return sb.toString();
     }
     
 

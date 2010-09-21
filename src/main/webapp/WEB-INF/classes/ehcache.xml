@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ehcache>
 
-  <!-- Uses default diskstore (java.io.tmpdir) -->
+  <!-- See http://ehcache.org/documentation/configuration.html -->
 
-  <!-- Set as jvm argument, e.g. -Dehcache.disk.store.dir=/path/to/dir -->
-  <!--diskStore path="ehcache.disk.store.dir" /-->
+  <diskStore path="user.home/vortikal/cache" />
 
   <defaultCache
     maxElementsInMemory="100"
@@ -12,16 +11,14 @@
     eternal="false"
     overflowToDisk="true"
     timeToIdleSeconds="120"
-    timeToLiveSeconds="120"
-    memoryStoreEvictionPolicy="LRU" />
+    timeToLiveSeconds="120" />
 
   <!-- LINK CHECK CACHE -->
   <cache name="org.vortikal.LINK_CHECK_CACHE"
          maxElementsInMemory="500"
-         maxElementsOnDisk="100000"
+         maxElementsOnDisk="1000000"
          eternal="false"
          overflowToDisk="true"
-         memoryStoreEvictionPolicy="LRU"
          timeToIdleSeconds="0"
          timeToLiveSeconds="86400" />
 

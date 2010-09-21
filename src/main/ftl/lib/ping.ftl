@@ -38,9 +38,7 @@
 
      function callback() {
         if (req != null && req.readyState == 4) {
-           if (req.status == 200) {
               setTimeout('ping()', intervalSec * 1000);
-           }
         }
      }
 

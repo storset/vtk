@@ -55,7 +55,9 @@
           </#if>
         </#if> -->
         <#assign title = vrtx.propValue(image, 'userTitle')?html />
-        <#if count % 4 == 0>
+        <#if count % 4 == 0 && count % 5 == 0>
+          <li class="vrtx-thumb-last vrtx-thumb-last-four vrtx-thumb-last-five">
+        <#elseif count % 4 == 0>
           <li class="vrtx-thumb-last vrtx-thumb-last-four">
         <#elseif count % 5 == 0>
           <li class="vrtx-thumb-last-five">

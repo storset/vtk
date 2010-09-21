@@ -88,7 +88,7 @@ public class RequestLoadListener implements ApplicationListener {
 
     public int getLoad(int lastSeconds) {
         if (lastSeconds <= 0) throw new IllegalArgumentException(
-            "Arument must be a positive integer < " + this.seconds);
+            "Argument must be a positive integer < " + this.seconds);
         if (lastSeconds > this.seconds) 
             throw new IllegalArgumentException("Request history only spans over "
                                                + this.seconds + " seconds");
@@ -108,6 +108,7 @@ public class RequestLoadListener implements ApplicationListener {
     
 
 
+    @Override
     public void onApplicationEvent(ApplicationEvent event) {
         if (event instanceof RequestHandledEvent) {
             update();
@@ -118,10 +119,11 @@ public class RequestLoadListener implements ApplicationListener {
 
 
 
+    @Override
     public String toString() {
         update();
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("history for  last ").append(this.seconds);
         sb.append(" seconds\n");
 

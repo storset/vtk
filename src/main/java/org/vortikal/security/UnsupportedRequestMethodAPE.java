@@ -33,6 +33,7 @@ package org.vortikal.security;
 
 /**
  * VTK-1896
+ *
  * Thrown if authentication processing/challenging is not supported for request
  * method triggering the authentication processing.
  */

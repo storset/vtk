@@ -299,7 +299,7 @@
   <#case "image_ref">
     <#local thumbnail = '' />
     <#if elem.value?exists && value?exists && value != "">
-    		<#local thumbnail = vrtx.linkConstructor(value, 'displayThumbnailService') />
+    		<#local thumbnail = vrtx.linkConstructor(value, 'displayThumbnailService').getPathRepresentation() />
     </#if>
     <@vrtxImageRef.printPropertyEditView 
       title=jsonAttr

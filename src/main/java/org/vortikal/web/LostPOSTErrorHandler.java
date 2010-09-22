@@ -61,7 +61,7 @@ public final class LostPOSTErrorHandler {
 
         try {
             String incidentId = UUID.randomUUID().toString();
-            logPOST(request, incidentId, urmape);
+            this.logger.info(getErrorLogEntry(request, incidentId, urmape));
 
             String errorPageHTML = getErrorHTMLPage(request, incidentId);
             response.setContentType("text/html; charset=utf-8");
@@ -71,10 +71,6 @@ public final class LostPOSTErrorHandler {
         } catch (Exception e) {
             throw new ServletException(e);
         }
-    }
-
-    private void logPOST(HttpServletRequest request, String incidentId, Throwable error) {
-        this.logger.info(getErrorLogEntry(request, incidentId, error));
     }
 
     private String getErrorLogEntry(HttpServletRequest req, String incidentId, Throwable error) {

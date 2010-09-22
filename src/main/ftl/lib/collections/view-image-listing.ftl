@@ -142,10 +142,11 @@
 	     });
        // -->
        </script>
+       
         <div class="vrtx-image-listing-include-container-pure-css">
           <div class="vrtx-image-listing-include-container-nav-pure-css">
-            <a class="prev" href="#" title="&lt;&lt; Forrige"><span class="prev-transparent-block"></span></a>
-            <a class="next" href="#" title="Neste &gt;&gt;"><span class="next-transparent-block"></span></a>
+            <a class="prev" href="#" title="${vrtx.getMsg('imageListing.previous.prefix')}&nbsp;${vrtx.getMsg('imageListing.previous')}"><span class="prev-transparent-block"></span></a>
+            <a class="next" href="#" title="${vrtx.getMsg('imageListing.next')}&nbsp;${vrtx.getMsg('imageListing.next.postfix')}"><span class="next-transparent-block"></span></a>
           </div>
         </div>
     <ul class="vrtx-image-listing-include-thumbs-pure-css">

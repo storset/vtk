@@ -394,7 +394,7 @@ public class VortikalServlet extends DispatcherServlet {
                 // I know, ugly, but what ISN'T ugly about VTK-1896 ? And besides, I don't care, since
                 // it needs to fixed in a proper way later, anyway.
                 if ("POST".equals(request.getMethod())) {
-                    new LostPOSTErrorHandler().handleLostPOSTError(request, servletResponse, urmape);
+                    new LostPOSTErrorHandler().handleLostPOSTError(request, responseWrapper, urmape);
                     return; // let finally block wrap things up
                 }
 

@@ -31,7 +31,6 @@
 
 package org.vortikal.web;
 
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
@@ -147,7 +146,7 @@ public final class LostPOSTErrorHandler {
                 + "  <li>Leaving the editor open without any activity for a long time.</li>\n"
                 + "</ul>\n"
                 + "\n"
-                + "<p><em>If you had unsaved changes in your document, please contact: <a href=\"mailto:vortex-hjelp@usit.uio.no\">vortex-hjelp@usit.uio.no</a><br/>\n"
+                + "<p><em>If you were editing a document and had unsaved changes, please contact: <a href=\"mailto:vortex-hjelp@usit.uio.no\">vortex-hjelp@usit.uio.no</a><br/>\n"
                 + "and include the following incident ID in your email: <strong>" + incidentId + "</strong><br/>\n"
                 + "We might be able to help you get it back.</em></p>\n"
                 + "<p>Work is being done to avoid this from happening and improve the situation when it does.<br/>\n"

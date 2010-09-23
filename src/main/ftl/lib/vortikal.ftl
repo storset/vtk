@@ -169,12 +169,12 @@
   </#compress>
 </#macro>
 
-
 <#function linkConstructor resourceUri serviceName >
-	<#if VRTX_LINK_CONSTRUCTOR?exists && resourceUri?exists && serviceName?exists > 
-		<#return VRTX_LINK_CONSTRUCTOR.construct(resourceUri,null,serviceName) />
+	<#if VRTX_LINK_CONSTRUCTOR?exists && resourceUri?exists && serviceName?exists >
+		<#if VRTX_LINK_CONSTRUCTOR.construct(resourceUri,null,serviceName)?exists>
+			<#return VRTX_LINK_CONSTRUCTOR.construct(resourceUri,null,serviceName) />
+		</#if>
 	</#if>
-	<#return "" />
 </#function>
 
 <#--

@@ -62,7 +62,6 @@ resourcetype structured-event : structured-document {
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
         [call "resource:comments-feed-link"]
-        [call "structured-article:javascript"]
         <title>[call "comp:title"]</title>
       </head>
       <body id="vrtx-structured-event">

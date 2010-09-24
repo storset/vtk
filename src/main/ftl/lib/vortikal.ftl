@@ -434,7 +434,12 @@
   ${(contentLength / 1000)?string("#")} KB
 </#macro>
 
-<#function getMetadata metadata key >
+<#function getMetadata metadata key multiple=false>
+  <#if multiple = true>
+    <#if metadata.getValues(key)?exists>
+      <#return metadata.getValues(key) />
+    </#if>
+  </#if>
   <#assign value = "" />
   <#if metadata.getValue(key)?exists>
     <#assign value = metadata.getValue(key) />

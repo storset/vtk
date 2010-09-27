@@ -103,7 +103,7 @@ resourcetype structured-document {
         <title>[call "comp:title"]</title>
       </head>
       <body>
-        <h1>[call "comp:title"]></h1>
+        <h1>[call "comp:title"]</h1>
         [call "comp:introduction-image"]
         [call "comp:introduction"]
         [call "json:field" {"select":"content"}]

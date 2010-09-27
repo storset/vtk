@@ -125,8 +125,8 @@ public class LinkCheckController implements Controller, InitializingBean {
                 continue;
             }
             if (isBroken(resource.getURI(), link, token)) {
-                if(!brokenLinks.contains(link)) {
-                  brokenLinks.add(link);
+                if (!brokenLinks.contains(link)) {
+                    brokenLinks.add(link);
                 }
             }
         }
@@ -144,6 +144,7 @@ public class LinkCheckController implements Controller, InitializingBean {
     }
 
     private String getProcessedLink(Path resourceURI, String link) {
+        link = this.trimTrailingSlashInPathString(link);
         if (isWebLink(link)) {
             org.vortikal.web.service.URL url = org.vortikal.web.service.URL.parse(link);
             url.clearParameters();
@@ -160,19 +161,23 @@ public class LinkCheckController implements Controller, InitializingBean {
         if (link.contains("#")) {
             link = link.substring(0, link.indexOf("#"));
         }
-        if (link.endsWith("/") && !Path.ROOT.toString().equals(link)) {
-            link = link.substring(0, link.lastIndexOf("/"));
-        }
         if (!link.startsWith("/")) {
             link = resourceURI.getParent().extend(link).toString();
         }
         return link;
     }
 
+    private String trimTrailingSlashInPathString(String pathString) {
+        while (pathString.endsWith("/") && !Path.ROOT.toString().equals(pathString)) {
+            pathString = pathString.substring(0, pathString.lastIndexOf("/"));
+        }
+        return pathString;
+    }
+
     private boolean isBroken(Path resourceURI, String link, String token) {
         // get the processed link to check
         String processedLink = getProcessedLink(resourceURI, link);
-        
+
         // link to internal resource, check for existence
         if (!isWebLink(processedLink)) {
             return this.isBrokenInternal(processedLink, token);

@@ -146,14 +146,22 @@ public class LinkCheckController implements Controller, InitializingBean {
     private String getProcessedLink(Path resourceURI, String link) {
         link = this.trimTrailingSlashInPathString(link);
         if (isWebLink(link)) {
-            org.vortikal.web.service.URL url = org.vortikal.web.service.URL.parse(link);
-            url.clearParameters();
-            String host = url.getHost();
-            String hostname = this.repository.getId();
-            if (hostname.equals(host)) {
-                return url.getPathRepresentation();
-            }
-            return url.toString();
+
+            // XXX We can't do this, becuse we have services hooked up on the
+            // hostname in front of Vortex, e.g. sok & stats:
+            // http://www.uio.no/stats/
+            // http://www.uio.no/sok?person=someretard
+
+//            org.vortikal.web.service.URL url = org.vortikal.web.service.URL.parse(link);
+//            url.clearParameters();
+//            String host = url.getHost();
+//            String hostname = this.repository.getId();
+//            if (hostname.equals(host)) {
+//                return url.getPathRepresentation();
+//            }
+//            return url.toString();
+            
+            return link;
         }
         if (link.contains("?")) {
             link = link.substring(0, link.indexOf("?"));

@@ -387,9 +387,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     }
 
     @Override
-    public void delete(String token, Path uri) throws IllegalOperationException, AuthorizationException,
-            AuthenticationException, ResourceNotFoundException, ResourceLockedException, FailedDependencyException,
-            ReadOnlyException, IOException {
+    public void delete(String token, Path uri, boolean restorable) throws IllegalOperationException,
+            AuthorizationException, AuthenticationException, ResourceNotFoundException, ResourceLockedException,
+            FailedDependencyException, ReadOnlyException, IOException {
 
         Principal principal = this.tokenManager.getPrincipal(token);
 

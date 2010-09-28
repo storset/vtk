@@ -83,7 +83,7 @@ public class DeleteController extends AbstractWebdavController {
             }
 
             // Delete the document or collection:
-            this.repository.delete(token, uri);
+            this.repository.delete(token, uri, true);
 
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Resource " + uri + " deleted");

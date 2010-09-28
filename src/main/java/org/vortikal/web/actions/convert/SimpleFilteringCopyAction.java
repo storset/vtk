@@ -61,7 +61,7 @@ public class SimpleFilteringCopyAction implements CopyAction, InitializingBean {
                 this.repository.storeContent(token, copyUri, is);
             } catch (Exception e) {
                 try {
-                    this.repository.delete(token, copyUri);
+                    this.repository.delete(token, copyUri, true);
                 } catch (Exception ex) {
                     // XXX: should log
                     // Can't do much, hope it's okay

@@ -366,10 +366,14 @@ public interface Repository {
             ResourceNotFoundException, ReadOnlyException, Exception;
 
     /**
-     * Permanently deletes a resource.
+     * Deletes a resource by either moving it to trash can or deleting
+     * it permanently (decided by parameter "restorable").
      *
      * @param token identifies the client's authenticated session
      * @param uri identifies the resource to delete
+     * @param restorable whether or not resource is to be permanently
+     * deleted or just moved to trash can
+     * 
      * @exception IllegalOperationException if the resource identified
      * by the destination URI can not be deleted due to namespace
      * inconsistency
@@ -390,7 +394,7 @@ public interface Repository {
      * the repository is in read-only mode
      * @exception Exception if an I/O error occurs
      */
-    public void delete(String token, Path uri)
+    public void delete(String token, Path uri, boolean restoreable)
         throws IllegalOperationException, AuthorizationException, 
             AuthenticationException, ResourceNotFoundException, 
             ResourceLockedException, FailedDependencyException, 

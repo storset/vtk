@@ -180,13 +180,13 @@ public class CachePurgeControlRepositoryWrapper implements Repository {
     }
 
     @Override
-    public void delete(String token, Path uri)
+    public void delete(String token, Path uri, boolean restorable)
             throws IllegalOperationException, AuthorizationException,
             AuthenticationException, ResourceNotFoundException,
             ResourceLockedException, FailedDependencyException,
             ReadOnlyException, Exception {
 
-        this.wrappedRepository.delete(token, uri); // Tx
+        this.wrappedRepository.delete(token, uri, restorable); // Tx
         
         List<Path> affected = new ArrayList<Path>(2);
         affected.add(uri);

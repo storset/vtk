@@ -31,7 +31,7 @@ public class DeleteResourcesController implements Controller {
             if (name.startsWith("/")) {
                 try {
                     Path uri = Path.fromString(name);
-                    repository.delete(securityContext.getToken(), uri);
+                    repository.delete(securityContext.getToken(), uri, true);
                 } catch (Exception exception) {
                 }
             }

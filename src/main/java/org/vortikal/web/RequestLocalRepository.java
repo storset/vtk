@@ -253,14 +253,14 @@ public class RequestLocalRepository implements Repository {
     }
 
     @Override
-    public void delete(String token, Path uri)
+    public void delete(String token, Path uri, boolean restorable)
         throws Exception {
 
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();
         if (ctx != null) {
             ctx.clear();
         }
-        this.repository.delete(token, uri);
+        this.repository.delete(token, uri, restorable);
     }
 
     @Override

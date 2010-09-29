@@ -417,11 +417,23 @@ div.vrtx-subfolder-menu ul {
   margin: 0 0 1em 0;
 }
 
-/*Sublists ++*/
+/* Sublists ++ */
 div.vrtx-subfolder-menu ul ul {
   float: none;  
   padding: 0 .5em 0 1em;
   margin: 0;
+}
+
+/* Comma separated lists */
+
+div.vrtx-subfolder-menu.comma-separated ul,
+div.vrtx-subfolder-menu.comma-separated ul li {
+  list-style: none;
+  padding-left: 0;
+}
+
+div.vrtx-subfolder-menu.comma-separated ul li ul li {
+  display: inline;
 }
 
 /* END resource:subfolder-menu */
@@ -463,9 +475,6 @@ span.vrtx-toc-header {
 } 
 
 /* END resource:toc */
-
-
-
 
 /* START include:tag-cloud */
 

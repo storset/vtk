@@ -7,8 +7,10 @@
   -   subFolderMenu
   -
   -->
+
 <#import "../lib/vortikal.ftl" as vrtx />
- <#-- RECURSIVE MENU BUILD --> 
+
+<#-- RECURSIVE MENU BUILD --> 
 
 <#if subFolderMenu?exists> 
 	<@displaySubFolderMenu subFolderMenu false />
@@ -25,7 +27,11 @@
       <#assign "c" = 0>
          
       <#if subFolderMenu.resultSets?exists>
-        <div class="vrtx-subfolder-menu">
+        <#if subFolderMenu.display?exists && subFolderMenu.display = "comma-separated">
+          <div class="vrtx-subfolder-menu comma-separated">
+        <#else>
+          <div class="vrtx-subfolder-menu">
+        </#if>
           <#if subFolderMenu.title?exists>
             <div class="menu-title">${subFolderMenu.title?html}</div>
           </#if>
@@ -47,7 +53,7 @@
 </#macro>
 
 <#-- MACROS: -->
-<#macro displayItem item >
+<#macro displayItem item separator="none" >
   <#if item.menu?exists>
     <a href="${item.url?html}">${item.label?html}</a>
     <#if USE_TREE_VIEW>
@@ -55,7 +61,15 @@
      </#if>
     <@displaySubMenu item.menu displaySubMenu />
   <#else>
-    <a href="${item.url?html}">${item.label?html}</a>
+    <#if separator = "none">
+      <a href="${item.url?html}">${item.label?html}</a>
+    <#else>
+      <#if separator = "and">
+        <a href="${item.url?html}">${item.label?html}</a> <@vrtx.msg code='subfolder.separator.and' /> 
+      <#else>  
+        <a href="${item.url?html}">${item.label?html}</a>${separator}
+      </#if>
+    </#if>
   </#if>
 </#macro>
 
@@ -89,15 +103,30 @@
 <#macro displaySubMenu menu displaySubMenu >
   <ul>
   	<#assign i = 0 />
+  	<#assign sized = menu.itemsSorted?size />
+  	<#if (menu.maxNumberOfItems < sized)>
+  	  <#assign sized = menu.maxNumberOfItems />
+  	</#if>
     <#list menu.itemsSorted as item>
-    	<#if (i < menu.maxNumberOfItems)>
+    	<#if (i < sized)>
 	        <#if USE_TREE_VIEW >
 	          <li class="closed">
 	          <span class="folder">
 	        <#else>
 	          <li>
-	        </#if> 
-            <@displayItem item=item />
+	        </#if>
+            
+            <#if subFolderMenu.display?exists && subFolderMenu.display = "comma-separated">
+              <#if (i < (sized-2))>
+                <@displayItem item=item separator="," />
+              <#elseif ((i+1) = sized)>
+                <@displayItem item=item separator="." />
+              <#else>
+                <@displayItem item=item separator="and" />
+              </#if>
+            <#else>
+              <@displayItem item=item />
+            </#if>
           	</li>
          <#else>
          	<#break>

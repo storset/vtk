@@ -106,6 +106,7 @@ public class CollectionStructureReporter extends AbstractReporter {
         int depth = 2;
         int displayFromLevel = -1;
         int maxNumberOfChildren = Integer.MAX_VALUE;
+        String display = "";
         ArrayList<Path> includeURIs = new ArrayList<Path>();
         int searchLimit = Integer.MAX_VALUE;
         boolean structuredCollectionReportLink = true;
@@ -121,7 +122,7 @@ public class CollectionStructureReporter extends AbstractReporter {
 
         MenuRequest menuRequest = subfolderMenu.getNewMenuRequest(currentCollectionUri, title, sortProperty,
                 ascendingSort, sortByName, resultSets, groupResultSetsBy, freezeAtLevel, depth, displayFromLevel,
-                maxNumberOfChildren,locale, token, searchLimit, structuredCollectionReportLink,includeURIs);
+                maxNumberOfChildren, display, locale, token, searchLimit, structuredCollectionReportLink,includeURIs);
 
         ListMenu<PropertySet> menu = subfolderMenu.buildListMenu(rs, menuRequest);
         return subfolderMenu.buildMenuModel(menu, menuRequest);

@@ -127,6 +127,9 @@ public class SubFolderMenuComponent extends ListMenuComponent {
 
     private static final String PARAMETER_MAX_NUMBER_OF_CHILDREN = "max-number-of-children";
     private static final String PARAMETER_MAX_NUMBER_OF_CHILDREN_DESC = "Defines the maximum number of children displayed for each element";
+    
+    private static final String PARAMETER_DISPLAY = "display";
+    private static final String PARAMETER_DISPLAY_DESC = "Specifies how to display the list. 'comma-separated' separates sublist-elements with ',' + ' and ' + '.'";
 
     private static Log logger = LogFactory.getLog(SubFolderMenuComponent.class);
 
@@ -238,6 +241,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         }
         model.put("size", new Integer(menu.getItems().size()));
         model.put("title", menu.getTitle());
+        model.put("display", menuRequest.getDisplay());
         return model;
     }
 
@@ -402,6 +406,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         private int depth = 1;
         private int displayFromLevel = -1;
         private int maxNumberOfChildren = Integer.MAX_VALUE;
+        private String display;
         private Locale locale;
         private String token;
         private int searchLimit = DEFAULT_SEARCH_LIMIT;
@@ -410,7 +415,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
 
         public MenuRequest(Path currentCollectionUri, String title, PropertyTypeDefinition sortProperty,
                 boolean ascendingSort, boolean sortByName, int resultSets, int groupResultSetsBy, int freezeAtLevel,
-                int depth, int displayFromLevel, int maxNumberOfChildren, Locale locale, String token, int searchLimit,
+                int depth, int displayFromLevel, int maxNumberOfChildren, String display, Locale locale, String token, int searchLimit,
                 boolean structuredCollectionReportLink, ArrayList<Path> includeURIs) {
             super();
             this.currentCollectionUri = currentCollectionUri;
@@ -424,6 +429,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
             this.depth = depth;
             this.displayFromLevel = displayFromLevel;
             this.maxNumberOfChildren = maxNumberOfChildren;
+            this.display = display;
             this.locale = locale;
             this.token = token;
             this.searchLimit = searchLimit;
@@ -519,6 +525,20 @@ public class SubFolderMenuComponent extends ListMenuComponent {
                 setMaxNumberOfChildren(Integer.parseInt(request.getStringParameter(PARAMETER_MAX_NUMBER_OF_CHILDREN)));
             } catch (NumberFormatException e) {
                 // Not a required parameter
+            }
+            
+            String displayParam = request.getStringParameter(PARAMETER_DISPLAY);
+            
+            if (displayParam != null && !"".equals(displayParam.trim())) {
+            
+              try {
+                setDisplay(displayParam);
+              } catch (Throwable t) {
+                throw new DecoratorComponentException("Illegal value for parameter '"
+                        + PARAMETER_DISPLAY + "': "
+                        + request.getStringParameter(PARAMETER_DISPLAY));
+              }
+            
             }
 
             if (displayFromLevel != null && !"".equals(displayFromLevel.trim())) {
@@ -683,6 +703,14 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         public int getMaxNumberOfChildren() {
             return maxNumberOfChildren;
         }
+        
+        public void setDisplay(String display) {
+            this.display = display;
+        }
+        
+        public String getDisplay() {
+            return display;
+        }
 
         public void setSortByName(boolean sortByName) {
             this.sortByName = sortByName;
@@ -735,6 +763,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         map.put(PARAMETER_AS_CURRENT_USER, PARAMETER_AS_CURRENT_USER_DESC);
         map.put(PARAMETER_DEPTH, PARAMETER_DEPTH_DESC);
         map.put(PARAMETER_MAX_NUMBER_OF_CHILDREN, PARAMETER_MAX_NUMBER_OF_CHILDREN_DESC);
+        map.put(PARAMETER_DISPLAY, PARAMETER_DISPLAY_DESC);
         return map;
     }
 
@@ -760,10 +789,10 @@ public class SubFolderMenuComponent extends ListMenuComponent {
 
     public MenuRequest getNewMenuRequest(Path currentCollectionUri, String title, PropertyTypeDefinition sortProperty,
             boolean ascendingSort, boolean sortByName, int resultSets, int groupResultSetsBy, int freezeAtLevel,
-            int depth, int displayFromLevel, int maxNumberOfChildren, Locale locale, String token, int searchLimit,
+            int depth, int displayFromLevel, int maxNumberOfChildren, String display, Locale locale, String token, int searchLimit,
             boolean structuredCollectionReportLink, ArrayList<Path> includeURIs) {
         return new MenuRequest(currentCollectionUri, title, sortProperty, ascendingSort, sortByName, resultSets,
-                groupResultSetsBy, freezeAtLevel, depth, displayFromLevel, maxNumberOfChildren, locale, token,
+                groupResultSetsBy, freezeAtLevel, depth, displayFromLevel, maxNumberOfChildren, display, locale, token,
                 searchLimit, structuredCollectionReportLink, includeURIs);
     }
 

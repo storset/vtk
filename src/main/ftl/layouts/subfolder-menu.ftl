@@ -10,10 +10,15 @@
 
 <#import "../lib/vortikal.ftl" as vrtx />
 
-<#-- RECURSIVE MENU BUILD --> 
+<#assign commaSeparated = false />
+<#if subFolderMenu.display?exists && subFolderMenu.display = "comma-separated">
+  <#assign commaSeparated = true />
+</#if>
+
+<#-- RECURSIVE MENU BUILD -->
 
 <#if subFolderMenu?exists> 
-	<@displaySubFolderMenu subFolderMenu false />
+  <@displaySubFolderMenu subFolderMenu false />
 </#if>
 
 <#global USE_TREE_VIEW = false >
@@ -27,7 +32,7 @@
       <#assign "c" = 0>
          
       <#if subFolderMenu.resultSets?exists>
-        <#if subFolderMenu.display?exists && subFolderMenu.display = "comma-separated">
+        <#if commaSeparated>
           <div class="vrtx-subfolder-menu comma-separated">
         <#else>
           <div class="vrtx-subfolder-menu">
@@ -64,11 +69,7 @@
     <#if separator = "none">
       <a href="${item.url?html}">${item.label?html}</a>
     <#else>
-      <#if separator = "and">
-        <a href="${item.url?html}">${item.label?html}</a> <@vrtx.msg code='subfolder.separator.and' /> 
-      <#else>  
-        <a href="${item.url?html}">${item.label?html}</a>${separator}
-      </#if>
+      <a href="${item.url?html}">${item.label?html}</a>${separator}
     </#if>
   </#if>
 </#macro>
@@ -116,13 +117,14 @@
 	          <li>
 	        </#if>
             
-            <#if subFolderMenu.display?exists && subFolderMenu.display = "comma-separated">
+            <#if commaSeparated>
               <#if (i < (sized-2))>
                 <@displayItem item=item separator="," />
               <#elseif ((i+1) = sized)>
                 <@displayItem item=item separator="." />
               <#else>
-                <@displayItem item=item separator="and" />
+                <#assign and> <@vrtx.msg code='subfolder.separator.and' /> </#assign>
+                <@displayItem item=item separator=and />
               </#if>
             <#else>
               <@displayItem item=item />

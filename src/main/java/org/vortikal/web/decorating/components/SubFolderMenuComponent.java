@@ -129,7 +129,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
     private static final String PARAMETER_MAX_NUMBER_OF_CHILDREN_DESC = "Defines the maximum number of children displayed for each element";
     
     private static final String PARAMETER_DISPLAY = "display";
-    private static final String PARAMETER_DISPLAY_DESC = "Specifies how to display the subfolder-menu. The default is plain list. 'comma-separated' separates sublist-elements with commas.";
+    private static final String PARAMETER_DISPLAY_DESC = "Specifies how to display the subfolder-menu. The default is normal list and sublist. 'comma-separated' separates sublist-elements with commas.";
 
     private static Log logger = LogFactory.getLog(SubFolderMenuComponent.class);
 

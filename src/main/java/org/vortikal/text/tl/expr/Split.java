@@ -73,7 +73,14 @@ public class Split extends Function {
         }
         
         String word = sb.toString();
-        int lengthThreshold = Integer.parseInt((String) o2);
+        
+        int lengthThreshold = 999;
+        try {
+          lengthThreshold = Integer.parseInt((String) o2);
+        } catch(NumberFormatException nfex) {
+          throw new IllegalArgumentException("Split: second argument must be an integer");
+        }
+        
         String splitChar = (String) o3;
 
         if(word.length() > lengthThreshold) {

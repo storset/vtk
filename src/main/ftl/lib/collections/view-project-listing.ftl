@@ -46,11 +46,17 @@
       <div class="vrtx-project">
             <#if introImg?has_content >
             <#local src = vrtx.propValue(project, 'picture', 'thumbnail') />
+            <#local introImgURI = vrtx.propValue(project, 'picture') />
+          	<#if introImgURI?exists>
+    			<#local thumbnail =  vrtx.relativeLinkConstructor(introImgURI, 'displayThumbnailService') />
+    	 	<#else>
+    			<#local thumbnail = "" />
+   		   	</#if>
             	<a class="vrtx-image" href="${projectListing.urls[project.URI]?html}">
                 <#if caption != ''>
-                	<img src="${src?html}" alt="${captionFlattened}" />
+                	<img src="${thumbnail?html}" alt="${captionFlattened}" />
                 <#else>
-                    <img src="${src?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
+                    <img src="${thumbnail?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
                 </#if>
                 </a>
             </#if>

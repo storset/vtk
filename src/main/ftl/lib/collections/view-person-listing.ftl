@@ -30,13 +30,22 @@
       <#local mobilenumbers = vrtx.propValue(person, 'mobile')  />
       <#local emails = vrtx.propValue(person, 'email')  />
       <#local tags = vrtx.propValue(person, 'tags') />
+      
       <#local src = vrtx.propValue(person, 'picture', 'thumbnail') />
+      
+      <#local introImgURI = vrtx.propValue(person, 'picture') />
+      <#if introImgURI?exists>
+    		<#local thumbnail =  vrtx.relativeLinkConstructor(introImgURI, 'displayThumbnailService') />
+      <#else>
+    		<#local thumbnail = "" />
+   	   </#if>
+      
       <#local imageAlt = vrtx.getMsg("person-listing.image-alt") >
       <#local imageAlt = imageAlt + " " + firstName + " " + surname />
 	  <tr class="vrtx-person-${personNr}">
         <td class="vrtx-person-listing-name">
           <#if src?has_content>
-            <a class="vrtx-image" href="${person.URI?html}"><img src="${src?html}" alt="${imageAlt}" /></a>
+            <a class="vrtx-image" href="${person.URI?html}"><img src="${thumbnail?html}" alt="${imageAlt}" /></a>
           </#if>
           <#if surname?has_content >
             <a href="${person.URI?html}">${surname}<#if firstName?has_content && surname?has_content>, </#if>${firstName?html}</a>

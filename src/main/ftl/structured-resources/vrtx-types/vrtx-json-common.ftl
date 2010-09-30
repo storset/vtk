@@ -79,13 +79,10 @@
           />
         <#break>
       <#case "image_ref">
-      	<#local thumbnail = '' />
-      	<#if elem.value?exists >
-      		<#if  vrtx.linkConstructor(elem.value, 'displayThumbnailService')?exists >
-				<#local thumbnail = vrtx.linkConstructor(elem.value, 'displayThumbnailService').getPathRepresentation() />
-			<#else>
-				<#local thumbnail = elem.value />
-			</#if> 
+      	<#if elem.value?exists>
+      		<#local thumbnail = vrtx.relativeLinkConstructor(elem.value, 'displayThumbnailService') />
+      	<#else>
+      		<#local thumbnail = "" />
       	</#if>
         <@vrtxImageRef.printPropertyEditView 
           title=localizedTitle
@@ -301,13 +298,10 @@
       classes=""  />
     <#break>
   <#case "image_ref">
-    <#local thumbnail = '' />
-    <#if elem.value?exists && value?exists && value != "">
-    	<#if  vrtx.linkConstructor(value, 'displayThumbnailService')?exists >
-			<#local thumbnail = vrtx.linkConstructor(value, 'displayThumbnailService').getPathRepresentation() />
-		<#else>
-			<#local thumbnail = value />
-		</#if> 
+  	<#if value?exists>
+    	<#local thumbnail =  vrtx.relativeLinkConstructor(value, 'displayThumbnailService') />
+    <#else>
+    	<#local thumbnail = "" />
     </#if>
     <@vrtxImageRef.printPropertyEditView 
       title=jsonAttr

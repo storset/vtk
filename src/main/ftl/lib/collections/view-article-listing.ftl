@@ -39,16 +39,23 @@
             <#local articleType = "vrtx-featured-article" />
           </#if>
           <div id="vrtx-result-${i}" class="vrtx-resource ${articleType}">
-            <#local src = vrtx.propValue(r, 'picture', 'thumbnail') />
-            <#if introImg?has_content && articles.hasDisplayPropDef(introImg.definition.name)>
+          <#local introImgURI = vrtx.propValue(r, 'picture') />
+          <#if introImgURI?exists>
+    			<#local thumbnail =  vrtx.relativeLinkConstructor(introImgURI, 'displayThumbnailService') />
+    	  <#else>
+    			<#local thumbnail = "" />
+   		   </#if>
+            
+           <#if introImg?has_content && articles.hasDisplayPropDef(introImg.definition.name)>
                <a class="vrtx-image" href="${articles.urls[r.URI]?html}">
                  <#if caption != ''>
-                    <img src="${src?html}" alt="${captionFlattened}" />
+                    <img src="${thumbnail?html}" alt="${captionFlattened}" />
                   <#else>
-                    <img src="${src?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
+                    <img src="${thumbnail?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
                   </#if>
                </a>
-            </#if>
+           </#if>
+            
             <div class="vrtx-title">
             <a class="vrtx-title" href="${articles.urls[r.URI]?html}">${title?html}</a></div>
             

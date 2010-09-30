@@ -169,6 +169,19 @@
   </#compress>
 </#macro>
 
+<#function relativeLinkConstructor resourceUri serviceName >
+	<#local constructedURL = linkConstructor(resourceUri,serviceName) />
+	<#if constructedURL?exists>
+		<#return constructedURL.getPathRepresentation() />	
+	<#else>
+		<#if resourceUri?exists>
+			<#return resourceUri />
+		<#else>
+			<#return "" />
+		</#if>
+	</#if>
+</#function>
+
 <#function linkConstructor resourceUri serviceName >
 	<#if VRTX_LINK_CONSTRUCTOR?exists && resourceUri?exists && serviceName?exists >
 		<#if VRTX_LINK_CONSTRUCTOR.construct(resourceUri,null,serviceName)?exists>

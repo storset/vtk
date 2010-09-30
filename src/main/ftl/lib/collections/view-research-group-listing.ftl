@@ -35,13 +35,18 @@
       </#local>
       <div class="vrtx-research-group">
             <#if introImg?has_content >
-            <#local src = vrtx.propValue(researchGroup, 'picture', 'thumbnail') />
-            	<a class="vrtx-image" href="${researchGroupListing.urls[researchGroup.URI]?html}">
-                <#if caption != ''>
-                	<img src="${src?html}" alt="${captionFlattened}" />
-                <#else>
-                    <img src="${src?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
-                </#if>
+               <#local introImgURI = vrtx.propValue(researchGroup, 'picture') />
+	           <#if introImgURI?exists>
+	    			<#local thumbnail =  vrtx.relativeLinkConstructor(introImgURI, 'displayThumbnailService') />
+	    	   <#else>
+	    			<#local thumbnail = "" />
+	   		   </#if>
+               <a class="vrtx-image" href="${researchGroupListing.urls[researchGroup.URI]?html}">
+               <#if caption != ''>
+                	<img src="${thumbnail?html}" alt="${captionFlattened}" />
+               <#else>
+                    <img src="${thumbnail?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
+               </#if>
                 </a>
             </#if>
             <div class="vrtx-title">

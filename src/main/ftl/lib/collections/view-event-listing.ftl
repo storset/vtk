@@ -190,12 +190,17 @@
   </#local>
   <div class="vrtx-resource vevent">
     <#if introImg?has_content && parent.hasDisplayPropDef(introImg.definition.name)>
-      <#local src = vrtx.propValue(event, 'picture', 'thumbnail') />
+      <#local introImgURI = vrtx.propValue(event, 'picture') />
+      <#if introImgURI?exists>
+			<#local thumbnail =  vrtx.relativeLinkConstructor(introImgURI, 'displayThumbnailService') />
+	  <#else>
+			<#local thumbnail = "" />
+	  </#if>
       <a class="vrtx-image" href="${parent.urls[event.URI]?html}">
         <#if caption != ''>
-          <img src="${src?html}" alt="${captionFlattened}" />
+          <img src="${thumbnail?html}" alt="${captionFlattened}" />
         <#else>
-          <img src="${src?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
+          <img src="${thumbnail?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
         </#if>
       </a>
     </#if>

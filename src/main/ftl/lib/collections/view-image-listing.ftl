@@ -76,7 +76,7 @@
           <li class="vrtx-image-entry">
         </#if>
             <div class="vrtx-image-container">
-                <a href="${image.URI?html}"><img src="${vrtx.linkConstructor(image.URI.toString(), 'displayThumbnailService').getPathRepresentation()}" title="${title}" alt="${title}" /></a>
+                <a href="${image.URI?html}"><img src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" title="${title}" alt="${title}" /></a>
             </div>
 
             <div class="vrtx-image-info">
@@ -170,15 +170,15 @@
         </#if>
         <#if activeImage != "">
 	      <#if (activeImage == image.URI) >
-	          <a href="${image.URI}" class="active"><img src="${vrtx.linkConstructor(image.URI.toString(), 'displayThumbnailService').getPathRepresentation()}" alt="${description}" title="${title}" />
+	          <a href="${image.URI}" class="active"><img src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt="${description}" title="${title}" />
 	        <#else>
-	          <a href="${image.URI}"><img src="${vrtx.linkConstructor(image.URI.toString(), 'displayThumbnailService').getPathRepresentation()}" alt="${description}" title="${title}" />
+	          <a href="${image.URI}"><img src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt="${description}" title="${title}" />
 	        </#if>
 	      <#else>
 	        <#if (image_index == 0) >
-	          <a href="${image.URI}" class="active"><img src="${vrtx.linkConstructor(image.URI.toString(), 'displayThumbnailService').getPathRepresentation()}" alt="${description}" title="${title}" />
+	          <a href="${image.URI}" class="active"><img src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt="${description}" title="${title}" />
 	        <#else>
-	          <a href="${image.URI}"><img src="${vrtx.linkConstructor(image.URI.toString(), 'displayThumbnailService').getPathRepresentation()}" alt="${description}" title="${title}" />
+	          <a href="${image.URI}"><img src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt="${description}" title="${title}" />
 	        </#if>
 	      </#if>
 	            <span><img src="${image.URI}" alt="${description}" title="${title}" /></span>
@@ -214,7 +214,7 @@
         <#list images as image>
           <tr>
             <#local title = vrtx.propValue(image, 'title')?html />
-            <td class="vrtx-table-image"><a href="${image.URI}"><img src="${vrtx.linkConstructor(image.URI.toString(), 'displayThumbnailService').getPathRepresentation()}" alt="${title}" /></a></td>
+            <td class="vrtx-table-image"><a href="${image.URI}"><img src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt="${title}" /></a></td>
             <td class="vrtx-table-title"><a href="${image.URI}">${title}</a></td>
             <#local description = vrtx.propValue(image, 'description', '', 'content')?html />
             <td class="vrtx-table-description">${description}</td>

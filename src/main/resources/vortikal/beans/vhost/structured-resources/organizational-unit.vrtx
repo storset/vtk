@@ -94,6 +94,7 @@ resourcetype organizational-unit {
                 [endlist]
               </span>
             [endif]
+            
           
             [if (phone != null && phone != "") || (fax != null && fax != "")]
               <span class="vrtx-organizational-unit-phone-fax">
@@ -112,7 +113,8 @@ resourcetype organizational-unit {
               
             [if email != null && email != ""]
               <span class="vrtx-organizational-unit-email">
-                [localized 'email']: <a href="mailto:[val email]"><span class="email">[val email]</span></a>
+                [def emailSplitted split(email, "25", "@")]
+                [localized 'email']: <a href="mailto:[val email]"><span class="email">[val emailSplitted]</span></a>
               </span>
             [endif]
         

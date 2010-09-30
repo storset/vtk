@@ -145,7 +145,10 @@
   <bean id="decorating.defaultFunctions"
         class="org.springframework.beans.factory.config.SetFactoryBean">
     <property name="sourceSet">
-      <ref bean="templateLanguage.concatFunction" />
+      <set>
+        <ref bean="templateLanguage.concatFunction" />
+        <ref bean="templateLanguage.splitFunction" />
+      </set>
     </property>
   </bean>
 

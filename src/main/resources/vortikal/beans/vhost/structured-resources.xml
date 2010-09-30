@@ -183,6 +183,7 @@
     <property name="sourceSet">
       <set>
         <ref bean="templateLanguage.concatFunction" />
+        <ref bean="templateLanguage.splitFunction" />
         <ref bean="structuredResources.resourceFunction" />
         <ref bean="structuredResources.resourcePropFunction" />
         <ref bean="structuredResources.resourcePropObjValFunction" />

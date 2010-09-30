@@ -9,5 +9,13 @@
       </bean>
     </constructor-arg>
   </bean>
+  
+  <bean id="templateLanguage.splitFunction" class="org.vortikal.text.tl.expr.Split">
+    <constructor-arg>
+      <bean class="org.vortikal.text.tl.Symbol">
+        <constructor-arg  value="split" />
+      </bean>
+    </constructor-arg>
+  </bean>
 
 </beans>

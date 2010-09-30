@@ -32,7 +32,9 @@ package org.vortikal.web.actions.publish;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
@@ -44,7 +46,17 @@ import org.vortikal.repository.resourcetype.Value;
 
 public class EditPublishingCommandValidator implements Validator {
 
-    private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm";
+    private static final String DATE_FORMAT_COMPLETE = "yyyy-MM-dd HH:mm";
+    private static final String DATE_FORMAT_HOUR = "yyyy-MM-dd HH";
+    private static final String DATE_FORMAT_SIMPLE = "yyyy-MM-dd";
+    private static List<String> dateformats;
+
+    static {
+        dateformats = new ArrayList<String>();
+        dateformats.add(DATE_FORMAT_COMPLETE);
+        dateformats.add(DATE_FORMAT_HOUR);
+        dateformats.add(DATE_FORMAT_SIMPLE);
+    }
 
     private PropertyTypeDefinition publishDatePropDef;
     private PropertyTypeDefinition unpublishDatePropDef;
@@ -97,14 +109,26 @@ public class EditPublishingCommandValidator implements Validator {
     }
 
     private Date getValidDate(String dateString, String bindName, Errors errors) {
-        try {
-            SimpleDateFormat dateParser = new SimpleDateFormat(DATE_FORMAT);
-            dateParser.setLenient(false);
-            return dateParser.parse(dateString);
-        } catch (ParseException e) {
+        Date validDate = null;
+
+        for (String dateFormat : dateformats) {
+            try {
+                SimpleDateFormat dateParser = new SimpleDateFormat(dateFormat);
+                dateParser.setLenient(false);
+                validDate = dateParser.parse(dateString);
+                // Break as soon as you get a valid date
+                break;
+            } catch (ParseException e) {
+                // Do nothing, validDate is still null and will be handled
+                // later
+            }
+        }
+
+        if (validDate == null) {
             errors.rejectValue(bindName, "publishing.edit.invalid." + bindName, "Invalid date");
         }
-        return null;
+
+        return validDate;
     }
 
     @Required

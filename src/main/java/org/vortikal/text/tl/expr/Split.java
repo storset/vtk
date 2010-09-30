@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2010, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,10 +30,7 @@
  */
 package org.vortikal.text.tl.expr;
 
-import org.vortikal.repository.resourcetype.DateValueFormatter;
-import org.vortikal.repository.resourcetype.StringValueFormatter;
 import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Symbol;
 
@@ -69,8 +66,10 @@ public class Split extends Function {
         } else if (o1 instanceof Value) {
           Value v = (Value) o1;
           sb.append(v.getStringValue());
-        } else {
+        } else if (o1 instanceof String) {
           sb.append((String) o1);  
+        } else {
+          throw new IllegalArgumentException("Split: first argument must be Value[], Value or String");  
         }
         
         String word = sb.toString();

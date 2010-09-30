@@ -100,11 +100,11 @@ public class Split extends Function {
           String[] splittedWords = word.split(splitChar, splitLimit);
           StringBuilder splitted = new StringBuilder();
           
-          int splittedWordsLength = splittedWords.length - 1;
-          for(int i = 0; i < splittedWordsLength; i++) {
+          int splittedWordsLengthMinusOne = splittedWords.length - 1;
+          for(int i = 0; i < splittedWordsLengthMinusOne; i++) {
             splitted.append(splittedWords[i] + splitChar + " ");
           }
-          splitted.append(splittedWords[splittedWordsLength]);
+          splitted.append(splittedWords[splittedWordsLengthMinusOne]);
           
           return splitted.toString();
         }

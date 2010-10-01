@@ -99,6 +99,10 @@ public class ParserTest extends TestCase {
         result = parseAndRender("[def x \"[ab\\\"c\\\"]\"][val x unescaped]", ctx);
         assertEquals("[ab\"c\"]", result);
         
+        //XXX: make split() test
+        //result = parseAndRender("[def test split('farmasoytisk.bibliotek@ub.uio.no', '@', '25', '2')]", ctx);
+        //assertEquals("farmasoytisk.bibliotek@ ub.uio.no", result);
+        
         String template = 
             "[def foo \"bar]\"]"
             + "\n"

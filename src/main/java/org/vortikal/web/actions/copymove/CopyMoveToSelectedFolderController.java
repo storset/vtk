@@ -122,6 +122,7 @@ public class CopyMoveToSelectedFolderController implements Controller {
         List<String> filesToBeCopied = sessionBean.getFilesToBeCopied();
 
         boolean authorizationFailed = false;
+        boolean moveAction = "move-resources".equals(action);
 
         for (String uri : filesToBeCopied) {
             Path resourceUri = Path.fromString(uri);
@@ -134,7 +135,7 @@ public class CopyMoveToSelectedFolderController implements Controller {
             }
 
             try {
-                if (action.equals("move-resources")) {
+                if (moveAction) {
 
                     if (!this.repository.exists(token, newResourceUri)) {
                         this.repository.move(token, resourceUri, newResourceUri, false);
@@ -183,13 +184,13 @@ public class CopyMoveToSelectedFolderController implements Controller {
             String msgCode = "";
 
             if (authorizationFailed) {
-                if (action.equals("move-resources")) {
+                if (moveAction) {
                     msgCode = "manage.create.copyMove.error.authorization.moveFailed";
                 } else {
                     msgCode = "manage.create.copyMove.error.authorization.copyFailed";
                 }
             } else {
-                if (action.equals("move-resources")) {
+                if (moveAction) {
                     msgCode = "manage.create.copyMove.error.moveFailed";
                 } else {
                     msgCode = "manage.create.copyMove.error.copyFailed";

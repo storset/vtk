@@ -98,12 +98,16 @@ public class CopyMoveWarningProvider implements CategorizableReferenceDataProvid
             if (destAcl.containsEntry(RepositoryAction.READ, PrincipalFactory.ALL)
                     || destAcl.containsEntry(RepositoryAction.READ_PROCESSED, PrincipalFactory.ALL)) {
                 for (String uri : sessionBean.getFilesToBeCopied()) {
+                    // Resource to copy might have been deleted or moved, check for existence
+                    if (!this.repository.exists(token, Path.fromString(uri))) {
+                        continue;
+                    }
                     Resource srcAclResource = findNearestAcl(token, Path.fromString(uri));
                     Acl srcAcl = srcAclResource.getAcl();
                     if (!srcAclResource.isInheritedAcl() 
                             && !(srcAcl.containsEntry(RepositoryAction.READ, PrincipalFactory.ALL)
                                     || srcAcl.containsEntry(RepositoryAction.READ_PROCESSED, PrincipalFactory.ALL))) {
-                        
+
                         URL url = this.confirmationService.constructURL(destinationUri);
                         url.setCollection(true);
                         model.put("resourcesDisclosed", Boolean.TRUE);
@@ -188,7 +192,6 @@ public class CopyMoveWarningProvider implements CategorizableReferenceDataProvid
         }
         return Path.fromString(filesToBeCopied.get(0)).getParent();
     }
-
 
     @Required
     public void setRepository(Repository repository) {

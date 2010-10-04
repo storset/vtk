@@ -40,10 +40,6 @@
     #destUri# || substr(uri, length(#srcUri#) + 1)
   </sql>
   
-  <sql id="binaryDestinationDescendantUriMove">
-    #destUri# || substr(value, length(#srcUri#) + 1)
-  </sql>
-  
   <insert id="insertPropertyEntry" parameterClass="java.util.Map">
     insert into extra_prop_entry
       (extra_prop_entry_id, resource_id, name_space, name, value

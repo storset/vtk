@@ -39,10 +39,6 @@
   <sql id="destinationDescendantUriMove">
     <!-- XXX write sql -->
   </sql>
-  
-  <sql id="binaryDestinationDescendantUriMove">
-    <!-- XXX write sql -->
-  </sql>
 
   <sql id="listCommentsLimitPrepend">
     <!-- By default, nothing is prepend to query for limiting. --> 

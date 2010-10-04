@@ -507,7 +507,7 @@ public class Cache implements DataAccessor, InitializingBean {
     
 
     @Override
-    public void delete(ResourceImpl r) throws DataAccessException {
+    public void delete(ResourceImpl r, boolean restorable) throws DataAccessException {
         List<Path> uris = new ArrayList<Path>();
 
         uris.add(r.getURI());
@@ -529,7 +529,7 @@ public class Cache implements DataAccessor, InitializingBean {
         List<Path> locks = this.lockManager.lock(uris);
 
         try {
-            this.wrappedAccessor.delete(r); // Dispatch to wrapped DAO for persistence
+            this.wrappedAccessor.delete(r, restorable); // Dispatch to wrapped DAO for persistence
             this.items.remove(uris);        // Purge all affected items from cache 
         } finally {
             this.lockManager.unlock(locks); // Release URI sync locks

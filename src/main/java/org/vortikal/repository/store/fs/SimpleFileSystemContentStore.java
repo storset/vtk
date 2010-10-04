@@ -41,6 +41,7 @@ import java.nio.channels.FileChannel;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.store.ContentStore;
@@ -48,19 +49,19 @@ import org.vortikal.repository.store.DataAccessException;
 import org.vortikal.web.service.URL;
 
 /**
- * File system content store implementation operating directly on the
- * repository data.
+ * File system content store implementation operating directly on the repository
+ * data.
  */
 public class SimpleFileSystemContentStore implements InitializingBean, ContentStore {
 
     private static Log logger = LogFactory.getLog(SimpleFileSystemContentStore.class);
 
     private String repositoryDataDirectory;
+    private String trashCanDirectory;
 
     private boolean urlEncodeFileNames = false;
 
-    public void createResource(Path uri, boolean isCollection) 
-        throws DataAccessException {
+    public void createResource(Path uri, boolean isCollection) throws DataAccessException {
 
         String fileName = getLocalFilename(uri);
 
@@ -82,19 +83,18 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
             throw new DataAccessException("Create resource [" + uri + "] failed", e);
         }
     }
-    
+
     public long getContentLength(Path uri) throws DataAccessException {
         String fileName = getLocalFilename(uri);
 
         try {
             File f = new File(fileName);
             if (!f.exists()) {
-                throw new DataAccessException(
-                    "No file exists for URI " + uri + " at " + f.getCanonicalPath());
+                throw new DataAccessException("No file exists for URI " + uri + " at " + f.getCanonicalPath());
             }
             if (f.isFile()) {
                 return f.length();
-            } 
+            }
             throw new IllegalOperationException("Length is undefined for collections");
         } catch (IOException e) {
             throw new DataAccessException("Get content length [" + uri + "] failed", e);
@@ -103,7 +103,7 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
 
     public void deleteResource(Path uri) {
         String fileName = getLocalFilename(uri);
-        //Don't delete root
+        // Don't delete root
         if (!uri.equals(Path.ROOT)) {
             deleteFiles(new File(fileName));
         }
@@ -134,8 +134,7 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
         }
     }
 
-    public void storeContent(Path uri, InputStream inputStream)
-            throws DataAccessException {
+    public void storeContent(Path uri, InputStream inputStream) throws DataAccessException {
         String fileName = getLocalFilename(uri);
 
         try {
@@ -157,7 +156,7 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
             throw new DataAccessException("Store content [" + uri + "] failed", e);
         }
     }
-    
+
     public void copy(Path srcURI, Path destURI) throws DataAccessException {
         String fileNameFrom = getLocalFilename(srcURI);
         String fileNameTo = getLocalFilename(destURI);
@@ -170,19 +169,17 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
                 copyFile(fromDir, new File(fileNameTo));
             }
         } catch (IOException e) {
-            throw new DataAccessException("Store content [" + srcURI + ", "
-                                          + destURI + "] failed", e);
+            throw new DataAccessException("Store content [" + srcURI + ", " + destURI + "] failed", e);
         }
     }
-    
+
     private void copyDir(File fromDir, File toDir) throws IOException {
 
         toDir.mkdir();
 
         File[] children = fromDir.listFiles();
         for (int i = 0; i < children.length; i++) {
-            File newFile = new File(toDir.getCanonicalPath()
-                                  + File.separator + children[i].getName());
+            File newFile = new File(toDir.getCanonicalPath() + File.separator + children[i].getName());
             if (children[i].isFile()) {
                 copyFile(children[i], newFile);
             } else {
@@ -190,7 +187,6 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
             }
         }
     }
-    
 
     private void copyFile(File from, File to) throws IOException {
 
@@ -201,16 +197,13 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
         dstChannel.close();
     }
 
-
     public void move(Path srcURI, Path destURI) throws DataAccessException {
         String fileNameFrom = getLocalFilename(srcURI);
         String fileNameTo = getLocalFilename(destURI);
         if (!new File(fileNameFrom).renameTo(new File(fileNameTo))) {
-            throw new DataAccessException("Unable to rename file " +
-                                          fileNameFrom + " to " + fileNameTo);
+            throw new DataAccessException("Unable to rename file " + fileNameFrom + " to " + fileNameTo);
         }
     }
-    
 
     private String getLocalFilename(Path uri) {
         Path path = uri;
@@ -219,9 +212,15 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
         }
         return this.repositoryDataDirectory + path.toString();
     }
-    
+
+    @Required
     public void setRepositoryDataDirectory(String repositoryDataDirectory) {
         this.repositoryDataDirectory = repositoryDataDirectory;
+    }
+
+    @Required
+    public void setTrashCanDirectory(String trashCanDirectory) {
+        this.trashCanDirectory = trashCanDirectory;
     }
 
     public void setUrlEncodeFileNames(boolean urlEncodeFileNames) {
@@ -229,22 +228,21 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
     }
 
     public void afterPropertiesSet() throws Exception {
+        this.createRootDirectory(this.repositoryDataDirectory);
+        this.createRootDirectory(this.trashCanDirectory);
+    }
 
-        if (this.repositoryDataDirectory == null) {
-            throw new IOException("Missing property \"repositoryDataDirectory\"");
-        }
-
-        File root = new File(this.repositoryDataDirectory);
+    private void createRootDirectory(String directoryPath) {
+        File root = new File(directoryPath);
 
         if (!root.isAbsolute()) {
-            this.repositoryDataDirectory = System.getProperty("vortex.home") + File.separator
-                    + this.repositoryDataDirectory;
-            root = new File(this.repositoryDataDirectory);
+            directoryPath = System.getProperty("vortex.home") + File.separator + directoryPath;
+            root = new File(directoryPath);
         }
 
         if (!root.exists()) {
             root.mkdir();
         }
     }
-    
+
 }

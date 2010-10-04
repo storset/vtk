@@ -71,12 +71,10 @@ import org.vortikal.security.token.TokenManager;
  * A (still non-transactional) implementation of the
  * <code>org.vortikal.repository.Repository</code> interface.
  * 
- * XXX: implement locking of depth 'infinity'
- * XXX: namespace locking/concurrency
- * XXX: Evaluate exception practice, handling and propagation
- * XXX: transaction demarcation
- * XXX: externalize caching
- * XXX: duplication of owner and inherited between resource and acl.
+ * XXX: implement locking of depth 'infinity' XXX: namespace locking/concurrency
+ * XXX: Evaluate exception practice, handling and propagation XXX: transaction
+ * demarcation XXX: externalize caching XXX: duplication of owner and inherited
+ * between resource and acl.
  * 
  */
 public class RepositoryImpl implements Repository, ApplicationContextAware {
@@ -99,7 +97,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     private int maxResourceChildren = 3000;
 
     private static Log searchLogger = LogFactory.getLog(RepositoryImpl.class.getName() + ".Search");
-    
 
     @Override
     public boolean isReadOnly() {
@@ -297,7 +294,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         checkMaxChildren(destParent);
 
         if (dest != null) {
-            this.dao.delete(dest);
+            this.dao.delete(dest, false);
             this.contentStore.deleteResource(dest.getURI());
             this.context
                     .publishEvent(new ResourceDeletionEvent(this, dest.getURI(), dest.getID(), dest.isCollection()));
@@ -356,7 +353,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
         // Performing delete operation
         if (dest != null) {
-            this.dao.delete(dest);
+            this.dao.delete(dest, false);
             this.contentStore.deleteResource(dest.getURI());
 
             this.context
@@ -414,7 +411,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         parentCollection = this.resourceHelper.contentModification(parentCollection, principal);
         this.dao.store(parentCollection);
 
-        this.dao.delete(r);
+        this.dao.delete(r, restorable);
         this.contentStore.deleteResource(r.getURI());
 
         ResourceDeletionEvent event = new ResourceDeletionEvent(this, uri, r.getID(), r.isCollection());
@@ -519,8 +516,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     }
 
     @Override
-    public Resource createDocument(String token, Path uri, InputStream inStream) throws IllegalOperationException, AuthorizationException,
-    AuthenticationException, ResourceLockedException, ReadOnlyException, IOException {
+    public Resource createDocument(String token, Path uri, InputStream inStream) throws IllegalOperationException,
+            AuthorizationException, AuthenticationException, ResourceLockedException, ReadOnlyException, IOException {
 
         Principal principal = this.tokenManager.getPrincipal(token);
         ResourceImpl resource = this.dao.load(uri);
@@ -574,7 +571,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
     }
 
-    
     /**
      * Requests that an InputStream be written to a resource.
      */
@@ -915,7 +911,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
     }
 
-
     private void checkMaxChildren(ResourceImpl resource) {
         if (resource.getChildURIs().size() > this.maxResourceChildren) {
             throw new AuthorizationException("Collection " + resource.getURI() + " has too many children, maximum is "
@@ -923,27 +918,22 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
     }
 
-    private void validateCopyURIs(Path srcPath, Path destPath)
-            throws IllegalOperationException {
+    private void validateCopyURIs(Path srcPath, Path destPath) throws IllegalOperationException {
 
         if (srcPath.isRoot()) {
-            throw new IllegalOperationException(
-                    "Cannot copy or move the root resource ('/')");
+            throw new IllegalOperationException("Cannot copy or move the root resource ('/')");
         }
 
         if (destPath.isRoot()) {
-            throw new IllegalOperationException(
-                    "Cannot copy or move to the root resource ('/')");
+            throw new IllegalOperationException("Cannot copy or move to the root resource ('/')");
         }
 
         if (destPath.equals(srcPath)) {
-            throw new IllegalOperationException(
-                    "Cannot copy or move a resource to itself");
+            throw new IllegalOperationException("Cannot copy or move a resource to itself");
         }
 
         if (srcPath.isAncestorOf(destPath)) {
-            throw new IllegalOperationException(
-                    "Cannot copy or move a resource into itself");
+            throw new IllegalOperationException("Cannot copy or move a resource into itself");
         }
     }
 
@@ -1147,7 +1137,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                     searchLogger.debug("search: " + duration + " ms");
                 }
             }
-            
+
         } else {
             throw new IllegalStateException("No repository searcher has been configured.");
         }

@@ -38,100 +38,94 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.ResourceImpl;
 import org.vortikal.security.Principal;
 
-
 /**
  * Simple data access abstraction API.
  */
 public interface DataAccessor {
 
-
     /**
-     * "Sanity check" method, called after
-     * initialization. Implementations should return false if the
-     * data accessor is unable to operate properly (i.e. tables missing,
-     * etc.)
+     * "Sanity check" method, called after initialization. Implementations
+     * should return false if the data accessor is unable to operate properly
+     * (i.e. tables missing, etc.)
      */
     public boolean validate() throws DataAccessException;
-
 
     /**
      * Loads a single resource
      */
     public ResourceImpl load(Path uri) throws DataAccessException;
 
-
     /**
      * Loads the children of a given resource
      */
     public ResourceImpl[] loadChildren(ResourceImpl parent) throws DataAccessException;
-
 
     /**
      * Stores a single resource
      */
     public void store(ResourceImpl r) throws DataAccessException;
 
-
     /**
      * Stores the ACL of a resource
      */
     public void storeACL(ResourceImpl r) throws DataAccessException;
 
-
     /**
      * Deletes a single resource (and any children)
      */
-    public void delete(ResourceImpl resource) throws DataAccessException;
-
-
+    public void delete(ResourceImpl resource, boolean restorable) throws DataAccessException;
 
     /**
      * Deletes all expired locks (should be called periodically)
      */
     public void deleteExpiredLocks(Date expireDate) throws DataAccessException;
 
-
     /**
      * Atomically copies a resource to a new destination.
-     * @param resource the resource to copy from
-     * @param dest the resource to copy into (becomes the parent of
-     * the copied resource after the copy operation)
-     * @param newResource the newly created resource: this resource is
-     * passed as an argument, as its properties may have changed as a
-     * result of the name change operation.
-     * @param copyACLs whether to copy ACLs from the existing
-     * resource, or to inherit from the new parent resource
-     * @param fixedProperties a set of properties to set on the new
-     * resource(s) instead of copying from the existing
+     * 
+     * @param resource
+     *            the resource to copy from
+     * @param dest
+     *            the resource to copy into (becomes the parent of the copied
+     *            resource after the copy operation)
+     * @param newResource
+     *            the newly created resource: this resource is passed as an
+     *            argument, as its properties may have changed as a result of
+     *            the name change operation.
+     * @param copyACLs
+     *            whether to copy ACLs from the existing resource, or to inherit
+     *            from the new parent resource
+     * @param fixedProperties
+     *            a set of properties to set on the new resource(s) instead of
+     *            copying from the existing
      */
-    public void copy(ResourceImpl resource, ResourceImpl dest,
-                     PropertySet newResource, boolean copyACLs,
-                     PropertySet fixedProperties) throws DataAccessException;
-
+    public void copy(ResourceImpl resource, ResourceImpl dest, PropertySet newResource, boolean copyACLs,
+            PropertySet fixedProperties) throws DataAccessException;
 
     /**
      * Atomically moves a resource to a new destination.
-     * @param resource the resource to move
-     * @param newResource the newly created resource: this resource is
-     * passed as an argument, as its properties may have changed as a
-     * result of the name change operation.
+     * 
+     * @param resource
+     *            the resource to move
+     * @param newResource
+     *            the newly created resource: this resource is passed as an
+     *            argument, as its properties may have changed as a result of
+     *            the name change operation.
      */
-    public void move(ResourceImpl resource, ResourceImpl newResource)
-        throws DataAccessException;
-
+    public void move(ResourceImpl resource, ResourceImpl newResource) throws DataAccessException;
 
     /**
-     * Finds any locks on a resource, or on resources in the URI
-     * hierarchy defined by that resource.
+     * Finds any locks on a resource, or on resources in the URI hierarchy
+     * defined by that resource.
      */
     public Path[] discoverLocks(Path uri) throws DataAccessException;
 
     /**
-     * Finds any ACLs on a resource, or on resources in the URI
-     * hierarchy defined by that resource.
+     * Finds any ACLs on a resource, or on resources in the URI hierarchy
+     * defined by that resource.
      */
     public Path[] discoverACLs(Path uri) throws DataAccessException;
-    
+
     /**
      * Discover all distinct groups currently present in the database.
      * 

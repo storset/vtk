@@ -32,8 +32,10 @@ package org.vortikal.web.display.linkcheck;
 
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -182,7 +184,7 @@ public class LinkCheckController implements Controller, InitializingBean {
         return pathString;
     }
 
-    private boolean isBroken(Path resourceURI, String link, String token) {
+    private boolean isBroken(Path resourceURI, String link, String token) throws UnsupportedEncodingException {
         // get the processed link to check
         String processedLink = getProcessedLink(resourceURI, link);
 
@@ -239,7 +241,8 @@ public class LinkCheckController implements Controller, InitializingBean {
         return link.startsWith("http") || link.startsWith("www");
     }
 
-    private boolean isBrokenInternal(String link, String token) {
+    private boolean isBrokenInternal(String link, String token) throws UnsupportedEncodingException {
+        link = URLDecoder.decode(link, "utf-8");
         UriTermQuery uriQuery = new UriTermQuery(link, TermOperator.EQ);
         Search search = new Search();
         search.setQuery(uriQuery);

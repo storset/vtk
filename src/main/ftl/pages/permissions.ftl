@@ -78,8 +78,16 @@
           </#if>
         </#if>
       </form>
-      </#if>
-
+      <#elseif resourceContext.currentResource.inheritedAcl>
+      	<p>
+     		<@vrtx.msg code="permissions.isInherited" default="Inherited permissions" />
+     	</p>  
+      <#elseif !resourceContext.currentResource.inheritedAcl>
+      	<p>
+      		<@vrtx.msg code="permissions.notInherited.${resource.resourceType}" default="${defaultNotInherited}" />  
+      	</p>
+      </#if>	
+	
       <#assign privilegeHeading><@vrtx.msg code="permissions.privilege.read" default="Read" /></#assign>
       <@permissions.editOrDisplayPrivilege privilegeName="read" privilegeHeading=privilegeHeading />
 

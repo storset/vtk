@@ -11,8 +11,16 @@
   <@ping.ping url=pingURL['url'] interval=300 />
   <@fckEditor.addFckScripts />
   <@vrtxJSONJavascript.script />
+  <script language="Javascript" type="text/javascript" src="${webResources?html}/jquery-plugins/jquery.hotkeys-0.7.9.min.js"></script>
   <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/admin-prop-change.js"></script>
   <script language="Javascript" type="text/javascript"><!--
+  	
+  	$(document).bind('keydown', 'ctrl+s', saveDocument);
+  	
+  	function saveDocument(){
+  		$("#updateAction").click();
+  	}
+  
     window.onbeforeunload = unsavedChangesInEditorMessage;
     UNSAVED_CAHANGES_CONFIRMATION = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";
     COMPLETE_UNSAVED_CAHANGES_CONFIRMATION = "<@vrtx.msg code='manage.completeUnsavedChangesConfirmation' />";
@@ -58,6 +66,13 @@
 
 <#assign header = form.resource.getLocalizedMsg("header", locale, null) />
 <h2>${header}</h2>
+
+<div class="submit-extra-buttons">
+    <input type="button" onClick="$('#updateQuitAction').click()" value="${vrtx.getMsg("editor.saveAndQuit")}" />
+    <input type="button" onClick="$('#updateAction').click()"  value="${vrtx.getMsg("editor.save")}" />
+    <input type="button" onClick="$('#cancelAction').click()"  value="${vrtx.getMsg("editor.cancel")}" />
+</div>
+
 <div id="help-links">
 	<a href="${editorHelpURL?html}" target="new_window"><@vrtx.msg code="editor.help"/></a><br />
 	<a href="${form.listComponentServiceURL?html}" target="new_window"><@vrtx.msg code="plaintextEdit.tooltip.listDecoratorComponentsService" /></a>

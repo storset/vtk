@@ -517,3 +517,9 @@ input.date, input.hours, input.minutes {
 /* STOP Introduction image edit (like the old one) */
 
 /* STOP forms */
+
+.submit-extra-buttons {
+    position:absolute;
+    right:40px;
+    top:187px;
+}

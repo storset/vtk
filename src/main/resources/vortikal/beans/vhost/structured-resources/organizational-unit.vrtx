@@ -3,6 +3,7 @@ resourcetype organizational-unit {
   properties {
     areacode : string,
     getExternalUnitInfo : boolean,
+    displayAcronym : boolean,
     name : string external:organizationMetadataLdapService,
     acronym : string external:organizationMetadataLdapService,
     postalAddress : string multiple external:organizationMetadataLdapService,
@@ -55,9 +56,10 @@ resourcetype organizational-unit {
       ##
       [def title resource-prop(".", "title")]
       [def acronym resource-prop(".", "acronym")]
+      [def displayAcronym resource-prop-obj-val(".", "displayAcronym")]
       [if title != null]
         [val title]
-        [if acronym != null]
+        [if acronym != null && displayAcronym = true]
           ([val acronym])
         [endif]
       [endif]
@@ -247,6 +249,11 @@ resourcetype organizational-unit {
   }
 
   vocabulary {
+     displayAcronym {
+       en : ("true" = "Yes", "false" = "No"),
+       no : ("true" = "Ja", "false" = "Nei"),
+       nn : ("true" = "Ja", "false" = "Nei")
+     },
      getExternalUnitInfo {
        en : ("true" = "Yes", "false" = "No"),
        no : ("true" = "Ja", "false" = "Nei"),
@@ -265,12 +272,16 @@ resourcetype organizational-unit {
   }
 
   localization {
-    header : (en : "Edit organizational unit", no : "Rediger organisatorisk enhet", nn : "Rediger organisatorisk enhet"),
+    header : (en : "Edit organizational unit", no : "Rediger organisatorisk enhet", nn : "Rediger organisatorisk eining"),
     areacode : (en : "Area code", no : "Stedkode", nn : "Stadkode"),
     getExternalUnitInfo : (
       en : "Use information registrated in UiO's payroll- and personalsystem",
       no : "Bruk opplysninger registrert i UiOs lønns- og personalsystem",
       nn : "Bruk opplysingar registrerte i lønns- og personalsystemet til UiO"),
+    displayAcronym : (
+      en : "Display acronym in title",
+      no : "Vis enhetens forkortelse i parentes bak tittel",
+      nn : "Vis forkortinga til einninga i parentes bak tittelen"),
     name : (en : "Name", no : "Navn", nn : "Namn"),
     acronym : (en : "Acronym", no : "Forkortelse", nn : "Forkortelse"),
     contactHeader : (en : "Contact", no : "Kontakt", nn : "Kontakt"),

@@ -142,10 +142,10 @@
      for (i in j.a) {
        var inputFieldName = j.name + "." + j.a[i].name + "." + counter;
        if (j.a[i].type == "simple_html") {
-         newEditor(inputFieldName, false, false, '${resourceContext.parentURI}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
+         newEditor(inputFieldName, false, false, '${resourceContext.parentURI?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
           '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', '');
        } else if (j.a[i].type == "html") {
-         newEditor(inputFieldName, true, false, '${resourceContext.parentURI}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
+         newEditor(inputFieldName, true, false, '${resourceContext.parentURI?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
           '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', '');
        } else if (j.a[i].type == "datetime") {
          displayDateAsMultipleInputFields(inputFieldName);
@@ -255,7 +255,7 @@
     htmlTemplate += '<label for=\"' + inputFieldName+ '\">' + elem.title + '<\/label>';
     htmlTemplate += '<\/div><div>';
     htmlTemplate += '<input type=\"text\" id=\"' + inputFieldName+ '\" name=\"' + inputFieldName + '\" value=\"\" onblur=\"previewImage($(this).parent().find(\'input\').attr(\'id\'));\" size=\"30\" \/>';
-    htmlTemplate += '<button type=\"button\" onclick=\"browseServer($(this).parent().find(\'input\').attr(\'id\'), \'${fckeditorBase.url}\', \'${resourceContext.parentURI}\', \'${fckBrowse.url.pathRepresentation}\');\"><@vrtx.msg code="editor.browseImages" /><\/button>';
+    htmlTemplate += '<button type=\"button\" onclick=\"browseServer($(this).parent().find(\'input\').attr(\'id\'), \'${fckeditorBase.url}\', \'${resourceContext.parentURI?js_string}\', \'${fckBrowse.url.pathRepresentation}\');\"><@vrtx.msg code="editor.browseImages" /><\/button>';
     htmlTemplate += '<\/div>';
     htmlTemplate += '<div id=\"' + inputFieldName + '.preview\">';
     htmlTemplate += '<\/div><\/div>';
@@ -282,7 +282,7 @@
     htmlTemplate += '<div><label for=\"' + inputFieldName + '\">' + elem.title + '<\/label>';
     htmlTemplate += '<\/div><div>';
     htmlTemplate += '<input type=\"text\" id=\"' + inputFieldName + '\" name=\"' + inputFieldName + '\" value=\"\" onblur=\"previewImage($(this).parent().find(\'input\').attr(\'id\'));\" size=\"30\"\/>';
-    htmlTemplate += '<button type=\"button\" onclick=\"browseServer($(this).parent().find(\'input\').attr(\'id\'), \'${fckeditorBase.url}\', \'${resourceContext.parentURI}\', \'${fckBrowse.url.pathRepresentation}\', \'Media\');\"><@vrtx.msg code="editor.browseImages" /><\/button>';
+    htmlTemplate += '<button type=\"button\" onclick=\"browseServer($(this).parent().find(\'input\').attr(\'id\'), \'${fckeditorBase.url}\', \'${resourceContext.parentURI?js_string}\', \'${fckBrowse.url.pathRepresentation}\', \'Media\');\"><@vrtx.msg code="editor.browseImages" /><\/button>';
     htmlTemplate += '<\/div><\/div>'
     
     return htmlTemplate;

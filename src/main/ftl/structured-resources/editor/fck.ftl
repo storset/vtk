@@ -24,7 +24,7 @@
     </#if>
     <script language="Javascript" type="text/javascript">
       newEditor('${content}', ${completeEditor?string}, ${withoutSubSuper?string}, 
-        '${baseFolder?string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
+        '${baseFolder?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
         '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', {${cssFileList}});      
     </script>
 </#macro>

@@ -118,13 +118,10 @@
 	        </#if>
             
             <#if commaSeparated>
-              <#if (i < (sized-2))>
+              <#if (i < (sized-1))>
                 <@displayItem item=item separator="," />
-              <#elseif ((i+1) = sized)>
-                <@displayItem item=item separator="." />
               <#else>
-                <#assign and> <@vrtx.msg code='subfolder.separator.and' /> </#assign>
-                <@displayItem item=item separator=and />
+                <@displayItem item=item separator="." />
               </#if>
             <#else>
               <@displayItem item=item />

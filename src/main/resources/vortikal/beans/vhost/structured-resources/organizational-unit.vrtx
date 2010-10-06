@@ -79,8 +79,8 @@ resourcetype organizational-unit {
             [if title != null]
               <span class="fn org" style="display:none">[val title]</span>
             [endif]
+            <h2>[localized "contactHeader"]</h2>
             [if postalAddress != null && postalAddress != ""]
-              <h2>[localized "contactHeader"]</h2>
               <span class="vrtx-organizational-unit-postal-address adr">
                 <span class="vrtx-label">[localized "postalAddress"]</span>
                 [list postalAddress postalAddressLine]

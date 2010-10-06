@@ -120,6 +120,8 @@
             <#if commaSeparated>
               <#if (i < (sized-1))>
                 <@displayItem item=item separator="," />
+              <#else>
+                <@displayItem item=item separator="none" />
               </#if>
             <#else>
               <@displayItem item=item />

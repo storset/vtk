@@ -176,12 +176,15 @@ public class LinkCheckController implements Controller, InitializingBean {
             return this.isBrokenInternal(processedLink, token);
         }
 
+        if (!processedLink.startsWith("http://")) {
+            processedLink = "http://" + processedLink;
+        }
+
         // go out on the worldwide web
         HttpURLConnection urlConnection = null;
         try {
             URL url = new URL(processedLink);
             urlConnection = (HttpURLConnection) url.openConnection();
-            this.prepareConnection(urlConnection);
             urlConnection.connect();
             int responseCode = urlConnection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_MOVED_PERM || responseCode == HttpURLConnection.HTTP_MOVED_TEMP) {
@@ -206,18 +209,11 @@ public class LinkCheckController implements Controller, InitializingBean {
             String location = urlConnection.getHeaderField("Location");
             urlConnection.disconnect();
             urlConnection = (HttpURLConnection) new URL(location).openConnection();
-            this.prepareConnection(urlConnection);
             urlConnection.connect();
             responseCode = urlConnection.getResponseCode();
             retry++;
         }
         return responseCode;
-    }
-
-    private void prepareConnection(HttpURLConnection urlConnection) throws Exception {
-        urlConnection.setRequestMethod("HEAD");
-        // if it doesn't answer within 5sec, mark it as broken
-        urlConnection.setConnectTimeout(5000);
     }
 
     private boolean isWebLink(String link) {

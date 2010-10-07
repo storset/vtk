@@ -74,7 +74,7 @@ public class Expression {
     private static final Symbol MULTIPLY = new Symbol("*");
     private static final Symbol DIVIDE = new Symbol("/");
     private static final Symbol MAPPING = new Symbol(":");
-
+    private static final Symbol ACCESSOR = new Symbol(".");
     
     /**
      * The default set of operators
@@ -84,7 +84,10 @@ public class Expression {
         Map<Symbol, Operator> ops = new HashMap<Symbol, Operator>();
 
         // Unary
-        ops.put(NOT, new Not(NOT, Notation.PREFIX, Precedence.ELEVEN));
+        ops.put(NOT, new Not(NOT, Notation.PREFIX, Precedence.TWELVE));
+
+        // Accessor
+        ops.put(ACCESSOR, new Accessor(ACCESSOR, Notation.INFIX, Precedence.ELEVEN));
 
         // Multiplicative
         ops.put(DIVIDE, new Divide(DIVIDE, Notation.INFIX, Precedence.TEN));
@@ -281,6 +284,16 @@ public class Expression {
                     top = this.operators.get(stack.peek());
                 }
             }
+            // Associativity is considered only between equal operators.
+            if (top != null && top.getSymbol().equals(symbol) && top.leftAssociative()) {
+                output.add(top.getSymbol());
+                stack.pop();
+                if (stack.isEmpty()) {
+                    top = null;
+                } else {
+                    top = this.operators.get(stack.peek());
+                }
+            }
             stack.push(symbol);
         }
         while (!stack.isEmpty()) {
@@ -345,7 +358,7 @@ public class Expression {
         }
         return sb.toString();
     }
-
+    
     private void addFunction(Function function) {
         if (function == null) {
             throw new IllegalArgumentException("Function is NULL");

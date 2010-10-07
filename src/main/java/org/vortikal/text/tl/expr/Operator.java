@@ -32,6 +32,7 @@ package org.vortikal.text.tl.expr;
 
 import java.util.Stack;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Symbol;
 
@@ -56,6 +57,7 @@ public abstract class Operator {
         NINE(9),
         TEN(10),
         ELEVEN(11),
+        TWELVE(12),
         FUNCTION_PRECEDENCE(100);
         private int n;
         private Precedence(int n) {
@@ -88,9 +90,29 @@ public abstract class Operator {
         return this.precedence;
     }
     
+    public boolean leftAssociative() {
+        return false;
+    }
+    
     public String toString() {
         return this.symbol.getSymbol();
     }
     
     public abstract Object eval(Context ctx, Stack<Object> stack) throws Exception;
+    
+    protected final Number getNumericValue(Object obj) {
+        if (obj == null) {
+            throw new IllegalArgumentException("Argument is NULL");
+        }
+        if (obj instanceof Number) {
+            return (Number) obj;
+        } else if (obj instanceof String) {
+            try {
+                String s = (String) obj;
+                return NumberUtils.createNumber(s);
+            } catch (Throwable t) { }
+        }
+        throw new IllegalArgumentException("Not a number: " + obj);
+    }
+    
 }

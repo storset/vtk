@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2010, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,35 +30,57 @@
  */
 package org.vortikal.text.tl.expr;
 
-import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Symbol;
 
-public abstract class NumericOperator extends Operator {
+public class Accessor extends Operator {
 
-    public NumericOperator(Symbol symbol, Notation notation, Precedence precedence) {
+    public Accessor(Symbol symbol, Notation notation, Precedence precedence) {
         super(symbol, notation, precedence);
     }
-
-    public final Object eval(Context ctx, Stack<Object> stack) {
-        Object second = stack.pop();
-        Object first = stack.pop();
-        // Wrap values in BigDecimal to simplify calculations:
-        BigDecimal n1 = new BigDecimal(getNumericValue(first).doubleValue());
-        BigDecimal n2 = new BigDecimal(getNumericValue(second).doubleValue());
-        Object result = evalNumeric(n1, n2);
-        if (result instanceof BigDecimal) {
-            BigDecimal d = (BigDecimal) result;
-            if (d.scale() == 0) {
-                result = d.intValueExact();
-            } else {
-                result = d.floatValue();
-            }
-        }
-        return result;
+    
+    @Override
+    public boolean leftAssociative() {
+        return true;
     }
 
-    protected abstract Object evalNumeric(BigDecimal n1, BigDecimal n2);
+    @Override
+    public Object eval(Context ctx, Stack<Object> stack) throws Exception {
+        Object second = stack.pop();
+        Object first = stack.pop();
+        if (first == null) {
+            throw new IllegalArgumentException("First argument is NULL");
+        }
+        if (second == null) {
+            throw new IllegalArgumentException("Second argument is NULL");
+        }
+        if (first instanceof List<?>) {
+            List<?> list = (List<?>) first;
+            int i = getNumericValue(second).intValue();
+            int n = list.size();
+            if (i < 0 || (n == 0 && i == 0) || i > n) {
+                throw new IllegalArgumentException("Index out of bounds: " + i);
+            }
+            return list.get(i);
+            
+        } else if (first.getClass().isArray()) {
+            Object[] array = (Object[]) first;
+            int i = getNumericValue(second).intValue();
+            int n = array.length;
+            if (i < 0 || (n == 0 && i == 0) || i > n) {
+                throw new IllegalArgumentException("Index out of bounds: " + i);
+            }
+            return array[i];
+            
+        } else if (first instanceof Map<?, ?>) {
+            Map<?,?> map = (Map<?,?>) first;
+            return map.get(second);
+        }
+        throw new IllegalArgumentException("Unable to access field '" 
+                + first + "' of object '" + first + "'");
+    }
 }

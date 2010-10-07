@@ -99,10 +99,6 @@ public class ParserTest extends TestCase {
         result = parseAndRender("[def x \"[ab\\\"c\\\"]\"][val x unescaped]", ctx);
         assertEquals("[ab\"c\"]", result);
         
-        //XXX: make split() test
-        //result = parseAndRender("[def test split('farmasoytisk.bibliotek@ub.uio.no', '@', '25', '2')]", ctx);
-        //assertEquals("farmasoytisk.bibliotek@ ub.uio.no", result);
-        
         String template = 
             "[def foo \"bar]\"]"
             + "\n"
@@ -147,6 +143,33 @@ public class ParserTest extends TestCase {
         assertEquals("<!--[if IE]>conditional comment<![endif]-->", writer.toString());
     }
     
+    public void testDirectiveArgs() {
+        List<Argument> args = parseDirective("[test arg1 \"arg2\" 100]");
+        assertEquals(args.size(), 3);
+        assertEquals(new Symbol("arg1"), args.get(0));
+        assertEquals(new Literal("\"arg2\""), args.get(1));
+        assertEquals(new Literal("100"), args.get(2));
+
+        args = parseDirective("[test concat('foo', 'bar')]");
+        assertEquals(6, args.size());
+        assertEquals(new Symbol("concat"), args.get(0));
+        assertEquals(new Symbol("("), args.get(1));
+        assertEquals(new Literal("\"foo\""), args.get(2));
+        assertEquals(new Symbol(","), args.get(3));
+        assertEquals(new Literal("'bar'"), args.get(4));
+        assertEquals(new Symbol(")"), args.get(5));
+
+        args = parseDirective("[test {'foo', 'bar'}.1]");
+        assertEquals(7, args.size());
+        assertEquals(new Symbol("{"), args.get(0));
+        assertEquals(new Literal("'foo'"), args.get(1));
+        assertEquals(new Symbol(","), args.get(2));
+        assertEquals(new Literal("'bar'"), args.get(3));
+        assertEquals(new Symbol("}"), args.get(4));
+        assertEquals(new Symbol("."), args.get(5));
+        assertEquals(new Literal("1"), args.get(6));
+    }
+    
     public void testIf() throws Exception {
         Context ctx = new Context(Locale.getDefault());
         String result = parseAndRender("[if true]yes[else]no[endif]", ctx);
@@ -174,23 +197,14 @@ public class ParserTest extends TestCase {
         ctx.define("var2", true, true);
         result = parseAndRender("[if var1]var1[elseif var2][if var1]var1[elseif var2]var2[endif][else]none[endif]", ctx);
         assertEquals("var2", result);
+        
+        Map<Object, Object> map = new HashMap<Object, Object>();
+        map.put("a", 22);
+        ctx.define("map", map, true);
+        result = parseAndRender("[if map.a = 22]yes[else]no[endif]", ctx);
+        assertEquals("yes", result);
     }
-    public void testDirectiveArgs() {
-        List<Argument> args = parseDirective("[test arg1 \"arg2\" 100]");
-        assertEquals(args.size(), 3);
-        assertEquals(new Symbol("arg1"), args.get(0));
-        assertEquals(new Literal("\"arg2\""), args.get(1));
-        assertEquals(new Literal("100"), args.get(2));
-
-        args = parseDirective("[test concat('foo', 'bar')]");
-        assertEquals(6, args.size());
-        assertEquals(new Symbol("concat"), args.get(0));
-        assertEquals(new Symbol("("), args.get(1));
-        assertEquals(new Literal("\"foo\""), args.get(2));
-        assertEquals(new Symbol(","), args.get(3));
-        assertEquals(new Literal("'bar'"), args.get(4));
-        assertEquals(new Symbol(")"), args.get(5));
-    }
+    
     
     private String parseAndRender(String template, Context ctx) throws Exception {
         NodeList result = parse(template);

@@ -193,16 +193,17 @@ public class Parser {
      * (i.e. treated as separate symbols and thus 
      * not allowed to be part of other symbols)
      */
-    public static final Set<Character> DIRECTIVE_SPECIAL_CHARS; 
+    public static final Set<Character> TOKENIZED_CHARS; 
     
     static {
-        DIRECTIVE_SPECIAL_CHARS = new HashSet<Character>();
-        DIRECTIVE_SPECIAL_CHARS.add('(');
-        DIRECTIVE_SPECIAL_CHARS.add(')');
-        DIRECTIVE_SPECIAL_CHARS.add('{');
-        DIRECTIVE_SPECIAL_CHARS.add('}');
-        DIRECTIVE_SPECIAL_CHARS.add(':');
-        DIRECTIVE_SPECIAL_CHARS.add(',');
+        TOKENIZED_CHARS = new HashSet<Character>();
+        TOKENIZED_CHARS.add('(');
+        TOKENIZED_CHARS.add(')');
+        TOKENIZED_CHARS.add('{');
+        TOKENIZED_CHARS.add('}');
+        TOKENIZED_CHARS.add(':');
+        TOKENIZED_CHARS.add(',');
+        TOKENIZED_CHARS.add('.');
     }
     
     
@@ -243,7 +244,7 @@ public class Parser {
                         curToken.delete(0, curToken.length());
                     }
                 }
-            } else if (DIRECTIVE_SPECIAL_CHARS.contains(c)) {
+            } else if (TOKENIZED_CHARS.contains(c)) {
                 if (dquote || squote) {
                     curToken.append(c);
                 } else {
@@ -326,7 +327,7 @@ public class Parser {
                         cur.delete(0, cur.length());
                     }
                 }
-            } else if (DIRECTIVE_SPECIAL_CHARS.contains(c)) {
+            } else if (TOKENIZED_CHARS.contains(c)) {
                 if (dquote || squote) {
                     cur.append(c);
                 } else {

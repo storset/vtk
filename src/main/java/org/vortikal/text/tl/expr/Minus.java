@@ -41,6 +41,11 @@ public class Minus extends NumericOperator {
     }
 
     @Override
+    public boolean leftAssociative() {
+        return true;
+    }
+
+    @Override
     protected Object evalNumeric(BigDecimal n1, BigDecimal n2) {
         return n1.subtract(n2);
     }

@@ -31,6 +31,7 @@
 package org.vortikal.text.tl.expr;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -158,6 +159,24 @@ public class ExpressionTest extends TestCase {
                 new Literal("2")
         });
         assertEquals(1, result);
+
+        result = eval(new Argument[] {
+                new Literal("200"),
+                new Symbol("/"),
+                new Literal("4"),
+                new Symbol("/"),
+                new Literal("10")
+        });
+        assertEquals(5, result);
+
+        result = eval(new Argument[] {
+                new Literal("200"),
+                new Symbol("/"),
+                new Literal("10"),
+                new Symbol("/"),
+                new Literal("4")
+        });
+        assertEquals(5, result);
 
         result = eval(new Argument[] {
                 new Literal("2.2"),
@@ -530,6 +549,58 @@ public class ExpressionTest extends TestCase {
         assertTrue(result instanceof Map<?,?>);
         Map<?,?> map = (Map<?,?>) result;
         assertEquals("bd", map.get("a"));
+    }
+    
+    public void testAccessors() {
+        
+        Object result;
+
+        result = eval(new Argument[] {
+                new Symbol("{"),
+                new Literal("'a'"),
+                new Symbol(":"),
+                new Literal("'b'"),
+                new Symbol("}"),
+                new Symbol("."),
+                new Literal("'a'")
+        });
+        assertEquals("b", result);
+        
+        result = eval(new Argument[] {
+                new Symbol("{"),
+                new Literal("'a'"),
+                new Symbol(":"),
+                new Symbol("{"),
+                new Literal("'b'"),
+                new Symbol(","),
+                new Literal("'c'"),
+                new Symbol("}"),
+                new Symbol("}"),
+                new Symbol("."),
+                new Literal("'a'"),
+                new Symbol("."),
+                new Literal("1")
+        });
+        assertEquals("c", result);
+        
+        Context ctx = new Context(Locale.getDefault());
+        Map<Object, Object> m1 = new HashMap<Object, Object>();
+        Map<Object, Object> m2 = new HashMap<Object, Object>();
+        m1.put("b", m2);
+        m2.put("c", new Object[]{"d", 2});
+        ctx.define("a", m1, true);
+        result = eval(ctx, new Argument[] {
+                new Symbol("a"),
+                new Symbol("."),
+                new Literal("'b'"),
+                new Symbol("."),
+                new Literal("'c'"),
+                new Symbol("."),
+                new Literal("1"),
+                new Symbol("+"),
+                new Literal("20")
+        });
+        assertEquals(22, result);
     }
 
     public void testTooManyArguments() throws Exception {

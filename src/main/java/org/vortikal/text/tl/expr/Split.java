@@ -83,7 +83,7 @@ public class Split extends Function {
         int lengthThreshold = -1;
         
         try {
-          lengthThreshold = Integer.parseInt((String) o3);
+          lengthThreshold = ((Integer)o3).intValue();
         } catch(NumberFormatException nfex) {
           throw new IllegalArgumentException("Split: third argument must be an integer");
         }
@@ -91,7 +91,7 @@ public class Split extends Function {
         int splitLimit = 0; //split all
         
         try {
-          splitLimit = Integer.parseInt((String) o4);
+          splitLimit = ((Integer)o4).intValue();
         } catch(NumberFormatException nfex) {
           throw new IllegalArgumentException("Split: fourth argument must be an integer");
         }

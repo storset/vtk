@@ -562,7 +562,7 @@ public class ExpressionTest extends TestCase {
                 new Literal("'b'"),
                 new Symbol("}"),
                 new Symbol("."),
-                new Literal("'a'")
+                new Symbol("a")
         });
         assertEquals("b", result);
         
@@ -577,7 +577,7 @@ public class ExpressionTest extends TestCase {
                 new Symbol("}"),
                 new Symbol("}"),
                 new Symbol("."),
-                new Literal("'a'"),
+                new Symbol("a"),
                 new Symbol("."),
                 new Literal("1")
         });
@@ -592,9 +592,9 @@ public class ExpressionTest extends TestCase {
         result = eval(ctx, new Argument[] {
                 new Symbol("a"),
                 new Symbol("."),
-                new Literal("'b'"),
+                new Symbol("b"),
                 new Symbol("."),
-                new Literal("'c'"),
+                new Symbol("c"),
                 new Symbol("."),
                 new Literal("1"),
                 new Symbol("+"),

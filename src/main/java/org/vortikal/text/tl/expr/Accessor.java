@@ -32,7 +32,6 @@ package org.vortikal.text.tl.expr;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Symbol;
@@ -49,38 +48,42 @@ public class Accessor extends Operator {
     }
 
     @Override
-    public Object eval(Context ctx, Stack<Object> stack) throws Exception {
-        Object second = stack.pop();
-        Object first = stack.pop();
-        if (first == null) {
+    public Object eval(Context ctx, EvalStack stack) throws Exception {
+        Object accessor = stack.pop(false);
+        Object collection = stack.pop();
+        if (collection == null) {
             throw new IllegalArgumentException("First argument is NULL");
         }
-        if (second == null) {
+        if (accessor == null) {
             throw new IllegalArgumentException("Second argument is NULL");
         }
-        if (first instanceof List<?>) {
-            List<?> list = (List<?>) first;
-            int i = getNumericValue(second).intValue();
+        if (collection instanceof List<?>) {
+            List<?> list = (List<?>) collection;
+            int i = getNumericValue(accessor).intValue();
             int n = list.size();
             if (i < 0 || (n == 0 && i == 0) || i > n) {
                 throw new IllegalArgumentException("Index out of bounds: " + i);
             }
             return list.get(i);
             
-        } else if (first.getClass().isArray()) {
-            Object[] array = (Object[]) first;
-            int i = getNumericValue(second).intValue();
+        } else if (collection.getClass().isArray()) {
+            Object[] array = (Object[]) collection;
+            int i = getNumericValue(accessor).intValue();
             int n = array.length;
             if (i < 0 || (n == 0 && i == 0) || i > n) {
                 throw new IllegalArgumentException("Index out of bounds: " + i);
             }
             return array[i];
             
-        } else if (first instanceof Map<?, ?>) {
-            Map<?,?> map = (Map<?,?>) first;
-            return map.get(second);
+        } else if (collection instanceof Map<?, ?>) {
+            Map<?,?> map = (Map<?,?>) collection;
+            if (!(accessor instanceof Symbol)) {
+                throw new IllegalArgumentException("Accessor '" + accessor + "' is not a symbol");
+            }
+            accessor = ((Symbol) accessor).getSymbol();
+            return map.get(accessor);
         }
         throw new IllegalArgumentException("Unable to access field '" 
-                + first + "' of object '" + first + "'");
+                + collection + "' of object '" + collection + "'");
     }
 }

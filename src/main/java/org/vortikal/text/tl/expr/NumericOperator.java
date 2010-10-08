@@ -31,7 +31,6 @@
 package org.vortikal.text.tl.expr;
 
 import java.math.BigDecimal;
-import java.util.Stack;
 
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Symbol;
@@ -42,7 +41,8 @@ public abstract class NumericOperator extends Operator {
         super(symbol, notation, precedence);
     }
 
-    public final Object eval(Context ctx, Stack<Object> stack) {
+    @Override
+    public final Object eval(Context ctx, EvalStack stack) {
         Object second = stack.pop();
         Object first = stack.pop();
         // Wrap values in BigDecimal to simplify calculations:

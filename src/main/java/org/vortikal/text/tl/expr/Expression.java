@@ -310,7 +310,7 @@ public class Expression {
      * Evaluates the expression. Returns a single object value as the result.
      */
     public Object evaluate(Context ctx) {
-        Stack<Object> stack = new Stack<Object>();
+        EvalStack stack = new EvalStack(ctx);
         try {
             for (Argument arg : this.postfix) {
                 if (arg instanceof Literal) {
@@ -327,7 +327,7 @@ public class Expression {
                         Operator op = operators.get(s);
                         if (op == null) {
                             // Variable:
-                            stack.push(s.getValue(ctx));
+                            stack.push(s);
                         } else {
                             // Function/operator:
                             Object val = op.eval(ctx, stack);
@@ -342,7 +342,7 @@ public class Expression {
         if (stack.size() != 1) {
             throw new RuntimeException("Unable to evaluate expression " + this);
         }
-        return stack.peek();
+        return stack.pop();
     }
 
     public String toString() {
@@ -374,7 +374,7 @@ public class Expression {
     }
 
     
-    private Object defineCollection(Stack<Object> stack) {
+    private Object defineCollection(EvalStack stack) {
         if (stack.isEmpty()) {
             throw new RuntimeException("Empty evaluation stack");
         }
@@ -417,7 +417,8 @@ public class Expression {
             super(symbol, notation, precedence);
         }
 
-        public Object eval(Context ctx, Stack<Object> stack) {
+        @Override
+        public Object eval(Context ctx, EvalStack stack) {
             Object value = stack.pop();
             Object key = stack.pop();
             MapEntry entry = new MapEntry();

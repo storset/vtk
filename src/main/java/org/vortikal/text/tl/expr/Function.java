@@ -30,8 +30,6 @@
  */
 package org.vortikal.text.tl.expr;
 
-import java.util.Stack;
-
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Symbol;
 
@@ -48,7 +46,8 @@ public abstract class Function extends Operator {
         return this.argumentCount;
     }
     
-    public final Object eval(Context ctx, Stack<Object> stack) throws Exception {
+    @Override
+    public final Object eval(Context ctx, EvalStack stack) throws Exception {
         Object[] args = new Object[this.argumentCount];
 
         for (int i = this.argumentCount - 1; i >= 0; i--) {

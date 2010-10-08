@@ -30,8 +30,6 @@
  */
 package org.vortikal.text.tl.expr;
 
-import java.util.Stack;
-
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Symbol;
 
@@ -41,7 +39,8 @@ public class Not extends Operator {
         super(symbol, notation, precedence);
     }
 
-    public Object eval(Context ctx, Stack<Object> stack) {
+    @Override
+    public Object eval(Context ctx, EvalStack stack) {
         Object o = stack.pop();
         if (o == null) {
             return true;

@@ -30,8 +30,6 @@
  */
 package org.vortikal.text.tl.expr;
 
-import java.util.Stack;
-
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Symbol;
 
@@ -40,9 +38,10 @@ public class Gt extends Operator {
     public Gt(Symbol symbol, Notation notation, Precedence precedence) {
         super(symbol, notation, precedence);
     }
-    
+
+    @Override
     @SuppressWarnings("unchecked")
-    public Object eval(Context ctx, Stack<Object> stack) {
+    public Object eval(Context ctx, EvalStack stack) {
         Object o2 = stack.pop();
         Object o1 = stack.pop();
         if (o1 == null) {

@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2010, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,34 +30,66 @@
  */
 package org.vortikal.text.tl.expr;
 
+import java.util.Stack;
+
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Symbol;
 
-public class Lt extends Operator {
-
-    public Lt(Symbol symbol, Notation notation, Precedence precedence) {
-        super(symbol, notation, precedence);
+/**
+ * Evaluation stack for expressions.
+ */
+public class EvalStack {
+    private Stack<Object> stack = new Stack<Object>();
+    private Context ctx;
+    
+    public EvalStack(Context ctx) {
+        this.ctx = ctx;
     }
     
-    @Override
-    @SuppressWarnings("unchecked")
-    public Object eval(Context ctx, EvalStack stack) {
-        Object o2 = stack.pop();
-        Object o1 = stack.pop();
-        if (o1 == null) {
-            throw new IllegalArgumentException("Compare:" + getSymbol() + " first argument is NULL");
+    /**
+     * Gets the size of the stack.
+     * @return the size of the stack
+     */
+    public int size() {
+        return this.stack.size();
+    }
+    
+    /**
+     * Tests if the stack is empty.
+     * @return a boolean indicating whether 
+     * or not the stack is empty
+     */
+    public boolean isEmpty() {
+        return this.stack.isEmpty();
+    }
+    
+    /**
+     * Pushes an object onto the stack
+     * @param o the object to push
+     */
+    public void push(Object o) {
+        this.stack.push(o);
+    }
+
+    /**
+     * Pops the stack
+     * @return the popped object
+     */
+    public Object pop() {
+        return pop(true);
+    }
+
+    /**
+     * Pops the stack and optionally evaluates the 
+     * returned object in the context (only if the object is a symbol).
+     * @param evaluate whether to evaluate the returned object
+     * @return the popped object
+     */
+    public Object pop(boolean evaluate) {
+        Object o = this.stack.pop();
+        if (evaluate && o instanceof Symbol) {
+            return ((Symbol) o).getValue(this.ctx);
         }
-        if (o2 == null) {
-            throw new IllegalArgumentException("Compare:" + getSymbol() + " second argument is NULL");
-        }
-        if (o1.getClass() != o2.getClass()) {
-            throw new IllegalArgumentException("Compare: " + o1 + " " + getSymbol() + o2 + ": not comparable");
-        }
-        if (!(o1 instanceof Comparable<?>)) {
-            throw new IllegalArgumentException("Compare: " + o1 + " " + getSymbol() + o2 + ": not comparable");
-        }
-        Comparable<Object> c1 = (Comparable<Object>) o1;
-        Comparable<Object> c2 = (Comparable<Object>) o2;
-        return Boolean.valueOf(c1.compareTo(c2) < 0);
+        return o;
     }
 }

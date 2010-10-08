@@ -30,8 +30,6 @@
  */
 package org.vortikal.text.tl.expr;
 
-import java.util.Stack;
-
 import org.apache.commons.lang.math.NumberUtils;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Symbol;
@@ -98,7 +96,7 @@ public abstract class Operator {
         return this.symbol.getSymbol();
     }
     
-    public abstract Object eval(Context ctx, Stack<Object> stack) throws Exception;
+    public abstract Object eval(Context ctx, EvalStack stack) throws Exception;
     
     protected final Number getNumericValue(Object obj) {
         if (obj == null) {

@@ -326,7 +326,7 @@ public class Expression {
                     } else {
                         Operator op = operators.get(s);
                         if (op == null) {
-                            // Variable:
+                            // Symbol/variable:
                             stack.push(s);
                         } else {
                             // Function/operator:
@@ -338,6 +338,19 @@ public class Expression {
             }
         } catch (Throwable t) {
             throw new RuntimeException("Unable to evaluate expression '" + this + "': " + t.getMessage(), t);
+        }
+        if (stack.size() > 0) {
+            // If there are undefined symbols at this point, it is because
+            // there are undefined functions in the expression.
+            // (This error should really be caught at an earlier stage.) 
+            for (Object o: stack) {
+                if (o instanceof Symbol) {
+                    Symbol s = (Symbol) o;
+                    if (!s.isDefined(ctx)) {
+                        throw new RuntimeException("Undefined symbol: " + s.getSymbol());
+                    }
+                }
+            }
         }
         if (stack.size() != 1) {
             throw new RuntimeException("Unable to evaluate expression " + this);

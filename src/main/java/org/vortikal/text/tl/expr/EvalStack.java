@@ -30,6 +30,7 @@
  */
 package org.vortikal.text.tl.expr;
 
+import java.util.Iterator;
 import java.util.Stack;
 
 import org.vortikal.text.tl.Context;
@@ -38,7 +39,7 @@ import org.vortikal.text.tl.Symbol;
 /**
  * Evaluation stack for expressions.
  */
-public class EvalStack {
+public class EvalStack implements Iterable<Object> {
     private Stack<Object> stack = new Stack<Object>();
     private Context ctx;
     
@@ -92,4 +93,14 @@ public class EvalStack {
         }
         return o;
     }
+    
+    @Override
+    public Iterator<Object> iterator() {
+        return this.stack.iterator();
+    }
+
+    public String toString() {
+        return this.stack.toString();
+    }
+
 }

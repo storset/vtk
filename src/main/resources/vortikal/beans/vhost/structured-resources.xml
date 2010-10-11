@@ -128,6 +128,7 @@
   <bean id="structuredResources.ifDirective" class="org.vortikal.text.tl.IfNodeFactory" />
 
   <bean id="structuredResources.valDirective" class="org.vortikal.text.tl.ValNodeFactory">
+    <property name="functions" ref="structuredResources.defaultFunctions" />
     <constructor-arg>
       <map>
         <entry>

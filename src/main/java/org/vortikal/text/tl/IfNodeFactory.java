@@ -38,12 +38,23 @@ import java.util.List;
 import java.util.Set;
 
 import org.vortikal.text.tl.expr.Expression;
+import org.vortikal.text.tl.expr.Function;
 
 public class IfNodeFactory implements DirectiveNodeFactory {
 
     private static final Set<String> TERMS = 
         new HashSet<String>(Arrays.asList("elseif", "else", "endif"));
 
+    private Set<Function> functions = new HashSet<Function>();
+    
+    public void setFunctions(Set<Function> functions) {
+        if (functions != null) {
+            for (Function function: functions) {
+                this.functions.add(function);
+            }
+        }
+    }
+    
     public Node create(DirectiveParseContext ctx) throws Exception {
         LinkedHashMap<Expression, NodeList> expressions = new LinkedHashMap<Expression, NodeList>();
 
@@ -63,7 +74,7 @@ public class IfNodeFactory implements DirectiveNodeFactory {
             if (curArgs.isEmpty()) {
                 curArgs.add(new Literal("true"));
             }
-            Expression expression = new Expression(curArgs);
+            Expression expression = new Expression(this.functions, curArgs);
             expressions.put(expression, parsed.getNodeList());
 
             if ("endif".equals(terminator)) {

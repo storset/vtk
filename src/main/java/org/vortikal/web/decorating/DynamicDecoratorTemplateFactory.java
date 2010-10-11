@@ -98,13 +98,16 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
     @Override
     public void afterPropertiesSet() throws Exception {
         Map<String, DirectiveNodeFactory> directiveHandlers = new HashMap<String, DirectiveNodeFactory>();
-        directiveHandlers.put("if", new IfNodeFactory());
+        IfNodeFactory ifNodeFactory = new IfNodeFactory();
+        ifNodeFactory.setFunctions(this.functions);
+        directiveHandlers.put("if", ifNodeFactory);
         directiveHandlers.put("strip", new StripNodeFactory());
 
         ValNodeFactory val = new ValNodeFactory();
         //val.addValueFormatHandler(PropertyImpl.class, new PropertyValueFormatHandler(this.valueFormatterRegistry));
         //val.addValueFormatHandler(Value.class, new PropertyValueFormatHandler(this.valueFormatterRegistry));
         //val.addValueFormatHandler(Value[].class, new PropertyValueFormatHandler(this.valueFormatterRegistry));
+        val.setFunctions(this.functions);
         directiveHandlers.put("val", val);
 
         ListNodeFactory list = new ListNodeFactory();

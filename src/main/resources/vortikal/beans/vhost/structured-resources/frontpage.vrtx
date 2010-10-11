@@ -19,21 +19,20 @@ resourcetype frontpage {
 
   view-components {
   
-    main-content {
+    main-content(document) {
       ##
       [resource-props "."]
-      [def document structured-document()]
-      [def boxes json-attr(document, "properties.main-content")]
+      [def boxes document.properties.main-content]
       [if boxes != null]
         [list boxes box]
-          [def type json-attr(box, "boxType")]
-          [def sizePlacement json-attr(box, "boxCssSizeAndPlacement")]
-          [def color json-attr(box, "boxCssColor")]
-          [def title json-attr(box, "boxTitle")]
-          [def picture json-attr(box, "boxPicture")]
-          [def content json-attr(box, "boxContent")]
-          [def url json-attr(box, "boxUrl")]
-          [def urlText json-attr(box, "boxUrlText")]
+          [def type box.boxType]
+          [def sizePlacement box.boxCssSizeAndPlacement]
+          [def color box.boxCssColor]
+          [def title box.boxTitle]
+          [def picture box.boxPicture]
+          [def content box.boxContent]
+          [def url box.boxUrl]
+          [def urlText box.boxUrlText]
           [def number _index + 1]
           
           [def cssClasses ""]
@@ -98,7 +97,7 @@ resourcetype frontpage {
             [endif]
             <div class="vrtx-box-content">
               [if content != null && content != ""]
-                [val content unescaped]
+                [val content # unescaped]
               [endif]
             </div>
             [if urlText != null && urlText != ""]
@@ -116,20 +115,19 @@ resourcetype frontpage {
       ##
     }
     
-    additional-content {
+    additional-content(document) {
       ##
       [resource-props "."]
-      [def document structured-document()]
-      [def boxes json-attr(document, "properties.additional-content")]
+      [def boxes document.properties.additional-content]
       [if boxes != null]
         <div id="vrtx-additional-content">
           [list boxes box]
-            [def type json-attr(box, "boxType")]
-            [def title json-attr(box, "boxTitle")]
-            [def picture json-attr(box, "boxPicture")]
-            [def content json-attr(box, "boxContent")]
-            [def url json-attr(box, "boxUrl")]
-            [def urlText json-attr(box, "boxUrlText")]
+            [def type box.boxType]
+            [def title box.boxTitle]
+            [def picture box.boxPicture]
+            [def content box.boxContent]
+            [def url box.boxUrl]
+            [def urlText box.boxUrlText]
             [def number _index + 1]
              
             [def cssClasses ""]
@@ -177,7 +175,7 @@ resourcetype frontpage {
               [endif]
               [if content != null && content != ""]
                 <div class="vrtx-box-content">
-                  [val content unescaped]
+                  [val content # unescaped]
                 </div>
               [endif]
               [if urlText != null && urlText != ""]
@@ -237,9 +235,9 @@ resourcetype frontpage {
         
               [if caption != null]
                 <div class="vrtx-introduction-image" style="[val style]">
-                  <img src="[val img-uri]" alt="[val caption unescaped 'flattened']"/>
+                  <img src="[val img-uri]" alt="[val caption # unescaped 'flattened']"/>
                   <div class="vrtx-imagetext">
-                    <div class="vrtx-imagedescription">[val caption unescaped]</div>
+                    <div class="vrtx-imagedescription">[val caption # unescaped]</div>
                     [if img-author != null]
                       <span class="vrtx-photo">
                         <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val img-author]
@@ -270,7 +268,7 @@ resourcetype frontpage {
         [endif]
       
         [if intro != null]
-          <div class="vrtx-introduction">[val intro unescaped]</div>
+          <div class="vrtx-introduction">[val intro # unescaped]</div>
         [endif]
 
       </div>
@@ -291,7 +289,7 @@ resourcetype frontpage {
       <body id="vrtx-frontpage">
         [resources-props "."]
         [def document structured-document()]
-        [def boxes json-attr(document, "properties.additional-content")]
+        [def boxes document.properties.additional-content]
         [if boxes != null]
           <div id="vrtx-content">
         [else]
@@ -300,9 +298,9 @@ resourcetype frontpage {
           <h1>[call "comp:title"]</h1>
           <div id="vrtx-main-content">
             [call "comp:frontpage-introduction"]
-            [call "comp:main-content"]
+            [call "comp:main-content" {"document":document}]
           </div>
-          [call "comp:additional-content"]
+          [call "comp:additional-content" {"document":document}]
         </div>
       </body>
     </html>

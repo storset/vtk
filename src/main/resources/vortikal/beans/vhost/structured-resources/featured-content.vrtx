@@ -53,7 +53,7 @@ resourcetype featured-content {
                    <div class="vrtx-date">[val dateVal]</div>
                  [endif]
                  [if content != null && content != ""]
-                   <div class="vrtx-box-sub-content">[val content unescaped]</div>
+                   <div class="vrtx-box-sub-content">[val content # unescaped]</div>
                  [endif]
                </div>
                [if urlText != null && urlText != ""]

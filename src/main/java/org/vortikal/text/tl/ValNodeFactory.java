@@ -31,43 +31,72 @@
 package org.vortikal.text.tl;
 
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import org.vortikal.text.tl.expr.Expression;
+import org.vortikal.text.tl.expr.Function;
 
 public class ValNodeFactory implements DirectiveNodeFactory {
 
     private Map<Class<?>, ValueFormatHandler> valueFormatHandlers = 
         new HashMap<Class<?>, ValueFormatHandler>();
+    private Set<Function> functions = new HashSet<Function>();
     
+    private static final Symbol FLAG_SEPARATOR = new Symbol("#");
     private static final Symbol UNESCAPED = new Symbol("unescaped");
     
     public ValNodeFactory() {
-        
     }
     
     public ValNodeFactory(Map<Class<?>, ValueFormatHandler> valueFormatHandlers) {
         this.valueFormatHandlers = valueFormatHandlers;
     }
     
-    public Node create(DirectiveParseContext ctx) throws Exception {
+    public void setFunctions(Set<Function> functions) {
+        if (functions != null) {
+            for (Function function: functions) {
+                this.functions.add(function);
+            }
+        }
+    }
     
-        // [val obj ["unescaped"]? [format]?]
+    public Node create(DirectiveParseContext ctx) throws Exception {
+
+        // [val <expression> (# flags)? ]
         List<Argument> args = ctx.getArguments();
         if (args.size() < 1) {
             throw new RuntimeException("Wrong number of arguments: " + ctx.getNodeText());
         }
-        Argument variable = args.remove(0);
+        List<Argument> expression = new ArrayList<Argument>();
+        List<Argument> flags = new ArrayList<Argument>();
+        List<Argument> cur = expression;
+        for (Argument arg: args) {
+            if (FLAG_SEPARATOR.equals(arg)) {
+                cur = flags;
+                continue;
+            }
+            cur.add(arg);
+        }
+        
+        if (expression.isEmpty()) {
+            throw new RuntimeException("Empty expression :" + ctx.getNodeText());
+        }
+        
         boolean escape = true;
-        if (!args.isEmpty() && args.get(0).equals(UNESCAPED)) {
+        if (!flags.isEmpty() && flags.get(0).equals(UNESCAPED)) {
            escape = false;
-           args.remove(0);
+           flags.remove(0);
         }
         Argument format = null;
-        if (!args.isEmpty()) {
-           format = args.remove(0);
+        if (!flags.isEmpty()) {
+           format = flags.remove(0);
         }
-        return new ValNode(variable, escape, format);
+        return new ValNode(expression, escape, format);
     }
 
     public void addValueFormatHandler(Class<?> clazz, ValueFormatHandler handler) {
@@ -79,18 +108,18 @@ public class ValNodeFactory implements DirectiveNodeFactory {
     }
 
     private class ValNode extends Node {
-        private Argument variable;
+        private Expression expression;
         boolean escape;
         private Argument format;
 
-        public ValNode(Argument variable, boolean escape, Argument format) {
-            this.variable = variable;
+        public ValNode(List<Argument> expression, boolean escape, Argument format) {
+            this.expression = new Expression(functions, expression);
             this.escape = escape;
             this.format = format;
         }
 
         public void render(Context ctx, Writer out) throws Exception {
-            Object val = this.variable.getValue(ctx);
+            Object val = this.expression.evaluate(ctx);
             String format = null;
             if (this.format != null) {
                 Object o = this.format.getValue(ctx);
@@ -115,7 +144,7 @@ public class ValNodeFactory implements DirectiveNodeFactory {
         }
 
         public String toString() {
-            return "[val-node: " + this.variable + "]";
+            return "[val-node: " + this.expression + "]";
         }
     }
 }

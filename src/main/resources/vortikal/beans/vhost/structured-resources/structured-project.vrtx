@@ -32,7 +32,7 @@ resourcetype structured-project {
       ##
       [def intro resource-prop(".", "introduction")]
       [if intro != null]
-        <div class="vrtx-introduction">[val intro unescaped]</div>
+        <div class="vrtx-introduction">[val intro # unescaped]</div>
       [endif]
       ##
     }
@@ -67,9 +67,9 @@ resourcetype structured-project {
         
             [if caption != null]
               <div class="vrtx-introduction-image" style="[val style]">
-                <img src="[val img-uri]" alt="[val caption unescaped 'flattened']"/>
+                <img src="[val img-uri]" alt="[val caption # unescaped 'flattened']"/>
                 <div class="vrtx-imagetext">
-                  <div class="vrtx-imagedescription">[val caption unescaped]</div>
+                  <div class="vrtx-imagedescription">[val caption # unescaped]</div>
                   [if img-author != null]
                     <span class="vrtx-photo">
                       <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val img-author]
@@ -109,7 +109,7 @@ resourcetype structured-project {
        [if contactinfo != null]
          <div class="vrtx-project-contactinfo">
            <h2>[localized "contactInfoView"]</h2>
-            [val contactinfo unescaped]
+            [val contactinfo # unescaped]
          </div>
        [endif]
       ##

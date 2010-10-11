@@ -59,7 +59,7 @@ resourcetype boxes {
            [def content json-attr(box, "content")]
            <div style="border:1px solid black;margin:20px;">
              [if title != null]<b>[val title]</b>[endif]
-             [if content != null][val content unescaped][endif]
+             [if content != null][val content # unescaped][endif]
            </div>
         [endlist]
       [endif]

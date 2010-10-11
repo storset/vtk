@@ -134,7 +134,7 @@ resourcetype organizational-unit {
       ##
       [def intro resource-prop(".", "introduction")]
       [if intro != null && intro != ""]
-        <div class="vrtx-organizational-unit-introduction">[val intro unescaped]</div>
+        <div class="vrtx-organizational-unit-introduction">[val intro # unescaped]</div>
       [endif]
       ##
     }
@@ -144,7 +144,7 @@ resourcetype organizational-unit {
       [def resp resource-prop(".", "responsibilities")]
       [if resp != null && resp != ""]
         <div class="vrtx-organizational-unit-responsibilities">
-          [val resp unescaped]
+          [val resp # unescaped]
         </div>
       [endif]
       ##
@@ -181,7 +181,7 @@ resourcetype organizational-unit {
       [def related json-attr(document, "properties.related-content")]
       [if related != null && related != ""]
         <div id="vrtx-related-content">
-          [val related unescaped]
+          [val related # unescaped]
         </div>
       [endif]
       ##
@@ -194,7 +194,7 @@ resourcetype organizational-unit {
       [def theContent json-attr(document, "properties.content")]
       [if theContent != null && theContent != ""]
         <div class="vrtx-frontpage-box white-box">
-          [val theContent unescaped]
+          [val theContent # unescaped]
         </div>
       [endif]
       ##

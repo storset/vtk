@@ -223,7 +223,7 @@ resourcetype person {
             </div>
           [else]
             [if (publications != null && publications != "")]
-              [val publications unescaped]
+              [val publications # unescaped]
             [else]
               <div id="vrtx-publication-tabs" class="vrtx-person-publications">
                [call "resource:publications"]

@@ -147,7 +147,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         return null;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public PageContent renderInitialPage(StructuredResource res, Map model, HttpServletRequest request)
     throws Exception {
 

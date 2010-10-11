@@ -459,3 +459,11 @@
   </#if>
   <#return value />
 </#function>
+
+<#function distributionPerColumn items column maxcolumns>
+    <#assign num = (items / maxcolumns)?floor />
+    <#if ((items % maxcolumns) >= column)>
+      <#assign num = num + 1 />
+    </#if>
+    <#return num />
+</#function>

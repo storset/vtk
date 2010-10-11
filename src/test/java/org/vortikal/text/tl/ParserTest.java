@@ -36,11 +36,16 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import junit.framework.TestCase;
+
+import org.vortikal.text.tl.expr.Concat;
+import org.vortikal.text.tl.expr.Function;
 
 public class ParserTest extends TestCase {
 
@@ -49,16 +54,29 @@ public class ParserTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        Set<Function> functions = new HashSet<Function>();
+        functions.add(new Concat(new Symbol("concat")));
+        
         Map<String, DirectiveNodeFactory> directiveHandlers = new HashMap<String, DirectiveNodeFactory>();
-        directiveHandlers.put("if", new IfNodeFactory());
-        ValNodeFactory val = new ValNodeFactory();
-        directiveHandlers.put("val", val);
-        directiveHandlers.put("list", new ListNodeFactory());
-        DefineNodeFactory def = new DefineNodeFactory();
-        directiveHandlers.put("def", def);
+        IfNodeFactory ifDirective = new IfNodeFactory();
+        ifDirective.setFunctions(functions);
+        directiveHandlers.put("if", ifDirective);
+        
+        ValNodeFactory valDirective = new ValNodeFactory();
+        valDirective.setFunctions(functions);
+        directiveHandlers.put("val", valDirective);
+        
+        ListNodeFactory listDirective = new ListNodeFactory();
+        listDirective.setFunctions(functions);
+        directiveHandlers.put("list", listDirective);
+        
+        DefineNodeFactory defDirective = new DefineNodeFactory();
+        defDirective.setFunctions(functions);
+        directiveHandlers.put("def", defDirective);
+        
         this.directiveHandlers = directiveHandlers;
     }
-    
+
     public void testBasicSyntax() throws Exception {
         
         Context ctx = new Context(Locale.getDefault());
@@ -96,7 +114,7 @@ public class ParserTest extends TestCase {
         result = parseAndRender("\r\n[def x-x \"22\"]\r\n[def x-y x-x]\r\n[val x-y]", ctx);
         assertEquals("\n\n\n22", result);
 
-        result = parseAndRender("[def x \"[ab\\\"c\\\"]\"][val x unescaped]", ctx);
+        result = parseAndRender("[def x \"[ab\\\"c\\\"]\"][val x # unescaped]", ctx);
         assertEquals("[ab\"c\"]", result);
         
         String template = 
@@ -205,6 +223,11 @@ public class ParserTest extends TestCase {
         assertEquals("yes", result);
     }
     
+    public void testValNode() throws Exception {
+        Context ctx = new Context(Locale.getDefault());
+        String result = parseAndRender("[val concat('a', 'b')]", ctx);
+        assertEquals("ab", result);
+    }
     
     private String parseAndRender(String template, Context ctx) throws Exception {
         NodeList result = parse(template);

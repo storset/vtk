@@ -184,6 +184,7 @@
       <set>
         <ref bean="templateLanguage.concatFunction" />
         <ref bean="templateLanguage.splitFunction" />
+        <ref bean="structuredResources.requestContextFunction" />
         <ref bean="structuredResources.resourceFunction" />
         <ref bean="structuredResources.resourcePropFunction" />
         <ref bean="structuredResources.resourcePropObjValFunction" />
@@ -194,6 +195,14 @@
         <ref bean="structuredResources.toDateFunction" />
       </set>
     </property>
+  </bean>
+
+  <bean id="structuredResources.requestContextFunction" class="org.vortikal.resourcemanagement.view.tl.RequestContextFunction">
+    <constructor-arg>
+      <bean class="org.vortikal.text.tl.Symbol">
+        <constructor-arg value="request-context" />
+      </bean>
+    </constructor-arg>
   </bean>
 
   <bean id="structuredResources.resourceFunction" class="org.vortikal.resourcemanagement.view.tl.RetrieveHandler">

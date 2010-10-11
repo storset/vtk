@@ -148,6 +148,7 @@
       <set>
         <ref bean="templateLanguage.concatFunction" />
         <ref bean="templateLanguage.splitFunction" />
+        <ref bean="structuredResources.requestContextFunction" />
       </set>
     </property>
   </bean>

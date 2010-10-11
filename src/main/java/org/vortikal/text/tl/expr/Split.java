@@ -80,7 +80,7 @@ public class Split extends Function {
         String word = sb.toString();
         String splitChar = (String) o2;
         
-        int lengthThreshold = -1;
+        int lengthThreshold = -1; // split any string length
         
         try {
           lengthThreshold = ((Integer)o3).intValue();
@@ -88,7 +88,7 @@ public class Split extends Function {
           throw new IllegalArgumentException("Split: third argument must be an integer");
         }
         
-        int splitLimit = 0; //split all
+        int splitLimit = 0; // split all occurrences of splitChar
         
         try {
           splitLimit = ((Integer)o4).intValue();

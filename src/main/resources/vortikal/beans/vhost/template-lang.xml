@@ -2,6 +2,14 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
+  <bean id="templateLanguage.toStringFunction" class="org.vortikal.text.tl.expr.ToString">
+    <constructor-arg>
+      <bean class="org.vortikal.text.tl.Symbol">
+        <constructor-arg  value="string" />
+      </bean>
+    </constructor-arg>
+  </bean>
+
   <bean id="templateLanguage.concatFunction" class="org.vortikal.text.tl.expr.Concat">
     <constructor-arg>
       <bean class="org.vortikal.text.tl.Symbol">

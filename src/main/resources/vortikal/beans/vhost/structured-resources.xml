@@ -182,6 +182,7 @@
         class="org.springframework.beans.factory.config.SetFactoryBean">
     <property name="sourceSet">
       <set>
+        <ref bean="templateLanguage.toStringFunction" />
         <ref bean="templateLanguage.concatFunction" />
         <ref bean="templateLanguage.splitFunction" />
         <ref bean="structuredResources.requestContextFunction" />

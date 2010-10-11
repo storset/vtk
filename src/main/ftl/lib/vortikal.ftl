@@ -460,10 +460,19 @@
   <#return value />
 </#function>
 
-<#function distributionPerColumn items column maxcolumns>
-    <#assign num = (items / maxcolumns)?floor />
-    <#if ((items % maxcolumns) >= column)>
-      <#assign num = num + 1 />
+<#--
+ * getEvenlyColumnDistribution
+ *
+ * Evenly distribute (LTR) items into columns
+ *
+ * Based on: http://stackoverflow.com/questions/1244338/algorithm-to-evenly-distribute-items-into-3-columns
+ * (with ?floor instead of ?round to distribute e.g. 10 as 4,3,3 and not 3,3,4)
+ *
+-->
+<#function getEvenlyColumnDistribution totalItems column maxColumns>
+    <#assign n = (totalItems / maxColumns)?floor />
+    <#if ((totalItems % maxColumns) >= column)>
+      <#assign n = n + 1 />
     </#if>
-    <#return num />
+    <#return n />
 </#function>

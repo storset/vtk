@@ -463,7 +463,7 @@
 <#--
  * getEvenlyColumnDistribution
  *
- * Evenly distribute (LTR) items into columns
+ * Get number of items per column when totalItems is evenly distributed across maxColumns (from left to right)
  *
  * Based on: http://stackoverflow.com/questions/1244338/algorithm-to-evenly-distribute-items-into-3-columns
  * (with ?floor instead of ?round to distribute e.g. 10 as 4,3,3 and not 3,3,4)

@@ -22,8 +22,8 @@
   	}
   
     window.onbeforeunload = unsavedChangesInEditorMessage;
-    UNSAVED_CAHANGES_CONFIRMATION = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";
-    COMPLETE_UNSAVED_CAHANGES_CONFIRMATION = "<@vrtx.msg code='manage.completeUnsavedChangesConfirmation' />";
+    UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";
+    COMPLETE_UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.completeUnsavedChangesConfirmation' />";
     
     function performSave() {
         saveDateAndTimeFields();

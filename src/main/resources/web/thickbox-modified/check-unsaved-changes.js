@@ -21,7 +21,7 @@ function tb_init_check_props(domChunk){
 function tb_show_check_props(caption, url, imageGroup){
     var checkForChanges = unsavedChangesInEditor();
     if(checkForChanges != undefined){
-        if(!confirm(COMPLETE_UNSAVED_CAHANGES_CONFIRMATION)){
+        if(!confirm(COMPLETE_UNSAVED_CHANGES_CONFIRMATION)){
             return false;
         }
         NEED_TO_CONFIRM = false;

@@ -1,7 +1,7 @@
 // JavaScript Document	
 var INITIAL_INPUT_FIELDS = new Array();
 var NEED_TO_CONFIRM = true;
-var UNSAVED_CAHANGES_CONFIRMATION;
+var UNSAVED_CHANGES_CONFIRMATION;
 
 function initPropChange() {
     var i = 0;
@@ -37,6 +37,6 @@ function unsavedChangesInEditor() {
 
 function unsavedChangesInEditorMessage() {
     if (unsavedChangesInEditor()) {
-        return UNSAVED_CAHANGES_CONFIRMATION;
+        return UNSAVED_CHANGES_CONFIRMATION;
     }
 }

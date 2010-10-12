@@ -32,9 +32,9 @@ function initDatePicker(language) {
 }
 
 // Stupid test to check if script is loaded from editor
-// UNSAVED_CAHANGES_CONFIRMATION is defined in "structured-resource/editor.ftl"
+// UNSAVED_CHANGES_CONFIRMATION is defined in "structured-resource/editor.ftl"
 function requestFromEditor() {
-  return !(typeof (UNSAVED_CAHANGES_CONFIRMATION) == "undefined");
+  return !(typeof (UNSAVED_CHANGES_CONFIRMATION) == "undefined");
 }
 
 function displayDateAsMultipleInputFields(name) {

@@ -79,7 +79,7 @@
           />
         <#break>
       <#case "image_ref">
-      	<#if elem.value?exists>
+      	<#if elem.value?exists && elem.value != "">
       		<#local thumbnail = vrtx.relativeLinkConstructor(elem.value, 'displayThumbnailService') />
       	<#else>
       		<#local thumbnail = "" />
@@ -298,7 +298,7 @@
       classes=""  />
     <#break>
   <#case "image_ref">
-  	<#if value?exists>
+  	<#if value?exists && value != "">
     	<#local thumbnail =  vrtx.relativeLinkConstructor(value, 'displayThumbnailService') />
     <#else>
     	<#local thumbnail = "" />

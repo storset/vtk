@@ -17,14 +17,14 @@ resourcetype contact-supervisor {
         ##
         [resource-props "."]
         [def document structured-document()]
-        [def boxes json-attr(document, "properties.contact-supervisor-box")]
+        [def boxes document.properties.contact-supervisor-box]
         [if boxes != null]
         
           [list boxes box]
-             [def title json-attr(box, "boxTitle")]
-             [def description json-attr(box, "description")]
-             [def contactInfo json-attr(box, "contactInfo")]
-             [def id json-attr(box, "id")]
+             [def title box.boxTitle]
+             [def description box.description]
+             [def contactInfo box.contactInfo]
+             [def id box.id]
              
              [def number _index + 1]
              

@@ -50,13 +50,13 @@ resourcetype boxes {
       ##
       [resource-props "."]
       [def document structured-document()]
-      [def boxes json-attr(document, "properties.box-list")]
+      [def boxes document.properties.box-list]
       [if boxes != null]
         [def document structured-document()]
-        [def boxes json-attr(document, "properties.box-list")]
+        [def boxes document.properties.box-list]
         [list boxes box]
-           [def title json-attr(box, "title")]
-           [def content json-attr(box, "content")]
+           [def title box.title]
+           [def content box.content]
            <div style="border:1px solid black;margin:20px;">
              [if title != null]<b>[val title]</b>[endif]
              [if content != null][val content # unescaped][endif]

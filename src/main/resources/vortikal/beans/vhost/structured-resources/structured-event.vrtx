@@ -28,13 +28,13 @@ resourcetype structured-event : structured-document {
       ##
       [resource-props "."]
       [def document structured-document()]
-      [def organizers json-attr(document, "properties.organizers")]
+      [def organizers document.properties.organizers]
       [if organizers != null]
         <div class="vrtx-event-organizers">
         <h2>[localized 'organizers']</h2>
         [list organizers organizer]
-          [def organizerName json-attr(organizer, "organizer")]
-          [def organizerUrl json-attr(organizer, "organizer-url")]
+          [def organizerName organizer.organizer]
+          [def organizerUrl organizer.organizer-url]
           [def count _index + 1]
           [def size _size]
           [def beforeLast size - 1]

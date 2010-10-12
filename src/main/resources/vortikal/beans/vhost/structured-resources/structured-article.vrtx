@@ -45,8 +45,8 @@ resourcetype structured-article : structured-document {
       ##
       [resource-props "."]
       [def document structured-document()]
-      [def thehideAdditionalContent json-attr(document, "properties.hideAdditionalContent")]
-      [def theRelated-content json-attr(document, "properties.related-content")]
+      [def thehideAdditionalContent document.properties.hideAdditionalContent]
+      [def theRelated-content document.properties.related-content]
 
       [if (thehideAdditionalContent = "false")]
         [if theRelated-content != null]
@@ -64,8 +64,8 @@ resourcetype structured-article : structured-document {
       ##
       [resource-props "."]
       [def document structured-document()]
-      [def thehideAdditionalContent json-attr(document, "properties.hideAdditionalContent")]
-      [def theRelated-content json-attr(document, "properties.related-content")]
+      [def thehideAdditionalContent document.properties.hideAdditionalContent]
+      [def theRelated-content document.properties.related-content]
       
       [if (thehideAdditionalContent = "true")]
           [if theRelated-content != null]

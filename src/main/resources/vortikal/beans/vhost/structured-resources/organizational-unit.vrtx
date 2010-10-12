@@ -178,7 +178,7 @@ resourcetype organizational-unit {
       ##
       [resource-props "."]
       [def document structured-document()]
-      [def related json-attr(document, "properties.related-content")]
+      [def related document.properties.related-content]
       [if related != null && related != ""]
         <div id="vrtx-related-content">
           [val related # unescaped]
@@ -191,7 +191,7 @@ resourcetype organizational-unit {
       ##
       [resource-props "."]
       [def document structured-document()]
-      [def theContent json-attr(document, "properties.content")]
+      [def theContent document.properties.content]
       [if theContent != null && theContent != ""]
         <div class="vrtx-frontpage-box white-box">
           [val theContent # unescaped]

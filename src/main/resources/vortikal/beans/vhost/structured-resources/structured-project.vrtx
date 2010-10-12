@@ -41,7 +41,7 @@ resourcetype structured-project {
       ##
       [resource-props "."]
       [def document structured-document()]
-      [def ongoing json-attr(document, "properties.status-ongoing")]
+      [def ongoing document.properties.status-ongoing]
       [if (ongoing = "false")]
            ([localized "completed"])
       [endif]
@@ -105,7 +105,7 @@ resourcetype structured-project {
        ##
        [resource-props "."]
        [def document structured-document()]
-       [def contactinfo json-attr(document, "properties.contactInfo")]
+       [def contactinfo document.properties.contactInfo]
        [if contactinfo != null]
          <div class="vrtx-project-contactinfo">
            <h2>[localized "contactInfoView"]</h2>
@@ -120,11 +120,11 @@ resourcetype structured-project {
       [resource-props "."]
       [if rssFeeds != null]
         [def document structured-document()]
-        [def feeds json-attr(document, "properties.rssFeeds")]
+        [def feeds document.properties.rssFeeds]
         [if feeds != null]
           [list feeds feed]
-              [def thetitle json-attr(feed, "rssTitle")]
-              [def theurl json-attr(feed, "rssUrl")]
+              [def thetitle feed.rssTitle]
+              [def theurl feed.rssUrl]
               
               [if theurl != null && theurl != ""]         
                 [if thetitle != null && thetitle != ""]

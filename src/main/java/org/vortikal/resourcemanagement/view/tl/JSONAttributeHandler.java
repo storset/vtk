@@ -37,6 +37,7 @@ import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Symbol;
 import org.vortikal.text.tl.expr.Function;
 
+@Deprecated
 public class JSONAttributeHandler extends Function {
 
     public JSONAttributeHandler(Symbol symbol) {

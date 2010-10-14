@@ -73,11 +73,14 @@ resourcetype structured-project {
 		<div class="vrtx-introduction-image" style="[val style]">
 	  [else]
 		<div class="vrtx-introduction-image">
-	  [endif]	
-	  [if caption != null]
-	    <img src="[val img-uri]" alt="[val caption # unescaped 'flattened']"/>
-	  [else]
-	    <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
+	  [endif]
+	  
+	  [if img-uri != null]	
+		  [if caption != null]
+		    <img src="[val img-uri]" alt="[val caption # unescaped 'flattened']"/>
+		  [else]
+		    <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
+		  [endif]
 	  [endif]
 	  <div class="vrtx-imagetext">
 	      <div class="vrtx-imagedescription">[val caption # unescaped]</div>

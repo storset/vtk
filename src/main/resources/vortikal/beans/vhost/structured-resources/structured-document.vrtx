@@ -54,6 +54,8 @@ resourcetype structured-document {
 		    <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
 		  [endif]
 	  [endif]
+	  
+	  [if caption != null]
 	  <div class="vrtx-imagetext">
 	      <div class="vrtx-imagedescription">[val caption # unescaped]</div>
 	      [if img-author != null]
@@ -63,6 +65,7 @@ resourcetype structured-document {
 	      [endif]
 	    </div>
 	  </div>
+	  [endif]
       ##
     }
     introduction {

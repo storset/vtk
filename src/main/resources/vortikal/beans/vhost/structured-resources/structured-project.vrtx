@@ -82,6 +82,8 @@ resourcetype structured-project {
 		    <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
 		  [endif]
 	  [endif]
+	  
+	  [if caption != null]
 	  <div class="vrtx-imagetext">
 	      <div class="vrtx-imagedescription">[val caption # unescaped]</div>
 	      [if img-author != null]
@@ -91,6 +93,7 @@ resourcetype structured-project {
 	      [endif]
 	    </div>
 	  </div>
+	  [endif]
       ##
     }
     

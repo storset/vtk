@@ -40,50 +40,42 @@ resourcetype research-group {
       ##
       [def img-uri resource-prop(".", "picture")]
       [def caption resource-prop(".", "caption")]
-      [if img-uri != null]
-        [def img resource(img-uri)]
-        
-        [if img != null]
-        
-          [def pixel-width resource-prop(img-uri, "pixelWidth")]
-          
-          [if pixel-width != null]
-            [def style concat("width:", concat(pixel-width, "px"))]
-            [def img-author resource-prop(img-uri, "authorName")]
-        
-            [if caption != null]
-              <div class="vrtx-introduction-image" style="[val style]">
-                <img src="[val img-uri]" alt="[val caption # unescaped 'flattened']"/>
-                <div class="vrtx-imagetext">
-                  <div class="vrtx-imagedescription">[val caption # unescaped]</div>
-                  [if img-author != null]
-                    <span class="vrtx-photo">
-                      <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val img-author]
-                    </span>
-                  [endif]
-                </div>
-              </div>
-            [else]
-              [if img-author != null]
-                <div class="vrtx-introduction-image" style="[val style]">
-                  <img src="[val img-uri]" alt="[localized 'introduction-image-alt']" />
-                  <div class="vrtx-imagetext">
-                    <span class="vrtx-photo">
-                      <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val img-author]
-                    </span>
-                  </div>
-                </div>
-              [else]
-                <img class="vrtx-introduction-image" src="[val img-uri]" alt="[localized 'introduction-image-alt']" />
-              [endif]
-            [endif]
-          [else]
-            <img class="vrtx-introduction-image" src="[val img-uri]" alt="[localized 'introduction-image-alt']" />
-          [endif]
-        [else]
-          <img class="vrtx-introduction-image" src="[val img-uri]" alt="[localized 'introduction-image-alt']" />
-        [endif]
+      [def pixel-width null]
+      [def img null]
+      [def pixel-width null]
+      [def img-author null]
+      [def style null]
+      
+	  [if img-uri != null]	
+      	[def img resource(img-uri)]      
       [endif]
+      [if img != null] 
+	  	[def pixel-width resource-prop(img-uri, "pixelWidth")]
+	  	[def img-author resource-prop(img-uri, "authorName")]
+  	  [endif]
+  	  [if pixel-width != null]
+	  	[def style concat("width:", concat(pixel-width, "px"))]
+	  [endif]
+	  
+	  [if pixel-width != null]  
+		<div class="vrtx-introduction-image" style="[val style]">
+	  [else]
+		<div class="vrtx-introduction-image">
+	  [endif]	
+	  [if caption != null]
+	    <img src="[val img-uri]" alt="[val caption # unescaped 'flattened']"/>
+	  [else]
+	    <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
+	  [endif]
+	  <div class="vrtx-imagetext">
+	      <div class="vrtx-imagedescription">[val caption # unescaped]</div>
+	      [if img-author != null]
+	        <span class="vrtx-photo">
+	          <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val img-author]
+	        </span>
+	      [endif]
+	    </div>
+	  </div>
       ##
     }
     

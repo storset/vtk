@@ -39,11 +39,18 @@
     <script type="text/javascript" src="${webResources?html}/jquery-ui-1.7.1.custom/js/jquery.ui.datepicker-no.js"></script>
     <script type="text/javascript" src="${webResources?html}/jquery-ui-1.7.1.custom/js/jquery.ui.datepicker-nn.js"></script>
     <script type="text/javascript" src="${jsBaseURL?html}/admin-datepicker.js"></script>
+    <script language="Javascript" type="text/javascript" src="${webResources?html}/jquery-plugins/jquery.hotkeys-0.7.9.min.js"></script>
     
     <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
 
     <script type="text/javascript">
     <!--
+      $(document).bind('keydown', 'ctrl+s', saveDocument);
+  	
+      function saveDocument(){
+  		$("#saveButton").click();
+      }	
+    
       $(document).ready(function() {
           interceptEnterKey();
           setAutoComplete('resource\\.tags', 'tags', {minChars:1});
@@ -73,6 +80,13 @@
     <h2>${header}</h2>
 
     <form id="form" class="editor" action="" method="post">
+    
+      <div class="submit-extra-buttons">
+    	<input type="button" onClick="$('#saveAndQuitButton').click()" value="${vrtx.getMsg("editor.saveAndQuit")}" />
+    	<input type="button" onClick="$('#saveButton').click()"  value="${vrtx.getMsg("editor.save")}" />
+    	<input type="button" onClick="$('#cancel').click()"  value="${vrtx.getMsg("editor.cancel")}" />
+      </div>
+    
       <@handleProps />
 
       <div class="properties">
@@ -101,8 +115,8 @@
 
       <div id="submit" class="save-cancel">
           <input type="submit" id="saveAndQuitButton" onClick="formatFeaturedArticlesData();performSave();" name="savequit"  value="${vrtx.getMsg("editor.saveAndQuit")}">
-          <input type="submit" id="saveButton" onClick="formatFeaturedArticlesData();cSave();" name="save" value="${vrtx.getMsg("editor.save")}">
-          <input type="submit" onClick="performSave();" name="cancel" value="${vrtx.getMsg("editor.cancel")}">
+          <input type="submit" id="saveButton" onClick="formatFeaturedArticlesData();performSave();" name="save" value="${vrtx.getMsg("editor.save")}">
+          <input type="submit" id="cancel" onClick="performSave();" name="cancel" value="${vrtx.getMsg("editor.cancel")}">
       </div>
 
       <#if (resource.content)?exists>
@@ -533,11 +547,6 @@
 
       newEditor('${content}', ${completeEditor?string}, ${withoutSubSuper?string});
       
-      function cSave() {
-        document.getElementById("form").setAttribute("action", "#submit");
-        performSave();
-      }
-
       function performSave() {
         needToConfirm = false;
         var oEditor = FCKeditorAPI.GetInstance('${content}');

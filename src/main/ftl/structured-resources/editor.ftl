@@ -7,7 +7,7 @@
 
 <html>
 <head>
-  <title>Edit structured resource</title>
+ <title>Edit structured resource</title>
   <@ping.ping url=pingURL['url'] interval=300 />
   <@fckEditor.addFckScripts />
   <@vrtxJSONJavascript.script />
@@ -67,11 +67,6 @@
 <#assign header = form.resource.getLocalizedMsg("header", locale, null) />
 <h2>${header}</h2>
 
-<div class="submit-extra-buttons">
-    <input type="button" onClick="$('#updateQuitAction').click()" value="${vrtx.getMsg("editor.saveAndQuit")}" />
-    <input type="button" onClick="$('#updateAction').click()"  value="${vrtx.getMsg("editor.save")}" />
-    <input type="button" onClick="$('#cancelAction').click()"  value="${vrtx.getMsg("editor.cancel")}" />
-</div>
 
 <div id="help-links">
 	<a href="${editorHelpURL?html}" target="new_window"><@vrtx.msg code="editor.help"/></a><br />
@@ -79,6 +74,13 @@
 </div>	  
 
 <form action="${form.submitURL?html}" method="post">
+
+<div class="submit-extra-buttons">
+    <input type="button" onClick="$('#updateQuitAction').click()" value="${vrtx.getMsg("editor.saveAndQuit")}" />
+    <input type="button" onClick="$('#updateAction').click()"  value="${vrtx.getMsg("editor.save")}" />
+    <input type="button" onClick="$('#cancelAction').click()"  value="${vrtx.getMsg("editor.cancel")}" />
+</div>
+
 
 <#list form.elements as elementBox>
 

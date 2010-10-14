@@ -522,4 +522,5 @@ input.date, input.hours, input.minutes {
 	position:relative;
     top:-50px;
     text-align:right;
+    height:0;
 }

@@ -581,4 +581,5 @@ span.show-tooltip-text {
 	position:relative;
     top:-50px;
     text-align:right;
+    height:0;
 }

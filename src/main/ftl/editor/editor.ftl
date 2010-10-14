@@ -78,14 +78,14 @@
       <@vrtx.msg code="editor.edit" args=[vrtx.resourceTypeName(resource)?lower_case] />
     </#assign>
     <h2>${header}</h2>
-
+	  <div class="submit-extra-buttons">
+		<input type="button" onClick="$('#saveAndQuitButton').click()" value="${vrtx.getMsg("editor.saveAndQuit")}" />
+		<input type="button" onClick="$('#saveButton').click()"  value="${vrtx.getMsg("editor.save")}" />
+		<input type="button" onClick="$('#cancel').click()"  value="${vrtx.getMsg("editor.cancel")}" />
+	  </div>
     <form id="form" class="editor" action="" method="post">
     
-      <div class="submit-extra-buttons">
-    	<input type="button" onClick="$('#saveAndQuitButton').click()" value="${vrtx.getMsg("editor.saveAndQuit")}" />
-    	<input type="button" onClick="$('#saveButton').click()"  value="${vrtx.getMsg("editor.save")}" />
-    	<input type="button" onClick="$('#cancel').click()"  value="${vrtx.getMsg("editor.cancel")}" />
-      </div>
+
     
       <@handleProps />
 

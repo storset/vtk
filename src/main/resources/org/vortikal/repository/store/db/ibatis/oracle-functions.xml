@@ -24,6 +24,10 @@
     changelog_entry_seq_pk.nextval
   </sql>
 
+  <sql id="nextDeletedResourceId">
+    deleted_resource_seq_pk.nextval
+  </sql>
+
   <sql id="nextTempTableSessionId">
     vortex_tmp_session_id_seq.nextval from dual
   </sql>
@@ -38,6 +42,10 @@
 
   <sql id="destinationDescendantUriMove">
     #destUri# || substr(uri, length(#srcUri#) + 1)
+  </sql>
+  
+  <sql id="trashCanUri">
+    #trashCanID# || substr(uri, length(#parentURI#) + 1)
   </sql>
   
   <insert id="insertPropertyEntry" parameterClass="java.util.Map">

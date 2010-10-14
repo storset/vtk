@@ -72,7 +72,7 @@ resourcetype research-group {
 	  [endif]
 	  
 	  [if caption != null]
-	  <div class="vrtx-imagetext">
+	    <div class="vrtx-imagetext">
 	      <div class="vrtx-imagedescription">[val caption # unescaped]</div>
 	      [if img-author != null]
 	        <span class="vrtx-photo">
@@ -80,8 +80,8 @@ resourcetype research-group {
 	        </span>
 	      [endif]
 	    </div>
-	  </div>
 	  [endif]
+	  </div>
       ##
     }
     

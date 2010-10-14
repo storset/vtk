@@ -84,7 +84,7 @@ resourcetype structured-project {
 	  [endif]
 	  
 	  [if caption != null]
-	  <div class="vrtx-imagetext">
+	    <div class="vrtx-imagetext">
 	      <div class="vrtx-imagedescription">[val caption # unescaped]</div>
 	      [if img-author != null]
 	        <span class="vrtx-photo">
@@ -92,8 +92,8 @@ resourcetype structured-project {
 	        </span>
 	      [endif]
 	    </div>
-	  </div>
 	  [endif]
+	  </div>
       ##
     }
     

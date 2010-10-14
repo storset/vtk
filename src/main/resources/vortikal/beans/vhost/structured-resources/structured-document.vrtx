@@ -56,7 +56,7 @@ resourcetype structured-document {
 	  [endif]
 	  
 	  [if caption != null]
-	  <div class="vrtx-imagetext">
+	    <div class="vrtx-imagetext">
 	      <div class="vrtx-imagedescription">[val caption # unescaped]</div>
 	      [if img-author != null]
 	        <span class="vrtx-photo">
@@ -64,10 +64,11 @@ resourcetype structured-document {
 	        </span>
 	      [endif]
 	    </div>
-	  </div>
 	  [endif]
+	  </div>
       ##
     }
+    
     introduction {
       ##
       [def intro resource-prop(".", "introduction")]

@@ -519,7 +519,7 @@ input.date, input.hours, input.minutes {
 /* STOP forms */
 
 .submit-extra-buttons {
-    position:absolute;
-    right:40px;
-    top:187px;
+	position:relative;
+    top:-50px;
+    text-align:right;
 }

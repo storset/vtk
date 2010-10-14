@@ -575,3 +575,10 @@ span.show-tooltip-text {
 #ui-datepicker-div {
   font-size: 10px;
 }
+
+
+.submit-extra-buttons {
+	position:relative;
+    top:-50px;
+    text-align:right;
+}

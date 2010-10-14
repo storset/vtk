@@ -277,10 +277,24 @@
   </update>
 
 
+  <!-- ## DELETING ## -->
+  
+  <!-- ## Permanently delete ## -->
   <delete id="deleteResourceByUri" parameterClass="java.util.Map">
     delete from vortex_resource where uri = #uri# or uri like #uriWildcard# escape '@'
   </delete>
+  
+  <!-- ## Mark as deleted ("put in trash can") ## -->
+  <update id="markDeleted" parameterClass="java.util.Map">
+    update vortex_resource set
+      uri = <include refid="trashCanUri" />
+      where uri = #uri# or uri like #uriWildcard# escape '@'
+  </update>
 
+  <insert id="insertTrashCanEntry" parameterClass="java.util.Map">
+    insert into deleted_resource (id, resource_trash_uri, parent_id, deleted_by, deleted_time)
+      values (<include refid="nextDeletedResourceId" />, #trashCanURI#, #parentID#, #principal#, #deletedTime#)
+  </insert>
 
   <select id="loadChildren" parameterClass="java.util.Map"
           resultMap="Resource">

@@ -300,4 +300,9 @@ public class MemoryContentStore implements ContentStore {
             return n;
         }
     }
+
+    @Override
+    public void moveToTrash(Path srcURI, final String trashIdDir) throws DataAccessException {
+        throw new UnsupportedOperationException("Not implemented...");
+    }
 }

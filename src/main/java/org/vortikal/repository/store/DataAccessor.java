@@ -72,8 +72,28 @@ public interface DataAccessor {
 
     /**
      * Deletes a single resource (and any children)
+     * 
+     * @param resource
+     *            The resource (with children) to delete
+     * @throws DataAccessException
      */
-    public void delete(ResourceImpl resource, boolean restorable) throws DataAccessException;
+    public void delete(ResourceImpl resource) throws DataAccessException;
+
+    /**
+     * Marks a resource (and any children) as deleted (moves to trash can)
+     * 
+     * @param resource
+     *            The resource (with children) to mark as deleted
+     * @param parent
+     *            The parent of resource to mark for deletion
+     * @param principal
+     *            The user who requested the operation
+     * @param trashID
+     *            ID used to mark the resource as deleted
+     * @throws DataAccessException
+     */
+    public void markDeleted(ResourceImpl resource, ResourceImpl parent, Principal principal, final String trashID)
+            throws DataAccessException;
 
     /**
      * Deletes all expired locks (should be called periodically)

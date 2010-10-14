@@ -294,7 +294,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         checkMaxChildren(destParent);
 
         if (dest != null) {
-            this.dao.delete(dest, false);
+            this.dao.delete(dest);
             this.contentStore.deleteResource(dest.getURI());
             this.context
                     .publishEvent(new ResourceDeletionEvent(this, dest.getURI(), dest.getID(), dest.isCollection()));
@@ -353,7 +353,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
         // Performing delete operation
         if (dest != null) {
-            this.dao.delete(dest, false);
+            this.dao.delete(dest);
             this.contentStore.deleteResource(dest.getURI());
 
             this.context
@@ -403,15 +403,18 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         this.authorizationManager.authorizeDelete(uri, principal);
 
         // Store parent collection first to avoid dead-lock between Cache
-        // locking
-        // and database inter-transaction synchronization (which leads to
-        // "11-iterations"-problem)
+        // locking and database inter-transaction synchronization (which leads
+        // to "11-iterations"-problem)
         ResourceImpl parentCollection = this.dao.load(uri.getParent());
         parentCollection.removeChildURI(uri);
         parentCollection = this.resourceHelper.contentModification(parentCollection, principal);
         this.dao.store(parentCollection);
 
-        this.dao.delete(r, restorable);
+        // XXX Handle restorable:
+        // - mark as deleted (database)
+        // - move to trash (filesystem)
+
+        this.dao.delete(r);
         this.contentStore.deleteResource(r.getURI());
 
         ResourceDeletionEvent event = new ResourceDeletionEvent(this, uri, r.getID(), r.isCollection());

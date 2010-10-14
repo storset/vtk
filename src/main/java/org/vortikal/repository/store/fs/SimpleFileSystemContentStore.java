@@ -160,7 +160,6 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
     public void copy(Path srcURI, Path destURI) throws DataAccessException {
         String fileNameFrom = getLocalFilename(srcURI);
         String fileNameTo = getLocalFilename(destURI);
-
         try {
             File fromDir = new File(fileNameFrom);
             if (fromDir.isDirectory()) {
@@ -169,7 +168,7 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
                 copyFile(fromDir, new File(fileNameTo));
             }
         } catch (IOException e) {
-            throw new DataAccessException("Store content [" + srcURI + ", " + destURI + "] failed", e);
+            throw new DataAccessException("Store content [" + fileNameFrom + ", " + fileNameTo + "] failed", e);
         }
     }
 
@@ -189,7 +188,6 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
     }
 
     private void copyFile(File from, File to) throws IOException {
-
         FileChannel srcChannel = new FileInputStream(from).getChannel();
         FileChannel dstChannel = new FileOutputStream(to).getChannel();
         dstChannel.transferFrom(srcChannel, 0, srcChannel.size());
@@ -203,6 +201,12 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
         if (!new File(fileNameFrom).renameTo(new File(fileNameTo))) {
             throw new DataAccessException("Unable to rename file " + fileNameFrom + " to " + fileNameTo);
         }
+    }
+
+    @Override
+    public void moveToTrash(Path srcURI, final String trashIdDir) throws DataAccessException {
+        // XXX Move resource(s) to trash directory, after creating unique
+        // trashIdDir
     }
 
     private String getLocalFilename(Path uri) {

@@ -70,4 +70,6 @@ public interface ContentStore {
     public void copy(Path srcURI, Path destURI) throws DataAccessException;
     
     public void move(Path srcURI, Path destURI) throws DataAccessException;
+    
+    public void moveToTrash(Path srcURI, final String trashIdDir) throws DataAccessException;
 }

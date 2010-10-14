@@ -69,9 +69,9 @@ import org.vortikal.repository.store.DataAccessor;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.Principal.Type;
+import org.vortikal.util.io.StreamUtil;
 
 import com.ibatis.sqlmap.client.SqlMapExecutor;
-import org.vortikal.util.io.StreamUtil;
 
 /**
  * An iBATIS SQL maps implementation of the DataAccessor interface.
@@ -248,12 +248,21 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
 
     }
 
-    public void delete(ResourceImpl resource, boolean restorable) {
+    public void delete(ResourceImpl resource) {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("uri", resource.getURI().toString());
         parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(resource.getURI(), SQL_ESCAPE_CHAR));
         String sqlMap = getSqlMap("deleteResourceByUri");
         getSqlMapClientTemplate().update(sqlMap, parameters);
+    }
+
+    @Override
+    public void markDeleted(ResourceImpl resource, ResourceImpl parent, Principal principal, final String trashID)
+            throws DataAccessException {
+        // XXX Mark resource(s) as deleted
+        // - inherited ACL? -> create spanshot and update table acl_entry
+        // - update resource uri(s), prefix with trashID
+        // - insert stats in table deleted_resource
     }
 
     public ResourceImpl[] loadChildren(ResourceImpl parent) {

@@ -35,12 +35,12 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-public class HtmlPageParserImplTest extends TestCase {
+public class HtmlPageParserTest extends TestCase {
 
-    private HtmlPageParserImpl parser;
+    private HtmlPageParser parser;
 
     public void setUp() {
-        this.parser =  new HtmlPageParserImpl();
+        this.parser =  new HtmlPageParser();
     }
 
     private static final String SIMPLE_XHTML_PAGE =

@@ -30,37 +30,175 @@
  */
 package org.vortikal.text.html;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
+import org.vortikal.text.html.HtmlPageFilter.NodeResult;
 
-/**
- * Simple HTML page interface.
- *
- */
-public interface HtmlPage {
+public final class HtmlPage {
 
-    public String getDoctype();
+    public static final String DOCTYPE_HTML_2 = 
+        "HTML PUBLIC \"-//IETF//DTD HTML//EN\"";
     
-    public String getCharacterEncoding();
+    public static final String DOCTYPE_HTML_32 = 
+        "HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\"";
     
-    public HtmlElement getRootElement();
-    
-    public boolean isFrameset();
-    
-    public String getStringRepresentation();
+    public static final String DOCTYPE_HTML_401_STRICT = 
+        "HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\"";
 
-    public void filter(HtmlPageFilter filter);
+    public static final String DOCTYPE_HTML_401_TRANS = 
+        "HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"";
     
-    public List<HtmlElement> select(String expression);
+    public static final String DOCTYPE_HTML_401_FRAMESET = 
+        "HTML PUBLIC \"-//W3C//DTD HTML 4.01 Frameset//EN\" \"http://www.w3.org/TR/html4/frameset.dtd\"";
 
-    public HtmlElement selectSingleElement(String expression);
+    public static final String DOCTYPE_HTML_5 = "html";
     
-    public HtmlElement createElement(String name);
-
-    public HtmlText createTextNode(String content);
-
-    public HtmlComment createComment(String comment);
+    public static final String DOCTYPE_XHTML10_STRICT = 
+        "html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\"";
     
-    public HtmlAttribute createAttribute(String name, String value);
+    public static final String DOCTYPE_XHTML10_TRANS = 
+        "html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"";
 
+    public static final String DOCTYPE_XHTML10_FRAMESET = 
+        "html PUBLIC \"-//W3C//DTD XHTML 1.0 Frameset//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd\"";
+
+    public static final String DOCTYPE_XHTML_11 = 
+        "html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\"";
+    
+    public static final String DEFAULT_DOCTYPE = DOCTYPE_XHTML10_TRANS;
+        
+    private String doctype;
+    private String characterEncoding;
+    private HtmlElement root;
+    private boolean xhtml;
+    private final Set<String> emptyTags;
+    
+    public HtmlPage(HtmlElement root, String doctype, 
+            String characterEncoding, Set<String> emptyTags) {
+        if (root == null) {
+            throw new IllegalArgumentException("Root element cannot be NULL");
+        }
+        if (doctype == null) {
+            throw new IllegalArgumentException("Doctype cannot be NULL");
+        }
+        if (characterEncoding == null) {
+            throw new IllegalArgumentException("Character encoding cannot be NULL");
+        }
+        this.root = root;
+        this.doctype = doctype;
+        this.characterEncoding = characterEncoding.toLowerCase();
+        this.xhtml = isXhtml(doctype);
+        this.emptyTags = emptyTags;
+    }
+
+    public HtmlElement getRootElement() {
+        return this.root;
+    }
+
+    public String getDoctype() {
+        return this.doctype;
+    }
+    
+    public String getCharacterEncoding() {
+        return this.characterEncoding;
+    }
+
+    public boolean isFrameset() {
+        if (this.root != null) {
+            HtmlElement[] children = this.root.getChildElements("frameset");
+            if (children != null && children.length > 0) {
+                return true;
+            }
+        } 
+        return false;
+    }
+    
+    public String getStringRepresentation() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<!DOCTYPE ").append(this.doctype).append(">\n");
+        sb.append(this.root.getEnclosedContent());
+        return sb.toString();
+    }
+
+    public void filter(HtmlPageFilter filter) {
+        if (!filter.match(this)) {
+            return;
+        }
+        List<HtmlContent> toplevel = Arrays.asList(this.root.getChildNodes());
+        List<HtmlContent> filtered = filterContent(toplevel, filter);
+        this.root.setChildNodes(filtered.toArray(new HtmlContent[filtered.size()]));
+    }
+    
+    
+    static List<HtmlContent> filterContent(List<HtmlContent> nodeList, HtmlPageFilter filter) {
+        List<HtmlContent> resultList = new ArrayList<HtmlContent>();
+
+        for (HtmlContent node: nodeList) {
+            NodeResult result = filter.filter(node);
+
+            if (result == NodeResult.keep) {
+                if (node instanceof HtmlElement) {
+                    HtmlElement element = (HtmlElement) node;
+                    List<HtmlContent> children = Arrays.asList(element.getChildNodes());
+                    List<HtmlContent> filtered = filterContent(children, filter);
+                    element.setChildNodes(filtered.toArray(new HtmlContent[filtered.size()]));
+                }
+                resultList.add(node);
+
+            } else if (result == NodeResult.skip) {
+                if (node instanceof HtmlElement) {
+                    HtmlElement element = (HtmlElement) node;
+                    List<HtmlContent> children = Arrays.asList(element.getChildNodes());
+                    List<HtmlContent> filtered = filterContent(children, filter);
+                    resultList.addAll(filtered);
+                }
+            }
+        }
+        return resultList;
+    }
+
+    static boolean isXhtml(String doctype) {
+        boolean xhtml = doctype.toUpperCase().startsWith(
+            "HTML PUBLIC \"-//W3C//DTD XHTML");
+        return xhtml;
+    }
+    
+    
+    public List<HtmlElement> select(String expression) {
+        return HtmlSelectUtil.select(this, expression);
+    }
+
+    public HtmlElement selectSingleElement(String expression) {
+        return HtmlSelectUtil.selectSingleElement(this, expression);
+    }
+
+    public HtmlElement createElement(String name) {
+        if (name == null || "".equals(name.trim())) {
+            throw new IllegalArgumentException("Illegal element name: " + name);
+        }
+        return new HtmlElementImpl(name, this.xhtml, 
+                this.emptyTags.contains(name));
+    }
+
+    public HtmlText createTextNode(String content) {
+        return new HtmlTextImpl(content);
+    }
+
+    public HtmlComment createComment(String comment) {
+        return new HtmlCommentImpl(createTextNode(comment));
+    }
+    
+    public HtmlAttribute createAttribute(String name, String value) {
+        if (name == null || "".equals(name.trim())) {
+            throw new IllegalArgumentException("Illegal attribute name: " + name);
+        }
+        if (value == null) {
+            throw new IllegalArgumentException("Illegal attribute value: NULL");
+        }
+        return new HtmlAttributeImpl(name, value, false);
+    }
 }
+

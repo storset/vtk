@@ -55,15 +55,15 @@
   <script language="javascript">
   $(document).ready(function(){
 	$('iframe').load(function() {
-	
-	    <#if visualizeBrokenLinks?exists && visualizeBrokenLinks = 'true'>
-          visualizeDeadLinks("${resourceReference}");
-        </#if>
-	
-		$("iframe").contents().find("a").each(function(i, e){
-  		  this.target = "_top";
-		});
-
+	$("iframe").contents().find("a").each(function(i) {
+         <#if visualizeBrokenLinks?exists && visualizeBrokenLinks = 'true'>
+           var attr = $(this).attr("class");
+           if (attr && attr.match(/vrtx-invalid-link/)) {
+              $(this).append(" - 404").css("color", "red");
+           }
+         </#if>
+	  $(this).attr("target", "_top");
+         });
 	});
   });	
   </script>
@@ -85,9 +85,13 @@
     <#assign url = resourceReference />
     <#-- XXX: remove hard-coded 'authTarget' parameter: -->
     <#if url?contains("?")>
-      <#assign url = url + "&amp;" + previewUnpublishedParameter + "=" + "true" + "&amp;" + previewRefreshParameter + "=" + dateStr + "&amp;authTarget=http" />
+      <#assign url = url + "&amp;" + previewUnpublishedParameter + "="  + "true" 
+               + "&amp;link-check=" + visualizeBrokenLinks?default('false')
+               + "&amp;" + previewRefreshParameter + "=" + dateStr + "&amp;authTarget=http" />
     <#else>
-      <#assign url = url + "?" + previewUnpublishedParameter + "=" + "true" + "&amp;" + previewRefreshParameter + "=" + dateStr + "&amp;authTarget=http" />
+      <#assign url = url + "?" + previewUnpublishedParameter + "=" + "true"
+               + "&amp;link-check=" + visualizeBrokenLinks?default('false')
+               + "&amp;" + previewRefreshParameter + "=" + dateStr + "&amp;authTarget=http" />
     </#if>
 
     <iframe class="previewView" name="previewViewIframe" id="previewViewIframe" src="${url}" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0" vspace="0" hspace="0" style="overflow:visible; width:100%; ">

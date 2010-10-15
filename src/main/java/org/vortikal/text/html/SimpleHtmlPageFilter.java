@@ -70,7 +70,7 @@ public class SimpleHtmlPageFilter implements HtmlPageFilter {
     
     public SimpleHtmlPageFilter() {
     }
-    
+
     public SimpleHtmlPageFilter(Set<String> illegalElements,
             Set<HtmlElementDescriptor> validElements,
             boolean keepComments) {
@@ -99,6 +99,12 @@ public class SimpleHtmlPageFilter implements HtmlPageFilter {
         this.keepComments = keepComments;
     }
 
+    @Override
+    public boolean match(HtmlPage page) {
+        return true;
+    }
+
+    @Override
     public HtmlPageFilter.NodeResult filter(HtmlContent node) {
 
         if (node instanceof HtmlComment) {

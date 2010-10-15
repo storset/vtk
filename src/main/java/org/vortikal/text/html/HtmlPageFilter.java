@@ -38,6 +38,15 @@ public interface HtmlPageFilter {
     }
     
     /**
+     * Determines whether this filter can be applied to the HTML page.
+     * 
+     * @param the HTML page to filter
+     * @return <code>true</code> if the page can be filtered, 
+     * <code>false</code> otherwise.
+     */
+    public boolean match(HtmlPage page);
+    
+    /**
      * Filter a single HTML node.
      * 
      * @param node the current node being filtered

@@ -50,7 +50,18 @@ public interface HtmlElement extends EnclosingHtmlContent {
      */
     public void setAttributes(HtmlAttribute[] attributes);
     
+    
+    /**
+     * Adds an attribute to this element.
+     */
+    public void addAttribute(HtmlAttribute attribute);
+    
+    /**
+     * Adds or replaces an attribute on this element.
+     */
+    public void setAttribute(HtmlAttribute attribute);
 
+    
     /**
      * Gets a named attribute of this element.
      */

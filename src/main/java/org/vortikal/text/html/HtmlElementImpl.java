@@ -131,6 +131,21 @@ public class HtmlElementImpl implements HtmlElement {
         }
     }
     
+    public void addAttribute(HtmlAttribute attribute) {
+        this.attributes.add(attribute);
+    }
+    
+    public void setAttribute(HtmlAttribute attribute) {
+        List<HtmlAttribute> newAttrs = new ArrayList<HtmlAttribute>();
+        for (HtmlAttribute attr: this.attributes) {
+            if (!attr.getName().equalsIgnoreCase(attribute.getName())) {
+                newAttrs.add(attr);
+            }
+        }
+        newAttrs.add(attribute);
+        this.attributes = newAttrs;
+    }
+
     public HtmlAttribute getAttribute(String name) {
         if (name == null) {
             throw new IllegalArgumentException("Argument cannot be NULL");

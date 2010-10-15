@@ -30,8 +30,8 @@
  */
 package org.vortikal.resourcemanagement.view;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,7 +86,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
 
     private Map<String, DirectiveNodeFactory> directiveHandlers;
 
-    private HtmlPageFilter postFilter;
+    private List<HtmlPageFilter> postFilters;
 
     // XXX: clean up this mess:
     private Map<StructuredResourceDescription,
@@ -133,8 +133,9 @@ public class StructuredResourceDisplayController implements Controller, Initiali
 
         if (content instanceof HtmlPageContent) {
             HtmlPage page = ((HtmlPageContent) content).getHtmlContent();
-            if (this.postFilter != null) {
-                page.filter(this.postFilter);
+            if (this.postFilters != null) {
+                for (HtmlPageFilter filter: this.postFilters)
+                page.filter(filter);
             }
             model.put("page", ((HtmlPageContent) content).getHtmlContent());
             return new ModelAndView(this.viewName, model);
@@ -150,38 +151,24 @@ public class StructuredResourceDisplayController implements Controller, Initiali
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public PageContent renderInitialPage(StructuredResource res, Map model, HttpServletRequest request)
     throws Exception {
-
-        String html = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";
-        html += "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n";
-        html += "<head><title></title></head><body></body></html>";
-        ByteArrayInputStream in = new ByteArrayInputStream(html.getBytes("utf-8"));
-        final HtmlPage dummy = this.htmlParser.parse(in, "utf-8");
-
+        final HtmlPage initialPage = this.htmlParser.createEmptyPage("initial-page");
         HtmlPageContent content = new HtmlPageContent() {
             public HtmlPage getHtmlContent() {
-                return dummy;
+                return initialPage;
             }
 
             public String getContent() {
-                return dummy.getStringRepresentation();
+                return initialPage.getStringRepresentation();
             }
 
             public String getOriginalCharacterEncoding() {
-                return dummy.getCharacterEncoding();
+                return initialPage.getCharacterEncoding();
             }
         };
 
         String templateRef = res.getType().getName();
         Template t = this.templateManager.getTemplate(templateRef);
 
-        /*
-        if (!(t instanceof ParsedHtmlDecoratorTemplate)) {
-            throw new IllegalStateException("Template must be of class " + ParsedHtmlDecoratorTemplate.class.getName());
-        }
-        ParsedHtmlDecoratorTemplate template = (ParsedHtmlDecoratorTemplate) t;
-        ParsedHtmlDecoratorTemplate.Execution execution = (ParsedHtmlDecoratorTemplate.Execution) template
-        .newTemplateExecution(content, request, model, new HashMap<String, Object>());
-        */
         TemplateExecution execution = t.newTemplateExecution(content, request, model, new HashMap<String, Object>());
 
         ComponentResolver resolver = execution.getComponentResolver();
@@ -269,8 +256,8 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         this.configProviders = configProviders;
     }
 
-    public void setPostFilter(HtmlPageFilter postFilter) {
-        this.postFilter = postFilter;
+    public void setPostFilters(List<HtmlPageFilter> postFilters) {
+        this.postFilters = new ArrayList<HtmlPageFilter>(postFilters);
     }
     
     @Required

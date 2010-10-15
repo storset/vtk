@@ -48,8 +48,8 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.Resource;
 import org.vortikal.repository.Repository.Depth;
+import org.vortikal.repository.Resource;
 import org.vortikal.resourcemanagement.EditablePropertyDescription;
 import org.vortikal.resourcemanagement.JSONPropertyAttributeDescription;
 import org.vortikal.resourcemanagement.JSONPropertyDescription;
@@ -62,7 +62,6 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.text.html.HtmlPageParser;
-import org.vortikal.text.html.HtmlPageParserImpl;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -236,7 +235,7 @@ public class StructuredResourceEditor extends SimpleFormController {
     }
 
     private String filterValue(String value) throws Exception {
-        HtmlPageParser parser = new HtmlPageParserImpl();
+        HtmlPageParser parser = new HtmlPageParser();
         HtmlFragment fragment;
         fragment = parser.parseFragment(value);
         fragment.filter(safeHtmlFilter);

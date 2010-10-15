@@ -38,6 +38,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.text.html.HtmlContent;
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlFragment;
+import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.text.html.HtmlPageParser;
 
@@ -107,6 +108,9 @@ public class SyndFeedBuilder {
 
         final Set<HtmlContent> toplevel = new HashSet<HtmlContent>(fragment.getContent());
         fragment.filter(new HtmlPageFilter() {
+            public boolean match(HtmlPage page) {
+                return true;
+            }
             public NodeResult filter(HtmlContent node) {
                 if (toplevel.contains(node)) {
                    if (node instanceof HtmlElement) {

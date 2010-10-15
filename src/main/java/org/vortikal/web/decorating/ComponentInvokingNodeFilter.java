@@ -49,6 +49,7 @@ import org.vortikal.text.html.HtmlComment;
 import org.vortikal.text.html.HtmlContent;
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlNodeFilter;
+import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.text.html.HtmlText;
 import org.vortikal.web.RequestContext;
@@ -110,6 +111,11 @@ public class ComponentInvokingNodeFilter implements HtmlNodeFilter, HtmlPageFilt
             throw new BeanInitializationException(
                 "JavaBean property 'prohibitedComponentNamespaces' not specified");
         }
+    }
+    
+    @Override
+    public boolean match(HtmlPage page) {
+        return true;
     }
     
     // HtmlPageFilter.filter() (invoked after parsing)

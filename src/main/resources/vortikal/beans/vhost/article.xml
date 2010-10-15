@@ -39,8 +39,7 @@
   <bean id="article.displayHandler"  class="org.vortikal.web.decorating.HtmlController"
         parent="repositoryAware">
     <property name="parser" ref="decorating.htmlParser" />
-    <property name="parseFilters" ref="decorating.nodeFilters" />
-    <property name="parseableContentPropDef" ref="containsSSIDirectivesPropDef" />
+    <property name="parseFilters" ref="article.htmlFilters" />
     <property name="viewName" value="displayArticle" />
     <property name="exposedModelElements">
       <map>
@@ -48,6 +47,17 @@
       </map>
     </property>
   </bean>
+
+  <bean id="article.htmlFilters"
+        class="org.springframework.beans.factory.config.ListFactoryBean">
+    <property name="sourceList">
+      <list>
+        <ref bean="linkCheck.htmlFilter" />
+        <ref bean="decorating.ssiNodeFilter" />
+      </list>
+    </property>
+  </bean>
+
 
   <bean id="event.displayHandler"  parent="article.displayHandler">
     <property name="viewName" value="displayEvent" />

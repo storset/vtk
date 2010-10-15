@@ -44,7 +44,6 @@ import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlNodeFilter;
@@ -57,7 +56,6 @@ public class HtmlController implements Controller {
     private Repository repository;
     private HtmlPageParser parser;
     private List<HtmlNodeFilter> parseFilters;
-    private PropertyTypeDefinition parseableContentPropDef;
     private String viewName;
     private Map<String, String> exposedModelElements;
     
@@ -72,18 +70,8 @@ public class HtmlController implements Controller {
         Resource resource = this.repository.retrieve(token, uri, true);
         InputStream is = this.repository.getInputStream(token, uri, true);
 
-        boolean filter =
-            this.parseFilters != null
-            && this.parseableContentPropDef != null 
-            && resource.getProperty(this.parseableContentPropDef) != null;
-        
-        HtmlPage page = null;
-        if (filter) {
-            page = this.parser.parse(is, resource.getCharacterEncoding(), 
+        HtmlPage page = this.parser.parse(is, resource.getCharacterEncoding(), 
                     this.parseFilters);
-        } else {
-            page = this.parser.parse(is, resource.getCharacterEncoding());
-        }
 
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("resource", resource);
@@ -117,9 +105,5 @@ public class HtmlController implements Controller {
 
     public void setParseFilters(List<HtmlNodeFilter> parseFilters) {
         this.parseFilters = parseFilters;
-    }
-
-    public void setParseableContentPropDef(PropertyTypeDefinition parseableContentPropDef) {
-        this.parseableContentPropDef = parseableContentPropDef;
     }
 }

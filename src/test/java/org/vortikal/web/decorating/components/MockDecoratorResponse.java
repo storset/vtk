@@ -40,7 +40,6 @@ import java.util.Locale;
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageParser;
-import org.vortikal.text.html.HtmlPageParserImpl;
 import org.vortikal.web.decorating.DecoratorResponse;
 
 
@@ -82,7 +81,7 @@ public class MockDecoratorResponse implements DecoratorResponse {
         String result = "<html type=\"dummy-root-element\">"
             + new String(this.outputStream.toByteArray(), this.charset.name())
             + "</html>";
-        HtmlPageParser parser = new HtmlPageParserImpl();
+        HtmlPageParser parser = new HtmlPageParser();
         HtmlPage page = parser.parse(new java.io.ByteArrayInputStream(
                                          result.getBytes("utf-8")), "utf-8");
         HtmlElement dummy = page.getRootElement();

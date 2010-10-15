@@ -39,7 +39,7 @@
         class="org.vortikal.web.decorating.TemplateDecorator">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="decorationResolver" ref="system.decorationResolver" />
-    <property name="parseFilters" ref="decorating.nodeFilters" />
+    <!--property name="parseFilters" ref="decorating.userFilters" /-->
     <property name="postFilters">
       <list>
         <ref bean="system.csrfPreventionHandler" />

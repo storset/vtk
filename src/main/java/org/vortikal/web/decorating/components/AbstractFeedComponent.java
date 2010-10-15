@@ -39,7 +39,6 @@ import java.util.Map.Entry;
 import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.text.html.HtmlPageParser;
-import org.vortikal.text.html.HtmlPageParserImpl;
 import org.vortikal.web.decorating.DecoratorRequest;
 
 import com.sun.syndication.feed.synd.SyndEntry;
@@ -56,7 +55,7 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
     protected static final String PARAMETER_FEED_ELEMENT_ORDER = "element-order";
     protected static final String PARAMETER_FEED_ELEMENT_ORDER_DESC = "The order that the elementes are listed";
 
-    private HtmlPageParser parser = new HtmlPageParserImpl();
+    private HtmlPageParser parser = new HtmlPageParser();
     private HtmlPageFilter imgHtmlFilter;
     private HtmlPageFilter noImgHtmlFilter;
     private List<String> defaultElementOrder;

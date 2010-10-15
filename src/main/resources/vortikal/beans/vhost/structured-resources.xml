@@ -74,7 +74,12 @@
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="templateManager" ref="structuredResources.templateManager" />
     <property name="resourceModelKey" value="structured-resource" />
-    <property name="postFilter" ref="decorating.ssiNodeFilter" />
+    <property name="postFilters">
+      <list>
+        <ref bean="decorating.ssiNodeFilter" />
+        <ref bean="linkCheck.htmlFilter" />
+      </list>
+    </property>
     <property name="directiveHandlers" ref="structuredResources.directives" />
     <property name="configProviders">
       <list>

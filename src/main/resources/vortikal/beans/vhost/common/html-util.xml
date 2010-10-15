@@ -508,7 +508,7 @@
     </property>
   </bean>
   
-  <bean id="decorating.htmlParser" class="org.vortikal.text.html.HtmlPageParserImpl">
+  <bean id="decorating.htmlParser" class="org.vortikal.text.html.HtmlPageParser">
     <property name="compositeTags" ref="decorating.htmlParser.compositeTags" />
     <property name="emptyTags" ref="decorating.htmlParser.emptyTags" />
   </bean>

@@ -16,7 +16,8 @@
         class="org.vortikal.web.decorating.TemplateDecorator">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="decorationResolver" ref="decorating.decorationResolver" />
-    <property name="parseFilters" ref="decorating.nodeFilters" />
+    <property name="initialFilters" ref="decorating.initialFilters" />
+    <property name="userFilters" ref="decorating.userFilters" />
     <property name="tidyXhtml" value="${decorating.tidyXhtml}" />
     <!--
     <property name="postFilters">
@@ -27,7 +28,16 @@
     -->
   </bean>
 
-  <bean id="decorating.nodeFilters"
+  <bean id="decorating.initialFilters"
+        class="org.springframework.beans.factory.config.ListFactoryBean">
+    <property name="sourceList">
+      <list>
+        <ref bean="linkCheck.htmlFilter" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="decorating.userFilters"
         class="org.springframework.beans.factory.config.ListFactoryBean">
     <property name="sourceList">
       <list>

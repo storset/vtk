@@ -41,7 +41,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageParser;
-import org.vortikal.text.html.HtmlPageParserImpl;
 import org.vortikal.web.decorating.DecoratorRequest;
 
 
@@ -59,7 +58,7 @@ public class MockStringDecoratorRequest implements DecoratorRequest {
         if (parameters != null) {
             this.parameters = parameters;
         }
-        HtmlPageParser parser = new HtmlPageParserImpl();
+        HtmlPageParser parser = new HtmlPageParser();
         HtmlPage page = parser.parse(new java.io.ByteArrayInputStream(
                                          content.getBytes("utf-8")), "utf-8");
         this.page = page;

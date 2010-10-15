@@ -34,6 +34,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -64,7 +65,8 @@ public class TemplateDecorator implements Decorator {
     private DecorationResolver decorationResolver;
     boolean tidyXhtml = true;
     
-    private List<HtmlNodeFilter> parseFilters;
+    private List<HtmlNodeFilter> initialFilters;
+    private List<HtmlNodeFilter> userFilters;
     private List<HtmlPageFilter> postFilters;
 
     private static final String DECORATION_DESCRIPTOR_REQ_ATTR = 
@@ -79,7 +81,7 @@ public class TemplateDecorator implements Decorator {
         return false;
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public PageContent decorate(Map model, HttpServletRequest request, PageContent content)
         throws Exception, UnsupportedEncodingException, IOException {
 
@@ -96,7 +98,15 @@ public class TemplateDecorator implements Decorator {
         }
 
         boolean filter = descriptor.parse();
-        HtmlPageContent htmlContent = parseHtml(content, filter);
+        List<HtmlNodeFilter> filters = new ArrayList<HtmlNodeFilter>();
+        if (this.initialFilters != null) {
+            filters.addAll(this.initialFilters);
+        }
+        
+        if (filter && this.userFilters != null) {
+            filters.addAll(this.userFilters);
+        }
+        HtmlPageContent htmlContent = parseHtml(content, filters);
 
         List<Template> templates = descriptor.getTemplates();
         if (templates.isEmpty()) {
@@ -117,7 +127,7 @@ public class TemplateDecorator implements Decorator {
                 logger.debug("Rendering request for " + request.getRequestURI()
                         + " using template '" + template + "'");
             }
-            HtmlPageContent c = parseHtml(content, filter);
+            HtmlPageContent c = parseHtml(content, this.userFilters);
             TemplateExecution execution = template.newTemplateExecution(c, request, model, 
                     descriptor.getParameters(template));
             content = execution.render();
@@ -128,7 +138,7 @@ public class TemplateDecorator implements Decorator {
         }
         
         if (this.postFilters != null) {
-            htmlContent = parseHtml(content, false);
+            htmlContent = parseHtml(content, null);
             HtmlPage p = htmlContent.getHtmlContent();
             for (HtmlPageFilter f: this.postFilters) {
                 p.filter(f);
@@ -141,7 +151,7 @@ public class TemplateDecorator implements Decorator {
     }
 
 
-    protected HtmlPageContent parseHtml(PageContent content, boolean filter) throws Exception {
+    protected HtmlPageContent parseHtml(PageContent content, List<HtmlNodeFilter> filters) throws Exception {
         if (content instanceof HtmlPageContent) {
             if (logger.isDebugEnabled()) {
                 logger.debug("HTML content already parsed");
@@ -167,8 +177,8 @@ public class TemplateDecorator implements Decorator {
 
         InputStream stream = new ByteArrayInputStream(source.getBytes(encoding));
         HtmlPage html = null;
-        if (filter && this.parseFilters != null) {
-            html = this.htmlParser.parse(stream, encoding, this.parseFilters);
+        if (filters != null) {
+            html = this.htmlParser.parse(stream, encoding, filters);
         } else {
             html = this.htmlParser.parse(stream, encoding);
         }
@@ -207,8 +217,12 @@ public class TemplateDecorator implements Decorator {
         return this.decorationResolver.resolve(request, response);
     }
         
-    public void setParseFilters(List<HtmlNodeFilter> parseFilters) {
-        this.parseFilters = parseFilters;
+    public void setUserFilters(List<HtmlNodeFilter> userFilters) {
+        this.userFilters = userFilters;
+    }
+    
+    public void setInitialFilters(List<HtmlNodeFilter> initialFilters) {
+        this.initialFilters = initialFilters;
     }
     
     public void setPostFilters(List<HtmlPageFilter> postFilters) {

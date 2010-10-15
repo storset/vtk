@@ -3,39 +3,15 @@
                        "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
-  <bean id="linkCheckService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="viewService" />
-    <property name="order" value="-999" />
-    <property name="assertions">
-      <list>
-        <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="vrtx" />
-          <property name="parameterValue" value="link-check" />
-        </bean>
-        <bean class="org.vortikal.web.service.OrAssertion">
-          <property name="assertions">
-            <list>
-              <ref bean="htmlOrJsonContentTypeAssertion" />
-              <ref bean="hasIndexFileAssertion" />
-            </list>
-          </property>
-        </bean>
-      </list>
-    </property>
-    <property name="handler" ref="linkCheckHandler" />
+  <bean id="linkCheck.htmlFilter" class="org.vortikal.web.display.linkcheck.LinkCheckFilter">
+    <property name="linkChecker" ref="linkCheck.validator" />
   </bean>
 
-  <bean id="htmlOrJsonContentTypeAssertion" class="org.vortikal.web.service.OrAssertion">
-    <property name="assertions">
-      <list>
-        <ref bean="contentTypeMatchesHtml" />
-        <ref bean="json.contentTypeAssertion" />
-      </list>
-    </property>
-  </bean>
-
-  <bean id="linkCheckHandler" class="org.vortikal.web.display.linkcheck.LinkCheckController" parent="repositoryAware">
+  <bean id="linkCheck.validator" class="org.vortikal.web.display.linkcheck.LinkChecker" parent="repositoryAware">
     <property name="cacheManager" ref="ehCacheManager" />
+    <property name="connectTimeout" value="5000" />
+    <property name="readTimeout" value="5000" />
+    <property name="userAgent" value="Link checker for ${repositoryID}" />
   </bean>
 
 </beans>

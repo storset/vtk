@@ -289,7 +289,6 @@
           <list>
             <value>${jquery.baseURL}/jquery-${jquery.version}.min.js</value>
             <value>${jsBaseURL}/iframe-view.js</value>
-            <value>${jsBaseURL}/visualize-links.js</value>
           </list>
         </entry>
       </map>

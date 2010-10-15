@@ -32,8 +32,9 @@ package org.vortikal.web.display.linkcheck;
 
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLDecoder;
+import java.util.HashSet;
+import java.util.Set;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
@@ -51,6 +52,7 @@ import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.UriTermQuery;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.web.service.URL;
 
 public class LinkChecker implements InitializingBean {
     
@@ -60,6 +62,7 @@ public class LinkChecker implements InitializingBean {
     private int connectTimeout = 5000;
     private int readTimeout = 5000;
     private String userAgent = "Link checker";
+    private Set<String> localHostNames = new HashSet<String>();
     
     public static class LinkCheckResult {
         private String link;
@@ -96,42 +99,48 @@ public class LinkChecker implements InitializingBean {
         String cacheKey = link;
         Element cached = this.cache.get(cacheKey);
         if (cached != null) {
-            System.out.println("__cache_hit: " + link + ", found: " + ((LinkCheckResult) cached.getObjectValue()).isFound());
             return (LinkCheckResult) cached.getObjectValue();
         }
-
+        
         LinkCheckResult result;
         try {
-            boolean found = !isBroken(link, base);
+            URL url = getURL(link);
+            if (this.localHostNames.contains(url.getHost())) {
+                boolean found = !isBrokenInternal(url.getPath().toString());
+                return new LinkCheckResult(link, found);
+            }
+            boolean found = !isBroken(url);
             result  = new LinkCheckResult(link, found);
         } catch (Throwable t) {
             result = new LinkCheckResult(link, false, t);
         }
-        System.out.println("__cache_miss: " + link + ", found: " + result.found);
         this.cache.put(new Element(link, result));
         return result;
     }
-
-    private boolean isBroken(String link, Path base) {
-        // get the processed link to check
-        String processedLink = getProcessedLink(base, link);
-
-        if (!(processedLink.startsWith("http://") || processedLink.startsWith("https://"))) {
-            processedLink = "http://" + processedLink;
+    
+    private URL getURL(String link) {
+        link = trimTrailingSlashInPathString(link);
+        if (link.contains("#")) {
+            link = link.substring(0, link.indexOf("#"));
         }
+        return URL.parse(link);
+    }
 
+    private boolean isBroken(URL url) {
         // go out on the worldwide web
         HttpURLConnection urlConnection = null;
         try {
-            URL url = new URL(processedLink);
             urlConnection = createHeadRequest(url);
             urlConnection.connect();
             int responseCode = urlConnection.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_MOVED_PERM || responseCode == HttpURLConnection.HTTP_MOVED_TEMP) {
+            if (responseCode == HttpURLConnection.HTTP_MOVED_PERM 
+                    || responseCode == HttpURLConnection.HTTP_MOVED_TEMP) {
                 // check if moved location is valid
                 responseCode = this.checkMoved(urlConnection, responseCode);
             }
-            return responseCode != HttpURLConnection.HTTP_OK;
+            return responseCode == HttpURLConnection.HTTP_NOT_FOUND 
+                || responseCode == HttpURLConnection.HTTP_GONE;
+            
         } catch (Exception e) {
             return true;
         } finally {
@@ -148,7 +157,7 @@ public class LinkChecker implements InitializingBean {
                 && (responseCode == HttpURLConnection.HTTP_MOVED_PERM || responseCode == HttpURLConnection.HTTP_MOVED_TEMP)) {
             String location = urlConnection.getHeaderField("Location");
             urlConnection.disconnect();
-            urlConnection = createHeadRequest(new URL(location));
+            urlConnection = createHeadRequest(URL.parse(location));
             urlConnection.connect();
             responseCode = urlConnection.getResponseCode();
             retry++;
@@ -156,7 +165,8 @@ public class LinkChecker implements InitializingBean {
         return responseCode;
     }
     
-    private HttpURLConnection createHeadRequest(URL location) throws Exception {
+    private HttpURLConnection createHeadRequest(URL url) throws Exception {
+        java.net.URL location = new java.net.URL(url.toString());
         HttpURLConnection urlConnection = (HttpURLConnection) location.openConnection();
         urlConnection.setRequestMethod("HEAD");
         urlConnection.setConnectTimeout(this.connectTimeout);
@@ -249,6 +259,10 @@ public class LinkChecker implements InitializingBean {
     
     public void setUserAgent(String userAgent) {
         this.userAgent = userAgent;
+    }
+
+    public void setLocalHostNames(Set<String> localHostNames) {
+        this.localHostNames = localHostNames;
     }
 
     @Override

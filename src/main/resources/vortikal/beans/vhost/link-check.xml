@@ -10,8 +10,13 @@
   <bean id="linkCheck.validator" class="org.vortikal.web.display.linkcheck.LinkChecker" parent="repositoryAware">
     <property name="cacheManager" ref="ehCacheManager" />
     <property name="connectTimeout" value="5000" />
-    <property name="readTimeout" value="5000" />
+    <property name="readTimeout" value="10000" />
     <property name="userAgent" value="Link checker for ${repositoryID}" />
+    <property name="localHostNames">
+      <bean class="org.vortikal.context.CSVSetFactoryBean">
+        <property name="csvList" value="${linkCheck.localDomains}" />
+      </bean>
+    </property>
   </bean>
 
 </beans>

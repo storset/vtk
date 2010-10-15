@@ -69,6 +69,7 @@ import org.vortikal.text.html.AbstractHtmlPageFilter;
 import org.vortikal.text.html.HtmlAttribute;
 import org.vortikal.text.html.HtmlContent;
 import org.vortikal.text.html.HtmlElement;
+import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlText;
 import org.vortikal.text.html.HtmlUtil;
 import org.vortikal.util.io.StreamUtil;
@@ -117,6 +118,10 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
     	return generateToken(url, session);
     }
     
+    @Override
+    public boolean match(HtmlPage page) {
+        return true;
+    }
     
     @Override
     public void filter(HttpServletRequest request, HandlerFilterChain chain)

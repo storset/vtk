@@ -31,7 +31,10 @@
 package org.vortikal.util.repository;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -64,8 +67,8 @@ public class MethodInvokingRepositoryEventTrigger
     private String method;
 
     private LinkedHashMap<Object, String> multipleInvocations;
-    private LinkedHashMap<Object, Method> methodInvocations;
-    
+    private List<TargetAndMethod> methodInvocations;
+
     @Required
     public void setRepository(Repository repository)  {
         this.repository = repository;
@@ -96,23 +99,26 @@ public class MethodInvokingRepositoryEventTrigger
     }
     
 
+    @Override
     public void afterPropertiesSet() {
         if (this.uri == null && this.uriPattern == null) {
             throw new BeanInitializationException(
                 "One of JavaBean properties 'uri' or 'uriPattern' must be specified.");
         }
         if (this.multipleInvocations != null && this.targetObject != null) {
-            throw new BeanInitializationException("Specify only one of properties 'targetMethod' or 'multipleInvocations'");
+            throw new BeanInitializationException("Specify only one of properties 'targetObject + method' or 'multipleInvocations'");
         }
         if (this.multipleInvocations == null && (this.targetObject == null || this.method == null)) {
-            throw new BeanInitializationException("Specify one of properties 'targetMethod' or 'multipleInvocations'");
+            throw new BeanInitializationException("Specify one of properties 'targetObject + method' or 'multipleInvocations'");
         }
-        this.methodInvocations = new LinkedHashMap<Object, Method>();
+
+        this.methodInvocations = new ArrayList<TargetAndMethod>();
         if (this.multipleInvocations == null) {
             initMethodInvocation(this.targetObject, this.method);
         } else {
-            for (Object target : this.multipleInvocations.keySet()) {
-                String methodName = this.multipleInvocations.get(target);
+            for (Map.Entry<Object,String> entry: this.multipleInvocations.entrySet()) {
+                Object target = entry.getKey();
+                String methodName = entry.getValue();
                 initMethodInvocation(target, methodName);
             }
         }
@@ -120,19 +126,17 @@ public class MethodInvokingRepositoryEventTrigger
     
     private void initMethodInvocation(Object target, String methodName) {
         // Resolving only methods that take no arguments.
-        Method method = 
-            BeanUtils.findMethod(target.getClass(), 
-                    methodName, new Class[0]);
+        Method m =  BeanUtils.findMethod(target.getClass(), methodName, new Class[0]);
         
-        if (method == null) {
+        if (m == null) {
             throw new BeanInitializationException("Unable to resolve method with name '"
                     + methodName + "' for class " + target.getClass() 
                     + ". Only methods that take no arguments are supported.");
         }
-        this.methodInvocations.put(target, method);
+        this.methodInvocations.add(new TargetAndMethod(target, m));
     }
 
-    
+    @Override
     public void onApplicationEvent(ApplicationEvent event) {
         if (! (event instanceof RepositoryEvent)) {
             return;
@@ -164,21 +168,40 @@ public class MethodInvokingRepositoryEventTrigger
 
 
     private void invoke() {
-        for (Object target : this.methodInvocations.keySet()) {
-            Method method = this.methodInvocations.get(target);
+        for (TargetAndMethod tm: this.methodInvocations) {
+            Method m = tm.getMethod();
+            Object target = tm.getTarget();
+
             try {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Invoking method " + method + " on object "
+                    logger.debug("Invoking method " + m + " on object "
                             + this.targetObject);
                 }
-                method.invoke(target, new Object[0]);
+                m.invoke(target, new Object[0]);
             } catch (Throwable t) {
-                logger.warn("Error occurred while invoking method '" + method +
-                        "' on object '" + target+ "'", t);
+                logger.warn("Error occurred while invoking method '" + m +
+                        "' on object '" + target + "'", t);
             }
         }
     }
-    
+
+    private static final class TargetAndMethod {
+        private Object target;
+        private Method method;
+
+        public TargetAndMethod(Object target, Method m) {
+            this.target = target;
+            this.method = m;
+        }
+
+        public Object getTarget() {
+            return this.target;
+        }
+
+        public Method getMethod() {
+            return this.method;
+        }
+    }
 
 }
 

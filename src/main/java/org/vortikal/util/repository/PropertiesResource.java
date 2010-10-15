@@ -99,7 +99,6 @@ public class PropertiesResource extends Properties implements InitializingBean {
         this.lazyInit = lazyInit;
         afterPropertiesSet();
     }
-    
 
     @Required
     public void setRepository(Repository repository) {
@@ -127,6 +126,7 @@ public class PropertiesResource extends Properties implements InitializingBean {
         this.lazyInit = lazyInit;
     }
 
+    @Override
     public void afterPropertiesSet() throws Exception {
         if (!this.lazyInit) {
             this.load();

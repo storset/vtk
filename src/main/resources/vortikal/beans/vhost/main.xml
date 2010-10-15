@@ -73,6 +73,7 @@
   <import resource="delete.xml" />
   <import resource="vocabulary.xml" />
   <import resource="publish.xml" />
+  <import resource="trash-can.xml" />
   
   <import resource="link-check.xml" />
   

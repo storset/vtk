@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+                       "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <bean id="viewTrashCanContentsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-9999" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="view-trash-can" />
+        </bean>
+        <ref bean="resourceIsCollection" />
+      </list>
+    </property>
+    <property name="handler" ref="viewTrashCanContentsHandler" />
+  </bean>
+
+  <bean id="viewTrashCanContentsHandler" class="org.vortikal.web.display.trashcan.ViewTrashCanContentsController"
+    parent="repositoryAware">
+  </bean>
+
+</beans>

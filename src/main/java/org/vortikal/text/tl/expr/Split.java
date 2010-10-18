@@ -30,7 +30,6 @@
  */
 package org.vortikal.text.tl.expr;
 
-import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Symbol;
 
@@ -60,57 +59,33 @@ public class Split extends Function {
             throw new IllegalArgumentException("Split: fourth argument is NULL");
         }
         
-        //XXX: probably use ValNodeFactory for this. ***
-        StringBuilder sb = new StringBuilder();
-        if(o1 instanceof Value[]) {
-          Value[] values = (Value[]) o1;
-          for(Value value : values) {
-            sb.append(value.getStringValue());
-          }
-        } else if (o1 instanceof Value) {
-          Value value = (Value) o1;
-          sb.append(value.getStringValue());
-        } else if (o1 instanceof String) {
-          sb.append((String) o1);  
-        } else {
-          throw new IllegalArgumentException("Split: first argument must be Value[], Value or String");  
-        }
-        //***
-        
-        String word = sb.toString();
+        String word = o1.toString();
         String splitChar = (String) o2;
         
-        int lengthThreshold = -1; // split any string length
+        int threshold = -1;
         
         try {
-          lengthThreshold = ((Integer)o3).intValue();
-        } catch(NumberFormatException nfex) {
+          threshold = ((Integer)o3).intValue();
+        } catch (NumberFormatException e) {
           throw new IllegalArgumentException("Split: third argument must be an integer");
         }
-        
-        int splitLimit = 0; // split all occurrences of splitChar
-        
+        int splitLimit = 0;
         try {
           splitLimit = ((Integer)o4).intValue();
-        } catch(NumberFormatException nfex) {
+        } catch (NumberFormatException e) {
           throw new IllegalArgumentException("Split: fourth argument must be an integer");
         }
         
-        if(word.length() > lengthThreshold || lengthThreshold == -1) {
-          String[] splittedWords = word.split(splitChar, splitLimit);
-          StringBuilder splitted = new StringBuilder();
-          
-          int splittedWordsLengthMinusOne = splittedWords.length - 1;
-          for(int i = 0; i < splittedWordsLengthMinusOne; i++) {
-            splitted.append(splittedWords[i] + splitChar + " ");
+        if (word.length() > threshold || threshold == -1) {
+          String[] splitWords = word.split(splitChar, splitLimit);
+          StringBuilder result = new StringBuilder();
+          for (int i = 0; i < splitWords.length - 1; i++) {
+            result.append(splitWords[i] + splitChar + " ");
           }
-          splitted.append(splittedWords[splittedWordsLengthMinusOne]);
-          
-          return splitted.toString();
+          result.append(splitWords[splitWords.length - 1]);
+          return result.toString();
         }
-
         return o1; 
-        
     }
 
 }

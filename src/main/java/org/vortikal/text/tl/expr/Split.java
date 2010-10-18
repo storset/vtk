@@ -43,7 +43,7 @@ public class Split extends Function {
     public Object eval(Context ctx, Object... args) {
         Object o1 = args[0]; // word
         Object o2 = args[1]; // splitChar
-        Object o3 = args[2]; // lengthThreshold
+        Object o3 = args[2]; // threshold
         Object o4 = args[3]; // splitLimit
         
         if (o1 == null) {

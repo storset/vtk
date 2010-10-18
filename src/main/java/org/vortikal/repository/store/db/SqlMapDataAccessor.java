@@ -33,6 +33,7 @@ package org.vortikal.repository.store.db;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -259,10 +260,31 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
     @Override
     public void markDeleted(ResourceImpl resource, ResourceImpl parent, Principal principal, final String trashID)
             throws DataAccessException {
-        // XXX Mark resource(s) as deleted
-        // - inherited ACL? -> create spanshot and update table acl_entry
-        // - update resource uri(s), prefix with trashID
-        // - insert stats in table deleted_resource
+        Path resourceURI = resource.getURI();
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("uri", resourceURI.toString());
+        parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(resourceURI, SQL_ESCAPE_CHAR));
+
+        if (resource.isInheritedAcl()) {
+            // XXX take snapshot of ACL
+        }
+
+        Path parentURI = resourceURI.getParent();
+        int uriTrimLength = parentURI.toString().length();
+        if (!parentURI.isRoot()) {
+            uriTrimLength++;
+        }
+        parameters.put("uriTrimLength", uriTrimLength);
+        parameters.put("trashCanID", trashID);
+        String sqlMap = getSqlMap("markDeleted");
+        getSqlMapClientTemplate().update(sqlMap, parameters);
+
+        parameters.put("trashCanURI", trashID + "/" + resourceURI.getName());
+        parameters.put("parentID", parent.getID());
+        parameters.put("principal", principal.getName());
+        parameters.put("deletedTime", Calendar.getInstance().getTime());
+        sqlMap = getSqlMap("insertTrashCanEntry");
+        getSqlMapClientTemplate().update(sqlMap, parameters);
     }
 
     public ResourceImpl[] loadChildren(ResourceImpl parent) {

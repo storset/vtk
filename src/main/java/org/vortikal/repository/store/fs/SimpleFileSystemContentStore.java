@@ -205,8 +205,19 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
 
     @Override
     public void moveToTrash(Path srcURI, final String trashIdDir) throws DataAccessException {
-        // XXX Move resource(s) to trash directory, after creating unique
-        // trashIdDir
+        
+        String from = getLocalFilename(srcURI);
+        File src = new File(from);
+
+        String trashCanDir = this.trashCanDirectory + "/" + trashIdDir;
+        File trashDir = new File(trashCanDir);
+        trashDir.mkdir();
+        File dest = new File(trashCanDir + "/" + srcURI.getName());
+        
+        // XXX Issues with renamTo()? e.g. http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6213298
+        if (!src.renameTo(dest)) {
+            throw new DataAccessException("Unable to move " + from + " to trash can");
+        }
     }
 
     private String getLocalFilename(Path uri) {

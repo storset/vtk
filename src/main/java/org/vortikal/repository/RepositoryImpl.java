@@ -410,10 +410,15 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         parentCollection = this.resourceHelper.contentModification(parentCollection, principal);
         this.dao.store(parentCollection);
 
-        // XXX Handle restorable:
-        // - mark as deleted (database)
-        // - move to trash (filesystem)
-
+        // XXX Wait a wee bit before "arming" this nuclear disaster
+        // if (restorable) {
+        //    final String trashID = "trash-" + r.getID();
+        //    this.dao.markDeleted(r, parentCollection, principal, trashID);
+        //    this.contentStore.moveToTrash(r.getURI(), trashID);
+        // } else {
+        //    this.dao.delete(r);
+        //    this.contentStore.deleteResource(r.getURI());
+        // }
         this.dao.delete(r);
         this.contentStore.deleteResource(r.getURI());
 

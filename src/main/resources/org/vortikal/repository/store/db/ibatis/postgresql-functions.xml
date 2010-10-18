@@ -45,7 +45,7 @@
   </sql>
 
   <sql id="trashCanUri">
-    #trashCanID# || substring(uri, length(#parentURI#) + 1)
+    #trashCanID# || substring(uri, #uriTrimLength#)
   </sql>
 
   <insert id="insertPropertyEntry" parameterClass="java.util.Map">

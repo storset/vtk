@@ -533,11 +533,13 @@ public class Cache implements DataAccessor, InitializingBean {
 
         try {
             // Dispatch to wrapped DAO for persistence
-            if (restorable) {
-                this.wrappedAccessor.markDeleted(resource, parent, principal, trashID);
-            } else {
-                this.wrappedAccessor.delete(resource);
-            }
+            // XXX Wait until all db-scripts have been run (Oracle)
+//            if (restorable) {
+//                this.wrappedAccessor.markDeleted(resource, parent, principal, trashID);
+//            } else {
+//                this.wrappedAccessor.delete(resource);
+//            }
+            this.wrappedAccessor.delete(resource);
 
             this.items.remove(uris); // Purge all affected items from cache
         } finally {

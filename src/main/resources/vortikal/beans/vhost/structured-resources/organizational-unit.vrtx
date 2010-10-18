@@ -113,10 +113,11 @@ resourcetype organizational-unit {
               </span>
             [endif]
               
-            [if email != null && email != ""]
+            [if email != null]
+              [!-- XXX: Displays only the first email address: --]
               <span class="vrtx-organizational-unit-email">
-                [def emailSplitted split(email, "@", 25, 2)]
-                [localized 'email']: <a href="mailto:[val email]"><span class="email">[val emailSplitted]</span></a>
+                [def emailSplit split(email.0, "@", 25, 2)]
+                [localized 'email']: <a href="mailto:[val email.0]"><span class="email">[val emailSplit]</span></a>
               </span>
             [endif]
         

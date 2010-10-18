@@ -57,7 +57,7 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
     private static Log logger = LogFactory.getLog(SimpleFileSystemContentStore.class);
 
     private String repositoryDataDirectory;
-    private String trashCanDirectory;
+    private String repositoryTrashCanDirectory;
 
     private boolean urlEncodeFileNames = false;
 
@@ -209,7 +209,7 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
         String from = getLocalFilename(srcURI);
         File src = new File(from);
 
-        String trashCanDir = this.trashCanDirectory + "/" + trashIdDir;
+        String trashCanDir = this.repositoryTrashCanDirectory + "/" + trashIdDir;
         File trashDir = new File(trashCanDir);
         trashDir.mkdir();
         File dest = new File(trashCanDir + "/" + srcURI.getName());
@@ -234,8 +234,8 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
     }
 
     @Required
-    public void setTrashCanDirectory(String trashCanDirectory) {
-        this.trashCanDirectory = trashCanDirectory;
+    public void setRepositoryTrashCanDirectory(String repositoryTrashCanDirectory) {
+        this.repositoryTrashCanDirectory = repositoryTrashCanDirectory;
     }
 
     public void setUrlEncodeFileNames(boolean urlEncodeFileNames) {
@@ -244,7 +244,7 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
 
     public void afterPropertiesSet() throws Exception {
         this.createRootDirectory(this.repositoryDataDirectory);
-        this.createRootDirectory(this.trashCanDirectory);
+        this.createRootDirectory(this.repositoryTrashCanDirectory);
     }
 
     private void createRootDirectory(String directoryPath) {

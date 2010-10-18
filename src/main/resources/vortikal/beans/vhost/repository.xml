@@ -135,7 +135,7 @@
         class="org.vortikal.repository.store.fs.SimpleFileSystemContentStore">
     <property name="urlEncodeFileNames" value="${urlEncodeFileNames}" />
     <property name="repositoryDataDirectory" value="${repositoryDataDirectory}" />
-    <property name="trashCanDirectory" value="${trashCanDirectory}" />
+    <property name="repositoryTrashCanDirectory" value="${repositoryTrashCanDirectory}" />
   </bean>
 
   <bean id="repository.indexDao" class="org.vortikal.repository.store.db.SqlMapIndexDao">

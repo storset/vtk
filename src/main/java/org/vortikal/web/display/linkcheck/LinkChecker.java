@@ -63,6 +63,7 @@ public class LinkChecker implements InitializingBean {
     private int readTimeout = 5000;
     private String userAgent = "Link checker";
     private Set<String> localHostNames = new HashSet<String>();
+    private boolean optimizeLocalLinks = false;
     
     public static class LinkCheckResult {
         private String link;
@@ -105,7 +106,7 @@ public class LinkChecker implements InitializingBean {
         LinkCheckResult result;
         try {
             URL url = getURL(link);
-            if (this.localHostNames.contains(url.getHost())) {
+            if (this.optimizeLocalLinks && this.localHostNames.contains(url.getHost())) {
                 boolean found = !isBrokenInternal(url.getPath().toString());
                 return new LinkCheckResult(link, found);
             }
@@ -263,6 +264,10 @@ public class LinkChecker implements InitializingBean {
 
     public void setLocalHostNames(Set<String> localHostNames) {
         this.localHostNames = localHostNames;
+    }
+
+    public void setOptimizeLocalLinks(boolean optimizeLocalLinks) {
+        this.optimizeLocalLinks = optimizeLocalLinks;
     }
 
     @Override

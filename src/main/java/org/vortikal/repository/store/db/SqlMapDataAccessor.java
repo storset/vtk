@@ -265,10 +265,6 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         parameters.put("uri", resourceURI.toString());
         parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(resourceURI, SQL_ESCAPE_CHAR));
 
-        if (resource.isInheritedAcl()) {
-            // XXX take snapshot of ACL
-        }
-
         Path parentURI = resourceURI.getParent();
         int uriTrimLength = parentURI.toString().length();
         if (!parentURI.isRoot()) {

@@ -386,7 +386,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     @Override
     public void delete(String token, Path uri, boolean restorable) throws IllegalOperationException,
             AuthorizationException, AuthenticationException, ResourceNotFoundException, ResourceLockedException,
-            FailedDependencyException, ReadOnlyException, IOException {
+            FailedDependencyException, ReadOnlyException, IOException, CloneNotSupportedException {
 
         Principal principal = this.tokenManager.getPrincipal(token);
 
@@ -410,17 +410,22 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         parentCollection = this.resourceHelper.contentModification(parentCollection, principal);
         this.dao.store(parentCollection);
 
-        // XXX Wait a wee bit before "arming" this nuclear disaster
-        // if (restorable) {
-        //    final String trashID = "trash-" + r.getID();
-        //    this.dao.markDeleted(r, parentCollection, principal, trashID);
-        //    this.contentStore.moveToTrash(r.getURI(), trashID);
-        // } else {
-        //    this.dao.delete(r);
-        //    this.contentStore.deleteResource(r.getURI());
-        // }
-        this.dao.delete(r);
-        this.contentStore.deleteResource(r.getURI());
+        if (restorable) {
+
+            // Check ACL before moving to trash can,
+            // if inherited, take snapshot of current ACL
+            if (r.isInheritedAcl()) {
+                r.setInheritedAcl(false);
+                this.dao.storeACL(r);
+            }
+
+            final String trashID = "trash-" + r.getID();
+            this.dao.markDeleted(r, parentCollection, principal, trashID);
+            this.contentStore.moveToTrash(r.getURI(), trashID);
+        } else {
+            this.dao.delete(r);
+            this.contentStore.deleteResource(r.getURI());
+        }
 
         ResourceDeletionEvent event = new ResourceDeletionEvent(this, uri, r.getID(), r.isCollection());
         this.context.publishEvent(event);

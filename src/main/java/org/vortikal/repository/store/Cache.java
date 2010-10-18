@@ -533,13 +533,11 @@ public class Cache implements DataAccessor, InitializingBean {
 
         try {
             // Dispatch to wrapped DAO for persistence
-            // XXX Hold on with this a wee bit longer. Might cause severe diarrhea.
-            // if (restorable) {
-            //     this.wrappedAccessor.markDeleted(resource, parent, principal, trashID);
-            // } else {
-            //     this.wrappedAccessor.delete(resource);
-            // }
-            this.wrappedAccessor.delete(resource);
+            if (restorable) {
+                this.wrappedAccessor.markDeleted(resource, parent, principal, trashID);
+            } else {
+                this.wrappedAccessor.delete(resource);
+            }
 
             this.items.remove(uris); // Purge all affected items from cache
         } finally {

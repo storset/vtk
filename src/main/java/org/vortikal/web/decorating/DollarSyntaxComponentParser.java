@@ -45,13 +45,13 @@ import org.apache.commons.logging.LogFactory;
 public class DollarSyntaxComponentParser implements TextualComponentParser {
 
     private static Log logger = LogFactory.getLog(DollarSyntaxComponentParser.class);
-    
+
     private static final Pattern NAMESPACE_REGEX_PATTERN = Pattern.compile("[a-zA-Z]+");
     private static final Pattern NAME_REGEX_PATTERN = Pattern.compile("[a-zA-Z]+(-[a-zA-Z]+)*");
 
     public ComponentInvocation[] parse(Reader reader) throws Exception {
         BufferedReader bufferedReader = new BufferedReader(reader);
-        
+
         StringBuilder sb = new StringBuilder();
         char[] buffer = new char[1024];
 
@@ -61,13 +61,13 @@ public class DollarSyntaxComponentParser implements TextualComponentParser {
         }
         return parseInternal(sb.toString());
     }
-    
+
 
     private ComponentInvocation[] parseInternal(String s) throws Exception {
 
         // Look for occurrences of:
         // ${namespace:name param1=[value] param2=[value]}
-        
+
         List<ComponentInvocation> fragmentList = new ArrayList<ComponentInvocation>();
 
         int contentIdx = 0;
@@ -84,7 +84,7 @@ public class DollarSyntaxComponentParser implements TextualComponentParser {
             }
 
             String componentContent = unescapedSubstring(
-                s, '}', '\\', directiveStart, directiveEnd);
+                    s, '}', '\\', directiveStart, directiveEnd);
             ComponentInvocation c = parseDirective(componentContent);
 
             if (logger.isDebugEnabled()) {
@@ -116,33 +116,33 @@ public class DollarSyntaxComponentParser implements TextualComponentParser {
         // namespace:name param1=[value] param2=[value]
         String componentRef = parseComponentRef(s);
         if (componentRef == null) {
-        	if (logger.isInfoEnabled()) {
-        		logger.info("Unable to parse component ref: '" + s + "'");
-        	}
-        	return null;
+            if (logger.isInfoEnabled()) {
+                logger.info("Unable to parse component ref: '" + s + "'");
+            }
+            return null;
         }
-        
+
         String namespace = parseComponentNamespace(componentRef);
         if (namespace == null) {
-        	if (logger.isInfoEnabled()) {
-        		logger.info("Unable to parse component namespace from: '" + componentRef + "'");
-        	}
-        	return null;
+            if (logger.isInfoEnabled()) {
+                logger.info("Unable to parse component namespace from: '" + componentRef + "'");
+            }
+            return null;
         }
         String name = parseComponentName(componentRef);
         if (name == null) {
-        	if (logger.isInfoEnabled()) {
-        		logger.info("Unable to parse component name from: '" + componentRef + "'");
-        	}
-        	return null;
+            if (logger.isInfoEnabled()) {
+                logger.info("Unable to parse component name from: '" + componentRef + "'");
+            }
+            return null;
         }
 
         LinkedHashMap<String, Object> parameters = splitParameterList(s);
         if (parameters == null) {
-        	if (logger.isInfoEnabled()) {
-        		logger.info("Malformed parameter list in directive: '" + s + "'");
-        	}
-        	return null;
+            if (logger.isInfoEnabled()) {
+                logger.info("Malformed parameter list in directive: '" + s + "'");
+            }
+            return null;
         }
         return new ComponentInvocationImpl(namespace, name, new HashMap<String, Object>(parameters));
     }
@@ -162,9 +162,9 @@ public class DollarSyntaxComponentParser implements TextualComponentParser {
 
         return s.substring(0, endIdx);
     }
-    
+
     private String parseComponentNamespace(String s) {
-        
+
         int delimIdx = s.indexOf(":");
         if (delimIdx == -1) {
             return null;
@@ -176,9 +176,9 @@ public class DollarSyntaxComponentParser implements TextualComponentParser {
         }
         return namespace.trim();
     }
-    
+
     private String parseComponentName(String s) {
-        
+
         int delimIdx = s.indexOf(":");
         if (delimIdx == -1) {
             return null;
@@ -192,8 +192,8 @@ public class DollarSyntaxComponentParser implements TextualComponentParser {
         }
         return name;
     }
-    
-    
+
+
     /**
      * Splits a parameter list into a map of <code>(name, value)</code> pairs.
      *
@@ -228,7 +228,7 @@ public class DollarSyntaxComponentParser implements TextualComponentParser {
             }
             String name = s.substring(nameStartIdx, equalsIdx).trim();
             String value = unescapedSubstring(
-                s, ']', '\\', valueStartIdx, valueEndIdx).trim();
+                    s, ']', '\\', valueStartIdx, valueEndIdx).trim();
 
             value = value.replaceAll("&amp;", "&");
             value = value.replaceAll("&quot;", "\"");
@@ -240,7 +240,7 @@ public class DollarSyntaxComponentParser implements TextualComponentParser {
         }
         return result;
     }
-    
+
 
 
     private int nextIndexOf(String string, char character, char escape, int startIndex) {
@@ -258,9 +258,9 @@ public class DollarSyntaxComponentParser implements TextualComponentParser {
         }
         return -1;
     }
-    
+
     private String unescapedSubstring(String string, char special,
-                                     char escape, int startIndex, int endIndex) {
+            char escape, int startIndex, int endIndex) {
         StringBuilder sb = new StringBuilder();
         for (int i = startIndex; i < endIndex; i++) {
             char current = string.charAt(i);
@@ -276,7 +276,7 @@ public class DollarSyntaxComponentParser implements TextualComponentParser {
         }
         return sb.toString();
     }
-    
+
 
     private int nextWhitespaceIdx(String s, int startIdx) {
         for (int i = startIdx; i < s.length(); i++) {
@@ -288,14 +288,14 @@ public class DollarSyntaxComponentParser implements TextualComponentParser {
         return -1;
     }
 
-    
+
     private void addDynamicComponent(List<ComponentInvocation> fragmentList, ComponentInvocation inv) {
         if (logger.isDebugEnabled()) {
             logger.debug("Dynamic component: " + inv);
         }
         fragmentList.add(inv);
     }
-    
+
 
     private void addStaticText(List<ComponentInvocation> fragmentList, String s) {
         if (logger.isDebugEnabled()) {
@@ -314,5 +314,5 @@ public class DollarSyntaxComponentParser implements TextualComponentParser {
         fragmentList.add(f);
     }
 
-    
+
 }

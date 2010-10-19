@@ -149,7 +149,7 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
                     + nfe.getMessage());
         }
 
-        Object resourceTypeParam = request.getParameter(PARAMETER_RESOURCE_TYPE);
+        Object resourceTypeParam = request.getRawParameter(PARAMETER_RESOURCE_TYPE);
         List<ResourceTypeDefinition> resourceTypeDefs = new ArrayList<ResourceTypeDefinition>();
         if (resourceTypeParam != null) {
             String[] resourceTypes = resourceTypeParam.toString().split(",");
@@ -162,7 +162,7 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
         }
 
         List<String> urlSortingParmas = new ArrayList<String>();
-        Object sortingParam = request.getParameter(PARAMETER_SORT_SELECTED_TAG_BY);
+        Object sortingParam = request.getRawParameter(PARAMETER_SORT_SELECTED_TAG_BY);
         if (sortingParam != null) {
             String[] sortingParams = sortingParam.toString().split(",");
             for (String param : sortingParams) {

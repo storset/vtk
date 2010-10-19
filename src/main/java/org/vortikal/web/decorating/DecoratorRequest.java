@@ -78,16 +78,19 @@ public interface DecoratorRequest {
 
     /**
      * Gets a named parameter for this 
-     * decorator component invocation.
+     * decorator component invocation. No processing 
+     * (variable expansion) is performed on the parameter.
      * @param name the name of the parameter
      * @return the parameter value (or <code>null</code> 
      * if no such parameter exists)
      */
-    public Object getParameter(String name);
+    public Object getRawParameter(String name);
 
     /**
      * Gets a named string parameter for this 
-     * decorator component invocation.
+     * decorator component invocation. 
+     * The parameter may be subject to variable 
+     * expansion before returned.
      * @param name the name of the parameter
      * @return the parameter value, as a string
      */

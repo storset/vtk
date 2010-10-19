@@ -47,14 +47,14 @@ import org.vortikal.web.decorating.DecoratorRequest;
 public class MockStringDecoratorRequest implements DecoratorRequest {
 
     private HtmlPage page;
-    private Map<Object, Object> parameters = new HashMap<Object, Object>();
+    private Map<String, Object> parameters = new HashMap<String, Object>();
 
     public MockStringDecoratorRequest(String content) throws Exception {
         this(content, null);
     }
     
 
-    public MockStringDecoratorRequest(String content, Map<Object, Object> parameters) throws Exception {
+    public MockStringDecoratorRequest(String content, Map<String, Object> parameters) throws Exception {
         if (parameters != null) {
             this.parameters = parameters;
         }
@@ -84,7 +84,7 @@ public class MockStringDecoratorRequest implements DecoratorRequest {
         return new HashMap<Object, Object>();
     }
         
-    public Object getParameter(String name) {
+    public Object getRawParameter(String name) {
         return this.parameters.get(name);
     }
 

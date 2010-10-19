@@ -65,8 +65,8 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
             throws Exception {
 
         String token = getToken(request);
-        int displayFromLevel = getIntegerGreaterThenZero(PARAMETER_DISPLAY_FROM_LEVEL, request, -1);
-        int maxSiblings = getIntegerGreaterThenZero(PARAMETER_MAX_NUMBER_OF_SIBLINGS, request, Integer.MAX_VALUE);
+        int displayFromLevel = getIntegerGreaterThanZero(PARAMETER_DISPLAY_FROM_LEVEL, request, -1);
+        int maxSiblings = getIntegerGreaterThanZero(PARAMETER_MAX_NUMBER_OF_SIBLINGS, request, Integer.MAX_VALUE);
 
         Path uri = RequestContext.getRequestContext().getResourceURI();
         Principal principal = SecurityContext.getSecurityContext().getPrincipal();
@@ -193,20 +193,20 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
             return securityContext.getToken();
     }
 
-    private int getIntegerGreaterThenZero(String prameter, DecoratorRequest request, int returnWhenParamNotFound) {
+    private int getIntegerGreaterThanZero(String prameter, DecoratorRequest request, int returnWhenParamNotFound) {
         int value = returnWhenParamNotFound;
         try {
             value = Integer.parseInt((String) request.getStringParameter(prameter));
             if (value < 1)
-                intergerMustBeGreaterThenZeroException(prameter);
+                intergerMustBeGreaterThanZeroException(prameter);
         } catch (NumberFormatException e) {
-            if (request.getParameter(prameter) != null)
-                intergerMustBeGreaterThenZeroException(prameter);
+            if (request.getRawParameter(prameter) != null)
+                intergerMustBeGreaterThanZeroException(prameter);
         }
         return value;
     }
 
-    private void intergerMustBeGreaterThenZeroException(String prameter) {
+    private void intergerMustBeGreaterThanZeroException(String prameter) {
         throw new DecoratorComponentException("Parameter '" + prameter + "' must be an integer > 0");
     }
 

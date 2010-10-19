@@ -103,9 +103,7 @@ implements HtmlDecoratorComponent {
             HtmlFragment fragment = this.htmlParser.parseFragment(writer.getBuffer().toString());
             return fragment.getContent();
         } catch (Throwable t) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Error rendering component '" + getName() + "'", t);
-            }
+            logger.info("Error rendering component '" + getName() + "'", t);
             throw new DecoratorComponentException("Error rendering component '" 
                     + getName() + "': " + t.getMessage(), t);
         }
@@ -121,9 +119,7 @@ implements HtmlDecoratorComponent {
             writer.flush();
             writer.close();
         } catch (Throwable t) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Error rendering component '" + getName() + "'", t);
-            }
+            logger.info("Error rendering component '" + getName() + "'", t);
             throw new DecoratorComponentException("Error rendering component '" 
                     + getName() + "': " + t.getMessage(), t);
         }
@@ -135,7 +131,7 @@ implements HtmlDecoratorComponent {
             ctx.define(this.modelKey, request.getMvcModel(), true);
         }
         for (String param : this.definition.getParameters()) {
-            Object value = request.getParameter(param);
+            Object value = request.getRawParameter(param);
             ctx.define(param, value, true);
         }
         return ctx;

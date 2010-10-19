@@ -42,11 +42,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.View;
 import org.vortikal.repository.Repository;
+import org.vortikal.web.decorating.DecoratorRequest;
+import org.vortikal.web.decorating.DecoratorResponse;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.servlet.BufferedResponse;
-import org.vortikal.web.decorating.DecoratorRequest;
-import org.vortikal.web.decorating.DecoratorResponse;
 
 public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent {
 
@@ -90,15 +90,10 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
      * config parameter <code>exposedParameters</code> is specified.
      * <li>
      * </ol>
-     * 
-     * @param model
-     *            the MVC model
-     * @param request
-     *            the decorator request
-     * @param response
-     *            the decorator response
-     * @exception Exception
-     *                if an error occurs
+     * @param model the MVC model
+     * @param request the decorator request
+     * @param response the decorator response
+     * @exception Exception if an error occurs
      */
     protected void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
@@ -109,7 +104,7 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
                 if (!this.exposedParameters.isEmpty() && !this.exposedParameters.contains(name)) {
                     continue;
                 }
-                Object value = request.getParameter(name);
+                Object value = request.getRawParameter(name);
                 model.put(name, value);
             }
         }
@@ -124,7 +119,7 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     private void renderView(Map model, DecoratorRequest request, DecoratorResponse response) throws Exception {
         HttpServletRequest servletRequest = request.getServletRequest();
         BufferedResponse bufferedResponse = new BufferedResponse();

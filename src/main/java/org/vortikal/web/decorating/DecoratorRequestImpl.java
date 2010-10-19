@@ -36,39 +36,32 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.vortikal.repository.Path;
 import org.vortikal.text.html.HtmlPage;
+import org.vortikal.web.RequestContext;
+import org.vortikal.web.decorating.components.DecoratorComponentException;
 
 public class DecoratorRequestImpl implements DecoratorRequest {
 
     private HtmlPage html;
-
     private HttpServletRequest servletRequest;
-
     private Map<Object, Object> mvcModel;
-    
     private Map<String, Object> decoratorParameters;
-    
     private String doctype;
-
     private Locale locale;
+    private static final Pattern PATH_LEVEL_PATTERN = 
+        Pattern.compile("(\\$path\\((\\d+)\\))");
     
     public DecoratorRequestImpl(HtmlPage html,
                                 HttpServletRequest servletRequest,
                                 Map<Object, Object> mvcModel,
                                 Map<String, Object> decoratorParameters,
                                 String doctype, Locale locale) {
-        if (html == null) {
-            throw new IllegalArgumentException("Argument 'html' cannot be NULL");
-        }
-        if (servletRequest == null) {
-            throw new IllegalArgumentException("Argument 'servletRequest' cannot be NULL");
-        }
-        if (mvcModel == null) {
-            throw new IllegalArgumentException("Argument 'mvcModel' cannot be NULL");
-        }
         this.html = html;
         this.servletRequest = servletRequest;
         this.mvcModel = mvcModel;
@@ -88,8 +81,8 @@ public class DecoratorRequestImpl implements DecoratorRequest {
     public Map<Object, Object> getMvcModel() {
         return Collections.unmodifiableMap(this.mvcModel);
     }
-    
-    public Object getParameter(String name) {
+   
+    public Object getRawParameter(String name) {
         Object value = null;
         if (this.decoratorParameters != null) {
             value = this.decoratorParameters.get(name);
@@ -98,11 +91,11 @@ public class DecoratorRequestImpl implements DecoratorRequest {
     }
     
     public String getStringParameter(String name) {
-        Object value = getParameter(name);
+        Object value = getRawParameter(name);
         if (value == null) {
             return null;
         }
-        return value.toString();
+        return expandParameter(value.toString());
     }
     
     public String getDoctype() {
@@ -118,5 +111,33 @@ public class DecoratorRequestImpl implements DecoratorRequest {
         Set<String> s = new HashSet<String>();
         s.addAll(this.decoratorParameters.keySet());
         return s.iterator();
+    }
+    
+    private String expandParameter(String param) {
+        // Support for expanding '$path(level)':
+        Matcher m = PATH_LEVEL_PATTERN.matcher(param);
+        Path currentURI = RequestContext.getRequestContext().getResourceURI();
+        StringBuffer sb = new StringBuffer();
+        if (m.find()) {
+            do {
+                String s = m.group(2);
+                try {
+                    int level = Integer.parseInt(s);
+                    if (level < 0 || level > currentURI.getDepth()) {
+                        throw new DecoratorComponentException(
+                                "Invalid level for current URI: " + currentURI + ": " + level);
+                    }
+                    String replacement = currentURI.getElements().get(level);
+                    m.appendReplacement(sb, replacement);
+                } catch (NumberFormatException e) {
+                    throw new DecoratorComponentException(
+                            "Unable to parse integer: " + s);
+                }
+            } while (m.find());
+            
+            m.appendTail(sb);
+            param = sb.toString();
+        }
+        return param;
     }
 }

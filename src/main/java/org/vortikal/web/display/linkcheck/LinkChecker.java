@@ -42,15 +42,12 @@ import net.sf.ehcache.Element;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.UriTermQuery;
-import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.service.URL;
 
@@ -92,8 +89,7 @@ public class LinkChecker implements InitializingBean {
     public LinkCheckResult validate(String link, Path base) {
         
         if (!isWebLink(link)) {
-            link = getProcessedLink(base, link);
-            boolean found = !isBrokenInternal(link);
+            boolean found = !isBrokenInternal(base, link);
             return new LinkCheckResult(link, found);
         }
         
@@ -107,7 +103,7 @@ public class LinkChecker implements InitializingBean {
         try {
             URL url = getURL(link);
             if (this.optimizeLocalLinks && this.localHostNames.contains(url.getHost())) {
-                boolean found = !isBrokenInternal(url.getPath().toString());
+                boolean found = !isBrokenInternal(base, url.getPath().toString());
                 return new LinkCheckResult(link, found);
             }
             boolean found = !isBroken(url);
@@ -120,7 +116,7 @@ public class LinkChecker implements InitializingBean {
     }
     
     private URL getURL(String link) {
-        link = trimTrailingSlashInPathString(link);
+        link = trimTrailingSlash(link);
         if (link.contains("#")) {
             link = link.substring(0, link.indexOf("#"));
         }
@@ -180,7 +176,21 @@ public class LinkChecker implements InitializingBean {
         return link.startsWith("http") || link.startsWith("www");
     }
 
-    private boolean isBrokenInternal(String link) {
+    private boolean isBrokenInternal(Path base, String link) {
+        link = trimTrailingSlash(link);
+        if (link.contains("?")) {
+            link = link.substring(0, link.indexOf("?"));
+        }
+        if (link.contains("#")) {
+            link = link.substring(0, link.indexOf("#"));
+        }
+        if (!link.startsWith("/")) {
+            try {
+                link = base.getParent().expand(link).toString();
+            } catch (Exception e) {
+                return true;
+            }
+        }
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
         try {
@@ -191,43 +201,10 @@ public class LinkChecker implements InitializingBean {
         search.setQuery(uriQuery);
         search.setLimit(1);
         ResultSet rs = this.repository.search(token, search);
-        boolean broken = rs.getSize() == 0;
-        if (broken) {
-            try {
-                Path path = Path.fromString(link);
-                this.repository.retrieve(token, path, false);
-                return false;
-            } catch (IllegalArgumentException e) {
-                return true;
-            } catch (ResourceNotFoundException e) {
-                return true;
-            } catch (AuthorizationException e) {
-                return false;
-            } catch (AuthenticationException e) {
-                return false;
-            } catch (Exception e) {
-                return true;
-            }
-        }
-        return broken;
+        return rs.getSize() == 0;
     }
 
-    private String getProcessedLink(Path resourceURI, String link) {
-        link = trimTrailingSlashInPathString(link);
-        if (!isWebLink(link) && !link.startsWith("/")) {
-            link = resourceURI.getParent().extend(link).toString();
-        }
-
-        if (link.contains("?")) {
-            link = link.substring(0, link.indexOf("?"));
-        }
-        if (link.contains("#")) {
-            link = link.substring(0, link.indexOf("#"));
-        }
-        return link;
-    }
-
-    private String trimTrailingSlashInPathString(String pathString) {
+    private String trimTrailingSlash(String pathString) {
         while (pathString.endsWith("/") && !Path.ROOT.toString().equals(pathString)) {
             pathString = pathString.substring(0, pathString.lastIndexOf("/"));
         }

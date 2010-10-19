@@ -60,6 +60,15 @@ public class DecoratorRequestImpl implements DecoratorRequest {
                                 Map<Object, Object> mvcModel,
                                 Map<String, Object> decoratorParameters,
                                 String doctype, Locale locale) {
+        if (html == null) {
+            throw new IllegalArgumentException("Argument 'html' cannot be NULL");
+        }
+        if (servletRequest == null) {
+            throw new IllegalArgumentException("Argument 'servletRequest' cannot be NULL");
+        }
+        if (mvcModel == null) {
+            throw new IllegalArgumentException("Argument 'mvcModel' cannot be NULL");
+        }
         this.html = html;
         this.servletRequest = servletRequest;
         this.mvcModel = mvcModel;

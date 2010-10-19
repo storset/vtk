@@ -80,15 +80,13 @@ public class WrappingView implements View, InitializingBean {
         afterPropertiesSet();
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public void render(Map model, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
+        if (model == null) {
+            model = new HashMap<String, Object>();
+        }
         if (this.referenceDataProviders != null && this.referenceDataProviders.length > 0) {
-
-            if (model == null) {
-                model = new HashMap<String, Object>();
-            }
-            
             for (int i = 0; i < this.referenceDataProviders.length; i++) {
                 ReferenceDataProvider provider = this.referenceDataProviders[i];
                 if (logger.isDebugEnabled())
@@ -116,7 +114,6 @@ public class WrappingView implements View, InitializingBean {
             }
             this.view.render(model, requestWrapper, response);
         }
-        
     }
 
     public String toString() {

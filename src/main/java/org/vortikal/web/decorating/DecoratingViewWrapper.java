@@ -153,7 +153,7 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
     }
 
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public void renderView(View view, Map model, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         
@@ -203,7 +203,7 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
     }
 
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     private void decorate(Map model, HttpServletRequest request,
                            List<Decorator> decoratorList, BufferedResponseWrapper bufferedResponse)
         throws Exception {
@@ -276,7 +276,7 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
                 contentType);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     private void decorate(Map model, HttpServletRequest request,
                           List<Decorator> decoratorList, HtmlPageContent page,
                           BufferedResponseWrapper bufferedResponse)

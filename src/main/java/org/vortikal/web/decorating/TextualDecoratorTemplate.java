@@ -86,7 +86,7 @@ public class TextualDecoratorTemplate implements Template {
         private HttpServletRequest request;
         private Map<Object, Object> model;
 
-        public Execution(HtmlPageContent content, ComponentInvocation[] fragments, 
+        Execution(HtmlPageContent content, ComponentInvocation[] fragments, 
                 ComponentResolver componentResolver, HttpServletRequest request,
                 Map<Object, Object> model) {
             this.content = content;
@@ -156,7 +156,15 @@ public class TextualDecoratorTemplate implements Template {
     public TemplateExecution newTemplateExecution(HtmlPageContent html,
             HttpServletRequest request, Map<Object, Object> model,
             Map<String, Object> templateParameters) throws Exception {
-
+        if (html == null) {
+            throw new IllegalArgumentException("Argument 'html' cannot be NULL");
+        }
+        if (request == null) {
+            throw new IllegalArgumentException("Argument 'request' cannot be NULL");
+        }
+        if (model == null) {
+            throw new IllegalArgumentException("Argument 'model' cannot be NULL");
+        }
         if (this.templateSource.getLastModified() > this.lastModified) {
             compile();
         }

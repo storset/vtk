@@ -462,7 +462,7 @@ public class XmlSearcher {
                 if (def != null) {
                     selectedFields.addPropertyDefinition(def);
                 }
-                System.out.println("__formats: " + this.formats);
+                //System.out.println("__formats: " + this.formats);
             }
             
         }

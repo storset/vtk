@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.search;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -41,6 +42,15 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
  */
 public class ConfigurablePropertySelect implements PropertySelect {
     private Set<PropertyTypeDefinition> properties = new HashSet<PropertyTypeDefinition>();
+    
+    public ConfigurablePropertySelect() {
+    }
+    
+    public ConfigurablePropertySelect(Collection<PropertyTypeDefinition> properties) {
+        for (PropertyTypeDefinition p: properties) {
+            this.properties.add(p);
+        }
+    }
     
     public void addPropertyDefinition(PropertyTypeDefinition def) {
         this.properties.add(def);

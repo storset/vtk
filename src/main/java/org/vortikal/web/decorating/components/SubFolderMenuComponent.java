@@ -49,6 +49,7 @@ import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.repository.search.PropertySelect;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.WildcardPropertySelect;
@@ -132,9 +133,8 @@ public class SubFolderMenuComponent extends ListMenuComponent {
     private static final String PARAMETER_DISPLAY_DESC = "Specifies how to display the subfolder-menu. The default is normal lists. 'comma-separated' separates sublist-elements with commas.";
 
     private static Log logger = LogFactory.getLog(SubFolderMenuComponent.class);
-
     private ResourceTypeTree resourceTypeTree;
-
+    private PropertySelect propertySelect = new WildcardPropertySelect();
     protected Service reportService;
 
     public void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
@@ -274,19 +274,12 @@ public class SubFolderMenuComponent extends ListMenuComponent {
                 includeFolders.add(new UriPrefixQuery(exUri.toString(), false));
             }
         }
-
         mainQuery.add(includeFolders);
-
         mainQuery.add(new TypeTermQuery(this.collectionResourceType.getName(), TermOperator.IN));
-
-        WildcardPropertySelect select = new WildcardPropertySelect();
-
         Search search = new Search();
         search.setQuery(mainQuery);
-
         search.setLimit(menuRequest.searchLimit);
-
-        search.setPropertySelect(select);
+        search.setPropertySelect(this.propertySelect);
         return search;
     }
 
@@ -384,12 +377,10 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         mainQuery.add(new UriDepthQuery(depth));
         mainQuery.add(new UriPrefixQuery(uri.toString()));
         mainQuery.add(new TypeTermQuery(this.collectionResourceType.getName(), TermOperator.IN));
-        WildcardPropertySelect select = new WildcardPropertySelect();
-
         Search search = new Search();
         search.setQuery(mainQuery);
         search.setLimit(searchLimit);
-        search.setPropertySelect(select);
+        search.setPropertySelect(this.propertySelect);
         return search;
     }
 
@@ -739,6 +730,13 @@ public class SubFolderMenuComponent extends ListMenuComponent {
 
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
+    }
+
+    public void setPropertySelect(PropertySelect propertySelect) {
+        if (propertySelect == null) {
+            throw new IllegalArgumentException("propertySelect cannot be NULL");
+        }
+        this.propertySelect = propertySelect;
     }
 
     public void setImportancePropDef(PropertyTypeDefinition importancePropDef) {

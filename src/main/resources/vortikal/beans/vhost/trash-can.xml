@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
-                       "http://www.springframework.org/dtd/spring-beans.dtd">
+"http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
   <bean id="viewTrashCanContentsService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
-    <property name="order" value="-9999" />
     <property name="assertions">
       <list>
+        <ref bean="resourceInCollection" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="action" />
+          <property name="parameterName" value="mode" />
           <property name="parameterValue" value="view-trash-can" />
         </bean>
-        <ref bean="resourceIsCollection" />
       </list>
     </property>
     <property name="handler" ref="viewTrashCanContentsHandler" />
@@ -20,6 +19,27 @@
 
   <bean id="viewTrashCanContentsHandler" class="org.vortikal.web.display.trashcan.ViewTrashCanContentsController"
     parent="repositoryAware">
+    <property name="viewName" value="trashCan" />
+  </bean>
+
+  <bean id="trashCan.viewResolver" parent="system.decoratingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="trashCan" value-ref="trashCanView" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="trashCanView" parent="freemarkerView">
+    <property name="url" value="pages/trash-can.ftl" />
+  </bean>
+
+  <bean class="org.springframework.context.support.ResourceBundleMessageSource">
+    <property name="basenames">
+      <list>
+        <value>vortikal.i18n.trash-can</value>
+      </list>
+    </property>
   </bean>
 
 </beans>

@@ -36,21 +36,35 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
+import org.vortikal.security.SecurityContext;
+import org.vortikal.web.RequestContext;
 
 public class ViewTrashCanContentsController implements Controller {
 
     private Repository repository;
+    private String viewName;
 
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        String token = SecurityContext.getSecurityContext().getToken();
+        Path collectionURI = RequestContext.getRequestContext().getCurrentCollection();
+
         // XXX Implement
-        return null;
+
+        return new ModelAndView(this.viewName);
     }
 
     @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
+    }
+
+    @Required
+    public void setViewName(String viewName) {
+        this.viewName = viewName;
     }
 
 }

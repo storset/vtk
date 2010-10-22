@@ -50,7 +50,7 @@ resourcetype structured-event : structured-document {
           [endif]
 
         [endlist]
-        <div>
+        </div>
       [endif]
       ##
     }

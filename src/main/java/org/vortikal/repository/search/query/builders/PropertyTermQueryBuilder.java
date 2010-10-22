@@ -32,11 +32,11 @@ package org.vortikal.repository.search.query.builders;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.ConstantScoreQuery;
-import org.apache.lucene.search.ConstantScoreRangeQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TermRangeFilter;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
 import org.vortikal.repository.search.query.TermOperator;
@@ -102,9 +102,14 @@ public class PropertyTermQueryBuilder implements QueryBuilder {
         } else {
             throw new QueryBuilderException("Unknown term operator"); 
         }
+
+        TermRangeFilter trFilter = new TermRangeFilter(fieldName, lowerTerm, upperTerm,
+                includeLower, includeUpper);
+
+        return new ConstantScoreQuery(trFilter);
         
-        return new ConstantScoreRangeQuery(fieldName, lowerTerm, upperTerm, 
-                                                    includeLower, includeUpper);
+//        return new ConstantScoreRangeQuery(fieldName, lowerTerm, upperTerm,
+//                                                    includeLower, includeUpper);
     }
 
 }

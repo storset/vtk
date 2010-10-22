@@ -4,6 +4,8 @@ import junit.framework.TestCase;
 
 import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
+import org.apache.lucene.analysis.tokenattributes.TermAttribute;
 import org.vortikal.repository.index.mapping.StringArrayTokenStream;
 
 public class StringArrayTokenStreamTest extends TestCase {
@@ -13,38 +15,44 @@ public class StringArrayTokenStreamTest extends TestCase {
         String[] values = new String[]{ "foo", "bar", "hepp", "hopp" };
         TokenStream stream = new StringArrayTokenStream(values);
         
-        final Token reusableToken = new Token();
+        assertTrue(stream.incrementToken());
         
-        Token token = stream.next(reusableToken);
-        assertEquals("foo", token.term());
-        assertEquals(0, token.startOffset());
-        assertEquals(3, token.endOffset());
+        TermAttribute ta = stream.getAttribute(TermAttribute.class);
+//        OffsetAttribute oa = stream.getAttribute(OffsetAttribute.class);
+        assertEquals("foo", ta.term());
+//        assertEquals(0, oa.startOffset());
+//        assertEquals(3, oa.endOffset());
         
-        token = stream.next(reusableToken);
-        assertEquals("bar", token.term());
-        assertEquals(3, token.startOffset());
-        assertEquals(6, token.endOffset());
+        assertTrue(stream.incrementToken());
+
+        ta = stream.getAttribute(TermAttribute.class);
+//        oa = stream.getAttribute(OffsetAttribute.class);
+        assertEquals("bar", ta.term());
+//        assertEquals(3, oa.startOffset());
+//        assertEquals(6, oa.endOffset());
         
-        token = stream.next(reusableToken);
-        assertEquals("hepp", token.term());
-        assertEquals(6, token.startOffset());
-        assertEquals(10, token.endOffset());
+        assertTrue(stream.incrementToken());
+
+        ta = stream.getAttribute(TermAttribute.class);
+//        oa = stream.getAttribute(OffsetAttribute.class);
+        assertEquals("hepp", ta.term());
+//        assertEquals(6, oa.startOffset());
+//        assertEquals(10, oa.endOffset());
         
-        token = stream.next(reusableToken);
-        assertEquals("hopp", token.term());
-        assertEquals(10, token.startOffset());
-        assertEquals(14, token.endOffset());
+        assertTrue(stream.incrementToken());
+
+        ta = stream.getAttribute(TermAttribute.class);
+//        oa = stream.getAttribute(OffsetAttribute.class);
+        assertEquals("hopp", ta.term());
+//        assertEquals(10, oa.startOffset());
+//        assertEquals(14, oa.endOffset());
         
-        token = stream.next(reusableToken);
-        assertNull(token);
+        assertFalse(stream.incrementToken());
     }
     
     public void testZeroValues() throws Exception {
-    	
-    	final Token reusableToken = new Token();
-        
         TokenStream stream = new StringArrayTokenStream(new String[]{});
-        assertNull(stream.next(reusableToken));
+        assertFalse(stream.incrementToken());
     }
     
 }

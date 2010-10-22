@@ -37,7 +37,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
+import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
@@ -83,8 +83,7 @@ public class PropertySetIndexImpl implements PropertySetIndex {
                 logger.debug("Adding new property set at URI '" + propertySet.getURI() + "'");
                 logger.debug("Document mapper created the following document: ");
 
-                for (Iterator<Field> iterator = doc.getFields().iterator(); iterator.hasNext();) {
-                    Field field = iterator.next();
+                for (Fieldable field: doc.getFields()) {
                     if (field.isBinary()) {
                         logger.debug("Field '" + field.name() + "', value: [BINARY]");
                     } else {

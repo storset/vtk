@@ -39,16 +39,12 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.NIOFSDirectory;
 
 
 /**
  * File system backed Lucene index.
- *
- * DON'T USE; FSDirectory sucks at concurrency.
- *
- * @author oyviste
- * @deprecated
  */
 public class FSBackedLuceneIndex extends AbstractLuceneIndex {
     
@@ -70,6 +66,7 @@ public class FSBackedLuceneIndex extends AbstractLuceneIndex {
      * Create fs directory. One instance of this is created at startup
      * and whenever an index is re-initialized or re-created.
      */
+    @Override
     protected Directory createDirectory() throws IOException {
         logger.debug("Initializing index storage directory at path '" 
                 + this.storageDirectory.getAbsolutePath() + "'");
@@ -81,8 +78,10 @@ public class FSBackedLuceneIndex extends AbstractLuceneIndex {
             throw new IOException("Storage directory path '" 
                     + this.storageDirectory.getAbsolutePath() + "' is not writable.");
         }
-        
-        return NIOFSDirectory.getDirectory(this.storageDirectory);
+
+        // Picks default best Impl at runtime based on current system.
+        // For all but Windows, this means NIOFSDirectory.
+        return FSDirectory.open(this.storageDirectory);
     }
     
     /**

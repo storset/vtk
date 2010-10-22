@@ -38,18 +38,22 @@ import java.text.RuleBasedCollator;
 
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.FieldCache;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.ScoreDocComparator;
-import org.apache.lucene.search.SortComparatorSource;
+import org.apache.lucene.search.FieldComparator;
+import org.apache.lucene.search.FieldComparatorSource;
 
-public class CustomSortComparatorSource implements SortComparatorSource {
+
+/**
+ * XXX Completely untested after upgrade to Lucene 3.
+ *     Might be utterly broken. We don't currently use it for anything, though..
+ */
+public class CustomFieldComparatorSource extends FieldComparatorSource {
 
     private static final long serialVersionUID = -8586536787705536907L;
     
     private Collator collator;
     private String fileName = "custom-rules.txt";
 
-    public CustomSortComparatorSource() throws IOException, ParseException {
+    public CustomFieldComparatorSource() throws IOException, ParseException {
         InputStream input = getClass().getResourceAsStream(fileName);
         String rules = inputStreamToString(input);
 
@@ -65,48 +69,73 @@ public class CustomSortComparatorSource implements SortComparatorSource {
         return out.toString();
     }
 
-    /**
-     * Creates a comparator for the field in the given index.
-     * 
-     * @param reader
-     *            Index to create comparator for.
-     * @param fieldname
-     *            Fieldable to create comparator for.
-     * @return Comparator of ScoreDoc objects.
-     * @throws IOException
-     *             If an error occurs reading the index.
-     */
-    public ScoreDocComparator newComparator(IndexReader reader,
-            String fieldname) throws IOException {
-        final String field = fieldname.intern();
-        final String[] index = FieldCache.DEFAULT.getStrings(reader, field);
-        return new ScoreDocComparator() {
-            public final int compare(final ScoreDoc i, final ScoreDoc j) {
-                String is = index[i.doc];
-                String js = index[j.doc];
-                if (is == js) {
-                    return 0;
-                } else if (is == null) {
-                    return -1;
-                } else if (js == null) {
-                    return 1;
-                } else {
-                    return collator.compare(is, js);
-                }
-            }
-
-            @SuppressWarnings("unchecked")
-            public Comparable sortValue(final ScoreDoc i) {
-                return index[i.doc];
-            }
-
-            public int sortType() {
-                return org.apache.lucene.search.SortField.STRING;
-            }
-        };
-    }
-
     public Collator getCollator() {
         return collator;
+    }
+
+    @Override
+    public FieldComparator newComparator(final String fieldname,
+                                         final int numHits,
+                                         final int sortPos,
+                                         final boolean reversed) throws IOException {
+
+        return new FieldComparator() {
+            private final String[] values = new String[numHits];
+            private String[] currentReaderValues;
+            private final String field = fieldname;
+            final Collator collator = this.collator;
+            private String bottom;
+
+            @Override
+            public int compare(int slot1, int slot2) {
+                final String val1 = values[slot1];
+                final String val2 = values[slot2];
+                if (val1 == null) {
+                    if (val2 == null) {
+                        return 0;
+                    }
+                    return -1;
+                } else if (val2 == null) {
+                    return 1;
+                }
+                return collator.compare(val1, val2);
+            }
+
+            @Override
+            public int compareBottom(int doc) {
+                final String val2 = currentReaderValues[doc];
+                if (bottom == null) {
+                    if (val2 == null) {
+                        return 0;
+                    }
+                    return -1;
+                } else if (val2 == null) {
+                    return 1;
+                }
+                return collator.compare(bottom, val2);
+            }
+
+            @Override
+            public void copy(int slot, int doc) {
+                values[slot] = currentReaderValues[doc];
+            }
+
+            @Override
+            public void setNextReader(IndexReader reader, int docBase) throws IOException {
+                currentReaderValues = FieldCache.DEFAULT.getStrings(reader, field);
+            }
+
+            @Override
+            public void setBottom(final int bottom) {
+                this.bottom = values[bottom];
+            }
+
+            @Override
+            public Comparable value(int slot) {
+                return values[slot];
+            }
+
+        };
+
     }
 }

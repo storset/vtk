@@ -193,9 +193,9 @@ public abstract class AbstractLuceneIndex {
         }
 
         if (this.reader == null) {
-            this.reader = IndexReader.open(this.directory);
-            this.reader.setTermInfosIndexDivisor(2); // This reader is typically not used for queries, so
-                                                     // decrease RAM usage by setting TermInfosIndexDivisor to 2.
+            // This reader is typically not used for queries, so
+            // decrease RAM usage by setting TermInfosIndexDivisor to 2.
+            this.reader = IndexReader.open(this.directory, null, false, 2);
         }
 
         return this.reader;

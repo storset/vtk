@@ -52,6 +52,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldSelector;
 import org.apache.lucene.document.FieldSelectorResult;
+import org.apache.lucene.document.Fieldable;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Namespace;
@@ -349,9 +350,9 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
         // (with the same name) in the index.
         // Note that the iteration will _only_ contain _stored_ fields.
         String currentName = null;
-        List<Field> fields = new ArrayList<Field>();
-        for (Iterator<Field> iterator = doc.getFields().iterator(); iterator.hasNext();) {
-            Field field = iterator.next();
+        List<Fieldable> fields = new ArrayList<Fieldable>();
+        for (Fieldable field: doc.getFields()) {
+
             String fieldName = field.name();
 
             if (FieldNameMapping.isReservedField(fieldName))
@@ -394,7 +395,7 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
      * @return
      * @throws FieldValueMappingException
      */
-    private Property getPropertyFromStoredFieldValues(String fieldName, List<Field> storedValueFields)
+    private Property getPropertyFromStoredFieldValues(String fieldName, List<Fieldable> storedValueFields)
             throws FieldValueMappingException {
 
         PropertyTypeDefinition def = this.storedFieldNamePropDefMap.get(fieldName);

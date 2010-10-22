@@ -30,8 +30,9 @@
  */
 package org.vortikal.repository.search.query.builders;
 
-import org.apache.lucene.search.ConstantScoreRangeQuery;
+import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermRangeFilter;
 import org.vortikal.repository.index.mapping.FieldNameMapping;
 import org.vortikal.repository.index.mapping.FieldValueMapper;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -69,10 +70,15 @@ public class PropertyRangeQueryBuilder implements QueryBuilder {
                     this.prq.getComplexValueAttributeSpecifier(), false);
         }
 
-        ConstantScoreRangeQuery csrq = new ConstantScoreRangeQuery(fieldName, 
-                fromEncoded, toEncoded, this.prq.isInclusive(), this.prq.isInclusive());
-        
-        return csrq;
+        TermRangeFilter trFilter = new TermRangeFilter(fieldName, fromEncoded,
+                toEncoded, this.prq.isInclusive(), this.prq.isInclusive());
+
+        return new ConstantScoreQuery(trFilter);
+
+//        ConstantScoreRangeQuery csrq = new ConstantScoreRangeQuery(fieldName,
+//                fromEncoded, toEncoded, this.prq.isInclusive(), this.prq.isInclusive());
+//
+//        return csrq;
 
     }
 

@@ -60,6 +60,7 @@ public class SortBuilderImpl implements SortBuilder {
 //        }
 //    }
 
+    @Override
     public org.apache.lucene.search.Sort buildSort(Sorting sort)
             throws SortBuilderException {
 

@@ -4,14 +4,14 @@ import java.io.IOException;
 import java.text.Collator;
 import java.text.ParseException;
 
-import org.vortikal.repository.search.query.CustomSortComparatorSource;
+import org.vortikal.repository.search.query.CustomFieldComparatorSource;
 
 import junit.framework.TestCase;
 
 public class CustomSortComparatorTest extends TestCase {
 
     public void testCollator() throws IOException, ParseException {
-        Collator collator = new CustomSortComparatorSource().getCollator(); 
+        Collator collator = new CustomFieldComparatorSource().getCollator();
 
         assertEquals(-1, collator.compare("Aa", "c"));
         assertEquals(-1, collator.compare("A", "aa"));

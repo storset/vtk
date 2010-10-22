@@ -80,28 +80,6 @@ public class InversionFilter extends Filter {
     }
 
     @Override
-    @Deprecated
-    public BitSet bits(IndexReader reader) throws IOException {
-        final BitSet inverted = new BitSet(reader.maxDoc());
-        inverted.or(this.wrappedFilter.bits(reader));
-        inverted.flip(0, reader.maxDoc());
-
-        if (reader.hasDeletions()) {
-            if (this.deletedDocsFilter != null) {
-                inverted.andNot(this.deletedDocsFilter.bits(reader));
-            } else {
-                for (int i = inverted.nextSetBit(0); i >= 0; i = inverted.nextSetBit(i + 1)) {
-                    if (reader.isDeleted(i)) {
-                        inverted.clear(i);
-                    }
-                }
-            }
-        }
-
-        return inverted;
-    }
-    
-    @Override
     public DocIdSet getDocIdSet(IndexReader reader) throws IOException {
 
         final int maxDoc = reader.maxDoc();

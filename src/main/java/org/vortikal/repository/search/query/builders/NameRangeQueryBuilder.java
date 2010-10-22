@@ -30,8 +30,9 @@
  */
 package org.vortikal.repository.search.query.builders;
 
-import org.apache.lucene.search.ConstantScoreRangeQuery;
+import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermRangeFilter;
 import org.vortikal.repository.index.mapping.FieldNameMapping;
 import org.vortikal.repository.search.query.NameRangeQuery;
 import org.vortikal.repository.search.query.QueryBuilder;
@@ -48,10 +49,15 @@ public class NameRangeQueryBuilder implements QueryBuilder {
     public Query buildQuery() {
         String from = this.nrq.getFromTerm();
         String to = this.nrq.getToTerm();
+
+        TermRangeFilter trFilter = new TermRangeFilter(FieldNameMapping.NAME_FIELD_NAME,
+                from, to, this.nrq.isInclusive(), this.nrq.isInclusive());
+
+        return new ConstantScoreQuery(trFilter);
         
-        return new ConstantScoreRangeQuery(FieldNameMapping.NAME_FIELD_NAME, from, to,
-                                           this.nrq.isInclusive(),
-                                           this.nrq.isInclusive());
+//        return new ConstantScoreRangeQuery(FieldNameMapping.NAME_FIELD_NAME, from, to,
+//                                           this.nrq.isInclusive(),
+//                                           this.nrq.isInclusive());
     }
 
 }

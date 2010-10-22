@@ -70,34 +70,6 @@ public class WildcardTermFilter extends Filter {
     }
 
     @Override
-    public BitSet bits(IndexReader reader) throws IOException {
-        BitSet bits = new BitSet(reader.maxDoc());
-        String fieldName = this.wildcardTerm.field();
-        WildcardTermEnum tenum = new WildcardTermEnum(reader, this.wildcardTerm);
-        TermDocs tdocs = reader.termDocs();
-        try {
-            do {
-                Term term = tenum.term();
-                if (term != null && term.field() == fieldName) { // interned string comparison
-                    tdocs.seek(tenum);
-
-                    while (tdocs.next()) {
-                        bits.set(tdocs.doc());
-                    }
-                } else {
-                    break;
-                }
-            } while (tenum.next());
-        } finally {
-            tenum.close();
-            tdocs.close();
-        }
-
-        return bits;
-    }
-
-
-    @Override
     public DocIdSet getDocIdSet(IndexReader reader) throws IOException {
         OpenBitSet docIdSet = new OpenBitSet(reader.maxDoc());
         String fieldName = this.wildcardTerm.field();

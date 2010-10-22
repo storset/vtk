@@ -64,20 +64,6 @@ public class TermExistsFilter extends Filter {
     }
     
     @Override
-    @Deprecated
-    public BitSet bits(final IndexReader reader) throws IOException {
-        final BitSet bits = new BitSet(reader.maxDoc());
-        new ExistsIdGenerator(this.fieldName) {
-            @Override
-            public void handleDoc(int doc) {
-                bits.set(doc);
-            }
-        }.generate(reader);
-
-        return bits;
-    }
-
-    @Override
     public DocIdSet getDocIdSet(final IndexReader reader) throws IOException {
         final OpenBitSet bits = new OpenBitSet(reader.maxDoc());
         new ExistsIdGenerator(this.fieldName) {

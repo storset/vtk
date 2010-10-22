@@ -111,21 +111,6 @@ public class SimpleQueryAuthorizationFilterFactory extends
         private static final long serialVersionUID = -1927640174374225525L;
 
         @Override
-        public BitSet bits(IndexReader reader) throws IOException {
-            BitSet bits = new BitSet(reader.maxDoc());
-            TermDocs tdocs = reader.termDocs(READ_FOR_ALL_TERM);
-            try {
-                while(tdocs.next()) {
-                    bits.set(tdocs.doc());
-                }
-            } finally {
-                tdocs.close();
-            }
-            
-            return bits;
-        }
-        
-        @Override
         public DocIdSet getDocIdSet(IndexReader reader) throws IOException {
          
             OpenBitSet docIdSet = new OpenBitSet(reader.maxDoc());

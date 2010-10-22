@@ -38,8 +38,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldSelector;
+import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanFilter;
@@ -83,6 +83,7 @@ public class IndexDataReportDAO implements DataReportDAO {
     private int maxIndexDirtyAge = 0;
 
     @SuppressWarnings("unchecked")
+    @Override
     public List<Pair<Value, Integer>>
             executePropertyFrequencyValueQuery(PropertyValueFrequencyQuery query)
             throws DataReportException {
@@ -115,9 +116,10 @@ public class IndexDataReportDAO implements DataReportDAO {
             DocIdSet allowedDocs = mainFilter.getDocIdSet(reader);
             DocIdSetIterator iterator = allowedDocs.iterator();
             final String fieldName = FieldNameMapping.getStoredFieldName(def);
-            while (iterator.next()) {
-                Document doc = reader.document(iterator.doc(), fieldSelector);
-                Field[] fields = doc.getFields(fieldName);
+            int docID = 0;
+            while ((docID = iterator.nextDoc()) != DocIdSetIterator.NO_MORE_DOCS) {
+                Document doc = reader.document(docID, fieldSelector);
+                Fieldable[] fields = doc.getFieldables(fieldName);
 
                 if (fields.length == 0) { // This check should be unnecessary
                     // now, since we're always using term

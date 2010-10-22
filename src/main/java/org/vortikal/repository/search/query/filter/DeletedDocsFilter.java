@@ -44,23 +44,6 @@ import org.apache.lucene.util.OpenBitSet;
 public class DeletedDocsFilter extends Filter {
 
     @Override
-    @Deprecated
-    public BitSet bits(IndexReader reader) throws IOException {
-        int maxDoc = reader.maxDoc();
-        BitSet deletedSet = new BitSet(maxDoc);
-
-        if (reader.hasDeletions()) {
-            for (int i = 0; i < maxDoc; i++) {
-                if (reader.isDeleted(i)) {
-                    deletedSet.set(i);
-                }
-            }
-        }
-
-        return deletedSet;
-    }
-
-    @Override
     public DocIdSet getDocIdSet(IndexReader reader) throws IOException {
         int maxDoc = reader.maxDoc();
         OpenBitSet deletedSet = new OpenBitSet(maxDoc);

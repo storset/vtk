@@ -36,6 +36,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.Fieldable;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
@@ -54,6 +55,8 @@ import org.vortikal.util.cache.ReusableObjectCache;
  * representation.</li>
  * <li>Binary values for storage in index</li>
  * </ul>
+ *
+ * TODO Consider using NumericField (Lucene 3) for numeric values.
  * 
  * @author oyviste
  */
@@ -90,14 +93,15 @@ public final class FieldValueMapper {
         
         Field field = new Field(name, Integer.toString(value), Field.Store.NO,
                 Field.Index.NOT_ANALYZED_NO_NORMS);
-        field.setOmitTf(true);
+
+        field.setOmitTermFreqAndPositions(true);
         return field;
     }
 
     // No encoding (un-typed)
     public Field getKeywordField(String name, String value) {
         Field field = new Field(name, value, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS);
-        field.setOmitTf(true);
+        field.setOmitTermFreqAndPositions(true);
         return field;
     }
 
@@ -105,7 +109,7 @@ public final class FieldValueMapper {
     public Field getStoredKeywordField(String name, int value) {
         Field field = new Field(name, Integer.toString(value), Field.Store.YES,
                 Field.Index.NOT_ANALYZED_NO_NORMS);
-        field.setOmitTf(true);
+        field.setOmitTermFreqAndPositions(true);
         return field;
     }
 
@@ -113,7 +117,7 @@ public final class FieldValueMapper {
     // No encoding (un-typed)
     public Field getStoredKeywordField(String name, String value) {
         Field field = new Field(name, value, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
-        field.setOmitTf(true);
+        field.setOmitTermFreqAndPositions(true);
         return field;
     }
 
@@ -132,8 +136,10 @@ public final class FieldValueMapper {
             encodedValues[i] = encodeIndexFieldValue(values[i], lowercase);
         }
 
+
+
         Field field = new Field(name, new StringArrayTokenStream(encodedValues));
-        field.setOmitTf(true);
+        field.setOmitTermFreqAndPositions(true);
         return field;
     }
     
@@ -185,7 +191,7 @@ public final class FieldValueMapper {
     
     public Field getUnencodedMultiValueFieldFromStrings(String name, String[] values) {
         Field field = new Field(name, new StringArrayTokenStream(values));
-        field.setOmitTf(true);
+        field.setOmitTermFreqAndPositions(true);
         return field;
     }
 
@@ -354,7 +360,7 @@ public final class FieldValueMapper {
         }
 
         Field field = new Field(name, byteValue, Field.Store.YES);
-        field.setOmitTf(true);
+        field.setOmitTermFreqAndPositions(true);
         return field;
     }
 
@@ -383,7 +389,7 @@ public final class FieldValueMapper {
     
 
 
-    public Value getValueFromStoredBinaryField(Field field, Type type) throws FieldDataEncodingException,
+    public Value getValueFromStoredBinaryField(Fieldable field, Type type) throws FieldDataEncodingException,
             ValueFormatException {
 
         byte[] valueBuf = field.getBinaryValue();
@@ -437,7 +443,7 @@ public final class FieldValueMapper {
     }
 
 
-    public Value[] getValuesFromStoredBinaryFields(List<Field> fields, Type type)
+    public Value[] getValuesFromStoredBinaryFields(List<Fieldable> fields, Type type)
             throws FieldDataEncodingException, ValueFormatException {
 
         if (fields.isEmpty()) {
@@ -446,7 +452,7 @@ public final class FieldValueMapper {
 
         Value[] values = new Value[fields.size()];
         int u = 0;
-        for (Field field : fields) {
+        for (Fieldable field : fields) {
             values[u++] = getValueFromStoredBinaryField(field, type);
         }
 
@@ -457,7 +463,7 @@ public final class FieldValueMapper {
         throws FieldValueMappingException {
         Field field = new Field(name,
                 FieldDataEncoder.encodeIntegerToBinary(value), Field.Store.YES);
-        field.setOmitTf(true);
+        field.setOmitTermFreqAndPositions(true);
         return field;
     }
 
@@ -496,7 +502,7 @@ public final class FieldValueMapper {
             for (int i = 0; i < values.length; i++) {
                 fields[i] = new Field(name, values[i].getBytes(STRING_VALUE_ENCODING), 
                                       Field.Store.YES);
-                fields[i].setOmitTf(true);
+                fields[i].setOmitTermFreqAndPositions(true);
             }
         } catch (UnsupportedEncodingException uee) {
             throw new FieldValueMappingException(uee.getMessage());

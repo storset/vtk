@@ -233,10 +233,6 @@ public class IndexDataReportScopeFilterFactoryImpl
             return new OpenBitSet(reader.maxDoc());
         }
 
-        @Override
-        public BitSet bits(IndexReader reader) {
-            return new BitSet(reader.maxDoc());
-        }
     }
 
 }

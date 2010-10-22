@@ -33,7 +33,6 @@ package org.vortikal.web.display.linkcheck;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.Path;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.text.html.HtmlAttribute;
 import org.vortikal.text.html.HtmlContent;
@@ -42,10 +41,15 @@ import org.vortikal.text.html.HtmlNodeFilter;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.display.linkcheck.LinkChecker.LinkCheckResult;
 
 public class LinkCheckFilter implements HtmlPageFilter, HtmlNodeFilter {
-    private LinkChecker linkChecker;
+
+    private String elementClass = null;
+    
+    @Required
+    public void setElementClass(String elementClass) {
+        this.elementClass = elementClass;
+    }
 
     @Override
     public boolean match(HtmlPage page) {
@@ -72,15 +76,11 @@ public class LinkCheckFilter implements HtmlPageFilter, HtmlNodeFilter {
         if (href == null) {
             return NodeResult.keep;
         }
-        String link = href.getValue();
-        if (!isBroken(link)) {
-            return NodeResult.keep;
-        }
         HtmlAttribute clazz = element.getAttribute("class");
         if (clazz == null) {
-            clazz = new SimpleAttr("class", "vrtx-invalid-link");
+            clazz = new SimpleAttr("class", this.elementClass);
         } else {
-            clazz = new SimpleAttr("class", clazz.getValue() + " vrtx-invalid-link");
+            clazz = new SimpleAttr("class", clazz.getValue() + " " + this.elementClass);
         }
         element.setAttribute(clazz);
         return NodeResult.keep;
@@ -92,21 +92,6 @@ public class LinkCheckFilter implements HtmlPageFilter, HtmlNodeFilter {
         return content;
     }
     
-    private boolean isBroken(String link) {
-        if (link.startsWith("#") || link.startsWith("mailto:") || link.startsWith("ftp:")) {
-            return false;
-        }
-        RequestContext requestContext = RequestContext.getRequestContext();
-        Path base = requestContext.getResourceURI();
-        LinkCheckResult result = this.linkChecker.validate(link, base);
-        return !result.isFound();
-    }
-    
-    @Required
-    public void setLinkChecker(LinkChecker linkChecker) {
-        this.linkChecker = linkChecker;
-    }
-
     private class SimpleAttr implements HtmlAttribute {
         private String name, value;
         private boolean singleQuotes = false;

@@ -51,23 +51,19 @@
   <head><title>${(title.title)?default(resourceContext.currentResource.name)}</title>
 
   <#include "/system/javascript.ftl"/>
-  
-  <script language="javascript">
-  $(document).ready(function(){
-	$('iframe').load(function() {
-	$("iframe").contents().find("a").each(function(i) {
-         <#if visualizeBrokenLinks?exists && visualizeBrokenLinks = 'true'>
-           var attr = $(this).attr("class");
-           if (attr && attr.match(/vrtx-invalid-link/)) {
-              $(this).append(" - 404").css("color", "red");
-           }
-         </#if>
-	  $(this).attr("target", "_top");
-         });
-	});
+  <script language="javascript"><!--
+  $(document).ready(function() {
+     $('iframe').load(function() {
+        $("iframe").contents().find("a").each(function(i) {
+	    $(this).attr("target", "_top");
+        });
+        <#if visualizeBrokenLinks?exists && visualizeBrokenLinks = 'true'>
+        visualizeBrokenLinks('iframe', '${linkcheck.URL?html}', 10);
+        </#if>
+     });
   });	
+  //-->
   </script>
-
   </head>
   <body>
 

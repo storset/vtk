@@ -130,6 +130,11 @@
       <list>
         <ref bean="viewIframeJSProvider" />
         <ref bean="resourceContextProvider" />
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider" parent="repositoryAware">
+          <property name="service" ref="linkCheck.validationService" />
+          <property name="modelName" value="linkcheck" />
+          <property name="urlName" value="URL" />
+        </bean>
       </list>
     </property>
   </bean>
@@ -289,6 +294,7 @@
           <list>
             <value>${jquery.baseURL}/jquery-${jquery.version}.min.js</value>
             <value>${jsBaseURL}/iframe-view.js</value>
+            <value>${jsBaseURL}/visualize-broken-links.js</value>
           </list>
         </entry>
       </map>

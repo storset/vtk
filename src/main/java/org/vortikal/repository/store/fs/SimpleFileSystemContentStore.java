@@ -214,7 +214,6 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
         trashDir.mkdir();
         File dest = new File(trashCanDir + "/" + srcURI.getName());
         
-        // XXX Issues with renamTo()? e.g. http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6213298
         if (!src.renameTo(dest)) {
             throw new DataAccessException("Unable to move " + from + " to trash can");
         }

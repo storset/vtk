@@ -30,8 +30,10 @@
  */
 package org.vortikal.web.display.linkcheck;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URLDecoder;
 import java.util.HashSet;
 import java.util.Set;
@@ -64,53 +66,55 @@ public class LinkChecker implements InitializingBean {
     
     public static class LinkCheckResult {
         private String link;
-        private boolean found;
-        private Throwable throwable;
-        public LinkCheckResult(String link, boolean found) {
-            this(link, found, null);
-        }
-        public LinkCheckResult(String link, boolean found, Throwable t) {
+        private Status status;
+        public LinkCheckResult(String link, Status status) {
             this.link = link;
-            this.found = found;
-            this.throwable = t;
+            this.status = status;
         }
         public String getLink() {
             return this.link;
         }
-        public boolean isFound() {
-            return this.found;
+        public String getStatus() {
+            return this.status.toString();
         }
-        public Throwable error() {
-            return this.throwable;
+    }
+    
+    private enum Status {
+        OK("OK"),
+        NOT_FOUND("NOT_FOUND"),
+        TIMEOUT("TIMEOUT"),
+        ERROR("ERROR");
+        private String status;
+        private Status(String status) {
+            this.status = status;
+        }
+        public String toString() {
+            return this.status;
         }
     }
     
     
     public LinkCheckResult validate(String link, Path base) {
-        
         if (!isWebLink(link)) {
-            boolean found = !isBrokenInternal(base, link);
-            return new LinkCheckResult(link, found);
+            return new LinkCheckResult(link, validateInternalLink(base, link));
         }
-        
         String cacheKey = link;
         Element cached = this.cache.get(cacheKey);
         if (cached != null) {
             return (LinkCheckResult) cached.getObjectValue();
         }
-        
-        LinkCheckResult result;
+        Status status;
         try {
             URL url = getURL(link);
             if (this.optimizeLocalLinks && this.localHostNames.contains(url.getHost())) {
-                boolean found = !isBrokenInternal(base, url.getPath().toString());
-                return new LinkCheckResult(link, found);
+                status = validateInternalLink(base, url.getPath().toString());
+                return new LinkCheckResult(link, status);
             }
-            boolean found = !isBroken(url);
-            result  = new LinkCheckResult(link, found);
+            status = validateURL(url);
         } catch (Throwable t) {
-            result = new LinkCheckResult(link, false, t);
+            status = Status.ERROR;
         }
+        LinkCheckResult result = new LinkCheckResult(link, status);
         this.cache.put(new Element(link, result));
         return result;
     }
@@ -123,7 +127,7 @@ public class LinkChecker implements InitializingBean {
         return URL.parse(link);
     }
 
-    private boolean isBroken(URL url) {
+    private Status validateURL(URL url) {
         // go out on the worldwide web
         HttpURLConnection urlConnection = null;
         try {
@@ -135,11 +139,15 @@ public class LinkChecker implements InitializingBean {
                 // check if moved location is valid
                 responseCode = this.checkMoved(urlConnection, responseCode);
             }
-            return responseCode == HttpURLConnection.HTTP_NOT_FOUND 
-                || responseCode == HttpURLConnection.HTTP_GONE;
-            
+            if (responseCode == HttpURLConnection.HTTP_NOT_FOUND 
+                || responseCode == HttpURLConnection.HTTP_GONE) {
+                return Status.NOT_FOUND;
+            }
+            return Status.OK;
+        } catch (SocketTimeoutException e) {
+            return Status.TIMEOUT;
         } catch (Exception e) {
-            return true;
+            return Status.ERROR;
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -147,7 +155,7 @@ public class LinkChecker implements InitializingBean {
         }
     }
 
-    private int checkMoved(HttpURLConnection urlConnection, int responseCode) throws Exception {
+    private int checkMoved(HttpURLConnection urlConnection, int responseCode) throws IOException {
         int retry = 0;
         // try a maximum of three times
         while (retry < 3
@@ -162,7 +170,7 @@ public class LinkChecker implements InitializingBean {
         return responseCode;
     }
     
-    private HttpURLConnection createHeadRequest(URL url) throws Exception {
+    private HttpURLConnection createHeadRequest(URL url) throws IOException {
         java.net.URL location = new java.net.URL(url.toString());
         HttpURLConnection urlConnection = (HttpURLConnection) location.openConnection();
         urlConnection.setRequestMethod("HEAD");
@@ -176,7 +184,7 @@ public class LinkChecker implements InitializingBean {
         return link.startsWith("http") || link.startsWith("www");
     }
 
-    private boolean isBrokenInternal(Path base, String link) {
+    private Status validateInternalLink(Path base, String link) {
         if (link.contains("?")) {
             link = link.substring(0, link.indexOf("?"));
         }
@@ -188,7 +196,7 @@ public class LinkChecker implements InitializingBean {
             try {
                 link = base.getParent().expand(link).toString();
             } catch (Exception e) {
-                return true;
+                return Status.ERROR;
             }
         }
         SecurityContext securityContext = SecurityContext.getSecurityContext();
@@ -201,7 +209,10 @@ public class LinkChecker implements InitializingBean {
         search.setQuery(uriQuery);
         search.setLimit(1);
         ResultSet rs = this.repository.search(token, search);
-        return rs.getSize() == 0;
+        if (rs.getSize() > 0) {
+            return Status.OK;
+        }
+        return Status.NOT_FOUND;
     }
 
     private String trimTrailingSlash(String pathString) {

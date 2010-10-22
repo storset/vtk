@@ -25,22 +25,23 @@ function visualizeBrokenLinks(selection, validationURL, chunk) {
             type : 'POST',
             url : validationURL,
             data : data,
-            dataType : 'text',
             contentType : 'text/plain',
+            dataType : 'json',
             success : linkCheckResponse,
             context : context
         });
     });
 }
 
-function linkCheckResponse(data, status, resp) {
-    var deadLinks = data.split("\n");
+function linkCheckResponse(results, status, resp) {
     $(this).contents().find("a.vrtx-link-check").each(function(e) {
         var href = $(this).attr('href');
-        for (var i = 0; i < deadLinks.length; i++) {
-            if (href == deadLinks[i]) {
-                $(this).append(" - 404").css("color", "red").removeClass("vrtx-link-check");
-                break;
+        for (var i = 0; i < results.length; i++) {
+            if (results[i].status != "OK") {
+               if (href == results[i].link) {
+                   $(this).append(" - 404").css("color", "red").removeClass("vrtx-link-check");
+                   break;
+               }
             }
         }
     });

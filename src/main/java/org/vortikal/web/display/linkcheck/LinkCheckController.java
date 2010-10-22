@@ -38,6 +38,9 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
@@ -60,31 +63,33 @@ public class LinkCheckController implements Controller, InitializingBean {
             return null;
         }
         Path base = RequestContext.getRequestContext().getResourceURI();
-        urls = checkLinks(urls, base);
-        writeResponse(urls, response);
+        List<LinkCheckResult> results = checkLinks(urls, base);
+        writeResponse(results, response);
         return null;
     }
     
-    private List<String> checkLinks(List<String> input, Path base) {
-        List<String> result = new ArrayList<String>();
+    private List<LinkCheckResult> checkLinks(List<String> input, Path base) {
+        List<LinkCheckResult> results = new ArrayList<LinkCheckResult>();
         for (String link: input) {
             LinkCheckResult r = this.linkChecker.validate(link, base);
-            if (!r.isFound()) {
-                result.add(link);
-            }
+            results.add(r);
         }
-        return result;
+        return results;
     }
     
-    private void writeResponse(List<String> urls, HttpServletResponse response) throws Exception {
+    private void writeResponse(List<LinkCheckResult> results, HttpServletResponse response) throws Exception {
+        JSONArray list = new JSONArray();
+        for (LinkCheckResult result: results) {
+            JSONObject o = new JSONObject();
+            o.put("link", result.getLink());
+            o.put("status", result.getStatus());
+            list.add(o);
+        }
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("text/plain;charset=utf-8");
         PrintWriter writer = response.getWriter();
         try {
-            for (String brokenLink : urls) {
-                writer.print(brokenLink);
-                writer.print("\n");
-            }
+            writer.print(list.toString());
         } finally {
             writer.close();
         }

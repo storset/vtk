@@ -177,13 +177,13 @@ public class LinkChecker implements InitializingBean {
     }
 
     private boolean isBrokenInternal(Path base, String link) {
-        link = trimTrailingSlash(link);
         if (link.contains("?")) {
             link = link.substring(0, link.indexOf("?"));
         }
         if (link.contains("#")) {
             link = link.substring(0, link.indexOf("#"));
         }
+        link = trimTrailingSlash(link);
         if (!link.startsWith("/")) {
             try {
                 link = base.getParent().expand(link).toString();
@@ -191,6 +191,7 @@ public class LinkChecker implements InitializingBean {
                 return true;
             }
         }
+        System.out.println("__llink: " + link);
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
         try {

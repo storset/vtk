@@ -191,7 +191,6 @@ public class LinkChecker implements InitializingBean {
                 return true;
             }
         }
-        System.out.println("__llink: " + link);
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
         try {

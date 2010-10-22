@@ -38,10 +38,21 @@ function linkCheckResponse(results, status, resp) {
         var href = $(this).attr('href');
         for (var i = 0; i < results.length; i++) {
             if (results[i].status != "OK") {
-               if (href == results[i].link) {
-                   $(this).append(" - 404").css("color", "red").removeClass("vrtx-link-check");
-                   break;
-               }
+                if (href == results[i].link) {
+                    var append = " - ";
+                    switch (results[i].status) {
+                    case "NOT_FOUND":
+                        append += "404";
+                        break;
+                    case "TIMEOUT":
+                        append += "timeout";
+                        break;
+                    default:
+                    }
+
+                    $(this).append(append).css("color", "red").removeClass("vrtx-link-check");
+                    break;
+                }
             }
         }
     });

@@ -30,12 +30,11 @@
  */
 package org.vortikal.web.service;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 
@@ -46,85 +45,41 @@ import org.vortikal.security.Principal;
  * <ul>
  *   <li><code>method</code> - the HTTP method to match
  *   <li><code>methods</code> - alternatively, a {@link Set set} of
- *   HTTP methods can be specified. Note that these configuration
- *   properties are "mutually exclusive", they cannot both be
- *   specified.
+ *   HTTP methods can be specified.
  * </ul>
- *
  */
-public class RequestMethodAssertion 
-  implements Assertion, InitializingBean {
-
-    private String method = null;
-    private Set<String> methods = null;
+public class RequestMethodAssertion implements Assertion {
+    private Set<String> methods = new HashSet<String>();
     
-	
     public void setMethod(String method) {
-        this.method = method;
+        this.methods.clear();
+        this.methods.add(method);
     }
 	
     public void setMethods(Set<String> methods) {
-        this.methods = methods;
-    }
-    
-    public String getMethod() {
-        return this.method;
-    }
-
-    public Set<String> getMethods() {
-        return this.methods;
-    }
-
-    public void afterPropertiesSet() {
-        if (this.method != null && this.methods != null) {
-            throw new BeanInitializationException(
-                "Bean properties 'method' and 'methods' cannot both be set");
-        }
-
-        if (this.method == null && this.methods == null) {
-            throw new BeanInitializationException(
-                "Either bean property 'method' or 'methods' must be set");
+        this.methods.clear();
+        for (String method: methods) {
+            this.methods.add(method);
         }
     }
     
-
     public boolean conflicts(Assertion assertion) {
         if (!(assertion instanceof RequestMethodAssertion)) {
             return false;
         }
-
         RequestMethodAssertion other = (RequestMethodAssertion) assertion;
-
-        if (this.method != null) {
-            if (other.getMethods() != null) {
-                return other.getMethods().contains(this.method);
-            } 
-            return !this.method.equals(other.getMethod());
-        }
-
-        if (other.getMethod() != null) {
-            return !this.methods.contains(other.getMethod());
-        }
-
-        boolean intersect = false;
         for (String method: other.methods) {
             if (this.methods.contains(method)) {
-                intersect = true;
-                break;
+                return false;
             }
         }
-        return !intersect;
+        return true;
     }
-
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(super.toString());
-        if (this.methods != null) {
-            sb.append("; methods = ").append(this.methods);
-        } else {
-            sb.append("; method = ").append(this.method);
-        }
+        sb.append("; methods = ").append(this.methods);
         return sb.toString();
     }
 
@@ -138,11 +93,7 @@ public class RequestMethodAssertion
     
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
         String reqMethod = request.getMethod();
-
-        if (this.methods != null) {
-            return this.methods.contains(reqMethod);
-        }
-        return reqMethod.equals(this.method);
+        return this.methods.contains(reqMethod);
     }
 
 }

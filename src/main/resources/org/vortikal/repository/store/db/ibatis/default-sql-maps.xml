@@ -746,6 +746,7 @@
     select r.*, 
     p.name_space, p.name, p.value from vortex_resource r
     left outer join extra_prop_entry p on r.resource_id = p.resource_id
+    where r.uri like '/%'
     order by r.uri, p.extra_prop_entry_id
   </select>
   

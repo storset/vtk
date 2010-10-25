@@ -39,18 +39,18 @@ function linkCheckResponse(results, status, resp) {
         for (var i = 0; i < results.length; i++) {
             if (results[i].status != "OK") {
                 if (href == results[i].link) {
-                    var append = " - ";
+                    var msg = "";
                     switch (results[i].status) {
                     case "NOT_FOUND":
-                        append += "404";
+                        msg = " [404]";
                         break;
                     case "TIMEOUT":
-                        append += "timeout";
+                        msg = " [timeout]";
                         break;
                     default:
+                        msg = " [error]";
                     }
-
-                    $(this).append(append).css("color", "red").removeClass("vrtx-link-check");
+                    $(this).append(msg).css("color", "red").removeClass("vrtx-link-check");
                     break;
                 }
             }

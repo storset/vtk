@@ -45,9 +45,9 @@ import net.sf.ehcache.Element;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
-import org.vortikal.repository.Repository;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
+import org.vortikal.repository.search.Searcher;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.UriTermQuery;
 import org.vortikal.security.SecurityContext;
@@ -55,7 +55,7 @@ import org.vortikal.web.service.URL;
 
 public class LinkChecker implements InitializingBean {
     
-    private Repository repository;
+    private Searcher searcher;
     private CacheManager cacheManager;
     private Cache cache;
     private int connectTimeout = 5000;
@@ -80,21 +80,18 @@ public class LinkChecker implements InitializingBean {
     }
     
     private enum Status {
-        OK("OK"),
-        NOT_FOUND("NOT_FOUND"),
-        TIMEOUT("TIMEOUT"),
-        ERROR("ERROR");
-        private String status;
-        private Status(String status) {
-            this.status = status;
-        }
-        public String toString() {
-            return this.status;
-        }
+        OK,
+        NOT_FOUND,
+        TIMEOUT,
+        MALFORMED_URL,
+        ERROR;
     }
     
     
     public LinkCheckResult validate(String link, Path base) {
+        if (link == null) {
+            throw new IllegalArgumentException("Link argument cannot be NULL");
+        }
         if (!isWebLink(link)) {
             return new LinkCheckResult(link, validateInternalLink(base, link));
         }
@@ -103,15 +100,21 @@ public class LinkChecker implements InitializingBean {
         if (cached != null) {
             return (LinkCheckResult) cached.getObjectValue();
         }
+        URL url;
+        try {
+            url = getURL(link);
+        } catch (Throwable t) {
+            return new LinkCheckResult(link, Status.MALFORMED_URL);
+        }
         Status status;
         try {
-            URL url = getURL(link);
             if (this.optimizeLocalLinks && this.localHostNames.contains(url.getHost())) {
                 status = validateInternalLink(base, url.getPath().toString());
                 return new LinkCheckResult(link, status);
             }
             status = validateURL(url);
         } catch (Throwable t) {
+            t.printStackTrace();
             status = Status.ERROR;
         }
         LinkCheckResult result = new LinkCheckResult(link, status);
@@ -120,6 +123,7 @@ public class LinkChecker implements InitializingBean {
     }
     
     private URL getURL(String link) {
+        link = link.trim();
         link = trimTrailingSlash(link);
         if (link.contains("#")) {
             link = link.substring(0, link.indexOf("#"));
@@ -137,7 +141,7 @@ public class LinkChecker implements InitializingBean {
             if (responseCode == HttpURLConnection.HTTP_MOVED_PERM 
                     || responseCode == HttpURLConnection.HTTP_MOVED_TEMP) {
                 // check if moved location is valid
-                responseCode = this.checkMoved(urlConnection, responseCode);
+                responseCode = checkMoved(urlConnection, responseCode);
             }
             if (responseCode == HttpURLConnection.HTTP_NOT_FOUND 
                 || responseCode == HttpURLConnection.HTTP_GONE) {
@@ -204,11 +208,12 @@ public class LinkChecker implements InitializingBean {
         try {
             link = URLDecoder.decode(link, "utf-8");
         } catch (UnsupportedEncodingException e) { }
+
         UriTermQuery uriQuery = new UriTermQuery(link, TermOperator.EQ);
         Search search = new Search();
         search.setQuery(uriQuery);
         search.setLimit(1);
-        ResultSet rs = this.repository.search(token, search);
+        ResultSet rs = this.searcher.execute(token, search);
         if (rs.getSize() > 0) {
             return Status.OK;
         }
@@ -223,8 +228,8 @@ public class LinkChecker implements InitializingBean {
     }
     
     @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
+    public void setSearcher(Searcher searcher) {
+        this.searcher = searcher;
     }
 
     @Required

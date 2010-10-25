@@ -48,6 +48,7 @@ public abstract class RepositoryEvent extends ApplicationEvent {
 
     public abstract Path getURI();
     
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(getClass().getName());
         sb.append("[source=").append(this.source).append("]");

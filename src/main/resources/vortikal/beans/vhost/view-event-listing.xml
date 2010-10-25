@@ -25,8 +25,7 @@
     <property name="handler" ref="eventListing.atomHandler" />
   </bean>
 
-  <bean id="eventListing.handler" class="org.vortikal.web.display.collection.event.EventListingController"
-    parent="repositoryAware">
+  <bean id="eventListing.handler" class="org.vortikal.web.display.collection.event.EventListingController" parent="repositoryAware">
     <property name="resourceManager" ref="resourceManager" />
     <property name="sortPropDefs">
       <list>
@@ -86,11 +85,11 @@
     <property name="displayTypePropDef" ref="eventListing.displayTypePropDef" />
     <property name="overridePublishDatePropDefPointer" ref="${override.listing.prefix}overridePublishDatePropDefPointer" />
   </bean>
-  
+
   <bean id="overridePublishDatePropDefPointer" class="java.lang.String">
     <constructor-arg value="start-date" />
   </bean>
-  
+
   <bean id="structured.overridePublishDatePropDefPointer" class="java.lang.String">
     <constructor-arg value="resource:start-date" />
   </bean>
@@ -110,7 +109,9 @@
     <property name="defaultRecursive" value="true" />
     <property name="recursivePropDef" ref="eventListing.recursiveListingPropDef" />
     <property name="query">
-      <value>(uri = {$currentFolder}/* AND type IN event) AND (start-date &gt;= {$currentDate} OR end-date &gt;= {$currentDate})</value>
+     <!--   <value>(uri = {$currentFolder}/* AND type IN event) AND ((start-date &gt;= {$currentTime} OR end-date &gt;=
+        {$currentTime}) OR (resource:end-date not exists AND resource:start-date &gt;= {$currentDate}))</value> -->
+         <value>(uri = {$currentFolder}/* AND type IN event) AND ((end-date not exists AND start-date &gt;= {$currentDate}) OR (end-date &gt;= {$currentTime}))</value>
     </property>
     <property name="queryParser" ref="searchParser" />
     <property name="listableProperties" ref="eventListing.listableProperties" />
@@ -124,7 +125,7 @@
         <value>start-date</value>
       </list>
     </property>
-    <property name="resourceTypeTree"  ref ="resourceTypeTree" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="defaultSortOrder" ref="SORT_ORDER.ASC" />
   </bean>
 
@@ -137,7 +138,9 @@
     <property name="defaultRecursive" value="true" />
     <property name="recursivePropDef" ref="eventListing.recursiveListingPropDef" />
     <property name="query">
-      <value>(uri = {$currentFolder}/* AND type IN event) AND (end-date &lt; {$currentDate} OR (end-date not exists AND start-date &lt; {$currentDate}))</value>
+      <!-- <value>(uri = {$currentFolder}/* AND type IN event) AND (end-date &lt; {$currentTime} OR (end-date not exists AND
+        start-date &lt; {$currentDate}))</value> -->
+               <value>(uri = {$currentFolder}/* AND type IN event) AND (end-date &lt; {$currentTime} OR (end-date not exists AND start-date &lt; {$currentDate}))</value>
     </property>
     <property name="queryParser" ref="searchParser" />
     <property name="listableProperties" ref="eventListing.listableProperties" />
@@ -151,14 +154,14 @@
         <value>start-date</value>
       </list>
     </property>
-    <property name="resourceTypeTree"  ref ="resourceTypeTree" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="defaultSortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
   <bean id="eventListing.listableProperties" class="java.util.ArrayList">
     <constructor-arg>
       <list>
-          <bean class="org.vortikal.web.search.PropertyDisplayConfig">
+        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
           <property name="displayProperty" ref="startDatePropDef" />
         </bean>
         <bean class="org.vortikal.web.search.PropertyDisplayConfig">
@@ -184,8 +187,8 @@
   <bean id="eventListing.viewResolver" parent="decoratorViewResolver">
     <property name="views">
       <map>
-        <entry key="${override.listing.prefix}eventListing.view"  value-ref="${override.listing.prefix}eventListing.view" />
-        <entry key="eventListingCalendar.view"  value-ref="eventListingCalendar.view" />
+        <entry key="${override.listing.prefix}eventListing.view" value-ref="${override.listing.prefix}eventListing.view" />
+        <entry key="eventListingCalendar.view" value-ref="eventListingCalendar.view" />
       </map>
     </property>
   </bean>

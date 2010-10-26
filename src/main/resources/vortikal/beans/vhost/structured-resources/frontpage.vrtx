@@ -148,6 +148,11 @@ resourcetype frontpage {
               [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
               [def cssClasses concat(cssClasses, type)]
             [endif]
+            
+            [if main-content = "true"]
+              [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
+              [def cssClasses concat(cssClasses, "white-box")]
+            [endif]
 
             [if cssClasses != null && cssClasses != ""]
               <div class="vrtx-frontpage-box [val cssClasses]" id="vrtx-additional-content-[val number]">

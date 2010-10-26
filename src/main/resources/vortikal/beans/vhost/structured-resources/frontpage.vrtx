@@ -116,7 +116,7 @@ resourcetype frontpage {
       ##
     }
     
-    additional-content(document) {
+    additional-content(document, main-content) {
       ##
       [resource-props "."]
       [def boxes document.properties.additional-content]

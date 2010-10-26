@@ -52,13 +52,25 @@
 
   <#include "/system/javascript.ftl"/>
   <script language="javascript"><!--
+  function linkCheckLocalizer(status) {
+      switch (status) {
+         case 'NOT_FOUND':
+         case 'MALFORMED_URL':
+            return '<@vrtx.msg code="linkcheck.status.NOT_FOUND" default="broken"/>';
+         case 'TIMEOUT':
+            return '<@vrtx.msg code="linkcheck.status.TIMEOUT" default="timeout"/>';
+         default:
+            return '<@vrtx.msg code="linkcheck.status.ERROR" default="error"/>';
+      }
+  }
+
   $(document).ready(function() {
      $('iframe').load(function() {
         $("iframe").contents().find("a").each(function(i) {
 	    $(this).attr("target", "_top");
         });
         <#if visualizeBrokenLinks?exists && visualizeBrokenLinks = 'true'>
-        visualizeBrokenLinks('iframe', '${linkcheck.URL?html}', 10);
+        visualizeBrokenLinks('iframe', '${linkcheck.URL?html}', 10, linkCheckLocalizer);
         </#if>
      });
   });	

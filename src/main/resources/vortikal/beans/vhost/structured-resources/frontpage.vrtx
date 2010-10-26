@@ -121,7 +121,9 @@ resourcetype frontpage {
       [resource-props "."]
       [def boxes document.properties.additional-content]
       [def theShowAdditionalContent document.properties.showAdditionalContent]
-      [if (theShowAdditionalContent = "true" && main-content = "false") || (theShowAdditionalContent = "false" && main-content = "true")]
+      [if (theShowAdditionalContent = "true" && main-content = "false")
+       || (theShowAdditionalContent = null && main-content = "false")  
+       || (theShowAdditionalContent = "false" && main-content = "true")]
       [if boxes != null]
         [if main-content = "false"]
           <div id="vrtx-additional-content">
@@ -298,7 +300,7 @@ resourcetype frontpage {
         [resources-props "."]
         [def document structured-document()]
         [def theShowAdditionalContent document.properties.showAdditionalContent]
-        [if theShowAdditionalContent = "true"]
+        [if theShowAdditionalContent = "true" || theShowAdditionalContent = null]
           <div id="vrtx-content">
         [else]
           <div id="vrtx-content" class="vrtx-frontpage-wide">

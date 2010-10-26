@@ -121,7 +121,7 @@ resourcetype frontpage {
       [resource-props "."]
       [def boxes document.properties.additional-content]
       [def theShowAdditionalContent document.properties.showAdditionalContent]
-      [if (theShowAdditionalContent = "true") || (theShowAdditionalContent = "false" && main-content = "true")]
+      [if (theShowAdditionalContent = "true" && main-content = "false") || (theShowAdditionalContent = "false" && main-content = "true")]
       [if boxes != null]
         [if main-content = "false"]
           <div id="vrtx-additional-content">

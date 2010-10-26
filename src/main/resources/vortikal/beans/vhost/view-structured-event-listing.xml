@@ -40,9 +40,9 @@
     <constructor-arg type="java.lang.String">
       <value>
         (uri = {$currentFolder}/* AND type IN structured-event)
-          AND ((resource:start-date &gt;= {$currentDate+[1]d} AND resource:start-date &lt; {$currentDate+[2]d})
-            OR (resource:end-date &gt;= {$currentDate+[1]d} AND resource:end-date &lt; {$currentDate+[2]d})
-            OR (resource:start-date &lt;= {$currentDate+[1]d} AND resource:end-date &gt;= {$currentDate+[2]d}))
+          AND ((resource:start-date &gt;= {$currentTime+[1]d} AND resource:start-date &lt; {$currentTime+[1]d})
+            OR (resource:end-date &gt;= {$currentTime+[1]d} AND resource:end-date &lt; {$currentTime+[1]d})
+            OR (resource:start-date &lt;= {$currentTime+[1]d} AND resource:end-date &gt;= {$currentTime+[1]d}))
       </value>
     </constructor-arg>
   </bean>

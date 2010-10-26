@@ -7,6 +7,7 @@ resourcetype frontpage {
     caption : simple_html,
     main-content : json (boxTitle : string, boxCssSizeAndPlacement : string, boxCssColor : string, boxType : string, boxPicture : image_ref, boxContent : html, boxUrlText : string, boxUrl : string) multiple noextract,
     additional-content : json (boxTitle : string, boxType : string, boxPicture : image_ref, boxContent : html, boxUrlText : string, boxUrl : string) multiple noextract,
+    showAdditionalContent : boolean,
     cssUrl : string
   }
 
@@ -119,8 +120,12 @@ resourcetype frontpage {
       ##
       [resource-props "."]
       [def boxes document.properties.additional-content]
+      [def theShowAdditionalContent document.properties.showAdditionalContent]
+      [if (theShowAdditionalContent = "true") || (theShowAdditionalContent = "false" && main-content = "true")]
       [if boxes != null]
-        <div id="vrtx-additional-content">
+        [if main-content = "false"]
+          <div id="vrtx-additional-content">
+        [endif]
           [list boxes box]
             [def type box.boxType]
             [def title box.boxTitle]
@@ -189,7 +194,10 @@ resourcetype frontpage {
               [endif]
             </div>
           [endlist]
+        [if main-content = "false"]
         </div>
+        [endif]
+        [endif]
       [endif]
       ##
     }
@@ -289,8 +297,8 @@ resourcetype frontpage {
       <body id="vrtx-frontpage">
         [resources-props "."]
         [def document structured-document()]
-        [def boxes document.properties.additional-content]
-        [if boxes != null]
+        [def theShowAdditionalContent document.properties.showAdditionalContent]
+        [if theShowAdditionalContent = "true"]
           <div id="vrtx-content">
         [else]
           <div id="vrtx-content" class="vrtx-frontpage-wide">
@@ -298,9 +306,9 @@ resourcetype frontpage {
           <h1>[call "comp:title"]</h1>
           <div id="vrtx-main-content">
             [call "comp:frontpage-introduction"]
-            [call "comp:main-content" {"document":document}]
+            [call "comp:additional-content" {"document":document, "main-content": "true"}]
           </div>
-          [call "comp:additional-content" {"document":document}]
+          [call "comp:additional-content" {"document":document, "main-content": "false"}]
         </div>
       </body>
     </html>
@@ -308,6 +316,11 @@ resourcetype frontpage {
   }
   
   vocabulary {
+     showAdditionalContent {
+       en : ("true" = "Yes", "false" = "No"),
+       no : ("true" = "Ja", "false" = "Nei"),
+       nn : ("true" = "Ja", "false" = "Nei")
+     },
      main-content:boxCssColor {
        en : ("undefined" = "Blanc", "grey-box" = "Grey box", "white-box" = "White box"),
        no : ("undefined" = "Blank", "grey-box" = "Grå boks", "white-box" = "Hvit boks"),
@@ -338,6 +351,7 @@ resourcetype frontpage {
      boxUrlText : (en : "Link text", no : "Lenketekst", nn : "Lenketekst"),
      boxUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
      header : (en : "Edit frontpage", no : "Rediger forside", nn : "Rediger forside"),
+     showAdditionalContent : (en : "Show right-column", no : "Vis høyre kolonne", nn : "Vis høyre kolonne"),
      cssUrl : (en : "Include CSS", no : "Inkluder CSS", nn : "Inkluder CSS")
   }
 }

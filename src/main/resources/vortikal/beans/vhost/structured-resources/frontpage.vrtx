@@ -306,6 +306,7 @@ resourcetype frontpage {
           <h1>[call "comp:title"]</h1>
           <div id="vrtx-main-content">
             [call "comp:frontpage-introduction"]
+            [call "comp:main-content" {"document":document}]
             [call "comp:additional-content" {"document":document, "main-content": "true"}]
           </div>
           [call "comp:additional-content" {"document":document, "main-content": "false"}]

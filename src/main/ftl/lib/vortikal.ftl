@@ -173,14 +173,12 @@
 	<#if linkConstructor(resourceUri,serviceName)?exists >
 		<#local constructedURL = linkConstructor(resourceUri,serviceName) />
 	</#if>
-	<#if constructedURL?exists>
+	<#if constructedURL?exists && resourceUri?exists && !resourceUri?contains("://") >
 		<#return constructedURL.getPathRepresentation() />	
+	<#elseif resourceUri?exists >
+		<#return resourceUri />
 	<#else>
-		<#if resourceUri?exists>
-			<#return resourceUri />
-		<#else>
-			<#return "" />
-		</#if>
+		<#return "" />
 	</#if>
 </#function>
 

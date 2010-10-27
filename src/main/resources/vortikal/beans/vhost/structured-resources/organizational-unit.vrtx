@@ -172,17 +172,16 @@ resourcetype organizational-unit {
 	  	[def style concat("width:", concat(pixel-width, "px"))]
 	  [endif]
 	  
-	  [if pixel-width != null]  
-		<div class="vrtx-introduction-image" style="[val style]">
-	  [else]
-		<div class="vrtx-introduction-image">
-	  [endif]
-	  
 	  [if img-uri != null]	
-		    <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
+	    [if pixel-width != null]  
+		  <div class="vrtx-introduction-image" style="[val style]">
+	    [else]
+		  <div class="vrtx-introduction-image">
+	    [endif]
+	  
+	    <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
+	    </div>
 	  [endif]
-
-	  </div>
       ##
     }
 

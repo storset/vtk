@@ -57,39 +57,39 @@ resourcetype research-group {
 	  	[def style concat("width:", concat(pixel-width, "px"))]
 	  [endif]
 	  
-	  [if pixel-width != null]  
-		<div class="vrtx-introduction-image" style="[val style]">
-	  [else]
-		<div class="vrtx-introduction-image">
-	  [endif]
+	  [if img-uri != null]
+	    [if pixel-width != null]  
+		  <div class="vrtx-introduction-image" style="[val style]">
+	    [else]
+		  <div class="vrtx-introduction-image">
+	    [endif]
+	  	
+	    [if caption != null]
+		  <img src="[val img-uri]" alt="[val caption # unescaped 'flattened']"/>
+	    [else]
+		  <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
+	    [endif]
 	  
-	  [if img-uri != null]	
-		  [if caption != null]
-		    <img src="[val img-uri]" alt="[val caption # unescaped 'flattened']"/>
-		  [else]
-		    <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
-		  [endif]
-	  [endif]
-	  
-	  [if caption != null]
-	    <div class="vrtx-imagetext">
-	      <div class="vrtx-imagedescription">[val caption # unescaped]</div>
-	      [if img-author != null]
-	        <span class="vrtx-photo">
-	          <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val img-author]
-	        </span>
-	      [endif]
+	    [if caption != null]
+	      <div class="vrtx-imagetext">
+	        <div class="vrtx-imagedescription">[val caption # unescaped]</div>
+	        [if img-author != null]
+	          <span class="vrtx-photo">
+	            <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val img-author]
+	          </span>
+	        [endif]
+	      </div>
+	    [elseif img-author != null]
+	      <div class="vrtx-imagetext">
+	        [if img-author != null]
+	          <span class="vrtx-photo">
+	            <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val img-author]
+	          </span>
+	        [endif]
+	      </div> 
+	    [endif]
 	    </div>
-	  [elseif img-author != null]
-	    <div class="vrtx-imagetext">
-	      [if img-author != null]
-	        <span class="vrtx-photo">
-	          <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val img-author]
-	        </span>
-	      [endif]
-	    </div> 
 	  [endif]
-	  </div>
       ##
     }
     

@@ -198,9 +198,9 @@ public class LinkChecker implements InitializingBean {
         link = trimTrailingSlash(link);
         if (!link.startsWith("/")) {
             try {
-                link = base.getParent().expand(link).toString();
+                link = base.expand(link).toString();
             } catch (Exception e) {
-                return Status.ERROR;
+                return Status.MALFORMED_URL;
             }
         }
         SecurityContext securityContext = SecurityContext.getSecurityContext();

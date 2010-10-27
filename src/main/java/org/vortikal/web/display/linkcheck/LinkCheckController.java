@@ -62,7 +62,7 @@ public class LinkCheckController implements Controller, InitializingBean {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return null;
         }
-        Path base = RequestContext.getRequestContext().getResourceURI();
+        Path base = RequestContext.getRequestContext().getCurrentCollection();
         List<LinkCheckResult> results = checkLinks(urls, base);
         writeResponse(results, response);
         return null;

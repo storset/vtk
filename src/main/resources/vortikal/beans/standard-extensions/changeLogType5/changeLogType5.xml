@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <!-- Publish events whenever changes to Vortex resources occur. -->
+  <bean id="processedContentEventDumperAll" 
+    class="org.vortikal.repository.ProcessedContentEventDumperAll">
+    <property name="dataAccessor" ref="repository.sqlMapDao"/>
+    <property name="changeLogDAO" ref="repository.changeLogDAO" />
+    <property name="repository" ref="repository"/>
+    <property name="loggerType" value="5" />
+    <property name="loggerId" value="1" />
+  </bean>
+
+</beans>

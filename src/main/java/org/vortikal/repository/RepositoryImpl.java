@@ -694,7 +694,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                 r.setAclInheritedFrom(PropertySetImpl.NULL_RESOURCE_ID);
 
             } else if (!original.isInheritedAcl() && resource.isInheritedAcl()) {
-                /* Switching to inheritance. */
+                /* Switching to inheritance. The new ACL is the same as the
+                 * parent's ACL.
+                 */
+                AclImpl newAcl = (AclImpl) parent.getAcl().clone();
+                r.setAcl(newAcl);
                 r.setAclInheritedFrom(parent.getID());
                 r.setInheritedAcl(true);
 

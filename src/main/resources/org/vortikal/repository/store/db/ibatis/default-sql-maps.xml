@@ -623,6 +623,20 @@
   </insert>
 
 
+  <insert id="insertChangeLogEntryInherited" 
+          parameterClass="org.vortikal.repository.ChangeLogEntry">
+    insert into changelog_entry 
+      (changelog_entry_id, logger_id, logger_type,
+      operation, timestamp, uri, resource_id, is_collection)
+    select <include refid="nextChangelogEntryId" />, #loggerId#, #loggerType#,
+      #operation,handler=org.vortikal.repository.store.db.ibatis.ChangeLogEntryOperationTypeHandlerCallback#, 
+      #timestamp#, uri, resource_id, is_collection 
+    from vortex_resource 
+    where acl_inherited_from = #resourceId:NUMERIC:-1#
+    or resource_id = #resourceId:NUMERIC:-1#
+  </insert>
+
+
   <insert id="insertChangeLogEntry" 
           parameterClass="org.vortikal.repository.ChangeLogEntry">
     insert into changelog_entry 

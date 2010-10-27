@@ -170,7 +170,9 @@
 </#macro>
 
 <#function relativeLinkConstructor resourceUri serviceName >
-	<#local constructedURL = linkConstructor(resourceUri,serviceName) />
+	<#if linkConstructor(resourceUri,serviceName)?exists >
+		<#local constructedURL = linkConstructor(resourceUri,serviceName) />
+	</#if>
 	<#if constructedURL?exists>
 		<#return constructedURL.getPathRepresentation() />	
 	<#else>

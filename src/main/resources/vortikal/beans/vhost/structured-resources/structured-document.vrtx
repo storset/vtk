@@ -64,6 +64,14 @@ resourcetype structured-document {
 	        </span>
 	      [endif]
 	    </div>
+	  [elseif img-author != null]
+	    <div class="vrtx-imagetext">
+	      [if img-author != null]
+	        <span class="vrtx-photo">
+	          <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val img-author]
+	        </span>
+	      [endif]
+	    </div> 
 	  [endif]
 	  </div>
       ##

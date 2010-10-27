@@ -71,7 +71,7 @@ resourcetype research-group {
 		  [endif]
 	  [endif]
 	  
-	  [if caption != null]
+	  if caption != null]
 	    <div class="vrtx-imagetext">
 	      <div class="vrtx-imagedescription">[val caption # unescaped]</div>
 	      [if img-author != null]
@@ -80,6 +80,14 @@ resourcetype research-group {
 	        </span>
 	      [endif]
 	    </div>
+	  [elseif img-author != null]
+	    <div class="vrtx-imagetext">
+	      [if img-author != null]
+	        <span class="vrtx-photo">
+	          <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val img-author]
+	        </span>
+	      [endif]
+	    </div> 
 	  [endif]
 	  </div>
       ##

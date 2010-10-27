@@ -186,7 +186,7 @@ resourcetype organizational-unit {
 		  [endif]
 	  [endif]
 	  
-	  if caption != null]
+	  [if caption != null]
 	    <div class="vrtx-imagetext">
 	      <div class="vrtx-imagedescription">[val caption # unescaped]</div>
 	      [if img-author != null]

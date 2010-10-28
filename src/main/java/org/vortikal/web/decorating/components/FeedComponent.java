@@ -191,10 +191,10 @@ public class FeedComponent extends AbstractFeedComponent {
         SyndFeed feed = null;
 
         try {
-            if (!url.startsWith("/")) {
-                feed = this.cache.get(url);
-            } else {
+            if (url.startsWith("/")) {
                 feed = this.localFeedFetcher.getFeed(url, request);
+            } else {
+                feed = this.cache.get(url);
             }
         } catch (Exception e) {
             throw new RuntimeException("Could not read feed url " + url, e);

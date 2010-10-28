@@ -117,12 +117,8 @@ resourcetype organizational-unit {
               <span class="vrtx-organizational-unit-email">
                 [localized 'email']: 
                 [list email anEmail]
-                  [def sized _size]
-                  [def number _index + 1]
-                  
                   [def emailSplit split(anEmail, "@", 25, 2)]
                   <a href="mailto:[val anEmail]"><span class="email">[val emailSplit]</span></a>
-                  [if sized = number][else]<br />[endif]
                 [endlist]
               </span>
             [endif]

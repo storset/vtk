@@ -197,7 +197,7 @@ public class FeedComponent extends AbstractFeedComponent {
                 feed = this.cache.get(url);
             }
         } catch (Exception e) {
-            throw new RuntimeException("Could not read feed url " + url, e);
+            throw new RuntimeException("Could not read feed url " + url + " (" + e.getMessage() + ")", e);
         }
                 
         List<String> elementOrder = getElementOrder(PARAMETER_FEED_ELEMENT_ORDER, request);

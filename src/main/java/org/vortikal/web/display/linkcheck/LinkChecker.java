@@ -166,6 +166,9 @@ public class LinkChecker implements InitializingBean {
                 && (responseCode == HttpURLConnection.HTTP_MOVED_PERM || responseCode == HttpURLConnection.HTTP_MOVED_TEMP)) {
             String location = urlConnection.getHeaderField("Location");
             urlConnection.disconnect();
+            if (location == null) {
+                return responseCode;
+            }
             urlConnection = createHeadRequest(URL.parse(location));
             urlConnection.connect();
             responseCode = urlConnection.getResponseCode();

@@ -117,9 +117,9 @@
     <constructor-arg type="java.lang.String">
       <value>
         (uri = {$currentFolder}/* AND type IN event)
-          AND ((start-date &gt;= {$currentTime+[1]d} AND start-date &lt; {$currentTime+[2]d})
-            OR (end-date &gt;= {$currentTime+[1]d} AND end-date &lt; {$currentTime+[2]d})
-            OR (start-date &lt;= {$currentTime+[1]d} AND end-date &gt;= {$currentTime+[2]d}))
+          AND ((start-date &gt;= {$currentDate+[1]d} AND start-date &lt; {$currentDate+[2]d})
+            OR (end-date &gt;= {$currentDate+[1]d} AND end-date &lt; {$currentDate+[2]d})
+            OR (start-date &lt;= {$currentDate+[1]d} AND end-date &gt;= {$currentDate+[2]d}))
       </value>
     </constructor-arg>
   </bean>
@@ -127,7 +127,7 @@
   <bean id="eventListing.furtherUpcomingSearchString" class="java.lang.String">
     <constructor-arg type="java.lang.String">
       <value>
-        (uri = {$currentFolder}/* AND type IN event) AND (start-date &gt;= {$currentTime+[1]d})
+        (uri = {$currentFolder}/* AND type IN event) AND (start-date &gt;= {$currentDate+[1]d})
       </value>
     </constructor-arg>
   </bean>

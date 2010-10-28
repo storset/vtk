@@ -129,7 +129,7 @@ resourcetype structured-article : structured-document {
     author: (en : "Author", no : "Forfatter", nn : "Forfattar"),
     published-date: (en : "Publishing time", no : "Publiseringstidspunkt", nn : "Publiseringstidspunkt"),
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
-    hideAdditionalContent : (en : "Hide right-column", no : "Skjul høyre kolonne", nn : "Skjul høyre kolonne"),
+    hideAdditionalContent : (en : "Hide right-column", no : "Skjul høyrekolonne", nn : "Skjul høyrekolonne"),
     related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold"),
     relatedContent : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold"),
     header : (en : "Edit article", no : "Rediger artikkel", nn : "Rediger artikkel"),

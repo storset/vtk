@@ -365,7 +365,7 @@ resourcetype frontpage {
      boxUrlText : (en : "Link text", no : "Lenketekst", nn : "Lenketekst"),
      boxUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
      header : (en : "Edit frontpage", no : "Rediger forside", nn : "Rediger forside"),
-     showAdditionalContent : (en : "Show right-column", no : "Vis høyre kolonne", nn : "Vis høyre kolonne"),
+     showAdditionalContent : (en : "Show right-column", no : "Vis høyrekolonne", nn : "Vis høyrekolonne"),
      cssUrl : (en : "Include CSS", no : "Inkluder CSS", nn : "Inkluder CSS")
   }
 }

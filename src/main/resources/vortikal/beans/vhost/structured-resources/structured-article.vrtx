@@ -131,7 +131,7 @@ resourcetype structured-article : structured-document {
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
     hideAdditionalContent : (en : "Hide right-column", no : "Skjul høyrekolonne", nn : "Skjul høyrekolonne"),
     related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold"),
-    relatedContent : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold"),
+    relatedContent : (en : "Related content (default as right-column)", no : "Relatert innhold (default som høyrekolonne)", nn : "Relatert innhold (default som høyrekolonne)"),
     header : (en : "Edit article", no : "Rediger artikkel", nn : "Rediger artikkel"),
     authorsAnd : (en : "and", no : "og", nn : "og")
   }

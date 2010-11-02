@@ -159,6 +159,8 @@
         <ref bean="templateLanguage.toStringFunction" />
         <ref bean="templateLanguage.concatFunction" />
         <ref bean="templateLanguage.splitFunction" />
+        <ref bean="templateLanguage.lengthFunction" />
+        <ref bean="templateLanguage.getFunction" />
         <ref bean="structuredResources.requestContextFunction" />
       </set>
     </property>

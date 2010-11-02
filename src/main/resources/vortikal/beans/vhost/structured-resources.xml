@@ -130,7 +130,9 @@
     </property>
   </bean>
 
-  <bean id="structuredResources.ifDirective" class="org.vortikal.text.tl.IfNodeFactory" />
+  <bean id="structuredResources.ifDirective" class="org.vortikal.text.tl.IfNodeFactory">
+    <property name="functions" ref="structuredResources.defaultFunctions" />
+  </bean>
 
   <bean id="structuredResources.valDirective" class="org.vortikal.text.tl.ValNodeFactory">
     <property name="functions" ref="structuredResources.defaultFunctions" />
@@ -191,6 +193,8 @@
         <ref bean="templateLanguage.toStringFunction" />
         <ref bean="templateLanguage.concatFunction" />
         <ref bean="templateLanguage.splitFunction" />
+        <ref bean="templateLanguage.lengthFunction" />
+        <ref bean="templateLanguage.getFunction" />
         <ref bean="structuredResources.requestContextFunction" />
         <ref bean="structuredResources.resourceFunction" />
         <ref bean="structuredResources.resourcePropFunction" />

@@ -37,21 +37,16 @@ import java.util.Map;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Symbol;
 
-public class Accessor extends Operator {
+public class Get extends Function {
 
-    public Accessor(Symbol symbol, Notation notation, Precedence precedence) {
-        super(symbol, notation, precedence);
-    }
-    
-    @Override
-    public boolean leftAssociative() {
-        return true;
+    public Get(Symbol symbol) {
+        super(symbol, 2);
     }
 
     @Override
-    public Object eval(Context ctx, EvalStack stack) throws Exception {
-        Object accessor = stack.pop(false);
-        Object collection = stack.pop();
+    public Object eval(Context ctx, Object... args) throws Exception {
+        Object collection = args[0];
+        Object accessor = args[1];
         if (collection == null) {
             throw new IllegalArgumentException("First argument is NULL");
         }
@@ -71,6 +66,7 @@ public class Accessor extends Operator {
                 + accessor + "' of object '" + collection + "'");
     }
 
+    
     private Object accessArray(Object[] array, Object accessor) {
         int i = getNumericValue(accessor).intValue();
         int n = array.length;
@@ -91,10 +87,6 @@ public class Accessor extends Operator {
     }
     
     private Object accessMap(Map<?, ?> map, Object accessor) {
-        if (!(accessor instanceof Symbol)) {
-            throw new IllegalArgumentException("Accessor '" + accessor + "' is not a symbol");
-        }
-        accessor = ((Symbol) accessor).getSymbol();
         return map.get(accessor);
     }
     

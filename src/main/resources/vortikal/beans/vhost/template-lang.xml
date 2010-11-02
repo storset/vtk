@@ -18,6 +18,22 @@
     </constructor-arg>
   </bean>
   
+  <bean id="templateLanguage.lengthFunction" class="org.vortikal.text.tl.expr.Length">
+    <constructor-arg>
+      <bean class="org.vortikal.text.tl.Symbol">
+        <constructor-arg  value="length" />
+      </bean>
+    </constructor-arg>
+  </bean>
+
+  <bean id="templateLanguage.getFunction" class="org.vortikal.text.tl.expr.Get">
+    <constructor-arg>
+      <bean class="org.vortikal.text.tl.Symbol">
+        <constructor-arg  value="get" />
+      </bean>
+    </constructor-arg>
+  </bean>
+
   <bean id="templateLanguage.splitFunction" class="org.vortikal.text.tl.expr.Split">
     <constructor-arg>
       <bean class="org.vortikal.text.tl.Symbol">

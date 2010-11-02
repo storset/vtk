@@ -36,20 +36,18 @@ import org.vortikal.text.tl.Symbol;
 public class Concat extends Function {
 
     public Concat(Symbol symbol) {
-        super(symbol, 2);
+        super(symbol);
     }
 
     @Override
     public Object eval(Context ctx, Object... args) {
-        Object o1 = args[0];
-        Object o2 = args[1];
-        if (o1 == null) {
-            throw new IllegalArgumentException("Concat: first argument is NULL");
+        StringBuilder sb = new StringBuilder();
+        for (Object o : args) {
+            if (o == null) {
+                throw new IllegalArgumentException("Concat: argument is NULL");
+            }
+            sb.append(o.toString());
         }
-        if (o2 == null) {
-            throw new IllegalArgumentException("Concat: second argument is NULL");
-        }
-        return o1.toString() + o2.toString();
+        return sb.toString();
     }
-
 }

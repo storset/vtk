@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2010, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,42 +30,38 @@
  */
 package org.vortikal.text.tl.expr;
 
+import java.util.Collection;
+import java.util.Map;
+
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Symbol;
 
-
-public abstract class Function extends Operator {
-    private Integer argumentCount;
+public class Length extends Function {
     
-    public Function(Symbol symbol, int argumentCount) {
-        super(symbol, Notation.PREFIX, Precedence.FUNCTION_PRECEDENCE);
-        this.argumentCount = argumentCount;
+    public Length(Symbol symbol) {
+        super(symbol);
     }
 
-    public Function(Symbol symbol) {
-        super(symbol, Notation.PREFIX, Precedence.FUNCTION_PRECEDENCE);
-        this.argumentCount = null;
-    }
-
-    
     @Override
-    public final Object eval(Context ctx, EvalStack stack) throws Exception {
-        Object o = stack.pop();
-        if (o == null || !(o instanceof Integer)) {
-            throw new IllegalStateException("Expected argument count at top of stack");
+    public Object eval(Context ctx, Object... args) throws Exception {
+        if (args.length != 1) {
+            throw new IllegalArgumentException(getSymbol() + " takes 1 argument");
         }
-        int argCount = (Integer) o;
-        if (this.argumentCount != null && argCount != this.argumentCount) {
-            throw new IllegalArgumentException("Function " + getSymbol().getSymbol() 
-                    + " takes " + this.argumentCount + " arguments");
+        Object o = args[0];
+        if (o == null) {
+            throw new IllegalArgumentException("Argument is NULL");
         }
-        Object[] args = new Object[argCount];
-
-        for (int i = argCount - 1; i >= 0; i--) {
-            args[i] = stack.pop();
+        if (o instanceof String) {
+            return ((String) o).length();
+        } else if (o.getClass().isArray()) {
+            return ((Object[]) o).length;
+        } else if (o instanceof Map<?,?>) {
+            return ((Map<?,?>) o).size();
+        } else if (o instanceof Collection<?>) {
+            return ((Collection<?>) o).size();
         }
-        return eval(ctx, args);
+        o = o.toString();
+        return ((String) o).length();
     }
-    
-    public abstract Object eval(Context ctx, Object...args) throws Exception;
+
 }

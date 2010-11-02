@@ -52,20 +52,29 @@ public class ExpressionTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        Symbol s = new Symbol("concat");
-        this.functions.add(new Concat(s));
-        s = new Symbol("emptyfunc");
+        this.functions.add(new Concat(new Symbol("concat")));
+        this.functions.add(new Length(new Symbol("length")));
+        this.functions.add(new Get(new Symbol("get")));
+        
+        Symbol s = new Symbol("emptyfunc");
         this.functions.add(new Function(s, 0) {
             public Object eval(Context ctx, Object... args) {
                 return "result";
-            }});
-        s = new Symbol("map-get");
-        this.functions.add(new Function(s, 2) {
-            public Object eval(Context ctx, Object... args) {
-                Map<?,?> map = (Map<?,?>) args[0];
-                Object key = args[1];
-                return map.get(key);
-            }});
+            }
+        });
+        s = new Symbol("map");
+        this.functions.add(new Function(s) {
+            public Object eval(Context ctx, Object... args) throws Exception {
+                if (args == null || args.length % 2 != 0) {
+                    throw new IllegalArgumentException(getSymbol() + " takes an even number of arguments");
+                }
+                Map<Object, Object> result = new HashMap<Object, Object>();
+                for (int i = 0; i < args.length; i+=2) {
+                    result.put(args[i], args[i+1]);
+                }
+                return result;
+            }
+        });
     }
 
     
@@ -94,16 +103,6 @@ public class ExpressionTest extends TestCase {
         });
         assertEquals(true, result);
 
-        result = eval(new Argument[] {
-                new Symbol("+"),
-                new Symbol("("),
-                new Literal("2"),
-                new Symbol(","),
-                new Literal("2"),
-                new Symbol(")")
-        });
-        assertEquals(4, result);
-        
         result = eval(new Argument[] {
                 new Literal("true")
         });
@@ -258,6 +257,27 @@ public class ExpressionTest extends TestCase {
                 new Symbol("="),
                 new Literal("4")
         });
+        assertEquals(false, result);
+        
+        result = eval(new Argument[] {
+                new Symbol("("),
+                new Literal("2"),
+                new Symbol("+"),
+                new Literal("4"),
+                new Symbol("="),
+                new Literal("3"),
+                new Symbol(")"),
+                new Symbol("||"),
+                new Symbol("("),
+                new Literal("2"),
+                new Symbol("*"),
+                new Literal("2"),
+                new Symbol("="),
+                new Literal("4"),
+                new Symbol(")")
+        });
+        assertEquals(true, result);
+            
     }
 
     public void testFunctions() {
@@ -524,7 +544,7 @@ public class ExpressionTest extends TestCase {
     
     public void testMapsAndFunctions() {
         Object result;
-        
+
         result = eval(new Argument[] {
                 new Symbol("{"),
                 new Literal("'a'"),
@@ -533,7 +553,7 @@ public class ExpressionTest extends TestCase {
                 new Symbol("("),
                 new Literal("'b'"),
                 new Symbol(","),
-                new Symbol("map-get"),
+                new Symbol("get"),
                 new Symbol("("),
                 new Symbol("{"),
                 new Literal("'c'"),
@@ -547,8 +567,71 @@ public class ExpressionTest extends TestCase {
                 new Symbol("}")
         });
         assertTrue(result instanceof Map<?,?>);
-        Map<?,?> map = (Map<?,?>) result;
-        assertEquals("bd", map.get("a"));
+        Map<?,?> m = (Map<?,?>) result;
+        assertEquals("bd", m.get("a"));
+        
+        Context ctx = new Context(Locale.getDefault());
+        Map<Object, Object> map = new HashMap<Object, Object>();
+        map.put("b", "c");
+        ctx.define("a", map, true);
+
+        // length(a)
+        result = eval(ctx, new Argument[] {
+                new Symbol("length"),
+                new Symbol("("),
+                new Symbol("a"),
+                new Symbol(")")
+        });
+        assertEquals(1, result);
+        
+        // a.length()
+        result = eval(ctx, new Argument[] {
+                new Symbol("a"),
+                new Symbol("."),
+                new Symbol("length"),
+                new Symbol("("),
+                new Symbol(")")
+        });
+        assertEquals(1, result);
+        
+        result = eval(ctx, new Argument[] {
+                new Symbol("a"),
+                new Symbol("."),
+                new Symbol("get"),
+                new Symbol("("),
+                new Literal("'b'"),
+                new Symbol(")")
+        });
+        assertEquals("c", result);
+        
+        result = eval(ctx, new Argument[] {
+                new Symbol("a"),
+                new Symbol("."),
+                new Symbol("get"),
+                new Symbol("("),
+                new Literal("'xyz'"),
+                new Symbol(")")
+        });
+        assertNull(result);
+
+        result = eval(ctx, new Argument[] {
+                new Symbol("map"),
+                new Symbol("("),
+                new Literal("'a'"),
+                new Symbol(","),
+                new Literal("'b'"),
+                new Symbol(","),
+                new Literal("'c'"),
+                new Symbol(","),
+                new Literal("'d'"),
+                new Symbol(")"),
+                new Symbol("."),
+                new Symbol("length"),
+                new Symbol("("),
+                new Symbol(")")
+        });
+        assertEquals(2, result);
+        
     }
     
     public void testAccessors() {
@@ -601,24 +684,113 @@ public class ExpressionTest extends TestCase {
                 new Literal("20")
         });
         assertEquals(22, result);
+
+        result = eval(ctx, new Argument[] {
+                new Symbol("a"),
+                new Symbol("."),
+                new Symbol("b"),
+                new Symbol("."),
+                new Symbol("c"),
+                new Symbol("."),
+                new Symbol("get"),
+                new Symbol("("),
+                new Literal("1"),
+                new Symbol(")"),
+                new Symbol("+"),
+                new Literal("20")
+        });
+        assertEquals(22, result);
     }
 
     public void testTooManyArguments() throws Exception {
         try {
             eval(new Argument[] {
-                    new Symbol("concat"),
+                    new Symbol("emptyfunc"),
                     new Symbol("("),
-                    new Symbol("a"),
+                    new Literal("'a'"),
                     new Symbol(","),
-                    new Symbol("b"),
+                    new Literal("'b'"),
                     new Symbol(","),
-                    new Symbol("c"),
+                    new Literal("'c'"),
                     new Symbol(")")
             });
             fail("Should not succeed");
         } catch (RuntimeException e) {
             // Expected
         }
+    }
+
+    public void testVarArgs() throws Exception {
+        Object result;
+        result = eval(new Argument[] {
+                new Symbol("("),
+                new Literal("'a'"),
+                new Symbol(")")
+        });
+        assertEquals("a", result);
+        
+        result = eval(new Argument[] {
+                new Symbol("concat"),
+                new Symbol("("),
+                new Symbol(")")
+        });
+        assertEquals("", result);
+        
+        result = eval(new Argument[] {
+                new Symbol("concat"),
+                new Symbol("("),
+                new Literal("'a'"),
+                new Symbol(")")
+        });
+        assertEquals("a", result);
+
+        result = eval(new Argument[] {
+                new Symbol("concat"),
+                new Symbol("("),
+                new Literal("'a'"),
+                new Symbol(","),
+                new Literal("'b'"),
+                new Symbol(","),
+                new Literal("'c'"),
+                new Symbol(")")
+        });
+        assertEquals("abc", result);
+
+       result = eval(new Argument[] {
+                new Symbol("concat"),
+                new Symbol("("),
+                new Literal("'a'"),
+                new Symbol(","),
+                new Literal("'b'"),
+                new Symbol(")")
+        });
+        assertEquals("ab", result);
+
+        result = eval(new Argument[] {
+                new Symbol("concat"),
+                new Symbol("("),
+                new Literal("'a'"),
+                new Symbol(","),
+                new Literal("'b'"),
+                new Symbol(","),
+                new Symbol("concat"),
+                new Symbol("("),
+                new Symbol("concat"),
+                new Symbol("("),
+                new Literal("'x'"),
+                new Symbol(","),
+                new Literal("'y'"),
+                new Symbol(")"),
+                new Symbol(","),
+                new Literal("'c'"),
+                new Symbol(","),
+                new Literal("'d'"),
+                new Symbol(")"),
+                new Symbol(","),
+                new Literal("'e'"),
+                new Symbol(")")
+        });
+        assertEquals("abxycde", result);
     }
 
     public void testMalformedExpressions() throws Exception {

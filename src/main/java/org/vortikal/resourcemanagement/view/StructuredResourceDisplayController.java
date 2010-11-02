@@ -195,10 +195,9 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         this.components.put(desc, comps);
     }
 
+    @Override
     public void afterPropertiesSet() {
-
         List<StructuredResourceDescription> allDescriptions = this.resourceManager.list();
-
         for (StructuredResourceDescription desc : allDescriptions) {
             try {
                 initComponentDefs(desc);

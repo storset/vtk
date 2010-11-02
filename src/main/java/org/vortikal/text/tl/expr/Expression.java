@@ -119,6 +119,8 @@ public class Expression {
      */
     private Map<Symbol, Operator> operators = new HashMap<Symbol, Operator>(DEFAULT_OPERATORS);
 
+    private Map<Symbol, Operator> functions = new HashMap<Symbol, Operator>();
+
     /**
      * The expression in its original infix notation
      */
@@ -127,7 +129,7 @@ public class Expression {
     /**
      * The expression converted to postfix notation
      */
-    private List<Argument> postfix;
+    private List<Object> postfix;
 
     public Expression(List<Argument> args) {
         this(null, args);
@@ -147,9 +149,8 @@ public class Expression {
             throw new IllegalArgumentException("Empty expression");
         }
         this.infix = new ArrayList<Argument>(args);
-
         Stack<Symbol> stack = new Stack<Symbol>();
-        List<Argument> output = new ArrayList<Argument>();
+        List<Object> output = new ArrayList<Object>();
 
         Argument prev = null, next = null;
         for (int i = 0; i < args.size(); i++) {
@@ -163,6 +164,10 @@ public class Expression {
             if ((arg instanceof Literal) && (prev instanceof Literal)) {
                 throw new RuntimeException("Malformed expression: " + this);
             }
+            if (ACCESSOR.equals(arg) && prev == null) {
+                throw new IllegalArgumentException("Malformed expression: " + this);
+            }
+            
             if (arg instanceof Literal) {
                 output.add(arg);
                 continue;
@@ -179,7 +184,33 @@ public class Expression {
                 continue;
             }
             
+            if (LP.equals(next)) {
+                // Function: '<symbol> ('
+                stack.push(symbol);
+                continue;
+            }
+            
             if (RP.equals(symbol)) {
+                if (LP.equals(prev)) {
+                    // Special case: function call with no arguments: '<function>()'
+                    if (stack.size() < 2) {
+                        throw new RuntimeException("Malformed expression: " + this);
+                    }
+                    stack.pop();
+                    Symbol top = stack.pop();
+                    Operator op = this.operators.get(top);
+                    if (op != null) {
+                        stack.push(top);
+                    } else {
+                        int argCount = 0;
+                        if (!stack.isEmpty() && ACCESSOR.equals(stack.peek())) {
+                            stack.pop();
+                            argCount++;
+                        }
+                        output.add(new Funcall(top, argCount));
+                    }
+                    continue;
+                }
                 int commas = 0;
                 while (true) {
                     if (stack.isEmpty()) {
@@ -198,28 +229,29 @@ public class Expression {
                 if (!stack.isEmpty()) {
                     Symbol top = stack.pop();
                     Operator op = this.operators.get(top);
-                    if (op instanceof Function) {
-                        Function f = (Function) op;
-                        int expected = f.getArgumentCount();
-                        if (expected == 0 && commas != 0 || expected > 0 && expected != commas + 1) {
-                            throw new RuntimeException(this + ": wrong number of arguments for function "
-                                    + f.getSymbol().getSymbol() + " (expected " + expected + ")");
+                    if (op != null) {
+                        stack.push(top);
+                    } else {
+                        int argCount = commas == 0 ? 1 : commas + 1;
+                        if (!stack.isEmpty() && ACCESSOR.equals(stack.peek())) {
+                            stack.pop();
+                            argCount++;
                         }
+                        output.add(new Funcall(top, argCount));
                     }
-                    output.add(top);
                 }
                 continue;
             }
 
             if (RCB.equals(symbol)) {
                 if (LCB.equals(prev)) {
-                    // Special case of empty list ('{}'):
+                    // Special case: empty list ('{}'):
                     stack.pop();
                     output.add(EMPTY_LIST);
                     continue;
                 } else if (MAPPING.equals(prev)) {
                     if (stack.size() > 1 && LCB.equals(stack.elementAt(stack.size() - 2))) {
-                        // Special case of empty map ('{:}')
+                        // Special case: empty map ('{:}')
                         stack.pop();
                         stack.pop();
                         output.add(EMPTY_MAP);
@@ -255,7 +287,8 @@ public class Expression {
                     if (LP.equals(top) || LCB.equals(top) || COMMA.equals(top)) {
                         break;
                     }
-                    output.add(stack.pop());
+                    top = stack.pop();
+                    output.add(top);
                 }
                 stack.push(symbol);
                 continue;
@@ -266,9 +299,7 @@ public class Expression {
                 output.add(symbol);
                 continue;
             }
-            if (op instanceof Function && !LP.equals(next)) {
-                throw new RuntimeException("Expected '(' after function name: " + op.getSymbol().getSymbol());
-            }
+
             if (stack.isEmpty()) {
                 stack.push(symbol);
                 continue;
@@ -312,26 +343,41 @@ public class Expression {
     public Object evaluate(Context ctx) {
         EvalStack stack = new EvalStack(ctx);
         try {
-            for (Argument arg : this.postfix) {
-                if (arg instanceof Literal) {
-                    stack.push(arg.getValue(ctx));
+            for (Object o : this.postfix) {
+                if (o instanceof Funcall) {
+                    Funcall funcall = (Funcall) o;
+                    Operator function = functions.get(funcall.name);
+                    if (function == null) {
+                        throw new RuntimeException("Error in expression " + infix 
+                                + ": undefined function: " + funcall.name.getSymbol());
+                    }
+                    stack.push(funcall.args);
+                    Object val = function.eval(ctx, stack);
+                                        stack.push(val);
                 } else {
-                    Symbol s = (Symbol) arg;
-                    if (EMPTY_MAP.equals(s)) {
-                        stack.push(new HashMap<Object, Object>());
-                    } else if (EMPTY_LIST.equals(s)) {
-                        stack.push(new ArrayList<Object>());
-                    } else if (COLLECTION.equals(s)) {
-                        stack.push(defineCollection(stack));
+                    Argument arg = (Argument) o;
+                    if (arg instanceof Literal) {
+                        stack.push(arg.getValue(ctx));
+                    } else if (arg instanceof Funcall) {
+
                     } else {
-                        Operator op = operators.get(s);
-                        if (op == null) {
-                            // Symbol/variable:
-                            stack.push(s);
+                        Symbol s = (Symbol) arg;
+                        if (EMPTY_MAP.equals(s)) {
+                            stack.push(new HashMap<Object, Object>());
+                        } else if (EMPTY_LIST.equals(s)) {
+                            stack.push(new ArrayList<Object>());
+                        } else if (COLLECTION.equals(s)) {
+                            stack.push(defineCollection(stack));
                         } else {
-                            // Function/operator:
-                            Object val = op.eval(ctx, stack);
-                            stack.push(val);
+                            Operator op = operators.get(s);
+                            if (op == null) {
+                                // Symbol/variable:
+                                stack.push(s);
+                            } else {
+                                // Operator:
+                                Object val = op.eval(ctx, stack);
+                                stack.push(val);
+                            }
                         }
                     }
                 }
@@ -380,10 +426,10 @@ public class Expression {
         if (symbol == null) {
             throw new IllegalArgumentException("Function's symbol is NULL");
         }
-        if (this.operators.containsKey(symbol)) {
+        if (this.functions.containsKey(symbol)) {
             throw new IllegalArgumentException("Cannot re-define " + symbol.getSymbol());
         }
-        this.operators.put(symbol, function);
+        this.functions.put(symbol, function);
     }
 
     
@@ -440,4 +486,17 @@ public class Expression {
             return entry;
         }
     }
+    
+    private static class Funcall {
+        private Symbol name;
+        private int args;
+        public Funcall(Symbol name, int args) {
+            this.name = name;
+            this.args = args;
+        }
+        public String toString() {
+            return "function#" + name.getSymbol() + "(" + args + ")";
+        }
+    }
+    
 }

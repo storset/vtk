@@ -1,51 +1,123 @@
 var MULTIPLE_INPUT_FIELD_NAMES = new Array();
 var COUNTER_FOR_MULTIPLE_INPUT_FIELD = new Array();
+var LENGTH_FOR_MULTIPLE_INPUT_FIELD = new Array();
 
-function loadMultipleInputFields(name,addName, removeName) {
+var debugMultipleInputFields = false;
+
+function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDownName) {
     var id = "#" + name;
-    if ($(id).val() == null)
-        return;
+    if ($(id).val() == null) { return; }
+    var formFields = $(id).val().split(",");
     
-    COUNTER_FOR_MULTIPLE_INPUT_FIELD[name] = 0;
-    if(MULTIPLE_INPUT_FIELD_NAMES.length > 0){
-        MULTIPLE_INPUT_FIELD_NAMES[MULTIPLE_INPUT_FIELD_NAMES.length+1] = name; 
-    }else{
-        MULTIPLE_INPUT_FIELD_NAMES[0] = name; 
-    }
+    COUNTER_FOR_MULTIPLE_INPUT_FIELD[name] = 1; // 1-index
+    LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] = formFields.length;
+    MULTIPLE_INPUT_FIELD_NAMES.push(name);
     
-    var size = $(id).attr("size");  
+    var size = $(id).attr("size");
+
     $(id).hide();
-    $(id).after("<div id='vrtx-" + name + "-add'>" + "<button  onClick=\"addFormField('"+ 
-                name + "',null, '"+ removeName + "','" + size + "'); return false;\">" + 
-                addName + "</button></div>");
-
-    var l = $(id).val().split(",");
-    var lLen = l.length;
-    for (var i = 0; i < lLen; i++) {
-        addFormField(name,jQuery.trim(l[i]), removeName,size);    
+    $(id).after("<div id='vrtx-" + name + "-add'>"
+    		  + "<button  onClick=\"addFormField('" + name + "',null, '"
+    		  + removeName + "','" + moveUpName + "','" + moveDownName + "','" + size + "'," + false + "); return false;\">"
+    		  + addName + "</button></div>");
+     
+    for (var i = 0; i < LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]; i++) {
+       addFormField(name, jQuery.trim(formFields[i]), removeName, moveUpName, moveDownName, size, true);    
     }
-}
+} 
 
-function addFormField(name, value, removeName, size) {
+function addFormField(name, value, removeName, moveUpName, moveDownName, size, init) {
+	if (value == null) { value = ""; }
+	
     var idstr = "vrtx-" + name + "-";
     var i = COUNTER_FOR_MULTIPLE_INPUT_FIELD[name];
-    if (value == null){
-        value = "";
-    }
-    var deleteRow = "";
+    var removeButton = "";
+    var moveUpButton = "";
+    var moveDownButton = "";
+    
     if (removeName != null) {
-        removeButton = "<button type='button' id='" + idstr + "remove' onClick='removeFormField(\"#" + 
-        idstr + "row-" + i + "\"); return false;'>" + removeName + "</button>";
+        removeButton = "<button type='button' "
+        + "id='" + idstr + "remove' "
+        + "onClick='removeFormField(\"" + name + "\",\"" + i + "\"); return false;'>"
+        + removeName + "</button>";
+    }
+    if (moveUpName != null && i > 1) {
+    	moveUpButton = "<button class='moveup' type='button' "
+        + "id='" + idstr + "moveup' "
+        + "onClick='moveUpFormField(\"#" + idstr + "row-" + i + "\"); return false;'>"
+        + "&uarr; " + moveUpName + "</button>";
     } 
-    $("#vrtx-" + name + "-add").before("<div class='vrtx-multipleinputfield' id='"+ idstr + 
-            "row-" + i + "'><input value='" + value +  "' type='text'  size='" + size +"' id='" + 
-            idstr + i + "'> " + removeButton + "</div>");
+    if (moveDownName != null && i < LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]) {
+    	moveDownButton = "<button class='movedown' type='button' "
+    	+ "id='" + idstr + "movedown' "
+    	+ "onClick='moveDownFormField(\"#" + idstr + "row-" + i + "\"); return false;'>"
+    	+ "&darr; " + moveDownName + "</button>";
+    }
+    
+    $("#vrtx-" + name + "-add")
+      .before("<div class='vrtx-multipleinputfield' id='" + idstr + "row-" + i + "'>"
+      + "<input value='" + value + "' type='text' size='" + size + "' id='" + idstr + i + "'>" 
+      + removeButton + moveUpButton + moveDownButton + "</div>");
+    
+    if(!init) {
+    	var fields = "." + name + " div.inputfield div";
+        if($(fields).eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).not("has:button.movedown")) {
+        	
+        	var theId = $(fields).eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).attr("id");
+        	
+        	moveDownButton = "<button class='movedown' type='button' "
+        	+ "id='" + idstr + "movedown' "
+        	+ "onClick='moveDownFormField(\"#" + theId + "\"); return false;'>"
+        	+ "&darr; " + moveDownName + "</button>";
+
+        	$(fields).eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).append(moveDownButton);
+        	logMultipleInputFields("Added before-last movedown");
+        }
+        LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]++;
+      }
     
     COUNTER_FOR_MULTIPLE_INPUT_FIELD[name]++;
 }
 
-function removeFormField(id) {
-    $(id).remove();
+function removeFormField(name, i) {
+
+	var id = "#vrtx-" + name + "-row-";
+
+    $(id + i).remove();
+    console.log("Fjerner :" + id + i);
+    
+    LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]--;
+    COUNTER_FOR_MULTIPLE_INPUT_FIELD[name]--;
+    logMultipleInputFields("Number of inputfields: " + LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]);
+    logMultipleInputFields("Next number for inputfield: " + COUNTER_FOR_MULTIPLE_INPUT_FIELD[name]);
+    
+    var fields = "." + name + " div.inputfield div";
+    
+	if($(fields).eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).has("button.movedown")) {
+	  $(fields).eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).find("button.movedown").remove();
+	  logMultipleInputFields("Removed last movedown");
+	}
+			
+	if($(fields).eq(0).has("button.moveup")) {
+	  $(fields).eq(0).find("button.moveup").remove();
+	  logMultipleInputFields("Removed first moveup");
+	}
+}
+
+function moveUpFormField(id) {
+  var thisText = $(id).find("input").val();
+  var prevText = $(id).prev().find("input").val();
+  $(id).find("input").val(prevText);
+  $(id).prev().find("input").val(thisText);
+  logMultipleInputFields("Moved up " + thisText + " and swapped with " + prevText);
+}
+
+function moveDownFormField(id) {
+  var thisText = $(id).find("input").val();
+  var nextText = $(id).next().find("input").val();
+  $(id).find("input").val(nextText);
+  $(id).next().find("input").val(thisText);
+  logMultipleInputFields("Moved down " + thisText + " and swapped with " + nextText);
 }
 
 function formatMultipleInputFields(name) {
@@ -65,8 +137,14 @@ function formatMultipleInputFields(name) {
 }
 
 function saveMultipleInputFields(){
-    for(i in MULTIPLE_INPUT_FIELD_NAMES){
-        formatMultipleInputFields(MULTIPLE_INPUT_FIELD_NAMES[i]);
-    }
+  var MULTIPLE_INPUT_FIELD_NAMES_LENGTH = MULTIPLE_INPUT_FIELD_NAMES.length;
+  for(var i = 0; i < MULTIPLE_INPUT_FIELD_NAMES_LENGTH; i++){
+    formatMultipleInputFields(MULTIPLE_INPUT_FIELD_NAMES[i]);
+  }
 }
 
+function logMultipleInputFields(str) {
+  if (typeof console != "undefined" && debugMultipleInputFields) {
+    console.log(str);
+  }
+}

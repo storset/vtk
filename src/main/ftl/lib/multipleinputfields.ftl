@@ -6,5 +6,5 @@
 </#macro>
 
 <#macro addMultipleInputFields script>
-      loadMultipleInputFields('${script.name}','${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}');
+      loadMultipleInputFields('${script.name}','${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}', '${vrtx.getMsg("editor.move-up")}', '${vrtx.getMsg("editor.move-down")}');
 </#macro>

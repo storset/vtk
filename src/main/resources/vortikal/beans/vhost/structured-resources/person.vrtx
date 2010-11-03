@@ -216,17 +216,19 @@ resourcetype person {
         [def document structured-document()]
         [def publications document.properties.selectedPublications]
         [if (publications != null && publications != "") || (externalPublications != null && externalPublications != "")]
-          <h2>[localized "scientificInformation"]</h2>
           [if (publications != null && publications != "") && (externalPublications != null && externalPublications != "")]
+            <h2>[localized "scientificInformation"]</h2>
             <div id="vrtx-publication-tabs" class="vrtx-person-publications">
                [call "resource:publications"]
             </div>
           [else]
             [if (publications != null && publications != "")]
+              <h2>[localized "selectedPublications"]</h2>
               [val publications # unescaped]
             [else]
+              <h2>[localized "scientificInformation"]</h2>
               <div id="vrtx-publication-tabs" class="vrtx-person-publications">
-               [call "resource:publications"]
+              [call "resource:publications"]
               </div>
             [endif]
           [endif]

@@ -31,7 +31,6 @@
 package org.vortikal.web.display.index;
 
 import java.nio.charset.Charset;
-import java.util.Date;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -50,7 +49,6 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.servlet.ConfigurableRequestWrapper;
 import org.vortikal.web.servlet.VortikalServlet;
@@ -113,12 +111,10 @@ public class IndexFileController
         }
     }
     
-
     public long getLastModified(HttpServletRequest request) {
-        return -1;
+        return -1L;
     }
     
-
     public ModelAndView handleRequest(HttpServletRequest request,
                                       HttpServletResponse response)
         throws Exception {
@@ -149,24 +145,11 @@ public class IndexFileController
                                             + "' not a regular file");
         }
 
-        long collectionLastMod = res.getLastModified().getTime();
-        long requestLastMod = request.getDateHeader("If-Modified-Since");
-        long ifModSince = -1;
-
-        if (requestLastMod != -1) {
-            ifModSince = Math.min(collectionLastMod, requestLastMod);
-        }
-
         String encodedURI = new String(indexURI.toString().getBytes("utf-8"),
                                        this.uriCharacterEncoding);
 
         ConfigurableRequestWrapper requestWrapper = new ConfigurableRequestWrapper(request);
         requestWrapper.setRequestURI(encodedURI);
-
-        if (ifModSince != -1) {
-            requestWrapper.setHeader(
-                "If-Modified-Since", HttpUtil.getHttpDateString(new Date(ifModSince)));
-        }
 
         String servletName = (String) request.getAttribute(
                 VortikalServlet.SERVLET_NAME_REQUEST_ATTRIBUTE);

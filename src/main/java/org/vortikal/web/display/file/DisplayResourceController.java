@@ -91,10 +91,10 @@ import org.vortikal.webdav.ifheader.IfNoneMatchHeader;
  *       resource's <code>lastModified</code> value. Setting this
  *       property to <code>true</code> means that the resource content
  *       cannot be cached by the client. Default is
- *       <code>false</code>.
+ *       <code>true</code>.
  *   <li><code>ignoreLastModifiedOnCollections</code> - wether or not to ignore the
  *       resource's <code>lastModified</code> value when the resource is a collection.
- *       Default is <code>false</code>.
+ *       Default is <code>true</code>.
  *   <li><code>supportIfHeaders</code> - wether or not to look for If-Match and 
  *   If-None-Match headers. Default is <code>false</code>.</li>
  * </ul>
@@ -128,9 +128,9 @@ public class DisplayResourceController
     private String unsupportedResourceView = "HTTP_STATUS_NOT_FOUND";
     private Set<String> unsupportedResourceTypes = null;
     private boolean streamToString = false;
-    private boolean ignoreLastModified = false;
-    private boolean ignoreLastModifiedOnCollections = false;
-    private boolean supportIfHeaders = false;
+    private boolean ignoreLastModified = true;
+    private boolean ignoreLastModifiedOnCollections = true;
+    private boolean supportIfHeaders = true;
     
     public void setChildName(String childName) {
         this.childName = childName;

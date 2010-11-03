@@ -46,6 +46,7 @@
     class="org.vortikal.web.display.file.DisplayResourceController"
     parent="repositoryAware">
     <property name="displayProcessed" value="true" />
+    <property name="ignoreLastModified" value="false" />
   </bean>
 
   <bean id="displayHTMLResourceHandler" 

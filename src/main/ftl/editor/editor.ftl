@@ -79,7 +79,7 @@
     </#assign>
     <h2>${header}</h2>
 	  <div class="submit-extra-buttons">
-		<input type="button" onClick="$('#saveAndQuitButton').click()" value="${vrtx.getMsg("editor.saveAndQuit")}" />
+		<input type="button" onClick="$('#saveAndQuitButton').click()" value="${vrtx.getMsg("editor.saveAndView")}" />
 		<input type="button" onClick="$('#saveButton').click()"  value="${vrtx.getMsg("editor.save")}" />
 		<input type="button" onClick="$('#cancel').click()"  value="${vrtx.getMsg("editor.cancel")}" />
 	  </div>
@@ -114,7 +114,7 @@
       </#if>
 
       <div id="submit" class="save-cancel">
-          <input type="submit" id="saveAndQuitButton" onClick="formatFeaturedArticlesData();performSave();" name="savequit"  value="${vrtx.getMsg("editor.saveAndQuit")}">
+          <input type="submit" id="saveAndQuitButton" onClick="formatFeaturedArticlesData();performSave();" name="savequit"  value="${vrtx.getMsg("editor.saveAndView")}">
           <input type="submit" id="saveButton" onClick="formatFeaturedArticlesData();performSave();" name="save" value="${vrtx.getMsg("editor.save")}">
           <input type="submit" id="cancel" onClick="performSave();" name="cancel" value="${vrtx.getMsg("editor.cancel")}">
       </div>

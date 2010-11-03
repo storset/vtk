@@ -79,7 +79,7 @@
     </#assign>
     <h2>${header}</h2>
 	  <div class="submit-extra-buttons">
-		<input type="button" onClick="$('#saveAndQuitButton').click()" value="${vrtx.getMsg("editor.saveAndView")}" />
+		<input type="button" onClick="$('#saveAndViewButton').click()" value="${vrtx.getMsg("editor.saveAndView")}" />
 		<input type="button" onClick="$('#saveButton').click()"  value="${vrtx.getMsg("editor.save")}" />
 		<input type="button" onClick="$('#cancel').click()"  value="${vrtx.getMsg("editor.cancel")}" />
 	  </div>
@@ -114,7 +114,7 @@
       </#if>
 
       <div id="submit" class="save-cancel">
-          <input type="submit" id="saveAndQuitButton" onClick="formatFeaturedArticlesData();performSave();" name="savequit"  value="${vrtx.getMsg("editor.saveAndView")}">
+          <input type="submit" id="saveAndViewButton" onClick="formatFeaturedArticlesData();performSave();" name="saveview"  value="${vrtx.getMsg("editor.saveAndView")}">
           <input type="submit" id="saveButton" onClick="formatFeaturedArticlesData();performSave();" name="save" value="${vrtx.getMsg("editor.save")}">
           <input type="submit" id="cancel" onClick="performSave();" name="cancel" value="${vrtx.getMsg("editor.cancel")}">
       </div>
@@ -229,13 +229,13 @@
 
       function disableSubmit() {
         document.getElementById("saveButton").disabled = true;
-        document.getElementById("saveAndQuitButton").disabled = true;
+        document.getElementById("saveAndViewButton").disabled = true;
         return true;
       }
 
       function enableSubmit() {
          document.getElementById("saveButton").disabled = false;
-         document.getElementById("saveAndQuitButton").disabled = false;
+         document.getElementById("saveAndViewButton").disabled = false;
          return true;
       }
 

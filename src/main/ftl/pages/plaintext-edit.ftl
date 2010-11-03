@@ -57,7 +57,7 @@
     <form action="${plaintextEditForm.submitURL}" method="POST">
       <textarea style="width:100%;" id="foo" name="content" rows="30" cols="80">${plaintextEditForm.content?html}</textarea>
       <div style="padding-top:7px;">
-        <input type="submit" id="saveQuitAction" name="saveQuitAction" onclick="checkSubmit()" value="<@vrtx.msg code="plaintextEditForm.saveAndView" default="Save and view"/>">
+        <input type="submit" id="saveViewAction" name="saveViewAction" onclick="checkSubmit()" value="<@vrtx.msg code="plaintextEditForm.saveAndView" default="Save and view"/>">
         <input type="submit" id="saveAction" name="saveAction" onclick="checkSubmit()" value="<@vrtx.msg code="plaintextEditForm.save" default="Save"/>">
         <input type="submit" id="cancelAction" name="cancelAction" value="<@vrtx.msg code="plaintextEditForm.cancel" default="Cancel"/>">
         <#if plaintextEditForm.tooltips?exists>

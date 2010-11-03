@@ -122,7 +122,7 @@ public class ResourceEditWrapper extends ResourceWrapper {
 
 
     private boolean save = false;
-    private boolean quit = false;
+    private boolean view = false;
 
     public boolean isSave() {
         return this.save;
@@ -132,12 +132,12 @@ public class ResourceEditWrapper extends ResourceWrapper {
         this.save = save;
     }
 
-    public void setQuit(boolean quit) {
-        this.quit = quit;
+    public void setView(boolean view) {
+        this.view = view;
     }
 
-    public boolean isQuit() {
-        return quit;
+    public boolean isView() {
+        return view;
     }
 
 }

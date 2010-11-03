@@ -40,7 +40,7 @@ public class UpdateCancelCommand {
 
     private String updateAction = null;
     private String cancelAction = null;
-    private String updateQuitAction = null;
+    private String updateViewAction = null;
 
     private String submitURL;
     private boolean done = false;
@@ -99,21 +99,21 @@ public class UpdateCancelCommand {
     }
     
     /**
-     * Gets the value of updateQuitAction
+     * Gets the value of updateViewAction
      *
-     * @return the value of updateQuitAction
+     * @return the value of updateViewAction
      */
-    public String getUpdateQuitAction() {
-        return updateQuitAction;
+    public String getUpdateViewAction() {
+        return updateViewAction;
     }
 
     /**
-     * Sets the value of updateQuitAction
+     * Sets the value of updateViewAction
      *
-     * @param updateQuitAction Value to assign to this.updateQuitAction
+     * @param updateViewAction Value to assign to this.updateViewAction
      */
-    public void setUpdateQuitAction(String updateQuitAction) {
-        this.updateQuitAction = updateQuitAction;
+    public void setUpdateViewAction(String updateViewAction) {
+        this.updateViewAction = updateViewAction;
     }
 
     /**

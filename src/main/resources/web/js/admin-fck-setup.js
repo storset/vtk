@@ -71,12 +71,12 @@ function FCKeditor_OnComplete(editorInstance) {
 
 function disableSubmit() {
   document.getElementById("saveButton").disabled = true;
-  document.getElementById("saveAndQuitButton").disabled = true;
+  document.getElementById("saveAndViewButton").disabled = true;
   return true;
 }
 
 function enableSubmit() {
   document.getElementById("saveButton").disabled = false;
-  document.getElementById("saveAndQuitButton").disabled = false;
+  document.getElementById("saveAndViewButton").disabled = false;
   return true;
 }

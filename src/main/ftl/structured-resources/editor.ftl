@@ -68,7 +68,7 @@
 <h2>${header}</h2>
 
 <div class="submit-extra-buttons">
-    <input type="button" onClick="$('#updateQuitAction').click()" value="${vrtx.getMsg("editor.saveAndView")}" />
+    <input type="button" onClick="$('#updateViewAction').click()" value="${vrtx.getMsg("editor.saveAndView")}" />
     <input type="button" onClick="$('#updateAction').click()"  value="${vrtx.getMsg("editor.save")}" />
     <input type="button" onClick="$('#cancelAction').click()"  value="${vrtx.getMsg("editor.cancel")}" />
 </div>
@@ -115,7 +115,7 @@
   
 </#list>
 <div class="submit">
-    <input type="submit" id="updateQuitAction" onClick="performSave();" name="updateQuitAction" value="${vrtx.getMsg("editor.saveAndView")}" />
+    <input type="submit" id="updateViewAction" onClick="performSave();" name="updateViewAction" value="${vrtx.getMsg("editor.saveAndView")}" />
     <input type="submit" id="updateAction" onClick="performSave();" name="updateAction" value="${vrtx.getMsg("editor.save")}" />
     <input type="submit" onClick="performSave();" name="cancelAction" id="cancelAction" value="${vrtx.getMsg("editor.cancel")}" />
 </div>

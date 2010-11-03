@@ -181,10 +181,10 @@ public class PlaintextEditController extends SimpleFormController
             return super.onSubmit(command, errors);
         }
         
-        /** The user has selected "cancel" or "save and quit". Unlock resource, return
+        /** The user has selected "cancel" or "save and view". Unlock resource, return
          *  the manage view. */
         
-        if(plaintextEditCommand.getSaveQuitAction() != null) {
+        if(plaintextEditCommand.getSaveViewAction() != null) {
         	doSubmitAction(command);
         }
         

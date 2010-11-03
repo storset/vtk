@@ -116,7 +116,7 @@ public class StructuredResourceEditor extends SimpleFormController {
         InputStream stream = new ByteArrayInputStream(form.getResource().toJSON().toString(3).getBytes("utf-8"));
         this.repository.storeContent(token, uri, stream);
 
-        if (form.getUpdateQuitAction() != null) {
+        if (form.getUpdateViewAction() != null) {
             unlock();
             return new ModelAndView(getSuccessView());
         }

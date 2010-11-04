@@ -14,6 +14,8 @@ function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDown
     MULTIPLE_INPUT_FIELD_NAMES.push(name);
     
     var size = $(id).attr("size");
+    
+    registerClicks(name);
 
     $(id).hide();
     $(id).after("<div id='vrtx-" + name + "-add'>"
@@ -26,6 +28,18 @@ function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDown
     }
 } 
 
+function registerClicks(name) {
+  $("." + name).delegate(".remove", "click", function(){
+	removeFormField(name, $(this))
+  });
+  $("." + name).delegate(".moveup", "click", function(){
+	moveUpFormField($(this));
+  });
+  $("." + name).delegate(".movedown", "click", function(){
+	moveDownFormField($(this));
+  });
+}
+
 function addFormField(name, value, removeName, moveUpName, moveDownName, size, init) {
 	if (value == null) { value = ""; }
 	
@@ -36,21 +50,14 @@ function addFormField(name, value, removeName, moveUpName, moveDownName, size, i
     var moveDownButton = "";
     
     if (removeName != null) {
-        removeButton = "<button type='button' "
-        + "id='" + idstr + "remove' "
-        + "onClick='removeFormField(\"" + name + "\",\"" + i + "\"); return false;'>"
-        + removeName + "</button>";
+        removeButton = "<button class='remove' type='button' " + "id='" + idstr + "remove' >" + removeName + "</button>";
     }
     if (moveUpName != null && i > 1) {
-    	moveUpButton = "<button class='moveup' type='button' "
-        + "id='" + idstr + "moveup' "
-        + "onClick='moveUpFormField(\"#" + idstr + "row-" + i + "\"); return false;'>"
-        + "&uarr; " + moveUpName + "</button>";
+    	moveUpButton = "<button class='moveup' type='button' " + "id='" + idstr + "moveup' >" 
+    	+ "&uarr; " + moveUpName + "</button>";
     } 
     if (moveDownName != null && i < LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]) {
-    	moveDownButton = "<button class='movedown' type='button' "
-    	+ "id='" + idstr + "movedown' "
-    	+ "onClick='moveDownFormField(\"#" + idstr + "row-" + i + "\"); return false;'>"
+    	moveDownButton = "<button class='movedown' type='button' " + "id='" + idstr + "movedown' >"
     	+ "&darr; " + moveDownName + "</button>";
     }
     
@@ -79,12 +86,10 @@ function addFormField(name, value, removeName, moveUpName, moveDownName, size, i
     COUNTER_FOR_MULTIPLE_INPUT_FIELD[name]++;
 }
 
-function removeFormField(name, i) {
+function removeFormField(name, that) {
 
-	var id = "#vrtx-" + name + "-row-";
-
-    $(id + i).remove();
-    logMultipleInputFields("Fjerner :" + id + i);
+    $(that).parent().remove();
+    logMultipleInputFields("Fjerner felt");
     
     LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]--;
     COUNTER_FOR_MULTIPLE_INPUT_FIELD[name]--;
@@ -104,19 +109,23 @@ function removeFormField(name, i) {
 	}
 }
 
-function moveUpFormField(id) {
-  var thisText = $(id).find("input").val();
-  var prevText = $(id).prev().find("input").val();
-  $(id).find("input").val(prevText);
-  $(id).prev().find("input").val(thisText);
+function moveUpFormField(that) {
+  var thisInput = $(that).parent().find("input");
+  var prevInput = $(that).parent().prev().find("input");
+  var thisText = thisInput.val();
+  var prevText = prevInput.val();
+  $(thisInput).val(prevText);
+  $(prevInput).val(thisText);
   logMultipleInputFields("Moved up " + thisText + " and swapped with " + prevText);
 }
 
-function moveDownFormField(id) {
-  var thisText = $(id).find("input").val();
-  var nextText = $(id).next().find("input").val();
-  $(id).find("input").val(nextText);
-  $(id).next().find("input").val(thisText);
+function moveDownFormField(that) {
+  var thisInput = $(that).parent().find("input");
+  var nextInput = $(that).parent().next().find("input");
+  var thisText = $(thisInput).val();
+  var nextText = $(nextInput).val();
+  $(thisInput).val(nextText);
+  $(nextInput).val(thisText);
   logMultipleInputFields("Moved down " + thisText + " and swapped with " + nextText);
 }
 

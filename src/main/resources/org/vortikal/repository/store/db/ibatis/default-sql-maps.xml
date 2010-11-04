@@ -292,9 +292,44 @@
   </update>
 
   <insert id="insertTrashCanEntry" parameterClass="java.util.Map">
-    insert into deleted_resource (id, resource_trash_uri, parent_id, deleted_by, deleted_time)
-      values (<include refid="nextDeletedResourceId" />, #trashCanURI#, #parentID#, #principal#, #deletedTime#)
+    insert into deleted_resource (id, resource_trash_uri, parent_id, deleted_by, deleted_time, was_inherited_acl)
+      values (<include refid="nextDeletedResourceId" />,
+              #trashCanURI#, #parentID#, #principal#, #deletedTime#, #wasInheritedAcl#)
   </insert>
+
+  <!-- ## Display recoverable resources (trash can contents) ## -->
+  <resultMap id="recoverableResource" class="org.vortikal.repository.RecoverableResource">
+    <result property="id" column="id" />
+    <result property="trashUri" column="resource_trash_uri" />
+    <result property="parentId" column="parent_id" />
+    <result property="deletedByUid" column="deleted_by" />
+    <result property="deletedTime" column="deleted_time" />
+    <result property="wasInheritedAcl" column="was_inherited_acl" 
+            typeHandler="org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback" />
+  </resultMap>
+
+  <select id="getRecoverableResources" resultMap="recoverableResource">
+    select * from deleted_resource where parent_id = #value#
+  </select>
+
+  <select id="getRecoverableResourceById" resultMap="recoverableResource">
+    select * from deleted_resource where id = #value#
+  </select>
+
+  <!--  ## Recover deleted resource ## -->
+  <update id="recoverResource" parameterClass="java.util.Map">
+    update vortex_resource set
+      uri = <include refid="recoverUri" />
+      where uri like #trashIDWildcard# escape '@'
+  </update>
+
+  <delete id="deleteFromTrashCan">
+    delete from deleted_resource where id = #value#
+  </delete>
+
+  <select id="numberOfRecoverableResources" resultClass="Integer">
+    select count(*) from deleted_resource where parent_id = #value#
+  </select>
 
   <select id="loadChildren" parameterClass="java.util.Map"
           resultMap="Resource">

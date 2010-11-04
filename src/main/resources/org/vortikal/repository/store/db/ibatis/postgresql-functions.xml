@@ -48,6 +48,10 @@
     #trashCanID# || substring(uri, #uriTrimLength#)
   </sql>
 
+  <sql id="recoverUri">
+    #recoveryBaseUri# || substring(uri, #uriTrimLength#)
+  </sql>
+
   <insert id="insertPropertyEntry" parameterClass="java.util.Map">
     insert into extra_prop_entry
       (extra_prop_entry_id, resource_id, name_space, name, value

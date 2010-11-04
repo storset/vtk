@@ -33,6 +33,7 @@
         <ref bean="collection.hideLastModifiedPropDef" />
         <ref bean="collection.hideIntroductionPropDef" />
         <ref bean="hideNumberOfCommentsPropDef" />
+        <ref bean="collection.containsRecoverableResources" />
       </list>
     </property>
   </bean>
@@ -379,7 +380,22 @@
       </map>
     </property>
   </bean>
-  
+
+  <!-- ## Determines whether or not to display "trash can" (deleted resources tab) ## -->
+  <bean id="collection.containsRecoverableResources" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="name" value="contains-recoverable-resources" />
+    <property name="type" value="BOOLEAN" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="defaultValue" ref="VALUE_FALSE" />
+    <property name="propertyEvaluator" ref="containsRecoverableResourceEvaluator" />
+  </bean>
+
+  <bean id="containsRecoverableResourceEvaluator"
+    class="org.vortikal.repository.resourcetype.property.ContainsRecoverableResourceEvaluator">
+  </bean>
+
   <bean id="resourceInCollection" class="org.vortikal.web.service.ResourceTypeAssertion"
         parent="repositoryAware">
     <property name="resourceTypeDefinition" ref="collectionResourceTypeDefinition" />

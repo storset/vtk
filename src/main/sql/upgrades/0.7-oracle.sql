@@ -12,7 +12,7 @@ create table deleted_resource
   parent_id number not null,
   deleted_by VARCHAR2 (64) not null,
   deleted_time timestamp not null,
-  was_inherited_acl char(1) default 'Y' not null
+  was_inherited_acl char(1) default 'N' not null
 );
 
 alter table deleted_resource

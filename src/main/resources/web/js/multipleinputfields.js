@@ -67,17 +67,19 @@ function addFormField(name, value, removeName, moveUpName, moveDownName, size, i
       + removeButton + moveUpButton + moveDownButton + "</div>");
     
     if(!init) {
-    	var fields = "." + name + " div.inputfield div";
-        if($(fields).eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).not("has:button.movedown")) {
+    	if(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] > 0) {
+    	  var fields = "." + name + " div.inputfield div.vrtx-multipleinputfield";
+          if($(fields).eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).not("has:button.movedown")) {
         	
-        	var theId = $(fields).eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).attr("id");
+            var theId = $(fields).eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).attr("id");
         	
         	moveDownButton = "<button class='movedown' type='button' " + "id='" + idstr + "movedown' >"
         	+ "&darr; " + moveDownName + "</button>";
 
         	$(fields).eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).append(moveDownButton);
         	logMultipleInputFields("Added before-last movedown");
-        }
+          }
+    	}
         LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]++;
       }
     
@@ -94,7 +96,7 @@ function removeFormField(name, that) {
     logMultipleInputFields("Number of inputfields: " + LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]);
     logMultipleInputFields("Next number for inputfield: " + COUNTER_FOR_MULTIPLE_INPUT_FIELD[name]);
     
-    var fields = "." + name + " div.inputfield div";
+    var fields = "." + name + " div.inputfield div.vrtx-multipleinputfield";
     
 	if($(fields).eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).has("button.movedown")) {
 	  $(fields).eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).find("button.movedown").remove();

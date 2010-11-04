@@ -393,7 +393,7 @@
   </bean>
 
   <bean id="containsRecoverableResourceEvaluator"
-    class="org.vortikal.repository.resourcetype.property.ContainsRecoverableResourceEvaluator">
+    class="org.vortikal.repository.resourcetype.property.ContainsRecoverableResourcesEvaluator">
   </bean>
 
   <bean id="resourceInCollection" class="org.vortikal.web.service.ResourceTypeAssertion"

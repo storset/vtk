@@ -34,7 +34,7 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
 
-public class ContainsRecoverableResourceEvaluator implements PropertyEvaluator {
+public class ContainsRecoverableResourcesEvaluator implements PropertyEvaluator {
 
     @Override
     public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {        

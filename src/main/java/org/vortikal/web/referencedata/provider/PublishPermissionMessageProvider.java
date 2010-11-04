@@ -42,7 +42,6 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
-import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 
@@ -84,7 +83,6 @@ public class PublishPermissionMessageProvider implements ReferenceDataProvider {
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
-        Principal principal = securityContext.getPrincipal();
         String token = securityContext.getToken();
 
         Path uri = org.vortikal.web.RequestContext.getRequestContext().getResourceURI();
@@ -105,7 +103,7 @@ public class PublishPermissionMessageProvider implements ReferenceDataProvider {
 
         if (isJsonResourceType) {
             String publishStatus = "published";
-            
+
             if (!resource.getProperty(this.publishedPropDef).getBooleanValue()) {
                 publishStatus = "unpublished";
             }

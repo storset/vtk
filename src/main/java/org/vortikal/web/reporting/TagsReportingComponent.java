@@ -70,8 +70,8 @@ public class TagsReportingComponent {
             UriPrefixScope scope = new UriPrefixScope();
             scope.addUriPrefix(scopeUri);
 
-            // If we have an aggration resolver available, then include whatever URIs
-            // the scope URI might aggregate.
+            // If we have an aggregation resolver available, then include whatever URIs
+            // the scope URI might aggregate from.
             if (this.aggregationResolver != null) {
                 List<Path> aggregationPaths = this.aggregationResolver.getAggregationPaths(scopeUri);
                 if (aggregationPaths != null) {

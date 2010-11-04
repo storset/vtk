@@ -64,13 +64,24 @@
       }
   }
 
+  function linkCheckCompleted(requests) {
+      //console.log("link check done");
+  }
+
+
   $(document).ready(function() {
      $('iframe').load(function() {
         $("iframe").contents().find("a").each(function(i) {
 	    $(this).attr("target", "_top");
         });
         <#if visualizeBrokenLinks?exists && visualizeBrokenLinks = 'true'>
-        visualizeBrokenLinks('iframe', '${linkcheck.URL?html}', 10, linkCheckLocalizer);
+        visualizeBrokenLinks({
+            selection : 'iframe',
+            validationURL : '${linkcheck.URL?html}',
+            chunk : 10,
+            localizer : linkCheckLocalizer,
+            completed : linkCheckCompleted
+        });
         </#if>
      });
   });	

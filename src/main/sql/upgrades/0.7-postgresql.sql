@@ -11,7 +11,8 @@ create table deleted_resource
   resource_trash_uri varchar (64) not null,
   parent_id int not null,
   deleted_by varchar(64) not null,
-  deleted_time timestamp not null
+  deleted_time timestamp not null,
+  was_inherited_acl CHAR(1) default 'Y' not null
 );
 
 alter table deleted_resource

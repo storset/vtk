@@ -10,8 +10,9 @@ create table deleted_resource
   id number not null,
   resource_trash_uri VARCHAR2 (64) not null,
   parent_id number not null,
-  deleted_by VARCHAR2 not null,
-  deleted_time timestamp not null
+  deleted_by VARCHAR2 (64) not null,
+  deleted_time timestamp not null,
+  was_inherited_acl char(1) default 'Y' not null
 );
 
 alter table deleted_resource

@@ -84,7 +84,7 @@ function removeFormField(name, i) {
 	var id = "#vrtx-" + name + "-row-";
 
     $(id + i).remove();
-    console.log("Fjerner :" + id + i);
+    logMultipleInputFields("Fjerner :" + id + i);
     
     LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]--;
     COUNTER_FOR_MULTIPLE_INPUT_FIELD[name]--;

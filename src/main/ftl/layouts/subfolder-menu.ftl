@@ -10,14 +10,13 @@
 
 <#import "../lib/vortikal.ftl" as vrtx />
 
-<#assign commaSeparated = false />
-<#if subFolderMenu.display?exists && subFolderMenu.display = "comma-separated">
-  <#assign commaSeparated = true />
-</#if>
-
 <#-- RECURSIVE MENU BUILD -->
 
+<#assign commaSeparated = false />
 <#if subFolderMenu?exists> 
+  <#if subFolderMenu.display?exists && subFolderMenu.display = "comma-separated">
+    <#assign commaSeparated = true />
+  </#if>
   <@displaySubFolderMenu subFolderMenu false />
 </#if>
 

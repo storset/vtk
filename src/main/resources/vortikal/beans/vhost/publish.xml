@@ -365,4 +365,12 @@
     <property name="publishedPropDef" ref="publishedPropDef" />
   </bean>
 
+  <bean class="org.springframework.context.support.ResourceBundleMessageSource">
+    <property name="basenames">
+      <list>
+        <value>vortikal.i18n.publish.publish</value>
+      </list>
+    </property>
+  </bean>
+
 </beans>

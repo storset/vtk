@@ -13,6 +13,7 @@
 
 <#import "/spring.ftl" as spring />
 <#import "dump.ftl" as dumper />
+<#import "/lib/vortikal.ftl" as vrtx />
 <#import "/lib/autocomplete.ftl" as autocomplete />
 
 <#if !resourceContext?exists>
@@ -120,12 +121,12 @@
     <#list pseudoPrincipals as pseudoPrincipal>
       <#compress>
         <@vrtx.msg code="pseudoPrincipal.${pseudoPrincipal.name}" default="${pseudoPrincipal.name}" /><#t/>
-        <#if pseudoPrincipal.name = "pseudo:owner">&nbsp;(<@displayUserPrincipal principal=resourceContext.currentResource.owner />)</#if><#t/>
+        <#if pseudoPrincipal.name = "pseudo:owner">&nbsp;(<@vrtx.displayUserPrincipal principal=resourceContext.currentResource.owner />)</#if><#t/>
       </#compress>
       <#if pseudoPrincipal_index &lt; pseudoPrincipals?size - 1  || users?size &gt; 0  || groups?size &gt; 0>, <#t/></#if>
     </#list>
     <#list users as user>
-      <#compress><@displayUserPrincipal principal=user /></#compress><#t/>
+      <#compress><@vrtx.displayUserPrincipal principal=user /></#compress><#t/>
       <#if user_index &lt; users?size - 1 || groups?size &gt; 0>,<#t/></#if>
     </#list>
     <#list groups as group>
@@ -172,12 +173,12 @@
           <#list pseudoPrincipals as pseudoPrincipal>
             <#compress>
               <@vrtx.msg code="pseudoPrincipal.${pseudoPrincipal.name}" default="${pseudoPrincipal.name}" /><#t/>
-              <#if pseudoPrincipal.name = "pseudo:owner">&nbsp;(<@displayUserPrincipal principal=resourceContext.currentResource.owner />)</#if><#t/>
+              <#if pseudoPrincipal.name = "pseudo:owner">&nbsp;(<@vrtx.displayUserPrincipal principal=resourceContext.currentResource.owner />)</#if><#t/>
             </#compress>
             <#if pseudoPrincipal_index &lt; pseudoPrincipals?size - 1  || users?size &gt; 0>, <#t/></#if>
           </#list>
           <#list users as user>
-            <#compress><@displayUserPrincipal principal=user /></#compress><#t/>
+            <#compress><@vrtx.displayUserPrincipal principal=user /></#compress><#t/>
             <#if user_index &lt; users?size - 1>,<#t/></#if>
           </#list>
         </td>
@@ -230,12 +231,12 @@
     <#list pseudoPrincipals as pseudoPrincipal>
       <#compress>
         <@vrtx.msg code="pseudoPrincipal.${pseudoPrincipal.name}" default="${pseudoPrincipal.name}" />
-        <#if pseudoPrincipal.name = "pseudo:owner">&nbsp;(<@displayUserPrincipal principal=resourceContext.currentResource.owner />)</#if><#t/>
+        <#if pseudoPrincipal.name = "pseudo:owner">&nbsp;(<@vrtx.displayUserPrincipal principal=resourceContext.currentResource.owner />)</#if><#t/>
       </#compress>
       <#if pseudoPrincipal_index &lt; pseudoPrincipals?size - 1  || users?size &gt; 0  || groups?size &gt; 0>, <#t/></#if>
     </#list>
     <#list users as user>
-      <#compress><@displayUserPrincipal principal=user /></#compress><#t/>
+      <#compress><@vrtx.displayUserPrincipal principal=user /></#compress><#t/>
       <#if user_index &lt; users?size - 1 || groups?size &gt; 0>,<#t/></#if>
     </#list>
     <#list groups as group>
@@ -308,7 +309,7 @@
           <#switch user.name>
             <#case "pseudo:owner">
               <li><@vrtx.msg code="permissions.owner"
-                             default="owner"/>&nbsp;(<@displayUserPrincipal principal=resourceContext.currentResource.owner />)</li>
+                             default="owner"/>&nbsp;(<@vrtx.displayUserPrincipal principal=resourceContext.currentResource.owner />)</li>
               <#break>
             <#case "pseudo:authenticated">
             <#case "pseudo:all">
@@ -321,7 +322,7 @@
               </#if>
               <#break>
             <#default>
-              <li><@displayUserPrincipal principal=user />
+              <li><@vrtx.displayUserPrincipal principal=user />
                 <#if removeUserURLs?exists && removeUserURLs[user.name]?exists >
                   &nbsp;(&nbsp;<a href="${removeUserURLs[user.name]?html}"><#t/>
                   <#t/><@vrtx.msg code="permissions.remove" default="remove"/></a>&nbsp;)
@@ -407,15 +408,4 @@
     <input type="submit" name="cancelAction" value="<@vrtx.msg code="permissions.cancel" default="Cancel"/>">
     </div>
   </form>
-</#macro>
-
-
-<#macro displayUserPrincipal principal>
-<#compress>
-<#if principal.URL?exists>
-  <a title="${principal.name?html}" href="${principal.URL?html}">${principal.description?html}</a>
-<#else>
-  ${principal.name?html}
-</#if>
-</#compress>
 </#macro>

@@ -470,9 +470,19 @@
  *
 -->
 <#function getEvenlyColumnDistribution totalItems column maxColumns>
-    <#assign n = (totalItems / maxColumns)?floor />
-    <#if ((totalItems % maxColumns) >= column)>
-      <#assign n = n + 1 />
-    </#if>
-    <#return n />
+  <#assign n = (totalItems / maxColumns)?floor />
+  <#if ((totalItems % maxColumns) >= column)>
+    <#assign n = n + 1 />
+  </#if>
+  <#return n />
 </#function>
+
+<#macro displayUserPrincipal principal>
+  <#compress>
+    <#if principal.URL?exists>
+      <a title="${principal.name?html}" href="${principal.URL?html}">${principal.description?html}</a>
+    <#else>
+      ${principal.name?html}
+    </#if>
+  </#compress>
+</#macro>

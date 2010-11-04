@@ -72,9 +72,7 @@ function addFormField(name, value, removeName, moveUpName, moveDownName, size, i
         	
         	var theId = $(fields).eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).attr("id");
         	
-        	moveDownButton = "<button class='movedown' type='button' "
-        	+ "id='" + idstr + "movedown' "
-        	+ "onClick='moveDownFormField(\"#" + theId + "\"); return false;'>"
+        	moveDownButton = "<button class='movedown' type='button' " + "id='" + idstr + "movedown' >"
         	+ "&darr; " + moveDownName + "</button>";
 
         	$(fields).eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).append(moveDownButton);

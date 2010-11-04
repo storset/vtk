@@ -43,6 +43,7 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
+import org.vortikal.repository.search.PropertySortField;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.SortingImpl;
@@ -76,10 +77,11 @@ public class CollectionStructureReporter extends AbstractReporter {
             depthQuery.add(new UriDepthQuery(i + currentResource.getURI().getDepth()));
         }
         query.add(depthQuery);
-        
+
         Search search = new Search();
         search.setLimit(Integer.MAX_VALUE);
         SortingImpl sorting = new SortingImpl();
+        sorting.addSortField(new PropertySortField(this.titlePropDef));
         search.setSorting(sorting);
 
         search.setQuery(query);
@@ -87,7 +89,7 @@ public class CollectionStructureReporter extends AbstractReporter {
         ResultSet rs = this.searcher.execute(token, search);
         Map<String, Object> result = new HashMap<String, Object>();
 
-        Locale locale = new RequestContext(request).getLocale(); 
+        Locale locale = new RequestContext(request).getLocale();
 
         Map<String, Object> menu = getSubfolderMenu(rs, currentResource.getURI(), token, locale);
         result.put("subFolderMenu", menu);
@@ -122,7 +124,7 @@ public class CollectionStructureReporter extends AbstractReporter {
 
         MenuRequest menuRequest = subfolderMenu.getNewMenuRequest(currentCollectionUri, title, sortProperty,
                 ascendingSort, sortByName, resultSets, groupResultSetsBy, freezeAtLevel, depth, displayFromLevel,
-                maxNumberOfChildren, display, locale, token, searchLimit, structuredCollectionReportLink,includeURIs);
+                maxNumberOfChildren, display, locale, token, searchLimit, structuredCollectionReportLink, includeURIs);
 
         ListMenu<PropertySet> menu = subfolderMenu.buildListMenu(rs, menuRequest);
         return subfolderMenu.buildMenuModel(menu, menuRequest);
@@ -131,7 +133,7 @@ public class CollectionStructureReporter extends AbstractReporter {
     public void setViewService(Service viewService) {
         this.viewService = viewService;
     }
-    
+
     public void setReportService(Service reportService) {
         this.reportService = reportService;
     }

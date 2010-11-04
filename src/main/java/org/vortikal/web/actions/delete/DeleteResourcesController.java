@@ -19,7 +19,6 @@ public class DeleteResourcesController implements Controller {
     @SuppressWarnings("unchecked")
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        // TODO Auto-generated method stub
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
 
@@ -27,14 +26,19 @@ public class DeleteResourcesController implements Controller {
         while (e.hasMoreElements()) {
             String name = (String) e.nextElement();
 
-            // Need to replace this with a better check...
-            if (name.startsWith("/")) {
-                try {
-                    Path uri = Path.fromString(name);
-                    repository.delete(securityContext.getToken(), uri, true);
-                } catch (Exception exception) {
-                }
+            Path uri = null;
+            try {
+                uri = Path.fromString(name);
+            } catch (IllegalArgumentException iae) {
+                // Not a path, ignore it, try next one
+                continue;
             }
+
+            String token = securityContext.getToken();
+            if (this.repository.exists(token, uri)) {
+                repository.delete(token, uri, true);
+            }
+
         }
 
         return new ModelAndView(this.viewName);

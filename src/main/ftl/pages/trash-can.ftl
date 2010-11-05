@@ -13,7 +13,11 @@
     <link rel="stylesheet" href="${cssURL}" />
     </#list>
   </#if>
-    <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/ie6-table-tr-hover.js"></script>
+  <#if jsURLs?exists>
+    <#list jsURLs as jsURL>
+    <script type="text/javascript" src="${jsURL}"></script>
+    </#list>
+  </#if>
   </head>
 <body id="vrtx-trash-can">
 

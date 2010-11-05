@@ -72,6 +72,11 @@
             <value>${themeBaseURL}/trash-can/trash-can.css</value>
           </list>
         </entry>
+        <entry key="jsURLs">
+          <list>
+            <value>${jsBaseURL}/ie6-table-tr-hover.js</value>
+          </list>
+        </entry>
       </map>
     </property>
   </bean>

@@ -44,6 +44,7 @@ public class RecoverableResource {
     private String deletedByUid;
     private Date deletedTime;
     private boolean wasInheritedAcl;
+    private String resourceType;
 
     private Principal deletedBy;
     private String recoverToName;
@@ -112,6 +113,14 @@ public class RecoverableResource {
 
     public void setDeletedBy(Principal deletedByPrincipal) {
         this.deletedBy = deletedByPrincipal;
+    }
+
+    public String getResourceType() {
+        return resourceType;
+    }
+
+    public void setResourceType(String resourceType) {
+        this.resourceType = resourceType;
     }
 
     public String getRecoverToName() {

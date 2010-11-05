@@ -306,14 +306,19 @@
     <result property="deletedTime" column="deleted_time" />
     <result property="wasInheritedAcl" column="was_inherited_acl" 
             typeHandler="org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback" />
+    <result property="resourceType" column="resource_type" />
   </resultMap>
 
   <select id="getRecoverableResources" resultMap="recoverableResource">
-    select * from deleted_resource where parent_id = #value#
+    select d.*, r.resource_type as resource_type
+      from deleted_resource d, vortex_resource r
+      where d.parent_id = #value# and d.resource_trash_uri = r.uri;
   </select>
 
   <select id="getRecoverableResourceById" resultMap="recoverableResource">
-    select * from deleted_resource where id = #value#
+    select d.*, r.resource_type as resource_type
+      from deleted_resource d, vortex_resource r
+      where d.id = #value# and d.resource_trash_uri = r.uri;
   </select>
 
   <!--  ## Recover deleted resource ## -->

@@ -554,7 +554,15 @@ public class URL {
                 } else if (c == '#') {
                     state = ParseState.REF;
                 } else {
-                    path.append(c);
+                    if (c == '/') {
+                        int len = path.length();
+                        if (len == 0 || (len > 0 && path.charAt(len - 1) != '/')) {
+                            // Allow double slashes:
+                            path.append(c);
+                        }
+                    } else {
+                        path.append(c);
+                    }
                 }
                 break;
             case QUERY:

@@ -59,11 +59,6 @@ public class URLTest extends TestCase {
             URL.parse(s);
             fail("Parsed malformed URL: " + s);
         } catch (Exception e) { }
-        try {
-            String s = "http://localhost/folder///?_SERVER[DOCUMENT_ROOT]=http://malicious.site.example.com/////path/1.txt???";
-            URL.parse(s);
-            fail("Parsed malformed URL: " + s);
-        } catch (Exception e) { }
  
         URL url = URL.parse("http://foo");
         assertEquals(Integer.valueOf(80), url.getPort());
@@ -80,6 +75,8 @@ public class URLTest extends TestCase {
         assertEquals(Path.ROOT, url.getPath());
         assertEquals("value", url.getParameter("param"));
         assertTrue(url.isCollection());
+
+        url = URL.parse("http://foo//bar");
         
         url = URL.parse("http://foo.bar:8080");
         assertEquals(Path.ROOT, url.getPath());
@@ -97,8 +94,6 @@ public class URLTest extends TestCase {
         assertEquals(Path.fromString("/baz"), url.getPath());
         assertFalse(url.isCollection());
 
-        // XXX This test fails because updated URL class adds '=' to empty parameters.
-        //     Should it do that ?
         url = URL.parse("http://foo.bar:8080/baz/?param1&param2=abc");
         assertEquals("", url.getParameter("param1"));
         assertEquals("abc", url.getParameter("param2"));
@@ -155,11 +150,6 @@ public class URLTest extends TestCase {
         url.setPath(Path.fromString("/)"));
         assertEquals("/%29", url.getPathEncoded());
 
-        url = new URL("http", "foo.bar", Path.fromString("/ å"));
-        assertEquals("/%20%C3%A5", url.getPathEncoded());
-        url.setCharacterEncoding("iso-8859-1");
-        assertEquals("/%20%E5", url.getPathEncoded());
-        
         url = new URL("http", "foo.bar", Path.fromString("/%20"));
         assertEquals("http://foo.bar/%2520", url.toString());
     }

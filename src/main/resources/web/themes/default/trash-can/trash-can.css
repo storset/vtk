@@ -3,5 +3,9 @@ body#vrtx-trash-can #contents form {
 }
 
 #vrtx-trash-can-table #vrtx-trash-can-header th {
-  font-weight: bold;
+  /* font-weight: bold; */
+}
+
+#vrtx-trash-can-table td.checkbox {
+  text-align: center;
 }

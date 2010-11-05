@@ -47,7 +47,9 @@
   <table id="vrtx-trash-can-table" class="directoryListing">
     <tr id="vrtx-trash-can-header" class="directoryListingHeader">
       <th id="vrtx-trash-can-name"><@vrtx.msg code="trash-can.name" default="Name" /></th>
-      <th></th>
+      <th class="checkbox">
+        <a href="#" class="vrtx-check-all" > <@vrtx.msg code="collectionListing.all" default="All"/></a> | 
+        <a href="#" class="vrtx-uncheck-all"> <@vrtx.msg code="collectionListing.none" default="None"/></a></th>
       <th id="vrtx-trash-can-deleted-by"><@vrtx.msg code="trash-can.deletedBy" default="Deleted by" /></th>
       <th id="vrtx-trash-can-deleted-time"><@vrtx.msg code="trash-can.deletedTime" default="Deleted time" /></th>
     </tr>
@@ -59,7 +61,7 @@
       <tr class="even ${tco.recoverableResource.resourceType}">
     </#if>
         <td class="vrtx-trash-can-name name"><a href=".">${tco.recoverableResource.name?html}</a></td>
-        <td>
+        <td class="checkbox">
         <@spring.bind "trashcan.trashCanObjects[${tco_index}].selectedForRecovery" />
         <#assign checked = "" />
         <#if spring.status.value?string = 'true' >

@@ -1014,7 +1014,7 @@ div.vrtx-subfolder-menu {
   border:none;
 } 
 
-#vrtx-directoryListing .checked {
+.directoryListing .checked {
     background-color:darkgray;
 }
 

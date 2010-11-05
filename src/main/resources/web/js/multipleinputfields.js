@@ -30,7 +30,7 @@ function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDown
 
 function registerClicks(name) {
   $("." + name).delegate(".remove", "click", function(){
-	removeFormField(name, $(this))
+	removeFormField(name, $(this));
   });
   $("." + name).delegate(".moveup", "click", function(){
 	moveUpFormField($(this));

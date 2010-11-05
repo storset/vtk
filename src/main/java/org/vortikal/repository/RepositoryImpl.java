@@ -410,29 +410,32 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         parentCollection = this.resourceHelper.contentModification(parentCollection, principal);
         this.dao.store(parentCollection);
 
-        if (restorable) {
-
-            // Check ACL before moving to trash can,
-            // if inherited, take snapshot of current ACL
-            if (r.isInheritedAcl()) {
-                ResourceImpl clone = (ResourceImpl) r.clone();
-                clone.setInheritedAcl(false);
-                this.dao.storeACL(clone);
-            }
-
-            final String trashID = "trash-" + r.getID();
-            this.dao.markDeleted(r, parentCollection, principal, trashID);
-            this.contentStore.moveToTrash(r.getURI(), trashID);
-
-            // XXX hmm... must evaluate parent after deleting > property
-            // "contains-recoverable-resources"
-            parentCollection = this.resourceHelper.contentModification(parentCollection, principal);
-            this.dao.store(parentCollection);
-
-        } else {
-            this.dao.delete(r);
-            this.contentStore.deleteResource(r.getURI());
-        }
+//        if (restorable) {
+//
+//            // Check ACL before moving to trash can,
+//            // if inherited, take snapshot of current ACL
+//            if (r.isInheritedAcl()) {
+//                ResourceImpl clone = (ResourceImpl) r.clone();
+//                clone.setInheritedAcl(false);
+//                this.dao.storeACL(clone);
+//            }
+//
+//            final String trashID = "trash-" + r.getID();
+//            this.dao.markDeleted(r, parentCollection, principal, trashID);
+//            this.contentStore.moveToTrash(r.getURI(), trashID);
+//
+//            // XXX hmm... must evaluate parent after deleting > property
+//            // "contains-recoverable-resources"
+//            parentCollection = this.resourceHelper.contentModification(parentCollection, principal);
+//            this.dao.store(parentCollection);
+//
+//        } else {
+//            this.dao.delete(r);
+//            this.contentStore.deleteResource(r.getURI());
+//        }
+        
+        this.dao.delete(r);
+        this.contentStore.deleteResource(r.getURI());
 
         ResourceDeletionEvent event = new ResourceDeletionEvent(this, uri, r.getID(), r.isCollection());
         this.context.publishEvent(event);

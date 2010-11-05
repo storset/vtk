@@ -35,12 +35,6 @@
     <property name="connectTimeout" value="5000" />
     <property name="readTimeout" value="10000" />
     <property name="userAgent" value="Link checker for ${repositoryID}" />
-    <property name="optimizeLocalLinks" value="${servesWebRoot}" />
-    <property name="localHostNames">
-      <bean class="org.vortikal.context.CSVSetFactoryBean">
-        <property name="csvList" value="${linkCheck.localHostNames}" />
-      </bean>
-    </property>
   </bean>
 
 </beans>

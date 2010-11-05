@@ -31,6 +31,7 @@
 package org.vortikal.web.display.linkcheck;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +49,7 @@ import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.linkcheck.LinkChecker.LinkCheckResult;
+import org.vortikal.web.service.URL;
 
 public class LinkCheckController implements Controller, InitializingBean {
 
@@ -59,16 +61,19 @@ public class LinkCheckController implements Controller, InitializingBean {
         try {
             urls = readInput(request);
         } catch (BadRequestException e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            badRequest(e, response);
             return null;
         }
-        Path base = RequestContext.getRequestContext().getCurrentCollection();
+        Path path = RequestContext.getRequestContext().getCurrentCollection();
+        URL base = URL.create(request);
+        base.clearParameters();
+        base.setPath(path);
         List<LinkCheckResult> results = checkLinks(urls, base);
-        writeResponse(results, response);
+        writeResults(results, response);
         return null;
     }
     
-    private List<LinkCheckResult> checkLinks(List<String> input, Path base) {
+    private List<LinkCheckResult> checkLinks(List<String> input, URL base) {
         List<LinkCheckResult> results = new ArrayList<LinkCheckResult>();
         for (String link: input) {
             LinkCheckResult r = this.linkChecker.validate(link, base);
@@ -76,8 +81,18 @@ public class LinkCheckController implements Controller, InitializingBean {
         }
         return results;
     }
+
+    private void badRequest(Throwable e, HttpServletResponse response) throws IOException {
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        PrintWriter writer = response.getWriter();
+        try {
+            writer.write(e.getMessage());
+        } finally {
+            writer.close();
+        }
+    }
     
-    private void writeResponse(List<LinkCheckResult> results, HttpServletResponse response) throws Exception {
+    private void writeResults(List<LinkCheckResult> results, HttpServletResponse response) throws Exception {
         JSONArray list = new JSONArray();
         for (LinkCheckResult result: results) {
             JSONObject o = new JSONObject();
@@ -106,8 +121,11 @@ public class LinkCheckController implements Controller, InitializingBean {
             int n = 0;
             List<String> urls = new ArrayList<String>();
             while ((line = reader.readLine()) != null) {
+                if (line.length() > 500) {
+                    throw new BadRequestException("Line too long: " + line.length());
+                }
                 if (++n > 10) {
-                    throw new BadRequestException("Too much data");
+                    throw new BadRequestException("Too many lines");
                 }
                 line = sanitize(line);
                 if (line != null) {

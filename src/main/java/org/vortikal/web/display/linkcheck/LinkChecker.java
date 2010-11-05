@@ -31,12 +31,9 @@
 package org.vortikal.web.display.linkcheck;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
-import java.net.URLDecoder;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Map;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
@@ -61,8 +58,6 @@ public class LinkChecker implements InitializingBean {
     private int connectTimeout = 5000;
     private int readTimeout = 5000;
     private String userAgent = "Link checker";
-    private Set<String> localHostNames = new HashSet<String>();
-    private boolean optimizeLocalLinks = false;
     
     public static class LinkCheckResult {
         private String link;
@@ -88,47 +83,53 @@ public class LinkChecker implements InitializingBean {
     }
     
     
-    public LinkCheckResult validate(String link, Path base) {
-        if (link == null) {
+    public LinkCheckResult validate(String href, URL base) {
+        if (href == null) {
             throw new IllegalArgumentException("Link argument cannot be NULL");
         }
-        if (!isWebLink(link)) {
-            return new LinkCheckResult(link, validateInternalLink(base, link));
+        boolean internal = !isExternalLink(href);
+        URL url;
+        try {
+            url = getURL(href, base);
+        } catch (Throwable t) {
+            return new LinkCheckResult(href, Status.MALFORMED_URL);
         }
-        String cacheKey = link;
+        if (internal) {
+            Status status = indexLookup(url);
+            if (status == Status.OK) {
+                return new LinkCheckResult(href, status);
+            }
+        }
+        String cacheKey = href;
         Element cached = this.cache.get(cacheKey);
         if (cached != null) {
             return (LinkCheckResult) cached.getObjectValue();
         }
-        URL url;
-        try {
-            url = getURL(link);
-        } catch (Throwable t) {
-            return new LinkCheckResult(link, Status.MALFORMED_URL);
-        }
         Status status;
         try {
-            if (this.optimizeLocalLinks && this.localHostNames.contains(url.getHost())) {
-                status = validateInternalLink(base, url.getPath().toString());
-                return new LinkCheckResult(link, status);
-            }
             status = validateURL(url);
         } catch (Throwable t) {
             t.printStackTrace();
             status = Status.ERROR;
         }
-        LinkCheckResult result = new LinkCheckResult(link, status);
-        this.cache.put(new Element(link, result));
+        LinkCheckResult result = new LinkCheckResult(href, status);
+        this.cache.put(new Element(href, result));
         return result;
     }
     
-    private URL getURL(String link) {
-        link = link.trim();
-        link = trimTrailingSlash(link);
-        if (link.contains("#")) {
-            link = link.substring(0, link.indexOf("#"));
+    private Status indexLookup(URL url) {
+        SecurityContext securityContext = SecurityContext.getSecurityContext();
+        String token = securityContext.getToken();
+        String link = url.getPath().toString();
+        UriTermQuery uriQuery = new UriTermQuery(link, TermOperator.EQ);
+        Search search = new Search();
+        search.setQuery(uriQuery);
+        search.setLimit(1);
+        ResultSet rs = this.searcher.execute(token, search);
+        if (rs.getSize() > 0) {
+            return Status.OK;
         }
-        return URL.parse(link);
+        return Status.NOT_FOUND;
     }
 
     private Status validateURL(URL url) {
@@ -187,41 +188,44 @@ public class LinkChecker implements InitializingBean {
         return urlConnection;
     }
 
-    private boolean isWebLink(String link) {
-        return link.startsWith("http") || link.startsWith("www");
+    private boolean isExternalLink(String link) {
+        return link.startsWith("http://") || link.startsWith("https://");
     }
 
-    private Status validateInternalLink(Path base, String link) {
-        if (link.contains("?")) {
-            link = link.substring(0, link.indexOf("?"));
+    private URL getURL(String href, URL base) {
+        href = href.trim();
+        if (href.contains("#")) {
+            href = href.substring(0, href.indexOf("#"));
         }
-        if (link.contains("#")) {
-            link = link.substring(0, link.indexOf("#"));
+        Map<String, String[]> queryMap = null;
+        if (href.contains("?")) {
+            queryMap = URL.splitQueryString(href.substring(href.indexOf("?")));
+            href = href.substring(0, href.indexOf("?"));
         }
-        link = trimTrailingSlash(link);
-        if (!link.startsWith("/")) {
-            try {
-                link = base.expand(link).toString();
-            } catch (Exception e) {
-                return Status.MALFORMED_URL;
+        href = trimTrailingSlash(href);
+
+        URL url;
+        if (href.startsWith("http://") || href.startsWith("https://")) {
+            url = URL.parse(href);
+        } else {
+            url = new URL(base);
+            if (href.startsWith("/")) {
+                url.setPath(Path.fromString(href));
+            } else {
+                url.setPath(base.getPath().expand(href));
             }
         }
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String token = securityContext.getToken();
-        try {
-            link = URLDecoder.decode(link, "utf-8");
-        } catch (UnsupportedEncodingException e) { }
-
-        UriTermQuery uriQuery = new UriTermQuery(link, TermOperator.EQ);
-        Search search = new Search();
-        search.setQuery(uriQuery);
-        search.setLimit(1);
-        ResultSet rs = this.searcher.execute(token, search);
-        if (rs.getSize() > 0) {
-            return Status.OK;
+        if (queryMap != null) {
+            for (String name: queryMap.keySet()) {
+                String[] strings = queryMap.get(name);
+                for (String value: strings) {
+                    url.addParameter(name, value);
+                }
+            }
         }
-        return Status.NOT_FOUND;
+        return url;
     }
+
 
     private String trimTrailingSlash(String pathString) {
         while (pathString.endsWith("/") && !Path.ROOT.toString().equals(pathString)) {
@@ -256,14 +260,6 @@ public class LinkChecker implements InitializingBean {
     
     public void setUserAgent(String userAgent) {
         this.userAgent = userAgent;
-    }
-
-    public void setLocalHostNames(Set<String> localHostNames) {
-        this.localHostNames = localHostNames;
-    }
-
-    public void setOptimizeLocalLinks(boolean optimizeLocalLinks) {
-        this.optimizeLocalLinks = optimizeLocalLinks;
     }
 
     @Override

@@ -30,8 +30,16 @@
  */
 package org.vortikal.repository.store;
 
+
 public interface TrashCanDAO {
-    
+
+    /**
+     * 
+     * @param resourceId
+     *            Unique id of resource to check
+     * @return Whether or not the resource in question contains children that
+     *         are marked for deletion, i.e. moved to trash can
+     */
     public boolean containsRecoverableResources(final int resourceId);
 
 }

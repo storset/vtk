@@ -261,9 +261,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
     @Override
     public void markDeleted(ResourceImpl resource, ResourceImpl parent, Principal principal, final String trashID)
             throws DataAccessException {
-        
-        try {
-        
+
         Path resourceURI = resource.getURI();
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("uri", resourceURI.toString());
@@ -286,10 +284,6 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         parameters.put("wasInheritedAcl", resource.isInheritedAcl() ? "Y" : "N");
         sqlMap = getSqlMap("insertTrashCanEntry");
         getSqlMapClientTemplate().update(sqlMap, parameters);
-        
-        } catch (Throwable t) {
-            t.printStackTrace();
-        }
     }
 
     @Override

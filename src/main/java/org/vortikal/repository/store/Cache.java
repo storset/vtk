@@ -110,6 +110,7 @@ import org.vortikal.security.Principal;
  * </ul>
  */
 public class Cache implements DataAccessor, InitializingBean {
+
     private Log logger = LogFactory.getLog(this.getClass());
     private DataAccessor wrappedAccessor;
     private LockManager lockManager = new LockManager();

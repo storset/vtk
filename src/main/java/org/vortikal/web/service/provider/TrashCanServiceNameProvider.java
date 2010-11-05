@@ -40,7 +40,7 @@ public class TrashCanServiceNameProvider implements ServiceNameProvider {
     @Override
     public String getLocalizedName(Resource resource, HttpServletRequest request) {
         RequestContext rc = new RequestContext(request);
-        return rc.getMessage("trash-can.bread.crumb.title", "Deleted resources");
+        return rc.getMessage("trash-can.breadcrumb.title", "Deleted resources");
     }
 
 }

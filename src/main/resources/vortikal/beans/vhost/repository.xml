@@ -221,4 +221,11 @@
     <property name="principalFactory" ref="principalFactory" />
   </bean>
 
+  <!-- ## Trash can ## --> 
+  <bean id="repository.trashCanDao"
+        class="org.vortikal.repository.store.db.SqlMapTrashCanDAO">
+    <property name="sqlMapClient" ref="repository.sqlMapClient"/>
+    <property name="sqlMaps" ref="repository.statementMappings" />
+  </bean>
+
 </beans>

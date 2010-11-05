@@ -69,8 +69,8 @@
         </#if>
         <input type="checkbox" name="${spring.status.expression}" value="true" ${checked} />
         </td>
-        <td class="vrtx-trash-deleted-by"><@vrtx.displayUserPrincipal principal=tco.recoverableResource.deletedBy /></td>
-        <td class="vrtx-trash-deleted-time"><@printDeletedTime tco.recoverableResource.deletedTime /></td>
+        <td class="vrtx-trash-can-deleted-by"><@vrtx.displayUserPrincipal principal=tco.recoverableResource.deletedBy /></td>
+        <td class="vrtx-trash-can-deleted-time"><@printDeletedTime tco.recoverableResource.deletedTime /></td>
       </tr>
     </#list>
 

@@ -473,7 +473,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             this.dao.recover(parentUri, rr);
             this.contentStore.recover(parentUri, rr);
 
-            ResourceImpl recovered = this.dao.load(parentUri.extend(rr.getRecoverToName()));
+            ResourceImpl recovered = this.dao.load(parentUri.extend(rr.getName()));
             this.context.publishEvent(new ResourceCreationEvent(this, recovered));
 
             parent.addChildURI(recovered.getURI());

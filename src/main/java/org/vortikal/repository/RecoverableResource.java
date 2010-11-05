@@ -33,7 +33,6 @@ package org.vortikal.repository;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.apache.commons.lang.StringUtils;
 import org.vortikal.security.Principal;
 
 public class RecoverableResource {
@@ -45,9 +44,7 @@ public class RecoverableResource {
     private Date deletedTime;
     private boolean wasInheritedAcl;
     private String resourceType;
-
     private Principal deletedBy;
-    private String recoverToName;
 
     private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
@@ -121,17 +118,6 @@ public class RecoverableResource {
 
     public void setResourceType(String resourceType) {
         this.resourceType = resourceType;
-    }
-
-    public String getRecoverToName() {
-        if (StringUtils.isBlank(this.recoverToName)) {
-            return this.getName();
-        }
-        return recoverToName;
-    }
-
-    public void setRecoverToName(String recoverToName) {
-        this.recoverToName = recoverToName;
     }
 
     @Override

@@ -60,14 +60,12 @@ public class TrashCanValidator implements Validator {
 
         Resource parent = trashCanCommand.getParentResource();
         Path parentUri = parent.getURI();
-        boolean recoveryNameConflict = false;
-        int numbOfConflicted = 0;
         List<TrashCanObject> trashCanObjects = trashCanCommand.getTrashCanObjects();
 
         Set<String> duplicates = new HashSet<String>();
         for (TrashCanObject tco : trashCanObjects) {
             if (tco.isSelectedForRecovery()) {
-                String recoverToName = tco.getRecoverableResource().getRecoverToName();
+                String recoverToName = tco.getRecoverableResource().getName();
                 if (!duplicates.add(recoverToName)) {
                     errors.rejectValue("trashCanObjects",
                             "trash-can.no.resource.recovery.multiple.selected.name.conflict");
@@ -78,25 +76,10 @@ public class TrashCanValidator implements Validator {
 
         for (TrashCanObject tco : trashCanObjects) {
             if (tco.isSelectedForRecovery()) {
-                String recoverToName = tco.getRecoverableResource().getRecoverToName();
-                if (recoverToName.contains("/")) {
-                    errors.rejectValue("trashCanObjects", "trash-can.no.resource.recovery.name.invalid");
-                    return;
-                }
-                Path recoveryPath = parentUri.extend(recoverToName);
+                Path recoveryPath = parentUri.extend(tco.getRecoverableResource().getName());
                 if (this.exists(recoveryPath)) {
                     tco.setRecoveryNameConflicted(true);
-                    recoveryNameConflict = true;
-                    numbOfConflicted++;
                 }
-            }
-        }
-
-        if (recoveryNameConflict) {
-            if (numbOfConflicted == 1) {
-                errors.rejectValue("trashCanObjects", "trash-can.no.resource.recovery.name.conflict.single");
-            } else {
-                errors.rejectValue("trashCanObjects", "trash-can.no.resource.recovery.name.conflict.multiple");
             }
         }
 

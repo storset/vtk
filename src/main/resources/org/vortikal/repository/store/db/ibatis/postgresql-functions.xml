@@ -49,7 +49,7 @@
   </sql>
 
   <sql id="recoverUri">
-    #recoveryBaseUri# || substring(uri, #uriTrimLength#)
+    #parentUri# || substring(uri, #uriTrimLength#)
   </sql>
 
   <insert id="insertPropertyEntry" parameterClass="java.util.Map">

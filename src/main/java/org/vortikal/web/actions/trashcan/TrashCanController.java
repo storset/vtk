@@ -100,13 +100,15 @@ public class TrashCanController extends SimpleFormController {
             return new ModelAndView(this.getFormView());
         }
 
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        RequestContext requestContext = RequestContext.getRequestContext();
+        String token = SecurityContext.getSecurityContext().getToken();
+        Path parentURI = trashCanCommand.getParentResource().getURI();
+        List<RecoverableResource> recoverableResources = trashCanCommand.getSelectedResourcesToRecover(false);
 
-        String token = securityContext.getToken();
-        Path currentCollectionPath = requestContext.getCurrentCollection();
-        List<RecoverableResource> recoverableResources = trashCanCommand.getSelectedResourcesToRecover();
-        this.repository.recover(token, currentCollectionPath, recoverableResources);
+        List<RecoverableResource> unRecoverableResources = trashCanCommand.getSelectedResourcesToRecover(true);
+        // XXX Handle this as in copy/move -> ignore these resources and notify
+        // user of failed recovery due to naming conflict
+
+        this.repository.recover(token, parentURI, recoverableResources);
 
         return new ModelAndView(this.getSuccessView());
     }

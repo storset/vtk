@@ -318,22 +318,11 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         Map<String, Object> parameters = new HashMap<String, Object>();
         String trashID = deletedResource.getTrashID();
         parameters.put("trashIDWildcard", SqlDaoUtils.getStringSqlWildcard(trashID, SQL_ESCAPE_CHAR));
-        Path recoveryBaseUri = parent;
-        int uriTrimLength = 0;
-
-        String originalName = recoverableResource.getName();
-        String recoveryName = recoverableResource.getRecoverToName();
-        if (originalName.equals(recoveryName)) {
-            uriTrimLength = trashID.length() + 1;
-            if (parent.isRoot()) {
-                uriTrimLength++;
-            }
-        } else {
-            // resource is being recovered under a different name than original
-            uriTrimLength = deletedResource.getTrashUri().length() + 1;
-            recoveryBaseUri = recoveryBaseUri.extend(recoveryName);
+        int uriTrimLength = trashID.length() + 1;
+        if (parent.isRoot()) {
+            uriTrimLength++;
         }
-        parameters.put("recoveryBaseUri", recoveryBaseUri.toString());
+        parameters.put("parentUri", parent.toString());
         parameters.put("uriTrimLength", uriTrimLength);
 
         sqlMap = getSqlMap("recoverResource");

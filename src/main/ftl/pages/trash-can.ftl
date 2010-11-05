@@ -49,14 +49,7 @@
 
     <#list spring.status.value as tco>
     <tr>
-      <td>
-        <#if !tco.recoveryNameConflicted>
-          ${tco.recoverableResource.name?html}
-        <#else>
-          <@spring.bind "trashcan.trashCanObjects[${tco_index}].recoverableResource.recoverToName" />
-          <input name="${spring.status.expression}" value="${spring.status.value}" />
-        </#if>
-      </td>
+      <td>${tco.recoverableResource.name?html}</td>
       <td>
         <@spring.bind "trashcan.trashCanObjects[${tco_index}].selectedForRecovery" />
         <#assign checked = "" />

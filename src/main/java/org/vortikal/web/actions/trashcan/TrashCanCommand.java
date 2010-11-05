@@ -71,11 +71,23 @@ public class TrashCanCommand extends UpdateCancelCommand {
         return false;
     }
 
-    public List<RecoverableResource> getSelectedResourcesToRecover() {
+    /**
+     * 
+     * @param conflictedUnrecoverable
+     *            Determines the contents of the list to return. When true, the
+     *            list will contain elements that have been selected for
+     *            recovery, but can't be recovered because of naming conflict
+     *            with existing resources. When false, the opposite is returned,
+     *            i.e. a list of resources that have no apparent conflict and
+     *            can be recovered.
+     * @return List of recoverable resources the user selected to attempt
+     *         recovery for.
+     */
+    public List<RecoverableResource> getSelectedResourcesToRecover(boolean conflictedUnrecoverable) {
         List<RecoverableResource> result = new ArrayList<RecoverableResource>();
         if (this.trashCanObjects != null && this.trashCanObjects.size() > 0) {
             for (TrashCanObject tco : this.trashCanObjects) {
-                if (tco.isSelectedForRecovery()) {
+                if (tco.isSelectedForRecovery() && (tco.isRecoveryNameConflicted() == conflictedUnrecoverable)) {
                     result.add(tco.getRecoverableResource());
                 }
             }

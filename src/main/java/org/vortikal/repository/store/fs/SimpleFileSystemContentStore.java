@@ -225,7 +225,7 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
     @Override
     public void recover(Path destURI, RecoverableResource recoverableResource) throws DataAccessException {
         String dest = this.getLocalFilename(destURI);
-        String recover = dest + "/" + recoverableResource.getRecoverToName();
+        String recover = dest + "/" + recoverableResource.getName();
         String trashPath = this.repositoryTrashCanDirectory + "/" + recoverableResource.getTrashUri();
         if (!new File(trashPath).renameTo(new File(recover))) {
             throw new DataAccessException("Unable to recover file " + recoverableResource.getTrashUri());

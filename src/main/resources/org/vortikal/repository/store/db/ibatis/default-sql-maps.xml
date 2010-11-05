@@ -323,7 +323,7 @@
       where uri like #trashIDWildcard# escape '@'
   </update>
 
-  <delete id="deleteFromTrashCan">
+  <delete id="recoverFromTrashCan">
     delete from deleted_resource where id = #value#
   </delete>
 
@@ -331,11 +331,15 @@
     select count(*) from deleted_resource where parent_id = #value#
   </select>
 
+  <!-- ## Permanently delete a resource that has already been marked for deletion (moved to trash can) ##-->
+  <delete id="deletePermanentlyMarkDeleted" parameterClass="java.util.Map">
+    delete from vortex_resource where uri = #trashCanURI# or uri like #trashCanURIWildCard# escape '@'
+  </delete>
+
   <select id="loadChildren" parameterClass="java.util.Map"
           resultMap="Resource">
     select * from vortex_resource where uri like #uriWildcard# escape '@' and depth = #depth#
   </select>
-
 
   <select id="loadChildUrisForChildren" parameterClass="java.util.Map"
                                         resultClass="org.vortikal.repository.Path">

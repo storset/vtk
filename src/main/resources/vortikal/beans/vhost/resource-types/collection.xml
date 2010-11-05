@@ -394,6 +394,7 @@
 
   <bean id="containsRecoverableResourceEvaluator"
     class="org.vortikal.repository.resourcetype.property.ContainsRecoverableResourcesEvaluator">
+    <property name="trashCanDAO" ref="repository.trashCanDao" />
   </bean>
 
   <bean id="resourceInCollection" class="org.vortikal.web.service.ResourceTypeAssertion"

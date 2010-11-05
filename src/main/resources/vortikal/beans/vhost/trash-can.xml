@@ -68,6 +68,7 @@
       <map>
         <entry key="cssURLs">
           <list>
+            <value>${themeBaseURL}/basic.css</value>
             <value>${themeBaseURL}/trash-can/trash-can.css</value>
           </list>
         </entry>

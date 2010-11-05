@@ -13,8 +13,9 @@
     <link rel="stylesheet" href="${cssURL}" />
     </#list>
   </#if>
+    <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/ie6-table-tr-hover.js"></script>
   </head>
-<body>
+<body id="vrtx-trash-can">
 
 <#-- WTF???? Why the F*** does this work??? -->
 <#-- Without it, stupid freemarker puts spaces between digits in numbers -->
@@ -39,28 +40,32 @@
   </div>
   </#if>
 
-  <table id="vrtx-trashCan" class="trashCan">
-    <tr class="trashCanHeader">
-      <th><@vrtx.msg code="trash-can.name" default="Name" /></th>
+  <table id="vrtx-trash-can-table" class="directoryListing">
+    <tr id="vrtx-trash-can-header" class="directoryListingHeader">
+      <th id="vrtx-trash-can-name"><@vrtx.msg code="trash-can.name" default="Name" /></th>
       <th></th>
-      <th><@vrtx.msg code="trash-can.deletedBy" default="Deleted by" /></th>
-      <th><@vrtx.msg code="trash-can.deletedTime" default="Deleted time" /></th>
+      <th id="vrtx-trash-can-deleted-by"><@vrtx.msg code="trash-can.deletedBy" default="Deleted by" /></th>
+      <th id="vrtx-trash-can-deleted-time"><@vrtx.msg code="trash-can.deletedTime" default="Deleted time" /></th>
     </tr>
 
     <#list spring.status.value as tco>
-    <tr>
-      <td>${tco.recoverableResource.name?html}</td>
-      <td>
+    <#if (tco_index % 2 == 0)>
+      <tr class="odd ${tco.recoverableResource.resourceType}">
+    <#else>
+      <tr class="even ${tco.recoverableResource.resourceType}">
+    </#if>
+        <td class="vrtx-trash-can-name name"><a href=".">${tco.recoverableResource.name?html}</a></td>
+        <td>
         <@spring.bind "trashcan.trashCanObjects[${tco_index}].selectedForRecovery" />
         <#assign checked = "" />
         <#if spring.status.value?string = 'true' >
           <#assign checked = "checked" />
         </#if>
         <input type="checkbox" name="${spring.status.expression}" value="true" ${checked} />
-      </td>
-      <td><@vrtx.displayUserPrincipal principal=tco.recoverableResource.deletedBy /></td>
-      <td><@printDeletedTime tco.recoverableResource.deletedTime /></td>
-    </tr>
+        </td>
+        <td class="vrtx-trash-deleted-by"><@vrtx.displayUserPrincipal principal=tco.recoverableResource.deletedBy /></td>
+        <td class="vrtx-trash-deleted-time"><@printDeletedTime tco.recoverableResource.deletedTime /></td>
+      </tr>
     </#list>
 
   </table>

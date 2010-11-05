@@ -1,0 +1,7 @@
+body#vrtx-trash-can #contents form {
+  border: 1px solid #B0E0E6;
+}
+
+#vrtx-trash-can-table #vrtx-trash-can-header th {
+  font-weight: bold;
+}

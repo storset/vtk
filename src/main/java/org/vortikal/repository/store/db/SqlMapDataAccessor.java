@@ -312,7 +312,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         }
         RecoverableResource deletedResource = (RecoverableResource) o;
 
-        sqlMap = getSqlMap("deleteFromTrashCan");
+        sqlMap = getSqlMap("recoverFromTrashCan");
         getSqlMapClientTemplate().delete(sqlMap, deletedResource.getId());
 
         Map<String, Object> parameters = new HashMap<String, Object>();

@@ -28,43 +28,38 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.display.trashcan;
+package org.vortikal.web.actions.trashcan;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import org.vortikal.repository.RecoverableResource;
 
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
-import org.vortikal.repository.Path;
-import org.vortikal.repository.Repository;
-import org.vortikal.security.SecurityContext;
-import org.vortikal.web.RequestContext;
+public class TrashCanObject {
 
-public class ViewTrashCanContentsController implements Controller {
+    private RecoverableResource recoverableResource;
+    private boolean selectedForRecovery;
+    private boolean recoveryNameConflicted;
 
-    private Repository repository;
-    private String viewName;
-
-    @Override
-    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-
-        String token = SecurityContext.getSecurityContext().getToken();
-        Path collectionURI = RequestContext.getRequestContext().getCurrentCollection();
-
-        // XXX Implement
-
-        return new ModelAndView(this.viewName);
+    public RecoverableResource getRecoverableResource() {
+        return recoverableResource;
     }
 
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
+    public void setRecoverableResource(RecoverableResource recoverableResource) {
+        this.recoverableResource = recoverableResource;
     }
 
-    @Required
-    public void setViewName(String viewName) {
-        this.viewName = viewName;
+    public boolean isSelectedForRecovery() {
+        return selectedForRecovery;
+    }
+
+    public void setSelectedForRecovery(boolean selectedForRecovery) {
+        this.selectedForRecovery = selectedForRecovery;
+    }
+
+    public boolean isRecoveryNameConflicted() {
+        return recoveryNameConflicted;
+    }
+
+    public void setRecoveryNameConflicted(boolean recoveryNameConflicted) {
+        this.recoveryNameConflicted = recoveryNameConflicted;
     }
 
 }

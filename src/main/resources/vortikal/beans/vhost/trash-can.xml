@@ -3,23 +3,55 @@
 "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
-  <bean id="viewTrashCanContentsService" class="org.vortikal.web.service.ServiceImpl">
+  <!-- ## Manage trash can ## -->
+  <bean id="trashCanService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
+    <property name="categories">
+      <set>
+        <value>tabMenu</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="tabOrder">
+          <value type="java.lang.Integer">390</value>
+        </entry>
+      </map>
+    </property>
     <property name="assertions">
       <list>
         <ref bean="resourceInCollection" />
+        <ref bean="collectionContainsRecoverableResources" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="mode" />
-          <property name="parameterValue" value="view-trash-can" />
+          <property name="parameterValue" value="trash-can" />
         </bean>
       </list>
     </property>
-    <property name="handler" ref="viewTrashCanContentsHandler" />
+    <property name="handler" ref="trashCanHandler" />
+    <property name="serviceNameProvider" ref="trashCanServiceNameProvider" />
   </bean>
 
-  <bean id="viewTrashCanContentsHandler" class="org.vortikal.web.display.trashcan.ViewTrashCanContentsController"
+  <bean id="collectionContainsRecoverableResources" class="org.vortikal.web.service.ResourcePropertyAssertion">
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="name" value="contains-recoverable-resources" />
+    <property name="value" value="true" />
+    <property name="checkExistenceOnly" value="false" />
+  </bean>
+
+  <bean id="trashCanServiceNameProvider" class="org.vortikal.web.service.provider.TrashCanServiceNameProvider" />
+
+  <bean id="trashCanHandler" class="org.vortikal.web.actions.trashcan.TrashCanController"
     parent="repositoryAware">
-    <property name="viewName" value="trashCan" />
+    <property name="formView" value="trashCan" />
+    <property name="successView" value="redirectToManage" />
+    <property name="commandClass" value="org.vortikal.web.actions.trashcan.TrashCanCommand" />
+    <property name="commandName" value="trashcan" />
+    <property name="validator">
+      <bean class="org.vortikal.web.actions.trashcan.TrashCanValidator">
+        <property name="repository" ref="repository" />
+      </bean>
+    </property>
   </bean>
 
   <bean id="trashCan.viewResolver" parent="system.decoratingViewResolver">
@@ -32,12 +64,21 @@
 
   <bean id="trashCanView" parent="freemarkerView">
     <property name="url" value="pages/trash-can.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/trash-can/trash-can.css</value>
+          </list>
+        </entry>
+      </map>
+    </property>
   </bean>
 
   <bean class="org.springframework.context.support.ResourceBundleMessageSource">
     <property name="basenames">
       <list>
-        <value>vortikal.i18n.trash-can</value>
+        <value>vortikal.i18n.trash-can.trash-can</value>
       </list>
     </property>
   </bean>

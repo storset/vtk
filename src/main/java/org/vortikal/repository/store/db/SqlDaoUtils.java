@@ -34,45 +34,40 @@ import java.util.List;
 
 import org.vortikal.repository.Path;
 
-
 final class SqlDaoUtils {
 
     public static String getUriSqlWildcard(Path uri, final char escape) {
         if (uri.isRoot()) {
             return "/%";
         }
-        
-        String pathString = uri.toString();
-        StringBuilder result = new StringBuilder(pathString.length() + 2);
-        for (int i = 0; i < pathString.length(); i++) {
-            char c = pathString.charAt(i);
-            if (c == escape 
-             || c == '%'
-             || c == '_') {
+        return SqlDaoUtils.getStringSqlWildcard(uri.toString(), escape);
+    }
+
+    public static String getStringSqlWildcard(String s, final char escape) {
+        StringBuilder result = new StringBuilder(s.length() + 2);
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == escape || c == '%' || c == '_') {
                 result.append(escape);
             }
-            
+
             result.append(c);
         }
         result.append("/%");
-        
+
         return result.toString();
     }
-    
 
     /**
      * This internal class is used to aggregate property values from potentially
-     * multiple rows for a single property into a single prop holder 
-     * object.
+     * multiple rows for a single property into a single prop holder object.
      * 
-     * Elements that together constitute prop holder identity are:
-     * * The resource id
-     * * The property name space URI
-     * * The property name
-     *
-     * And nothing more. A single property instance at application level
-     * can map to multiple propIDs in database because of de-normalized storage
-     * of multi-value properties.
+     * Elements that together constitute prop holder identity are: * The
+     * resource id * The property name space URI * The property name
+     * 
+     * And nothing more. A single property instance at application level can map
+     * to multiple propIDs in database because of de-normalized storage of
+     * multi-value properties.
      */
     public static class PropHolder {
         String namespaceUri = "";
@@ -82,17 +77,21 @@ final class SqlDaoUtils {
         Object propID = null;
         boolean binary = false;
         List<String> values;
-        
+
         @Override
         public boolean equals(Object object) {
-            if (object == this) return true;
+            if (object == this)
+                return true;
 
-            if (object == null || object.getClass() != this.getClass()) return false;
-            
+            if (object == null || object.getClass() != this.getClass())
+                return false;
+
             PropHolder other = (PropHolder) object;
-            if (!this.name.equals(other.name)) return false;
+            if (!this.name.equals(other.name))
+                return false;
 
-            if (this.resourceId != other.resourceId) return false;
+            if (this.resourceId != other.resourceId)
+                return false;
 
             if (this.namespaceUri != null) {
                 return this.namespaceUri.equals(other.namespaceUri);
@@ -100,7 +99,7 @@ final class SqlDaoUtils {
                 return other.namespaceUri == null;
             }
         }
-        
+
         @Override
         public int hashCode() {
             int code = this.resourceId + 7;

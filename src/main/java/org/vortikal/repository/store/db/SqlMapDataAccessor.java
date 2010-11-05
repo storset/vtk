@@ -57,6 +57,7 @@ import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.PropertySetImpl;
+import org.vortikal.repository.RecoverableResource;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.ResourceImpl;
 import org.vortikal.repository.ResourceTypeTree;
@@ -260,6 +261,9 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
     @Override
     public void markDeleted(ResourceImpl resource, ResourceImpl parent, Principal principal, final String trashID)
             throws DataAccessException {
+        
+        try {
+        
         Path resourceURI = resource.getURI();
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("uri", resourceURI.toString());
@@ -279,7 +283,66 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         parameters.put("parentID", parent.getID());
         parameters.put("principal", principal.getName());
         parameters.put("deletedTime", Calendar.getInstance().getTime());
+        parameters.put("wasInheritedAcl", resource.isInheritedAcl() ? "Y" : "N");
         sqlMap = getSqlMap("insertTrashCanEntry");
+        getSqlMapClientTemplate().update(sqlMap, parameters);
+        
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<RecoverableResource> getRecoverableResources(final int parentResourceId) throws DataAccessException {
+        String sqlMap = getSqlMap("getRecoverableResources");
+        List<RecoverableResource> recoverableResources = getSqlMapClientTemplate().queryForList(sqlMap,
+                parentResourceId);
+        if (recoverableResources != null) {
+            for (RecoverableResource dr : recoverableResources) {
+                Principal p = this.principalFactory.getPrincipal(dr.getDeletedByUid(), Type.USER);
+                dr.setDeletedBy(p);
+            }
+        }
+        return recoverableResources;
+    }
+
+    @Override
+    public void recover(Path parent, RecoverableResource recoverableResource) throws DataAccessException {
+
+        int id = recoverableResource.getId();
+        String sqlMap = getSqlMap("getRecoverableResourceById");
+        Object o = getSqlMapClientTemplate().queryForObject(sqlMap, id);
+        if (o == null) {
+            throw new DataAccessException("Requested deleted object with id " + id + " was not found");
+        }
+        RecoverableResource deletedResource = (RecoverableResource) o;
+
+        sqlMap = getSqlMap("deleteFromTrashCan");
+        getSqlMapClientTemplate().delete(sqlMap, deletedResource.getId());
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        String trashID = deletedResource.getTrashID();
+        parameters.put("trashIDWildcard", SqlDaoUtils.getStringSqlWildcard(trashID, SQL_ESCAPE_CHAR));
+        Path recoveryBaseUri = parent;
+        int uriTrimLength = 0;
+
+        String originalName = recoverableResource.getName();
+        String recoveryName = recoverableResource.getRecoverToName();
+        if (originalName.equals(recoveryName)) {
+            uriTrimLength = trashID.length() + 1;
+            if (parent.isRoot()) {
+                uriTrimLength++;
+            }
+        } else {
+            // resource is being recovered under a different name than original
+            uriTrimLength = deletedResource.getTrashUri().length() + 1;
+            recoveryBaseUri = recoveryBaseUri.extend(recoveryName);
+        }
+        parameters.put("recoveryBaseUri", recoveryBaseUri.toString());
+        parameters.put("uriTrimLength", uriTrimLength);
+
+        sqlMap = getSqlMap("recoverResource");
         getSqlMapClientTemplate().update(sqlMap, parameters);
     }
 

@@ -44,6 +44,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.RecoverableResource;
 import org.vortikal.repository.store.ContentStore;
 import org.vortikal.repository.store.DataAccessException;
 import org.vortikal.web.service.URL;
@@ -205,26 +206,44 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
 
     @Override
     public void moveToTrash(Path srcURI, final String trashIdDir) throws DataAccessException {
-        
+
         String from = getLocalFilename(srcURI);
         File src = new File(from);
 
         String trashCanDir = this.repositoryTrashCanDirectory + "/" + trashIdDir;
         File trashDir = new File(trashCanDir);
         trashDir.mkdir();
-        File dest = new File(trashCanDir + "/" + srcURI.getName());
-        
+
+        Path path = this.getEncodedPathIfConfigured(srcURI);
+        File dest = new File(trashCanDir + "/" + path.getName());
+
         if (!src.renameTo(dest)) {
             throw new DataAccessException("Unable to move " + from + " to trash can");
         }
     }
 
-    private String getLocalFilename(Path uri) {
-        Path path = uri;
-        if (this.urlEncodeFileNames) {
-            path = URL.encode(path);
+    @Override
+    public void recover(Path destURI, RecoverableResource recoverableResource) throws DataAccessException {
+        String dest = this.getLocalFilename(destURI);
+        String recover = dest + "/" + recoverableResource.getRecoverToName();
+        String trashPath = this.repositoryTrashCanDirectory + "/" + recoverableResource.getTrashUri();
+        if (!new File(trashPath).renameTo(new File(recover))) {
+            throw new DataAccessException("Unable to recover file " + recoverableResource.getTrashUri());
         }
+        File trashDir = new File(this.repositoryTrashCanDirectory + "/" + recoverableResource.getTrashID());
+        trashDir.delete();
+    }
+
+    private String getLocalFilename(Path uri) {
+        Path path = this.getEncodedPathIfConfigured(uri);
         return this.repositoryDataDirectory + path.toString();
+    }
+
+    private Path getEncodedPathIfConfigured(Path original) {
+        if (this.urlEncodeFileNames) {
+            return URL.encode(original);
+        }
+        return original;
     }
 
     @Required

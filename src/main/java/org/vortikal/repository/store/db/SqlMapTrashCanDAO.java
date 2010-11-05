@@ -28,32 +28,20 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.resourcetype.property;
+package org.vortikal.repository.store.db;
 
-import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.Property;
-import org.vortikal.repository.PropertyEvaluationContext;
-import org.vortikal.repository.resourcetype.PropertyEvaluator;
 import org.vortikal.repository.store.TrashCanDAO;
 
-public class ContainsRecoverableResourcesEvaluator implements PropertyEvaluator {
-
-    private TrashCanDAO trashCanDAO;
+public class SqlMapTrashCanDAO extends AbstractSqlMapDataAccessor implements TrashCanDAO {
 
     @Override
-    public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
-        boolean containsRecoverableResources = this.trashCanDAO.containsRecoverableResources(ctx.getOriginalResource()
-                .getID());
-        if (containsRecoverableResources) {
-            property.setBooleanValue(true);
+    public boolean containsRecoverableResources(int resourceId) {
+        String sqlMap = getSqlMap("numberOfRecoverableResources");
+        Integer count = (Integer) getSqlMapClientTemplate().queryForObject(sqlMap, resourceId);
+        if (count > 0) {
             return true;
         }
         return false;
-    }
-
-    @Required
-    public void setTrashCanDAO(TrashCanDAO trashCanDAO) {
-        this.trashCanDAO = trashCanDAO;
     }
 
 }

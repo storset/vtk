@@ -43,6 +43,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.RecoverableResource;
 import org.vortikal.repository.ResourceImpl;
 import org.vortikal.security.Principal;
 
@@ -533,12 +534,11 @@ public class Cache implements DataAccessor, InitializingBean {
 
         try {
             // Dispatch to wrapped DAO for persistence
-            // XXX Wait until all db-scripts have been run (Oracle)
-//            if (restorable) {
-//                this.wrappedAccessor.markDeleted(resource, parent, principal, trashID);
-//            } else {
-//                this.wrappedAccessor.delete(resource);
-//            }
+            if (restorable) {
+                this.wrappedAccessor.markDeleted(resource, parent, principal, trashID);
+            } else {
+                this.wrappedAccessor.delete(resource);
+            }
             this.wrappedAccessor.delete(resource);
 
             this.items.remove(uris); // Purge all affected items from cache
@@ -551,6 +551,17 @@ public class Cache implements DataAccessor, InitializingBean {
         }
     }
 
+    @Override
+    public List<RecoverableResource> getRecoverableResources(final int parentResourceId) throws DataAccessException {
+        return this.wrappedAccessor.getRecoverableResources(parentResourceId);
+    }
+
+    @Override
+    public void recover(Path parent, RecoverableResource recoverableResource) {
+        // XXX handle cache
+        this.wrappedAccessor.recover(parent, recoverableResource);
+    }
+    
     @Override
     public void deleteExpiredLocks(Date expireDate) throws DataAccessException {
         this.wrappedAccessor.deleteExpiredLocks(expireDate);

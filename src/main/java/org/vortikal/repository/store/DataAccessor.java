@@ -31,10 +31,12 @@
 package org.vortikal.repository.store;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.RecoverableResource;
 import org.vortikal.repository.ResourceImpl;
 import org.vortikal.security.Principal;
 
@@ -94,6 +96,26 @@ public interface DataAccessor {
      */
     public void markDeleted(ResourceImpl resource, ResourceImpl parent, Principal principal, final String trashID)
             throws DataAccessException;
+
+    /**
+     * 
+     * @param parentResourceId
+     *            Unique id of resource (collection) to display recoverable
+     *            resources from
+     * @return A list of deleted resources within a collection
+     * @throws DataAccessException
+     */
+    public List<RecoverableResource> getRecoverableResources(final int parentResourceId) throws DataAccessException;
+
+    /**
+     * 
+     * @param parentUri
+     *            Parent of item to recover. Needed for path reconstruction.
+     * @param recoverableResource
+     *            The resource to recover
+     * @throws DataAccessException
+     */
+    public void recover(Path parentUri, RecoverableResource recoverableResource) throws DataAccessException;
 
     /**
      * Deletes all expired locks (should be called periodically)

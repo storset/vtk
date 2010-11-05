@@ -399,6 +399,32 @@ public interface Repository {
             AuthenticationException, ResourceNotFoundException, 
             ResourceLockedException, FailedDependencyException, 
             ReadOnlyException, Exception;
+    
+    /**
+     * @param token
+     *            Security token
+     * @param uri
+     *            Uri og collection to get recoverable resources fro
+     * @return List of recoverable resources, i.e. resources that have been
+     *         marked for deletion under the parent collection given by uri
+     */
+    public List<RecoverableResource> getRecoverableResources(String token, Path uri)
+        throws ResourceNotFoundException, AuthorizationException, 
+            AuthenticationException, Exception;
+    
+    /**
+     * @param token
+     *            Security token
+     * @param parentUri
+     *            Collection containing recoverable resources
+     * 
+     * @param recoverableResources
+     *            List of recoverable resources to recover
+     */
+    public void recover(String token, Path parentUri, 
+            List<RecoverableResource> recoverableResources)
+        throws ResourceNotFoundException, AuthorizationException, 
+            AuthenticationException, Exception;
 
     /**
      * Tests whether a resource identified by this URI exists.

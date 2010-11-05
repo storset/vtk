@@ -410,28 +410,76 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         parentCollection = this.resourceHelper.contentModification(parentCollection, principal);
         this.dao.store(parentCollection);
 
-        // XXX Wait until all db-scripts have been run (Oracle)
-//        if (restorable) {
-//
-//            // Check ACL before moving to trash can,
-//            // if inherited, take snapshot of current ACL
-//            if (r.isInheritedAcl()) {
-//                r.setInheritedAcl(false);
-//                this.dao.storeACL(r);
-//            }
-//
-//            final String trashID = "trash-" + r.getID();
-//            this.dao.markDeleted(r, parentCollection, principal, trashID);
-//            this.contentStore.moveToTrash(r.getURI(), trashID);
-//        } else {
-//            this.dao.delete(r);
-//            this.contentStore.deleteResource(r.getURI());
-//        }
-        this.dao.delete(r);
-        this.contentStore.deleteResource(r.getURI());
+        if (restorable) {
+
+            // Check ACL before moving to trash can,
+            // if inherited, take snapshot of current ACL
+            if (r.isInheritedAcl()) {
+                ResourceImpl clone = (ResourceImpl) r.clone();
+                clone.setInheritedAcl(false);
+                this.dao.storeACL(clone);
+            }
+
+            final String trashID = "trash-" + r.getID();
+            this.dao.markDeleted(r, parentCollection, principal, trashID);
+            this.contentStore.moveToTrash(r.getURI(), trashID);
+
+            // XXX hmm... must evaluate parent after deleting > property
+            // "contains-recoverable-resources"
+            parentCollection = this.resourceHelper.contentModification(parentCollection, principal);
+            this.dao.store(parentCollection);
+
+        } else {
+            this.dao.delete(r);
+            this.contentStore.deleteResource(r.getURI());
+        }
 
         ResourceDeletionEvent event = new ResourceDeletionEvent(this, uri, r.getID(), r.isCollection());
         this.context.publishEvent(event);
+    }
+
+    @Override
+    public List<RecoverableResource> getRecoverableResources(String token, Path uri) throws ResourceNotFoundException,
+            AuthorizationException, AuthenticationException, IOException {
+
+        Principal principal = this.tokenManager.getPrincipal(token);
+        ResourceImpl resource = this.dao.load(uri);
+        this.authorizationManager.authorizeRead(uri, principal);
+
+        if (resource == null) {
+            throw new ResourceNotFoundException(uri);
+        }
+        return this.dao.getRecoverableResources(resource.getID());
+    }
+
+    @Override
+    public void recover(String token, Path parentUri, List<RecoverableResource> recoverableResources)
+            throws ResourceNotFoundException, AuthorizationException, AuthenticationException, IOException {
+
+        Principal principal = this.tokenManager.getPrincipal(token);
+        ResourceImpl parent = this.dao.load(parentUri);
+
+        if (parent == null) {
+            throw new ResourceNotFoundException(parentUri);
+        }
+
+        this.authorizationManager.authorizeWrite(parentUri, principal);
+
+        for (RecoverableResource rr : recoverableResources) {
+
+            this.dao.recover(parentUri, rr);
+            this.contentStore.recover(parentUri, rr);
+
+            ResourceImpl recovered = this.dao.load(parentUri.extend(rr.getRecoverToName()));
+            this.context.publishEvent(new ResourceCreationEvent(this, recovered));
+
+            parent.addChildURI(recovered.getURI());
+
+        }
+
+        parent = this.resourceHelper.contentModification(parent, principal);
+        this.dao.store(parent);
+
     }
 
     @Override
@@ -694,7 +742,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                 r.setAclInheritedFrom(PropertySetImpl.NULL_RESOURCE_ID);
 
             } else if (!original.isInheritedAcl() && resource.isInheritedAcl()) {
-                /* Switching to inheritance. The new ACL is the same as the
+                /*
+                 * Switching to inheritance. The new ACL is the same as the
                  * parent's ACL.
                  */
                 AclImpl newAcl = (AclImpl) parent.getAcl().clone();

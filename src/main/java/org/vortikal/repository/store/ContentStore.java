@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.vortikal.repository.Path;
+import org.vortikal.repository.RecoverableResource;
 
 
 /**
@@ -72,4 +73,6 @@ public interface ContentStore {
     public void move(Path srcURI, Path destURI) throws DataAccessException;
     
     public void moveToTrash(Path srcURI, final String trashIdDir) throws DataAccessException;
+    
+    public void recover(Path destURI, RecoverableResource recoverableResource) throws DataAccessException;
 }

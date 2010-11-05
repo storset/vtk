@@ -41,7 +41,9 @@
 	          </a>
 	          <span class="published-date"><@vrtx.date value=comment.time format='long' /></span>
 	          <div class="item-description">
-	            ${comment.content}
+	            <@vrtx.limit nchars=50 elide=true>
+	              ${comment.content}
+	            </@vrtx.limit>
 	          </div>
 	        </li>
 	    </#list>

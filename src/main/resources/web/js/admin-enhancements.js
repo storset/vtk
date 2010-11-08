@@ -172,8 +172,10 @@ function placeDeleteButtonInActiveTab() {
 }
 
 function placeRecoverButtonInActiveTab() {
-	if($('.recoverResource').length) {
 	  var btn = $('.recoverResource');
+	  if (btn.size() == 0) {
+          return;
+      }
       btn.hide();
       $("#main .activeTab").prepend('<ul class="listMenu tabMenu2"><li class="recoverResourceService"><a id="recoverResourceService" href="javascript:void(0);">' + btn.attr('value') + '</a></li></ul>');
       $('#recoverResourceService').click(function() {
@@ -189,12 +191,13 @@ function placeRecoverButtonInActiveTab() {
     	  
     	return false;  
       });
-	}
 }
 
 function placeDeletePermanentButtonInActiveTab() {
-	if($('.deleteResourcePermanent').length) {
       var btn = $('.deleteResourcePermanent');
+      if (btn.size() == 0) {
+          return;
+      }
       btn.hide();
       $("#main .activeTab .tabMenu2").append('<li class="deleteResourcePermanentService"><a id="deleteResourcePermanentService" href="javascript:void(0);">' + btn.attr('value') + '</a></li>');
       $('#deleteResourcePermanentService').click(function() {
@@ -223,8 +226,7 @@ function placeDeletePermanentButtonInActiveTab() {
             }
         }
         return false;
-      });
-	}
+     });
 }
 
 function unlockButtonAsLink() {

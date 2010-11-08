@@ -75,6 +75,6 @@ public class StatusAwareResponseWrapper extends HttpServletResponseWrapper imple
         this.status = HttpServletResponse.SC_MOVED_TEMPORARILY;
         super.sendRedirect(location);
     }
-    
+
 }
 

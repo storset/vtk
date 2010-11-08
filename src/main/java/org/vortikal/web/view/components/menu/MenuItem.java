@@ -117,7 +117,7 @@ public class MenuItem<T> {
     }
 
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public boolean equals(Object o) {
         if (!(o instanceof MenuItem)) return false;
         MenuItem other = (MenuItem) o;

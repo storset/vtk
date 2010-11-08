@@ -191,7 +191,7 @@ resourcetype person {
         [if img != null]
           [def pixel-width resource-prop(img-uri, "pixelWidth")]
           [if pixel-width != null]
-            [def style concat("width:", concat(pixel-width, "px"))]
+            [def style concat("width:", pixel-width, "px")]
             [def person-firstname resource-prop(".", "firstName")]
             [def person-surname resource-prop(".", "surname")]
             [if person-firstname != null || person-surname != null]

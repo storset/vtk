@@ -38,7 +38,7 @@ resourcetype structured-document {
 	  	[def img-author resource-prop(img-uri, "authorName")]
   	  [endif]
   	  [if pixel-width != null]
-	  	[def style concat("width:", concat(pixel-width, "px"))]
+	  	[def style concat("width:", pixel-width, "px")]
 	  [endif]
 	  
 	  [if img-uri != null]

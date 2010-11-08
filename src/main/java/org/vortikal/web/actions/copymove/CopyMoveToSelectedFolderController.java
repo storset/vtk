@@ -31,10 +31,8 @@
 package org.vortikal.web.actions.copymove;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -92,10 +90,8 @@ public class CopyMoveToSelectedFolderController implements Controller {
         this.repository = newRepository;
     }
 
-    @SuppressWarnings("unchecked")
+    @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-
-        Map model = new HashMap();
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
@@ -106,11 +102,11 @@ public class CopyMoveToSelectedFolderController implements Controller {
                 COPYMOVE_SESSION_ATTRIBUTE);
 
         if (sessionBean == null) {
-            return new ModelAndView(this.viewName, model);
+            return new ModelAndView(this.viewName);
         }
 
         if (request.getParameter("cancel-action") != null) {
-            return new ModelAndView(this.viewName, model);
+            return new ModelAndView(this.viewName);
         }
 
         long before = System.currentTimeMillis();
@@ -215,7 +211,7 @@ public class CopyMoveToSelectedFolderController implements Controller {
             logger.debug("Milliseconds spent on this copy/move operation: " + total);
         }
 
-        return new ModelAndView(this.viewName, model);
+        return new ModelAndView(this.viewName);
     }
 
     protected Path appendCopySuffix(Path newUri, int number) {

@@ -32,15 +32,15 @@ package org.vortikal.web.actions.copymove;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
+import org.vortikal.repository.Path;
 import org.vortikal.web.Message;
 import org.vortikal.web.RequestContext;
 
@@ -61,64 +61,68 @@ import org.vortikal.web.RequestContext;
  * <p>
  * Model data published:
  * <ul>
- * <li><code>infoMessage</code>: a message that is presented
- * under the breadcrumb component</li>
+ * <li><code>infoMessage</code>: a message that is presented under the
+ * breadcrumb component</li>
  * </ul>
  */
 
 public class CopyMoveController implements Controller {
 
-	private static final String COPYMOVE_SESSION_ATTRIBUTE = "copymovesession";
-	private String viewName = "DEFAULT_VIEW_NAME";    
-	
-	public void setViewName(String viewName) {
-		this.viewName = viewName;
-	}
-	
-    @SuppressWarnings("unchecked")
-    public ModelAndView handleRequest(HttpServletRequest request,
-    		HttpServletResponse response) throws Exception {
-	    	
-	    	Map model = new HashMap();
-	    	
-	    	CopyMoveSessionBean sessionBean = (CopyMoveSessionBean) request.getSession(true).getAttribute(COPYMOVE_SESSION_ATTRIBUTE);
-	    	
-	    	/* Deleting session if you get a POST-request (because then
-	    	 * it is a new request for copy/move) */
-	    	
-	    	if (sessionBean != null && request.getMethod().equals("POST")){
-	    		request.getSession(true).removeAttribute(COPYMOVE_SESSION_ATTRIBUTE);
-	    		sessionBean = null;
-	    	}
-	    	
-	    	if (sessionBean == null) {
-	    		sessionBean = new CopyMoveSessionBean();
-	    		List<String> filesToBeCopied = new ArrayList<String>();
-	    			    		
-	    		/* Walk through the request-parameters to find the resources
-	    		 * selected for copy/move and store them in session */
-	    		
-	    		Enumeration e = request.getParameterNames();
-	    		
-	    		while (e.hasMoreElements()) {
-	    			String name = (String) e.nextElement();
-	    			
-	    			// Need to replace this with a better check...
-	    			if (name.startsWith("/")) {
-	    				filesToBeCopied.add(name);
-	    			}
-	    		}        
-	    		String action = request.getParameter("action");
-	    		sessionBean.setAction(action);
-	    		sessionBean.setFilesToBeCopied(filesToBeCopied);
-	    		request.getSession(true).setAttribute(COPYMOVE_SESSION_ATTRIBUTE, sessionBean);
-	    	}		
-	    	
-	    	RequestContext requestContext = RequestContext.getRequestContext();
-	    	String msgCode = "copyMove." + sessionBean.getAction() + ".header";
-	    	requestContext.addInfoMessage(new Message(msgCode));
-	    	return new ModelAndView(this.viewName, model);
-    }
-    
-}
+    private static final String COPYMOVE_SESSION_ATTRIBUTE = "copymovesession";
+    private String viewName;
 
+    @SuppressWarnings("unchecked")
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        CopyMoveSessionBean sessionBean = (CopyMoveSessionBean) request.getSession(true).getAttribute(
+                COPYMOVE_SESSION_ATTRIBUTE);
+
+        /*
+         * Deleting session if you get a POST-request (because then it is a new
+         * request for copy/move)
+         */
+        if (sessionBean != null && request.getMethod().equals("POST")) {
+            request.getSession(true).removeAttribute(COPYMOVE_SESSION_ATTRIBUTE);
+            sessionBean = null;
+        }
+
+        if (sessionBean == null) {
+            sessionBean = new CopyMoveSessionBean();
+            List<String> filesToBeCopied = new ArrayList<String>();
+
+            /*
+             * Walk through the request-parameters to find the resources
+             * selected for copy/move and store them in session
+             */
+
+            Enumeration<Object> e = request.getParameterNames();
+
+            while (e.hasMoreElements()) {
+                String name = (String) e.nextElement();
+
+                try {
+                    Path.fromString(name);
+                    filesToBeCopied.add(name);
+                } catch (IllegalArgumentException iae) {
+                    // Not a path, ignore it, try next one
+                    continue;
+                }
+            }
+            String action = request.getParameter("action");
+            sessionBean.setAction(action);
+            sessionBean.setFilesToBeCopied(filesToBeCopied);
+            request.getSession(true).setAttribute(COPYMOVE_SESSION_ATTRIBUTE, sessionBean);
+        }
+
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String msgCode = "copyMove." + sessionBean.getAction() + ".header";
+        requestContext.addInfoMessage(new Message(msgCode));
+        return new ModelAndView(this.viewName);
+    }
+
+    @Required
+    public void setViewName(String viewName) {
+        this.viewName = viewName;
+    }
+
+}

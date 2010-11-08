@@ -34,11 +34,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
@@ -48,10 +52,13 @@ import org.vortikal.repository.RecoverableResource;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.web.Message;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
 public class TrashCanController extends SimpleFormController {
+
+    private static Log logger = LogFactory.getLog(TrashCanController.class);
 
     private Repository repository;
 
@@ -83,39 +90,103 @@ public class TrashCanController extends SimpleFormController {
     }
 
     @Override
-    protected ModelAndView processFormSubmission(HttpServletRequest req, HttpServletResponse resp, Object command,
-            BindException errors) throws Exception {
-        if (errors.hasErrors()) {
-            // XXX Handle
-        }
-        return super.processFormSubmission(req, resp, command, errors);
-    }
-
-    @Override
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
             BindException errors) throws Exception {
 
         TrashCanCommand trashCanCommand = (TrashCanCommand) command;
-        if (!trashCanCommand.hasSelectedObjectsForRecovery()) {
-            return new ModelAndView(this.getFormView());
+        if (!trashCanCommand.hasSelectedObjectsForRecovery() || !trashCanCommand.isValidAction()) {
+            return this.showNewForm(request, response);
         }
 
         String token = SecurityContext.getSecurityContext().getToken();
         Path parentURI = trashCanCommand.getParentResource().getURI();
-        List<RecoverableResource> recoverableResources = trashCanCommand.getSelectedResourcesToRecover(false);
+        List<RecoverableResource> selectedResources = trashCanCommand.getSelectedResources();
 
-        List<RecoverableResource> unRecoverableResources = trashCanCommand.getSelectedResourcesToRecover(true);
-        // XXX Handle this as in copy/move -> ignore these resources and notify
-        // user of failed recovery due to naming conflict
+        if (trashCanCommand.getRecoverAction() != null) {
 
-        this.repository.recover(token, parentURI, recoverableResources);
+            RecoveryObject recoveryObject = this.getRecoverableResources(parentURI, selectedResources);
 
-        return new ModelAndView(this.getSuccessView());
+            // Check for conflicted resources, notify user of failed recovery
+            List<RecoverableResource> conflicted = recoveryObject.getConflicted();
+            if (conflicted != null && conflicted.size() > 0) {
+                String msgKey = "trash-can.recovery.conflict.";
+                msgKey = conflicted.size() == 1 ? msgKey + "single" : msgKey + "multiple";
+                Message msg = new Message(msgKey);
+
+                for (RecoverableResource rr : conflicted) {
+                    msg.addMessage(rr.getName());
+                }
+                RequestContext.getRequestContext().addErrorMessage(msg);
+            }
+
+            this.repository.recover(token, parentURI, recoveryObject.getRecoverable());
+            return new ModelAndView(this.getSuccessView());
+
+        } else if (trashCanCommand.getDeletePermanentAction() != null) {
+
+            this.repository.deleteRecoverable(token, parentURI, selectedResources);
+            return this.showNewForm(request, response);
+
+        } else {
+            throw new IllegalArgumentException("Invalid action, cannot process");
+        }
+    }
+
+    private RecoveryObject getRecoverableResources(Path parentURI, List<RecoverableResource> selectedResources) {
+
+        List<String> duplicateConflicted = new ArrayList<String>();
+        Set<String> duplicates = new HashSet<String>();
+        for (RecoverableResource rr : selectedResources) {
+            if (!duplicates.add(rr.getName())) {
+                duplicateConflicted.add(rr.getName());
+            }
+        }
+
+        List<RecoverableResource> recoverable = new ArrayList<RecoverableResource>();
+        List<RecoverableResource> conflicted = new ArrayList<RecoverableResource>();
+        for (RecoverableResource rr : selectedResources) {
+            Path recoveryPath = parentURI.extend(rr.getName());
+            if (!this.exists(recoveryPath) && !duplicateConflicted.contains(rr.getName())) {
+                recoverable.add(rr);
+            } else {
+                conflicted.add(rr);
+            }
+        }
+        return new RecoveryObject(recoverable, conflicted);
+    }
+
+    private boolean exists(Path path) {
+        try {
+            return this.repository.exists(null, path);
+        } catch (Exception e) {
+            logger.warn("An error occured while checking resource existense for " + path, e);
+        }
+        return false;
     }
 
     @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
+    }
+
+    class RecoveryObject {
+
+        List<RecoverableResource> recoverable;
+        List<RecoverableResource> conflicted;
+
+        protected RecoveryObject(List<RecoverableResource> recoverable, List<RecoverableResource> conflicted) {
+            this.recoverable = recoverable;
+            this.conflicted = conflicted;
+        }
+
+        protected List<RecoverableResource> getRecoverable() {
+            return recoverable;
+        }
+
+        protected List<RecoverableResource> getConflicted() {
+            return conflicted;
+        }
+
     }
 
     class TrashCanObjectComparator implements Comparator<TrashCanObject> {

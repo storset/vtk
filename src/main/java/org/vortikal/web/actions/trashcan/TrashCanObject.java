@@ -36,7 +36,6 @@ public class TrashCanObject {
 
     private RecoverableResource recoverableResource;
     private boolean selectedForRecovery;
-    private boolean recoveryNameConflicted;
 
     public RecoverableResource getRecoverableResource() {
         return recoverableResource;
@@ -52,14 +51,6 @@ public class TrashCanObject {
 
     public void setSelectedForRecovery(boolean selectedForRecovery) {
         this.selectedForRecovery = selectedForRecovery;
-    }
-
-    public boolean isRecoveryNameConflicted() {
-        return recoveryNameConflicted;
-    }
-
-    public void setRecoveryNameConflicted(boolean recoveryNameConflicted) {
-        this.recoveryNameConflicted = recoveryNameConflicted;
     }
 
 }

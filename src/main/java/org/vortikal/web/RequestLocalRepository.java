@@ -252,6 +252,12 @@ public class RequestLocalRepository implements Repository {
     }
 
     @Override
+    public void deleteRecoverable(String token, Path parentUri, List<RecoverableResource> recoverableResources)
+            throws Exception {
+        this.repository.deleteRecoverable(token, parentUri, recoverableResources);
+    }
+
+    @Override
     public boolean exists(String token, Path uri) throws Exception {
 
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();

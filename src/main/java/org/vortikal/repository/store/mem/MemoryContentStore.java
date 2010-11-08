@@ -312,4 +312,9 @@ public class MemoryContentStore implements ContentStore {
         throw new UnsupportedOperationException("Not implemented...");
     }
 
+    @Override
+    public void deleteRecoverable(RecoverableResource recoverableResource) throws DataAccessException {
+        throw new UnsupportedOperationException("Not implemented...");
+    }
+
 }

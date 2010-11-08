@@ -47,11 +47,6 @@
     <property name="successView" value="redirectToManage" />
     <property name="commandClass" value="org.vortikal.web.actions.trashcan.TrashCanCommand" />
     <property name="commandName" value="trashcan" />
-    <property name="validator">
-      <bean class="org.vortikal.web.actions.trashcan.TrashCanValidator">
-        <property name="repository" ref="repository" />
-      </bean>
-    </property>
   </bean>
 
   <bean id="trashCan.viewResolver" parent="system.decoratingViewResolver">

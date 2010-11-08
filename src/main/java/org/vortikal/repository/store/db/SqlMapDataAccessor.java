@@ -329,6 +329,16 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         getSqlMapClientTemplate().update(sqlMap, parameters);
     }
 
+    @Override
+    public void deleteRecoverable(RecoverableResource recoverableResource) throws DataAccessException {
+        String sqlMap = getSqlMap("deletePermanentlyMarkDeleted");
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        String trashUri = recoverableResource.getTrashUri();
+        parameters.put("trashCanURI", trashUri);
+        parameters.put("trashCanURIWildCard", SqlDaoUtils.getStringSqlWildcard(trashUri, SQL_ESCAPE_CHAR));
+        getSqlMapClientTemplate().delete(sqlMap, parameters);
+    }
+
     public ResourceImpl[] loadChildren(ResourceImpl parent) {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(parent.getURI(), SQL_ESCAPE_CHAR));

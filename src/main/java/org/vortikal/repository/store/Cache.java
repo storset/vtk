@@ -562,7 +562,12 @@ public class Cache implements DataAccessor, InitializingBean {
         // XXX handle cache
         this.wrappedAccessor.recover(parent, recoverableResource);
     }
-    
+
+    @Override
+    public void deleteRecoverable(RecoverableResource recoverableResource) throws DataAccessException {
+        this.wrappedAccessor.deleteRecoverable(recoverableResource);
+    }
+
     @Override
     public void deleteExpiredLocks(Date expireDate) throws DataAccessException {
         this.wrappedAccessor.deleteExpiredLocks(expireDate);

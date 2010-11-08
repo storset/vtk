@@ -31,19 +31,6 @@
 <@spring.bind "trashcan.submitURL" />
 <form class="trashcan" action="${spring.status.value?html}" method="post">
 
-  <#-- Validation -->
-  <@spring.bind "trashcan.trashCanObjects" />
-  <#assign recoverableResources = spring.status.value />
-  <#if spring.status.errorMessages?size &gt; 0>
-  <div class="errorContainer">
-    <ul class="errors">
-    <#list spring.status.errorMessages as error> 
-      <li>${error}</li> 
-    </#list>
-    </ul>
-  </div>
-  </#if>
-
   <table id="vrtx-trash-can-table" class="directoryListing">
     <tr id="vrtx-trash-can-header" class="directoryListingHeader">
       <th id="vrtx-trash-can-name"><@vrtx.msg code="trash-can.name" default="Name" /></th>
@@ -54,6 +41,7 @@
       <th id="vrtx-trash-can-deleted-time"><@vrtx.msg code="trash-can.deletedTime" default="Deleted time" /></th>
     </tr>
 
+    <@spring.bind "trashcan.trashCanObjects" />
     <#list spring.status.value as tco>
     <#if (tco_index % 2 == 0)>
       <tr class="odd ${tco.recoverableResource.resourceType}">
@@ -75,8 +63,10 @@
     </#list>
 
   </table>
-  <input class="recoverResource" type="submit" name="recoverResourceAction"
+  <input class="recoverResource" type="submit" name="recoverAction"
                value="<@vrtx.msg code="trash-can.recover" default="Recover"/>"/>
+  <input class="deleteResourcePermanent" type="submit" name="deletePermanentAction"
+               value="<@vrtx.msg code="trash-can.delete-permanent" default="Delete permanent"/>"/>
 </form>
 <#else>
   <@vrtx.msg code="trash-can.empty" default="The trash can contains no garbage." />

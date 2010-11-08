@@ -75,4 +75,6 @@ public interface ContentStore {
     public void moveToTrash(Path srcURI, final String trashIdDir) throws DataAccessException;
     
     public void recover(Path destURI, RecoverableResource recoverableResource) throws DataAccessException;
+    
+    public void deleteRecoverable(RecoverableResource recoverableResource) throws DataAccessException;
 }

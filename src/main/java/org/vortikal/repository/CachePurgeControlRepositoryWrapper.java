@@ -150,7 +150,7 @@ public class CachePurgeControlRepositoryWrapper implements Repository {
                 logPurge("createCollection", parent);
             }
             this.cache.purgeFromCache(parent); // Purge parent from cache after
-                                               // transaction has been comitted.
+            // transaction has been comitted.
         }
 
         return resource;
@@ -206,6 +206,12 @@ public class CachePurgeControlRepositoryWrapper implements Repository {
     public void recover(String token, Path parentUri, List<RecoverableResource> recoverableResources)
             throws ResourceNotFoundException, AuthorizationException, AuthenticationException, Exception {
         this.wrappedRepository.recover(token, parentUri, recoverableResources);
+    }
+
+    @Override
+    public void deleteRecoverable(String token, Path parentUri, List<RecoverableResource> recoverableResources)
+            throws Exception {
+        this.wrappedRepository.deleteRecoverable(token, parentUri, recoverableResources);
     }
 
     @Override

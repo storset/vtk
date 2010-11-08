@@ -405,11 +405,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         // Store parent collection first to avoid dead-lock between Cache
         // locking and database inter-transaction synchronization (which leads
         // to "11-iterations"-problem)
-        ResourceImpl parentCollection = this.dao.load(uri.getParent());
-        parentCollection.removeChildURI(uri);
-        parentCollection = this.resourceHelper.contentModification(parentCollection, principal);
-        this.dao.store(parentCollection);
-
+//        ResourceImpl parentCollection = this.dao.load(uri.getParent());
+//        parentCollection.removeChildURI(uri);
+//        parentCollection = this.resourceHelper.contentModification(parentCollection, principal);
+//        this.dao.store(parentCollection);
+//
 //        if (restorable) {
 //
 //            // Check ACL before moving to trash can,
@@ -483,6 +483,28 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         parent = this.resourceHelper.contentModification(parent, principal);
         this.dao.store(parent);
 
+    }
+
+    @Override
+    public void deleteRecoverable(String token, Path parentUri, List<RecoverableResource> recoverableResources)
+            throws Exception {
+
+        Principal principal = this.tokenManager.getPrincipal(token);
+        ResourceImpl parent = this.dao.load(parentUri);
+
+        this.authorizationManager.authorizeWrite(parentUri, principal);
+
+        if (parent == null) {
+            throw new ResourceNotFoundException(parentUri);
+        }
+
+        for (RecoverableResource rr : recoverableResources) {
+            this.dao.deleteRecoverable(rr);
+            this.contentStore.deleteRecoverable(rr);
+        }
+
+        parent = this.resourceHelper.contentModification(parent, principal);
+        this.dao.store(parent);
     }
 
     @Override

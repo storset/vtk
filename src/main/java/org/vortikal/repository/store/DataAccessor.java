@@ -118,6 +118,14 @@ public interface DataAccessor {
     public void recover(Path parentUri, RecoverableResource recoverableResource) throws DataAccessException;
 
     /**
+     * XXX comment
+     * 
+     * @param recoverableResource
+     * @throws DataAccessException
+     */
+    public void deleteRecoverable(RecoverableResource recoverableResource) throws DataAccessException;
+
+    /**
      * Deletes all expired locks (should be called periodically)
      */
     public void deleteExpiredLocks(Date expireDate) throws DataAccessException;

@@ -39,8 +39,27 @@ import org.vortikal.web.actions.UpdateCancelCommand;
 
 public class TrashCanCommand extends UpdateCancelCommand {
 
+    private String recoverAction;
+    private String deletePermanentAction;
+
     private Resource parentResource;
     private List<TrashCanObject> trashCanObjects = new ArrayList<TrashCanObject>();
+
+    public String getRecoverAction() {
+        return recoverAction;
+    }
+
+    public void setRecoverAction(String recoverAction) {
+        this.recoverAction = recoverAction;
+    }
+
+    public String getDeletePermanentAction() {
+        return deletePermanentAction;
+    }
+
+    public void setDeletePermanentAction(String deletePermanentAction) {
+        this.deletePermanentAction = deletePermanentAction;
+    }
 
     public List<TrashCanObject> getTrashCanObjects() {
         return trashCanObjects;
@@ -71,28 +90,23 @@ public class TrashCanCommand extends UpdateCancelCommand {
         return false;
     }
 
-    /**
-     * 
-     * @param conflictedUnrecoverable
-     *            Determines the contents of the list to return. When true, the
-     *            list will contain elements that have been selected for
-     *            recovery, but can't be recovered because of naming conflict
-     *            with existing resources. When false, the opposite is returned,
-     *            i.e. a list of resources that have no apparent conflict and
-     *            can be recovered.
-     * @return List of recoverable resources the user selected to attempt
-     *         recovery for.
-     */
-    public List<RecoverableResource> getSelectedResourcesToRecover(boolean conflictedUnrecoverable) {
+    public List<RecoverableResource> getSelectedResources() {
         List<RecoverableResource> result = new ArrayList<RecoverableResource>();
         if (this.trashCanObjects != null && this.trashCanObjects.size() > 0) {
             for (TrashCanObject tco : this.trashCanObjects) {
-                if (tco.isSelectedForRecovery() && (tco.isRecoveryNameConflicted() == conflictedUnrecoverable)) {
+                if (tco.isSelectedForRecovery()) {
                     result.add(tco.getRecoverableResource());
                 }
             }
         }
         return result;
+    }
+
+    public boolean isValidAction() {
+        if (this.getRecoverAction() == null && this.getDeletePermanentAction() == null) {
+            return false;
+        }
+        return true;
     }
 
 }

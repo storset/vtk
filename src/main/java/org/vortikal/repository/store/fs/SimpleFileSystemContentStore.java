@@ -234,6 +234,12 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
         trashDir.delete();
     }
 
+    @Override
+    public void deleteRecoverable(RecoverableResource recoverableResource) throws DataAccessException {
+        String filePath = this.repositoryTrashCanDirectory + "/" + recoverableResource.getTrashID();
+        this.deleteFiles(new File(filePath));
+    }
+
     private String getLocalFilename(Path uri) {
         Path path = this.getEncodedPathIfConfigured(uri);
         return this.repositoryDataDirectory + path.toString();

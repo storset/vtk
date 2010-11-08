@@ -31,7 +31,6 @@
 package org.vortikal.web.actions.copymove;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -195,8 +194,8 @@ public class CopyMoveToSelectedFolderController implements Controller {
 
             Message msg = new Message(msgCode);
 
-            for (Iterator<Path> j = filesFailed.iterator(); j.hasNext();) {
-                msg.addMessage(j.next().getName().toString());
+            for (Path p : filesFailed) {
+                msg.addMessage(p.getName());
             }
             requestContext.addErrorMessage(msg);
 

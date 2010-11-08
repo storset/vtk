@@ -17,8 +17,8 @@
     <url>http://www.usit.uio.no/it/vortex</url>
   </organization>
   <issueManagement>
-    <system>Jira</system>
-    <url>https://www.usit.uio.no/jira/browse/VTK</url>
+    <system>JIRA</system>
+    <url>https://utv.uio.no/jira/browse/VTK</url>
   </issueManagement>
   <developers>
     <developer>

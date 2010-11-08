@@ -171,6 +171,61 @@ function placeDeleteButtonInActiveTab() {
     });
 }
 
+function placeRecoverButtonInActiveTab() {
+	if($('.recoverResource').length) {
+	  var btn = $('.recoverResource');
+      btn.hide();
+      $("#main .activeTab").prepend('<ul class="listMenu tabMenu2"><li class="recoverResourceService"><a id="recoverResourceService" href="javascript:void(0);">' + btn.attr('value') + '</a></li></ul>');
+      $('#recoverResourceService').click(function() {
+    	var boxes = $('form.trashcan input[type=checkbox]:checked');
+    	//TODO i18n from somewhere
+        var recoverUncheckedMessage = 'You must check at least one element to recover';
+    	
+    	if (boxes.size() == 0) {
+            alert(recoverUncheckedMessage); //TODO i18n from somewhere
+        } else {
+        	$('.recoverResource').click();
+        }
+    	  
+    	return false;  
+      });
+	}
+}
+
+function placeDeletePermanentButtonInActiveTab() {
+	if($('.deleteResourcePermanent').length) {
+      var btn = $('.deleteResourcePermanent');
+      btn.hide();
+      $("#main .activeTab .tabMenu2").append('<li class="deleteResourcePermanentService"><a id="deleteResourcePermanentService" href="javascript:void(0);">' + btn.attr('value') + '</a></li>');
+      $('#deleteResourcePermanentService').click(function() {
+        var boxes = $('form.trashcan input[type=checkbox]:checked');
+        //TODO i18n from somewhere
+        var deletePermanentlyUncheckedMessage = 'You must check at least one element to delete permanently'; 
+        
+        if (boxes.size() == 0) {
+        	alert(deletePermanentlyUncheckedMessage);
+        } else {     
+        	//TODO i18n from somewhere
+        	var confirmDeletePermanently = 'Are you sure you want to delete:';   
+        	var confirmDeletePermanentlyAnd = 'and';
+        	var confirmDeletePermanentlyMore = 'more';
+        	
+            var list = new String("");
+            var boxesSize = boxes.size();
+            for(i = 0; i < boxesSize && i < 10;i++){
+                list += boxes[i].title + '\n';
+            }
+            if(boxes.size() > 10){
+                list += "... " + confirmDeletePermanentlyAnd + " " + (boxes.size() - 10) + " " + confirmDeletePermanentlyMore;
+            }
+            if(confirm(confirmDeletePermanently.replace("(1)",boxes.size()) + '\n\n' +  list)){
+                $('.deleteResourcePermanent').click();
+            }
+        }
+        return false;
+      });
+	}
+}
 
 function unlockButtonAsLink() {
     var btn = $('#vrtx-unlock-resource-form\\.submit');
@@ -255,6 +310,8 @@ $(document).ready(copyMoveButtonsAsLinks);
 $(document).ready(placeMoveButtonInActiveTab);
 $(document).ready(placeCopyButtonInActiveTab);
 $(document).ready(placeDeleteButtonInActiveTab);
+$(document).ready(placeRecoverButtonInActiveTab);
+$(document).ready(placeDeletePermanentButtonInActiveTab);
 $(document).ready(unlockButtonAsLink);
 $(document).ready(toggleAclInheritanceButtonAsLink);
 $(document).ready(takeOwnershipButtonAsLink);

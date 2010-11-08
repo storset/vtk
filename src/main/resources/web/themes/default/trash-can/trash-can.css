@@ -9,3 +9,19 @@ body#vrtx-trash-can #contents form {
 #vrtx-trash-can-table td.checkbox {
   text-align: center;
 }
+
+ul.tabMenu2 li.recoverResourceService a,
+ul.tabMenu2 li.deleteResourcePermanentService a {
+  padding-left: 22px;
+}
+
+ul.tabMenu2 li.recoverResourceService {
+  background: transparent url(../icons/nyfil.gif) no-repeat 0px -4px;
+  padding-top: 4px;
+}
+
+ul.tabMenu2 li.deleteResourcePermanentService {
+  background: transparent url(../icons/delete.png) no-repeat 0px -2px;
+  padding-bottom: 1px;
+  padding-top: 4px;
+}

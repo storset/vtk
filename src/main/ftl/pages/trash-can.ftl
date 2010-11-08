@@ -55,7 +55,7 @@
         <#if spring.status.value?string = 'true' >
           <#assign checked = "checked" />
         </#if>
-        <input type="checkbox" name="${spring.status.expression}" value="true" ${checked} />
+        <input type="checkbox" name="${spring.status.expression}" title="${tco.recoverableResource.name?html}" value="true" ${checked} />
         </td>
         <td class="vrtx-trash-can-deleted-by"><@vrtx.displayUserPrincipal principal=tco.recoverableResource.deletedBy /></td>
         <td class="vrtx-trash-can-deleted-time"><@printDeletedTime tco.recoverableResource.deletedTime /></td>

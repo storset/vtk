@@ -30,11 +30,7 @@ resourcetype structured-article : structured-document {
       [if authors != null && authors != ""]
         <span class="vrtx-authors"><span class="vrtx-authors-prefix">[localized "by-line"]</span>
         [list authors author]
-          [if _first]
-          [else]
-            [if _last] [localized "authorsAnd"] [else], [endif]
-          [endif]
-        [val author]
+          [val author][if ! _last],[endif]
         [endlist]
         </span>
       [endif]
@@ -132,7 +128,6 @@ resourcetype structured-article : structured-document {
     hideAdditionalContent : (en : "Hide right-column", no : "Skjul høyrekolonne", nn : "Skjul høyrekolonne"),
     related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold"),
     relatedContent : (en : "Related content (default as right-column)", no : "Relatert innhold (default som høyrekolonne)", nn : "Relatert innhold (default som høyrekolonne)"),
-    header : (en : "Edit article", no : "Rediger artikkel", nn : "Rediger artikkel"),
-    authorsAnd : (en : "and", no : "og", nn : "og")
+    header : (en : "Edit article", no : "Rediger artikkel", nn : "Rediger artikkel")
   }
 }

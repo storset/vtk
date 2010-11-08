@@ -149,6 +149,12 @@ resourcetype frontpage {
               [def cssClasses concat(cssClasses, "white-box")]
             [endif]
             
+            [if title != null && title != ""]
+            [else]
+              [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
+              [def cssClasses concat(cssClasses, "vrtx-header-false")]
+            [endif]
+            
             [if (urlText = "" || urlText = null) && (content = "" || content = null) 
              && (picture = "" || picture = null) && (title != null && title != "")]
               [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]

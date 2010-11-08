@@ -97,27 +97,6 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        Map<String, DirectiveNodeFactory> directiveHandlers = new HashMap<String, DirectiveNodeFactory>();
-        IfNodeFactory ifNodeFactory = new IfNodeFactory();
-        ifNodeFactory.setFunctions(this.functions);
-        directiveHandlers.put("if", ifNodeFactory);
-        directiveHandlers.put("strip", new StripNodeFactory());
-
-        ValNodeFactory val = new ValNodeFactory();
-        //val.addValueFormatHandler(PropertyImpl.class, new PropertyValueFormatHandler(this.valueFormatterRegistry));
-        //val.addValueFormatHandler(Value.class, new PropertyValueFormatHandler(this.valueFormatterRegistry));
-        //val.addValueFormatHandler(Value[].class, new PropertyValueFormatHandler(this.valueFormatterRegistry));
-        val.setFunctions(this.functions);
-        directiveHandlers.put("val", val);
-
-        ListNodeFactory list = new ListNodeFactory();
-        list.setFunctions(this.functions);
-        directiveHandlers.put("list", list);
-        
-        //directiveHandlers.put("resource-props", new ResourcePropsNodeFactory(this.repository));
-
-        DefineNodeFactory def = new DefineNodeFactory();
-
         Set<Function> functions = new HashSet<Function>();
         functions.addAll(this.functions);
         //functions.add(new RequestURLFunction(new Symbol("request-url")));
@@ -128,14 +107,27 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
         functions.add(new ResourceAspectFunction(new Symbol("resource-aspect"), this.aspectsPropdef, this.fieldConfig));
         functions.add(new ResourcePropHandler(new Symbol("resource-prop"), this.repository));
         functions.add(new JSONAttributeHandler(new Symbol("json-attr")));
-        def.setFunctions(functions);
-        directiveHandlers.put("def", def);
+        this.functions = functions;
         
+        Map<String, DirectiveNodeFactory> directiveHandlers = new HashMap<String, DirectiveNodeFactory>();
+        IfNodeFactory ifNodeFactory = new IfNodeFactory();
+        ifNodeFactory.setFunctions(this.functions);
+        directiveHandlers.put("if", ifNodeFactory);
+        directiveHandlers.put("strip", new StripNodeFactory());
+
+        ValNodeFactory val = new ValNodeFactory();
+        val.setFunctions(this.functions);
+        directiveHandlers.put("val", val);
+
+        ListNodeFactory list = new ListNodeFactory();
+        list.setFunctions(this.functions);
+        directiveHandlers.put("list", list);
+
+        DefineNodeFactory def = new DefineNodeFactory();
+        def.setFunctions(this.functions);
+        directiveHandlers.put("def", def);
         directiveHandlers.put("capture", new CaptureNodeFactory());
-
-        //directiveHandlers.put("localized", new LocalizationNodeFactory(this.resourceModelKey));
         directiveHandlers.put("call", new ComponentInvokerNodeFactory(new DynamicDecoratorTemplate.ComponentSupport()));
-
         this.directiveHandlers = directiveHandlers;
     }
     

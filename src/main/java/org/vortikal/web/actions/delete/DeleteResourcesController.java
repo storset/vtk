@@ -9,7 +9,9 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.web.RequestContext;
 
 public class DeleteResourcesController implements Controller {
 
@@ -20,8 +22,9 @@ public class DeleteResourcesController implements Controller {
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
+        String token = SecurityContext.getSecurityContext().getToken();
 
+        boolean recoverable = true;
         Enumeration e = request.getParameterNames();
         while (e.hasMoreElements()) {
             String name = (String) e.nextElement();
@@ -34,11 +37,18 @@ public class DeleteResourcesController implements Controller {
                 continue;
             }
 
-            String token = securityContext.getToken();
             if (this.repository.exists(token, uri)) {
-                repository.delete(token, uri, true);
+                repository.delete(token, uri, recoverable);
             }
 
+        }
+
+        if (recoverable) {
+            // If recoverable, must evaluate parent after deleting > property
+            // "contains-recoverable-resources"
+            Path parentUri = RequestContext.getRequestContext().getCurrentCollection();
+            Resource parent = this.repository.retrieve(token, parentUri, true);
+            this.repository.store(token, parent);
         }
 
         return new ModelAndView(this.viewName);

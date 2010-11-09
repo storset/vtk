@@ -312,13 +312,13 @@
   <select id="getRecoverableResources" parameterClass="int" resultMap="recoverableResource">
     select d.*, r.resource_type as resource_type
       from deleted_resource d, vortex_resource r
-      where d.parent_id = #value# and d.resource_trash_uri = r.uri;
+      where d.parent_id = #value# and d.resource_trash_uri = r.uri
   </select>
 
   <select id="getRecoverableResourceById" parameterClass="int" resultMap="recoverableResource">
     select d.*, r.resource_type as resource_type
       from deleted_resource d, vortex_resource r
-      where d.id = #value# and d.resource_trash_uri = r.uri;
+      where d.id = #value# and d.resource_trash_uri = r.uri
   </select>
 
   <!--  ## Recover deleted resource ## -->

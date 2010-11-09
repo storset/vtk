@@ -125,6 +125,9 @@ public class TrashCanController extends SimpleFormController {
         } else if (trashCanCommand.getDeletePermanentAction() != null) {
 
             this.repository.deleteRecoverable(token, parentURI, selectedResources);
+            if (selectedResources.size() == trashCanCommand.getTrashCanObjects().size()) {
+                return new ModelAndView(this.getSuccessView());
+            }
             return this.showNewForm(request, response);
 
         } else {

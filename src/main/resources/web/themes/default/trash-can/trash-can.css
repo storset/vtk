@@ -16,12 +16,12 @@ ul.tabMenu2 li.deleteResourcePermanentService a {
 }
 
 ul.tabMenu2 li.recoverResourceService {
-  background: transparent url(../icons/nyfil.gif) no-repeat 0px -4px;
+  background: transparent url(../icons/nyfil.gif) no-repeat 0px -1px;
   padding-top: 4px;
 }
 
 ul.tabMenu2 li.deleteResourcePermanentService {
-  background: transparent url(../icons/delete.png) no-repeat 0px -2px;
+  background: transparent url(../icons/delete.png) no-repeat 0px 3px;
   padding-bottom: 1px;
   padding-top: 4px;
 }

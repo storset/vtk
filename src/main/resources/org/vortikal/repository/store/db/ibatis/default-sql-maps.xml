@@ -309,13 +309,13 @@
     <result property="resourceType" column="resource_type" />
   </resultMap>
 
-  <select id="getRecoverableResources" resultMap="recoverableResource">
+  <select id="getRecoverableResources" parameterClass="int" resultMap="recoverableResource">
     select d.*, r.resource_type as resource_type
       from deleted_resource d, vortex_resource r
       where d.parent_id = #value# and d.resource_trash_uri = r.uri;
   </select>
 
-  <select id="getRecoverableResourceById" resultMap="recoverableResource">
+  <select id="getRecoverableResourceById" parameterClass="int" resultMap="recoverableResource">
     select d.*, r.resource_type as resource_type
       from deleted_resource d, vortex_resource r
       where d.id = #value# and d.resource_trash_uri = r.uri;
@@ -328,11 +328,11 @@
       where uri like #trashIDWildcard# escape '@'
   </update>
 
-  <delete id="recoverFromTrashCan">
+  <delete id="recoverFromTrashCan" parameterClass="int">
     delete from deleted_resource where id = #value#
   </delete>
 
-  <select id="numberOfRecoverableResources" resultClass="Integer">
+  <select id="numberOfRecoverableResources" parameterClass="int" resultClass="Integer">
     select count(*) from deleted_resource where parent_id = #value#
   </select>
 

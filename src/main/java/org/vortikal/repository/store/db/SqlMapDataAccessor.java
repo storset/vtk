@@ -327,6 +327,19 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
 
         sqlMap = getSqlMap("recoverResource");
         getSqlMapClientTemplate().update(sqlMap, parameters);
+
+        if (deletedResource.wasInheritedAcl()) {
+            Path recoverdResourcePath = parent.extend(deletedResource.getName());
+            ResourceImpl recoveredResource = this.load(recoverdResourcePath);
+            ResourceImpl parentResource = this.load(parent);
+            Acl recoveredResourceAcl = recoveredResource.getAcl();
+            Acl parentAcl = parentResource.getAcl();
+            if (recoveredResourceAcl.equals(parentAcl)) {
+                recoveredResource.setAclInheritedFrom(parentResource.getID());
+                recoveredResource.setInheritedAcl(true);
+                this.storeACL(recoveredResource);
+            }
+        }
     }
 
     @Override

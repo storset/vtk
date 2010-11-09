@@ -96,7 +96,7 @@ public class RecoverableResource {
         this.deletedTime = deletedTime;
     }
 
-    public boolean isWasInheritedAcl() {
+    public boolean wasInheritedAcl() {
         return wasInheritedAcl;
     }
 

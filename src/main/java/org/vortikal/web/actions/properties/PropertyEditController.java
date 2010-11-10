@@ -62,6 +62,7 @@ import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
+import org.vortikal.repository.resourcetype.ValueFactoryImpl;
 import org.vortikal.repository.resourcetype.ValueFormatException;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.SecurityContext;
@@ -442,7 +443,7 @@ public class PropertyEditController extends SimpleFormController
         return resourceType.hasPropertyDefinition(def);
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
@@ -471,7 +472,7 @@ public class PropertyEditController extends SimpleFormController
             String toggleValue = null;
             
             if (this.repository.isAuthorized(resource, def.getProtectionLevel(),
-                                      securityContext.getPrincipal())) {
+                                      securityContext.getPrincipal(), true)) {
                 
                 Map<String, String> urlParameters = new HashMap<String, String>();
                 String namespaceURI = def.getNamespace().getUri();

@@ -58,10 +58,9 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.RecoverableResource;
-import org.vortikal.repository.RepositoryAction;
+import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.ResourceImpl;
 import org.vortikal.repository.ResourceTypeTree;
-import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
@@ -69,8 +68,8 @@ import org.vortikal.repository.resourcetype.value.BinaryValue;
 import org.vortikal.repository.store.DataAccessException;
 import org.vortikal.repository.store.DataAccessor;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.Principal.Type;
+import org.vortikal.security.PrincipalFactory;
 import org.vortikal.util.io.StreamUtil;
 
 import com.ibatis.sqlmap.client.SqlMapExecutor;
@@ -704,7 +703,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         if (newAcl == null) {
             throw new DataAccessException("Resource " + r + " has no ACL");
         }
-        final Set<RepositoryAction> actions = newAcl.getActions();
+        final Set<Privilege> actions = newAcl.getActions();
         final String sqlMap = getSqlMap("insertAclEntry");
 
         getSqlMapClientTemplate().execute(new SqlMapClientCallback() {
@@ -712,8 +711,8 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
             public Object doInSqlMapClient(SqlMapExecutor executor) throws SQLException {
                 executor.startBatch();
                 Map<String, Object> parameters = new HashMap<String, Object>();
-                for (RepositoryAction action : actions) {
-                    String actionName = Privilege.getActionName(action);
+                for (Privilege action: actions) {
+                    String actionName = action.getName();
                     for (Principal p : newAcl.getPrincipalSet(action)) {
 
                         Integer actionID = actionTypes.get(actionName);
@@ -886,7 +885,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
                 p = principalFactory.getPrincipal(name, Type.PSEUDO);
             else
                 p = principalFactory.getPrincipal(name, Type.USER);
-            RepositoryAction action = Privilege.getActionByName(privilege);
+            Privilege action = Privilege.forName(privilege);
             acl.addEntryNoValidation(action, p);
         }
     }

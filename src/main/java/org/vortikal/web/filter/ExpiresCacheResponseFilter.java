@@ -137,7 +137,7 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
             }
             Property expiresProp = resource.getProperty(this.expiresPropDef);
             boolean anonymousReadable = 
-                this.repository.isAuthorized(resource, RepositoryAction.READ_PROCESSED, null);
+                this.repository.isAuthorized(resource, RepositoryAction.READ_PROCESSED, null, false);
             if (!anonymousReadable) {
                 if (logger.isDebugEnabled()) {
                     logger.debug(uri + ": ignore: restricted");

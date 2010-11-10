@@ -91,9 +91,9 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
     private Repository repository = null;
     private Service aclInheritanceService = null;
     
-    private Map<RepositoryAction, Principal> groupingPrivilegePrincipalMap;
+    private Map<Privilege, Principal> groupingPrivilegePrincipalMap;
 
-    private Map<RepositoryAction, Service> aclEditServices;
+    private Map<Privilege, Service> aclEditServices;
     
     private String modelName = "aclInfo";
     
@@ -105,7 +105,7 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
         this.aclInheritanceService = aclInheritanceService;
     }
     
-    public void setAclEditServices(Map<RepositoryAction, Service> aclEditServices) {
+    public void setAclEditServices(Map<Privilege, Service> aclEditServices) {
         this.aclEditServices = aclEditServices;
     }      
 
@@ -113,7 +113,7 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
         this.modelName = modelName;
     }
     
-    public void setGroupingPrivilegePrincipalMap(Map<RepositoryAction, Principal> groupingPrivilegePrincipalMap) {
+    public void setGroupingPrivilegePrincipalMap(Map<Privilege, Principal> groupingPrivilegePrincipalMap) {
         this.groupingPrivilegePrincipalMap = groupingPrivilegePrincipalMap;
     }
     
@@ -142,7 +142,7 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
     }
 
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public void referenceData(Map model, HttpServletRequest request)
         throws Exception {
 
@@ -159,8 +159,8 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
         Map<String, String> editURLs = new HashMap<String, String>();
 
         if (!resource.isInheritedAcl()) {
-            for (RepositoryAction action: this.aclEditServices.keySet()) {
-                String privilegeName = Privilege.getActionName(action);
+            for (Privilege action: this.aclEditServices.keySet()) {
+                String privilegeName = action.getName();
                 Service editService = this.aclEditServices.get(action);
                 try {
                     String url = editService.constructLink(
@@ -179,13 +179,13 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
         } catch (Exception e) { }
         
 
-        Map<String, RepositoryAction> privileges = new HashMap<String, RepositoryAction>();
+        Map<String, Privilege> privileges = new HashMap<String, Privilege>();
         Map<String, Principal[]> privilegedUsers = new HashMap<String, Principal[]>();
         Map<String, Principal[]> privilegedGroups = new HashMap<String, Principal[]>();
         Map<String, List<Principal>> privilegedPseudoPrincipals = new HashMap<String, List<Principal>>();
 
-        for (RepositoryAction action: Privilege.PRIVILEGES) {
-            String actionName = Privilege.getActionName(action);
+        for (Privilege action: Privilege.values()) {
+            String actionName = action.getName();
             privileges.put(actionName, action);
 
 
@@ -200,9 +200,9 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
         Map<String, Principal> pseudoPrincipalPrivilegeMap = 
             new HashMap<String, Principal>();
 
-        for (RepositoryAction action: this.groupingPrivilegePrincipalMap.keySet()) {
+        for (Privilege action: this.groupingPrivilegePrincipalMap.keySet()) {
             Principal p = this.groupingPrivilegePrincipalMap.get(action);
-            pseudoPrincipalPrivilegeMap.put(Privilege.getActionName(action), p);
+            pseudoPrincipalPrivilegeMap.put(action.getName(), p);
         }
 
         aclModel.put("aclEditURLs", editURLs);

@@ -31,20 +31,17 @@
 package org.vortikal.repository;
 
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.ChangeLogEntry.Operation;
 import org.vortikal.repository.store.ChangeLogDAO;
-import org.vortikal.repository.store.DataAccessException;
 import org.vortikal.repository.store.DataAccessor;
-import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 
 
 public class ProcessedContentEventDumperOpen extends AbstractRepositoryEventDumper {
 
+    @SuppressWarnings("unused")
     private DataAccessor dataAccessor;
     private ChangeLogDAO changeLogDAO;
 
@@ -106,24 +103,24 @@ public class ProcessedContentEventDumperOpen extends AbstractRepositoryEventDump
         	return;
         }
         
-        RepositoryAction[] privsForAllOrig = originalACL.getPrivilegeSet(PrincipalFactory.ALL);
-        RepositoryAction[] privsForAllNew = newACL.getPrivilegeSet(PrincipalFactory.ALL);
+        Privilege[] privsForAllOrig = originalACL.getPrivilegeSet(PrincipalFactory.ALL);
+        Privilege[] privsForAllNew = newACL.getPrivilegeSet(PrincipalFactory.ALL);
         
         boolean origAllowsReadForAll = false;
         boolean newAllowsReadForAll = false;
         
-        for (RepositoryAction action: privsForAllOrig) {
-            if (action == RepositoryAction.READ 
-                    || action == RepositoryAction.READ_PROCESSED
-                    || action == RepositoryAction.ALL) {
+        for (Privilege action: privsForAllOrig) {
+            if (action == Privilege.READ 
+                    || action == Privilege.READ_PROCESSED
+                    || action == Privilege.ALL) {
                 origAllowsReadForAll = true;
                 break;
             }
         }
-        for (RepositoryAction action: privsForAllNew) {
-            if (action == RepositoryAction.READ 
-                    || action == RepositoryAction.READ_PROCESSED
-                    || action == RepositoryAction.ALL) {
+        for (Privilege action: privsForAllNew) {
+            if (action == Privilege.READ 
+                    || action == Privilege.READ_PROCESSED
+                    || action == Privilege.ALL) {
                 newAllowsReadForAll = true;
                 break;
             }

@@ -208,8 +208,8 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
     }
 
     public boolean isReadRestricted() {
-        return !this.getAcl().hasPrivilege(RepositoryAction.READ, PrincipalFactory.ALL)
-                && !this.getAcl().hasPrivilege(RepositoryAction.READ_PROCESSED, PrincipalFactory.ALL);
+        return !this.getAcl().hasPrivilege(Privilege.READ, PrincipalFactory.ALL)
+                && !this.getAcl().hasPrivilege(Privilege.READ_PROCESSED, PrincipalFactory.ALL);
     }
 
     public boolean isPublished() {

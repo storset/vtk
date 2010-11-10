@@ -34,7 +34,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 import org.vortikal.repository.Acl;
-import org.vortikal.repository.RepositoryAction;
+import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.PrincipalFactory;
 
@@ -238,8 +238,8 @@ public class ResourceSorter {
 
         private boolean isReadAll(Resource r) {
             Acl acl = r.getAcl();
-            return acl.containsEntry(RepositoryAction.READ, PrincipalFactory.ALL)
-                || acl.containsEntry(RepositoryAction.READ_PROCESSED, PrincipalFactory.ALL);
+            return acl.containsEntry(Privilege.READ, PrincipalFactory.ALL)
+                || acl.containsEntry(Privilege.READ_PROCESSED, PrincipalFactory.ALL);
         }
         
         private int compare(boolean r1ReadAll, boolean r2ReadAll) {

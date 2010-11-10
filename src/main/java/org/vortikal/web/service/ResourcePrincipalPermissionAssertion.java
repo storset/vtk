@@ -37,6 +37,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
@@ -100,6 +101,7 @@ public class ResourcePrincipalPermissionAssertion
     private Repository repository = null;
     private String trustedToken = null;
     private boolean anonymous = false;
+    private boolean considerLocks = true;
     
     Set<String> rootPrincipals;
     Set<String> readPrincipals;
@@ -107,34 +109,43 @@ public class ResourcePrincipalPermissionAssertion
     public void setRequiresAuthentication(boolean requiresAuthentication) {
         this.requiresAuthentication = requiresAuthentication;
     }
-    
 
     public void setPermission(RepositoryAction permission) {
+        if (this.permission != null) {
+            throw new IllegalStateException("Cannot set privilege: permission already set");
+        }
         this.permission = permission;
     }
 
+    public void setPrivilege(Privilege privilege) {
+        if (this.permission != null) {
+            throw new IllegalStateException("Cannot set privilege: permission already set");
+        }
+        this.permission = privilege.getAction();
+    }
 
     public void setPrincipalManager(PrincipalManager principalManager) {
         this.principalManager = principalManager;
     }
     
-
     public void setRoleManager(RoleManager roleManager) {
         this.roleManager = roleManager;
     }
     
-
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
     
-
     public void setTrustedToken(String trustedToken) {
         this.trustedToken = trustedToken;
     }
     
     public void setAnonymous(boolean anonymous) {
         this.anonymous = anonymous;
+    }
+    
+    public void setConsiderLocks(boolean considerLocks) {
+        this.considerLocks = considerLocks;
     }
     
     public void afterPropertiesSet() throws Exception {
@@ -192,9 +203,9 @@ public class ResourcePrincipalPermissionAssertion
         
         try {
             if (this.anonymous) {
-                return this.repository.isAuthorized(resource, this.permission, null);
+                return this.repository.isAuthorized(resource, this.permission, null, this.considerLocks);
             }
-            return this.repository.isAuthorized(resource, this.permission, principal);
+            return this.repository.isAuthorized(resource, this.permission, principal, this.considerLocks);
 
         } catch (RuntimeException e) {
             // XXX Hmm. Don't wrap runtime-exceptions, because we then hide

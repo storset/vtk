@@ -41,8 +41,8 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.PropertySelect;
@@ -67,7 +67,7 @@ public class CopyMoveWarningProvider implements CategorizableReferenceDataProvid
     private Searcher searcher;
     private Set<?> categories;
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     @Override
     public void referenceData(Map model, HttpServletRequest request)
             throws Exception {
@@ -95,8 +95,8 @@ public class CopyMoveWarningProvider implements CategorizableReferenceDataProvid
             // XXX: refactor:
             Resource destAclResource = findNearestAcl(token, destinationUri);
             Acl destAcl = destAclResource.getAcl();
-            if (destAcl.containsEntry(RepositoryAction.READ, PrincipalFactory.ALL)
-                    || destAcl.containsEntry(RepositoryAction.READ_PROCESSED, PrincipalFactory.ALL)) {
+            if (destAcl.containsEntry(Privilege.READ, PrincipalFactory.ALL)
+                    || destAcl.containsEntry(Privilege.READ_PROCESSED, PrincipalFactory.ALL)) {
                 for (String uri : sessionBean.getFilesToBeCopied()) {
                     // Resource to copy might have been deleted or moved, check for existence
                     if (!this.repository.exists(token, Path.fromString(uri))) {
@@ -105,8 +105,8 @@ public class CopyMoveWarningProvider implements CategorizableReferenceDataProvid
                     Resource srcAclResource = findNearestAcl(token, Path.fromString(uri));
                     Acl srcAcl = srcAclResource.getAcl();
                     if (!srcAclResource.isInheritedAcl() 
-                            && !(srcAcl.containsEntry(RepositoryAction.READ, PrincipalFactory.ALL)
-                                    || srcAcl.containsEntry(RepositoryAction.READ_PROCESSED, PrincipalFactory.ALL))) {
+                            && !(srcAcl.containsEntry(Privilege.READ, PrincipalFactory.ALL)
+                                    || srcAcl.containsEntry(Privilege.READ_PROCESSED, PrincipalFactory.ALL))) {
 
                         URL url = this.confirmationService.constructURL(destinationUri);
                         url.setCollection(true);
@@ -130,15 +130,15 @@ public class CopyMoveWarningProvider implements CategorizableReferenceDataProvid
         
         Resource srcAclResource = findNearestAcl(token, sourceParentUri);
         Acl srcAcl = srcAclResource.getAcl();
-        if (srcAcl.containsEntry(RepositoryAction.READ, PrincipalFactory.ALL)
-                || srcAcl.containsEntry(RepositoryAction.READ_PROCESSED, PrincipalFactory.ALL)) {
+        if (srcAcl.containsEntry(Privilege.READ, PrincipalFactory.ALL)
+                || srcAcl.containsEntry(Privilege.READ_PROCESSED, PrincipalFactory.ALL)) {
             return;
         }
 
         Resource destAclResource = findNearestAcl(token, destinationUri);
         Acl destAcl = destAclResource.getAcl();
-        if (!(destAcl.containsEntry(RepositoryAction.READ, PrincipalFactory.ALL)
-                || destAcl.containsEntry(RepositoryAction.READ_PROCESSED, PrincipalFactory.ALL))) {
+        if (!(destAcl.containsEntry(Privilege.READ, PrincipalFactory.ALL)
+                || destAcl.containsEntry(Privilege.READ_PROCESSED, PrincipalFactory.ALL))) {
             return;
         }
         

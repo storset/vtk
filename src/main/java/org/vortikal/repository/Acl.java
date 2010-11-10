@@ -37,29 +37,29 @@ import org.vortikal.security.Principal;
 public interface Acl extends Cloneable {
 
 
-    public boolean hasPrivilege(RepositoryAction privilege, Principal principal);
+    public boolean hasPrivilege(Privilege privilege, Principal principal);
 
-    public RepositoryAction[] getPrivilegeSet(Principal principal);
+    public Privilege[] getPrivilegeSet(Principal principal);
     
-    public Principal[] listPrivilegedUsers(RepositoryAction privilege);
+    public Principal[] listPrivilegedUsers(Privilege privilege);
 
-    public Principal[] listPrivilegedGroups(RepositoryAction privilege);
+    public Principal[] listPrivilegedGroups(Privilege privilege);
     
-    public Principal[] listPrivilegedPseudoPrincipals(RepositoryAction action);
+    public Principal[] listPrivilegedPseudoPrincipals(Privilege action);
 
-    public Set<Principal> getPrincipalSet(RepositoryAction action);
+    public Set<Principal> getPrincipalSet(Privilege action);
 
-    public Set<RepositoryAction> getActions();
+    public Set<Privilege> getActions();
 
     public void clear();
 
-    public boolean isValidEntry(RepositoryAction action, Principal principal);
+    public boolean isValidEntry(Privilege action, Principal principal);
     
-    public void addEntry(RepositoryAction action, Principal principal);
+    public void addEntry(Privilege action, Principal principal);
 
-    public void removeEntry(RepositoryAction privilegeName, Principal principal);
+    public void removeEntry(Privilege privilegeName, Principal principal);
 
-    public boolean containsEntry(RepositoryAction privilegeName, Principal principal);
+    public boolean containsEntry(Privilege privilegeName, Principal principal);
 
     public Object clone() throws CloneNotSupportedException;
     

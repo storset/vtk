@@ -370,8 +370,9 @@ public class RequestLocalRepository implements Repository {
     }
 
     @Override
-    public boolean isAuthorized(Resource resource, RepositoryAction action, Principal principal) throws Exception {
-        return this.repository.isAuthorized(resource, action, principal);
+    public boolean isAuthorized(Resource resource, RepositoryAction action, 
+            Principal principal, boolean considerLocks) throws Exception {
+        return this.repository.isAuthorized(resource, action, principal, considerLocks);
     }
 
     // XXX: Losing stack traces unnecessary

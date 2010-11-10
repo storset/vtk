@@ -47,10 +47,10 @@ public class AclImpl implements Acl {
     /**
      * map: [action --> Set(Principal)]
      */
-    private Map<RepositoryAction, Set<Principal>> actionSets = 
-        new HashMap<RepositoryAction, Set<Principal>>();
+    private Map<Privilege, Set<Principal>> actionSets = 
+        new HashMap<Privilege, Set<Principal>>();
 
-    public boolean hasPrivilege(RepositoryAction privilege, Principal principal) {
+    public boolean hasPrivilege(Privilege privilege, Principal principal) {
         Set<Principal> actionSet = this.actionSets.get(privilege);
         
         if (actionSet != null && actionSet.contains(principal)) 
@@ -59,11 +59,11 @@ public class AclImpl implements Acl {
     }
 
  
-    public Set<RepositoryAction> getActions() {
+    public Set<Privilege> getActions() {
         return this.actionSets.keySet();
     }
 
-    public Set<Principal> getPrincipalSet(RepositoryAction action) {
+    public Set<Principal> getPrincipalSet(Privilege action) {
         Set<Principal> set = this.actionSets.get(action);
         if (set == null) {
             return new HashSet<Principal>();
@@ -72,20 +72,20 @@ public class AclImpl implements Acl {
     }
 
     public void clear() {
-        this.actionSets = new HashMap<RepositoryAction, Set<Principal>>();
+        this.actionSets = new HashMap<Privilege, Set<Principal>>();
         addEntry(Privilege.ALL, PrincipalFactory.OWNER);
     }
     
-    public boolean isValidEntry(RepositoryAction action, Principal principal) {
-        if (!Privilege.PRIVILEGES.contains(action))
-            throw new IllegalArgumentException("Unknown acl privilege");
-            
-        if (principal == null)
-            throw new IllegalArgumentException("Null principal");
-            
+    public boolean isValidEntry(Privilege privilege, Principal principal) {
+        if (privilege == null) {
+            throw new IllegalArgumentException("Privilege is NULL");
+        }
+        if (principal == null) {
+            throw new IllegalArgumentException("Principal is NULL");
+        }
         if (PrincipalFactory.ALL.equals(principal)) {
-            if (Privilege.ALL.equals(action) || Privilege.WRITE.equals(action)
-                || Privilege.BIND.equals(action) || Privilege.ADD_COMMENT.equals(action)) {
+            if (Privilege.ALL.equals(privilege) || Privilege.WRITE.equals(privilege)
+                || Privilege.BIND.equals(privilege) || Privilege.ADD_COMMENT.equals(privilege)) {
                 return false;
             }
         }
@@ -93,83 +93,87 @@ public class AclImpl implements Acl {
     }
     
     
-    public void addEntry(RepositoryAction action, Principal p) {
-        if (!Privilege.PRIVILEGES.contains(action))
-            throw new IllegalArgumentException("Unknown acl privilege");
+    public void addEntry(Privilege privilege, Principal principal) {
+        if (privilege == null) {
+            throw new IllegalArgumentException("Privilege is NULL");
+        }
+        if (principal == null) {
+            throw new IllegalArgumentException("Principal is NULL");
+        }
             
-        if (p == null)
-            throw new IllegalArgumentException("Null principal");
-            
-        if (!isValidEntry(action, p)) {
+        if (!isValidEntry(privilege, principal)) {
             throw new IllegalArgumentException(
-                    "Not allowed to add principal '" + p + "' to privilege '"
-                    + action + "'" );
+                    "Not allowed to add principal '" + principal + "' to privilege '"
+                    + privilege + "'" );
         }
         
-        Set<Principal> actionEntry = this.actionSets.get(action);
+        Set<Principal> actionEntry = this.actionSets.get(privilege);
         if (actionEntry == null) {
             actionEntry = new HashSet<Principal>();
-            this.actionSets.put(action, actionEntry);
+            this.actionSets.put(privilege, actionEntry);
         }
         
-        actionEntry.add(p);
+        actionEntry.add(principal);
     }
     
-    public void addEntryNoValidation(RepositoryAction action, Principal p) {
-        if (!Privilege.PRIVILEGES.contains(action))
-            throw new IllegalArgumentException("Unknown acl privilege");
-            
-        if (p == null)
-            throw new IllegalArgumentException("Null principal");
+    public void addEntryNoValidation(Privilege privilege, Principal principal) {
+        if (privilege == null) {
+            throw new IllegalArgumentException("Privilege is NULL");
+        }
+        if (principal == null) {
+            throw new IllegalArgumentException("Principal is NULL");
+        }
         
-        Set<Principal> actionEntry = this.actionSets.get(action);
+        Set<Principal> actionEntry = this.actionSets.get(privilege);
         if (actionEntry == null) {
             actionEntry = new HashSet<Principal>();
-            this.actionSets.put(action, actionEntry);
+            this.actionSets.put(privilege, actionEntry);
         }
         
-        actionEntry.add(p);
+        actionEntry.add(principal);
     }
     
-    public void removeEntry(RepositoryAction action, Principal principal)
+    public void removeEntry(Privilege privilege, Principal principal)
         throws IllegalArgumentException {
-
-        if (!Privilege.PRIVILEGES.contains(action))
-            throw new IllegalArgumentException("Unknown acl privilege");
-            
-        if (principal == null)
-            throw new IllegalArgumentException("Null principal");
+        if (privilege == null) {
+            throw new IllegalArgumentException("Privilege is NULL");
+        }
+        if (principal == null) {
+            throw new IllegalArgumentException("Principal is NULL");
+        }
             
         if (PrincipalFactory.OWNER.equals(principal) &&
-                Privilege.ALL.equals(action))
+                Privilege.ALL.equals(privilege)) {
                 throw new IllegalArgumentException("Not allowed to remove acl entry");
-        
-        Set<Principal> actionEntry = this.actionSets.get(action);
+        }
+        Set<Principal> actionEntry = this.actionSets.get(privilege);
         
         if (actionEntry == null) return;
         actionEntry.remove(principal);
     }
 
 
-    public boolean containsEntry(RepositoryAction action, Principal principal) throws IllegalArgumentException {
-
-        if (!Privilege.PRIVILEGES.contains(action))
-            throw new IllegalArgumentException("Unknown acl privilege");
+    public boolean containsEntry(Privilege privilege, Principal principal) throws IllegalArgumentException {
+        if (privilege == null) {
+            throw new IllegalArgumentException("Privilege is NULL");
+        }
+        if (principal == null) {
+            throw new IllegalArgumentException("Principal is NULL");
+        }
             
-        if (principal == null)
-            throw new IllegalArgumentException("Null principal");
-            
-        Set<Principal> actionEntry = this.actionSets.get(action);
+        Set<Principal> actionEntry = this.actionSets.get(privilege);
         
         if (actionEntry == null) return false;
         return actionEntry.contains(principal);
     }
 
 
-    public Principal[] listPrivilegedUsers(RepositoryAction action) {
-        Set<Principal> principals = this.actionSets.get(action);
+    public Principal[] listPrivilegedUsers(Privilege privilege) {
+        Set<Principal> principals = this.actionSets.get(privilege);
 
-        if (principals == null) return new Principal[0];
+        if (principals == null) {
+            return new Principal[0];
+        }
         
         List<Principal> userList = new ArrayList<Principal>();
         for (Principal p: principals) {
@@ -181,10 +185,12 @@ public class AclImpl implements Acl {
         return userList.toArray(new Principal[userList.size()]);
     }
 
-    public Principal[] listPrivilegedGroups(RepositoryAction action) {
-        Set<Principal> principals = this.actionSets.get(action);
+    public Principal[] listPrivilegedGroups(Privilege privilege) {
+        Set<Principal> principals = this.actionSets.get(privilege);
         
-        if (principals == null) return new Principal[0];
+        if (principals == null) {
+            return new Principal[0];
+        }
         
         List<Principal> groupList = new ArrayList<Principal>();
         for (Principal p: principals) {
@@ -195,10 +201,12 @@ public class AclImpl implements Acl {
         return groupList.toArray(new Principal[groupList.size()]);
     }
     
-    public Principal[] listPrivilegedPseudoPrincipals(RepositoryAction action) {
-        Set<Principal> principals = this.actionSets.get(action);
+    public Principal[] listPrivilegedPseudoPrincipals(Privilege privilege) {
+        Set<Principal> principals = this.actionSets.get(privilege);
         
-        if (principals == null) return new Principal[0];
+        if (principals == null) {
+            return new Principal[0];
+        }
         
         List<Principal> principalList = new ArrayList<Principal>();
         for (Principal p: principals) {
@@ -211,17 +219,17 @@ public class AclImpl implements Acl {
     }
 
 
-    public RepositoryAction[] getPrivilegeSet(Principal principal) {
-        Set<RepositoryAction> actions = new HashSet<RepositoryAction>();
+    public Privilege[] getPrivilegeSet(Principal principal) {
+        Set<Privilege> actions = new HashSet<Privilege>();
         
-        for (Map.Entry<RepositoryAction, Set<Principal>> entry: this.actionSets.entrySet()) {
-            RepositoryAction action = entry.getKey();
+        for (Map.Entry<Privilege, Set<Principal>> entry: this.actionSets.entrySet()) {
+            Privilege action = entry.getKey();
             Set<Principal> actionEntries = entry.getValue();
             if (actionEntries != null && actionEntries.contains(principal))
                 actions.add(action);
         }
         
-        return actions.toArray(new RepositoryAction[actions.size()]);
+        return actions.toArray(new Privilege[actions.size()]);
     }
 
 
@@ -237,13 +245,13 @@ public class AclImpl implements Acl {
             return true;
         }
 
-        Set<RepositoryAction> actions = this.actionSets.keySet();
+        Set<Privilege> actions = this.actionSets.keySet();
 
         if (actions.size() != acl.actionSets.keySet().size()) {
             return false;
         }
 
-        for (RepositoryAction action: actions) {
+        for (Privilege action: actions) {
             if (!acl.actionSets.containsKey(action)) {
                 return false;
             }
@@ -261,30 +269,28 @@ public class AclImpl implements Acl {
                 }
             }
         }
-
         return true;
     }
 
     public int hashCode() {
         int hashCode = super.hashCode();
 
-        Set<RepositoryAction> actions = this.actionSets.keySet();
+        Set<Privilege> actions = this.actionSets.keySet();
 
-        for (RepositoryAction action: actions) {
+        for (Privilege action: actions) {
             for (Principal p: this.actionSets.get(action)) {
                 hashCode += p.hashCode() + action.hashCode();
             }
         }
-
         return hashCode;
     }
 
     public Object clone() {
         AclImpl clone = new AclImpl();
 
-        for (Map.Entry<RepositoryAction, Set<Principal>> entry: this.actionSets.entrySet()) {
+        for (Map.Entry<Privilege, Set<Principal>> entry: this.actionSets.entrySet()) {
             
-            RepositoryAction action = entry.getKey();
+            Privilege action = entry.getKey();
 
             for (Principal p: entry.getValue()) {
                 clone.addEntryNoValidation(action, p);
@@ -298,7 +304,7 @@ public class AclImpl implements Acl {
 
         sb.append("[ACL: ");
         sb.append("access: ");
-        for (RepositoryAction action: this.actionSets.keySet()) {
+        for (Privilege action: this.actionSets.keySet()) {
             Set<Principal> principalSet = this.actionSets.get(action);
 
             sb.append(" [");

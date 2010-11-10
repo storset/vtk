@@ -81,7 +81,7 @@
       <list>
         <bean parent="abstractResourcePrincipalPermissionAssertion">
           <property name="requiresAuthentication" value="false" />
-          <property name="permission" ref="ACTION_READ_PROCESSED" />
+          <property name="privilege" ref="PRIVILEGE_READ_PROCESSED" />
           <property name="anonymous" value="true" />
         </bean>
         <ref bean="commenting.requestParameterIsFeed" />
@@ -222,12 +222,12 @@
 
   <bean id="commenting.isCommentable"
         parent="abstractResourcePrincipalPermissionAssertion">
-    <property name="permission" ref="PRIVILEGE_ADD_COMMENT" />
+    <property name="privilege" ref="PRIVILEGE_ADD_COMMENT" />
   </bean>
 
   <bean id="commenting.hasDeletePermission"
         parent="abstractResourcePrincipalPermissionAssertion">
-    <property name="permission" ref="PRIVILEGE_ALL" />
+    <property name="privilege" ref="PRIVILEGE_ALL" />
   </bean>
 
   <bean id="commenting.viewResolver" parent="viewResolver">

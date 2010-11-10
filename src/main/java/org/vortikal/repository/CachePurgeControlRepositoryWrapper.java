@@ -320,17 +320,25 @@ public class CachePurgeControlRepositoryWrapper implements Repository {
         return this.wrappedRepository.updateComment(token, resource, comment); // Tx
     }
 
-    private void logPurge(String serviceMethodName, List<Path> uris) {
-        logger.debug(serviceMethodName + "() completed, purging the following URIs from cache:");
-        for (Path uri : uris) {
-            logger.debug(uri);
-        }
+    @Override
+    public ResultSet search(String token, Search search) throws QueryException {
+        return this.wrappedRepository.search(token, search);
     }
 
-    private void logPurge(String serviceMethodName, Path uri) {
-        List<Path> uris = new ArrayList<Path>();
-        uris.add(uri);
-        logPurge(serviceMethodName, uris);
+    @Override
+    public boolean isAuthorized(Resource resource, RepositoryAction action, 
+            Principal principal, boolean considerLocks) throws Exception {
+        return this.wrappedRepository.isAuthorized(resource, action, principal, considerLocks);
+    }
+
+    @Override
+    public TypeInfo getTypeInfo(String token, Path uri) throws Exception {
+        return this.wrappedRepository.getTypeInfo(token, uri);
+    }
+
+    @Override
+    public TypeInfo getTypeInfo(Resource resource) {
+        return this.wrappedRepository.getTypeInfo(resource);
     }
 
     @Required
@@ -343,20 +351,17 @@ public class CachePurgeControlRepositoryWrapper implements Repository {
         this.wrappedRepository = wrappedRepository;
     }
 
-    public ResultSet search(String token, Search search) throws QueryException {
-        return this.wrappedRepository.search(token, search);
+    private void logPurge(String serviceMethodName, List<Path> uris) {
+        logger.debug(serviceMethodName + "() completed, purging the following URIs from cache:");
+        for (Path uri : uris) {
+            logger.debug(uri);
+        }
     }
 
-    public boolean isAuthorized(Resource resource, RepositoryAction action, Principal principal) throws Exception {
-        return this.wrappedRepository.isAuthorized(resource, action, principal);
-    }
-
-    public TypeInfo getTypeInfo(String token, Path uri) throws Exception {
-        return this.wrappedRepository.getTypeInfo(token, uri);
-    }
-
-    public TypeInfo getTypeInfo(Resource resource) {
-        return this.wrappedRepository.getTypeInfo(resource);
+    private void logPurge(String serviceMethodName, Path uri) {
+        List<Path> uris = new ArrayList<Path>();
+        uris.add(uri);
+        logPurge(serviceMethodName, uris);
     }
 
 }

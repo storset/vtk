@@ -73,8 +73,8 @@ import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.Principal.Type;
+import org.vortikal.security.PrincipalFactory;
 import org.vortikal.web.RequestContext;
 
 public class ResourceArchiver {
@@ -356,9 +356,9 @@ public class ResourceArchiver {
     private void addAcl(Resource r, PrintWriter out) throws Exception {
         if (!r.isInheritedAcl()) {
             Acl acl = r.getAcl();
-            for (RepositoryAction action : acl.getActions()) {
+            for (Privilege action : acl.getActions()) {
                 StringBuilder entry = new StringBuilder("X-vrtx-acl-");
-                entry.append(Privilege.getActionName(action)).append(": ");
+                entry.append(action.getName()).append(": ");
 
                 boolean empty = true;
 
@@ -650,7 +650,7 @@ public class ResourceArchiver {
     private boolean setAclEntry(Resource resource, String name, Attributes attributes, boolean decode,
             EventListener listener) throws Exception {
         String actionName = name.substring("X-vrtx-acl-".length());
-        RepositoryAction action = Privilege.getActionByName(actionName);
+        Privilege action = Privilege.forName(actionName);
 
         String values = attributes.getValue(name);
         if (decode) {

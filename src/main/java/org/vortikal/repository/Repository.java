@@ -562,12 +562,13 @@ public interface Repository {
      * @param resource the resource in question
      * @param action the operation in question
      * @param principal the principal in question
+     * @param considerLocks whether or not to take resource locks into account
      * @return <code>true</code> if the principal is allowed to 
      * perform the operation, <code>false</code> otherwise
      * @throws Exception if an error occurs
      */
     public boolean isAuthorized(Resource resource, RepositoryAction action, 
-            Principal principal) throws Exception;
+            Principal principal, boolean considerLocks) throws Exception;
     
     
     /**

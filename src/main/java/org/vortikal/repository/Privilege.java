@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, 2007, University of Oslo, Norway
+/* Copyright (c) 2006, 2007, 2010, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,79 +30,65 @@
  */
 package org.vortikal.repository;
 
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+
 
 /**
  * This class defines the privileges supported in an Acl.
  */
-public class Privilege {
-    
-    public static final RepositoryAction READ_PROCESSED = RepositoryAction.READ_PROCESSED;
-    public static final RepositoryAction READ = RepositoryAction.READ;
-    public static final RepositoryAction BIND = RepositoryAction.CREATE;
-    public static final RepositoryAction WRITE = RepositoryAction.WRITE;
-    public static final RepositoryAction ADD_COMMENT = RepositoryAction.ADD_COMMENT;
-    public static final RepositoryAction ALL = RepositoryAction.ALL;
-    
+public enum Privilege {
+    READ_PROCESSED(RepositoryAction.READ_PROCESSED),
+    READ(RepositoryAction.READ),
+    BIND(RepositoryAction.CREATE, "bind"),
+    WRITE(RepositoryAction.WRITE),
+    ADD_COMMENT(RepositoryAction.ADD_COMMENT),
+    ALL(RepositoryAction.ALL);
 
-    public static final Set<RepositoryAction> PRIVILEGES =
-        Collections.unmodifiableSet(
-            new HashSet<RepositoryAction>(
-                Arrays.asList(new RepositoryAction[] {
-                        READ_PROCESSED,
-                        READ,
-                        BIND,
-                        WRITE,
-                        ALL,
-                        ADD_COMMENT})));
-    
+    private RepositoryAction action;
+    private String name;
+    private Privilege(RepositoryAction action) {
+        this.action = action;
+        this.name = action.value();
+    }
+    private Privilege(RepositoryAction action, String name) {
+        this.action = action;
+        this.name = name;
+    }
 
-    public static final RepositoryAction getActionByName(String actionName) {
-        if ("read".equals(actionName)) {
-            return READ;
+    private static final Map<String, Privilege> NAME_MAP = new HashMap<String, Privilege>();
+    static {
+        Set<Privilege> set = new HashSet<Privilege>();
+        for (Privilege p: values()) {
+            set.add(p);
+            NAME_MAP.put(p.name, p);
         }
-        if ("write".equals(actionName)) {
-            return WRITE;
+    }
+
+    public static final Privilege forName(String name) {
+        Privilege p = NAME_MAP.get(name);
+        if (p == null) {
+            throw new IllegalArgumentException("Invalid ACL privilege: '" + name + "'");
         }
-        if ("all".equals(actionName)) {
-            return ALL;
-        }
-        if ("read-processed".equals(actionName)) {
-            return READ_PROCESSED;
-        }
-        if ("bind".equals(actionName)) {
-            return BIND;
-        }
-        if ("add-comment".equals(actionName)) {
-            return ADD_COMMENT;
-        }
-        throw new IllegalArgumentException("Invalid ACL action: '" + actionName + "'");
+        return p;
     }
     
-
-    public static final String getActionName(RepositoryAction action) {
-
-        if (READ.equals(action)) {
-            return "read";
-        }
-        if (WRITE.equals(action)) {
-            return "write";
-        }
-        if (ALL.equals(action)) {
-            return "all";
-        }
-        if (READ_PROCESSED.equals(action)) {
-            return "read-processed";
-        }
-        if (BIND.equals(action)) {
-            return "bind";
-        }
-        if (ADD_COMMENT.equals(action)) {
-            return "add-comment";
-        }
-        throw new IllegalArgumentException("Invalid ACL privilege: '" + action + "'");
+    public static boolean exists(String name){
+        return NAME_MAP.containsKey(name);
     }
+    
+    public String getName() {
+        return this.name;
+    }
+    
+    public RepositoryAction getAction() {
+        return this.action;
+    }
+    
+    public String toString() {
+        return this.name;
+    }
+
 }

@@ -136,24 +136,24 @@ public class RepositoryIndexingEventDumperImpl extends AbstractRepositoryEventDu
             if (originalResource.isInheritedAcl() != resource.isInheritedAcl()) {
                 recurse = true;
             } else {
-                RepositoryAction[] privsForAllOrig = originalACL.getPrivilegeSet(PrincipalFactory.ALL);
-                RepositoryAction[] privsForAllNew = newACL.getPrivilegeSet(PrincipalFactory.ALL);
+                Privilege[] privsForAllOrig = originalACL.getPrivilegeSet(PrincipalFactory.ALL);
+                Privilege[] privsForAllNew = newACL.getPrivilegeSet(PrincipalFactory.ALL);
                 
                 boolean origAllowsReadForAll = false;
                 boolean newAllowsReadForAll = false;
                 
-                for (RepositoryAction action: privsForAllOrig) {
-                    if (action == RepositoryAction.READ 
-                            || action == RepositoryAction.READ_PROCESSED
-                            || action == RepositoryAction.ALL) {
+                for (Privilege action: privsForAllOrig) {
+                    if (action == Privilege.READ 
+                            || action == Privilege.READ_PROCESSED
+                            || action == Privilege.ALL) {
                         origAllowsReadForAll = true;
                         break;
                     }
                 }
-                for (RepositoryAction action: privsForAllNew) {
-                    if (action == RepositoryAction.READ 
-                            || action == RepositoryAction.READ_PROCESSED
-                            || action == RepositoryAction.ALL) {
+                for (Privilege action: privsForAllNew) {
+                    if (action == Privilege.READ 
+                            || action == Privilege.READ_PROCESSED
+                            || action == Privilege.ALL) {
                         newAllowsReadForAll = true;
                         break;
                     }

@@ -228,6 +228,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new IllegalOperationException("Either parent doesn't exist " + "or parent is document");
         }
 
+        this.lockManager.lockAuthorize(parent, principal);
         this.authorizationManager.authorizeCreate(parent.getURI(), principal);
         checkMaxChildren(parent);
 
@@ -290,6 +291,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new IllegalOperationException("destination is either a document or does not exist");
         }
 
+        if (dest != null) {
+            this.lockManager.lockAuthorize(dest, principal);
+        }
+        this.lockManager.lockAuthorize(destParent, principal);
         this.authorizationManager.authorizeCopy(srcUri, destUri, principal, overwrite);
         checkMaxChildren(destParent);
 
@@ -329,6 +334,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
         // Loading and checking source resource
         ResourceImpl src = this.dao.load(srcUri);
+        ResourceImpl parent = this.dao.load(srcUri.getParent());
 
         if (src == null) {
             throw new ResourceNotFoundException(srcUri);
@@ -347,6 +353,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         if ((destParent == null) || !destParent.isCollection()) {
             throw new IllegalOperationException("Invalid destination resource");
         }
+        
+        this.lockManager.lockAuthorize(src, principal);
+        this.lockManager.lockAuthorize(parent, principal);
+        if (dest != null) {
+            this.lockManager.lockAuthorize(dest, principal);
+        }
+        this.lockManager.lockAuthorize(destParent, principal);
 
         this.authorizationManager.authorizeMove(srcUri, destUri, principal, overwrite);
         checkMaxChildren(destParent);
@@ -400,12 +413,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new ResourceNotFoundException(uri);
         }
 
-        this.authorizationManager.authorizeDelete(uri, principal);
 
         // Store parent collection first to avoid dead-lock between Cache
         // locking and database inter-transaction synchronization (which leads
         // to "11-iterations"-problem)
         ResourceImpl parentCollection = this.dao.load(uri.getParent());
+        this.authorizationManager.authorizeDelete(uri, principal);
+        this.lockManager.lockAuthorize(parentCollection, principal);
+        this.lockManager.lockAuthorize(r, principal);
         parentCollection.removeChildURI(uri);
         parentCollection = this.resourceHelper.contentModification(parentCollection, principal);
         this.dao.store(parentCollection);
@@ -458,6 +473,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new ResourceNotFoundException(parentUri);
         }
 
+        this.lockManager.lockAuthorize(parent, principal);
         this.authorizationManager.authorizeWrite(parentUri, principal);
 
         for (RecoverableResource rr : recoverableResources) {
@@ -484,6 +500,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         Principal principal = this.tokenManager.getPrincipal(token);
         ResourceImpl parent = this.dao.load(parentUri);
 
+        this.lockManager.lockAuthorize(parent, principal);
         this.authorizationManager.authorizeWrite(parentUri, principal);
 
         if (parent == null) {
@@ -525,6 +542,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             }
         }
 
+        this.lockManager.lockAuthorize(r, principal);
         this.authorizationManager.authorizeWrite(uri, principal);
 
         this.lockManager.lockResource(r, principal, ownerInfo, depth, requestedTimeoutSeconds, (lockToken != null));
@@ -541,6 +559,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new ResourceNotFoundException(uri);
         }
 
+        this.lockManager.lockAuthorize(r, principal);
         this.authorizationManager.authorizeUnlock(uri, principal);
 
         if (r.getLock() != null) {
@@ -569,6 +588,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new ResourceNotFoundException(uri);
         }
 
+        this.lockManager.lockAuthorize(original, principal);
         this.authorizationManager.authorizeWrite(uri, principal);
 
         try {
@@ -610,6 +630,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new IllegalOperationException("Either parent doesn't exist " + "or parent is document");
         }
 
+        this.lockManager.lockAuthorize(parent, principal);
         this.authorizationManager.authorizeCreate(parent.getURI(), principal);
         checkMaxChildren(parent);
 
@@ -670,6 +691,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new IllegalOperationException("resource is collection");
         }
 
+        this.lockManager.lockAuthorize(r, principal);
         this.authorizationManager.authorizeWrite(uri, principal);
         File tempFile = null;
         try {
@@ -698,8 +720,41 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     }
 
     @Override
-    public boolean isAuthorized(Resource resource, RepositoryAction action, Principal principal) throws Exception {
+    public boolean isAuthorized(Resource resource, RepositoryAction action, Principal principal, 
+            boolean considerLocks) throws Exception {
+        if (resource == null) {
+            throw new IllegalArgumentException("Resource is NULL");
+        }
+        if (action == null) {
+            throw new IllegalArgumentException("Action is NULL");
+        }
+        if (action == RepositoryAction.COPY || action == RepositoryAction.MOVE) {
+            throw new IllegalArgumentException("Cannot authorize action " 
+                    + action + " on a single resource");
+        }
         try {
+            if (considerLocks) {
+                if (action == RepositoryAction.DELETE) {
+                    if (resource.getURI().isRoot()) {
+                        return false;
+                    }
+                    Resource parent = this.dao.load(resource.getURI().getParent());
+                    this.lockManager.lockAuthorize(parent, principal);
+                    this.lockManager.lockAuthorize(resource, principal);
+
+                } else if (action == RepositoryAction.ALL || 
+                        action == RepositoryAction.ADD_COMMENT ||
+                        action == RepositoryAction.EDIT_COMMENT ||
+                        action == RepositoryAction.REPOSITORY_ADMIN_ROLE_ACTION ||
+                        action == RepositoryAction.REPOSITORY_ROOT_ROLE_ACTION ||
+                        action == RepositoryAction.UNEDITABLE_ACTION ||
+                        action == RepositoryAction.UNLOCK ||
+                        action == RepositoryAction.CREATE ||
+                        action == RepositoryAction.WRITE ||
+                        action == RepositoryAction.WRITE_ACL) {
+                    this.lockManager.lockAuthorize(resource, principal);
+                }
+            }
             this.authorizationManager.authorizeAction(resource.getURI(), action, principal);
             return true;
         } catch (AuthenticationException e) {
@@ -729,6 +784,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         if (r == null) {
             throw new ResourceNotFoundException(resource.getURI());
         }
+        this.lockManager.lockAuthorize(resource, principal);
         this.authorizationManager.authorizeAll(resource.getURI(), principal);
 
         try {
@@ -850,6 +906,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                 throw new ResourceNotFoundException(resource.getURI());
             }
 
+            this.lockManager.lockAuthorize(resource, principal);
             this.authorizationManager.authorizeAddComment(resource.getURI(), principal);
 
             List<Comment> comments = this.commentDAO.listCommentsByResource(resource, false, this.maxComments);
@@ -910,6 +967,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                 throw new ResourceNotFoundException(resource.getURI());
             }
 
+            this.lockManager.lockAuthorize(resource, principal);
             this.authorizationManager.authorizeEditComment(resource.getURI(), principal);
             this.commentDAO.deleteComment(comment);
 
@@ -944,6 +1002,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                 throw new ResourceNotFoundException(resource.getURI());
             }
 
+            this.lockManager.lockAuthorize(resource, principal);
             this.authorizationManager.authorizeEditComment(resource.getURI(), principal);
             this.commentDAO.deleteAllComments(resource);
 
@@ -990,6 +1049,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                 throw new IllegalArgumentException("Trying to update a non-existing comment");
             }
 
+            this.lockManager.lockAuthorize(resource, principal);
             this.authorizationManager.authorizeEditComment(resource.getURI(), principal);
             comment = this.commentDAO.updateComment(comment);
             return comment;
@@ -1026,8 +1086,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     }
 
     private void validateACL(Acl acl, Acl originalAcl) throws InvalidPrincipalException {
-        Set<RepositoryAction> actions = acl.getActions();
-        for (RepositoryAction action : actions) {
+        Set<Privilege> actions = acl.getActions();
+        for (Privilege action : actions) {
             Set<Principal> principals = acl.getPrincipalSet(action);
             for (Principal principal : principals) {
                 boolean valid = false;

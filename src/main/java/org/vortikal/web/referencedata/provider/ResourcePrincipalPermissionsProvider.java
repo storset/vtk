@@ -81,6 +81,7 @@ public class ResourcePrincipalPermissionsProvider implements ReferenceDataProvid
     private RepositoryAction permission = null;
     private boolean requiresAuthentication = false;
     private boolean anonymous = false;
+    private boolean considerLocks = true;
         
     public void setRepository(Repository repository) {
         this.repository = repository;
@@ -102,6 +103,10 @@ public class ResourcePrincipalPermissionsProvider implements ReferenceDataProvid
         this.anonymous = anonymous;
     }
     
+    public void setConsiderLocks(boolean considerLocks) {
+        this.considerLocks = considerLocks;
+    }
+    
     public void afterPropertiesSet() {
         if (this.repository == null) {
             throw new BeanInitializationException(
@@ -114,7 +119,7 @@ public class ResourcePrincipalPermissionsProvider implements ReferenceDataProvid
     }
 
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public void referenceData(Map model, HttpServletRequest request)
         throws Exception {
 
@@ -145,14 +150,14 @@ public class ResourcePrincipalPermissionsProvider implements ReferenceDataProvid
                 }
                 throw new AuthenticationException();
             }
-            
             try {
                 if (this.anonymous) {
-                    result =  this.repository.isAuthorized(resource, this.permission, null);
+                    result = this.repository.isAuthorized(resource, this.permission, 
+                            null, this.considerLocks);
                 } else {
-                    result = this.repository.isAuthorized(resource, this.permission, principal);
+                    result = this.repository.isAuthorized(resource, this.permission, 
+                            principal, this.considerLocks);
                 }
-                
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -164,7 +169,6 @@ public class ResourcePrincipalPermissionsProvider implements ReferenceDataProvid
             permissionsModel.put("permissionsQueryResult", "false");            
         }
         permissionsModel.put("requestScheme", scheme);            
-        
         model.put(modelName, permissionsModel);
     }
 

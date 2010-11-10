@@ -30,80 +30,30 @@
  */
 package org.vortikal.repository;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+public enum RepositoryAction {
+    READ_PROCESSED("read-processed"),
+    READ("read"),
+    CREATE("create"),
+    WRITE("write"),
+    WRITE_ACL("write-acl"),
+    UNLOCK("unlock"),
+    DELETE("delete"),
+    COPY("copy"),
+    MOVE("move"),
+    ALL("all"),
+    ADD_COMMENT("add-comment"),
+    EDIT_COMMENT("edit-comment"),
+    UNEDITABLE_ACTION("property-edit-uneditable-action"),
+    REPOSITORY_ADMIN_ROLE_ACTION("property-edit-admin-role"),
+    REPOSITORY_ROOT_ROLE_ACTION("property-edit-root-role");
 
-public final class RepositoryAction {
-    
-    public final static RepositoryAction READ_PROCESSED = new RepositoryAction("read-processed");
-
-    public final static RepositoryAction READ = new RepositoryAction("read");
-
-    public final static RepositoryAction CREATE = new RepositoryAction("create");
-
-    public final static RepositoryAction WRITE = new RepositoryAction("write");
-
-    public final static RepositoryAction WRITE_ACL = new RepositoryAction("write-acl");
-
-    public final static RepositoryAction UNLOCK = new RepositoryAction("unlock");
-
-    public final static RepositoryAction DELETE = new RepositoryAction("delete");
-
-    public final static RepositoryAction COPY = new RepositoryAction("copy");
-
-    public final static RepositoryAction MOVE = new RepositoryAction("move");
-
-    public final static RepositoryAction ALL = new RepositoryAction("all");
-
-    public final static RepositoryAction ADD_COMMENT = new RepositoryAction("add-comment");
-
-    public final static RepositoryAction EDIT_COMMENT = new RepositoryAction("edit-comment");
-
-    public final static RepositoryAction UNEDITABLE_ACTION =
-        new RepositoryAction("property-edit-uneditable-action");
-
-    public final static RepositoryAction REPOSITORY_ADMIN_ROLE_ACTION =
-        new RepositoryAction("property-edit-admin-role");
-
-    public final static RepositoryAction REPOSITORY_ROOT_ROLE_ACTION =
-        new RepositoryAction("property-edit-root-role");
-
-    
-    
-    public final static RepositoryAction[] REPOSITORY_ACTIONS = 
-        new RepositoryAction[] {
-        RepositoryAction.READ_PROCESSED,
-        RepositoryAction.READ,
-        RepositoryAction.CREATE,
-        RepositoryAction.WRITE,
-        RepositoryAction.WRITE_ACL,
-        RepositoryAction.UNLOCK, 
-        RepositoryAction.DELETE,
-        RepositoryAction.COPY,
-        RepositoryAction.MOVE,
-        RepositoryAction.ALL,
-        RepositoryAction.ADD_COMMENT,
-        RepositoryAction.EDIT_COMMENT,
-        RepositoryAction.REPOSITORY_ADMIN_ROLE_ACTION,
-        RepositoryAction.REPOSITORY_ROOT_ROLE_ACTION,
-        RepositoryAction.UNEDITABLE_ACTION};
-    
-    /**
-     * The list of defined repository actions
-     */
-    public final static Set<RepositoryAction> REPOSITORY_ACTION_SET = 
-        new HashSet<RepositoryAction>(Arrays.asList(REPOSITORY_ACTIONS));
-    
-
-    
     private String name;
-    
     private RepositoryAction(String name) {
         this.name = name;
     }
-    
-
+    public String value() {
+        return this.name;
+    }
     public String toString() {
         return this.name;
     }

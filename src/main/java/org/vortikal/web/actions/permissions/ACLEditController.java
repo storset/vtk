@@ -51,22 +51,21 @@ import org.vortikal.repository.Acl;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
+import org.vortikal.security.Principal.Type;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.security.Principal.Type;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
 public class ACLEditController extends SimpleFormController implements InitializingBean {
 
     private Repository repository;
-    private RepositoryAction privilege;
+    private Privilege privilege;
     private PrincipalFactory principalFactory;
 
-    private Map<RepositoryAction, Principal> privilegePrincipalMap;
+    private Map<Privilege, Principal> privilegePrincipalMap;
 
     private Principal groupingPrincipal = PrincipalFactory.ALL;
 
@@ -85,7 +84,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
     }
 
     public void setPrivilegePrincipalMap(
-            Map<RepositoryAction, Principal> privilegePrincipalMap) {
+            Map<Privilege, Principal> privilegePrincipalMap) {
         this.privilegePrincipalMap = privilegePrincipalMap;
     }
 
@@ -98,22 +97,23 @@ public class ACLEditController extends SimpleFormController implements Initializ
             throw new BeanInitializationException(
                     "Bean property 'groupingPrincipal' must be set");
         }
+        
 
-        if (!Privilege.PRIVILEGES.contains(this.privilege)) {
+        if (this.privilege == null) {
             throw new BeanInitializationException(
-                    "Legal values for bean property 'privilege' are defined by "
-                            + "Privilege.PRIVILEGES. Value is '" + this.privilege + "'.");
+                    "Bean property 'privilege' must be set");
         }
         if (this.privilegePrincipalMap == null) {
             throw new BeanInitializationException(
                     "Bean property 'privilegePrincipalMap' must be set");
         }
         Principal p = this.privilegePrincipalMap.get(this.privilege);
-        if (p != null)
+        if (p != null) {
             this.groupingPrincipal = p;
+        }
     }
 
-    public void setPrivilege(RepositoryAction privilege) {
+    public void setPrivilege(Privilege privilege) {
         this.privilege = privilege;
     }
 

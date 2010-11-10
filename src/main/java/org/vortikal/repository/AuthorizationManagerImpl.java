@@ -46,7 +46,6 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
     private RoleManager roleManager;
     private PrincipalManager principalManager;
     private DataAccessor dao;
-    private LockManager lockManager;
     
     private boolean readOnly = false;
 
@@ -76,57 +75,63 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
 
     public void authorizeAction(Path uri, RepositoryAction action, 
             Principal principal) throws AuthenticationException, AuthorizationException,
-            ResourceLockedException, IOException {
-
-        if (!RepositoryAction.REPOSITORY_ACTION_SET.contains(action)
-                || RepositoryAction.COPY.equals(action)
-                || RepositoryAction.MOVE.equals(action)) {
-            throw new IllegalArgumentException(
-                "Unable to authorize for action " + action
-                + ": must be one of (except COPY/MOVE) " + RepositoryAction.REPOSITORY_ACTION_SET);
+            IOException {
+        if (uri == null) {
+            throw new IllegalArgumentException("URI cannot be NULL");
         }
-
-        if (RepositoryAction.UNEDITABLE_ACTION.equals(action)) {
+        if (action == null) {
+            throw new IllegalArgumentException("Action cannot be NULL");
+        }
+        if (RepositoryAction.COPY == action || RepositoryAction.MOVE == action) {
+            throw new IllegalArgumentException(
+                    "Unable to authorize for COPY/MOVE actions");
+        }
+        
+        switch (action) {
+        case UNEDITABLE_ACTION:
             throw new AuthorizationException("Uneditable");
-        } else if (RepositoryAction.READ_PROCESSED.equals(action)) {
+        case READ_PROCESSED:
             authorizeReadProcessed(uri, principal);
-
-        } else if (RepositoryAction.READ.equals(action)) {
+            break;
+        case READ:
             authorizeRead(uri, principal);
-
-        } else if (RepositoryAction.CREATE.equals(action)) {
+            break;
+        case CREATE:
             authorizeCreate(uri, principal);
-
-        } else if (RepositoryAction.WRITE.equals(action)) {
+            break;
+        case WRITE:
             authorizeWrite(uri, principal);
-
-        } else if (RepositoryAction.EDIT_COMMENT.equals(action)) {
+            break;
+        case EDIT_COMMENT:
             authorizeEditComment(uri, principal);
-
-        } else if (RepositoryAction.ADD_COMMENT.equals(action)) {
+            break;
+        case ADD_COMMENT:
             authorizeAddComment(uri, principal);
-
-        } else if (RepositoryAction.WRITE_ACL.equals(action) ||
-                RepositoryAction.ALL.equals(action)) {
+            break;
+        case ALL:
+        case WRITE_ACL:
             authorizeAll(uri, principal);
-
-        } else if (RepositoryAction.UNLOCK.equals(action)) {
+            break;
+        case UNLOCK:
             authorizeUnlock(uri, principal);
-
-        } else if (RepositoryAction.DELETE.equals(action)) {
+            break;
+        case DELETE:
             authorizeDelete(uri, principal);
-
-        } else if (RepositoryAction.REPOSITORY_ADMIN_ROLE_ACTION.equals(action)) {
+            break;
+        case REPOSITORY_ADMIN_ROLE_ACTION:
             authorizePropertyEditAdminRole(uri, principal);
-
-        } else if (RepositoryAction.REPOSITORY_ROOT_ROLE_ACTION.equals(action)) {
+            break;
+        case REPOSITORY_ROOT_ROLE_ACTION:
             authorizePropertyEditRootRole(uri, principal);
+            break;
+            default:
+                throw new IllegalArgumentException("Cannot authorize action " + action);
         }
     }
     
     
-    private static final RepositoryAction[] READ_PROCESSED_AUTH_PRIVILEGES = 
-        new RepositoryAction[] {Privilege.ALL, Privilege.READ, Privilege.READ_PROCESSED};
+    private static final Privilege[] READ_PROCESSED_AUTH_PRIVILEGES = 
+        new Privilege[] {Privilege.ALL, Privilege.READ, Privilege.READ_PROCESSED};
 
     /**
      * <ul>
@@ -150,8 +155,8 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
 
     
 
-    private static final RepositoryAction[] READ_AUTH_PRIVILEGES = 
-        new RepositoryAction[] {Privilege.ALL, Privilege.READ};
+    private static final Privilege[] READ_AUTH_PRIVILEGES = 
+        new Privilege[] {Privilege.ALL, Privilege.READ};
 
     /**
      * <ul>
@@ -163,7 +168,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
      */
     public void authorizeRead(Path uri, Principal principal) 
         throws AuthenticationException, AuthorizationException,
-        ResourceLockedException, IOException, ResourceNotFoundException {
+        IOException, ResourceNotFoundException {
 
         ResourceImpl resource = loadResource(uri);
 
@@ -175,27 +180,24 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
     }
 
 
-    private static final RepositoryAction[] CREATE_AUTH_PRIVILEGES = 
-        new RepositoryAction[] {Privilege.ALL, Privilege.WRITE, Privilege.BIND};
+    private static final Privilege[] CREATE_AUTH_PRIVILEGES = 
+        new Privilege[] {Privilege.ALL, Privilege.WRITE, Privilege.BIND};
 
     /**
      * <ul>
      *   <li>Privilege BIND, WRITE or ALL on resource
      *   <li>Role ROOT
-     *   <li>+ parent not locked by another principal
      * </ul>
      * @return is authorized
      * @throws IOException
      */
     public void authorizeCreate(Path uri, Principal principal)
         throws AuthenticationException, AuthorizationException, ReadOnlyException, 
-        ResourceLockedException, IOException, ResourceNotFoundException {
+        IOException, ResourceNotFoundException {
 
         checkReadOnly(principal);
 
         ResourceImpl resource = loadResource(uri);
-        
-        this.lockManager.lockAuthorize(resource, principal);
         
         if (this.roleManager.hasRole(principal, RoleManager.ROOT))
             return;
@@ -204,28 +206,25 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
     }
     
 
-    private static final RepositoryAction[] WRITE_AUTH_PRIVILEGES = 
-        new RepositoryAction[] {Privilege.ALL, Privilege.WRITE};
+    private static final Privilege[] WRITE_AUTH_PRIVILEGES = 
+        new Privilege[] {Privilege.ALL, Privilege.WRITE};
 
     /**
      * <ul>
      *   <li>Privilege WRITE or ALL in ACL
      *   <li>Role ROOT
-     *   <li>+ resource not locked by another principal
      * </ul>
      * @return is authorized
      * @throws IOException
      */
     public void authorizeWrite(Path uri, Principal principal)
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
-        ResourceLockedException, IOException, ResourceNotFoundException {
+        IOException, ResourceNotFoundException {
 
         checkReadOnly(principal);
 
         ResourceImpl resource = loadResource(uri);
         
-        this.lockManager.lockAuthorize(resource, principal);
-
         if (this.roleManager.hasRole(principal, RoleManager.ROOT))
             return;
         
@@ -233,27 +232,24 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
     }
     
 
-    private static final RepositoryAction[] ADD_COMMENT_AUTH_PRIVILEGES = 
-        new RepositoryAction[] {Privilege.ADD_COMMENT};
+    private static final Privilege[] ADD_COMMENT_AUTH_PRIVILEGES = 
+        new Privilege[] {Privilege.ADD_COMMENT};
 
     /**
      * <ul>
      *   <li>Privilege ADD_COMMENT in ACL
-     *   <li>+ resource not locked by another principal
      * </ul>
      * @return is authorized
      * @throws IOException
      */
     public void authorizeAddComment(Path uri, Principal principal)
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
-        ResourceLockedException, IOException, ResourceNotFoundException {
+        IOException, ResourceNotFoundException {
 
         checkReadOnly(principal);
 
         ResourceImpl resource = loadResource(uri);
         
-        this.lockManager.lockAuthorize(resource, principal);
-
         if (this.roleManager.hasRole(principal, RoleManager.ROOT))
             return;
         
@@ -262,28 +258,25 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
     
 
 
-    private static final RepositoryAction[] EDIT_COMMENT_AUTH_PRIVILEGES = 
-        new RepositoryAction[] {Privilege.ALL, Privilege.WRITE};
+    private static final Privilege[] EDIT_COMMENT_AUTH_PRIVILEGES = 
+        new Privilege[] {Privilege.ALL, Privilege.WRITE};
 
     /**
      * <ul>
      *   <li>Privilege WRITE or ALL in ACL
      *   <li>Role ROOT
-     *   <li>+ resource not locked by another principal
      * </ul>
      * @return is authorized
      * @throws IOException
      */
     public void authorizeEditComment(Path uri, Principal principal)
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
-        ResourceLockedException, IOException, ResourceNotFoundException {
+        IOException, ResourceNotFoundException {
 
         checkReadOnly(principal);
 
         ResourceImpl resource = loadResource(uri);
         
-        this.lockManager.lockAuthorize(resource, principal);
-
         if (this.roleManager.hasRole(principal, RoleManager.ROOT))
             return;
         
@@ -293,28 +286,25 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
 
 
 
-    private static final RepositoryAction[] ALL_AUTH_PRIVILEGES = 
-        new RepositoryAction[] {Privilege.ALL};
+    private static final Privilege[] ALL_AUTH_PRIVILEGES = 
+        new Privilege[] {Privilege.ALL};
 
 
     /**
      * <ul>
      *   <li>Privilege ALL in ACL
      *   <li>Role ROOT
-     *   <li>+ resource not locked by another principal
      * </ul>
      * @return is authorized
      * @throws IOException
      */
     public void authorizeAll(Path uri, Principal principal)
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
-        ResourceLockedException, IOException, ResourceNotFoundException {
+        IOException, ResourceNotFoundException {
 
         checkReadOnly(principal);
         
         ResourceImpl resource = loadResource(uri);
-        
-        this.lockManager.lockAuthorize(resource, principal);
         
         if (this.roleManager.hasRole(principal, RoleManager.ROOT))
             return;
@@ -325,13 +315,13 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
 
 
     
-    private static final RepositoryAction[] UNLOCK_AUTH_PRIVILEGES = 
-        new RepositoryAction[] {Privilege.ALL, Privilege.WRITE};
+    private static final Privilege[] UNLOCK_AUTH_PRIVILEGES = 
+        new Privilege[] {Privilege.ALL, Privilege.WRITE};
 
 
     /**
      * <ul>
-     *   <li>privilege WRITE or ALL in Acl + resource not locked by another principal
+     *   <li>privilege WRITE or ALL in Acl 
      *   <li>Role ROOT
      * </ul>
      * @return is authorized
@@ -339,7 +329,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
      */
     public void authorizeUnlock(Path uri, Principal principal) 
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
-        ResourceLockedException, IOException, ResourceNotFoundException {
+        IOException, ResourceNotFoundException {
 
         checkReadOnly(principal);
         
@@ -348,21 +338,18 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
         
         ResourceImpl resource = loadResource(uri);
         
-        this.lockManager.lockAuthorize(resource, principal);
-
         aclAuthorize(principal, resource, UNLOCK_AUTH_PRIVILEGES);
     }
 
 
-    private static final RepositoryAction[] DELETE_AUTH_PRIVILEGES = 
-        new RepositoryAction[] {Privilege.ALL};
+    private static final Privilege[] DELETE_AUTH_PRIVILEGES = 
+        new Privilege[] {Privilege.ALL};
 
 
     /**
      * <ul>
-     *   <li>Privilege ALL in ACL + parent not locked
+     *   <li>Privilege ALL in ACL
      *   <li>Action WRITE on parent
-     *   <li>+ resource tree not locked by another principal
      *   <li>Resource is not the root resource '/'.
      * </ul>
      * @return is authorized
@@ -370,7 +357,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
      */
     public void authorizeDelete(Path uri, Principal principal) 
         throws AuthenticationException, AuthorizationException, ReadOnlyException, 
-        ResourceLockedException, IOException, ResourceNotFoundException {
+        IOException, ResourceNotFoundException {
 
         checkReadOnly(principal);
 
@@ -396,8 +383,8 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
     }
     
 
-    private static final RepositoryAction[] ADMIN_AUTH_PRIVILEGES = 
-        new RepositoryAction[] {Privilege.ALL};
+    private static final Privilege[] ADMIN_AUTH_PRIVILEGES = 
+        new Privilege[] {Privilege.ALL};
 
 
     /**
@@ -411,7 +398,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
      */
     public void authorizePropertyEditAdminRole(Path uri, Principal principal) 
         throws AuthenticationException, AuthorizationException,
-        ResourceLockedException, IOException, ResourceNotFoundException {
+        IOException, ResourceNotFoundException {
         if (principal == null) {
             throw new AuthorizationException(
                 "NULL principal not authorized to edit properties using admin privilege ");
@@ -439,7 +426,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
      */
     public void authorizePropertyEditRootRole(Path uri, Principal principal)
         throws AuthenticationException, AuthorizationException,
-        ResourceLockedException, IOException {
+        IOException {
 
         if (!this.roleManager.hasRole(principal, RoleManager.ROOT))
             throw new AuthorizationException();
@@ -461,7 +448,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
     public void authorizeCopy(Path srcUri, Path destUri, 
             Principal principal, boolean deleteDestination) 
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
-        ResourceLockedException, IOException, ResourceNotFoundException {
+        IOException, ResourceNotFoundException {
 
         checkReadOnly(principal);
 
@@ -495,13 +482,9 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
     public void authorizeMove(Path srcUri, Path destUri,
             Principal principal, boolean deleteDestination) 
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
-        ResourceLockedException, IOException {
+        IOException {
 
         checkReadOnly(principal);
-
-        // XXX: in order to move a collection, read permission is required for 
-        // the entire subtree (commented out):
-        //authorizeCopy(srcUri, destUri, principal, deleteDestination);
 
         authorizeDelete(srcUri, principal);
     }
@@ -528,13 +511,13 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
      * <p>5) (g, privilege) is present in the resource's ACL, where g is a group
      * identifier and the user is a member of that group
      **/
-    private void aclAuthorize(Principal principal, Resource resource, RepositoryAction[] privileges) 
+    private void aclAuthorize(Principal principal, Resource resource, Privilege[] privileges) 
         throws AuthenticationException, AuthorizationException {
         
         Acl acl = resource.getAcl();
 
         for (int i = 0; i < privileges.length; i++) {
-            RepositoryAction privilege = privileges[i];
+            Privilege privilege = privileges[i];
             Set<Principal> principalSet = acl.getPrincipalSet(privilege);
             
             // Dont't need to test the conditions if (principalSet == null)
@@ -574,7 +557,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
         if (principal == null) throw new AuthenticationException();
             
         for (int i = 0; i < privileges.length; i++) {
-            RepositoryAction action = privileges[i];
+            Privilege action = privileges[i];
             Set<Principal> principalSet = acl.getPrincipalSet(action);
             
             // Condition 5:
@@ -620,10 +603,6 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
 
     public void setDao(DataAccessor dao) {
         this.dao = dao;
-    }
-
-    public void setLockManager(LockManager lockManager) {
-        this.lockManager = lockManager;
     }
 
 }

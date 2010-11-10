@@ -91,7 +91,7 @@ public class CommentsProvider implements ReferenceDataProvider {
         this.formSessionAttributeName = formSessionAttributeName;
     }
     
-    @SuppressWarnings(value={"unchecked"}) 
+    @SuppressWarnings(value={"rawtypes", "unchecked"}) 
     public void referenceData(Map model, HttpServletRequest servletRequest) throws Exception {
         
         if (this.formSessionAttributeName != null) {
@@ -165,7 +165,7 @@ public class CommentsProvider implements ReferenceDataProvider {
         if (this.resourceCommentsFeedService != null) {
             
             // Only provide feed subscription link if resource is READ for ALL.
-            if (this.repository.isAuthorized(resource, RepositoryAction.READ, PrincipalFactory.ALL)) {
+            if (this.repository.isAuthorized(resource, RepositoryAction.READ, PrincipalFactory.ALL, false)) {
                 try {
                     URL feedURL = this.resourceCommentsFeedService.constructURL(resource, principal);
                     model.put("feedURL", feedURL);

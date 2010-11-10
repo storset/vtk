@@ -268,7 +268,7 @@
     <property name="handlerInterceptors" ref="publishPermissionInterceptor" />
   </bean>
 
-  <bean id="lockResourceService" class="org.vortikal.web.service.ServiceImpl">
+  <bean id="manage.unlockFormService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
     <property name="categories">
       <set>
@@ -277,23 +277,18 @@
     </property>
     <property name="assertions">
       <list>
-        <ref bean="lockPermissionAssertion" />
+        <ref bean="unlockPermissionAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
-          <property name="parameterValue" value="lock" />
+          <property name="parameterValue" value="unlock-form" />
         </bean>
       </list>
     </property>
-    <property name="handler" ref="lockResourceHandler" />
+    <property name="handler" ref="manage.unlockFormHandler" />
   </bean>
 
-  <bean id="unlockResourceService" class="org.vortikal.web.service.ServiceImpl">
+  <bean id="manage.unlockResourceService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
-    <property name="categories">
-      <set>
-        <value>lockUnlockAction</value>
-      </set>
-    </property>
     <property name="assertions">
       <list>
         <ref bean="manage.postRequestAssertion" />
@@ -304,7 +299,7 @@
         </bean>
       </list>
     </property>
-    <property name="handler" ref="unlockResourceHandler" />
+    <property name="handler" ref="manage.unlockResourceHandler" />
   </bean>
 
   <bean id="fileUploadService" class="org.vortikal.web.service.ServiceImpl">
@@ -831,9 +826,11 @@
     <property name="tempDir" value="${repository.tempDir}" />
   </bean>
 
-  <bean id="lockResourceHandler" class="org.vortikal.web.actions.lock.LockResourceController" parent="repositoryAware" />
+  <bean id="manage.unlockResourceHandler" class="org.vortikal.web.actions.lock.UnlockResourceController" parent="repositoryAware" />
 
-  <bean id="unlockResourceHandler" class="org.vortikal.web.actions.lock.UnlockResourceController" parent="repositoryAware" />
+  <bean id="manage.unlockFormHandler" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+    <property name="viewName" value="manage.unlockForm" />
+  </bean>
 
   <bean id="createDocumentHandler" class="org.vortikal.web.actions.create.TemplateBasedCreateController"
     parent="repositoryAware">
@@ -1079,9 +1076,25 @@
     <property name="views">
       <map>
         <entry key="manage.refreshLockView" value-ref="manage.refreshLockView" />
+        <entry key="manage.unlockForm" value-ref="manage.unlockFormView" />
       </map>
     </property>
   </bean>
+
+  <bean id="manage.unlockFormView" parent="freemarkerView">
+    <property name="url" value="pages/unlock-form.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
+              parent="repositoryAware">
+          <property name="service" ref="manage.unlockResourceService" />
+          <property name="modelName" value="form" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
 
   <bean id="expiresSecProvider" class="org.vortikal.web.referencedata.provider.ResourcePropertiesValueProvider"
     parent="repositoryAware">
@@ -1464,7 +1477,7 @@
 
   <bean id="manage.unlockURLProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
     <property name="repository" ref="repository" />
-    <property name="service" ref="unlockResourceService" />
+    <property name="service" ref="manage.unlockResourceService" />
     <property name="modelName" value="unlockURL" />
     <property name="urlName" value="url" />
   </bean>

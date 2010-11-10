@@ -209,7 +209,6 @@
   <bean id="authorizationManager" class="org.vortikal.repository.AuthorizationManagerImpl">
     <property name="readOnly" value="${repositoryReadOnly}" />
     <property name="principalManager" ref="principalManager" />
-    <property name="lockManager" ref="repository.lockManager" />
     <property name="roleManager" ref="roleManager" />
     <property name="dao" ref="${repositoryBackend}" />
   </bean>

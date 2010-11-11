@@ -39,18 +39,26 @@ import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.vortikal.util.web.HttpUtil;
+import org.vortikal.web.service.URL;
 
 
 /**
  * Standard request filter.
- * 1) Ensures that the URI is not empty or <code>null</code>.
- * 2) Translates '*' as request URI to '/' (relevant for a host global OPTIONS request).
+ * 
+ * <ol>
+ * <li>Ensures that the URI is not empty or <code>null</code>.
+ * <li>Translates '*' as request URI to '/' (relevant for a host global OPTIONS request).
+ * <li>Supports translating forwarded requests using a header with optional fields {host, port, protocol}
+ *    Example: <code>X-My-Forward-Header: host=example.com,port=443,protocol=https</code>
+ * </ol>
  */
 public class StandardRequestFilter extends AbstractRequestFilter {
 
     private static Log logger = LogFactory.getLog(StandardRequestFilter.class);
 
     private Map<Pattern, String> urlReplacements;
+    private String requestForwardHeader = null;
 
     public void setUrlReplacements(Map<String, String> urlReplacements) {
         this.urlReplacements = new LinkedHashMap<Pattern, String>();
@@ -61,26 +69,73 @@ public class StandardRequestFilter extends AbstractRequestFilter {
         }
     }
 
+    public void setRequestForwardHeader(String forwardHeader) {
+        this.requestForwardHeader = forwardHeader;
+    }
+
     public HttpServletRequest filterRequest(HttpServletRequest request) {
         return new StandardRequestWrapper(request);
     }
 
     private class StandardRequestWrapper extends HttpServletRequestWrapper {
-
         private String uri;
+        private URL requestURL;
 
         public StandardRequestWrapper(HttpServletRequest request) {
-
             super(request);
-
             String requestURI = request.getRequestURI();
             this.uri = translateUri(requestURI);
-
             if (logger.isDebugEnabled()) {
                 logger.debug("Translated uri: from '" + requestURI + "' to '" + this.uri + "'");
             }
+            this.requestURL = URL.parse(request.getRequestURL().toString());
+            if (requestForwardHeader == null || requestForwardHeader.trim().equals("")) {
+                return;
+            }
+            String forwardHeader = request.getHeader(requestForwardHeader);
+            if (forwardHeader == null) {
+                return;
+            }
+            String host = HttpUtil.extractHeaderField(forwardHeader, "host");
+            String port = HttpUtil.extractHeaderField(forwardHeader, "port");
+            String protocol = HttpUtil.extractHeaderField(forwardHeader, "protocol");
+            if (protocol != null) {
+                this.requestURL.setProtocol(protocol);
+            }
+            if (port != null) {
+                this.requestURL.setPort(Integer.parseInt(port));
+            }
+            if (host!= null) {
+                this.requestURL.setHost(host);
+            }
         }
 
+        @Override
+        public StringBuffer getRequestURL() {
+            return new StringBuffer(this.requestURL.toString());
+        }
+
+        @Override
+        public String getScheme() {
+            return this.requestURL.getProtocol();
+        }
+
+        @Override
+        public int getServerPort() {
+            return this.requestURL.getPort();
+        }
+
+        @Override
+        public String getServerName() {
+            return this.requestURL.getHost();
+        }
+
+        @Override
+        public boolean isSecure() {
+            return "https".equals(this.requestURL.getProtocol());
+        }
+
+        @Override
         public String getRequestURI() {
             return this.uri;
         }
@@ -103,6 +158,3 @@ public class StandardRequestFilter extends AbstractRequestFilter {
     }
 
 }
-
-
-

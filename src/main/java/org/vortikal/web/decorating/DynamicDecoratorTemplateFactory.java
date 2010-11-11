@@ -48,7 +48,6 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.resourcemanagement.view.tl.ComponentInvokerNodeFactory;
-import org.vortikal.resourcemanagement.view.tl.JSONAttributeHandler;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.text.tl.CaptureNodeFactory;
 import org.vortikal.text.tl.Context;
@@ -106,7 +105,6 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
         functions.add(new TemplateParameterFunction(new Symbol("template-param")));
         functions.add(new ResourceAspectFunction(new Symbol("resource-aspect"), this.aspectsPropdef, this.fieldConfig));
         functions.add(new ResourcePropHandler(new Symbol("resource-prop"), this.repository));
-        functions.add(new JSONAttributeHandler(new Symbol("json-attr")));
         this.functions = functions;
         
         Map<String, DirectiveNodeFactory> directiveHandlers = new HashMap<String, DirectiveNodeFactory>();

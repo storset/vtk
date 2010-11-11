@@ -200,7 +200,6 @@
         <ref bean="structuredResources.resourcePropFunction" />
         <ref bean="structuredResources.resourcePropObjValFunction" />
         <ref bean="structuredResources.structuredDocumentFunction" />
-        <ref bean="structuredResources.jsonAttrFunction" />
         <ref bean="structuredResources.searchFunction" />
         <ref bean="structuredResources.viewURLFunction" />
         <ref bean="structuredResources.toDateFunction" />
@@ -247,14 +246,6 @@
     <constructor-arg>
       <bean class="org.vortikal.text.tl.Symbol">
         <constructor-arg value="structured-document" />
-      </bean>
-    </constructor-arg>
-  </bean>
-
-  <bean id="structuredResources.jsonAttrFunction" class="org.vortikal.resourcemanagement.view.tl.JSONAttributeHandler">
-    <constructor-arg>
-      <bean class="org.vortikal.text.tl.Symbol">
-        <constructor-arg value="json-attr" />
       </bean>
     </constructor-arg>
   </bean>

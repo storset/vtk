@@ -52,7 +52,7 @@
 
   <#include "/system/javascript.ftl"/>
   <script language="javascript"><!--
-  function linkCheckLocalizer(status) {
+  function linkCheckResponseLocalizer(status) {
       switch (status) {
          case 'NOT_FOUND':
          case 'MALFORMED_URL':
@@ -63,11 +63,14 @@
             return '<@vrtx.msg code="linkcheck.status.ERROR" default="error"/>';
       }
   }
+  
+  function linkCheckSpinnerLocalizer() {
+     return '<@vrtx.msg code="linkcheck.spinner" default="Checking links..."/>';
+  }
 
   function linkCheckCompleted(requests) {
       //console.log("link check done");
   }
-
 
   $(document).ready(function() {
      $('iframe').load(function() {
@@ -79,7 +82,8 @@
             selection : 'iframe',
             validationURL : '${linkcheck.URL?html}',
             chunk : 10,
-            localizer : linkCheckLocalizer,
+            responseLocalizer : linkCheckResponseLocalizer,
+            spinnerLocalizer : linkCheckSpinnerLocalizer,
             completed : linkCheckCompleted
         });
         </#if>

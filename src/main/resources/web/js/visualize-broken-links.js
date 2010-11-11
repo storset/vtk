@@ -10,6 +10,8 @@ function visualizeBrokenLinks(options) {
     var urls = [];
     var idx = 0;
     urls[idx] = [];
+    var tabMenu = $("#main .activeTab", window.parent.document);
+    tabMenu.prepend("<span id='" + linkClass + "-spinner'>" + options.spinnerLocalizer() + "</span>");
     var context = $(selection);
     context.contents().find("a." + linkClass).each(function(elem) {
         if (urls[idx].length == chunk) {
@@ -22,12 +24,11 @@ function visualizeBrokenLinks(options) {
         var href = $(this).attr("href");
         list[list.length] = $(this).attr("href");
     });
-
     if (urls.length == 0) {
         if (options.completed) options.completed(0);
         return;
     }
-    var reqs = 0;
+    var reqs = 0;  
     $.each(urls, function(i, list) {
         var data = "";
         for (var j = 0; j < list.length; j++) {
@@ -41,12 +42,13 @@ function visualizeBrokenLinks(options) {
             dataType : 'json',
             context : context,
             success : function(results, status, resp) {
-                return linkCheckResponse(results, $(this), options.localizer, linkClass);
+                return linkCheckResponse(results, $(this), options.responseLocalizer, linkClass);
             },
             complete : function(req, status) {
                 reqs++;
                 if (reqs == urls.length && options.completed) {
                     options.completed(reqs);
+                    tabMenu.find("#" + linkClass + "-spinner").remove();
                 }
             }
         });

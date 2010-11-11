@@ -70,6 +70,13 @@
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
+  <bean id="myDocumentsReporter" class="org.vortikal.web.actions.report.MyDocumentsReporter" parent="documentReporter">
+    <property name="name" value="my-documents" />
+    <property name="createdByPropDef" ref="createdByPropDef" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
   <bean id="report.viewResolver" parent="system.decoratingViewResolver">
     <property name="views">
       <map>

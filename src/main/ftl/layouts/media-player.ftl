@@ -14,12 +14,10 @@
 
 <#if media?exists && contentType?exists >
 
- <#if media != ""> 
   <div class="vrtx-media-ref">
     <#if contentType == "audio" || contentType == "audio/mpeg" || contentType == "audio/mp3" >
     
-      <script type="text/javascript" language="JavaScript" src="${audioFlashPlayerJsURL?html}/"></script>
-      
+      <script type="text/javascript" language="JavaScript" src="${audioFlashPlayerJsURL?html}/"></script>  
       <object type="application/x-shockwave-flash" data="${audioFlashPlayerFlashURL?html}" id="audioplayer1" height="24" width="290">
         <param name="movie" value="${audioFlashPlayerFlashURL?html}"/>
         <param name="FlashVars" value="playerID=1&amp;soundFile=${media}"/>
@@ -27,7 +25,6 @@
         <param name="menu" value="false"/>
         <param name="wmode" value="transparent"/>
       </object>
-      
       <a class="vrtx-media" href="${media}"><@vrtx.msg code="article.media-file" /></a>
     
      <#elseif contentType == "video/quicktime" >
@@ -41,7 +38,8 @@
         <embed src="${media}" width="${width}" height="${height}" autoplay="false" controller="true" loop="false" scale="aspect" pluginspage="http://www.apple.com/quicktime/download/">
         </embed>
       </object> 
-	
+	  <a class="vrtx-media" href="${media}"><@vrtx.msg code="article.media-file" /></a>
+
 	<#elseif contentType == "application/x-shockwave-flash" && extension == "swf">
 	
 		<OBJECT 
@@ -69,7 +67,9 @@
 			 	flashvars="src=${media}">
 		 	</embed>
 		</object>
-	    			
+		<#if contentType == "video/mp4">
+		<a class="vrtx-media" href="${media}"><@vrtx.msg code="article.media-file" /></a>
+		</#if>
     <#else>
         <object  
 			classid="CLSID:22D6F312-B0F6-11D0-94AB-0080C74C7E95" 
@@ -97,5 +97,4 @@
     </#if>
   </div>
   
-  </#if>
 </#if>

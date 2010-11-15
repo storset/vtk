@@ -17,7 +17,7 @@ import org.vortikal.web.service.URL;
 
 public class ResourceMediaPlayerComponent extends ViewRenderingDecoratorComponent {
 
-    private Repository repository;
+    protected Repository repository;
     Map<String, String> extentionToMimetype;
 
     protected void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)

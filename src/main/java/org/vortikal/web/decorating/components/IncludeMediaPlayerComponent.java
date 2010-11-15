@@ -3,6 +3,9 @@ package org.vortikal.web.decorating.components;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.vortikal.repository.Path;
+import org.vortikal.repository.Resource;
+import org.vortikal.security.SecurityContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
 
@@ -38,9 +41,20 @@ public class IncludeMediaPlayerComponent extends ResourceMediaPlayerComponent {
         if (autoplay != null)
             model.put("autoplay", autoplay);
 
+        Resource mediaResource = null;
+        if (url != null && url.startsWith("/")) {
+            try {
+                String token = SecurityContext.getSecurityContext().getToken();
+                mediaResource = repository.retrieve(token, Path.fromString(url), false);
+            } catch (Exception e) {
+            }
+        }
+
         String extension = getExtension(url);
         if (contentType != null) {
             model.put("contentType", contentType);
+        } else if (mediaResource != null) {
+            model.put("contentType", mediaResource.getContentType());
         } else if (extentionToMimetype.containsKey(extension)) {
             model.put("contentType", extentionToMimetype.get(extension));
         }

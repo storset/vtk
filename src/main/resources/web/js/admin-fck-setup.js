@@ -6,48 +6,48 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   var completeEditor = completeEditor != null ? completeEditor : false;
   var withoutSubSuper = withoutSubSuper != null ? withoutSubSuper : false;
 
-  var fck = new CKEDITOR;
-  fck.BasePath = baseUrl + "/";
+  var ck = new CKEDITOR;
+  ck.BasePath = baseUrl + "/";
 
-  fck.config['DefaultLanguage'] = defaultLanguage;
+  ck.config['DefaultLanguage'] = defaultLanguage;
 
-  fck.config['CustomConfigurationsPath'] = baseUrl + '/custom-fckconfig.js';
+  ck.config['CustomConfigurationsPath'] = baseUrl + '/custom-fckconfig.js';
 
   if (completeEditor) {
-    fck.ToolbarSet = 'Complete-article';
+    ck.ToolbarSet = 'Complete-article';
   } else if (withoutSubSuper) {
-    fck.ToolbarSet = 'Inline-S';
+    ck.ToolbarSet = 'Inline-S';
   } else {
-    fck.ToolbarSet = 'Inline';
+    ck.ToolbarSet = 'Inline';
   }
 
   // File browser
-  // fck.config['LinkBrowserURL'] = baseUrl + '/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder
+  // ck.config['LinkBrowserURL'] = baseUrl + '/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder
   //     + '&Connector=' + browsePath;
-  // fck.config['ImageBrowserURL'] = baseUrl + '/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder
+  // ck.config['ImageBrowserURL'] = baseUrl + '/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder
   //     + '&Type=Image&Connector=' + browsePath;
-  // fck.config['FlashBrowserURL'] = baseUrl + '/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder
+  // ck.config['FlashBrowserURL'] = baseUrl + '/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder
   //    + '&Type=Flash&Connector=' + browsePath;
 
-  fck.config.filebrowserLinkBrowseURL  = '${fckeditorBase.url?html}/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=${fckBrowse.url.pathRepresentation}';
-  fck.config.filebrowserImageBrowseURL = '${fckeditorBase.url?html}/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=${fckBrowse.url.pathRepresentation}';
-  fck.config.filebrowserFlashBrowseURL = '${fckeditorBase.url?html}/plugins/filemanager/browser/cddefault/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=${fckBrowse.url.pathRepresentation}';
+  ck.config.filebrowserLinkBrowseUrl  = '${fckeditorBase.url?html}/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=${fckBrowse.url.pathRepresentation}';
+  ck.config.filebrowserImageBrowseUrl = '${fckeditorBase.url?html}/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=${fckBrowse.url.pathRepresentation}';
+  ck.config.filebrowserFlashBrowseUrl = '${fckeditorBase.url?html}/plugins/filemanager/browser/cddefault/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=${fckBrowse.url.pathRepresentation}';
 
-  fck.config.LinkUpload = false;
-  fck.config.ImageUpload = false;
-  fck.config.FlashUpload = false;
+  ck.config.LinkUpload = false;
+  ck.config.ImageUpload = false;
+  ck.config.FlashUpload = false;
 
   // Misc setup
-  fck.config['FullPage'] = false;
-  fck.config['ToolbarCanCollapse'] = false;
-  fck.config['TabSpaces'] = 4;
-  fck.config['FontFormats'] = 'p;h2;h3;h4;h5;h6;pre';
-  fck.config.EMailProtection = 'none';
-  fck.config.DisableFFTableHandles = false;
-  fck.config.ForcePasteAsPlainText = false;
+  ck.config['FullPage'] = false;
+  ck.config['ToolbarCanCollapse'] = false;
+  ck.config['TabSpaces'] = 4;
+  ck.config['FontFormats'] = 'p;h2;h3;h4;h5;h6;pre';
+  ck.config.EMailProtection = 'none';
+  ck.config.DisableFFTableHandles = false;
+  ck.config.ForcePasteAsPlainText = false;
 
-  fck.config['SkinPath'] = fck.BasePath + 'editor/skins/silver/';
-  fck.config.BaseHref = baseDocumentUrl;
+  ck.config['SkinPath'] = ck.BasePath + 'editor/skins/silver/';
+  ck.config.BaseHref = baseDocumentUrl;
 
   var cssFileList = new Array(
           "/vrtx/__vrtx/static-resources/themes/default/editor-container.css",
@@ -60,9 +60,9 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
         cssFileList[cssFileList.length] = "/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css";
       }
 
-      fck.config['EditorAreaCSS'] = cssFileList;
+      ck.config['EditorAreaCSS'] = cssFileList;
 
-  fck.ReplaceTextarea();
+  ck.ReplaceTextarea();
 }
 
 function FCKeditor_OnComplete(editorInstance) {

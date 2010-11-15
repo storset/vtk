@@ -142,7 +142,7 @@
       </map>
     </property>
   </bean>
-  
+
   <bean id="decorating.timeAndPlaceComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="time-and-place" />
@@ -159,35 +159,39 @@
     </property>
   </bean>
 
-  <bean id="decorating.mediaComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
+  <bean id="decorating.includeMediaComponent" class="org.vortikal.web.decorating.components.IncludeMediaPlayerComponent"
+    parent="decorating.resourceMediaComponent">
+    <property name="namespace" ref="decorating.includeNamespace" />
+  </bean>
+
+  <bean id="decorating.resourceMediaComponent" class="org.vortikal.web.decorating.components.ResourceMediaPlayerComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />
+    <property name="repository" ref="repository" />
     <property name="name" value="media-player" />
     <property name="description" value="Inserts media player if it is an article document" />
     <property name="view" ref="decorating.mediaComponent.view" />
+    <property name="extentionToMimetype">
+      <map>
+        <entry key="mp4" value="video/mp4" />
+        <entry key="mov" value="video/quicktime" />
+        <entry key="mp3" value="audio" />
+        <entry key="swf" value="application/x-shockwave-flash" />
+        <entry key="flv" value="application/x-shockwave-flash" />
+      </map>
+    </property>
   </bean>
 
   <bean id="decorating.mediaComponent.view" parent="freemarkerView">
     <property name="url" value="layouts/media-player.ftl" />
-    <property name="referenceDataProviders">
-      <list>
-        <ref bean="resourceContextProvider" />
-        <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
-          <property name="repository" ref="repository" />
-          <property name="uri" value="/" />
-          <property name="appendPath" value="${flash.baseURL}/audioplayer.swf" />
-          <property name="service" ref="viewService" />
-          <property name="modelName" value="flashPlayer" />
-          <property name="urlName" value="flashURL" />
-        </bean>
-        <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
-          <property name="repository" ref="repository" />
-          <property name="uri" value="/" />
-          <property name="appendPath" value="${jsBaseURL}/audio-player.js" />
-          <property name="service" ref="viewService" />
-          <property name="modelName" value="flashPlayer" />
-          <property name="urlName" value="jsURL" />
-        </bean>
-      </list>
+    <property name="attributes">
+      <map>
+        <entry key="height" value="330px" />
+        <entry key="width" value="520px" />
+        <entry key="autoplay" value="false" />
+        <entry key="audioFlashPlayerJsURL" value="${jsBaseURL}/audio-player.js" />
+        <entry key="audioFlashPlayerFlashURL" value="${flash.baseURL}/audioplayer.swf" />
+        <entry key="strobe" value="${webResources.baseURL}/StrobeMediaPlayback_1.0-full/10.1/StrobeMediaPlayback.swf" />
+      </map>
     </property>
   </bean>
 
@@ -232,7 +236,7 @@
     </property>
     <property name="referenceDataProviders">
       <list>
-        <!--        <ref bean="resourceContextProvider" />-->
+        <!-- <ref bean="resourceContextProvider" /> -->
         <ref bean="socialWebsitesProvider" />
       </list>
     </property>
@@ -245,18 +249,12 @@
       <map>
         <entry key="Facebook" value="http://www.facebook.com/share.php?u=%{url}&amp;amp;t=%{title}" />
         <entry key="Twitter" value="http://twitter.com/home?status=%{url}" />
-        <!--
-          <entry key="Nettby"
-          value="http://www.nettby.no/user/edit_link.php?name=%{title}&amp;amp;url=%{url}&amp;amp;description=%{resource:introduction}"
-          />
-        -->
+        <!-- <entry key="Nettby" value="http://www.nettby.no/user/edit_link.php?name=%{title}&amp;amp;url=%{url}&amp;amp;description=%{resource:introduction}" 
+          />me -->
         <entry key="Delicious" value="http://del.icio.us/post?url=%{url}&amp;amp;title=%{title}" />
-        <!--
-          <entry key="Digg"
-          value="http://digg.com/submit?url=%{url}&amp;amp;title=%{title}&amp;amp;bodytext=%{resource:introduction}" />
-          <entry key="LinkedIn"
-          value="http://www.linkedin.com/shareArticle?mini=true&amp;amp;url=%{url}&amp;amp;title=%{title}" />
-        -->
+        <!-- <entry key="Digg" value="http://digg.com/submit?url=%{url}&amp;amp;title=%{title}&amp;amp;bodytext=%{resource:introduction}" 
+          /> <entry key="LinkedIn" value="http://www.linkedin.com/shareArticle?mini=true&amp;amp;url=%{url}&amp;amp;title=%{title}" 
+          /> -->
       </map>
     </property>
   </bean>
@@ -444,7 +442,7 @@
     parent="repositoryAware">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="login" />
-    <property name="view" ref="decorating.authenticationComponent.view" /> 
+    <property name="view" ref="decorating.authenticationComponent.view" />
     <property name="defaultLoginService" ref="loginService" />
     <property name="alternativeLoginServices">
       <map>
@@ -453,7 +451,7 @@
     </property>
     <property name="logoutService" ref="logoutService" />
     <property name="description" value="Displays a login or logout URL" />
-     <property name="parameterDescriptions">
+    <property name="parameterDescriptions">
       <map>
         <entry key="destination-service" value="Destination service. Default destination is view, the other possible value is 'admin'." />
       </map>
@@ -509,8 +507,10 @@
       <map>
         <entry key="uri" value="URI of the imagefolder to include pictures from." />
         <entry key="limit" value="Maximum number of images to show in list. Default is 5" />
-        <entry key="type" value="How to the display the component. Default is 'list'. 'gallery' will display an embedded gallery." />
-        <entry key="fade-effect" value="Milliseconds of fade in and out effect for choosen image. Default is 0 or off, and max is 999 ms" />
+        <entry key="type"
+          value="How to the display the component. Default is 'list'. 'gallery' will display an embedded gallery." />
+        <entry key="fade-effect"
+          value="Milliseconds of fade in and out effect for choosen image. Default is 0 or off, and max is 999 ms" />
       </map>
     </property>
     <property name="searchSorting" ref="collectionListing.searchSorting" />
@@ -536,7 +536,8 @@
   </bean>
 
   <!-- ######## Specialize where necessary ######## -->
-  <bean id="decorating.abstractSearchFormComponent" abstract="true" class="org.vortikal.web.decorating.components.SearchFormComponent">
+  <bean id="decorating.abstractSearchFormComponent" abstract="true"
+    class="org.vortikal.web.decorating.components.SearchFormComponent">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="view" ref="decorating.searchForm.view" />
     <property name="description" value="Inserts search-form that searches current directory. To override you can specify 'uri'." />

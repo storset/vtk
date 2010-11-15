@@ -138,9 +138,9 @@
           <include>*-schema.sql</include>
         </includes>
       </resource>
-      <resource>
-        <directory>src/main/ext/FCKeditor/fckeditor-build-2.6.5</directory>
-        <targetPath>web/fckeditor-build-2.6.5</targetPath>
+       <resource>
+        <directory>src/main/ext/CKEditor/ckeditor-build</directory>
+        <targetPath>web/ckeditor-build</targetPath>
       </resource>
     </resources>
     <testResources>

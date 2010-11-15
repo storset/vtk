@@ -1,0 +1,41 @@
+Integration of CKEditor in Vortikal
+
+----------------------------------------------
+
+http://www.ckeditor.com/
+
+For the CKEditor license, see
+
+ckeditor-org/ckeditor-<version>/license.txt
+
+----------------------------------------------
+
+
+This directory contains three sub-directories:
+
+  o ckeditor-org: the original distribution(s) of FCKEditor
+  o ckeditor-modifications: the local source modifications
+  o ckeditor-build: the resulting "merge" between
+    ckeditor-org/<ck-version> and ckeditor-modifications.
+
+All local modifications should be made in ckeditor-modifications and
+then copied to ckeditor-build (or the other way around :)
+
+No modifications should be made in ckeditor-org.
+
+If you modifications to files in the _source folder, run the ckpackager.jar application afterwards:
+java -jar ckpackager.jar ckeditor.pack
+
+Upgrading to a new version:
+
+cd src/main/ext/CKeditor
+wget http://.../CKeditor_<version>.tar.gz
+tar zcvf CKeditor_<version>.tar.gz
+mv -r ckeditor ckeditor-org/ckeditor-<version>
+rsync -r --exclude .svn\*  --exclude custom-ckconfig.js --delete -ptv ckeditor-org/ckeditor-<version>/ ckeditor-build
+rsync -r --exclude .svn\*  -ptv cckeditor-modifications/ ckeditor-build
+
+for f in $(svn status ckeditor-build | grep \! | awk '{print $2}'); do svn rm "$f"; done
+
+for f in $(svn status ckeditor-build | grep \? | awk '{print $2}'); do svn add "$f"; done
+

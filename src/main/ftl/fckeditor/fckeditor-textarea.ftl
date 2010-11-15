@@ -49,7 +49,7 @@
         fullpage=false
         collapseToolbar=false
         runOnLoad=true
-        enableFileBrowsers=false
+        enableFileBrowsers=true
         fckSkin='editor/skins/silver/'>
 
     <#if !__editorDeclared?exists>
@@ -61,36 +61,38 @@
 
       function loadEditor() {
           if (initialized) return;
-          var editor = new FCKeditor('${textarea}');
+          var editor = new CKEDITOR;
           editor.BasePath = '${fckeditorBase.url?html}/';
-          editor.Config['DefaultLanguage'] = '<@vrtx.requestLanguage />';
+          editor.config['DefaultLanguage'] = '<@vrtx.requestLanguage />';
 
-          editor.Config['CustomConfigurationsPath'] = '${fckeditorBase.url?html}/custom-fckconfig.js';
+          editor.config['CustomConfigurationsPath'] = '${fckeditorBase.url?html}/custom-fckconfig.js';
           editor.ToolbarSet = '${toolbar}';
           <#if enableFileBrowsers && !fckBrowse?exists>
            <#stop "parameter 'enableFileBrowsers' requires that model attribute 'fckBrowse' exists">
           <#elseif enableFileBrowsers>
           var baseFolder = "${resourceContext.parentURI?html}";
-          editor.Config['LinkBrowserURL']  = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=${fckBrowse.url.pathRepresentation}';
-          editor.Config['ImageBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=${fckBrowse.url.pathRepresentation}';
-          editor.Config['FlashBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=${fckBrowse.url.pathRepresentation}';
+          
+          editor.config.filebrowserLinkBrowseURL  = '${fckeditorBase.url?html}/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=${fckBrowse.url.pathRepresentation}';
+          editor.config.filebrowserImageBrowseURL = '${fckeditorBase.url?html}/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=${fckBrowse.url.pathRepresentation}';
+          editor.config.filebrowserFlashBrowseURL = '${fckeditorBase.url?html}/plugins/filemanager/browser/cddefault/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=${fckBrowse.url.pathRepresentation}';
+          
           </#if>
-          editor.Config['FontFormats'] = '${fontFormats}';
-          editor.Config['FullPage'] = ${fullpage?string};
-          editor.Config['ToolbarCanCollapse'] = ${collapseToolbar?string};
-          editor.Config.LinkBrowser = ${enableFileBrowsers?string};
-          editor.Config.LinkUpload = false;
+          editor.config['FontFormats'] = '${fontFormats}';
+          editor.config['FullPage'] = ${fullpage?string};
+          editor.config['ToolbarCanCollapse'] = ${collapseToolbar?string};
+          editor.config.LinkBrowser = ${enableFileBrowsers?string};
+          editor.config.LinkUpload = false;
 
-	  editor.Config.EMailProtection = 'none';
-          editor.Config.ImageBrowser = ${enableFileBrowsers?string};
-          editor.Config.ImageUpload = ${enableFileBrowsers?string};
-          editor.Config.FlashBrowser = ${enableFileBrowsers?string};
-          editor.Config.FlashUpload = ${enableFileBrowsers?string};
-          <#-- editor.Config.BaseHref = '${fckeditorBase.documentURL?html}'; -->
-          editor.Config['SkinPath'] = editor.BasePath + '${fckSkin}';
-	  editor.Config['EditorAreaCSS'] = "<#list fckEditorAreaCSSURL as url>${url?html}<#if url_has_next>,</#if></#list>";
+	  	  editor.config.EMailProtection = 'none';
+          editor.config.ImageBrowser = ${enableFileBrowsers?string};
+          editor.config.ImageUpload = ${enableFileBrowsers?string};
+          editor.config.FlashBrowser = ${enableFileBrowsers?string};
+          editor.config.FlashUpload = ${enableFileBrowsers?string};
+          <#-- editor.config.BaseHref = '${fckeditorBase.documentURL?html}'; -->
+          editor.config['SkinPath'] = editor.BasePath + '${fckSkin}';
+	  	  editor.config['EditorAreaCSS'] = "<#list fckEditorAreaCSSURL as url>${url?html}<#if url_has_next>,</#if></#list>";
 
-          editor.ReplaceTextarea();
+          editor.replaceAll();
 
           initialized = true;
       }

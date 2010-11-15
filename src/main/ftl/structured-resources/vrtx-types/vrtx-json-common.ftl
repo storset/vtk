@@ -79,7 +79,7 @@
           />
         <#break>
       <#case "image_ref">
-      	<#if elem.value?exists && elem.value != "">
+      	<#if elem.value?exists>
       		<#local thumbnail = vrtx.relativeLinkConstructor(elem.value, 'displayThumbnailService') />
       	<#else>
       		<#local thumbnail = "" />
@@ -272,7 +272,7 @@
       title=jsonAttr 
       inputFieldName=tmpName
       value=value
-      editor="simple-ckeditor"
+      editor=""
       classes=cssclass />
     <@fckEditor.insertEditor tmpName />
     <#break>
@@ -286,7 +286,7 @@
       title=jsonAttr 
       inputFieldName=tmpName
       value=value
-      editor="ckeditor"
+      editor=""
       classes="vrtx-html " + tmpName />
     <@fckEditor.insertEditor tmpName true false />
     <#break>
@@ -298,7 +298,7 @@
       classes=""  />
     <#break>
   <#case "image_ref">
-  	<#if value?exists && value != "">
+  	<#if value?exists>
     	<#local thumbnail =  vrtx.relativeLinkConstructor(value, 'displayThumbnailService') />
     <#else>
     	<#local thumbnail = "" />

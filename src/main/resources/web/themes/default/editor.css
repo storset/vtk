@@ -576,10 +576,8 @@ span.show-tooltip-text {
   font-size: 10px;
 }
 
-
 .submit-extra-buttons {
-	position:relative;
-    top:-50px;
-    text-align:right;
-    height:0;
+    position:absolute;
+    right:40px;
+    top:187px;
 }

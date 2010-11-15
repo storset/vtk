@@ -7,10 +7,16 @@
 
 <html>
 <head>
- <title>Edit structured resource</title>
+
+  <script type="text/javascript" src="${webResources?html}/ckeditor/ckeditor.js"></script>
+  <title>Edit structured resource</title>
   <@ping.ping url=pingURL['url'] interval=300 />
   <@fckEditor.addFckScripts />
   <@vrtxJSONJavascript.script />
+  
+
+  <script type="text/javascript" src="${webResources?html}/ckeditor/adapters/jquery.js"></script>
+
   <script language="Javascript" type="text/javascript" src="${webResources?html}/jquery-plugins/jquery.hotkeys-0.7.9.min.js"></script>
   <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/admin-prop-change.js"></script>
   <script language="Javascript" type="text/javascript"><!--

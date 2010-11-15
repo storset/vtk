@@ -4,10 +4,10 @@
   - 
   - Required model data:
   -  
-  -  fckeditorBase.url
-  -  fckSource.getURL
-  -  fckCleanup.url
-  -  fckBrowse.url
+  -  ckeditorBase.url
+  -  ckSource.getURL
+  -  ckCleanup.url
+  -  ckBrowse.url
   -
   -->
 <#import "/lib/ping.ftl" as ping />
@@ -21,8 +21,8 @@
     <title>Editor</title>
     <@ping.ping url=pingURL['url'] interval=300 />    
     
-    <!-- Main fck-editor js -->
-    <script language="Javascript" type="text/javascript" src="${fckeditorBase.url?html}/fckeditor.js"></script>
+    <!-- Main ck-editor js -->
+    <script language="Javascript" type="text/javascript" src="${fckeditorBase.url?html}/ckeditor.js"></script>
     <@setupFckEditor resource.resourceType />
 
     <!-- Yahoo YUI library: --> 
@@ -119,52 +119,54 @@
           <input type="submit" id="cancel" onClick="performSave();" name="cancel" value="${vrtx.getMsg("editor.cancel")}">
       </div>
 
+      <#--
       <#if (resource.content)?exists>
       <script language="Javascript" type="text/javascript">
         <!--
           disableSubmit();
         // -->
       </script>
-      <#else>
+      <#-- <#else> -->
       <script language="Javascript" type="text/javascript">
         <!--
           enableSubmit();
         // -->
       </script>
-      </#if>
+      <#-- </#if> -->
      </form>
     </body>
 </html>
 
 <#macro setupFckEditor resourceType>
     <script language="Javascript" type="text/javascript">
-      <!--
+	<!--
       function newEditor(name, completeEditor, withoutSubSuper) {
-
+     
         var completeEditor = completeEditor != null ? completeEditor : false;
         var withoutSubSuper = withoutSubSuper != null ? withoutSubSuper : false; 
-        
-        var fck = new FCKeditor( name ,'100%', 400) ;
-        fck.BasePath = "${fckeditorBase.url?html}/";
+              
+        var ck = CKEDITOR;
+                
+       	ck.BasePath = "${fckeditorBase.url?html}/";
 
-        fck.Config['DefaultLanguage'] = '<@vrtx.requestLanguage />';
+        ck.config['DefaultLanguage'] = '<@vrtx.requestLanguage />';
 
-        fck.Config['CustomConfigurationsPath'] = '${fckeditorBase.url?html}/custom-fckconfig.js';
-
+        ck.config['customConfig'] = '${fckeditorBase.url?html}/custom-ckconfig.js';
+	
          if (completeEditor) {
             <#if resourceType = 'article' || resourceType = 'event'  >
-              fck.ToolbarSet = 'Complete-article';
+              ck.config.toolbar = 'Complete_article';
             <#else>
-              fck.ToolbarSet = 'Complete'; 
+              ck.config.toolbar = 'Complete'; 
             </#if> 
          } else {
-            fck.ToolbarSet = 'Inline';
+            ck.config.toolbar = 'Inline';
          }
      
          if(withoutSubSuper) {
-           fck.ToolbarSet = 'Inline-S';
+           ck.config.toolbar = 'Inline_S';
          }
-
+		                        
          // File browser
          <#if resourceContext.parentURI?exists>
             <#if resourceType = 'article-listing' || resourceType = 'event-listing' || resourceType = 'collection'>              
@@ -173,33 +175,37 @@
               var baseFolder = "${resourceContext.parentURI?html}";
             </#if>
          <#else>
-         	var baseFolder = "/";
+			  var baseFolder = "/";
          </#if>
-         fck.Config['LinkBrowserURL']  = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=${fckBrowse.url.pathRepresentation}';
-         fck.Config['ImageBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=${fckBrowse.url.pathRepresentation}';
-         fck.Config['FlashBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=${fckBrowse.url.pathRepresentation}';
-
-         fck.Config.LinkUpload = false;
-         fck.Config.ImageUpload = false;
-         fck.Config.FlashUpload = false;
+         ck.config.filebrowserBrowseUrl  = '${fckeditorBase.url?html}/plugins/filemanager/browser/default/browser.html';    
+         // ck.config['filebrowserBrowseURL']  = '${fckeditorBase.url?html}/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=${fckBrowse.url.pathRepresentation}';         
+              
+         ck.config.filebrowserLinkBrowseUrl  = '${fckeditorBase.url?html}/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=${fckBrowse.url.pathRepresentation}';
+         ck.config.filebrowserImageBrowseUrl = '${fckeditorBase.url?html}/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=${fckBrowse.url.pathRepresentation}';
+         ck.config.filebrowserFlashBrowseUrl = '${fckeditorBase.url?html}/plugins/filemanager/browser/cddefault/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=${fckBrowse.url.pathRepresentation}';
+		 	     		 
+         // ck.config.LinkUpload = false;
+         // ck.config.ImageUpload = false;
+         // ck.config.FlashUpload = false;
 
          // Misc setup
-         fck.Config['FullPage'] = false;
-         fck.Config['ToolbarCanCollapse'] = false;
-         fck.Config['TabSpaces'] = 4;
+         ck.config['FullPage'] = false;
+         ck.config['ToolbarCanCollapse'] = false;
+         ck.config['TabSpaces'] = 4;
          <#if resource.resourceType == 'article' || resource.resourceType == 'event'>
-           fck.Config['FontFormats'] = 'p;h2;h3;h4;h5;h6;pre';
+           ck.config['FontFormats'] = 'p;h2;h3;h4;h5;h6;pre';
          <#else>
-           fck.Config['FontFormats'] = 'p;h1;h2;h3;h4;h5;h6;pre';
+           ck.config['FontFormats'] = 'p;h1;h2;h3;h4;h5;h6;pre';
          </#if>
 
-         fck.Config.EMailProtection = 'none';
-         fck.Config.DisableFFTableHandles = false;
-	 fck.Config.ForcePasteAsPlainText = false;
+         ck.config.EMailProtection = 'none';
+         ck.config.DisableFFTableHandles = false;
+		 ck.config.ForcePasteAsPlainText = false;
 
-         fck.Config['SkinPath'] = fck.BasePath + 'editor/skins/silver/';
-         fck.Config.BaseHref = '${fckeditorBase.documentURL?html}';
-
+         // ck.config['SkinPath'] = ck.BasePath + 'editor/skins/silver/';
+         ck.config.skin = 'kama';
+         ck.config.BaseHref = '${fckeditorBase.documentURL?html}';
+	 				 
          var cssFileList = new Array(
          <#if fckEditorAreaCSSURL?exists>
            <#list fckEditorAreaCSSURL as cssURL>
@@ -209,23 +215,25 @@
          "");
 
          /* Fix for div contianer display in ie */
-         var browser = navigator.userAgent;
+         var browser = navigator.userAgent;		 
          var ieversion = new Number(RegExp.$1)
          if(browser.indexOf("MSIE") > -1 && ieversion <= 7){
            cssFileList[cssFileList.length-1] = "/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css";
          }
-
-         fck.Config['EditorAreaCSS'] = cssFileList;
-         fck.ReplaceTextarea();
+       
+         ck.config['EditorAreaCSS'] = cssFileList;
+         ck.replace("resource.content", "config.filebrowserBrowseURL  = '${fckeditorBase.url?html}/plugins/filemanager/browser/default/browser.html'");	
       }
 
-      function FCKeditor_OnComplete(editorInstance) {
+	  /*
+      function CKeditor_OnComplete(editorInstance) {
         // Get around bug: http://dev.fckeditor.net/ticket/1482
-        editorInstance.ResetIsDirty();
+        editorInstance.ResetIsDirty();        
         if ('resource.content' == editorInstance.Name) {
           enableSubmit();
         }
-      }
+      }      
+	  */
 
       function disableSubmit() {
         document.getElementById("saveButton").disabled = true;
@@ -237,9 +245,8 @@
          document.getElementById("saveButton").disabled = false;
          document.getElementById("saveAndViewButton").disabled = false;
          return true;
-      }
-
-      // -->
+      }  
+  // -->
   </script>
 </#macro>
 
@@ -254,12 +261,11 @@
          resource.resourceType = 'article-listing' || resource.resourceType = 'collection')>
       <#local value = resource.title />
     </#if>
-      
-
+		
     <#if type = 'HTML'>
-      var fck_${name} = FCKeditorAPI.GetInstance('resource.${name}');
-
-      if (fck_${name} && fck_${name}.IsDirty()) {
+      var fck_${name} = CKEDITOR.instances.resource.${name};
+	  	  
+      if (fck_${name} && fck_${name}.editor.checkDirty()) {
         return true;
       } else if (!fck_${name} && '${value?js_string}' != document.getElementById('resource.${name}').value) {
         return true;
@@ -325,7 +331,7 @@
         }
       }
     }
-
+	
     window.onunload = doUnlock;
    </#if-->
 
@@ -338,12 +344,14 @@
       var dirty = false;
       var userLang = (navigator.language) ? navigator.language : navigator.userLanguage;
       if (propChange()) dirty = true;
-            
+	        
       <#if (resource.resourceType != 'event-listing' &&
-         resource.resourceType != 'article-listing' && resource.resourceType != 'collection')>
-      if (FCKeditorAPI.GetInstance('resource.content') .IsDirty()) dirty = true;
+         resource.resourceType != 'article-listing' && resource.resourceType != 'collection')>           
+      	
+      	 <#-- if (CKEDITOR.GetInstance('resource.content') .IsDirty()) dirty = true; -->
+      	 if (CKEDITOR.instances.resource.content.checkDirty()) dirty = true;      	 
       </#if>
-      
+	        
       if (dirty) {
         return '<@vrtx.msg code='manage.unsavedChangesConfirmation' />';
       }
@@ -549,7 +557,7 @@
       
       function performSave() {
         needToConfirm = false;
-        var oEditor = FCKeditorAPI.GetInstance('${content}');
+        var oEditor = CKEDITOR.instances.${content};
         var srcxhtml = oEditor.GetXHTML();
         // var title = document.getElementById("title");
 

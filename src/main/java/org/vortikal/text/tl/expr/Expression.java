@@ -83,29 +83,22 @@ public class Expression {
     static {
         Map<Symbol, Operator> ops = new HashMap<Symbol, Operator>();
 
-        // Unary
-        ops.put(NOT, new Not(NOT, Notation.PREFIX, Precedence.TWELVE));
+        ops.put(ACCESSOR, new Accessor(ACCESSOR, Notation.INFIX, Precedence.TWELVE));
 
-        // Accessor
-        ops.put(ACCESSOR, new Accessor(ACCESSOR, Notation.INFIX, Precedence.ELEVEN));
+        ops.put(NOT, new Not(NOT, Notation.PREFIX, Precedence.ELEVEN));
 
-        // Multiplicative
         ops.put(DIVIDE, new Divide(DIVIDE, Notation.INFIX, Precedence.TEN));
         ops.put(MULTIPLY, new Multiply(MULTIPLY, Notation.INFIX, Precedence.NINE));
 
-        // Additive
         ops.put(PLUS, new Plus(PLUS, Notation.INFIX, Precedence.EIGHT));
         ops.put(MINUS, new Minus(MINUS, Notation.INFIX, Precedence.SEVEN));
 
-        // Greater/less than
         ops.put(GT, new Gt(GT, Notation.INFIX, Precedence.SIX));
         ops.put(LT, new Lt(LT, Notation.INFIX, Precedence.FIVE));
 
-        // Equality
         ops.put(EQ, new Eq(EQ, Notation.INFIX, Precedence.FOUR));
         ops.put(NEQ, new Neq(NEQ, Notation.INFIX, Precedence.THREE));
 
-        // Logical AND/OR
         ops.put(AND, new And(AND, Notation.INFIX, Precedence.TWO));
         ops.put(OR, new Or(OR, Notation.INFIX, Precedence.ONE));
 

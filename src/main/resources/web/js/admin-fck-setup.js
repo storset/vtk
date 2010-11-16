@@ -62,7 +62,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
 
       ck.config['EditorAreaCSS'] = cssFileList;
 
-  ck.replace(name, ck.config);
+  	  ck.replace(name);
 }
 
 function FCKeditor_OnComplete(editorInstance) {

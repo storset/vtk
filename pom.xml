@@ -502,18 +502,18 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
-      <version>2.5.6.SEC01</version>
+      <version>2.5.6.SEC02</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring</artifactId>
-      <version>2.5.6.SEC01</version>
+      <version>2.5.6.SEC02</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
-      <version>2.5.6.SEC01</version>
+      <version>2.5.6.SEC02</version>
     </dependency>
     <dependency>
       <groupId>org.apache.lucene</groupId>

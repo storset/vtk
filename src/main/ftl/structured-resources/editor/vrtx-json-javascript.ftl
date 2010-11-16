@@ -307,8 +307,7 @@
   function swapContent(counter, arrayOfIds, move, name) {
   
     var movingBox = "#vrtx-json-element-" + name + "-" + (counter + move);
-    console.log(movingBox);
-     
+ 
     var arrayOfIdsLength = arrayOfIds.length;
     for (var x = 0; x < arrayOfIdsLength; x++) {
       var elementId1 = '#' + arrayOfIds[x] + counter;

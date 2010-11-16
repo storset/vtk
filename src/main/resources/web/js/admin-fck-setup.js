@@ -14,11 +14,11 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   ck.config['CustomConfigurationsPath'] = baseUrl + '/custom-fckconfig.js';
 
   if (completeEditor) {
-    ck.ToolbarSet = 'Complete-article';
+    ck.config.toolbar = 'Complete-article';
   } else if (withoutSubSuper) {
-    ck.ToolbarSet = 'Inline-S';
+    ck.ck.toolbar = 'Inline-S';
   } else {
-    ck.ToolbarSet = 'Inline';
+    ck.config.toolbar = 'Inline';
   }
 
   // File browser
@@ -62,7 +62,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
 
       ck.config['EditorAreaCSS'] = cssFileList;
 
-  ck.replaceAll();
+  ck.replace(name, ck.config);
 }
 
 function FCKeditor_OnComplete(editorInstance) {

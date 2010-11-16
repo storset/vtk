@@ -7,31 +7,24 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   var withoutSubSuper = withoutSubSuper != null ? withoutSubSuper : false;
 
   var ck = CKEDITOR;
-  ck.BasePath = baseUrl + "/";
-
+  ck.baseHref = baseUrl + "/";
+  
   ck.config['DefaultLanguage'] = defaultLanguage;
 
-  ck.config['CustomConfigurationsPath'] = baseUrl + '/custom-fckconfig.js';
-
+  ck.config['customConfig'] = baseUrl + '/custom-ckconfig.js';
+      
   if (completeEditor) {
-    ck.config.toolbar = 'Complete-article';
+    ck.config.toolbar = 'Complete_article';
   } else if (withoutSubSuper) {
-    ck.ck.toolbar = 'Inline-S';
+    ck.ck.toolbar = 'Inline_S';
   } else {
     ck.config.toolbar = 'Inline';
   }
 
   // File browser
-  // ck.config['LinkBrowserURL'] = baseUrl + '/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder
-  //     + '&Connector=' + browsePath;
-  // ck.config['ImageBrowserURL'] = baseUrl + '/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder
-  //     + '&Type=Image&Connector=' + browsePath;
-  // ck.config['FlashBrowserURL'] = baseUrl + '/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder
-  //    + '&Type=Flash&Connector=' + browsePath;
-
-  ck.config.filebrowserLinkBrowseUrl  = '${fckeditorBase.url?html}/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=${fckBrowse.url.pathRepresentation}';
-  ck.config.filebrowserImageBrowseUrl = '${fckeditorBase.url?html}/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=${fckBrowse.url.pathRepresentation}';
-  ck.config.filebrowserFlashBrowseUrl = '${fckeditorBase.url?html}/plugins/filemanager/browser/cddefault/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=${fckBrowse.url.pathRepresentation}';
+  ck.config.filebrowserLinkBrowseUrl  = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=${fckBrowse.url.pathRepresentation}';
+  ck.config.filebrowserImageBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=${fckBrowse.url.pathRepresentation}';
+  ck.config.filebrowserFlashBrowseUrl = baseUrl + '/plugins/filemanager/browser/cddefault/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=${fckBrowse.url.pathRepresentation}';
 
   ck.config.LinkUpload = false;
   ck.config.ImageUpload = false;

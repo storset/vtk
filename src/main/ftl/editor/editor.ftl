@@ -147,7 +147,7 @@
               
         var ck = CKEDITOR;
                 
-       	ck.BasePath = "${fckeditorBase.url?html}/";
+       	ck.baseHref = "${fckeditorBase.url?html}/";
 
         ck.config['DefaultLanguage'] = '<@vrtx.requestLanguage />';
 

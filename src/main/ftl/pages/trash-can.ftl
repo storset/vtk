@@ -66,7 +66,7 @@
   <input class="recoverResource" type="submit" name="recoverAction"
                value="<@vrtx.msg code="trash-can.recover" default="Recover"/>"/>
   <input class="deleteResourcePermanent" type="submit" name="deletePermanentAction"
-               value="<@vrtx.msg code="trash-can.delete-permanent" default="Delete permanent"/>"/>
+               value="<@vrtx.msg code="trash-can.delete-permanent" default="Delete permanently"/>"/>
 </form>
 <#else>
   <@vrtx.msg code="trash-can.empty" default="The trash can contains no garbage." />

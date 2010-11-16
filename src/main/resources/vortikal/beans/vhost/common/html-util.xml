@@ -539,6 +539,7 @@
         <value>kbd</value>
         <value>var</value>
         <value>iframe</value>
+        <value>noscript</value>
         <value>v:component</value>
       </set>
     </property>

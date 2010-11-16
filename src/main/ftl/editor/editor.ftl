@@ -222,7 +222,7 @@
          }
        
          ck.config['EditorAreaCSS'] = cssFileList;
-         ck.replace("resource.content", "config.filebrowserBrowseURL  = '${fckeditorBase.url?html}/plugins/filemanager/browser/default/browser.html'");	
+         ck.replace("resource.content");	
       }
 
 	  /*

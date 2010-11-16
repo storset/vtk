@@ -8,7 +8,7 @@
 <html>
 <head>
 
-  <script type="text/javascript" src="${webResources?html}/ckeditor/ckeditor.js"></script>
+  <script type="text/javascript" src="${fckeditorBase.url?html}/ckeditor.js"></script>
   <title>Edit structured resource</title>
   <@ping.ping url=pingURL['url'] interval=300 />
   <@fckEditor.addFckScripts />

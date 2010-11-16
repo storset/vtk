@@ -6,7 +6,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   var completeEditor = completeEditor != null ? completeEditor : false;
   var withoutSubSuper = withoutSubSuper != null ? withoutSubSuper : false;
 
-  var ck = new CKEDITOR;
+  var ck = CKEDITOR;
   ck.BasePath = baseUrl + "/";
 
   ck.config['DefaultLanguage'] = defaultLanguage;
@@ -62,7 +62,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
 
       ck.config['EditorAreaCSS'] = cssFileList;
 
-  ck.ReplaceTextarea();
+  ck.replaceAll();
 }
 
 function FCKeditor_OnComplete(editorInstance) {

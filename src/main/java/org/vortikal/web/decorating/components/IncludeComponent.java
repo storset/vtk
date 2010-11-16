@@ -37,8 +37,6 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -99,18 +97,10 @@ implements ServletContextAware {
     static final String INCLUDE_ATTRIBUTE_NAME =
         IncludeComponent.class.getName() + ".IncludeRequestAttribute";
 
-    private static final Pattern PATH_LEVEL_PATTERN = 
-    	Pattern.compile("(\\$path\\((\\d+)\\))");
-
-    
     private ServletContext servletContext;
-
     private ContentCache<String, URLObject> httpIncludeCache;
-
     private Repository repository;
-
     private HtmlPageParser htmlParser;
-
     private QueryStringPreProcessor uriPreProcessor;
 
     @Required public void setRepository(Repository repository) {
@@ -135,32 +125,9 @@ implements ServletContextAware {
 
         String uri = request.getStringParameter(PARAMETER_FILE);
         boolean ignoreNotFound = false;
+        
         if (uri != null) {
-            // Support for expanding $path(level):
-            Matcher m = PATH_LEVEL_PATTERN.matcher(uri);
-            Path currentURI = RequestContext.getRequestContext().getResourceURI();
-            StringBuffer sb = new StringBuffer();
-            if (m.find()) {
-                do {
-                    String s = m.group(2);
-                    try {
-                        int level = Integer.parseInt(s);
-                        if (level < 0 || level > currentURI.getDepth()) {
-                            throw new DecoratorComponentException(
-                                    "Invalid level for current URI: " + currentURI + ": " + level);
-                        }
-                        String replacement = currentURI.getElements().get(level);
-                        m.appendReplacement(sb, replacement);
-                        ignoreNotFound = true;
-                    } catch (NumberFormatException e) {
-                        throw new DecoratorComponentException(
-                                "Unable to parse integer: " + s);
-                    }
-                } while (m.find());
-                
-                m.appendTail(sb);
-                uri = sb.toString();
-            }
+            ignoreNotFound = ! uri.equals(request.getRawParameter(PARAMETER_FILE));
             if (!uri.startsWith("/")) {
                 Path currentCollection = RequestContext.getRequestContext().getCurrentCollection();
                 uri = currentCollection.expand(uri).toString();
@@ -237,7 +204,6 @@ implements ServletContextAware {
         if (elementParam != null && ContentTypeHelper.isHTMLOrXHTMLContentType(r.getContentType())) {
             HtmlPage page = this.htmlParser.parse(is, characterEncoding);
             String result = "";
-
             List<HtmlElement> elements = page.select(elementParam);
             if (elements.size() > 0) {
                 result = elements.get(0).getContent();
@@ -245,15 +211,12 @@ implements ServletContextAware {
             Writer writer = response.getWriter();
             writer.write(result);
             writer.close();
-
         } else {
             byte[] bytes = StreamUtil.readInputStream(is);
-
             response.setCharacterEncoding(characterEncoding);
             OutputStream out = response.getOutputStream();
             out.write(bytes);
             out.close();
-
         }
     }
 

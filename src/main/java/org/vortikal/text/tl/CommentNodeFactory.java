@@ -50,7 +50,8 @@ public class CommentNodeFactory implements DirectiveNodeFactory {
     }
 
     private class CommentNode extends Node {
-        public void render(Context ctx, Writer out) throws Exception {
+        public boolean render(Context ctx, Writer out) throws Exception {
+            return true;
         }
         public String toString() {
             return "[comment-node]";

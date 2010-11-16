@@ -118,7 +118,7 @@ public class ValNodeFactory implements DirectiveNodeFactory {
             this.format = format;
         }
 
-        public void render(Context ctx, Writer out) throws Exception {
+        public boolean render(Context ctx, Writer out) throws Exception {
             Object val = this.expression.evaluate(ctx);
             String format = null;
             if (this.format != null) {
@@ -141,6 +141,7 @@ public class ValNodeFactory implements DirectiveNodeFactory {
                     }
                 }
             }
+            return true;
         }
 
         public String toString() {

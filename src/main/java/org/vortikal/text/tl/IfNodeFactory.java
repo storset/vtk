@@ -46,6 +46,13 @@ public class IfNodeFactory implements DirectiveNodeFactory {
         new HashSet<String>(Arrays.asList("elseif", "else", "endif"));
 
     private Set<Function> functions = new HashSet<Function>();
+
+    public IfNodeFactory() {
+    }
+
+    public IfNodeFactory(Set<Function> functions) {
+        setFunctions(functions);
+    }
     
     public void setFunctions(Set<Function> functions) {
         if (functions != null) {
@@ -101,7 +108,7 @@ public class IfNodeFactory implements DirectiveNodeFactory {
             this.branches = branches;
         }
 
-        public void render(Context ctx, Writer out) throws Exception {
+        public boolean render(Context ctx, Writer out) throws Exception {
             NodeList branch = null;
             for (Expression exp : this.branches.keySet()) {
                 if (eval(exp, ctx)) {
@@ -109,11 +116,13 @@ public class IfNodeFactory implements DirectiveNodeFactory {
                     break;
                 }
             }
+            boolean retval = true;
             if (branch != null) {
                 ctx.push();
-                branch.render(ctx, out);
+                retval = branch.render(ctx, out);
                 ctx.pop();
             }
+            return retval;
         }
 
         private boolean eval(Expression expression, Context ctx) {

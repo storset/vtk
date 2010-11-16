@@ -98,7 +98,7 @@ public class ListNodeFactory implements DirectiveNodeFactory {
             this.nodeList = nodeList;
         }
 
-        public void render(Context ctx, Writer out) throws Exception {
+        public boolean render(Context ctx, Writer out) throws Exception {
             Object evaluated = this.expression.evaluate(ctx);
             List<Object> elements = new ArrayList<Object>();
             if (evaluated instanceof Iterable<?>) {
@@ -122,6 +122,7 @@ public class ListNodeFactory implements DirectiveNodeFactory {
                 		+ evaluated);
             }
             execute(elements, ctx, out);
+            return true;
         }
         
         private void execute(List<Object> elements, Context ctx, Writer out) throws Exception {

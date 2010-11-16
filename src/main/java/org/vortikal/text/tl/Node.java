@@ -34,5 +34,13 @@ import java.io.Writer;
 
 public abstract class Node {
 
-    public abstract void render(Context ctx, Writer out) throws Exception;
+    /**
+     * Instructs a node to render itself.
+     * @param ctx the execution state (variables)
+     * @param out output writer
+     * @return <code>true</code> if execution should continue, 
+     * <code>false</code> otherwise
+     * @throws Exception if an error occurs
+     */
+    public abstract boolean render(Context ctx, Writer out) throws Exception;
 }

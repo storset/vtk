@@ -41,7 +41,8 @@ public class CommentNode extends Node {
     }
     
     @Override
-    public void render(Context ctx, Writer out) throws Exception {
+    public boolean render(Context ctx, Writer out) throws Exception {
+        return true;
     }
 
     @Override

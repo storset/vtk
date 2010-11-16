@@ -72,10 +72,11 @@ public class CaptureNodeFactory implements DirectiveNodeFactory {
             this.variable = variable;
         }
         
-        public void render(Context ctx, Writer out) throws Exception {
+        public boolean render(Context ctx, Writer out) throws Exception {
             StringWriter buffer = new StringWriter();
             this.nodeList.render(ctx, buffer);
             ctx.define(this.variable, buffer.getBuffer().toString(), true);
+            return true;
         }
     }
 }

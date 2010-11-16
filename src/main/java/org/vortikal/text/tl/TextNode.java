@@ -41,8 +41,9 @@ public class TextNode extends Node {
     }
 
     @Override
-    public void render(Context ctx, Writer out) throws Exception {
+    public boolean render(Context ctx, Writer out) throws Exception {
         out.write(this.text);
+        return true;
     }
 
     @Override

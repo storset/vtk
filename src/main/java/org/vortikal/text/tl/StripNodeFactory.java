@@ -60,10 +60,11 @@ public class StripNodeFactory implements DirectiveNodeFactory {
             this.nodeList = nodeList;
         }
         
-        public void render(Context ctx, Writer out) throws Exception {
+        public boolean render(Context ctx, Writer out) throws Exception {
             StringWriter buffer = new StringWriter();
             this.nodeList.render(ctx, buffer);
             out.write(buffer.getBuffer().toString().trim());
+            return true;
         }
     }
 

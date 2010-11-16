@@ -55,9 +55,10 @@ public final class DefineNodeFactory implements DirectiveNodeFactory {
 
         final Expression expression = new Expression(this.functions, args);
         return new Node() {
-            public void render(Context ctx, Writer out) throws Exception {
+            public boolean render(Context ctx, Writer out) throws Exception {
                 Object val = expression.evaluate(ctx);
                 ctx.define(variable, val, true);
+                return true;
             }
         };
     }

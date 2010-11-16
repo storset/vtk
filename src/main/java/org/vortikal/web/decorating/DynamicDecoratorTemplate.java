@@ -211,8 +211,9 @@ public class DynamicDecoratorTemplate implements Template {
         final TemplateSource template = this.templateSource;
         NodeList nodeList = new NodeList();
         nodeList.add(new Node() {
-            public void render(Context ctx, Writer out) throws Exception {
+            public boolean render(Context ctx, Writer out) throws Exception {
                 out.write("Error compiling template " + template.getID() + ": " + message);
+                return true;
             }
         });
         return new ParseResult(nodeList);

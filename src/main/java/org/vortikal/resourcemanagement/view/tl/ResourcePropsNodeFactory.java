@@ -68,7 +68,7 @@ public class ResourcePropsNodeFactory implements DirectiveNodeFactory {
         final Argument arg1 = tokens.get(0);
 
         return new Node() {
-            public void render(Context ctx, Writer out) throws Exception {
+            public boolean render(Context ctx, Writer out) throws Exception {
                 Resource resource;
                 String token = SecurityContext.getSecurityContext().getToken();
                 String ref = arg1.getValue(ctx).toString();
@@ -109,6 +109,7 @@ public class ResourcePropsNodeFactory implements DirectiveNodeFactory {
                     }
                     resourceType = resourceType.getParentTypeDefinition();
                 }
+                return true;
             }
         };
     }

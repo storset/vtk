@@ -63,7 +63,7 @@ public class LocalizationNodeFactory implements DirectiveNodeFactory {
         final List<Argument> rest = new ArrayList<Argument>(args);
 
         return new Node() {
-            public void render(Context ctx, Writer out) throws Exception {
+            public boolean render(Context ctx, Writer out) throws Exception {
                 String key = code.getValue(ctx).toString();
                 RequestContext requestContext = RequestContext.getRequestContext();
                 HttpServletRequest request = requestContext.getServletRequest();
@@ -86,6 +86,7 @@ public class LocalizationNodeFactory implements DirectiveNodeFactory {
                 }
                 String localizedMsg = resource.getType().getLocalizedMsg(key, ctx.getLocale(), localizationArgs);
                 out.write(ctx.htmlEscape(localizedMsg));
+                return true;
             }
         };
     }

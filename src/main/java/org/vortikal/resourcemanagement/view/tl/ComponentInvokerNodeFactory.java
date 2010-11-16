@@ -99,7 +99,7 @@ public class ComponentInvokerNodeFactory implements DirectiveNodeFactory {
 
         return new Node() {
             @SuppressWarnings("unchecked")
-            public void render(Context ctx, Writer out) throws Exception {
+            public boolean render(Context ctx, Writer out) throws Exception {
                 Object componentRef = arg1.getValue(ctx);
                 
                 if (!(componentRef instanceof String)) {
@@ -112,12 +112,12 @@ public class ComponentInvokerNodeFactory implements DirectiveNodeFactory {
                         parameterMap = expression.evaluate(ctx);
                     } catch (Throwable t) {
                         out.write(componentRef + ":" + t.getMessage());
-                        return;
+                        return true;
                     }
                 }
                 if (!(parameterMap instanceof Map<?, ?>)) {
                     out.write(componentRef + ": second argument must be a map: " + parameterMap);
-                    return;
+                    return true;
                 }
                 for (Map.Entry<?, ?> entry : ((Map<?, ?>) parameterMap).entrySet()) {
 //                    if (entry.getKey() == null || entry.getValue() == null) {
@@ -138,7 +138,7 @@ public class ComponentInvokerNodeFactory implements DirectiveNodeFactory {
                 DecoratorComponent component = resolveComponent(ctx, namespace, name);
                 if (component == null) {
                     out.write("Unable to resolve component '" + namespace + ":" + name + "'");
-                    return;
+                    return true;
                 }
                 
                 RequestContext requestContext = RequestContext.getRequestContext();
@@ -153,7 +153,7 @@ public class ComponentInvokerNodeFactory implements DirectiveNodeFactory {
                 for (DecoratorComponent c : componentStack) {
                     if (c == component) {
                         out.write("Component invocation loop detected: '" + c.getNamespace() + ":" + c.getName()+ "'");
-                        return;
+                        return true;
                     }
                 }
                 componentStack.push(component);
@@ -175,6 +175,7 @@ public class ComponentInvokerNodeFactory implements DirectiveNodeFactory {
                 } finally {
                     componentStack.pop();
                 }
+                return true;
             }
         };
     }

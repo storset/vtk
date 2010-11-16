@@ -52,10 +52,21 @@ public final class NodeList implements Iterable<Node> {
         return Collections.unmodifiableList(this.nodes);
     }
 
-    public void render(Context ctx, Writer out) throws Exception {
+    /**
+     * Renders the node list.
+     * @param ctx the execution state (variables)
+     * @param out output writer
+     * @return <code>true</code> if the execution continued across 
+     * all nodes, <code>false</code> if one of the nodes aborted execution
+     * @throws Exception
+     */
+    public boolean render(Context ctx, Writer out) throws Exception {
         for (Node node: this.nodes) {
-            node.render(ctx, out);
+            if (!node.render(ctx, out)) {
+                return false;
+            }
         }
+        return true;
     }
 
     public String toString() {

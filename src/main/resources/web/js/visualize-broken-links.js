@@ -10,8 +10,6 @@ function visualizeBrokenLinks(options) {
     var urls = [];
     var idx = 0;
     urls[idx] = [];
-    var tabMenu = $("#main .activeTab", window.parent.document);
-    tabMenu.prepend("<span id='" + linkClass + "-spinner'>" + options.spinnerLocalizer() + "</span>");
     var context = $(selection);
     context.contents().find("a." + linkClass).each(function(elem) {
         if (urls[idx].length == chunk) {
@@ -48,7 +46,6 @@ function visualizeBrokenLinks(options) {
                 reqs++;
                 if (reqs == urls.length && options.completed) {
                     options.completed(reqs);
-                    tabMenu.find("#" + linkClass + "-spinner").remove();
                 }
             }
         });

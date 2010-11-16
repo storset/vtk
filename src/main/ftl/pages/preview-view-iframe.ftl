@@ -64,12 +64,9 @@
       }
   }
   
-  function linkCheckSpinnerLocalizer() {
-     return '<@vrtx.msg code="linkcheck.spinner" default="Checking links..."/>';
-  }
-
   function linkCheckCompleted(requests) {
-      //console.log("link check done");
+      var tabMenu = $("#main .activeTab", window.parent.document);
+      tabMenu.find("#vrtx-link-check-spinner").remove();
   }
 
   $(document).ready(function() {
@@ -78,12 +75,15 @@
 	    $(this).attr("target", "_top");
         });
         <#if visualizeBrokenLinks?exists && visualizeBrokenLinks = 'true'>
+         var tabMenu = $("#main .activeTab", window.parent.document);
+         var msg = '<@vrtx.msg code="linkcheck.spinner" default="Checking links..."/>';
+         tabMenu.prepend('<span id="vrtx-link-check-spinner">' + msg + '</span>');
+
         visualizeBrokenLinks({
             selection : 'iframe',
             validationURL : '${linkcheck.URL?html}',
             chunk : 10,
             responseLocalizer : linkCheckResponseLocalizer,
-            spinnerLocalizer : linkCheckSpinnerLocalizer,
             completed : linkCheckCompleted
         });
         </#if>

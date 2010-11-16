@@ -48,7 +48,7 @@
           value=elem.value 
           classes=cssclass 
           tooltip=form.resource.getLocalizedTooltip(elem.name, locale)
-          editor="simple-ckeditor"
+          editor=""
           />
          <@fckEditor.insertEditor elem.name /> 
         <#break>
@@ -64,7 +64,7 @@
           value=elem.value 
           classes="vrtx-html " + elem.name  
           tooltip=form.resource.getLocalizedTooltip(elem.name, locale)
-          editor="ckeditor"
+          editor=""
           />
         <@fckEditor.insertEditor elem.name true false /> 
         <#break>

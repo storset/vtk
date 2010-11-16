@@ -222,7 +222,7 @@
          }
        
          ck.config['EditorAreaCSS'] = cssFileList;
-         ck.replace(name);	
+         ck.replace(name, ck.config);	
       }
 
 	  /*

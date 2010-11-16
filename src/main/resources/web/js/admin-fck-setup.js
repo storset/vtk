@@ -12,11 +12,11 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   ck.config['DefaultLanguage'] = defaultLanguage;
 
   ck.config['customConfig'] = baseUrl + '/custom-ckconfig.js';
-      
+        
   if (completeEditor) {
     ck.config.toolbar = 'Complete_article';
   } else if (withoutSubSuper) {
-    ck.ck.toolbar = 'Inline_S';
+    ck.ck.toolbar = 'Inline_S';  	
   } else {
     ck.config.toolbar = 'Inline';
   }
@@ -55,7 +55,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
 
       ck.config['EditorAreaCSS'] = cssFileList;
 
-  	  ck.replace(name);
+  	  ck.replace(name, ck.config);
 }
 
 function FCKeditor_OnComplete(editorInstance) {

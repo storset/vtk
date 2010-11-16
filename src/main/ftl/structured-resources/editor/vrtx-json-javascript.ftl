@@ -3,6 +3,7 @@
 -->
 <#macro script >
   <#assign locale = springMacroRequestContext.getLocale() />
+  <script language="Javascript" type="text/javascript" src="${webResources?html}/js/jquery.scrollTo-1.4.2-min.js"></script>
   <script language="Javascript" type="text/javascript"> <!-- 
    
   LIST_OF_JSON_ELEMENTS = new Array();
@@ -117,23 +118,23 @@
      if (counter > 0){
         newElement.append(moveUpButton);
      }
-     
+
      newElement.find(".vrtx-remove-button").click(
      	function(){
-     		removeNode( j.name, counter ,  arrayOfIds );
+     		removeNode(j.name , counter ,  arrayOfIds );
      	}
      );
      
      newElement.find(".vrtx-move-up-button").click(
     	function(){
-     		swapContent(counter, arrayOfIds, -1);
+     		swapContent(counter, arrayOfIds, -1, j.name);
      	}
      );
      
      if(newElement.prev(".vrtx-json-element").length){
 	     newElement.prev(".vrtx-json-element").find(".vrtx-move-down-button").click(
 	     	function(){
-	     		swapContent(counter-1, arrayOfIds, 1);
+	     		swapContent(counter-1, arrayOfIds, 1, j.name);
 	     	}
 	     );
      }
@@ -157,7 +158,7 @@
   function removeNode(name,counter,arrayOfIds){
     var removeElementId = '#vrtx-json-element-' + name + '-' + counter;
     var removeElement = $(removeElementId);
-  
+    
 	var siblingElement;
 	if(removeElement.prev(".vrtx-json-element").length){
 		siblingElement = removeElement.prev(".vrtx-json-element");	
@@ -297,13 +298,16 @@
     var oEditor = FCKeditorAPI.GetInstance(instanceName);
     oEditor.SetData(data);
   }
-   
+  
   function isFckEditor(instanceName) {
     var oEditor = FCKeditorAPI.GetInstance(instanceName);
     return oEditor != null;
   }
   
-  function swapContent(counter, arrayOfIds, move) {
+  function swapContent(counter, arrayOfIds, move, name) {
+  
+    var movingBox = "#vrtx-json-element-" + name + "-" + (counter + move);
+    console.log(movingBox);
      
     var arrayOfIdsLength = arrayOfIds.length;
     for (var x = 0; x < arrayOfIdsLength; x++) {
@@ -313,7 +317,7 @@
       if(move > 0){  
       	moveToId = parseInt( $(elementId1).parents(".vrtx-json-element").next(".vrtx-json-element").find("input.id").val() );
       } else {
-	moveToId = parseInt( $(elementId1).parents(".vrtx-json-element").prev(".vrtx-json-element").find("input.id").val() );
+	    moveToId = parseInt( $(elementId1).parents(".vrtx-json-element").prev(".vrtx-json-element").find("input.id").val() );
       }
 	         
       var elementId2 = '#' + arrayOfIds[x] + moveToId;
@@ -364,7 +368,9 @@
       element1.change();
       element2.change();
     }
+    $('body').scrollTo( movingBox, 250, { easing:'swing', queue:true, axis:'y' } );
   }
+  
   // -->
   </script>
 </#macro>

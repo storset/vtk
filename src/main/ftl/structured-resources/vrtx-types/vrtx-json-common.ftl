@@ -191,7 +191,7 @@
        	<script language="Javascript" type="text/javascript">
        	     $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-remove-button").click(
 			 	function(){
-			 		removeNode("${inputFieldName}", ${counter} ,  ${arrayOfIds} );
+			 		removeNode("${inputFieldName}", ${counter},  ${arrayOfIds});
 			 	}
     		 );
        	</script>
@@ -201,7 +201,7 @@
        	   <script language="Javascript" type="text/javascript">
        	        $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-move-up-button").click(
     				function(){
-     					swapContent(${counter}, ${arrayOfIds}, -1);
+     					swapContent(${counter}, ${arrayOfIds}, -1, "${inputFieldName}");
      				}
    				  );
        	   </script>
@@ -212,7 +212,7 @@
           <script language="Javascript" type="text/javascript">       	
           	$("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-move-down-button").click(
 	     		function(){
-	     			swapContent(${counter}, ${arrayOfIds},1);
+	     			swapContent(${counter}, ${arrayOfIds}, 1, "${inputFieldName}");
 	     		}
 	     	);
           </script>

@@ -273,7 +273,8 @@ public class ParserTest extends TestCase {
             this.tokenOutput.addAll(ctx.getArguments());
             return new Node() {
                 @Override
-                public void render(Context ctx, Writer out) throws Exception {
+                public boolean render(Context ctx, Writer out) throws Exception {
+                    return true;
                 }
             };
         }

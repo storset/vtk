@@ -429,14 +429,6 @@ div.activeTab form.vrtx-admin-form {
   float: left;
 }
 
-div.activeTab #vrtx-link-check-spinner {
-  background: url(icons/tabmenu-spinner.gif) no-repeat center left;
-  padding: 0 2px 0 26px;
-  float: right;
-  display: block;
-  font-size: 0.8em;
-}
-
 * html div.activeTab form.vrtx-admin-form {
   margin-top: -9px;
   width: 95% !important;

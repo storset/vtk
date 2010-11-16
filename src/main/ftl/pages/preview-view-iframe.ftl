@@ -48,8 +48,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-  <head><title>${(title.title)?default(resourceContext.currentResource.name)}</title>
-
+  <head>
+  <title>${(title.title)?default(resourceContext.currentResource.name)}</title>
+  <#include "/system/css.ftl"/> 
   <#include "/system/javascript.ftl"/>
   <script language="javascript"><!--
   function linkCheckResponseLocalizer(status) {
@@ -65,19 +66,16 @@
   }
   
   function linkCheckCompleted(requests) {
-      var tabMenu = $("#main .activeTab", window.parent.document);
-      tabMenu.find("#vrtx-link-check-spinner").remove();
+     $("body").find("#vrtx-link-check-spinner").remove();
   }
 
   $(document).ready(function() {
      $('iframe').load(function() {
         $("iframe").contents().find("a").each(function(i) {
-	    $(this).attr("target", "_top");
+	      $(this).attr("target", "_top");
         });
-        <#if visualizeBrokenLinks?exists && visualizeBrokenLinks = 'true'>
-         var tabMenu = $("#main .activeTab", window.parent.document);
-         var msg = '<@vrtx.msg code="linkcheck.spinner" default="Checking links..."/>';
-         tabMenu.prepend('<span id="vrtx-link-check-spinner">' + msg + '</span>');
+        <#if visualizeBrokenLinks?exists && visualizeBrokenLinks = 'true'> 
+        $("body").prepend('<span id="vrtx-link-check-spinner"><@vrtx.msg code="linkcheck.spinner" default="Checking links..."/></span>');
 
         visualizeBrokenLinks({
             selection : 'iframe',

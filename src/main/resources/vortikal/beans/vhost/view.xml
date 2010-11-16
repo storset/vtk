@@ -128,6 +128,7 @@
     </property>
     <property name="referenceDataProviders">
       <list>
+        <ref bean="viewIframeCSSProvider" />
         <ref bean="viewIframeJSProvider" />
         <ref bean="resourceContextProvider" />
         <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider" parent="repositoryAware">
@@ -287,6 +288,18 @@
     <property name="skipIndexFile" value="true" />
   </bean>
   
+  <bean id="viewIframeCSSProvider" class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
+    <property name="modelDataMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/visualize-broken-links.css</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+  
   <bean id="viewIframeJSProvider" class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
     <property name="modelDataMap">
       <map>
@@ -300,7 +313,6 @@
       </map>
     </property>
   </bean>
-  
 
  <!-- Config for view technologies -->
 

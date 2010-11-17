@@ -28,22 +28,6 @@
   <bean id="eventListing.handler" class="org.vortikal.web.display.collection.event.EventListingController"
     parent="repositoryAware">
     <property name="resourceManager" ref="resourceManager" />
-    <property name="sortPropDefs">
-      <list>
-        <ref bean="importancePropDef" />
-        <ref bean="navigationTitlePropDef" />
-        <ref bean="titlePropDef" />
-      </list>
-    </property>
-    <property name="overridingSortPropDefs">
-      <map>
-        <entry key-ref="navigationTitlePropDef">
-          <list>
-            <ref bean="titlePropDef" />
-          </list>
-        </entry>
-      </map>
-    </property>
     <property name="hiddenPropDef" ref="hiddenPropDef" />
     <property name="viewName" value="${override.listing.prefix}eventListing.view" />
     <property name="pageLimitPropDef" ref="pageLimitPropDef" />

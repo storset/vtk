@@ -31,12 +31,10 @@
 package org.vortikal.web.display.collection;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -52,9 +50,11 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
+import org.vortikal.repository.search.SortingImpl;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.PropertyExistsQuery;
 import org.vortikal.repository.search.query.TermOperator;
@@ -63,7 +63,7 @@ import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.util.repository.ResourcePropertyComparator;
+import org.vortikal.web.search.SearchSorting;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
@@ -85,11 +85,11 @@ public abstract class AbstractCollectionListingController implements ListingCont
     protected String viewName;
     protected Map<String, Service> alternativeRepresentations;
     private boolean includeRequestParametersInAlternativeRepresentation;
+    private ResourceTypeTree resourceTypeTree;
+    
+    private SearchSorting searchSorting;
 
-    // A list of properties used when sorting the list of collections
-    // @see ResourcePropertyComparator
-    protected List<PropertyTypeDefinition> sortPropDefs;
-    protected Map<PropertyTypeDefinition, List<PropertyTypeDefinition>> overridingSortPropDefs;
+
 
     /**
      * Container class for (resource, URL) for subcollections
@@ -122,11 +122,8 @@ public abstract class AbstractCollectionListingController implements ListingCont
         Principal principal = securityContext.getPrincipal();
 
         Resource collection = this.repository.retrieve(token, uri, true);
-        List<PropertySet> subCollections = listCollections(uri, token);
+        ResultSet subCollections = listCollections(uri, token,collection);
 
-        Locale locale = new RequestContext(request).getLocale();
-        Collections.sort(subCollections, new ResourcePropertyComparator(this.sortPropDefs, this.overridingSortPropDefs,
-                false, locale));
 
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("collection", this.resourceManager.createResourceWrapper(collection));
@@ -174,9 +171,11 @@ public abstract class AbstractCollectionListingController implements ListingCont
         return new ModelAndView(this.viewName, model);
     }
 
-    protected List<CollectionItem> createSubCollections(HttpServletRequest request, List<PropertySet> subCollections) {
+    protected List<CollectionItem> createSubCollections(HttpServletRequest request, ResultSet rs) {
         List<CollectionItem> result = new ArrayList<CollectionItem>();
-        for (PropertySet propertySet : subCollections) {
+        for (int i = 0; i < rs.getSize(); i++) {
+            PropertySet propertySet = rs.getResult(i);
+ 
             URL url = URL.create(request);
             url.clearParameters();
             url.setRef(null);
@@ -187,7 +186,7 @@ public abstract class AbstractCollectionListingController implements ListingCont
         return result;
     }
 
-    protected List<PropertySet> listCollections(Path uri, String token) {
+    protected ResultSet listCollections(Path uri, String token,Resource collection) {
 
         AndQuery query = new AndQuery();
         query.add(new UriPrefixQuery(uri.toString()));
@@ -198,9 +197,11 @@ public abstract class AbstractCollectionListingController implements ListingCont
         Search search = new Search();
         search.setLimit(this.collectionDisplayLimit);
         search.setQuery(query);
-
+        search.setSorting(new SortingImpl(this.searchSorting.getSortFields(collection)));
+        
         ResultSet result = this.repository.search(token, search);
-        return result.getAllResults();
+      
+        return result;
     }
 
     protected URL createURL(HttpServletRequest request, String... removeableParams) {
@@ -256,16 +257,6 @@ public abstract class AbstractCollectionListingController implements ListingCont
     }
 
     @Required
-    public void setSortPropDefs(List<PropertyTypeDefinition> sortPropDefs) {
-        this.sortPropDefs = sortPropDefs;
-    }
-
-    public void setOverridingSortPropDefs(
-            Map<PropertyTypeDefinition, List<PropertyTypeDefinition>> overridingSortPropDefs) {
-        this.overridingSortPropDefs = overridingSortPropDefs;
-    }
-
-    @Required
     public void setPageLimitPropDef(PropertyTypeDefinition pageLimitPropDef) {
         this.pageLimitPropDef = pageLimitPropDef;
     }
@@ -296,5 +287,21 @@ public abstract class AbstractCollectionListingController implements ListingCont
 
     public void setCollectionDisplayLimit(int collectionDisplayLimit) {
         this.collectionDisplayLimit = collectionDisplayLimit;
+    }
+
+    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+        this.resourceTypeTree = resourceTypeTree;
+    }
+
+    public ResourceTypeTree getResourceTypeTree() {
+        return resourceTypeTree;
+    }
+
+    public void setSearchSorting(SearchSorting searchSorting) {
+        this.searchSorting = searchSorting;
+    }
+
+    public SearchSorting getSearchSorting() {
+        return searchSorting;
     }
 }

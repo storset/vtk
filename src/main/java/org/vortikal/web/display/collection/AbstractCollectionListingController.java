@@ -50,7 +50,6 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
@@ -85,11 +84,9 @@ public abstract class AbstractCollectionListingController implements ListingCont
     protected String viewName;
     protected Map<String, Service> alternativeRepresentations;
     private boolean includeRequestParametersInAlternativeRepresentation;
-    private ResourceTypeTree resourceTypeTree;
+
     
     private SearchSorting searchSorting;
-
-
 
     /**
      * Container class for (resource, URL) for subcollections
@@ -287,14 +284,6 @@ public abstract class AbstractCollectionListingController implements ListingCont
 
     public void setCollectionDisplayLimit(int collectionDisplayLimit) {
         this.collectionDisplayLimit = collectionDisplayLimit;
-    }
-
-    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
-        this.resourceTypeTree = resourceTypeTree;
-    }
-
-    public ResourceTypeTree getResourceTypeTree() {
-        return resourceTypeTree;
     }
 
     public void setSearchSorting(SearchSorting searchSorting) {

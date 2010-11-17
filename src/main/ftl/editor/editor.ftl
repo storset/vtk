@@ -151,13 +151,15 @@
 
         ck.config['DefaultLanguage'] = '<@vrtx.requestLanguage />';
 
-        ck.config['customConfig'] = '${fckeditorBase.url?html}/custom-ckconfig.js';
-	
+        ck.config.customConfig = '${fckeditorBase.url?html}/custom-ckconfig.js';
+			
 		ck.config.autoGrow_maxHeight = '400px';
   		ck.config.autoGrow_minHeight = '40px';
   		ck.config.height = '250px';
   		ck.config.resize_enabled = true;        
 	
+		ck.config.extraPlugins = 'MediaEmbed';
+			
          if (completeEditor) {
             ck.config.autoGrow_minHeight = '50px'; 
             <#if resourceType = 'article' || resourceType = 'event'  >

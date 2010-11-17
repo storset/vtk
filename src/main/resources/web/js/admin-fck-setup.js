@@ -18,6 +18,8 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   ck.config.height = '250px';
   ck.config.resize_enabled = true;        
         
+  ck.config.extraPlugins = 'MediaEmbed';
+        
   if (completeEditor) {
     ck.config.toolbar = 'Complete_article';
     ck.config.autoGrow_minHeight = '50px';  	

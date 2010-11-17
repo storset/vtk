@@ -31,6 +31,7 @@
 package org.vortikal.resourcemanagement;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -96,7 +97,7 @@ public abstract class PropertyDescription {
     public void addVocabulary(Locale lang, String vocabularyKey, Object vocabularyValue) {
         Map<String, Object> m = vocabulary.get(lang);
         if (m == null) {
-            m = new HashMap<String, Object>();
+            m = new LinkedHashMap<String, Object>();
         }
         m.put(vocabularyKey, vocabularyValue);
         this.vocabulary.put(lang, m);

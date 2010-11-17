@@ -153,7 +153,13 @@
 
         ck.config['customConfig'] = '${fckeditorBase.url?html}/custom-ckconfig.js';
 	
+		ck.config.autoGrow_maxHeight = '400px';
+  		ck.config.autoGrow_minHeight = '40px';
+  		ck.config.height = '150px';
+  		ck.config.resize_enabled = true;        
+	
          if (completeEditor) {
+            ck.config.autoGrow_minHeight = '50px'; 
             <#if resourceType = 'article' || resourceType = 'event'  >
               ck.config.toolbar = 'Complete_article';
             <#else>
@@ -161,10 +167,12 @@
             </#if> 
          } else {
             ck.config.toolbar = 'Inline';
+            ck.config.height = '40px';
+  			ck.config.resize_enabled = false;
          }
      
          if(withoutSubSuper) {
-           ck.config.toolbar = 'Inline_S';
+           ck.config.toolbar = 'Inline_S';           
          }
 		                        
          // File browser

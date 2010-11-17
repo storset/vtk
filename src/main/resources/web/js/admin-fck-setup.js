@@ -13,12 +13,22 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
 
   ck.config['customConfig'] = baseUrl + '/custom-ckconfig.js';
         
+  ck.config.autoGrow_maxHeight = '400px';
+  ck.config.autoGrow_minHeight = '40px';
+  ck.config.height = '150px';
+  ck.config.resize_enabled = true;        
+        
   if (completeEditor) {
     ck.config.toolbar = 'Complete_article';
+    ck.config.autoGrow_minHeight = '50px';  	
   } else if (withoutSubSuper) {
-    ck.ck.toolbar = 'Inline_S';  	
+    ck.config.toolbar = 'Inline_S';  	
+  	ck.config.height = '40px';
+  	ck.config.resize_enabled = false;
   } else {
     ck.config.toolbar = 'Inline';
+    ck.config.height = '40px';
+    ck.config.resize_enabled = false;
   }
 
   // File browser

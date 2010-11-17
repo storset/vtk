@@ -289,18 +289,27 @@
     return htmlTemplate;
   }
 
-  function getFckValue(instanceName) {
-    var oEditor = FCKeditorAPI.GetInstance(instanceName);
-    return oEditor.GetXHTML(true);
+  function getCkValue(instanceName) {
+    var oEditor = getCkInstance(instanceName);
+    return oEditor.getData();
   }
   
-  function setFckValue(instanceName, data) {
-    var oEditor = FCKeditorAPI.GetInstance(instanceName);
-    oEditor.SetData(data);
+  function setCkValue(instanceName, data) {
+    var oEditor = getCkInstance(instanceName);
+    oEditor.setData(data);
   }
-  
-  function isFckEditor(instanceName) {
-    var oEditor = FCKeditorAPI.GetInstance(instanceName);
+
+  function getCkInstance(instanceName){
+  	 for(var i in CKEDITOR.instances) {
+    	if(CKEDITOR.instances[i].name == instanceName){
+    		return CKEDITOR.instances[i];
+    	} 
+      }
+      return null;
+  }
+   
+  function isCkEditor(instanceName) {
+    var oEditor = getCkInstance(instanceName);
     return oEditor != null;
   }
   
@@ -316,19 +325,19 @@
       if(move > 0){  
       	moveToId = parseInt( $(elementId1).parents(".vrtx-json-element").next(".vrtx-json-element").find("input.id").val() );
       } else {
-	    moveToId = parseInt( $(elementId1).parents(".vrtx-json-element").prev(".vrtx-json-element").find("input.id").val() );
+		moveToId = parseInt( $(elementId1).parents(".vrtx-json-element").prev(".vrtx-json-element").find("input.id").val() );
       }
 	         
       var elementId2 = '#' + arrayOfIds[x] + moveToId;
      
       /* We need to handle special cases like date and fck fields  */
-      var fckInstanceName1 = arrayOfIds[x].replace(/\\/g, '') + counter;
-      var fckInstanceName2 = arrayOfIds[x].replace(/\\/g, '') + moveToId;
-      if (isFckEditor(fckInstanceName1) && isFckEditor(fckInstanceName2)) {
-        var val1 = getFckValue(fckInstanceName1);
-        var val2 = getFckValue(fckInstanceName2);
-        setFckValue(fckInstanceName1, val2);
-        setFckValue(fckInstanceName2, val1);
+      var ckInstanceName1 = arrayOfIds[x].replace(/\\/g, '') + counter;
+      var ckInstanceName2 = arrayOfIds[x].replace(/\\/g, '') + moveToId;
+      if (isCkEditor(ckInstanceName1) && isCkEditor(ckInstanceName2)) {
+        var val1 = getCkValue(ckInstanceName1);
+        var val2 = getCkValue(ckInstanceName2);
+        setCkValue(ckInstanceName1, val2);
+        setCkValue(ckInstanceName2, val1);
       } else if ($(elementId1).hasClass("date") && $(elementId2).hasClass("date")) {
         var date1 = $(elementId1 + '-date');
         var hours1 = $(elementId1 + '-hours');

@@ -35,9 +35,14 @@
                   onOk : function()
                  {
 		  for (var i=0; i<window.frames.length; i++) {
-		     if(window.frames[i].name == 'iframeMediaEmbed') {
-		        var content = window.frames[i].document.getElementById("embed").value;
+		      if(window.frames[i].name == 'iframeMediaEmbed') {
+		        var url = window.frames[i].document.getElementById("txtUrl").value;
+			var contentType = window.frames[i].document.getElementById("txtContentType").value;
+			var width = window.frames[i].document.getElementById("txtWidth").value;
+			var height = window.frames[i].document.getElementById("txtHeight").value;
+			var autoplay = window.frames[i].document.getElementById("chkAutoplay").value;
 		     }
+		      var content = "${include:media-player url=["+url+"] height=["+height+"] width=["+width+"] autoplay=["+autoplay+"] content-type=["+contentType+"]}";
 		  }
 		  final_html = 'MediaEmbedInsertData|---' + escape('<div class="media_embed">'+content+'</div>') + '---|MediaEmbedInsertData';
                     editor.insertHtml(final_html);

@@ -11,14 +11,6 @@
 		<!-- URL -->
     <table cellspacing="5" cellpadding="0" width="100%" border="0">
 	   <tr>
-		  <td width="100%">
-		      <span fckLang="MoviePlayerURL">URL:</span>
-		  </td>
-          <td id="tdBrowse" style="display: none" rowspan="2">
-              <input id="btnBrowse" onclick="BrowseServer();" type="button" value="Browse Server" fckLang="DlgBtnBrowseServer" />
-          </td>
-	   </tr>
-	   <tr>
            <td style="vertical-align: top">
 		  <input id="txtUrl" style="width: 100%" type="text" />
            </td>
@@ -33,7 +25,7 @@
 	   </tr>
 	   <tr>
            <td style="vertical-align: top">
-           	<input id="txtUrl" style="width: 50%" type="text" />
+           	<input id="txtContentType" style="width: 50%" type="text" />
            </td>
 	   </tr>
 	</table>
@@ -51,7 +43,7 @@
         </tr>
         <tr>
             <td><span fckLang="MoviePlayerAutoplay">Auto Play:</span></td>
-            <td><input type="checkbox" class="CheckBox" id="chkAutoplay"></td>
+            <td><input id="chkAutoplay" type="checkbox" class="CheckBox"></td>
         </tr>
 	</table>
 

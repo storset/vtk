@@ -44,10 +44,10 @@
 		     }
 		      var content = "${include:media-player url=["+url+"] height=["+height+"] width=["+width+"] autoplay=["+autoplay+"] content-type=["+contentType+"]}";
 		  }
-		  final_html = 'MediaEmbedInsertData|---' + escape('<div class="media_embed">'+content+'</div>') + '---|MediaEmbedInsertData';
+		  final_html = 'MediaEmbedInsertData|---' + escape(content) + '---|MediaEmbedInsertData';
                     editor.insertHtml(final_html);
                     updated_editor_data = editor.getData();
-                    clean_editor_data = updated_editor_data.replace(final_html,'<div class="media_embed">'+content+'</div>');
+                    clean_editor_data = updated_editor_data.replace(final_html,content);
                     editor.setData(clean_editor_data);
                  }
               };

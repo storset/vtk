@@ -194,8 +194,9 @@ public abstract class AbstractCollectionListingController implements ListingCont
         Search search = new Search();
         search.setLimit(this.collectionDisplayLimit);
         search.setQuery(query);
-        search.setSorting(new SortingImpl(this.searchSorting.getSortFields(collection)));
-        
+        if (this.searchSorting != null) {
+            search.setSorting(new SortingImpl(this.searchSorting.getSortFields(collection)));
+        }
         ResultSet result = this.repository.search(token, search);
       
         return result;

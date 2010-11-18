@@ -4,7 +4,7 @@ getDescription() {
 
 
 getUsage() {
-    return "repo search <query:string>";
+    return "repo search <query:string> [<properties:string...>]";
 }
 
 void execute(context, args, out) {
@@ -24,8 +24,27 @@ void execute(context, args, out) {
 
     rs = indexSearcher.execute(token, search);
 
+    propList = args.get("properties");
+
     for (r: rs.getAllResults()) {
         out.println(r.getURI());
+        if (propList != null) {
+            for (propName: propList) {
+                p = propName;
+                prefix = null;
+                
+                if (p.contains(":")) {
+                    prefix = p.substring(0, p.indexOf(":"));
+                    p = p.substring(prefix.length() + 1);
+                }
+                prop = r.getPropertyByPrefix(prefix, p);
+                if (prop.getType() == org.vortikal.repository.resourcetype.PropertyType.Type.BINARY) {
+                    out.println("  " + propName + ": [binary]");
+                } else {
+                    out.println("  " + propName + ": " + prop.getValue());
+                }
+            }
+        }
     }
 }
 

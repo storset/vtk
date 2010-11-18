@@ -47,9 +47,10 @@ void execute(context, args, out) {
         return;
     }
 
-    ignored = "";
+    props = new HashMap();
+    // props.put("ignored", new ArrayList());
     try {
-        archiver.createArchive(token, resource, stream, ignored, listener);
+        archiver.createArchive(token, resource, stream, props, listener);
     } catch (e) {
         out.println("Unable to create archive: "
                     + file + ": " + e.getMessage());

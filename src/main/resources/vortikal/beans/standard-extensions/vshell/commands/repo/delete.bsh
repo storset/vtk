@@ -19,7 +19,7 @@ void execute(context, args, out) {
     }
 
     try {
-        repo.delete(token, uri);
+        repo.delete(token, uri, true);
     } catch (e) {
         out.println("Unable to delete " + uri + ": " + e.getMessage());
     }

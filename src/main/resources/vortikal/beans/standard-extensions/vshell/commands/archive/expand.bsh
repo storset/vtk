@@ -41,10 +41,11 @@ void execute(context, args, out) {
         return;
     }
 
-    ignored = "";
+    props = new HashMap();
+    // props.put("ignored", new ArrayList());
 
     try {
-        archiver.expandArchive(token, stream, uri, ignored, listener);
+        archiver.expandArchive(token, stream, uri, props, listener);
     } catch (e) {
         out.println("Unable to expand archive: " + file
                     + ": " + e.getMessage());

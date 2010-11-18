@@ -37,10 +37,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -50,13 +50,8 @@ import org.vortikal.web.service.Service;
 
 public class RenameController extends SimpleFormController {
 
-    private String confirmView;
     private static Log logger = LogFactory.getLog(RenameController.class);
-    private Repository repository = null;
-
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
+    private Repository repository;
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -67,7 +62,7 @@ public class RenameController extends SimpleFormController {
                 .retrieve(securityContext.getToken(), requestContext.getResourceURI(), false);
         String url = service.constructLink(resource, securityContext.getPrincipal());
 
-        RenameCommand command = new RenameCommand(resource.getName(), url);
+        RenameCommand command = new RenameCommand(resource, url);
         return command;
     }
 
@@ -78,69 +73,42 @@ public class RenameController extends SimpleFormController {
         Path uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
 
-        RenameCommand rename = (RenameCommand) command;
+        RenameCommand renameCommand = (RenameCommand) command;
 
-        if (rename.getCancel() != null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Not setting new name for resource " + uri);
-            }
-            rename.setDone(true);
+        if (renameCommand.getCancel() != null) {
             return new ModelAndView(getSuccessView());
+        }
+
+        if (renameCommand.isConfirmOverwrite()) {
+            return new ModelAndView(getFormView());
         }
 
         Resource resource = this.repository.retrieve(token, uri, false);
         String name = resource.getName();
 
-        Map<String, Object> model = null;
-
         boolean overwrite = false;
+        if (renameCommand.getOverwrite() != null) {
+            overwrite = true;
+        }
 
         try {
-            Path newUri = uri.getParent().extend(rename.getName());
-
-            if (repository.exists(token, newUri)) {
-                model = errors.getModel();
-                Resource resource2 = repository.retrieve(token, newUri, false);
-                if (rename.getOverwrite() == null) {
-                    if (resource.isCollection() || resource2.isCollection()) {
-                        errors.rejectValue("name", "manage.rename.resource.exists");
-                    } else {
-                        errors.rejectValue("name", "manage.rename.resource.overwrite",
-                                "A resource of this name already exists, do you want to overwrite it?");
-                        model.put("confirm", true);
-                    }
-                    return new ModelAndView(getFormView(), model);
-                } else {
-                    if (!(resource.isCollection() || resource2.isCollection())) {
-                        overwrite = true;
-                    }
-                }
-            }
-
-            if (!name.equals(rename.getName())) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Setting new name '" + rename.getName() + "' for resource " + uri);
-                }
-
+            Path newUri = renameCommand.getRenamePath();
+            if (!name.equals(renameCommand.getName())) {
                 this.repository.move(token, uri, newUri, overwrite);
-                Resource newResource = this.repository.retrieve(token, newUri, false);
-                model = new HashMap<String, Object>();
-                model.put("resource", newResource);
+                resource = this.repository.retrieve(token, newUri, false);
             }
-            rename.setDone(true);
+            Map<String, Object> model = new HashMap<String, Object>();
+            model.put("resource", resource);
             return new ModelAndView(getSuccessView(), model);
-
-        } catch (IllegalOperationException e) {
-            errors.rejectValue("name", "manage.rename.invalid.name", "The name is not valid for this resource");
+        } catch (Exception e) {
+            logger.error("An error occured while renaming resource " + uri, e);
+            errors.reject("manage.rename.resource.validation.failed", "Renaming of resource failed");
             return new ModelAndView(getFormView(), errors.getModel());
         }
     }
 
-    public void setConfirmView(String confirmView) {
-        this.confirmView = confirmView;
-    }
-
-    public String getConfirmView() {
-        return confirmView;
+    @Required
+    public void setRepository(Repository repository) {
+        this.repository = repository;
     }
 }

@@ -30,32 +30,21 @@
  */
 package org.vortikal.web.actions.copymove;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.web.RequestContext;
 
-public class RenameCommandValidator implements Validator, InitializingBean {
+public class RenameCommandValidator implements Validator {
 
+    private Repository repository;
     private static Log logger = LogFactory.getLog(RenameCommandValidator.class);
-
-    private Repository repository = null;
-
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
-    public void afterPropertiesSet() throws Exception {
-        if (this.repository == null) {
-            throw new BeanInitializationException("Property 'repository' cannot be null");
-        }
-    }
 
     @SuppressWarnings("unchecked")
     public boolean supports(Class clazz) {
@@ -63,14 +52,6 @@ public class RenameCommandValidator implements Validator, InitializingBean {
     }
 
     public void validate(Object command, Errors errors) {
-        RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-
-        Path uri = requestContext.getResourceURI();
-        Path parentCollection = requestContext.getCurrentCollection();
-        if (uri.equals(parentCollection)) {
-            parentCollection = parentCollection.getParent();
-        }
 
         RenameCommand renameCommand = (RenameCommand) command;
         if (renameCommand.getCancel() != null)
@@ -78,12 +59,43 @@ public class RenameCommandValidator implements Validator, InitializingBean {
 
         String name = renameCommand.getName();
 
-        if (null == name || "".equals(name.trim())) {
-            errors.rejectValue("name", "manage.rename.invalid.name", "The name is not valid for this resource");
-            renameCommand.setName("");
+        if (StringUtils.isBlank(name)) {
+            errors.rejectValue("name", "manage.create.document.missing.name",
+                    "A name must be provided for the document");
+            return;
+
+        }
+        if (name.contains("/")) {
+            errors.rejectValue("name", "manage.create.document.invalid.name", "This is an invalid document name");
+            return;
         }
 
+        Resource resource = renameCommand.getResource();
+        Path newUri = renameCommand.getRenamePath();
 
+        String token = SecurityContext.getSecurityContext().getToken();
+        try {
+            if (this.repository.exists(token, newUri)) {
+                Resource existing = repository.retrieve(token, newUri, false);
+                if (renameCommand.getOverwrite() == null) {
+                    if (resource.isCollection() || existing.isCollection()) {
+                        errors.rejectValue("name", "manage.rename.resource.exists");
+                    } else {
+                        errors.rejectValue("name", "manage.rename.resource.overwrite",
+                                "A resource of this name already exists, do you want to overwrite it?");
+                        renameCommand.setConfirmOverwrite(true);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Failed while validating rename operation", e);
+            errors.reject("manage.rename.resource.validation.failed", "Validiation failed");
+        }
+    }
+
+    @Required
+    public void setRepository(Repository repository) {
+        this.repository = repository;
     }
 
 }

@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.actions.convert;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -64,9 +65,15 @@ public abstract class CopyCommandValidator implements Validator {
             return;
 
         String name = copyCommand.getName();
-        if (null == name || "".equals(name.trim())) {
-            errors.rejectValue("name", "manage.rename.invalid.name", "The name is not valid for this resource");
-            copyCommand.setName("");
+        if (StringUtils.isBlank(name)) {
+            errors.rejectValue("name", "manage.create.document.missing.name",
+                    "A name must be provided for the document");
+            return;
+
+        }
+        if (name.contains("/")) {
+            errors.rejectValue("name", "manage.create.document.invalid.name", "This is an invalid document name");
+            return;
         }
 
         Path newURI = this.getCopyToURI(name);

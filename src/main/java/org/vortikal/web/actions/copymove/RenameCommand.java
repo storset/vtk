@@ -30,90 +30,51 @@
  */
 package org.vortikal.web.actions.copymove;
 
+import org.vortikal.repository.Path;
+import org.vortikal.repository.Resource;
+import org.vortikal.web.actions.UpdateCancelCommand;
 
-public class RenameCommand {
+public class RenameCommand extends UpdateCancelCommand {
 
     private String name;
-    private String submitURL = null;
-    private boolean done = false;
     private String cancel;
     private String overwrite;
-    
-    /**
-     * Gets the value of cancel
-     *
-     * @return the value of cancel
-     */
+
+    private Resource resource;
+    private boolean confirmOverwrite;
+
+    public RenameCommand(Resource resource, String submitURL) {
+        super(submitURL);
+        this.resource = resource;
+        this.name = resource.getName();
+    }
+
+    public boolean isConfirmOverwrite() {
+        return confirmOverwrite;
+    }
+
+    public void setConfirmOverwrite(boolean confirmOverwrite) {
+        this.confirmOverwrite = confirmOverwrite;
+    }
+
+    public Resource getResource() {
+        return resource;
+    }
+
     public String getCancel() {
         return this.cancel;
     }
 
-    /**
-     * Sets the value of cancel
-     *
-     * @param cancel Value to assign to this.cancel
-     */
-    public void setCancel(String cancel)  {
+    public void setCancel(String cancel) {
         this.cancel = cancel;
     }
 
-    public RenameCommand(String name, String submitURL) {
-        this.name = name;
-        this.submitURL = submitURL;
-    }
-
-    
-
-    /**
-     * Gets the value of owner
-     *
-     * @return the value of owner
-     */
     public String getName() {
         return this.name;
     }
 
-    /**
-     * Sets the name of the resource
-     *
-     * @param name 
-     */
-    public void setName(String name)  {
+    public void setName(String name) {
         this.name = name;
-    }
-    
-    
-    /**
-     * Gets the value of submitURL
-     *
-     * @return the value of submitURL
-     */
-    public String getSubmitURL() {
-        return this.submitURL;
-    }
-
-    /**
-     * Sets the value of submitURL
-     *
-     * @param submitURL Value to assign to this.submitURL
-     */
-    public void setSubmitURL(String submitURL)  {
-        this.submitURL = submitURL;
-    }
-
-
-    /**
-     * @return Returns the done.
-     */
-    public boolean isDone() {
-        return this.done;
-    }
-    
-    /**
-     * @param done The done to set.
-     */
-    public void setDone(boolean done) {
-        this.done = done;
     }
 
     public void setOverwrite(String overwrite) {
@@ -123,5 +84,8 @@ public class RenameCommand {
     public String getOverwrite() {
         return overwrite;
     }
+    
+    public Path getRenamePath() {
+        return this.resource.getURI().getParent().extend(this.name);
+    }
 }
-

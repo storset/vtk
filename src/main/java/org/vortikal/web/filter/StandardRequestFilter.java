@@ -42,14 +42,15 @@ import org.apache.commons.logging.LogFactory;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.service.URL;
 
-
 /**
  * Standard request filter.
  * 
  * <ol>
  * <li>Ensures that the URI is not empty or <code>null</code>.
  * <li>Translates '*' as request URI to '/' (relevant for a host global OPTIONS request).
- * <li>Supports translating forwarded requests using a header with optional fields {host, port, protocol}
+ * <li>Supports the de-facto header <code>X-Forwarded-For</code> with a client IP
+ * <li>Also supports translating forwarded requests using a header with optional 
+ *    fields <code>{host, port, protocol, client}</code>
  *    Example: <code>X-My-Forward-Header: host=example.com,port=443,protocol=https</code>
  * </ol>
  */
@@ -58,7 +59,8 @@ public class StandardRequestFilter extends AbstractRequestFilter {
     private static Log logger = LogFactory.getLog(StandardRequestFilter.class);
 
     private Map<Pattern, String> urlReplacements;
-    private String requestForwardHeader = null;
+    private boolean supportXForwardedFor = false;
+    private String requestForwardFieldHeader = null;
 
     public void setUrlReplacements(Map<String, String> urlReplacements) {
         this.urlReplacements = new LinkedHashMap<Pattern, String>();
@@ -69,8 +71,12 @@ public class StandardRequestFilter extends AbstractRequestFilter {
         }
     }
 
-    public void setRequestForwardHeader(String forwardHeader) {
-        this.requestForwardHeader = forwardHeader;
+    public void setSupportXForwardedFor(boolean supportXForwardedFor) {
+        this.supportXForwardedFor = supportXForwardedFor;
+    }
+    
+    public void setRequestForwardFieldHeader(String forwardHeader) {
+        this.requestForwardFieldHeader = forwardHeader;
     }
 
     public HttpServletRequest filterRequest(HttpServletRequest request) {
@@ -80,7 +86,8 @@ public class StandardRequestFilter extends AbstractRequestFilter {
     private class StandardRequestWrapper extends HttpServletRequestWrapper {
         private String uri;
         private URL requestURL;
-
+        private String client = null;
+        
         public StandardRequestWrapper(HttpServletRequest request) {
             super(request);
             String requestURI = request.getRequestURI();
@@ -89,16 +96,28 @@ public class StandardRequestFilter extends AbstractRequestFilter {
                 logger.debug("Translated uri: from '" + requestURI + "' to '" + this.uri + "'");
             }
             this.requestURL = URL.parse(request.getRequestURL().toString());
-            if (requestForwardHeader == null || requestForwardHeader.trim().equals("")) {
+            if (supportXForwardedFor) {
+                String xForwardHeader = request.getHeader("X-Forwarded-For");
+                if (xForwardHeader != null) {
+                    xForwardHeader = xForwardHeader.split(" ")[0];
+                    if (xForwardHeader.indexOf(",") != -1) {
+                        xForwardHeader = xForwardHeader.substring(0, xForwardHeader.indexOf(","));
+                    }
+                    this.client = xForwardHeader;
+                }
+            }
+            
+            if (requestForwardFieldHeader == null || requestForwardFieldHeader.trim().equals("")) {
                 return;
             }
-            String forwardHeader = request.getHeader(requestForwardHeader);
+            String forwardHeader = request.getHeader(requestForwardFieldHeader);
             if (forwardHeader == null) {
                 return;
             }
             String host = HttpUtil.extractHeaderField(forwardHeader, "host");
             String port = HttpUtil.extractHeaderField(forwardHeader, "port");
             String protocol = HttpUtil.extractHeaderField(forwardHeader, "protocol");
+            String client = HttpUtil.extractHeaderField(forwardHeader, "client");
             if (protocol != null) {
                 this.requestURL.setProtocol(protocol);
             }
@@ -107,6 +126,9 @@ public class StandardRequestFilter extends AbstractRequestFilter {
             }
             if (host!= null) {
                 this.requestURL.setHost(host);
+            }
+            if (client != null) {
+                this.client = client;
             }
         }
 
@@ -138,6 +160,22 @@ public class StandardRequestFilter extends AbstractRequestFilter {
         @Override
         public String getRequestURI() {
             return this.uri;
+        }
+        
+        @Override
+        public String getRemoteAddr() {
+            if (this.client != null) {
+                return this.client;
+            }
+            return super.getRemoteAddr();
+        }
+
+        @Override
+        public String getRemoteHost() {
+            if (this.client != null) {
+                return this.client;
+            }
+            return super.getRemoteHost();
         }
 
         private String translateUri(String requestURI) {

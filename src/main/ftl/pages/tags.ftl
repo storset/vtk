@@ -60,7 +60,9 @@
 
   <#if scopeUp?exists>
     <div class="vrtx-tags-scope-up">
-      <a href="${scopeUp.url}">${scopeUp.title}</a>
+      <ul>
+        <li><a href="${scopeUp.url}">${scopeUp.title}</a></li>
+      </ul>
     </div>
   </#if>
 

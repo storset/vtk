@@ -330,8 +330,9 @@ input.vrtx-move-down-button  {
   width: 500px;
 }
 
-.vrtx-simple-html textarea {
-  height: 22.5ex;
+.vrtx-simple-html textarea,
+.vrtx-simple-html .cke_contents {
+  height: 22.5ex !important;
   width: 500px;
 }
 
@@ -339,8 +340,9 @@ input.vrtx-move-down-button  {
   height: 300px;
 }
 
-.vrtx-simple-html-small textarea {
-  height: 12.5ex;
+.vrtx-simple-html-small textarea,
+.vrtx-simple-html-small .cke_contents {
+  height: 12.5ex !important;
   width: 350px;
 }
 

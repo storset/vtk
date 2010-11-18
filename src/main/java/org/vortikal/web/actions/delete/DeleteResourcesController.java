@@ -25,6 +25,11 @@ public class DeleteResourcesController implements Controller {
         String token = SecurityContext.getSecurityContext().getToken();
 
         boolean recoverable = true;
+        String permanent = request.getParameter("permanent");
+        if ("true".equals(permanent)) {
+            recoverable = false;
+        }
+
         Enumeration e = request.getParameterNames();
         while (e.hasMoreElements()) {
             String name = (String) e.nextElement();

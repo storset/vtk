@@ -41,13 +41,14 @@
 			var width = window.frames[i].document.getElementById("txtWidth").value;
 			var height = window.frames[i].document.getElementById("txtHeight").value;
 			var autoplay = window.frames[i].document.getElementById("chkAutoplay").value;
+			var align = window.frames[i].document.getElementById("txtAlign").value;
 		     }
 		      var content = "${include:media-player url=["+url+"] height=["+height+"] width=["+width+"] autoplay=["+autoplay+"] content-type=["+contentType+"]}";
 		  }
-		  final_html = 'MediaEmbedInsertData|---' + escape('<div class="media_embed">'+content+'</div>') + '---|MediaEmbedInsertData';
+		  final_html = 'MediaEmbedInsertData|---' + escape('<div class="vrtx-media-player" ' +align+'>'+content+'</div>') + '---|MediaEmbedInsertData';
 		  editor.insertHtml(final_html);
 		  updated_editor_data = editor.getData();
-	          clean_editor_data = updated_editor_data.replace(final_html,'<div class="media_embed">'+content+'</div>');
+	          clean_editor_data = updated_editor_data.replace(final_html,'<div class="vrtx-media-player" '+align+'>'+content+'</div>');
 		  editor.setData(clean_editor_data);
                  }
               };

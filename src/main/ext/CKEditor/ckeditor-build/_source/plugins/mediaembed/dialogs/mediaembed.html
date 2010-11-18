@@ -19,15 +19,7 @@
 	       <td colspan="2">
 	           <small><span fckLang="MoviePlayerURLDesc">Select a .avi, .flv, .mov, .mp3, .mp4, .mpv, .wma, .wmv file or youtube URL</span></small>
 	       </td>
-	   </tr>
-	   <tr>
-	   	<td>Content-type:</td>
-	   </tr>
-	   <tr>
-           <td style="vertical-align: top">
-           	<input id="txtContentType" style="width: 50%" type="text" />
-           </td>
-	   </tr>
+	   </tr>	  
 	</table>
 
     <!-- OPTIONS -->
@@ -36,10 +28,20 @@
         <tr>
 		   <td><span fckLang="MoviePlayerWidth">Width:</span></td>
 		   <td><input id="txtWidth"  type="text" style="width: 50px"/></td>
-		</tr>
+		   <td>Content-type:</td>
+		   <td style="vertical-align: top">
+                   <input id="txtContentType" style="width: 100px" type="text" />
+	</tr>	   
+
         <tr>
            <td><span fckLang="MoviePlayerHeight">Height:</span></td>
            <td><input id="txtHeight" type="text" style="width: 50px"/></td>
+	   <td><span fckLang="MoviePlayerAlign">Align:</span></td>
+	   <td><select id="txtAlign">
+	       <option value="vrtx-align-left">Left</option>
+	       <option value="vrtx-align-middle">Middle</option>
+	       <option value="vrtx-align-right">Right</option>
+	     </select>
         </tr>
         <tr>
             <td><span fckLang="MoviePlayerAutoplay">Auto Play:</span></td>

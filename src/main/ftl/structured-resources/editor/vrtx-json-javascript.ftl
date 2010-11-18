@@ -324,11 +324,11 @@
   function swapContent(counter, arrayOfIds, move, name) {
   
     var thisId = "#vrtx-json-element-" + name + "-" + counter;
-    var movingBoxId = "#";
+    var movedId = "#";
     if(move > 0){
-      movingBoxId += $(thisId).next(".vrtx-json-element").attr("id");
+      movedId += $(thisId).next(".vrtx-json-element").attr("id");
     } else {
-      movingBoxId += $(thisId).prev(".vrtx-json-element").attr("id");
+      movedId += $(thisId).prev(".vrtx-json-element").attr("id");
     }
   
     var arrayOfIdsLength = arrayOfIds.length;
@@ -391,7 +391,7 @@
       element2.change();
     }
 
-    $('body').scrollTo(movingBoxId, 250, { easing:'swing', queue:true, axis:'y' });
+    $('body').scrollTo(movedId, 250, { easing:'swing', queue:true, axis:'y' });
   }
   
   // -->

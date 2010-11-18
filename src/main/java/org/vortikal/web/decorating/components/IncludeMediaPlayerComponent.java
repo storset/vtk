@@ -34,11 +34,11 @@ public class IncludeMediaPlayerComponent extends ResourceMediaPlayerComponent {
         createLocalUrlToMediaFile(request.getServletRequest(), url, model);
 
         // Overwrites default values
-        if (height != null)
+        if (height != null && !"".equals(height))
             model.put("height", height);
-        if (width != null)
+        if (width != null && !"".equals(width))
             model.put("width", width);
-        if (autoplay != null)
+        if (autoplay != null && !"".equals(autoplay))
             model.put("autoplay", autoplay);
 
         Resource mediaResource = null;
@@ -51,7 +51,7 @@ public class IncludeMediaPlayerComponent extends ResourceMediaPlayerComponent {
         }
 
         String extension = getExtension(url);
-        if (contentType != null) {
+        if (contentType != null && !"".equals(contentType)) {
             model.put("contentType", contentType);
         } else if (mediaResource != null) {
             model.put("contentType", mediaResource.getContentType());

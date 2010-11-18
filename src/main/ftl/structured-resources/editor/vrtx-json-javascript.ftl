@@ -165,6 +165,14 @@
 	}else if(removeElement.next(".vrtx-json-element").length){
 		siblingElement = removeElement.next(".vrtx-json-element");
 	}
+	
+	$(removeElementId + " textarea").each(function() {
+            if (isCkEditor(this.name)) {
+					getCkInstance(this.name).destroy();
+            }
+    });
+
+	
     $(removeElementId).remove(); 	
 	removeUnwantedButtons(siblingElement);
   }

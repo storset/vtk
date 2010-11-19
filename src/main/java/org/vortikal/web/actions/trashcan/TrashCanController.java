@@ -107,7 +107,9 @@ public class TrashCanController extends SimpleFormController {
             RecoveryObject recoveryObject = this.getRecoverableResources(parentURI, selectedResources);
 
             // Recover what u can
-            this.repository.recover(token, parentURI, recoveryObject.getRecoverable());
+            for (RecoverableResource rr : recoveryObject.getRecoverable()) {
+                this.repository.recover(token, parentURI, rr);
+            }
 
             // Check for conflicted resources, notify user of failed recovery
             List<RecoverableResource> conflicted = recoveryObject.getConflicted();
@@ -127,7 +129,9 @@ public class TrashCanController extends SimpleFormController {
 
         } else if (trashCanCommand.getDeletePermanentAction() != null) {
 
-            this.repository.deleteRecoverable(token, parentURI, selectedResources);
+            for (RecoverableResource rr : selectedResources) {
+                this.repository.deleteRecoverable(token, parentURI, rr);
+            }
             if (selectedResources.size() == trashCanCommand.getTrashCanObjects().size()) {
                 return new ModelAndView(this.getSuccessView());
             }

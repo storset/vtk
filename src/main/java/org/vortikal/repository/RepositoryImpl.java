@@ -353,7 +353,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         if ((destParent == null) || !destParent.isCollection()) {
             throw new IllegalOperationException("Invalid destination resource");
         }
-        
+
         this.lockManager.lockAuthorize(src, principal);
         this.lockManager.lockAuthorize(parent, principal);
         if (dest != null) {
@@ -413,7 +413,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new ResourceNotFoundException(uri);
         }
 
-
         // Store parent collection first to avoid dead-lock between Cache
         // locking and database inter-transaction synchronization (which leads
         // to "11-iterations"-problem)
@@ -463,7 +462,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     }
 
     @Override
-    public void recover(String token, Path parentUri, List<RecoverableResource> recoverableResources)
+    public void recover(String token, Path parentUri, RecoverableResource recoverableResource)
             throws ResourceNotFoundException, AuthorizationException, AuthenticationException, IOException {
 
         Principal principal = this.tokenManager.getPrincipal(token);
@@ -476,17 +475,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         this.lockManager.lockAuthorize(parent, principal);
         this.authorizationManager.authorizeWrite(parentUri, principal);
 
-        for (RecoverableResource rr : recoverableResources) {
+        this.dao.recover(parentUri, recoverableResource);
+        this.contentStore.recover(parentUri, recoverableResource);
 
-            this.dao.recover(parentUri, rr);
-            this.contentStore.recover(parentUri, rr);
+        ResourceImpl recovered = this.dao.load(parentUri.extend(recoverableResource.getName()));
+        this.context.publishEvent(new ResourceCreationEvent(this, recovered));
 
-            ResourceImpl recovered = this.dao.load(parentUri.extend(rr.getName()));
-            this.context.publishEvent(new ResourceCreationEvent(this, recovered));
-
-            parent.addChildURI(recovered.getURI());
-
-        }
+        parent.addChildURI(recovered.getURI());
 
         parent = this.resourceHelper.contentModification(parent, principal);
         this.dao.store(parent);
@@ -494,7 +489,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     }
 
     @Override
-    public void deleteRecoverable(String token, Path parentUri, List<RecoverableResource> recoverableResources)
+    public void deleteRecoverable(String token, Path parentUri, RecoverableResource recoverableResource)
             throws Exception {
 
         Principal principal = this.tokenManager.getPrincipal(token);
@@ -507,10 +502,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new ResourceNotFoundException(parentUri);
         }
 
-        for (RecoverableResource rr : recoverableResources) {
-            this.dao.deleteRecoverable(rr);
-            this.contentStore.deleteRecoverable(rr);
-        }
+        this.dao.deleteRecoverable(recoverableResource);
+        this.contentStore.deleteRecoverable(recoverableResource);
 
         parent = this.resourceHelper.contentModification(parent, principal);
         this.dao.store(parent);
@@ -720,8 +713,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     }
 
     @Override
-    public boolean isAuthorized(Resource resource, RepositoryAction action, Principal principal, 
-            boolean considerLocks) throws Exception {
+    public boolean isAuthorized(Resource resource, RepositoryAction action, Principal principal, boolean considerLocks)
+            throws Exception {
         if (resource == null) {
             throw new IllegalArgumentException("Resource is NULL");
         }
@@ -729,8 +722,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new IllegalArgumentException("Action is NULL");
         }
         if (action == RepositoryAction.COPY || action == RepositoryAction.MOVE) {
-            throw new IllegalArgumentException("Cannot authorize action " 
-                    + action + " on a single resource");
+            throw new IllegalArgumentException("Cannot authorize action " + action + " on a single resource");
         }
         try {
             if (considerLocks) {
@@ -742,16 +734,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                     this.lockManager.lockAuthorize(parent, principal);
                     this.lockManager.lockAuthorize(resource, principal);
 
-                } else if (action == RepositoryAction.ALL || 
-                        action == RepositoryAction.ADD_COMMENT ||
-                        action == RepositoryAction.EDIT_COMMENT ||
-                        action == RepositoryAction.REPOSITORY_ADMIN_ROLE_ACTION ||
-                        action == RepositoryAction.REPOSITORY_ROOT_ROLE_ACTION ||
-                        action == RepositoryAction.UNEDITABLE_ACTION ||
-                        action == RepositoryAction.UNLOCK ||
-                        action == RepositoryAction.CREATE ||
-                        action == RepositoryAction.WRITE ||
-                        action == RepositoryAction.WRITE_ACL) {
+                } else if (action == RepositoryAction.ALL || action == RepositoryAction.ADD_COMMENT
+                        || action == RepositoryAction.EDIT_COMMENT
+                        || action == RepositoryAction.REPOSITORY_ADMIN_ROLE_ACTION
+                        || action == RepositoryAction.REPOSITORY_ROOT_ROLE_ACTION
+                        || action == RepositoryAction.UNEDITABLE_ACTION || action == RepositoryAction.UNLOCK
+                        || action == RepositoryAction.CREATE || action == RepositoryAction.WRITE
+                        || action == RepositoryAction.WRITE_ACL) {
                     this.lockManager.lockAuthorize(resource, principal);
                 }
             }

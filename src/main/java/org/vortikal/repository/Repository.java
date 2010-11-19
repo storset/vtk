@@ -418,11 +418,11 @@ public interface Repository {
      * @param parentUri
      *            Collection containing recoverable resources
      * 
-     * @param recoverableResources
-     *            List of recoverable resources to recover
+     * @param recoverableResource
+     *            The recoverable resource to recover
      */
     public void recover(String token, Path parentUri, 
-            List<RecoverableResource> recoverableResources)
+            RecoverableResource recoverableResource)
         throws ResourceNotFoundException, AuthorizationException, 
             AuthenticationException, Exception;
     
@@ -435,7 +435,7 @@ public interface Repository {
      * @throws Exception
      */
     public void deleteRecoverable(String token, Path parentUri,
-            List<RecoverableResource> recoverableResources) throws Exception;
+            RecoverableResource recoverableResource) throws Exception;
 
     /**
      * Tests whether a resource identified by this URI exists.

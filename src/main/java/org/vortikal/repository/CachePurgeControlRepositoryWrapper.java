@@ -203,15 +203,15 @@ public class CachePurgeControlRepositoryWrapper implements Repository {
     }
 
     @Override
-    public void recover(String token, Path parentUri, List<RecoverableResource> recoverableResources)
+    public void recover(String token, Path parentUri, RecoverableResource recoverableResource)
             throws ResourceNotFoundException, AuthorizationException, AuthenticationException, Exception {
-        this.wrappedRepository.recover(token, parentUri, recoverableResources);
+        this.wrappedRepository.recover(token, parentUri, recoverableResource);
     }
 
     @Override
-    public void deleteRecoverable(String token, Path parentUri, List<RecoverableResource> recoverableResources)
+    public void deleteRecoverable(String token, Path parentUri, RecoverableResource recoverableResource)
             throws Exception {
-        this.wrappedRepository.deleteRecoverable(token, parentUri, recoverableResources);
+        this.wrappedRepository.deleteRecoverable(token, parentUri, recoverableResource);
     }
 
     @Override
@@ -326,8 +326,8 @@ public class CachePurgeControlRepositoryWrapper implements Repository {
     }
 
     @Override
-    public boolean isAuthorized(Resource resource, RepositoryAction action, 
-            Principal principal, boolean considerLocks) throws Exception {
+    public boolean isAuthorized(Resource resource, RepositoryAction action, Principal principal, boolean considerLocks)
+            throws Exception {
         return this.wrappedRepository.isAuthorized(resource, action, principal, considerLocks);
     }
 

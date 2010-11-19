@@ -246,15 +246,15 @@ public class RequestLocalRepository implements Repository {
     }
 
     @Override
-    public void recover(String token, Path parentUri, List<RecoverableResource> recoverableResources)
+    public void recover(String token, Path parentUri, RecoverableResource recoverableResource)
             throws ResourceNotFoundException, AuthorizationException, AuthenticationException, Exception {
-        this.repository.recover(token, parentUri, recoverableResources);
+        this.repository.recover(token, parentUri, recoverableResource);
     }
 
     @Override
-    public void deleteRecoverable(String token, Path parentUri, List<RecoverableResource> recoverableResources)
+    public void deleteRecoverable(String token, Path parentUri, RecoverableResource recoverableResource)
             throws Exception {
-        this.repository.deleteRecoverable(token, parentUri, recoverableResources);
+        this.repository.deleteRecoverable(token, parentUri, recoverableResource);
     }
 
     @Override
@@ -370,8 +370,8 @@ public class RequestLocalRepository implements Repository {
     }
 
     @Override
-    public boolean isAuthorized(Resource resource, RepositoryAction action, 
-            Principal principal, boolean considerLocks) throws Exception {
+    public boolean isAuthorized(Resource resource, RepositoryAction action, Principal principal, boolean considerLocks)
+            throws Exception {
         return this.repository.isAuthorized(resource, action, principal, considerLocks);
     }
 

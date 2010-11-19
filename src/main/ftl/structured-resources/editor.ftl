@@ -14,14 +14,10 @@
   <@vrtxJSONJavascript.script />
   
 
-  <script type="text/javascript" src="${webResources?html}/ckeditor/adapters/jquery.js"></script>
-
-  <script language="Javascript" type="text/javascript" src="${webResources?html}/jquery-plugins/jquery.hotkeys-0.7.9.min.js"></script>
   <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/admin-prop-change.js"></script>
   <script language="Javascript" type="text/javascript"><!--
   	
-  	$(document).bind('keydown', 'ctrl+s', saveDocument);
-  	
+ 	
   	function saveDocument(){
   		$("#updateAction").click();
   	}
@@ -86,9 +82,6 @@
 
 
 <form action="${form.submitURL?html}" method="post">
-
-
-
 
 <#list form.elements as elementBox>
 

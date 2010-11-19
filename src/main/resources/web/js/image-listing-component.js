@@ -144,7 +144,7 @@
      function scaleAndCalculatePosition() {
 
          var minHeight = 100;
-         var minWidth = 250;
+         var minWidth = 150;
 
          //cache image instance
          var $$$ = $(wrapperContainerLink + " img");

@@ -326,10 +326,6 @@ input.vrtx-move-down-button  {
 
 /* START Set explisit widths and heights */
 
-.cke_contents {
-  height: auto !important;
-}
-
 .vrtx-simple-html {
   width: 500px;
 }

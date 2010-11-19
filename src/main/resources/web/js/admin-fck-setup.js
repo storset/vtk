@@ -20,10 +20,10 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
         
   ck.config.extraPlugins = 'MediaEmbed';
         
-  if (completeEditor) {
+  if (completeEditor != false) {
     ck.config.toolbar = 'Complete_article';
     ck.config.autoGrow_minHeight = '50px';  	
-  } else if (withoutSubSuper) {
+  } else if (withoutSubSuper != false) {
     ck.config.toolbar = 'Inline_S';  	
   	ck.config.height = '40px';
   	ck.config.resize_enabled = false;
@@ -32,7 +32,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
     ck.config.height = '40px';
     ck.config.resize_enabled = false;
   }
-
+  
   // File browser
   ck.config.filebrowserLinkBrowseUrl  = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=${fckBrowse.url.pathRepresentation}';
   ck.config.filebrowserImageBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=${fckBrowse.url.pathRepresentation}';

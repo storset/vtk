@@ -23,9 +23,9 @@ function unsavedChangesInEditor() {
         }
     }
     $("textarea").each(function() {
-        if (typeof (FCKeditorAPI) != "undefined") {
-            if (FCKeditorAPI.GetInstance(this.name) != null) {
-                if (FCKeditorAPI.GetInstance(this.name).IsDirty()) {
+        if (typeof (CKEDITOR) != "undefined") {
+            if (getCkInstance(this.name) != null) { // defined in vrtx-json-javascript.ftl
+                if (getCkInstance(this.name).checkDirty()) {
                     dirtyState = true;
                     return;
                 }

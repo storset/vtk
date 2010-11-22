@@ -13,6 +13,7 @@
     <property name="handler" ref="blogListing.handler" />
     <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
   </bean>
+  
   <bean id="blogListing.handler" class="org.vortikal.web.display.collection.BlogListingController" parent="collectionListing.handler">
     <property name="searchComponents">
       <list>

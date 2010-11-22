@@ -3,7 +3,7 @@ package org.vortikal.web.commenting;
 import java.util.Map;
 
 import org.vortikal.repository.Path;
-import org.vortikal.repository.RepositoryAction;
+import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
@@ -21,7 +21,7 @@ public class CommentsFeedUrlProvider extends ViewRenderingDecoratorComponent {
         Resource resource = repository.retrieve(token, uri, true);
         boolean commentsEnabled = false;
         if(resource != null)
-            commentsEnabled = resource.getAcl().getActions().contains(RepositoryAction.ADD_COMMENT);
+            commentsEnabled = resource.getAcl().getActions().contains(Privilege.ADD_COMMENT);
         model.put("commentsEnabled", commentsEnabled);
     }
 

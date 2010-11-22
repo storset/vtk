@@ -40,9 +40,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Comment;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
@@ -140,7 +140,7 @@ public class RecentCommentsProvider implements ReferenceDataProvider {
         }
 
         boolean commentsEnabled =
-            resource.getAcl().getActions().contains(RepositoryAction.ADD_COMMENT);
+            resource.getAcl().getActions().contains(Privilege.ADD_COMMENT);
 
         URL baseCommentURL = null;
         try {

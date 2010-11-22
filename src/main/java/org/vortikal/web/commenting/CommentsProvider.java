@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Comment;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
@@ -118,7 +119,7 @@ public class CommentsProvider implements ReferenceDataProvider {
         model.put("comments", comments);
 
         boolean commentsEnabled =
-            resource.getAcl().getActions().contains(RepositoryAction.ADD_COMMENT);
+            resource.getAcl().getActions().contains(Privilege.ADD_COMMENT);
         model.put("commentsEnabled", commentsEnabled);
         model.put("repositoryReadOnly", this.repository.isReadOnly());
 

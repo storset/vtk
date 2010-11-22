@@ -37,13 +37,34 @@
 		  for (var i=0; i<window.frames.length; i++) {
 		      if(window.frames[i].name == 'iframeMediaEmbed') {
 		        var url = window.frames[i].document.getElementById("txtUrl").value;
+			if(url.length > 0) {
+			    var content = "${include:media-player url=["+url+"]";			    
+			}
 			var contentType = window.frames[i].document.getElementById("txtContentType").value;
+			if(contentType.length > 0) {
+			    content = content + " content-type=["+contentType+"]";
+			}
 			var width = window.frames[i].document.getElementById("txtWidth").value;
+			if(width.length > 0) {
+			    content = content + " width=["+width+"]";
+			}
 			var height = window.frames[i].document.getElementById("txtHeight").value;
-			var autoplay = window.frames[i].document.getElementById("chkAutoplay").value;
+			if(height.length > 0) {
+			    content = content + " height=["+height+"]";
+			}
+			var autoplay = window.frames[i].document.getElementById("chkAutoplay");
+			if(autoplay.checked == true) {
+			    content = content + " autoplay=[true]";
+			}
 			var align = window.frames[i].document.getElementById("txtAlign").value;
+			if(align.length > 0) {
+			    content = content + " align=["+align+"]";
+			}
+			if(content.length>0) {
+			    content = content + "}";
+			}
 		     }
-		      var content = "${include:media-player url=["+url+"] height=["+height+"] width=["+width+"] autoplay=["+autoplay+"] content-type=["+contentType+"]}";
+		      
 		  }
 		  final_html = 'MediaEmbedInsertData|---' + escape('<div class="vrtx-media-player" ' +align+'>'+content+'</div>') + '---|MediaEmbedInsertData';
 		  editor.insertHtml(final_html);

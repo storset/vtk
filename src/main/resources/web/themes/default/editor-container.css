@@ -116,3 +116,10 @@
 	margin:0;
 	padding:0;
 }
+
+.vrtx-media-player {
+  background: #000;
+  width: 507px; /* std article width */
+  height: 380px;  /* 4:3 */
+  content: "";
+}

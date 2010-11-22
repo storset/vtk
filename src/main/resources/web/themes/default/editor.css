@@ -581,3 +581,9 @@ span.show-tooltip-text {
     right:40px;
     top:187px;
 }
+
+/* CKEditor */
+
+span.cke_skin_kama {
+  padding: 0px !important;
+}

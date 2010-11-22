@@ -527,8 +527,16 @@ input.date, input.hours, input.minutes {
 /* STOP forms */
 
 .submit-extra-buttons {
-	position:relative;
+    position:relative;
     top:-50px;
     text-align:right;
     height:0;
 }
+
+/* START CKEditor */
+
+span.cke_skin_kama {
+  padding: 0px !important;
+}
+
+/* STOP CKEditor */

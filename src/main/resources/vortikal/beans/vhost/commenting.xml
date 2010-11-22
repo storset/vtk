@@ -298,7 +298,7 @@
         <property name="resourceCommentsFeedService" ref="commenting.feedService" />
         <property name="publishedDatePropDef" ref="publishedDatePropDef" />
       </bean>    
-    </property>
+    </property>  
   </bean>
 
   <bean id="commenting.feedView" parent="freemarkerView">
@@ -355,6 +355,12 @@
   <bean id="commenting.commentsView" parent="freemarkerView">
     <property name="url" value="commenting/comments-component.ftl" />
     <property name="referenceDataProviders" ref="commenting.commentsView.referenceDataProviders" />
+      <property name="attributesMap">
+      <map>
+        <entry key="jsBaseURL" value="${jsBaseURL}" />
+         <entry key="jquery" value="${jquery.baseURL}/jquery-${jquery.version}.min.js" />
+      </map>
+    </property>
   </bean>
 
   <bean id="commenting.freemarkerConfig" class="org.springframework.beans.factory.config.MapFactoryBean">

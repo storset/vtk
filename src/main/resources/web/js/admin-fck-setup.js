@@ -347,3 +347,23 @@ function enableSubmit() {
   document.getElementById("saveAndViewButton").disabled = false;
   return true;
 }
+
+function commentsCkEditor(){
+
+	    var commentsEditorConfig = {
+	    
+        uiColor : '#C2CEEA',
+        toolbar : [ [ 'Source','Bold',
+                'Italic', 'Underline', 'Strike', 'NumberedList',
+                        'BulletedList', 'Link', 'Unlink' ] ],
+        resize_enabled : true,
+        height : '150px',
+        autoGrow_maxHeight : '400px',
+        autoGrow_minHeight : '40px'
+        
+        
+    	}
+
+	  $("#comments-text").ckeditor(function(){}, commentsEditorConfig);
+        
+}

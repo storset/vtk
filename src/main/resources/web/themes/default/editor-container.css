@@ -118,7 +118,7 @@
 }
 
 .vrtx-media-player {
-  background: #000;
+  background: #000 url(icons/movieplayer-play.png) no-repeat center center;
   width: 507px; /* std article width */
   height: 380px;  /* 4:3 */
   content: "";

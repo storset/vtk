@@ -4,10 +4,7 @@
   - File: media-player.ftl
   - 
   - Description: Article media player
-  - 
-  - Required model data:
-  -   resource
-  -
+  - 	
   -->
   
 <#import "/lib/vortikal.ftl" as vrtx />
@@ -25,7 +22,7 @@
         <param name="menu" value="false"/>
         <param name="wmode" value="transparent"/>
       </object>
-      <a class="vrtx-media" href="${media}"><@vrtx.msg code="article.media-file" /></a>
+      <a class="vrtx-media" href="${media}"><@vrtx.msg code="article.audio-file" /></a>
     
      <#elseif contentType == "video/quicktime" >
     
@@ -67,32 +64,10 @@
 			 	flashvars="src=${media}">
 		 	</embed>
 		</object>
-		<#if contentType == "video/mp4">
-		<a class="vrtx-media" href="${media}"><@vrtx.msg code="article.media-file" /></a>
+		<#if contentType == "video/mp4" && !media?starts_with("rtmp")>
+			<a class="vrtx-media" href="${media}"><@vrtx.msg code="article.video-file" /></a>
 		</#if>
     <#else>
-        <object  
-			classid="CLSID:22D6F312-B0F6-11D0-94AB-0080C74C7E95" 
-			standby="Loading Microsoft Windows Media Player components..." 
-			type="application/x-oleobject" 
-			codebase="http://activex.microsoft.com/activex/controls/mplayer/en/nsmp2inf.cab#Version=6,4,7,1112" 
-			width="${width}" height="${height}" >
-			
-			<param name="filename" value="'${media}'" />
-			<param name="autoStart" value="${autoplay}" />
-			<param name="showControls" value="true" />
-			<param name="ShowStatusBar" value="true" />
-			<param name="ShowDisplay" value="false" />
-				<embed 	src="${media}" 
-						type="video/x-msvideo" 
-						name="MediaPlayer" 
-						autoplay="${autoplay}" 
-						showcontrols="1" 
-						showdisplay="0" 
-						width="${width}" 
-						height="${height}" /> 
-		</object>
-    
       	<a class="vrtx-media" href="${media}"><@vrtx.msg code="article.media-file" /></a>
     </#if>
   </div>

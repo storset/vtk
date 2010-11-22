@@ -31,7 +31,9 @@ function openServerBrowser(url, width, height) {
 //Callback from the FCKEditor image browser:
 function SetUrl(url, width, height, alt) {
     url = decodeURIComponent(url);
-    document.getElementById(urlobj).value = url ;
+    if(urlobj) {
+    	document.getElementById(urlobj).value = url ;
+    }    
     oWindow = null;
-    // previewImage(urlobj);
+    previewImage(urlobj);
 }

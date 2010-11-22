@@ -141,13 +141,46 @@
     <script language="Javascript" type="text/javascript">
 	<!--
       function newEditor(name, completeEditor, withoutSubSuper) {
-     
+        
         var completeEditor = completeEditor != null ? completeEditor : false;
         var withoutSubSuper = withoutSubSuper != null ? withoutSubSuper : false; 
-              
+                           
         var ck = CKEDITOR;
 
 		ck.config.baseHref = "${fckeditorBase.url?html}/";
+		              
+		ck.config.forcePasteAsPlainText = true;
+		ck.config.toolbarCanCollapse = false;
+		ck.config.disableNativeSpellChecker = false;
+		ck.config.browserContextMenuOnCtrl = true;
+
+		ck.config.extraPlugins = 'MediaEmbed';
+
+		ck.config.toolbar_Complete = [
+            ['Source','PasteText','PasteFromWord','-','Undo','Redo','-','Replace','RemoveFormat','-','Link','Unlink','Anchor','Image','MediaEmbed','Table','HorizontalRule','SpecialChar'],
+            ['Format','-','Bold','Italic','Underline','Strike','Subscript','Superscript','NumberedList','BulletedList','Outdent','Indent','JustifyLeft','JustifyCenter','JustifyRight','TextColor','Maximize']] ;
+
+		ck.config.toolbar_Complete_article = [
+            ['Source','PasteText','PasteFromWord','-','Undo','Redo','-','Replace','RemoveFormat','-','Link','Unlink','Anchor','Image','CreateDiv','MediaEmbed','Table','HorizontalRule','SpecialChar'],
+            ['Format','-','Bold','Italic','Underline','Strike','Subscript','Superscript','NumberedList','BulletedList','Outdent','Indent','JustifyLeft','JustifyCenter','JustifyRight','TextColor','Maximize']] ;
+
+		ck.config.toolbar_Inline = [
+            ['Source','PasteText','PasteFromWord','Link','Unlink', 'Bold','Italic','Underline','Strike','Subscript','Superscript','SpecialChar']] ;
+
+		ck.config.toolbar_Inline_S = [
+            ['Source','PasteText','PasteFromWord','Link','Unlink', 'Bold','Italic','Underline','Strike','SpecialChar']] ;
+
+		ck.config.toolbar_Vortikal = [
+            ['Save','-','PasteText','PasteFromWord','-','Undo','Redo','-','Replace','RemoveFormat','-','Link','Unlink','Anchor','Image','MediaEmbed','Table','HorizontalRule','SpecialChar'],
+            '/',
+            ['Format','-','Bold','Italic','Underline','Strike','Subscript','Superscript','NumberedList','BulletedList','Outdent','Indent','JustifyLeft','JustifyCenter','JustifyRight','TextColor','Maximize'],
+            '/'
+		] ;
+
+		ck.config.toolbar_AddComment = [
+            ['Source', 'Bold','Italic','Underline','Strike','NumberedList','BulletedList','Link','Unlink']
+		] ;
+		              
 		                
 		ck.config.stylesSet = [
                 {
@@ -329,15 +362,13 @@
 
         ck.config['DefaultLanguage'] = '<@vrtx.requestLanguage />';
 
-        ck.config.customConfig = '${fckeditorBase.url?html}/custom-ckconfig.js';
+        // ck.config.customConfig = '${fckeditorBase.url?html}/custom-ckconfig.js';
 			
 		ck.config.autoGrow_maxHeight = '400px';
   		ck.config.autoGrow_minHeight = '40px';
   		ck.config.height = '250px';
   		ck.config.resize_enabled = true;        
-	
-		ck.config.extraPlugins = 'MediaEmbed';
-			
+				
          if (completeEditor) {
             ck.config.autoGrow_minHeight = '50px'; 
             <#if resourceType = 'article' || resourceType = 'event'  >

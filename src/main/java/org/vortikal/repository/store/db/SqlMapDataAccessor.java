@@ -351,6 +351,28 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         getSqlMapClientTemplate().delete(sqlMap, parameters);
     }
 
+    @Override
+    public void deleteOverdue(int overDueLimit) throws DataAccessException {
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("limit", overDueLimit);
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, overDueLimit);
+        Date overDueDate = cal.getTime();
+        parameters.put("overDueDate", overDueDate);
+        String sqlMap = getSqlMap("deleteOverdue");
+        this.getSqlMapClientTemplate().delete(sqlMap, parameters);
+    }
+
+    @Override
+    public boolean containsRecoverableResources(int resourceId) throws DataAccessException {
+        String sqlMap = getSqlMap("numberOfRecoverableResources");
+        Integer count = (Integer) getSqlMapClientTemplate().queryForObject(sqlMap, resourceId);
+        if (count > 0) {
+            return true;
+        }
+        return false;
+    }
+
     public ResourceImpl[] loadChildren(ResourceImpl parent) {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(parent.getURI(), SQL_ESCAPE_CHAR));
@@ -711,7 +733,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
             public Object doInSqlMapClient(SqlMapExecutor executor) throws SQLException {
                 executor.startBatch();
                 Map<String, Object> parameters = new HashMap<String, Object>();
-                for (Privilege action: actions) {
+                for (Privilege action : actions) {
                     String actionName = action.getName();
                     for (Principal p : newAcl.getPrincipalSet(action)) {
 

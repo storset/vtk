@@ -9,9 +9,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.web.RequestContext;
 
 public class DeleteResourcesController implements Controller {
 
@@ -46,14 +44,6 @@ public class DeleteResourcesController implements Controller {
                 repository.delete(token, uri, recoverable);
             }
 
-        }
-
-        if (recoverable) {
-            // If recoverable, must evaluate parent after deleting > property
-            // "contains-recoverable-resources"
-            Path parentUri = RequestContext.getRequestContext().getCurrentCollection();
-            Resource parent = this.repository.retrieve(token, parentUri, true);
-            this.repository.store(token, parent);
         }
 
         return new ModelAndView(this.viewName);

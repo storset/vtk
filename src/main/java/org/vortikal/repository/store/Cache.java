@@ -559,13 +559,23 @@ public class Cache implements DataAccessor, InitializingBean {
 
     @Override
     public void recover(Path parent, RecoverableResource recoverableResource) {
-        // XXX handle cache
+        // XXX handle cache??
         this.wrappedAccessor.recover(parent, recoverableResource);
     }
 
     @Override
     public void deleteRecoverable(RecoverableResource recoverableResource) throws DataAccessException {
         this.wrappedAccessor.deleteRecoverable(recoverableResource);
+    }
+
+    @Override
+    public void deleteOverdue(int overDueLimit) throws DataAccessException {
+        this.wrappedAccessor.deleteOverdue(overDueLimit);
+    }
+
+    @Override
+    public boolean containsRecoverableResources(int resourceId) throws DataAccessException {
+        return this.wrappedAccessor.containsRecoverableResources(resourceId);
     }
 
     @Override

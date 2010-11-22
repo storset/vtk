@@ -32,17 +32,13 @@
     <property name="serviceNameProvider" ref="trashCanServiceNameProvider" />
   </bean>
 
-  <bean id="collectionContainsRecoverableResources" class="org.vortikal.web.service.ResourcePropertyAssertion">
-    <property name="namespace" ref="DEFAULT_NAMESPACE" />
-    <property name="name" value="contains-recoverable-resources" />
-    <property name="value" value="true" />
-    <property name="checkExistenceOnly" value="false" />
+  <bean id="collectionContainsRecoverableResources" class="org.vortikal.web.service.ResourceContainsDeletedResourcesAssertion">
+    <property name="repository" ref="repository" />
   </bean>
 
   <bean id="trashCanServiceNameProvider" class="org.vortikal.web.service.provider.TrashCanServiceNameProvider" />
 
-  <bean id="trashCanHandler" class="org.vortikal.web.actions.trashcan.TrashCanController"
-    parent="repositoryAware">
+  <bean id="trashCanHandler" class="org.vortikal.web.actions.trashcan.TrashCanController" parent="repositoryAware">
     <property name="formView" value="trashCan" />
     <property name="successView" value="redirectToManage" />
     <property name="commandClass" value="org.vortikal.web.actions.trashcan.TrashCanCommand" />
@@ -59,6 +55,11 @@
 
   <bean id="trashCanView" parent="freemarkerView">
     <property name="url" value="pages/trash-can.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="overDueLimitMessageProvider" />
+      </list>
+    </property>
     <property name="attributesMap">
       <map>
         <entry key="cssURLs">
@@ -74,6 +75,14 @@
         </entry>
       </map>
     </property>
+  </bean>
+
+  <bean id="overDueLimitMessageProvider" class="org.vortikal.web.referencedata.provider.OverDueLimitMessageProvider">
+    <property name="permanentDeleteOverdueLimitInDays" value="${repository.permanentDeleteOverdueLimitInDays}" />
+  </bean>
+
+  <bean id="overDueLimitInterceptor" class="org.vortikal.web.ReferenceDataProvidingHandlerInterceptor">
+    <property name="providers" ref="overDueLimitMessageProvider" />
   </bean>
 
   <bean class="org.springframework.context.support.ResourceBundleMessageSource">

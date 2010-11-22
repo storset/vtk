@@ -28,20 +28,34 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.store.db;
+package org.vortikal.web.referencedata.provider;
 
-import org.vortikal.repository.store.TrashCanDAO;
+import java.util.Map;
 
-public class SqlMapTrashCanDAO extends AbstractSqlMapDataAccessor implements TrashCanDAO {
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.web.referencedata.ReferenceDataProvider;
+
+public class OverDueLimitMessageProvider implements ReferenceDataProvider {
+
+    private int permanentDeleteOverdueLimitInDays;
 
     @Override
-    public boolean containsRecoverableResources(int resourceId) {
-        String sqlMap = getSqlMap("numberOfRecoverableResources");
-        Integer count = (Integer) getSqlMapClientTemplate().queryForObject(sqlMap, resourceId);
-        if (count > 0) {
-            return true;
-        }
-        return false;
+    @SuppressWarnings("unchecked")
+    public void referenceData(Map model, HttpServletRequest request) throws Exception {
+
+        org.springframework.web.servlet.support.RequestContext springContext = new org.springframework.web.servlet.support.RequestContext(
+                request);
+        String message = springContext.getMessage("trash-can.permanent.delete.warning",
+                new Object[] { this.permanentDeleteOverdueLimitInDays });
+
+        model.put("tabMessage", message);
+    }
+
+    @Required
+    public void setPermanentDeleteOverdueLimitInDays(int permanentDeleteOverdueLimitInDays) {
+        this.permanentDeleteOverdueLimitInDays = permanentDeleteOverdueLimitInDays;
     }
 
 }

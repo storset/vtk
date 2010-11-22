@@ -215,6 +215,11 @@ public class CachePurgeControlRepositoryWrapper implements Repository {
     }
 
     @Override
+    public boolean resourceContainsDeletedResources(Path uri) throws Exception {
+        return this.wrappedRepository.resourceContainsDeletedResources(uri);
+    }
+
+    @Override
     public void deleteAllComments(String token, Resource resource) throws RepositoryException, AuthenticationException {
         this.wrappedRepository.deleteAllComments(token, resource); // Tx
 

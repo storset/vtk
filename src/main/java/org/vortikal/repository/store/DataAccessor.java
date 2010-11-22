@@ -118,12 +118,33 @@ public interface DataAccessor {
     public void recover(Path parentUri, RecoverableResource recoverableResource) throws DataAccessException;
 
     /**
-     * XXX comment
+     * Permanently deletes a recoverable resource
      * 
      * @param recoverableResource
+     *            The recoverable resource to delete
      * @throws DataAccessException
      */
     public void deleteRecoverable(RecoverableResource recoverableResource) throws DataAccessException;
+
+    /**
+     * Deletes resources in the trash can that are overdue for permanent removal
+     * (called periodically)
+     * 
+     * @param overDueLimit
+     *            number of days that have to pass from deletion time before a
+     *            recoverable resource is to be permanently deleted
+     * 
+     */
+    public void deleteOverdue(int overdueLimit) throws DataAccessException;
+
+    /**
+     * 
+     * @param resourceId
+     *            Unique id of resource to check
+     * @return Whether or not the resource in question contains children that
+     *         are marked for deletion, i.e. moved to trash can
+     */
+    public boolean containsRecoverableResources(int resourceId) throws DataAccessException;
 
     /**
      * Deletes all expired locks (should be called periodically)

@@ -96,6 +96,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     private PeriodicThread periodicThread;
     private int maxResourceChildren = 3000;
 
+    // Default value of 60 days before recoverable resources are purged from
+    // trash can
+    private int permanentDeleteOverdueLimitInDays = 60;
+
     private static Log searchLogger = LogFactory.getLog(RepositoryImpl.class.getName() + ".Search");
 
     @Override
@@ -491,22 +495,17 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     @Override
     public void deleteRecoverable(String token, Path parentUri, RecoverableResource recoverableResource)
             throws Exception {
-
-        Principal principal = this.tokenManager.getPrincipal(token);
-        ResourceImpl parent = this.dao.load(parentUri);
-
-        this.lockManager.lockAuthorize(parent, principal);
-        this.authorizationManager.authorizeWrite(parentUri, principal);
-
-        if (parent == null) {
-            throw new ResourceNotFoundException(parentUri);
-        }
-
         this.dao.deleteRecoverable(recoverableResource);
         this.contentStore.deleteRecoverable(recoverableResource);
+    }
 
-        parent = this.resourceHelper.contentModification(parent, principal);
-        this.dao.store(parent);
+    @Override
+    public boolean resourceContainsDeletedResources(Path uri) throws Exception {
+        ResourceImpl r = this.dao.load(uri);
+        if (!r.isCollection()) {
+            return false;
+        }
+        return this.dao.containsRecoverableResources(r.getID());
     }
 
     @Override
@@ -1132,6 +1131,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     private void periodicJob() {
         if (!this.isReadOnly()) {
             this.dao.deleteExpiredLocks(new Date());
+            //this.dao.deleteOverdue(this.permanentDeleteOverdueLimitInDays);
         }
     }
 
@@ -1282,6 +1282,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
     public void setSearcher(Searcher searcher) {
         this.searcher = searcher;
+    }
+
+    public void setPermanentDeleteOverdueLimitInDays(int permanentDeleteOverdueLimitInDays) {
+        if (permanentDeleteOverdueLimitInDays < 1) {
+            throw new IllegalArgumentException("Limit cannot be less than 1. Currently set to: "
+                    + permanentDeleteOverdueLimitInDays);
+        }
+        this.permanentDeleteOverdueLimitInDays = permanentDeleteOverdueLimitInDays;
     }
 
 }

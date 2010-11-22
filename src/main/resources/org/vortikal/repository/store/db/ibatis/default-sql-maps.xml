@@ -341,6 +341,15 @@
     delete from vortex_resource where uri = #trashCanURI# or uri like #trashCanURIWildCard# escape '@'
   </delete>
 
+  <!-- ## Permanently delete resources that have been deleted longer than a given limit ## -->
+  <delete id="deleteOverdue" parameterClass="java.util.Map">
+    delete from vortex_resource
+      where uri in (
+        select resource_trash_uri from deleted_resource
+          where <include refid="deletedTimeOverdue" /> &gt; #overDueDate#
+      )
+  </delete>
+
   <select id="loadChildren" parameterClass="java.util.Map"
           resultMap="Resource">
     select * from vortex_resource where uri like #uriWildcard# escape '@' and depth = #depth#

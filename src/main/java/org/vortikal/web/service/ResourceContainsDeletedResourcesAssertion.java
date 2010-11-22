@@ -28,18 +28,35 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.store;
+package org.vortikal.web.service;
 
+import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
 
-public interface TrashCanDAO {
+public class ResourceContainsDeletedResourcesAssertion extends AbstractRepositoryAssertion {
 
-    /**
-     * 
-     * @param resourceId
-     *            Unique id of resource to check
-     * @return Whether or not the resource in question contains children that
-     *         are marked for deletion, i.e. moved to trash can
-     */
-    public boolean containsRecoverableResources(final int resourceId);
+    private Repository repository;
+
+    @Override
+    public boolean matches(Resource resource, Principal principal) {
+        try {
+            return this.repository.resourceContainsDeletedResources(resource.getURI());
+        } catch (Exception e) {
+            // XXX handle/log
+        }
+        return false;
+    }
+
+    @Override
+    public boolean conflicts(Assertion assertion) {
+        return false;
+    }
+
+    @Required
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
 
 }

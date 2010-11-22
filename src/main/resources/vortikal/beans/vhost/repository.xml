@@ -71,6 +71,7 @@
     <property name="repositoryResourceHelper" ref="repositoryResourceHelper" />
     <property name="tempDir" value="${repository.tempDir}" />
     <property name="maxResourceChildren" value="${repository.maxResourceChildren}" />
+    <property name="permanentDeleteOverdueLimitInDays" value="${repository.permanentDeleteOverdueLimitInDays}" />
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
@@ -218,13 +219,6 @@
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="tempDir" value="${repository.tempDir}" />
     <property name="principalFactory" ref="principalFactory" />
-  </bean>
-
-  <!-- ## Trash can ## --> 
-  <bean id="repository.trashCanDao"
-        class="org.vortikal.repository.store.db.SqlMapTrashCanDAO">
-    <property name="sqlMapClient" ref="repository.sqlMapClient"/>
-    <property name="sqlMaps" ref="repository.statementMappings" />
   </bean>
 
 </beans>

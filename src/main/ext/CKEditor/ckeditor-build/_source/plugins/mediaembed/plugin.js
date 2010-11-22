@@ -57,9 +57,7 @@
 			    content = content + " autoplay=[true]";
 			}
 			var align = window.frames[i].document.getElementById("txtAlign").value;
-			if(align.length > 0) {
-			    content = content + " align=["+align+"]";
-			}
+
 			if(content.length>0) {
 			    content = content + "}";
 			}
@@ -69,7 +67,7 @@
 		  final_html = 'MediaEmbedInsertData|---' + escape('<div class="vrtx-media-player" ' +align+'>'+content+'</div>') + '---|MediaEmbedInsertData';
 		  editor.insertHtml(final_html);
 		  updated_editor_data = editor.getData();
-	          clean_editor_data = updated_editor_data.replace(final_html,'<div class="vrtx-media-player" '+align+'>'+content+'</div>');
+	          clean_editor_data = updated_editor_data.replace(final_html,'<div class="vrtx-media-player" ' +align+'>'+content+'</div>');
 		  editor.setData(clean_editor_data);
                  }
               };

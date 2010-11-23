@@ -17,8 +17,6 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
       if(browser.indexOf("MSIE") > -1 && ieversion <= 7){
         cssFileList.push("/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css");
       }
-
-
   
     completeEditorTemplate = {
     	filebrowserBrowseUrl : linkBrowseUrl,

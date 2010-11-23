@@ -10,7 +10,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
     // File browser
   var linkBrowseUrl  = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=' + browsePath;
   var imageBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=' + browsePath;
-  var flashBrowseUrl = baseUrl + '/plugins/filemanager/browser/cddefault/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=' + browsePath;
+  var flashBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=' + browsePath;
   
     var cssFileList = new Array(
           "/vrtx/__vrtx/static-resources/themes/default/editor-container.css",
@@ -30,6 +30,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
     	filebrowserImageBrowseUrl : imageBrowseUrl,
     	filebrowserFlashBrowseUrl : flashBrowseUrl, 
     	extraPlugins : 'MediaEmbed',
+    	toolbarCanCollapse : false,
     	contentsCss : cssFileList,
         toolbar : [
 
@@ -231,6 +232,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
                 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript',
                 'SpecialChar' ] ],
         resize_enabled : true,
+		toolbarCanCollapse : false,		
         height : '40px',
         autoGrow_maxHeight : '400px',
         autoGrow_minHeight : '40px'
@@ -242,6 +244,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
         toolbar : [ [ 'Source', 'PasteText', 'Link', 'Unlink', 'Bold',
                 'Italic', 'Underline', 'Strike', 'SpecialChar' ] ],
         resize_enabled : true,
+        toolbarCanCollapse : false,
         height : '40px',
         autoGrow_maxHeight : '400px',
         autoGrow_minHeight : '40px'
@@ -251,8 +254,9 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
     	filebrowserBrowseUrl : linkBrowseUrl,
         toolbar : [ [ 'Source', 'PasteText', 'Link', 'Unlink', 'Bold',
                 'Italic', 'Underline', 'Strike', 'SpecialChar' ] ],
-        resize_enabled : true,
-        height : '150px',
+        resize_enabled : false,
+     	toolbarCanCollapse : false,
+     	height : '150px',
         autoGrow_maxHeight : '400px',
         autoGrow_minHeight : '40px'
     }
@@ -261,7 +265,8 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
     	filebrowserBrowseUrl : linkBrowseUrl,
         toolbar : [ [ 'Source', 'PasteText', 'Link', 'Unlink', 'Bold',
                 'Italic', 'Underline', 'Strike', 'SpecialChar' ] ],
-        resize_enabled : true,
+        resize_enabled : false,
+        toolbarCanCollapse : false,        
         height : '93px',
         autoGrow_maxHeight : '400px',
         autoGrow_minHeight : '40px'

@@ -39,17 +39,16 @@
     <script type="text/javascript" src="${webResources?html}/jquery-ui-1.7.1.custom/js/jquery.ui.datepicker-no.js"></script>
     <script type="text/javascript" src="${webResources?html}/jquery-ui-1.7.1.custom/js/jquery.ui.datepicker-nn.js"></script>
     <script type="text/javascript" src="${jsBaseURL?html}/admin-datepicker.js"></script>
-    <script language="Javascript" type="text/javascript" src="${webResources?html}/jquery-plugins/jquery.hotkeys-0.7.9.min.js"></script>
+  <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/shortcut.js"></script>
     
     <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
 
     <script type="text/javascript">
     <!--
-      $(document).bind('keydown', 'ctrl+s', saveDocument);
-  	
-      function saveDocument(){
-  		$("#saveButton").click();
-      }	
+
+   	  shortcut.add("Ctrl+S",function() {
+ 		$("#saveButton").click();
+ 		})
     
       $(document).ready(function() {
           interceptEnterKey();

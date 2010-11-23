@@ -121,5 +121,8 @@
   background: #000 url(icons/movieplayer-play.png) no-repeat center center;
   width: 507px; /* std article width */
   height: 380px;  /* 4:3 */
-  content: "";
+  text-indent: -9000px;
+  -moz-user-select:none;
+  -webkit-user-select:none;
+  overflow: hidden;
 }

@@ -36,8 +36,8 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
                 [ 'Source', 'PasteText', '-', 'Undo', 'Redo', '-', 'Replace',
                         'RemoveFormat', '-', 'Link', 'Unlink', 'Anchor',
                         'Image', 'CreateDiv', 'MediaEmbed', 'Table',
-                        'HorizontalRule', 'SpecialChar' ],
-                [ 'Format', '-', 'Bold', 'Italic', 'Underline', 'Strike',
+                        'HorizontalRule', 'SpecialChar' 
+                 ],['Format', 'Bold', 'Italic', 'Underline', 'Strike',
                         'Subscript', 'Superscript', 'NumberedList',
                         'BulletedList', 'Outdent', 'Indent', 'JustifyLeft',
                         'JustifyCenter', 'JustifyRight', 'TextColor',

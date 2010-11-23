@@ -6,21 +6,16 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
    var completeEditor = completeEditor != null ? completeEditor : false;
   var withoutSubSuper = withoutSubSuper != null ? withoutSubSuper : false;
   
-  
     // File browser
   var linkBrowseUrl  = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=' + browsePath;
   var imageBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=' + browsePath;
   var flashBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=' + browsePath;
-  
-    var cssFileList = new Array(
-          "/vrtx/__vrtx/static-resources/themes/default/editor-container.css",
-          "/vrtx/__vrtx/static-resources/themes/default/fck_editorarea.css");
 
       /* Fix for div contianer display in ie */
       var browser = navigator.userAgent;
       var ieversion = new Number(RegExp.$1);
       if(browser.indexOf("MSIE") > -1 && ieversion <= 7){
-        cssFileList[cssFileList.length] = "/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css";
+        cssFileList.push("/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css");
       }
 
 
@@ -285,36 +280,16 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
     var completeEditor = completeEditor != null ? completeEditor : false;
     var withoutSubSuper = withoutSubSuper != null ? withoutSubSuper : false;
 
-    if (name == "introduction") {
-        $('#' + name.replace(/\./g, "\\.")).ckeditor(function() { /*
-                                                                     * callback
-                                                                     * code
-                                                                     */
-        }, introductionEditorTemplate);
-    } else if (name == "caption") {
-        $('#' + name.replace(/\./g, "\\.")).ckeditor(function() { /*
-                                                                     * callback
-                                                                     * code
-                                                                     */
-        }, captionEditorTemplate);
+    if (name.indexOf("introduction") != -1) {
+        $('#' + name.replace(/\./g, "\\.")).ckeditor(function() {}, introductionEditorTemplate);
+    } else if (name.indexOf("caption") != -1) {
+        $('#' + name.replace(/\./g, "\\.")).ckeditor(function() {}, captionEditorTemplate);
     } else if (completeEditor) {
-        $('#' + name.replace(/\./g, "\\.")).ckeditor(function() { /*
-                                                                     * callback
-                                                                     * code
-                                                                     */
-        }, completeEditorTemplate);
+        $('#' + name.replace(/\./g, "\\.")).ckeditor(function() {}, completeEditorTemplate);
     } else if (withoutSubSuper) {
-        $('#' + name.replace(/\./g, "\\.")).ckeditor(function() { /*
-                                                                     * callback
-                                                                     * code
-                                                                     */
-        }, inlineEditorTemplate);
+        $('#' + name.replace(/\./g, "\\.")).ckeditor(function() {}, inlineEditorTemplate);
     } else {
-        $('#' + name.replace(/\./g, "\\.")).ckeditor(function() { /*
-                                                                     * callback
-                                                                     * code
-                                                                     */
-        }, withoutSubSuperEditorTemplate);
+        $('#' + name.replace(/\./g, "\\.")).ckeditor(function() {}, withoutSubSuperEditorTemplate);
     }
   
 
@@ -336,14 +311,6 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
 
 
 
-}
-
-function FCKeditor_OnComplete(editorInstance) {
-  // Get around bug: http://dev.fckeditor.net/ticket/1482
-  editorInstance.ResetIsDirty();
-  if ('resource.content' == editorInstance.Name) {
-    enableSubmit();
-  }
 }
 
 function disableSubmit() {

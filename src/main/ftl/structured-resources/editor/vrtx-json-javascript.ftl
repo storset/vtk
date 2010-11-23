@@ -146,10 +146,10 @@
        var inputFieldName = j.name + "." + j.a[i].name + "." + counter;
        if (j.a[i].type == "simple_html") {
          newEditor(inputFieldName, false, false, '${resourceContext.parentURI?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
-          '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', '');
+          '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />');
        } else if (j.a[i].type == "html") {
          newEditor(inputFieldName, true, false, '${resourceContext.parentURI?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
-          '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', '');
+          '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />');
        } else if (j.a[i].type == "datetime") {
          displayDateAsMultipleInputFields(inputFieldName);
      }

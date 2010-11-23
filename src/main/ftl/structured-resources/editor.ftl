@@ -16,15 +16,12 @@
   <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/shortcut.js"></script>
   <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/admin-ck-helper.js"></script>
   <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/admin-prop-change.js"></script>
-
   
   <script language="Javascript" type="text/javascript"><!--
   	
- 	
  	shortcut.add("Ctrl+S",function() {
   		$("#updateAction").click();
 	});
- 	
   
     window.onbeforeunload = unsavedChangesInEditorMessage;
     UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";

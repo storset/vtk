@@ -23,7 +23,8 @@
     
     <!-- Main ck-editor js -->
     <script language="Javascript" type="text/javascript" src="${fckeditorBase.url?html}/ckeditor.js"></script>
-    <@setupFckEditor resource.resourceType />
+    <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/admin-fck-setup.js"></script>
+    <script type="text/javascript" src="${fckeditorBase.url?html}/adapters/jquery.js"></script>
 
     <!-- Yahoo YUI library: --> 
     <script language="Javascript" type="text/javascript" src="${yuiBase.url?html}/build/yahoo-dom-event/yahoo-dom-event.js"></script>
@@ -39,6 +40,7 @@
     <script type="text/javascript" src="${webResources?html}/jquery-ui-1.7.1.custom/js/jquery.ui.datepicker-no.js"></script>
     <script type="text/javascript" src="${webResources?html}/jquery-ui-1.7.1.custom/js/jquery.ui.datepicker-nn.js"></script>
     <script type="text/javascript" src="${jsBaseURL?html}/admin-datepicker.js"></script>
+    
   	<script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/shortcut.js"></script>
     <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/admin-ck-helper.js"></script>
     <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/admin-prop-change.js"></script>
@@ -85,9 +87,7 @@
 		<input type="button" onClick="$('#cancel').click()"  value="${vrtx.getMsg("editor.cancel")}" />
 	  </div>
     <form id="form" class="editor" action="" method="post">
-    
 
-    
       <@handleProps />
 
       <div class="properties">
@@ -137,338 +137,6 @@
      </form>
     </body>
 </html>
-
-<#macro setupFckEditor resourceType>
-    <script language="Javascript" type="text/javascript">
-	<!--
-      function newEditor(name, completeEditor, withoutSubSuper) {
-        
-        var completeEditor = completeEditor != null ? completeEditor : false;
-        var withoutSubSuper = withoutSubSuper != null ? withoutSubSuper : false; 
-                           
-        var ck = CKEDITOR;
-
-		ck.config.baseHref = "${fckeditorBase.url?html}/";
-		              
-		ck.config.forcePasteAsPlainText = true;
-		ck.config.toolbarCanCollapse = false;
-		ck.config.disableNativeSpellChecker = false;
-		ck.config.browserContextMenuOnCtrl = true;
-
-		ck.config.extraPlugins = 'MediaEmbed';
-
-		ck.config.toolbar_Complete = [
-            ['Source','PasteText','PasteFromWord','-','Undo','Redo','-','Replace','RemoveFormat','-','Link','Unlink','Anchor','Image','MediaEmbed','Table','HorizontalRule','SpecialChar'],
-            ['Format','-','Bold','Italic','Underline','Strike','Subscript','Superscript','NumberedList','BulletedList','Outdent','Indent','JustifyLeft','JustifyCenter','JustifyRight','TextColor','Maximize']] ;
-
-		ck.config.toolbar_Complete_article = [
-            ['Source','PasteText','PasteFromWord','-','Undo','Redo','-','Replace','RemoveFormat','-','Link','Unlink','Anchor','Image','CreateDiv','MediaEmbed','Table','HorizontalRule','SpecialChar'],
-            ['Format','-','Bold','Italic','Underline','Strike','Subscript','Superscript','NumberedList','BulletedList','Outdent','Indent','JustifyLeft','JustifyCenter','JustifyRight','TextColor','Maximize']] ;
-
-		ck.config.toolbar_Inline = [
-            ['Source','PasteText','PasteFromWord','Link','Unlink', 'Bold','Italic','Underline','Strike','Subscript','Superscript','SpecialChar']] ;
-
-		ck.config.toolbar_Inline_S = [
-            ['Source','PasteText','PasteFromWord','Link','Unlink', 'Bold','Italic','Underline','Strike','SpecialChar']] ;
-
-		ck.config.toolbar_Vortikal = [
-            ['Save','-','PasteText','PasteFromWord','-','Undo','Redo','-','Replace','RemoveFormat','-','Link','Unlink','Anchor','Image','MediaEmbed','Table','HorizontalRule','SpecialChar'],
-            '/',
-            ['Format','-','Bold','Italic','Underline','Strike','Subscript','Superscript','NumberedList','BulletedList','Outdent','Indent','JustifyLeft','JustifyCenter','JustifyRight','TextColor','Maximize'],
-            '/'
-		] ;
-
-		ck.config.toolbar_AddComment = [
-            ['Source', 'Bold','Italic','Underline','Strike','NumberedList','BulletedList','Link','Unlink']
-		] ;
-		              
-		                
-		ck.config.stylesSet = [
-                {
-                    name : 'Facts left',
-                    element : 'div',
-                    attributes : {
-                        'class' : 'vrtx-facts-container vrtx-container-left'
-                    }
-                },
-                {
-                    name : 'Facts right',
-                    element : 'div',
-                    attributes : {
-                        'class' : 'vrtx-facts-container vrtx-container-right'
-                    }
-                },
-                {
-                    name : 'Image left',
-                    element : 'div',
-                    attributes : {
-                        'class' : 'vrtx-img-container vrtx-container-left'
-                    }
-                },
-                {
-                    name : 'Image center',
-                    element : 'div',
-                    attributes : {
-                        'class' : 'vrtx-img-container vrtx-container-middle vrtx-img-container-middle-ie'
-                    }
-                },
-                {
-                    name : 'Image right',
-                    element : 'div',
-                    attributes : {
-                        'class' : 'vrtx-img-container vrtx-container-right'
-                    }
-                },
-                {
-                    name : 'Img & capt left (800px)',
-                    element : 'div',
-                    attributes : {
-                        'class' : 'vrtx-container vrtx-container-size-xxl vrtx-container-left'
-                    }
-                },
-                {
-                    name : 'Img & capt left (700px)',
-                    element : 'div',
-                    attributes : {
-                        'class' : 'vrtx-container vrtx-container-size-xl vrtx-container-left'
-                    }
-                },
-                {
-                    name : 'Img & capt left (600px)',
-                    element : 'div',
-                    attributes : {
-                        'class' : 'vrtx-container vrtx-container-size-l vrtx-container-left'
-                    }
-                },
-                {
-                    name : 'Img & capt left (500px)',
-                    element : 'div',
-                    attributes : {
-                        'class' : 'vrtx-container vrtx-container-size-m vrtx-container-left'
-                    }
-                },
-                {
-                    name : 'Img & capt left (400px)',
-                    element : 'div',
-                    attributes : {
-                        'class' : 'vrtx-container vrtx-container-size-s vrtx-container-left'
-                    }
-                },
-                {
-                    name : 'Img & capt left (300px)',
-                    element : 'div',
-                    attributes : {
-                        'class' : 'vrtx-container vrtx-container-size-xs vrtx-container-left'
-                    }
-                },
-                {
-                    name : 'Img & capt left (200px)',
-                    element : 'div',
-                    attributes : {
-                        'class' : 'vrtx-container vrtx-container-size-xxs vrtx-container-left'
-                    }
-                },
-                {
-                    name : 'Img & capt center (full)',
-                    element : 'div',
-                    attributes : {
-                        'class' : 'vrtx-container vrtx-container-size-full vrtx-container-middle'
-                    }
-                },
-                {
-                    name : 'Img & capt center (800px)',
-                    element : 'div',
-                    attributes : {
-                        'class' : 'vrtx-container vrtx-container-size-xxl vrtx-container-middle'
-                    }
-                },
-                {
-                    name : 'Img & capt center (700px) ',
-                    element : 'div',
-                    attributes : {
-                        'class' : 'vrtx-container vrtx-container-size-xl vrtx-container-middle'
-                    }
-                },
-                {
-                    name : 'Img & capt center (600px) ',
-                    element : 'div',
-                    attributes : {
-                        'class' : 'vrtx-container vrtx-container-size-l vrtx-container-middle'
-                    }
-                },
-                {
-                    name : 'Img & capt center (500px) ',
-                    element : 'div',
-                    attributes : {
-                        'class' : 'vrtx-container vrtx-container-size-m vrtx-container-middle'
-                    }
-                },
-                {
-                    name : 'Img & capt center (400px) ',
-                    element : 'div',
-                    attributes : {
-                        'class' : 'vrtx-container vrtx-container-size-s vrtx-container-middle'
-                    }
-                },
-                {
-                    name : 'Img & capt right (800px) ',
-                    element : 'div',
-                    attributes : {
-                        'class' : 'vrtx-container vrtx-container-size-xxl vrtx-container-right'
-                    }
-                },
-                {
-                    name : 'Img & capt right (700px) ',
-                    element : 'div',
-                    attributes : {
-                        'class' : 'vrtx-container vrtx-container-size-xl vrtx-container-right'
-                    }
-                },
-                {
-                    name : 'Img & capt right (600px) ',
-                    element : 'div',
-                    attributes : {
-                        'class' : 'vrtx-container vrtx-container-size-l vrtx-container-right'
-                    }
-                },
-                {
-                    name : 'Img & capt right (500px) ',
-                    element : 'div',
-                    attributes : {
-                        'class' : 'vrtx-container vrtx-container-size-m vrtx-container-right'
-                    }
-                },
-                {
-                    name : 'Img & capt right (400px) ',
-                    element : 'div',
-                    attributes : {
-                        'class' : 'vrtx-container vrtx-container-size-s vrtx-container-right'
-                    }
-                },
-                {
-                    name : 'Img & capt right (300px) ',
-                    element : 'div',
-                    attributes : {
-                        'class' : 'vrtx-container vrtx-container-size-xs vrtx-container-right'
-                    }
-                },
-                {
-                    name : 'Img & capt right (200px) ',
-                    element : 'div',
-                    attributes : {
-                        'class' : 'vrtx-container vrtx-container-size-xxs vrtx-container-right'
-                    }
-                } ];                
-                
-		ck.config.defaultLanguage = 'no';
-        ck.config.language = '<@vrtx.requestLanguage />';
-
-        // ck.config.customConfig = '${fckeditorBase.url?html}/custom-ckconfig.js';
-			
-		ck.config.autoGrow_maxHeight = '400px';
-  		ck.config.autoGrow_minHeight = '40px';
-  		ck.config.height = '250px';
-  		ck.config.resize_enabled = true;        
-				
-         if (completeEditor) {
-            ck.config.autoGrow_minHeight = '50px'; 
-            <#if resourceType = 'article' || resourceType = 'event'  >
-              ck.config.toolbar = 'Complete_article';
-            <#else>
-              ck.config.toolbar = 'Complete'; 
-            </#if> 
-         } else {
-            ck.config.toolbar = 'Inline';
-            ck.config.height = '40px';
-  			ck.config.resize_enabled = false;
-         }
-     
-         if(withoutSubSuper) {
-           ck.config.toolbar = 'Inline_S';           
-         }
-		                        
-         // File browser
-         <#if resourceContext.parentURI?exists>
-            <#if resourceType = 'article-listing' || resourceType = 'event-listing' || resourceType = 'collection'>              
-              var baseFolder = "${resourceContext.currentURI?html}";
-            <#else>
-              var baseFolder = "${resourceContext.parentURI?html}";
-            </#if>
-         <#else>
-			  var baseFolder = "/";
-         </#if>
-         ck.config.filebrowserBrowseUrl  = '${fckeditorBase.url?html}/plugins/filemanager/browser/default/browser.html';    
-         // ck.config['filebrowserBrowseURL']  = '${fckeditorBase.url?html}/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=${fckBrowse.url.pathRepresentation}';         
-              
-         ck.config.filebrowserLinkBrowseUrl  = '${fckeditorBase.url?html}/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=${fckBrowse.url.pathRepresentation}';
-         ck.config.filebrowserImageBrowseUrl = '${fckeditorBase.url?html}/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=${fckBrowse.url.pathRepresentation}';
-         ck.config.filebrowserFlashBrowseUrl = '${fckeditorBase.url?html}/plugins/filemanager/browser/cddefault/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=${fckBrowse.url.pathRepresentation}';
-		 	     		 
-         // ck.config.LinkUpload = false;
-         // ck.config.ImageUpload = false;
-         // ck.config.FlashUpload = false;
-
-         // Misc setup
-         ck.config['FullPage'] = false;
-         ck.config['ToolbarCanCollapse'] = false;
-         ck.config['TabSpaces'] = 4;
-         <#if resource.resourceType == 'article' || resource.resourceType == 'event'>
-           ck.config['FontFormats'] = 'p;h2;h3;h4;h5;h6;pre';
-         <#else>
-           ck.config['FontFormats'] = 'p;h1;h2;h3;h4;h5;h6;pre';
-         </#if>
-
-         ck.config.EMailProtection = 'none';
-         ck.config.DisableFFTableHandles = false;
-		 ck.config.ForcePasteAsPlainText = false;
-
-         // ck.config['SkinPath'] = ck.BasePath + 'editor/skins/silver/';
-         ck.config.skin = 'kama';
-         ck.config.BaseHref = '${fckeditorBase.documentURL?html}';
-	 				 
-         var cssFileList = new Array(
-         <#if fckEditorAreaCSSURL?exists>
-           <#list fckEditorAreaCSSURL as cssURL>
-             "${cssURL?html}",
-           </#list>
-         </#if>
-         "");
-
-         /* Fix for div contianer display in ie */
-         var browser = navigator.userAgent;		 
-         var ieversion = new Number(RegExp.$1)
-         if(browser.indexOf("MSIE") > -1 && ieversion <= 7){
-           cssFileList[cssFileList.length-1] = "/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css";
-         }
-       
-         ck.config.contentsCss = cssFileList;
-         ck.replace(name, ck.config);	
-      }
-
-	  /*
-      function CKeditor_OnComplete(editorInstance) {
-        // Get around bug: http://dev.fckeditor.net/ticket/1482
-        editorInstance.ResetIsDirty();        
-        if ('resource.content' == editorInstance.Name) {
-          enableSubmit();
-        }
-      }      
-	  */
-
-      function disableSubmit() {
-        document.getElementById("saveButton").disabled = true;
-        document.getElementById("saveAndViewButton").disabled = true;
-        return true;
-      }
-
-      function enableSubmit() {
-         document.getElementById("saveButton").disabled = false;
-         document.getElementById("saveAndViewButton").disabled = false;
-         return true;
-      }  
-  // -->
-  </script>
-</#macro>
 
 <#macro propChangeTests propDefs>
   <#list propDefs as propDef>
@@ -748,10 +416,24 @@
 </#macro>
 
 <#macro fck content completeEditor=false withoutSubSuper=false>
-    <script language="Javascript" type="text/javascript"><!--
+    <script language="Javascript" type="text/javascript">
+    <!--
+    var cssFileList = new Array(
+      <#if fckEditorAreaCSSURL?exists>
+        <#list fckEditorAreaCSSURL as cssURL>
+          "${cssURL?html}",
+        </#list>
+     </#if>"");
 
-
-      newEditor('${content}', ${completeEditor?string}, ${withoutSubSuper?string});
+	newEditor('${content}', 
+	  ${completeEditor?string}, 
+	  ${withoutSubSuper?string}, 
+	  '${baseFolder?js_string}', 
+	  '${fckeditorBase.url?html}', 
+	  '${fckeditorBase.documentURL?html}', 
+	  '${fckBrowse.url.pathRepresentation}', 
+	  '<@vrtx.requestLanguage />',
+	  cssFileList);
       
       function performSave() {
         var oEditor = CKEDITOR.instances.${content};
@@ -761,15 +443,13 @@
         // Title
         document.getElementById('${content}').value = srcxhtml;
       } 
-      
-      UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";
-      COMPLETE_UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.completeUnsavedChangesConfirmation' />";
-      window.onbeforeunload = unsavedChangesInEditorMessage;
-
-      // -->
-    </script>
     
+    UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";
+    COMPLETE_UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.completeUnsavedChangesConfirmation' />";
+    window.onbeforeunload = unsavedChangesInEditorMessage;
 
+      //-->
+    </script>
 </#macro>
 
 <#macro displayDefaultSelectedValueAsRadioButton propDef name >

@@ -17,11 +17,17 @@
   <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/admin-ck-helper.js"></script>
   <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/admin-prop-change.js"></script>
   
+  <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
+  
   <script language="Javascript" type="text/javascript"><!--
   	
  	shortcut.add("Ctrl+S",function() {
   		$("#updateAction").click();
 	});
+	
+	$(document).ready(function() {
+      initDatePicker("${language}");
+    });
   
     window.onbeforeunload = unsavedChangesInEditorMessage;
     UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";
@@ -47,16 +53,6 @@
   <script type="text/javascript" src="${webResources?html}/jquery-ui-1.7.1.custom/js/jquery.ui.datepicker-no.js"></script>
   <script type="text/javascript" src="${webResources?html}/jquery-ui-1.7.1.custom/js/jquery.ui.datepicker-nn.js"></script>
   <script type="text/javascript" src="${jsBaseURL?html}/datepicker.js"></script>
-  
-  <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
-
-   <script type="text/javascript">
-    <!--
-      $(document).ready(function() {
-          initDatePicker("${language}");
-       });
-    //-->
-  </script>
   
   <#if form.resource.type.scripts?exists>
     <@scripts.includeScripts form.resource.type.scripts />

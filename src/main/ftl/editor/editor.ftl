@@ -49,7 +49,6 @@
 
     <script type="text/javascript">
     <!--
-    
    	  shortcut.add("Ctrl+S",function() {
  		$("#saveButton").click();
  	  });
@@ -59,6 +58,15 @@
           setAutoComplete('resource\\.tags', 'tags', {minChars:1});
           initDatePicker("${language}");
        });
+
+      UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";
+      COMPLETE_UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.completeUnsavedChangesConfirmation' />";
+      window.onbeforeunload = unsavedChangesInEditorMessage;
+      
+      function performSave() {
+        NEED_TO_CONFIRM = false;
+      } 
+     
     //-->
     </script>
 
@@ -222,8 +230,6 @@
 	
     window.onunload = doUnlock;
    </#if-->
-
-
     // -->
   </script>
 </#macro>
@@ -434,19 +440,6 @@
 	  '${fckBrowse.url.pathRepresentation}', 
 	  '<@vrtx.requestLanguage />',
 	  cssFileList);
-      
-      function performSave() {
-        var oEditor = CKEDITOR.instances.${content};
-        var srcxhtml = oEditor.GetXHTML();
-        // var title = document.getElementById("title");
-
-        // Title
-        document.getElementById('${content}').value = srcxhtml;
-      } 
-    
-    UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";
-    COMPLETE_UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.completeUnsavedChangesConfirmation' />";
-    window.onbeforeunload = unsavedChangesInEditorMessage;
 
       //-->
     </script>

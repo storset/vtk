@@ -3,7 +3,7 @@
 function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, baseDocumentUrl, browsePath,
     defaultLanguage, cssFileList) {
 
-   var completeEditor = completeEditor != null ? completeEditor : false;
+  var completeEditor = completeEditor != null ? completeEditor : false;
   var withoutSubSuper = withoutSubSuper != null ? withoutSubSuper : false;
   
     // File browser
@@ -11,12 +11,12 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   var imageBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=' + browsePath;
   var flashBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=' + browsePath;
 
-      /* Fix for div contianer display in ie */
-      var browser = navigator.userAgent;
-      var ieversion = new Number(RegExp.$1);
-      if(browser.indexOf("MSIE") > -1 && ieversion <= 7){
-        cssFileList.push("/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css");
-      }
+  /* Fix for div contianer display in ie */
+  var browser = navigator.userAgent;
+  var ieversion = new Number(RegExp.$1);
+  if(browser.indexOf("MSIE") > -1 && ieversion <= 7){
+    cssFileList.push("/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css");
+  }
   
     completeEditorTemplate = {
     	filebrowserBrowseUrl : linkBrowseUrl,
@@ -290,7 +290,6 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
         $('#' + name.replace(/\./g, "\\.")).ckeditor(function() {}, withoutSubSuperEditorTemplate);
     }
   
-
 //  ck.config.LinkUpload = false;
 //  ck.config.ImageUpload = false;
  // ck.config.FlashUpload = false;
@@ -306,8 +305,6 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
 
 //  ck.config['SkinPath'] = ck.BasePath + 'editor/skins/silver/';
 //  ck.config.BaseHref = baseDocumentUrl;
-
-
 
 }
 

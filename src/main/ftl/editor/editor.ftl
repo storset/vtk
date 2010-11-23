@@ -39,16 +39,18 @@
     <script type="text/javascript" src="${webResources?html}/jquery-ui-1.7.1.custom/js/jquery.ui.datepicker-no.js"></script>
     <script type="text/javascript" src="${webResources?html}/jquery-ui-1.7.1.custom/js/jquery.ui.datepicker-nn.js"></script>
     <script type="text/javascript" src="${jsBaseURL?html}/admin-datepicker.js"></script>
-  <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/shortcut.js"></script>
+  	<script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/shortcut.js"></script>
+    <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/admin-ck-helper.js"></script>
+    <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/admin-prop-change.js"></script>
     
     <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
 
     <script type="text/javascript">
     <!--
-
+    
    	  shortcut.add("Ctrl+S",function() {
  		$("#saveButton").click();
- 		})
+ 	  });
     
       $(document).ready(function() {
           interceptEnterKey();
@@ -553,29 +555,7 @@
     window.onunload = doUnlock;
    </#if-->
 
-    function doConfirm(event) {
 
-    var f = propChange();
-      if (!needToConfirm) {
-        return;
-      }
-      var dirty = false;
-      var userLang = (navigator.language) ? navigator.language : navigator.userLanguage;
-      if (propChange()) dirty = true;
-	        
-      <#if (resource.resourceType != 'event-listing' &&
-         resource.resourceType != 'article-listing' && resource.resourceType != 'collection')>           
-      	
-      	 <#-- if (CKEDITOR.GetInstance('resource.content') .IsDirty()) dirty = true; -->
-      	 if (CKEDITOR.instances.resource.content.checkDirty()) dirty = true;      	 
-      </#if>
-	        
-      if (dirty) {
-        return '<@vrtx.msg code='manage.unsavedChangesConfirmation' />';
-      }
-    }
-
-    window.onbeforeunload = doConfirm;
     // -->
   </script>
 </#macro>
@@ -769,22 +749,31 @@
 
 <#macro fck content completeEditor=false withoutSubSuper=false>
     <script language="Javascript" type="text/javascript"><!--
-      var needToConfirm = true;
+
 
       newEditor('${content}', ${completeEditor?string}, ${withoutSubSuper?string});
       
       function performSave() {
-        needToConfirm = false;
         var oEditor = CKEDITOR.instances.${content};
         var srcxhtml = oEditor.GetXHTML();
         // var title = document.getElementById("title");
 
         // Title
-        <#-- // srcxhtml = srcxhtml.replace(/<title.*<\/title>/i, "<title>" + title.value + "</title>"); -->
         document.getElementById('${content}').value = srcxhtml;
-      }  
+      } 
+      
+    $(document).ready(function() {
+     		initPropChange(); 
+     
+    });
+    
+    UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";
+    COMPLETE_UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.completeUnsavedChangesConfirmation' />";
+    window.onbeforeunload = unsavedChangesInEditorMessage;
+
       // -->
     </script>
+    
 
 </#macro>
 

@@ -18,13 +18,12 @@ function unsavedChangesInEditor() {
     var INITIAL_INPUT_FIELDS_LENGTH = INITIAL_INPUT_FIELDS.length;
     for (i = 0; i < INITIAL_INPUT_FIELDS_LENGTH; i++) {
         if (currentStateOfInputFields[i].value != INITIAL_INPUT_FIELDS[i]) {
-            dirtyState = true;
-            break;
+            return true;
         }
-    }
+    }    
     $("textarea").each(function() {
         if (typeof (CKEDITOR) != "undefined") {
-            if (getCkInstance(this.name) != null) { // defined in vrtx-json-javascript.ftl
+            if (getCkInstance(this.name) != null) { // defined in admin-ck-helper.js
                 if (getCkInstance(this.name).checkDirty()) {
                     dirtyState = true;
                     return;
@@ -40,3 +39,5 @@ function unsavedChangesInEditorMessage() {
         return UNSAVED_CHANGES_CONFIRMATION;
     }
 }
+
+

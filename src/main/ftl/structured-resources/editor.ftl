@@ -14,7 +14,9 @@
   <@vrtxJSONJavascript.script />
   
   <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/shortcut.js"></script>
+  <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/admin-ck-helper.js"></script>
   <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/admin-prop-change.js"></script>
+
   
   <script language="Javascript" type="text/javascript"><!--
   	

@@ -52,6 +52,17 @@
 			if(height.length > 0) {
 			    content = content + " height=["+height+"]";
 			}
+			var style = '';
+			if (height.length > 0 || width.length > 0) {
+			    style = style + ' style="';
+			    if(height.length > 0) {
+				style = style +  'height: ' + height + ';';
+			    }
+			    if(width.length > 0) {
+				style = style + ' width: ' + width + ';';
+                           } 
+			    style = style + '"';
+			}
 			var autoplay = window.frames[i].document.getElementById("chkAutoplay");
 			if(autoplay.checked == true) {
 			    content = content + " autoplay=[true]";
@@ -60,14 +71,14 @@
 
 			if(content.length>0) {
 			    content = content + "}";
-			}
+			}			
 		     }
 		      
-		  }
-		  final_html = 'MediaEmbedInsertData|---' + escape('<div class="vrtx-media-player" ' +align+'>'+content+'</div>') + '---|MediaEmbedInsertData';
+		 } 		  
+		  final_html = 'MediaEmbedInsertData|---' + escape('<div class="vrtx-media-player" ' +align+style+'>'+content+'</div>') + '---|MediaEmbedInsertData';
 		  editor.insertHtml(final_html);
 		  updated_editor_data = editor.getData();
-	          clean_editor_data = updated_editor_data.replace(final_html,'<div class="vrtx-media-player" ' +align+'>'+content+'</div>');
+		  clean_editor_data = updated_editor_data.replace(final_html,'<div class="vrtx-media-player" ' +align+style+'>'+content+'</div>');
 		  editor.setData(clean_editor_data);
                  }
               };

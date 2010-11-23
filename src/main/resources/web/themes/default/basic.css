@@ -757,6 +757,10 @@ table.directoryListing td.activeLock span.lockOwner {
   
 }
 
+table.directoryListing td.trash {
+  padding-left: 25px;
+}
+
 table.directoryListing td.name a {
   padding-left: 22px;
 }

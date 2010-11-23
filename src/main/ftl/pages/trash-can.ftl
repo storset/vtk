@@ -48,7 +48,7 @@
     <#else>
       <tr class="even ${tco.recoverableResource.resourceType}">
     </#if>
-        <td class="vrtx-trash-can-name name"><a href=".">${tco.recoverableResource.name?html}</a></td>
+        <td class="vrtx-trash-can-name name trash">${tco.recoverableResource.name?html}</td>
         <td class="checkbox">
         <@spring.bind "trashcan.trashCanObjects[${tco_index}].selectedForRecovery" />
         <#assign checked = "" />

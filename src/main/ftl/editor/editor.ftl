@@ -14,6 +14,7 @@
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "/lib/autocomplete.ftl" as autocomplete />
+<#import "/lib/ckeditor/common.ftl" as fckEditor />
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -69,19 +70,18 @@
      
     //-->
     </script>
-
-  </head>
-  
-  <#assign baseFolder = "/" />
-  <#if resourceContext.parentURI?exists>
+    
+   <#global baseFolder = "/" />
+   <#if resourceContext.parentURI?exists>
     <#if resource.resourceType = 'article-listing' || resource.resourceType = 'event-listing'
          || resource.resourceType = 'collection'>
-      <#assign baseFolder = resourceContext.currentURI?html />
+      <#global baseFolder = resourceContext.currentURI?html />
     <#else>
-      <#assign baseFolder = resourceContext.parentURI?html />
+      <#global baseFolder = resourceContext.parentURI?html />
     </#if>
-  </#if>
-  
+   </#if>
+
+  </head>
   <body onLoad="loadFeaturedArticles('${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}','${vrtx.getMsg("editor.browse")}',
                   '${fckeditorBase.url?html}', '${baseFolder}', '${fckBrowse.url.pathRepresentation}');">
 
@@ -107,7 +107,7 @@
       <div class="html-content">
       <label class="resource.content" for="resource.content"><@vrtx.msg code="editor.content" /></label> 
        <textarea name="resource.content" rows="8" cols="60" id="resource.content">${resource.bodyAsString?html}</textarea>
-       <@fck 'resource.content' true false />
+       <@fckEditor.createEditor  'resource.content' true false />
 
       </div>
       </#if>
@@ -266,11 +266,11 @@
       <#if type = 'HTML' && name != 'userTitle' && name != 'title' && name != 'caption'>
 
         <textarea id="resource.${name}" name="resource.${name}" rows="4" cols="60">${value?html}</textarea>
-        <@fck 'resource.${name}' false false />
+        <@fckEditor.createEditor  'resource.${name}' false false />
         
       <#elseif type = 'HTML' && name == 'caption'>
         <textarea id="resource.${name}" name="resource.${name}" rows="1" cols="60">${value?html}</textarea>
-        <@fck 'resource.${name}' false true />
+        <@fckEditor.createEditor 'resource.${name}' false true />
         </div><#-- On the fly div STOP caption -->
 
       <#-- hack for setting collection titles: -->
@@ -419,10 +419,6 @@
       <#if error != ""><span class="error">${error}</span></#if> 
     </div>
     </#list>
-</#macro>
-
-<#macro fck content completeEditor=false withoutSubSuper=false>
-    <#include "../lib/ckeditor/create-editor.ftl" />
 </#macro>
 
 <#macro displayDefaultSelectedValueAsRadioButton propDef name >

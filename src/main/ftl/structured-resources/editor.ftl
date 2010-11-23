@@ -1,11 +1,17 @@
 <#import "/lib/ping.ftl" as ping />
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "include/scripts.ftl" as scripts />
-<#import "editor/fck.ftl" as fckEditor />
+<#import "/lib/ckeditor/common.ftl" as fckEditor />
 <#import "editor/vrtx-json-javascript.ftl" as vrtxJSONJavascript />
 <#import "vrtx-types/vrtx-json-common.ftl" as vrtxJSONCommon />
 
 <html>
+
+<#global baseFolder = "/" />
+<#if resourceContext.parentURI?exists>
+  <#global baseFolder = resourceContext.parentURI?html />
+</#if>
+
 <head>
 
   <title>Edit structured resource</title>
@@ -75,8 +81,6 @@
 	<a href="${editorHelpURL?html}" target="new_window"><@vrtx.msg code="editor.help"/></a><br />
 	<a href="${form.listComponentServiceURL?html}" target="new_window"><@vrtx.msg code="plaintextEdit.tooltip.listDecoratorComponentsService" /></a>
 </div>	  
-
-
 
 <form action="${form.submitURL?html}" method="post">
 

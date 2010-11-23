@@ -289,7 +289,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
 }
 
 function setCKEditorConfig(name, configuration) {
-  $('#' + name.replace(/\./g, "\\.")).ckeditor(function() {}, configuration);
+  CKEDITOR.replace(name,configuration);
 }
 
 function disableSubmit() {

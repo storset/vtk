@@ -314,5 +314,5 @@ function commentsCkEditor() {
         	autoGrow_maxHeight : '400px',
         	autoGrow_minHeight : '40px' 
     	}
-	  $("#comments-text").ckeditor(function(){}, commentsEditorConfig);
+	  setCKEditorConfiguration("comments-text", commentsEditorConfig)
 }

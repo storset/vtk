@@ -291,12 +291,6 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         String sqlMap = getSqlMap("getRecoverableResources");
         List<RecoverableResource> recoverableResources = getSqlMapClientTemplate().queryForList(sqlMap,
                 parentResourceId);
-        if (recoverableResources != null) {
-            for (RecoverableResource dr : recoverableResources) {
-                Principal p = this.principalFactory.getPrincipal(dr.getDeletedByUid(), Type.USER);
-                dr.setDeletedBy(p);
-            }
-        }
         return recoverableResources;
     }
 

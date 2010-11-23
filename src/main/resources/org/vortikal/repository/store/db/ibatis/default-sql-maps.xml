@@ -302,7 +302,7 @@
     <result property="id" column="id" />
     <result property="trashUri" column="resource_trash_uri" />
     <result property="parentId" column="parent_id" />
-    <result property="deletedByUid" column="deleted_by" />
+    <result property="deletedBy" column="deleted_by" />
     <result property="deletedTime" column="deleted_time" />
     <result property="wasInheritedAcl" column="was_inherited_acl" 
             typeHandler="org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback" />

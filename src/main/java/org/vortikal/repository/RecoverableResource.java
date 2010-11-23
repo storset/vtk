@@ -33,18 +33,15 @@ package org.vortikal.repository;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.vortikal.security.Principal;
-
 public class RecoverableResource {
 
     private int id;
     private String trashUri;
     private int parentId;
-    private String deletedByUid;
+    private String deletedBy;
     private Date deletedTime;
     private boolean wasInheritedAcl;
     private String resourceType;
-    private Principal deletedBy;
 
     private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
@@ -80,12 +77,12 @@ public class RecoverableResource {
         this.parentId = parentId;
     }
 
-    public String getDeletedByUid() {
-        return deletedByUid;
+    public String getDeletedBy() {
+        return deletedBy;
     }
 
-    public void setDeletedByUid(String deletedByUid) {
-        this.deletedByUid = deletedByUid;
+    public void setDeletedBy(String deletedBy) {
+        this.deletedBy = deletedBy;
     }
 
     public Date getDeletedTime() {
@@ -104,14 +101,6 @@ public class RecoverableResource {
         this.wasInheritedAcl = wasInheritedAcl;
     }
 
-    public Principal getDeletedBy() {
-        return deletedBy;
-    }
-
-    public void setDeletedBy(Principal deletedByPrincipal) {
-        this.deletedBy = deletedByPrincipal;
-    }
-
     public String getResourceType() {
         return resourceType;
     }
@@ -124,7 +113,7 @@ public class RecoverableResource {
     public String toString() {
         StringBuilder sb = new StringBuilder(this.getTrashID());
         sb.append(": " + this.getName());
-        sb.append(", deleted by " + this.getDeletedByUid());
+        sb.append(", deleted by " + this.getDeletedBy());
         sb.append(", deleted " + SDF.format(this.getDeletedTime()));
         return sb.toString();
     }

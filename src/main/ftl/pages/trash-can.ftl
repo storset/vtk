@@ -43,21 +43,22 @@
 
     <@spring.bind "trashcan.trashCanObjects" />
     <#list spring.status.value as tco>
+    <#assign rr = tco.recoverableResource />
     <#if (tco_index % 2 == 0)>
-      <tr class="odd ${tco.recoverableResource.resourceType}">
+      <tr class="odd ${rr.resourceType}">
     <#else>
-      <tr class="even ${tco.recoverableResource.resourceType}">
+      <tr class="even ${rr.resourceType}">
     </#if>
-        <td class="vrtx-trash-can-name name trash">${tco.recoverableResource.name?html}</td>
+        <td class="vrtx-trash-can-name name trash">${rr.name?html}</td>
         <td class="checkbox">
         <@spring.bind "trashcan.trashCanObjects[${tco_index}].selectedForRecovery" />
         <#assign checked = "" />
         <#if spring.status.value?string = 'true' >
           <#assign checked = "checked" />
         </#if>
-        <input type="checkbox" name="${spring.status.expression}" title="${tco.recoverableResource.name?html}" value="true" ${checked} />
+        <input type="checkbox" name="${spring.status.expression}" title="${rr.name?html}" value="true" ${checked} />
         </td>
-        <td class="vrtx-trash-can-deleted-by"><@vrtx.displayUserPrincipal principal=tco.recoverableResource.deletedBy /></td>
+        <td class="vrtx-trash-can-deleted-by">${rr.deletedBy}</td>
         <td class="vrtx-trash-can-deleted-time"><@printDeletedTime tco.recoverableResource.deletedTime /></td>
       </tr>
     </#list>

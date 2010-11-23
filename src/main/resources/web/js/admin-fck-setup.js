@@ -13,8 +13,8 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
     cssFileList.push("/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css");
   }
 
-  //CKEditor templates
-  completeEditorTemplate = {
+  //CKEditor configurations
+  var completeEditorConfig = {
   	filebrowserBrowseUrl : linkBrowseUrl,
   	filebrowserImageBrowseUrl : imageBrowseUrl,
   	filebrowserFlashBrowseUrl : flashBrowseUrl, 
@@ -217,7 +217,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
               } ]
   }
 
-  inlineEditorTemplate = {
+  var inlineEditorConfig = {
       filebrowserBrowseUrl : linkBrowseUrl,
       defaultLanguage : 'no',
       language : defaultLanguage,
@@ -232,7 +232,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
 
   }
 
-  withoutSubSuperEditorTemplate = {
+  var withoutSubSuperEditorConfig = {
   	filebrowserBrowseUrl : linkBrowseUrl,
       defaultLanguage : 'no',
       language : defaultLanguage,
@@ -245,20 +245,20 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
       autoGrow_minHeight : '40px'
   }
 
-  introductionEditorTemplate = {
+  var introductionEditorConfig = {
   	filebrowserBrowseUrl : linkBrowseUrl,
       defaultLanguage : 'no',
       language : defaultLanguage,
       toolbar : [ [ 'Source', 'PasteText', 'Link', 'Unlink', 'Bold',
               'Italic', 'Underline', 'Strike', 'SpecialChar' ] ],
       resize_enabled : false,
-   	toolbarCanCollapse : false,
-   	height : '150px',
+   	  toolbarCanCollapse : false,
+   	  height : '150px',
       autoGrow_maxHeight : '400px',
       autoGrow_minHeight : '40px'
   }
 
-  captionEditorTemplate = {
+  var captionEditorConfig = {
   	filebrowserBrowseUrl : linkBrowseUrl,
       defaultLanguage : 'no',
       language : defaultLanguage,
@@ -275,37 +275,21 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   var withoutSubSuper = withoutSubSuper != null ? withoutSubSuper : false;
 
   if (name.indexOf("introduction") != -1) {
-	  setCKEditorConfiguration(name, introductionEditorTemplate);
+	  setCKEditorConfiguration(name, introductionEditorConfig);
   } else if (name.indexOf("caption") != -1) {
-	  setCKEditorConfiguration(name, captionEditorTemplate);
+	  setCKEditorConfiguration(name, captionEditorConfig);
   } else if (completeEditor) {
-	  setCKEditorConfiguration(name,  completeEditorTemplate);
+	  setCKEditorConfiguration(name,  completeEditorConfig);
   } else if (withoutSubSuper) {
-	  setCKEditorConfiguration(name,  inlineEditorTemplate);
+	  setCKEditorConfiguration(name,  inlineEditorConfig);
   } else {
-	  setCKEditorConfiguration(name,  withoutSubSuperEditorTemplate);
+	  setCKEditorConfiguration(name,  withoutSubSuperEditorConfig);
   }
-  
-//  ck.config.LinkUpload = false;
-//  ck.config.ImageUpload = false;
- // ck.config.FlashUpload = false;
-
-  // Misc setup
-//  ck.config['FullPage'] = false;
- // ck.config['ToolbarCanCollapse'] = false;
-//  ck.config['TabSpaces'] = 4;
- // ck.config['FontFormats'] = 'p;h2;h3;h4;h5;h6;pre';
-//  ck.config.EMailProtection = 'none';
-//  ck.config.DisableFFTableHandles = false;
-//  ck.config.ForcePasteAsPlainText = false;
-
-//  ck.config['SkinPath'] = ck.BasePath + 'editor/skins/silver/';
-//  ck.config.BaseHref = baseDocumentUrl;
 
 }
 
 function setCKEditorConfiguration(name, configuration) {
-	$('#' + name.replace(/\./g, "\\.")).ckeditor(function() {}, configuration);
+  $('#' + name.replace(/\./g, "\\.")).ckeditor(function() {}, configuration);
 }
 
 function disableSubmit() {
@@ -321,7 +305,7 @@ function enableSubmit() {
 }
 
 function commentsCkEditor() {
-	    var commentsEditorConfig = {
+	  var commentsEditorConfig = {
         	toolbar : [ [ 'Source','Bold',
                 'Italic', 'Underline', 'Strike', 'NumberedList',
                         'BulletedList', 'Link', 'Unlink' ] ],

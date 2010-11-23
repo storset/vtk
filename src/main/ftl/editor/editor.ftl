@@ -762,14 +762,9 @@
         document.getElementById('${content}').value = srcxhtml;
       } 
       
-    $(document).ready(function() {
-     		initPropChange(); 
-     
-    });
-    
-    UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";
-    COMPLETE_UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.completeUnsavedChangesConfirmation' />";
-    window.onbeforeunload = unsavedChangesInEditorMessage;
+      UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";
+      COMPLETE_UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.completeUnsavedChangesConfirmation' />";
+      window.onbeforeunload = unsavedChangesInEditorMessage;
 
       // -->
     </script>

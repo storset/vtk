@@ -3,6 +3,10 @@ var INITIAL_INPUT_FIELDS = new Array();
 var NEED_TO_CONFIRM = true;
 var UNSAVED_CHANGES_CONFIRMATION;
 
+$(document).ready(function() {
+ 		initPropChange(); 
+});
+
 function initPropChange() {
     var i = 0;
     $("input").each(function() {

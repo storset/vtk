@@ -24,7 +24,6 @@
           <@showhide.addShowHide script />
         <#elseif script.type == 'MULTIPLEINPUTFIELDS' >
           <@multipleinputfields.addMultipleInputFields script />
-          initPropChange();
         </#if>
       </#list>
     });

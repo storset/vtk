@@ -81,10 +81,6 @@
     <property name="permanentDeleteOverdueLimitInDays" value="${repository.permanentDeleteOverdueLimitInDays}" />
   </bean>
 
-  <bean id="overDueLimitInterceptor" class="org.vortikal.web.ReferenceDataProvidingHandlerInterceptor">
-    <property name="providers" ref="overDueLimitMessageProvider" />
-  </bean>
-
   <bean class="org.springframework.context.support.ResourceBundleMessageSource">
     <property name="basenames">
       <list>

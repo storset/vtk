@@ -1,22 +1,16 @@
 <#import "/lib/ping.ftl" as ping />
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "include/scripts.ftl" as scripts />
-<#import "/lib/ckeditor/common.ftl" as fckEditor />
+<#import "/lib/ckeditor/common.ftl" as ckEditor />
 <#import "editor/vrtx-json-javascript.ftl" as vrtxJSONJavascript />
 <#import "vrtx-types/vrtx-json-common.ftl" as vrtxJSONCommon />
 
 <html>
-
-<#global baseFolder = "/" />
-<#if resourceContext.parentURI?exists>
-  <#global baseFolder = resourceContext.parentURI?html />
-</#if>
-
 <head>
 
   <title>Edit structured resource</title>
   <@ping.ping url=pingURL['url'] interval=300 />
-  <@fckEditor.addFckScripts />
+  <@ckEditor.addFckScripts />
   <@vrtxJSONJavascript.script />
   
   <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/shortcut.js"></script>
@@ -63,6 +57,12 @@
   <#if form.resource.type.scripts?exists>
     <@scripts.includeScripts form.resource.type.scripts />
   </#if>
+  
+  <#global baseFolder = "/" />
+  <#if resourceContext.parentURI?exists>
+    <#global baseFolder = resourceContext.parentURI?html />
+  </#if>
+  
 </head>
 <body>
 

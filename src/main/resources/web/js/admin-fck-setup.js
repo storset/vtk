@@ -31,7 +31,6 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
     	filebrowserFlashBrowseUrl : flashBrowseUrl, 
     	extraPlugins : 'MediaEmbed',
     	contentsCss : cssFileList,
-        uiColor : '#C2CEEA',
         toolbar : [
 
                 [ 'Source', 'PasteText', '-', 'Undo', 'Redo', '-', 'Replace',
@@ -39,8 +38,8 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
                         'Image', 'CreateDiv', 'MediaEmbed', 'Table',
                         'HorizontalRule', 'SpecialChar' ],
                 [ 'Format', '-', 'Bold', 'Italic', 'Underline', 'Strike',
-                        'Subscript', 'Superscript', 'OrderedList',
-                        'UnorderedList', 'Outdent', 'Indent', 'JustifyLeft',
+                        'Subscript', 'Superscript', 'NumberedList',
+                        'BulletedList', 'Outdent', 'Indent', 'JustifyLeft',
                         'JustifyCenter', 'JustifyRight', 'TextColor',
                         'Maximize' ]
 
@@ -228,7 +227,6 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
 
     inlineEditorTemplate = {
         filebrowserBrowseUrl : linkBrowseUrl,
-        uiColor : '#C2CEEA',
         toolbar : [ [ 'Source', 'PasteText', 'Link', 'Unlink', 'Bold',
                 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript',
                 'SpecialChar' ] ],
@@ -241,7 +239,6 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
 
     withoutSubSuperEditorTemplate = {
     	filebrowserBrowseUrl : linkBrowseUrl,
-        uiColor : '#C2CEEA',
         toolbar : [ [ 'Source', 'PasteText', 'Link', 'Unlink', 'Bold',
                 'Italic', 'Underline', 'Strike', 'SpecialChar' ] ],
         resize_enabled : true,
@@ -252,7 +249,6 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
 
     introductionEditorTemplate = {
     	filebrowserBrowseUrl : linkBrowseUrl,
-        uiColor : '#C2CEEA',
         toolbar : [ [ 'Source', 'PasteText', 'Link', 'Unlink', 'Bold',
                 'Italic', 'Underline', 'Strike', 'SpecialChar' ] ],
         resize_enabled : true,
@@ -263,7 +259,6 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
 
     captionEditorTemplate = {
     	filebrowserBrowseUrl : linkBrowseUrl,
-        uiColor : '#C2CEEA',
         toolbar : [ [ 'Source', 'PasteText', 'Link', 'Unlink', 'Bold',
                 'Italic', 'Underline', 'Strike', 'SpecialChar' ] ],
         resize_enabled : true,
@@ -349,21 +344,14 @@ function enableSubmit() {
 }
 
 function commentsCkEditor(){
-
 	    var commentsEditorConfig = {
-	    
-        uiColor : '#C2CEEA',
-        toolbar : [ [ 'Source','Bold',
+        	toolbar : [ [ 'Source','Bold',
                 'Italic', 'Underline', 'Strike', 'NumberedList',
                         'BulletedList', 'Link', 'Unlink' ] ],
-        resize_enabled : true,
-        height : '150px',
-        autoGrow_maxHeight : '400px',
-        autoGrow_minHeight : '40px'
-        
-        
+        	resize_enabled : true,
+        	height : '150px',
+        	autoGrow_maxHeight : '400px',
+        	autoGrow_minHeight : '40px' 
     	}
-
 	  $("#comments-text").ckeditor(function(){}, commentsEditorConfig);
-        
 }

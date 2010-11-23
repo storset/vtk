@@ -360,8 +360,8 @@
                     }
                 } ];                
                 
-
-        ck.config['DefaultLanguage'] = '<@vrtx.requestLanguage />';
+		ck.config.defaultLanguage = 'no';
+        ck.config.language = '<@vrtx.requestLanguage />';
 
         // ck.config.customConfig = '${fckeditorBase.url?html}/custom-ckconfig.js';
 			

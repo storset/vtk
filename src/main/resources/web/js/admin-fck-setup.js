@@ -32,6 +32,8 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
     	extraPlugins : 'MediaEmbed',
     	toolbarCanCollapse : false,
     	contentsCss : cssFileList,
+        defaultLanguage : 'no',
+        language : defaultLanguage,
         toolbar : [
 
                 [ 'Source', 'PasteText', '-', 'Undo', 'Redo', '-', 'Replace',
@@ -228,6 +230,8 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
 
     inlineEditorTemplate = {
         filebrowserBrowseUrl : linkBrowseUrl,
+        defaultLanguage : 'no',
+        language : defaultLanguage,
         toolbar : [ [ 'Source', 'PasteText', 'Link', 'Unlink', 'Bold',
                 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript',
                 'SpecialChar' ] ],
@@ -241,6 +245,8 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
 
     withoutSubSuperEditorTemplate = {
     	filebrowserBrowseUrl : linkBrowseUrl,
+        defaultLanguage : 'no',
+        language : defaultLanguage,
         toolbar : [ [ 'Source', 'PasteText', 'Link', 'Unlink', 'Bold',
                 'Italic', 'Underline', 'Strike', 'SpecialChar' ] ],
         resize_enabled : true,
@@ -252,6 +258,8 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
 
     introductionEditorTemplate = {
     	filebrowserBrowseUrl : linkBrowseUrl,
+        defaultLanguage : 'no',
+        language : defaultLanguage,
         toolbar : [ [ 'Source', 'PasteText', 'Link', 'Unlink', 'Bold',
                 'Italic', 'Underline', 'Strike', 'SpecialChar' ] ],
         resize_enabled : false,
@@ -263,6 +271,8 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
 
     captionEditorTemplate = {
     	filebrowserBrowseUrl : linkBrowseUrl,
+        defaultLanguage : 'no',
+        language : defaultLanguage,
         toolbar : [ [ 'Source', 'PasteText', 'Link', 'Unlink', 'Bold',
                 'Italic', 'Underline', 'Strike', 'SpecialChar' ] ],
         resize_enabled : false,

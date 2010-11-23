@@ -14,7 +14,7 @@
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "/lib/autocomplete.ftl" as autocomplete />
-<#import "/lib/ckeditor/common.ftl" as ckEditor />
+<#import "/lib/editor/common.ftl" as ckEditor />
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -30,12 +30,7 @@
     <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/tooltip.js"></script>
     <@autocomplete.addAutoCompleteScripts srcBase="${webResources?html}"/>
     
-    <!-- JQuery UI (used for datepicker) -->
-    <link type="text/css" href="${webResources?html}/jquery-ui-1.7.1.custom/css/smoothness/jquery-ui-1.7.1.custom.css" rel="stylesheet" />
-    <script type="text/javascript" src="${webResources?html}/jquery-ui-1.7.1.custom/js/jquery-ui-1.7.1.custom.min.js"></script>
-    <script type="text/javascript" src="${webResources?html}/jquery-ui-1.7.1.custom/js/jquery.ui.datepicker-no.js"></script>
-    <script type="text/javascript" src="${webResources?html}/jquery-ui-1.7.1.custom/js/jquery.ui.datepicker-nn.js"></script>
-    <script type="text/javascript" src="${jsBaseURL?html}/admin-datepicker.js"></script>
+    <@ckEditor.addDatePickerScripts />
     
   	<script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/shortcut.js"></script>
     <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/admin-ck-helper.js"></script>
@@ -65,6 +60,7 @@
      
     //-->
     </script>
+    <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/imageref.js"></script>
     
    <#global baseFolder = "/" />
    <#if resourceContext.parentURI?exists>

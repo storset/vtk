@@ -10,7 +10,7 @@
 
   <title>Edit structured resource</title>
   <@ping.ping url=pingURL['url'] interval=300 />
-  <@ckEditor.addFckScripts />
+  <@ckEditor.addCkScripts />
   <@vrtxJSONJavascript.script />
   
   <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/shortcut.js"></script>

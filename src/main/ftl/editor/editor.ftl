@@ -21,7 +21,7 @@
   <head>
     <title>Editor</title>
     <@ping.ping url=pingURL['url'] interval=300 />    
-    <@ckEditor.addFckScripts />
+    <@ckEditor.addCkScripts />
 
     <!-- Yahoo YUI library: --> 
     <script language="Javascript" type="text/javascript" src="${yuiBase.url?html}/build/yahoo-dom-event/yahoo-dom-event.js"></script>

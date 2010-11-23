@@ -6,7 +6,7 @@
   
 <#import "../vortikal.ftl" as vrtx />
 
-<#macro addFckScripts>
+<#macro addCkScripts>
   <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/imageref.js"></script>
   <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/serverbrowsedialog.js"></script>
   <script language="Javascript" type="text/javascript" src="${fckeditorBase.url?html}/ckeditor.js"></script>

@@ -32,13 +32,15 @@
 <form class="trashcan" action="${spring.status.value?html}" method="post">
 
   <table id="vrtx-trash-can-table" class="directoryListing">
+    <@spring.bind "trashcan.sortLinks" />
     <tr id="vrtx-trash-can-header" class="directoryListingHeader">
-      <th id="vrtx-trash-can-name"><@vrtx.msg code="trash-can.name" default="Name" /></th>
+      <@setHeader "name" "trash-can.name" />
       <th class="checkbox">
         <a href="#" class="vrtx-check-all" > <@vrtx.msg code="collectionListing.all" default="All"/></a> | 
-        <a href="#" class="vrtx-uncheck-all"> <@vrtx.msg code="collectionListing.none" default="None"/></a></th>
-      <th id="vrtx-trash-can-deleted-by"><@vrtx.msg code="trash-can.deletedBy" default="Deleted by" /></th>
-      <th id="vrtx-trash-can-deleted-time"><@vrtx.msg code="trash-can.deletedTime" default="Deleted time" /></th>
+        <a href="#" class="vrtx-uncheck-all"> <@vrtx.msg code="collectionListing.none" default="None"/></a>
+      </th>
+      <@setHeader "deleted-by" "trash-can.deletedBy" />
+      <@setHeader "deleted-time" "trash-can.deletedTime" />
     </tr>
 
     <@spring.bind "trashcan.trashCanObjects" />
@@ -78,4 +80,17 @@
 
 <#macro printDeletedTime time>
   ${time?string("yyyy-MM-dd HH:mm:ss")}
+</#macro>
+
+<#macro setHeader id code >
+  <#assign sortLink = spring.status.value[id] />
+  <#if sortLink.selected>
+    <th id="vrtx-${code}" class="sortColumn" >
+  <#else>
+    <th id="vrtx-${code}">
+  </#if>
+    <a href="${sortLink.url?html}" id="${id}">
+      <@vrtx.msg code="${code}" default="${id}" />
+    </a>
+  </th>
 </#macro>

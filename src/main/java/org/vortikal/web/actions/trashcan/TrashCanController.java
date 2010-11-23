@@ -31,9 +31,6 @@
 package org.vortikal.web.actions.trashcan;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -51,9 +48,11 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.RecoverableResource;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.Message;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.actions.trashcan.TrashCanObjectSorter.Order;
 import org.vortikal.web.service.Service;
 
 public class TrashCanController extends SimpleFormController {
@@ -72,8 +71,9 @@ public class TrashCanController extends SimpleFormController {
 
         Resource resource = this.repository.retrieve(token, uri, false);
         Service service = requestContext.getService();
+        Principal principal = securityContext.getPrincipal();
 
-        String submitURL = service.constructLink(resource, securityContext.getPrincipal());
+        String submitURL = service.constructLink(resource, principal);
         TrashCanCommand command = new TrashCanCommand(submitURL, resource);
 
         List<RecoverableResource> recoverableResources = this.repository.getRecoverableResources(token, uri);
@@ -83,8 +83,12 @@ public class TrashCanController extends SimpleFormController {
             tco.setRecoverableResource(rr);
             trashCanObjects.add(tco);
         }
-        Collections.sort(trashCanObjects, new TrashCanObjectComparator());
+
+        Order sortOrder = TrashCanObjectSorter.getSortOrder(request.getParameter(TrashCanObjectSorter.SORT_BY_PARAM));
+        boolean invert = request.getParameter(TrashCanObjectSorter.INVERT_PARAM) != null;
+        TrashCanObjectSorter.sort(trashCanObjects, sortOrder, invert);
         command.setTrashCanObjects(trashCanObjects);
+        command.setSortLinks(TrashCanObjectSorter.getSortLinks(service, resource, principal, request));
 
         return command;
     }
@@ -195,23 +199,6 @@ public class TrashCanController extends SimpleFormController {
 
         protected List<RecoverableResource> getConflicted() {
             return conflicted;
-        }
-
-    }
-
-    class TrashCanObjectComparator implements Comparator<TrashCanObject> {
-
-        @Override
-        public int compare(TrashCanObject tco1, TrashCanObject tco2) {
-            String name1 = tco1.getRecoverableResource().getName();
-            String name2 = tco2.getRecoverableResource().getName();
-            if (name1.equals(name2)) {
-                Date date1 = tco1.getRecoverableResource().getDeletedTime();
-                Date date2 = tco2.getRecoverableResource().getDeletedTime();
-                // most recently deleted first
-                return date2.compareTo(date1);
-            }
-            return name1.compareTo(name2);
         }
 
     }

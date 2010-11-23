@@ -31,7 +31,9 @@
 package org.vortikal.web.actions.trashcan;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.vortikal.repository.RecoverableResource;
 import org.vortikal.repository.Resource;
@@ -44,6 +46,7 @@ public class TrashCanCommand extends UpdateCancelCommand {
 
     private Resource parentResource;
     private List<TrashCanObject> trashCanObjects = new ArrayList<TrashCanObject>();
+    private Map<String, TrashCanSortLink> sortLinks = new HashMap<String, TrashCanSortLink>();
 
     public String getRecoverAction() {
         return recoverAction;
@@ -76,6 +79,14 @@ public class TrashCanCommand extends UpdateCancelCommand {
 
     public Resource getParentResource() {
         return parentResource;
+    }
+
+    public Map<String, TrashCanSortLink> getSortLinks() {
+        return sortLinks;
+    }
+
+    public void setSortLinks(Map<String, TrashCanSortLink> sortLinks) {
+        this.sortLinks = sortLinks;
     }
 
     public boolean hasSelectedObjectsForRecovery() {

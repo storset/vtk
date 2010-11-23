@@ -275,20 +275,20 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   var withoutSubSuper = withoutSubSuper != null ? withoutSubSuper : false;
 
   if (name.indexOf("introduction") != -1) {
-	  setCKEditorConfiguration(name, introductionEditorConfig);
+	  setCKEditorConfig(name, introductionEditorConfig);
   } else if (name.indexOf("caption") != -1) {
-	  setCKEditorConfiguration(name, captionEditorConfig);
+	  setCKEditorConfig(name, captionEditorConfig);
   } else if (completeEditor) {
-	  setCKEditorConfiguration(name,  completeEditorConfig);
+	  setCKEditorConfig(name,  completeEditorConfig);
   } else if (withoutSubSuper) {
-	  setCKEditorConfiguration(name,  inlineEditorConfig);
+	  setCKEditorConfig(name,  inlineEditorConfig);
   } else {
-	  setCKEditorConfiguration(name,  withoutSubSuperEditorConfig);
+	  setCKEditorConfig(name,  withoutSubSuperEditorConfig);
   }
 
 }
 
-function setCKEditorConfiguration(name, configuration) {
+function setCKEditorConfig(name, configuration) {
   $('#' + name.replace(/\./g, "\\.")).ckeditor(function() {}, configuration);
 }
 

@@ -1,7 +1,7 @@
 <#import "/lib/ping.ftl" as ping />
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "include/scripts.ftl" as scripts />
-<#import "/lib/editor/common.ftl" as ckEditor />
+<#import "/lib/editor/common.ftl" as editor />
 <#import "editor/vrtx-json-javascript.ftl" as vrtxJSONJavascript />
 <#import "vrtx-types/vrtx-json-common.ftl" as vrtxJSONCommon />
 
@@ -10,7 +10,7 @@
 
   <title>Edit structured resource</title>
   <@ping.ping url=pingURL['url'] interval=300 />
-  <@ckEditor.addCkScripts />
+  <@editor.addCkScripts />
   <@vrtxJSONJavascript.script />
   
   <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/shortcut.js"></script>
@@ -48,7 +48,7 @@
   </script>
   <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/imageref.js"></script>
   
-  <@ckEditor.addDatePickerScripts />
+  <@editor.addDatePickerScripts />
   
   <#if form.resource.type.scripts?exists>
     <@scripts.includeScripts form.resource.type.scripts />

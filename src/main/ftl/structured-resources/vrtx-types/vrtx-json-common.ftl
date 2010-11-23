@@ -50,7 +50,7 @@
           tooltip=form.resource.getLocalizedTooltip(elem.name, locale)
           editor=""
           />
-         <@ckEditor.createEditor elem.name /> 
+         <@editor.createEditor elem.name /> 
         <#break>
       <#case "html">
         <#if elem.description.edithints?exists>
@@ -66,7 +66,7 @@
           tooltip=form.resource.getLocalizedTooltip(elem.name, locale)
           editor=""
           />
-        <@ckEditor.createEditor elem.name true false /> 
+        <@editor.createEditor elem.name true false /> 
         <#break>
       <#case "boolean">
         <@vrtxBoolean.printPropertyEditView 
@@ -274,7 +274,7 @@
       value=value
       editor=""
       classes=cssclass />
-    <@ckEditor.createEditor tmpName />
+    <@editor.createEditor tmpName />
     <#break>
   <#case "html">
     <#if elem.description.edithints?exists>
@@ -288,7 +288,7 @@
       value=value
       editor=""
       classes="vrtx-html " + tmpName />
-    <@ckEditor.createEditor tmpName true false />
+    <@editor.createEditor tmpName true false />
     <#break>
   <#case "boolean">
     <@vrtxBoolean.printPropertyEditView 

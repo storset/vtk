@@ -14,23 +14,22 @@
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "/lib/autocomplete.ftl" as autocomplete />
-<#import "/lib/editor/common.ftl" as ckEditor />
+<#import "/lib/editor/common.ftl" as editor />
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>Editor</title>
     <@ping.ping url=pingURL['url'] interval=300 />    
-    <@ckEditor.addCkScripts />
+    <@editor.addCkScripts />
 
     <!-- Yahoo YUI library: --> 
     <script language="Javascript" type="text/javascript" src="${yuiBase.url?html}/build/yahoo-dom-event/yahoo-dom-event.js"></script>
-
     
     <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/tooltip.js"></script>
     <@autocomplete.addAutoCompleteScripts srcBase="${webResources?html}"/>
     
-    <@ckEditor.addDatePickerScripts />
+    <@editor.addDatePickerScripts />
     
   	<script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/shortcut.js"></script>
     <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/admin-ck-helper.js"></script>
@@ -98,7 +97,7 @@
       <div class="html-content">
       <label class="resource.content" for="resource.content"><@vrtx.msg code="editor.content" /></label> 
        <textarea name="resource.content" rows="8" cols="60" id="resource.content">${resource.bodyAsString?html}</textarea>
-       <@ckEditor.createEditor  'resource.content' true false />
+       <@editor.createEditor  'resource.content' true false />
 
       </div>
       </#if>
@@ -257,11 +256,11 @@
       <#if type = 'HTML' && name != 'userTitle' && name != 'title' && name != 'caption'>
 
         <textarea id="resource.${name}" name="resource.${name}" rows="4" cols="60">${value?html}</textarea>
-        <@ckEditor.createEditor  'resource.${name}' false false />
+        <@editor.createEditor  'resource.${name}' false false />
         
       <#elseif type = 'HTML' && name == 'caption'>
         <textarea id="resource.${name}" name="resource.${name}" rows="1" cols="60">${value?html}</textarea>
-        <@ckEditor.createEditor 'resource.${name}' false true />
+        <@editor.createEditor 'resource.${name}' false true />
         </div><#-- On the fly div STOP caption -->
 
       <#-- hack for setting collection titles: -->

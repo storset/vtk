@@ -3,9 +3,6 @@
 function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, baseDocumentUrl, browsePath,
     defaultLanguage, cssFileList) {
 
-  var completeEditor = completeEditor != null ? completeEditor : false;
-  var withoutSubSuper = withoutSubSuper != null ? withoutSubSuper : false;
-  
     // File browser
   var linkBrowseUrl  = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=' + browsePath;
   var imageBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=' + browsePath;

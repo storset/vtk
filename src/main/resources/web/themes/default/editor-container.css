@@ -128,7 +128,7 @@
 .vrtx-media-player {
   background: #acacac url(icons/movieplayer-play.png) no-repeat center center;
   width: 507px; /* std article width */
-  height: 380px;  /* 4:3 */
+  height: 322px;  /* 4:3 */
   text-indent: -9000px;
   overflow: hidden;
   -moz-user-select:none;
@@ -137,8 +137,8 @@
 
 .vrtx-media-player-audio {
   background: #acacac url(icons/audioplayer.png) no-repeat center center;
-  width: 73px;
-  height: 24px;
+  width: 214px;
+  height: 61px;
   text-indent: -9000px;
   overflow: hidden;
   -moz-user-select:none;

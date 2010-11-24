@@ -10,7 +10,7 @@
   <bean id="stdReqFilter" class="org.vortikal.web.filter.StandardRequestFilter"
         parent="defaultRequestFilterCategoryBean">
     <property name="urlReplacements" ref="stdReqFilter.urlReplacements" />
-    <property name="supportXForwardedFor" value="${request.supportXForwardedFor}" />
+    <property name="xForwardedFor" value="${request.xForwardedFor}" />
     <property name="requestForwardFieldHeader" value="${request.forwardFieldHeader}" />
   </bean>
 

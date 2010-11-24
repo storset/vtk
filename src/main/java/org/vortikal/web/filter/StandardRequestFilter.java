@@ -30,8 +30,12 @@
  */
 package org.vortikal.web.filter;
 
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
@@ -59,7 +63,7 @@ public class StandardRequestFilter extends AbstractRequestFilter {
     private static Log logger = LogFactory.getLog(StandardRequestFilter.class);
 
     private Map<Pattern, String> urlReplacements;
-    private boolean supportXForwardedFor = false;
+    private Pattern xForwardedFor = null;
     private String requestForwardFieldHeader = null;
 
     public void setUrlReplacements(Map<String, String> urlReplacements) {
@@ -71,8 +75,10 @@ public class StandardRequestFilter extends AbstractRequestFilter {
         }
     }
 
-    public void setSupportXForwardedFor(boolean supportXForwardedFor) {
-        this.supportXForwardedFor = supportXForwardedFor;
+    public void setxForwardedFor(String xForwardedFor) {
+        if (xForwardedFor != null && !"".equals(xForwardedFor.trim())) {
+            this.xForwardedFor = Pattern.compile(xForwardedFor);
+        }
     }
     
     public void setRequestForwardFieldHeader(String forwardHeader) {
@@ -87,6 +93,7 @@ public class StandardRequestFilter extends AbstractRequestFilter {
         private String uri;
         private URL requestURL;
         private String client = null;
+        private Set<String> absorbedHeaders = new HashSet<String>();
         
         public StandardRequestWrapper(HttpServletRequest request) {
             super(request);
@@ -96,7 +103,7 @@ public class StandardRequestFilter extends AbstractRequestFilter {
                 logger.debug("Translated uri: from '" + requestURI + "' to '" + this.uri + "'");
             }
             this.requestURL = URL.parse(request.getRequestURL().toString());
-            if (supportXForwardedFor) {
+            if (xForwardedFor != null && xForwardedFor.matcher(request.getRequestURL()).matches()) {
                 String xForwardHeader = request.getHeader("X-Forwarded-For");
                 if (xForwardHeader != null) {
                     xForwardHeader = xForwardHeader.split(" ")[0];
@@ -104,6 +111,7 @@ public class StandardRequestFilter extends AbstractRequestFilter {
                         xForwardHeader = xForwardHeader.substring(0, xForwardHeader.indexOf(","));
                     }
                     this.client = xForwardHeader;
+                    this.absorbedHeaders.add("X-Forwarded-For");
                 }
             }
             
@@ -114,6 +122,7 @@ public class StandardRequestFilter extends AbstractRequestFilter {
             if (forwardHeader == null) {
                 return;
             }
+            this.absorbedHeaders.add(requestForwardFieldHeader);
             String host = HttpUtil.extractHeaderField(forwardHeader, "host");
             String port = HttpUtil.extractHeaderField(forwardHeader, "port");
             String protocol = HttpUtil.extractHeaderField(forwardHeader, "protocol");
@@ -130,6 +139,53 @@ public class StandardRequestFilter extends AbstractRequestFilter {
             if (client != null) {
                 this.client = client;
             }
+        }
+        
+        @Override
+        public long getDateHeader(String name) {
+            if (this.absorbedHeaders.contains(name)) {
+                return -1;
+            }
+            return super.getDateHeader(name);
+        }
+
+        @Override
+        public String getHeader(String name) {
+            if (this.absorbedHeaders.contains(name)) {
+                return null;
+            }
+            return super.getHeader(name);
+        }
+
+        @Override
+        @SuppressWarnings("rawtypes")
+        public Enumeration getHeaders(String name) {
+            if (this.absorbedHeaders.contains(name)) {
+                return null;
+            }
+            return super.getHeaders(name);
+        }
+
+        @Override
+        @SuppressWarnings("rawtypes")
+        public Enumeration getHeaderNames() {
+            Enumeration e = super.getHeaderNames();
+            Set<String> set = new HashSet<String>();
+            while (e.hasMoreElements()) {
+                String h = (String) e.nextElement();
+                if (!this.absorbedHeaders.contains(h)) {
+                    set.add(h);
+                }
+            }
+            return Collections.enumeration(set);
+        }
+
+        @Override
+        public int getIntHeader(String name) {
+            if (this.absorbedHeaders.contains(name)) {
+                return -1;
+            }
+            return super.getIntHeader(name);
         }
 
         @Override

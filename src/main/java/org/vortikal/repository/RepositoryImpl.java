@@ -101,6 +101,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     private int permanentDeleteOverdueLimitInDays = 60;
 
     private static Log searchLogger = LogFactory.getLog(RepositoryImpl.class.getName() + ".Search");
+    private static Log trashLogger = LogFactory.getLog(RepositoryImpl.class.getName() + ".Trash");
 
     @Override
     public boolean isReadOnly() {
@@ -495,6 +496,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     @Override
     public void deleteRecoverable(String token, Path parentUri, RecoverableResource recoverableResource)
             throws Exception {
+
+        ResourceImpl parent = this.dao.load(parentUri);
+
+        if (parent == null) {
+            throw new ResourceNotFoundException(parentUri);
+        }
+
         this.dao.deleteRecoverable(recoverableResource);
         this.contentStore.deleteRecoverable(recoverableResource);
     }
@@ -1131,7 +1139,20 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     private void periodicJob() {
         if (!this.isReadOnly()) {
             this.dao.deleteExpiredLocks(new Date());
-            //this.dao.deleteOverdue(this.permanentDeleteOverdueLimitInDays);
+            //this.deleteOverdue();
+        }
+    }
+
+    private void deleteOverdue() {
+        List<RecoverableResource> overdue = this.dao.getOverdue(this.permanentDeleteOverdueLimitInDays);
+        if (overdue != null && overdue.size() > 0) {
+            trashLogger.info("Found " + overdue.size()
+                    + " recoverable resources that are overdue for permanent deletion.");
+            for (RecoverableResource rr : overdue) {
+                trashLogger.info("Permanently deleting recoverable resource: " + rr);
+                this.dao.deleteRecoverable(rr);
+                this.contentStore.deleteRecoverable(rr);
+            }
         }
     }
 

@@ -53,7 +53,7 @@ public interface DataAccessor {
     public boolean validate() throws DataAccessException;
 
     /**
-     * Loads a single resource
+     * Loads a single resource by uri
      */
     public ResourceImpl load(Path uri) throws DataAccessException;
 
@@ -127,15 +127,16 @@ public interface DataAccessor {
     public void deleteRecoverable(RecoverableResource recoverableResource) throws DataAccessException;
 
     /**
-     * Deletes resources in the trash can that are overdue for permanent removal
-     * (called periodically)
+     * * Deletes resources in the trash can that are overdue for permanent
+     * removal (called periodically)
      * 
      * @param overDueLimit
      *            number of days that have to pass from deletion time before a
      *            recoverable resource is to be permanently deleted
-     * 
+     * @return a list or recoverable resources that are overdue for deletion
+     * @throws DataAccessException
      */
-    public void deleteOverdue(int overdueLimit) throws DataAccessException;
+    public List<RecoverableResource> getOverdue(int overdueLimit) throws DataAccessException;
 
     /**
      * 

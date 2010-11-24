@@ -569,8 +569,8 @@ public class Cache implements DataAccessor, InitializingBean {
     }
 
     @Override
-    public void deleteOverdue(int overDueLimit) throws DataAccessException {
-        this.wrappedAccessor.deleteOverdue(overDueLimit);
+    public List<RecoverableResource> getOverdue(int overDueLimit) throws DataAccessException {
+        return this.wrappedAccessor.getOverdue(overDueLimit);
     }
 
     @Override

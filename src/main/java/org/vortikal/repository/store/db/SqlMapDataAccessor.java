@@ -94,6 +94,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         throw new DataAccessException("Not implemented");
     }
 
+    @Override
     public ResourceImpl load(Path uri) {
         ResourceImpl resource = loadResourceInternal(uri);
         if (resource == null) {
@@ -274,7 +275,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         parameters.put("uriTrimLength", uriTrimLength);
         parameters.put("trashCanID", trashID);
         String sqlMap = getSqlMap("markDeleted");
-        getSqlMapClientTemplate().update(sqlMap, parameters);
+        this.getSqlMapClientTemplate().update(sqlMap, parameters);
 
         parameters.put("trashCanURI", trashID + "/" + resourceURI.getName());
         parameters.put("parentID", parent.getID());
@@ -282,14 +283,14 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         parameters.put("deletedTime", Calendar.getInstance().getTime());
         parameters.put("wasInheritedAcl", resource.isInheritedAcl() ? "Y" : "N");
         sqlMap = getSqlMap("insertTrashCanEntry");
-        getSqlMapClientTemplate().update(sqlMap, parameters);
+        this.getSqlMapClientTemplate().update(sqlMap, parameters);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public List<RecoverableResource> getRecoverableResources(final int parentResourceId) throws DataAccessException {
         String sqlMap = getSqlMap("getRecoverableResources");
-        List<RecoverableResource> recoverableResources = getSqlMapClientTemplate().queryForList(sqlMap,
+        List<RecoverableResource> recoverableResources = this.getSqlMapClientTemplate().queryForList(sqlMap,
                 parentResourceId);
         return recoverableResources;
     }
@@ -306,7 +307,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         RecoverableResource deletedResource = (RecoverableResource) o;
 
         sqlMap = getSqlMap("recoverFromTrashCan");
-        getSqlMapClientTemplate().delete(sqlMap, deletedResource.getId());
+        this.getSqlMapClientTemplate().delete(sqlMap, deletedResource.getId());
 
         Map<String, Object> parameters = new HashMap<String, Object>();
         String trashID = deletedResource.getTrashID();
@@ -319,7 +320,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         parameters.put("uriTrimLength", uriTrimLength);
 
         sqlMap = getSqlMap("recoverResource");
-        getSqlMapClientTemplate().update(sqlMap, parameters);
+        this.getSqlMapClientTemplate().update(sqlMap, parameters);
 
         if (deletedResource.wasInheritedAcl()) {
             Path recoverdResourcePath = parent.extend(deletedResource.getName());
@@ -342,19 +343,20 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         String trashUri = recoverableResource.getTrashUri();
         parameters.put("trashCanURI", trashUri);
         parameters.put("trashCanURIWildCard", SqlDaoUtils.getStringSqlWildcard(trashUri, SQL_ESCAPE_CHAR));
-        getSqlMapClientTemplate().delete(sqlMap, parameters);
+        this.getSqlMapClientTemplate().delete(sqlMap, parameters);
     }
 
     @Override
-    public void deleteOverdue(int overDueLimit) throws DataAccessException {
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("limit", overDueLimit);
+    @SuppressWarnings("unchecked")
+    public List<RecoverableResource> getOverdue(int overDueLimit) throws DataAccessException {
         Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, overDueLimit);
+        // Add negative limit -> substract
+        cal.add(Calendar.DATE, -overDueLimit);
         Date overDueDate = cal.getTime();
-        parameters.put("overDueDate", overDueDate);
-        String sqlMap = getSqlMap("deleteOverdue");
-        this.getSqlMapClientTemplate().delete(sqlMap, parameters);
+        String sqlMap = getSqlMap("getOverdue");
+        List<RecoverableResource> recoverableResources = this.getSqlMapClientTemplate().queryForList(sqlMap,
+                overDueDate);
+        return recoverableResources;
     }
 
     @Override

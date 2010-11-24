@@ -77,7 +77,7 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
 	config.filebrowserFlashBrowseUrl = flashBrowseUrl;
 	config.extraPlugins = 'MediaEmbed';
 	config.contentsCss = cssFileList;
-    config.stylesSet = divContainerStyleSheet;
+    config.stylesSet = divContainerStylesSet;
   }
   
   if(resizable) {
@@ -114,7 +114,7 @@ function commentsCkEditor() {
   setCKEditorConfig("comments-text", null, null, null, null, null, 150, 400, 40, commentsToolbar, false, true) 
 }
 
-var divContainerStyleSheet = [{
+var divContainerStylesSet = [{
     name : 'Facts left',
     element : 'div',
     attributes : {

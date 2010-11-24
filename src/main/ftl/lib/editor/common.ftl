@@ -27,9 +27,9 @@
     var cssFileList = new Array(
       <#if fckEditorAreaCSSURL?exists>
         <#list fckEditorAreaCSSURL as cssURL>
-          "${cssURL?html}",
+          "${cssURL?html}" <#if cssURL_has_next>,</#if>
         </#list>
-     </#if>"");
+     </#if>);
 
 	newEditor('${content}', ${completeEditor?string}, ${withoutSubSuper?string}, 
 	  '${baseFolder?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 

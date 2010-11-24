@@ -36,31 +36,28 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
     cssFileList.push("/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css");
   }
   
-  var completeEditor = completeEditor != null ? completeEditor : false;
-  var withoutSubSuper = withoutSubSuper != null ? withoutSubSuper : false;
+  var isCompleteEditor = completeEditor != null ? completeEditor : false;
+  var isWithoutSubSuper = withoutSubSuper != null ? withoutSubSuper : false;
   
   //CKEditor configurations
   if (name.indexOf("introduction") != -1) {
     setCKEditorConfig(name, linkBrowseUrl, null, null, 
-			          defaultLanguage, null, 150, 400, 40, introductionCaptionToolbar, false, false);
+			          defaultLanguage, null, 150, 400, 40, introductionCaptionToolbar, isCompleteEditor, false);
   } else if (name.indexOf("caption") != -1) {
     setCKEditorConfig(name, linkBrowseUrl, null, null, 
-			          defaultLanguage, null, 93, 400, 40, introductionCaptionToolbar, false, false);
-  } else if (completeEditor) {	  
-	var height = 400;
-	var maxHeight = 800;
-	if (name.indexOf("boxContent") != -1) {
-	  height = 220;
-	  maxHeight = 400;
-	}
+			          defaultLanguage, null, 93, 400, 40, introductionCaptionToolbar, isCompleteEditor, false);
+  } else if (isCompleteEditor) {	  
+	var height = 400; var maxHeight = 800;
+	if (name.indexOf("boxContent") != -1) { height = 220; maxHeight = 400; }
+	
 	setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
-			          defaultLanguage, cssFileList, height ,maxHeight, 50, completeToolbar, true, true);
-  } else if (withoutSubSuper) {
+			          defaultLanguage, cssFileList, height ,maxHeight, 50, completeToolbar, isCompleteEditor, true);
+  } else if (isWithoutSubSuper) {
 	setCKEditorConfig(name, linkBrowseUrl, null, null, 
-			          defaultLanguage, null, 40, 400, 40, inlineToolbar, false, true);
+			          defaultLanguage, null, 40, 400, 40, inlineToolbar, isCompleteEditor, true);
   } else {
 	setCKEditorConfig(name, linkBrowseUrl, null, null,
-			          defaultLanguage, null, 40, 400, 40, withoutSubSuperToolbar, false, true);
+			          defaultLanguage, null, 40, 400, 40, withoutSubSuperToolbar, isCompleteEditor, true);
   }
 
 }

@@ -47,64 +47,65 @@ function getExtension(url) {
                                    ]
                           }
                        ],
-                  onOk : function()
-                 {
-		  for (var i=0; i<window.frames.length; i++) {
-		      if(window.frames[i].name == 'iframeMediaEmbed') {
-		        var url = window.frames[i].document.getElementById("txtUrl").value;
-			if(url.length > 0) {
-			    var content = "${include:media-player url=["+url+"]";			    
-			}
-			var contentType = window.frames[i].document.getElementById("txtContentType").value;
-			if(contentType.length > 0) {
-			    content = content + " content-type=["+contentType+"]";
-			}
-			var width = window.frames[i].document.getElementById("txtWidth").value;
-			if(width.length > 0) {
-			    content = content + " width=["+width+"]";
-			}
-			var height = window.frames[i].document.getElementById("txtHeight").value;
-			if(height.length > 0) {
-			    content = content + " height=["+height+"]";
-			}
-			var style = '';
-			if (height.length > 0 || width.length > 0) {
-			    style = style + ' style=';
-			    if(height.length > 0) {
-				style = style +  'height: ' + height + ';';
-			    }
-			    if(width.length > 0) {
-				style = style + ' width: ' + width + ';';
-                           } 
-			}
-			var autoplay = window.frames[i].document.getElementById("chkAutoplay");
-			if(autoplay.checked == true) {
-			    content = content + " autoplay=[true]";
-			}
-			var align = window.frames[i].document.getElementById("txtAlign").value;
-
-			if(content.length>0) {
-			    content = content + "}";
-			}			
-			
-			var divClassType = '';
-			if(contentType.length > 0 && contentType == "audio/mp3") {
-			    divClassType = 'vrtx-media-player-audio';
-			}
-			else if (url.length > 0 && getExtension(url) == "mp3") {
-			    divClassType = 'vrtx-media-player-audio';
-			}
-			else {
-			    divClassType ='vrtx-media-player';
-			}
-		      }
+                  onOk : function() {
+					  for (var i=0; i<window.frames.length; i++) {
+					      if(window.frames[i].name == 'iframeMediaEmbed') {
+					        var url = window.frames[i].document.getElementById("txtUrl").value;
+							if(url.length > 0) {
+							    var content = "${include:media-player url=["+url+"]";			    
+							}
+							var contentType = window.frames[i].document.getElementById("txtContentType").value;
+							if(contentType.length > 0) {
+							    content = content + " content-type=["+contentType+"]";
+							}
+							var width = window.frames[i].document.getElementById("txtWidth").value;
+							if(width.length > 0) {
+							    content = content + " width=["+width+"]";
+							}
+							var height = window.frames[i].document.getElementById("txtHeight").value;
+							if(height.length > 0) {
+							    content = content + " height=["+height+"]";
+						    }
+							var style = '';
+							if (height.length > 0 || width.length > 0) {
+							    style = style + ' style="';
+							    if(height.length > 0) {
+								  style = style +  'height: ' + height + ';';
+							    }
+							    if(width.length > 0) {
+								  style = style + ' width: ' + width + ';';
+				                }
+							    style = style + '"';
+							}
+							var autoplay = window.frames[i].document.getElementById("chkAutoplay");
+							if(autoplay.checked == true) {
+							    content = content + " autoplay=[true]";
+							}
+							var align = window.frames[i].document.getElementById("txtAlign").value;
+							console.log(align);
+				
+							if(content.length>0) {
+							    content = content + "}";
+							}			
+							
+							var divClassType = '';
+							if(contentType.length > 0 && contentType == "audio/mp3") {
+							    divClassType = 'vrtx-media-player-audio';
+							}
+							else if (url.length > 0 && getExtension(url) == "mp3") {
+							    divClassType = 'vrtx-media-player-audio';
+							}
+							else {
+							    divClassType ='vrtx-media-player';
+							}
+		                 }
 		      
-		 } 		  
-		  final_html = 'MediaEmbedInsertData|---' + escape('<div class="'+divClassType+' '+align+style+'">'+content+'</div>') + '---|MediaEmbedInsertData';
-		  editor.insertHtml(final_html);
-		  updated_editor_data = editor.getData();
-		  clean_editor_data = updated_editor_data.replace(final_html,'<div class="'+divClassType+' '+align+style+'">'+content+'</div>');
-		  editor.setData(clean_editor_data);
+		              } 		  
+		           final_html = 'MediaEmbedInsertData|---' + escape('<div class="'+divClassType+' '+align+'" '+style+'>'+content+'</div>') + '---|MediaEmbedInsertData';
+		           editor.insertHtml(final_html);
+		           updated_editor_data = editor.getData();
+		           clean_editor_data = updated_editor_data.replace(final_html,'<div class="'+divClassType+' '+align+'" '+style+'>'+content+'</div>');
+		           editor.setData(clean_editor_data);
                  }
               };
            } );

@@ -373,10 +373,6 @@ input.vrtx-move-down-button  {
   padding-right: 15px;
 }
 
-.introduction iframe {
-  height: 150px;
-}
-
 .selectedPublications,
 .additional-content {
   width: 98% !important;
@@ -385,10 +381,6 @@ input.vrtx-move-down-button  {
 .relatedContent .related-content label, /* article */
 .contactInformation .visitingAddress { /* person */
   display: none !important;
-}
-
-.contactInfo iframe {
-  height: 200px;
 }
 
 #participants .vrtx-string,
@@ -518,3 +510,8 @@ span.cke_skin_kama {
 }
 
 /* STOP CKEditor */
+
+.cke_skin_kama .cke_toolgroup {
+  margin-bottom: 12px !important;
+  border: 1px solid red;
+}

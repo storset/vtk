@@ -43,16 +43,24 @@
 	margin-left:auto;
 }
 
+.vrtx-media-middle,
 .vrtx-container-middle{
 	display:block;
 	margin-right:auto;
 	margin-left:auto;
 }
 
+.vrtx-media-middle {
+  margin: 1em 0;
+}
+
+.vrtx-media-left,
 .vrtx-container-left{
 	margin: 0 1em 1em 0;
 	float:left;
 }
+
+.vrtx-media-right,
 .vrtx-container-right{
 	margin: 0 0 1em 1em;
 	float:right;
@@ -118,21 +126,21 @@
 }
 
 .vrtx-media-player {
-  background: #000 url(icons/movieplayer-play.png) no-repeat center center;
+  background: #acacac url(icons/movieplayer-play.png) no-repeat center center;
   width: 507px; /* std article width */
   height: 380px;  /* 4:3 */
   text-indent: -9000px;
+  overflow: hidden;
   -moz-user-select:none;
   -webkit-user-select:none;
-  overflow: hidden;
 }
 
 .vrtx-media-player-audio {
-  background: #fff url(icons/audioplayer.png) no-repeat center center;
+  background: #acacac url(icons/audioplayer.png) no-repeat center center;
   width: 73px;
   height: 24px;
   text-indent: -9000px;
+  overflow: hidden;
   -moz-user-select:none;
   -webkit-user-select:none;
-  overflow: hidden;
 }

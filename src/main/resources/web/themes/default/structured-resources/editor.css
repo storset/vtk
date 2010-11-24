@@ -304,13 +304,6 @@ input.vrtx-move-down-button  {
   width:70px;
 }
 
-.vrtx-json #main-content .vrtx-json-element .vrtx-html iframe,
-.vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-html iframe,
-.vrtx-json #additional-content .vrtx-json-element .vrtx-html iframe,
-.vrtx-json #featured-items .vrtx-json-element .vrtx-html iframe {
-  height: 230px;
-}
-
 .vrtx-json #main-content .header,
 .vrtx-json #contact-supervisor-box .header,
 .vrtx-json #additional-content .header,
@@ -389,11 +382,6 @@ input.vrtx-move-down-button  {
   width: 98% !important;
 }
 
-.related-content iframe,
-.selectedPublications iframe {
-  height: 210px;
-}
-
 .relatedContent .related-content label, /* article */
 .contactInformation .visitingAddress { /* person */
   display: none !important;
@@ -422,16 +410,6 @@ input.vrtx-move-down-button  {
 
 #contact-supervisor-box {
   max-width: 750px;	
-}
-
-#contact-supervisor-box .vrtx-simple-html iframe {
-  height: 125px !important;
-  width: 600px !important;
-}
-
-#contact-supervisor-box .vrtx-html iframe {
-  height: 150px !important;
-  width: 600px !important;
 }
 
 .vrtx-json #main-content .boxType input,

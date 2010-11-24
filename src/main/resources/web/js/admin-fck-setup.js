@@ -49,8 +49,9 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
     setCKEditorConfig(name, linkBrowseUrl, null, null, 
 			          defaultLanguage, null, 93, 400, 40, introductionCaptionToolbar, isCompleteEditor, false);
   } else if (isCompleteEditor) {	  
-	var height = 400; var maxHeight = 800;
-	if (name.indexOf("boxContent") != -1) { height = 220; maxHeight = 400; }
+	var height = 220; var maxHeight = 400;
+    if (name.indexOf("supervisor-box") != -1) { height = 130; maxHeight = 300; }
+    else if (name.indexOf("content") != -1 && name.indexOf("related-content") == -1) { height = 400; maxHeight = 800; }
 	
 	setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
 			          defaultLanguage, cssFileList, height ,maxHeight, 50, completeToolbarPointer, isCompleteEditor, true);

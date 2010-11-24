@@ -88,6 +88,10 @@ public class RecoverableResource {
     public Date getDeletedTime() {
         return deletedTime;
     }
+    
+    public String getFormattedDeletedTime() {
+        return SDF.format(this.deletedTime);
+    }
 
     public void setDeletedTime(Date deletedTime) {
         this.deletedTime = deletedTime;
@@ -114,7 +118,7 @@ public class RecoverableResource {
         StringBuilder sb = new StringBuilder(this.getTrashID());
         sb.append(": " + this.getName());
         sb.append(", deleted by " + this.getDeletedBy());
-        sb.append(", deleted " + SDF.format(this.getDeletedTime()));
+        sb.append(", deleted " + this.getFormattedDeletedTime());
         return sb.toString();
     }
 

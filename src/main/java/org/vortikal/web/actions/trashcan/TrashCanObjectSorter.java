@@ -30,7 +30,6 @@
  */
 package org.vortikal.web.actions.trashcan;
 
-import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -40,6 +39,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.vortikal.repository.RecoverableResource;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.web.service.Service;
@@ -48,8 +48,6 @@ public class TrashCanObjectSorter {
 
     public static final String SORT_BY_PARAM = "sort-by";
     public static final String INVERT_PARAM = "invert";
-
-    private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
     public static enum Order {
         BY_NAME("name"), BY_DELETED_BY("deleted-by"), BY_DELETED_TIME("deleted-time");
@@ -178,15 +176,17 @@ public class TrashCanObjectSorter {
 
         @Override
         public int compare(TrashCanObject tco1, TrashCanObject tco2) {
-            Date d1 = tco1.getRecoverableResource().getDeletedTime();
-            Date d2 = tco2.getRecoverableResource().getDeletedTime();
-            if (SDF.format(d1).equals(SDF.format(d2))) {
+            RecoverableResource r1 = tco1.getRecoverableResource();
+            RecoverableResource r2 = tco2.getRecoverableResource();
+            if (r1.getFormattedDeletedTime().equals(r2.getFormattedDeletedTime())) {
                 // If deleted simultaneously (down to sec. precision) ->
                 // sort on name
-                String n1 = tco1.getRecoverableResource().getName();
-                String n2 = tco2.getRecoverableResource().getName();
+                String n1 = r1.getName();
+                String n2 = r2.getName();
                 return n1.compareTo(n2);
             }
+            Date d1 = r1.getDeletedTime();
+            Date d2 = r2.getDeletedTime();
             if (!this.invert) {
                 return d1.compareTo(d2);
             }

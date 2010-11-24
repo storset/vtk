@@ -47,8 +47,9 @@ public class OverDueLimitMessageProvider implements ReferenceDataProvider {
 
         org.springframework.web.servlet.support.RequestContext springContext = new org.springframework.web.servlet.support.RequestContext(
                 request);
-        String message = springContext.getMessage("trash-can.permanent.delete.warning",
-                new Object[] { this.permanentDeleteOverdueLimitInDays });
+        String msgKey = "trash-can.permanent.delete.warning.";
+        msgKey = this.permanentDeleteOverdueLimitInDays > 1 ? msgKey.concat("multiple") : msgKey.concat("single");
+        String message = springContext.getMessage(msgKey, new Object[] { this.permanentDeleteOverdueLimitInDays });
 
         model.put("tabMessage", message);
     }

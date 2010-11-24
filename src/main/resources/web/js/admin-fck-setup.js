@@ -52,9 +52,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
 	var height = 220; var maxHeight = 400;
     if (name.indexOf("supervisor-box") != -1) { height = 130; maxHeight = 300; }
     else if (name.indexOf("content") != -1 && name != "related-content") { height = 400; maxHeight = 800; }
-    
-    console.log(name + " " + height + " " + maxHeight);
-	
+
 	setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
 			          defaultLanguage, cssFileList, height ,maxHeight, 50, completeToolbarPointer, isCompleteEditor, true);
   } else if (isWithoutSubSuper) {

@@ -39,6 +39,8 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   var isCompleteEditor = completeEditor != null ? completeEditor : false;
   var isWithoutSubSuper = withoutSubSuper != null ? withoutSubSuper : false;
   
+  var completeToolbarPointer = completeToolbar;  
+  
   //CKEditor configurations
   if (name.indexOf("introduction") != -1) {
     setCKEditorConfig(name, linkBrowseUrl, null, null, 
@@ -51,7 +53,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
 	if (name.indexOf("boxContent") != -1) { height = 220; maxHeight = 400; }
 	
 	setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
-			          defaultLanguage, cssFileList, height ,maxHeight, 50, completeToolbar, isCompleteEditor, true);
+			          defaultLanguage, cssFileList, height ,maxHeight, 50, completeToolbarPointer, isCompleteEditor, true);
   } else if (isWithoutSubSuper) {
 	setCKEditorConfig(name, linkBrowseUrl, null, null, 
 			          defaultLanguage, null, 40, 400, 40, inlineToolbar, isCompleteEditor, true);
@@ -74,7 +76,8 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
 	config.filebrowserFlashBrowseUrl = flashBrowseUrl;
 	config.extraPlugins = 'MediaEmbed';
 	config.contentsCss = cssFileList;
-    config.stylesSet = divContainerStylesSet;
+	var divContainerStylesSetPointer = divContainerStylesSet; // performance
+    config.stylesSet = divContainerStylesSetPointer;
   }
   
   if(resizable) {

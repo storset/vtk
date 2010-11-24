@@ -510,8 +510,3 @@ span.cke_skin_kama {
 }
 
 /* STOP CKEditor */
-
-.cke_skin_kama .cke_toolgroup {
-  margin-bottom: 12px !important;
-  border: 1px solid red;
-}

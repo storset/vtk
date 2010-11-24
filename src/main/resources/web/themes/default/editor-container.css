@@ -126,3 +126,13 @@
   -webkit-user-select:none;
   overflow: hidden;
 }
+
+.vrtx-media-player-audio {
+  background: #fff url(icons/audioplayer.png) no-repeat center center;
+  width: 73px;
+  height: 24px;
+  text-indent: -9000px;
+  -moz-user-select:none;
+  -webkit-user-select:none;
+  overflow: hidden;
+}

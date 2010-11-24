@@ -37,11 +37,11 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   
   //CKEditor configurations
   if (name.indexOf("introduction") != -1) {
-    setCKEditorConfig(name, createCKEditorConfig("intro", linkBrowseUrl, null, null, 
-			          defaultLanguage, null, 150, 400, 40, introductionCaptionToolbar));
+    setCKEditorConfig(name, linkBrowseUrl, null, null, 
+			          defaultLanguage, null, 150, 400, 40, introductionCaptionToolbar, false, false);
   } else if (name.indexOf("caption") != -1) {
-    setCKEditorConfig(name, createCKEditorConfig("caption", linkBrowseUrl, null, null, 
-			          defaultLanguage, null, 93, 400, 40, introductionCaptionToolbar));
+    setCKEditorConfig(name, linkBrowseUrl, null, null, 
+			          defaultLanguage, null, 93, 400, 40, introductionCaptionToolbar, false, false);
   } else if (completeEditor) {	  
 	var height = 400;
 	var maxHeight = 800;
@@ -49,44 +49,46 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
 	  height = 220;
 	  maxHeight = 400;
 	}
-	setCKEditorConfig(name, createCKEditorConfig("complete", linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
-			          defaultLanguage, cssFileList, height ,maxHeight, 50, completeToolbar));
+	setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
+			          defaultLanguage, cssFileList, height ,maxHeight, 50, completeToolbar, true, true);
   } else if (withoutSubSuper) {
-	setCKEditorConfig(name, createCKEditorConfig("inline", linkBrowseUrl, null, null, 
-			          defaultLanguage, null, 40, 400, 40, inlineToolbar));
+	setCKEditorConfig(name, linkBrowseUrl, null, null, 
+			          defaultLanguage, null, 40, 400, 40, inlineToolbar, false, true);
   } else {
-	setCKEditorConfig(name, createCKEditorConfig("withoutSubSuper", linkBrowseUrl, null, null,
-			          defaultLanguage, null, 40, 400, 40, withoutSubSuperToolbar));
+	setCKEditorConfig(name, linkBrowseUrl, null, null,
+			          defaultLanguage, null, 40, 400, 40, withoutSubSuperToolbar, false, true);
   }
 
 }
 
-function createCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, height, maxHeight, minHeight, toolbar) {
-
+function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, height, maxHeight, minHeight, toolbar, complete, resizable) {
   var config = [{}];
+  
   config.filebrowserBrowseUrl = linkBrowseUrl;
-  if(name == "complete") {
+  
+  if(complete) {
 	config.filebrowserImageBrowseUrl = imageBrowseUrl;
 	config.filebrowserFlashBrowseUrl = flashBrowseUrl;
 	config.extraPlugins = 'MediaEmbed';
 	config.contentsCss = cssFileList;
     config.stylesSet = createDivContainerStyleSet();
   }
-  config.toolbarCanCollapse = false;
-  if(name == "complete" || name == "withoutSubSuper" || name == "inline") {
+  
+  if(resizable) {
 	config.resize_enabled = true;
   } else {
     config.resize_enabled = false;
   }
 	
+  config.toolbarCanCollapse = false;
   config.defaultLanguage = 'no';
   config.language = defaultLanguage;
   config.toolbar = toolbar;
   config.height = height + 'px';
   config.autoGrow_maxHeight = maxHeight + 'px';
   config.autoGrow_minHeight = minHeight + 'px';
-	
-  return config;
+  
+  CKEDITOR.replace(name, config);
 }
 
 function createDivContainerStyleSet() {
@@ -266,10 +268,6 @@ function createDivContainerStyleSet() {
      }
  }];
 
-}
-
-function setCKEditorConfig(name, configuration) {
-  CKEDITOR.replace(name,configuration);
 }
 
 function disableSubmit() {

@@ -8,6 +8,12 @@
     </style>
   <script language="Javascript" type="text/javascript" src="/vrtx/__vrtx/static-resources/js/serverbrowsedialog.js"></script>
   <script language="Javascript" type="text/javascript" src="/vrtx/__vrtx/static-resources/js/imageref.js"></script>
+  <script language="Javascript" type="text/javascript">
+    function getPath(fullPath) {
+      return fullPath.substring(0, fullPath.lastIndexOf("/"));
+    }
+  </script>
+
   </head>
   <body>
     <!-- URL -->
@@ -15,7 +21,7 @@
       <tr>
 	<div class="vrtx-image-ref-browse">
 	  <input type="text" id="txtUrl" name="$txtUrl" size="30" />
-	  <button type="button" onclick="browseServer('txtUrl', '/vrtx/__vrtx/static-resources/ckeditor-build', '/','/vrtx/__vrtx/app-resources/ckeditor-build/browse?action=browse','Media');">Browse</button>
+	  <button type="button" onclick="browseServer('txtUrl', '/vrtx/__vrtx/static-resources/ckeditor-build', getPath(parent.location.pathname),'/vrtx/__vrtx/app-resources/ckeditor-build/browse?action=browse','Media');">Browse</button>
 	</div>
       </tr>
       <tr>

@@ -7,7 +7,7 @@ var withoutSubSuperToolbar = [ [ 'Source', 'PasteText', 'Link', 'Unlink', 'Bold'
 var introductionCaptionToolbar = [ [ 'Source', 'PasteText', 'Link', 'Unlink', 'Bold',
                                      'Italic', 'Underline', 'Strike', 'SpecialChar' ] ];
 
-var completeToolbar = [ [ 'Source', 'PasteText', '-', 'Undo', 'Redo', '-', 'Replace',
+var completeToolbar = [ [ 'Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
                           'RemoveFormat', '-', 'Link', 'Unlink', 'Anchor',
                           'Image', 'CreateDiv', 'MediaEmbed', 'Table',
                           'HorizontalRule', 'SpecialChar' 

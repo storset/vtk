@@ -65,7 +65,7 @@ function createCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUr
 
   var config = [{}];
   config.filebrowserBrowseUrl = linkBrowseUrl;
-  if("complete") {
+  if(name == "complete") {
 	config.filebrowserImageBrowseUrl = imageBrowseUrl;
 	config.filebrowserFlashBrowseUrl = flashBrowseUrl;
 	config.extraPlugins = 'MediaEmbed';
@@ -73,7 +73,7 @@ function createCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUr
     config.stylesSet = createDivContainerStyleSet();
   }
   config.toolbarCanCollapse = false;
-  if("complete" || "withoutSubSuper" || "inline") {
+  if(name == "complete" || name == "withoutSubSuper" || name == "inline") {
 	config.resize_enabled = true;
   } else {
     config.resize_enabled = false;

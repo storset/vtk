@@ -10,7 +10,13 @@
   <script language="Javascript" type="text/javascript" src="/vrtx/__vrtx/static-resources/js/imageref.js"></script>
   <script language="Javascript" type="text/javascript">
     function getPath(fullPath) {
-      return fullPath.substring(0, fullPath.lastIndexOf("/"));
+      var path = fullPath.substring(0, fullPath.lastIndexOf("/"));
+    if (path.length >0) {
+        return path;
+      }
+      else {
+        return "/";
+      }
     }
   </script>
   </head>

@@ -352,6 +352,7 @@
               <entry key="cssURLs" value-ref="structuredResources.editCSSURLs" />
               <entry key="jsBaseURL" value="${jsBaseURL}" />
               <entry key="webResources" value="${webResources.baseURL}" />
+              <entry key="fckEditorAreaCSSURL" value-ref="editor.fckEditorAreaCSSURL" />
               <entry key="themeBaseURL" value="${themeBaseURL}" />
               <entry key="editorHelpURL" value="${editor.helpURL}" />
             </map>

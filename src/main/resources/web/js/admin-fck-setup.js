@@ -47,7 +47,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
 			          defaultLanguage, null, 150, 400, 40, introductionCaptionToolbar, isCompleteEditor, false);
   } else if (name.indexOf("caption") != -1) {
     setCKEditorConfig(name, linkBrowseUrl, null, null, 
-			          defaultLanguage, null, 93, 400, 40, introductionCaptionToolbar, isCompleteEditor, false);
+			          defaultLanguage, null, 104, 400, 40, introductionCaptionToolbar, isCompleteEditor, false);
   } else if (isCompleteEditor) {	  
 	var height = 220; var maxHeight = 400;
     if (name.indexOf("supervisor-box") != -1) { height = 130; maxHeight = 300; }

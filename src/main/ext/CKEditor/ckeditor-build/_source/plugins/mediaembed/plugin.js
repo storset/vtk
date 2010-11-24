@@ -1,6 +1,21 @@
 /*
 * @example An iframe-based dialog with custom button handling logics.
 */
+/** Get the file extension  */
+function getExtension(url) {
+    var ext = url.match(/\.(avi|asf|fla|flv|mov|mp3|mp4|m4v|mpg|mpeg|mpv|qt|swf|wma|wmv)$/i);
+    if (ext != null && ext.length && ext.length > 0) {
+	ext = ext[1];
+    } else {
+	if (url.contains('youtube.com/')) {
+	    ext = 'swf';
+	} else {
+	    ext = '';
+	}
+    }
+    return ext;
+}
+
 ( function() {
     CKEDITOR.plugins.add( 'MediaEmbed',
     {
@@ -54,14 +69,13 @@
 			}
 			var style = '';
 			if (height.length > 0 || width.length > 0) {
-			    style = style + ' style="';
+			    style = style + ' style=';
 			    if(height.length > 0) {
 				style = style +  'height: ' + height + ';';
 			    }
 			    if(width.length > 0) {
 				style = style + ' width: ' + width + ';';
                            } 
-			    style = style + '"';
 			}
 			var autoplay = window.frames[i].document.getElementById("chkAutoplay");
 			if(autoplay.checked == true) {
@@ -72,13 +86,24 @@
 			if(content.length>0) {
 			    content = content + "}";
 			}			
-		     }
+			
+			var divClassType = '';
+			if(contentType.length > 0 && contentType == "audio/mp3") {
+			    divClassType = 'vrtx-media-player-audio';
+			}
+			else if (url.length > 0 && getExtension(url) == "mp3") {
+			    divClassType = 'vrtx-media-player-audio';
+			}
+			else {
+			    divClassType ='vrtx-media-player';
+			}
+		      }
 		      
 		 } 		  
-		  final_html = 'MediaEmbedInsertData|---' + escape('<div class="vrtx-media-player" ' +align+style+'>'+content+'</div>') + '---|MediaEmbedInsertData';
+		  final_html = 'MediaEmbedInsertData|---' + escape('<div class="'+divClassType+' '+align+style+'">'+content+'</div>') + '---|MediaEmbedInsertData';
 		  editor.insertHtml(final_html);
 		  updated_editor_data = editor.getData();
-		  clean_editor_data = updated_editor_data.replace(final_html,'<div class="vrtx-media-player" ' +align+style+'>'+content+'</div>');
+		  clean_editor_data = updated_editor_data.replace(final_html,'<div class="'+divClassType+' '+align+style+'">'+content+'</div>');
 		  editor.setData(clean_editor_data);
                  }
               };

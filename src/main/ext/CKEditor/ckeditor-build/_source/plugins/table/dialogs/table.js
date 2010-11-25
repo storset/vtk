@@ -330,7 +330,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 										{
 											type : 'select',
 											id : 'selHeaders',
-											'default' : '',
+											'default' : 'row',
 											label : editor.lang.table.headers,
 											items :
 											[
@@ -424,7 +424,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 													id : 'txtWidth',
 													style : 'width:5em',
 													label : editor.lang.table.width,
-													'default' : 500,
+													'default' : 100,
 													validate : CKEDITOR.dialog.validate['number']( editor.lang.table.invalidWidth ),
 
 													// Extra labelling of width unit type.
@@ -468,7 +468,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 													type : 'select',
 													label : editor.lang.table.widthUnit,
 													labelStyle: 'visibility:hidden',
-													'default' : 'pixels',
+													'default' : 'percents',
 													items :
 													[
 														[ editor.lang.table.widthPx , 'pixels'],

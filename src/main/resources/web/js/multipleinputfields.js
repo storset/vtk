@@ -24,12 +24,12 @@ function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDown
     		  + addName + "</button></div>");
 
     var addFormFieldFunc = addFormField;
-    for (var i = LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]; i--; ) {
+    for (var i = 0; i < LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]; i++) {
        addFormFieldFunc(name, jQuery.trim(formFields[i]), removeName, moveUpName, moveDownName, size, true);
     }
 }
 
-function registerClicks(name) { // Use delegate() for dynamic eventhandlers
+function registerClicks(name) {
   $("." + name).delegate(".remove", "click", function(){
 	removeFormField(name, $(this));
   });
@@ -132,12 +132,12 @@ function moveDownFormField(that) {
 
 function formatMultipleInputFields(name) {
     if ($( "#" + name ).val() == null)
-      return;
+        return;
 
     var allFields = $.find("input[id^='vrtx-" + name + "']");
     var result = "";
     var allFieldsLength = allFields.length;
-    for (var i = allFieldsLength; i--; ) {
+    for (var i = 0; i < allFieldsLength; i++) {
         result += allFields[i].value;
         if (i < (allFieldsLength-1)) {
             result += ",";
@@ -147,9 +147,10 @@ function formatMultipleInputFields(name) {
 }
 
 function saveMultipleInputFields(){
-  formatMultipleInputFieldsFunc = formatMultipleInputFields;
-  for(var i = MULTIPLE_INPUT_FIELD_NAMES.length; i--; ) {
-    formatMultipleInputFieldsFunc(MULTIPLE_INPUT_FIELD_NAMES[i]);
+  var MULTIPLE_INPUT_FIELD_NAMES_LENGTH = MULTIPLE_INPUT_FIELD_NAMES.length;
+  var formatMultipleInputFieldsFunc = formatMultipleInputFields;
+  for(var i = 0; i < MULTIPLE_INPUT_FIELD_NAMES_LENGTH; i++){
+    formatMultipleInputFields(MULTIPLE_INPUT_FIELD_NAMES[i]);
   }
 }
 

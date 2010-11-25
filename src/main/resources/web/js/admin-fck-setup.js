@@ -25,6 +25,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
                    defaultLanguage, cssFileList) {
 
   // File browser
+  
   var linkBrowseUrl  = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=' + browsePath;
   var imageBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=' + browsePath;
   var flashBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=' + browsePath;
@@ -44,30 +45,33 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   //CKEditor configurations
   if (name.indexOf("introduction") != -1) {
     setCKEditorConfig(name, linkBrowseUrl, null, null, 
-			          defaultLanguage, null, 150, 400, 40, introductionCaptionToolbar, isCompleteEditor, false);
+			          defaultLanguage, null, 150, 400, 40, introductionCaptionToolbar, isCompleteEditor, false, baseDocumentUrl);
   } else if (name.indexOf("caption") != -1) {
     setCKEditorConfig(name, linkBrowseUrl, null, null, 
-			          defaultLanguage, null, 104, 400, 40, introductionCaptionToolbar, isCompleteEditor, false);
+			          defaultLanguage, null, 104, 400, 40, introductionCaptionToolbar, isCompleteEditor, false, baseDocumentUrl);
   } else if (isCompleteEditor) {	  
 	var height = 220; var maxHeight = 400;
     if (name.indexOf("supervisor-box") != -1) { height = 130; maxHeight = 300; }
     else if (name == "content" || name == "resource.content" ) { height = 400; maxHeight = 800; }
 
 	setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
-			          defaultLanguage, cssFileList, height ,maxHeight, 50, completeToolbarPointer, isCompleteEditor, true);
+			          defaultLanguage, cssFileList, height ,maxHeight, 50, completeToolbarPointer, isCompleteEditor, true, baseDocumentUrl);
   } else if (isWithoutSubSuper) {
 	setCKEditorConfig(name, linkBrowseUrl, null, null, 
-			          defaultLanguage, null, 40, 400, 40, inlineToolbar, isCompleteEditor, true);
+			          defaultLanguage, null, 40, 400, 40, inlineToolbar, isCompleteEditor, true, baseDocumentUrl);
   } else {
 	setCKEditorConfig(name, linkBrowseUrl, null, null,
-			          defaultLanguage, null, 40, 400, 40, withoutSubSuperToolbar, isCompleteEditor, true);
+			          defaultLanguage, null, 40, 400, 40, withoutSubSuperToolbar, isCompleteEditor, true, baseDocumentUrl);
   }
 
 }
 
-function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, height, maxHeight, minHeight, toolbar, complete, resizable) {
+function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, height, maxHeight, minHeight, toolbar, complete, resizable,baseDocumentUrl) {
   var config = [{}];
   
+  config.baseHref = baseDocumentUrl;
+  config.contentsCss = cssFileList;
+  	
   if(linkBrowseUrl != null) {
     config.filebrowserBrowseUrl = linkBrowseUrl;
   }
@@ -76,7 +80,6 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
 	config.filebrowserImageBrowseUrl = imageBrowseUrl;
 	config.filebrowserFlashBrowseUrl = flashBrowseUrl;
 	config.extraPlugins = 'MediaEmbed';
-	config.contentsCss = cssFileList;
 	var divContainerStylesSetPointer = divContainerStylesSet; // performance
     config.stylesSet = divContainerStylesSetPointer;
     
@@ -118,7 +121,7 @@ function enableSubmit() {
 }
 
 function commentsCkEditor() { 
-  setCKEditorConfig("comments-text", null, null, null, null, null, 150, 400, 40, commentsToolbar, false, true) 
+  setCKEditorConfig("comments-text", null, null, null, null, null, 150, 400, 40, commentsToolbar, false, true,null) 
 }
 
 var divContainerStylesSet = [{

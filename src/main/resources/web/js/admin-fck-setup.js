@@ -1,11 +1,9 @@
 var inlineToolbar = [ [ 'Source', 'PasteText', 'Link', 'Unlink', 'Bold',
                         'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript',
                           'SpecialChar' ] ];
+
 var withoutSubSuperToolbar = [ [ 'Source', 'PasteText', 'Link', 'Unlink', 'Bold',
                        'Italic', 'Underline', 'Strike', 'SpecialChar' ] ];
-
-var introductionCaptionToolbar = [ [ 'Source', 'PasteText', 'Link', 'Unlink', 'Bold',
-                                     'Italic', 'Underline', 'Strike', 'SpecialChar' ] ];
 
 var completeToolbar = [ [ 'Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
                           'RemoveFormat', '-', 'Link', 'Unlink', 'Anchor',
@@ -31,31 +29,27 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   var flashBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=' + browsePath;
 
   /* Fix for div container display in IE */
-  var browser = navigator.userAgent;
-  var ieversion = new Number(RegExp.$1);
-  if(browser.indexOf("MSIE") > -1 && ieversion <= 7){
+  if(CKEDITOR.env.ie7Compat || CKEDITOR.env.ie6Compat){
     cssFileList.push("/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css");
   }
   
   var isCompleteEditor = completeEditor != null ? completeEditor : false;
   var isWithoutSubSuper = withoutSubSuper != null ? withoutSubSuper : false;
-  
-  var completeToolbarPointer = completeToolbar;  
-  
+
   //CKEditor configurations
   if (name.indexOf("introduction") != -1) {
     setCKEditorConfig(name, linkBrowseUrl, null, null, 
-			          defaultLanguage, null, 150, 400, 40, introductionCaptionToolbar, isCompleteEditor, false, baseDocumentUrl);
+			          defaultLanguage, cssFileList, 150, 400, 40, inlineToolbar, isCompleteEditor, false);
   } else if (name.indexOf("caption") != -1) {
     setCKEditorConfig(name, linkBrowseUrl, null, null, 
-			          defaultLanguage, null, 104, 400, 40, introductionCaptionToolbar, isCompleteEditor, false, baseDocumentUrl);
+			          defaultLanguage, cssFileList, 104, 400, 40, inlineToolbar, isCompleteEditor, false);
   } else if (isCompleteEditor) {	  
 	var height = 220; var maxHeight = 400;
     if (name.indexOf("supervisor-box") != -1) { height = 130; maxHeight = 300; }
     else if (name == "content" || name == "resource.content" ) { height = 400; maxHeight = 800; }
 
 	setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
-			          defaultLanguage, cssFileList, height ,maxHeight, 50, completeToolbarPointer, isCompleteEditor, true, baseDocumentUrl);
+			          defaultLanguage, cssFileList, height ,maxHeight, 50, completeToolbar, isCompleteEditor, true);
   } else if (isWithoutSubSuper) {
 	setCKEditorConfig(name, linkBrowseUrl, null, null, 
 			          defaultLanguage, null, 40, 400, 40, inlineToolbar, isCompleteEditor, true, baseDocumentUrl);
@@ -68,7 +62,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
 
 function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, height, maxHeight, minHeight, toolbar, complete, resizable,baseDocumentUrl) {
   var config = [{}];
-  
+
   config.baseHref = baseDocumentUrl;
   config.contentsCss = cssFileList;
   	
@@ -80,8 +74,7 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
 	config.filebrowserImageBrowseUrl = imageBrowseUrl;
 	config.filebrowserFlashBrowseUrl = flashBrowseUrl;
 	config.extraPlugins = 'MediaEmbed';
-	var divContainerStylesSetPointer = divContainerStylesSet; // performance
-    config.stylesSet = divContainerStylesSetPointer;
+    config.stylesSet = divContainerStylesSet;
     
     if(name == "resource.content") {
       config.format_tags = 'p;h1;h2;h3;h4;h5;h6;pre;div';

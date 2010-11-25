@@ -82,6 +82,8 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
     } else {
       config.format_tags = 'p;h2;h3;h4;h5;h6;pre;div';
     }
+  } else {
+	config.removePlugins = 'elementspath';
   }
   
   if(resizable) {

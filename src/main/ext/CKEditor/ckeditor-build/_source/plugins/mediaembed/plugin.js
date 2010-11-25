@@ -141,8 +141,6 @@ function getExtension(url) {
         				if(HTML.indexOf("include:media-player") != -1) {
         				  data.dialog = 'MediaEmbedDialog';
         				}
-        				
-        				return { MediaEmbedDialog: CKEDITOR.TRISTATE_ON };
         			});
             
             

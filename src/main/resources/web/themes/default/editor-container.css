@@ -131,8 +131,6 @@
   height: 322px;  /* 4:3 */
   text-indent: -9000px;
   overflow: hidden;
-  -moz-user-select:none;
-  -webkit-user-select:none;
 }
 
 .vrtx-media-player-audio {
@@ -141,6 +139,4 @@
   height: 61px;
   text-indent: -9000px;
   overflow: hidden;
-  -moz-user-select:none;
-  -webkit-user-select:none;
 }

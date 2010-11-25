@@ -70,10 +70,10 @@ function getExtension(url) {
 							if (height.length > 0 || width.length > 0) {
 							    style = style + ' style="';
 							    if(height.length > 0) {
-								  style = style +  'height: ' + height + ';';
+								  style = style +  'height: ' + height + 'px;';
 							    }
 							    if(width.length > 0) {
-								  style = style + ' width: ' + width + ';';
+								  style = style + ' width: ' + width + 'px;';
 				                }
 							    style = style + '"';
 							}
@@ -100,10 +100,10 @@ function getExtension(url) {
 		                 }
 		      
 		              } 		  
-		           var final_html = 'MediaEmbedInsertData|---' + escape('<div class="'+divClassType+' '+align+'">'+content+'</div>') + '---|MediaEmbedInsertData';
+		           var final_html = 'MediaEmbedInsertData|---' + escape('<div class="'+divClassType+' '+align+'" '+style+'>'+content+'</div>') + '---|MediaEmbedInsertData';
 		           editor.insertHtml(final_html);
 		           var updated_editor_data = editor.getData();
-		           var clean_editor_data = updated_editor_data.replace(final_html,'<div class="'+divClassType+' '+align+'">'+content+'</div>');
+		           var clean_editor_data = updated_editor_data.replace(final_html,'<div class="'+divClassType+' '+align+'" '+style+'>'+content+'</div>');
 		           editor.setData(clean_editor_data);
                  }
               };

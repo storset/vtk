@@ -82,7 +82,6 @@ function getExtension(url) {
 							    content = content + " autoplay=[true]";
 							}
 							var align = window.frames[i].document.getElementById("txtAlign").value;
-							console.log(align);
 				
 							if(content.length>0) {
 							    content = content + "}";

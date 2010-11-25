@@ -179,6 +179,7 @@
         <entry key="flv" value="application/x-shockwave-flash" />
       </map>
     </property>
+    <property name="viewService" ref="viewService" />
   </bean>
 
   <bean id="decorating.mediaComponent.view" parent="freemarkerView">

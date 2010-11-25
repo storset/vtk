@@ -2,6 +2,7 @@ package org.vortikal.web.decorating.components;
 
 import java.util.Map;
 
+import javax.media.j3d.ViewSpecificGroup;
 import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.repository.Namespace;
@@ -13,12 +14,14 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
+import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 public class ResourceMediaPlayerComponent extends ViewRenderingDecoratorComponent {
 
     protected Repository repository;
-    Map<String, String> extentionToMimetype;
+    protected Map<String, String> extentionToMimetype;
+    protected Service viewService;
 
     protected void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
@@ -61,27 +64,11 @@ public class ResourceMediaPlayerComponent extends ViewRenderingDecoratorComponen
 
     public void createLocalUrlToMediaFile(HttpServletRequest request, String mediaUri, Map<Object, Object> model) {
         Path uri = null;
+        URL localURL = null;
         try {
             uri = Path.fromString(mediaUri);
+            localURL = getViewService().constructURL(uri);
         } catch (Exception e) {
-        }
-        URL localURL = null;
-        String token = SecurityContext.getSecurityContext().getToken();
-        String name = request.getServerName();
-        String protocol = null;
-        if (request.getProtocol().contains("HTTPS")) {
-            protocol = "https";
-        } else {
-            protocol = "http";
-        }
-        Resource mediaResource = null;
-        try {
-            mediaResource = repository.retrieve(token, uri, false);
-        } catch (Exception e) {
-        }
-        if (mediaResource != null) {
-            localURL = new URL(protocol, name, uri);
-            localURL.setPort(request.getLocalPort());
         }
         if (localURL != null) {
             model.put("media", localURL);
@@ -100,5 +87,13 @@ public class ResourceMediaPlayerComponent extends ViewRenderingDecoratorComponen
 
     public void setExtentionToMimetype(Map<String, String> extentionToMimetype) {
         this.extentionToMimetype = extentionToMimetype;
+    }
+
+    public void setViewService(Service viewService) {
+        this.viewService = viewService;
+    }
+
+    public Service getViewService() {
+        return viewService;
     }
 }

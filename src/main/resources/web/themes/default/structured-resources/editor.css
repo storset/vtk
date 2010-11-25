@@ -454,6 +454,10 @@ input.date, input.hours, input.minutes {
 
 /* START Introduction image edit (like the old one) */
 
+.introImageAndCaption {
+  margin-bottom: 20px;
+}
+
 .introImageAndCaption * > label {
   font-size: 1em !important;
 }

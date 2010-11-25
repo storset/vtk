@@ -8,7 +8,7 @@ drop table deleted_resource cascade constraints;
 create table deleted_resource
 (
   id number not null,
-  resource_trash_uri VARCHAR2 (64) not null,
+  resource_trash_uri VARCHAR2 (2048) not null,
   parent_id number not null,
   deleted_by VARCHAR2 (64) not null,
   deleted_time timestamp not null,

@@ -126,7 +126,6 @@ function getExtension(url) {
         				var element = data.element;
 
         				var HTML = element.$.innerHTML;
-        				console.log(HTML);
         				
         				if(HTML.indexOf("include:media-player") != -1) {
         				  data.dialog = 'MediaEmbedDialog';
@@ -143,7 +142,8 @@ function getExtension(url) {
             	  editor.addMenuItem('MediaEmbedDialog', {
             	    label: 'Mediaegenskaper',
             	    command: 'MediaEmbed',
-            	    group: 'MediaEmbed'
+            	    group: 'MediaEmbed',
+            	    icon: this.path.toLowerCase() + 'images/icon.gif'
             	  });
             	}
             	  

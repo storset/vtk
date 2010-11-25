@@ -74,6 +74,7 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
 	config.filebrowserImageBrowseUrl = imageBrowseUrl;
 	config.filebrowserFlashBrowseUrl = flashBrowseUrl;
 	config.extraPlugins = 'MediaEmbed';
+	//TODO: config.protectedSource.push("<div class='vrtx-media...");
     config.stylesSet = divContainerStylesSet;
     
     if(name == "resource.content") {

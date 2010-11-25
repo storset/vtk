@@ -50,7 +50,7 @@ public class ResourceMediaPlayerComponent extends ViewRenderingDecoratorComponen
             model.put("contentType", extentionToMimetype.get(getExtension(media)));
         }
 
-        createLocalUrlToMediaFile(request.getServletRequest(), media, model);
+        createLocalUrlToMediaFile(media, model);
     }
 
     public String getExtension(String url) {
@@ -61,7 +61,7 @@ public class ResourceMediaPlayerComponent extends ViewRenderingDecoratorComponen
         return "";
     }
 
-    public void createLocalUrlToMediaFile(HttpServletRequest request, String mediaUri, Map<Object, Object> model) {
+    public void createLocalUrlToMediaFile(String mediaUri, Map<Object, Object> model) {
         Path uri = null;
         URL localURL = null;
         try {

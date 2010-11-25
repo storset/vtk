@@ -31,7 +31,7 @@ public class IncludeMediaPlayerComponent extends ResourceMediaPlayerComponent {
         String autoplay = request.getStringParameter(PARAMETER_AUTOPLAY);
         String contentType = request.getStringParameter(PARAMETER_CONTENT_TYPE);
 
-        createLocalUrlToMediaFile(request.getServletRequest(), url, model);
+        createLocalUrlToMediaFile(url, model);
 
         // Overwrites default values
         if (height != null && !"".equals(height))

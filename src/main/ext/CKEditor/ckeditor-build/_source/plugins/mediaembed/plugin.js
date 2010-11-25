@@ -100,10 +100,10 @@ function getExtension(url) {
 		                 }
 		      
 		              } 		  
-		           final_html = 'MediaEmbedInsertData|---' + escape('<div class="'+divClassType+' '+align+'" '+style+'>'+content+'</div>') + '---|MediaEmbedInsertData';
+		           var final_html = 'MediaEmbedInsertData|---' + escape('<div class="'+divClassType+' '+align+'">'+content+'</div>') + '---|MediaEmbedInsertData';
 		           editor.insertHtml(final_html);
-		           updated_editor_data = editor.getData();
-		           clean_editor_data = updated_editor_data.replace(final_html,'<div class="'+divClassType+' '+align+'" '+style+'>'+content+'</div>');
+		           var updated_editor_data = editor.getData();
+		           var clean_editor_data = updated_editor_data.replace(final_html,'<div class="'+divClassType+' '+align+'">'+content+'</div>');
 		           editor.setData(clean_editor_data);
                  }
               };

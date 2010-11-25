@@ -53,29 +53,35 @@ public class ThumbnailEvaluator implements PropertyEvaluator {
     private Set<String> supportedFormats;
     private boolean scaleUp;
 
-    public boolean evaluate(Property property, PropertyEvaluationContext ctx)
-            throws PropertyEvaluationException {
-        if (property.isValueInitialized()
-                && ctx.getEvaluationType() != Type.ContentChange 
+    // If image exceeds limit, don't create thumbnail
+    private static final int MAX_IMAGE_SIZE_IN_BYTES = 35000000;
+
+    public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
+        if (property.isValueInitialized() && ctx.getEvaluationType() != Type.ContentChange
                 && ctx.getEvaluationType() != Type.Create) {
             return true;
         }
 
         try {
-            BufferedImage image = (BufferedImage) ctx.getContent()
-                    .getContentRepresentation(BufferedImage.class);
+
+            long contentLength = ctx.getContent().getContentLength();
+            if (contentLength >= MAX_IMAGE_SIZE_IN_BYTES) {
+                log.warn("Unable to get create thumbnail, image size exceeds maximum limit: " + contentLength);
+                return false;
+            }
+
+            BufferedImage image = (BufferedImage) ctx.getContent().getContentRepresentation(BufferedImage.class);
             if (image == null) {
                 return false;
             }
 
-            Property contentType = ctx.getNewResource().getProperty(
-                    Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTTYPE_PROP_NAME);
+            Property contentType = ctx.getNewResource().getProperty(Namespace.DEFAULT_NAMESPACE,
+                    PropertyType.CONTENTTYPE_PROP_NAME);
             String mimetype = contentType.getStringValue();
             String imageFormat = mimetype.substring(mimetype.lastIndexOf("/") + 1);
 
             if (!supportedFormats.contains(imageFormat.toLowerCase())) {
-                log.warn("Unable to get create thumbnail, unsupported format: "
-                        + imageFormat);
+                log.warn("Unable to get create thumbnail, unsupported format: " + imageFormat);
                 return false;
             }
 
@@ -86,15 +92,12 @@ public class ThumbnailEvaluator implements PropertyEvaluator {
                 return false;
             }
 
-            ScaledImage thumbnail = imageService
-                    .scaleImage(image, imageFormat, width, "");
+            ScaledImage thumbnail = imageService.scaleImage(image, imageFormat, width, "");
 
             // TODO lossy-compression -> jpeg
-            String thumbnailFormat = !imageFormat.equalsIgnoreCase("png") ? "png"
-                    : imageFormat;
+            String thumbnailFormat = !imageFormat.equalsIgnoreCase("png") ? "png" : imageFormat;
 
-            property.setBinaryValue(thumbnail.getImageBytes(thumbnailFormat), "image/"
-                    + thumbnailFormat);
+            property.setBinaryValue(thumbnail.getImageBytes(thumbnailFormat), "image/" + thumbnailFormat);
             return true;
 
         } catch (Exception e) {

@@ -2,7 +2,6 @@ package org.vortikal.web.decorating.components;
 
 import java.util.Map;
 
-import javax.media.j3d.ViewSpecificGroup;
 import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.repository.Namespace;

@@ -106,7 +106,7 @@ function getExtension(url) {
 		           editor.insertHtml(final_html);
 		           var updated_editor_data = editor.getData();
 		           var clean_editor_data = updated_editor_data.replace(final_html,'<div class="'+divClassType+' '+align+'">'+content+'</div>');
-		           editor.setData(final_html);
+		           editor.setData(clean_editor_data);
                  }
               };
            } );
@@ -120,16 +120,29 @@ function getExtension(url) {
                 icon: this.path.toLowerCase() + 'images/icon.gif'
             } );
             
-            editor.on( 'doubleclick', function( evt )
-        			{
+            
+            /* TODO: set values from element into dialog 
+             *
+             * Not a problem to get component values, but not sure how to put them into the dialog
+             * Not documentated very good - need to find examples that apply to what we have done so far
+             * 
+             * Should be possible to get something out of this documentation:
+             * http://docs.cksource.com/ckeditor_api/symbols/CKEDITOR.dialog.html
+             * 
+             * ContextMenu documentated external:
+             * http://blog.ale-re.net/2010/06/ckeditor-context-menu.html
+             * 
+             */
+            editor.on( 'doubleclick', function( evt ){
             	        var data = evt.data;
         				var element = data.element;
 
         				var HTML = element.$.innerHTML;
-        				
         				if(HTML.indexOf("include:media-player") != -1) {
         				  data.dialog = 'MediaEmbedDialog';
-        			    }
+        				}
+        				
+        				return { MediaEmbedDialog: CKEDITOR.TRISTATE_ON };
         			});
             
             

@@ -35,26 +35,32 @@
 	    }
 	  });
 
-	  //init first active image
-	  calculateImage($(wrapperThumbsLinks + ".active img"), 0, true);
+          //Performance: function pointers to use inside loop
+          var centerThumbailImageFunc = centerThumbnailImage;
+          var calculateImageFunc = calculateImage;
+          var generateLinkImageFunc = generateLinkImage;
 
+	  //init first active image
+	  calculateImageFunc($(wrapperThumbsLinks + ".active img"), 0, true);
+
+          //TODO: use for-loop and optimize use of sub-functions
 	  return this.each(function (i) {
 
-               var link = generateLinkImage($("img", this), $(this));
+               var link = generateLinkImageFunc($("img", this), $(this));
 	       images[i] = link; //cache image
-                
+
                $(this).hover(function () { if(!$(this).hasClass("active")) { $("img", this).stop().fadeTo(settings.fadeThumbsInOutTime, 1); } },
                              function () { if(!$(this).hasClass("active")) { $("img", this).stop().fadeTo(settings.fadeThumbsInOutTime, settings.fadedThumbsOutOpacity); }
                });
 
                $(this).click(function(e) {
-	               calculateImage($("img", this), i, false);
+	               calculateImageFunc($("img", this), i, false);
 	  	       $(this).addClass("active");
 	  	       $("img", this).stop().fadeTo(0, 1);
 	               e.preventDefault();
                });
 
-               centerThumbnailImage($("img", this));
+               centerThumbnailImageFunc($("img", this));
 	 });
 
 	 function calculateImage(image, i, init) {

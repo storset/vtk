@@ -19,14 +19,16 @@ $(document).ready(function() {
  * showHideProps: Multiple props / id's / classnames to show / hide (Array)
  */
 function showHide(radioIds, conditionHide, conditionHideEqual, showHideProps) {
+  var showHidePropertiesFunc = showHideProperties;
+
   //init
-  showHideProperties(true, conditionHide, conditionHideEqual, showHideProps);
+  showHidePropertiesFunc(true, conditionHide, conditionHideEqual, showHideProps);
 
   //bind() click() events
   var radioIdsLength = radioIds.length;
   for(var j = 0; j < radioIdsLength; j++) {
 	$(radioIds[j]).bind("click", function() {
-	  showHideProperties(false, conditionHide, conditionHideEqual, showHideProps);
+	  showHidePropertiesFunc(false, conditionHide, conditionHideEqual, showHideProps);
     });
   }
 }
@@ -34,8 +36,9 @@ function showHide(radioIds, conditionHide, conditionHideEqual, showHideProps) {
 function showHideProperties(init, conditionHide, conditionHideEqual, showHideProps) {
   var showHidePropsLength = showHideProps.length;
   var conditionHideVal = $(conditionHide).val();
+  var showHidePropertyFunc = showHideProperty;
   for(var i = 0; i < showHidePropsLength; i++) {
-    showHideProperty(showHideProps[i], init, conditionHideVal == conditionHideEqual ? false : true);
+    showHidePropertyFunc(showHideProps[i], init, conditionHideVal == conditionHideEqual ? false : true);
   }
 }
 

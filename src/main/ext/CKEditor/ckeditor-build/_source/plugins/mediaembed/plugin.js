@@ -2,10 +2,12 @@
 * @example An iframe-based dialog with custom button handling logics.
 */
 
-var gHeight = 0;
-var gWidth = 0;
-var gAutocomplete = "false";
-var gUrl = "";
+var props = {
+  "url" : "",
+  "width" : 0,
+  "height" : 0,
+  "autocomplete" : "false"
+};
 
 /** Get the file extension  */
 function getExtension(url) {
@@ -56,12 +58,12 @@ function getExtension(url) {
                   onShow : function() {
             	    for (var i=0; i<window.frames.length; i++) {
 				      if(window.frames[i].name == 'iframeMediaEmbed') {
-            	        window.frames[i].document.getElementById("txtUrl").value = gUrl;
-            	        window.frames[i].document.getElementById("txtWidth").value = gWidth;
-            	        window.frames[i].document.getElementById("txtHeight").value = gHeight;
-            	        gUrl = "";
-            	        gWidth = 0;
-            	        gHeight = 0;
+            	        window.frames[i].document.getElementById("txtUrl").value = props["url"];
+            	        window.frames[i].document.getElementById("txtWidth").value = props["width"];
+            	        window.frames[i].document.getElementById("txtHeight").value = props["height"];
+            	        props["url"] = "";
+            	        props["width"] = 0;
+            	        props["height"] = 0;
 				      }
             	    }
                   },
@@ -182,59 +184,20 @@ function getExtension(url) {
     } );
     
     function extractMediaPlayerProps(HTML) {
-    	
-    	var props = new Array(
-    			"url",
-    			"width",
-    			"height",
-    			"autocomplete"
-    		);
     		var regexp = [];
-    		
     		var HTMLOrig = HTML;
     		
-    		for(var i = props.length; i--; ) { //performance;
-    		  regexp = new RegExp('(?:' + props[i] + '=\\[)(.*?)(?=\\])'); // non-capturing group for prop=
+    		for(var name in props) {
+    		  regexp = new RegExp('(?:' + name + '=\\[)(.*?)(?=\\])'); // non-capturing group for prop=
     		                                                               // TODO: positive lookbehind (non-capturing)
-    		  switch(props[i]) {
-    		    case "url":
-    		      var url = regexp.exec(HTML);
-    		      if(url != null) {
-    		       if(url.length = 2) {
-    		    	gUrl = url[1]; // get the capturing group  
-    		       }
-    		      }
-    			  break;
-    		    case "width":
-    		      var width = regexp.exec(HTML);
-    		      if(width != null) {
-    		       if(width.length = 2) {
-    		        gWidth = width[1]; // get the capturing group  
-      		       }
-    		      }
-    			  break;
-    		    case "height":
-    		      var height = regexp.exec(HTML);
-    		      if(height != null) {
-    		       if(height.length = 2) {
-    		    	gHeight = height[1]; // get the capturing group  
-      		       }
-    		      }
-    			  break;
-    		    case "autocomplete":
-    		      var autocomplete = regexp.exec(HTML);
-    		      if(autocomplete != null) {
-    		       if(autocomplete.length = 2) {
-    		    	gAutocomplete = autocomplete[1]; // get the capturing group  
-      		       }
-    		      }
-    		      break;
-    		    default: 
-    		      break;
+    		  var prop = regexp.exec(HTML);
+    		  if(prop != null) {
+   		       if(prop.length = 2) {
+   		    	props[name] = prop[1]; // get the capturing group 
+   		       }
     		  }
-    		  HTML = HTMLOrig;
+    		   HTML = HTMLOrig;
     		}
-
     		//console.log(gUrl + " " + gWidth + " " + gHeight + " " + gAutocomplete);
     }
 } )();

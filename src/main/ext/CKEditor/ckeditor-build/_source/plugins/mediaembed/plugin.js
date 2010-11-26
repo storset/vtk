@@ -4,8 +4,8 @@
 
 var props = {
   "url" : "",
-  "width" : 0,
-  "height" : 0,
+  "width" : 507,
+  "height" : 322,
   "autoplay" : "false"
 };
 
@@ -63,10 +63,13 @@ function getExtension(url) {
             	        window.frames[i].document.getElementById("txtHeight").value = props.height;
             	        if(props.autoplay == "true") {
             	          window.frames[i].document.getElementById("chkAutoplay").checked = true;  	
+            	        } else {
+            	          window.frames[i].document.getElementById("chkAutoplay").checked = false;  
             	        }
             	        props.url = "";
-            	        props.width = 0;
-            	        props.height = 0;
+            	        props.width = 507;
+            	        props.height = 322;
+            	        props.autoplay = "false";
 				      }
             	    }
                   },

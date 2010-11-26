@@ -190,19 +190,19 @@ function getExtension(url) {
     } );
     
     function extractMediaPlayerProps(HTML) {
-    		var regexp = [];
-    		var HTMLOrig = HTML;
+      var regexp = [];
+      var HTMLOrig = HTML;
     		
-    		for(var name in props) {
-    		  regexp = new RegExp('(?:' + name + '=\\[)(.*?)(?=\\])'); // non-capturing group for prop=
-    		                                                               // TODO: positive lookbehind (non-capturing)
-    		  var prop = regexp.exec(HTML);
-    		  if(prop != null) {
-   		       if(prop.length = 2) {
-   		    	props[name] = prop[1]; // get the capturing group 
-   		       }
-    		  }
-    		   HTML = HTMLOrig;
-    		}
+      for(var name in props) {
+        regexp = new RegExp('(?:' + name + '=\\[)(.*?)(?=\\])'); // non-capturing group for prop=
+    		                                                     // TODO: positive lookbehind (non-capturing)
+    	var prop = regexp.exec(HTML);
+    	if(prop != null) {
+   		  if(prop.length = 2) {
+   		    props[name] = prop[1]; // get the capturing group 
+   		  }
+    	}
+    	HTML = HTMLOrig;
+      }
     }
 } )();

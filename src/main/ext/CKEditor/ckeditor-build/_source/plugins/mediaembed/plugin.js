@@ -1,6 +1,12 @@
 /*
 * @example An iframe-based dialog with custom button handling logics.
 */
+
+var gHeight = 0;
+var gWidth = 0;
+var gAutocomplete = "false";
+var gUrl = "";
+
 /** Get the file extension  */
 function getExtension(url) {
     var ext = url.match(/\.(avi|asf|fla|flv|mov|mp3|mp4|m4v|mpg|mpeg|mpv|qt|swf|wma|wmv)$/i);
@@ -47,6 +53,18 @@ function getExtension(url) {
                                    ]
                           }
                        ],
+                  onShow : function() {
+            	    for (var i=0; i<window.frames.length; i++) {
+				      if(window.frames[i].name == 'iframeMediaEmbed') {
+            	        window.frames[i].document.getElementById("txtUrl").value = gUrl;
+            	        window.frames[i].document.getElementById("txtWidth").value = gWidth;
+            	        window.frames[i].document.getElementById("txtHeight").value = gHeight;
+            	        gUrl = "";
+            	        gWidth = 0;
+            	        gHeight = 0;
+				      }
+            	    }
+                  },
                   onOk : function() {
 					  for (var i=0; i<window.frames.length; i++) {
 					      if(window.frames[i].name == 'iframeMediaEmbed') {
@@ -133,41 +151,95 @@ function getExtension(url) {
              * http://blog.ale-re.net/2010/06/ckeditor-context-menu.html
              * 
              */
-//            editor.on( 'doubleclick', function( evt ){
-//            	        var data = evt.data;
-//        				var element = data.element;
-//
-//        				var HTML = element.$.innerHTML;
-//        				if(HTML.indexOf("include:media-player") != -1) {
-//        				  data.dialog = 'MediaEmbedDialog';
-//        				}
-//        			});
-//            
-//            
-//            if (editor.addMenuItem) {
-//            	  // A group menu is required
-//            	  // order, as second parameter, is not required
-//            	  editor.addMenuGroup('MediaEmbed');
-//            	 
-//            	  // Create a menu item
-//            	  editor.addMenuItem('MediaEmbedDialog', {
-//            	    label: 'Mediaegenskaper',
-//            	    command: 'MediaEmbed',
-//            	    group: 'MediaEmbed',
-//            	    icon: this.path.toLowerCase() + 'images/icon.gif'
-//            	  });
-//            	}
-//            	  
-//            	if (editor.contextMenu) {
-//            	  editor.contextMenu.addListener(function(element, selection) {
-//            		var HTML = element.$.innerHTML;
-//            		if(HTML.indexOf("include:media-player") == -1) {
-//            		  return null;	
-//            		}
-//            		
-//            	    return { MediaEmbedDialog: CKEDITOR.TRISTATE_ON };
-//            	  });
-//            	}
+            editor.on( 'doubleclick', function( evt ){
+            	        var data = evt.data;
+        				var element = data.element;
+
+        				var HTML = element.$.innerHTML;
+        				if(HTML.indexOf("include:media-player") != -1) {
+        				  data.dialog = 'MediaEmbedDialog';
+        				}
+        			});
+            
+            
+            if (editor.addMenuItem) {
+            	  // A group menu is required
+            	  // order, as second parameter, is not required
+            	  editor.addMenuGroup('MediaEmbed');
+            	 
+            	  // Create a menu item
+            	  editor.addMenuItem('MediaEmbedDialog', {
+            	    label: 'Mediaegenskaper',
+            	    command: 'MediaEmbed',
+            	    group: 'MediaEmbed',
+            	    icon: this.path.toLowerCase() + 'images/icon.gif'
+            	  });
+            	}
+            	  
+            	if (editor.contextMenu) {
+            	  editor.contextMenu.addListener(function(element, selection) {
+            		var HTML = element.$.innerHTML;
+            		if(HTML.indexOf("include:media-player") == -1) {
+            		  return null;	
+            		}
+            		
+            		var props = new Array(
+            			"url",
+            			"width",
+            			"height",
+            			"autocomplete"
+            		);
+            		var regexp = [];
+            		
+            		var HTMLOrig = HTML;
+            		
+            		for(var i = props.length; i--; ) { //performance;
+            		  regexp = new RegExp('(?:' + props[i] + '=\\[)(.*?)(?=\\])'); // non-capturing group for prop=
+            		                                                               // TODO: positive lookbehind (non-capturing)
+            		  switch(props[i]) {
+            		    case "url":
+            		      var url = regexp.exec(HTML);
+            		      if(url != null) {
+            		       if(url.length = 2) {
+            		    	gUrl = url[1]; // get the capturing group  
+            		       }
+            		      }
+            			  break;
+            		    case "width":
+            		      var width = regexp.exec(HTML);
+            		      if(width != null) {
+            		       if(width.length = 2) {
+            		        gWidth = width[1]; // get the capturing group  
+              		       }
+            		      }
+            			  break;
+            		    case "height":
+            		      var height = regexp.exec(HTML);
+            		      if(height != null) {
+            		       if(height.length = 2) {
+            		    	gHeight = height[1]; // get the capturing group  
+              		       }
+            		      }
+            			  break;
+            		    case "autocomplete":
+            		      var autocomplete = regexp.exec(HTML);
+            		      if(autocomplete != null) {
+            		       if(autocomplete.length = 2) {
+            		    	gAutocomplete = autocomplete[1]; // get the capturing group  
+              		       }
+            		      }
+            		      break;
+            		    default: 
+            		      break;
+            		  }
+            		  HTML = HTMLOrig;
+            		}
+
+            		//console.log(gUrl + " " + gWidth + " " + gHeight + " " + gAutocomplete);
+
+            	    return { MediaEmbedDialog: CKEDITOR.TRISTATE_ON };
+            	  });
+            	}
         }
     } );
 } )();

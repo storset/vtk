@@ -56,22 +56,25 @@ function getExtension(url) {
                           }
                        ],
                   onShow : function() {
-            	    for (var i=0; i<window.frames.length; i++) {
-				      if(window.frames[i].name == 'iframeMediaEmbed') {
-            	        window.frames[i].document.getElementById("txtUrl").value = props.url;
-            	        window.frames[i].document.getElementById("txtWidth").value = props.width;
-            	        window.frames[i].document.getElementById("txtHeight").value = props.height;
-            	        if(props.autoplay == "true") {
-            	          window.frames[i].document.getElementById("chkAutoplay").checked = true;  	
-            	        } else {
-            	          window.frames[i].document.getElementById("chkAutoplay").checked = false;  
-            	        }
-            	        props.url = "";
-            	        props.width = 507;
-            	        props.height = 322;
-            	        props.autoplay = "false";
+            	    setTimeout(function() {
+            	     for (var i=0; i<window.frames.length; i++) {
+				       if(window.frames[i].name == 'iframeMediaEmbed') {
+				    	   window.frames[i].document.getElementById("txtUrl").value = props.url;
+				    	   window.frames[i].document.getElementById("txtWidth").value = props.width;
+				    	   window.frames[i].document.getElementById("txtHeight").value = props.height;
+            	            if(props.autoplay == "true") {
+            	            	window.frames[i].document.getElementById("chkAutoplay").checked = true;  	
+            	            } else {
+            	            	window.frames[i].document.getElementById("chkAutoplay").checked = false;  
+            	            }
+            	            props.url = "";
+            	            props.width = 507;
+            	            props.height = 322;
+            	            props.autoplay = "false";
+				      
+				    	}
 				      }
-            	    }
+            	    }, 100);
                   },
                   onOk : function() {
 					  for (var i=0; i<window.frames.length; i++) {

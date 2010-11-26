@@ -156,9 +156,12 @@ function getExtension(url) {
         				var element = data.element;
 
         				var HTML = element.$.innerHTML;
-        				if(HTML.indexOf("include:media-player") != -1) {
-        				  data.dialog = 'MediaEmbedDialog';
+        				if(HTML.indexOf("include:media-player") == -1) {
+        				  return null;
         				}
+        				
+        				extractMediaPlayerProps(HTML);
+        				data.dialog = 'MediaEmbedDialog';
         			});
             
             
@@ -183,63 +186,68 @@ function getExtension(url) {
             		  return null;	
             		}
             		
-            		var props = new Array(
-            			"url",
-            			"width",
-            			"height",
-            			"autocomplete"
-            		);
-            		var regexp = [];
+            		extractMediaPlayerProps(HTML);
             		
-            		var HTMLOrig = HTML;
-            		
-            		for(var i = props.length; i--; ) { //performance;
-            		  regexp = new RegExp('(?:' + props[i] + '=\\[)(.*?)(?=\\])'); // non-capturing group for prop=
-            		                                                               // TODO: positive lookbehind (non-capturing)
-            		  switch(props[i]) {
-            		    case "url":
-            		      var url = regexp.exec(HTML);
-            		      if(url != null) {
-            		       if(url.length = 2) {
-            		    	gUrl = url[1]; // get the capturing group  
-            		       }
-            		      }
-            			  break;
-            		    case "width":
-            		      var width = regexp.exec(HTML);
-            		      if(width != null) {
-            		       if(width.length = 2) {
-            		        gWidth = width[1]; // get the capturing group  
-              		       }
-            		      }
-            			  break;
-            		    case "height":
-            		      var height = regexp.exec(HTML);
-            		      if(height != null) {
-            		       if(height.length = 2) {
-            		    	gHeight = height[1]; // get the capturing group  
-              		       }
-            		      }
-            			  break;
-            		    case "autocomplete":
-            		      var autocomplete = regexp.exec(HTML);
-            		      if(autocomplete != null) {
-            		       if(autocomplete.length = 2) {
-            		    	gAutocomplete = autocomplete[1]; // get the capturing group  
-              		       }
-            		      }
-            		      break;
-            		    default: 
-            		      break;
-            		  }
-            		  HTML = HTMLOrig;
-            		}
-
-            		//console.log(gUrl + " " + gWidth + " " + gHeight + " " + gAutocomplete);
-
             	    return { MediaEmbedDialog: CKEDITOR.TRISTATE_ON };
             	  });
             	}
         }
     } );
+    
+    function extractMediaPlayerProps(HTML) {
+    	
+    	var props = new Array(
+    			"url",
+    			"width",
+    			"height",
+    			"autocomplete"
+    		);
+    		var regexp = [];
+    		
+    		var HTMLOrig = HTML;
+    		
+    		for(var i = props.length; i--; ) { //performance;
+    		  regexp = new RegExp('(?:' + props[i] + '=\\[)(.*?)(?=\\])'); // non-capturing group for prop=
+    		                                                               // TODO: positive lookbehind (non-capturing)
+    		  switch(props[i]) {
+    		    case "url":
+    		      var url = regexp.exec(HTML);
+    		      if(url != null) {
+    		       if(url.length = 2) {
+    		    	gUrl = url[1]; // get the capturing group  
+    		       }
+    		      }
+    			  break;
+    		    case "width":
+    		      var width = regexp.exec(HTML);
+    		      if(width != null) {
+    		       if(width.length = 2) {
+    		        gWidth = width[1]; // get the capturing group  
+      		       }
+    		      }
+    			  break;
+    		    case "height":
+    		      var height = regexp.exec(HTML);
+    		      if(height != null) {
+    		       if(height.length = 2) {
+    		    	gHeight = height[1]; // get the capturing group  
+      		       }
+    		      }
+    			  break;
+    		    case "autocomplete":
+    		      var autocomplete = regexp.exec(HTML);
+    		      if(autocomplete != null) {
+    		       if(autocomplete.length = 2) {
+    		    	gAutocomplete = autocomplete[1]; // get the capturing group  
+      		       }
+    		      }
+    		      break;
+    		    default: 
+    		      break;
+    		  }
+    		  HTML = HTMLOrig;
+    		}
+
+    		//console.log(gUrl + " " + gWidth + " " + gHeight + " " + gAutocomplete);
+    }
 } )();

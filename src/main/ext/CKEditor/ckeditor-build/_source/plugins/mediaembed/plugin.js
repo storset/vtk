@@ -138,19 +138,6 @@ function getExtension(url) {
                 icon: this.path.toLowerCase() + 'images/icon.gif'
             } );
             
-            
-            /* TODO: set values from element into dialog 
-             *
-             * Not a problem to get component values, but not sure how to put them into the dialog
-             * Not documentated very good - need to find examples that apply to what we have done so far
-             * 
-             * Should be possible to get something out of this documentation:
-             * http://docs.cksource.com/ckeditor_api/symbols/CKEDITOR.dialog.html
-             * 
-             * ContextMenu documentated external:
-             * http://blog.ale-re.net/2010/06/ckeditor-context-menu.html
-             * 
-             */
             editor.on( 'doubleclick', function( evt ){
             	        var data = evt.data;
         				var element = data.element;

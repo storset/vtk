@@ -208,7 +208,7 @@ function getExtension(url) {
    		    props[name] = prop[1]; // get the capturing group 
    		  }
     	}
-    	HTML = HTMLOrig;
+    	HTML = HTMLOrig; //TODO: is it possible to avoid this?
       }
     }
 } )();

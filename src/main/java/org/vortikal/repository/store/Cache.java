@@ -540,7 +540,6 @@ public class Cache implements DataAccessor, InitializingBean {
             } else {
                 this.wrappedAccessor.delete(resource);
             }
-            this.wrappedAccessor.delete(resource);
 
             this.items.remove(uris); // Purge all affected items from cache
         } finally {

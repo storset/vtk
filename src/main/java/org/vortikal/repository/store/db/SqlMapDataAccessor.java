@@ -338,12 +338,16 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
 
     @Override
     public void deleteRecoverable(RecoverableResource recoverableResource) throws DataAccessException {
+        // XXX Lazy delete, #missing parent#
         String sqlMap = getSqlMap("deletePermanentlyMarkDeleted");
         Map<String, Object> parameters = new HashMap<String, Object>();
         String trashUri = recoverableResource.getTrashUri();
         parameters.put("trashCanURI", trashUri);
         parameters.put("trashCanURIWildCard", SqlDaoUtils.getStringSqlWildcard(trashUri, SQL_ESCAPE_CHAR));
         this.getSqlMapClientTemplate().delete(sqlMap, parameters);
+        sqlMap = getSqlMap("recoverFromTrashCan");
+        this.getSqlMapClientTemplate().delete(sqlMap, recoverableResource.getId());
+
     }
 
     @Override

@@ -448,11 +448,3 @@ create table deleted_resource
 
 alter table deleted_resource
   add constraint deleted_resource_PK primary key (id);
-
-alter table deleted_resource
-  add constraint deleted_resource_uri_FK foreign key (resource_trash_uri)
-  references vortex_resource (uri) on delete cascade;
-
-alter table deleted_resource
-  add constraint deleted_resource_parent_FK foreign key (parent_id)
-  references vortex_resource (resource_id) on delete cascade;

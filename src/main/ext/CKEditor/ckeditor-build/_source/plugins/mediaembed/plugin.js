@@ -4,8 +4,8 @@
 
 var props = {
   "url" : "",
-  "width" : 507,
-  "height" : 322,
+  "width" : 256,
+  "height" : 192,
   "autoplay" : "false"
 };
 
@@ -82,19 +82,18 @@ function getExtension(url) {
 					        var url = window.frames[i].document.getElementById("txtUrl").value;
 							if(url.length > 0) {
 							    var content = "${include:media-player url=["+url+"]";			    
-							}
-							var contentType = window.frames[i].document.getElementById("txtContentType").value;
-							if(contentType.length > 0) {
+							  var contentType = window.frames[i].document.getElementById("txtContentType").value;
+							  if(contentType.length > 0) {
 							    content = content + " content-type=["+contentType+"]";
-							}
-							var width = window.frames[i].document.getElementById("txtWidth").value;
-							if(width.length > 0) {
+							  }
+							  var width = window.frames[i].document.getElementById("txtWidth").value;
+							  if(width.length > 0) {
 							    content = content + " width=["+width+"]";
-							}
-							var height = window.frames[i].document.getElementById("txtHeight").value;
-							if(height.length > 0) {
+							  }
+							  var height = window.frames[i].document.getElementById("txtHeight").value;
+							  if(height.length > 0) {
 							    content = content + " height=["+height+"]";
-						    }
+						      }
 							/*
 							var style = '';
 							if (height.length > 0 || width.length > 0) {
@@ -108,25 +107,29 @@ function getExtension(url) {
 							    style = style + '"';
 							}
 							*/
-							var autoplay = window.frames[i].document.getElementById("chkAutoplay");
-							if(autoplay.checked == true) {
+							  var autoplay = window.frames[i].document.getElementById("chkAutoplay");
+							  if(autoplay.checked == true) {
 							    content = content + " autoplay=[true]";
-							}
-							var align = window.frames[i].document.getElementById("txtAlign").value;
+							  }
+							  var align = window.frames[i].document.getElementById("txtAlign").value;
 				
-							if(content.length>0) {
+							  if(content.length>0) {
 							    content = content + "}";
-							}			
+							  }			
 							
-							var divClassType = '';
-							if(contentType.length > 0 && contentType == "audio/mp3") {
+							  var divClassType = '';
+							  if(contentType.length > 0 && contentType == "audio/mp3") {
 							    divClassType = 'vrtx-media-player vrtx-media-player-audio';
-							}
-							else if (url.length > 0 && getExtension(url) == "mp3") {
+							  }
+							  else if (url.length > 0 && getExtension(url) == "mp3") {
 							    divClassType = 'vrtx-media-player vrtx-media-player-audio';
-							}
-							else {
+							  }
+							  else {
 							    divClassType ='vrtx-media-player';
+							  }
+							} else {
+							  alert("Du må spesifisere en URL");
+							  return false;	
 							}
 		                 }
 		      

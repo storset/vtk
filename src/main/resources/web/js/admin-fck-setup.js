@@ -15,6 +15,16 @@ var completeToolbar = [ [ 'Source', 'PasteText', 'PasteFromWord', '-', 'Undo', '
                            'JustifyCenter', 'JustifyRight', 'TextColor',
                            'Maximize' ]];
 
+var completeToolbarOld = [ [ 'Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
+                          'RemoveFormat', '-', 'Link', 'Unlink', 'Anchor',
+                          'Image', 'MediaEmbed', 'Table',
+                          'HorizontalRule', 'SpecialChar' 
+                        ],['Format', 'Bold', 'Italic', 'Underline', 'Strike',
+                           'Subscript', 'Superscript', 'NumberedList',
+                           'BulletedList', 'Outdent', 'Indent', 'JustifyLeft',
+                           'JustifyCenter', 'JustifyRight', 'TextColor',
+                           'Maximize' ]];
+
 var commentsToolbar = [ [ 'Source','Bold',
                           'Italic', 'Underline', 'Strike', 'NumberedList',
                           'BulletedList', 'Link', 'Unlink' ] ];
@@ -45,11 +55,18 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
 			          defaultLanguage, cssFileList, 104, 400, 40, inlineToolbar, isCompleteEditor, false,baseDocumentUrl);
   } else if (isCompleteEditor) {	  
 	var height = 220; var maxHeight = 400;
-    if (name.indexOf("supervisor-box") != -1) { height = 130; maxHeight = 300; }
-    else if (name == "content" || name == "resource.content" ) { height = 400; maxHeight = 800; }
+	var completeTB = completeToolbar;
+    if (name.indexOf("supervisor-box") != -1) { 
+    	height = 130; maxHeight = 300;
+    } else if (name == "content" || name == "resource.content" ) { 
+    	height = 400; maxHeight = 800;
+    	if(name == "resource.content") {
+    	  completeTB = completeToolbarOld;
+    	}
+    }
 
 	setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
-			          defaultLanguage, cssFileList, height ,maxHeight, 50, completeToolbar, isCompleteEditor, true,baseDocumentUrl);
+			          defaultLanguage, cssFileList, height ,maxHeight, 50, completeTB, isCompleteEditor, true,baseDocumentUrl);
   } else if (isWithoutSubSuper) {
 	setCKEditorConfig(name, linkBrowseUrl, null, null, 
 			          defaultLanguage, null, 40, 400, 40, inlineToolbar, isCompleteEditor, true, baseDocumentUrl);

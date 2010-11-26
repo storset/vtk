@@ -127,8 +127,8 @@
 
 .vrtx-media-player {
   background: #acacac url(icons/movieplayer-play.png) no-repeat center center;
-  width: 507px; /* std article width */
-  height: 322px;  /* 4:3 */
+  width: 256px; /* std article width */
+  height: 192px;  /* 4:3 */
   text-indent: -9000px;
   overflow: hidden;
 }

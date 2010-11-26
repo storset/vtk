@@ -133,41 +133,41 @@ function getExtension(url) {
              * http://blog.ale-re.net/2010/06/ckeditor-context-menu.html
              * 
              */
-            editor.on( 'doubleclick', function( evt ){
-            	        var data = evt.data;
-        				var element = data.element;
-
-        				var HTML = element.$.innerHTML;
-        				if(HTML.indexOf("include:media-player") != -1) {
-        				  data.dialog = 'MediaEmbedDialog';
-        				}
-        			});
-            
-            
-            if (editor.addMenuItem) {
-            	  // A group menu is required
-            	  // order, as second parameter, is not required
-            	  editor.addMenuGroup('MediaEmbed');
-            	 
-            	  // Create a menu item
-            	  editor.addMenuItem('MediaEmbedDialog', {
-            	    label: 'Mediaegenskaper',
-            	    command: 'MediaEmbed',
-            	    group: 'MediaEmbed',
-            	    icon: this.path.toLowerCase() + 'images/icon.gif'
-            	  });
-            	}
-            	  
-            	if (editor.contextMenu) {
-            	  editor.contextMenu.addListener(function(element, selection) {
-            		var HTML = element.$.innerHTML;
-            		if(HTML.indexOf("include:media-player") == -1) {
-            		  return null;	
-            		}
-            		
-            	    return { MediaEmbedDialog: CKEDITOR.TRISTATE_ON };
-            	  });
-            	}
+//            editor.on( 'doubleclick', function( evt ){
+//            	        var data = evt.data;
+//        				var element = data.element;
+//
+//        				var HTML = element.$.innerHTML;
+//        				if(HTML.indexOf("include:media-player") != -1) {
+//        				  data.dialog = 'MediaEmbedDialog';
+//        				}
+//        			});
+//            
+//            
+//            if (editor.addMenuItem) {
+//            	  // A group menu is required
+//            	  // order, as second parameter, is not required
+//            	  editor.addMenuGroup('MediaEmbed');
+//            	 
+//            	  // Create a menu item
+//            	  editor.addMenuItem('MediaEmbedDialog', {
+//            	    label: 'Mediaegenskaper',
+//            	    command: 'MediaEmbed',
+//            	    group: 'MediaEmbed',
+//            	    icon: this.path.toLowerCase() + 'images/icon.gif'
+//            	  });
+//            	}
+//            	  
+//            	if (editor.contextMenu) {
+//            	  editor.contextMenu.addListener(function(element, selection) {
+//            		var HTML = element.$.innerHTML;
+//            		if(HTML.indexOf("include:media-player") == -1) {
+//            		  return null;	
+//            		}
+//            		
+//            	    return { MediaEmbedDialog: CKEDITOR.TRISTATE_ON };
+//            	  });
+//            	}
         }
     } );
 } )();

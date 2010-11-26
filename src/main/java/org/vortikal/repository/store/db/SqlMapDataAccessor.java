@@ -306,7 +306,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         }
         RecoverableResource deletedResource = (RecoverableResource) o;
 
-        sqlMap = getSqlMap("recoverFromTrashCan");
+        sqlMap = getSqlMap("deleteFromTrashCan");
         this.getSqlMapClientTemplate().delete(sqlMap, deletedResource.getId());
 
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -345,7 +345,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         parameters.put("trashCanURI", trashUri);
         parameters.put("trashCanURIWildCard", SqlDaoUtils.getStringSqlWildcard(trashUri, SQL_ESCAPE_CHAR));
         this.getSqlMapClientTemplate().delete(sqlMap, parameters);
-        sqlMap = getSqlMap("recoverFromTrashCan");
+        sqlMap = getSqlMap("deleteFromTrashCan");
         this.getSqlMapClientTemplate().delete(sqlMap, recoverableResource.getId());
 
     }

@@ -328,7 +328,7 @@
       where uri like #trashIDWildcard# escape '@'
   </update>
 
-  <delete id="recoverFromTrashCan" parameterClass="int">
+  <delete id="deleteFromTrashCan" parameterClass="int">
     delete from deleted_resource where id = #value#
   </delete>
 

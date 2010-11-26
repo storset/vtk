@@ -39,17 +39,17 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   //CKEditor configurations
   if (name.indexOf("introduction") != -1) {
     setCKEditorConfig(name, linkBrowseUrl, null, null, 
-			          defaultLanguage, cssFileList, 150, 400, 40, inlineToolbar, isCompleteEditor, false);
+			          defaultLanguage, cssFileList, 150, 400, 40, inlineToolbar, isCompleteEditor, false,baseDocumentUrl);
   } else if (name.indexOf("caption") != -1) {
     setCKEditorConfig(name, linkBrowseUrl, null, null, 
-			          defaultLanguage, cssFileList, 104, 400, 40, inlineToolbar, isCompleteEditor, false);
+			          defaultLanguage, cssFileList, 104, 400, 40, inlineToolbar, isCompleteEditor, false,baseDocumentUrl);
   } else if (isCompleteEditor) {	  
 	var height = 220; var maxHeight = 400;
     if (name.indexOf("supervisor-box") != -1) { height = 130; maxHeight = 300; }
     else if (name == "content" || name == "resource.content" ) { height = 400; maxHeight = 800; }
 
 	setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
-			          defaultLanguage, cssFileList, height ,maxHeight, 50, completeToolbar, isCompleteEditor, true);
+			          defaultLanguage, cssFileList, height ,maxHeight, 50, completeToolbar, isCompleteEditor, true,baseDocumentUrl);
   } else if (isWithoutSubSuper) {
 	setCKEditorConfig(name, linkBrowseUrl, null, null, 
 			          defaultLanguage, null, 40, 400, 40, inlineToolbar, isCompleteEditor, true, baseDocumentUrl);

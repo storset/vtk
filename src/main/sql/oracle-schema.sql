@@ -450,3 +450,7 @@ create table deleted_resource
 
 alter table deleted_resource
   add constraint deleted_resource_PK primary key (id);
+
+-- identifier "deleted_resource_parent_id_index" is too long, causes ORA-00927.
+-- Hence the short name.
+create index deleted_resource_parent_id_idx on deleted_resource(parent_id);

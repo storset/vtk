@@ -34,6 +34,9 @@ public class ResourceMediaPlayerComponent extends ViewRenderingDecoratorComponen
         if (mediaProperty == null) {
             mediaProperty = currentDocument.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, "media");
         }
+        if(mediaProperty == null){
+            return;
+        }
         String media = mediaProperty.getStringValue();
 
         Resource mediaResource = null;

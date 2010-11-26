@@ -6,7 +6,7 @@ var props = {
   "url" : "",
   "width" : 0,
   "height" : 0,
-  "autocomplete" : "false"
+  "autoplay" : "false"
 };
 
 /** Get the file extension  */
@@ -58,12 +58,15 @@ function getExtension(url) {
                   onShow : function() {
             	    for (var i=0; i<window.frames.length; i++) {
 				      if(window.frames[i].name == 'iframeMediaEmbed') {
-            	        window.frames[i].document.getElementById("txtUrl").value = props["url"];
-            	        window.frames[i].document.getElementById("txtWidth").value = props["width"];
-            	        window.frames[i].document.getElementById("txtHeight").value = props["height"];
-            	        props["url"] = "";
-            	        props["width"] = 0;
-            	        props["height"] = 0;
+            	        window.frames[i].document.getElementById("txtUrl").value = props.url;
+            	        window.frames[i].document.getElementById("txtWidth").value = props.width;
+            	        window.frames[i].document.getElementById("txtHeight").value = props.height;
+            	        if(props.autoplay == "true") {
+            	          window.frames[i].document.getElementById("chkAutoplay").checked = true;  	
+            	        }
+            	        props.url = "";
+            	        props.width = 0;
+            	        props.height = 0;
 				      }
             	    }
                   },
@@ -198,6 +201,5 @@ function getExtension(url) {
     		  }
     		   HTML = HTMLOrig;
     		}
-    		//console.log(gUrl + " " + gWidth + " " + gHeight + " " + gAutocomplete);
     }
 } )();

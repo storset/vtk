@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -58,6 +59,14 @@ public class Parser {
         return parse(Collections.<String>emptySet());
     }
 
+    /**
+     * Parse input until one of the supplied terminators are encountered.
+     */
+    public ParseResult parse(String... terminators) throws Exception {
+        Set<String> set = new HashSet<String>(Arrays.asList(terminators));
+        return parse(set);
+    }
+    
     /**
      * Parse input until one of the supplied terminators are encountered.
      */
@@ -356,7 +365,8 @@ public class Parser {
     private boolean isDirective() throws IOException {
         if (this.reader.lookingAt("[")) {
             char n = (char) reader.peek(2);
-            if ((n >= 'a' && n <= 'z') || (n >= 'A' && n <= 'Z')) {
+            // Allow [a-z], [A-Z], [/]
+            if ((n >= 'a' && n <= 'z') || (n >= 'A' && n <= 'Z') || n == '/') {
                 return true;
             }
         }

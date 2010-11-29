@@ -36,7 +36,7 @@
 	  });
 
           //Performance: function pointers to use inside loop
-          var centerThumbailImageFunc = centerThumbnailImage;
+          var centerThumbnailImageFunc = centerThumbnailImage;
           var calculateImageFunc = calculateImage;
           var generateLinkImageFunc = generateLinkImage;
 

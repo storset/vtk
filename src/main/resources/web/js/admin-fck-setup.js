@@ -117,7 +117,7 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
   config.height = height + 'px';
   config.autoGrow_maxHeight = maxHeight + 'px';
   config.autoGrow_minHeight = minHeight + 'px';
-  
+	
   CKEDITOR.replace(name, config);
 }
 

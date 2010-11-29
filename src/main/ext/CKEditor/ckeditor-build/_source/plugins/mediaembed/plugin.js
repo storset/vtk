@@ -9,20 +9,7 @@ var props = {
   "autoplay" : "false"
 };
 
-/** Get the file extension  */
-function getExtension(url) {
-    var ext = url.match(/\.(avi|asf|fla|flv|mov|mp3|mp4|m4v|mpg|mpeg|mpv|qt|swf|wma|wmv)$/i);
-    if (ext != null && ext.length && ext.length > 0) {
-	ext = ext[1];
-    } else {
-	if (url.contains('youtube.com/')) {
-	    ext = 'swf';
-	} else {
-	    ext = '';
-	}
-    }
-    return ext;
-}
+var oldHTML = "";
 
 ( function() {
     CKEDITOR.plugins.add( 'MediaEmbed',
@@ -82,68 +69,72 @@ function getExtension(url) {
             	    }, 50);
                   },
                   onOk : function() {
-					  for (var i=0; i<window.frames.length; i++) {
-					      if(window.frames[i].name == 'iframeMediaEmbed') {
-					        var url = window.frames[i].document.getElementById("txtUrl").value;
-							if(url.length > 0) {
-							    var content = "${include:media-player url=["+url+"]";			    
-							  var contentType = window.frames[i].document.getElementById("txtContentType").value;
+                	  
+                	  
+                	  var editor = this.getParentEditor();
+                      
+                	  
+					  var theIframe = $("iframe#iframeMediaEmbed");
+              	        var contents = theIframe.contents();
+					    var url = contents.find("#txtUrl").val();
+						if(url != "") {
+							  var content = "${include:media-player url=["+url+"]";			    
+							  var contentType = contents.find("#txtContentType").val();
 							  if(contentType.length > 0) {
 							    content = content + " content-type=["+contentType+"]";
 							  }
-							  var width = window.frames[i].document.getElementById("txtWidth").value;
+							  var width = contents.find("#txtWidth").val();
 							  if(width.length > 0) {
 							    content = content + " width=["+width+"]";
 							  }
-							  var height = window.frames[i].document.getElementById("txtHeight").value;
+							  var height = contents.find("#txtHeight").val();
 							  if(height.length > 0) {
 							    content = content + " height=["+height+"]";
 						      }
-							/*
-							var style = '';
-							if (height.length > 0 || width.length > 0) {
-							    style = style + ' style="';
-							    if(height.length > 0) {
-								  style = style +  'height: ' + height + 'px;';
-							    }
-							    if(width.length > 0) {
-								  style = style + ' width: ' + width + 'px;';
-				                }
-							    style = style + '"';
-							}
-							*/
-							  var autoplay = window.frames[i].document.getElementById("chkAutoplay");
-							  if(autoplay.checked == true) {
+							  var autoplay = contents.find("#chkAutoplay");
+							  if(autoplay.attr("checked") == true) {
 							    content = content + " autoplay=[true]";
 							  }
-							  var align = window.frames[i].document.getElementById("txtAlign").value;
+							  var align = contents.find("#txtAlign").val();
 				
 							  if(content.length>0) {
 							    content = content + "}";
 							  }			
 							
 							  var divClassType = '';
-							  if(contentType.length > 0 && contentType == "audio/mp3") {
-							    divClassType = 'vrtx-media-player vrtx-media-player-audio';
-							  }
-							  else if (url.length > 0 && getExtension(url) == "mp3") {
-							    divClassType = 'vrtx-media-player vrtx-media-player-audio';
-							  }
-							  else {
+							  if(contentType.length > 0 && contentType == "audio/mp3") {  
+							    divClassType = 'vrtx-media-player-audio';
+							  } else if (getExtension(url) == "mp3") {
+							    divClassType = 'vrtx-media-player-audio';
+							  } else {
 							    divClassType ='vrtx-media-player';
 							  }
+							  						  
+							// Existing
+	                    	if(editor.getSelection().getStartElement()) {
+	                    	  selected = editor.getSelection().getStartElement();
+	                    	  selected.removeAttribute("class");
+	                    	  if(align != "" && divClassType != "") {
+	                    	    selected.addClass(divClassType);
+	                    	    selected.addClass(align);
+	                    	  } else {
+	                    	    selected.addClass(divClassType); 
+	                    	  }
+	  						  editor.getSelection().getStartElement().setHtml(content);
+	                      	} else { // New
+	                      	  var divClasses = "";
+	                      	  if(align != "" && divClassType != "") {
+	                            divClasses = divClassType+' '+align;
+	                          } else {
+	                          	divClasses = divClassType;	  
+	                          }
+	                      	  editor.insertHtml('<div class="'+divClasses+'">'+content+'</div>');	
+	                      	}
+							  
 							} else {
 							  alert("Du må spesifisere en URL");
 							  return false;	
 							}
-		                 }
-		      
-		              } 		  
-		           var final_html = 'MediaEmbedInsertData|---' + escape('<div class="'+divClassType+' '+align+'">'+content+'</div>') + '---|MediaEmbedInsertData';
-		           editor.insertHtml(final_html);
-		           var updated_editor_data = editor.getData();
-		           var clean_editor_data = updated_editor_data.replace(final_html,'<div class="'+divClassType+' '+align+'">'+content+'</div>');
-		           editor.setData(clean_editor_data);
                  }
               };
            } );
@@ -171,7 +162,7 @@ function getExtension(url) {
         			});
             
             
-            if (editor.addMenuItem) {
+            if (editor.addMenuItem) {    
             	  // A group menu is required
             	  // order, as second parameter, is not required
             	  editor.addMenuGroup('MediaEmbed');
@@ -191,29 +182,45 @@ function getExtension(url) {
             		if(HTML.indexOf("include:media-player") == -1) {
             		  return null;	
             		}
-            		
-            		extractMediaPlayerProps(HTML);
-            		
-            	    return { MediaEmbedDialog: CKEDITOR.TRISTATE_ON };
-            	  });
-            	}
-        }
-    } );
-    
-    function extractMediaPlayerProps(HTML) {
-      var regexp = [];
-      var HTMLOrig = HTML;
-    		
-      for(var name in props) {
-        regexp = new RegExp('(?:' + name + '=\\[)(.*?)(?=\\])'); // non-capturing group for prop=
-    		                                                     // TODO: positive lookbehind (non-capturing)
-    	var prop = regexp.exec(HTML);
-    	if(prop != null) {
-   		  if(prop.length = 2) {
-   		    props[name] = prop[1]; // get the capturing group 
-   		  }
-    	}
-    	HTML = HTMLOrig; //TODO: is it possible to avoid this?
-      }
+
+					extractMediaPlayerProps(HTML);
+					return {
+						MediaEmbedDialog: CKEDITOR.TRISTATE_ON
+					};
+                });
+              }
     }
+    });
 } )();
+
+/** Get the file extension  */
+function getExtension(url) {
+    var ext = url.match(/\.(avi|asf|fla|flv|mov|mp3|mp4|m4v|mpg|mpeg|mpv|qt|swf|wma|wmv)$/i);
+    if (ext != null && ext.length && ext.length > 0) {
+	ext = ext[1];
+    } else {
+	if (url.contains('youtube.com/')) {
+	    ext = 'swf';
+	} else {
+	    ext = '';
+	}
+    }
+    return ext;
+}
+
+function extractMediaPlayerProps(HTML) {
+    var regexp = [];
+    var HTMLOrig = HTML;
+  		
+    for(var name in props) {
+      regexp = new RegExp('(?:' + name + '=\\[)(.*?)(?=\\])'); // non-capturing group for prop=
+  		                                                     // TODO: positive lookbehind (non-capturing)
+  	var prop = regexp.exec(HTML);
+  	if(prop != null) {
+ 		  if(prop.length = 2) {
+ 		    props[name] = prop[1]; // get the capturing group 
+ 		  }
+  	}
+  	HTML = HTMLOrig; //TODO: is it possible to avoid this?
+    }
+  }

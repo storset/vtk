@@ -82,8 +82,9 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 				if ( selIsLocked )
 					this.getSelection().lock();
 			}
-			else
-				this.document.$.execCommand( 'inserthtml', false, data );
+			else {
+				this.document.$.execCommand( 'inserthtml', false, data );	
+			}
 
 			// Webkit does not scroll to the cursor position after pasting (#5558)
 			if ( CKEDITOR.env.webkit )

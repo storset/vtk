@@ -82,12 +82,15 @@ public class DeleteController extends AbstractWebdavController {
                 this.logger.debug("Attempting to delete resource " + uri);
             }
 
-            // Temporary for testing:
+
+            // Default to non-recoverable deletes for Webdav until we can get the
+            // locking problems sorted out.
+            // See VTK-2002
             boolean recoverable = false;
-            String permanent = request.getParameter("permanent");
-            if ("true".equals(permanent)) {
-                recoverable = false;
-            }
+//            String permanent = request.getParameter("permanent");
+//            if ("true".equals(permanent)) {
+//                recoverable = false;
+//            }
 
             // Delete the document or collection:
             this.repository.delete(token, uri, recoverable);

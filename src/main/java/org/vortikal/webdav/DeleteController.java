@@ -82,11 +82,13 @@ public class DeleteController extends AbstractWebdavController {
                 this.logger.debug("Attempting to delete resource " + uri);
             }
 
-            boolean recoverable = true;
+            // Temporary for testing:
+            boolean recoverable = false;
             String permanent = request.getParameter("permanent");
             if ("true".equals(permanent)) {
                 recoverable = false;
             }
+
             // Delete the document or collection:
             this.repository.delete(token, uri, recoverable);
 

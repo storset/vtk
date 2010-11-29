@@ -15,7 +15,7 @@
     <#if contentType == "audio" || contentType == "audio/mpeg" || contentType == "audio/mp3" >
     
       <script type="text/javascript" language="JavaScript" src="${audioFlashPlayerJsURL?html}/"></script>  
-      <object type="application/x-shockwave-flash" data="${audioFlashPlayerFlashURL?html}" id="audioplayer1" height="24" width="290">
+      <object type="application/x-shockwave-flash" data="${audioFlashPlayerFlashURL?html}" height="24" width="290">
         <param name="movie" value="${audioFlashPlayerFlashURL?html}"/>
         <param name="FlashVars" value="playerID=1&amp;soundFile=${media}"/>
         <param name="quality" value="high"/>
@@ -28,11 +28,11 @@
     
       <object classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" width="${width}" height="${height}" codebase="http://www.apple.com/qtactivex/qtplugin.cab">
         <param name="src" value="${media}"/>
-        <param name="autoplay" value="false"/>
+        <param name="autoplay" value="${autoplay}"/>
         <param name="controller" value="true"/>
         <param name="loop" value="false"/>
         <param name="scale" value="aspect" />         
-        <embed src="${media}" width="${width}" height="${height}" autoplay="false" controller="true" loop="false" scale="aspect" pluginspage="http://www.apple.com/quicktime/download/">
+        <embed src="${media}" width="${width}" height="${height}" autoplay="${autoplay}" controller="true" loop="false" scale="aspect" pluginspage="http://www.apple.com/quicktime/download/">
         </embed>
       </object> 
 	  <a class="vrtx-media" href="${media}"><@vrtx.msg code="article.media-file" /></a>

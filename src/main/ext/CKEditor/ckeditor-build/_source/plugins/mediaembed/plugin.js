@@ -56,7 +56,7 @@ function getExtension(url) {
                           }
                        ],
                   onShow : function() {
-            	        var check = setInterval(function() {
+            	        var check = setInterval(function() { // check each 50ms if iframe content is loaded
             	           var theIframe = $("iframe#iframeMediaEmbed");
             	           if(theIframe) {
             	        	   var contents = theIframe.contents();

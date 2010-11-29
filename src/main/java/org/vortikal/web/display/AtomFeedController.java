@@ -63,6 +63,7 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.text.html.HtmlUtil;
 import org.vortikal.web.service.Service;
 
 public abstract class AtomFeedController implements Controller {
@@ -233,8 +234,8 @@ public abstract class AtomFeedController implements Controller {
                     entry.addLink(mediaLink);
                 } catch (Throwable t) {
                     // Don't break the entire entry if media link breaks
-                    logger.error("An error occured while setting media link for feed entry, " + result.getURI() + ": "
-                            + t.getMessage());
+                    logger.warn("An error occured while setting media link for feed entry, " 
+                            + result.getURI(), t);
                 }
             }
 
@@ -242,7 +243,7 @@ public abstract class AtomFeedController implements Controller {
 
         } catch (Throwable t) {
             // Don't break the entire feed if the entry breaks
-            logger.error("An error occured while creating feed entry for " + result.getURI() + ": " + t.getMessage());
+            logger.warn("An error occured while creating feed entry for " + result.getURI(), t);
         }
     }
 
@@ -263,7 +264,8 @@ public abstract class AtomFeedController implements Controller {
             }
             String imgPath = picture.getFormattedValue("thumbnail", Locale.getDefault());
             String imgAlt = getImageAlt(imgPath);
-            sb.append("<img src=\"" + imgPath + "\" alt=\"" + imgAlt + "\"/>");
+            sb.append("<img src=\"" + HtmlUtil.escapeHtmlString(imgPath) 
+                    + "\" alt=\"" + HtmlUtil.escapeHtmlString(imgAlt) + "\"/>");
         }
 
         if (summary != null) {

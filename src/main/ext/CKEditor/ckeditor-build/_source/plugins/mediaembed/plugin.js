@@ -56,27 +56,30 @@ function getExtension(url) {
                           }
                        ],
                   onShow : function() {
-            	        var check = setInterval(function() { // check each 50ms if iframe content is loaded
-            	           var theIframe = $("iframe#iframeMediaEmbed");
-            	           if(theIframe) {
-            	        	   var contents = theIframe.contents();
-            	        	   if(contents.find("#chkAutoplay").attr("checked") != "undefined") {
-            	        		  contents.find("#txtUrl").val(props.url);
-            	        		  contents.find("#txtWidth").val(props.width);
-            	        		  contents.find("#txtHeight").val(props.height);
-                	              if(props.autoplay == "true") {
-                	                contents.find("#chkAutoplay").attr("checked", true);  	
-                	              } else {
-                	                contents.find("#chkAutoplay").attr("checked", false);  
-                	              }
-                	              props.url = "";
-                	              props.width = 507;
-                	              props.height = 322;
-                	              props.autoplay = "false";
-            	                  clearInterval(check);
-            	        	   }
-            	           }
-            	        }, 50);
+            	    var check = setInterval(function() { // check each 50ms if iframe content is loaded
+            	      var theIframe = $("iframe#iframeMediaEmbed");
+            	      if(theIframe) {
+            	        var contents = theIframe.contents();
+            	        if(contents.find("#chkAutoplay").attr("checked") != "undefined") {
+            	          // Put values in dialog
+            	          contents.find("#txtUrl").val(props.url);
+            	          contents.find("#txtWidth").val(props.width);
+            	          contents.find("#txtHeight").val(props.height);
+                	      if(props.autoplay == "true") {
+                	        contents.find("#chkAutoplay").attr("checked", true);  	
+                	      } else {
+                	        contents.find("#chkAutoplay").attr("checked", false);  
+                	      }
+                	      // Restore init values
+                	      props.url = "";
+                	      props.width = 507;
+                	      props.height = 322;
+                	      props.autoplay = "false";
+                	      // Clear loop
+            	          clearInterval(check);
+            	        }
+            	      }
+            	    }, 50);
                   },
                   onOk : function() {
 					  for (var i=0; i<window.frames.length; i++) {

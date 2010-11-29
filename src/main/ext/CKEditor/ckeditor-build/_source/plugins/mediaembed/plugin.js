@@ -6,7 +6,8 @@ var props = {
   "url" : "",
   "width" : 256,
   "height" : 192,
-  "autoplay" : "false"
+  "autoplay" : "false",
+  "contentType" : ""
 };
 
 ( function() {
@@ -50,6 +51,7 @@ var props = {
             	          contents.find("#txtUrl").val(props.url);
             	          contents.find("#txtWidth").val(props.width);
             	          contents.find("#txtHeight").val(props.height);
+            	          contents.find("#txtContentType").val(props.contentType);
                 	      if(props.autoplay == "true") {
                 	        contents.find("#chkAutoplay").attr("checked", true);  	
                 	      } else {
@@ -60,6 +62,7 @@ var props = {
                 	      props.width = 507;
                 	      props.height = 322;
                 	      props.autoplay = "false";
+                	      props.contentType = "";
                 	      // Clear loop
             	          clearInterval(check);
             	        }
@@ -210,14 +213,18 @@ function extractMediaPlayerProps(HTML) {
     var HTMLOrig = HTML;
   		
     for(var name in props) {
-      regexp = new RegExp('(?:' + name + '=\\[)(.*?)(?=\\])'); // non-capturing group for prop=
-  		                                                     // TODO: positive lookbehind (non-capturing)
-  	var prop = regexp.exec(HTML);
-  	if(prop != null) {
- 		  if(prop.length = 2) {
- 		    props[name] = prop[1]; // get the capturing group 
- 		  }
-  	}
-  	HTML = HTMLOrig; //TODO: is it possible to avoid this?
+      if(name != "contentType") {
+        regexp = new RegExp('(?:' + name + '=\\[)(.*?)(?=\\])'); // non-capturing group for prop=. TODO: positive lookbehind (non-capturing)
+      } else {
+    	regexp = new RegExp('(?:content\\-type=\\[)(.*?)(?=\\])'); // non-capturing group for prop=. TODO: positive lookbehind (non-capturing)
+      }
+      
+  	  var prop = regexp.exec(HTML);
+  	  if(prop != null) {
+ 		if(prop.length = 2) {
+ 		  props[name] = prop[1]; // get the capturing group 
+ 		}
+  	  }
+  	  HTML = HTMLOrig; //TODO: is it possible to avoid this?
     }
-  }
+ }

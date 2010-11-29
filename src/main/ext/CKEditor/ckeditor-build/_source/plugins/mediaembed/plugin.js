@@ -10,6 +10,8 @@ var props = {
   "contentType" : ""
 };
 
+propsAlign = "";
+
 ( function() {
     CKEDITOR.plugins.add( 'MediaEmbed',
     {
@@ -57,12 +59,20 @@ var props = {
                 	      } else {
                 	        contents.find("#chkAutoplay").attr("checked", false);  
                 	      }
+                	      if(propsAlign != "" && propsAlign != " ") {
+                	        contents.find("#txtAlign").val(propsAlign);
+                	      } else {
+                	    	contents.find("#txtAlign").val("");  
+                	      }
+                	      
                 	      // Restore init values
                 	      props.url = "";
-                	      props.width = 507;
-                	      props.height = 322;
+                	      props.width = 256;
+                	      props.height = 192;
                 	      props.autoplay = "false";
                 	      props.contentType = "";
+                	      propsAlign = "";
+                	      
                 	      // Clear loop
             	          clearInterval(check);
             	        }
@@ -77,8 +87,8 @@ var props = {
 					  var theIframe = $("iframe#iframeMediaEmbed");
               	        var contents = theIframe.contents();
 					    var url = contents.find("#txtUrl").val();
-						if(url != "") {
-							  var content = "${include:media-player url=["+url+"]";			    
+						if(url != "" && url.indexOf(".") != -1) {
+							  var content = "${include:media-player url=["+unescape(url)+"]";			    
 							  var contentType = contents.find("#txtContentType").val();
 							  if(contentType.length > 0) {
 							    content = content + " content-type=["+contentType+"]";
@@ -157,6 +167,9 @@ var props = {
         				  return null;
         				}
         				
+                		var className = element.$.className;
+                		propsAlign = $.trim(className.replace(/vrtx-media-player[\w-]*/g, ""));
+        				
         				extractMediaPlayerProps(HTML);
         				data.dialog = 'MediaEmbedDialog';
         			});
@@ -182,6 +195,9 @@ var props = {
             		if(HTML.indexOf("include:media-player") == -1) {
             		  return null;	
             		}
+            		
+            		var className = element.$.className;
+            		propsAlign = $.trim(className.replace(/vrtx-media-player[\w-]*/g, ""));
 
 					extractMediaPlayerProps(HTML);
 					return {
@@ -197,13 +213,9 @@ var props = {
 function getExtension(url) {
     var ext = url.match(/\.(avi|asf|fla|flv|mov|mp3|mp4|m4v|mpg|mpeg|mpv|qt|swf|wma|wmv)$/i);
     if (ext != null && ext.length && ext.length > 0) {
-	ext = ext[1];
+	  ext = ext[1];
     } else {
-	if (url.contains('youtube.com/')) {
-	    ext = 'swf';
-	} else {
-	    ext = '';
-	}
+	  ext = '';
     }
     return ext;
 }

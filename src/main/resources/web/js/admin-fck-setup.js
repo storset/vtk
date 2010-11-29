@@ -66,7 +66,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
     }
 
 	setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
-			          defaultLanguage, cssFileList, height ,maxHeight, 50, completeTB, isCompleteEditor, true,baseDocumentUrl);
+			          defaultLanguage, cssFileList, height, maxHeight, 50, completeTB, isCompleteEditor, true,baseDocumentUrl);
   } else if (isWithoutSubSuper) {
 	setCKEditorConfig(name, linkBrowseUrl, null, null, 
 			          defaultLanguage, null, 40, 400, 40, inlineToolbar, isCompleteEditor, true, baseDocumentUrl);
@@ -91,7 +91,15 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
 	config.filebrowserImageBrowseUrl = imageBrowseUrl;
 	config.filebrowserFlashBrowseUrl = flashBrowseUrl;
 	config.extraPlugins = 'MediaEmbed';
-	//TODO: config.protectedSource.push("<div class='vrtx-media...");
+
+	// TODO: is it possible to use this at all?
+	// Component is protected but can't use (only visible in HTML / src-edit)
+	//config.protectedSource = [];
+	//config.protectedSource.push(/\$\{include:media-player[\w\W\[\]\{\}\$][^<]*?/g);
+
+	// <div> is protected	
+	// /(<div[^>]*class="vrtx-media-player[^>]*>)([\s\S]*?)(<\/div>)/g
+	
     config.stylesSet = divContainerStylesSet;
     
     if(name == "resource.content") {

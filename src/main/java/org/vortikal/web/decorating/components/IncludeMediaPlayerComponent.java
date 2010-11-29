@@ -40,6 +40,8 @@ public class IncludeMediaPlayerComponent extends ResourceMediaPlayerComponent {
             model.put("width", width);
         if (autoplay != null && !"".equals(autoplay))
             model.put("autoplay", autoplay);
+        else
+            model.put("autoplay", "false");
 
         Resource mediaResource = null;
         if (url != null && url.startsWith("/")) {

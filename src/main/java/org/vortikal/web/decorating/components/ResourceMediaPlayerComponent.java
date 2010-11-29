@@ -46,7 +46,8 @@ public class ResourceMediaPlayerComponent extends ViewRenderingDecoratorComponen
         }
 
         model.put("extension", getExtension(media));
-
+        model.put("autoplay", "false");
+        
         if (mediaResource != null) {
             model.put("contentType", mediaResource.getContentType());
         } else {

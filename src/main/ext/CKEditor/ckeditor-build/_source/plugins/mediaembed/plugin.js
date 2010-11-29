@@ -9,8 +9,6 @@ var props = {
   "autoplay" : "false"
 };
 
-var oldHTML = "";
-
 ( function() {
     CKEDITOR.plugins.add( 'MediaEmbed',
     {
@@ -72,7 +70,6 @@ var oldHTML = "";
                 	  
                 	  
                 	  var editor = this.getParentEditor();
-                      
                 	  
 					  var theIframe = $("iframe#iframeMediaEmbed");
               	        var contents = theIframe.contents();

@@ -56,25 +56,27 @@ function getExtension(url) {
                           }
                        ],
                   onShow : function() {
-            	    setTimeout(function() {
-            	     for (var i=0; i<window.frames.length; i++) {
-				       if(window.frames[i].name == 'iframeMediaEmbed') {
-				    	   window.frames[i].document.getElementById("txtUrl").value = props.url;
-				    	   window.frames[i].document.getElementById("txtWidth").value = props.width;
-				    	   window.frames[i].document.getElementById("txtHeight").value = props.height;
-            	            if(props.autoplay == "true") {
-            	            	window.frames[i].document.getElementById("chkAutoplay").checked = true;  	
-            	            } else {
-            	            	window.frames[i].document.getElementById("chkAutoplay").checked = false;  
-            	            }
-            	            props.url = "";
-            	            props.width = 507;
-            	            props.height = 322;
-            	            props.autoplay = "false";
-				      
-				    	}
-				      }
-            	    }, 100);
+            	        var check = setInterval(function() {
+            	           var theIframe = $("iframe#iframeMediaEmbed");
+            	           if(theIframe) {
+            	        	   var contents = theIframe.contents();
+            	        	   if(contents.find("#chkAutoplay").attr("checked") != "undefined") {
+            	        		  contents.find("#txtUrl").val(props.url);
+            	        		  contents.find("#txtWidth").val(props.width);
+            	        		  contents.find("#txtHeight").val(props.height);
+                	              if(props.autoplay == "true") {
+                	                contents.find("#chkAutoplay").attr("checked", true);  	
+                	              } else {
+                	                contents.find("#chkAutoplay").attr("checked", false);  
+                	              }
+                	              props.url = "";
+                	              props.width = 507;
+                	              props.height = 322;
+                	              props.autoplay = "false";
+            	                  clearInterval(check);
+            	        	   }
+            	           }
+            	        }, 50);
                   },
                   onOk : function() {
 					  for (var i=0; i<window.frames.length; i++) {

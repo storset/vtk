@@ -459,6 +459,10 @@ div.tabMessage {
   float: left;
 }
 
+#vrtx-trash-can div.tabMessage {
+  padding-top: 3px;
+}
+
 a.tabHelpURL {
   font-size: 75%;
   padding: 5px 0 5px 0;

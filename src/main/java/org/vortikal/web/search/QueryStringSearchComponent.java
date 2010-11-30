@@ -42,12 +42,21 @@ import org.vortikal.repository.search.query.UriDepthQuery;
 
 public class QueryStringSearchComponent extends QuerySearchComponent {
 
-    protected String query;
+    private String query;
     private QueryParser queryParser;
 
     @Override
-    protected Query getQuery(Resource collection, HttpServletRequest request, boolean recursive) {
-        Query query = this.queryParser.parse(this.query);
+    protected Query getQuery(Resource collection, HttpServletRequest request,
+            boolean recursive, QueryManipulator manipulator) {
+        String queryString = this.query;
+        if (manipulator != null) {
+            Object result = manipulator.process(this.query);
+            if (result instanceof String) {
+                queryString = (String) result;
+            }
+        }
+        
+        Query query = this.queryParser.parse(queryString);
 
         Query aggregationQuery = null;
         boolean aggregate = false;

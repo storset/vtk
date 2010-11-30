@@ -152,8 +152,9 @@ public class EventListingSearcher {
         };
         
         //this.processedQuerySearchComponent.setProcessedQuery(this.getProcessedFurtherUpcomingQueryString(daysAhead));
+        boolean defaultRecursive = this.processedQuerySearchComponent.isDefaultRecursive();
         Listing furtherUpcomingEvents = this.processedQuerySearchComponent.execute(request, collection, 1,
-                furtherUpcomingPageLimit, 0);
+                furtherUpcomingPageLimit, 0, defaultRecursive, manipulator);
         return furtherUpcomingEvents;
     }
 

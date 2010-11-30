@@ -4,8 +4,8 @@
 
 var props = {
   "url" : "",
-  "width" : 256,
-  "height" : 192,
+  "width" : 507,
+  "height" : 322,
   "autoplay" : "false",
   "contentType" : ""
 };
@@ -67,8 +67,8 @@ var propsAlign = "";
                 	      
                 	      // Restore init values
                 	      props.url = "";
-                	      props.width = 256;
-                	      props.height = 192;
+                	      props.width = 507;
+                	      props.height = 322;
                 	      props.autoplay = "false";
                 	      props.contentType = "";
                 	      propsAlign = "";

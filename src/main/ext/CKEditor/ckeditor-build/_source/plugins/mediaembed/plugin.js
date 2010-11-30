@@ -134,13 +134,18 @@ var cond = false;
 	  						  editor.getSelection().getStartElement().setHtml(content);
 	  						  cond = false;
 	                      	} else { // New
-	                      	  var divClasses = "";
-	                      	  if(align != "" && divClassType != "") {
-	                            divClasses = divClassType+' '+align;
-	                          } else {
-	                          	divClasses = divClassType;	  
-	                          }
-	                          editor.insertHtml('<div class="'+divClasses+'">'+content+'</div>');
+	                          selected = editor.getSelection().getStartElement();
+	                      	  selected.removeAttribute("class");
+		                      if(align != "" && divClassType != "") {
+		                        selected.addClass(divClassType);
+		                    	selected.addClass(align);
+		                      } else {
+		                    	selected.addClass(divClassType); 
+		                      }
+	                      	  if(selected.is("p")) {
+	                      	    selected.renameNode("div");
+	                      	  }
+	                      	  selected.setHtml(content);
 	                      	}
 							  
 						} else {

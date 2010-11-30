@@ -150,6 +150,17 @@ propsAlign = "";
            } );
 
             editor.addCommand( 'MediaEmbed', new CKEDITOR.dialogCommand( 'MediaEmbedDialog' ) );
+            editor.addCommand( 'MediaEmbedRemove',
+    				{
+    					exec : function( editor )
+    					{
+    						var selection = editor.getSelection();
+							var bookmarks = selection.createBookmarks();
+							var node = selection.getStartElement();
+                            node.remove( false );
+    						selection.selectBookmarks( bookmarks );
+    					}
+    				} );
 
             editor.ui.addButton( 'MediaEmbed',
             {
@@ -175,20 +186,33 @@ propsAlign = "";
         			});
             
             
-            if (editor.addMenuItem) {    
+            if (editor.addMenuItems) {    
             	  // A group menu is required
             	  // order, as second parameter, is not required
             	  editor.addMenuGroup('MediaEmbed');
             	 
             	  // Create a menu item
-            	  editor.addMenuItem('MediaEmbedDialog', {
-            	    label: 'Mediaegenskaper',
-            	    command: 'MediaEmbed',
-            	    group: 'MediaEmbed',
-            	    icon: this.path.toLowerCase() + 'images/icon.gif'
+            	  editor.addMenuItems(
+            	  {	  
+            		MediaEmbedDialog:
+            		{
+            	        label: 'Mediaegenskaper',
+            	        command: 'MediaEmbed',
+            	        group: 'MediaEmbed',
+            	        icon: this.path.toLowerCase() + 'images/icon.gif',
+            	        order: 1
+            		},
+					RemoveMedia:
+					{
+						label: 'Fjern media',
+						command: 'MediaEmbedRemove',
+						group: 'MediaEmbed',
+						order: 5
+					}
+            	    
             	  });
             	}
-            	  
+            
             	if (editor.contextMenu) {
             	  editor.contextMenu.addListener(function(element, selection) {
             		var HTML = element.$.innerHTML;
@@ -201,7 +225,8 @@ propsAlign = "";
 
 					extractMediaPlayerProps(HTML);
 					return {
-						MediaEmbedDialog: CKEDITOR.TRISTATE_ON
+						MediaEmbedDialog: CKEDITOR.TRISTATE_ON,
+						RemoveMedia: CKEDITOR.TRISTATE_ON 
 					};
                 });
               }

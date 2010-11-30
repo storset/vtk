@@ -145,7 +145,9 @@ function enableSubmit() {
 }
 
 function commentsCkEditor() { 
-  setCKEditorConfig("comments-text", null, null, null, null, null, 150, 400, 40, commentsToolbar, false, true,null) 
+	$("#comments-text").click(function () {
+  		setCKEditorConfig("comments-text", null, null, null, null, null, 150, 400, 40, commentsToolbar, false, true,null);
+  	});
 }
 
 var divContainerStylesSet = [{

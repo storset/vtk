@@ -145,7 +145,7 @@ var cond = false;
 	                      	  if(selected.is("p")) {
 	                      	    selected.renameNode("div");
 	                      	  }
-	                      	  selected.setHtml(content);
+	                      	  selected.setText(content);
 	                      	}
 							  
 						} else {

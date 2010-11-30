@@ -46,7 +46,9 @@ public class QueryPartsSearchComponent extends QuerySearchComponent {
     private List<QueryBuilder> queryBuilders;
 
     @Override
-    protected Query getQuery(Resource collection, HttpServletRequest request, boolean recursive) {
+    protected Query getQuery(Resource collection, HttpServletRequest request, boolean recursive, 
+            QueryManipulator manipulator) { // XXX: remove manipulator 
+        
         AndQuery query = new AndQuery();
 
         for (QueryBuilder builder : this.queryBuilders) {

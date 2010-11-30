@@ -10,7 +10,7 @@ var props = {
   "contentType" : ""
 };
 
-propsAlign = "";
+var propsAlign = "";
 
 ( function() {
     CKEDITOR.plugins.add( 'MediaEmbed',
@@ -48,7 +48,7 @@ propsAlign = "";
             	      var theIframe = $("iframe#iframeMediaEmbed");
             	      if(theIframe) {
             	        var contents = theIframe.contents();
-            	        if(contents.find("#chkAutoplay").attr("checked") != "undefined") {
+            	        if(contents.find("#chkAutoplay").length) {
             	          // Put values in dialog
             	          contents.find("#txtUrl").val(props.url);
             	          contents.find("#txtWidth").val(props.width);
@@ -119,9 +119,15 @@ propsAlign = "";
 							  } else {
 							    divClassType ='vrtx-media-player';
 							  }
-							  						  
+							  
+							if(editor.getSelection().getStartElement().getAttribute('class')) {
+							  var cond = editor.getSelection().getStartElement().getAttribute('class').indexOf("vrtx-media-player");
+							} else {
+							  cond = -1;	
+							}
+							
 							// Existing
-	                    	if(editor.getSelection().getStartElement()) {
+	                    	if(cond != -1) {
 	                    	  selected = editor.getSelection().getStartElement();
 	                    	  selected.removeAttribute("class");
 	                    	  if(align != "" && divClassType != "") {
@@ -138,13 +144,17 @@ propsAlign = "";
 	                          } else {
 	                          	divClasses = divClassType;	  
 	                          }
-	                      	  editor.insertHtml('<div class="'+divClasses+'">'+content+'</div>');	
+	                          final_html = 'MediaEmbedInsertData|---' + escape('<div class="'+divClasses+'">'+content+'</div>') + '---|MediaEmbedInsertData';
+	                          editor.insertHtml(final_html);
+	                          updated_editor_data = editor.getData();
+	                          clean_editor_data = updated_editor_data.replace(final_html,'<div class="'+divClasses+'">'+content+'</div>');
+	                          editor.setData(clean_editor_data);
 	                      	}
 							  
-							} else {
-							  alert("Du må spesifisere en URL");
-							  return false;	
-							}
+						} else {
+						  alert("Du må spesifisere en URL");
+						  return false;	
+						}
                  }
               };
            } );
@@ -180,7 +190,7 @@ propsAlign = "";
         				
                 		var className = element.$.className;
                 		propsAlign = $.trim(className.replace(/vrtx-media-player[\w-]*/g, ""));
-        				
+
         				extractMediaPlayerProps(HTML);
         				data.dialog = 'MediaEmbedDialog';
         			});

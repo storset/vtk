@@ -177,7 +177,7 @@ public class Expression {
                 continue;
             }
             
-            if (LP.equals(next)) {
+            if (LP.equals(next) && !this.operators.containsKey(symbol)) {
                 // Function: '<symbol> ('
                 stack.push(symbol);
                 continue;

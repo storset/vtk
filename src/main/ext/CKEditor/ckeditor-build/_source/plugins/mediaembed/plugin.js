@@ -11,7 +11,6 @@ var props = {
 };
 
 var propsAlign = "";
-var cond = false;
 
 ( function() {
     CKEDITOR.plugins.add( 'MediaEmbed',
@@ -121,19 +120,6 @@ var cond = false;
 							    divClassType ='vrtx-media-player';
 							  }
 							  
-							// Existing
-	                    	if(cond) {
-	                    	  selected = editor.getSelection().getStartElement();
-	                    	  selected.removeAttribute("class");
-	                    	  if(align != "" && divClassType != "") {
-	                    	    selected.addClass(divClassType);
-	                    	    selected.addClass(align);
-	                    	  } else {
-	                    	    selected.addClass(divClassType); 
-	                    	  }
-	  						  editor.getSelection().getStartElement().setHtml(content);
-	  						  cond = false;
-	                      	} else { // New
 	                          selected = editor.getSelection().getStartElement();
 	                      	  selected.removeAttribute("class");
 		                      if(align != "" && divClassType != "") {
@@ -146,7 +132,6 @@ var cond = false;
 	                      	    selected.renameNode("div");
 	                      	  }
 	                      	  selected.setText(content);
-	                      	}
 							  
 						} else {
 						  alert("Du må spesifisere en URL");
@@ -256,7 +241,6 @@ function getExtension(url) {
 function extractMediaPlayerProps(HTML) {
     var regexp = [];
     var HTMLOrig = HTML;
-    cond = true;
   		
     for(var name in props) {
       if(name != "contentType") {

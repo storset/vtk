@@ -287,7 +287,8 @@
   <!-- ## Mark as deleted ("put in trash can") ## -->
   <update id="markDeleted" parameterClass="java.util.Map">
     update vortex_resource set
-      uri = <include refid="trashCanUri" />
+      uri = <include refid="trashCanUri" />,
+      depth = depth + #depthDiff#
       where uri = #uri# or uri like #uriWildcard# escape '@'
   </update>
 
@@ -324,7 +325,8 @@
   <!--  ## Recover deleted resource ## -->
   <update id="recoverResource" parameterClass="java.util.Map">
     update vortex_resource set
-      uri = <include refid="recoverUri" />
+      uri = <include refid="recoverUri" />,
+      depth = depth + #depthDiff#
       where uri like #trashIDWildcard# escape '@'
   </update>
 

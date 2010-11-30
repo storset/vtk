@@ -267,13 +267,18 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         parameters.put("uri", resourceURI.toString());
         parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(resourceURI, SQL_ESCAPE_CHAR));
 
+        
         Path parentURI = resourceURI.getParent();
+
+        int depthDiff = -1 * parentURI.getDepth();
+        
         int uriTrimLength = parentURI.toString().length();
         if (!parentURI.isRoot()) {
             uriTrimLength++;
         }
         parameters.put("uriTrimLength", uriTrimLength);
         parameters.put("trashCanID", trashID);
+        parameters.put("depthDiff", depthDiff);
         String sqlMap = getSqlMap("markDeleted");
         this.getSqlMapClientTemplate().update(sqlMap, parameters);
 
@@ -316,7 +321,10 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         if (parent.isRoot()) {
             uriTrimLength++;
         }
+
+        int depthDiff = parent.getDepth();
         parameters.put("parentUri", parent.toString());
+        parameters.put("depthDiff", depthDiff);
         parameters.put("uriTrimLength", uriTrimLength);
 
         sqlMap = getSqlMap("recoverResource");

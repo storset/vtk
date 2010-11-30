@@ -11,6 +11,7 @@ var props = {
 };
 
 var propsAlign = "";
+var cond = false;
 
 ( function() {
     CKEDITOR.plugins.add( 'MediaEmbed',
@@ -120,14 +121,8 @@ var propsAlign = "";
 							    divClassType ='vrtx-media-player';
 							  }
 							  
-							if(editor.getSelection().getStartElement().getAttribute('class')) {
-							  var cond = editor.getSelection().getStartElement().getAttribute('class').indexOf("vrtx-media-player");
-							} else {
-							  cond = -1;	
-							}
-							
 							// Existing
-	                    	if(cond != -1) {
+	                    	if(cond) {
 	                    	  selected = editor.getSelection().getStartElement();
 	                    	  selected.removeAttribute("class");
 	                    	  if(align != "" && divClassType != "") {
@@ -137,6 +132,7 @@ var propsAlign = "";
 	                    	    selected.addClass(divClassType); 
 	                    	  }
 	  						  editor.getSelection().getStartElement().setHtml(content);
+	  						  cond = false;
 	                      	} else { // New
 	                      	  var divClasses = "";
 	                      	  if(align != "" && divClassType != "") {
@@ -259,6 +255,7 @@ function getExtension(url) {
 function extractMediaPlayerProps(HTML) {
     var regexp = [];
     var HTMLOrig = HTML;
+    cond = true;
   		
     for(var name in props) {
       if(name != "contentType") {

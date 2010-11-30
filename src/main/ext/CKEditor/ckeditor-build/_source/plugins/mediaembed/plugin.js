@@ -207,6 +207,7 @@ propsAlign = "";
 						label: 'Fjern media',
 						command: 'MediaEmbedRemove',
 						group: 'MediaEmbed',
+						icon: this.path.toLowerCase() + 'images/iconremove.gif',
 						order: 5
 					}
             	    

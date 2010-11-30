@@ -396,7 +396,7 @@
         ${valueItem.property.getFormattedValue("localized", springMacroRequestContext.locale)}
       <#elseif valueItem.definition.multiple>
         <#list valueItem.property.values as val>
-          ${val?string}<#if val_has_next>, </#if>
+          ${val?html}<#if val_has_next>, </#if>
         </#list>
         <#if valueItem.property.values?size &lt; 0>
         </#if>
@@ -414,7 +414,7 @@
         <#else>
           <#local label>
             <@vrtx.msg code="${localizedValueLookupKeyPrefix}.value.${valueItem.property.value?string}"
-                       default="${valueItem.property.value?string}" />
+                       default="${valueItem.property.value?html}" />
           </#local>
           ${label}
         </#if>
@@ -533,21 +533,20 @@
           <#local value>
             <#compress>
             <#if formValue != "">
-              ${formValue}
+              ${formValue?html}
             <#elseif form.value?exists>
-              ${form.value}
+              ${form.value?html}
             <#elseif !defaultItem?is_boolean>
               ${defaultItem.property.value?string}
             </#if>
             </#compress>
           </#local>
 
-          
           <@formInputWrapper item>
             <#if inputSize &gt; 99>
-              <textarea name="value" rows="5" cols="60">${value}</textarea>
+              <textarea name="value" rows="5" cols="60">${value?html}</textarea>
             <#else>
-              <input type="text" id="value" name="value" value="${value}" size=${inputSize}>
+              <input type="text" id="value" name="value" value="${value?html}" size=${inputSize}>
               <#if item.format?exists>(${item.format})</#if>
             </#if>
             <#if form.hierarchicalHelpUrl?exists>
@@ -570,7 +569,7 @@
       <#if spring.status.errorCodes?size &gt; 0>
         <@formErrorsWrapper>
           <#list spring.status.errorCodes as error> 
-            <@formErrorWrapper>${error}</@formErrorWrapper>
+            <@formErrorWrapper>${error?html}</@formErrorWrapper>
           </#list>
         </@formErrorsWrapper>
       </#if>

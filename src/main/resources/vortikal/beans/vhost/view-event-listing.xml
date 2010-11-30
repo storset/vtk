@@ -50,7 +50,7 @@
     <property name="specificDateEventSearchString" ref="${override.listing.prefix}eventListing.specificDateEventSearchQueryString" />
   </bean>
 
-  <bean id="eventListing.processedQuerySearchComponent" class="org.vortikal.web.search.ProcessedQueryStringSearchComponenet"
+  <bean id="eventListing.processedQuerySearchComponent" class="org.vortikal.web.search.QueryStringSearchComponent"
     parent="${override.listing.prefix}eventListing.upcomingEventsSearchComponent">
     <property name="name" value="eventListing.calendarEventSearch" />
     <property name="titleLocalizationKey">

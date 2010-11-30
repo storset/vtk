@@ -140,7 +140,7 @@ var cond = false;
 	                          } else {
 	                          	divClasses = divClassType;	  
 	                          }
-	                          final_html = 'MediaEmbedInsertData|---' + escape('<div class="'+divClasses+'">'+content+'</div>') + '---|MediaEmbedInsertData';
+	                          final_html = 'MediaEmbedInsertDataMediaEmbedInsertData';
 	                          editor.insertHtml(final_html);
 	                          updated_editor_data = editor.getData();
 	                          clean_editor_data = updated_editor_data.replace(final_html,'<div class="'+divClasses+'">'+content+'</div>');

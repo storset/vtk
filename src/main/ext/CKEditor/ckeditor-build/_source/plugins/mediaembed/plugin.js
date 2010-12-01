@@ -2,6 +2,14 @@
 * @example An iframe-based dialog with custom button handling logics.
 */
 
+var propsStandard = {
+  "url" : "",
+  "width" : 507,
+  "height" : 322,
+  "autoplay" : "false",
+  "contentType" : ""
+};
+
 var props = {
   "url" : "",
   "width" : 507,
@@ -13,7 +21,7 @@ var props = {
 var propsAlign = "";
 
 ( function() {
-    CKEDITOR.plugins.add( 'MediaEmbed',
+    CKEDITOR.plugins.add( 'mediaembed',
     {
         requires: [ 'iframedialog' ],
         init: function( editor )
@@ -66,11 +74,11 @@ var propsAlign = "";
                 	      }
                 	      
                 	      // Restore init values
-                	      props.url = "";
-                	      props.width = 507;
-                	      props.height = 322;
-                	      props.autoplay = "false";
-                	      props.contentType = "";
+                	      props.url = propsStandard.url;
+                	      props.width = propsStandard.width;
+                	      props.height = propsStandard.height;
+                	      props.autoplay = propsStandard.autoplay;
+                	      props.contentType = propsStandard.contentType;
                 	      propsAlign = "";
                 	      
                 	      // Clear loop
@@ -94,11 +102,11 @@ var propsAlign = "";
 							    content = content + " content-type=["+contentType+"]";
 							  }
 							  var width = contents.find("#txtWidth").val();
-							  if(width.length > 0) {
+							  if(width.length > 0 && width != propsStandard.width) {
 							    content = content + " width=["+width+"]";
 							  }
 							  var height = contents.find("#txtHeight").val();
-							  if(height.length > 0) {
+							  if(height.length > 0 && height != propsStandard.height) {
 							    content = content + " height=["+height+"]";
 						      }
 							  var autoplay = contents.find("#chkAutoplay");
@@ -141,7 +149,7 @@ var propsAlign = "";
               };
            } );
 
-            editor.addCommand( 'MediaEmbed', new CKEDITOR.dialogCommand( 'MediaEmbedDialog' ) );
+            editor.addCommand( 'mediaembed', new CKEDITOR.dialogCommand( 'MediaEmbedDialog' ) );
             editor.addCommand( 'MediaEmbedRemove',
     				{
     					exec : function( editor )
@@ -157,7 +165,7 @@ var propsAlign = "";
             editor.ui.addButton( 'MediaEmbed',
             {
                 label: 'Embed Media',
-                command: 'MediaEmbed',
+                command: 'mediaembed',
                 icon: this.path.toLowerCase() + 'images/icon.gif'
             } );
             
@@ -181,7 +189,7 @@ var propsAlign = "";
             if (editor.addMenuItems) {    
             	  // A group menu is required
             	  // order, as second parameter, is not required
-            	  editor.addMenuGroup('MediaEmbed');
+            	  editor.addMenuGroup('mediaembed');
             	 
             	  // Create a menu item
             	  editor.addMenuItems(
@@ -189,8 +197,8 @@ var propsAlign = "";
             		MediaEmbedDialog:
             		{
             	        label: 'Mediaegenskaper',
-            	        command: 'MediaEmbed',
-            	        group: 'MediaEmbed',
+            	        command: 'mediaembed',
+            	        group: 'mediaembed',
             	        icon: this.path.toLowerCase() + 'images/icon.gif',
             	        order: 1
             		},
@@ -198,7 +206,7 @@ var propsAlign = "";
 					{
 						label: 'Fjern media',
 						command: 'MediaEmbedRemove',
-						group: 'MediaEmbed',
+						group: 'mediaembed',
 						icon: this.path.toLowerCase() + 'images/iconremove.gif',
 						order: 5
 					}

@@ -76,13 +76,13 @@ var propsAlign = "";
             	    }, 50);
                   },
                   onOk : function() {
-                	  
-                	  
+
                 	  var editor = this.getParentEditor();
                 	  
 					  var theIframe = $("iframe#iframeMediaEmbed");
               	        var contents = theIframe.contents();
 					    var url = contents.find("#txtUrl").val();
+					    alert(url);
 						if(url != "" && url.indexOf(".") != -1) {
 							  var content = "${include:media-player url=["+unescape(url)+"]";			    
 							  var contentType = contents.find("#txtContentType").val();
@@ -154,17 +154,17 @@ var propsAlign = "";
                                            [
                                               {
         						               type : 'html',
-        						               id : 'pageMediaEmbed',
+        						               id : 'pageMediaEmbedMod',
         						               label : 'Embed Media',
         						               style : 'width : 100%',
-        						               html : '<iframe src="'+me.path.toLowerCase()+'dialogs/mediaembed_'+editor.config.language+'.html" frameborder="0" name="iframeMediaEmbed" id="iframeMediaEmbed" allowtransparency="1" style="width:100%;height:250px;margin:0;padding:0;"></iframe>'
+        						               html : '<iframe src="'+me.path.toLowerCase()+'dialogs/mediaembed_'+editor.config.language+'.html" frameborder="0" name="iframeMediaEmbed" id="iframeMediaEmbedMod" allowtransparency="1" style="width:100%;height:250px;margin:0;padding:0;"></iframe>'
         						              }
                                            ]
                                   }
                                ],
                           onShow : function() {
                     	    var check = setInterval(function() { // check each 50ms if iframe content is loaded
-                    	      var theIframe = $("iframe#iframeMediaEmbed");
+                    	      var theIframe = $("iframe#iframeMediaEmbedMod");
                     	      if(theIframe) {
                     	        var contents = theIframe.contents();
                     	        if(contents.find("#chkAutoplay").length) {
@@ -203,7 +203,7 @@ var propsAlign = "";
                         	  
                         	  var editor = this.getParentEditor();
                         	  
-        					  var theIframe = $("iframe#iframeMediaEmbed");
+        					  var theIframe = $("iframe#iframeMediaEmbedMod");
                       	        var contents = theIframe.contents();
         					    var url = contents.find("#txtUrl").val();
         						if(url != "" && url.indexOf(".") != -1) {

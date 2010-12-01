@@ -93,7 +93,7 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
   if(complete) {
 	config.filebrowserImageBrowseUrl = imageBrowseUrl;
 	config.filebrowserFlashBrowseUrl = flashBrowseUrl;
-	config.extraPlugins = 'MediaEmbed';
+	config.extraPlugins = 'mediaembed';
 
 	// TODO: is it possible to use this at all?
 	// Component is protected but can't use (only visible in HTML / src-edit)
@@ -106,7 +106,7 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
     config.stylesSet = divContainerStylesSet;
     
     if(name == "resource.content") {
-      config.format_tags = 'p;h1;h2;h3;h4;h5;h6;pre;div';
+      config.format_tags = 'p;h2;h3;h4;h5;h6;pre;div';
     } else {
       config.format_tags = 'p;h2;h3;h4;h5;h6;pre;div';
     }

@@ -57,29 +57,17 @@ var propsAlign = "";
             	      if(theIframe) {
             	        var contents = theIframe.contents();
             	        if(contents.find("#chkAutoplay").length) {
-            	          // Put values in dialog
-            	          contents.find("#txtUrl").val(props.url);
-            	          contents.find("#txtWidth").val(props.width);
-            	          contents.find("#txtHeight").val(props.height);
-            	          contents.find("#txtContentType").val(props.contentType);
-                	      if(props.autoplay == "true") {
+            	          // Put standardvalues in dialog
+            	          contents.find("#txtUrl").val(propsStandard.url);
+            	          contents.find("#txtWidth").val(propsStandard.width);
+            	          contents.find("#txtHeight").val(propsStandard.height);
+            	          contents.find("#txtContentType").val(propsStandard.contentType);
+                	      if(propsStandard.autoplay == "true") {
                 	        contents.find("#chkAutoplay").attr("checked", true);  	
                 	      } else {
                 	        contents.find("#chkAutoplay").attr("checked", false);  
                 	      }
-                	      if(propsAlign != "" && propsAlign != " ") {
-                	        contents.find("#txtAlign").val(propsAlign);
-                	      } else {
-                	    	contents.find("#txtAlign").val("");  
-                	      }
-                	      
-                	      // Restore init values
-                	      props.url = propsStandard.url;
-                	      props.width = propsStandard.width;
-                	      props.height = propsStandard.height;
-                	      props.autoplay = propsStandard.autoplay;
-                	      props.contentType = propsStandard.contentType;
-                	      propsAlign = "";
+                	      contents.find("#txtAlign").val("");  
                 	      
                 	      // Clear loop
             	          clearInterval(check);
@@ -148,8 +136,132 @@ var propsAlign = "";
                  }
               };
            } );
+           
+           
+           CKEDITOR.dialog.add( 'MediaEmbedDialogMod', function (editor)
+                   {	
+                      return {
+                         title : 'Embed Media Dialog',
+                         minWidth : 550,
+                         minHeight : 200,
+                         contents :
+                               [
+                                  {
+                                     id : 'iframe',
+                                     label : 'Embed Media',
+                                     expand : true,
+                                     elements :
+                                           [
+                                              {
+        						               type : 'html',
+        						               id : 'pageMediaEmbed',
+        						               label : 'Embed Media',
+        						               style : 'width : 100%',
+        						               html : '<iframe src="'+me.path.toLowerCase()+'dialogs/mediaembed_'+editor.config.language+'.html" frameborder="0" name="iframeMediaEmbed" id="iframeMediaEmbed" allowtransparency="1" style="width:100%;height:250px;margin:0;padding:0;"></iframe>'
+        						              }
+                                           ]
+                                  }
+                               ],
+                          onShow : function() {
+                    	    var check = setInterval(function() { // check each 50ms if iframe content is loaded
+                    	      var theIframe = $("iframe#iframeMediaEmbed");
+                    	      if(theIframe) {
+                    	        var contents = theIframe.contents();
+                    	        if(contents.find("#chkAutoplay").length) {
+                    	          // Put values in dialog
+                    	          contents.find("#txtUrl").val(props.url);
+                    	          contents.find("#txtWidth").val(props.width);
+                    	          contents.find("#txtHeight").val(props.height);
+                    	          contents.find("#txtContentType").val(props.contentType);
+                        	      if(props.autoplay == "true") {
+                        	        contents.find("#chkAutoplay").attr("checked", true);  	
+                        	      } else {
+                        	        contents.find("#chkAutoplay").attr("checked", false);  
+                        	      }
+                        	      if(propsAlign != "" && propsAlign != " ") {
+                        	        contents.find("#txtAlign").val(propsAlign);
+                        	      } else {
+                        	    	contents.find("#txtAlign").val("");  
+                        	      }
+                        	      
+                        	      // Restore init values
+                        	      props.url = propsStandard.url;
+                        	      props.width = propsStandard.width;
+                        	      props.height = propsStandard.height;
+                        	      props.autoplay = propsStandard.autoplay;
+                        	      props.contentType = propsStandard.contentType;
+                        	      propsAlign = "";
+                        	      
+                        	      // Clear loop
+                    	          clearInterval(check);
+                    	        }
+                    	      }
+                    	    }, 50);
+                          },
+                          onOk : function() {
+                        	  
+                        	  
+                        	  var editor = this.getParentEditor();
+                        	  
+        					  var theIframe = $("iframe#iframeMediaEmbed");
+                      	        var contents = theIframe.contents();
+        					    var url = contents.find("#txtUrl").val();
+        						if(url != "" && url.indexOf(".") != -1) {
+        							  var content = "${include:media-player url=["+unescape(url)+"]";			    
+        							  var contentType = contents.find("#txtContentType").val();
+        							  if(contentType.length > 0) {
+        							    content = content + " content-type=["+contentType+"]";
+        							  }
+        							  var width = contents.find("#txtWidth").val();
+        							  if(width.length > 0 && width != propsStandard.width) {
+        							    content = content + " width=["+width+"]";
+        							  }
+        							  var height = contents.find("#txtHeight").val();
+        							  if(height.length > 0 && height != propsStandard.height) {
+        							    content = content + " height=["+height+"]";
+        						      }
+        							  var autoplay = contents.find("#chkAutoplay");
+        							  if(autoplay.attr("checked") == true) {
+        							    content = content + " autoplay=[true]";
+        							  }
+        							  var align = contents.find("#txtAlign").val();
+        				
+        							  if(content.length>0) {
+        							    content = content + "}";
+        							  }			
+        							
+        							  var divClassType = '';
+        							  if(contentType.length > 0 && contentType == "audio/mp3") {  
+        							    divClassType = 'vrtx-media-player-audio';
+        							  } else if (getExtension(url) == "mp3") {
+        							    divClassType = 'vrtx-media-player-audio';
+        							  } else {
+        							    divClassType ='vrtx-media-player';
+        							  }
+        							  
+        	                          selected = editor.getSelection().getStartElement();
+        	                      	  selected.removeAttribute("class");
+        		                      if(align != "" && divClassType != "") {
+        		                        selected.addClass(divClassType);
+        		                    	selected.addClass(align);
+        		                      } else {
+        		                    	selected.addClass(divClassType); 
+        		                      }
+        	                      	  if(selected.is("p")) {
+        	                      	    selected.renameNode("div");
+        	                      	  }
+        	                      	  selected.setText(content);
+        							  
+        						} else {
+        						  alert("Du må spesifisere en URL");
+        						  return false;	
+        						}
+                         }
+                      };
+                   } );
 
             editor.addCommand( 'mediaembed', new CKEDITOR.dialogCommand( 'MediaEmbedDialog' ) );
+            editor.addCommand( 'mediaembedmod', new CKEDITOR.dialogCommand( 'MediaEmbedDialogMod' ) );
             editor.addCommand( 'MediaEmbedRemove',
     				{
     					exec : function( editor )
@@ -173,16 +285,13 @@ var propsAlign = "";
             	        var data = evt.data;
         				var element = data.element;
 
-        				var HTML = element.$.innerHTML;
+        				var HTML = element.getHtml();
         				if(HTML.indexOf("include:media-player") == -1) {
         				  return null;
         				}
         				
-                		var className = element.$.className;
-                		propsAlign = $.trim(className.replace(/vrtx-media-player[\w-]*/g, ""));
-
-        				extractMediaPlayerProps(HTML);
-        				data.dialog = 'MediaEmbedDialog';
+        				extractMediaPlayerProps(HTML, element);
+        				data.dialog = 'MediaEmbedDialogMod';
         			});
             
             
@@ -194,10 +303,10 @@ var propsAlign = "";
             	  // Create a menu item
             	  editor.addMenuItems(
             	  {	  
-            		MediaEmbedDialog:
+            		MediaEmbedDialogMod:
             		{
             	        label: 'Mediaegenskaper',
-            	        command: 'mediaembed',
+            	        command: 'mediaembedmod',
             	        group: 'mediaembed',
             	        icon: this.path.toLowerCase() + 'images/icon.gif',
             	        order: 1
@@ -216,18 +325,16 @@ var propsAlign = "";
             
             	if (editor.contextMenu) {
             	  editor.contextMenu.addListener(function(element, selection) {
-            		var HTML = element.$.innerHTML;
+            		var HTML = element.getHtml();
             		if(HTML.indexOf("include:media-player") == -1) {
             		  return null;	
             		}
             		
-            		var className = element.$.className;
-            		propsAlign = $.trim(className.replace(/vrtx-media-player[\w-]*/g, ""));
-
-					extractMediaPlayerProps(HTML);
+					extractMediaPlayerProps(HTML, element);
+					
 					return {
-						MediaEmbedDialog: CKEDITOR.TRISTATE_ON,
-						RemoveMedia: CKEDITOR.TRISTATE_ON 
+						MediaEmbedDialogMod: CKEDITOR.TRISTATE_OFF,
+						RemoveMedia: CKEDITOR.TRISTATE_OFF
 					};
                 });
               }
@@ -246,9 +353,12 @@ function getExtension(url) {
     return ext;
 }
 
-function extractMediaPlayerProps(HTML) {
+function extractMediaPlayerProps(HTML, element) {
     var regexp = [];
     var HTMLOrig = HTML;
+    
+    var className = element.$.className;
+	propsAlign = $.trim(className.replace(/vrtx-media-player[\w-]*/g, ""));
   		
     for(var name in props) {
       if(name != "contentType") {

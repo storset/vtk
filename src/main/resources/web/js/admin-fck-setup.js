@@ -27,7 +27,7 @@ var completeToolbarOld = [ [ 'Source', 'PasteText', 'PasteFromWord', '-', 'Undo'
 
 var commentsToolbar = [ [ 'Source','Bold',
                           'Italic', 'Underline', 'Strike', 'NumberedList',
-                          'BulletedList', 'Link', 'Unlink' ] ];
+                          'BulletedList', 'Link', 'Unlink', 'CreateDiv' ] ];
 
 function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, baseDocumentUrl, browsePath,
                    defaultLanguage, cssFileList) {
@@ -128,6 +128,8 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
   config.height = height + 'px';
   config.autoGrow_maxHeight = maxHeight + 'px';
   config.autoGrow_minHeight = minHeight + 'px';
+
+  config.forcePasteAsPlainText = false;
 	
   CKEDITOR.replace(name, config);
 }

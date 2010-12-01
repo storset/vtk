@@ -19,7 +19,8 @@
   <script type="text/javascript" src="${webResources?html}/jquery-ui-1.7.1.custom/js/jquery-ui-1.7.1.custom.min.js"></script>
   <script type="text/javascript" src="${webResources?html}/jquery-ui-1.7.1.custom/js/jquery.ui.datepicker-no.js"></script>
   <script type="text/javascript" src="${webResources?html}/jquery-ui-1.7.1.custom/js/jquery.ui.datepicker-nn.js"></script>
-  <script type="text/javascript" src="${jsBaseURL?html}/datepicker.js"></script>
+  <script type="text/javascript" src="${jsBaseURL?html}/datepicker.js"></script>  
+  <script type="text/javascript" src="${jsBaseURL?html}/admin-datepicker.js"></script>
 </#macro>
 
 <#macro createEditor content completeEditor=false withoutSubSuper=false>

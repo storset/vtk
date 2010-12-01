@@ -1,5 +1,6 @@
 /*
 * @example An iframe-based dialog with custom button handling logics.
+* TODO: fix VTK-2010 and refactor, optimalize, use API etc. for existing code
 */
 
 var propsStandard = {

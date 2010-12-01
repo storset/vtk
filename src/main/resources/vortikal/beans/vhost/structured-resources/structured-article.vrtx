@@ -96,7 +96,7 @@ resourcetype structured-article : structured-document {
             [call "resource:tags"]
             [call "comp:author"]
             [call "comp:vrtx-date-info"]
-            <div class="vrtx-social-components"
+            <div class="vrtx-social-components">
               [call "resource:email-friend"]
               [call "resource:share-at"]
             </div>

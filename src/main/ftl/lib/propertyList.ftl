@@ -414,7 +414,7 @@
         <#else>
           <#local label>
             <@vrtx.msg code="${localizedValueLookupKeyPrefix}.value.${valueItem.property.value?string}"
-                       default="${valueItem.property.value?html}" />
+                       default="${valueItem.property.value}" />
           </#local>
           ${label}
         </#if>
@@ -427,7 +427,6 @@
       ${label}
     </#if>
   </#local>
-
   <#local editURL>
     <@propertyItemEditURL item=item toggle=toggle />
   </#local>
@@ -544,9 +543,9 @@
 
           <@formInputWrapper item>
             <#if inputSize &gt; 99>
-              <textarea name="value" rows="5" cols="60">${value?html}</textarea>
+              <textarea name="value" rows="5" cols="60">${value}</textarea>
             <#else>
-              <input type="text" id="value" name="value" value="${value?html}" size=${inputSize}>
+              <input type="text" id="value" name="value" value="${value}" size=${inputSize}>
               <#if item.format?exists>(${item.format})</#if>
             </#if>
             <#if form.hierarchicalHelpUrl?exists>

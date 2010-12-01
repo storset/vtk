@@ -82,7 +82,6 @@ var propsAlign = "";
 					  var theIframe = $("iframe#iframeMediaEmbed");
               	        var contents = theIframe.contents();
 					    var url = contents.find("#txtUrl").val();
-					    alert(url);
 						if(url != "" && url.indexOf(".") != -1) {
 							  var content = "${include:media-player url=["+unescape(url)+"]";			    
 							  var contentType = contents.find("#txtContentType").val();
@@ -131,21 +130,6 @@ var propsAlign = "";
 		                      	selected.renameNode("div");
 		                      }
 							  selected.appendHtml('<div class="'+divClasses+'">'+content+'</div>');
-
-
-//							  selected = editor.getSelection().getStartElement().$.innerHTML = 
-//								  selected = editor.getSelection().getStartElement().$.innerHTML + ';
-//	                      	  selected.removeAttribute("class");
-//		                      if(align != "" && divClassType != "") {
-//		                        selected.addClass(divClassType);
-//		                    	selected.addClass(align);
-//		                      } else {
-//		                    	selected.addClass(divClassType); 
-//		                      }
-//	                      	  if(selected.is("p")) {
-//	                      	    selected.renameNode("div");
-//	                      	  }
-//	                      	  selected.setText();
 							  
 						} else {
 						  alert("Du må spesifisere en URL");
@@ -382,7 +366,7 @@ function extractMediaPlayerProps(HTML, element) {
       if(name != "contentType") {
         regexp = new RegExp('(?:' + name + '=\\[)(.*?)(?=\\])'); // non-capturing group for prop=. TODO: positive lookbehind (non-capturing)
       } else {
-    	regexp = new RegExp('(?:content\\-type=\\[)(.*?)(?=\\])'); // non-capturing group for prop=. TODO: positive lookbehind (non-capturing)
+    	regexp = new RegExp('(?:content\\-type=\\[)(.*?)(?=\\])');
       }
       
   	  var prop = regexp.exec(HTML);

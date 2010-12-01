@@ -84,7 +84,6 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
 
   config.baseHref = baseDocumentUrl;
   config.contentsCss = cssFileList;
-  config.forcePasteAsPlainText = true;
   	
   if(linkBrowseUrl != null) {
     config.filebrowserBrowseUrl = linkBrowseUrl;

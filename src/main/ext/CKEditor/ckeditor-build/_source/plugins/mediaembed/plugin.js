@@ -116,18 +116,36 @@ var propsAlign = "";
 							    divClassType ='vrtx-media-player';
 							  }
 							  
-	                          selected = editor.getSelection().getStartElement();
-	                      	  selected.removeAttribute("class");
-		                      if(align != "" && divClassType != "") {
-		                        selected.addClass(divClassType);
-		                    	selected.addClass(align);
-		                      } else {
-		                    	selected.addClass(divClassType); 
+							  //console.log(content);
+							  
+							  var divClasses = divClassType;
+							  if(align != "") {
+								  divClasses = divClasses + " " + align;
+							  }
+							  
+							  //console.log(editor.getSelection().getStartElement());
+							  //console.log(editor.getSelection().getNative());
+
+							  selected = editor.getSelection().getStartElement();
+							  if(selected.is("p")) {
+		                      	selected.renameNode("div");
 		                      }
-	                      	  if(selected.is("p")) {
-	                      	    selected.renameNode("div");
-	                      	  }
-	                      	  selected.setText(content);
+							  selected.appendHtml('<div class="'+divClasses+'">'+content+'</div>');
+
+
+//							  selected = editor.getSelection().getStartElement().$.innerHTML = 
+//								  selected = editor.getSelection().getStartElement().$.innerHTML + ';
+//	                      	  selected.removeAttribute("class");
+//		                      if(align != "" && divClassType != "") {
+//		                        selected.addClass(divClassType);
+//		                    	selected.addClass(align);
+//		                      } else {
+//		                    	selected.addClass(divClassType); 
+//		                      }
+//	                      	  if(selected.is("p")) {
+//	                      	    selected.renameNode("div");
+//	                      	  }
+//	                      	  selected.setText();
 							  
 						} else {
 						  alert("Du må spesifisere en URL");

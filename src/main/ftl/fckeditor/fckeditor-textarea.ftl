@@ -42,7 +42,7 @@
 <#macro editorInTextarea
         textarea
         toolbar='Complete'
-        format_tags='p;h2;h3;h4;h5;h6;pre'
+        fontFormats='p;h1;h2;h3;h4;h5;h6;pre'
         fullpage=false
         collapseToolbar=false
         runOnLoad=true

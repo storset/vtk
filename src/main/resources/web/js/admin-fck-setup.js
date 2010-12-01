@@ -25,9 +25,9 @@ var completeToolbarOld = [ [ 'Source', 'PasteText', 'PasteFromWord', '-', 'Undo'
                            'JustifyCenter', 'JustifyRight', 'TextColor',
                            'Maximize' ]];
 
-var commentsToolbar = [ [ 'Source','Bold',
+var commentsToolbar = [ [ 'Source', 'PasteText', 'Bold',
                           'Italic', 'Underline', 'Strike', 'NumberedList',
-                          'BulletedList', 'Link', 'Unlink', 'CreateDiv' ] ];
+                          'BulletedList', 'Link', 'Unlink' ] ];
 
 function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, baseDocumentUrl, browsePath,
                    defaultLanguage, cssFileList) {

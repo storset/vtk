@@ -140,3 +140,7 @@
   text-indent: -9000px;
   overflow: hidden;
 }
+
+ul.cke_panel_list a {
+  color: #000 !important;
+}

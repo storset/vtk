@@ -477,10 +477,6 @@ input.date, input.hours, input.minutes {
   left: 0px;
 }
 
-.introImageAndCaption .caption div {
-  margin-top: 2px;
-}
-
 .introImageAndCaption div.vrtx-image-ref-browse {
   float: left;
 }

@@ -29,7 +29,7 @@
     <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/tooltip.js"></script>
     <@autocomplete.addAutoCompleteScripts srcBase="${webResources?html}"/>
     
-    <@editor.addDatePickerScripts />
+    <@editor.addDatePickerScripts true />
     
   	<script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/shortcut.js"></script>
     <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/admin-ck-helper.js"></script>

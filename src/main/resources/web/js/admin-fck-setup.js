@@ -17,7 +17,7 @@ var completeToolbar = [ [ 'Source', 'PasteText', 'PasteFromWord', '-', 'Undo', '
 
 var completeToolbarOld = [ [ 'Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
                           'RemoveFormat', '-', 'Link', 'Unlink', 'Anchor',
-                          'Image', 'MediaEmbed', 'Table',
+                          'Image', 'CreateDiv', 'MediaEmbed', 'Table',
                           'HorizontalRule', 'SpecialChar' 
                         ],['Format', 'Bold', 'Italic', 'Underline', 'Strike',
                            'Subscript', 'Superscript', 'NumberedList',

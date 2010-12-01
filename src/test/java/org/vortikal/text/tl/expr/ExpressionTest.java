@@ -115,6 +115,13 @@ public class ExpressionTest extends TestCase {
         assertEquals(false, result);
 
         result = eval(new Argument[] {
+                new Symbol("!"),
+                new Symbol("!"),
+                new Literal("true")
+        });
+        assertEquals(true, result);
+        
+        result = eval(new Argument[] {
                 new Literal("774")	
         });
         assertEquals(774, result);
@@ -277,9 +284,52 @@ public class ExpressionTest extends TestCase {
                 new Symbol(")")
         });
         assertEquals(true, result);
-            
+
+        Context ctx = new Context(Locale.getDefault());        
+        
+        ctx.define("x", "y", true);
+        ctx.define("a", null, true);
+        
+        result = eval(ctx, new Argument[] {
+                new Symbol("x"),
+                new Symbol("="),
+                new Literal("'y'"),
+                new Symbol("||"),
+                new Symbol("("),
+                new Symbol("x"),
+                new Symbol("="),
+                new Literal("'z'"),
+                new Symbol("&&"),
+                new Symbol("a"),
+                new Symbol("="),
+                new Literal("'value'"),
+                new Symbol(")")
+        });
+        assertEquals(true, result);
+
+        ctx.define("x", "z", true);
+        ctx.define("a", "value", true);
+        
+        result = eval(ctx, new Argument[] {
+                new Symbol("x"),
+                new Symbol("="),
+                new Literal("'y'"),
+                new Symbol("||"),
+                new Symbol("("),
+                new Symbol("x"),
+                new Symbol("="),
+                new Literal("'z'"),
+                new Symbol("&&"),
+                new Symbol("a"),
+                new Symbol("="),
+                new Literal("'value'"),
+                new Symbol(")")
+        });
+        assertEquals(true, result);
+        
     }
 
+    
     public void testFunctions() {
         Context ctx = new Context(Locale.getDefault());
         ctx.define("a", "a", true);

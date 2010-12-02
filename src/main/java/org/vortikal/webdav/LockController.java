@@ -47,12 +47,13 @@ import org.jdom.output.XMLOutputter;
 import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.repository.FailedDependencyException;
 import org.vortikal.repository.IllegalOperationException;
+import org.vortikal.repository.Lock;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.ReadOnlyException;
+import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
-import org.vortikal.repository.Repository.Depth;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.web.HttpUtil;
@@ -140,7 +141,10 @@ public class LockController extends AbstractWebdavController {
                     //If contentLength <= 0 we assume we want to refresh a lock
                     // If-header has already been verified in verifyIfHeader so we don't need to
                     // verify the if-header again
-                    lockToken = resource.getLock().getLockToken();
+                    Lock lock = resource.getLock();
+                    if (lock != null) {
+                        lockToken = lock.getLockToken();
+                    }
                 } else {
                     Document requestBody = parseRequestBody(request);
                     validateRequest(requestBody);

@@ -65,40 +65,40 @@
 
 <#macro displayEntry entry conf element>
  <#if element = "title" >
-	  <a class="item-title" href="<#if entry.link?exists>${entry.link?html}<#else>${entry.uri?html}</#if>">${entry.title?trim?html}</a>
-</#if>
+     <a class="item-title" href="<#if entry.link?exists>${entry.link?html}<#else>${entry.uri?html}</#if>">${entry.title?trim?html}</a>
+ </#if>
  <#if element = "publishDate" >
-	  <#if conf.publishedDate?exists && entry.publishedDate?exists>
-	  <span class="published-date">
-	    <@vrtx.date value=entry.publishedDate format="${conf.publishedDate}" />
-	  </span>
-	  </#if>
+     <#if conf.publishedDate?exists && entry.publishedDate?exists>
+     <span class="published-date">
+       <@vrtx.date value=entry.publishedDate format="${conf.publishedDate}" />
+     </span>
+     </#if>
   </#if>
 
     <#if element = "categories" >
-	  <#if conf.displayCategories?exists && (entry.categories)?exists && (entry.categories)?size &gt; 0>
-	    <ul class="categories">
-	      <#list entry.categories as category>
-	        <li>${category.name}</li>
-	      </#list>
-	    </ul>
-	  </#if>
+     <#if conf.displayCategories?exists && (entry.categories)?exists && (entry.categories)?size &gt; 0>
+       <ul class="categories">
+         <#list entry.categories as category>
+           <li>${category.name}</li>
+         </#list>
+       </ul>
+     </#if>
   </#if>
   
   <#if element = "channel" >
-	  <#if conf.displayChannel?exists>
-	    <#if conf.publishedDate?exists && entry.publishedDate?exists> - </#if><a href="${feedMapping.getUrl(entry)}" class="channel">${feedMapping.getTitle(entry)?html}</a> 
-	  </#if>
+     <#if conf.displayChannel?exists>
+       <#if conf.publishedDate?exists && entry.publishedDate?exists> - </#if><a href="${feedMapping.getUrl(entry)}" class="channel">${feedMapping.getTitle(entry)?html}</a> 
+     </#if>
   </#if>
   
   <#if element = "description" && conf.itemDescription?exists && descriptionNoImage[entry]?exists && descriptionNoImage[entry]?has_content>
     <div class="item-description">
-  	  ${descriptionNoImage[entry]?string}
+       ${descriptionNoImage[entry]?string}
     </div>
   </#if>
   
   <#if element = "picture" && conf.itemPicture?exists && imageMap[entry]?exists && imageMap[entry]?has_content >
-  	  <a class="vrtx-image" href="<#if entry.link?exists>${entry.link?html}<#else>${entry.uri?html}</#if>">${imageMap[entry]?string}</a>
+     <a class="vrtx-image" href="<#if entry.link?exists>${entry.link?html}<#else>${entry.uri?html}</#if>">${imageMap[entry]?string}</a>
   </#if>
 
 </#macro>

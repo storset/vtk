@@ -88,7 +88,7 @@ public class ImageRefValueFormatter implements ValueFormatter, ApplicationContex
                 ref = requestContext.getCurrentCollection().extend(val);
             }
             URL url = thumbnailService.constructURL(ref);
-            return url.toString();
+            return url.getPathRepresentation();
         } catch (Throwable t) {
             return val;
         }

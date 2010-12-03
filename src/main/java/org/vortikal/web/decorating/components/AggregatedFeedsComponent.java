@@ -40,9 +40,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.util.cache.ContentCache;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
+import org.vortikal.web.service.URL;
 
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
@@ -184,9 +187,23 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
         List<String> elementOrder = getElementOrder(PARAMETER_FEED_ELEMENT_ORDER, request);
         model.put("elementOrder", elementOrder);
 
-        Map<String,String> imgMap = getFilteredEntryValues(getImgHtmlFilter(), feed);
-        imgMap = excludeEverythingButFirstTag(imgMap);
-        Map<String,String> descriptionNoImage = getFilteredEntryValues(getNoImgHtmlFilter(), feed);
+        URL requestURL = RequestContext.getRequestContext().getRequestURL();
+        Map<String, String> descriptionNoImage = new HashMap<String, String>();
+        Map<String, String> imgMap = new HashMap<String, String>();
+        for (SyndEntry entry: entries) {
+            if (entry.getDescription() == null) {
+                descriptionNoImage.put(entry.toString(), null);
+                continue;
+            }
+            Filter filter = new Filter(getNoImgHtmlFilter(), requestURL);
+            HtmlFragment fragment = super.filterEntry(entry, filter);
+            descriptionNoImage.put(entry.toString(), fragment.getStringRepresentation());
+            if (filter.getImage() != null) {
+                imgMap.put(entry.toString(), filter.getImage().getEnclosedContent());
+            } else {
+                imgMap.put(entry.toString(), null);
+            }
+        }
         model.put("descriptionNoImage", descriptionNoImage);        
         model.put("imageMap", imgMap);
     

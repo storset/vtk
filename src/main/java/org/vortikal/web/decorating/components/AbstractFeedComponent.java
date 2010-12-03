@@ -31,18 +31,19 @@
 package org.vortikal.web.decorating.components;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
+import org.vortikal.text.html.HtmlAttribute;
+import org.vortikal.text.html.HtmlContent;
+import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlFragment;
+import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.web.decorating.DecoratorRequest;
+import org.vortikal.web.service.URL;
 
 import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndFeed;
 
 public abstract class AbstractFeedComponent extends ViewRenderingDecoratorComponent {
 
@@ -67,22 +68,82 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
         }
         return false;
     }
-
-    @SuppressWarnings("unchecked")
-    protected Map<String,String> getFilteredEntryValues(HtmlPageFilter filter, SyndFeed feed) throws Exception {
-        Map<String,String> result = new LinkedHashMap<String,String>();
-        List<SyndEntry> entries = feed.getEntries();
-        for (SyndEntry entry : entries) {
-            String htmlFragment = null;
-            if (entry.getDescription() != null)
-                htmlFragment = entry.getDescription().getValue();
-            HtmlFragment fragment = this.parser.parseFragment(htmlFragment);
-            fragment.filter(filter);
-            result.put(entry.toString(),fragment.getStringRepresentation());
+ 
+    protected HtmlFragment filterEntry(SyndEntry entry, HtmlPageFilter filter) throws Exception {
+        String htmlFragment = null;
+        if (entry.getDescription() == null) {
+            return null;
         }
-        return result;
+        if (entry.getDescription() != null) {
+            htmlFragment = entry.getDescription().getValue();
+        }
+        HtmlFragment fragment = this.parser.parseFragment(htmlFragment);
+        fragment.filter(filter);
+        return fragment;
     }
 
+    /**
+     * Filter: keeps a reference to the first <img> tag, possibly making 
+     * the 'src' attribute relative to the supplied base URL. 
+     * Invokes another filter to do content selection.
+     */
+    protected class Filter implements HtmlPageFilter {
+        private HtmlPageFilter filter;
+        private HtmlElement img = null;
+        private URL base;
+
+        public Filter(HtmlPageFilter filter, URL base) {
+            this.filter = filter;
+            this.base= base;
+        }
+
+        public HtmlElement getImage() {
+            return this.img;
+        }
+
+        @Override
+        public NodeResult filter(HtmlContent node) {
+            NodeResult result = this.filter.filter(node);
+            if (node instanceof HtmlElement) {
+                HtmlElement elem = (HtmlElement) node;
+                if ("img".equalsIgnoreCase(elem.getName())) {
+                    if (this.img == null) {
+                        processImageURL(elem);
+                        this.img = elem;
+                    }
+                    return NodeResult.skip;
+                }
+            }
+            return result;
+        }
+
+        @Override
+        public boolean match(HtmlPage page) {
+            return this.filter.match(page);
+        }
+
+        private void processImageURL(HtmlElement img) {
+            if (img.getAttribute("src") == null) {
+                return;
+            }
+            HtmlAttribute attr = img.getAttribute("src");
+            if (attr == null || !attr.hasValue()) {
+                return;
+            }
+            String val = attr.getValue();
+            if (!val.startsWith("http://") && !val.startsWith("https://")) {
+                return;
+            }
+            try {
+                URL url = URL.parse(val);
+                if (url.getHost().equals(this.base.getHost())) {
+                    attr.setValue(url.getPathRepresentation());
+                }
+            } catch (Throwable t) { }
+        }
+    }
+    
+    
     protected List<String> getElementOrder(String param, DecoratorRequest request) {
         List<String> resultOrder = new ArrayList<String>();
 
@@ -106,25 +167,6 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
             }
         }
         return resultOrder;
-    }
-
-    protected Map<String, String> excludeEverythingButFirstTag(Map<String, String> list) {
-        for (Entry<String, String> entry : list.entrySet()) {
-            String value = entry.getValue();
-            int l_index = -1;
-            int r_index = -1;
-            if (value != null) {
-                l_index = value.indexOf("<");
-                r_index = value.indexOf(">");
-            }
-            String key = entry.getKey();
-            if (r_index > -1 && l_index > -1) {
-                list.put(key, value.subSequence(l_index, r_index + 1).toString());
-            } else {
-                list.put(key, null);
-            }
-        }
-        return list;
     }
 
     public void setImgHtmlFilter(HtmlPageFilter imgHtmlFilter) {

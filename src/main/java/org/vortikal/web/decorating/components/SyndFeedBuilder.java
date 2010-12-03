@@ -35,12 +35,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Path;
+import org.vortikal.text.html.HtmlAttribute;
 import org.vortikal.text.html.HtmlContent;
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.text.html.HtmlPageParser;
+import org.vortikal.web.service.URL;
 
 import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndEntry;
@@ -68,12 +71,22 @@ public class SyndFeedBuilder {
         SyndFeedInput input = new SyndFeedInput();
         SyndFeed feed = input.build(xmlReader);
         clean(feed);
-        return feed;            
+        return feed;
     }
+
     
     private void clean(SyndFeed feed) throws Exception {
+        
+        URL base = null;
+        try {
+            base = URL.parse(feed.getLink());
+        } catch (Throwable t) {
+        }
+
         for (Object o : feed.getEntries()) {
             SyndEntry entry = (SyndEntry) o;
+            entry.setLink(resolveLink(entry.getLink(), base));
+            
             SyndContent desc = entry.getDescription();
             if (desc != null) {
                 String value = desc.getValue();
@@ -85,27 +98,86 @@ public class SyndFeedBuilder {
                 if (type != null) {
                     if (type.equals("xhtml")) {
                         HtmlFragment frag = this.htmlParser.parseFragment(value);
-                        filterXhtml(frag);
+                        filterXhtml(frag, base);
                         desc.setValue(frag.getStringRepresentation());
 
                     } else if (type.equals("text/html") && desc.getValue() != null) {
                         HtmlFragment frag = this.htmlParser.parseFragment(value);
-                        filterHtml(frag);
+                        filterHtml(frag, base);
                         desc.setValue(frag.getStringRepresentation());
-
-                    }  
+                    }
                 } else {
                     HtmlFragment frag = this.htmlParser.parseFragment(value);
-                    filterText(frag);
+                    filterText(frag, base);
                     desc.setValue(frag.getStringRepresentation());
                 }
             }
         }
     }
-    
-    private void filterXhtml(HtmlFragment fragment) {
-        fragment.filter(this.safeHtmlFilter);
 
+    private String resolveLink(String link, URL base) {
+        if (base == null) {
+            return link;
+        }
+        if (link.startsWith("http://") || link.startsWith("https://")) {
+            return link;
+        }
+        String rest = "";
+        if (link.contains("?")) {
+            rest = link.substring(link.indexOf("?"));
+        } else if (link.contains("#")) {
+            rest = link.substring(link.indexOf("#"));
+        }
+        if (rest.length() > 0) {
+            link = link.substring(0, link.length() - rest.length());
+        }
+        if (link.startsWith("/")) {
+            while (link.endsWith("/") && !"/".equals(link)) {
+                link = link.substring(0, link.length() - 1);
+            }
+            Path p = Path.fromString(link);
+            URL url = new URL(base);
+            url.setPath(p);
+            return url.toString() + rest;
+        }        
+        URL url = new URL(base);
+        url.setPath(url.getPath().extend(link));
+        return url.toString() + rest;
+    }
+    
+
+    private class ImageFilter implements HtmlPageFilter {
+        private URL base;
+        public ImageFilter(URL base) {
+            this.base = base;
+        }
+        @Override
+        public boolean match(HtmlPage page) {
+            return true;
+        }
+        @Override
+        public NodeResult filter(HtmlContent node) {
+            if (node instanceof HtmlElement) {
+                HtmlElement elem = (HtmlElement) node;
+                if (elem.getName().equalsIgnoreCase("img")) {
+                    HtmlAttribute src = elem.getAttribute("src");
+                    if (src != null) {
+                        String link = src.getValue();
+                        if (link != null) {
+                            link = resolveLink(link, base);
+                            src.setValue(link);
+                        }
+                    }
+                }
+            }
+            return NodeResult.keep;
+        }
+    }
+    
+    private void filterXhtml(HtmlFragment fragment, URL base) {
+        fragment.filter(this.safeHtmlFilter);
+        fragment.filter(new ImageFilter(base));
+        
         final Set<HtmlContent> toplevel = new HashSet<HtmlContent>(fragment.getContent());
         fragment.filter(new HtmlPageFilter() {
             public boolean match(HtmlPage page) {
@@ -122,12 +194,14 @@ public class SyndFeedBuilder {
             }});
     }
 
-    private void filterHtml(HtmlFragment fragment) {
+    private void filterHtml(HtmlFragment fragment, URL base) {
         fragment.filter(this.safeHtmlFilter);
+        fragment.filter(new ImageFilter(base));
     }
 
-    private void filterText(HtmlFragment fragment) {
+    private void filterText(HtmlFragment fragment, URL base) {
         fragment.filter(this.safeHtmlFilter);
+        fragment.filter(new ImageFilter(base));
     }
 
 }

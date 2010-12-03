@@ -36,10 +36,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.util.cache.ContentCache;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
+import org.vortikal.web.service.URL;
 
+import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
 
 /**
@@ -199,20 +203,44 @@ public class FeedComponent extends AbstractFeedComponent {
         } catch (Exception e) {
             throw new RuntimeException("Could not read feed url " + url + " (" + e.getMessage() + ")", e);
         }
-                
+
         List<String> elementOrder = getElementOrder(PARAMETER_FEED_ELEMENT_ORDER, request);
         model.put("elementOrder", elementOrder);
 
-        Map<String,String> imgMap = getFilteredEntryValues(getImgHtmlFilter(), feed);
-        imgMap = excludeEverythingButFirstTag(imgMap);
-        Map<String,String> descriptionNoImage = getFilteredEntryValues(getNoImgHtmlFilter(), feed);
+        Map<String, String> descriptionNoImage = new HashMap<String, String>();
+        Map<String, String> imgMap = new HashMap<String, String>();
+
+        URL requestURL = RequestContext.getRequestContext().getRequestURL();
+        
+        @SuppressWarnings("unchecked")
+        List<SyndEntry> entries = (List<SyndEntry>) feed.getEntries();
+        for (SyndEntry entry: entries) {
+            if (entry.getDescription() == null) {
+                continue;
+            }
+            Filter filter = new Filter(getNoImgHtmlFilter(), requestURL);
+            HtmlFragment fragment = super.filterEntry(entry, filter);
+            descriptionNoImage.put(entry.toString(), fragment.getStringRepresentation());
+            if (filter.getImage() != null) {
+                imgMap.put(entry.toString(), filter.getImage().getEnclosedContent());
+            } else {
+                imgMap.put(entry.toString(), null);
+            }
+        }
+        
+        // Split html: <img> elements in 'imgMap', everything else in 'descriptionNoImage'
+        //Map<String,String> imgMap = getFilteredEntryValues(getImgHtmlFilter(), feed);
+        //imgMap = excludeEverythingButFirstTag(imgMap);
+        //Map<String,String> descriptionNoImage = getFilteredEntryValues(getNoImgHtmlFilter(), feed);
         model.put("descriptionNoImage", descriptionNoImage);
         model.put("imageMap", imgMap);
         
         model.put("feed", feed);
         model.put("conf", conf);
     }
-
+    
+    
+    
     protected String getDescriptionInternal() {
         return "Inserts a feed (RSS, Atom) component on the page";
     }

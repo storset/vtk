@@ -40,6 +40,7 @@ import org.vortikal.context.BaseContext;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Resource;
 import org.vortikal.web.service.Service;
+import org.vortikal.web.service.URL;
 
 
 /**
@@ -112,7 +113,6 @@ public class RequestContext {
         if (BaseContext.exists()) {
             return BaseContext.getContext().getAttribute(RequestContext.class.getName()) != null;
         }
-
         return false;
     }
 
@@ -137,6 +137,12 @@ public class RequestContext {
         return this.servletRequest;
     }
 
+    /**
+     * Gets the request URL
+     */
+    public URL getRequestURL() {
+        return URL.create(this.servletRequest);
+    }
 
     /**
      * Gets the current {@link Service} that this request executes
@@ -180,7 +186,7 @@ public class RequestContext {
     public Path getIndexFileURI() {
         return this.indexFileURI;
     }
-    
+
     public void addInfoMessage(Message msg) {
         if (msg == null) {
             throw new IllegalArgumentException("Message cannot be null");

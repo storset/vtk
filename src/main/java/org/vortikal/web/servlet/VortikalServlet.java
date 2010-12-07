@@ -33,6 +33,7 @@ package org.vortikal.web.servlet;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -150,7 +151,7 @@ public class VortikalServlet extends DispatcherServlet {
     private RepositoryContextInitializer repositoryContextInitializer;
     private RequestContextInitializer requestContextInitializer;
     private ErrorHandler[] errorHandlers = new ErrorHandler[0];
-    private long requests = 0;
+    private AtomicLong requests = new AtomicLong(0);
 
     @Override
     public String getServletInfo() {
@@ -341,12 +342,7 @@ public class VortikalServlet extends DispatcherServlet {
         Throwable failureCause = null;
 
         String threadName = Thread.currentThread().getName();
-        long number = 0;
-
-        synchronized(this) {
-            this.requests++;
-            number = this.requests;
-        }
+        long number = this.requests.incrementAndGet();
 
         boolean proceedService = true;
         HeaderAwareResponseWrapper responseWrapper = 

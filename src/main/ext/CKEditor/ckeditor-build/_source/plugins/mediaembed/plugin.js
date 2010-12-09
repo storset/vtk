@@ -185,7 +185,7 @@ function insertOrModifyComponent(editor, iframeId, init) {
 	  
 	    var url = contents.find("#txtUrl").val();
 		if(url != "" && url.indexOf(".") != -1) {
-			  var content = "${include:media-player url=["+unescape(url)+"]";			    
+			  var content = "${include:media-player url=["+url+"]";			    
 			  var contentType = contents.find("#txtContentType").val();
 			  if(contentType.length > 0) {
 			    content = content + " content-type=["+contentType+"]";

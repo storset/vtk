@@ -3,7 +3,7 @@
 * TODO: fix VTK-2010 and refactor, optimalize, use API etc. for existing code
 */
 
-var propsStandard = {
+var paramsStandard = {
   "url" : "",
   "width" : 507,
   "height" : 322,
@@ -11,7 +11,7 @@ var propsStandard = {
   "contentType" : ""
 };
 
-var props = {
+var params = {
   "url" : "",
   "width" : 507,
   "height" : 322,
@@ -19,7 +19,7 @@ var props = {
   "contentType" : ""
 };
 
-var propsAlign = "";
+var divAlign = "";
 
 ( function() {
     CKEDITOR.plugins.add( 'mediaembed',
@@ -191,11 +191,11 @@ function insertOrModifyComponent(editor, iframeId, init) {
 			    content = content + " content-type=["+contentType+"]";
 			  }
 			  var width = contents.find("#txtWidth").val();
-			  if(width.length > 0 && width != propsStandard.width) {
+			  if(width.length > 0 && width != paramsStandard.width) {
 			    content = content + " width=["+width+"]";
 			  }
 			  var height = contents.find("#txtHeight").val();
-			  if(height.length > 0 && height != propsStandard.height) {
+			  if(height.length > 0 && height != paramsStandard.height) {
 			    content = content + " height=["+height+"]";
 		      }
 			  var autoplay = contents.find("#chkAutoplay");
@@ -257,31 +257,31 @@ function putDialogValues(iframeId, init) {
 	        var contents = theIframe.contents();
 	        if(contents.find("#chkAutoplay").length) {
 	          // Put standardvalues in dialog
-	          contents.find("#txtUrl").val(init ? propsStandard.url : props.url);
-	          contents.find("#txtWidth").val(init ? propsStandard.width : props.width);
-	          contents.find("#txtHeight").val(init ? propsStandard.height : props.height);
-	          contents.find("#txtContentType").val(init ? propsStandard.contentType : props.contentType);
+	          contents.find("#txtUrl").val(init ? paramsStandard.url : params.url);
+	          contents.find("#txtWidth").val(init ? paramsStandard.width : params.width);
+	          contents.find("#txtHeight").val(init ? paramsStandard.height : params.height);
+	          contents.find("#txtContentType").val(init ? paramsStandard.contentType : params.contentType);
 	          
-	          var autoPlay = init ? propsStandard.autoplay : props.autoplay;
+	          var autoPlay = init ? paramsStandard.autoplay : params.autoplay;
     	      if(autoPlay == "true") {
     	        contents.find("#chkAutoplay").attr("checked", true);  	
     	      } else {
     	        contents.find("#chkAutoplay").attr("checked", false);  
     	      }
-    	      if(propsAlign != "" && propsAlign != " " && !init) {
-      	        contents.find("#txtAlign").val(propsAlign);
+    	      if(divAlign != "" && divAlign != " " && !init) {
+      	        contents.find("#txtAlign").val(divAlign);
       	      } else {
       	    	contents.find("#txtAlign").val("");  
       	      }
     	      
     	      if(!init) {
     	    	// Restore init values
-        	    props.url = propsStandard.url;
-        	    props.width = propsStandard.width;
-        	    props.height = propsStandard.height;
-        	    props.autoplay = propsStandard.autoplay;
-        	    props.contentType = propsStandard.contentType;
-        	    propsAlign = "";  
+    	    	params.url = paramsStandard.url;
+        	    params.width = paramsStandard.width;
+        	    params.height = paramsStandard.height;
+        	    params.autoplay = paramsStandard.autoplay;
+        	    params.contentType = paramsStandard.contentType;
+        	    divAlign = "";  
     	      }
     	      
     	      // Clear loop
@@ -307,19 +307,19 @@ function extractMediaPlayerProps(HTML, element) {
     var HTMLOrig = HTML;
     
     var className = element.$.className;
-	propsAlign = $.trim(className.replace(/vrtx-media-player[\w-]*/g, ""));
+	divAlign = $.trim(className.replace(/vrtx-media-player[\w-]*/g, ""));
   		
-    for(var name in props) {
+    for(var name in params) {
       if(name != "contentType") {
         regexp = new RegExp('(?:' + name + '[\\s]*?=[\\s]*?\\[[\\s]*?)(.*?)(?=[\\s]*?\\])'); // non-capturing group for prop=. TODO: positive lookbehind (non-capturing)
       } else {
     	regexp = new RegExp('(?:content\\-type[\\s]*?=[\\s]*?\\[[\\s]*?)(.*?)(?=[\\s]*?\\])');
       }
       
-  	  var prop = regexp.exec(HTML);
-  	  if(prop != null) {
- 		if(prop.length = 2) {
- 		  props[name] = $.trim(prop[1]); // get the capturing group 
+  	  var param = regexp.exec(HTML);
+  	  if(param != null) {
+ 		if(param.length = 2) {
+ 		  params[name] = $.trim(param[1]); // get the capturing group 
  		}
   	  }
   	  HTML = HTMLOrig; //TODO: is it possible to avoid this?

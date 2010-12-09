@@ -53,28 +53,7 @@ var propsAlign = "";
                           }
                        ],
                   onShow : function() {
-            	    var check = setInterval(function() { // check each 50ms if iframe content is loaded
-            	      var theIframe = $("iframe#iframeMediaEmbed");
-            	      if(theIframe) {
-            	        var contents = theIframe.contents();
-            	        if(contents.find("#chkAutoplay").length) {
-            	          // Put standardvalues in dialog
-            	          contents.find("#txtUrl").val(propsStandard.url);
-            	          contents.find("#txtWidth").val(propsStandard.width);
-            	          contents.find("#txtHeight").val(propsStandard.height);
-            	          contents.find("#txtContentType").val(propsStandard.contentType);
-                	      if(propsStandard.autoplay == "true") {
-                	        contents.find("#chkAutoplay").attr("checked", true);  	
-                	      } else {
-                	        contents.find("#chkAutoplay").attr("checked", false);  
-                	      }
-                	      contents.find("#txtAlign").val("");  
-                	      
-                	      // Clear loop
-            	          clearInterval(check);
-            	        }
-            	      }
-            	    }, 50);
+            	    putDialogValues("iframe#iframeMediaEmbed", true);          	    
                   },
                   onOk : function() {
 
@@ -166,40 +145,7 @@ var propsAlign = "";
                                   }
                                ],
                           onShow : function() {
-                    	    var check = setInterval(function() { // check each 50ms if iframe content is loaded
-                    	      var theIframe = $("iframe#iframeMediaEmbedMod");
-                    	      if(theIframe) {
-                    	        var contents = theIframe.contents();
-                    	        if(contents.find("#chkAutoplay").length) {
-                    	          // Put values in dialog
-                    	          contents.find("#txtUrl").val(props.url);
-                    	          contents.find("#txtWidth").val(props.width);
-                    	          contents.find("#txtHeight").val(props.height);
-                    	          contents.find("#txtContentType").val(props.contentType);
-                        	      if(props.autoplay == "true") {
-                        	        contents.find("#chkAutoplay").attr("checked", true);  	
-                        	      } else {
-                        	        contents.find("#chkAutoplay").attr("checked", false);  
-                        	      }
-                        	      if(propsAlign != "" && propsAlign != " ") {
-                        	        contents.find("#txtAlign").val(propsAlign);
-                        	      } else {
-                        	    	contents.find("#txtAlign").val("");  
-                        	      }
-                        	      
-                        	      // Restore init values
-                        	      props.url = propsStandard.url;
-                        	      props.width = propsStandard.width;
-                        	      props.height = propsStandard.height;
-                        	      props.autoplay = propsStandard.autoplay;
-                        	      props.contentType = propsStandard.contentType;
-                        	      propsAlign = "";
-                        	      
-                        	      // Clear loop
-                    	          clearInterval(check);
-                    	        }
-                    	      }
-                    	    }, 50);
+                    	    putDialogValues("iframe#iframeMediaEmbedMod", false);
                           },
                           onOk : function() {
                         	  
@@ -344,6 +290,48 @@ var propsAlign = "";
     }
     });
 } )();
+
+
+function putDialogValues(iframeId, init) {
+	  var check = setInterval(function() { // check each 50ms if iframe content is loaded
+	      var theIframe = $(iframeId);
+	      if(theIframe) {
+	        var contents = theIframe.contents();
+	        if(contents.find("#chkAutoplay").length) {
+	          // Put standardvalues in dialog
+	          contents.find("#txtUrl").val(init ? propsStandard.url : props.url);
+	          contents.find("#txtWidth").val(init ? propsStandard.width : props.width);
+	          contents.find("#txtHeight").val(init ? propsStandard.height : props.height);
+	          contents.find("#txtContentType").val(init ? propsStandard.contentType : props.contentType);
+	          
+	          var autoPlay = init ? propsStandard.autoplay : props.autoplay;
+    	      if(autoPlay == "true") {
+    	        contents.find("#chkAutoplay").attr("checked", true);  	
+    	      } else {
+    	        contents.find("#chkAutoplay").attr("checked", false);  
+    	      }
+    	      if(propsAlign != "" && propsAlign != " " && !init) {
+      	        contents.find("#txtAlign").val(propsAlign);
+      	      } else {
+      	    	contents.find("#txtAlign").val("");  
+      	      }
+    	      
+    	      if(!init) {
+    	    	// Restore init values
+        	    props.url = propsStandard.url;
+        	    props.width = propsStandard.width;
+        	    props.height = propsStandard.height;
+        	    props.autoplay = propsStandard.autoplay;
+        	    props.contentType = propsStandard.contentType;
+        	    propsAlign = "";  
+    	      }
+    	      
+    	      // Clear loop
+	          clearInterval(check);
+	        }
+	      }
+	    }, 50);   	
+}
 
 /** Get the file extension  */
 function getExtension(url) {

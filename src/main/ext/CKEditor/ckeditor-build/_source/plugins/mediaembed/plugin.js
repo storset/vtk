@@ -311,15 +311,15 @@ function extractMediaPlayerProps(HTML, element) {
   		
     for(var name in props) {
       if(name != "contentType") {
-        regexp = new RegExp('(?:' + name + '=\\[)(.*?)(?=\\])'); // non-capturing group for prop=. TODO: positive lookbehind (non-capturing)
+        regexp = new RegExp('(?:' + name + '[\\s]*?=[\\s]*?\\[[\\s]*?)(.*?)(?=[\\s]*?\\])'); // non-capturing group for prop=. TODO: positive lookbehind (non-capturing)
       } else {
-    	regexp = new RegExp('(?:content\\-type=\\[)(.*?)(?=\\])');
+    	regexp = new RegExp('(?:content\\-type[\\s]*?=[\\s]*?\\[[\\s]*?)(.*?)(?=[\\s]*?\\])');
       }
       
   	  var prop = regexp.exec(HTML);
   	  if(prop != null) {
  		if(prop.length = 2) {
- 		  props[name] = prop[1]; // get the capturing group 
+ 		  props[name] = $.trim(prop[1]); // get the capturing group 
  		}
   	  }
   	  HTML = HTMLOrig; //TODO: is it possible to avoid this?

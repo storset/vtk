@@ -222,7 +222,7 @@ function insertOrModifyComponent(editor, iframeId, init) {
 		        selected.renameNode("div");
 		      }
 			  
-			  // TODO: robustify
+			  // TODO: robustify (need a more robust insertHtml() from CKEditor ppl.)
 			  if(init) { // Insert
 				  //console.log(content);
 				  var divClasses = divClassType;

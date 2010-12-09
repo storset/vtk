@@ -27,6 +27,7 @@ var propsAlign = "";
         requires: [ 'iframedialog' ],
         init: function( editor )
         {
+    	   var lang = editor.lang.mediaembed;
            var me = this;
            CKEDITOR.dialog.add( 'MediaEmbedDialog', function (editor)
            {	
@@ -140,7 +141,7 @@ var propsAlign = "";
             	  {	  
             		MediaEmbedDialogMod:
             		{
-            	        label: 'Mediaegenskaper',
+            	        label: lang.edit,
             	        command: 'mediaembedmod',
             	        group: 'mediaembed',
             	        icon: this.path.toLowerCase() + 'images/icon.gif',
@@ -148,7 +149,7 @@ var propsAlign = "";
             		},
 					RemoveMedia:
 					{
-						label: 'Fjern media',
+						label: lang.remove,
 						command: 'MediaEmbedRemove',
 						group: 'mediaembed',
 						icon: this.path.toLowerCase() + 'images/iconremove.gif',

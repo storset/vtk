@@ -95,4 +95,8 @@ public class DecoratorResponseImpl implements DecoratorResponse {
         return this.outputStream.toString(this.characterEncoding);
     }
     
+    public byte[] getContent() throws Exception {
+        return this.outputStream.toByteArray();
+    }
+    
 }

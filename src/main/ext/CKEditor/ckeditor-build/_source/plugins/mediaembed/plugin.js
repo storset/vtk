@@ -56,65 +56,7 @@ var propsAlign = "";
             	    putDialogValues("iframe#iframeMediaEmbed", true);          	    
                   },
                   onOk : function() {
-
-                	  var editor = this.getParentEditor();
-                	  
-					  var theIframe = $("iframe#iframeMediaEmbed");
-              	        var contents = theIframe.contents();
-					    var url = contents.find("#txtUrl").val();
-						if(url != "" && url.indexOf(".") != -1) {
-							  var content = "${include:media-player url=["+unescape(url)+"]";			    
-							  var contentType = contents.find("#txtContentType").val();
-							  if(contentType.length > 0) {
-							    content = content + " content-type=["+contentType+"]";
-							  }
-							  var width = contents.find("#txtWidth").val();
-							  if(width.length > 0 && width != propsStandard.width) {
-							    content = content + " width=["+width+"]";
-							  }
-							  var height = contents.find("#txtHeight").val();
-							  if(height.length > 0 && height != propsStandard.height) {
-							    content = content + " height=["+height+"]";
-						      }
-							  var autoplay = contents.find("#chkAutoplay");
-							  if(autoplay.attr("checked") == true) {
-							    content = content + " autoplay=[true]";
-							  }
-							  var align = contents.find("#txtAlign").val();
-				
-							  if(content.length>0) {
-							    content = content + "}";
-							  }			
-							
-							  var divClassType = '';
-							  if(contentType.length > 0 && contentType == "audio/mp3") {  
-							    divClassType = 'vrtx-media-player-audio';
-							  } else if (getExtension(url) == "mp3") {
-							    divClassType = 'vrtx-media-player-audio';
-							  } else {
-							    divClassType ='vrtx-media-player';
-							  }
-							  
-							  //console.log(content);
-							  
-							  var divClasses = divClassType;
-							  if(align != "") {
-								  divClasses = divClasses + " " + align;
-							  }
-							  
-							  //console.log(editor.getSelection().getStartElement());
-							  //console.log(editor.getSelection().getNative());
-
-							  selected = editor.getSelection().getStartElement();
-							  if(selected.is("p")) {
-		                      	selected.renameNode("div");
-		                      }
-							  selected.appendHtml('<div class="'+divClasses+'">'+content+'</div>');
-							  
-						} else {
-						  alert("Du må spesifisere en URL");
-						  return false;	
-						}
+                	insertOrModifyComponent(this.getParentEditor(), "iframe#iframeMediaEmbed", true);   
                  }
               };
            } );
@@ -148,63 +90,7 @@ var propsAlign = "";
                     	    putDialogValues("iframe#iframeMediaEmbedMod", false);
                           },
                           onOk : function() {
-                        	  
-                        	  
-                        	  var editor = this.getParentEditor();
-                        	  
-        					  var theIframe = $("iframe#iframeMediaEmbedMod");
-                      	        var contents = theIframe.contents();
-        					    var url = contents.find("#txtUrl").val();
-        						if(url != "" && url.indexOf(".") != -1) {
-        							  var content = "${include:media-player url=["+unescape(url)+"]";			    
-        							  var contentType = contents.find("#txtContentType").val();
-        							  if(contentType.length > 0) {
-        							    content = content + " content-type=["+contentType+"]";
-        							  }
-        							  var width = contents.find("#txtWidth").val();
-        							  if(width.length > 0 && width != propsStandard.width) {
-        							    content = content + " width=["+width+"]";
-        							  }
-        							  var height = contents.find("#txtHeight").val();
-        							  if(height.length > 0 && height != propsStandard.height) {
-        							    content = content + " height=["+height+"]";
-        						      }
-        							  var autoplay = contents.find("#chkAutoplay");
-        							  if(autoplay.attr("checked") == true) {
-        							    content = content + " autoplay=[true]";
-        							  }
-        							  var align = contents.find("#txtAlign").val();
-        				
-        							  if(content.length>0) {
-        							    content = content + "}";
-        							  }			
-        							
-        							  var divClassType = '';
-        							  if(contentType.length > 0 && contentType == "audio/mp3") {  
-        							    divClassType = 'vrtx-media-player-audio';
-        							  } else if (getExtension(url) == "mp3") {
-        							    divClassType = 'vrtx-media-player-audio';
-        							  } else {
-        							    divClassType ='vrtx-media-player';
-        							  }
-        							  
-        	                          selected = editor.getSelection().getStartElement();
-        	                      	  selected.removeAttribute("class");
-        		                      if(align != "" && divClassType != "") {
-        		                        selected.addClass(divClassType);
-        		                    	selected.addClass(align);
-        		                      } else {
-        		                    	selected.addClass(divClassType); 
-        		                      }
-        	                      	  if(selected.is("p")) {
-        	                      	    selected.renameNode("div");
-        	                      	  }
-        	                      	  selected.setText(content);
-        							  
-        						} else {
-        						  alert("Du må spesifisere en URL");
-        						  return false;	
-        						}
+                        	insertOrModifyComponent(this.getParentEditor(), "iframe#iframeMediaEmbedMod", false);   
                          }
                       };
                    } );
@@ -291,6 +177,77 @@ var propsAlign = "";
     });
 } )();
 
+function insertOrModifyComponent(editor, iframeId, init) {
+	  
+	  var theIframe = $(iframeId);
+	  var contents = theIframe.contents();
+	  
+	    var url = contents.find("#txtUrl").val();
+		if(url != "" && url.indexOf(".") != -1) {
+			  var content = "${include:media-player url=["+unescape(url)+"]";			    
+			  var contentType = contents.find("#txtContentType").val();
+			  if(contentType.length > 0) {
+			    content = content + " content-type=["+contentType+"]";
+			  }
+			  var width = contents.find("#txtWidth").val();
+			  if(width.length > 0 && width != propsStandard.width) {
+			    content = content + " width=["+width+"]";
+			  }
+			  var height = contents.find("#txtHeight").val();
+			  if(height.length > 0 && height != propsStandard.height) {
+			    content = content + " height=["+height+"]";
+		      }
+			  var autoplay = contents.find("#chkAutoplay");
+			  if(autoplay.attr("checked") == true) {
+			    content = content + " autoplay=[true]";
+			  }
+			  var align = contents.find("#txtAlign").val();
+
+			  if(content.length>0) {
+			    content = content + "}";
+			  }			
+			
+			  var divClassType = '';
+			  if(contentType.length > 0 && contentType == "audio/mp3") {  
+			    divClassType = 'vrtx-media-player-audio';
+			  } else if (getExtension(url) == "mp3") {
+			    divClassType = 'vrtx-media-player-audio';
+			  } else {
+			    divClassType ='vrtx-media-player';
+			  }
+			  
+			  var selected = editor.getSelection().getStartElement();
+			  if(selected.is("p")) {
+		        selected.renameNode("div");
+		      }
+			  
+			  // TODO: robustify
+			  if(init) { // Insert
+				  //console.log(content);
+				  var divClasses = divClassType;
+				  if(align != "") {
+					  divClasses = divClasses + " " + align;
+				  }
+				  //console.log(editor.getSelection().getStartElement());
+				  //console.log(editor.getSelection().getNative());
+				  selected.appendHtml('<div class="'+divClasses+'">'+content+'</div>');
+			  } else { // Modify
+		      	  selected.removeAttribute("class");
+		          if(align != "" && divClassType != "") {
+		            selected.addClass(divClassType);
+		        	selected.addClass(align);
+		          } else {
+		        	selected.addClass(divClassType); 
+		          }
+		      	  selected.setText(content);
+			  }
+			  
+		} else {
+		  alert("Du må spesifisere en URL");
+		  return false;	
+		}
+	
+}
 
 function putDialogValues(iframeId, init) {
 	  var check = setInterval(function() { // check each 50ms if iframe content is loaded

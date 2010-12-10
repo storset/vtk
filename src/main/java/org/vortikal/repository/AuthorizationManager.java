@@ -30,31 +30,55 @@
  */
 package org.vortikal.repository;
 
-
 import java.io.IOException;
+import java.util.Set;
 
+import org.vortikal.repository.store.DataAccessor;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalFactory;
+import org.vortikal.security.PrincipalManager;
+import org.vortikal.security.roles.RoleManager;
 
 /**
  * Manager for authorizing principals at specific authorization level.
  */
-public interface AuthorizationManager {
+public final class AuthorizationManager {
 
-
-    public boolean isReadOnly();
+    private RoleManager roleManager;
+    private PrincipalManager principalManager;
+    private DataAccessor dao;
     
+    private boolean readOnly = false;
 
-    public void setReadOnly(boolean readOnly);
-
-
+    public boolean isReadOnly() {
+        return this.readOnly;
+    }
+    
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
+    }
+    
     /**
      * Authorizes a principal for a root role action. Should throw an
      * AuthorizationException if the principal in question does not
      * have root privileges.
      */
-    public void authorizeRootRoleAction(Principal principal) throws AuthorizationException;
+    public void authorizeRootRoleAction(Principal principal) throws AuthorizationException {
+        if (!this.roleManager.hasRole(principal, RoleManager.ROOT)) {
+            throw new AuthorizationException(
+                "Principal '" + principal
+                + "' not authorized to perform repository administration");
+        }
+    }
     
+    private void checkReadOnly(Principal principal) throws ReadOnlyException {
+        
+        if (isReadOnly() && !this.roleManager.hasRole(principal, 
+                RoleManager.ROOT)) {
+            throw new ReadOnlyException();
+        }
+    }
 
     /**
      * Authorizes a principal for a given action on a resource
@@ -67,9 +91,66 @@ public interface AuthorizationManager {
      * defined in {@link #ACTION_AUTHORIZATIONS}.
      * @param principal the principal performing the action
      */
-    public void authorizeAction(Path uri, RepositoryAction action, Principal principal)
-    throws AuthorizationException, AuthenticationException, ResourceLockedException, IOException;
+    public void authorizeAction(Path uri, RepositoryAction action, 
+            Principal principal) throws AuthenticationException, AuthorizationException,
+            IOException {
+        if (uri == null) {
+            throw new IllegalArgumentException("URI cannot be NULL");
+        }
+        if (action == null) {
+            throw new IllegalArgumentException("Action cannot be NULL");
+        }
+        if (RepositoryAction.COPY == action || RepositoryAction.MOVE == action) {
+            throw new IllegalArgumentException(
+                    "Unable to authorize for COPY/MOVE actions");
+        }
+        
+        switch (action) {
+        case UNEDITABLE_ACTION:
+            throw new AuthorizationException("Uneditable");
+        case READ_PROCESSED:
+            authorizeReadProcessed(uri, principal);
+            break;
+        case READ:
+            authorizeRead(uri, principal);
+            break;
+        case CREATE:
+            authorizeCreate(uri, principal);
+            break;
+        case WRITE:
+            authorizeWrite(uri, principal);
+            break;
+        case EDIT_COMMENT:
+            authorizeEditComment(uri, principal);
+            break;
+        case ADD_COMMENT:
+            authorizeAddComment(uri, principal);
+            break;
+        case ALL:
+        case WRITE_ACL:
+            authorizeAll(uri, principal);
+            break;
+        case UNLOCK:
+            authorizeUnlock(uri, principal);
+            break;
+        case DELETE:
+            authorizeDelete(uri, principal);
+            break;
+        case REPOSITORY_ADMIN_ROLE_ACTION:
+            authorizePropertyEditAdminRole(uri, principal);
+            break;
+        case REPOSITORY_ROOT_ROLE_ACTION:
+            authorizePropertyEditRootRole(uri, principal);
+            break;
+            default:
+                throw new IllegalArgumentException("Cannot authorize action " + action);
+        }
+    }
     
+    
+    private static final Privilege[] READ_PROCESSED_AUTH_PRIVILEGES = 
+        new Privilege[] {Privilege.ALL, Privilege.READ, Privilege.READ_PROCESSED};
+
     /**
      * <ul>
      *   <li>Privilege READ_PROCESSED, READ or ALL in ACL
@@ -79,9 +160,22 @@ public interface AuthorizationManager {
      * @throws IOException
      */
     public void authorizeReadProcessed(Path uri, Principal principal) 
-        throws AuthenticationException, AuthorizationException,
-        ResourceLockedException, IOException;
+        throws AuthenticationException, AuthorizationException, IOException, ResourceNotFoundException {
+
+        ResourceImpl resource = loadResource(uri);
+
+        if (this.roleManager.hasRole(principal, RoleManager.ROOT) ||
+                this.roleManager.hasRole(principal, RoleManager.READ_EVERYTHING))
+            return;
+
+        aclAuthorize(principal, resource, READ_PROCESSED_AUTH_PRIVILEGES);
+    }
+
     
+
+    private static final Privilege[] READ_AUTH_PRIVILEGES = 
+        new Privilege[] {Privilege.ALL, Privilege.READ};
+
     /**
      * <ul>
      *   <li>Privilege READ or ALL in ACL
@@ -92,51 +186,160 @@ public interface AuthorizationManager {
      */
     public void authorizeRead(Path uri, Principal principal) 
         throws AuthenticationException, AuthorizationException,
-        ResourceLockedException, IOException;
+        IOException, ResourceNotFoundException {
 
+        ResourceImpl resource = loadResource(uri);
+
+        if (this.roleManager.hasRole(principal, RoleManager.ROOT) ||
+                this.roleManager.hasRole(principal, RoleManager.READ_EVERYTHING))
+            return;
+        
+        aclAuthorize(principal, resource, READ_AUTH_PRIVILEGES);
+    }
+
+
+    private static final Privilege[] CREATE_AUTH_PRIVILEGES = 
+        new Privilege[] {Privilege.ALL, Privilege.WRITE, Privilege.BIND};
 
     /**
      * <ul>
-     *   <li>Privilege BIND, WRITE or ALL on parent resource
+     *   <li>Privilege BIND, WRITE or ALL on resource
      *   <li>Role ROOT
-     *   <li>+ parent not locked by another principal
      * </ul>
      * @return is authorized
      * @throws IOException
      */
     public void authorizeCreate(Path uri, Principal principal)
         throws AuthenticationException, AuthorizationException, ReadOnlyException, 
-        ResourceLockedException, IOException;
+        IOException, ResourceNotFoundException {
+
+        checkReadOnly(principal);
+
+        ResourceImpl resource = loadResource(uri);
+        
+        if (this.roleManager.hasRole(principal, RoleManager.ROOT))
+            return;
+        
+        aclAuthorize(principal, resource, CREATE_AUTH_PRIVILEGES);
+    }
     
+
+    private static final Privilege[] WRITE_AUTH_PRIVILEGES = 
+        new Privilege[] {Privilege.ALL, Privilege.WRITE};
+
     /**
      * <ul>
      *   <li>Privilege WRITE or ALL in ACL
      *   <li>Role ROOT
-     *   <li>+ resource not locked by another principal
      * </ul>
      * @return is authorized
      * @throws IOException
      */
     public void authorizeWrite(Path uri, Principal principal)
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
-        ResourceLockedException, IOException;
+        IOException, ResourceNotFoundException {
+
+        checkReadOnly(principal);
+
+        ResourceImpl resource = loadResource(uri);
+        
+        if (this.roleManager.hasRole(principal, RoleManager.ROOT))
+            return;
+        
+        aclAuthorize(principal, resource, WRITE_AUTH_PRIVILEGES);
+    }
     
+
+    private static final Privilege[] ADD_COMMENT_AUTH_PRIVILEGES = 
+        new Privilege[] {Privilege.ADD_COMMENT};
+
+    /**
+     * <ul>
+     *   <li>Privilege ADD_COMMENT in ACL
+     * </ul>
+     * @return is authorized
+     * @throws IOException
+     */
+    public void authorizeAddComment(Path uri, Principal principal)
+        throws AuthenticationException, AuthorizationException, ReadOnlyException,
+        IOException, ResourceNotFoundException {
+
+        checkReadOnly(principal);
+
+        ResourceImpl resource = loadResource(uri);
+        
+        if (this.roleManager.hasRole(principal, RoleManager.ROOT))
+            return;
+        
+        aclAuthorize(principal, resource, ADD_COMMENT_AUTH_PRIVILEGES);
+    }
+    
+
+
+    private static final Privilege[] EDIT_COMMENT_AUTH_PRIVILEGES = 
+        new Privilege[] {Privilege.ALL, Privilege.WRITE};
+
+    /**
+     * <ul>
+     *   <li>Privilege WRITE or ALL in ACL
+     *   <li>Role ROOT
+     * </ul>
+     * @return is authorized
+     * @throws IOException
+     */
+    public void authorizeEditComment(Path uri, Principal principal)
+        throws AuthenticationException, AuthorizationException, ReadOnlyException,
+        IOException, ResourceNotFoundException {
+
+        checkReadOnly(principal);
+
+        ResourceImpl resource = loadResource(uri);
+        
+        if (this.roleManager.hasRole(principal, RoleManager.ROOT))
+            return;
+        
+        aclAuthorize(principal, resource, EDIT_COMMENT_AUTH_PRIVILEGES);
+    }
+    
+
+
+
+    private static final Privilege[] ALL_AUTH_PRIVILEGES = 
+        new Privilege[] {Privilege.ALL};
+
+
     /**
      * <ul>
      *   <li>Privilege ALL in ACL
      *   <li>Role ROOT
-     *   <li>+ resource not locked by another principal
      * </ul>
      * @return is authorized
      * @throws IOException
      */
     public void authorizeAll(Path uri, Principal principal)
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
-        ResourceLockedException, IOException;
+        IOException, ResourceNotFoundException {
+
+        checkReadOnly(principal);
+        
+        ResourceImpl resource = loadResource(uri);
+        
+        if (this.roleManager.hasRole(principal, RoleManager.ROOT))
+            return;
+        
+        aclAuthorize(principal, resource, ALL_AUTH_PRIVILEGES);
+    }
     
+
+
+    
+    private static final Privilege[] UNLOCK_AUTH_PRIVILEGES = 
+        new Privilege[] {Privilege.ALL, Privilege.WRITE};
+
+
     /**
      * <ul>
-     *   <li>privilege WRITE or ALL in Acl + resource not locked by another principal
+     *   <li>privilege WRITE or ALL in Acl 
      *   <li>Role ROOT
      * </ul>
      * @return is authorized
@@ -144,21 +347,62 @@ public interface AuthorizationManager {
      */
     public void authorizeUnlock(Path uri, Principal principal) 
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
-        ResourceLockedException, IOException;
+        IOException, ResourceNotFoundException {
+
+        checkReadOnly(principal);
+        
+        if (this.roleManager.hasRole(principal, RoleManager.ROOT))
+            return;
+        
+        ResourceImpl resource = loadResource(uri);
+        
+        aclAuthorize(principal, resource, UNLOCK_AUTH_PRIVILEGES);
+    }
+
+
+    private static final Privilege[] DELETE_AUTH_PRIVILEGES = 
+        new Privilege[] {Privilege.ALL};
 
 
     /**
      * <ul>
-     *   <li>Privilege ALL in ACL + parent not locked
+     *   <li>Privilege ALL in ACL
      *   <li>Action WRITE on parent
-     *   <li>+ resource tree not locked by another principal
+     *   <li>Resource is not the root resource '/'.
      * </ul>
      * @return is authorized
      * @throws IOException
      */
     public void authorizeDelete(Path uri, Principal principal) 
         throws AuthenticationException, AuthorizationException, ReadOnlyException, 
-        ResourceLockedException, IOException;
+        IOException, ResourceNotFoundException {
+
+        checkReadOnly(principal);
+
+        if (uri.isRoot()) {
+            // Not allowed to delete root resource.
+            // Avoid sending null as Path to DAO layer (uri.getParent() below ..),
+            // which results in a NullPointerException in Cache, hidden by catch(Exception) below.
+            throw new AuthorizationException("Not allowed to delete root resource");
+        }
+        
+        Resource resource = loadResource(uri);
+
+        // Delete is authorized if either of these conditions hold:
+        try {
+            // 1. Principal has write permission on the parent resource, or
+            authorizeWrite(uri.getParent(), principal);
+            return;
+        } catch (AuthorizationException e) {
+            // Continue to #2
+        }
+        // 2. Principal has delete permission directly on the resource itself
+        aclAuthorize(principal, resource, DELETE_AUTH_PRIVILEGES);
+    }
+    
+
+    private static final Privilege[] ADMIN_AUTH_PRIVILEGES = 
+        new Privilege[] {Privilege.ALL};
 
 
     /**
@@ -172,7 +416,21 @@ public interface AuthorizationManager {
      */
     public void authorizePropertyEditAdminRole(Path uri, Principal principal) 
         throws AuthenticationException, AuthorizationException,
-        ResourceLockedException, IOException;
+        IOException, ResourceNotFoundException {
+        if (principal == null) {
+            throw new AuthorizationException(
+                "NULL principal not authorized to edit properties using admin privilege ");
+        }
+        
+        if (this.roleManager.hasRole(principal, RoleManager.ROOT)) {
+            return;
+        }
+
+        Resource resource = loadResource(uri);
+        aclAuthorize(principal, resource, ADMIN_AUTH_PRIVILEGES);
+        authorizeWrite(uri, principal);
+        
+    }
 
 
     /**
@@ -186,8 +444,14 @@ public interface AuthorizationManager {
      */
     public void authorizePropertyEditRootRole(Path uri, Principal principal)
         throws AuthenticationException, AuthorizationException,
-        ResourceLockedException, IOException;
+        IOException {
 
+        if (!this.roleManager.hasRole(principal, RoleManager.ROOT))
+            throw new AuthorizationException();
+        
+        authorizeWrite(uri, principal);
+        
+    }
     
     /**
      * All of:
@@ -202,7 +466,26 @@ public interface AuthorizationManager {
     public void authorizeCopy(Path srcUri, Path destUri, 
             Principal principal, boolean deleteDestination) 
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
-        ResourceLockedException, IOException;
+        IOException, ResourceNotFoundException {
+
+        checkReadOnly(principal);
+
+        authorizeRead(srcUri, principal);
+
+        Resource resource = loadResource(srcUri);
+
+        if (resource.isCollection()) {
+            Path[] uris = this.dao.discoverACLs(srcUri);
+            for (int i = 0; i < uris.length; i++) {
+                authorizeRead(uris[i], principal);
+            }
+        }
+
+        Path destParentUri = destUri.getParent();
+        authorizeCreate(destParentUri, principal);
+
+        if (deleteDestination) authorizeDelete(destUri, principal);
+    }
     
 
     /**
@@ -217,35 +500,127 @@ public interface AuthorizationManager {
     public void authorizeMove(Path srcUri, Path destUri,
             Principal principal, boolean deleteDestination) 
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
-        ResourceLockedException, IOException;
+        IOException {
 
+        checkReadOnly(principal);
 
+        authorizeDelete(srcUri, principal);
+    }
 
+    
     /**
-     * <ul>
-     *   <li>Privilege ADD_COMMENT, WRITE or ALL in ACL
-     *   <li>Role ROOT
-     *   <li>+ resource not locked by another principal
-     * </ul>
-     * @return is authorized
-     * @throws IOException
-     */
-    public void authorizeAddComment(Path uri, Principal principal) 
-        throws AuthenticationException, AuthorizationException, ReadOnlyException,
-        ResourceLockedException, IOException;
+     * A principal is granted access if one of these conditions are met for one
+     * of the privileges supplied:
+     * 
+     * <p>1) (ALL, privilege) is present in the resource's ACL.<br> 
+     * NOTE: This is limited to read privileges
+     * 
+     * <p>The rest requires that the user is authenticated:
+     * 
+     * <p>2) principal != null and (AUTHENTICATED, privilege) is present
+     * 
+     * <p>The rest is meaningless if principalList == null:
+     * 
+     * <p>3) Principal is resource owner and (OWNER, privilege) is present in
+     * the resource's ACL
+     * 
+     * <p>4) (principal, privilege) is present in the resource's ACL
+     * 
+     * <p>5) (g, privilege) is present in the resource's ACL, where g is a group
+     * identifier and the user is a member of that group
+     **/
+    private void aclAuthorize(Principal principal, Resource resource, Privilege[] privileges) 
+        throws AuthenticationException, AuthorizationException {
+        
+        Acl acl = resource.getAcl();
+
+        for (int i = 0; i < privileges.length; i++) {
+            Privilege privilege = privileges[i];
+            Set<Principal> principalSet = acl.getPrincipalSet(privilege);
+            
+            // Dont't need to test the conditions if (principalSet == null)
+            if (principalSet == null || principalSet.size() == 0) {
+                continue;
+            }
+
+            // Condition 1:
+            if (principalSet.contains(PrincipalFactory.ALL)) {
+                return;
+            }
+
+            // If not condition 1 - needs to be authenticated
+            if (principal == null) {
+                continue;
+            }
+
+            // Condition 2:
+            if (principalSet.contains(PrincipalFactory.AUTHENTICATED)) {
+                return;
+            }
+
+            // Condition 3:
+            if (resource.getOwner().equals(principal)
+                && principalSet.contains(PrincipalFactory.OWNER)) {
+                return;
+            }
+
+            // Condition 4:
+
+            if (principalSet.contains(principal)) {
+                return;
+            }
+        }
+
+        // At this point a principal should always be available:
+        if (principal == null) throw new AuthenticationException();
+            
+        for (int i = 0; i < privileges.length; i++) {
+            Privilege action = privileges[i];
+            Set<Principal> principalSet = acl.getPrincipalSet(action);
+            
+            // Condition 5:
+            if (groupMatch(principalSet, principal)) {
+                return;
+            }
+        }
+       throw new AuthorizationException();
+    }
+    
+    // Temporary fix for problems with DAO returning null for resources not found
+    // and this class does not handle it. Throw ResourceNotFoundException(Path) instead
+    // of NullPointerException.
+    private ResourceImpl loadResource(Path uri) 
+        throws ResourceNotFoundException {
+        ResourceImpl resource = this.dao.load(uri);
+        if (resource == null) {
+            throw new ResourceNotFoundException(uri);
+        }
+        return resource;
+    }
+
+    private boolean groupMatch(Set<Principal> principalList, Principal principal) {
+
+        for (Principal p: principalList) {
+            if (p.getType() == Principal.Type.GROUP) {
+                if (this.principalManager.isMember(principal, p)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
 
-    /**
-     * <ul>
-     *   <li>Privilege WRITE or ALL in ACL
-     *   <li>Role ROOT
-     *   <li>+ resource not locked by another principal
-     * </ul>
-     * @return is authorized
-     * @throws IOException
-     */
-    public void authorizeEditComment(Path uri, Principal principal) 
-        throws AuthenticationException, AuthorizationException, ReadOnlyException,
-        ResourceLockedException, IOException;
+    public void setPrincipalManager(PrincipalManager principalManager) {
+        this.principalManager = principalManager;
+    }
+
+    public void setRoleManager(RoleManager roleManager) {
+        this.roleManager = roleManager;
+    }
+
+    public void setDao(DataAccessor dao) {
+        this.dao = dao;
+    }
 
 }

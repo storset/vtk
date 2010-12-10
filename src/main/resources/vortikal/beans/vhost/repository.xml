@@ -210,7 +210,7 @@
   <bean id="pdfContentFactory"
         class="org.vortikal.repository.content.PDFContentFactory" />
 
-  <bean id="authorizationManager" class="org.vortikal.repository.AuthorizationManagerImpl">
+  <bean id="authorizationManager" class="org.vortikal.repository.AuthorizationManager">
     <property name="readOnly" value="${repositoryReadOnly}" />
     <property name="principalManager" ref="principalManager" />
     <property name="roleManager" ref="roleManager" />

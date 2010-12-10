@@ -40,7 +40,9 @@ import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.roles.RoleManager;
 
-
+/**
+ * Manager for authorizing principals at specific authorization level.
+ */
 public class AuthorizationManagerImpl implements AuthorizationManager {
 
     private RoleManager roleManager;
@@ -57,6 +59,11 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
         this.readOnly = readOnly;
     }
     
+    /**
+     * Authorizes a principal for a root role action. Should throw an
+     * AuthorizationException if the principal in question does not
+     * have root privileges.
+     */
     public void authorizeRootRoleAction(Principal principal) throws AuthorizationException {
         if (!this.roleManager.hasRole(principal, RoleManager.ROOT)) {
             throw new AuthorizationException(
@@ -73,6 +80,17 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
         }
     }
 
+    /**
+     * Authorizes a principal for a given action on a resource
+     * URI. Equivalent to calling one of the <code>authorizeYYY(uri,
+     * principal)</code> methods of this interface (with
+     * <code>YYY</code> mapping to one of the actions).
+     *
+     * @param uri a resource URI
+     * @param action the action to perform. One of the action types
+     * defined in {@link #ACTION_AUTHORIZATIONS}.
+     * @param principal the principal performing the action
+     */
     public void authorizeAction(Path uri, RepositoryAction action, 
             Principal principal) throws AuthenticationException, AuthorizationException,
             IOException {

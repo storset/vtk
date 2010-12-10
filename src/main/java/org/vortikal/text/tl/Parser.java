@@ -46,6 +46,7 @@ public class Parser {
 
     private PeekableReader reader;
     private Map<String, DirectiveNodeFactory> directives = new HashMap<String, DirectiveNodeFactory>();
+    private Map<String, Object> attributes = new HashMap<String, Object>();
 
     public Parser(Reader reader, Map<String, DirectiveNodeFactory> directives) {
         this.reader = new PeekableReader(reader);
@@ -117,7 +118,14 @@ public class Parser {
         throw new RuntimeException("Error at line " + getLineNumber() + ": " + msg);
     }
     
+    public void setAttribute(String name, Object attribute) {
+        this.attributes.put(name, attribute);
+    }
     
+    public Object getAttribute(String name) {
+        return this.attributes.get(name);
+    }
+        
     private ParseNode nextNode() throws Exception {
         int c = this.reader.peek(1);
         if (c == -1) {
@@ -454,5 +462,5 @@ public class Parser {
             }
         }
     }
-
+    
 }

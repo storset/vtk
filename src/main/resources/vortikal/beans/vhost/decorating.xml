@@ -206,7 +206,7 @@
     </property>
   </bean>
 
-  <bean id="displayComponentResourceService" class="org.vortikal.web.service.ServiceImpl">
+  <bean id="displayComponentService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="displayHTMLResourceService" />
     <property name="assertions">
       <list>

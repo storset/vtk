@@ -35,23 +35,17 @@ import org.vortikal.text.tl.Symbol;
 
 public class And extends Operator {
 
-    public And(Symbol symbol, Notation notation, Precedence precedence) {
-        super(symbol, notation, precedence);
+    public And(Symbol symbol) {
+        super(symbol);
     }
 
-    public Object eval(Context ctx, EvalStack stack) {
-        Object o1 = stack.pop();
-        Object o2 = stack.pop();
-        if (o1 == null || o2 == null) {
-            return false;
-        }
-        if (o1 instanceof Boolean) {
-            if (!(Boolean) o1) {
-                return false;
+    public Object eval(Context ctx, ExpressionNode... nodes) {
+        for (ExpressionNode n: nodes) {
+            Object o = n.eval(ctx);
+            if (! (o instanceof Boolean)) {
+                throw new IllegalArgumentException("Not a boolean: " + o);
             }
-        }
-        if (o2 instanceof Boolean) {
-            if (!(Boolean) o2) {
+            if (!(Boolean) o) {
                 return false;
             }
         }

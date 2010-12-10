@@ -141,7 +141,7 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
             super(symbol, 0);
         }
         @Override
-        public Object eval(Context ctx, Object... args) throws Exception {
+        public Object eval(Context ctx, Object... args) {
             return repository.getId();
         }        
     }
@@ -152,7 +152,7 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
         }
 
         @Override
-        public Object eval(Context ctx, Object... args) throws Exception {
+        public Object eval(Context ctx, Object... args) {
             RequestContext requestContext = RequestContext.getRequestContext();
             HttpServletRequest request = requestContext.getServletRequest();
             URL url = URL.create(request);
@@ -173,7 +173,7 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
         }
 
         @Override
-        public Object eval(Context ctx, Object... args) throws Exception {
+        public Object eval(Context ctx, Object... args) {
             RequestContext requestContext = RequestContext.getRequestContext();
             HttpServletRequest request = requestContext.getServletRequest();
             Object o = args[0];
@@ -192,7 +192,7 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
         }
 
         @Override
-        public Object eval(Context ctx, Object... args) throws Exception {
+        public Object eval(Context ctx, Object... args) {
             RequestContext requestContext = RequestContext.getRequestContext();
             HttpServletRequest request = requestContext.getServletRequest();
             Object o = args[0];
@@ -212,7 +212,7 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
         }
 
         @Override
-        public Object eval(Context ctx, Object... args) throws Exception {
+        public Object eval(Context ctx, Object... args) {
             RequestContext requestContext = RequestContext.getRequestContext();
             HttpServletRequest request = requestContext.getServletRequest();
             return RequestContextUtils.getLocale(request).toString();
@@ -229,14 +229,18 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
         }
         
         @Override
-        public Object eval(Context ctx, Object... args) throws Exception {
+        public Object eval(Context ctx, Object... args) {
             RequestContext requestContext = RequestContext.getRequestContext();
             Object o = args[0];
             if (o == null) {
                 throw new IllegalArgumentException("Argument must be a valid name");
             }
             String aspect = o.toString();
-            return this.resolver.resolve(requestContext.getResourceURI(), aspect);
+            try {
+                return this.resolver.resolve(requestContext.getResourceURI(), aspect);
+            } catch (Throwable t) {
+                throw new RuntimeException(t);
+            }
         }
      }
     
@@ -251,7 +255,7 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
         }
 
         @Override
-        public Object eval(Context ctx, Object... args) throws Exception {
+        public Object eval(Context ctx, Object... args) {
             final Object arg1 = args[0];
             final Object arg2 = args[1];
             PropertySet resource = null;
@@ -268,7 +272,11 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
                 ? RequestContext.getRequestContext().getResourceURI()
                         : Path.fromString(ref);
                 String token = SecurityContext.getSecurityContext().getToken();
-                resource = this.repository.retrieve(token, uri, true);
+                try {
+                    resource = this.repository.retrieve(token, uri, true);
+                } catch (Throwable t) {
+                    throw new RuntimeException(t);
+                }
             }
             String propName = arg2.toString();
             if ("uri".equals(propName)) {

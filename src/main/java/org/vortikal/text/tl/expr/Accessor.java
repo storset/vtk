@@ -34,24 +34,24 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.vortikal.text.tl.Argument;
 import org.vortikal.text.tl.Context;
+import org.vortikal.text.tl.Literal;
 import org.vortikal.text.tl.Symbol;
 
 public class Accessor extends Operator {
+    private Argument field;
 
-    public Accessor(Symbol symbol, Notation notation, Precedence precedence) {
-        super(symbol, notation, precedence);
-    }
-    
-    @Override
-    public boolean leftAssociative() {
-        return true;
+    public Accessor(Symbol symbol, Argument field) {
+        super(symbol);
+        this.field = field;
     }
 
     @Override
-    public Object eval(Context ctx, EvalStack stack) throws Exception {
-        Object accessor = stack.pop(false);
-        Object collection = stack.pop();
+    public Object eval(Context ctx, ExpressionNode... nodes) {
+        Object collection = nodes[0].eval(ctx);
+        Object accessor = (this.field instanceof Literal) ? 
+                this.field.getValue(ctx) : this.field;
         if (collection == null) {
             throw new IllegalArgumentException("First argument is NULL");
         }

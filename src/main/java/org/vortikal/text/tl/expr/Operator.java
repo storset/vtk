@@ -36,68 +36,21 @@ import org.vortikal.text.tl.Symbol;
 
 public abstract class Operator {
     private Symbol symbol;
-    private Notation notation;
-    private Precedence precedence;
 
-    /**
-     * The set of defined operator precedences
-     */
-    public static enum Precedence {
-        ZERO(0),
-        ONE(1),
-        TWO(2),
-        THREE(3),
-        FOUR(4),
-        FIVE(5),
-        SIX(6),
-        SEVEN(7),
-        EIGHT(8),
-        NINE(9),
-        TEN(10),
-        ELEVEN(11),
-        TWELVE(12),
-        FUNCTION_PRECEDENCE(100);
-        private int n;
-        private Precedence(int n) {
-            this.n = n;
-        }
-        public int value() {
-            return this.n;
-        }
-    }
-    
-    public static enum Notation {
-        PREFIX, INFIX;
-    }
-
-    public Operator(Symbol symbol, Notation notation, Precedence precedence) {
+    public Operator(Symbol symbol) {
         this.symbol = symbol;
-        this.notation = notation;
-        this.precedence = precedence;
     }
     
-    public Symbol getSymbol() {
+    public final Symbol getSymbol() {
         return this.symbol;
-    }
-    
-    public Notation getNotation() {
-        return this.notation;
-    }
-    
-    public Precedence getprecedence() {
-        return this.precedence;
-    }
-    
-    public boolean leftAssociative() {
-        return false;
     }
     
     public String toString() {
         return this.symbol.getSymbol();
     }
     
-    public abstract Object eval(Context ctx, EvalStack stack) throws Exception;
-    
+    public abstract Object eval(Context ctx, ExpressionNode... nodes);
+        
     protected final Number getNumericValue(Object obj) {
         if (obj == null) {
             throw new IllegalArgumentException("Argument is NULL");

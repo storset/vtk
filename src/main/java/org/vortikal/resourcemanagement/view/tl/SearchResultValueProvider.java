@@ -54,7 +54,7 @@ public class SearchResultValueProvider extends Function {
     }
 
     @Override
-    public Object eval(Context ctx, Object... args) throws Exception {
+    public Object eval(Context ctx, Object... args) {
         Object arg = args[0];
         String queryString = arg.toString();
         String token = SecurityContext.getSecurityContext().getToken();

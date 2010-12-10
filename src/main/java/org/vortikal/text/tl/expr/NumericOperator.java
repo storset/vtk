@@ -37,14 +37,14 @@ import org.vortikal.text.tl.Symbol;
 
 public abstract class NumericOperator extends Operator {
 
-    public NumericOperator(Symbol symbol, Notation notation, Precedence precedence) {
-        super(symbol, notation, precedence);
+    public NumericOperator(Symbol symbol) {
+        super(symbol);
     }
 
     @Override
-    public final Object eval(Context ctx, EvalStack stack) {
-        Object second = stack.pop();
-        Object first = stack.pop();
+    public Object eval(Context ctx, ExpressionNode... nodes) {
+        Object first = nodes[0].eval(ctx);
+        Object second = nodes[1].eval(ctx);
         // Wrap values in BigDecimal to simplify calculations:
         BigDecimal n1 = new BigDecimal(getNumericValue(first).doubleValue());
         BigDecimal n2 = new BigDecimal(getNumericValue(second).doubleValue());

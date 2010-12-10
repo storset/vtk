@@ -46,10 +46,10 @@ public class ViewURLValueProvider extends Function {
     }
 
     @Override
-    public Object eval(Context ctx, Object... args) throws Exception {
+    public Object eval(Context ctx, Object... args) {
         Object arg = args[0];
         if (!(arg instanceof PropertySet)) {
-            throw new Exception("Argument must be a resource object: " + arg);
+            throw new RuntimeException("Argument must be a resource object: " + arg);
         }
         return this.viewService.constructLink(((PropertySet) arg).getURI());
     }

@@ -47,7 +47,7 @@ public class RequestContextFunction extends Function {
     }
 
     @Override
-    public Object eval(Context ctx, Object... args) throws Exception {
+    public Object eval(Context ctx, Object... args) {
         Map<Object, Object> result = new HashMap<Object, Object>();
         RequestContext requestContext = RequestContext.getRequestContext();
         result.put("current-collection", requestContext.getCurrentCollection());

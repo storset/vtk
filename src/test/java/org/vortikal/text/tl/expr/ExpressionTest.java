@@ -64,7 +64,7 @@ public class ExpressionTest extends TestCase {
         });
         s = new Symbol("map");
         this.functions.add(new Function(s) {
-            public Object eval(Context ctx, Object... args) throws Exception {
+            public Object eval(Context ctx, Object... args) {
                 if (args == null || args.length % 2 != 0) {
                     throw new IllegalArgumentException(getSymbol() + " takes an even number of arguments");
                 }
@@ -91,12 +91,6 @@ public class ExpressionTest extends TestCase {
         assertNull(result);
         
         result = eval(new Argument[] {
-           new Literal("'a'"),
-           new Symbol(":"),
-           new Literal("'b'"),
-        });
-        
-        result = eval(new Argument[] {
                 new Symbol("null"),
                 new Symbol("="),
                 new Symbol("null")
@@ -120,6 +114,25 @@ public class ExpressionTest extends TestCase {
                 new Literal("true")
         });
         assertEquals(true, result);
+        
+        result = eval(new Argument[] {
+                new Literal("true"),
+                new Symbol("&&"),
+                new Literal("false"),
+                new Symbol("||"),
+                new Literal("true")
+        });
+        assertEquals(true, result);
+        
+        result = eval(new Argument[] {
+                new Literal("true"),
+                new Symbol("||"),
+                new Literal("false"),
+                new Symbol("&&"),
+                new Literal("true")
+        });
+        assertEquals(true, result);
+        
         
         result = eval(new Argument[] {
                 new Literal("774")	
@@ -444,30 +457,45 @@ public class ExpressionTest extends TestCase {
         Object result;
         List<?> list;
         result = eval(new Argument[] {
-                new Symbol("{"),
-                new Symbol("}")
+                new Symbol("#"),
+                new Symbol("("),
+                new Symbol(")")
         });
         list = (List<?>) result;
         assertTrue(list.isEmpty());
         
         result = eval(new Argument[] {
-                new Symbol("{"),
+                new Symbol("#"),
+                new Symbol("("),
                 new Literal("'a'"),
-                new Symbol("}")
+                new Symbol(")")
         });
         list = (List<?>) result;
         assertEquals(1, list.size());
         assertEquals("a", list.get(0));
+        
+        result = eval(new Argument[] {
+                new Symbol("#"),
+                new Symbol("("),
+                new Literal("'a'"),
+                new Symbol(","),
+                new Literal("'b'"),
+                new Symbol(")")
+        });
+        list = (List<?>) result;
+        assertEquals(2, list.size());
+        assertEquals("a", list.get(0));
+        assertEquals("b", list.get(1));
     }
     
     public void testMalformedLists() {
         try {
             eval(new Argument[] {
-                    new Symbol("{"),
+                    new Symbol("{{"),
                     new Literal("'a'"),
                     new Literal("'b'"),
                     new Literal("'c'"),
-                    new Symbol("}")
+                    new Symbol("}}")
             });
             fail("Should not succeed");
         } catch (RuntimeException e) {
@@ -619,9 +647,40 @@ public class ExpressionTest extends TestCase {
         assertTrue(result instanceof Map<?,?>);
         Map<?,?> m = (Map<?,?>) result;
         assertEquals("bd", m.get("a"));
-        
+
         Context ctx = new Context(Locale.getDefault());
         Map<Object, Object> map = new HashMap<Object, Object>();
+        map.put("b", "c");
+        ctx.define("a", map, true);
+        result = eval(ctx, new Argument[] {
+                new Symbol("a"),
+                new Symbol("!="),
+                new Symbol("null"),
+                new Symbol("&&"),
+                new Symbol("a"),
+                new Symbol("."),
+                new Symbol("b"),
+                new Symbol("="),
+                new Literal("'c'")
+        });
+        assertEquals(Boolean.TRUE, result);
+        
+        ctx.define("a", null, true);
+        result = eval(ctx, new Argument[] {
+                new Symbol("a"),
+                new Symbol("!="),
+                new Symbol("null"),
+                new Symbol("&&"),
+                new Symbol("a"),
+                new Symbol("."),
+                new Symbol("b"),
+                new Symbol("="),
+                new Literal("'c'")
+        });
+        assertEquals(Boolean.FALSE, result);
+        
+        ctx = new Context(Locale.getDefault());
+        map = new HashMap<Object, Object>();
         map.put("b", "c");
         ctx.define("a", map, true);
 
@@ -703,11 +762,12 @@ public class ExpressionTest extends TestCase {
                 new Symbol("{"),
                 new Literal("'a'"),
                 new Symbol(":"),
-                new Symbol("{"),
+                new Symbol("#"),
+                new Symbol("("),
                 new Literal("'b'"),
                 new Symbol(","),
                 new Literal("'c'"),
-                new Symbol("}"),
+                new Symbol(")"),
                 new Symbol("}"),
                 new Symbol("."),
                 new Symbol("a"),

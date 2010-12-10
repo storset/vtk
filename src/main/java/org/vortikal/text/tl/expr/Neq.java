@@ -35,14 +35,14 @@ import org.vortikal.text.tl.Symbol;
 
 public class Neq extends Operator {
 
-    public Neq(Symbol symbol, Notation notation, Precedence precedence) {
-        super(symbol, notation, precedence);
+    public Neq(Symbol symbol) {
+        super(symbol);
     }
 
     @Override
-    public Object eval(Context ctx, EvalStack stack) {
-        Object o1 = stack.pop();
-        Object o2 = stack.pop();
+    public Object eval(Context ctx, ExpressionNode... nodes) {
+        Object o1 = nodes[0].eval(ctx);
+        Object o2 = nodes[1].eval(ctx);
         if (o1 == null && o2 == null) {
             return false;
         } else if (o1 == null && o2 != null) {

@@ -35,27 +35,18 @@ import org.vortikal.text.tl.Symbol;
 
 public class Or extends Operator {
 
-    public Or(Symbol symbol, Notation notation, Precedence precedence) {
-        super(symbol, notation, precedence);
+    public Or(Symbol symbol) {
+        super(symbol);
     }
 
     @Override
-    public Object eval(Context ctx, EvalStack stack) {
-        Object o1 = stack.pop();
-        Object o2 = stack.pop();
-        if (o1 != null) {
-            if (!(o1 instanceof Boolean)) {
-                return true;
+    public Object eval(Context ctx, ExpressionNode... nodes) {
+        for (ExpressionNode n: nodes) {
+            Object o = n.eval(ctx);
+            if (! (o instanceof Boolean)) {
+                throw new IllegalArgumentException("Not a boolean: " + o);
             }
-            if ((Boolean) o1) {
-                return true;
-            }
-        }
-        if (o2 != null) {
-            if (!(o2 instanceof Boolean)) {
-                return true;
-            }
-            if ((Boolean) o2) {
+            if ((Boolean) o) {
                 return true;
             }
         }

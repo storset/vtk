@@ -43,7 +43,7 @@ public class Length extends Function {
     }
 
     @Override
-    public Object eval(Context ctx, Object... args) throws Exception {
+    public Object eval(Context ctx, Object... args) {
         if (args.length != 1) {
             throw new IllegalArgumentException(getSymbol() + " takes 1 argument");
         }

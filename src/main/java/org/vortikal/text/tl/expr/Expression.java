@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2010, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -33,35 +33,86 @@ package org.vortikal.text.tl.expr;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 
 import org.vortikal.text.tl.Argument;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Literal;
 import org.vortikal.text.tl.Symbol;
-import org.vortikal.text.tl.expr.Operator.Notation;
-import org.vortikal.text.tl.expr.Operator.Precedence;
 
 /**
- * Utility class for parsing and evaluating infix expressions (e.g.
- * <code>(x = y) || (x = z)</code>).
+ * Expression parser and evaluator. 
+ * 
+ * Takes a list of {@link Argument tokens} as constructor argument and 
+ * returns a "compiled" expression that can be later evaluated 
+ * against a provided {@link Context context}.
+ * 
+ * The expression grammar is loosely defined as follows:
+ * <pre>
+ * expression ::= logical-expression ;
+ * 
+ * logical-expression ::= relational-expression { logical-operator relational-expression } ;
+ * 
+ * relational-expression ::= simple-expression { relational-operator simple-expression } ;
+ * 
+ * simple-expression ::= operand { additive-operator operand } ;
+ * 
+ * operand ::= term { accessor }  ;
+ * 
+ * accessor ::=
+ *    "." function-call
+ *    | "." field-accessor ;
+ * 
+ * field-accessor = symbol | literal ;
+ * 
+ * term ::= factor { multiplicative-operator factor } ;
+ * 
+ * factor ::= 
+ *    "(" logical-expression ")"
+ *    | list
+ *    | function-call 
+ *    | inv-expression
+ *    | map
+ *    | variable
+ *    | literal ;
+ * 
+ * list ::= "#" "(" [ list-body ] ")" ;
+ * 
+ * list-body ::= logical-expression { "," logical-expression } ;
+ * 
+ * function-call ::=  symbol "(" [ arg-list ] ")" ;
+ * 
+ * method-call ::= symbol "." symbol "(" [ arg-list ] ")" ;
+ * 
+ * arg-list ::= logical-expression { "," logical-expression } ;
+ * 
+ * accessor ::= symbol "." 
+ * 
+ * map ::= 
+ *    "{" ":" "}"
+ *    | "{" map-entry { "," map-entry } "}";
+ *  
+ * map-entry ::= logical-expression ":" logical-expression
+ * 
+ * inv-expression ::= "!" factor ;
+ * 
+ * relational-operator ::=  "=" | "!=" | "<" | ">" | "<=" | ">=" ;
+ * 
+ * additive-operator ::=  "+" | "-" | "||" ;
+ * 
+ * multiplicative-operator ::=  "*" | "/" | "&&" ;
+ * </pre>
  */
 public class Expression {
 
-    private static final Symbol EMPTY_LIST = new Symbol("#emptylist");
-    private static final Symbol EMPTY_MAP = new Symbol("#emptymap");
-    private static final Symbol COLLECTION = new Symbol("#collection");
-    
     private static final Symbol LP = new Symbol("(");
     private static final Symbol RP = new Symbol(")");
     private static final Symbol LCB = new Symbol("{");
     private static final Symbol RCB = new Symbol("}");
     private static final Symbol COMMA = new Symbol(",");
-
+    private static final Symbol HASH = new Symbol("#");
     private static final Symbol EQ = new Symbol("=");
     private static final Symbol NEQ = new Symbol("!=");
     private static final Symbol GT = new Symbol(">");
@@ -75,340 +126,528 @@ public class Expression {
     private static final Symbol DIVIDE = new Symbol("/");
     private static final Symbol MAPPING = new Symbol(":");
     private static final Symbol ACCESSOR = new Symbol(".");
+
+    private static final Symbol[] LOGICAL_OPERATORS = 
+        new Symbol[] { AND, OR };
     
-    /**
-     * The default set of operators
-     */
-    public static final Map<Symbol, Operator> DEFAULT_OPERATORS;
+    private static final Symbol[] RELATIONAL_OPERATORS = 
+        new Symbol[] { EQ, NEQ, LT, GT };
+
+    private static final Symbol[] ADDITIVE_OPERATORS = 
+        new Symbol[] { PLUS, MINUS };
+
+    private static final Symbol[] MULTIPLICATIVE_OPERATORS = 
+        new Symbol[] { MULTIPLY, DIVIDE };
+
+    private enum Wildcard {
+        ANY_SYMBOL,
+        LITERAL;
+    }
+
+    public static final Map<Symbol, Operator> OPERATORS;
     static {
         Map<Symbol, Operator> ops = new HashMap<Symbol, Operator>();
 
-        ops.put(ACCESSOR, new Accessor(ACCESSOR, Notation.INFIX, Precedence.TWELVE));
+        ops.put(NOT, new Not(NOT));
 
-        ops.put(NOT, new Not(NOT, Notation.PREFIX, Precedence.ELEVEN));
+        ops.put(DIVIDE, new Divide(DIVIDE));
+        ops.put(MULTIPLY, new Multiply(MULTIPLY));
 
-        ops.put(DIVIDE, new Divide(DIVIDE, Notation.INFIX, Precedence.TEN));
-        ops.put(MULTIPLY, new Multiply(MULTIPLY, Notation.INFIX, Precedence.NINE));
+        ops.put(PLUS, new Plus(PLUS));
+        ops.put(MINUS, new Minus(MINUS));
 
-        ops.put(PLUS, new Plus(PLUS, Notation.INFIX, Precedence.EIGHT));
-        ops.put(MINUS, new Minus(MINUS, Notation.INFIX, Precedence.SEVEN));
+        ops.put(GT, new Gt(GT));
+        ops.put(LT, new Lt(LT));
 
-        ops.put(GT, new Gt(GT, Notation.INFIX, Precedence.SIX));
-        ops.put(LT, new Lt(LT, Notation.INFIX, Precedence.FIVE));
+        ops.put(EQ, new Eq(EQ));
+        ops.put(NEQ, new Neq(NEQ));
 
-        ops.put(EQ, new Eq(EQ, Notation.INFIX, Precedence.FOUR));
-        ops.put(NEQ, new Neq(NEQ, Notation.INFIX, Precedence.THREE));
+        ops.put(AND, new And(AND));
+        ops.put(OR, new Or(OR));
 
-        ops.put(AND, new And(AND, Notation.INFIX, Precedence.TWO));
-        ops.put(OR, new Or(OR, Notation.INFIX, Precedence.ONE));
-
-        ops.put(MAPPING, new Mapping(MAPPING, Notation.INFIX, Precedence.ZERO));
-        
-        DEFAULT_OPERATORS = Collections.unmodifiableMap(new HashMap<Symbol, Operator>(ops));
-    }
-
-    /**
-     * The set of defined operators for this expression
-     */
-    private Map<Symbol, Operator> operators = new HashMap<Symbol, Operator>(DEFAULT_OPERATORS);
-
-    private Map<Symbol, Operator> functions = new HashMap<Symbol, Operator>();
-
-    /**
-     * The expression in its original infix notation
-     */
-    private List<Argument> infix;
-
-    /**
-     * The expression converted to postfix notation
-     */
-    private List<Object> postfix;
-
-    public Expression(List<Argument> args) {
-        this(null, args);
+        OPERATORS = Collections.unmodifiableMap(new HashMap<Symbol, Operator>(ops));
     }
     
-    /**
-     * Constructs an expression using a supplied set of functions
-     */
-    public Expression(Set<Function> functions, List<Argument> args) {
+    private Map<Symbol, Operator> functions = new HashMap<Symbol, Operator>();
+    
+    private List<Argument> tokens;
+    private int pos = 0;
+    private ExpressionNode exp;
 
-        if (functions != null) {
-            for (Function f : functions) {
-                addFunction(f);
-            }
-        }
-        if (args == null || args.isEmpty()) {
-            throw new IllegalArgumentException("Empty expression");
-        }
-        this.infix = new ArrayList<Argument>(args);
-        Stack<Symbol> stack = new Stack<Symbol>();
-        List<Object> output = new ArrayList<Object>();
-
-        Argument prev = null, next = null;
-        for (int i = 0; i < args.size(); i++) {
-            Argument arg = args.get(i);
-            if (i > 0) {
-                prev = args.get(i - 1);
-            }
-            if (i < args.size() - 1) {
-                next = args.get(i + 1);
-            }
-            if ((arg instanceof Literal) && (prev instanceof Literal)) {
-                throw new RuntimeException("Malformed expression: " + this);
-            }
-            if (ACCESSOR.equals(arg) && prev == null) {
-                throw new IllegalArgumentException("Malformed expression: " + this);
-            }
-            
-            if (arg instanceof Literal) {
-                output.add(arg);
-                continue;
-            }
-            Symbol symbol = (Symbol) arg;
-
-            if (LP.equals(symbol)) {
-                stack.push(symbol);
-                continue;
-            }
-
-            if (LCB.equals(symbol)) {
-                stack.push(symbol);
-                continue;
-            }
-            
-            if (LP.equals(next) && !this.operators.containsKey(symbol)) {
-                // Function: '<symbol> ('
-                stack.push(symbol);
-                continue;
-            }
-            
-            if (RP.equals(symbol)) {
-                if (LP.equals(prev)) {
-                    // Special case: function call with no arguments: '<function>()'
-                    if (stack.size() < 2) {
-                        throw new RuntimeException("Malformed expression: " + this);
-                    }
-                    stack.pop();
-                    Symbol top = stack.pop();
-                    Operator op = this.operators.get(top);
-                    if (op != null) {
-                        stack.push(top);
-                    } else {
-                        int argCount = 0;
-                        if (!stack.isEmpty() && ACCESSOR.equals(stack.peek())) {
-                            stack.pop();
-                            argCount++;
-                        }
-                        output.add(new Funcall(top, argCount));
-                    }
-                    continue;
-                }
-                int commas = 0;
-                while (true) {
-                    if (stack.isEmpty()) {
-                        throw new RuntimeException("Unbalanced parentheses in expression " + this);
-                    }
-                    Symbol top = stack.pop();
-                    if (LP.equals(top)) {
-                        break;
-                    }
-                    if (COMMA.equals(top)) {
-                        commas++;
-                    } else {
-                        output.add(top);
-                    }
-                }
-                if (!stack.isEmpty()) {
-                    Symbol top = stack.pop();
-                    Operator op = this.operators.get(top);
-                    if (op != null) {
-                        stack.push(top);
-                    } else {
-                        int argCount = commas == 0 ? 1 : commas + 1;
-                        if (!stack.isEmpty() && ACCESSOR.equals(stack.peek())) {
-                            stack.pop();
-                            argCount++;
-                        }
-                        output.add(new Funcall(top, argCount));
-                    }
-                }
-                continue;
-            }
-
-            if (RCB.equals(symbol)) {
-                if (LCB.equals(prev)) {
-                    // Special case: empty list ('{}'):
-                    stack.pop();
-                    output.add(EMPTY_LIST);
-                    continue;
-                } else if (MAPPING.equals(prev)) {
-                    if (stack.size() > 1 && LCB.equals(stack.elementAt(stack.size() - 2))) {
-                        // Special case: empty map ('{:}')
-                        stack.pop();
-                        stack.pop();
-                        output.add(EMPTY_MAP);
-                        continue;
-                    }
-                }
-                int commas = 0;
-                while (true) {
-                    if (stack.isEmpty()) {
-                        throw new RuntimeException("Unbalanced map definition in expression " + this);
-                    }
-                    Symbol top = stack.pop();
-                    if (LCB.equals(top)) {
-                        break;
-                    }
-                    if (COMMA.equals(top)) {
-                        commas++;
-                    } else {
-                        output.add(top);
-                    }
-                }
-                output.add(new Literal(String.valueOf(commas + 1)));
-                output.add(COLLECTION);
-                continue;
-            }
-            
-            if (COMMA.equals(symbol)) {
-                while (true) {
-                    if (stack.isEmpty()) {
-                        throw new RuntimeException("Malformed expression: " + this);
-                    }
-                    Symbol top = stack.peek();
-                    if (LP.equals(top) || LCB.equals(top) || COMMA.equals(top)) {
-                        break;
-                    }
-                    top = stack.pop();
-                    output.add(top);
-                }
-                stack.push(symbol);
-                continue;
-            }
-
-            Operator op = this.operators.get(symbol);
-            if (op == null) {
-                output.add(symbol);
-                continue;
-            }
-
-            if (stack.isEmpty()) {
-                stack.push(symbol);
-                continue;
-            }
-            Operator top = this.operators.get(stack.peek());
-            int n = op.getprecedence().value();
-            while (top != null && top.getprecedence().value() > n) {
-                output.add(top.getSymbol());
-                stack.pop();
-                if (stack.isEmpty()) {
-                    top = null;
-                } else {
-                    top = this.operators.get(stack.peek());
-                }
-            }
-            // Associativity is considered only between equal operators.
-            if (top != null && top.getSymbol().equals(symbol) && top.leftAssociative()) {
-                output.add(top.getSymbol());
-                stack.pop();
-                if (stack.isEmpty()) {
-                    top = null;
-                } else {
-                    top = this.operators.get(stack.peek());
-                }
-            }
-            stack.push(symbol);
-        }
-        while (!stack.isEmpty()) {
-            Symbol top = stack.pop();
-            if (LP.equals(top) || RP.equals(top) || COMMA.equals(top)) {
-                throw new RuntimeException("Invalid expression: " + this);
-            }
-            output.add(top);
-        }
-        this.postfix = output;
+    public Expression(List<Argument> tokens) {
+        this(null, tokens);
     }
 
-    /**
-     * Evaluates the expression. Returns a single object value as the result.
-     */
     public Object evaluate(Context ctx) {
-        EvalStack stack = new EvalStack(ctx);
-        try {
-            for (Object o : this.postfix) {
-                if (o instanceof Funcall) {
-                    Funcall funcall = (Funcall) o;
-                    Operator function = functions.get(funcall.name);
-                    if (function == null) {
-                        throw new RuntimeException("Error in expression " + infix 
-                                + ": undefined function: " + funcall.name.getSymbol());
-                    }
-                    stack.push(funcall.args);
-                    Object val = function.eval(ctx, stack);
-                                        stack.push(val);
-                } else {
-                    Argument arg = (Argument) o;
-                    if (arg instanceof Literal) {
-                        stack.push(arg.getValue(ctx));
-                    } else if (arg instanceof Funcall) {
-
-                    } else {
-                        Symbol s = (Symbol) arg;
-                        if (EMPTY_MAP.equals(s)) {
-                            stack.push(new HashMap<Object, Object>());
-                        } else if (EMPTY_LIST.equals(s)) {
-                            stack.push(new ArrayList<Object>());
-                        } else if (COLLECTION.equals(s)) {
-                            stack.push(defineCollection(stack));
-                        } else {
-                            Operator op = operators.get(s);
-                            if (op == null) {
-                                // Symbol/variable:
-                                stack.push(s);
-                            } else {
-                                // Operator:
-                                Object val = op.eval(ctx, stack);
-                                stack.push(val);
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (Throwable t) {
-            throw new RuntimeException("Unable to evaluate expression '" + this + "': " + t.getMessage(), t);
+        return this.exp.eval(ctx);
+    }
+    
+    public Expression(Set<Function> functions, List<Argument> tokens) {        
+       this.tokens = tokens;
+       if (functions != null) {
+           for (Function f : functions) {
+               addFunction(f);
+           }
+       }
+       this.exp = logicalExpression();
+       if (cur() != null) {
+           throw new IllegalArgumentException("Malformed expression: " + this.tokens);
+       }
+    }
+    
+    private ExpressionNode logicalExpression() {
+        ExpressionNode node = relationalExpression();
+        while (lookingAt(LOGICAL_OPERATORS)) {
+            Symbol s = readSymbol();
+            ExpressionNode rel = relationalExpression();
+            node = new InfixOperation(node, s, rel);
         }
-        if (stack.size() > 0) {
-            // If there are undefined symbols at this point, it is because
-            // there are undefined functions in the expression.
-            // (This error should really be caught at an earlier stage.) 
-            for (Object o: stack) {
-                if (o instanceof Symbol) {
-                    Symbol s = (Symbol) o;
-                    if (!s.isDefined(ctx)) {
-                        throw new RuntimeException("Undefined symbol: " + s.getSymbol());
-                    }
-                }
-            }
+        return node;
+        
+    }
+    
+    private ExpressionNode relationalExpression() {
+        ExpressionNode node = simpleExpression();
+        while (lookingAt(RELATIONAL_OPERATORS)) {
+            Symbol s = readSymbol();
+            ExpressionNode simple = simpleExpression();
+            node = new InfixOperation(node, s, simple);
         }
-        if (stack.size() != 1) {
-            throw new RuntimeException("Unable to evaluate expression " + this);
-        }
-        return stack.pop();
+        return node;
     }
 
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
+    private ExpressionNode simpleExpression() {
+        ExpressionNode node = operand();
+        while (lookingAt(ADDITIVE_OPERATORS)) {
+            Symbol s = readSymbol();
+            ExpressionNode operand = operand();
+            node = new InfixOperation(node, s, operand);
+        }
+        return node;
+    }
 
-        Iterator<Argument> iter = this.infix.iterator();
-        while (iter.hasNext()) {
-            Argument arg = iter.next();
-            sb.append(arg.getRawValue());
-            if (iter.hasNext()) {
-                sb.append(" ");
+    private ExpressionNode operand() {
+        ExpressionNode node = term();
+        
+        while (lookingAt(ACCESSOR)) {
+            readSymbol();
+            if (lookingAt(Wildcard.LITERAL)) {
+                Literal literal = readLiteral();
+                return new FieldAccessNode(node, literal);
+            }
+            expect(Wildcard.ANY_SYMBOL);
+            Symbol symbol = readSymbol();
+            if (lookingAt(LP)) {
+                // Method call
+                List<ExpressionNode> args = new ArrayList<ExpressionNode>();
+                args.add(node);
+                readSymbol();
+                if (lookingAt(RP)) {
+                    readSymbol();
+                    node = new FunctionCall(symbol, args, this.functions);
+                    continue;
+                }
+                args.addAll(argList());
+                expect(RP);
+                readSymbol();
+                node = new FunctionCall(symbol, args, this.functions);
+                continue;
+            } 
+            // Field accessor:
+            node = new FieldAccessNode(node, symbol);
+        }
+        return node;
+    }
+    
+    private ExpressionNode term() {
+        ExpressionNode node = factor();
+        while (lookingAt(MULTIPLICATIVE_OPERATORS)) {
+            Symbol s = readSymbol();
+            ExpressionNode factor = factor();
+            node = new InfixOperation(node, s, factor);
+        }
+        return node;
+    }
+
+    private ExpressionNode factor() {
+       if (lookingAt(LP)) {
+           readSymbol();
+           ExpressionNode n = logicalExpression();
+           expect(RP);
+           readSymbol();
+           return n;
+       }
+       if (lookingAt(HASH)) {
+           ExpressionNode list = list();
+           return list;
+       }
+       if (lookingAt(Wildcard.ANY_SYMBOL) && LP.equals(lookahead(1))) {
+           ExpressionNode fun = functionCall();
+           return fun;
+       }
+       if (lookingAt(NOT)) {
+           ExpressionNode inv = invExpression();
+           return inv;
+       }
+       if (lookingAt(LCB)) {
+           ExpressionNode map = map();
+           return map;
+       }
+       if (lookingAt(Wildcard.ANY_SYMBOL)) {
+          Symbol s = readSymbol();
+          ExpressionNode var = new VariableNode(s);
+          return var;
+       }
+       if (lookingAt(Wildcard.LITERAL)) {
+          Literal literal = readLiteral();
+          ExpressionNode node = new LiteralNode(literal);
+          return node;
+       }
+       throw new IllegalArgumentException("Illegal token: " + cur());
+    }
+
+    private ExpressionNode functionCall() {
+        Symbol symbol = readSymbol();
+        expect(LP);
+        readSymbol();
+        if (lookingAt(RP)) {
+            readSymbol();
+            return new FunctionCall(symbol, this.functions);
+        }
+        List<ExpressionNode> args = argList();
+        expect(RP);
+        readSymbol();
+        return new FunctionCall(symbol, args, this.functions);
+    }
+    
+    private List<ExpressionNode> argList() {
+        List<ExpressionNode> list = new ArrayList<ExpressionNode>();
+        list.add(logicalExpression());
+        while (lookingAt(COMMA)) {
+            readSymbol();
+            list.add(logicalExpression());
+        }
+        return list;
+    }
+    
+    private ExpressionNode list() {
+        readSymbol();
+        expect(LP);
+        readSymbol();
+        if (lookingAt(RP)) {
+            readSymbol();
+            return new ListNode(new ArrayList<ExpressionNode>());
+        }
+        List<ExpressionNode> list = new ArrayList<ExpressionNode>();
+        list.add(logicalExpression());
+        while (lookingAt(COMMA)) {
+            readSymbol();
+            list.add(logicalExpression());
+        }
+        expect(RP);
+        readSymbol();
+        return new ListNode(list);
+    }
+
+    private ExpressionNode map() {
+        readSymbol();
+        if (lookingAt(MAPPING)) {
+            readSymbol();
+            expect(RCB);
+            readSymbol();
+            ExpressionNode emptymap = new MapNode(new HashMap<ExpressionNode, ExpressionNode>());
+            return emptymap;
+        }
+        Map<ExpressionNode, ExpressionNode> map = new HashMap<ExpressionNode, ExpressionNode>();
+        ExpressionNode key = logicalExpression();
+        expect(MAPPING);
+        readSymbol();
+        ExpressionNode value = logicalExpression();
+        map.put(key, value);
+        while (lookingAt(COMMA)) {
+            readSymbol();
+            key = logicalExpression();
+            expect(MAPPING);
+            readSymbol();
+            value = logicalExpression();
+            map.put(key, value);
+        }
+        expect(RCB);
+        readSymbol();
+        return new MapNode(map);
+    }
+    
+    private ExpressionNode invExpression() {
+        expect(NOT);
+        Symbol s = readSymbol();
+        ExpressionNode factor = factor();
+        return new UnaryOperation(s, factor);
+    }
+    
+    private Argument cur() {
+        if (this.pos < this.tokens.size()) {
+            return this.tokens.get(this.pos);
+        }
+        return null;
+    }
+    
+    private void expect(Symbol s) {
+        Argument cur = cur();
+        if (cur == null) {
+            throw new IllegalArgumentException("Expected: " + s + ", found: EOF");
+        }
+        if (!s.equals(cur)) {
+            throw new IllegalArgumentException("Expected: " + s + ", found: " + cur 
+                    + " at position " + this.pos + " in " + this.tokens);
+        }
+    }
+    
+    private void expect(Wildcard wildcard) {
+        Argument cur = cur();
+        String expected = wildcard == Wildcard.ANY_SYMBOL ? "<symbol>" : "<literal>";
+        if (cur == null) {
+            throw new IllegalArgumentException("Expected: " + expected + ", found: EOF");
+        }
+        switch (wildcard) {
+        case ANY_SYMBOL:
+            if (!(cur instanceof Symbol)) {
+                throw new IllegalArgumentException("Expected: " + expected + ", found: " + cur);
+            }
+            break;
+        case LITERAL:
+            if (!(cur instanceof Literal)) {
+                throw new IllegalArgumentException("Expected: " + expected + ", found: " + cur);
+            }
+            break;
+        }
+    }
+    
+    private Symbol readSymbol() {
+        Argument arg = cur();
+        if (arg == null) {
+            throw new IllegalArgumentException("Encountered EOF");
+        }
+        if (!(arg instanceof Symbol)) {
+            throw new IllegalArgumentException("Not a symbol: " + arg);
+        }
+        this.pos++;
+        return (Symbol) arg;
+    }
+    
+    private Literal readLiteral() {
+        Argument arg = cur();
+        if (arg == null) {
+            throw new IllegalArgumentException("Encountered EOF");
+        }
+        if (!(arg instanceof Literal)) {
+            throw new IllegalArgumentException("Not a literal: " + arg);
+        }
+        this.pos++;
+        return (Literal) arg;
+    }
+
+    private boolean lookingAt(Wildcard wildcard) {
+        Argument cur = cur();
+        if (cur == null) {
+            return false;
+        }
+        switch (wildcard) {
+        case ANY_SYMBOL:
+            return cur instanceof Symbol;
+        case LITERAL:
+            return cur instanceof Literal;
+        default:
+            return false;
+        }
+    }
+    
+    private boolean lookingAt(Symbol... symbols) {
+        Argument cur = cur();
+        for (Symbol symbol: symbols) {
+            if (symbol.equals(cur)) {
+                return true;
             }
         }
-        return sb.toString();
+        return false;
+    }
+    
+    private Argument lookahead(int offset) {
+        int idx = this.pos + offset;
+        if (idx >= this.tokens.size()) {
+            return null;
+        }
+        return this.tokens.get(idx);
+    }    
+
+    private static class InfixOperation implements ExpressionNode {
+        private ExpressionNode left;
+        private Operator operator;
+        private ExpressionNode right;
+        public InfixOperation(ExpressionNode left, Symbol symbol, ExpressionNode right) {
+            this.left = left;
+            this.operator = OPERATORS.get(symbol);
+            this.right = right;
+        }
+
+        @Override
+        public Object eval(Context ctx) {
+            return this.operator.eval(ctx, new ExpressionNode[]{left, right});
+        }
+        
+        @Override
+        public String toString() {
+            return "(" + this.left + " " + this.operator + " " + this.right + ")";
+        }
+    }
+    
+    private static class UnaryOperation implements ExpressionNode {
+        private Operator operator;
+        private ExpressionNode node;
+        public UnaryOperation(Symbol symbol, ExpressionNode node) {
+            this.operator = OPERATORS.get(symbol);
+            this.node = node;
+        }
+
+        @Override
+        public Object eval(Context ctx) {
+            return this.operator.eval(ctx, new ExpressionNode[]{node});
+        }
+        @Override
+        public String toString() {
+            return this.operator.toString() + " " + this.node.toString();
+        }
+    }
+
+    private static class ListNode implements ExpressionNode {
+        private List<ExpressionNode> list;
+        public ListNode(List<ExpressionNode> list) {
+            this.list = list;
+        }
+        @Override
+        public Object eval(Context ctx) {
+            List<Object> result = new ArrayList<Object>();
+            for (ExpressionNode n: this.list) {
+                result.add(n.eval(ctx));
+            }
+            return result;
+        }
+        @Override
+        public String toString() {
+            return "#(" + this.list + ")";
+        }
+    }
+
+    private static class MapNode implements ExpressionNode {
+        private Map<ExpressionNode, ExpressionNode> map;
+        public MapNode(Map<ExpressionNode, ExpressionNode> map) {
+            this.map = map;
+        }
+        @Override
+        public Object eval(Context ctx) {
+            Map<Object, Object> result = new HashMap<Object, Object>();
+            for (ExpressionNode key: this.map.keySet()) {
+                result.put(key.eval(ctx), this.map.get(key).eval(ctx));
+            }
+            return result;
+        }
+        @Override
+        public String toString() {
+            return this.map.toString();
+        }
+    }
+
+    
+    private static class VariableNode implements ExpressionNode {
+        private Symbol symbol;
+        public VariableNode(Symbol symbol) {
+            this.symbol = symbol;
+        }
+        @Override
+        public Object eval(Context ctx) {
+            return this.symbol.getValue(ctx);
+        }
+        @Override
+        public String toString() {
+            return this.symbol.getRawValue();
+        }
+    }
+
+    private static class LiteralNode implements ExpressionNode {
+        private Literal literal;
+        public LiteralNode(Literal literal) {
+            this.literal= literal;
+        }
+        @Override
+        public Object eval(Context ctx) {
+            return this.literal.getValue(ctx);
+        }
+        @Override
+        public String toString() {
+            return this.literal.getRawValue();
+        }
+    }
+    
+    private static class FieldAccessNode implements ExpressionNode {
+        private ExpressionNode object;
+        private String field;
+        private Accessor accessor;
+
+        public FieldAccessNode(ExpressionNode object, Argument accessor) {
+            this.object = object;
+            this.field = accessor.getRawValue();
+            this.accessor = new Accessor(ACCESSOR, accessor);
+        }
+        @Override
+        public Object eval(Context ctx) {
+            return this.accessor.eval(ctx, this.object);
+        }
+        
+        @Override
+        public String toString() {
+            return this.object + "." + this.field;
+        }
+        
+    }
+    
+    private static class FunctionCall implements ExpressionNode {
+        private Symbol name;
+        private List<ExpressionNode> args = null;
+        private Map<Symbol, Operator> functions;
+        
+        public FunctionCall(Symbol name, Map<Symbol, Operator> functions) {
+            this.name = name;
+            this.functions = functions;
+        }
+
+        public FunctionCall(Symbol name, List<ExpressionNode> args, Map<Symbol, Operator> functions) {
+            this.name = name;
+            this.args = args;
+            this.functions = functions;
+        }
+        
+        @Override
+        public Object eval(Context ctx) {
+            Operator fun = this.functions.get(this.name);
+            if (fun == null) {
+                throw new IllegalStateException("Undefined function: " + this.name);
+            }
+            List<ExpressionNode> args = this.args;
+            if (args == null) {
+                args = Collections.emptyList();
+            }
+            return fun.eval(ctx, args.toArray(new ExpressionNode[args.size()]));
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder(this.name.getRawValue());
+            sb.append("(");
+            if (this.args != null) {
+                sb.append(this.args);
+            }
+            sb.append(")");
+            return sb.toString();
+        }
     }
     
     private void addFunction(Function function) {
@@ -424,72 +663,9 @@ public class Expression {
         }
         this.functions.put(symbol, function);
     }
-
     
-    private Object defineCollection(EvalStack stack) {
-        if (stack.isEmpty()) {
-            throw new RuntimeException("Empty evaluation stack");
-        }
-        Object top = stack.pop();
-        if (!(top instanceof Number)) {
-            throw new RuntimeException("Number of entries not a numeric value: " + top);   
-        }
-        int n = ((Number) top).intValue();
-        List<Object> list = new ArrayList<Object>();
-        boolean allMapEntries = true;
-        for (int i = 0; i < n; i++) {
-            if (stack.isEmpty()) {
-                throw new RuntimeException("Empty evaluation stack");
-            }
-            Object o = stack.pop();
-            if (!(o instanceof MapEntry)) {
-                allMapEntries = false;
-            }
-            list.add(0, o);
-        }
-        if (!allMapEntries) {
-            return list;
-        }
-        Map<Object, Object> map = new HashMap<Object, Object>();
-        for (Object o: list) {
-            MapEntry e = (MapEntry) o;
-            map.put(e.key, e.value);
-        }
-        return map;
+    @Override
+    public String toString() {
+        return this.exp.toString();
     }
-    
-    private static class MapEntry {
-        public Object key;
-        public Object value;
-    }
-    
-    private static class Mapping extends Operator {
-
-        public Mapping(Symbol symbol, Notation notation, Precedence precedence) {
-            super(symbol, notation, precedence);
-        }
-
-        @Override
-        public Object eval(Context ctx, EvalStack stack) {
-            Object value = stack.pop();
-            Object key = stack.pop();
-            MapEntry entry = new MapEntry();
-            entry.key = key;
-            entry.value = value;
-            return entry;
-        }
-    }
-    
-    private static class Funcall {
-        private Symbol name;
-        private int args;
-        public Funcall(Symbol name, int args) {
-            this.name = name;
-            this.args = args;
-        }
-        public String toString() {
-            return "function#" + name.getSymbol() + "(" + args + ")";
-        }
-    }
-    
 }

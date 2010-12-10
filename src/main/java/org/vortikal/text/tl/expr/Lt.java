@@ -35,15 +35,15 @@ import org.vortikal.text.tl.Symbol;
 
 public class Lt extends Operator {
 
-    public Lt(Symbol symbol, Notation notation, Precedence precedence) {
-        super(symbol, notation, precedence);
+    public Lt(Symbol symbol) {
+        super(symbol);
     }
     
     @Override
     @SuppressWarnings("unchecked")
-    public Object eval(Context ctx, EvalStack stack) {
-        Object o2 = stack.pop();
-        Object o1 = stack.pop();
+    public Object eval(Context ctx, ExpressionNode... nodes) {
+        Object o1 = nodes[0].eval(ctx);
+        Object o2 = nodes[1].eval(ctx);
         if (o1 == null) {
             throw new IllegalArgumentException("Compare:" + getSymbol() + " first argument is NULL");
         }
@@ -60,4 +60,5 @@ public class Lt extends Operator {
         Comparable<Object> c2 = (Comparable<Object>) o2;
         return Boolean.valueOf(c1.compareTo(c2) < 0);
     }
+
 }

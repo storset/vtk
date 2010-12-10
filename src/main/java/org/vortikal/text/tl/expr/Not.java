@@ -35,13 +35,13 @@ import org.vortikal.text.tl.Symbol;
 
 public class Not extends Operator {
 
-    public Not(Symbol symbol, Notation notation, Precedence precedence) {
-        super(symbol, notation, precedence);
+    public Not(Symbol symbol) {
+        super(symbol);
     }
 
     @Override
-    public Object eval(Context ctx, EvalStack stack) {
-        Object o = stack.pop();
+    public Object eval(Context ctx, ExpressionNode... nodes) {
+        Object o = nodes[0].eval(ctx);
         if (o == null) {
             return true;
         }

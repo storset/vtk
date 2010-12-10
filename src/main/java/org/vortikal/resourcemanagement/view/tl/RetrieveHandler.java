@@ -54,7 +54,7 @@ public class RetrieveHandler extends Function {
     }
 
     @Override
-    public Object eval(Context ctx, Object... args) throws Exception {
+    public Object eval(Context ctx, Object... args) {
 
         Object arg = args[0];
         Resource resource;

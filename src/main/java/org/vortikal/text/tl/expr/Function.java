@@ -38,34 +38,28 @@ public abstract class Function extends Operator {
     private Integer argumentCount;
     
     public Function(Symbol symbol, int argumentCount) {
-        super(symbol, Notation.PREFIX, Precedence.FUNCTION_PRECEDENCE);
+        super(symbol);
         this.argumentCount = argumentCount;
     }
 
     public Function(Symbol symbol) {
-        super(symbol, Notation.PREFIX, Precedence.FUNCTION_PRECEDENCE);
+        super(symbol);
         this.argumentCount = null;
     }
 
     
     @Override
-    public final Object eval(Context ctx, EvalStack stack) throws Exception {
-        Object o = stack.pop();
-        if (o == null || !(o instanceof Integer)) {
-            throw new IllegalStateException("Expected argument count at top of stack");
-        }
-        int argCount = (Integer) o;
-        if (this.argumentCount != null && argCount != this.argumentCount) {
+    public final Object eval(Context ctx, ExpressionNode... nodes) {
+        if (this.argumentCount != null && nodes.length != this.argumentCount) {
             throw new IllegalArgumentException("Function " + getSymbol().getSymbol() 
                     + " takes " + this.argumentCount + " arguments");
         }
-        Object[] args = new Object[argCount];
-
-        for (int i = argCount - 1; i >= 0; i--) {
-            args[i] = stack.pop();
+        Object[] args = new Object[nodes.length];        
+        for (int i = 0; i < nodes.length; i++) {
+            args[i] = nodes[i].eval(ctx);
         }
         return eval(ctx, args);
     }
     
-    public abstract Object eval(Context ctx, Object...args) throws Exception;
+    public abstract Object eval(Context ctx, Object...args);
 }

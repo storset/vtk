@@ -48,7 +48,7 @@ public class ToDateFunction extends Function {
     }
 
     @Override
-    public Object eval(Context ctx, Object... args) throws Exception {
+    public Object eval(Context ctx, Object... args) {
         Object arg = args[0];
         if (!(arg instanceof String)) {
             throw new RuntimeException("Argument must be a string: " + arg);

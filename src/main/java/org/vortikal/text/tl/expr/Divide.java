@@ -36,13 +36,8 @@ import org.vortikal.text.tl.Symbol;
 
 public class Divide extends NumericOperator {
 
-    public Divide(Symbol symbol, Notation notation, Precedence precedence) {
-        super(symbol, notation, precedence);
-    }
-
-    @Override
-    public boolean leftAssociative() {
-        return true;
+    public Divide(Symbol symbol) {
+        super(symbol);
     }
 
     @Override

@@ -40,7 +40,7 @@ public class ToString extends Function {
     }
 
     @Override
-    public Object eval(Context ctx, Object... args) throws Exception {
+    public Object eval(Context ctx, Object... args) {
         Object o = args[0];
         if (o == null) {
             return "null";

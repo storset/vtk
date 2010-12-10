@@ -36,13 +36,8 @@ import org.vortikal.text.tl.Symbol;
 
 public class Minus extends NumericOperator {
 
-    public Minus(Symbol symbol, Notation notation, Precedence precedence) {
-        super(symbol, notation, precedence);
-    }
-
-    @Override
-    public boolean leftAssociative() {
-        return true;
+    public Minus(Symbol symbol) {
+        super(symbol);
     }
 
     @Override

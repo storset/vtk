@@ -20,7 +20,7 @@ resourcetype boxes {
     test-include-feed (url) {
       ##
 
-      [list {'a', 'b', 'cc'} elem]
+      [list #('a', 'b', 'cc') elem]
          elem: [val elem]
       [endlist]
       [def map {'a':'b', 'c':'d'}]

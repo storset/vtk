@@ -30,77 +30,9 @@
  */
 package org.vortikal.text.tl.expr;
 
-import java.util.Iterator;
-import java.util.Stack;
-
 import org.vortikal.text.tl.Context;
-import org.vortikal.text.tl.Symbol;
 
-/**
- * Evaluation stack for expressions.
- */
-public class EvalStack implements Iterable<Object> {
-    private Stack<Object> stack = new Stack<Object>();
-    private Context ctx;
-    
-    public EvalStack(Context ctx) {
-        this.ctx = ctx;
-    }
-    
-    /**
-     * Gets the size of the stack.
-     * @return the size of the stack
-     */
-    public int size() {
-        return this.stack.size();
-    }
-    
-    /**
-     * Tests if the stack is empty.
-     * @return a boolean indicating whether 
-     * or not the stack is empty
-     */
-    public boolean isEmpty() {
-        return this.stack.isEmpty();
-    }
-    
-    /**
-     * Pushes an object onto the stack
-     * @param o the object to push
-     */
-    public void push(Object o) {
-        this.stack.push(o);
-    }
-
-    /**
-     * Pops the stack
-     * @return the popped object
-     */
-    public Object pop() {
-        return pop(true);
-    }
-
-    /**
-     * Pops the stack and optionally evaluates the 
-     * returned object in the context (only if the object is a symbol).
-     * @param evaluate whether to evaluate the returned object
-     * @return the popped object
-     */
-    public Object pop(boolean evaluate) {
-        Object o = this.stack.pop();
-        if (evaluate && o instanceof Symbol) {
-            return ((Symbol) o).getValue(this.ctx);
-        }
-        return o;
-    }
-    
-    @Override
-    public Iterator<Object> iterator() {
-        return this.stack.iterator();
-    }
-
-    public String toString() {
-        return this.stack.toString();
-    }
+public interface ExpressionNode {
+    public Object eval(Context ctx);
 
 }

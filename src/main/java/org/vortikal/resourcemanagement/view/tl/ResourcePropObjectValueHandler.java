@@ -45,7 +45,7 @@ public class ResourcePropObjectValueHandler extends ResourcePropHandler {
     }
     
     @Override
-    public Object eval(Context ctx, Object... args) throws Exception {
+    public Object eval(Context ctx, Object... args) {
         Object obj = super.eval(ctx, args);
         
         if (obj instanceof Value) 

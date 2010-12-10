@@ -57,7 +57,7 @@ public class ResourcePropHandler extends Function {
     }
 
     @Override
-    public Object eval(Context ctx, Object... args) throws Exception {
+    public Object eval(Context ctx, Object... args) {
         final Object arg1 = args[0];
         final Object arg2 = args[1];
         PropertySet resource = null;
@@ -89,7 +89,11 @@ public class ResourcePropHandler extends Function {
                     uri = Path.fromString(ref);
                 }
                 String token = SecurityContext.getSecurityContext().getToken();
-                resource = this.repository.retrieve(token, uri, true);
+                try {
+                    resource = this.repository.retrieve(token, uri, true);
+                } catch (Throwable t) {
+                    throw new RuntimeException(t);
+                }
             }
         }
         String propName = arg2.toString();

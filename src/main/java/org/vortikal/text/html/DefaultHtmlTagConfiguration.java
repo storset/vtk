@@ -64,6 +64,7 @@ public final class DefaultHtmlTagConfiguration {
         compositeTags.add("kbd");
         compositeTags.add("var");
         compositeTags.add("iframe");
+        compositeTags.add("noscript");
         
         emptyTags.add("br");
         emptyTags.add("area");
@@ -75,6 +76,7 @@ public final class DefaultHtmlTagConfiguration {
         emptyTags.add("col");
         emptyTags.add("base");
         emptyTags.add("meta");
+        emptyTags.add("esi:include");
     }
 
     public static Set<String> compositeTags() {

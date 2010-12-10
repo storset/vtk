@@ -23,8 +23,8 @@
 <#global USE_TREE_VIEW = false >
 
 <#macro displaySubFolderMenu subFolderMenu treeView>
-	<#assign USE_TREE_VIEW=treeView>
-	
+  <#assign USE_TREE_VIEW=treeView>
+  
     <#if subFolderMenu.size &gt; 0>
       <#assign "counter" = 0>
       <#assign "counter2" = 0>
@@ -75,10 +75,10 @@
 
 <#macro displayParentMenu menu currentCount groupCount newDiv subFolderMenu >
   <#if newDiv>
-       <#if currentCount != 1>
-          </div>
-       </#if>  
-          <div class="vrtx-group-${groupCount?html}">
+    <#if currentCount != 1>
+     </div>
+    </#if>  
+    <div class="vrtx-group-${groupCount?html}">
   </#if>
    <#if USE_TREE_VIEW >
     <ul class="resultset-${currentCount?html} filetree">
@@ -102,19 +102,19 @@
 
 <#macro displaySubMenu menu displaySubMenu >
   <ul>
-  	<#assign i = 0 />
-  	<#assign sized = menu.itemsSorted?size />
-  	<#if (menu.maxNumberOfItems < sized)>
-  	  <#assign sized = menu.maxNumberOfItems />
-  	</#if>
+    <#assign i = 0 />
+    <#assign sized = menu.itemsSorted?size />
+    <#if (menu.maxNumberOfItems < sized)>
+      <#assign sized = menu.maxNumberOfItems />
+    </#if>
     <#list menu.itemsSorted as item>
-    	<#if (i < sized)>
-	        <#if USE_TREE_VIEW >
-	          <li class="closed">
-	          <span class="folder">
-	        <#else>
-	          <li>
-	        </#if>
+      <#if (i < sized)>
+          <#if USE_TREE_VIEW >
+            <li class="closed">
+            <span class="folder">
+          <#else>
+            <li>
+          </#if>
             
             <#if commaSeparated>
               <#if (i < (sized-1))>
@@ -125,16 +125,16 @@
             <#else>
               <@displayItem item=item />
             </#if>
-          	</li>
+            </li>
          <#else>
-         	<#break>
+           <#break>
          </#if>
          <#assign i = i + 1 />
     </#list>
-	<#if (menu.totalNumberOfItems > menu.maxNumberOfItems)>
-	    <li class="vrtx-more">   
-			<a href="${menu.moreUrl?html}"><@vrtx.msg code="subfolder.morelinkTitle" /></a>
-		</li>
-	</#if>
+  <#if (menu.totalNumberOfItems > menu.maxNumberOfItems)>
+      <li class="vrtx-more">   
+      <a href="${menu.moreUrl?html}"><@vrtx.msg code="subfolder.morelinkTitle" /></a>
+    </li>
+  </#if>
   </ul>
 </#macro>

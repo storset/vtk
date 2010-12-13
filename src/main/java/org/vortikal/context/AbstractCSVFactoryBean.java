@@ -67,7 +67,7 @@ public abstract class AbstractCSVFactoryBean extends AbstractFactoryBean {
 
     protected abstract Object createInstance() throws Exception;
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public abstract Class getObjectType();
 
 }

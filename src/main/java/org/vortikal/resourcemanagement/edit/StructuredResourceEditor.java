@@ -154,12 +154,16 @@ public class StructuredResourceEditor extends SimpleFormController {
             FormSubmitCommand form = (FormSubmitCommand) getTarget();
             for (PropertyDescription desc : props) {
                 if (desc instanceof EditablePropertyDescription) {
-                    if ("simple_html".equals(desc.getType()))
+
+                    if ("simple_html".equals(desc.getType())) {
                         runSimpleHtmlFilter(request, form, desc);
-                    else if (desc instanceof JSONPropertyDescription)
+                        
+                    } else if (desc instanceof JSONPropertyDescription) {
                         buildJSONFromInput(request, form, desc);
-                    else
+                        
+                    } else {
                         storePostedValue(request, form, desc);
+                    }
                 }
             }
             super.bind(request);
@@ -183,35 +187,8 @@ public class StructuredResourceEditor extends SimpleFormController {
         @SuppressWarnings("unchecked")
         private void buildJSONFromInput(ServletRequest request, FormSubmitCommand form, PropertyDescription desc) {
             JSONPropertyDescription jsonDesc = (JSONPropertyDescription) desc;
-            if (jsonDesc.isMultiple()) {
-                Enumeration<String> names = request.getParameterNames();
-                int maxIndex = 0;
-                while (names.hasMoreElements()) {
-                    String input = names.nextElement();
-                    for (JSONPropertyAttributeDescription attr : jsonDesc.getAttributes()) {
-                        String prefix = desc.getName() + "." + attr.getName() + ".";
-                        if (input.startsWith(prefix)) {
-                            int i = Integer.parseInt(input.substring(prefix.length()));
-                            maxIndex = Math.max(maxIndex, i);
-                        }
-                    }
-                }
-                List<JSONObject> resultList = new ArrayList<JSONObject>();
-                for (int i = 0; i <= maxIndex; i++) {
-                    JSONObject obj = new JSONObject();
-                    for (JSONPropertyAttributeDescription attr : jsonDesc.getAttributes()) {
-                        String input = desc.getName() + "." + attr.getName() + "." + i;
-                        String posted = request.getParameter(input);
-                        if (posted != null && !"".equals(posted.trim())) {
-                            obj.put(attr.getName(), posted);
-                        }
-                    }
-                    if (!obj.isEmpty()) {
-                        resultList.add(obj);
-                    }
-                }
-                bindObjectToForm(form, desc, resultList);
-            } else {
+            
+            if (!jsonDesc.isMultiple()) {
                 JSONObject obj = new JSONObject();
                 for (JSONPropertyAttributeDescription attr : jsonDesc.getAttributes()) {
                     String param = desc.getName() + "." + attr.getName() + ".0";
@@ -221,7 +198,36 @@ public class StructuredResourceEditor extends SimpleFormController {
                     }
                 }
                 bindObjectToForm(form, desc, obj);
+                return;
             }
+            
+            Enumeration<String> names = request.getParameterNames();
+            int maxIndex = 0;
+            while (names.hasMoreElements()) {
+                String input = names.nextElement();
+                for (JSONPropertyAttributeDescription attr : jsonDesc.getAttributes()) {
+                    String prefix = desc.getName() + "." + attr.getName() + ".";
+                    if (input.startsWith(prefix)) {
+                        int i = Integer.parseInt(input.substring(prefix.length()));
+                        maxIndex = Math.max(maxIndex, i);
+                    }
+                }
+            }
+            List<JSONObject> resultList = new ArrayList<JSONObject>();
+            for (int i = 0; i <= maxIndex; i++) {
+                JSONObject obj = new JSONObject();
+                for (JSONPropertyAttributeDescription attr : jsonDesc.getAttributes()) {
+                    String input = desc.getName() + "." + attr.getName() + "." + i;
+                    String posted = request.getParameter(input);
+                    if (posted != null && !"".equals(posted.trim())) {
+                        obj.put(attr.getName(), posted);
+                    }
+                }
+                if (!obj.isEmpty()) {
+                    resultList.add(obj);
+                }
+            }
+            bindObjectToForm(form, desc, resultList);
 
         }
 

@@ -74,6 +74,29 @@ public class ParserTest extends TestCase {
         defDirective.setFunctions(functions);
         directiveHandlers.put("def", defDirective);
         
+        directiveHandlers.put("abc", new DirectiveNodeFactory() {
+            @Override
+            public Node create(DirectiveParseContext ctx) throws Exception {
+                ParseResult result = ctx.getParser().parse(new String[]{"/abc"});
+                DirectiveParseContext info = result.getTerminator();
+                if (info == null) {
+                    throw new IllegalStateException("Unterminated directive: " + ctx.getName());
+                }
+                if (!"/abc".equals(info.getName())) {
+                    throw new IllegalStateException("Unterminated directive: " + ctx.getName());
+                }
+                final NodeList content = result.getNodeList();
+                return new Node() {
+                    @Override
+                    public boolean render(Context ctx, Writer out)
+                            throws Exception {
+                        return content.render(ctx, out);
+                    }
+                    
+                };
+            }
+        });
+        
         this.directiveHandlers = directiveHandlers;
     }
 
@@ -83,6 +106,9 @@ public class ParserTest extends TestCase {
 
         String result = parseAndRender("[def x 22][val x]", ctx);
         assertEquals("22", result);
+        
+        result = parseAndRender("a [abc]wrapper around [abc]inner [/abc]text[/abc]", ctx);
+        assertEquals("a wrapper around inner text", result);
         
         result = parseAndRender("[]", ctx);
         assertEquals("[]", result);
@@ -159,6 +185,17 @@ public class ParserTest extends TestCase {
         writer = new StringWriter();
         nodes.get(0).render(ctx, writer);
         assertEquals("<!--[if IE]>conditional comment<![endif]-->", writer.toString());
+        
+        template = "<!--[if IE 7]>\n"
+            + "<link type=\"text/css\" rel=\"stylesheet\" media=\"all\" href=\"...style_ie7.css\" />\n"
+            + "<![endif]-->";
+        try {
+            parseAndRender(template, ctx);
+            throw new Exception("Should fail");
+        } catch (RuntimeException e) { }
+  
+        template = "[#--" + template + "--]";
+        parse(template);
     }
     
     public void testDirectiveArgs() {
@@ -193,6 +230,9 @@ public class ParserTest extends TestCase {
         String result = parseAndRender("[if true]yes[else]no[endif]", ctx);
         assertEquals("yes", result);
 
+        result = parseAndRender("[if 4 / 2 = 2]yes[else]no[endif]", ctx);
+        assertEquals("yes", result);
+        
         ctx.define("var1", true, true);
         result = parseAndRender("[if var1]yes[else]no[endif]", ctx);
         assertEquals("yes", result);
@@ -221,6 +261,13 @@ public class ParserTest extends TestCase {
         ctx.define("map", map, true);
         result = parseAndRender("[if map.a = 22]yes[else]no[endif]", ctx);
         assertEquals("yes", result);
+    }
+    
+    public void testXXX() throws Exception {
+        Context ctx = new Context(Locale.getDefault());
+        String result = parseAndRender("[abc]foo[/abc]", ctx);
+        assertEquals("foo", result);
+        
     }
     
     public void testValNode() throws Exception {

@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.servlet;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -234,7 +235,7 @@ public class VortikalServlet extends DispatcherServlet {
         }
         
         this.requestFilters = filterArray;
-        this.logger.info("Request filters: " + filterArray + " set up successfully");
+        this.logger.info("Using request filters: " + Arrays.asList(filterArray));
     }
     
     private void initResponseFilters() {

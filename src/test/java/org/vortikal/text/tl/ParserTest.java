@@ -199,7 +199,7 @@ public class ParserTest extends TestCase {
     }
     
     public void testDirectiveArgs() {
-        List<Argument> args = parseDirective("[test arg1 \"arg2\" 100]");
+        List<Token> args = parseDirective("[test arg1 \"arg2\" 100]");
         assertEquals(args.size(), 3);
         assertEquals(new Symbol("arg1"), args.get(0));
         assertEquals(new Literal("\"arg2\""), args.get(1));
@@ -294,9 +294,9 @@ public class ParserTest extends TestCase {
         }
     }
 
-    public List<Argument> parseDirective(String template) {
+    public List<Token> parseDirective(String template) {
         Map<String, DirectiveNodeFactory> directives = new HashMap<String, DirectiveNodeFactory>();
-        List<Argument> tokens = new ArrayList<Argument>();
+        List<Token> tokens = new ArrayList<Token>();
         
         TestNodeFactory nf = new TestNodeFactory(tokens);
         directives.put("*", nf);
@@ -311,8 +311,8 @@ public class ParserTest extends TestCase {
     }
 
     private class TestNodeFactory implements DirectiveNodeFactory {
-        private List<Argument> tokenOutput;
-        public TestNodeFactory(List<Argument> tokenOutput) {
+        private List<Token> tokenOutput;
+        public TestNodeFactory(List<Token> tokenOutput) {
             this.tokenOutput = tokenOutput;
         }
         @Override

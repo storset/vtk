@@ -50,6 +50,9 @@ public class Eq extends Operator {
         } else if (o1 != null && o2 == null) {
             return false;
         }
+        if (o1 == o2) {
+            return Boolean.TRUE;
+        }
         return Boolean.valueOf(o1.equals(o2));
     }
 }

@@ -40,10 +40,10 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
-import org.vortikal.text.tl.Token;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Literal;
 import org.vortikal.text.tl.Symbol;
+import org.vortikal.text.tl.Token;
 
 public class ExpressionTest extends TestCase {
 
@@ -80,143 +80,144 @@ public class ExpressionTest extends TestCase {
     
     public void testBasicExpressions() {
         Object result;
-        result = eval(new Token[] {
+        result = eval(
                 new Literal("\"literal-string\"")	
-        });
+        );
         assertEquals("literal-string", result);
 
-        result = eval(new Token[] {
+        result = eval(
                 new Symbol("null")
-        });
+        );
         assertNull(result);
         
-        result = eval(new Token[] {
+        result = eval(
                 new Symbol("null"),
                 new Symbol("="),
                 new Symbol("null")
-        });
+        );
         assertEquals(true, result);
 
-        result = eval(new Token[] {
+        result = eval(
                 new Literal("true")
-        });
+        );
         assertEquals(true, result);
 
-        result = eval(new Token[] {
+        result = eval(
                 new Symbol("!"),
                 new Literal("true")
-        });
+        );
         assertEquals(false, result);
 
-        result = eval(new Token[] {
+        result = eval(
                 new Symbol("!"),
                 new Symbol("!"),
                 new Literal("true")
-        });
+        );
         assertEquals(true, result);
         
-        result = eval(new Token[] {
+        result = eval(
                 new Literal("true"),
                 new Symbol("&&"),
                 new Literal("false"),
                 new Symbol("||"),
                 new Literal("true")
-        });
+        );
         assertEquals(true, result);
         
-        result = eval(new Token[] {
+        result = eval(
                 new Literal("true"),
                 new Symbol("||"),
                 new Literal("false"),
                 new Symbol("&&"),
                 new Literal("true")
-        });
+        );
         assertEquals(true, result);
         
         
-        result = eval(new Token[] {
+        result = eval(
                 new Literal("774")	
-        });
+        );
         assertEquals(774, result);
 
-        result = eval(new Token[] {
+        result = eval(
                 new Literal("-774")	
-        });
+        );
         assertEquals(-774, result);
 
-        result = eval(new Token[] {
+        result = eval(
                 new Literal("2"),
                 new Symbol("+"),
                 new Literal("2")
-        });
+        );
         assertEquals(4, result);
 
-        result = eval(new Token[] {
+        result = eval(
                 new Literal("2"),
                 new Symbol("-"),
                 new Literal("2")
-        });
+        );
         assertEquals(0, result);
 
-        result = eval(new Token[] {
+        result = eval(
                 new Literal("2"),
                 new Symbol("-"),
                 new Literal("-2")
-        });
+        );
         assertEquals(4, result);
 
-        result = eval(new Token[] {
+        result = eval(
                 new Literal("2"),
                 new Symbol("*"),
                 new Literal("2")
-        });
+        );
         assertEquals(4, result);
 
-        result = eval(new Token[] {
+        result = eval(
                 new Literal("2"),
                 new Symbol("/"),
                 new Literal("2")
-        });
+        );
         assertEquals(1, result);
 
-        result = eval(new Token[] {
+        result = eval(
                 new Literal("200"),
                 new Symbol("/"),
                 new Literal("4"),
                 new Symbol("/"),
                 new Literal("10")
-        });
+        );
         assertEquals(5, result);
 
-        result = eval(new Token[] {
+        result = eval(
                 new Literal("200"),
                 new Symbol("/"),
                 new Literal("10"),
                 new Symbol("/"),
                 new Literal("4")
-        });
+        );
         assertEquals(5, result);
 
-        result = eval(new Token[] {
+        result = eval(
                 new Literal("2.2"),
                 new Symbol("/"),
                 new Literal("2")
-        });
+        );
         assertEquals(1.1F, result);
     }
 
+    
     public void testComplexExpressions() {
         Object result;
-        result = eval(new Token[] {
+        result = eval(
                 new Literal("2"),
                 new Symbol("+"),
                 new Literal("2"),
                 new Symbol("*"),
                 new Literal("2")
-        });
+        );
         assertEquals(6, result);
 
-        result = eval(new Token[] {
+        result = eval(
                 new Literal("2"),
                 new Symbol("+"),
                 new Literal("3"),
@@ -224,10 +225,10 @@ public class ExpressionTest extends TestCase {
                 new Literal("4"),
                 new Symbol("/"),
                 new Literal("2")
-        });
+        );
         assertEquals(7, result);
 
-        result = eval(new Token[] {
+        result = eval(
                 new Symbol("("),
                 new Literal("2"),
                 new Symbol("+"),
@@ -235,10 +236,10 @@ public class ExpressionTest extends TestCase {
                 new Symbol(")"),
                 new Symbol("*"),
                 new Literal("2")
-        });
+        );
         assertEquals(12, result);
 
-        result = eval(new Token[] {
+        result = eval(
                 new Symbol("("),
                 new Literal("2"),
                 new Symbol("+"),
@@ -246,10 +247,10 @@ public class ExpressionTest extends TestCase {
                 new Symbol(")"),
                 new Symbol("="),
                 new Literal("6")
-        });
+        );
         assertEquals(true, result);
 
-        result = eval(new Token[] {
+        result = eval(
                 new Literal("2"),
                 new Symbol("+"),
                 new Literal("4"),
@@ -261,10 +262,10 @@ public class ExpressionTest extends TestCase {
                 new Literal("2"),
                 new Symbol("="),
                 new Literal("4")
-        });
+        );
         assertEquals(true, result);
 
-        result = eval(new Token[] {
+        result = eval(
                 new Literal("2"),
                 new Symbol("+"),
                 new Literal("4"),
@@ -276,10 +277,10 @@ public class ExpressionTest extends TestCase {
                 new Literal("2"),
                 new Symbol("="),
                 new Literal("4")
-        });
+        );
         assertEquals(false, result);
         
-        result = eval(new Token[] {
+        result = eval(
                 new Symbol("("),
                 new Literal("2"),
                 new Symbol("+"),
@@ -295,7 +296,7 @@ public class ExpressionTest extends TestCase {
                 new Symbol("="),
                 new Literal("4"),
                 new Symbol(")")
-        });
+        );
         assertEquals(true, result);
 
         Context ctx = new Context(Locale.getDefault());        
@@ -303,7 +304,7 @@ public class ExpressionTest extends TestCase {
         ctx.define("x", "y", true);
         ctx.define("a", null, true);
         
-        result = eval(ctx, new Token[] {
+        result = eval(ctx, 
                 new Symbol("x"),
                 new Symbol("="),
                 new Literal("'y'"),
@@ -317,13 +318,13 @@ public class ExpressionTest extends TestCase {
                 new Symbol("="),
                 new Literal("'value'"),
                 new Symbol(")")
-        });
+        );
         assertEquals(true, result);
 
         ctx.define("x", "z", true);
         ctx.define("a", "value", true);
         
-        result = eval(ctx, new Token[] {
+        result = eval(ctx,
                 new Symbol("x"),
                 new Symbol("="),
                 new Literal("'y'"),
@@ -337,9 +338,27 @@ public class ExpressionTest extends TestCase {
                 new Symbol("="),
                 new Literal("'value'"),
                 new Symbol(")")
-        });
+        );
         assertEquals(true, result);
         
+        ctx.define("a", true, true);
+        ctx.define("b", false, true);
+        ctx.define("c", true, true);
+        
+        result = eval(ctx,
+                new Symbol("!"),
+                new Symbol("!"),
+                new Symbol("("),
+                new Symbol("a"),
+                new Symbol("&&"),
+                new Symbol("("),
+                new Symbol("b"),
+                new Symbol("||"),
+                new Symbol("c"),
+                new Symbol(")"),
+                new Symbol(")")
+        );
+        assertEquals(true, result);
     }
 
     
@@ -350,7 +369,7 @@ public class ExpressionTest extends TestCase {
         ctx.define("c", "c", true);
 
         Object result;
-        result = eval(new Token[] {
+        result = eval(
                 new Symbol("concat"),
                 new Symbol("("),
                 new Literal("'a'"),
@@ -362,10 +381,10 @@ public class ExpressionTest extends TestCase {
                 new Literal("'c'"),
                 new Symbol(")"),
                 new Symbol(")")
-        });
+        );
         assertEquals("abc", result);
 
-        result = eval(ctx, new Token[] {
+        result = eval(ctx, 
                 new Symbol("concat"),
                 new Symbol("("),
                 new Symbol("a"),
@@ -377,10 +396,10 @@ public class ExpressionTest extends TestCase {
                 new Symbol("c"),
                 new Symbol(")"),
                 new Symbol(")")
-        });
+        );
         assertEquals("abc", result);
 
-        result = eval(new Token[] {
+        result = eval(
                 new Symbol("concat"),
                 new Symbol("("),
                 new Symbol("concat"),
@@ -392,10 +411,10 @@ public class ExpressionTest extends TestCase {
                 new Symbol(","),
                 new Literal("'c'"),
                 new Symbol(")")
-        });
+        );
         assertEquals("abc", result);
 
-        result = eval(ctx, new Token[] {
+        result = eval(ctx,
                 new Symbol("concat"),
                 new Symbol("("),
                 new Symbol("a"),
@@ -412,16 +431,16 @@ public class ExpressionTest extends TestCase {
                 new Symbol("a"),
                 new Symbol(")"),
                 new Symbol(")")
-        });
+        );
         assertEquals("abca", result);
 
-        result = eval(ctx, new Token[] {
+        result = eval(ctx,
                 new Symbol("emptyfunc"),
                 new Symbol("("),
                 new Symbol(")")
-        });
+        );
 
-        result = eval(ctx, new Token[] {
+        result = eval(ctx,
                 new Symbol("concat"),
                 new Symbol("("),
                 new Symbol("emptyfunc"),
@@ -430,13 +449,29 @@ public class ExpressionTest extends TestCase {
                 new Symbol(","),
                 new Literal("'ing'"),
                 new Symbol(")")
-        });
+        );
         assertEquals("resulting", result);
+
+        result = eval(ctx, 
+                new Symbol("!"),
+                new Symbol("("),
+                new Literal("'abc'"),
+                new Symbol("="),
+                new Symbol("concat"),
+                new Symbol("("),
+                new Literal("'a'"),
+                new Symbol(","),
+                new Literal("'b'"),
+                new Symbol(")"),
+                new Symbol(")")
+        );
+        assertEquals(true, result);
+    
     }
 
     public void testUndefinedFunction() throws Exception {
         try {
-            eval(new Token[] {
+            eval(
                     new Symbol("bazza"),
                     new Symbol("("),
                     new Symbol("a"),
@@ -445,7 +480,7 @@ public class ExpressionTest extends TestCase {
                     new Symbol(","),
                     new Symbol("c"),
                     new Symbol(")")
-            });
+            );
             fail("Should not succeed");
         } catch (RuntimeException e) {
             // Expected
@@ -456,32 +491,32 @@ public class ExpressionTest extends TestCase {
     public void testLists() {
         Object result;
         List<?> list;
-        result = eval(new Token[] {
+        result = eval(
                 new Symbol("#"),
                 new Symbol("("),
                 new Symbol(")")
-        });
+        );
         list = (List<?>) result;
         assertTrue(list.isEmpty());
         
-        result = eval(new Token[] {
+        result = eval(
                 new Symbol("#"),
                 new Symbol("("),
                 new Literal("'a'"),
                 new Symbol(")")
-        });
+        );
         list = (List<?>) result;
         assertEquals(1, list.size());
         assertEquals("a", list.get(0));
         
-        result = eval(new Token[] {
+        result = eval(
                 new Symbol("#"),
                 new Symbol("("),
                 new Literal("'a'"),
                 new Symbol(","),
                 new Literal("'b'"),
                 new Symbol(")")
-        });
+        );
         list = (List<?>) result;
         assertEquals(2, list.size());
         assertEquals("a", list.get(0));
@@ -490,13 +525,13 @@ public class ExpressionTest extends TestCase {
     
     public void testMalformedLists() {
         try {
-            eval(new Token[] {
+            eval(
                     new Symbol("{{"),
                     new Literal("'a'"),
                     new Literal("'b'"),
                     new Literal("'c'"),
                     new Symbol("}}")
-            });
+            );
             fail("Should not succeed");
         } catch (RuntimeException e) {
             // Expected
@@ -505,14 +540,14 @@ public class ExpressionTest extends TestCase {
     
     public void testMalformedMaps() {
         try {
-            eval(new Token[] {
+            eval(
                     new Symbol("{"),
                     new Literal("'a'"),
                     new Symbol(":"),
                     new Symbol("}")
-            });
+            );
             fail("Should not succeed");
-            eval(new Token[] {
+            eval(
                     new Symbol("{"),
                     new Literal("'a'"),
                     new Symbol(":"),
@@ -521,7 +556,7 @@ public class ExpressionTest extends TestCase {
                     new Symbol(":"),
                     new Literal("'d'"),
                     new Symbol("}")
-            });
+            );
             fail("Should not succeed");
         } catch (RuntimeException e) {
             // Expected
@@ -531,26 +566,26 @@ public class ExpressionTest extends TestCase {
     public void testBasicMaps() {
         Object result;
         Map<?,?> map;
-        result = eval(new Token[] {
+        result = eval(
                 new Symbol("{"),
                 new Symbol(":"),
                 new Symbol("}")
-        });
+        );
         map = (Map<?,?>) result;
         assertTrue(map.isEmpty());
 
-        result = eval(new Token[] {
+        result = eval(
                 new Symbol("{"),
                 new Literal("'a'"),
                 new Symbol(":"),
                 new Literal("'b'"),
                 new Symbol("}")
-        });
+        );
         map = (Map<?,?>) result;
         assertEquals(1, map.size());
         assertEquals("b", map.get("a"));
         
-        result = eval(new Token[] {
+        result = eval(
                 new Symbol("{"),
                 new Literal("'a'"),
                 new Symbol(":"),
@@ -568,7 +603,7 @@ public class ExpressionTest extends TestCase {
                 new Literal("'f'"),
                 new Symbol("}"),
                 new Symbol("}")
-        });
+        );
         map = (Map<?,?>) result;
         assertEquals(3, map.size());
         assertEquals("b", map.get("a"));
@@ -578,7 +613,7 @@ public class ExpressionTest extends TestCase {
         assertEquals(1, submap.size());
         assertEquals("f", submap.get("e"));
         
-        result = eval(new Token[] {
+        result = eval(
                 new Symbol("{"),
                 new Literal("'a'"),
                 new Symbol(":"),
@@ -592,13 +627,13 @@ public class ExpressionTest extends TestCase {
                 new Symbol(":"),
                 new Literal("'d'"),
                 new Symbol("}")
-        });
+        );
         map = (Map<?,?>) result;
         assertEquals(4, map.get("a"));
         assertEquals("d", map.get(9));
         
 
-        result = eval(new Token[] {
+        result = eval(
                 new Symbol("{"),
                 new Literal("'a'"),
                 new Symbol(":"),
@@ -616,14 +651,14 @@ public class ExpressionTest extends TestCase {
                 new Symbol(":"),
                 new Literal("'a'"),
                 new Symbol("}")
-        });
+        );
         assertTrue(result instanceof Map<?,?>);
     }
     
     public void testMapsAndFunctions() {
         Object result;
 
-        result = eval(new Token[] {
+        result = eval(
                 new Symbol("{"),
                 new Literal("'a'"),
                 new Symbol(":"),
@@ -643,7 +678,7 @@ public class ExpressionTest extends TestCase {
                 new Symbol(")"),
                 new Symbol(")"),
                 new Symbol("}")
-        });
+        );
         assertTrue(result instanceof Map<?,?>);
         Map<?,?> m = (Map<?,?>) result;
         assertEquals("bd", m.get("a"));
@@ -652,7 +687,7 @@ public class ExpressionTest extends TestCase {
         Map<Object, Object> map = new HashMap<Object, Object>();
         map.put("b", "c");
         ctx.define("a", map, true);
-        result = eval(ctx, new Token[] {
+        result = eval(ctx,
                 new Symbol("a"),
                 new Symbol("!="),
                 new Symbol("null"),
@@ -662,11 +697,11 @@ public class ExpressionTest extends TestCase {
                 new Symbol("b"),
                 new Symbol("="),
                 new Literal("'c'")
-        });
+        );
         assertEquals(Boolean.TRUE, result);
         
         ctx.define("a", null, true);
-        result = eval(ctx, new Token[] {
+        result = eval(ctx,
                 new Symbol("a"),
                 new Symbol("!="),
                 new Symbol("null"),
@@ -676,7 +711,7 @@ public class ExpressionTest extends TestCase {
                 new Symbol("b"),
                 new Symbol("="),
                 new Literal("'c'")
-        });
+        );
         assertEquals(Boolean.FALSE, result);
         
         ctx = new Context(Locale.getDefault());
@@ -685,45 +720,45 @@ public class ExpressionTest extends TestCase {
         ctx.define("a", map, true);
 
         // length(a)
-        result = eval(ctx, new Token[] {
+        result = eval(ctx,
                 new Symbol("length"),
                 new Symbol("("),
                 new Symbol("a"),
                 new Symbol(")")
-        });
+        );
         assertEquals(1, result);
         
         // a.length()
-        result = eval(ctx, new Token[] {
+        result = eval(ctx,
                 new Symbol("a"),
                 new Symbol("."),
                 new Symbol("length"),
                 new Symbol("("),
                 new Symbol(")")
-        });
+        );
         assertEquals(1, result);
         
-        result = eval(ctx, new Token[] {
+        result = eval(ctx,
                 new Symbol("a"),
                 new Symbol("."),
                 new Symbol("get"),
                 new Symbol("("),
                 new Literal("'b'"),
                 new Symbol(")")
-        });
+        );
         assertEquals("c", result);
         
-        result = eval(ctx, new Token[] {
+        result = eval(ctx,
                 new Symbol("a"),
                 new Symbol("."),
                 new Symbol("get"),
                 new Symbol("("),
                 new Literal("'xyz'"),
                 new Symbol(")")
-        });
+        );
         assertNull(result);
 
-        result = eval(ctx, new Token[] {
+        result = eval(ctx,
                 new Symbol("map"),
                 new Symbol("("),
                 new Literal("'a'"),
@@ -738,7 +773,7 @@ public class ExpressionTest extends TestCase {
                 new Symbol("length"),
                 new Symbol("("),
                 new Symbol(")")
-        });
+        );
         assertEquals(2, result);
         
     }
@@ -747,7 +782,7 @@ public class ExpressionTest extends TestCase {
         
         Object result;
 
-        result = eval(new Token[] {
+        result = eval(
                 new Symbol("{"),
                 new Literal("'a'"),
                 new Symbol(":"),
@@ -755,10 +790,10 @@ public class ExpressionTest extends TestCase {
                 new Symbol("}"),
                 new Symbol("."),
                 new Symbol("a")
-        });
+        );
         assertEquals("b", result);
         
-        result = eval(new Token[] {
+        result = eval(
                 new Symbol("{"),
                 new Literal("'a'"),
                 new Symbol(":"),
@@ -773,7 +808,7 @@ public class ExpressionTest extends TestCase {
                 new Symbol("a"),
                 new Symbol("."),
                 new Literal("1")
-        });
+        );
         assertEquals("c", result);
         
         Context ctx = new Context(Locale.getDefault());
@@ -782,7 +817,7 @@ public class ExpressionTest extends TestCase {
         m1.put("b", m2);
         m2.put("c", new Object[]{"d", 2});
         ctx.define("a", m1, true);
-        result = eval(ctx, new Token[] {
+        result = eval(ctx,
                 new Symbol("a"),
                 new Symbol("."),
                 new Symbol("b"),
@@ -792,10 +827,10 @@ public class ExpressionTest extends TestCase {
                 new Literal("1"),
                 new Symbol("+"),
                 new Literal("20")
-        });
+        );
         assertEquals(22, result);
 
-        result = eval(ctx, new Token[] {
+        result = eval(ctx,
                 new Symbol("a"),
                 new Symbol("."),
                 new Symbol("b"),
@@ -808,13 +843,13 @@ public class ExpressionTest extends TestCase {
                 new Symbol(")"),
                 new Symbol("+"),
                 new Literal("20")
-        });
+        );
         assertEquals(22, result);
     }
 
     public void testTooManyArguments() throws Exception {
         try {
-            eval(new Token[] {
+            eval(
                     new Symbol("emptyfunc"),
                     new Symbol("("),
                     new Literal("'a'"),
@@ -823,7 +858,7 @@ public class ExpressionTest extends TestCase {
                     new Symbol(","),
                     new Literal("'c'"),
                     new Symbol(")")
-            });
+            );
             fail("Should not succeed");
         } catch (RuntimeException e) {
             // Expected
@@ -832,29 +867,29 @@ public class ExpressionTest extends TestCase {
 
     public void testVarArgs() throws Exception {
         Object result;
-        result = eval(new Token[] {
+        result = eval(
                 new Symbol("("),
                 new Literal("'a'"),
                 new Symbol(")")
-        });
+        );
         assertEquals("a", result);
         
-        result = eval(new Token[] {
+        result = eval(
                 new Symbol("concat"),
                 new Symbol("("),
                 new Symbol(")")
-        });
+        );
         assertEquals("", result);
         
-        result = eval(new Token[] {
+        result = eval(
                 new Symbol("concat"),
                 new Symbol("("),
                 new Literal("'a'"),
                 new Symbol(")")
-        });
+        );
         assertEquals("a", result);
 
-        result = eval(new Token[] {
+        result = eval(
                 new Symbol("concat"),
                 new Symbol("("),
                 new Literal("'a'"),
@@ -863,20 +898,20 @@ public class ExpressionTest extends TestCase {
                 new Symbol(","),
                 new Literal("'c'"),
                 new Symbol(")")
-        });
+        );
         assertEquals("abc", result);
 
-       result = eval(new Token[] {
+        result = eval(
                 new Symbol("concat"),
                 new Symbol("("),
                 new Literal("'a'"),
                 new Symbol(","),
                 new Literal("'b'"),
                 new Symbol(")")
-        });
+        );
         assertEquals("ab", result);
 
-        result = eval(new Token[] {
+        result = eval(
                 new Symbol("concat"),
                 new Symbol("("),
                 new Literal("'a'"),
@@ -899,37 +934,37 @@ public class ExpressionTest extends TestCase {
                 new Symbol(","),
                 new Literal("'e'"),
                 new Symbol(")")
-        });
+        );
         assertEquals("abxycde", result);
     }
 
     public void testMalformedExpressions() throws Exception {
         try {
-            eval(new Token[] {
+            eval(
                     new Symbol(","),
                     new Symbol("("),
                     new Literal("2"),
                     new Symbol("+")
-            });
+            );
             fail("Should not succeed");
         } catch (RuntimeException e) {
             // Expected
         }
 
         try {
-            eval(new Token[] {
+            eval(
                     new Symbol("concat"),
                     new Literal("2"),
                     new Symbol(","),
                     new Literal("2")
-            });
+            );
             fail("Should not succeed");
         } catch (RuntimeException e) {
             // Expected
         }
 
         try {
-            eval(new Token[] {
+            eval(
                     new Symbol("concat"),
                     new Symbol("("),
                     new Literal("'a'"),
@@ -940,7 +975,7 @@ public class ExpressionTest extends TestCase {
                     new Symbol(","),
                     new Literal("'c'"),
                     new Symbol(")")
-            });
+            );
             fail("Should not succeed");
         } catch (RuntimeException e) {
             // Expected

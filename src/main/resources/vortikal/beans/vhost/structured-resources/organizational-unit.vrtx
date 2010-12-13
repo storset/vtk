@@ -222,9 +222,10 @@ resourcetype organizational-unit {
     
     employees {
       ##
-      [def url resource-prop(".", "urlToEmployeesList")]
-      [def title resource-prop(".", "title")]
-      ${resource:organization-employees}
+      [def displayEmployees resource-prop-obj-val(".", "displayEmployees")]
+      [if displayEmployees = true]
+        ${resource:organization-employees}
+      [endif]
       ##
     }
     

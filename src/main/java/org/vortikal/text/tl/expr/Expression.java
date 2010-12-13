@@ -37,25 +37,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.vortikal.text.tl.Token;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Literal;
 import org.vortikal.text.tl.Symbol;
+import org.vortikal.text.tl.Token;
 
 /**
  * Expression parser and evaluator. 
  * 
  * Takes a list of {@link Token tokens} as constructor argument and 
  * returns a "compiled" expression that can be later evaluated 
- * against a provided {@link Context context}.
+ * against a given {@link Context context}.
  * 
  * The expression grammar is loosely defined as follows:
  * <pre>
  * expression ::= logical-expression ;
  * 
  * logical-expression ::= relational-expression { logical-operator relational-expression } ;
+ *     
+ * relational-expression ::= 
+ *    inv-expression 
+ *    | simple-expression { relational-operator simple-expression } ;
  * 
- * relational-expression ::= simple-expression { relational-operator simple-expression } ;
+ * inv-expression ::= "!" relational-expression ;
  * 
  * simple-expression ::= operand { additive-operator operand } ;
  * 
@@ -73,7 +77,6 @@ import org.vortikal.text.tl.Symbol;
  *    "(" logical-expression ")"
  *    | list
  *    | function-call 
- *    | inv-expression
  *    | map
  *    | variable
  *    | literal ;
@@ -88,17 +91,17 @@ import org.vortikal.text.tl.Symbol;
  * 
  * arg-list ::= logical-expression { "," logical-expression } ;
  * 
- * accessor ::= symbol "." 
+ * accessor ::= symbol "." ;
  * 
  * map ::= 
  *    "{" ":" "}"
  *    | "{" map-entry { "," map-entry } "}";
  *  
- * map-entry ::= logical-expression ":" logical-expression
+ * map-entry ::= logical-expression ":" logical-expression ;
+ *  
+ * logical-operator ::= "&&" | "||" ;
  * 
- * inv-expression ::= "!" factor ;
- * 
- * relational-operator ::=  "=" | "!=" | "<" | ">" | "<=" | ">=" ;
+ * relational-operator ::=  "=" | "!=" | "<" | ">" | "<=" | ">=" "~" ;
  * 
  * additive-operator ::=  "+" | "-" | "||" ;
  * 
@@ -125,13 +128,14 @@ public class Expression {
     private static final Symbol MULTIPLY = new Symbol("*");
     private static final Symbol DIVIDE = new Symbol("/");
     private static final Symbol MAPPING = new Symbol(":");
+    private static final Symbol MATCH = new Symbol("~");
     private static final Symbol ACCESSOR = new Symbol(".");
 
     private static final Symbol[] LOGICAL_OPERATORS = 
         new Symbol[] { AND, OR };
     
     private static final Symbol[] RELATIONAL_OPERATORS = 
-        new Symbol[] { EQ, NEQ, LT, GT };
+        new Symbol[] { EQ, NEQ, LT, GT, MATCH  };
 
     private static final Symbol[] ADDITIVE_OPERATORS = 
         new Symbol[] { PLUS, MINUS };
@@ -161,6 +165,8 @@ public class Expression {
 
         ops.put(EQ, new Eq(EQ));
         ops.put(NEQ, new Neq(NEQ));
+        
+        ops.put(MATCH, new Match(MATCH));
 
         ops.put(AND, new And(AND));
         ops.put(OR, new Or(OR));
@@ -179,7 +185,12 @@ public class Expression {
     }
 
     public Object evaluate(Context ctx) {
+        try {
         return this.exp.eval(ctx);
+        } catch (Throwable t) {
+            System.out.println("__err: " + this.exp);
+            throw new RuntimeException(t);
+        }
     }
     
     public Expression(Set<Function> functions, List<Token> tokens) {        
@@ -194,6 +205,7 @@ public class Expression {
            throw new IllegalArgumentException("Malformed expression: " + this.tokens);
        }
     }
+
     
     private ExpressionNode logicalExpression() {
         ExpressionNode node = relationalExpression();
@@ -203,10 +215,13 @@ public class Expression {
             node = new InfixOperation(node, s, rel);
         }
         return node;
-        
     }
     
     private ExpressionNode relationalExpression() {
+        if (lookingAt(NOT)) {
+            ExpressionNode inv = invExpression();
+            return inv;
+        }
         ExpressionNode node = simpleExpression();
         while (lookingAt(RELATIONAL_OPERATORS)) {
             Symbol s = readSymbol();
@@ -284,10 +299,6 @@ public class Expression {
        if (lookingAt(Wildcard.ANY_SYMBOL) && LP.equals(lookahead(1))) {
            ExpressionNode fun = functionCall();
            return fun;
-       }
-       if (lookingAt(NOT)) {
-           ExpressionNode inv = invExpression();
-           return inv;
        }
        if (lookingAt(LCB)) {
            ExpressionNode map = map();
@@ -378,10 +389,9 @@ public class Expression {
     }
     
     private ExpressionNode invExpression() {
-        expect(NOT);
         Symbol s = readSymbol();
-        ExpressionNode factor = factor();
-        return new UnaryOperation(s, factor);
+        ExpressionNode rel = logicalExpression();
+        return new UnaryOperation(s, rel);
     }
     
     private Token cur() {

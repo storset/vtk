@@ -166,9 +166,9 @@ public class RequestContextInitializer implements ContextInitializer {
 
     	URL url;
     	try {
-    		url = URL.create(request);
+    	    url = URL.create(request);
     	} catch (Throwable t) {
-    		throw new InvalidRequestException("Invalid request", t);
+    	    throw new InvalidRequestException("Invalid request: " + request.getRequestURL(), t);
     	}
     	Path uri = url.getPath();
         Resource resource = null;

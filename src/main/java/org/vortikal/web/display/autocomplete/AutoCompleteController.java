@@ -84,6 +84,8 @@ public abstract class AutoCompleteController implements Controller {
             writer.print(suggestion);
             writer.print(SUGGESTION_DELIMITER);
         }
+        writer.flush();
+        writer.close();
     }
 
     protected CompletionContext getCompletionContext(HttpServletRequest request) {

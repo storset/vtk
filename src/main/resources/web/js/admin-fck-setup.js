@@ -146,6 +146,8 @@ function enableSubmit() {
 }
 
 function commentsCkEditor() { 
+	document.getElementById("comment-syntax-desc").style.display = "none";
+    document.getElementById("comments-text-div").style.margin = "0";
 	$("#comments-text").click(function () {
   		setCKEditorConfig("comments-text", null, null, null, null, null, 150, 400, 40, commentsToolbar, false, true,null);
   	});

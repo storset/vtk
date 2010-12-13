@@ -152,16 +152,6 @@
           </#compress>&gt;<#if element_has_next>, </#if>
         </#list>
         </p>
-        <script type="text/javascript"><!--
-          function editor() {
-            if (editorAvailable()) {
-               document.getElementById("comment-syntax-desc").style.display = "none";
-               document.getElementById("comments-text-div").style.margin = "0";
-               loadEditor();
-             }
-          }
-          // -->
-        </script>
       </div>
       <form class="vrtx-comments-post" action="${postCommentURL?string?html}#comment-form" method="post">
         <@vrtx.csrfPreventionToken url=postCommentURL />

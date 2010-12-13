@@ -39,7 +39,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.resourcemanagement.StructuredResource;
 import org.vortikal.resourcemanagement.view.StructuredResourceDisplayController;
-import org.vortikal.text.tl.Argument;
+import org.vortikal.text.tl.Token;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.DirectiveNodeFactory;
 import org.vortikal.text.tl.DirectiveParseContext;
@@ -55,12 +55,12 @@ public class LocalizationNodeFactory implements DirectiveNodeFactory {
     }
 
     public Node create(DirectiveParseContext ctx) throws Exception {
-        List<Argument> args = ctx.getArguments();
+        List<Token> args = ctx.getArguments();
         if (args.size() == 0) {
             throw new RuntimeException("Missing arguments: " + ctx.getNodeText());
         }
-        final Argument code = args.remove(0);
-        final List<Argument> rest = new ArrayList<Argument>(args);
+        final Token code = args.remove(0);
+        final List<Token> rest = new ArrayList<Token>(args);
 
         return new Node() {
             public boolean render(Context ctx, Writer out) throws Exception {
@@ -74,7 +74,7 @@ public class LocalizationNodeFactory implements DirectiveNodeFactory {
                 }
                 Object[] localizationArgs = new Object[rest.size()];
                 for (int i = 0; i < rest.size(); i++) {
-                    Argument a = rest.get(i);
+                    Token a = rest.get(i);
                     localizationArgs[i] = a.getValue(ctx);
                 }
 

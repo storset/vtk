@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.vortikal.text.tl.Argument;
+import org.vortikal.text.tl.Token;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Literal;
 import org.vortikal.text.tl.Symbol;
@@ -45,7 +45,7 @@ import org.vortikal.text.tl.Symbol;
 /**
  * Expression parser and evaluator. 
  * 
- * Takes a list of {@link Argument tokens} as constructor argument and 
+ * Takes a list of {@link Token tokens} as constructor argument and 
  * returns a "compiled" expression that can be later evaluated 
  * against a provided {@link Context context}.
  * 
@@ -170,11 +170,11 @@ public class Expression {
     
     private Map<Symbol, Operator> functions = new HashMap<Symbol, Operator>();
     
-    private List<Argument> tokens;
+    private List<Token> tokens;
     private int pos = 0;
     private ExpressionNode exp;
 
-    public Expression(List<Argument> tokens) {
+    public Expression(List<Token> tokens) {
         this(null, tokens);
     }
 
@@ -182,7 +182,7 @@ public class Expression {
         return this.exp.eval(ctx);
     }
     
-    public Expression(Set<Function> functions, List<Argument> tokens) {        
+    public Expression(Set<Function> functions, List<Token> tokens) {        
        this.tokens = tokens;
        if (functions != null) {
            for (Function f : functions) {
@@ -384,7 +384,7 @@ public class Expression {
         return new UnaryOperation(s, factor);
     }
     
-    private Argument cur() {
+    private Token cur() {
         if (this.pos < this.tokens.size()) {
             return this.tokens.get(this.pos);
         }
@@ -392,7 +392,7 @@ public class Expression {
     }
     
     private void expect(Symbol s) {
-        Argument cur = cur();
+        Token cur = cur();
         if (cur == null) {
             throw new IllegalArgumentException("Expected: " + s + ", found: EOF");
         }
@@ -403,7 +403,7 @@ public class Expression {
     }
     
     private void expect(Wildcard wildcard) {
-        Argument cur = cur();
+        Token cur = cur();
         String expected = wildcard == Wildcard.ANY_SYMBOL ? "<symbol>" : "<literal>";
         if (cur == null) {
             throw new IllegalArgumentException("Expected: " + expected + ", found: EOF");
@@ -423,7 +423,7 @@ public class Expression {
     }
     
     private Symbol readSymbol() {
-        Argument arg = cur();
+        Token arg = cur();
         if (arg == null) {
             throw new IllegalArgumentException("Encountered EOF");
         }
@@ -435,7 +435,7 @@ public class Expression {
     }
     
     private Literal readLiteral() {
-        Argument arg = cur();
+        Token arg = cur();
         if (arg == null) {
             throw new IllegalArgumentException("Encountered EOF");
         }
@@ -447,7 +447,7 @@ public class Expression {
     }
 
     private boolean lookingAt(Wildcard wildcard) {
-        Argument cur = cur();
+        Token cur = cur();
         if (cur == null) {
             return false;
         }
@@ -462,7 +462,7 @@ public class Expression {
     }
     
     private boolean lookingAt(Symbol... symbols) {
-        Argument cur = cur();
+        Token cur = cur();
         for (Symbol symbol: symbols) {
             if (symbol.equals(cur)) {
                 return true;
@@ -471,7 +471,7 @@ public class Expression {
         return false;
     }
     
-    private Argument lookahead(int offset) {
+    private Token lookahead(int offset) {
         int idx = this.pos + offset;
         if (idx >= this.tokens.size()) {
             return null;
@@ -592,7 +592,7 @@ public class Expression {
         private String field;
         private Accessor accessor;
 
-        public FieldAccessNode(ExpressionNode object, Argument accessor) {
+        public FieldAccessNode(ExpressionNode object, Token accessor) {
             this.object = object;
             this.field = accessor.getRawValue();
             this.accessor = new Accessor(ACCESSOR, accessor);

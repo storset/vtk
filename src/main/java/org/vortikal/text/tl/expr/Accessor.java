@@ -34,15 +34,15 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.vortikal.text.tl.Argument;
+import org.vortikal.text.tl.Token;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Literal;
 import org.vortikal.text.tl.Symbol;
 
 public class Accessor extends Operator {
-    private Argument field;
+    private Token field;
 
-    public Accessor(Symbol symbol, Argument field) {
+    public Accessor(Symbol symbol, Token field) {
         super(symbol);
         this.field = field;
     }

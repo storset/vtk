@@ -31,7 +31,7 @@
 package org.vortikal.text.tl;
 
 
-public final class Symbol implements Argument {
+public final class Symbol implements Token {
 
     private String value;
     

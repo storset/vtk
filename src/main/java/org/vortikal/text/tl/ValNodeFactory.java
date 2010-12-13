@@ -68,14 +68,14 @@ public class ValNodeFactory implements DirectiveNodeFactory {
     public Node create(DirectiveParseContext ctx) throws Exception {
 
         // [val <expression> (# flags)? ]
-        List<Argument> args = ctx.getArguments();
+        List<Token> args = ctx.getArguments();
         if (args.size() < 1) {
             throw new RuntimeException("Wrong number of arguments: " + ctx.getNodeText());
         }
-        List<Argument> expression = new ArrayList<Argument>();
-        List<Argument> flags = new ArrayList<Argument>();
-        List<Argument> cur = expression;
-        for (Argument arg: args) {
+        List<Token> expression = new ArrayList<Token>();
+        List<Token> flags = new ArrayList<Token>();
+        List<Token> cur = expression;
+        for (Token arg: args) {
             if (FLAG_SEPARATOR.equals(arg)) {
                 cur = flags;
                 continue;
@@ -92,7 +92,7 @@ public class ValNodeFactory implements DirectiveNodeFactory {
            escape = false;
            flags.remove(0);
         }
-        Argument format = null;
+        Token format = null;
         if (!flags.isEmpty()) {
            format = flags.remove(0);
         }
@@ -110,9 +110,9 @@ public class ValNodeFactory implements DirectiveNodeFactory {
     private class ValNode extends Node {
         private Expression expression;
         boolean escape;
-        private Argument format;
+        private Token format;
 
-        public ValNode(List<Argument> expression, boolean escape, Argument format) {
+        public ValNode(List<Token> expression, boolean escape, Token format) {
             this.expression = new Expression(functions, expression);
             this.escape = escape;
             this.format = format;

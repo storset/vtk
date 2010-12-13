@@ -43,12 +43,12 @@ public class CaptureNodeFactory implements DirectiveNodeFactory {
     
     @Override
     public Node create(DirectiveParseContext ctx) throws Exception {
-        List<Argument> args = ctx.getArguments();
+        List<Token> args = ctx.getArguments();
 
         if (args.size() != 1) {
             throw new RuntimeException("Capture directive takes one argument: " + ctx.getNodeText());
         }
-        Argument arg1 = args.remove(0);
+        Token arg1 = args.remove(0);
         if (!(arg1 instanceof Symbol)) {
             throw new RuntimeException("Expected symbol: " + arg1.getRawValue());
         }

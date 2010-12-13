@@ -37,11 +37,11 @@ public class DirectiveParseContext {
 
     private String name;
     private Parser parser;
-    private List<Argument> arguments;
+    private List<Token> arguments;
     private String nodeText;
  
     public DirectiveParseContext(String name, Parser parser, 
-            List<Argument> arguments, String nodeText) {
+            List<Token> arguments, String nodeText) {
         this.name = name;
         this.parser = parser;
         this.arguments = arguments;
@@ -56,8 +56,8 @@ public class DirectiveParseContext {
         return this.parser;
     }
 
-    public List<Argument> getArguments() {
-        List<Argument> copy = new ArrayList<Argument>();
+    public List<Token> getArguments() {
+        List<Token> copy = new ArrayList<Token>();
         copy.addAll(this.arguments);
         return copy;
     }

@@ -43,11 +43,11 @@ public final class DefineNodeFactory implements DirectiveNodeFactory {
     private Set<Function> functions = new HashSet<Function>();
     
     public Node create(DirectiveParseContext ctx) throws Exception {
-        List<Argument> args = ctx.getArguments();
+        List<Token> args = ctx.getArguments();
         if (args.size() < 2) {
             throw new RuntimeException("Too few arguments: " + ctx.getNodeText());
         }
-        Argument arg1 = args.remove(0);
+        Token arg1 = args.remove(0);
         if (!(arg1 instanceof Symbol)) {
             throw new RuntimeException("Expected symbol: " + arg1.getRawValue());
         }

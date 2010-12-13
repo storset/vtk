@@ -66,12 +66,12 @@ public class ListNodeFactory implements DirectiveNodeFactory {
      * 
      */
     public Node create(DirectiveParseContext ctx) throws Exception {
-        List<Argument> args = ctx.getArguments();
+        List<Token> args = ctx.getArguments();
         if (args.size() < 2) {
             throw new RuntimeException("List directive: " + ctx.getNodeText() 
                         + ": wrong number of arguments");
         }
-        Argument last = args.remove(args.size() - 1);
+        Token last = args.remove(args.size() - 1);
         if (!(last instanceof Symbol)) {
             throw new RuntimeException("Expected symbol: " + last.getRawValue());
         }

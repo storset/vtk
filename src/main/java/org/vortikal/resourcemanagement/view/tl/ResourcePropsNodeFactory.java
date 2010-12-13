@@ -45,7 +45,7 @@ import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.resourcemanagement.view.StructuredResourceDisplayController;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.text.tl.Argument;
+import org.vortikal.text.tl.Token;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.DirectiveNodeFactory;
 import org.vortikal.text.tl.DirectiveParseContext;
@@ -61,11 +61,11 @@ public class ResourcePropsNodeFactory implements DirectiveNodeFactory {
     }
 
     public Node create(DirectiveParseContext ctx) throws Exception {
-        List<Argument> tokens = ctx.getArguments();
+        List<Token> tokens = ctx.getArguments();
         if (tokens.size() != 1) {
             throw new Exception("Wrong number of arguments");
         }
-        final Argument arg1 = tokens.get(0);
+        final Token arg1 = tokens.get(0);
 
         return new Node() {
             public boolean render(Context ctx, Writer out) throws Exception {

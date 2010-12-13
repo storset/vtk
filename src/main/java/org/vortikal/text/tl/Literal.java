@@ -32,7 +32,7 @@ package org.vortikal.text.tl;
 
 import java.math.BigDecimal;
 
-public class Literal implements Argument {
+public class Literal implements Token {
 
     public enum Type {
         STRING, NUMBER, BOOLEAN;

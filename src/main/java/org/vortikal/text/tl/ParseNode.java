@@ -38,7 +38,7 @@ public class ParseNode {
     public Type type;
     public String name;
     public String text;
-    public List<Argument> arguments;
+    public List<Token> arguments;
     
     public ParseNode(String text, Type type) {
         if (type == Type.Directive) {
@@ -48,7 +48,7 @@ public class ParseNode {
         this.type = type;
     }
     
-    public ParseNode(String name, String text, List<Argument> arguments) {
+    public ParseNode(String name, String text, List<Token> arguments) {
         this.name = name;
         this.text = text;
         this.arguments = arguments;

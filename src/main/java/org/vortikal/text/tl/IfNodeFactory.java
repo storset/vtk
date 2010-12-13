@@ -68,7 +68,7 @@ public class IfNodeFactory implements DirectiveNodeFactory {
         Parser parser = ctx.getParser();
         int line = parser.getLineNumber();
         String cur = ctx.getName();
-        List<Argument> curArgs = ctx.getArguments();
+        List<Token> curArgs = ctx.getArguments();
         while (true) {
             ParseResult parsed = parser.parse(TERMS);
             DirectiveParseContext info = parsed.getTerminator();

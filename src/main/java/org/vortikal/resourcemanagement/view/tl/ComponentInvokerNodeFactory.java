@@ -41,7 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.resourcemanagement.view.StructuredResourceDisplayController;
 import org.vortikal.text.html.HtmlPage;
-import org.vortikal.text.tl.Argument;
+import org.vortikal.text.tl.Token;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.DirectiveNodeFactory;
 import org.vortikal.text.tl.DirectiveParseContext;
@@ -86,7 +86,7 @@ public class ComponentInvokerNodeFactory implements DirectiveNodeFactory {
     }
     
     public Node create(DirectiveParseContext ctx) throws Exception {
-        List<Argument> args = ctx.getArguments();
+        List<Token> args = ctx.getArguments();
         
         if (args.size() == 0) {
             throw new RuntimeException(
@@ -94,7 +94,7 @@ public class ComponentInvokerNodeFactory implements DirectiveNodeFactory {
                     + ": expected <component-reference> <params>");
         }
         
-        final Argument arg1 = args.remove(0);
+        final Token arg1 = args.remove(0);
         final Expression expression = args.size() > 0 ? new Expression(args) : null;
 
         return new Node() {

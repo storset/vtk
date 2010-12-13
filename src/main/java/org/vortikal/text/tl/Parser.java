@@ -90,7 +90,7 @@ public class Parser {
                 break;
             case Directive:
                 String name = parseNode.name;
-                List<Argument> args = parseNode.arguments;
+                List<Token> args = parseNode.arguments;
                 DirectiveParseContext info = new DirectiveParseContext(name, this, args, parseNode.text);
 
                 if (this.directives.containsKey(name)) {
@@ -308,7 +308,7 @@ public class Parser {
             error("Empty directive");
         }        
         String name = tokens.remove(0);
-        List<Argument> args = parseArguments(tokens);
+        List<Token> args = parseArguments(tokens);
         return new ParseNode(name, nodeText.toString(), args);
     }
 
@@ -386,8 +386,8 @@ public class Parser {
     }
     
     
-    private List<Argument> parseArguments(List<String> list) {
-        List<Argument> result = new ArrayList<Argument>();
+    private List<Token> parseArguments(List<String> list) {
+        List<Token> result = new ArrayList<Token>();
         for (String token: list) {
             try {
                 result.add(new Literal(token));

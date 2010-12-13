@@ -30,74 +30,18 @@
  */
 package org.vortikal.text.tl;
 
-import java.util.ArrayList;
-import java.util.List;
+public interface Token {
 
-public class Token {
-    public enum Type {Text, Directive};
-    public Type type;
-    public String value;
-
-    public String toString() {
-        if (this.type == Type.Text) {
-            return "text('" + this.value + "')";
-        }
-        return "directive('" + this.value + "')";
-    }
-
-    public List<String> split() {
-        if (this.type != Type.Directive) {
-            throw new IllegalStateException("Cannot split a text token");
-        }
-
-        List<String> tokenList = new ArrayList<String>();
-        
-        boolean dquote = false, squote = false;
-
-        StringBuilder cur = new StringBuilder();
-
-        for (int i = 0; i < this.value.length(); i++) {
-            char c = this.value.charAt(i);
-
-            if (c == '"') {
-                if (!squote) {
-                    dquote = !dquote;
-                }
-                cur.append(c);
-                
-            } else if (c == '\'') {
-                if (!dquote) {
-                    squote = !squote;
-                }
-                cur.append(c);
-                
-            } else if (c == ' ' || c == '\n' || c == '\r') {
-                if (dquote || squote) {
-                    cur.append(c);
-                } else {
-                    if (cur.length() > 0) {
-                        tokenList.add(cur.toString());
-                        cur.delete(0, cur.length());
-                    }
-                }
-            } else if (c == '(' || c == ')') {
-                if (dquote || squote) {
-                    cur.append(c);
-                } else {
-                    if (cur.length() > 0) {
-                        tokenList.add(cur.toString());
-                        cur.delete(0, cur.length());
-                    }
-                    tokenList.add(String.valueOf(c));
-                }
-            } else {
-                cur.append(c);
-            }
-        }
-
-        if (cur.length() > 0) {
-            tokenList.add(cur.toString());
-        }
-        return tokenList;
-    }
+    /**
+     * Gets the raw value as provided by the parser.
+     */
+    public String getRawValue();
+    
+    /**
+     * Gets the "runtime" value (a literal value or 
+     * a value resolved by the context in case of 
+     * this argument being a symbol)
+     */
+    public Object getValue(Context ctx);
+    
 }

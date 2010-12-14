@@ -206,26 +206,6 @@
     </property>
   </bean>
 
-  <bean id="displayComponentService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="displayHTMLResourceService" />
-    <property name="assertions">
-      <list>
-          <bean class="org.vortikal.web.service.RequestParameterAssertion">
-            <property name="parameterName" value="view" />
-            <property name="parameterValue" value="component" />
-          </bean>
-      </list>
-    </property>
-    <property name="handler" ref="displayHTMLComponentHandler" />
-  </bean>
-
-  <bean id="displayHTMLComponentHandler" 
-    class="org.vortikal.web.decorating.DisplayComponentController">
-    <property name="componentResolver" ref="decorating.defaultComponentResolver" />
-  </bean>
-
-
-
   <bean id="listDecoratorComponentsService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="webService" />
     <property name="order" value="-200" />

@@ -56,6 +56,7 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageParser;
+import org.vortikal.text.html.HtmlUtil;
 import org.vortikal.util.cache.ContentCache;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.util.repository.ContentTypeHelper;
@@ -123,6 +124,15 @@ implements ServletContextAware {
     public void render(DecoratorRequest request, DecoratorResponse response)
     throws Exception {
 
+        String esi = request.getStringParameter("esi");
+        if (esi != null) {
+            Writer writer = response.getWriter();
+            writer.write("<esi:include src=\"" + HtmlUtil.escapeHtmlString(esi) + "\" />");
+            writer.flush();
+            writer.close();
+            return;
+        }
+        
         String uri = request.getStringParameter(PARAMETER_FILE);
         boolean ignoreNotFound = false;
         

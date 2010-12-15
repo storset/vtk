@@ -41,8 +41,11 @@ public final class Context {
 
     private static final Pattern VALID_NAME_PATTERN = Pattern.compile("[a-zA-Z_]([a-zA-Z0-9\\-_]*[a-zA-Z0-9_])?");
     private Locale locale = Locale.getDefault();
+    // Visible from templates and functions:
     private Stack<Map<String, Object>> stack = new Stack<Map<String, Object>>();
-
+    // For use by "runtime system":
+    private Map<String, Object> attributes = new HashMap<String, Object>();
+    
     private static final String NULL = "null";
 
     public Context(Locale locale) {
@@ -145,6 +148,20 @@ public final class Context {
 
     public String toString() {
         return this.stack.toString();
+    }
+    
+    public Object getAttribute(String name) {
+        if (this.attributes == null) {
+            return null;
+        }
+        return this.attributes.get(name);
+    }
+    
+    public void setAttribute(String name, Object value) {
+        if (this.attributes == null) {
+            this.attributes = new HashMap<String, Object>();
+        }
+        this.attributes.put(name, value);
     }
 
     private boolean validateSymbol(String symbol) {

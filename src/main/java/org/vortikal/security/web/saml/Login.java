@@ -59,6 +59,7 @@ public class Login extends SamlService {
     private ReplayCache replayCache = new ReplayCache(replayStorage, 60 * 1000 * replayMinutes);
     
     private String urlSessionAttribute = null;
+
     
     public void setUrlSessionAttribute(String urlSessionAttribute) {
         if (urlSessionAttribute != null && !"".equals(urlSessionAttribute.trim())) {
@@ -89,6 +90,10 @@ public class Login extends SamlService {
             return true;
         } catch (Throwable t) { }
         return false;
+    }
+    
+    public boolean isUnsolicitedLoginResponse(HttpServletRequest req) {
+        return isLoginResponse(req) && req.getSession(false) == null;
     }
 
     public UserData login(HttpServletRequest request) throws AuthenticationException, AuthenticationProcessingException {

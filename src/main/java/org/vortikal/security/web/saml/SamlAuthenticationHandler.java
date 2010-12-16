@@ -90,25 +90,29 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     @Override
     public Principal authenticate(HttpServletRequest request) throws AuthenticationProcessingException,
             AuthenticationException, InvalidAuthenticationRequestException {
+
+        if (this.login.isUnsolicitedLoginResponse(request)) {
+            this.challenge.prepareUnsolicitedChallenge(request);
+            throw new AuthenticationException("Unsolicitated authentication request: " + request);
+        }
         
         UserData userData = this.login.login(request);
-        if (userData != null) {
-            String id = userData.getUsername();
-            Principal principal = this.principalFactory.getPrincipal(id, Principal.Type.USER);
-            if (this.loginListeners != null) {
-                for (LoginListener listener : this.loginListeners) {
-                    try {
-                        listener.onLogin(principal, userData);
-                    } catch (Exception e) {
-                        throw new AuthenticationProcessingException(
-                                "Failed to invoke login listener: " + listener, e);
-                    }
-                }
-            }
-            return principal;
-        } else {
+        if (userData == null) {
             throw new AuthenticationException("Unable to authenticate request " + request);
         }
+        String id = userData.getUsername();
+        Principal principal = this.principalFactory.getPrincipal(id, Principal.Type.USER);
+        if (this.loginListeners != null) {
+            for (LoginListener listener : this.loginListeners) {
+                try {
+                    listener.onLogin(principal, userData);
+                } catch (Exception e) {
+                    throw new AuthenticationProcessingException(
+                            "Failed to invoke login listener: " + listener, e);
+                }
+            }
+        }
+        return principal;
     }
 
     /**

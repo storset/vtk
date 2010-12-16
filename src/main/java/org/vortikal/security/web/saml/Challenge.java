@@ -42,6 +42,9 @@ import org.vortikal.security.UnsupportedRequestMethodAPE;
 import org.vortikal.web.service.URL;
 
 public class Challenge extends SamlService {
+    private static final String UNSOLICITED_AUTH_REDIRECT = 
+        Challenge.class.getName() + ".unsolicitedRedirectURL";
+    
 
     private String urlSessionAttribute = null;
     
@@ -54,6 +57,13 @@ public class Challenge extends SamlService {
     public void challenge(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationProcessingException {
 
+        if (request.getAttribute(UNSOLICITED_AUTH_REDIRECT) != null) {
+            URL url = (URL) request.getAttribute(UNSOLICITED_AUTH_REDIRECT);
+            response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+            response.setHeader("Location", url.toString());
+            return;
+        }
+
         if ("POST".equals(request.getMethod())) {
             // VTK-1896
             // Can't challenge POST requests, because the POST data gets lost in cyberspace if
@@ -62,7 +72,7 @@ public class Challenge extends SamlService {
             // through authentication point SSO mechanism.
             throw new UnsupportedRequestMethodAPE("SamlService: Challenge in response to POST requests is not supported");
         }
-
+        
         if (request.getScheme().equals("http")) {
             // XXX: remove hard-coded 'authTarget' parameter:
             // XXX: move redirect -> ssl elsewhere
@@ -92,6 +102,10 @@ public class Challenge extends SamlService {
         response.setHeader("Location", redirectURL.toString());
     }
 
+    public void prepareUnsolicitedChallenge(HttpServletRequest request) {
+        String relayState = request.getParameter("RelayState");
+        request.setAttribute(UNSOLICITED_AUTH_REDIRECT, URL.parse(relayState));
+    }
 
     public String urlToLoginServiceForDomain(SamlConfiguration config, UUID requestID, String relayState) {
         AuthnRequest authnRequest = createAuthenticationRequest(config, requestID);

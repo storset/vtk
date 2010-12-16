@@ -311,9 +311,80 @@ public class URL {
         url.append(getPathRepresentation());  // Includes encoded /path, ?query parameters and #ref.
 
         return url.toString();
+    }    
+    
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime
+                * result
+                + ((characterEncoding == null) ? 0 : characterEncoding
+                        .hashCode());
+        result = prime * result + (collection ? 1231 : 1237);
+        result = prime * result + ((host == null) ? 0 : host.hashCode());
+        result = prime * result
+                + ((parameters == null) ? 0 : parameters.hashCode());
+        result = prime * result + ((path == null) ? 0 : path.hashCode());
+        result = prime * result + (pathOnly ? 1231 : 1237);
+        result = prime * result + ((port == null) ? 0 : port.hashCode());
+        result = prime * result
+                + ((protocol == null) ? 0 : protocol.hashCode());
+        result = prime * result + ((ref == null) ? 0 : ref.hashCode());
+        return result;
     }
 
-    
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        URL other = (URL) obj;
+        if (characterEncoding == null) {
+            if (other.characterEncoding != null)
+                return false;
+        } else if (!characterEncoding.equals(other.characterEncoding))
+            return false;
+        if (collection != other.collection)
+            return false;
+        if (host == null) {
+            if (other.host != null)
+                return false;
+        } else if (!host.equals(other.host))
+            return false;
+        if (parameters == null) {
+            if (other.parameters != null)
+                return false;
+        } else if (!parameters.equals(other.parameters))
+            return false;
+        if (path == null) {
+            if (other.path != null)
+                return false;
+        } else if (!path.equals(other.path))
+            return false;
+        if (pathOnly != other.pathOnly)
+            return false;
+        if (port == null) {
+            if (other.port != null)
+                return false;
+        } else if (!port.equals(other.port))
+            return false;
+        if (protocol == null) {
+            if (other.protocol != null)
+                return false;
+        } else if (!protocol.equals(other.protocol))
+            return false;
+        if (ref == null) {
+            if (other.ref != null)
+                return false;
+        } else if (!ref.equals(other.ref))
+            return false;
+        return true;
+    }
+
     /**
      * Generates a string representation of this URL, including
      * protocol, hostname and port information, excluding query string
@@ -842,6 +913,4 @@ public class URL {
          }
          return true;
      }
-     
-
 }

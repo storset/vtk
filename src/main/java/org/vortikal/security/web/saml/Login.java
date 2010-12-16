@@ -96,11 +96,15 @@ public class Login extends SamlService {
         if (session == null) {
             throw new InvalidRequestException("No session exists");
         }
-        UUID expectedRequestID = (UUID) session.getAttribute(REQUEST_ID_SESSION_ATTR);
+        String relayState = request.getParameter("RelayState");
+        URL url = URL.parse(relayState);
+        UUID expectedRequestID = getRequestIDSessionAttribute(request, url);
         if (expectedRequestID == null) {
-            throw new InvalidRequestException("Missing request ID attribute in session");
+            throw new InvalidRequestException(
+                    "Missing request ID attribute in session"
+                    + " for authentication attempt: " + relayState);
         }
-        session.removeAttribute(REQUEST_ID_SESSION_ATTR);
+        setRequestIDSessionAttribute(request, url, null);
 
         UserData userData = getUserData(request, expectedRequestID);
         if (userData == null) {

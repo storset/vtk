@@ -68,8 +68,8 @@ public class Logout extends SamlService {
     
         // Generate request ID, save in session
         UUID requestID = UUID.randomUUID();
-        request.getSession().setAttribute(REQUEST_ID_SESSION_ATTR, requestID);
-        
+        setRequestIDSessionAttribute(request, savedURL, requestID);
+                
         String relayState = savedURL.toString();
         SamlConfiguration samlConfiguration = newSamlConfiguration(request);
         String url = urlToLogoutServiceForDomain(samlConfiguration, requestID, relayState);
@@ -126,28 +126,23 @@ public class Logout extends SamlService {
         if (request.getParameter("SAMLResponse") == null) {
             throw new InvalidRequestException("Not a SAML logout request");
         }
-
-        UUID expectedRequestID = (UUID) session.getAttribute(REQUEST_ID_SESSION_ATTR);
-        if (expectedRequestID == null) {
-            throw new InvalidRequestException("Missing request ID attribute in session");
-        }
-        session.removeAttribute(REQUEST_ID_SESSION_ATTR);
-
-        LogoutResponse logoutResponse = getLogoutResponse(request);
-        logoutResponse.validate(true);
-        
         String relayState = request.getParameter("RelayState");
         if (relayState == null) {
             throw new InvalidRequestException("Missing RelayState parameter");
         }
         URL url = URL.parse(relayState);
-        if (url == null) {
-            throw new InvalidRequestException("No URL session attribute exists, nowhere to redirect");
+        
+        UUID expectedRequestID = getRequestIDSessionAttribute(request, url);
+        if (expectedRequestID == null) {
+            throw new InvalidRequestException("Missing request ID attribute in session");
         }
+        setRequestIDSessionAttribute(request, url, null);
+
+        LogoutResponse logoutResponse = getLogoutResponse(request);
+        logoutResponse.validate(true);
+        
         this.securityInitializer.removeAuthState(request, response);
         
-        session.removeAttribute(REQUEST_ID_SESSION_ATTR);
-
         response.setStatus(HttpServletResponse.SC_FOUND);
         response.setHeader("Location", url.toString());
     }

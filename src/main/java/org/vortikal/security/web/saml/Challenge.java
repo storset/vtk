@@ -85,7 +85,7 @@ public class Challenge extends SamlService {
 
         // Generate request ID, save in session
         UUID requestID = UUID.randomUUID();
-        session.setAttribute(REQUEST_ID_SESSION_ATTR, requestID);
+        setRequestIDSessionAttribute(request, url, requestID);
 
         String redirectURL = urlToLoginServiceForDomain(samlConfiguration, requestID, relayState);
         response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);

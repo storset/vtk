@@ -35,11 +35,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -100,8 +103,9 @@ public abstract class SamlService {
         }
     }
 
-    protected static final String REQUEST_ID_SESSION_ATTR = SamlAuthenticationHandler.class.getName()
-            + ".SamlSavedRequestID";
+    private static final String REQUEST_ID_SESSION_ATTR = SamlAuthenticationHandler.class.getName()
+            + ".SamlSavedRequestIDS";
+    
 
     private CertificateManager certificateManager;
 
@@ -120,6 +124,30 @@ public abstract class SamlService {
 
     private String logoutURL;
 
+    protected UUID getRequestIDSessionAttribute(HttpServletRequest request, URL url) {
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            return null;
+        }
+        @SuppressWarnings("unchecked")
+        Map<URL, UUID> attr = (Map<URL, UUID>) session.getAttribute(REQUEST_ID_SESSION_ATTR);
+        if (attr == null) {
+            return null;
+        }
+        return attr.get(url);
+    }
+    
+    public void setRequestIDSessionAttribute(HttpServletRequest request, URL url, UUID uuid) {
+        HttpSession session = request.getSession(true);
+        @SuppressWarnings("unchecked")
+        Map<URL, UUID> attr = (Map<URL, UUID>) session.getAttribute(REQUEST_ID_SESSION_ATTR);
+        if (attr == null) {
+            attr = new HashMap<URL, UUID>();
+            session.setAttribute(REQUEST_ID_SESSION_ATTR, attr);
+        }
+        attr.put(url, uuid);
+    }
+    
 
     @Required
     public void setCertificateManager(CertificateManager certificateManager) {

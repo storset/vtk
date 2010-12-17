@@ -23,7 +23,8 @@ then copied to ckeditor-build (or the other way around :)
 
 No modifications should be made in ckeditor-org.
 
-If you modifications to files in the _source folder, run the ckpackager.jar application afterwards:
+If you do modifications to files in the _source folder, or if upgrading to a new
+version of ckeditor, run the ckpackager.jar application afterwards:
 java -jar ckpackager.jar ckeditor.pack
 
 Upgrading to a new version:

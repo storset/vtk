@@ -1143,7 +1143,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
     }
 
-    private void deleteOverdue() {
+    /*private void deleteOverdue() {
         List<RecoverableResource> overdue = this.dao.getOverdue(this.permanentDeleteOverdueLimitInDays);
         if (overdue != null && overdue.size() > 0) {
             trashLogger.info("Found " + overdue.size()
@@ -1154,7 +1154,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                 this.contentStore.deleteRecoverable(rr);
             }
         }
-    }
+    }*/
 
     @Required
     public void setTokenManager(TokenManager tokenManager) {

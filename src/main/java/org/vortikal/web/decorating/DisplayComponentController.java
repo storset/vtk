@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.decorating;
 
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -75,14 +76,21 @@ public class DisplayComponentController implements Controller {
         return this.componentResolver.resolveComponent(namespace, name);
     }
     
-    private ComponentInvocation getComponentInvocation(DecoratorComponent component, HttpServletRequest request) {
-        Map<String, String> parameterDescriptions = component.getParameterDescriptions();
+    private ComponentInvocation getComponentInvocation(DecoratorComponent component, 
+            HttpServletRequest request) {
         Map<String, Object> actualParameters = new HashMap<String, Object>();
-        for (String name: parameterDescriptions.keySet()) {
-            String input = request.getParameter("p:" + name);
-            actualParameters.put(name, input);
+        @SuppressWarnings("rawtypes")
+        Enumeration e = request.getParameterNames();
+        while (e.hasMoreElements()) {
+            String name = (String) e.nextElement();
+            if (name.startsWith("p:")) {
+                String value = request.getParameter(name);
+                name = name.substring(2);
+                actualParameters.put(name, value);
+            }
         }
-        return new ComponentInvocationImpl(component.getNamespace(), component.getName(), actualParameters);
+        return new ComponentInvocationImpl(component.getNamespace(), 
+                component.getName(), actualParameters);
     }
     
     private void renderComponent(DecoratorComponent component, ComponentInvocation inv, 

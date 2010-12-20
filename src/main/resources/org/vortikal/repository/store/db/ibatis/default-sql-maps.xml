@@ -350,6 +350,14 @@
       where d.deleted_time &lt; #value# and d.resource_trash_uri = r.uri
   </select>
 
+  <!-- ## Get resources that have been deleted and are orphans (parent has been permanently deleted) ## -->
+  <select id="getOrphans" resultMap="recoverableResource">
+    select d.*, r.resource_type as resource_type
+      from deleted_resource d, vortex_resource r
+      where d.resource_trash_uri = r.uri
+        and d.parent_id not in (select resource_id from vortex_resource)
+  </select>
+
   <select id="loadChildren" parameterClass="java.util.Map"
           resultMap="Resource">
     select * from vortex_resource where uri like #uriWildcard# escape '@' and depth = #depth#

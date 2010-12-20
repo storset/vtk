@@ -127,7 +127,7 @@ public interface DataAccessor {
     public void deleteRecoverable(RecoverableResource recoverableResource) throws DataAccessException;
 
     /**
-     * * Deletes resources in the trash can that are overdue for permanent
+     * Retrieves resources in the trash can that are overdue for permanent
      * removal (called periodically)
      * 
      * @param overDueLimit
@@ -136,7 +136,16 @@ public interface DataAccessor {
      * @return a list or recoverable resources that are overdue for deletion
      * @throws DataAccessException
      */
-    public List<RecoverableResource> getOverdue(int overdueLimit) throws DataAccessException;
+    public List<RecoverableResource> getTrashCanOverdue(int overdueLimit) throws DataAccessException;
+
+    /**
+     * 
+     * 
+     * @return a list of deleted resource that are orphans, i.e. have their
+     *         parents permanently deleted
+     * @throws DataAccessException
+     */
+    public List<RecoverableResource> getTrashCanOrphans() throws DataAccessException;
 
     /**
      * 

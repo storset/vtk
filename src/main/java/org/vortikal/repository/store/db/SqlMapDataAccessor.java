@@ -267,11 +267,10 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         parameters.put("uri", resourceURI.toString());
         parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(resourceURI, SQL_ESCAPE_CHAR));
 
-        
         Path parentURI = resourceURI.getParent();
 
         int depthDiff = -1 * parentURI.getDepth();
-        
+
         int uriTrimLength = parentURI.toString().length();
         if (!parentURI.isRoot()) {
             uriTrimLength++;
@@ -360,7 +359,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<RecoverableResource> getOverdue(int overDueLimit) throws DataAccessException {
+    public List<RecoverableResource> getTrashCanOverdue(int overDueLimit) throws DataAccessException {
         Calendar cal = Calendar.getInstance();
         // Add negative limit -> substract
         cal.add(Calendar.DATE, -overDueLimit);
@@ -368,6 +367,14 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         String sqlMap = getSqlMap("getOverdue");
         List<RecoverableResource> recoverableResources = this.getSqlMapClientTemplate().queryForList(sqlMap,
                 overDueDate);
+        return recoverableResources;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<RecoverableResource> getTrashCanOrphans() throws DataAccessException {
+        String sqlMap = getSqlMap("getOrphans");
+        List<RecoverableResource> recoverableResources = this.getSqlMapClientTemplate().queryForList(sqlMap);
         return recoverableResources;
     }
 

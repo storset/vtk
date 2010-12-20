@@ -568,8 +568,13 @@ public class Cache implements DataAccessor, InitializingBean {
     }
 
     @Override
-    public List<RecoverableResource> getOverdue(int overDueLimit) throws DataAccessException {
-        return this.wrappedAccessor.getOverdue(overDueLimit);
+    public List<RecoverableResource> getTrashCanOverdue(int overDueLimit) throws DataAccessException {
+        return this.wrappedAccessor.getTrashCanOverdue(overDueLimit);
+    }
+
+    @Override
+    public java.util.List<RecoverableResource> getTrashCanOrphans() throws DataAccessException {
+        return this.wrappedAccessor.getTrashCanOrphans();
     }
 
     @Override

@@ -89,4 +89,19 @@
     </property>
   </bean>
 
+  <!-- ## Periodically purge trash can for overdue and orphans ## -->
+  <bean id="repository.trashCanPruger" class="org.vortikal.web.actions.trashcan.TrashCanPurger"
+    parent="repositoryAware" />
+
+  <bean id="repository.trashcCanPurgerTrigger" class="org.vortikal.scheduling.SimpleMethodInvokingTriggerBean">
+    <property name="targetMethodName" value="purgeTrashCan" />
+    <property name="targetObject" ref="repository.trashCanPruger" />
+    <property name="triggerThreadName" value="${repositoryID}.trashcanpurger" />
+    <property name="startDelay" value="20000" />
+    <!-- Run every 5min (300000ms) -->
+    <property name="repeatInterval" value="300000" />
+    <property name="startTriggerAfterInitialization" value="true" />
+    <property name="abortTriggerOnTargetMethodException" value="false" />
+  </bean>
+
 </beans>

@@ -368,5 +368,9 @@ public class CachePurgeControlRepositoryWrapper implements Repository {
         uris.add(uri);
         logPurge(serviceMethodName, uris);
     }
+    
+    public void purgeTrash() {
+        this.wrappedRepository.purgeTrash();
+    }
 
 }

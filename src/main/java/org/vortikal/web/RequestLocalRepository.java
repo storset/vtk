@@ -427,4 +427,8 @@ public class RequestLocalRepository implements Repository {
     public void init() throws Exception {
     }
 
+    public void purgeTrash() {
+        this.repository.purgeTrash();
+    }
+
 }

@@ -1139,12 +1139,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     private void periodicJob() {
         if (!this.isReadOnly()) {
             this.dao.deleteExpiredLocks(new Date());
-            //this.deleteOverdue();
         }
     }
 
-    /*private void deleteOverdue() {
-        List<RecoverableResource> overdue = this.dao.getOverdue(this.permanentDeleteOverdueLimitInDays);
+    public void purgeTrash() {
+        List<RecoverableResource> overdue = this.dao.getTrashCanOverdue(this.permanentDeleteOverdueLimitInDays);
         if (overdue != null && overdue.size() > 0) {
             trashLogger.info("Found " + overdue.size()
                     + " recoverable resources that are overdue for permanent deletion.");
@@ -1154,7 +1153,16 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                 this.contentStore.deleteRecoverable(rr);
             }
         }
-    }*/
+        List<RecoverableResource> orphans = this.dao.getTrashCanOrphans();
+        if (orphans != null && orphans.size() > 0) {
+            trashLogger.info("Found " + orphans.size() + " recoverable resources that are orphans.");
+            for (RecoverableResource rr : orphans) {
+                trashLogger.info("Permanently deleting orphan: " + rr);
+                this.dao.deleteRecoverable(rr);
+                this.contentStore.deleteRecoverable(rr);
+            }
+        }
+    }
 
     @Required
     public void setTokenManager(TokenManager tokenManager) {

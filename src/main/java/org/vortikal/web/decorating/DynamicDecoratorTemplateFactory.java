@@ -121,8 +121,7 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
         list.setFunctions(this.functions);
         directiveHandlers.put("list", list);
 
-        DefineNodeFactory def = new DefineNodeFactory();
-        def.setFunctions(this.functions);
+        DefineNodeFactory def = new DefineNodeFactory(this.functions);
         directiveHandlers.put("def", def);
         directiveHandlers.put("capture", new CaptureNodeFactory());
         directiveHandlers.put("call", new ComponentInvokerNodeFactory(new DynamicDecoratorTemplate.ComponentSupport()));

@@ -30,9 +30,12 @@
  */
 package org.vortikal.web.filter;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
@@ -53,15 +56,6 @@ import org.vortikal.web.service.Service;
 public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
 
     private static Log logger = LogFactory.getLog(ExpiresCacheResponseFilter.class);
-    
-    private static final Set<String> DROPPED_HEADERS = new HashSet<String>();
-    static {
-        DROPPED_HEADERS.add("Expires");
-        DROPPED_HEADERS.add("Cache-Control");
-        DROPPED_HEADERS.add("Pragma");
-        DROPPED_HEADERS.add("Last-Modified");
-        DROPPED_HEADERS.add("Vary");
-    }
     
     private Repository repository;
     private PropertyTypeDefinition expiresPropDef;
@@ -135,7 +129,6 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
                     }
                 }
             }
-            Property expiresProp = resource.getProperty(this.expiresPropDef);
             boolean anonymousReadable = 
                 this.repository.isAuthorized(resource, RepositoryAction.READ_PROCESSED, null, false);
             if (!anonymousReadable) {
@@ -145,17 +138,18 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
                 return response;
             }
 
+            Property expiresProp = resource.getProperty(this.expiresPropDef);
             if (expiresProp != null) {
                 if (logger.isDebugEnabled()) {
                     logger.debug(uri + ": property max-age=" + expiresProp.getLongValue());
                 }
-                return new ExpiresResponseWrapper(response, expiresProp.getLongValue());
+                return new CacheControlResponseWrapper(response, expiresProp.getLongValue());
             }
             if (this.globalMaxAge > 0) {
                 if (logger.isDebugEnabled()) {
                     logger.debug(uri + ": default max-age=" + this.globalMaxAge);
                 }
-                return new ExpiresResponseWrapper(response, this.globalMaxAge);
+                return new CacheControlResponseWrapper(response, this.globalMaxAge);
             }
         } catch (Throwable t) { 
         }
@@ -187,15 +181,24 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
         this.excludedResourceTypes = excludedResourceTypes;
     }
     
-    private class ExpiresResponseWrapper extends HttpServletResponseWrapper {
+    private static final Set<String> DROPPED_HEADERS = new HashSet<String>();
+    static {
+        DROPPED_HEADERS.add("Expires");
+        DROPPED_HEADERS.add("Cache-Control");
+        DROPPED_HEADERS.add("Pragma");
+        DROPPED_HEADERS.add("Last-Modified");
+        DROPPED_HEADERS.add("Vary");
+    }
+    
+    private class CacheControlResponseWrapper extends HttpServletResponseWrapper {
 
         private HttpServletResponse response;
         
-        public ExpiresResponseWrapper(HttpServletResponse response, long seconds) {
+        public CacheControlResponseWrapper(HttpServletResponse response, 
+                long seconds) {
             super(response);
             this.response = response;
             this.response.setHeader("Cache-Control", "max-age=" + seconds);
-            this.response.setHeader("Vary", "Cookie");
         }
 
         @Override
@@ -237,11 +240,14 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
             }
             super.setDateHeader(name, date);
         }
-
+        
         @Override
         public void setHeader(String name, String value) {
             if (DROPPED_HEADERS.contains(name)) {
                 return;
+            }
+            if ("Content-Type".equals(name) && contentTypeMatch(value)) {
+                this.response.setHeader("Vary", "Cookie");
             }
             super.setHeader(name, value);
         }
@@ -255,8 +261,39 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
         }
         
         @Override
+        public ServletOutputStream getOutputStream() throws IOException {
+            if (contentTypeMatch(this.response.getContentType())) {
+                this.response.setHeader("Vary", "Cookie");
+            }
+            return super.getOutputStream();
+        }
+
+        @Override
+        public PrintWriter getWriter() throws IOException {
+            if (contentTypeMatch(this.response.getContentType())) {
+                this.response.setHeader("Vary", "Cookie");
+            }
+            return super.getWriter();
+        }
+
+        @Override
+        public void setContentType(String type) {
+            if (contentTypeMatch(type)) {
+                this.response.setHeader("Vary", "Cookie");
+            }
+            super.setContentType(type);
+        }
+
+        @Override
         public String toString() {
-            return "ExpiresCacheResponseFilter.Response: " + super.toString();
+            return "CacheControlResponseWrapper[" + super.toString() + "]";
+        }
+
+        private boolean contentTypeMatch(String contentType) {
+            if (contentType == null) {
+                return false;
+            }
+            return contentType.startsWith("text/html");
         }
     }
 

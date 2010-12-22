@@ -70,8 +70,7 @@ public class ParserTest extends TestCase {
         listDirective.setFunctions(functions);
         directiveHandlers.put("list", listDirective);
         
-        DefineNodeFactory defDirective = new DefineNodeFactory();
-        defDirective.setFunctions(functions);
+        DefineNodeFactory defDirective = new DefineNodeFactory(functions);
         directiveHandlers.put("def", defDirective);
         
         directiveHandlers.put("abc", new DirectiveNodeFactory() {

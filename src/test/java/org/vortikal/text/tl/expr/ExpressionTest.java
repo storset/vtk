@@ -684,9 +684,9 @@ public class ExpressionTest extends TestCase {
         assertEquals("bd", m.get("a"));
 
         Context ctx = new Context(Locale.getDefault());
-        Map<Object, Object> map = new HashMap<Object, Object>();
-        map.put("b", "c");
-        ctx.define("a", map, true);
+        Map<Object, Object> a = new HashMap<Object, Object>();
+        a.put("b", "c");
+        ctx.define("a", a, true);
         result = eval(ctx,
                 new Symbol("a"),
                 new Symbol("!="),
@@ -699,6 +699,27 @@ public class ExpressionTest extends TestCase {
                 new Literal("'c'")
         );
         assertEquals(Boolean.TRUE, result);
+
+        Map<Object, Object> b = new HashMap<Object, Object>();
+        b.put("c", new HashMap<Object, Object>());
+        a = new HashMap<Object, Object>();
+        a.put("b", b);
+        ctx.define("a", a, true);
+        result = eval(ctx,
+                new Symbol("a"),
+                new Symbol("."),
+                new Symbol("b"),
+                new Symbol("."),
+                new Symbol("c"),
+                new Symbol("."),
+                new Symbol("length"),
+                new Symbol("("),
+                new Symbol(")"),
+                new Symbol("="),
+                new Literal("0")
+        );
+        assertEquals(Boolean.TRUE, result);
+
         
         ctx.define("a", null, true);
         result = eval(ctx,
@@ -715,9 +736,9 @@ public class ExpressionTest extends TestCase {
         assertEquals(Boolean.FALSE, result);
         
         ctx = new Context(Locale.getDefault());
-        map = new HashMap<Object, Object>();
-        map.put("b", "c");
-        ctx.define("a", map, true);
+        a = new HashMap<Object, Object>();
+        a.put("b", "c");
+        ctx.define("a", a, true);
 
         // length(a)
         result = eval(ctx,

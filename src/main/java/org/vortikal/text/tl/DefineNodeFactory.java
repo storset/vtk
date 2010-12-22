@@ -41,7 +41,22 @@ import org.vortikal.text.tl.expr.Function;
 public final class DefineNodeFactory implements DirectiveNodeFactory {
 
     private Set<Function> functions = new HashSet<Function>();
+
+    public DefineNodeFactory() {
+    }
     
+    public DefineNodeFactory(Set<Function> functions) {
+        setFunctions(functions);
+    }
+    
+    public void setFunctions(Set<Function> functions) {
+        if (functions != null) {
+            for (Function function: functions) {
+                this.functions.add(function);
+            }
+        }
+    }
+
     public Node create(DirectiveParseContext ctx) throws Exception {
         List<Token> args = ctx.getArguments();
         if (args.size() < 2) {
@@ -61,13 +76,5 @@ public final class DefineNodeFactory implements DirectiveNodeFactory {
                 return true;
             }
         };
-    }
-    
-    public void setFunctions(Set<Function> functions) {
-        if (functions != null) {
-            for (Function function: functions) {
-                this.functions.add(function);
-            }
-        }
     }
 }

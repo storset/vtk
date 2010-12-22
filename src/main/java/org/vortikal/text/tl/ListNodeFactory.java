@@ -46,6 +46,13 @@ public class ListNodeFactory implements DirectiveNodeFactory {
     private static final Set<String> LIST_TERM = new HashSet<String>(Arrays.asList("endlist"));
 
     private Set<Function> functions = new HashSet<Function>();
+
+    public ListNodeFactory() {
+    }
+    
+    public ListNodeFactory(Set<Function> functions) {
+        setFunctions(functions);
+    }
     
     public void setFunctions(Set<Function> functions) {
         if (functions != null) {

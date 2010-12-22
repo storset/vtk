@@ -43,8 +43,11 @@ public class Or extends Operator {
     public Object eval(Context ctx, ExpressionNode... nodes) {
         for (ExpressionNode n: nodes) {
             Object o = n.eval(ctx);
+            if (o == null) {
+                return false;
+            }
             if (! (o instanceof Boolean)) {
-                throw new IllegalArgumentException("Not a boolean: " + o);
+                o = Boolean.parseBoolean(o.toString());
             }
             if ((Boolean) o) {
                 return true;

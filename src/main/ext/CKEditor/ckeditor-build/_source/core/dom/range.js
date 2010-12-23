@@ -351,10 +351,7 @@ CKEDITOR.dom.range = function( document )
 			this.collapsed = true;
 		},
 
-		/**
-		 *  The content nodes of the range are cloned and added to a document fragment, which is returned.
-		 *  <strong> Note: </strong> Text selection may lost after invoking this method. (caused by text node splitting).
-		 */
+		// The selection may be lost when cloning (due to the splitText() call).
 		cloneContents : function()
 		{
 			var docFrag = new CKEDITOR.dom.documentFragment( this.document );
@@ -365,9 +362,6 @@ CKEDITOR.dom.range = function( document )
 			return docFrag;
 		},
 
-		/**
-		 * Deletes the content nodes of the range permanently from the DOM tree.
-		 */
 		deleteContents : function()
 		{
 			if ( this.collapsed )
@@ -376,10 +370,6 @@ CKEDITOR.dom.range = function( document )
 			execContentsAction( this, 0 );
 		},
 
-		/**
-		 *  The content nodes of the range are cloned and added to a document fragment,
-		 * meanwhile they're removed permanently from the DOM tree.
-		 */
 		extractContents : function()
 		{
 			var docFrag = new CKEDITOR.dom.documentFragment( this.document );
@@ -1415,7 +1405,7 @@ CKEDITOR.dom.range = function( document )
 			// Fixing invalid range start inside dtd empty elements.
 			if( startNode.type == CKEDITOR.NODE_ELEMENT
 				&& CKEDITOR.dtd.$empty[ startNode.getName() ] )
-				startOffset = startNode.getIndex(), startNode = startNode.getParent();
+				startNode = startNode.getParent(), startOffset = startNode.getIndex();
 
 			this.startContainer	= startNode;
 			this.startOffset	= startOffset;

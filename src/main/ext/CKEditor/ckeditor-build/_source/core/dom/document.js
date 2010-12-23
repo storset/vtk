@@ -150,7 +150,7 @@ CKEDITOR.tools.extend( CKEDITOR.dom.document.prototype,
 
 		getElementsByTag : function( tagName, namespace )
 		{
-			if ( !( CKEDITOR.env.ie && ! ( document.documentMode > 8 ) ) && namespace )
+			if ( !CKEDITOR.env.ie && namespace )
 				tagName = namespace + ':' + tagName;
 			return new CKEDITOR.dom.nodeList( this.$.getElementsByTagName( tagName ) );
 		},

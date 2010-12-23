@@ -40,7 +40,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 			editor.addCommand( 'flash', new CKEDITOR.dialogCommand( 'flash' ) );
 			editor.ui.addButton( 'Flash',
 				{
-					label : editor.lang.common.flash,
+					label : editor.lang.common.flash,				
 					command : 'flash'
 				});
 			CKEDITOR.dialog.add( 'flash', this.path + 'dialogs/flash.js' );
@@ -142,27 +142,3 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 		requires : [ 'fakeobjects' ]
 	});
 })();
-
-CKEDITOR.tools.extend( CKEDITOR.config,
-{
-	/**
-	 * Save as EMBED tag only. This tag is unrecommended.
-	 * @type Boolean
-	 * @default false
-	 */
-	flashEmbedTagOnly : false,
-
-	/**
-	 * Add EMBED tag as alternative: &lt;object&gt&lt;embed&gt&lt;/embed&gt&lt;/object&gt
-	 * @type Boolean
-	 * @default false
-	 */
-	flashAddEmbedTag : true,
-
-	/**
-	 * Use embedTagOnly and addEmbedTag values on edit.
-	 * @type Boolean
-	 * @default false
-	 */
-	flashConvertOnEdit : false
-} );

@@ -614,6 +614,12 @@ CKEDITOR.lang['no'] =
 		edit				: 'Rediger Div',
 		remove				: 'Fjern Div'
   	},
+  	
+  	mediaembed :
+  	{
+  	  edit   : 'Mediaegenskaper',
+  	  remove : 'Fjern media'
+  	},
 
 	font :
 	{

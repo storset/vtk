@@ -155,15 +155,7 @@ CKEDITOR._.elementsPath =
 		editor.focus();
 
 		var element = editor._.elementsPath.list[ elementIndex ];
-
-		if ( element.is( 'body' ) )
-		{
-			var range = new CKEDITOR.dom.range( editor.document );
-			range.selectNodeContents( element );
-			range.select();
-		}
-		else
-			editor.getSelection().selectElement( element );
+		editor.getSelection().selectElement( element );
 
 		return false;
 	},

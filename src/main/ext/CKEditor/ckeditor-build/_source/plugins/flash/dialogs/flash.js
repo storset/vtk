@@ -638,7 +638,8 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 				},
 				{
 					id : 'advanced',
-					label : editor.lang.common.advancedTab,
+					// label : editor.lang.common.advancedTab,						
+					label : 'fakkers',
 					elements :
 					[
 						{

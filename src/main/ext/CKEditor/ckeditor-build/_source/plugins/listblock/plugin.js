@@ -93,7 +93,7 @@ CKEDITOR.plugins.add( 'listblock',
 						this._.items[ value ] = id;
 
 						pendingHtml.push(
-							'<li id=', id, ' class=cke_panel_listItem role=presentation>' +
+							'<li id=', id, ' class=cke_panel_listItem>' +
 								'<a id="', id, '_option" _cke_focus=1 hidefocus=true' +
 									' title="', title || value, '"' +
 									' href="javascript:void(\'', value, '\')"' +

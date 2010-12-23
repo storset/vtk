@@ -48,7 +48,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 	{
 		var editor = evt.editor,
 			chromeRoot = editor.container.getChild( 1 ),
-			directionNode = evt.data.path.block || evt.data.path.blockLimit;
+			directionNode = getElementForDirection( evt.data.path.lastElement );
 
 		if ( directionNode && editor.lang.dir != directionNode.getComputedStyle( 'direction' ) )
 			chromeRoot.addClass( 'cke_mixed_dir_content' );
@@ -123,13 +123,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 		// the element and all its children, so it will get really reflected
 		// like a mirror. (#5910)
 		if ( dir != dirBefore )
-		{
-			editor.fire( 'dirChanged',
-				{
-					node : element,
-					dir : dir
-				} );
-		}
+			editor.fire( 'dirChanged', element );
 
 		editor.forceNextSelectionCheck();
 

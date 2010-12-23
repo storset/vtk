@@ -97,9 +97,6 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 		 */
 		ckeditor: function( callback, config )
 		{
-			if ( !CKEDITOR.env.isCompatible )
-				return this;
-
 			if ( !jQuery.isFunction( callback ))
 			{
 				var tmp = config;

@@ -118,6 +118,7 @@ CKEDITOR.themes.add( 'default', (function()
 			var container = CKEDITOR.dom.element.createFromHtml( [
 				'<span' +
 					' id="cke_', name, '"' +
+					' onmousedown="return false;"' +
 					' class="', editor.skinClass, ' ', editor.id, ' cke_editor_', name, '"' +
 					' dir="', editor.lang.dir, '"' +
 					' title="', ( CKEDITOR.env.gecko ? ' ' : '' ), '"' +
@@ -184,14 +185,10 @@ CKEDITOR.themes.add( 'default', (function()
 								'<div id="%title#" class="%title" role="presentation"></div>' +
 								'<a id="%close_button#" class="%close_button" href="javascript:void(0)" title="' +  editor.lang.common.close+'" role="button"><span class="cke_label">X</span></a>' +
 								'<div id="%tabs#" class="%tabs" role="tablist"></div>' +
-								'<table class="%contents" role="presentation">' +
-								'<tr>' +
+								'<table class="%contents" role="presentation"><tr>' +
 								  '<td id="%contents#" class="%contents" role="presentation"></td>' +
-								'</tr>' +
-								'<tr>' +
-								  '<td id="%footer#" class="%footer" role="presentation"></td>' +
-								'</tr>' +
-								'</table>' +
+								'</tr></table>' +
+								'<div id="%footer#" class="%footer" role="presentation"></div>' +
 							'</div>' +
 							'<div id="%tl#" class="%tl"></div>' +
 							'<div id="%tc#" class="%tc"></div>' +
@@ -230,7 +227,7 @@ CKEDITOR.themes.add( 'default', (function()
 					close		: close,
 					tabs		: body.getChild( 2 ),
 					contents	: body.getChild( [ 3, 0, 0, 0 ] ),
-					footer		: body.getChild( [ 3, 0, 1, 0 ] )
+					footer		: body.getChild( 4 )
 				}
 			};
 		},

@@ -349,7 +349,7 @@ CKEDITOR.config =
 
 	/**
 	 * List of regular expressions to be executed over the input HTML,
-	 * indicating HTML source code that matched must <strong>not</strong> present in WYSIWYG mode for editing.
+	 * indicating code that must stay untouched.
 	 * @type Array
 	 * @default [] (empty array)
 	 * @example

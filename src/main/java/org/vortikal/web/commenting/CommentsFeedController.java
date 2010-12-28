@@ -55,32 +55,25 @@ public class CommentsFeedController implements Controller {
     private Repository repository;
     private String viewName;
     private Service viewService;
-    private boolean anonymous = true;
-    
-    @Required public void setRepository(Repository repository) {
+
+    @Required
+    public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
-    @Required public void setViewName(String viewName) {
+    @Required
+    public void setViewName(String viewName) {
         this.viewName = viewName;
     }
 
-    @Required public void setViewService(Service viewService) {
+    @Required
+    public void setViewService(Service viewService) {
         this.viewService = viewService;
     }
 
-    public void setAnonymous(boolean anonymous) {
-        this.anonymous = anonymous;
-    }
-    
-    
-    public ModelAndView handleRequest(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Principal principal = SecurityContext.getSecurityContext().getPrincipal();
-        String token = null;
-        if (!this.anonymous) {
-            token = SecurityContext.getSecurityContext().getToken();
-        }
+        String token = SecurityContext.getSecurityContext().getToken();
         Path uri = RequestContext.getRequestContext().getResourceURI();
         Resource resource = repository.retrieve(token, uri, true);
 
@@ -90,13 +83,13 @@ public class CommentsFeedController implements Controller {
         Map<String, URL> urlMap = new HashMap<String, URL>();
         resourceMap.put(resource.getURI().toString(), resource);
         urlMap.put(resource.getURI().toString(), this.viewService.constructURL(resource.getURI()));
-        for (Comment comment: comments) {
+        for (Comment comment : comments) {
             Resource r = this.repository.retrieve(token, comment.getURI(), true);
             resourceMap.put(r.getURI().toString(), r);
             urlMap.put(r.getURI().toString(), this.viewService.constructURL(r.getURI()));
         }
         URL selfURL = URL.create(request);
-        
+
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("resource", resource);
         model.put("principal", principal);
@@ -104,7 +97,7 @@ public class CommentsFeedController implements Controller {
         model.put("resourceMap", resourceMap);
         model.put("urlMap", urlMap);
         model.put("selfURL", selfURL);
-        
+
         return new ModelAndView(this.viewName, model);
     }
 

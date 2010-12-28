@@ -79,11 +79,7 @@
     <property name="parent" ref="webService" />
     <property name="assertions">
       <list>
-        <bean parent="abstractResourcePrincipalPermissionAssertion">
-          <property name="requiresAuthentication" value="false" />
-          <property name="privilege" ref="PRIVILEGE_READ_PROCESSED" />
-          <property name="anonymous" value="true" />
-        </bean>
+        <ref bean="resourceInCollection" />
         <ref bean="commenting.requestParameterIsFeed" />
       </list>
     </property>

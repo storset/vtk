@@ -52,18 +52,16 @@ import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
-
 public class RecentCommentsProvider implements ReferenceDataProvider {
-    
+
     private Repository repository;
-    private boolean deepCommentsListing = false;
+    private boolean deepCommentsListing;
     private int maxComments = 100;
     private Service viewService;
     private Service resourceCommentsFeedService;
     private Service recentCommentsService;
-    private boolean includeCommentsFromUnpublished = false;
+    private boolean includeCommentsFromUnpublished;
     private PropertyTypeDefinition publishedDatePropDef;
-
 
     @Required
     public void setRepository(Repository repository) {
@@ -80,12 +78,12 @@ public class RecentCommentsProvider implements ReferenceDataProvider {
         }
         this.maxComments = maxComments;
     }
-    
+
     @Required
     public void setViewService(Service viewService) {
         this.viewService = viewService;
     }
-    
+
     public void setRecentCommentsService(Service recentCommentsService) {
         this.recentCommentsService = recentCommentsService;
     }
@@ -93,72 +91,78 @@ public class RecentCommentsProvider implements ReferenceDataProvider {
     public void setResourceCommentsFeedService(Service resourceCommentsFeedService) {
         this.resourceCommentsFeedService = resourceCommentsFeedService;
     }
-    
-	public void setIncludeCommentsFromUnpublished(boolean includeCommentsFromUnpublished) {
-		this.includeCommentsFromUnpublished = includeCommentsFromUnpublished;
-	}
-	
-	public void setPublishedDatePropDef(PropertyTypeDefinition publishedDatePropDef) {
-		this.publishedDatePropDef = publishedDatePropDef;
-	}
 
-    @SuppressWarnings(value={"unchecked"}) 
+    public void setIncludeCommentsFromUnpublished(boolean includeCommentsFromUnpublished) {
+        this.includeCommentsFromUnpublished = includeCommentsFromUnpublished;
+    }
+
+    public void setPublishedDatePropDef(PropertyTypeDefinition publishedDatePropDef) {
+        this.publishedDatePropDef = publishedDatePropDef;
+    }
+
+    @SuppressWarnings(value = { "unchecked" })
     public void referenceData(Map model, HttpServletRequest servletRequest) throws Exception {
         Principal principal = SecurityContext.getSecurityContext().getPrincipal();
         String token = SecurityContext.getSecurityContext().getToken();
         Path uri = RequestContext.getRequestContext().getResourceURI();
 
         Resource resource = repository.retrieve(token, uri, true);
-        // If deepCommentListing is specified, always find the nearest collection:
+        // If deepCommentListing is specified, always find the nearest
+        // collection:
         if (!resource.isCollection() && this.deepCommentsListing) {
             uri = uri.getParent();
             resource = this.repository.retrieve(token, uri, true);
         }
 
-        List<Comment> comments = repository.getComments(token, resource, 
-                this.deepCommentsListing, this.maxComments);
+        List<Comment> comments = repository.getComments(token, resource, this.deepCommentsListing, this.maxComments);
 
         Map<String, Resource> resourceMap = new HashMap<String, Resource>();
         Map<String, URL> commentURLMap = new HashMap<String, URL>();
         List<Comment> filteredComments = new ArrayList<Comment>();
-        for (Comment comment: comments) {
+        for (Comment comment : comments) {
             try {
                 Resource r = this.repository.retrieve(token, comment.getURI(), true);
-                // Don't include comments from resources that have no published date
+                // Don't include comments from resources that have no published
+                // date
                 Property publishedDate = null;
                 if (publishedDatePropDef != null) {
-                	publishedDate = r.getProperty(publishedDatePropDef);
+                    publishedDate = r.getProperty(publishedDatePropDef);
                 }
                 if (!this.includeCommentsFromUnpublished && publishedDate == null) {
-                	continue;
+                    continue;
                 }
                 filteredComments.add(comment);
                 resourceMap.put(r.getURI().toString(), r);
                 URL commentURL = this.viewService.constructURL(r, principal);
                 commentURLMap.put(comment.getID(), commentURL);
-            } catch (Throwable t) { }
+            } catch (Throwable t) {
+            }
         }
 
-        boolean commentsEnabled =
-            resource.getAcl().getActions().contains(Privilege.ADD_COMMENT);
+        boolean commentsEnabled = resource.getAcl().getActions().contains(Privilege.ADD_COMMENT);
 
         URL baseCommentURL = null;
         try {
             baseCommentURL = this.viewService.constructURL(resource, principal);
-        } catch (Exception e) { }
+        } catch (Exception e) {
+        }
 
         URL feedURL = null;
         if (this.resourceCommentsFeedService != null) {
             try {
                 feedURL = this.resourceCommentsFeedService.constructURL(resource, principal);
-            } catch (Exception e) { }
+            } catch (Exception e) {
+            }
         }
 
         URL recentCommentsURL = null;
-        try {
-            recentCommentsURL = this.recentCommentsService.constructURL(resource, principal);
-        } catch (Exception e) { }
-        
+        if (this.recentCommentsService != null) {
+            try {
+                recentCommentsURL = this.recentCommentsService.constructURL(resource, principal);
+            } catch (Exception e) {
+            }
+        }
+
         model.put("resource", resource);
         model.put("principal", principal);
         model.put("comments", filteredComments);

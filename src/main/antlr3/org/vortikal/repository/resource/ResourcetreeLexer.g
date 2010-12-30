@@ -80,6 +80,8 @@ ORIENTATION
 BEFORE	:	'before';
 AFTER	:	'after';
 RANGE	:	'range';
+DEFAULTVALUE
+	:	'defaultvalue';
 LETTER	:	('a'..'z' | 'A'..'Z');
 NUMBER	:	('0'..'9')+;
 NAME	:	(LETTER | '-' | '_')+;

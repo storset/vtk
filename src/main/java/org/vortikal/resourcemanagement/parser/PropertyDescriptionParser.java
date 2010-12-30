@@ -117,6 +117,9 @@ public class PropertyDescriptionParser {
             case ResourcetreeLexer.EXTERNAL:
                 p.setExternalService(descEntry.getChild(0).getText());
                 break;
+            case ResourcetreeLexer.DEFAULTVALUE:
+                p.setDefaultValue(descEntry.getChild(0).getText());
+                break;
             default:
                 throw new IllegalStateException("Unknown token type for simple property description: "
                         + descEntry.getType());

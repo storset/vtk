@@ -30,10 +30,10 @@
  */
 package org.vortikal.resourcemanagement;
 
-
 public class SimplePropertyDescription extends EditablePropertyDescription {
 
     private boolean required;
+    private String defaultValue;
 
     public void setRequired(boolean required) {
         this.required = required;
@@ -41,5 +41,14 @@ public class SimplePropertyDescription extends EditablePropertyDescription {
 
     public boolean isRequired() {
         return required;
-    }    
+    }
+
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
 }

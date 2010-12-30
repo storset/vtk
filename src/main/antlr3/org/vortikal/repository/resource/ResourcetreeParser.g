@@ -100,9 +100,8 @@ propertytypedef
 derivedpropertytypedef
 	:	NAME COLON derived (overrides)? (MULTIPLE)? (defaultprop)? 
 		-> ^(NAME derived (overrides)? (MULTIPLE)? (defaultprop)?)
-	|
-        NAME COLON DERIVED external
-        -> ^(NAME ^(DERIVED external))
+	|	NAME COLON DERIVED external
+		-> ^(NAME ^(DERIVED external))
 	;
 
 derived	:	DERIVED LP fieldlist RP EVAL LP evallist RP
@@ -138,9 +137,13 @@ jsonpropspec
 
 plainpropertytypedef
 	:	NAME COLON PROPTYPE (MULTIPLE)? (REQUIRED)? (NOEXTRACT)? (overrides)?
-			(external)?
+			(external)? (defaultvalue)?
 		-> ^(NAME PROPTYPE (MULTIPLE)? (REQUIRED)? (NOEXTRACT)? (overrides)?
-			(external)?)
+			(external)? (defaultvalue)?)
+	;
+
+defaultvalue
+	:	DEFAULTVALUE LP QTEXT RP -> ^(DEFAULTVALUE QTEXT)
 	;
 
 binarypropertytypedef

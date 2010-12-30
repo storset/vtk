@@ -275,13 +275,44 @@ public class StructuredResourceManager {
         def.setPropertyEvaluator(createPropertyEvaluator(propertyDescription, resourceDescription));
 
         if (propertyDescription instanceof SimplePropertyDescription) {
-            Map<String, Object> edithints = ((SimplePropertyDescription) propertyDescription).getEdithints();
+            SimplePropertyDescription spd = ((SimplePropertyDescription) propertyDescription);
+            Map<String, Object> edithints = spd.getEdithints();
             if (edithints != null) {
                 def.addMetadata("editingHints", edithints);
+            }
+            String defaultValue = spd.getDefaultValue();
+            if (defaultValue != null) {
+                this.setDefaultValue(def, defaultValue);
             }
         }
         def.afterPropertiesSet();
         return def;
+    }
+
+    private void setDefaultValue(OverridablePropertyTypeDefinitionImpl def, String defaultValue) {
+        Type type = def.getType();
+        switch (type) {
+        case STRING:
+            def.setDefaultValue(new Value(defaultValue, type));
+            return;
+        case BOOLEAN:
+            if ("true".equalsIgnoreCase(defaultValue) || "false".equalsIgnoreCase(defaultValue)) {
+                def.setDefaultValue(new Value(Boolean.valueOf(defaultValue)));
+                return;
+            }
+            throw new IllegalArgumentException("Default value of a boolean property can only be 'true' or 'false'");
+        case INT:
+            Integer numb = null;
+            try {
+                numb = Integer.parseInt(defaultValue);
+            } catch (NumberFormatException nfe) {
+                throw new IllegalArgumentException("Default value of an int property can only be a valid number");
+            }
+            def.setDefaultValue(new Value(numb));
+            return;
+        default:
+            return;
+        }
     }
 
     private PropertyEvaluator createPropertyEvaluator(PropertyDescription desc,

@@ -165,8 +165,10 @@ public class PlaintextEditController extends SimpleFormController
         String url = service.constructLink(resource, principal);
         String content = getTextualContent(resource, token);
         
+        String contentType = resource.getContentType();
+        
         List<Map<String, String>> tooltips = resolveTooltips(resource, principal);
-        return new PlaintextEditCommand(content, url, tooltips);
+        return new PlaintextEditCommand(content, url, tooltips, contentType);
     }
 
 

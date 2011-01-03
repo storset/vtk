@@ -24,6 +24,10 @@
 <head>
   <title>Plain text edit</title>
   <script type="text/javascript" language="Javascript" src="${md5jsURL?html}"></script>
+  
+  <script type="text/javascript" language="Javascript" src="/vrtx/__vrtx/static-resources/CodeMirror-0.92/js/codemirror.js"></script>  
+  <script type="text/javascript" language="Javascript" src="/vrtx/__vrtx/static-resources/CodeMirror-0.92/js/mirrorframe.js"></script>
+  
   <@ping.ping url=pingURL['url'] interval=300/>
   <script type="text/javascript" language="Javascript"><!--
 
@@ -37,6 +41,38 @@
 
      window.onload = function() {
         before = hex_md5(document.getElementById("foo").value);
+        
+        var startPath = "/vrtx/__vrtx/static-resources/CodeMirror-0.92/";
+        
+        var contentType = "${plaintextEditForm.contentType?html}";
+        
+        if(contentType == "text/html") {
+          var editor = CodeMirror.fromTextArea('foo', {
+            parserfile: ["parsexml.js", "parsecss.js", "tokenizejavascript.js",
+                       "parsejavascript.js", "parsehtmlmixed.js"],
+            stylesheet: [startPath + "css/xmlcolors.css", startPath + "css/jscolors.css", startPath + "css/csscolors.css"],
+            path: startPath + "js/",
+            continuousScanning: 500,
+            lineNumbers: false
+          });        
+        } else if(contentType == "text/css") {
+          var editor = CodeMirror.fromTextArea('foo', {
+            parserfile: ["parsecss.js"],
+            stylesheet: [startPath + "css/csscolors.css"],
+            path: startPath + "js/",
+            continuousScanning: 500,
+            lineNumbers: false
+          });    
+        } else if (contentType = "text/javascript") {
+          var textarea = document.getElementById('foo');
+          var editor = new MirrorFrame(CodeMirror.replace(textarea), {
+            content: textarea.value,
+            parserfile: ["tokenizejavascript.js", "parsejavascript.js"],
+            stylesheet: startPath + "css/jscolors.css",
+            path: startPath + "js/",
+            autoMatchParens: true
+          });
+        }
      }
 
      window.onbeforeunload = function() {
@@ -48,6 +84,8 @@
         }
         return '<@vrtx.msg code='manage.unsavedChangesConfirmation' />';
      }
+     
+     
     // -->
   </script>
 

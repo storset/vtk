@@ -41,7 +41,7 @@ function tocGen(writeTo){
         this.parentOb = document.getElementById(writeTo);
 
         if(document.querySelectorAll) {
-           var headers = document.querySelectorAll("h2,h3");
+           var headers = document.querySelectorAll('h2,h3');
         } else if (typeof(document.compareDocumentPosition) != 'undefined' ||
                 typeof(this.parentOb.sourceIndex) != 'undefined' ) {
            var headers = getElementsByTagNames('h2,h3');

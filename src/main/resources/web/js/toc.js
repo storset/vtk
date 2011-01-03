@@ -1,4 +1,4 @@
-var tocTargetId = "";
+var tocTargetId = ""; //possible to override with a target for toc
 
 // This function is stolen (legally) from quirksmode.org
 function getElementsByTagNames(list,obj) {

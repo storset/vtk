@@ -70,6 +70,7 @@
             parserfile: ["tokenizejavascript.js", "parsejavascript.js"],
             stylesheet: startPath + "css/jscolors.css",
             path: startPath + "js/",
+            continuousScanning: 500,
             autoMatchParens: true
           });
         }

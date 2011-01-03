@@ -40,5 +40,8 @@ for f in $(svn status ckeditor-build | grep \! | awk '{print $2}'); do svn rm "$
 
 for f in $(svn status ckeditor-build | grep \? | awk '{print $2}'); do svn add "$f"; done
 
+If it don't work (which can mean the language-files have been updated in new version)
+you have to copy mediaembed{} from the language-files en.js and no.js: 
 
-lang pakka
+  o ckeditor-org/<ck-version>/lang/ => ckeditor-modifications/lang/
+  o ckeditor-org/<ck-version>/_source/lang/ => ckeditor-modifications/_source/lang/

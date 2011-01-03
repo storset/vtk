@@ -1,4 +1,4 @@
-var tocTargetId = ""; //possible to override with a target for toc defined typical in document.ready()
+var tocTargetId = ""; // Possible to override with a target for toc defined typical in document.ready() on a site / sites
 
 // This function is stolen (legally) from quirksmode.org
 function getElementsByTagNames(list,obj) {

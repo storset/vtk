@@ -36,4 +36,5 @@ function SetUrl(url, width, height, alt) {
     }    
     oWindow = null;
     previewImage(urlobj);
+    urlobj = "";
 }

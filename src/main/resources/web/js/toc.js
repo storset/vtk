@@ -1,3 +1,5 @@
+var tocTargetId = "";
+
 // This function is stolen (legally) from quirksmode.org
 function getElementsByTagNames(list,obj) {
 	if (!obj) var obj = document;
@@ -5,7 +7,11 @@ function getElementsByTagNames(list,obj) {
 	var resultArray = new Array();
 	var tagNamesLength = tagNames.length; //performance
 	for (var i=0;i<tagNames.length;i++) {
-		var tags = obj.getElementsByTagName(tagNames[i]);
+		if(tocTargetId != "") { 
+		  var tags = obj.getElementById(tocTargetId).getElementsByTagName(tagNames[i]);
+		} else {
+		  var tags = obj.getElementsByTagName(tagNames[i]);
+		}
 		var tagsLength = tags.length; //performance
 		for (var j=0;j<tagsLength;j++) {
 			resultArray.push(tags[j]);
@@ -41,7 +47,11 @@ function tocGen(writeTo){
         this.parentOb = document.getElementById(writeTo);
 
         if(document.querySelectorAll) {
-           var headers = document.querySelectorAll('h2,h3');
+        	if(tocTargetId != "") {      
+              var headers = document.getElementById(tocTargetId).querySelectorAll('h2,h3');
+        	} else {
+        	  var headers = document.querySelectorAll('h2,h3');	
+        	}
         } else if (typeof(document.compareDocumentPosition) != 'undefined' ||
                 typeof(this.parentOb.sourceIndex) != 'undefined' ) {
            var headers = getElementsByTagNames('h2,h3');

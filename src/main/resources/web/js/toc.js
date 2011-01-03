@@ -3,9 +3,11 @@ function getElementsByTagNames(list,obj) {
 	if (!obj) var obj = document;
 	var tagNames = list.split(',');
 	var resultArray = new Array();
+	var tagNamesLength = tagNames.length; //performance
 	for (var i=0;i<tagNames.length;i++) {
 		var tags = obj.getElementsByTagName(tagNames[i]);
-		for (var j=0;j<tags.length;j++) {
+		var tagsLength = tags.length; //performance
+		for (var j=0;j<tagsLength;j++) {
 			resultArray.push(tags[j]);
 		}
 	}
@@ -38,16 +40,19 @@ function tocGen(writeTo){
         //current requirements;
         this.parentOb = document.getElementById(writeTo);
 
-        if (typeof(document.compareDocumentPosition) != 'undefined' ||
+        if(document.querySelectorAll) {
+           var headers = document.querySelectorAll("h2,h3");
+        } else if (typeof(document.compareDocumentPosition) != 'undefined' ||
                 typeof(this.parentOb.sourceIndex) != 'undefined' ) {
-            var headers = getElementsByTagNames('h2,h3');
+           var headers = getElementsByTagNames('h2,h3');
         } else {
-            var headers = getElementsByTagNames('h2');
+           var headers = getElementsByTagNames('h2');
         }
 
         if(headers.length > 0){
             var num;
-            for(var i=0;i<headers.length;i++){
+            var headersLength = headers.length; //performance
+            for(var i=0;i<headersLength;i++){
                 num = headers[i].nodeName.substr(1);
                 if(num > this.previous){
                     this.writeOut += '<ul>';

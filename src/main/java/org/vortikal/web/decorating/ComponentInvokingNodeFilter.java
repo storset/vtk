@@ -56,7 +56,7 @@ import org.vortikal.web.RequestContext;
 
 
 public class ComponentInvokingNodeFilter implements HtmlNodeFilter, HtmlPageFilter, InitializingBean {
-    
+
     private static final Pattern SSI_DIRECTIVE_REGEXP = Pattern.compile(
             "#([a-zA-Z]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
@@ -67,7 +67,7 @@ public class ComponentInvokingNodeFilter implements HtmlNodeFilter, HtmlPageFilt
     private static Log logger = LogFactory.getLog(ComponentInvokingNodeFilter.class);
 
     private ComponentResolver componentResolver;
-    
+
     private Map<String, DecoratorComponent> ssiDirectiveComponentMap;
     private Set<String> availableComponentNamespaces = new HashSet<String>();
     private Set<String> prohibitedComponentNamespaces = new HashSet<String>();
@@ -81,19 +81,19 @@ public class ComponentInvokingNodeFilter implements HtmlNodeFilter, HtmlPageFilt
     public void setSsiDirectiveComponentMap(Map<String, DecoratorComponent> ssiDirectiveComponentMap) {
         this.ssiDirectiveComponentMap = ssiDirectiveComponentMap;
     }
-    
+
     public void setAvailableComponentNamespaces(Set<String> availableComponentNamespaces) {
         this.availableComponentNamespaces = availableComponentNamespaces;
     }
-    
+
     public void setProhibitedComponentNamespaces(Set<String> prohibitedComponentNamespaces) {
         this.prohibitedComponentNamespaces = prohibitedComponentNamespaces;
     }
-    
+
     public void setContentComponentParser(TextualComponentParser contentComponentParser) {
         this.contentComponentParser = contentComponentParser;
     }
-    
+
     public void setParseAttributes(boolean parseAttributes) {
         this.parseAttributes = parseAttributes;
     }
@@ -101,23 +101,23 @@ public class ComponentInvokingNodeFilter implements HtmlNodeFilter, HtmlPageFilt
     public void afterPropertiesSet() {
         if (this.componentResolver == null) {
             throw new BeanInitializationException(
-                "JavaBean property 'componentResolver' not specified");
+                    "JavaBean property 'componentResolver' not specified");
         }
         if (this.ssiDirectiveComponentMap == null) {
             throw new BeanInitializationException(
-                "JavaBean property 'ssiDirectiveComponentMap' not specified");
+            "JavaBean property 'ssiDirectiveComponentMap' not specified");
         }
         if (this.prohibitedComponentNamespaces == null) {
             throw new BeanInitializationException(
-                "JavaBean property 'prohibitedComponentNamespaces' not specified");
+            "JavaBean property 'prohibitedComponentNamespaces' not specified");
         }
     }
-    
+
     @Override
     public boolean match(HtmlPage page) {
         return true;
     }
-    
+
     // HtmlPageFilter.filter() (invoked after parsing)
     public NodeResult filter(HtmlContent node) {
         if (node instanceof HtmlElement) {
@@ -130,7 +130,7 @@ public class ComponentInvokingNodeFilter implements HtmlNodeFilter, HtmlPageFilt
         }
         return NodeResult.keep;
     }
-    
+
 
     // HtmlNodeFilter.filter() (invoked during parsing)
     public HtmlContent filterNode(HtmlContent node) {
@@ -152,7 +152,7 @@ public class ComponentInvokingNodeFilter implements HtmlNodeFilter, HtmlPageFilt
                         try {
                             ComponentInvocation[] parsedValue =
                                 this.contentComponentParser.parse(
-                                    new java.io.StringReader(value));
+                                        new java.io.StringReader(value));
                             value = invokeComponentsAsString(parsedValue);
                         } catch (Exception e) {
                             if (e.getMessage() == null) {
@@ -166,7 +166,7 @@ public class ComponentInvokingNodeFilter implements HtmlNodeFilter, HtmlPageFilt
                 }
             }
         } else if (node instanceof HtmlText) {
-        
+
             if (this.contentComponentParser == null) {
                 return node;
             }
@@ -183,22 +183,22 @@ public class ComponentInvokingNodeFilter implements HtmlNodeFilter, HtmlPageFilt
         return node;
     }
 
-    
+
     private ComponentInvocation buildSsiComponentInvocation(HtmlContent node) {
         String content = node.getContent();
         if (content == null || "".equals(content.trim())) {
             return null;
         }
-            
+
         String directive = null;
         Matcher directiveMatcher = SSI_DIRECTIVE_REGEXP.matcher(content);
         if (!directiveMatcher.find()) {
             return null;
         }
         directive = directiveMatcher.group(1);
-            
+
         Matcher paramMatcher = SSI_PARAMETERS_REGEXP.matcher(
-            content.substring(directiveMatcher.end()));
+                content.substring(directiveMatcher.end()));
 
         Map<String, Object> parameters = new HashMap<String, Object>();
 
@@ -234,7 +234,7 @@ public class ComponentInvokingNodeFilter implements HtmlNodeFilter, HtmlPageFilt
             }
         };
     }
-    
+
 
     private HtmlContent invokeComponentsAsContent(ComponentInvocation[] components) {
         final String text = invokeComponentsAsString(components);
@@ -244,12 +244,12 @@ public class ComponentInvokingNodeFilter implements HtmlNodeFilter, HtmlPageFilt
             }
         };
     }
-    
+
 
     private String invokeComponentsAsString(ComponentInvocation[] componentInvocations) {
         HttpServletRequest servletRequest =
             RequestContext.getRequestContext().getServletRequest();
-        
+
         org.springframework.web.servlet.support.RequestContext ctx =
             new org.springframework.web.servlet.support.RequestContext(servletRequest);
         Locale locale = ctx.getLocale();
@@ -265,39 +265,39 @@ public class ComponentInvokingNodeFilter implements HtmlNodeFilter, HtmlPageFilt
             }
             Map<String, Object> parameters = invocation.getParameters();
             DecoratorRequest decoratorRequest = new DecoratorRequestImpl(
-                null, servletRequest, new HashMap<Object, Object>(), 
-                parameters, doctype, locale);
+                    null, servletRequest, new HashMap<Object, Object>(), 
+                    parameters, doctype, locale);
             DecoratorResponseImpl response = new DecoratorResponseImpl(
-                doctype, locale, "utf-8");
+                    doctype, locale, "utf-8");
             String result = null;
             try {
                 DecoratorComponent component = this.componentResolver.resolveComponent(
                         invocation.getNamespace(), invocation.getName());
                 if (component == null) {
                     sb.append("Invalid component reference: " + invocation.getNamespace()
-                    + ":" + invocation.getName());
+                            + ":" + invocation.getName());
                     continue;
                 }
                 boolean render = true;
                 if (component.getNamespace() != null) {
-                	if (!this.availableComponentNamespaces.contains(component.getNamespace()) 
-                	        && !this.availableComponentNamespaces.contains("*")) {
-                		result = "Invalid component reference: " + component.getNamespace()
-                		+ ":" + component.getName();
-                		render = false;
+                    if (!this.availableComponentNamespaces.contains(component.getNamespace()) 
+                            && !this.availableComponentNamespaces.contains("*")) {
+                        result = "Invalid component reference: " + component.getNamespace()
+                        + ":" + component.getName();
+                        render = false;
 
-                	} else if (this.prohibitedComponentNamespaces.contains(component.getNamespace())) {
-                		result = "Invalid component reference: " + component.getNamespace()
-                		+ ":" + component.getName();
-                		render = false;
-                	}
+                    } else if (this.prohibitedComponentNamespaces.contains(component.getNamespace())) {
+                        result = "Invalid component reference: " + component.getNamespace()
+                        + ":" + component.getName();
+                        render = false;
+                    }
                 } 
-                
+
                 if (render) {
-                	component.render(decoratorRequest, response);
-                	result = response.getContentAsString();
+                    component.render(decoratorRequest, response);
+                    result = response.getContentAsString();
                 }
-                
+
             } catch (Throwable t) {
                 logger.warn("Error invoking component on page " + 
                         servletRequest.getRequestURI() + ": " + invocation, t);

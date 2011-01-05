@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.actions.convert;
 
+import org.springframework.validation.Errors;
 import org.vortikal.repository.Path;
 
 public class CreateArchiveCommandValidator extends ArchiveCommandValidator {
@@ -40,6 +41,13 @@ public class CreateArchiveCommandValidator extends ArchiveCommandValidator {
             return Path.fromString(name);
         }
         return Path.ROOT.extend(name);
+    }
+
+    @Override
+    protected boolean validateName(String name, Errors errors) {
+        // Name may contain slash ("/") here, as it may be path to where archive
+        // is to be created
+        return true;
     }
 
 }

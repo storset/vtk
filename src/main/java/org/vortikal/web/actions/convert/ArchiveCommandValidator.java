@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.actions.convert;
 
+
 public class ArchiveCommandValidator extends CopyResourceCommandValidator {
 
     @Override

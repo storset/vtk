@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.actions.convert;
 
+import org.springframework.validation.Errors;
 import org.vortikal.repository.Path;
 import org.vortikal.web.RequestContext;
 
@@ -46,6 +47,15 @@ public class CopyResourceCommandValidator extends CopyCommandValidator {
         RequestContext requestContext = RequestContext.getRequestContext();
         Path parentCollection = requestContext.getCurrentCollection();
         return parentCollection.extend(name);
+    }
+
+    @Override
+    protected boolean validateName(String name, Errors errors) {
+        if (name.contains("/")) {
+            errors.rejectValue("name", "manage.create.document.invalid.name", "This is an invalid document name");
+            return false;
+        }
+        return true;
     }
 
 }

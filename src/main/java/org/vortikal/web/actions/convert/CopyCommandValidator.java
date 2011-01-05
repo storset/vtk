@@ -51,6 +51,8 @@ public abstract class CopyCommandValidator implements Validator {
 
     protected abstract Path getCopyToURI(String name);
 
+    protected abstract boolean validateName(String name, Errors errors);
+
     @SuppressWarnings("unchecked")
     public boolean supports(Class clazz) {
         return this.supportsClass(clazz);
@@ -71,8 +73,7 @@ public abstract class CopyCommandValidator implements Validator {
             return;
 
         }
-        if (name.contains("/")) {
-            errors.rejectValue("name", "manage.create.document.invalid.name", "This is an invalid document name");
+        if (!this.validateName(name, errors)) {
             return;
         }
 

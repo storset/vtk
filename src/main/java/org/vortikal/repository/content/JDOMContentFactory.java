@@ -47,7 +47,13 @@ public class JDOMContentFactory implements ContentFactory {
     
 
     public Object getContentRepresentation(Class<?> clazz,  InputStream content) throws Exception {
-        return new SAXBuilder().build(content);
+
+        SAXBuilder saxBuilder = new SAXBuilder();
+        saxBuilder.setValidation(false);
+        saxBuilder.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+
+        return saxBuilder.build(content);
+
     }
     
 }

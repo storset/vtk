@@ -12,6 +12,7 @@
 
 <#macro createTagCloud>
 	<#if tagElements?exists && tagElements?size &gt; 0>
+	    <h3><@vrtx.msg code="decorating.tags" /></h3>
 	    <ul class="vrtx-tag-cloud">
 	     <#list tagElements as element>
 	       <li class="tag-magnitude-${element.magnitude}">

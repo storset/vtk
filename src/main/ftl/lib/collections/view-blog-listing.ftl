@@ -20,7 +20,6 @@
 		<@articles.displayArticles page=page collectionListings=searchComponents hideNumberOfComments=hideNumberOfComments displayMoreURLs=true />
 		</div>
 		<div class="additional-information">
-			<h3><@vrtx.msg code="decorating.tags" /></h3>
 			<@tagCloud.createTagCloud />
 			<@listComments />
 		</div>

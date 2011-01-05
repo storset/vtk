@@ -63,7 +63,7 @@
             continuousScanning: 500,
             lineNumbers: false
           });    
-        } else if (contentType = "text/javascript") {
+        } else if (contentType == "text/javascript") {
           var textarea = document.getElementById('foo');
           var editor = new MirrorFrame(CodeMirror.replace(textarea), {
             content: textarea.value,

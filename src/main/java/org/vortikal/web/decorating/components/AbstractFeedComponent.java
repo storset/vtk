@@ -32,7 +32,9 @@ package org.vortikal.web.decorating.components;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.vortikal.repository.Path;
 import org.vortikal.text.html.HtmlAttribute;
 import org.vortikal.text.html.HtmlContent;
 import org.vortikal.text.html.HtmlElement;
@@ -91,10 +93,12 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
         private HtmlPageFilter filter;
         private HtmlElement img = null;
         private URL base;
+        private URL requestURL;
 
-        public Filter(HtmlPageFilter filter, URL base) {
+        public Filter(HtmlPageFilter filter, URL base, URL requestURL) {
             this.filter = filter;
-            this.base= base;
+            this.base = base;
+            this.requestURL = requestURL;
         }
 
         public HtmlElement getImage() {
@@ -108,10 +112,12 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
                 HtmlElement elem = (HtmlElement) node;
                 if ("img".equalsIgnoreCase(elem.getName())) {
                     if (this.img == null) {
-                        processImageURL(elem);
+                        processURL(elem, "src");
                         this.img = elem;
                     }
                     return NodeResult.skip;
+                } else if ("a".equalsIgnoreCase(elem.getName())) {
+                    processURL(elem, "href");
                 }
             }
             return result;
@@ -122,24 +128,57 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
             return this.filter.match(page);
         }
 
-        private void processImageURL(HtmlElement img) {
-            if (img.getAttribute("src") == null) {
+        private void processURL(HtmlElement elem, String srcAttr) {
+            if (elem.getAttribute(srcAttr) == null) {
                 return;
             }
-            HtmlAttribute attr = img.getAttribute("src");
+            HtmlAttribute attr = elem.getAttribute(srcAttr);
             if (attr == null || !attr.hasValue()) {
                 return;
             }
             String val = attr.getValue();
-            if (!val.startsWith("http://") && !val.startsWith("https://")) {
-                return;
-            }
-            try {
-                URL url = URL.parse(val);
-                if (url.getHost().equals(this.base.getHost())) {
-                    attr.setValue(url.getPathRepresentation());
+            URL url = null;
+            if (val.startsWith("http://") || val.startsWith("https://")) {
+                try {
+                    url = URL.parse(val);
+                } catch (Throwable t) {
+                    return;
                 }
-            } catch (Throwable t) { }
+            } else {
+                if (val.contains("#")) {
+                    val = val.substring(0, val.indexOf("#"));
+                }
+                String query = "";
+                if (val.contains("?")) {
+                    query = val.substring(val.indexOf("?"));
+                    val = val.substring(0, val.indexOf("?"));
+                }
+                Path newPath = null;
+                try {
+                    if (val.startsWith("/")) {
+                        newPath = Path.fromString(val);
+                    } else {
+                        newPath = this.base.getPath().expand(val);
+                    }
+                } catch (Throwable t) {
+                    return;
+                }
+                url = new URL(this.base);
+                url.setPath(newPath);
+                if (!"".equals(query.trim())) {
+                    Map<String, String[]> split = URL.splitQueryString(query);
+                    for (String s: split.keySet()) {
+                        for (String v: split.get(s)) {
+                            url.addParameter(s, v);
+                        }
+                    }
+                }
+            }
+            attr.setValue(url.toString());
+            
+            if (url.getHost().equals(this.requestURL.getHost())) {
+                attr.setValue(url.getPathRepresentation());
+            }
         }
     }
     
@@ -169,6 +208,28 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
         return resultOrder;
     }
 
+    protected URL getBaseURL(String feedURL, URL requestURL) {
+        if (!feedURL.startsWith("/")) {
+            return URL.parse(feedURL);
+        }
+        if (feedURL.contains("#")) {
+            feedURL = feedURL.substring(0, feedURL.indexOf("#"));
+        }
+        String query = "";
+        if (feedURL.contains("?")) {
+            query = feedURL.substring(feedURL.indexOf("?"));
+            feedURL = feedURL.substring(0, feedURL.indexOf("?"));
+        }
+        URL baseURL = new URL(requestURL.getProtocol(), requestURL.getHost(), 
+                Path.fromString(feedURL));
+        Map<String, String[]> qry = URL.splitQueryString(query);
+        for (String s: qry.keySet())
+            for (String v: qry.get(s)) {
+                baseURL.addParameter(s, v);
+            }
+        return baseURL;
+    }
+    
     public void setImgHtmlFilter(HtmlPageFilter imgHtmlFilter) {
         this.imgHtmlFilter = imgHtmlFilter;
     }

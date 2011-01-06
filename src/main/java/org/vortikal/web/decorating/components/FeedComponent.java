@@ -193,7 +193,8 @@ public class FeedComponent extends AbstractFeedComponent {
         }
 
         SyndFeed feed = null;
-
+        URL requestURL = RequestContext.getRequestContext().getRequestURL();
+        URL baseURL = getBaseURL(url, requestURL);
         try {
             if (url.startsWith("/")) {
                 feed = this.localFeedFetcher.getFeed(url, request);
@@ -210,7 +211,6 @@ public class FeedComponent extends AbstractFeedComponent {
         Map<String, String> descriptionNoImage = new HashMap<String, String>();
         Map<String, String> imgMap = new HashMap<String, String>();
 
-        URL requestURL = RequestContext.getRequestContext().getRequestURL();
         
         @SuppressWarnings("unchecked")
         List<SyndEntry> entries = (List<SyndEntry>) feed.getEntries();
@@ -218,7 +218,7 @@ public class FeedComponent extends AbstractFeedComponent {
             if (entry.getDescription() == null) {
                 continue;
             }
-            Filter filter = new Filter(getNoImgHtmlFilter(), requestURL);
+            Filter filter = new Filter(getNoImgHtmlFilter(), baseURL, requestURL);
             HtmlFragment fragment = super.filterEntry(entry, filter);
             descriptionNoImage.put(entry.toString(), fragment.getStringRepresentation());
             if (filter.getImage() != null) {
@@ -238,7 +238,6 @@ public class FeedComponent extends AbstractFeedComponent {
         model.put("feed", feed);
         model.put("conf", conf);
     }
-    
     
     
     protected String getDescriptionInternal() {

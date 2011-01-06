@@ -29,14 +29,11 @@
       </list>
     </property>
     <property name="handler" ref="trashCanHandler" />
-    <property name="serviceNameProvider" ref="trashCanServiceNameProvider" />
   </bean>
 
   <bean id="collectionContainsRecoverableResources" class="org.vortikal.web.service.ResourceContainsDeletedResourcesAssertion">
     <property name="repository" ref="repository" />
   </bean>
-
-  <bean id="trashCanServiceNameProvider" class="org.vortikal.web.service.provider.TrashCanServiceNameProvider" />
 
   <bean id="trashCanHandler" class="org.vortikal.web.actions.trashcan.TrashCanController" parent="repositoryAware">
     <property name="formView" value="trashCan" />

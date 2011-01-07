@@ -20,7 +20,7 @@
 		<@articles.displayArticles page=page collectionListings=searchComponents hideNumberOfComments=hideNumberOfComments displayMoreURLs=true />
 		</div>
 		<div class="additional-information">
-			<@tagCloud.createTagCloud />
+			<@tagCloud.createTagCloud true />
 			<@listComments />
 		</div>
 	</div>

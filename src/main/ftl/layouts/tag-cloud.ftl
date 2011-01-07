@@ -7,12 +7,16 @@
   -     tagElements - List<org.vortikal.web.view.decorating.components.TagCloudComponent.TagElement>
   - 
   -->
+  
+<#import "/lib/vortikal.ftl" as vrtx />
 
 <@createTagCloud />
 
-<#macro createTagCloud>
+<#macro createTagCloud title=false>
 	<#if tagElements?exists && tagElements?size &gt; 0>
-	    <h3><@vrtx.msg code="decorating.tags" /></h3>
+	    <#if title>
+	      <h3><@vrtx.msg code="decorating.tags" /></h3>
+	    </#if>
 	    <ul class="vrtx-tag-cloud">
 	     <#list tagElements as element>
 	       <li class="tag-magnitude-${element.magnitude}">

@@ -48,17 +48,21 @@ public abstract class NumericOperator extends Operator {
         // Wrap values in BigDecimal to simplify calculations:
         BigDecimal n1 = new BigDecimal(getNumericValue(first).doubleValue());
         BigDecimal n2 = new BigDecimal(getNumericValue(second).doubleValue());
+
         Object result = evalNumeric(n1, n2);
+        
         if (result instanceof BigDecimal) {
-            BigDecimal d = (BigDecimal) result;
-            if (d.scale() == 0) {
-                result = d.intValueExact();
-            } else {
-                result = d.floatValue();
-            }
+            return unwrap((BigDecimal) result);
         }
         return result;
     }
-
+    
+    protected Object unwrap(BigDecimal d) {
+        if (d.scale() == 0) {
+            return d.intValueExact();
+        } 
+        return d.floatValue();
+    }
+    
     protected abstract Object evalNumeric(BigDecimal n1, BigDecimal n2);
 }

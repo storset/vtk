@@ -178,7 +178,7 @@ public class ExpressionTest extends TestCase {
                 new Literal("2")
         );
         assertEquals(1, result);
-
+        
         result = eval(
                 new Literal("200"),
                 new Symbol("/"),
@@ -203,6 +203,24 @@ public class ExpressionTest extends TestCase {
                 new Literal("2")
         );
         assertEquals(1.1F, result);
+        
+        result = eval(
+                new Literal("2"),
+                new Symbol("+"),
+                new Literal("'2'"),
+                new Symbol("+"),
+                new Literal("'2'")
+        );
+        assertEquals("222", result);
+
+        result = eval(
+                new Literal("2"),
+                new Symbol("+"),
+                new Literal("2"),
+                new Symbol("+"),
+                new Literal("'2'")
+        );
+        assertEquals("42", result);
     }
 
     

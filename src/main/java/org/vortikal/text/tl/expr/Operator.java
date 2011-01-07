@@ -66,4 +66,14 @@ public abstract class Operator {
         throw new IllegalArgumentException("Not a number: " + obj);
     }
     
+    protected final boolean isNumeric(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj instanceof Number) {
+            return true;
+        }
+        return false;
+    }
+    
 }

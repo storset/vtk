@@ -32,12 +32,25 @@ package org.vortikal.text.tl.expr;
 
 import java.math.BigDecimal;
 
+import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Symbol;
 
 public class Plus extends NumericOperator {
 
     public Plus(Symbol symbol) {
         super(symbol);
+    }
+    
+    @Override
+    public Object eval(Context ctx, ExpressionNode... nodes) {
+        Object first = nodes[0].eval(ctx);
+        Object second = nodes[1].eval(ctx);
+        if (isNumeric(first) && isNumeric(second)) {
+            return super.eval(ctx, nodes);
+        }
+        String s1 = first == null ? "null" : first.toString();
+        String s2 = second == null ? "null" : second.toString();
+        return s1 + s2;
     }
 
     @Override

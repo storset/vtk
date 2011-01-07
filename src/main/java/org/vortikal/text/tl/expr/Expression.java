@@ -151,26 +151,18 @@ public class Expression {
     public static final Map<Symbol, Operator> OPERATORS;
     static {
         Map<Symbol, Operator> ops = new HashMap<Symbol, Operator>();
-
         ops.put(NOT, new Not(NOT));
-
         ops.put(DIVIDE, new Divide(DIVIDE));
         ops.put(MULTIPLY, new Multiply(MULTIPLY));
-
         ops.put(PLUS, new Plus(PLUS));
         ops.put(MINUS, new Minus(MINUS));
-
         ops.put(GT, new Gt(GT));
         ops.put(LT, new Lt(LT));
-
         ops.put(EQ, new Eq(EQ));
         ops.put(NEQ, new Neq(NEQ));
-        
         ops.put(MATCH, new Match(MATCH));
-
         ops.put(AND, new And(AND));
         ops.put(OR, new Or(OR));
-
         OPERATORS = Collections.unmodifiableMap(new HashMap<Symbol, Operator>(ops));
     }
     
@@ -184,14 +176,6 @@ public class Expression {
         this(null, tokens);
     }
 
-    public Object evaluate(Context ctx) {
-        try {
-            return this.exp.eval(ctx);
-        } catch (Throwable t) {
-            throw new RuntimeException("Error evaluating expression: " + this.tokens, t);
-        }
-    }
-    
     public Expression(Set<Function> functions, List<Token> tokens) {        
        this.tokens = tokens;
        if (functions != null) {
@@ -201,10 +185,19 @@ public class Expression {
        }
        this.exp = logicalExpression();
        if (cur() != null) {
-           throw new IllegalArgumentException("Malformed expression: " + this.tokens);
+           throw new IllegalArgumentException("Extra tokens at position " 
+                   + pos + " in expression: " + this.tokens + ": " + cur());
        }
     }
 
+    public Object evaluate(Context ctx) {
+        try {
+            return this.exp.eval(ctx);
+        } catch (Throwable t) {
+            throw new RuntimeException("Error evaluating expression: " + this.tokens, t);
+        }
+    }
+    
     
     private ExpressionNode logicalExpression() {
         ExpressionNode node = relationalExpression();
@@ -432,27 +425,27 @@ public class Expression {
     }
     
     private Symbol readSymbol() {
-        Token arg = cur();
-        if (arg == null) {
+        Token cur = cur();
+        if (cur == null) {
             throw new IllegalArgumentException("Encountered EOF");
         }
-        if (!(arg instanceof Symbol)) {
-            throw new IllegalArgumentException("Not a symbol: " + arg);
+        if (!(cur instanceof Symbol)) {
+            throw new IllegalArgumentException("Not a symbol: " + cur);
         }
         this.pos++;
-        return (Symbol) arg;
+        return (Symbol) cur;
     }
     
     private Literal readLiteral() {
-        Token arg = cur();
-        if (arg == null) {
+        Token cur = cur();
+        if (cur == null) {
             throw new IllegalArgumentException("Encountered EOF");
         }
-        if (!(arg instanceof Literal)) {
-            throw new IllegalArgumentException("Not a literal: " + arg);
+        if (!(cur instanceof Literal)) {
+            throw new IllegalArgumentException("Not a literal: " + cur);
         }
         this.pos++;
-        return (Literal) arg;
+        return (Literal) cur;
     }
 
     private boolean lookingAt(Wildcard wildcard) {

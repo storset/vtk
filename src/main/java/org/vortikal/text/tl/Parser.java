@@ -42,19 +42,54 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Textual template parser. Templates consist of text nodes 
+ * and directive nodes (contained within <code>[ ... ]</code>):
+ * <pre>
+ *  this is a text node, and 
+ *  [this is a directive node]
+ * </pre>
+ * 
+ * <p>The resulting template is a {@link ParseResult}, which is basically 
+ * a wrapper around {@link NodeList} (a list of {@link Node}), which can later
+ * be rendered as text.</p> 
+ * 
+ * <p>Text nodes are created by the parser and render themselves 
+ * as the text they were parsed from.</p>
+ * 
+ * <p>Directive nodes are created based on 
+ * their first internal token (name) using a {@link DirectiveNodeFactory}. 
+ * It is up to the node factory to create the {@link Node node}, it is the 
+ * node's responsibility to to render itself. 
+ * Directives with an unknown name are ignored.</p>
+ *
+ */
 public class Parser {
-
+    
     private PeekableReader reader;
     private Map<String, DirectiveNodeFactory> directives = new HashMap<String, DirectiveNodeFactory>();
     private Map<String, Object> attributes = new HashMap<String, Object>();
 
+    /**
+     * Creates a parser with a given reader and a set of 
+     * named {@link DirectiveNodeFactory node factories}.
+     * @param reader
+     * @param directives
+     */
     public Parser(Reader reader, Map<String, DirectiveNodeFactory> directives) {
+        if (reader == null) {
+            throw new IllegalArgumentException("Reader cannot be NULL");
+        }
+        if (directives == null) {
+            throw new IllegalArgumentException("Directive handlers cannot be NULL");
+        }
         this.reader = new PeekableReader(reader);
         this.directives = directives;
     }
     
     /**
      * Parse input until EOF.
+     * @return the parse result
      */
     public ParseResult parse() throws Exception {
         return parse(Collections.<String>emptySet());
@@ -62,6 +97,8 @@ public class Parser {
 
     /**
      * Parse input until one of the supplied terminators are encountered.
+     * @param terminators the set of terminators
+     * @return the parse result
      */
     public ParseResult parse(String... terminators) throws Exception {
         Set<String> set = new HashSet<String>(Arrays.asList(terminators));
@@ -70,8 +107,54 @@ public class Parser {
     
     /**
      * Parse input until one of the supplied terminators are encountered.
+     * @param terminators the set of terminators
+     * @return the parse result
      */
     public ParseResult parse(Set<String> terminators) throws Exception {
+        try {
+            return parseNodes(terminators);
+        } catch (ParseException e) {
+            throw e;
+        } catch (Throwable t) {
+            throw new ParseException("Parse error at line " + getLineNumber(), 
+                    t, getLineNumber());
+        }
+    }
+    
+    /**
+     * Generates a parse exception with a given message, augmented 
+     * with internal parser state (such as the current line number).
+     * 
+     * This method is useful when there is a need to signal a parsing 
+     * error in code that is external from the parser itself 
+     * (i.e. in {@link DirectiveNodeFactory node factories}) 
+     * 
+     * @param msg the error message
+     */
+    public ParseException parseError(String msg) {
+        return new ParseException("Parse error at line " + getLineNumber() + 
+                ": " + msg, getLineNumber());
+    }
+    
+    /**
+     * Sets a user-defined attribute in the parser.
+     * @param name the name of the attribute
+     * @param attribute the attribute value
+     */
+    public void setAttribute(String name, Object attribute) {
+        this.attributes.put(name, attribute);
+    }
+    
+    /**
+     * Gets a user-defined attribute from the parser.
+     * @param name the name of the attribute
+     * @return the attribute (if defined, otherwise <code>null</code>)
+     */
+    public Object getAttribute(String name) {
+        return this.attributes.get(name);
+    }
+        
+    private ParseResult parseNodes(Set<String> terminators) throws Exception {
         NodeList list = new NodeList();
         while (true) {
             ParseNode parseNode = nextNode();
@@ -109,23 +192,16 @@ public class Parser {
         }
         return new ParseResult(list);
     }
-
+    
     public int getLineNumber() {
         return this.reader.getLineNumber() + 1;
     }
 
     private void error(String msg) {
-        throw new RuntimeException("Error at line " + getLineNumber() + ": " + msg);
+        throw new ParseException("Parse error at line " + getLineNumber() + 
+                ": " + msg, getLineNumber());
     }
-    
-    public void setAttribute(String name, Object attribute) {
-        this.attributes.put(name, attribute);
-    }
-    
-    public Object getAttribute(String name) {
-        return this.attributes.get(name);
-    }
-        
+
     private ParseNode nextNode() throws Exception {
         int c = this.reader.peek(1);
         if (c == -1) {

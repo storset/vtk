@@ -248,7 +248,7 @@
     <property name="assertions">
       <list>
         <ref bean="viewUnpublishedAssertion" />
-        <ref bean="requiresWritePermissionAssertion" />
+        <ref bean="requiresReadPermissionAssertion" />
         <ref bean="resourceIsNotPublishedAssertion" />
       </list>
     </property>

@@ -86,19 +86,12 @@
     <ul class="resultset-${currentCount?html}">
    </#if>
     <#list menu.itemsSorted as item>
+      <li>
         <#if USE_TREE_VIEW >
-           <#if !item.menu?exists>
-             <li class="collapsable">
-             <div class="hitarea collapsable-hitarea"></div>
-           <#else>
-             <li>
-           </#if>
-            <span class="folder">
-        <#else>
-          <li>
+          <span class="folder">
         </#if>
-          <@displayItem item=item />
-        </li>
+        <@displayItem item=item />
+      </li>
     </#list>
   </ul>
   

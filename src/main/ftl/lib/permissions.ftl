@@ -403,7 +403,7 @@
 
     <div id="submitButtons" class="submitButtons">
     <#-- Move buttons if 'everyone' has permission: -->
-    <#if grouped><script type="text/javascript">document.getElementById("submitButtons").style.padding-top="5px";</script></#if>
+    <#if grouped><script type="text/javascript">document.getElementById("submitButtons").style.paddingTop="5px";</script></#if>
     <input type="submit" name="saveAction" value="<@vrtx.msg code="permissions.save" default="Save"/>">
     <input type="submit" name="cancelAction" value="<@vrtx.msg code="permissions.cancel" default="Cancel"/>">
     </div>

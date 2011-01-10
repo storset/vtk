@@ -7,13 +7,22 @@ function changetemplatename(n) {
 // Used to hide users and groups when editing permissions
 
 function disableInput() {
-  document.getElementById('principalList').style.display = "none";
-  document.getElementById('submitButtons').style.paddingTop = "5px";
+  enableDisableInput("none", "5px");
 }
 
 function enableInput() {
-  document.getElementById('principalList').style.display = "block";
-  document.getElementById('submitButtons').style.paddingTop = "10px";
+  enableDisableInput("block", "10px");
+}
+
+function enableDisableInput(principalListDisplay, submitButtonsPadding) {
+	var p = document.getElementById('principalList');
+	if(p) {
+	  p.style.display = principalListDisplay;
+	}
+	var s = document.getElementById('submitButtons');
+	if(s) {
+	  s.style.paddingTop = submitButtonsPadding;		
+	}
 }
 
 /*

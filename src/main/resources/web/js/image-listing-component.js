@@ -65,13 +65,13 @@
 
 	 function calculateImage(image, i, init) {
 	      if(settings.fadeInOutTime > 0 && !init) {
-                $(wrapperContainer).stop().fadeTo(settings.fadeInOutTime, settings.fadedOutOpacity, function() {
+                $(wrapperContainer).stop().fadeTo(settings.fadeInOutTime, settings.fadedOutOpacity, "easeInQuad", function() {
                   $(wrapperContainerLink).remove();
                   $(wrapperContainer).append(images[i]);
-                  $(wrapperContainer).fadeTo(settings.fadeInOutTime, 1, function() {}, "easeOutQuad");
-                  $(wrapperContainer + " img").fadeTo(0, 1)
+                  $(wrapperContainer).fadeTo(settings.fadeInOutTime, 1, "easeOutQuad", function() {});
+                  $(wrapperContainer + " img").fadeTo(0, 1);
                   addPagingEvents(container.substring(1) + "-link");
-		}, "easeInQuad");
+		         });
 	      } else {
 	    	  $(wrapperContainerLink).remove();
 	    	  if(init) {

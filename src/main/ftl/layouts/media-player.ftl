@@ -46,7 +46,7 @@
 		    <PARAM name="FlashVars" value="autoplay=${autoplay}" />
 		</OBJECT>
 		
-	<#elseif extension == "flv"  || contentType == "video/mp4">
+	<#elseif contentType == "video/x-flv"  || contentType == "video/mp4">
 
       	<object width="${width}" height="${height}"> 
 			<param name="movie" value="${strobe?html}"></param>
@@ -58,7 +58,10 @@
 			 	allowscriptaccess="always" 
 			 	allowfullscreen="true" 
 			 	width="${width}" 
-			 	height="${height}" 
+			 	height="${height}"
+			 	<#if streamType?exists && streamType == "live"> 
+			 	streamType="live"
+			 	</#if>
 			 	flashvars="src=${media?url('UTF-8')}">
 		 	</embed>
 		</object>

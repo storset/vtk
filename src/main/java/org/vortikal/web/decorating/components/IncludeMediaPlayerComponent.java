@@ -21,6 +21,8 @@ public class IncludeMediaPlayerComponent extends ResourceMediaPlayerComponent {
     private final static String PARAMETER_AUTOPLAY_DESCRIPTION = "Start playing immediately if set to 'true'. Default is 'false'";
     private final static String PARAMETER_CONTENT_TYPE = "content-type";
     private final static String PARAMETER_CONTENT_TYPE_DESCRIPTION = "Content type of media file";
+    private final static String PARAMETER_STREAM_TYPE = "stream-type";
+    private final static String PARAMETER_STREAM_TYPE_DESC = "Set to live for live stream";
 
     protected void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
@@ -30,6 +32,7 @@ public class IncludeMediaPlayerComponent extends ResourceMediaPlayerComponent {
         String width = request.getStringParameter(PARAMETER_WIDTH);
         String autoplay = request.getStringParameter(PARAMETER_AUTOPLAY);
         String contentType = request.getStringParameter(PARAMETER_CONTENT_TYPE);
+        String streamType = request.getStringParameter(PARAMETER_STREAM_TYPE);
 
         createLocalUrlToMediaFile(url, model);
 
@@ -42,6 +45,8 @@ public class IncludeMediaPlayerComponent extends ResourceMediaPlayerComponent {
             model.put("autoplay", autoplay);
         else
             model.put("autoplay", "false");
+        if (streamType != null)
+            model.put("streamType", streamType);
 
         Resource mediaResource = null;
         if (url != null && url.startsWith("/")) {
@@ -71,6 +76,7 @@ public class IncludeMediaPlayerComponent extends ResourceMediaPlayerComponent {
         map.put(PARAMETER_WIDTH, PARAMETER_WIDTH_DESCRIPTION);
         map.put(PARAMETER_AUTOPLAY, PARAMETER_AUTOPLAY_DESCRIPTION);
         map.put(PARAMETER_CONTENT_TYPE, PARAMETER_CONTENT_TYPE_DESCRIPTION);
+        map.put(PARAMETER_STREAM_TYPE, PARAMETER_STREAM_TYPE_DESC);
         return map;
     }
 }

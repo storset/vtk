@@ -86,12 +86,19 @@
     <ul class="resultset-${currentCount?html}">
    </#if>
     <#list menu.itemsSorted as item>
-      <li>
-        <#if USE_TREE_VIEW >       
-          <span class="folder">
+        <#if USE_TREE_VIEW >
+           <#if !item.menu?exists>
+             <li class="collapsable">
+             <div class="hitarea collapsable-hitarea"></div>
+           <#else>
+             <li>
+           </#if>
+            <span class="folder">
+        <#else>
+          <li>
         </#if>
-        <@displayItem item=item />
-      </li>
+          <@displayItem item=item />
+        </li>
     </#list>
   </ul>
   
@@ -116,7 +123,6 @@
           <#else>
             <li>
           </#if>
-            
             <#if commaSeparated>
               <#if (i < (sized-1))>
                 <@displayItem item=item separator="," />

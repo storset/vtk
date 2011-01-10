@@ -46,6 +46,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.search.ConfigurablePropertySelect;
@@ -141,6 +142,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     protected PropertyTypeDefinition importancePropDef;
     protected ResourceTypeDefinition collectionResourceType;
     protected PropertyTypeDefinition navigationTitlePropDef;
+    protected boolean includePermissions = false;
     protected String modelName = "menu";
     protected int searchLimit = DEFAULT_SEARCH_LIMIT;
 
@@ -751,6 +753,14 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     @Required
     public void setNavigationTitlePropDef(PropertyTypeDefinition navigationTitlePropDef) {
         this.navigationTitlePropDef = navigationTitlePropDef;
+    }
+    
+    public void setIncludePermissions(boolean includePermissions) {
+        this.includePermissions = includePermissions;
+    }
+    
+    public void setRepository(Repository repository) {
+        this.repository = repository;
     }
 
     public void setModelName(String modelName) {

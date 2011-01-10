@@ -66,3 +66,11 @@
 .filetree span.folder { background: url(images/folder.gif) 0 0 no-repeat; }
 .filetree li.expandable span.folder, .filetree li.closed span.folder { background: url(images/folder-closed.gif) 0 0 no-repeat; }
 .filetree span.file { background: url(images/file.gif) 0 0 no-repeat; }
+
+.filetree span.folder.restricted  { background: url(images/folder-restricted.gif) 0 0 no-repeat; }
+.filetree span.folder.allowed-for-all  { background: url(images/folder-allowed-for-all.gif) 0 0 no-repeat; }
+
+.filetree li.expandable span.folder.restricted, .filetree li.closed span.folder.restricted { background: url(images/folder-closed-restricted.gif) 0 0 no-repeat; }
+.filetree li.expandable span.folder.allowed-for-all, .filetree li.closed span.folder.allowed-for-all { background: url(images/folder-closed-allowed-for-all.gif) 0 0 no-repeat; }
+
+.filetree li.inherited { background-image: url(images/treeview-gray-line.gif); }

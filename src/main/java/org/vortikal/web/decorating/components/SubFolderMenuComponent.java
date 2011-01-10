@@ -42,9 +42,12 @@ import java.util.StringTokenizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
+import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -59,6 +62,7 @@ import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
+import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
@@ -79,8 +83,7 @@ import org.vortikal.web.view.components.menu.MenuItem;
  * <li>result-sets - the number of &lt;ul&gt; lists to split the result into</li>
  * <li>group-result-sets-by - the number of results-sets in grouping divs</li>
  * <li>freeze-at-level - at which level the subfolder-listing should freeze</li>
- * <li>exclude-folders - comma-separated list with relative paths to folders
- * which should be excluded</li>
+ * <li>exclude-folders - comma-separated list with relative paths to folders which should be excluded</li>
  * <li>authenticated - default is listing only read-for-all resources</li>
  * <li>depth - specifies number of levels to retrieve subfolders from</li>
  * </ul>
@@ -128,7 +131,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
 
     private static final String PARAMETER_MAX_NUMBER_OF_CHILDREN = "max-number-of-children";
     private static final String PARAMETER_MAX_NUMBER_OF_CHILDREN_DESC = "Defines the maximum number of children displayed for each element";
-    
+
     private static final String PARAMETER_DISPLAY = "display";
     private static final String PARAMETER_DISPLAY_DESC = "Specifies how to display the subfolder-menu. The default is normal lists. 'comma-separated' separates sublist-elements with commas.";
 
@@ -136,6 +139,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
     private ResourceTypeTree resourceTypeTree;
     private PropertySelect propertySelect = new WildcardPropertySelect();
     protected Service reportService;
+
 
     public void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
@@ -163,6 +167,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         }
     }
 
+
     public Map<String, Object> buildMenuModel(ListMenu<PropertySet> menu, MenuRequest menuRequest) {
         List<ListMenu<PropertySet>> resultList = new ArrayList<ListMenu<PropertySet>>();
 
@@ -189,8 +194,8 @@ public class SubFolderMenuComponent extends ListMenuComponent {
             int endIdx = startIdx + itemsPerResultSet;
 
             /*
-             * Old code for remainder, places them last if (i == resultSets - 1
-             * && remainder > 0) { endIdx += remainder; }
+             * Old code for remainder, places them last if (i == resultSets - 1 && remainder > 0) { endIdx += remainder;
+             * }
              */
 
             if (endIdx > allItems.size()) {
@@ -245,6 +250,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         return model;
     }
 
+
     private Search buildSearch(MenuRequest menuRequest) {
 
         Path uri = menuRequest.getCurrentCollectionUri();
@@ -282,6 +288,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         search.setPropertySelect(this.propertySelect);
         return search;
     }
+
 
     public ListMenu<PropertySet> buildListMenu(ResultSet rs, MenuRequest menuRequest) {
         ListMenu<PropertySet> menu = new ListMenu<PropertySet>();
@@ -324,6 +331,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         return menu;
     }
 
+
     private MenuItem<PropertySet> buildItem(PropertySet resource, Map<Path, List<PropertySet>> childMap,
             MenuRequest menuRequest) {
         Path uri = resource.getURI();
@@ -332,7 +340,11 @@ public class SubFolderMenuComponent extends ListMenuComponent {
 
         if (menuRequest.generateStructuredCollectionReportLink()) {
             url = this.reportService.constructURL(uri);
-            url.addParameter("report-type", "collection-structure");
+            if(this.includePermissions) {
+              url.addParameter("report-type", "collection-structure-permissions");    
+            } else {
+              url.addParameter("report-type", "collection-structure");
+            }
         } else {
             url = this.viewService.constructURL(uri);
         }
@@ -349,6 +361,28 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         item.setTitle(titleProperty.getFormattedValue());
         item.setLabel(title.getStringValue());
         item.setActive(false);
+
+        if(this.includePermissions) {
+          try {
+            Resource res = this.repository.retrieve(menuRequest.getToken(), uri, true);
+            if (res != null) {
+              if(res.isReadRestricted()) {
+                item.setReadRestricted(true);
+              }
+              if(res.isInheritedAcl()) {
+                item.setInheritedAcl(true);
+              }
+            }
+          } catch (ResourceNotFoundException e) {
+            logger.error("ResourceNotFoundException " + e.getMessage());
+          } catch (AuthorizationException e) {
+            logger.error("AuthorizationException " + e.getMessage());
+          } catch (AuthenticationException e) {
+            logger.error("AuthenticationException " + e.getMessage());
+          } catch (Exception e) {
+            logger.error("Exception " + e.getMessage());
+          }
+        }
 
         List<PropertySet> children = childMap.get(resource.getURI());
         if (children != null) {
@@ -369,6 +403,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         }
         return item;
     }
+
 
     private Search getSearchForCollectionChildren(Path currentCollectionUri, int searchLimit) {
         Path uri = currentCollectionUri;
@@ -404,10 +439,11 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         private boolean structuredCollectionReportLink = false;
         private List<Path> includeURIs;
 
+
         public MenuRequest(Path currentCollectionUri, String title, PropertyTypeDefinition sortProperty,
                 boolean ascendingSort, boolean sortByName, int resultSets, int groupResultSetsBy, int freezeAtLevel,
-                int depth, int displayFromLevel, int maxNumberOfChildren, String display, Locale locale, String token, int searchLimit,
-                boolean structuredCollectionReportLink, ArrayList<Path> includeURIs) {
+                int depth, int displayFromLevel, int maxNumberOfChildren, String display, Locale locale, String token,
+                int searchLimit, boolean structuredCollectionReportLink, ArrayList<Path> includeURIs) {
             super();
             this.currentCollectionUri = currentCollectionUri;
             this.title = title;
@@ -427,6 +463,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
             this.structuredCollectionReportLink = structuredCollectionReportLink;
             this.includeURIs = includeURIs;
         }
+
 
         public MenuRequest(DecoratorRequest request) {
 
@@ -517,19 +554,18 @@ public class SubFolderMenuComponent extends ListMenuComponent {
             } catch (NumberFormatException e) {
                 // Not a required parameter
             }
-            
+
             String displayParam = request.getStringParameter(PARAMETER_DISPLAY);
-            
+
             if (displayParam != null && !"".equals(displayParam.trim())) {
-            
-              try {
-                setDisplay(displayParam);
-              } catch (Throwable t) {
-                throw new DecoratorComponentException("Illegal value for parameter '"
-                        + PARAMETER_DISPLAY + "': "
-                        + request.getStringParameter(PARAMETER_DISPLAY));
-              }
-            
+
+                try {
+                    setDisplay(displayParam);
+                } catch (Throwable t) {
+                    throw new DecoratorComponentException("Illegal value for parameter '" + PARAMETER_DISPLAY + "': "
+                            + request.getStringParameter(PARAMETER_DISPLAY));
+                }
+
             }
 
             if (displayFromLevel != null && !"".equals(displayFromLevel.trim())) {
@@ -593,7 +629,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
                 children.add(p.getURI());
             }
             this.includeURIs = children;
-            
+
             if (excludeFolders != null) {
                 try {
                     StringTokenizer excludeFoldersTokenized = new StringTokenizer(excludeFolders, ",");
@@ -611,53 +647,66 @@ public class SubFolderMenuComponent extends ListMenuComponent {
             this.locale = request.getLocale();
         }
 
+
         public Path getCurrentCollectionUri() {
             return this.currentCollectionUri;
         }
+
 
         public String getTitle() {
             return this.title;
         }
 
+
         public PropertyTypeDefinition getSortProperty() {
             return this.sortProperty;
         }
+
 
         public PropertyTypeDefinition getImportancePropDef() {
             return importancePropDef;
         }
 
+
         public boolean isAscendingSort() {
             return this.ascendingSort;
         }
+
 
         public int getResultSets() {
             return this.resultSets;
         }
 
+
         public int getGroupResultSetsBy() {
             return this.groupResultSetsBy;
         }
+
 
         public int getDisplayFromLevel() {
             return this.displayFromLevel;
         }
 
+
         public int getFreezeAtLevel() {
             return this.freezeAtLevel;
         }
+
 
         public Locale getLocale() {
             return this.locale;
         }
 
+
         public String getToken() {
             return this.token;
         }
 
+
         public int getDepth() {
             return this.depth;
         }
+
 
         private void initSortField(DecoratorRequest request) {
             String sortFieldParam = request.getStringParameter(PARAMETER_SORT);
@@ -687,50 +736,62 @@ public class SubFolderMenuComponent extends ListMenuComponent {
             }
         }
 
+
         public void setMaxNumberOfChildren(int maxNumberOfChildren) {
             this.maxNumberOfChildren = maxNumberOfChildren;
         }
 
+
         public int getMaxNumberOfChildren() {
             return maxNumberOfChildren;
         }
-        
+
+
         public void setDisplay(String display) {
             this.display = display;
         }
-        
+
+
         public String getDisplay() {
             return display;
         }
+
 
         public void setSortByName(boolean sortByName) {
             this.sortByName = sortByName;
         }
 
+
         public boolean isSortByName() {
             return sortByName;
         }
+
 
         public boolean generateStructuredCollectionReportLink() {
             return this.structuredCollectionReportLink;
         }
 
+
         public void setIncludeURIs(List<Path> includeURIs) {
             this.includeURIs = includeURIs;
         }
+
 
         public List<Path> getIncludeURIs() {
             return includeURIs;
         }
     }
 
+
     public void setReportService(Service reportService) {
         this.reportService = reportService;
     }
 
+
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
     }
+
 
     public void setPropertySelect(PropertySelect propertySelect) {
         if (propertySelect == null) {
@@ -739,13 +800,16 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         this.propertySelect = propertySelect;
     }
 
+
     public void setImportancePropDef(PropertyTypeDefinition importancePropDef) {
         this.importancePropDef = importancePropDef;
     }
 
+
     protected String getDescriptionInternal() {
         return DESCRIPTION;
     }
+
 
     protected Map<String, String> getParameterDescriptionsInternal() {
         Map<String, String> map = new LinkedHashMap<String, String>();
@@ -764,6 +828,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         map.put(PARAMETER_DISPLAY, PARAMETER_DISPLAY_DESC);
         return map;
     }
+
 
     public void afterPropertiesSet() throws Exception {
         super.afterPropertiesSet();
@@ -785,10 +850,11 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         }
     }
 
+
     public MenuRequest getNewMenuRequest(Path currentCollectionUri, String title, PropertyTypeDefinition sortProperty,
             boolean ascendingSort, boolean sortByName, int resultSets, int groupResultSetsBy, int freezeAtLevel,
-            int depth, int displayFromLevel, int maxNumberOfChildren, String display, Locale locale, String token, int searchLimit,
-            boolean structuredCollectionReportLink, ArrayList<Path> includeURIs) {
+            int depth, int displayFromLevel, int maxNumberOfChildren, String display, Locale locale, String token,
+            int searchLimit, boolean structuredCollectionReportLink, ArrayList<Path> includeURIs) {
         return new MenuRequest(currentCollectionUri, title, sortProperty, ascendingSort, sortByName, resultSets,
                 groupResultSetsBy, freezeAtLevel, depth, displayFromLevel, maxNumberOfChildren, display, locale, token,
                 searchLimit, structuredCollectionReportLink, includeURIs);

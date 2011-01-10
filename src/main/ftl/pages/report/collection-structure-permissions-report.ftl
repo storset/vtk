@@ -33,12 +33,12 @@
 	    <a href="${serviceURL}"><@vrtx.msg code="report.back" default="Back" /></a>
 	  </div>
 	</div> 
-	<h2><@vrtx.msg code="report.collection-structure" /></h2>
+	<h2><@vrtx.msg code="report.collection-structure-permissions" /></h2>
 	<p>
-	  <@vrtx.msg code="report.collection-structure.about" />
+	  <@vrtx.msg code="report.collection-structure-permissions.about" />
 	</p>
 	<div class="vrtx-report">
-	  <@subfolder.displaySubFolderMenu report.subFolderMenu true false />
+	  <@subfolder.displaySubFolderMenu report.subFolderMenu true true />
 	</div>
   </div>
   </body>

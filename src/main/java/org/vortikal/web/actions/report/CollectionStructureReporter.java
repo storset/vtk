@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.web.servlet.support.RequestContext;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
@@ -67,6 +68,8 @@ public class CollectionStructureReporter extends AbstractReporter {
     private PropertyTypeDefinition importancePropDef;
     private PropertyTypeDefinition navigationTitlePropDef;
     private ResourceTypeDefinition collectionResourceType;
+    private boolean includePermissions;
+    private Repository repository;
 
     public Map<String, Object> getReportContent(String token, Resource currentResource, HttpServletRequest request) {
         AndQuery query = new AndQuery();
@@ -121,6 +124,8 @@ public class CollectionStructureReporter extends AbstractReporter {
         subfolderMenu.setImportancePropDef(importancePropDef);
         subfolderMenu.setHiddenPropDef(hiddenPropDef);
         subfolderMenu.setCollectionResourceType(collectionResourceType);
+        subfolderMenu.setIncludePermissions(includePermissions);
+        subfolderMenu.setRepository(repository);
 
         MenuRequest menuRequest = subfolderMenu.getNewMenuRequest(currentCollectionUri, title, sortProperty,
                 ascendingSort, sortByName, resultSets, groupResultSetsBy, freezeAtLevel, depth, displayFromLevel,
@@ -156,6 +161,14 @@ public class CollectionStructureReporter extends AbstractReporter {
 
     public void setCollectionResourceType(ResourceTypeDefinition collectionResourceType) {
         this.collectionResourceType = collectionResourceType;
+    }
+    
+    public void setIncludePermissions(boolean includePermissions) {
+        this.includePermissions = includePermissions;
+    }
+    
+    public void setRepository(Repository repository) {
+        this.repository = repository;
     }
 
 }

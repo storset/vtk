@@ -17,13 +17,15 @@
   <#if subFolderMenu.display?exists && subFolderMenu.display = "comma-separated">
     <#assign commaSeparated = true />
   </#if>
-  <@displaySubFolderMenu subFolderMenu false />
+  <@displaySubFolderMenu subFolderMenu false false />
 </#if>
 
 <#global USE_TREE_VIEW = false >
+<#global USE_PERMISSION_VIEW = false >
 
-<#macro displaySubFolderMenu subFolderMenu treeView>
+<#macro displaySubFolderMenu subFolderMenu treeView permissionView>
   <#assign USE_TREE_VIEW=treeView>
+  <#assign USE_PERMISSION_VIEW=permissionView>
   
     <#if subFolderMenu.size &gt; 0>
       <#assign "counter" = 0>
@@ -64,7 +66,7 @@
        </span>
      </#if>
     <@displaySubMenu item.menu displaySubMenu />
-  <#else>
+  <#else> 
     <#if separator = "none">
       <a href="${item.url?html}">${item.label?html}</a>
     <#else>
@@ -86,9 +88,23 @@
     <ul class="resultset-${currentCount?html}">
    </#if>
     <#list menu.itemsSorted as item>
-      <li>
-        <#if USE_TREE_VIEW >
-          <span class="folder">
+        <#if USE_TREE_VIEW>
+          <#if USE_PERMISSION_VIEW>
+            <#if item.inheritedAcl>
+              <li class="inherited">
+            <#else>
+              <li>
+            </#if>
+            <#if item.readRestricted>
+              <span class="folder restricted">
+            <#else>
+              <span class="folder allowed-for-all">
+            </#if>
+          <#else>
+            <span class="folder">
+          </#if>
+        <#else>
+          <li>
         </#if>
         <@displayItem item=item />
       </li>
@@ -111,11 +127,27 @@
       <#if (i < sized)>
           <#if USE_TREE_VIEW >
             <#if (i == (sized-1))>
-              <li class="closed last">
+              <#if USE_PERMISSION_VIEW && item.inheritedAcl>
+                <li class="closed last inherited">
+              <#else>
+                <li class="closed last">
+              </#if>
             <#else>
-              <li class="closed">
+              <#if USE_PERMISSION_VIEW && item.inheritedAcl>
+                <li class="closed inherited">
+              <#else>
+                <li class="closed ">
+              </#if>
             </#if>
-            <span class="folder">
+            <#if USE_PERMISSION_VIEW>
+              <#if item.readRestricted>
+                <span class="folder restricted">
+              <#else>
+                <span class="folder allowed-for-all">
+              </#if>
+            <#else>
+              <span class="folder">
+            </#if>
           <#else>
             <li>
           </#if>

@@ -52,11 +52,14 @@ public class MenuItem<T> {
     private String title;
     private String label;
     private boolean active = false;
+    private boolean readRestricted = false;
+    private boolean inheritedAcl = false;
     private ListMenu<T> subMenu;
 
 
     public MenuItem(T value) {
-        if (value == null) throw new IllegalArgumentException("Constructor argument cannot be null");
+        if (value == null)
+            throw new IllegalArgumentException("Constructor argument cannot be null");
         this.value = value;
     }
 
@@ -67,7 +70,8 @@ public class MenuItem<T> {
 
 
     public String getTitle() {
-        if (this.title == null) return this.value.toString();
+        if (this.title == null)
+            return this.value.toString();
         return this.title;
     }
 
@@ -84,6 +88,25 @@ public class MenuItem<T> {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+
+    public boolean isReadRestricted() {
+        return this.readRestricted;
+    }
+
+
+    public void setReadRestricted(boolean readRestricted) {
+        this.readRestricted = readRestricted;
+    }
+    
+    public boolean isInheritedAcl() {
+        return this.inheritedAcl;
+    }
+
+
+    public void setInheritedAcl(boolean inheritedAcl) {
+        this.inheritedAcl = inheritedAcl;
     }
 
 
@@ -119,16 +142,29 @@ public class MenuItem<T> {
 
     @SuppressWarnings("rawtypes")
     public boolean equals(Object o) {
-        if (!(o instanceof MenuItem)) return false;
+        if (!(o instanceof MenuItem))
+            return false;
         MenuItem other = (MenuItem) o;
-        if (!this.value.equals(other.value)) return false;
-        if ((this.url == null || other.url == null) && this.url != other.url) return false;
-        if (this.url != null && !this.url.equals(other.url)) return false;
-        if ((this.title == null || other.title == null) && this.title != other.title) return false;
-        if (this.title != null && !this.title.equals(other.title)) return false;
-        if ((this.label == null || other.label == null) && this.label != other.label) return false;
-        if (this.label != null && !this.label.equals(other.label)) return false;
-        if (this.active != other.active) return false;
+        if (!this.value.equals(other.value))
+            return false;
+        if ((this.url == null || other.url == null) && this.url != other.url)
+            return false;
+        if (this.url != null && !this.url.equals(other.url))
+            return false;
+        if ((this.title == null || other.title == null) && this.title != other.title)
+            return false;
+        if (this.title != null && !this.title.equals(other.title))
+            return false;
+        if ((this.label == null || other.label == null) && this.label != other.label)
+            return false;
+        if (this.label != null && !this.label.equals(other.label))
+            return false;
+        if (this.active != other.active)
+            return false;
+        if (this.readRestricted != other.readRestricted)
+            return false;
+        if (this.inheritedAcl != other.inheritedAcl)
+            return false;
         return true;
     }
 

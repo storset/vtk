@@ -11,7 +11,7 @@
 
 <#if media?exists && contentType?exists >
   <div class="vrtx-media-ref">
-    <#if contentType == "audio" || contentType == "audio/mpeg" || contentType == "audio/mp3" >
+    <#if contentType == "audio" || contentType == "audio/mpeg" || contentType == "audio/mp3">
       <script type="text/javascript" language="JavaScript" src="${audioFlashPlayerJsURL?html}/"></script>  
       <object type="application/x-shockwave-flash" data="${audioFlashPlayerFlashURL?html}" height="24" width="290">
         <param name="movie" value="${audioFlashPlayerFlashURL?html}"/>
@@ -46,7 +46,7 @@
 		    <PARAM name="FlashVars" value="autoplay=${autoplay}" />
 		</OBJECT>
 		
-	<#elseif (contentType == "application/x-shockwave-flash" && extension == "flv") || contentType == "video/mp4">
+	<#elseif extension == "flv"  || contentType == "video/mp4">
 
       	<object width="${width}" height="${height}"> 
 			<param name="movie" value="${strobe?html}"></param>

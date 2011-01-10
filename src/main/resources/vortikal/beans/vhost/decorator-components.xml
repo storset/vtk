@@ -174,9 +174,9 @@
       <map>
         <entry key="mp4" value="video/mp4" />
         <entry key="mov" value="video/quicktime" />
-        <entry key="mp3" value="audio" />
+        <entry key="mp3" value="audio/mpeg" />
         <entry key="swf" value="application/x-shockwave-flash" />
-        <entry key="flv" value="application/x-shockwave-flash" />
+        <entry key="flv" value="video/x-flv" />
       </map>
     </property>
     <property name="viewService" ref="viewService" />

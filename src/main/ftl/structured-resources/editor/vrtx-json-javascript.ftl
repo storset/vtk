@@ -181,16 +181,18 @@
  
   
   function removeUnwantedButtons(siblingElement){
-  	var e = siblingElement.parents(".vrtx-json").find(".vrtx-json-element");
-  	while(e.prev(".vrtx-json-element").length){
+    if(siblingElement) {
+  	  var e = siblingElement.parents(".vrtx-json").find(".vrtx-json-element");
+  	  while(e.prev(".vrtx-json-element").length){
   		e = e.prev(".vrtx-json-element");
-  	}
-  	e.find(".vrtx-move-up-button").remove();
+  	  }
+  	  e.find(".vrtx-move-up-button").remove();
   	
-  	while(e.next(".vrtx-json-element").length){
+  	  while(e.next(".vrtx-json-element").length){
   		e = e.next(".vrtx-json-element");
+  	  }
+  	  e.find(".vrtx-move-down-button").remove();
   	}
-  	e.find(".vrtx-move-down-button").remove();
   }
   
   function addDropdown(elem, inputFieldName) {

@@ -45,14 +45,12 @@ public class PlaintextEditCommand extends UpdateCancelCommand {
 	private String saveViewAction = null;
     private String content;
     private List<Map<String, String>> tooltips;
-    private String contentType = null;
     
     
-    public PlaintextEditCommand(String content, String submitURL, List<Map<String, String>> tooltips, String contentType) {
+    public PlaintextEditCommand(String content, String submitURL, List<Map<String, String>> tooltips) {
         super(submitURL);
         this.content = content;
         this.tooltips = tooltips;
-        this.contentType = contentType;
     }
 
     public String getContent() {
@@ -82,14 +80,6 @@ public class PlaintextEditCommand extends UpdateCancelCommand {
 	public void setSaveViewAction(String saveViewAction) {
 		this.saveViewAction = saveViewAction;
 	}
-
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
-    }
-
-    public String getContentType() {
-        return contentType;
-    }
 
 }
 

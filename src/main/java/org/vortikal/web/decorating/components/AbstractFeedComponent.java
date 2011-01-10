@@ -165,6 +165,7 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
                 }
                 url = new URL(this.base);
                 url.setPath(newPath);
+                url.clearParameters();
                 if (!"".equals(query.trim())) {
                     Map<String, String[]> split = URL.splitQueryString(query);
                     for (String s: split.keySet()) {
@@ -174,6 +175,7 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
                     }
                 }
             }
+            url.setCollection(false);
             attr.setValue(url.toString());
             
             if (url.getHost().equals(this.requestURL.getHost())) {
@@ -209,24 +211,21 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
     }
 
     protected URL getBaseURL(String feedURL, URL requestURL) {
-        if (!feedURL.startsWith("/")) {
-            return URL.parse(feedURL);
-        }
         if (feedURL.contains("#")) {
             feedURL = feedURL.substring(0, feedURL.indexOf("#"));
         }
-        String query = "";
+        if (!feedURL.startsWith("/")) {
+            URL url = URL.parse(feedURL);
+            url.clearParameters();
+            url.setCollection(false);
+            return url;
+        }
         if (feedURL.contains("?")) {
-            query = feedURL.substring(feedURL.indexOf("?"));
             feedURL = feedURL.substring(0, feedURL.indexOf("?"));
         }
         URL baseURL = new URL(requestURL.getProtocol(), requestURL.getHost(), 
                 Path.fromString(feedURL));
-        Map<String, String[]> qry = URL.splitQueryString(query);
-        for (String s: qry.keySet())
-            for (String v: qry.get(s)) {
-                baseURL.addParameter(s, v);
-            }
+        baseURL.setCollection(false);
         return baseURL;
     }
     

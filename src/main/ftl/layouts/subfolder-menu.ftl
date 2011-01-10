@@ -111,11 +111,10 @@
       <#if (i < sized)>
           <#if USE_TREE_VIEW >
             <#if (i == (sized-1))>
-              <li class="expandable closed lastExpandable">
+              <li class="closed last">
             <#else>
-              <li class="expandable closed">
+              <li class="closed">
             </#if>
-            <div class="hitarea expandable-hitarea"></div>
             <span class="folder">
           <#else>
             <li>

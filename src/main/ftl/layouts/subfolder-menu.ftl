@@ -110,7 +110,8 @@
     <#list menu.itemsSorted as item>
       <#if (i < sized)>
           <#if USE_TREE_VIEW >
-            <li class="closed">
+            <li class="expandable closed">
+            <div class="hitarea expandable-hitarea"></div>
             <span class="folder">
           <#else>
             <li>

@@ -59,6 +59,7 @@ div.vrtx-report #vrtx-report-help {
   left: 400px;
   border: 1px solid #ccc;
   padding: 10px;
+  width: 155px;
 }
 
 #vrtx-report-help-restricted,

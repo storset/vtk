@@ -54,7 +54,7 @@
 .treeview-black li { background-image: url(images/treeview-black-line.gif); }
 .treeview-black .hitarea, .treeview-black li.lastCollapsable, .treeview-black li.lastExpandable { background-image: url(images/treeview-black.gif); }  
 
-.treeview-gray li { background-image: url(images/treeview-gray-line.gif); }
+.treeview-gray li { background-image: url(images/treeview-gray-line-4px-extra.gif); }
 .treeview-gray .hitarea, .treeview-gray li.lastCollapsable, .treeview-gray li.lastExpandable { background-image: url(images/treeview-gray-4px-extra.gif); } 
 
 .treeview-famfamfam li { background-image: url(images/treeview-famfamfam-line.gif); }

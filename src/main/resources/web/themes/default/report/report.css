@@ -9,6 +9,7 @@ ul.vrtx-reporters li {
 
 div.vrtx-report {
   position: relative;
+  min-height: 150px;
 }
 
 div.vrtx-report div.vrtx-subfolder-menu {

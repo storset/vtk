@@ -67,24 +67,42 @@ import java.util.Set;
 public class Parser {
     
     private PeekableReader reader;
+    private TextNodeFactory textNodeFactory;
     private Map<String, DirectiveNodeFactory> directives = new HashMap<String, DirectiveNodeFactory>();
     private Map<String, Object> attributes = new HashMap<String, Object>();
 
     /**
      * Creates a parser with a given reader and a set of 
      * named {@link DirectiveNodeFactory node factories}.
-     * @param reader
-     * @param directives
+     * @param reader the template source
+     * @param directives the set of node factories
      */
     public Parser(Reader reader, Map<String, DirectiveNodeFactory> directives) {
+        this(reader, directives, TextNodeFactory.DEFAULT);
+    }
+    
+    /**
+     * Creates a parser with a given reader, a set of 
+     * named {@link DirectiveNodeFactory node factories}
+     * and a {@link TextNodeFactory} text node factory.
+     * @param reader the template source
+     * @param directives the set of node factories
+     * @param textNodeFactory the text node factory
+     */
+    public Parser(Reader reader, Map<String, DirectiveNodeFactory> directives, 
+            TextNodeFactory textNodeFactory) {
         if (reader == null) {
-            throw new IllegalArgumentException("Reader cannot be NULL");
+            throw new IllegalArgumentException("Reader is NULL");
         }
         if (directives == null) {
-            throw new IllegalArgumentException("Directive handlers cannot be NULL");
+            throw new IllegalArgumentException("Directive handlers is NULL");
+        }
+        if (textNodeFactory == null) {
+            throw new IllegalArgumentException("Text node factory is NULL");
         }
         this.reader = new PeekableReader(reader);
         this.directives = directives;
+        this.textNodeFactory = textNodeFactory;
     }
     
     /**
@@ -163,7 +181,7 @@ public class Parser {
             }
             switch (parseNode.type) {
             case Text:
-                list.add(new TextNode(parseNode.text));
+                list.add(this.textNodeFactory.create(parseNode));
                 break;
             case Comment:
                 list.add(new CommentNode(parseNode.text));

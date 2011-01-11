@@ -44,7 +44,7 @@
 	    <p id="vrtx-report-help-restricted"><@vrtx.msg code="report.collection-structure.help.restricted" /></p>
 	    <p id="vrtx-report-help-allowed-for-all"><@vrtx.msg code="report.collection-structure.help.allowed-for-all" /></p>
 	    <p id="vrtx-report-help-inherited"><@vrtx.msg code="report.collection-structure.help.inherited" /></p>
-	    <p id="vrtx-report-help-not-inherited"><@vrtx.msg code="report.collection-structure.help.not-inherited" /><span id="vrtx-report-help-not-inherited-folder"></p>
+	    <p id="vrtx-report-help-not-inherited"><span id="vrtx-report-help-not-inherited-folder"></span><@vrtx.msg code="report.collection-structure.help.not-inherited" /></p>
 	  </div>
 	</div>
   </div>

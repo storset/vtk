@@ -104,7 +104,7 @@ public class LinkCheckController implements Controller, InitializingBean {
         response.setContentType("text/plain;charset=utf-8");
         PrintWriter writer = response.getWriter();
         try {
-            writer.print(list.toString());
+            writer.print(list.toString(1));
         } finally {
             writer.close();
         }

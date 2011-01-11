@@ -202,6 +202,9 @@ public class LinkChecker implements InitializingBean {
             queryMap = URL.splitQueryString(href.substring(href.indexOf("?")));
             href = href.substring(0, href.indexOf("?"));
         }
+        if ("".equals(href.trim())) {
+            href = base.toString();
+        }
         href = trimTrailingSlash(href);
 
         URL url;

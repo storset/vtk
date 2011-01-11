@@ -67,15 +67,18 @@
 .filetree li.expandable span.folder, .filetree li.closed span.folder { background: url(images/folder-closed.gif) 0 0 no-repeat; }
 .filetree span.file { background: url(images/file.gif) 0 0 no-repeat; }
 
+/* Folder icons for permission visualization */
 .filetree span.folder.restricted  { background: url(images/folder-restricted.gif) 0 0 no-repeat; }
 .filetree span.folder.allowed-for-all  { background: url(images/folder-allowed-for-all.gif) 0 0 no-repeat; }
-.filetree li.not-inherited span.folder.restricted  { background: url(images/folder-restricted-not-inherited.gif) 0 0 no-repeat; }
-.filetree li.not-inherited span.folder.allowed-for-all  { background: url(images/folder-allowed-for-all-not-inherited.gif) 0 0 no-repeat; }
-
 .filetree li.expandable span.folder.restricted, .filetree li.closed span.folder.restricted { background: url(images/folder-closed-restricted.gif) 0 0 no-repeat; }
 .filetree li.expandable span.folder.allowed-for-all, .filetree li.closed span.folder.allowed-for-all { background: url(images/folder-closed-allowed-for-all.gif) 0 0 no-repeat; }
+
+/* Not inherited folder icons */
+.filetree li.not-inherited span.folder.restricted  { background: url(images/folder-restricted-not-inherited.gif) 0 0 no-repeat; }
+.filetree li.not-inherited span.folder.allowed-for-all  { background: url(images/folder-allowed-for-all-not-inherited.gif) 0 0 no-repeat; }
 .filetree li.expandable.not-inherited span.folder.restricted, .filetree li.closed.not-inherited span.folder.restricted { background-image: url(images/folder-closed-restricted-not-inherited.gif); }
 .filetree li.expandable.not-inherited span.folder.allowed-for-all, .filetree li.closed.not-inherited span.folder.allowed-for-all { background: url(images/folder-closed-allowed-for-all-not-inherited.gif) 0 0 no-repeat; }
 
+/* Not inherited lines */
 .treeview-gray li.not-inherited { background-image: url(images/treeview-gray-line-not-inherited.gif); }
 .treeview-gray .not-inherited-hitarea, .treeview-gray li.not-inherited.lastCollapsable, .treeview-gray li.not-inherited.lastExpandable {  background-image: url(images/treeview-gray-not-inherited.gif); }

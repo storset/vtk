@@ -69,11 +69,11 @@ div.vrtx-report #vrtx-report-help {
 }
 
 #vrtx-report-help-restricted {
-  background: url(images/folder-closed-restricted.gif) no-repeat top left;
+  background: url(images/folder-closed-restricted.gif) no-repeat 0 0;
 }
 
 #vrtx-report-help-allowed-for-all {
-  background: url(images/folder-closed-allowed-for-all.gif) no-repeat top left;
+  background: url(images/folder-closed-allowed-for-all.gif) no-repeat 0 0;
 }
 
 #vrtx-report-help-inherited {
@@ -82,4 +82,12 @@ div.vrtx-report #vrtx-report-help {
 
 #vrtx-report-help-not-inherited {
   background: url(images/treeview-gray-line-not-inherited.gif) no-repeat -5px 0;
+}
+
+#vrtx-report-help-not-inherited-folder {
+  background: url(images/folder-allowed-for-all-not-inherited.gif) no-repeat 0 0;
+  display: block;
+  width: 16px;
+  height: 14px;
+  padding-top: 2px;
 }

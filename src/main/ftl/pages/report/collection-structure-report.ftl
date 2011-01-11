@@ -38,7 +38,7 @@
 	  <@vrtx.msg code="report.collection-structure.about" />
 	</p>
 	<div class="vrtx-report">
-	  <@subfolder.displaySubFolderMenu report.subFolderMenu true false />
+	  <@subfolder.displaySubFolderMenu report.subFolderMenu true true />
 	</div>
   </div>
   </body>

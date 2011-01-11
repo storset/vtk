@@ -56,21 +56,6 @@
     <property name="importancePropDef" ref="importancePropDef" />
     <property name="navigationTitlePropDef" ref="navigationTitlePropDef" />
     <property name="collectionResourceType" ref="collectionResourceTypeDefinition" />
-    <property name="includePermissions" value="false" />
-    <property name="repository" ref="repository" />
-  </bean>
-  
-  <bean id="collectionStructurePermissionsReporter" class="org.vortikal.web.actions.report.CollectionStructureReporter"
-    parent="reporter">
-    <property name="name" value="collection-structure-permissions" />
-    <property name="viewName" value="collectionStructurePermissions" />
-    <property name="viewService" ref="webService" />
-    <property name="reportService" ref="reportService" />
-    <property name="titlePropDef" ref="titlePropDef" />
-    <property name="hiddenPropDef" ref="hiddenPropDef" />
-    <property name="importancePropDef" ref="importancePropDef" />
-    <property name="navigationTitlePropDef" ref="navigationTitlePropDef" />
-    <property name="collectionResourceType" ref="collectionResourceTypeDefinition" />
     <property name="includePermissions" value="true" />
     <property name="repository" ref="repository" />
   </bean>
@@ -99,7 +84,6 @@
       <map>
         <entry key="report" value-ref="reportView" />
         <entry key="collectionStructure" value-ref="collectionStructureView" />
-        <entry key="collectionStructurePermissions" value-ref="collectionStructurePermissionsView" />
         <entry key="documentReport" value-ref="documentReportView" />
       </map>
     </property>
@@ -125,26 +109,6 @@
 
   <bean id="collectionStructureView" parent="freemarkerView">
     <property name="url" value="pages/report/collection-structure-report.ftl" />
-    <property name="attributesMap">
-      <map>
-        <entry key="cssURLs">
-          <list>
-            <value>${themeBaseURL}/report/report.css</value>
-            <value>${themeBaseURL}/view-components.css</value>
-            <value>${themeBaseURL}/report/jquery.treeview.css</value>
-          </list>
-        </entry> 
-        <entry key="jsURLs">
-          <list>
-            <value>${webResources.baseURL}/jquery/jquery.treeview.js</value>
-          </list>
-        </entry>
-      </map>
-    </property> 
-  </bean>
-  
-  <bean id="collectionStructurePermissionsView" parent="freemarkerView">
-    <property name="url" value="pages/report/collection-structure-permissions-report.ftl" />
     <property name="attributesMap">
       <map>
         <entry key="cssURLs">

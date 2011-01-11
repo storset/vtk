@@ -74,3 +74,4 @@
 .filetree li.expandable span.folder.allowed-for-all, .filetree li.closed span.folder.allowed-for-all { background: url(images/folder-closed-allowed-for-all.gif) 0 0 no-repeat; }
 
 .filetree li.inherited { background-image: url(images/treeview-gray-line.gif); }
+.filetree li.inherited.lastCollapsable, .filetree li.inherited.lastExpandable {  background-image: url(images/treeview-black.gif); } 

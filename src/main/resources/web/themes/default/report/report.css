@@ -7,6 +7,10 @@ ul.vrtx-reporters li {
   padding-bottom: 0.15em;	
 }
 
+div.vrtx-report {
+  position: relative;
+}
+
 div.vrtx-report div.vrtx-subfolder-menu {
   border: none;
 }
@@ -46,4 +50,35 @@ div.vrtx-report table#vrtx-report-document-table td.vrtx-report-last-modified {
 
 div.vrtx-report table#vrtx-report-document-table tr.even td {
   background-color: #eeeeee;
+}
+
+div.vrtx-report #vrtx-report-help {
+  position: absolute;
+  top: 20px;
+  left: 400px;
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+
+#vrtx-report-help-restricted,
+#vrtx-report-help-allowed-for-all,
+#vrtx-report-help-inherited,
+#vrtx-report-help-not-inherited {
+  padding-left: 18px;
+}
+
+#vrtx-report-help-restricted {
+  background: url(images/folder-closed-restricted.gif) no-repeat top left;
+}
+
+#vrtx-report-help-allowed-for-all {
+  background: url(images/folder-closed-allowed-for-all.gif) no-repeat top left;
+}
+
+#vrtx-report-help-inherited {
+  background: url(images/treeview-gray-line-4px-extra.gif) no-repeat -5px 0;
+}
+
+#vrtx-report-help-not-inherited {
+  background: url(images/treeview-gray-line-not-inherited.gif) no-repeat -5px 0;
 }

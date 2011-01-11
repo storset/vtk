@@ -39,6 +39,13 @@
 	</p>
 	<div class="vrtx-report">
 	  <@subfolder.displaySubFolderMenu report.subFolderMenu true true />
+	  <div id="vrtx-report-help">
+	    <h2><@vrtx.msg code="report.collection-structure.help" /></h2>
+	    <p id="vrtx-report-help-restricted"><@vrtx.msg code="report.collection-structure.help.restricted" /></p>
+	    <p id="vrtx-report-help-allowed-for-all"><@vrtx.msg code="report.collection-structure.help.allowed-for-all" /></p>
+	    <p id="vrtx-report-help-inherited"><@vrtx.msg code="report.collection-structure.help.inherited" /></p>
+	    <p id="vrtx-report-help-not-inherited"><@vrtx.msg code="report.collection-structure.help.not-inherited" /></p>
+	  </div>
 	</div>
   </div>
   </body>

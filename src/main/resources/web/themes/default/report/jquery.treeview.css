@@ -12,8 +12,8 @@
 .treeview .hitarea {
 	background: url(images/treeview-default.gif) -64px -25px no-repeat;
 	height: 16px;
-	width: 16px;
-	margin-left: -16px;
+	width: 20px;
+	margin-left: -20px;
 	float: left;
 	cursor: pointer;
 }
@@ -25,7 +25,7 @@
 
 .treeview li { 
 	margin: 0;
-	padding: 3px 0pt 3px 16px;
+	padding: 3px 0pt 3px 20px;
 }
 
 .treeview a.selected {
@@ -55,13 +55,13 @@
 .treeview-black .hitarea, .treeview-black li.lastCollapsable, .treeview-black li.lastExpandable { background-image: url(images/treeview-black.gif); }  
 
 .treeview-gray li { background-image: url(images/treeview-gray-line.gif); }
-.treeview-gray .hitarea, .treeview-gray li.lastCollapsable, .treeview-gray li.lastExpandable { background-image: url(images/treeview-gray.gif); } 
+.treeview-gray .hitarea, .treeview-gray li.lastCollapsable, .treeview-gray li.lastExpandable { background-image: url(images/treeview-gray-4px-extra.gif); } 
 
 .treeview-famfamfam li { background-image: url(images/treeview-famfamfam-line.gif); }
 .treeview-famfamfam .hitarea, .treeview-famfamfam li.lastCollapsable, .treeview-famfamfam li.lastExpandable { background-image: url(images/treeview-famfamfam.gif); } 
 
 
-.filetree li { padding: 3px 0 2px 16px; }
+.filetree li { padding: 3px 0 2px 20px; }
 .filetree span.folder, .filetree span.file { padding: 1px 0 1px 20px; display: block; }
 .filetree span.folder { background: url(images/folder.gif) 0 0 no-repeat; }
 .filetree li.expandable span.folder, .filetree li.closed span.folder { background: url(images/folder-closed.gif) 0 0 no-repeat; }
@@ -73,5 +73,5 @@
 .filetree li.expandable span.folder.restricted, .filetree li.closed span.folder.restricted { background: url(images/folder-closed-restricted.gif) 0 0 no-repeat; }
 .filetree li.expandable span.folder.allowed-for-all, .filetree li.closed span.folder.allowed-for-all { background: url(images/folder-closed-allowed-for-all.gif) 0 0 no-repeat; }
 
-.filetree li.inherited { background-image: url(images/treeview-gray-line.gif); }
-.filetree li.inherited.lastCollapsable, .filetree li.inherited.lastExpandable {  background-image: url(images/treeview-gray.gif); } 
+.treeview-gray li.not-inherited { background-image: url(images/treeview-gray-line-not-inherited.gif); }
+.treeview-gray .not-inherited-hitarea, .treeview-gray li.not-inherited.lastCollapsable, .treeview-gray li.not-inherited.lastExpandable {  background-image: url(images/treeview-gray-not-inherited.gif); }

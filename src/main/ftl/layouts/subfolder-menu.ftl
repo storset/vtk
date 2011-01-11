@@ -83,7 +83,11 @@
     <div class="vrtx-group-${groupCount?html}">
   </#if>
    <#if USE_TREE_VIEW >
-    <ul class="resultset-${currentCount?html} filetree">
+    <#if USE_PERMISSION_VIEW >
+      <ul class="resultset-${currentCount?html} filetree treeview-gray">
+    <#else>
+      <ul class="resultset-${currentCount?html} filetree">
+    </#if>
    <#else>
     <ul class="resultset-${currentCount?html}">
    </#if>
@@ -91,9 +95,9 @@
         <#if USE_TREE_VIEW>
           <#if USE_PERMISSION_VIEW>
             <#if item.inheritedAcl>
-              <li class="inherited">
-            <#else>
               <li>
+            <#else>
+              <li class="not-inherited">
             </#if>
             <#if item.readRestricted>
               <span class="folder restricted">
@@ -128,15 +132,15 @@
           <#if USE_TREE_VIEW >
             <#if (i == (sized-1))>
               <#if USE_PERMISSION_VIEW && item.inheritedAcl>
-                <li class="closed last inherited">
-              <#else>
                 <li class="closed last">
+              <#else>
+                <li class="closed last not-inherited">
               </#if>
             <#else>
               <#if USE_PERMISSION_VIEW && item.inheritedAcl>
-                <li class="closed inherited">
+                <li class="closed">
               <#else>
-                <li class="closed ">
+                <li class="closed not-inherited">
               </#if>
             </#if>
             <#if USE_PERMISSION_VIEW>

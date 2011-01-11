@@ -86,8 +86,9 @@ div.vrtx-report #vrtx-report-help {
 
 #vrtx-report-help-not-inherited-folder {
   background: url(images/folder-allowed-for-all-not-inherited.gif) no-repeat 0 0;
-  display: block;
   width: 16px;
   height: 14px;
-  padding-top: 2px;
+  display: block;
+  float: right;
+  margin-left: 3px;
 }

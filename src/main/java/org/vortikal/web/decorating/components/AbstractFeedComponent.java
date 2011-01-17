@@ -211,37 +211,10 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
     }
 
     protected URL getBaseURL(String feedURL, URL requestURL) {
-        if (feedURL.contains("#")) {
-            feedURL = feedURL.substring(0, feedURL.indexOf("#"));
-        }
-        if (feedURL.startsWith("?")) {
-            URL url = new URL(requestURL.getProtocol(), 
-                    requestURL.getHost(), requestURL.getPath());
-            feedURL = url.toString() + feedURL;
-        }
-        if (feedURL.startsWith(".")) {
-            URL url = new URL(requestURL.getProtocol(),
-                    requestURL.getHost(), requestURL.getPath());
-            feedURL = url.toString() + feedURL.substring(1);
-        }
-        if (!feedURL.startsWith("/")) {
-            URL url = URL.parse(feedURL);
-            url.clearParameters();
-            url.setCollection(false);
-            return url;
-        }
-        if (feedURL.contains("?")) {
-            feedURL = feedURL.substring(0, feedURL.indexOf("?"));
-        }
-        boolean collection = false;
-        if (feedURL.endsWith("/") && !"/".equals(feedURL)) {
-            collection = true;
-            feedURL = feedURL.substring(0, feedURL.length() - 1);
-        }
-        URL baseURL = new URL(requestURL.getProtocol(), requestURL.getHost(), 
-                Path.fromString(feedURL));
-        baseURL.setCollection(collection);
-        return baseURL;
+        URL u = requestURL.relativeURL(feedURL);
+        u.clearParameters();
+        u.setRef(null);
+        return u;
     }
     
     public void setImgHtmlFilter(HtmlPageFilter imgHtmlFilter) {

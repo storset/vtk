@@ -390,6 +390,8 @@ public class PropfindController extends AbstractWebdavController {
     protected Document parseRequestBody(HttpServletRequest request)
         throws InvalidRequestException, IOException {
         SAXBuilder builder = new SAXBuilder();
+        builder.setValidation(false);
+        builder.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 
         /* if empty request body, request is implicitly "allprop": */
         if (request.getHeader("Content-Length") != null

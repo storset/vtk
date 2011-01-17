@@ -13,6 +13,7 @@ div.tabs ul li.activeTab a,div.tabs ul li.activeTab a:hover {
 #contents {
   background-color: #efefef;
   overflow: visible;
+  position: relative;
 }
 
 #contents h2 {
@@ -579,8 +580,10 @@ span.show-tooltip-text {
 
 .submit-extra-buttons {
     position:absolute;
-    right:40px;
-    top:187px;
+    /* right:40px;
+    top:187px; */
+    top: 5px;
+    right: 12px;
 }
 
 /* CKEditor */

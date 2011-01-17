@@ -5,6 +5,7 @@
 #contents {
   background-color: #efefef;
   padding-left: 1.2em !important;
+  position: relative;
 }
 
 #contents h2 {
@@ -501,10 +502,11 @@ input.date, input.hours, input.minutes {
 /* STOP forms */
 
 .submit-extra-buttons {
-    position:relative;
-    top:-50px;
+    position:absolute;
+    top: 5px;
     text-align:right;
     height:0;
+    right: 12px;
 }
 
 /* START CKEditor */

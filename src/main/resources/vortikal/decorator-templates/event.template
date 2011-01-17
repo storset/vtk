@@ -9,7 +9,6 @@
     <event:title />
     <resource:introduction-image />
     <resource:introduction />
-    <resource:media-refs />
     <div class="vrtx-byline">
       <event:event-info />
     </div>

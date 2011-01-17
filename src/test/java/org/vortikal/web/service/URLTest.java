@@ -165,10 +165,14 @@ public class URLTest extends TestCase {
     
     public void testRelative() {
         URL url = URL.parse("http://a/b/c/d?q#f");
+                
         assertEquals("http://a/b/c/g", url.relativeURL("g").toString());
         assertEquals("http://a/b/c/g", url.relativeURL("./g").toString());
         assertEquals("http://a/b/c/g/", url.relativeURL("g/").toString());
-        assertEquals("http://a/b/c/g/", url.relativeURL("g/").toString());
+        assertEquals("http://a/g", url.relativeURL("/g").toString());
+        assertEquals("http://a/g/", url.relativeURL("/g/").toString());
+        assertEquals("http://g/", url.relativeURL("//g").toString());
+        assertEquals("http://g/?y", url.relativeURL("//g/?y").toString());
         assertEquals("http://a/b/c/d?y", url.relativeURL("?y").toString());
         assertEquals("http://a/b/c/d?y", url.relativeURL("?y").toString());
         assertEquals("http://a/b/c/d?q#s", url.relativeURL("#s").toString());

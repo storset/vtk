@@ -731,6 +731,25 @@ public class URL {
         if (rel.startsWith(PROTOCOL_HTTP + ":") || rel.startsWith(PROTOCOL_HTTPS + ":")) {
             return parse(rel);
         }
+        String host = this.host;
+        if (rel.startsWith("//")) {
+            rel = rel.substring(2);
+            int i = rel.indexOf("/");
+            if (i == -1) i = rel.indexOf("?");
+            if (i == -1) i = rel.indexOf("#");
+            if (i == -1) i = rel.length();
+            host = rel.substring(0, i);
+            rel = rel.substring(i);
+            if ("".equals(rel.trim())) {
+                URL url = new URL(this);
+                url.setHost(host);
+                url.setPath(Path.ROOT);
+                url.setCollection(false);
+                url.clearParameters();
+                url.setRef(null);
+                return url;
+            }
+        }
         int idx = rel.indexOf("#");
         String anchor = null;
         if (idx != -1) {
@@ -748,10 +767,12 @@ public class URL {
         Path path = this.path;
         boolean coll = rel.endsWith("/") 
             || rel.endsWith(".") 
-            || rel.endsWith("./")
-            || rel.endsWith("..")
-            || rel.endsWith("../");
+            || rel.endsWith("..");
+        
         if (rel.startsWith("/")) {
+            if (coll && !"/".equals(rel)) { 
+                rel = rel.substring(0, rel.length() - 1);
+            }
             path = Path.fromString(rel);
         } else if (!"".equals(rel)) {
             if (!path.isRoot()) {
@@ -760,6 +781,7 @@ public class URL {
             path = path.expand(rel);
         }
         URL url = new URL(this);
+        url.setHost(host);
         url.setCollection(coll);
         url.setPath(path);
         url.clearParameters();

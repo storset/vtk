@@ -199,6 +199,7 @@ public class FeedComponent extends AbstractFeedComponent {
             if (url.startsWith("/")) {
                 feed = this.localFeedFetcher.getFeed(url, request);
             } else {
+                url = baseURL.relativeURL(url).toString();
                 feed = this.cache.get(url);
             }
         } catch (Exception e) {
@@ -227,11 +228,6 @@ public class FeedComponent extends AbstractFeedComponent {
                 imgMap.put(entry.toString(), null);
             }
         }
-        
-        // Split html: <img> elements in 'imgMap', everything else in 'descriptionNoImage'
-        //Map<String,String> imgMap = getFilteredEntryValues(getImgHtmlFilter(), feed);
-        //imgMap = excludeEverythingButFirstTag(imgMap);
-        //Map<String,String> descriptionNoImage = getFilteredEntryValues(getNoImgHtmlFilter(), feed);
         model.put("descriptionNoImage", descriptionNoImage);
         model.put("imageMap", imgMap);
         

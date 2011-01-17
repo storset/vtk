@@ -87,6 +87,7 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
   	
   if(linkBrowseUrl != null) {
     config.filebrowserBrowseUrl = linkBrowseUrl;
+    config.filebrowserImageBrowseLinkUrl = linkBrowseUrl;
   }
   
   if(complete) {

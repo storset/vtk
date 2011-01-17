@@ -38,7 +38,7 @@ window.onload = function(){new tocGen('toc')};
 //This script was originally written By Brady Mulhollem - WebTech101.com
 //It was later modified by Tomm Eriksen and other humble USIT workers 
 function tocGen(writeTo){
-    this.num = 0;
+    this.num = 1;
     this.opened = 0;
     this.writeOut = '';
     this.previous = 0;

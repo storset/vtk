@@ -272,40 +272,6 @@
     </property>
   </bean>
 
-  <bean id="article.mediaRefsComponent"
-        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
-    <property name="namespace" ref="decorating.resourceNamespace" />
-    <property name="name" value="media-refs" />
-    <property name="description" value="Inserts the article media references" />
-    <property name="view" ref="article.mediaRefsView" />
-  </bean>
-
-  <bean id="article.mediaRefsView" parent="freemarkerView">
-    <property name="url" value="article/media-refs.ftl" />
-    <property name="referenceDataProviders">
-      <list>
-        <ref bean="resourceContextProvider" />
-        <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
-          <property name="repository" ref="repository" />
-          <property name="uri" value="/" />
-          <property name="appendPath" value="${flash.baseURL}/audioplayer.swf" />
-          <property name="service" ref="viewService" />
-          <property name="modelName" value="flashPlayer" />
-          <property name="urlName" value="flashURL" />
-        </bean>
-        <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
-          <property name="repository" ref="repository" />
-          <property name="uri" value="/" />
-          <property name="appendPath" value="${jsBaseURL}/audio-player.js" />
-          <property name="service" ref="viewService" />
-          <property name="modelName" value="flashPlayer" />
-          <property name="urlName" value="jsURL" />
-        </bean>
-      </list>
-    </property>
-  </bean>
-
-
   <bean id="article.authorsRefsComponent"
         class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />

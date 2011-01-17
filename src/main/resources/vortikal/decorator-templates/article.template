@@ -9,7 +9,7 @@
     <article:title />
     <resource:introduction-image />
     <resource:introduction />
-    <resource:media-refs />
+    <resource:media-player />
     <div class="vrtx-byline">
       <resource:authors />
       <resource:published-date />

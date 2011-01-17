@@ -13,9 +13,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>Publishing status on document</title>
-    <script type="text/javascript" src="${webResources?html}/jquery-ui-1.7.1.custom/js/jquery-ui-1.7.1.custom.min.js"></script>
-    <script type="text/javascript" src="${webResources?html}/jquery-ui-1.7.1.custom/js/jquery.ui.datepicker-no.js"></script>
-    <script type="text/javascript" src="${webResources?html}/jquery-ui-1.7.1.custom/js/jquery.ui.datepicker-nn.js"></script>
+    <script type="text/javascript" src="${webResources?html}/jquery-ui-1.8.8.custom/js/jquery-ui-1.8.8.custom.min.js"></script>
+    <script type="text/javascript" src="${webResources?html}/jquery-ui-1.8.8.custom/js/jquery.ui.datepicker-no.js"></script>
+    <script type="text/javascript" src="${webResources?html}/jquery-ui-1.8.8.custom/js/jquery.ui.datepicker-nn.js"></script>
     <script type="text/javascript" src="${jsBaseURL?html}/datepicker.js"></script>
   
     <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
@@ -28,7 +28,7 @@
     //-->
     </script>
     
-    <link type="text/css" href="${webResources?html}/jquery-ui-1.7.1.custom/css/smoothness/jquery-ui-1.7.1.custom.css" rel="stylesheet" />
+    <link type="text/css" href="${webResources?html}/jquery-ui-1.8.8.custom/css/smoothness/jquery-ui-1.8.8.custom.css" rel="stylesheet" />
     <#if cssURLs?exists>
       <#list cssURLs as cssURL>
         <link rel="stylesheet" href="${cssURL}" />

@@ -721,6 +721,67 @@ public class URL {
         return resultURL;
     }
     
+    public URL relativeURL(String rel) {
+        if (rel == null) {
+            throw new IllegalArgumentException("Malformed URL: " + rel);
+        }
+        if ("".equals(rel.trim())) {
+            return new URL(this);
+        }
+        if (rel.startsWith(PROTOCOL_HTTP + ":") || rel.startsWith(PROTOCOL_HTTPS + ":")) {
+            return parse(rel);
+        }
+        int idx = rel.indexOf("#");
+        String anchor = null;
+        if (idx != -1) {
+            anchor = rel.substring(idx + 1);
+            rel = rel.substring(0, idx);
+        }
+        idx = rel.indexOf("?");
+        Map<String, String[]> query = null;
+        if (idx == -1 && anchor != null) {
+            query = splitQueryString(getQueryString());
+        } else if (idx != -1) {
+            query = splitQueryString(rel.substring(idx));
+            rel = rel.substring(0, idx);
+        }
+        Path path = this.path;
+        boolean coll = rel.endsWith("/") 
+            || rel.endsWith(".") 
+            || rel.endsWith("./")
+            || rel.endsWith("..")
+            || rel.endsWith("../");
+        if (rel.startsWith("/")) {
+            path = Path.fromString(rel);
+        } else if (!"".equals(rel)) {
+            if (!path.isRoot()) {
+                path = path.getParent();
+            }
+            path = path.expand(rel);
+        }
+        URL url = new URL(this);
+        url.setCollection(coll);
+        url.setPath(path);
+        url.clearParameters();
+        if (query != null) {
+            for (String s: query.keySet()) {
+                String[] v = query.get(s);
+                if (v == null) {
+                    url.addParameter(s, null);
+                } else {
+                    for (String val: v) {
+                        url.addParameter(s, val);
+                    }
+                }
+            }
+        }
+        url.setRef(null);
+        if (anchor != null) {
+            url.setRef(anchor);
+        }
+        return url;
+    }
+    
      /**
       * Splits a query string into a map of (String, String[]). 
       * Note: the values are not URL decoded.

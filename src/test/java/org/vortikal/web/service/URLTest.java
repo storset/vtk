@@ -163,6 +163,26 @@ public class URLTest extends TestCase {
         assertEquals("/%20", url.getPath().toString());
     }
     
+    public void testRelative() {
+        URL url = URL.parse("http://a/b/c/d?q#f");
+        assertEquals("http://a/b/c/g", url.relativeURL("g").toString());
+        assertEquals("http://a/b/c/g", url.relativeURL("./g").toString());
+        assertEquals("http://a/b/c/g/", url.relativeURL("g/").toString());
+        assertEquals("http://a/b/c/g/", url.relativeURL("g/").toString());
+        assertEquals("http://a/b/c/d?y", url.relativeURL("?y").toString());
+        assertEquals("http://a/b/c/d?y", url.relativeURL("?y").toString());
+        assertEquals("http://a/b/c/d?q#s", url.relativeURL("#s").toString());
+        assertEquals("http://a/b/c/", url.relativeURL(".").toString());
+        assertEquals("http://a/b/c/", url.relativeURL("./").toString());
+        assertEquals("http://a/b/", url.relativeURL("..").toString());
+        assertEquals("http://a/b/", url.relativeURL("../").toString());
+        assertEquals("http://a/b/g", url.relativeURL("../g").toString());
+        assertEquals("http://a/", url.relativeURL("../..").toString());
+        assertEquals("http://a/", url.relativeURL("../../").toString());
+        assertEquals("http://a/g", url.relativeURL("../../g").toString());
+        assertEquals("http://a/b/c/d?q#f", url.relativeURL("").toString());
+    }
+    
     public void testIsEncoded() {
         assertFalse(URL.isEncoded("http://www.uio.no/detteÆerikkeencoda"));
         assertFalse(URL.isEncoded("http://www.uio.no/dette%erikkeencoda"));

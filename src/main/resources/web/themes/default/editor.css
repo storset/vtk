@@ -25,9 +25,9 @@ div.tabs ul li.activeTab a,div.tabs ul li.activeTab a:hover {
   margin-bottom: 1.5em;
 }
 
-#help-link {
-  float: right;
-  font-size: 80%;
+a.help-link {
+  font-size: 0.8em;
+  margin-right: 2em;
 }
 
 form.editor {
@@ -55,6 +55,8 @@ label {
   width:1%;*/
   font-size: .9em;
 }
+
+.cke_dialog_contents
 
 .recursive-listing-subfolders label {
   display: inline;

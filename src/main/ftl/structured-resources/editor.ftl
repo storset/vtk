@@ -68,15 +68,12 @@
 <h2>${header}</h2>
 
 <div class="submit-extra-buttons">
+    <a class="help-link" href="${editorHelpURL?html}" target="new_window"><@vrtx.msg code="editor.help"/></a>
+    <a class="help-link" href="${form.listComponentServiceURL?html}" target="new_window"><@vrtx.msg code="plaintextEdit.tooltip.listDecoratorComponentsService" /></a>
     <input type="button" onClick="$('#updateViewAction').click()" value="${vrtx.getMsg("editor.saveAndView")}" />
     <input type="button" onClick="$('#updateAction').click()"  value="${vrtx.getMsg("editor.save")}" />
     <input type="button" onClick="$('#cancelAction').click()"  value="${vrtx.getMsg("editor.cancel")}" />
-</div>
-
-<div id="help-links">
-	<a href="${editorHelpURL?html}" target="new_window"><@vrtx.msg code="editor.help"/></a><br />
-	<a href="${form.listComponentServiceURL?html}" target="new_window"><@vrtx.msg code="plaintextEdit.tooltip.listDecoratorComponentsService" /></a>
-</div>	  
+</div>  
 
 <form action="${form.submitURL?html}" method="post">
 

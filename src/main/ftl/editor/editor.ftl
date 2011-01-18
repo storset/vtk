@@ -77,6 +77,7 @@
     </#assign>
     <h2>${header}</h2>
 	  <div class="submit-extra-buttons">
+	  	<a class="help-link" href="${editorHelpURL?html}" target="new_window"><@vrtx.msg code="editor.help"/></a>
 		<input type="button" onClick="$('#saveAndViewButton').click()" value="${vrtx.getMsg("editor.saveAndView")}" />
 		<input type="button" onClick="$('#saveButton').click()"  value="${vrtx.getMsg("editor.save")}" />
 		<input type="button" onClick="$('#cancel').click()"  value="${vrtx.getMsg("editor.cancel")}" />
@@ -86,7 +87,6 @@
       <@handleProps />
 
       <div class="properties">
-        <a id="help-link" href="${editorHelpURL?html}" target="new_window"><@vrtx.msg code="editor.help"/></a>
         <@propsForm resource.preContentProperties />
       </div>
 
@@ -95,7 +95,6 @@
       <label class="resource.content" for="resource.content"><@vrtx.msg code="editor.content" /></label> 
        <textarea name="resource.content" rows="8" cols="60" id="resource.content">${resource.bodyAsString?html}</textarea>
        <@editor.createEditor  'resource.content' true false />
-
       </div>
       </#if>
 

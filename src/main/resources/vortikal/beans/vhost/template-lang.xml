@@ -10,6 +10,14 @@
     </constructor-arg>
   </bean>
 
+  <bean id="templateLanguage.toIntFunction" class="org.vortikal.text.tl.expr.ToIntFunction">
+    <constructor-arg>
+      <bean class="org.vortikal.text.tl.Symbol">
+        <constructor-arg  value="int" />
+      </bean>
+    </constructor-arg>
+  </bean>
+
   <bean id="templateLanguage.concatFunction" class="org.vortikal.text.tl.expr.Concat">
     <constructor-arg>
       <bean class="org.vortikal.text.tl.Symbol">

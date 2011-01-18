@@ -185,6 +185,10 @@ public class URLTest extends TestCase {
         assertEquals("http://a/", url.relativeURL("../../").toString());
         assertEquals("http://a/g", url.relativeURL("../../g").toString());
         assertEquals("http://a/b/c/d?q#f", url.relativeURL("").toString());
+        
+        url = URL.parse("http://a/b/");
+        assertEquals("http://a/b/?x=y", 
+                url.relativeURL("./?x=y").toString());
     }
     
     public void testIsEncoded() {

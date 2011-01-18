@@ -775,9 +775,10 @@ public class URL {
             }
             path = Path.fromString(rel);
         } else if (!"".equals(rel)) {
-            if (!path.isRoot()) {
+            if (!this.collection) {
                 path = path.getParent();
             }
+            
             path = path.expand(rel);
         }
         URL url = new URL(this);

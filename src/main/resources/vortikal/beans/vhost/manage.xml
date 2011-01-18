@@ -795,7 +795,6 @@
         <ref bean="authorNamePropDef" />
         <ref bean="authorEmailPropDef" />
         <ref bean="authorURLPropDef" />
-        <ref bean="scientificDisciplinesPropDef" />
         <ref bean="contentTypePropDef" />
         <ref bean="userSpecifiedCharacterEncodingPropDef" />
         <ref bean="guessedCharacterEncodingPropDef" />

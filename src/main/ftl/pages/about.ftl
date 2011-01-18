@@ -193,9 +193,7 @@
     <!-- content:authorURL -->
     <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'content:authorURL' inputSize=40 />
 
-    <!-- scientific:disciplines -->
-    <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'scientific:disciplines' inputSize=40 />
-  </table>
+ </table>
 
 
   <h3 class="resourceInfoHeader">

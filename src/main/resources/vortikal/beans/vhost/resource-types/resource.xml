@@ -7,7 +7,6 @@
   <import resource="property-types.xml" />
   <import resource="mixins/content-description.xml" />
   <import resource="mixins/header-control.xml" />
-  <import resource="mixins/scientific.xml" />
   
   <bean id="resourceTypeTree" class="org.vortikal.repository.ResourceTypeTreeImpl">
     <property name="typeLocalizationProvider" ref="typeLocalizationProvider" />
@@ -22,7 +21,6 @@
       <list>
         <ref bean="contentDescriptionMixinResourceTypeDef" />
         <ref bean="headerControlMixinResourceTypeDef" />
-        <ref bean="scientificDisciplinesMixinResourceTypeDef" />
       </list>
     </property>
     <property name="propertyTypeDefinitions">

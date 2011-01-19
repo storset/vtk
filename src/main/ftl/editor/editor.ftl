@@ -41,7 +41,7 @@
  	  });
     
       $(document).ready(function() {
-          interceptEnterKey();
+          interceptEnterKey('#resource\\.tags');
           setAutoComplete('resource\\.tags', 'tags', {minChars:1});
           initDatePicker("${language}");
        });

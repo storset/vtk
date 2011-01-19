@@ -47,8 +47,8 @@ function enableDisableInput(principalListDisplay, submitButtonsPadding) {
  * alert(unCheckedMessage); } }
  */
 
-function interceptEnterKey() {
-	$("form").bind("keypress", function(e) {
+function interceptEnterKey(idOrClass) {
+	$("form input" + idOrClass).bind("keypress", function(e) {
             if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
                return false; // cancel the default browser click
            }

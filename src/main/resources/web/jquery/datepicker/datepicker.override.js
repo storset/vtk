@@ -5,7 +5,6 @@
 
 function eventListingCalendar(allowedDates, activeDate, clickableDayTitle, notClickableDayTitle, language) {
 
-  var init = true;
   var activeDateForInit = makeActiveDateForInit(activeDate);
 
   // i18n (default english)
@@ -23,12 +22,12 @@ function eventListingCalendar(allowedDates, activeDate, clickableDayTitle, notCl
     firstDay : 1,
     showOtherMonths: true,
     defaultDate : activeDateForInit,
-    beforeShowDay : function(day) {
+    beforeShowDay : function(day) { // iterates days in month
       // Add classes and tooltip for dates with and without events
       var date_str = $.datepicker.formatDate("yy-m-d", new Date(day)).toString();
-      if ($.inArray(date_str, allowedDates) != -1) {
-        if (($.datepicker.formatDate("yy-m-d", new Date(activeDateForInit)).toString() == date_str) && !init) {
-          return [ true, 'state-active', clickableDayTitle ];
+      if ($.inArray(date_str, allowedDates) != -1) { // If a day in month has events
+        if ($.datepicker.formatDate("yy-m-d", new Date(activeDateForInit)).toString() == date_str) {
+          return [ true, 'state-active', clickableDayTitle ]; // If today has events
         } else {
           return [ true, '', clickableDayTitle ];
         }
@@ -37,23 +36,26 @@ function eventListingCalendar(allowedDates, activeDate, clickableDayTitle, notCl
       }
     },
     onChangeMonthYear : function(year, month, inst) {
-      var date = $.datepicker.formatDate("yy-mm", new Date(year, month - 1)).toString();
-      
-      if (!init) {
-        location.href = location.href.split('?')[0] + "?date=" + date;
-      } else {
-    	init = false;  
-      }
-      
-      //wait.. and make month link
-      setTimeout(function(){makeMonthLink(date)}, 100);
+      var date = $.datepicker.formatDate("yy-mm", new Date(year, month - 1)).toString();      
+      location.href = "./?date=" + date;
     }
   });
-}
+  
+  var interval = 25;
+  var checkMonthYearHTMLLoaded = setInterval(function() {
+	if($(".ui-datepicker-month").length && $(".ui-datepicker-year").length) {
+  	  var date = $.datepicker.formatDate("yy-mm", new Date(activeDateForInit)).toString();
+  	  
+  	  $(".ui-datepicker-month")
+  	    .html("<a href='./?date=" + date + "'>" 
+  	      + $(".ui-datepicker-month").text() + ' ' 
+  	      + $(".ui-datepicker-year").remove().text() 
+  	      + "</a>");
+  	  
+  	  clearInterval(checkMonthYearHTMLLoaded);
+    }
+  }, interval);
 
-function makeMonthLink(date) {
-  $(".ui-datepicker-month").html("<a href='" + location.href.split('?')[0] + "?date=" + date + "'>" 
-  + $(".ui-datepicker-month").text() + ' ' + $(".ui-datepicker-year").remove().text() + "</a>");
 }
 
 // For init of calender / datepicker()

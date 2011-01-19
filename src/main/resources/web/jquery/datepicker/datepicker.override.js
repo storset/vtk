@@ -1,12 +1,15 @@
 /*
- * Specific behavior of datepicker for event listing
- * TODO: look at interchange between format '2010-4-2' and '2010-04-02'
+ * Specific behavior of datepicker for event-listing
+ * 
+ * TODO: Better interchange between format '2010-4-2' and '2010-04-02'
+ * 
  */
 
 function eventListingCalendar(allowedDates, activeDate, clickableDayTitle, notClickableDayTitle, language) {
 
   var activeDateForInit = makeActiveDateForInit(activeDate);
-
+  var defaultDate = (activeDateForInit == null) ? null : activeDateForInit[0];
+  
   // i18n (default english)
   if (language == 'no') {
     $.datepicker.setDefaults($.datepicker.regional['no']);
@@ -21,12 +24,22 @@ function eventListingCalendar(allowedDates, activeDate, clickableDayTitle, notCl
     },
     firstDay : 1,
     showOtherMonths: true,
-    defaultDate : activeDateForInit,
+    defaultDate : defaultDate,
     beforeShowDay : function(day) { // iterates days in month
       // Add classes and tooltip for dates with and without events
       var date_str = $.datepicker.formatDate("yy-m-d", new Date(day)).toString();
-      if ($.inArray(date_str, allowedDates) != -1) { // If a day in month has events
-        if ($.datepicker.formatDate("yy-m-d", new Date(activeDateForInit)).toString() == date_str) {
+      
+      if ($.inArray(date_str, allowedDates) != -1) { // If a day in month has event
+    	// Format correct
+    	if(activeDateForInit[1] == 3) {
+    	  var choosen = $.datepicker.formatDate("yy-m-d", activeDateForInit[0]).toString();
+    	} else if(activeDateForInit[1] == 2) {
+    	  var choosen = $.datepicker.formatDate("yy-m", activeDateForInit[0]).toString();
+    	} else if (activeDateForInit[1] == 3) {
+    	  var choosen = $.datepicker.formatDate("yy", activeDateForInit[0]).toString();
+    	}
+
+        if (choosen == date_str) {
           return [ true, 'state-active', clickableDayTitle ]; // If today has events
         } else {
           return [ true, '', clickableDayTitle ];
@@ -59,14 +72,15 @@ function eventListingCalendar(allowedDates, activeDate, clickableDayTitle, notCl
 }
 
 // For init of calender / datepicker()
-function makeActiveDateForInit(activeDate) {
+function makeActiveDateForInit(activeDate) { 
   if(activeDate == "") { return null; }
   var dateArray = activeDate.split('-');
-  if (dateArray.length == 3) {
-    return new Date(dateArray[0], dateArray[1] - 1, dateArray[2]);
-  } else if (dateArray.length == 2) {
-    return new Date(dateArray[0], dateArray[1] - 1);
-  } else if (dateArray.length == 1) {
-    return new Date(dateArray[0]);
+  var len = dateArray.length;
+  if (len == 3) {
+    return [new Date(dateArray[0], dateArray[1] - 1, dateArray[2]), len];
+  } else if (len == 2) {
+    return [new Date(dateArray[0], dateArray[1] - 1), len];
+  } else if (len == 1) {
+    return [new Date(dateArray[0]), len];
   }
 }

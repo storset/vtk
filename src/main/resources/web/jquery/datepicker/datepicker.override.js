@@ -8,7 +8,7 @@
 function eventListingCalendar(allowedDates, activeDate, clickableDayTitle, notClickableDayTitle, language) {
 
   var activeDateForInit = makeActiveDateForInit(activeDate);
-  var defaultDate = (activeDateForInit == null) ? null : activeDateForInit[0];
+  var defaultDate = (activeDateForInit == null) ? new Date() : activeDateForInit[0];
   
   // i18n (default english)
   if (language == 'no') {

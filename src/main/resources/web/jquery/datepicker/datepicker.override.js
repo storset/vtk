@@ -8,9 +8,7 @@
 function eventListingCalendar(allowedDates, activeDate, clickableDayTitle, notClickableDayTitle, language) {
 
   var activeDateForInit = makeActiveDateForInit(activeDate);
-  //console.log(defaultDate);
-  //console.log(activeDateForInit[0] + "    " + activeDateForInit[1])
-  
+
   // i18n (default english)
   if (language == 'no') {
     $.datepicker.setDefaults($.datepicker.regional['no']);

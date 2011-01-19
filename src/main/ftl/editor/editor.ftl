@@ -24,9 +24,6 @@
     <@editor.addCkScripts />
 
     <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/tooltip.js"></script>
-    <@autocomplete.addAutoCompleteScripts srcBase="${webResources?html}"/>
-    
-    <@editor.addDatePickerScripts true />
     
   	<script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/shortcut.js"></script>
     <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/admin-ck-helper.js"></script>
@@ -57,6 +54,10 @@
     //-->
     </script>
     <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/imageref.js"></script>
+    
+    <@editor.addDatePickerScripts true />
+    
+    <@autocomplete.addAutoCompleteScripts srcBase="${webResources?html}"/>
     
    <#global baseFolder = "/" />
    <#if resourceContext.parentURI?exists>
@@ -392,7 +393,7 @@
           <#if name = 'recursive-listing-subfolders'>
             <label>${vrtx.getMsg("editor.recursive-listing.featured-articles")}</label>
           </#if>
-          <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32" />
+          <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32" />         
           <#if name = 'recursive-listing-subfolders'>
             <label>${vrtx.getMsg("editor.recursive-listing.featured-articles.hint")}</label>
           </#if>

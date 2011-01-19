@@ -163,6 +163,9 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
                 } catch (Throwable t) {
                     return;
                 }
+                if (newPath == null) {
+                    return;
+                }
                 url = new URL(this.base);
                 url.setPath(newPath);
                 url.clearParameters();

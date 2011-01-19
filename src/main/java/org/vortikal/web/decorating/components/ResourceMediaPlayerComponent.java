@@ -2,8 +2,6 @@ package org.vortikal.web.decorating.components;
 
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;

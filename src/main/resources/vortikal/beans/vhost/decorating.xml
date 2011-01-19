@@ -157,6 +157,7 @@
     <property name="sourceSet">
       <set>
         <ref bean="templateLanguage.toStringFunction" />
+        <ref bean="templateLanguage.toIntFunction" />
         <ref bean="templateLanguage.concatFunction" />
         <ref bean="templateLanguage.splitFunction" />
         <ref bean="templateLanguage.lengthFunction" />

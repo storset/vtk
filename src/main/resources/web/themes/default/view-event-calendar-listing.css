@@ -114,7 +114,6 @@
   background-color: #d9d9d9;
 }
 
-// Remove styling for .ui-datepicker-unselectable span in other months
 #vrtx-event-calendar .ui-widget-content table td.ui-datepicker-other-month span {
   border: none;
   background-color: inherit !important;

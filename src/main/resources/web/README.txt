@@ -1,7 +1,10 @@
 Readme for web-resources
-------------------------
+========================
 
 <work in progress>
+
+Videoplayer
+-----------
 
 .
 |-- StrobeMediaPlayback_1.0-full
@@ -9,21 +12,27 @@ Readme for web-resources
 |   |-- 10.1
 |   `-- src
 
-Mediaplayer
+http://www.osmf.org/strobe_mediaplayback.html
+
+jQuery JS library
+-----------------
 
 |-- jquery
-|   |-- autocomplete
-|   |-- datepicker
+|   |-- autocomplete <move partial into plugins and partial into js?>
+|   |-- datepicker <move into js?>
 |   |-- include-jquery.js
 |   |-- jquery-1.4.4.min.js
-|   |-- jquery.treeview.js
-|   `-- jquery.treeview.min.js
+|   |-- jquery.treeview.js <move into plugins?>
+|   `-- jquery.treeview.min.js <move into plugins?>
 
-jQuery
+jQuery JS plugins
+-----------------
 
 |-- jquery-plugins
 
-<move plugins here>
+<move plugins here?>
+
+Old jQuery UI
 
 |-- jquery-ui-1.7.1.custom
 |   |-- css
@@ -33,19 +42,26 @@ jQuery
 
 <replace with 1.8.8>
 
+jQuery UI for datepicker ++
+---------------------------
+
 |-- jquery-ui-1.8.8.custom
 |   |-- css
 |   |-- development-bundle
 |   |-- index.html
 |   `-- js
 
-jQuery UI for datepicker ++
+Customized jQuery UI for tabs 
+-----------------------------
 
 |-- jquery-ui-tabs-customized
 |   |-- css
 |   `-- js
 
-Customized for tabs <move into view-person.css>
+<move as override into view-person.css?>
+
+Admin enhancements <explain>
+----------------------------
 
 |-- js
 |   |-- admin-ck-helper.js
@@ -80,21 +96,26 @@ Customized for tabs <move into view-person.css>
 |   |-- tabs.js
 |   |-- tasknode.js
 |   |-- toc.js
-|   |-- tooltip.js
+|   |-- tooltip.jsi dette formatet
 |   |-- treeview.js
 |   `-- visualize-broken-links.js
 
-Admin enhancements <explain>
+Wordpress Audio Player
+--------------------------------------------
 
 |-- swf
 |   `-- audioplayer.swf
 
-For audioplayer <insert name of audioplayer>
+http://wpaudioplayer.com/
+
+Themes (CSS / icons)
+--------------------
 
 |-- themes
 |   `-- default
 
-CSS and icons
+Thickbox dialog window (modified for Vortex)
+--------------------------------------------
 
 `-- thickbox-modified
     |-- LESMEG
@@ -104,5 +125,3 @@ CSS and icons
     |-- macFFBgHack.png
     |-- thickbox.css
     `-- thickbox.js
-    
-Thickbox dialog window

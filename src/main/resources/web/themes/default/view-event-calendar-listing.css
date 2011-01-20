@@ -57,11 +57,11 @@
 .ui-datepicker .ui-datepicker-next-hover { right:2px; }
 
 #vrtx-event-calendar .ui-datepicker .ui-datepicker-prev span {
-  background-image: url(../../jquery-ui-tabs-customized/css/ui-lightness/images/left.png);
+  background-image: url(../../jquery/plugins/jquery-ui-tabs-customized/css/ui-lightness/images/left.png);
 }
 
 #vrtx-event-calendar .ui-datepicker .ui-datepicker-next span {
-  background-image: url(../../jquery-ui-tabs-customized/css/ui-lightness/images/right.png);
+  background-image: url(../../jquery/plugins/jquery-ui-tabs-customized/css/ui-lightness/images/right.png);
 }
 
 #vrtx-event-calendar .ui-datepicker .ui-datepicker-header a:hover {

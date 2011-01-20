@@ -1151,7 +1151,7 @@
             <value>${themeBaseURL}/basic.css</value>
             <value>${themeBaseURL}/tabs.css</value>
             <value>${themeBaseURL}/view-container.css</value>
-            <value>${webResources.baseURL}/thickbox-modified/thickbox.css</value>
+            <value>${js.baseURL}/plugins/thickbox-modified/thickbox.css</value>
           </list>
         </entry>
       </map>
@@ -1177,8 +1177,8 @@
             <value>${jsBaseURL}/admin-enhancements.js</value>
             <value>${jsBaseURL}/featured-articles-multiple-properties.js</value>
             <value>${jsBaseURL}/admin-edit-show-hide.js</value>
-            <value>${webResources.baseURL}/thickbox-modified/thickbox.js</value>
-            <value>${webResources.baseURL}/thickbox-modified/check-unsaved-changes.js</value>
+            <value>${js.baseURL}/plugins/thickbox-modified/thickbox.js</value>
+            <value>${js.baseURL}/plugins/thickbox-modified/check-unsaved-changes.js</value>
           </list>
         </entry>
       </map>
@@ -1629,8 +1629,8 @@
             <value>${jquery.baseURL}/jquery-${jquery.version}.min.js</value>
             <value>${jsBaseURL}/admin-enhancements.js</value>
             <value>${jsBaseURL}/iframe-admin.js</value>
-            <value>${webResources.baseURL}/thickbox-modified/thickbox.js</value>
-            <value>${webResources.baseURL}/thickbox-modified/check-unsaved-changes.js</value>
+            <value>${js.baseURL}/plugins/thickbox-modified/thickbox.js</value>
+            <value>${js.baseURL}/plugins/thickbox-modified/check-unsaved-changes.js</value>
           </list>
         </entry>
       </map>

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testrun name="" >
-<testsuite  name="Default Test Suite" project="StrobeMediaPlayerTest">
-<testsuite name="StrobeMediaPlayerTests" type="testsuiteclass"/>
-<testsuite name="org.osmf.player.chrome:TestControlBarElement" type="testcaseclass"/>
-<testsuite name="org.osmf.player.configuration:TestPlayerConfiguration" type="testcaseclass"/>
-</testsuite>
-</testrun>

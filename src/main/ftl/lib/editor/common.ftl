@@ -20,9 +20,9 @@
   <script type="text/javascript" src="${webResources?html}/jquery-ui-1.8.8.custom/js/jquery.ui.datepicker-no.js"></script>
   <script type="text/javascript" src="${webResources?html}/jquery-ui-1.8.8.custom/js/jquery.ui.datepicker-nn.js"></script>
   <#if oldEditor>
-    <script type="text/javascript" src="${jsBaseURL?html}/admin-datepicker.js"></script>
+    <script type="text/javascript" src="${jsBaseURL?html}/datepicker/datepicker-admin-old.js"></script>
   <#else>
-    <script type="text/javascript" src="${jsBaseURL?html}/datepicker.js"></script>  
+    <script type="text/javascript" src="${jsBaseURL?html}/datepicker/datepicker-admin.js"></script>  
   </#if>
 </#macro>
 

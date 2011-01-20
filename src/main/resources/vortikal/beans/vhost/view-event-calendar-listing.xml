@@ -165,7 +165,7 @@
             <value>${webResources.baseURL}/jquery-ui-1.8.8.custom/js/jquery-ui-1.8.8.custom.min.js</value>
             <value>${webResources.baseURL}/jquery-ui-1.8.8.custom/js/jquery.ui.datepicker-no.js</value>
             <value>${webResources.baseURL}/jquery-ui-1.8.8.custom/js/jquery.ui.datepicker-nn.js</value>
-            <value>${webResources.baseURL}/jquery/datepicker/datepicker.override.js</value>
+            <value>${webResources.baseURL}/js/datepicker/datepicker-event-listing.js</value>
           </list>
         </entry>
       </map>

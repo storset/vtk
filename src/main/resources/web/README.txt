@@ -19,7 +19,6 @@ jQuery JS library
 
 |-- jquery
 |   |-- autocomplete <move partial into plugins and partial into js?>
-|   |-- datepicker <move into js?>
 |   |-- include-jquery.js
 |   `-- jquery-1.4.4.min.js
 
@@ -65,9 +64,12 @@ Admin enhancements <explain>
 ----------------------------
 
 |-- js
+|   |-- datepicker
+        |-- datepicker-admin-old.js
+        |-- datepicker-admin.js
+        |-- datepicker-event-listing.js
 |   |-- admin-ck-helper.js
 |   |-- admin-ck-setup.js
-|   |-- admin-datepicker.js
 |   |-- admin-edit-show-hide.js
 |   |-- admin-enhancements.js
 |   |-- admin-prop-change.js
@@ -76,7 +78,6 @@ Admin enhancements <explain>
 |   |-- browse.js
 |   |-- browser-sniffer.js
 |   |-- customsort-norwegian-mod.js
-|   |-- datepicker.js
 |   |-- email-a-friend.js
 |   |-- featured-articles-multiple-properties.js
 |   |-- fixed.js

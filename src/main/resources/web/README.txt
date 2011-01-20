@@ -21,15 +21,15 @@ jQuery JS library
 |   |-- autocomplete <move partial into plugins and partial into js?>
 |   |-- datepicker <move into js?>
 |   |-- include-jquery.js
-|   |-- jquery-1.4.4.min.js
-|   |-- jquery.treeview.js <move into plugins?>
-|   `-- jquery.treeview.min.js <move into plugins?>
+|   `-- jquery-1.4.4.min.js
 
 jQuery JS plugins
 -----------------
 
 |-- jquery-plugins
-    |-- jquery.scrollTo-1.4.2-min.js
+|   |-- jquery.scrollTo-1.4.2-min.js
+|   |-- jquery.treeview.js
+|   |-- jquery.treeview.min.js
     
 <move all jQuery plugins in here?>
 

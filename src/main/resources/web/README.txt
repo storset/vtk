@@ -29,8 +29,9 @@ jQuery JS plugins
 -----------------
 
 |-- jquery-plugins
-
-<move plugins here?>
+    |-- jquery.scrollTo-1.4.2-min.js
+    
+<move all jQuery plugins in here?>
 
 Old jQuery UI
 
@@ -65,10 +66,10 @@ Admin enhancements <explain>
 
 |-- js
 |   |-- admin-ck-helper.js
+|   |-- admin-ck-setup.js
 |   |-- admin-datepicker.js
 |   |-- admin-edit-show-hide.js
 |   |-- admin-enhancements.js
-|   |-- admin-ck-setup.js
 |   |-- admin-prop-change.js
 |   |-- admin-showhide.js
 |   |-- audio-player.js
@@ -76,7 +77,6 @@ Admin enhancements <explain>
 |   |-- browser-sniffer.js
 |   |-- customsort-norwegian-mod.js
 |   |-- datepicker.js
-|   |-- dynamic-resize-iframe.js
 |   |-- email-a-friend.js
 |   |-- featured-articles-multiple-properties.js
 |   |-- fixed.js
@@ -86,7 +86,6 @@ Admin enhancements <explain>
 |   |-- iframe-view.js
 |   |-- image-listing-component.js
 |   |-- imageref.js
-|   |-- jquery.scrollTo-1.4.2-min.js
 |   |-- md5
 |   |-- multipleinputfields.js
 |   |-- serverbrowsedialog.js

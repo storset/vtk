@@ -67,7 +67,12 @@ Admin enhancements <explain>
 |   |-- datepicker
         |-- datepicker-admin-old.js
         |-- datepicker-admin.js
-        |-- datepicker-event-listing.js
+        `-- datepicker-event-listing.js
+    |-- md5
+        `-- md5.js
+    |-- social
+        |-- email-a-friend.js
+        `-- share.js
 |   |-- admin-ck-helper.js
 |   |-- admin-ck-setup.js
 |   |-- admin-edit-show-hide.js
@@ -78,7 +83,6 @@ Admin enhancements <explain>
 |   |-- browse.js
 |   |-- browser-sniffer.js
 |   |-- customsort-norwegian-mod.js
-|   |-- email-a-friend.js
 |   |-- featured-articles-multiple-properties.js
 |   |-- fixed.js
 |   |-- ie6-image-listing.js
@@ -90,7 +94,6 @@ Admin enhancements <explain>
 |   |-- md5
 |   |-- multipleinputfields.js
 |   |-- serverbrowsedialog.js
-|   |-- share.js
 |   |-- shortcut.js
 |   |-- tablesort.js
 |   |-- tabs.js

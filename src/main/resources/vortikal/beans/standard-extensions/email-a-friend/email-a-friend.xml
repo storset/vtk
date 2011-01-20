@@ -81,7 +81,7 @@
     </property>
     <property name="attributes">
       <map>
-        <entry key="url" value="${jsBaseURL}/email-a-friend.js" />
+        <entry key="url" value="${jsBaseURL}/social/email-a-friend.js" />
       </map>
     </property>
   </bean>

@@ -152,7 +152,7 @@
         <!--
         <value>${jsBaseURL}/browser-sniffer.js</value>
         -->
-        <value>${jsBaseURL}/plugins/fixed.js</value>
+        <value>${jsBaseURL}/fixed.js</value>
       </list>
     </constructor-arg>
   </bean>

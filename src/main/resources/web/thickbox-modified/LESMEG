@@ -1,0 +1,38 @@
+* Thickbox versjon 3.1 modifisert for bruk i admin *
+
+
+1.1 Ekstra parameter
+
+Denne versjonen av Thickbox har en ekstra parameter "showAsHtml". Dette parameteret 
+kan settes i query stringen dersom man ønsnker å overstyre Thickbox sin innebygde 
+funksjon for nå vise bilder. Grunnen til at vi trenger denne i admin er at Thickbox
+gjetter på filtype på grunnlag av filetternavnet på filnavnet i query strengen.  
+
+Ved oppgradering til ny versjon er det viktig at man tar med seg denne
+funksjonaliteten, hvis ikke vil det oppstå feil ved blant annet sletting 
+av bilder. 
+
+* Bruk * 
+
+Lenken som skal åpnes i Thickbox må ha "showAsHtml=true" som ekstra parameter. 
+
+* Eksempel fra "collectionlisting.ftl" * 
+
+<a href="${collectionListing.childLinks[child_index][item]?html}&showAsHtml=true&height=80&width=230"
+      	   class="thickbox">${actionName}</a>
+      	   
+1.2 Endret sti for "loadingAnimation.gif"
+
+Første linje i "thickbox.js" endret for å peke på riktig sti til bildet "loadingAnimation.gif". 
+
+Ref: 
+var tb_pathToImage = "/vrtx/__vrtx/static-resources/thickbox-modified/loadingAnimation.gif";
+
+1.3 Fjernet linje fra CSS
+
+*{padding: 0; margin: 0;}
+
+1.4 Modifisert loader med sjekk for endringer i innholdet til editoren 
+
+Benytt "thickbox-check-unsaved-changes" i stede for "thickbox" for at det skal sjekkes for 
+endringer i editoren før lasting av thickbox. Se "check-unsaved-changes.js". 

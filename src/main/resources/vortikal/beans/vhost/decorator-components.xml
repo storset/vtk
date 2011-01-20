@@ -191,7 +191,7 @@
         <entry key="autoplay" value="false" />
         <entry key="audioFlashPlayerJsURL" value="${jsBaseURL}/audio-player.js" />
         <entry key="audioFlashPlayerFlashURL" value="${flash.baseURL}/audioplayer.swf" />
-        <entry key="strobe" value="${flash.baseURL}/StrobeMediaPlayback_1.0-full/10.1/StrobeMediaPlayback.swf" />
+        <entry key="strobe" value="${webResources.baseURL}/StrobeMediaPlayback_1.0-full/10.1/StrobeMediaPlayback.swf" />
       </map>
     </property>
   </bean>

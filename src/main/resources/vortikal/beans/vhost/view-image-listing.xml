@@ -83,8 +83,8 @@
             </entry>
             <entry key="table">
               <list>
-                <value>${jsBaseURL}/plugins/tablesort.js</value>
-                <value>${jsBaseURL}/plugins/customsort-norwegian-mod.js</value>
+                <value>${jsBaseURL}/tablesort.js</value>
+                <value>${jsBaseURL}/customsort-norwegian-mod.js</value>
               </list>
             </entry>
             <entry key="gallery">

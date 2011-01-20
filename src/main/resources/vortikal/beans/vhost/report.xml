@@ -138,8 +138,8 @@
         </entry>
         <entry key="jsURLs">
           <list>
-            <value>${jsBaseURL}/tablesort.js</value>
-            <value>${jsBaseURL}/customsort-norwegian-mod.js</value>
+            <value>${jsBaseURL}/plugins/tablesort.js</value>
+            <value>${jsBaseURL}/plugins/customsort-norwegian-mod.js</value>
           </list>
         </entry>
       </map>

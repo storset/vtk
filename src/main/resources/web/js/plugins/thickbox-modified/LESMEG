@@ -26,7 +26,7 @@ Lenken som skal åpnes i Thickbox må ha "showAsHtml=true" som ekstra parameter.
 Første linje i "thickbox.js" endret for å peke på riktig sti til bildet "loadingAnimation.gif". 
 
 Ref: 
-var tb_pathToImage = "/vrtx/__vrtx/static-resources/thickbox-modified/loadingAnimation.gif";
+var tb_pathToImage = "/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif";
 
 1.3 Fjernet linje fra CSS
 

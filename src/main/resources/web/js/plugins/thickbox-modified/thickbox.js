@@ -6,7 +6,7 @@
 */
 
 // Modified path for use in Vortex
-var tb_pathToImage = "/vrtx/__vrtx/static-resources/thickbox-modified/loadingAnimation.gif";
+var tb_pathToImage = "/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif";
 
 /*!!!!!!!!!!!!!!!!! edit below this line at your own risk !!!!!!!!!!!!!!!!!!!!!!!*/
 

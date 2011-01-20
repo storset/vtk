@@ -11,7 +11,8 @@ function visualizeBrokenLinks(options) {
     var idx = 0;
     urls[idx] = [];
     var context = $(selection);
-    context.contents().find("a." + linkClass).each(function(elem) {
+    var links = context.contents().find("a." + linkClass);
+    for (var i = 0, linksLength = links.length; i < linksLength; i++) {
         if (urls[idx].length == chunk) {
             idx++;
         }
@@ -19,9 +20,9 @@ function visualizeBrokenLinks(options) {
             urls[idx] = [];
         }
         var list = urls[idx];
-        var href = $(this).attr("href");
-        list[list.length] = $(this).attr("href");
-    });
+        var href = $(links[i]).attr("href");
+        list[list.length] = href;
+    }
     if (urls.length == 0) {
         if (options.completed) options.completed(0);
         return;
@@ -29,7 +30,7 @@ function visualizeBrokenLinks(options) {
     var reqs = 0;  
     $.each(urls, function(i, list) {
         var data = "";
-        for (var j = 0; j < list.length; j++) {
+        for (var j = 0, listLength = list.length; j < listLength; j++) {
             data += list[j] + "\n";
         }
         $.ajax({
@@ -53,17 +54,18 @@ function visualizeBrokenLinks(options) {
 }
 
 function linkCheckResponse(results, context, localizer, linkClass) {
-    context.contents().find("a." + linkClass).each(function(e) {
-        var href = $(this).attr('href');
-        for (var i = 0; i < results.length; i++) {
+	var links = context.contents().find("a." + linkClass);
+	for (var j = 0, linksLength = links.length; j < linksLength; j++) {
+        var href = $(links[j]).attr('href');
+        for (var i = 0, resultsLength = results.length; i < resultsLength; i++) {
             if (results[i].status != "OK") {
                 if (href == results[i].link) {
                     var color = (results[i].status == "NOT_FOUND") ? "red" : "brown";
                     var msg = (localizer) ? localizer(results[i].status) : results[i].status;
-                    $(this).append(" - [" + msg + "]").css("color", color).removeClass(linkClass);
+                    $(links[j]).append(" - [" + msg + "]").css("color", color).removeClass(linkClass);
                     break;
                 }
             }
         }
-    });
+	}
 }

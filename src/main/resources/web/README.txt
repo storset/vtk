@@ -1,14 +1,20 @@
 Readme for web-resources
 ========================
 
-.
-|-- README.txt
+Flash
+-----
+
 |-- flash
 |   |-- StrobeMediaPlayback_1.0-full (http://www.osmf.org/strobe_mediaplayback.html)
 |   |   |-- 10.0
 |   |   |-- 10.1
 |   |   `-- src
 |   `-- audioplayer.swf (http://wpaudioplayer.com/)
+
+
+jQuery library and jQuery plugins
+---------------------------------
+
 |-- jquery
 |   |-- include-jquery.js
 |   |-- jquery-1.4.4.min.js
@@ -20,6 +26,14 @@ Readme for web-resources
 |       |-- jquery.treeview.js
 |       |-- jquery.treeview.min.js
 |       `-- ui
+|           |-- jquery-ui-1.7.1.custom
+|           |-- jquery-ui-1.8.8.custom
+|           |-- jquery-ui-tabs-customized.custom
+
+
+JavaScript and plain JS plugins
+-------------------------------
+
 |-- js
 |   |-- admin-ck-helper.js
 |   |-- admin-ck-setup.js
@@ -47,22 +61,10 @@ Readme for web-resources
 |   |-- imageref.js
 |   |-- md5
 |   |   `-- md5.js
-|   |-- multipleinputfields.js
-|   |-- plugins
-|   |   |-- customsort-norwegian-mod.js
-|   |   |-- fixed.js
-|   |   |-- shortcut.js
-|   |   |-- tablesort.js
-|   |   `-- thickbox-modified
-|   |-- serverbrowsedialog.js
-|   |-- social
-|   |   |-- email-a-friend.js
-|   |   `-- share.js
-|   |-- tabs.js
-|   |-- tasknode.js
-|   |-- toc.js
-|   |-- tooltip.js
-|   |-- treeview.js
-|   `-- visualize-broken-links.js
+
+
+CSS and icons
+-------------
+
 `-- themes
     `-- default

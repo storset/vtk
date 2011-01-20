@@ -22,7 +22,7 @@
     <title>Permissions on resource</title>
     
     <@autocomplete.addAutoCompleteScripts srcBase="${webResources?html}"/>
-    <script type='text/javascript' src='${webResources?html}/jquery/autocomplete/autocomplete.permissions.js'></script>
+    <script type='text/javascript' src='${webResources?html}/js/autocomplete/autocomplete-permissions.js'></script>
     
     <script type="text/javascript">
       $(document).ready(function() {

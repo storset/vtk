@@ -18,7 +18,6 @@ jQuery JS library
 -----------------
 
 |-- jquery
-|   |-- autocomplete <move partial into plugins and partial into js?>
 |   |-- include-jquery.js
 |   `-- jquery-1.4.4.min.js
 
@@ -26,9 +25,12 @@ jQuery JS plugins
 -----------------
 
 |-- jquery-plugins
+|   |-- jquery.autocomplete.css
+|   |-- jquery.autocomplete.js
 |   |-- jquery.scrollTo-1.4.2-min.js
 |   |-- jquery.treeview.js
 |   |-- jquery.treeview.min.js
+|   `-- README.txt
     
 <move all jQuery plugins in here?>
 
@@ -64,15 +66,19 @@ Admin enhancements <explain>
 ----------------------------
 
 |-- js
+|   |-- autocomplete
+|   |   |-- autocomplete-permissions.js
+|   |   |-- autocomplete.js
+|   |   `-- autocomplete.override.css      
 |   |-- datepicker
-        |-- datepicker-admin-old.js
-        |-- datepicker-admin.js
-        `-- datepicker-event-listing.js
-    |-- md5
-        `-- md5.js
-    |-- social
-        |-- email-a-friend.js
-        `-- share.js
+|   |   |-- datepicker-admin-old.js
+|   |   |-- datepicker-admin.js
+|   |   `-- datepicker-event-listing.js
+|   |-- md5
+|   |   `-- md5.js
+|   |-- social
+|   |   |-- email-a-friend.js
+|   |   `-- share.js
 |   |-- admin-ck-helper.js
 |   |-- admin-ck-setup.js
 |   |-- admin-edit-show-hide.js
@@ -99,7 +105,7 @@ Admin enhancements <explain>
 |   |-- tabs.js
 |   |-- tasknode.js
 |   |-- toc.js
-|   |-- tooltip.jsi dette formatet
+|   |-- tooltip.js
 |   |-- treeview.js
 |   `-- visualize-broken-links.js
 

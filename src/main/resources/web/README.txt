@@ -68,7 +68,7 @@ Admin enhancements <explain>
 |   |-- admin-datepicker.js
 |   |-- admin-edit-show-hide.js
 |   |-- admin-enhancements.js
-|   |-- admin-fck-setup.js
+|   |-- admin-ck-setup.js
 |   |-- admin-prop-change.js
 |   |-- admin-showhide.js
 |   |-- audio-player.js

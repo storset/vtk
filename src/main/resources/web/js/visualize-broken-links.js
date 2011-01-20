@@ -3,6 +3,7 @@ function visualizeBrokenLinks(options) {
     if (!options) throw "Missing argument";
     if (!options.validationURL) throw "Missing 'validationURL' field in argument";
     if (!options.selection) throw "Missing 'selection' field in argument";
+    
     var selection = options.selection;
     var validationURL = options.validationURL;
     var linkClass = options.linkClass ? options.linkClass : 'vrtx-link-check';
@@ -29,7 +30,7 @@ function visualizeBrokenLinks(options) {
         return;
     }
     var reqs = 0;
-    $.each(urls, function(i, list) {
+    $.each(urls, function(k, list) {
         var data = "";
         for (var j = 0, listLength = list.length; j < listLength; j++) {
             data += list[j] + "\n";

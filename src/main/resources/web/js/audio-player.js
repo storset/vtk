@@ -1,7 +1,8 @@
 var ap_instances = new Array();
 
 function ap_stopAll(playerID) {
-	for(var i = 0;i<ap_instances.length;i++) {
+	var len = ap_instances.length;
+	for(var i = 0;i<len;i++) {
 		try {
 			if(ap_instances[i] != playerID) document.getElementById("audioplayer" + ap_instances[i].toString()).SetVariable("closePlayer", 1);
 			else document.getElementById("audioplayer" + ap_instances[i].toString()).SetVariable("closePlayer", 0);
@@ -14,7 +15,8 @@ function ap_stopAll(playerID) {
 function ap_registerPlayers() {
 	var objectID;
 	var objectTags = document.getElementsByTagName("object");
-	for(var i=0;i<objectTags.length;i++) {
+	var len = objectTags.length;
+	for(var i=0;i<len;i++) {
 		objectID = objectTags[i].id;
 		if(objectID.indexOf("audioplayer") == 0) {
 			ap_instances[i] = objectID.substring(11, objectID.length);

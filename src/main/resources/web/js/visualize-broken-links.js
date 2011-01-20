@@ -23,11 +23,12 @@ function visualizeBrokenLinks(options) {
         var href = $(links[i]).attr("href");
         list[list.length] = href;
     }
-    if (urls.length == 0) {
+    var urlsLength = urls.length;
+    if (urlsLength == 0) {
         if (options.completed) options.completed(0);
         return;
     }
-    var reqs = 0;  
+    var reqs = 0;
     $.each(urls, function(i, list) {
         var data = "";
         for (var j = 0, listLength = list.length; j < listLength; j++) {
@@ -45,7 +46,7 @@ function visualizeBrokenLinks(options) {
             },
             complete : function(req, status) {
                 reqs++;
-                if (reqs == urls.length && options.completed) {
+                if (reqs == urlsLength && options.completed) {
                     options.completed(reqs);
                 }
             }

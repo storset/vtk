@@ -1,3 +1,7 @@
+//
+// IMPORTANT: this is _not_ a commented out JS - affects IE by using best-practice for browser-detection
+//
+
 // fixed.js: fix fixed positioning and fixed backgrounds in IE/Win
 // version 1.8, 08-Aug-2003
 // written by Andrew Clover <and@doxdesk.com>, use freely

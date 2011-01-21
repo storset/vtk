@@ -21,7 +21,7 @@
      var intervalSec = ${interval};
      var req;
           
-     function ping() {
+     var ping = function() {
         if (req == null) {
            if (window.XMLHttpRequest) {
               req = new XMLHttpRequest();
@@ -37,7 +37,7 @@
         }
      }
 
-     function callback() {
+     var callback = function() {
         if (req != null && req.readyState == 4) {
         	if (req.status == 200) {
               setTimeout(ping, intervalSec * 1000);

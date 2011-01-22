@@ -63,14 +63,14 @@
 
            $(wrapper).delegate("a.next", "click mouseover mouseout", function(e) {
               if(e.type == "mouseover") {
-                fadeMultiple(new Array(wrapper + " a.next span",
-                                       wrapper + " a.prev span"), settings.fadeNavInOutTime, 0.2);
+                fadeMultiple([wrapper + " a.next span",
+                              wrapper + " a.prev span"], settings.fadeNavInOutTime, 0.2);
                 $(wrapper + " a.next").stop().fadeTo(settings.fadeNavInOutTime, 1);
 	        $(wrapper + " a.prev").stop().fadeTo(settings.fadeNavInOutTime, 0.5);
               } else if(e.type == "mouseout"){
-                fadeMultiple(new Array(wrapper + " a.next", wrapper + " a.next span",
-                                       wrapper + " a.prev", wrapper + " a.prev span"),
-                                       settings.fadeNavInOutTime, 0);
+                fadeMultiple([wrapper + " a.next", wrapper + " a.next span",
+                              wrapper + " a.prev", wrapper + " a.prev span"],
+                              settings.fadeNavInOutTime, 0);
               } else {
                 var activeThumb = $(wrapperThumbsLinks + ".active");
 	        if(activeThumb.parent().next().length != 0) {
@@ -84,14 +84,14 @@
 
           $(wrapper).delegate(container + "-link", "click mouseover mouseout", function(e) {
               if(e.type == "mouseover") {
-                fadeMultiple(new Array(wrapper + " a.next span",
-                                       wrapper + " a.prev span"), settings.fadeNavInOutTime, 0.2);
+                fadeMultiple([wrapper + " a.next span",
+                              wrapper + " a.prev span"], settings.fadeNavInOutTime, 0.2);
                 $(wrapper + " a.next").stop().fadeTo(settings.fadeNavInOutTime, 1);
 	        $(wrapper + " a.prev").stop().fadeTo(settings.fadeNavInOutTime, 0.5);
               } else if(e.type == "mouseout"){
-                fadeMultiple(new Array(wrapper + " a.next", wrapper + " a.next span",
-                                       wrapper + " a.prev", wrapper + " a.prev span"),
-                                       settings.fadeNavInOutTime, 0);
+                fadeMultiple([wrapper + " a.next", wrapper + " a.next span",
+                              wrapper + " a.prev", wrapper + " a.prev span"],
+                              settings.fadeNavInOutTime, 0);
               } else {
                 var activeThumb = $(wrapperThumbsLinks + ".active");
 	        if(activeThumb.parent().next().length != 0) {
@@ -105,14 +105,14 @@
 
            $(wrapper).delegate("a.prev", "click mouseover mouseout", function(e) {
               if(e.type == "mouseover") {
-                fadeMultiple(new Array(wrapper + " a.next span",
-                                       wrapper + " a.prev span"), settings.fadeNavInOutTime, 0.2);
+                fadeMultiple([wrapper + " a.next span",
+                              wrapper + " a.prev span"], settings.fadeNavInOutTime, 0.2);
 	        $(wrapper + " a.prev").stop().fadeTo(settings.fadeNavInOutTime, 1);
 	        $(wrapper + " a.next").stop().fadeTo(settings.fadeNavInOutTime, 0.5);
               } else if(e.type == "mouseout"){
-                fadeMultiple(new Array(wrapper + " a.next", wrapper + " a.next span",
-                                       wrapper + " a.prev", wrapper + " a.prev span"),
-                                       settings.fadeNavInOutTime, 0);
+                fadeMultiple([wrapper + " a.next", wrapper + " a.next span",
+                              wrapper + " a.prev", wrapper + " a.prev span"],
+                              settings.fadeNavInOutTime, 0);
               } else {
                 var activeThumb = $(wrapperThumbsLinks + ".active");
  	        if(activeThumb.parent().prev().length != 0) {
@@ -136,7 +136,7 @@
             var img = link.find("img");
             var src = img.attr("src");
             images[src] = generateLinkImageFunc(img, link); // cache
-            centerThumbnailImageFunc(img);
+            centerThumbnailImageFunc(img, link);
 	  });
 
 	 function calculateImage(image, init) {
@@ -179,10 +179,9 @@
            + "<p class='" + container.substring(1) + "-title'>" 
            + $(image).attr("title") + "</p>" 
            + $(image).attr("alt") + "</div>").insertAfter(wrapperContainer);
-	   if(($(image).attr("alt") != null 
-              && $(image).attr("alt") != "")
-              || ($(image).attr("title") != null
-              && $(image).attr("title") != "")) {
+
+	   if(($(image).attr("alt") && $(image).attr("alt") != "")
+              || ($(image).attr("title") && $(image).attr("title") != "")) {
 	        $(wrapperContainer + "-description").css("width", $(wrapper + " " + container).width());
            }
   
@@ -208,9 +207,9 @@
          }
        }
      
-       var imgHeight = Math.max(imgHeight, minHeight);
+       imgHeight = Math.max(imgHeight, minHeight);
        setMultipleCSS([wrapperContainer + "-nav a", wrapperContainer + "-nav span", 
-                                  wrapperContainerLink], "height", imgHeight);
+                       wrapperContainerLink], "height", imgHeight);
      
        if(imgWidth > maxWidth) {
          imgWidth = maxWidth;
@@ -221,9 +220,9 @@
        setMultipleCSS([wrapperContainer, wrapperContainer + "-nav"], "width", imgWidth); 
      }
          
-     function centerThumbnailImage(thumb) {
-       centerDimension($(thumb), $(thumb).width(), $(thumb).parent().width(), "marginLeft");
-       centerDimension($(thumb), $(thumb).height(), $(thumb).parent().height(), "marginTop");
+     function centerThumbnailImage(thumb, link) {
+       centerDimension(thumb, thumb.width(), link.width(), "marginLeft"); // horizontal
+       centerDimension(thumb, thumb.height(), link.height(), "marginTop");  // vertical
      }
 	 
      function centerDimension(thumb, thumbDimension, thumbContainerDimension, cssProperty) {
@@ -231,7 +230,7 @@
 	 var adjust = (thumbDimension - thumbContainerDimension) / 2;
 	 $(thumb).css(cssProperty, -adjust + "px"); 
        } else if(thumbDimension < thumbContainerDimension) {
-	 var adjust = ((thumbContainerDimension - thumbDimension) / 2);
+	 var adjust = (thumbContainerDimension - thumbDimension) / 2;
          $(thumb).css(cssProperty, adjust + "px");
        }
      }

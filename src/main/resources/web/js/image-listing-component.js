@@ -61,46 +61,13 @@
             }
           });
 
+           // TODO: how to delegate events to two seperate DOM-elements
            $(wrapper).delegate("a.next", "click mouseover mouseout", function(e) {
-              if(e.type == "mouseover") {
-                fadeMultiple([wrapper + " a.next span",
-                              wrapper + " a.prev span"], settings.fadeNavInOutTime, 0.2);
-                $(wrapper + " a.next").stop().fadeTo(settings.fadeNavInOutTime, 1);
-	        $(wrapper + " a.prev").stop().fadeTo(settings.fadeNavInOutTime, 0.5);
-              } else if(e.type == "mouseout"){
-                fadeMultiple([wrapper + " a.next", wrapper + " a.next span",
-                              wrapper + " a.prev", wrapper + " a.prev span"],
-                              settings.fadeNavInOutTime, 0);
-              } else {
-                var activeThumb = $(wrapperThumbsLinks + ".active");
-	        if(activeThumb.parent().next().length != 0) {
-                  activeThumb.parent().next().find("a").click();
-                } else {
-   	          $(wrapper + " ul li:first a").click();
-                }
-	        e.preventDefault();
-              }
+             next(e);
            });
 
-          $(wrapper).delegate(container + "-link", "click mouseover mouseout", function(e) {
-              if(e.type == "mouseover") {
-                fadeMultiple([wrapper + " a.next span",
-                              wrapper + " a.prev span"], settings.fadeNavInOutTime, 0.2);
-                $(wrapper + " a.next").stop().fadeTo(settings.fadeNavInOutTime, 1);
-	        $(wrapper + " a.prev").stop().fadeTo(settings.fadeNavInOutTime, 0.5);
-              } else if(e.type == "mouseout"){
-                fadeMultiple([wrapper + " a.next", wrapper + " a.next span",
-                              wrapper + " a.prev", wrapper + " a.prev span"],
-                              settings.fadeNavInOutTime, 0);
-              } else {
-                var activeThumb = $(wrapperThumbsLinks + ".active");
-	        if(activeThumb.parent().next().length != 0) {
-                  activeThumb.parent().next().find("a").click();
-                } else {
-   	          $(wrapper + " ul li:first a").click();
-                }
-	        e.preventDefault();
-              }
+           $(wrapper).delegate(container + "-link", "click mouseover mouseout", function(e) {
+             next(e);
            });
 
            $(wrapper).delegate("a.prev", "click mouseover mouseout", function(e) {
@@ -138,6 +105,27 @@
             images[src] = generateLinkImageFunc(img, link); // cache
             centerThumbnailImageFunc(img, link);
 	  });
+
+         function next(e) { // TODO: how to delegate events to two seperate DOM-elements
+           if(e.type == "mouseover") {
+             fadeMultiple([wrapper + " a.next span",
+                           wrapper + " a.prev span"], settings.fadeNavInOutTime, 0.2);
+             $(wrapper + " a.next").stop().fadeTo(settings.fadeNavInOutTime, 1);
+	     $(wrapper + " a.prev").stop().fadeTo(settings.fadeNavInOutTime, 0.5);
+           } else if(e.type == "mouseout"){
+             fadeMultiple([wrapper + " a.next", wrapper + " a.next span",
+                           wrapper + " a.prev", wrapper + " a.prev span"],
+                           settings.fadeNavInOutTime, 0);
+           } else {
+             var activeThumb = $(wrapperThumbsLinks + ".active");
+	     if(activeThumb.parent().next().length != 0) {
+               activeThumb.parent().next().find("a").click();
+             } else {
+   	       $(wrapper + " ul li:first a").click();
+             }
+             e.preventDefault();
+           }
+         }
 
 	 function calculateImage(image, init) {
 	      if(settings.fadeInOutTime > 0 && !init) {

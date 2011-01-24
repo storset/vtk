@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+                       "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <bean id="subresource.retrieveService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-9999" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="subresource-retrieve" />
+        </bean>
+        <!-- <bean class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="method" value="POST" />
+        </bean> -->
+      </list>
+    </property>
+    <property name="handler" ref="subresource.handler" />
+  </bean>
+
+  <bean id="subresource.handler" class="org.vortikal.web.actions.subresource.SubresourceController">
+    <property name="searcher" ref="systemIndexSearcher" />
+    <property name="repository" ref="repository" />
+    <property name="documentTypeDefinition" ref="documentResourceTypeDefinition" />
+    <property name="collectionTypeDefinition" ref="collectionResourceTypeDefinition" />
+    <property name="userAgent" value="Subresource retriever for ${repositoryID}" />
+  </bean>
+
+</beans>

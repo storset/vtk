@@ -111,17 +111,19 @@ public class SubresourceController implements Controller, InitializingBean {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
       
-        // Query
+        // MainQuery (depth + 1 from uri)
         Path url = Path.fromString(uri);
         int depth = url.getDepth() + 1;
         AndQuery mainQuery = new AndQuery();
         mainQuery.add(new UriPrefixQuery(url.toString()));
         mainQuery.add(new UriDepthQuery(depth));
         OrQuery resourceQuery = new OrQuery();
-        // document or collection
+        
+        // Document OR collection
         resourceQuery.add(new TypeTermQuery(documentTypeDefinition.getName(), TermOperator.IN));
         resourceQuery.add(new TypeTermQuery(collectionTypeDefinition.getName(), TermOperator.IN));
         mainQuery.add(resourceQuery);
+        
         Search search = new Search();
         search.setQuery(mainQuery);
         search.setLimit(500);

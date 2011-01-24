@@ -25,7 +25,6 @@
     <property name="repository" ref="repository" />
     <property name="documentTypeDefinition" ref="documentResourceTypeDefinition" />
     <property name="collectionTypeDefinition" ref="collectionResourceTypeDefinition" />
-    <property name="userAgent" value="Subresource retriever for ${repositoryID}" />
   </bean>
 
 </beans>

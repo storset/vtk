@@ -74,11 +74,9 @@ public class SubresourceController implements Controller, InitializingBean {
     private Repository repository;
     private ResourceTypeDefinition documentTypeDefinition;
     private ResourceTypeDefinition collectionTypeDefinition;
-    private String userAgent = "Subresource retriever";
     
     private static Log logger = LogFactory.getLog(SubresourceController.class);
     
-    @SuppressWarnings("unchecked")
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String uri = null;
@@ -105,6 +103,7 @@ public class SubresourceController implements Controller, InitializingBean {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     private List<Subresource> buildSearchAndPopulateSubresources(String uri) {
         List<Subresource> subresources = new ArrayList();
         
@@ -276,11 +275,7 @@ public class SubresourceController implements Controller, InitializingBean {
     public void setCollectionTypeDefinition(ResourceTypeDefinition collectionTypeDefinition) {
         this.collectionTypeDefinition = collectionTypeDefinition;
     }
-
-    public void setUserAgent(String userAgent) {
-        this.userAgent = userAgent;
-    }
-
+    
     @Override
     public void afterPropertiesSet() throws Exception {
     }

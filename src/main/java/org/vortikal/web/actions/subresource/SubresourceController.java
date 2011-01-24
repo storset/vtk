@@ -99,6 +99,13 @@ public class SubresourceController implements Controller, InitializingBean {
         base.clearParameters();
         base.setPath(path);
         
+        List<Subresource> subresources = buildSearchAndPopulateSubresources(uri);
+        
+        writeResults(subresources, response);
+        return null;
+    }
+
+    private List<Subresource> buildSearchAndPopulateSubresources(String uri) {
         List<Subresource> subresources = new ArrayList();
         
         SecurityContext securityContext = SecurityContext.getSecurityContext();
@@ -153,9 +160,7 @@ public class SubresourceController implements Controller, InitializingBean {
            }
            subresources.add(new Subresource(resourceURI, resourceName, resourceTitle, resourceIsReadRestricted, resourceIsInheritedAcl));
         }
-        
-        writeResults(subresources, response);
-        return null;
+        return subresources;
     }
 
     private void badRequest(Throwable e, HttpServletResponse response) throws IOException {

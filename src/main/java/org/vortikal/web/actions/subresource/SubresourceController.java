@@ -138,12 +138,14 @@ public class SubresourceController implements Controller, InitializingBean {
           String resourceURI = result.getURI().toString();
           String resourceName = result.getName();
           String resourceTitle = "";
+          boolean resourceisCollection = false;
           boolean resourceIsReadRestricted = false;
           boolean resourceIsInheritedAcl = false;
           try {
             res = this.repository.retrieve(token, result.getURI(), true);
-            resourceTitle = res.getTitle();
             if (res != null) {
+              resourceTitle = res.getTitle();
+              resourceisCollection = res.isCollection();
               if(res.isReadRestricted()) {
                   resourceIsInheritedAcl = true;
                }
@@ -160,7 +162,8 @@ public class SubresourceController implements Controller, InitializingBean {
            } catch (Exception e) {
              logger.error("Exception " + e.getMessage());
            }
-           subresources.add(new Subresource(resourceURI, resourceName, resourceTitle, resourceIsReadRestricted, resourceIsInheritedAcl));
+           subresources.add(new Subresource(resourceURI, resourceName, resourceTitle, resourceisCollection, 
+                                            resourceIsReadRestricted, resourceIsInheritedAcl));
         }
         return subresources;
     }
@@ -182,8 +185,9 @@ public class SubresourceController implements Controller, InitializingBean {
             o.put("uri", sr.getUri());
             o.put("name", sr.getName());
             o.put("title", sr.getTitle());
-            o.put("readrestricted", sr.permissions.isReadRestricted);
-            o.put("inherited", sr.permissions.isInheritedAcl);
+            o.put("collection", sr.isCollection());
+            o.put("readrestricted", sr.permissions.isReadRestricted());
+            o.put("inherited", sr.permissions.isInheritedAcl());
             list.add(o);
         }
         response.setStatus(HttpServletResponse.SC_OK);
@@ -200,12 +204,15 @@ public class SubresourceController implements Controller, InitializingBean {
         private String uri;
         private String name;
         private String title;
+        private boolean collection;
         private SubresourcePermissions permissions;
 
-        public Subresource(String uri, String name, String title, boolean isReadProtected, boolean isInherited) { /* , String read, String write, String admin) { */
+        public Subresource(String uri, String name, String title,
+                           boolean collection, boolean isReadProtected, boolean isInherited) { /* , String read, String write, String admin) { */
             this.uri = uri;
             this.name = name;
             this.title = title;
+            this.collection = collection;
             this.permissions = new SubresourcePermissions(isReadProtected, isInherited); /* , read, write, admin); */
         }
         public String getUri() {
@@ -217,26 +224,29 @@ public class SubresourceController implements Controller, InitializingBean {
         public String getTitle() {
             return this.title;
         }
+        public boolean isCollection() {
+            return this.collection;
+        }
     }
     
     private static class SubresourcePermissions {
-        private boolean isReadRestricted = false;
-        private boolean isInheritedAcl = false;
+        private boolean readRestricted = false;
+        private boolean inheritedAcl = true;
         /* private String read;
         private String write;
         private String admin; */
-        public SubresourcePermissions(boolean isReadRestricted, boolean isInheritedAcl) { /*, String read, String write, String admin) { */
-            this.isReadRestricted = isReadRestricted;
-            this.isInheritedAcl = isInheritedAcl;
+        public SubresourcePermissions(boolean readRestricted, boolean inheritedAcl) { /*, String read, String write, String admin) { */
+            this.readRestricted = readRestricted;
+            this.inheritedAcl = inheritedAcl;
            /* this.read = read;
             this.write = write;
             this.admin = admin; */
         }
         public boolean isReadRestricted() {
-            return this.isReadRestricted;
+            return this.readRestricted;
         }
         public boolean isInheritedAcl() {
-            return this.isInheritedAcl;
+            return this.inheritedAcl;
         }
         /*
         public String getRead() {

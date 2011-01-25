@@ -30,7 +30,6 @@
  */
 package org.vortikal.web.actions.report;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -38,137 +37,75 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.web.servlet.support.RequestContext;
-import org.vortikal.repository.Path;
-import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
-import org.vortikal.repository.search.PropertySortField;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
-import org.vortikal.repository.search.SortingImpl;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
-import org.vortikal.web.decorating.components.SubFolderMenuComponent;
-import org.vortikal.web.decorating.components.SubFolderMenuComponent.MenuRequest;
-import org.vortikal.web.service.Service;
-import org.vortikal.web.view.components.menu.ListMenu;
+import org.vortikal.web.decorating.components.SubFolderMenuProvider;
 
 public class CollectionStructureReporter extends AbstractReporter {
 
-    private Service viewService;
-    private Service reportService;
-    private PropertyTypeDefinition titlePropDef;
-    private PropertyTypeDefinition hiddenPropDef;
-    private PropertyTypeDefinition importancePropDef;
-    private PropertyTypeDefinition navigationTitlePropDef;
-    private ResourceTypeDefinition collectionResourceType;
-    private boolean includePermissions;
-    private Repository repository;
+	private PropertyTypeDefinition sortPropDef;
+	private SubFolderMenuProvider subFolderMenuProvider;
+	private ResourceTypeTree resourceTypeTree;
 
-    public Map<String, Object> getReportContent(String token, Resource currentResource, HttpServletRequest request) {
-        AndQuery query = new AndQuery();
-        query.add(new TypeTermQuery("collection", TermOperator.IN));
-        query.add(new UriPrefixQuery(currentResource.getURI().toString()));
-        OrQuery depthQuery = new OrQuery();
-        for (int i = 0; i < 3; i++) {
-            depthQuery.add(new UriDepthQuery(i + currentResource.getURI().getDepth()));
-        }
-        query.add(depthQuery);
+	public Map<String, Object> getReportContent(String token, Resource currentResource, HttpServletRequest request) {
+		AndQuery query = new AndQuery();
+		query.add(new TypeTermQuery("collection", TermOperator.IN));
+		query.add(new UriPrefixQuery(currentResource.getURI().toString()));
+		OrQuery depthQuery = new OrQuery();
+		for (int i = 0; i < 3; i++) {
+			depthQuery.add(new UriDepthQuery(i + currentResource.getURI().getDepth()));
+		}
+		query.add(depthQuery);
 
-        Search search = new Search();
-        search.setLimit(Integer.MAX_VALUE);
-        SortingImpl sorting = new SortingImpl();
-        sorting.addSortField(new PropertySortField(this.titlePropDef));
-        search.setSorting(sorting);
+		Search search = new Search();
+		search.setLimit(Integer.MAX_VALUE);
 
-        search.setQuery(query);
+		search.setQuery(query);
 
-        ResultSet rs = this.searcher.execute(token, search);
-        Map<String, Object> result = new HashMap<String, Object>();
+		ResultSet rs = this.searcher.execute(token, search);
+		Map<String, Object> result = new HashMap<String, Object>();
 
-        Locale locale = new RequestContext(request).getLocale();
+		Locale locale = new RequestContext(request).getLocale();
 
-        Map<String, Object> menu = getSubfolderMenu(rs, currentResource.getURI(), token, locale);
-        result.put("subFolderMenu", menu);
+		Map<String, Object> menu = subFolderMenuProvider.getSubfolderMenu(rs, currentResource, token, locale, 1, true,
+		        null);
+		result.put("subFolderMenu", menu);
 
-        return result;
-    }
+		return result;
+	}
 
-    private Map<String, Object> getSubfolderMenu(ResultSet rs, Path currentCollectionUri, String token, Locale locale) {
-        String title = null;
-        PropertyTypeDefinition sortProperty = null;
-        boolean ascendingSort = true;
-        boolean sortByName = false;
-        int resultSets = 1;
-        int groupResultSetsBy = 0;
-        int freezeAtLevel = 0;
-        int depth = 2;
-        int displayFromLevel = -1;
-        int maxNumberOfChildren = Integer.MAX_VALUE;
-        String display = "";
-        ArrayList<Path> includeURIs = new ArrayList<Path>();
-        int searchLimit = Integer.MAX_VALUE;
-        boolean structuredCollectionReportLink = true;
+	public void setRepository(Repository repository) {
+		this.repository = repository;
+	}
 
-        SubFolderMenuComponent subfolderMenu = new SubFolderMenuComponent();
-        subfolderMenu.setViewService(viewService);
-        subfolderMenu.setReportService(reportService);
-        subfolderMenu.setNavigationTitlePropDef(navigationTitlePropDef);
-        subfolderMenu.setTitlePropDef(titlePropDef);
-        subfolderMenu.setImportancePropDef(importancePropDef);
-        subfolderMenu.setHiddenPropDef(hiddenPropDef);
-        subfolderMenu.setCollectionResourceType(collectionResourceType);
-        subfolderMenu.setIncludePermissions(includePermissions);
-        subfolderMenu.setRepository(repository);
+	public void setSortPropDef(PropertyTypeDefinition sortPropDef) {
+		this.sortPropDef = sortPropDef;
+	}
 
-        MenuRequest menuRequest = subfolderMenu.getNewMenuRequest(currentCollectionUri, title, sortProperty,
-                ascendingSort, sortByName, resultSets, groupResultSetsBy, freezeAtLevel, depth, displayFromLevel,
-                maxNumberOfChildren, display, locale, token, searchLimit, structuredCollectionReportLink, includeURIs);
+	public PropertyTypeDefinition getSortPropDef() {
+		return sortPropDef;
+	}
 
-        ListMenu<PropertySet> menu = subfolderMenu.buildListMenu(rs, menuRequest);
-        return subfolderMenu.buildMenuModel(menu, menuRequest);
-    }
+	public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+		this.resourceTypeTree = resourceTypeTree;
+	}
 
-    public void setViewService(Service viewService) {
-        this.viewService = viewService;
-    }
+	public ResourceTypeTree getResourceTypeTree() {
+		return resourceTypeTree;
+	}
 
-    public void setReportService(Service reportService) {
-        this.reportService = reportService;
-    }
-
-    public void setTitlePropDef(PropertyTypeDefinition titlePropDef) {
-        this.titlePropDef = titlePropDef;
-    }
-
-    public void setHiddenPropDef(PropertyTypeDefinition hiddenPropDef) {
-        this.hiddenPropDef = hiddenPropDef;
-    }
-
-    public void setImportancePropDef(PropertyTypeDefinition importancePropDef) {
-        this.importancePropDef = importancePropDef;
-    }
-
-    public void setNavigationTitlePropDef(PropertyTypeDefinition navigationTitlePropDef) {
-        this.navigationTitlePropDef = navigationTitlePropDef;
-    }
-
-    public void setCollectionResourceType(ResourceTypeDefinition collectionResourceType) {
-        this.collectionResourceType = collectionResourceType;
-    }
-    
-    public void setIncludePermissions(boolean includePermissions) {
-        this.includePermissions = includePermissions;
-    }
-    
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
+	public void setSubFolderMenuProvider(SubFolderMenuProvider subFolderMenuProvider) {
+		this.subFolderMenuProvider = subFolderMenuProvider;
+	}
 
 }

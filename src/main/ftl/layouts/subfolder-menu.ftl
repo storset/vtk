@@ -17,16 +17,10 @@
   <#if subFolderMenu.display?exists && subFolderMenu.display = "comma-separated">
     <#assign commaSeparated = true />
   </#if>
-  <@displaySubFolderMenu subFolderMenu false false />
+  <@displaySubFolderMenu subFolderMenu />
 </#if>
 
-<#global USE_TREE_VIEW = false >
-<#global USE_PERMISSION_VIEW = false >
-
-<#macro displaySubFolderMenu subFolderMenu treeView permissionView>
-  <#assign USE_TREE_VIEW=treeView>
-  <#assign USE_PERMISSION_VIEW=permissionView>
-  
+<#macro displaySubFolderMenu subFolderMenu> 
     <#if subFolderMenu.size &gt; 0>
       <#assign "counter" = 0>
       <#assign "counter2" = 0>
@@ -78,46 +72,20 @@
 <#macro displayParentMenu menu currentCount groupCount newDiv subFolderMenu >
   <#if newDiv>
     <#if currentCount != 1>
-     </div>
+    	</div>
     </#if>  
     <div class="vrtx-group-${groupCount?html}">
-  </#if>
-   <#if USE_TREE_VIEW >
-    <#if USE_PERMISSION_VIEW >
-      <ul class="resultset-${currentCount?html} filetree treeview-gray">
-    <#else>
-      <ul class="resultset-${currentCount?html} filetree">
-    </#if>
-   <#else>
+  	</#if>
     <ul class="resultset-${currentCount?html}">
-   </#if>
     <#list menu.itemsSorted as item>
-        <#if USE_TREE_VIEW>
-          <#if USE_PERMISSION_VIEW>
-            <#if item.inheritedAcl>
-              <li>
-            <#else>
-              <li class="not-inherited">
-            </#if>
-            <#if item.readRestricted>
-              <span class="folder restricted">
-            <#else>
-              <span class="folder allowed-for-all">
-            </#if>
-          <#else>
-            <span class="folder">
-          </#if>
-        <#else>
-          <li>
-        </#if>
+        <li>
         <@displayItem item=item />
-      </li>
+      	</li>
     </#list>
-  </ul>
-  
-  <#if subFolderMenu.groupResultSetsBy?exists && subFolderMenu.groupResultSetsBy?number &gt; 0 && currentCount == subFolderMenu.resultSets?size>
-     </div>
-  </#if>
+    </ul>
+    <#if subFolderMenu.groupResultSetsBy?exists && subFolderMenu.groupResultSetsBy?number &gt; 0 && currentCount == subFolderMenu.resultSets?size>
+    </div>
+    </#if>
 </#macro>
 
 <#macro displaySubMenu menu displaySubMenu >
@@ -129,33 +97,9 @@
     </#if>
     <#list menu.itemsSorted as item>
       <#if (i < sized)>
-          <#if USE_TREE_VIEW >
-            <#if (i == (sized-1))>
-              <#if USE_PERMISSION_VIEW && item.inheritedAcl>
-                <li class="closed last">
-              <#else>
-                <li class="closed last not-inherited">
-              </#if>
-            <#else>
-              <#if USE_PERMISSION_VIEW && item.inheritedAcl>
-                <li class="closed">
-              <#else>
-                <li class="closed not-inherited">
-              </#if>
-            </#if>
-            <#if USE_PERMISSION_VIEW>
-              <#if item.readRestricted>
-                <span class="folder restricted">
-              <#else>
-                <span class="folder allowed-for-all">
-              </#if>
-            <#else>
-              <span class="folder">
-            </#if>
-          <#else>
-            <li>
+          <li>
           </#if>
-            <#if commaSeparated>
+          <#if commaSeparated>
               <#if (i < (sized-1))>
                 <@displayItem item=item separator="," />
               <#else>
@@ -164,13 +108,11 @@
             <#else>
               <@displayItem item=item />
             </#if>
-            </li>
-         <#else>
-           <#break>
-         </#if>
-         <#assign i = i + 1 />
+          </li>
+         <#assign i = i + 1 /> 
     </#list>
-  <#if (menu.totalNumberOfItems > menu.maxNumberOfItems)>
+    
+  	<#if (menu.totalNumberOfItems > menu.maxNumberOfItems)>
       <li class="vrtx-more">   
       <a href="${menu.moreUrl?html}"><@vrtx.msg code="subfolder.morelinkTitle" /></a>
     </li>

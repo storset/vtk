@@ -237,10 +237,7 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
         	serviceNameCrumb = new BreadcrumbElement(null, serviceName, null);
         }
 
-        for (int i = 0; i < length; i++) {
-            if(i < displayFromLevel){
-                continue;
-            }
+        for (int i = displayFromLevel; i < length; i++) {
             try {
                 Resource r = this.repository.retrieve(token, incrementalPath.get(i), true);
 

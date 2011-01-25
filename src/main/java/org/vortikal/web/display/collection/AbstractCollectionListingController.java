@@ -30,11 +30,9 @@
  */
 package org.vortikal.web.display.collection;
 
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -51,247 +49,229 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.search.ResultSet;
-import org.vortikal.repository.search.Search;
-import org.vortikal.repository.search.SortingImpl;
-import org.vortikal.repository.search.query.AndQuery;
-import org.vortikal.repository.search.query.PropertyExistsQuery;
-import org.vortikal.repository.search.query.TermOperator;
-import org.vortikal.repository.search.query.TypeTermQuery;
-import org.vortikal.repository.search.query.UriDepthQuery;
-import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.web.decorating.components.SubFolderMenuProvider;
 import org.vortikal.web.search.SearchSorting;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
+import org.vortikal.web.view.freemarker.MessageLocalizer;
+
+import freemarker.template.TemplateModelException;
 
 public abstract class AbstractCollectionListingController implements ListingController {
 
-    protected final static String MODEL_KEY_SEARCH_COMPONENTS = "searchComponents";
-    protected final static String MODEL_KEY_PAGE = "page";
-    protected final static String MODEL_KEY_PAGE_THROUGH_URLS = "pageThroughUrls";
-    protected final static String MODEL_KEY_HIDE_ALTERNATIVE_REP = "hideAlternativeRepresentation";
-    protected final static String MODEL_KEY_OVERRIDDEN_TITLE = "overriddenTitle";
+	protected final static String MODEL_KEY_SEARCH_COMPONENTS = "searchComponents";
+	protected final static String MODEL_KEY_PAGE = "page";
+	protected final static String MODEL_KEY_PAGE_THROUGH_URLS = "pageThroughUrls";
+	protected final static String MODEL_KEY_HIDE_ALTERNATIVE_REP = "hideAlternativeRepresentation";
+	protected final static String MODEL_KEY_OVERRIDDEN_TITLE = "overriddenTitle";
 
-    protected Repository repository;
-    protected ResourceWrapperManager resourceManager;
-    protected PropertyTypeDefinition hiddenPropDef;
-    protected int defaultPageLimit = 20;
-    protected int collectionDisplayLimit = 1000;
-    protected PropertyTypeDefinition pageLimitPropDef;
-    protected PropertyTypeDefinition hideNumberOfComments;
-    protected String viewName;
-    protected Map<String, Service> alternativeRepresentations;
-    private boolean includeRequestParametersInAlternativeRepresentation;
+	protected Repository repository;
+	protected ResourceWrapperManager resourceManager;
+	protected int defaultPageLimit = 20;
+	protected int collectionDisplayLimit = 1000;
+	protected PropertyTypeDefinition pageLimitPropDef;
+	protected PropertyTypeDefinition hideNumberOfComments;
+	protected String viewName;
+	protected Map<String, Service> alternativeRepresentations;
+	private boolean includeRequestParametersInAlternativeRepresentation;
 
-    
-    private SearchSorting searchSorting;
+	private SubFolderMenuProvider subFolderMenuProvider;
 
-    /**
-     * Container class for (resource, URL) for subcollections
-     */
-    public class CollectionItem {
-        private PropertySet resource;
-        private URL url;
+	private SearchSorting searchSorting;
 
-        public CollectionItem(PropertySet resource, URL url) {
-            this.resource = resource;
-            this.url = url;
-        }
 
-        public PropertySet getResource() {
-            return this.resource;
-        }
+	/**
+	 * Container class for (resource, URL) for subcollections
+	 */
+	public class CollectionItem {
+		private PropertySet resource;
+		private URL url;
 
-        public URL getURL() {
-            return this.url;
-        }
+		public CollectionItem(PropertySet resource, URL url) {
+			this.resource = resource;
+			this.url = url;
+		}
+
+		public PropertySet getResource() {
+			return this.resource;
+		}
+
+		public URL getURL() {
+			return this.url;
+		}
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+		Path uri = org.vortikal.web.RequestContext.getRequestContext().getResourceURI();
+		SecurityContext securityContext = SecurityContext.getSecurityContext();
+		String token = securityContext.getToken();
+		Principal principal = securityContext.getPrincipal();
+		
+		Resource collection = this.repository.retrieve(token, uri, true);
+
+		Map<String, Object> model = new HashMap<String, Object>();
+
+		Map<String,Object> subfolders = getSubolderMenu(collection, request);
+		if(subfolders.size() > 0){
+			model.put("subFolderMenu",subfolders);
+		}
+		model.put("collection", this.resourceManager.createResourceWrapper(collection));
+
+		int pageLimit = getPageLimit(collection);
+		if (pageLimit > 0) {
+			/* Run the actual search (done in subclasses) */
+			runSearch(request, collection, model, pageLimit);
+		}
+
+		if (this.alternativeRepresentations != null) {
+			Set<Object> alt = new HashSet<Object>();
+			for (String contentType : this.alternativeRepresentations.keySet()) {
+				try {
+					Map<String, Object> m = new HashMap<String, Object>();
+					Service service = this.alternativeRepresentations.get(contentType);
+
+					URL url = service.constructURL(collection, principal);
+					if (this.includeRequestParametersInAlternativeRepresentation) {
+						Enumeration<String> requestParameters = request.getParameterNames();
+						while (requestParameters.hasMoreElements()) {
+							String requestParameter = requestParameters.nextElement();
+							String parameterValue = request.getParameter(requestParameter);
+							url.addParameter(requestParameter, parameterValue);
+						}
+					}
+
+					String title = service.getName();
+					RequestContext rc = new RequestContext(request);
+					title = rc.getMessage(service.getName(), new Object[] { collection.getTitle() }, service.getName());
+
+					m.put("title", title);
+					m.put("url", url);
+					m.put("contentType", contentType);
+
+					alt.add(m);
+				} catch (Throwable t) {
+				}
+			}
+			if (pageLimit > 0) {
+				model.put("alternativeRepresentations", alt);
+			}
+		}
+		return new ModelAndView(this.viewName, model);
+	}
+
+	protected Map<String, Object> getSubolderMenu(Resource collection, HttpServletRequest request) {
+		Map<String, Object> result = new HashMap<String, Object>();
+
+			result = subFolderMenuProvider.getSubfolderMenuWithGeneratedResultSets(collection, request);
+			HttpServletRequest servletRequest = request;
+			org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(
+			        servletRequest);
+
+			try {
+				String standardCollectionName = new MessageLocalizer("viewCollectionListing.subareas", "Subareas",
+				        null, springRequestContext).get(null).toString();
+				result.put("title", standardCollectionName);
+			} catch (TemplateModelException e) {
+				e.printStackTrace();
+			}
+		return result;
+	}
+	
+	protected URL createURL(HttpServletRequest request, String... removeableParams) {
+		URL url = URL.create(request);
+		for (String removableParam : removeableParams) {
+			url.removeParameter(removableParam);
+		}
+		return url;
+	}
+
+	protected int getPageLimit(Resource collection) {
+		int pageLimit = this.defaultPageLimit;
+		Property pageLimitProp = collection.getProperty(this.pageLimitPropDef);
+		if (pageLimitProp != null) {
+			pageLimit = pageLimitProp.getIntValue();
+		}
+		return pageLimit;
+	}
+
+	protected boolean getHideNumberOfComments(Resource collection) {
+		Property p = collection.getProperty(this.hideNumberOfComments);
+		if (p == null) {
+			return false;
+		}
+		return p.getBooleanValue();
+	}
+
+	protected int getIntParameter(HttpServletRequest request, String name, int defaultValue) {
+		String param = request.getParameter(name);
+		if (param == null) {
+			return defaultValue;
+		}
+		try {
+			return Integer.parseInt(param);
+		} catch (Throwable t) {
+			return defaultValue;
+		}
+	}
+
+	@Required
+	public void setRepository(Repository repository) {
+		this.repository = repository;
+	}
+
+	@Required
+	public void setResourceManager(ResourceWrapperManager resourceManager) {
+		this.resourceManager = resourceManager;
+	}
+
+	@Required
+	public void setPageLimitPropDef(PropertyTypeDefinition pageLimitPropDef) {
+		this.pageLimitPropDef = pageLimitPropDef;
+	}
+
+	public void setDefaultPageLimit(int defaultPageLimit) {
+		if (defaultPageLimit <= 0)
+			throw new IllegalArgumentException("Argument must be a positive integer");
+		this.defaultPageLimit = defaultPageLimit;
+	}
+
+	@Required
+	public void setViewName(String viewName) {
+		this.viewName = viewName;
+	}
+
+	public void setAlternativeRepresentations(Map<String, Service> alternativeRepresentations) {
+		this.alternativeRepresentations = alternativeRepresentations;
+	}
+
+	public void setIncludeRequestParametersInAlternativeRepresentation(
+	        boolean includeRequestParametersInAlternativeRepresentation) {
+		this.includeRequestParametersInAlternativeRepresentation = includeRequestParametersInAlternativeRepresentation;
+	}
+
+	public void setHideNumberOfComments(PropertyTypeDefinition hideNumberOfComments) {
+		this.hideNumberOfComments = hideNumberOfComments;
+	}
+
+	public void setCollectionDisplayLimit(int collectionDisplayLimit) {
+		this.collectionDisplayLimit = collectionDisplayLimit;
+	}
+
+	public void setSearchSorting(SearchSorting searchSorting) {
+		this.searchSorting = searchSorting;
+	}
+
+	public SearchSorting getSearchSorting() {
+		return searchSorting;
+	}
+
+	public void setSubFolderMenuProvider(SubFolderMenuProvider subFolderMenuProvider) {
+	    this.subFolderMenuProvider = subFolderMenuProvider;
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-
-        Path uri = org.vortikal.web.RequestContext.getRequestContext().getResourceURI();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String token = securityContext.getToken();
-        Principal principal = securityContext.getPrincipal();
-
-        Resource collection = this.repository.retrieve(token, uri, true);
-        ResultSet subCollections = listCollections(uri, token,collection);
-
-
-        Map<String, Object> model = new HashMap<String, Object>();
-        model.put("collection", this.resourceManager.createResourceWrapper(collection));
-        model.put("subCollections", createSubCollections(request, subCollections));
-
-        int pageLimit = getPageLimit(collection);
-        if (pageLimit > 0) {
-            /* Run the actual search (done in subclasses) */
-            runSearch(request, collection, model, pageLimit);
-        }
-
-        if (this.alternativeRepresentations != null) {
-            Set<Object> alt = new HashSet<Object>();
-            for (String contentType : this.alternativeRepresentations.keySet()) {
-                try {
-                    Map<String, Object> m = new HashMap<String, Object>();
-                    Service service = this.alternativeRepresentations.get(contentType);
-
-                    URL url = service.constructURL(collection, principal);
-                    if (this.includeRequestParametersInAlternativeRepresentation) {
-                        Enumeration<String> requestParameters = request.getParameterNames();
-                        while (requestParameters.hasMoreElements()) {
-                            String requestParameter = requestParameters.nextElement();
-                            String parameterValue = request.getParameter(requestParameter);
-                            url.addParameter(requestParameter, parameterValue);
-                        }
-                    }
-
-                    String title = service.getName();
-                    RequestContext rc = new RequestContext(request);
-                    title = rc.getMessage(service.getName(), new Object[] { collection.getTitle() }, service.getName());
-
-                    m.put("title", title);
-                    m.put("url", url);
-                    m.put("contentType", contentType);
-
-                    alt.add(m);
-                } catch (Throwable t) {
-                }
-            }
-            if (pageLimit > 0) {
-                model.put("alternativeRepresentations", alt);
-            }
-        }
-        return new ModelAndView(this.viewName, model);
-    }
-
-    protected List<CollectionItem> createSubCollections(HttpServletRequest request, ResultSet rs) {
-        List<CollectionItem> result = new ArrayList<CollectionItem>();
-        for (int i = 0; i < rs.getSize(); i++) {
-            PropertySet propertySet = rs.getResult(i);
- 
-            URL url = URL.create(request);
-            url.clearParameters();
-            url.setRef(null);
-            url.setPath(propertySet.getURI());
-            CollectionItem c = new CollectionItem(propertySet, url);
-            result.add(c);
-        }
-        return result;
-    }
-
-    protected ResultSet listCollections(Path uri, String token,Resource collection) {
-
-        AndQuery query = new AndQuery();
-        query.add(new UriPrefixQuery(uri.toString()));
-        query.add(new UriDepthQuery(uri.getDepth() + 1));
-        query.add(new TypeTermQuery("collection", TermOperator.IN));
-        query.add(new PropertyExistsQuery(this.hiddenPropDef, true));
-
-        Search search = new Search();
-        search.setLimit(this.collectionDisplayLimit);
-        search.setQuery(query);
-        if (this.searchSorting != null) {
-            search.setSorting(new SortingImpl(this.searchSorting.getSortFields(collection)));
-        }
-        ResultSet result = this.repository.search(token, search);
-      
-        return result;
-    }
-
-    protected URL createURL(HttpServletRequest request, String... removeableParams) {
-        URL url = URL.create(request);
-        for (String removableParam : removeableParams) {
-            url.removeParameter(removableParam);
-        }
-        return url;
-    }
-
-    protected int getPageLimit(Resource collection) {
-        int pageLimit = this.defaultPageLimit;
-        Property pageLimitProp = collection.getProperty(this.pageLimitPropDef);
-        if (pageLimitProp != null) {
-            pageLimit = pageLimitProp.getIntValue();
-        }
-        return pageLimit;
-    }
-
-    protected boolean getHideNumberOfComments(Resource collection) {
-        Property p = collection.getProperty(this.hideNumberOfComments);
-        if (p == null) {
-            return false;
-        }
-        return p.getBooleanValue();
-    }
-
-    protected int getIntParameter(HttpServletRequest request, String name, int defaultValue) {
-        String param = request.getParameter(name);
-        if (param == null) {
-            return defaultValue;
-        }
-        try {
-            return Integer.parseInt(param);
-        } catch (Throwable t) {
-            return defaultValue;
-        }
-    }
-
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
-    @Required
-    public void setResourceManager(ResourceWrapperManager resourceManager) {
-        this.resourceManager = resourceManager;
-    }
-
-    @Required
-    public void setHiddenPropDef(PropertyTypeDefinition hiddenPropDef) {
-        this.hiddenPropDef = hiddenPropDef;
-    }
-
-    @Required
-    public void setPageLimitPropDef(PropertyTypeDefinition pageLimitPropDef) {
-        this.pageLimitPropDef = pageLimitPropDef;
-    }
-
-    public void setDefaultPageLimit(int defaultPageLimit) {
-        if (defaultPageLimit <= 0)
-            throw new IllegalArgumentException("Argument must be a positive integer");
-        this.defaultPageLimit = defaultPageLimit;
-    }
-
-    @Required
-    public void setViewName(String viewName) {
-        this.viewName = viewName;
-    }
-
-    public void setAlternativeRepresentations(Map<String, Service> alternativeRepresentations) {
-        this.alternativeRepresentations = alternativeRepresentations;
-    }
-
-    public void setIncludeRequestParametersInAlternativeRepresentation(
-            boolean includeRequestParametersInAlternativeRepresentation) {
-        this.includeRequestParametersInAlternativeRepresentation = includeRequestParametersInAlternativeRepresentation;
-    }
-
-    public void setHideNumberOfComments(PropertyTypeDefinition hideNumberOfComments) {
-        this.hideNumberOfComments = hideNumberOfComments;
-    }
-
-    public void setCollectionDisplayLimit(int collectionDisplayLimit) {
-        this.collectionDisplayLimit = collectionDisplayLimit;
-    }
-
-    public void setSearchSorting(SearchSorting searchSorting) {
-        this.searchSorting = searchSorting;
-    }
-
-    public SearchSorting getSearchSorting() {
-        return searchSorting;
-    }
 }

@@ -34,10 +34,10 @@
     parent="repositoryAware">
     <property name="resourceManager" ref="resourceManager" />
      <property name="searchSorting" ref="collectionListing.searchSorting" />
-    <property name="hiddenPropDef" ref="hiddenPropDef" />
     <property name="viewName" value="collectionListing.view" />
     <property name="pageLimitPropDef" ref="pageLimitPropDef" />
     <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
+    <property name="subFolderMenuProvider" ref="subFolderMenuProvider" />
     <property name="searchComponents">
       <list>
         <ref bean="collectionListing.searchComponent" />

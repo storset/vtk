@@ -22,6 +22,7 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "/lib/dump.ftl" as dumper>
 <#import "/lib/view-utils.ftl" as viewutils />
+<#import "/layouts/subfolder-menu.ftl" as subfolder />
 
 <#import "/lib/collections/view-collection-listing.ftl" as coll />
 <#import "/lib/collections/view-article-listing.ftl" as articles />
@@ -91,7 +92,7 @@
     <div id="vrtx-calendar-listing">
   </#if>
   
-  <#if !isEventCalendarListing>
+<#if !isEventCalendarListing>
     <h1>${title}
       <@projects.completed />
       <#if page?has_content>
@@ -114,46 +115,11 @@
         </div>
       </#if>
       <#-- List collections: -->
-      <#if subCollections?size &gt; 0>
-        <#if subCollections?size &gt; 15>
-          <#assign splitList = ((subCollections?size/4)+0.75)?int />
-          <#assign interval = splitList />
-        <#elseif subCollections?size &gt; 8>
-          <#assign splitList = ((subCollections?size/3)+0.5)?int />
-          <#assign interval = splitList />
-        <#elseif subCollections?size &gt; 3>
-          <#assign splitList = ((subCollections?size/2)+0.5)?int />
-          <#assign interval = splitList />
-        <#else>
-          <#assign splitList = -1 />
-        </#if>
-        <div id="vrtx-collections" class="vrtx-collections">
-          <h2><@vrtx.msg code="viewCollectionListing.subareas" default="Subareas"/></h2>
-          <table>
-            <tr>
-              <td>
-                <ul>
-                  <#list subCollections as c>
-                    <#if c_index = splitList>
-                      </ul></td>
-                      <td><ul>
-                        <#assign splitList = splitList + interval />
-                    </#if>
-                    <#assign navigationTitle = vrtx.propValue(c.resource, "navigationTitle")?html />
-                    <#if navigationTitle?exists && navigationTitle != "">
-                      <li><a href="${c.URL.pathRepresentation?html}">${navigationTitle}</a></li>
-                    <#else>
-                      <li><a href="${c.URL.pathRepresentation?html}">${vrtx.propValue(c.resource, "title")?html}</a></li>
-                    </#if>
-                  </#list>
-                </ul>
-              </td>
-            </tr>
-          </table>
-        </div>
-      </#if>
-    </#if>
-  </#if>
+      <#if subFolderMenu?exists> 
+  	    <@subfolder.displaySubFolderMenu subFolderMenu />
+	  </#if> 
+  </#if> 
+</#if>
 
      <#-- XXX: "additional content" (for person listing) -->
      <#assign additionalContent = vrtx.propValue(resource, "additionalContent", "", "pl") />

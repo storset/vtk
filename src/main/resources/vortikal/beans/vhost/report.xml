@@ -36,8 +36,7 @@
   </bean>
 
 
-  <bean id="reportHandler" class="org.vortikal.web.actions.report.ReportHandler"
-    parent="repositoryAware">
+  <bean id="reportHandler" class="org.vortikal.web.actions.report.ReportHandler" parent="repositoryAware">
     <property name="viewName" value="report" />
   </bean>
 
@@ -49,15 +48,8 @@
     parent="reporter">
     <property name="name" value="collection-structure" />
     <property name="viewName" value="collectionStructure" />
-    <property name="viewService" ref="webService" />
-    <property name="reportService" ref="reportService" />
-    <property name="titlePropDef" ref="titlePropDef" />
-    <property name="hiddenPropDef" ref="hiddenPropDef" />
-    <property name="importancePropDef" ref="importancePropDef" />
-    <property name="navigationTitlePropDef" ref="navigationTitlePropDef" />
-    <property name="collectionResourceType" ref="collectionResourceTypeDefinition" />
-    <property name="includePermissions" value="true" />
-    <property name="repository" ref="repository" />
+    <property name="sortPropDef" ref="collection.sortingPropDef" />
+    <property name="subFolderMenuProvider" ref="subFolderMenuProvider" />
   </bean>
 
   <bean id="documentReporter" abstract="true" class="org.vortikal.web.actions.report.DocumentReporter" parent="reporter">
@@ -117,14 +109,14 @@
             <value>${themeBaseURL}/view-components.css</value>
             <value>${themeBaseURL}/report/jquery.treeview.css</value>
           </list>
-        </entry> 
+        </entry>
         <entry key="jsURLs">
           <list>
             <value>${webResources.baseURL}/jquery/plugins/jquery.treeview.js</value>
           </list>
         </entry>
       </map>
-    </property> 
+    </property>
   </bean>
 
   <bean id="documentReportView" parent="freemarkerView">

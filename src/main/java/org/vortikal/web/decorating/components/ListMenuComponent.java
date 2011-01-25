@@ -34,6 +34,7 @@ import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -47,6 +48,7 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.search.ConfigurablePropertySelect;
@@ -142,7 +144,6 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     protected PropertyTypeDefinition importancePropDef;
     protected ResourceTypeDefinition collectionResourceType;
     protected PropertyTypeDefinition navigationTitlePropDef;
-    protected boolean includePermissions = false;
     protected String modelName = "menu";
     protected int searchLimit = DEFAULT_SEARCH_LIMIT;
 
@@ -501,7 +502,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         private Locale locale;
         private String token;
         private List<String> excludedChildren = new ArrayList<String>();
-
+        
         public MenuRequest(DecoratorRequest request) {
             RequestContext requestContext = RequestContext.getRequestContext();
             this.currentURI = requestContext.getResourceURI();
@@ -684,12 +685,26 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
                 return collator.compare(i2.getValue().getName(), i1.getValue().getName());
             }
             if (overrideSortProp != null) {
-                String overrideValue1 = i1.getValue().getProperty(overrideSortProp).getStringValue();
-                String overrideValue2 = i2.getValue().getProperty(overrideSortProp).getStringValue();
-                if (ascending) {
-                    return collator.compare(overrideValue1, overrideValue2);
-                }
-                return collator.compare(overrideValue2, overrideValue1);
+            	Type t = i1.getValue().getProperty(overrideSortProp).getType();
+            	String overrideValue1 = null;
+            	String overrideValue2 = null;
+            	
+            	if(t.equals(Type.STRING)){
+            		overrideValue1 = i1.getValue().getProperty(overrideSortProp).getStringValue();
+                	overrideValue2 = i2.getValue().getProperty(overrideSortProp).getStringValue();
+                	 if (ascending) {
+                         return collator.compare(overrideValue1, overrideValue2);
+                     }
+                     return collator.compare(overrideValue2, overrideValue1);
+            	}else if(t.equals(Type.TIMESTAMP) || t.equals(Type.DATE)){
+            		Date d1 = i1.getValue().getProperty(overrideSortProp).getDateValue();
+                	Date d2 = i2.getValue().getProperty(overrideSortProp).getDateValue();
+                	if(ascending){
+                		return (int) (d2.getTime() - d1.getTime());
+                	}
+                	return (int) (d1.getTime() - d2.getTime());
+            	}
+               
             }
             if (this.importancePropertyDef != null) {
                 int importance1 = 0, importance2 = 0;
@@ -753,10 +768,6 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     @Required
     public void setNavigationTitlePropDef(PropertyTypeDefinition navigationTitlePropDef) {
         this.navigationTitlePropDef = navigationTitlePropDef;
-    }
-    
-    public void setIncludePermissions(boolean includePermissions) {
-        this.includePermissions = includePermissions;
     }
     
     public void setRepository(Repository repository) {

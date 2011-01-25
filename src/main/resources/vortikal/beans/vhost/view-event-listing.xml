@@ -27,7 +27,7 @@
 
   <bean id="eventListing.handler" class="org.vortikal.web.display.collection.event.EventListingController" parent="repositoryAware">
     <property name="resourceManager" ref="resourceManager" />
-    <property name="hiddenPropDef" ref="hiddenPropDef" />
+    <property name="subFolderMenuProvider" ref="subFolderMenuProvider" />
     <property name="viewName" value="${override.listing.prefix}eventListing.view" />
     <property name="pageLimitPropDef" ref="pageLimitPropDef" />
     <property name="hideNumberOfComments" ref="hideNumberOfCommentsPropDef" />

@@ -435,6 +435,14 @@
     <property name="description" value="Lists the subfolders of the current folder" />
   </bean>
 
+  <bean id="subFolderMenuProvider" class="org.vortikal.web.decorating.components.SubFolderMenuProvider" parent="repositoryAware"
+    depends-on="resourceTypeTree">
+    <property name="subFolderMenuComponent" ref="decorating.subFolderMenuComponent" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="sortPropDef" ref="collection.sortingPropDef" />
+    <property name="hiddenPropDef" ref="hiddenPropDef" />
+  </bean>
+
   <bean name="decorating.subFolderMenuComponent.view" parent="freemarkerView">
     <property name="url" value="layouts/subfolder-menu.ftl" />
   </bean>

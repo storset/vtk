@@ -9,7 +9,7 @@
     <property name="assertions">
       <list>
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="action" />
+          <property name="parameterName" value="service" />
           <property name="parameterValue" value="subresource-retrieve" />
         </bean>
       </list>
@@ -17,7 +17,12 @@
     <property name="handler" ref="subresource.handler" />
   </bean>
 
-  <bean id="subresource.handler" class="org.vortikal.web.actions.subresource.SubresourceController">
+  <bean id="subresource.handler" class="org.vortikal.web.service.subresource.SubresourceJSONService">
+    <property name="provider" ref="subresource.provider" />
+  </bean>
+  
+  <!-- TODO: move to vortikal.repository? -->
+  <bean id="subresource.provider" class="org.vortikal.web.actions.report.subresource.SubresourceProvider">
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="repository" ref="repository" />
     <property name="documentTypeDefinition" ref="documentResourceTypeDefinition" />

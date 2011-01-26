@@ -28,24 +28,13 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.actions.subresource;
+package org.vortikal.web.actions.report.subresource;
 
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
@@ -65,47 +54,19 @@ import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.web.RequestContext;
-import org.vortikal.web.service.URL;
 
-public class SubresourceController implements Controller, InitializingBean {
-    
+public class SubresourceProvider {
+
     private Searcher searcher;
     private Repository repository;
     private ResourceTypeDefinition documentTypeDefinition;
     private ResourceTypeDefinition collectionTypeDefinition;
     
-    private static Log logger = LogFactory.getLog(SubresourceController.class);
+    private static Log logger = LogFactory.getLog(SubresourceProvider.class);
     
-    @Override
-    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String uri = null;
-        
-        try {
-          uri = (String) request.getParameter("uri");  
-        } catch (Exception e) {
-            badRequest(e, response);
-            return null;
-        }
-        
-        if(uri == null) {
-          return null;
-        }
-
-        Path path = RequestContext.getRequestContext().getCurrentCollection();
-        URL base = URL.create(request);
-        base.clearParameters();
-        base.setPath(path);
-        
-        List<Subresource> subresources = buildSearchAndPopulateSubresources(uri);
-        
-        writeResults(subresources, response);
-        return null;
-    }
-
     @SuppressWarnings("unchecked")
-    private List<Subresource> buildSearchAndPopulateSubresources(String uri) {
-        List<Subresource> subresources = new ArrayList();
+    public List<SubresourcePermissions> buildSearchAndPopulateSubresources(String uri) {
+        List<SubresourcePermissions> subresources = new ArrayList();
         
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
@@ -161,103 +122,10 @@ public class SubresourceController implements Controller, InitializingBean {
            } catch (Exception e) {
              logger.error("Exception " + e.getMessage());
            }
-           subresources.add(new Subresource(resourceURI, resourceName, resourceTitle, resourceisCollection, 
+           subresources.add(new SubresourcePermissions(resourceURI, resourceName, resourceTitle, resourceisCollection, 
                                             resourceIsReadRestricted, resourceIsInheritedAcl));
         }
         return subresources;
-    }
-
-    private void badRequest(Throwable e, HttpServletResponse response) throws IOException {
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        PrintWriter writer = response.getWriter();
-        try {
-            writer.write(e.getMessage());
-        } finally {
-            writer.close();
-        }
-    }
-    
-    private void writeResults(List<Subresource> subresources, HttpServletResponse response) throws Exception {
-        JSONArray list = new JSONArray();
-        for (Subresource sr: subresources) {
-            JSONObject o = new JSONObject();
-            o.put("uri", sr.getUri());
-            o.put("name", sr.getName());
-            o.put("title", sr.getTitle());
-            o.put("collection", sr.isCollection());
-            o.put("readrestricted", sr.permissions.isReadRestricted());
-            o.put("inherited", sr.permissions.isInheritedAcl());
-            list.add(o);
-        }
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentType("text/plain;charset=utf-8");
-        PrintWriter writer = response.getWriter();
-        try {
-            writer.print(list.toString(1));
-        } finally {
-            writer.close();
-        }
-    }
-    
-    private static class Subresource {
-        private String uri;
-        private String name;
-        private String title;
-        private boolean collection;
-        private SubresourcePermissions permissions;
-
-        public Subresource(String uri, String name, String title,
-                           boolean collection, boolean isReadProtected, boolean isInherited) { /* , String read, String write, String admin) { */
-            this.uri = uri;
-            this.name = name;
-            this.title = title;
-            this.collection = collection;
-            this.permissions = new SubresourcePermissions(isReadProtected, isInherited); /* , read, write, admin); */
-        }
-        public String getUri() {
-            return this.uri;
-        }
-        public String getName() {
-            return this.name;
-        }
-        public String getTitle() {
-            return this.title;
-        }
-        public boolean isCollection() {
-            return this.collection;
-        }
-    }
-    
-    private static class SubresourcePermissions {
-        private boolean readRestricted = false;
-        private boolean inheritedAcl = true;
-        /* private String read;
-        private String write;
-        private String admin; */
-        public SubresourcePermissions(boolean readRestricted, boolean inheritedAcl) { /*, String read, String write, String admin) { */
-            this.readRestricted = readRestricted;
-            this.inheritedAcl = inheritedAcl;
-           /* this.read = read;
-            this.write = write;
-            this.admin = admin; */
-        }
-        public boolean isReadRestricted() {
-            return this.readRestricted;
-        }
-        public boolean isInheritedAcl() {
-            return this.inheritedAcl;
-        }
-        /*
-        public String getRead() {
-            return this.read;
-        }
-        public String getWrite() {
-            return this.write;
-        }
-        public String getAdmin() {
-            return this.admin;
-        }
-        */
     }
     
     public void setSearcher(Searcher searcher) {
@@ -276,7 +144,4 @@ public class SubresourceController implements Controller, InitializingBean {
         this.collectionTypeDefinition = collectionTypeDefinition;
     }
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
-    }
 }

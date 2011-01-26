@@ -21,9 +21,22 @@
 
 function load(settings, root, child, container) {
 	function createNode(parent) {
+                var linkOrPlainText = "";
+                if(this.uri) {
+                  if(this.title) {
+                    linkOrPlainText = "<a href='" + this.uri 
+                                    + "' title='" + this.title + "'>" 
+                                    + this.text + "</a>"
+                  } else {
+                    linkOrPlainText = "<a href='" + this.uri + "'>" 
+                                    + this.text + "</a>"
+                  }
+                } else {
+                  linkOrPlainText = this.text;
+                }
 		var current = $("<li/>").attr("id", this.id || "")
-                  .html("<span><a href='" + this.uri + "' title='" + this.title + "'>" 
-                        + this.text + "</a></span>").appendTo(parent);
+                  .html("<span>" + linkOrPlainText + "</span>").appendTo(parent);
+
                 if (this.listClasses) {
 			current.addClass(this.listClasses);
 		}

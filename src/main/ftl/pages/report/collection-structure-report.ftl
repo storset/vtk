@@ -27,7 +27,7 @@
   <script type="text/javascript">
      <!--
      $(window).ready(function(){
-       $(".resultset-1").treeview({
+       $("#tree").treeview({
          animated: "fast"
        });
      });
@@ -59,92 +59,39 @@
 	</div>
   </div>
   </body>
-</html>
+</html>iletree 
 
 <#-- RECURSIVE MENU BUILD -->
 
 <#macro displaySubResourceStructure subResourceStructure>
       <div class="vrtx-subfolder-menu">
-        <ul>    
+        <ul id="tree" class="filetree treeview-gray">
+          <#assign i = 0 />
+          <#assign size = subResourceStructure?size />
           <#list subResourceStructure as item>
-            <li><a href="${item.uri}" title="${item.title}">${item.name}</a></li>
-          </#list>
-        </ul>
-      </div>
-</#macro>
-
-
-<#-- TODO under -->
-
-<#-- MACROS: -->
-<#macro displayItem item separator="none" >
-  <#if item.menu?exists>
-    <a href="${item.url?html}">${item.label?html}</a>
-    </span>
-    <@displaySubMenu item.menu displaySubMenu />
-  <#else> 
-      <a href="${item.url?html}">${item.label?html}</a>
-  </#if>
-</#macro>
-
-<#macro displayParent menu currentCount groupCount newDiv subFolderMenu >
-  <#if newDiv>
-    <#if currentCount != 1>
-     </div>
-    </#if>  
-    <div class="vrtx-group-${groupCount?html}">
-  </#if>
-      <ul class="resultset-${currentCount?html} filetree treeview-gray">
-    <#list menu.itemsSorted as item>
-            <#if true>
-              <li>
-            <#else>
-              <li class="not-inherited">
-            </#if>
-            <#if true>
-              <span class="folder restricted">
-            <#else>
-              <span class="folder allowed-for-all">
-            </#if>
-        <@displayItem item=item />
-      </li>
-    </#list>
-  </ul>
-  <#if subFolderMenu.groupResultSetsBy?exists && subFolderMenu.groupResultSetsBy?number &gt; 0 && currentCount == subFolderMenu.resultSets?size>
-     </div>
-  </#if>
-</#macro>
-
-<#macro displaySubMenu menu displaySubMenu >
-  <ul>
-    <#assign i = 0 />
-    <#assign sized = menu.itemsSorted?size />
-    <#list menu.itemsSorted as item>
-      <#if (i < sized)>
-            <#if (i == (sized-1))>
-              <#if true>
+            <#if (i == (size-1))>
+              <#if item.inheritedAcl>>
                 <li class="closed last">
               <#else>
                 <li class="closed last not-inherited">
               </#if>
             <#else>
-              <#if true>
-                <li class="closed">
-              <#else>
-                <li class="closed not-inherited">
+              <#if item.inheritedAcl>
+                <li>
+               <#else>
+                <li class="not-inherited">
               </#if>
             </#if>
-              <#if true>
-                <span class="folder restricted">
-              <#else>
-                <span class="folder allowed-for-all">
-              </#if>
-             <@displayItem item=item separator="none" />
+            <#if item.readRestricted>
+              <span class="folder restricted">
+            <#else>
+              <span class="folder allowed-for-all">
+            </#if>
+                <a href="${item.uri?html}" title="${item.title?html}">${item.name?html}</a>
+              </span>
             </li>
-         <#else>
-           <#break>
-         </#if>
-         <#assign i = i + 1 />
-    </#list>
-  </ul>
+            <#assign i = i + 1 />
+          </#list>
+        </ul>
+      </div>
 </#macro>

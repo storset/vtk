@@ -38,11 +38,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.repository.Resource;
 import org.vortikal.web.actions.report.subresource.SubresourcePermissions;
-import org.vortikal.web.actions.report.subresource.SubresourceProvider;
+import org.vortikal.web.actions.report.subresource.SubresourcePermissionsProvider;
 
 public class CollectionStructureReporter extends AbstractReporter {
 
-    private SubresourceProvider provider;
+    private SubresourcePermissionsProvider provider;
 
 	public Map<String, Object> getReportContent(String token, Resource currentResource, HttpServletRequest request) {
 	    
@@ -54,7 +54,7 @@ public class CollectionStructureReporter extends AbstractReporter {
 		return result;
 	}
 
-    public void setProvider(SubresourceProvider provider) {
+    public void setProvider(SubresourcePermissionsProvider provider) {
         this.provider = provider;
     }
 

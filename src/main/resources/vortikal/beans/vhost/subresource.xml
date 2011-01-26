@@ -22,7 +22,7 @@
   </bean>
   
   <!-- TODO: move to vortikal.repository? -->
-  <bean id="subresource.provider" class="org.vortikal.web.actions.report.subresource.SubresourceProvider">
+  <bean id="subresource.provider" class="org.vortikal.web.actions.report.subresource.SubresourcePermissionsProvider">
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="repository" ref="repository" />
     <property name="documentTypeDefinition" ref="documentResourceTypeDefinition" />

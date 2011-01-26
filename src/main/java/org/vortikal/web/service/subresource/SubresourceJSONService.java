@@ -47,12 +47,12 @@ import org.vortikal.repository.Path;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.actions.report.subresource.SubresourcePermissions;
-import org.vortikal.web.actions.report.subresource.SubresourceProvider;
+import org.vortikal.web.actions.report.subresource.SubresourcePermissionsProvider;
 import org.vortikal.web.service.URL;
 
 public class SubresourceJSONService implements Controller, InitializingBean {
     
-    private SubresourceProvider provider;
+    private SubresourcePermissionsProvider provider;
       
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -119,7 +119,7 @@ public class SubresourceJSONService implements Controller, InitializingBean {
     public void afterPropertiesSet() throws Exception {
     }
 
-    public void setProvider(SubresourceProvider provider) {
+    public void setProvider(SubresourcePermissionsProvider provider) {
         this.provider = provider;
     }
 

@@ -30,6 +30,7 @@
     <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/admin-prop-change.js"></script>
     
     <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
+    <#assign isCollection = resource.resourceType = 'collection' || resource.resourceType?contains("-listing")/>
 
     <script type="text/javascript">
     <!--
@@ -39,7 +40,9 @@
     
       $(document).ready(function() {
           interceptEnterKey('#resource\\.tags');
+          <#if !isCollection>
           setAutoComplete('resource\\.tags', 'tags', {minChars:1});
+          </#if>
           initDatePicker("${language}");
        });
 
@@ -57,12 +60,13 @@
     
     <@editor.addDatePickerScripts true />
     
+    <#if !isCollection>
     <@autocomplete.addAutoCompleteScripts srcBase="${webResources?html}"/>
+    </#if>
     
    <#global baseFolder = "/" />
    <#if resourceContext.parentURI?exists>
-    <#if resource.resourceType = 'article-listing' || resource.resourceType = 'event-listing'
-         || resource.resourceType = 'collection'>
+    <#if isCollection>
       <#global baseFolder = resourceContext.currentURI?html />
     <#else>
       <#global baseFolder = resourceContext.parentURI?html />
@@ -140,8 +144,7 @@
 
     <#local type = propDef.type />
 
-    <#if type = 'HTML' && name='userTitle' && (resource.resourceType = 'event-listing' ||
-         resource.resourceType = 'article-listing' || resource.resourceType = 'collection')>
+    <#if type = 'HTML' && name='userTitle' && isCollection>
       <#local value = resource.title />
     </#if>
 		

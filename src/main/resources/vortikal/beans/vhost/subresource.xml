@@ -12,9 +12,6 @@
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="subresource-retrieve" />
         </bean>
-        <!-- <bean class="org.vortikal.web.service.RequestMethodAssertion">
-          <property name="method" value="POST" />
-        </bean> -->
       </list>
     </property>
     <property name="handler" ref="subresource.handler" />

@@ -30,6 +30,11 @@
        $("#tree").treeview({
          animated: "fast"
        });
+
+       // Working AJAX-test
+       //$("#tree2").treeview({
+	     //url: "?vrtx=admin&service=subresource-retrieve&uri=/web/blogg"
+	   //})
      });
      // -->
   </script>
@@ -46,6 +51,12 @@
 	  <@vrtx.msg code="report.collection-structure.about" />
 	</p>
 	<div class="vrtx-report">
+	
+	<#-- Working AJAX-test 
+	<div class="vrtx-subfolder-menu">
+	  <ul id="tree2" class="filetree treeview-gray">
+	  </ul>
+	</div> -->
 	
 	  <@displaySubResourceStructure report.subResourceStructure />
 	  
@@ -70,7 +81,7 @@
           <#assign size = subResourceStructure?size />
           <#list subResourceStructure as item>
             <#if (i == (size-1))>
-              <#if item.inheritedAcl>>
+              <#if item.inheritedAcl>
                 <li class="closed last">
               <#else>
                 <li class="closed last not-inherited">
@@ -82,12 +93,20 @@
                 <li class="not-inherited">
               </#if>
             </#if>
-            <#if item.readRestricted>
-              <span class="folder restricted">
+            <#if item.collection>
+              <#if item.readRestricted>
+                <span class="folder restricted">
+              <#else>
+                <span class="folder allowed-for-all">
+              </#if>
             <#else>
-              <span class="folder allowed-for-all">
+              <#if item.readRestricted>
+                <span class="file restricted">
+              <#else>
+                <span class="file allowed-for-all">
+              </#if>
             </#if>
-                <a href="${item.uri?html}" title="${item.title?html}">${item.name?html}</a>
+                <a class="retrieve" href="${item.uri?html}" title="${item.title?html}">${item.name?html}</a>
               </span>
             </li>
             <#assign i = i + 1 />

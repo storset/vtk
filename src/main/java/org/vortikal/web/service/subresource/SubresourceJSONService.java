@@ -97,12 +97,11 @@ public class SubresourceJSONService implements Controller, InitializingBean {
         JSONArray list = new JSONArray();
         for (SubresourcePermissions sr: subresources) {
             JSONObject o = new JSONObject();
-            o.put("uri", sr.getUri());
-            o.put("name", sr.getName());
-            o.put("title", sr.getTitle());
-            o.put("collection", sr.isCollection());
-            o.put("readrestricted", sr.isReadRestricted());
-            o.put("inherited", sr.isInheritedAcl());
+            o.put("text", sr.getName());
+            String classes = sr.isReadRestricted() ? "restricted " : "allowed-for-all ";
+            classes += sr.isInheritedAcl() ? " " : "not-inherited ";
+            classes += sr.isCollection() ? "folder " : "file ";
+            o.put("classes", classes);
             list.add(o);
         }
         response.setStatus(HttpServletResponse.SC_OK);

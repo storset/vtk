@@ -44,6 +44,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
+import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.actions.report.subresource.SubresourcePermissions;
 import org.vortikal.web.actions.report.subresource.SubresourceProvider;
@@ -72,8 +73,11 @@ public class SubresourceJSONService implements Controller, InitializingBean {
         URL base = URL.create(request);
         base.clearParameters();
         base.setPath(path);
+
+        SecurityContext securityContext = SecurityContext.getSecurityContext();
+        String token = securityContext.getToken();
         
-        List<SubresourcePermissions> subresources = provider.buildSearchAndPopulateSubresources(uri);
+        List<SubresourcePermissions> subresources = provider.buildSearchAndPopulateSubresources(uri, token);
         
         writeResults(subresources, response);
         return null;

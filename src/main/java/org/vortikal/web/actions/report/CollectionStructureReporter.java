@@ -31,80 +31,31 @@
 package org.vortikal.web.actions.report;
 
 import java.util.HashMap;
-import java.util.Locale;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.web.servlet.support.RequestContext;
-import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.ResourceTypeTree;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.search.ResultSet;
-import org.vortikal.repository.search.Search;
-import org.vortikal.repository.search.query.AndQuery;
-import org.vortikal.repository.search.query.OrQuery;
-import org.vortikal.repository.search.query.TermOperator;
-import org.vortikal.repository.search.query.TypeTermQuery;
-import org.vortikal.repository.search.query.UriDepthQuery;
-import org.vortikal.repository.search.query.UriPrefixQuery;
-import org.vortikal.web.decorating.components.SubFolderMenuProvider;
+import org.vortikal.web.actions.report.subresource.SubresourcePermissions;
+import org.vortikal.web.actions.report.subresource.SubresourceProvider;
 
 public class CollectionStructureReporter extends AbstractReporter {
 
-	private PropertyTypeDefinition sortPropDef;
-	private SubFolderMenuProvider subFolderMenuProvider;
-	private ResourceTypeTree resourceTypeTree;
+    private SubresourceProvider provider;
 
 	public Map<String, Object> getReportContent(String token, Resource currentResource, HttpServletRequest request) {
-		AndQuery query = new AndQuery();
-		query.add(new TypeTermQuery("collection", TermOperator.IN));
-		query.add(new UriPrefixQuery(currentResource.getURI().toString()));
-		OrQuery depthQuery = new OrQuery();
-		for (int i = 0; i < 3; i++) {
-			depthQuery.add(new UriDepthQuery(i + currentResource.getURI().getDepth()));
-		}
-		query.add(depthQuery);
-
-		Search search = new Search();
-		search.setLimit(Integer.MAX_VALUE);
-
-		search.setQuery(query);
-
-		ResultSet rs = this.searcher.execute(token, search);
-		Map<String, Object> result = new HashMap<String, Object>();
-
-		Locale locale = new RequestContext(request).getLocale();
-
-		Map<String, Object> menu = subFolderMenuProvider.getSubfolderMenu(rs, currentResource, token, locale, 1, null);
-		result.put("subFolderMenu", menu);
+	    
+	    Map<String, Object> result = new HashMap<String, Object>();
+	    
+		List<SubresourcePermissions> subResourceStructure = provider.buildSearchAndPopulateSubresources(currentResource.getURI().toString(), token);
+		result.put("subResourceStructure", subResourceStructure);
 
 		return result;
 	}
 
-	public void setRepository(Repository repository) {
-		this.repository = repository;
-	}
-
-	public void setSortPropDef(PropertyTypeDefinition sortPropDef) {
-		this.sortPropDef = sortPropDef;
-	}
-
-	public PropertyTypeDefinition getSortPropDef() {
-		return sortPropDef;
-	}
-
-	public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
-		this.resourceTypeTree = resourceTypeTree;
-	}
-
-	public ResourceTypeTree getResourceTypeTree() {
-		return resourceTypeTree;
-	}
-
-	public void setSubFolderMenuProvider(SubFolderMenuProvider subFolderMenuProvider) {
-		this.subFolderMenuProvider = subFolderMenuProvider;
-	}
+    public void setProvider(SubresourceProvider provider) {
+        this.provider = provider;
+    }
 
 }

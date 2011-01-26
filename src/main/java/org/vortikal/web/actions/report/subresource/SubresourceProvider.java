@@ -53,7 +53,6 @@ import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.security.AuthenticationException;
-import org.vortikal.security.SecurityContext;
 
 public class SubresourceProvider {
 
@@ -65,11 +64,8 @@ public class SubresourceProvider {
     private static Log logger = LogFactory.getLog(SubresourceProvider.class);
     
     @SuppressWarnings("unchecked")
-    public List<SubresourcePermissions> buildSearchAndPopulateSubresources(String uri) {
+    public List<SubresourcePermissions> buildSearchAndPopulateSubresources(String uri, String token) {
         List<SubresourcePermissions> subresources = new ArrayList();
-        
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String token = securityContext.getToken();
       
         // MainQuery (depth + 1 from uri)
         Path url = Path.fromString(uri);

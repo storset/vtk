@@ -4,39 +4,77 @@
   - Description: Sub folder menu implementation
   - 
   - Required model data:
-  -   subFolderMenu
+  -   subResourceStructure
   -
   -->
 
 <#import "/lib/vortikal.ftl" as vrtx />
 
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+  <#if cssURLs?exists>
+    <#list cssURLs as cssURL>
+    <link rel="stylesheet" href="${cssURL}" />
+    </#list>
+  </#if>
+  <#if jsURLs?exists>
+    <#list jsURLs as jsURL>
+    <script type="text/javascript" src="${jsURL}"></script>
+    </#list>
+  </#if>
+  <script type="text/javascript">
+     <!--
+     $(window).ready(function(){
+       $(".resultset-1").treeview({
+         animated: "fast"
+       });
+     });
+     // -->
+  </script>
+  </head>
+  <body>
+  <div class="resourceInfo">
+    <div class="vrtx-report-nav">
+  	  <div class="back">
+	    <a href="${serviceURL}"><@vrtx.msg code="report.back" default="Back" /></a>
+	  </div>
+	</div> 
+	<h2><@vrtx.msg code="report.collection-structure" /></h2>
+	<p>
+	  <@vrtx.msg code="report.collection-structure.about" />
+	</p>
+	<div class="vrtx-report">
+	
+	  <@displaySubResourceStructure report.subResourceStructure />
+	  
+	  <div id="vrtx-report-help">
+	    <h2><@vrtx.msg code="report.collection-structure.help" /></h2>
+	    <p id="vrtx-report-help-restricted"><@vrtx.msg code="report.collection-structure.help.restricted" /></p>
+	    <p id="vrtx-report-help-allowed-for-all"><@vrtx.msg code="report.collection-structure.help.allowed-for-all" /></p>
+	    <p id="vrtx-report-help-inherited"><@vrtx.msg code="report.collection-structure.help.inherited" /></p>
+	    <p id="vrtx-report-help-not-inherited"><span id="vrtx-report-help-not-inherited-folder"></span><@vrtx.msg code="report.collection-structure.help.not-inherited" /></p>
+	  </div>
+	</div>
+  </div>
+  </body>
+</html>
+
 <#-- RECURSIVE MENU BUILD -->
 
-<#macro displaySubFolderMenu subFolderMenu>
-  
-    <#if subFolderMenu.size &gt; 0>
-      <#assign "counter" = 0>
-      <#assign "counter2" = 0>
-      <#assign "c" = 0>
-         
-      <#if subFolderMenu.resultSets?exists>
-          <div class="vrtx-subfolder-menu">
-          <#list subFolderMenu.resultSets as resultSet>
-            <#assign counter = counter+1>
-            <#assign counter2 = counter2+1>
-            <#if subFolderMenu.groupResultSetsBy?exists && (subFolderMenu.groupResultSetsBy?number = counter2 || counter = 1)>
-               <#assign "counter2" = 0>
-               <#assign c = c+1>
-               <@displayParentMenu menu=resultSet currentCount=counter groupCount=c newDiv=true subFolderMenu=subFolderMenu />
-            <#else>
-               <@displayParentMenu menu=resultSet currentCount=counter groupCount=c newDiv=false subFolderMenu=subFolderMenu />
-            </#if>
+<#macro displaySubResourceStructure subResourceStructure>
+      <div class="vrtx-subfolder-menu">
+        <ul>    
+          <#list subResourceStructure as item>
+            <li><a href="${item.uri}" title="${item.title}">${item.name}</a></li>
           </#list>
-        </div>
-      </#if>
-</#if>
-
+        </ul>
+      </div>
 </#macro>
+
+
+<#-- TODO under -->
 
 <#-- MACROS: -->
 <#macro displayItem item separator="none" >
@@ -49,7 +87,7 @@
   </#if>
 </#macro>
 
-<#macro displayParentMenu menu currentCount groupCount newDiv subFolderMenu >
+<#macro displayParent menu currentCount groupCount newDiv subFolderMenu >
   <#if newDiv>
     <#if currentCount != 1>
      </div>
@@ -72,7 +110,6 @@
       </li>
     </#list>
   </ul>
-  
   <#if subFolderMenu.groupResultSetsBy?exists && subFolderMenu.groupResultSetsBy?number &gt; 0 && currentCount == subFolderMenu.resultSets?size>
      </div>
   </#if>
@@ -111,53 +148,3 @@
     </#list>
   </ul>
 </#macro>
-
-
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-  <#if cssURLs?exists>
-    <#list cssURLs as cssURL>
-    <link rel="stylesheet" href="${cssURL}" />
-    </#list>
-  </#if>
-  <#if jsURLs?exists>
-    <#list jsURLs as jsURL>
-    <script type="text/javascript" src="${jsURL}"></script>
-    </#list>
-  </#if>
-  <script type="text/javascript">
-     <!--
-     $(window).ready(function(){
-       $(".resultset-1").treeview({
-         animated: "fast"
-       });
-     });
-     // -->
-  </script>
-  </head>
-  <body>
-  <div class="resourceInfo">
-    <div class="vrtx-report-nav">
-  	  <div class="back">
-	    <a href="${serviceURL}"><@vrtx.msg code="report.back" default="Back" /></a>
-	  </div>
-	</div> 
-	<h2><@vrtx.msg code="report.collection-structure" /></h2>
-	<p>
-	  <@vrtx.msg code="report.collection-structure.about" />
-	</p>
-	<div class="vrtx-report">
-	  <@displaySubFolderMenu report.subFolderMenu />
-	  <div id="vrtx-report-help">
-	    <h2><@vrtx.msg code="report.collection-structure.help" /></h2>
-	    <p id="vrtx-report-help-restricted"><@vrtx.msg code="report.collection-structure.help.restricted" /></p>
-	    <p id="vrtx-report-help-allowed-for-all"><@vrtx.msg code="report.collection-structure.help.allowed-for-all" /></p>
-	    <p id="vrtx-report-help-inherited"><@vrtx.msg code="report.collection-structure.help.inherited" /></p>
-	    <p id="vrtx-report-help-not-inherited"><span id="vrtx-report-help-not-inherited-folder"></span><@vrtx.msg code="report.collection-structure.help.not-inherited" /></p>
-	  </div>
-	</div>
-  </div>
-  </body>
-</html>

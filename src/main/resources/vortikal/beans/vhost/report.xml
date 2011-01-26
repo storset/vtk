@@ -48,8 +48,7 @@
     parent="reporter">
     <property name="name" value="collection-structure" />
     <property name="viewName" value="collectionStructure" />
-    <property name="sortPropDef" ref="collection.sortingPropDef" />
-    <property name="subFolderMenuProvider" ref="subFolderMenuProvider" />
+    <property name="provider" ref="subresource.provider" />
   </bean>
 
   <bean id="documentReporter" abstract="true" class="org.vortikal.web.actions.report.DocumentReporter" parent="reporter">

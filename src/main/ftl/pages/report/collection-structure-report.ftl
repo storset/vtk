@@ -31,7 +31,6 @@
          animated: "fast"
        });
 
-       // Working AJAX-test
        //$("#tree2").treeview({
 	     //url: "?vrtx=admin&service=subresource-retrieve&uri=/web/blogg"
 	   //})
@@ -52,8 +51,7 @@
 	</p>
 	<div class="vrtx-report">
 	
-	<#-- Working AJAX-test 
-	<div class="vrtx-subfolder-menu">
+	<#-- <div class="vrtx-subfolder-menu">
 	  <ul id="tree2" class="filetree treeview-gray">
 	  </ul>
 	</div> -->
@@ -80,32 +78,31 @@
           <#assign i = 0 />
           <#assign size = subResourceStructure?size />
           <#list subResourceStructure as item>
+          
+            <#assign listClasses = "" />
             <#if (i == (size-1))>
-              <#if item.inheritedAcl>
-                <li class="closed last">
-              <#else>
-                <li class="closed last not-inherited">
-              </#if>
-            <#else>
-              <#if item.inheritedAcl>
-                <li>
-               <#else>
-                <li class="not-inherited">
-              </#if>
+              <#assign listClasses = listClasses + "last" />
+            </#if>
+            <#if !item.inheritedAcl>
+              <#assign listClasses = listClasses +  " not-inherited" />
             </#if>
             <#if item.collection>
-              <#if item.readRestricted>
-                <span class="folder restricted">
-              <#else>
-                <span class="folder allowed-for-all">
-              </#if>
-            <#else>
-              <#if item.readRestricted>
-                <span class="file restricted">
-              <#else>
-                <span class="file allowed-for-all">
-              </#if>
+              <#assign listClasses = listClasses +  " closed hasChildren" />
             </#if>
+            <li class="${listClasses}">
+            
+              <#assign spanClasses = "" />
+              <#if item.collection>
+                <#assign spanClasses = spanClasses +  "folder" />
+              <#else>
+                <#assign spanClasses = spanClasses +  "file" />
+              </#if>
+              <#if item.readRestricted>
+                <#assign spanClasses = spanClasses + " restricted">
+              <#else>
+                <#assign spanClasses = spanClasses + " allowed-for-all">
+              </#if>
+              <span class="${spanClasses}">
                 <a class="retrieve" href="${item.uri?html}" title="${item.title?html}">${item.name?html}</a>
               </span>
             </li>

@@ -109,6 +109,10 @@ public class SubresourceJSONService implements Controller, InitializingBean {
             spanClasses += sr.isCollection() ? "folder " : "file ";
             o.put("spanClasses", spanClasses);
             
+            if(sr.isCollection()) {
+              o.put("hasChildren", true);
+            }
+            
             list.add(o);
         }
         response.setStatus(HttpServletResponse.SC_OK);

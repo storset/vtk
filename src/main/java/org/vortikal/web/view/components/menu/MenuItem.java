@@ -52,8 +52,6 @@ public class MenuItem<T> {
     private String title;
     private String label;
     private boolean active = false;
-    private boolean readRestricted = false;
-    private boolean inheritedAcl = false;
     private ListMenu<T> subMenu;
 
 
@@ -88,25 +86,6 @@ public class MenuItem<T> {
 
     public void setActive(boolean active) {
         this.active = active;
-    }
-
-
-    public boolean isReadRestricted() {
-        return this.readRestricted;
-    }
-
-
-    public void setReadRestricted(boolean readRestricted) {
-        this.readRestricted = readRestricted;
-    }
-    
-    public boolean isInheritedAcl() {
-        return this.inheritedAcl;
-    }
-
-
-    public void setInheritedAcl(boolean inheritedAcl) {
-        this.inheritedAcl = inheritedAcl;
     }
 
 
@@ -160,10 +139,6 @@ public class MenuItem<T> {
         if (this.label != null && !this.label.equals(other.label))
             return false;
         if (this.active != other.active)
-            return false;
-        if (this.readRestricted != other.readRestricted)
-            return false;
-        if (this.inheritedAcl != other.inheritedAcl)
             return false;
         return true;
     }

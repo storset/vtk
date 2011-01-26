@@ -82,11 +82,11 @@ public class SubFolderMenuProvider {
 
 		PropertyTypeDefinition sortProperty = getSearchSorting(collection);
 
-		return getSubfolderMenu(rs, collection, token, locale, resultSets, false, sortProperty);
+		return getSubfolderMenu(rs, collection, token, locale, resultSets, sortProperty);
 	}
 
 	public Map<String, Object> getSubfolderMenu(ResultSet rs, Resource collection, String token, Locale locale,
-	        int resultSets, boolean includePermissions, PropertyTypeDefinition sortProperty) {
+	        int resultSets, PropertyTypeDefinition sortProperty) {
 		String title = null;
 		boolean ascendingSort = true;
 		boolean sortByName = false;
@@ -107,7 +107,7 @@ public class SubFolderMenuProvider {
 
 		MenuRequest menuRequest = subfolderMenu.getNewMenuRequest(collection.getURI(), title, sortProperty,
 		        ascendingSort, sortByName, resultSets, groupResultSetsBy, freezeAtLevel, depth, displayFromLevel,
-		        maxNumberOfChildren, display, locale, token, searchLimit, includeURIs, includePermissions);
+		        maxNumberOfChildren, display, locale, token, searchLimit, includeURIs);
 
 		ListMenu<PropertySet> menu = subfolderMenu.buildListMenu(rs, menuRequest);
 		return subfolderMenu.buildMenuModel(menu, menuRequest);

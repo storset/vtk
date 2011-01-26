@@ -77,8 +77,7 @@ public class CollectionStructureReporter extends AbstractReporter {
 
 		Locale locale = new RequestContext(request).getLocale();
 
-		Map<String, Object> menu = subFolderMenuProvider.getSubfolderMenu(rs, currentResource, token, locale, 1, true,
-		        null);
+		Map<String, Object> menu = subFolderMenuProvider.getSubfolderMenu(rs, currentResource, token, locale, 1, null);
 		result.put("subFolderMenu", menu);
 
 		return result;

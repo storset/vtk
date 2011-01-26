@@ -333,13 +333,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
 		Path uri = resource.getURI();
 
 		URL url = null;
-
-		// if (menuRequest.generateStructuredCollectionReportLink()) {
-		// url = this.reportService.constructURL(uri);
-		// url.addParameter("report-type", "collection-structure");
-		// } else {
 		url = this.viewService.constructURL(uri);
-		// }
 		url.setCollection(true);
 
 		Property titleProperty = resource.getProperty(this.navigationTitlePropDef);
@@ -353,28 +347,6 @@ public class SubFolderMenuComponent extends ListMenuComponent {
 		item.setTitle(titleProperty.getFormattedValue());
 		item.setLabel(title.getStringValue());
 		item.setActive(false);
-
-		if (menuRequest.includePermissions) {
-			try {
-				Resource res = this.repository.retrieve(menuRequest.getToken(), uri, true);
-				if (res != null) {
-					if (res.isReadRestricted()) {
-						item.setReadRestricted(true);
-					}
-					if (res.isInheritedAcl()) {
-						item.setInheritedAcl(true);
-					}
-				}
-			} catch (ResourceNotFoundException e) {
-				logger.error("ResourceNotFoundException " + e.getMessage());
-			} catch (AuthorizationException e) {
-				logger.error("AuthorizationException " + e.getMessage());
-			} catch (AuthenticationException e) {
-				logger.error("AuthenticationException " + e.getMessage());
-			} catch (Exception e) {
-				logger.error("Exception " + e.getMessage());
-			}
-		}
 
 		List<PropertySet> children = childMap.get(resource.getURI());
 		if (children != null) {
@@ -428,12 +400,11 @@ public class SubFolderMenuComponent extends ListMenuComponent {
 		private String token;
 		private int searchLimit = DEFAULT_SEARCH_LIMIT;
 		private List<Path> includeURIs;
-	    protected boolean includePermissions = false;
 
 		public MenuRequest(Path currentCollectionUri, String title, PropertyTypeDefinition sortProperty,
 		        boolean ascendingSort, boolean sortByName, int resultSets, int groupResultSetsBy, int freezeAtLevel,
 		        int depth, int displayFromLevel, int maxNumberOfChildren, String display, Locale locale, String token,
-		        int searchLimit, ArrayList<Path> includeURIs, boolean includePermissions) {
+		        int searchLimit, ArrayList<Path> includeURIs) {
 			super();
 			this.currentCollectionUri = currentCollectionUri;
 			this.title = title;
@@ -451,7 +422,6 @@ public class SubFolderMenuComponent extends ListMenuComponent {
 			this.token = token;
 			this.searchLimit = searchLimit;
 			this.includeURIs = includeURIs;
-			this.includePermissions = includePermissions;
 		}
 
 		public MenuRequest(DecoratorRequest request) {
@@ -809,10 +779,10 @@ public class SubFolderMenuComponent extends ListMenuComponent {
 	public MenuRequest getNewMenuRequest(Path currentCollectionUri, String title, PropertyTypeDefinition sortProperty,
 	        boolean ascendingSort, boolean sortByName, int resultSets, int groupResultSetsBy, int freezeAtLevel,
 	        int depth, int displayFromLevel, int maxNumberOfChildren, String display, Locale locale, String token,
-	        int searchLimit, ArrayList<Path> includeURIs, boolean includePermissions) {
+	        int searchLimit, ArrayList<Path> includeURIs) {
 		return new MenuRequest(currentCollectionUri, title, sortProperty, ascendingSort, sortByName, resultSets,
 		        groupResultSetsBy, freezeAtLevel, depth, displayFromLevel, maxNumberOfChildren, display, locale, token,
-		        searchLimit, includeURIs, includePermissions);
+		        searchLimit, includeURIs);
 	}
 
 }

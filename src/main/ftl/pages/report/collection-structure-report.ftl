@@ -31,9 +31,12 @@
          animated: "fast"
        });
 
-       //$("#tree2").treeview({
-	     //url: "?vrtx=admin&service=subresource-retrieve&uri=/web/blogg"
-	   //})
+       $("#tree").delegate(".hitarea", "click", function() {
+         $(this).parent().find("li").treeview({
+	       url: "?vrtx=admin&service=subresource-retrieve&uri=" + $(this).next().find("a").attr("href")
+	     })
+	     return false;
+	   })
      });
      // -->
   </script>
@@ -50,12 +53,7 @@
 	  <@vrtx.msg code="report.collection-structure.about" />
 	</p>
 	<div class="vrtx-report">
-	
-	<#-- <div class="vrtx-subfolder-menu">
-	  <ul id="tree2" class="filetree treeview-gray">
-	  </ul>
-	</div> -->
-	
+
 	  <@displaySubResourceStructure report.subResourceStructure />
 	  
 	  <div id="vrtx-report-help">
@@ -105,6 +103,9 @@
               <span class="${spanClasses}">
                 <a class="retrieve" href="${item.uri?html}" title="${item.title?html}">${item.name?html}</a>
               </span>
+              <#if item.collection>
+                <ul><li></li></ul>
+              </#if>
             </li>
             <#assign i = i + 1 />
           </#list>

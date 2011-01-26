@@ -342,9 +342,9 @@ resourcetype frontpage {
        nn : ("true" = "Ja", "false" = "Nei")
      },
      main-content:boxCssColor {
-       en : ("undefined" = "Blanc", "grey-box" = "Grey box", "white-box" = "White box"),
-       no : ("undefined" = "Blank", "grey-box" = "Grå boks", "white-box" = "Hvit boks"),
-       nn : ("undefined" = "Blank", "grey-box" = "Grå boks", "white-box" = "Hvit boks")
+       en : ("white-box" = "White box", "grey-box" = "Grey box", "undefined" = "Blanc"),
+       no : ("white-box" = "Hvit boks", "grey-box" = "Grå boks", "undefined" = "Blank"),
+       nn : ("white-box" = "Hvit boks", "grey-box" = "Grå boks", "undefined" = "Blank")
      },
      main-content:boxCssSizeAndPlacement {
        en : ("undefined" = "Full width", "half-box-left" = "Half width (1 of 2)", "half-box-right" = "Half width (2 of 2)", "third-box-left" = "Third width (1 of 3)", "third-box-middle" = "Third width (2 of 3)", "third-box-right" = "Third width (3 of 3)"),

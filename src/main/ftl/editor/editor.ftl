@@ -39,8 +39,8 @@
  	  });
     
       $(document).ready(function() {
-          interceptEnterKey('#resource\\.tags');
           <#if !isCollection>
+          interceptEnterKey('#resource\\.tags');
           setAutoComplete('resource\\.tags', 'tags', {minChars:1});
           </#if>
           initDatePicker("${language}");

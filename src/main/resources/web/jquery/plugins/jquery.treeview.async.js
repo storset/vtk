@@ -11,15 +11,24 @@
  *
  * Revision: $Id$
  *
+ * USIT added JSON: 1. possible to set classes also on <li> (in addition to <span>)
+ *                  2. uri / <a>
+ *                  3. title on <a>
+ *
  */
 
 ;(function($) {
 
 function load(settings, root, child, container) {
 	function createNode(parent) {
-		var current = $("<li/>").attr("id", this.id || "").html("<span>" + this.text + "</span>").appendTo(parent);
-		if (this.classes) {
-			current.children("span").addClass(this.classes);
+		var current = $("<li/>").attr("id", this.id || "")
+                  .html("<span><a href='" + this.uri + "' title='" + this.title + "'>" 
+                        + this.text + "</a></span>").appendTo(parent);
+                if (this.listClasses) {
+			current.addClass(this.listClasses);
+		}
+		if (this.spanClasses) {
+			current.children("span").addClass(this.spanClasses);
 		}
 		if (this.expanded) {
 			current.addClass("open");

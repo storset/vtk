@@ -33,6 +33,7 @@
 
        $("#tree").delegate(".hitarea", "click", function() {
          $(this).parent().find("li").treeview({
+           animated: "fast",
 	       url: "?vrtx=admin&service=subresource-retrieve&uri=" + $(this).next().find("a").attr("href")
 	     })
 	     return false;
@@ -101,7 +102,7 @@
                 <#assign spanClasses = spanClasses + " allowed-for-all">
               </#if>
               <span class="${spanClasses}">
-                <a class="retrieve" href="${item.uri?html}" title="${item.title?html}">${item.name?html}</a>
+                <a href="${item.uri?html}" title="${item.title?html}">${item.name?html}</a>
               </span>
               <#if item.collection>
                 <ul><li></li></ul>

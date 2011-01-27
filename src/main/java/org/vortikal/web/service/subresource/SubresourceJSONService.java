@@ -102,11 +102,11 @@ public class SubresourceJSONService implements Controller, InitializingBean {
             o.put("uri", sr.getUri());
             o.put("title", sr.getTitle());
             
-            String listClasses = sr.isInheritedAcl() ? "" : "not-inherited";
+            String listClasses = sr.isInheritedAcl() ? "" : " not-inherited";
             o.put("listClasses", listClasses);
             
-            String spanClasses = sr.isReadRestricted() ? "restricted " : "allowed-for-all ";
-            spanClasses += sr.isCollection() ? "folder " : "file ";
+            String spanClasses = sr.isReadRestricted() ? " restricted" : " allowed-for-all";
+            spanClasses += sr.isCollection() ? " folder" : " file";
             o.put("spanClasses", spanClasses);
             
             if(sr.isCollection()) {

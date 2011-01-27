@@ -119,6 +119,10 @@ $.fn.treeview = function(settings) {
 		toggle: function() {
 			var $this = $(this);
 			if ($this.hasClass("hasChildren")) {
+		        var ajaxUrl = {
+		  		  url: "?vrtx=admin&service=subresource-retrieve&uri=" + $(this).find("a").attr("href")
+		  		};
+				$.extend(settings, ajaxUrl);
 				var childList = $this.removeClass("hasChildren").find("ul");
 				load(settings, this.id, childList, container);
 			}

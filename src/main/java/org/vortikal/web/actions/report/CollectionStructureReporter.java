@@ -31,31 +31,21 @@
 package org.vortikal.web.actions.report;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.repository.Resource;
-import org.vortikal.web.actions.report.subresource.SubresourcePermissions;
-import org.vortikal.web.actions.report.subresource.SubresourcePermissionsProvider;
 
 public class CollectionStructureReporter extends AbstractReporter {
-
-    private SubresourcePermissionsProvider provider;
 
 	public Map<String, Object> getReportContent(String token, Resource currentResource, HttpServletRequest request) {
 	    
 	    Map<String, Object> result = new HashMap<String, Object>();
 	    
-		List<SubresourcePermissions> subResourceStructure = provider.buildSearchAndPopulateSubresources(currentResource.getURI().toString(), token);
-		result.put("subResourceStructure", subResourceStructure);
+		result.put("uri", currentResource.getURI().toString());
 
 		return result;
 	}
-
-    public void setProvider(SubresourcePermissionsProvider provider) {
-        this.provider = provider;
-    }
-
+	
 }

@@ -28,16 +28,9 @@
      <!--
      $(window).ready(function(){
        $("#tree").treeview({
-         animated: "fast"
+         animated: "fast",
+         url: "?vrtx=admin&service=subresource-retrieve&uri=${report.uri}"
        });
-
-       $("#tree").delegate(".hitarea", "click", function() {
-         $(this).parent().find("li").treeview({
-           animated: "fast",
-	       url: "?vrtx=admin&service=subresource-retrieve&uri=" + $(this).parent().find("a:first").attr("href")
-	     });
-	     return false;
-	   });
      });
      // -->
   </script>
@@ -55,7 +48,7 @@
 	</p>
 	<div class="vrtx-report">
 
-	  <@displaySubResourceStructure report.subResourceStructure />
+	  <ul id="tree" class="filetree treeview-gray"></ul>
 	  
 	  <div id="vrtx-report-help">
 	    <h2><@vrtx.msg code="report.collection-structure.help" /></h2>
@@ -67,9 +60,9 @@
 	</div>
   </div>
   </body>
-</html>iletree 
+</html>
 
-<#-- RECURSIVE MENU BUILD -->
+<#-- SUBRESOURCES TRUCTURE BUILD (keep) -->
 
 <#macro displaySubResourceStructure subResourceStructure>
       <div class="vrtx-subfolder-menu">
@@ -89,7 +82,7 @@
               <#assign listClasses = listClasses +  " closed hasChildren" />
             </#if>
             <li class="${listClasses}">
-            
+             -->
               <#assign spanClasses = "" />
               <#if item.collection>
                 <#assign spanClasses = spanClasses +  "folder" />

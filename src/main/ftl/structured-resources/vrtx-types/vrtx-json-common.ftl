@@ -6,6 +6,7 @@
 <#import "vrtx-media-ref.ftl" as vrtxMediaRef />
 <#import "vrtx-radio.ftl" as vrtxRadio />
 <#import "vrtx-string.ftl" as vrtxString />
+<#import "vrtx-url.ftl" as vrtxUrl />
 
 <#macro printPropertyEditView form elem locale>
     <#assign localizedTitle = form.resource.getLocalizedMsg(elem.name, locale, null) />
@@ -93,7 +94,19 @@
           classes=elem.name 
           tooltip=form.resource.getLocalizedTooltip(elem.name, locale)
           />
-        <#break>          
+        <#break>
+        <#case "urlz">
+            URLZ
+        <@vrtxUrl.printPropertyEditView 
+          title=localizedTitle
+          inputFieldName=elem.name 
+          value=elem.getFormatedValue()
+          name=elem.value
+          baseFolder=resourceContext.parentURI
+          classes=elem.name 
+          tooltip=form.resource.getLocalizedTooltip(elem.name, locale)
+          />
+        <#break>               
       <#case "media_ref">
         <@vrtxMediaRef.printPropertyEditView 
           title=localizedTitle
@@ -307,6 +320,17 @@
       title=jsonAttr
       inputFieldName=tmpName
       value=thumbnail
+      name=value 
+      baseFolder=resourceContext.parentURI
+      classes="" />
+    <#break>
+
+  <#case "urlz">
+  
+    <@vrtxUrl.printPropertyEditView 
+      title=jsonAttr
+      inputFieldName=tmpName
+      value=value
       name=value 
       baseFolder=resourceContext.parentURI
       classes="" />

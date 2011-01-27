@@ -44,6 +44,7 @@ public final class PropertyType {
     public enum Type {
         STRING,
         HTML,
+        URLZ,
         IMAGE_REF,
         INT, 
         LONG,

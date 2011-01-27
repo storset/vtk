@@ -34,8 +34,16 @@
      });
      
      var addTooltip = function() {
-       $("#tree a[title]").tooltip({
-         tip: '.tooltip',
+       $("#tree span.allowed-for-all a[title]").tooltip({
+         tip: '.tooltip-allowed-for-all',
+	 effect: 'fade',
+	 fadeOutSpeed: 100,
+	 predelay: 15,
+	 position: "top right",
+	 offset: [-220, 0]
+      });
+      $("#tree span.restricted a[title]").tooltip({
+         tip: '.tooltip-restricted',
 	 effect: 'fade',
 	 fadeOutSpeed: 100,
 	 predelay: 15,
@@ -62,7 +70,8 @@
 	</p>
 	<div class="vrtx-report">
 
-      <span class="tooltip">&nbsp;</span>
+      <span class="tooltip tooltip-allowed-for-all">&nbsp;</span>
+      <span class="tooltip tooltip-restricted">&nbsp;</span>
 	  <ul id="tree" class="filetree treeview-gray"></ul>
 	  
 	  <div id="vrtx-report-help">

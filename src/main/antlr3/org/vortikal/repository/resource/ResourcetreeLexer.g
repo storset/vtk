@@ -46,7 +46,7 @@ DQ	:	'"';
 EQ	:	'=';
 QUESTION:	'?';
 
-PROPTYPE:	(STRING | URLZ | HTML | SIMPLEHTML | BOOLEAN | INT | DATETIME | IMAGEREF | MEDIAREF);
+PROPTYPE:	(STRING | RESOURCEREF | HTML | SIMPLEHTML | BOOLEAN | INT | DATETIME | IMAGEREF | MEDIAREF);
 DERIVED	:	'derived';
 JSON	:	'json';
 BINARY	:	'binary';
@@ -107,8 +107,8 @@ WS	:	(' ' | '\t' | '\n' | '\r')+ {$channel=HIDDEN;};
 // Propertytypes
 fragment STRING
 	:	'string';	
-fragment URLZ
-	:	'urlz';
+fragment RESOURCEREF
+	:	'resource_ref';
 fragment HTML
 	:	'html';
 fragment SIMPLEHTML

@@ -6,7 +6,7 @@
 <#import "vrtx-media-ref.ftl" as vrtxMediaRef />
 <#import "vrtx-radio.ftl" as vrtxRadio />
 <#import "vrtx-string.ftl" as vrtxString />
-<#import "vrtx-url.ftl" as vrtxUrl />
+<#import "vrtx-resource-ref.ftl" as vrtxResourceRef />
 
 <#macro printPropertyEditView form elem locale>
     <#assign localizedTitle = form.resource.getLocalizedMsg(elem.name, locale, null) />
@@ -95,9 +95,18 @@
           tooltip=form.resource.getLocalizedTooltip(elem.name, locale)
           />
         <#break>
-        <#case "urlz">
-            URLZ
-        <@vrtxUrl.printPropertyEditView 
+        <#case "resource_ref">
+            <#assign fieldSize="40" />
+        	<#if elem.description.edithints?exists && elem.description.edithints['size']?exists >
+          		<#if elem.description.edithints['size'] == "large" >
+            		<#assign fieldSize="60" />
+          		<#elseif elem.description.edithints['size'] == "small" >
+           	 		<#assign fieldSize="20"/>
+          		<#else>
+            		<#assign fieldSize=elem.description.edithints['size'] />
+         		</#if>
+         	</#if>
+        <@vrtxResourceRef.printPropertyEditView 
           title=localizedTitle
           inputFieldName=elem.name 
           value=elem.getFormatedValue()
@@ -105,6 +114,7 @@
           baseFolder=resourceContext.parentURI
           classes=elem.name 
           tooltip=form.resource.getLocalizedTooltip(elem.name, locale)
+          inputFieldSize=fieldSize 
           />
         <#break>               
       <#case "media_ref">
@@ -325,15 +335,26 @@
       classes="" />
     <#break>
 
-  <#case "urlz">
-  
-    <@vrtxUrl.printPropertyEditView 
+  <#case "resource_ref">
+   <#assign fieldSize="40" />
+    <#if elem.description.edithints?exists && elem.description.edithints['size']?exists >
+      <#if elem.description.edithints['size'] == "large" >
+        <#assign fieldSize="60" />
+      <#elseif elem.description.edithints['size'] == "small" >
+        <#assign fieldSize="20"/>
+      <#else>
+        <#assign fieldSize=elem.description.edithints['size'] />
+      </#if>
+    </#if>
+    <@vrtxResourceRef.printPropertyEditView 
       title=jsonAttr
       inputFieldName=tmpName
       value=value
       name=value 
       baseFolder=resourceContext.parentURI
-      classes="" />
+      classes=""
+      inputFieldSize=fieldSize 
+       />
     <#break>
     
   <#case "media_ref">

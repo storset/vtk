@@ -89,6 +89,8 @@
              htmlTemplate += addBooleanField(j.a[i], inputFieldName); break
            case "image_ref":
              htmlTemplate += addImageRef(j.a[i], inputFieldName); break
+           case "resource_ref":  
+             htmlTemplate += addResourceRef(j.a[i], inputFieldName); break
            case "datetime":
              htmlTemplate += addDateField(j.a[i], inputFieldName); break
            case "media":
@@ -273,6 +275,21 @@
     htmlTemplate += '<div id=\"' + inputFieldName + '.preview\">';
     htmlTemplate += '<\/div><\/div>';
     
+    return htmlTemplate;
+  }
+  
+  function addResourceRef(elem, inputFieldName){
+  	var htmlTemplate = new String();
+  	htmlTemplate = '<div class=\"vrtx-url\">';
+  	htmlTemplate += '<div class=\"vrtx-url-label\">';
+    htmlTemplate += '<label for=\"' + inputFieldName + '\">' + elem.title + '<\/label>';
+	htmlTemplate += '<\/div>';
+	htmlTemplate += '<div class=\"vrtx-url-browse\">';
+	htmlTemplate += '<input type=\"text\" name=\"' + inputFieldName + '\" id=\"' + inputFieldName + '\" value=\"\" size=\"40\" \/>';
+    htmlTemplate += '<button type=\"button\" onclick=\"browseServer($(this).parent().find(\'input\').attr(\'id\'), \'${fckeditorBase.url}\', \'${resourceContext.parentURI?js_string}\', \'${fckBrowse.url.pathRepresentation}\');\"><@vrtx.msg code="editor.browseImages" /><\/button>';	
+    htmlTemplate += '<\/div>';
+	htmlTemplate += '<\/div>';
+	
     return htmlTemplate;
   }
   

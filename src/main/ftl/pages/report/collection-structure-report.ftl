@@ -30,8 +30,22 @@
        $("#tree").treeview({
          animated: "fast",
          url: "?vrtx=admin&service=subresource-retrieve&uri=${report.uri}"
-       });
+       })
      });
+     
+     var addTooltip = function() {
+       $("#tree a[title]").tooltip({
+		 tip: '.tooltip',
+		 effect: 'fade',
+		 fadeOutSpeed: 100,
+		 predelay: 15,
+		 position: "bottom right",
+		 offset: [-265, 0]
+	   });
+     };
+     
+     setTimeout(addTooltip, 500);
+
      // -->
   </script>
   </head>
@@ -48,6 +62,7 @@
 	</p>
 	<div class="vrtx-report">
 
+      <span class="tooltip">&nbsp;</span>
 	  <ul id="tree" class="filetree treeview-gray"></ul>
 	  
 	  <div id="vrtx-report-help">

@@ -59,6 +59,7 @@ public class SubResourcePermissionsProvider {
     private Searcher searcher;
     private Repository repository;
     private ResourceTypeDefinition documentTypeDefinition;
+    private ResourceTypeDefinition structuredDocumentTypeDefinition;
     private ResourceTypeDefinition collectionTypeDefinition;
     
     private static Log logger = LogFactory.getLog(SubResourcePermissionsProvider.class);
@@ -75,8 +76,9 @@ public class SubResourcePermissionsProvider {
         mainQuery.add(new UriDepthQuery(depth));
         OrQuery resourceQuery = new OrQuery();
         
-        // Document OR collection
+        // Document OR StructuredDocument(JSON) OR collection
         resourceQuery.add(new TypeTermQuery(documentTypeDefinition.getName(), TermOperator.IN));
+        resourceQuery.add(new TypeTermQuery(structuredDocumentTypeDefinition.getName(), TermOperator.IN));
         resourceQuery.add(new TypeTermQuery(collectionTypeDefinition.getName(), TermOperator.IN));
         mainQuery.add(resourceQuery);
         
@@ -123,7 +125,7 @@ public class SubResourcePermissionsProvider {
         }
         return subresources;
     }
-    
+
     public void setSearcher(Searcher searcher) {
         this.searcher = searcher;
     }
@@ -134,6 +136,10 @@ public class SubResourcePermissionsProvider {
     
     public void setDocumentTypeDefinition(ResourceTypeDefinition documentTypeDefinition) {
         this.documentTypeDefinition = documentTypeDefinition;
+    }
+    
+    public void setStructuredDocumentTypeDefinition(ResourceTypeDefinition structuredDocumentTypeDefinition) {
+        this.structuredDocumentTypeDefinition = structuredDocumentTypeDefinition;
     }
 
     public void setCollectionTypeDefinition(ResourceTypeDefinition collectionTypeDefinition) {

@@ -103,23 +103,23 @@ public class SubresourcePermissionsProvider {
               resourceTitle = res.getTitle();
               resourceisCollection = res.isCollection();
               if(res.isReadRestricted()) {
-                  resourceIsInheritedAcl = true;
-               }
-               if(res.isInheritedAcl()) {
-                  resourceIsInheritedAcl = true;
-               }
-             }
-           } catch (ResourceNotFoundException e) {
-             logger.error("ResourceNotFoundException " + e.getMessage());
-           } catch (AuthorizationException e) {
-             logger.error("AuthorizationException " + e.getMessage());
-           } catch (AuthenticationException e) {
-             logger.error("AuthenticationException " + e.getMessage());
-           } catch (Exception e) {
-             logger.error("Exception " + e.getMessage());
-           }
-           subresources.add(new SubresourcePermissions(resourceURI, resourceName, resourceTitle, resourceisCollection, 
-                                            resourceIsReadRestricted, resourceIsInheritedAcl));
+                resourceIsReadRestricted = true;
+              }
+              if(res.isInheritedAcl()) {
+                resourceIsInheritedAcl = true;
+              }
+            }
+          } catch (ResourceNotFoundException e) {
+            logger.error("ResourceNotFoundException " + e.getMessage());
+          } catch (AuthorizationException e) {
+            logger.error("AuthorizationException " + e.getMessage());
+          } catch (AuthenticationException e) {
+            logger.error("AuthenticationException " + e.getMessage());
+          } catch (Exception e) {
+            logger.error("Exception " + e.getMessage());
+          }
+          subresources.add(new SubresourcePermissions(resourceURI, resourceName, resourceTitle, resourceisCollection, 
+                                                      resourceIsReadRestricted, resourceIsInheritedAcl));
         }
         return subresources;
     }

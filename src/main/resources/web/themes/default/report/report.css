@@ -53,11 +53,13 @@ div.vrtx-report table#vrtx-report-document-table tr.even td {
   background-color: #eeeeee;
 }
 
+/* Tooltip */
+
 .tooltip {
   display: none;
   background-color: #337409;
-  border: 2px solid #000;
-  padding: 10px;
+  border: 1px solid #333;
+  padding: 7px 10px;
   font-size: 1em;
   z-index: 9999;
   color: #fff;
@@ -73,6 +75,8 @@ div.vrtx-report table#vrtx-report-document-table tr.even td {
 .tooltip-restricted {
   background-color: #740909 !important;
 }
+
+/* ^ Tooltip */
 
 /* Help */
 

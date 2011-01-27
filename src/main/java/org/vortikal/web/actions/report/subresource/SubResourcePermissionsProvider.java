@@ -54,18 +54,18 @@ import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.security.AuthenticationException;
 
-public class SubresourcePermissionsProvider {
+public class SubResourcePermissionsProvider {
 
     private Searcher searcher;
     private Repository repository;
     private ResourceTypeDefinition documentTypeDefinition;
     private ResourceTypeDefinition collectionTypeDefinition;
     
-    private static Log logger = LogFactory.getLog(SubresourcePermissionsProvider.class);
+    private static Log logger = LogFactory.getLog(SubResourcePermissionsProvider.class);
     
     @SuppressWarnings("unchecked")
-    public List<SubresourcePermissions> buildSearchAndPopulateSubresources(String uri, String token) {
-        List<SubresourcePermissions> subresources = new ArrayList();
+    public List<SubResourcePermissions> buildSearchAndPopulateSubresources(String uri, String token) {
+        List<SubResourcePermissions> subresources = new ArrayList();
       
         // MainQuery (depth + 1 from uri)
         Path url = Path.fromString(uri);
@@ -118,7 +118,7 @@ public class SubresourcePermissionsProvider {
           } catch (Exception e) {
             logger.error("Exception " + e.getMessage());
           }
-          subresources.add(new SubresourcePermissions(resourceURI, resourceName, resourceTitle, resourceisCollection, 
+          subresources.add(new SubResourcePermissions(resourceURI, resourceName, resourceTitle, resourceisCollection, 
                                                       resourceIsReadRestricted, resourceIsInheritedAcl));
         }
         return subresources;

@@ -12,8 +12,8 @@
  * Revision: $Id$
  *
  * USIT added JSON: 1. possible to set classes also on <li> (in addition to <span>)
- *                  2. uri / <a>
- *                  3. title on <a>
+ *                  2. uri and uriPostfix -> <a>
+ *                  3. title -> <a>
  *                  4. update settings.url on toggle()
  *
  */
@@ -22,23 +22,27 @@
 
 function load(settings, root, child, container) {
 	function createNode(parent) {
-                var linkOrPlainText = "";
-                if(this.uri) {
-                  if(this.title) {
-                    linkOrPlainText = "<a href='" + this.uri 
-                                    + "' title='" + this.title + "'>" 
-                                    + this.text + "</a>"
-                  } else {
-                    linkOrPlainText = "<a href='" + this.uri + "'>" 
-                                    + this.text + "</a>"
-                  }
-                } else {
-                  linkOrPlainText = this.text;
-                }
+        var linkOrPlainText = "";
+        if(this.uri) {
+          if(this.title) {
+            var theuri = this.uri;
+            if(this.uriPostfix) {
+              theuri += this.uriPostfix;
+            }
+            linkOrPlainText = "<a href='" + theuri
+                          + "' title='" + this.title + "'>" 
+                          + this.text + "</a>"
+          } else {
+            linkOrPlainText = "<a href='" + this.uri + "'>" 
+                          + this.text + "</a>"
+          }
+        } else {
+          linkOrPlainText = this.text;
+        }
 		var current = $("<li/>").attr("id", this.id || "")
-                  .html("<span>" + linkOrPlainText + "</span>").appendTo(parent);
+                      .html("<span>" + linkOrPlainText + "</span>").appendTo(parent);
 
-                if (this.listClasses) {
+        if (this.listClasses) {
 			current.addClass(this.listClasses);
 		}
 		if (this.spanClasses) {
@@ -121,7 +125,7 @@ $.fn.treeview = function(settings) {
 			var $this = $(this);
 			if ($this.hasClass("hasChildren")) {
 		        var ajaxUrl = {
-		  		  url: "?vrtx=admin&service=subresource-retrieve&uri=" + $(this).find("a").attr("href")
+		  		  url: "?vrtx=admin&service=subresource-retrieve&uri=" + $(this).find("a").attr("href").split("?")[0]
 		  		};
 				$.extend(settings, ajaxUrl);
 				var childList = $this.removeClass("hasChildren").find("ul");

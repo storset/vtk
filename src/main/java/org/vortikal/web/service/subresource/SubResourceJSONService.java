@@ -46,13 +46,13 @@ import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.actions.report.subresource.SubresourcePermissions;
-import org.vortikal.web.actions.report.subresource.SubresourcePermissionsProvider;
+import org.vortikal.web.actions.report.subresource.SubResourcePermissions;
+import org.vortikal.web.actions.report.subresource.SubResourcePermissionsProvider;
 import org.vortikal.web.service.URL;
 
-public class SubresourceJSONService implements Controller, InitializingBean {
+public class SubResourceJSONService implements Controller, InitializingBean {
     
-    private SubresourcePermissionsProvider provider;
+    private SubResourcePermissionsProvider provider;
       
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -77,7 +77,7 @@ public class SubresourceJSONService implements Controller, InitializingBean {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
         
-        List<SubresourcePermissions> subresources = provider.buildSearchAndPopulateSubresources(uri, token);
+        List<SubResourcePermissions> subresources = provider.buildSearchAndPopulateSubresources(uri, token);
         
         writeResults(subresources, response);
         return null;
@@ -93,13 +93,14 @@ public class SubresourceJSONService implements Controller, InitializingBean {
         }
     }
     
-    private void writeResults(List<SubresourcePermissions> subresources, HttpServletResponse response) throws Exception {
+    private void writeResults(List<SubResourcePermissions> subresources, HttpServletResponse response) throws Exception {
         JSONArray list = new JSONArray();
-        for (SubresourcePermissions sr: subresources) {
+        for (SubResourcePermissions sr: subresources) {
             JSONObject o = new JSONObject();
             
             o.put("text", sr.getName());
             o.put("uri", sr.getUri());
+            o.put("uriPostfix", "?vrtx=admin&mode=permissions");
             o.put("title", sr.getTitle());
             
             String listClasses = sr.isInheritedAcl() ? "" : " not-inherited";
@@ -129,7 +130,7 @@ public class SubresourceJSONService implements Controller, InitializingBean {
     public void afterPropertiesSet() throws Exception {
     }
 
-    public void setProvider(SubresourcePermissionsProvider provider) {
+    public void setProvider(SubResourcePermissionsProvider provider) {
         this.provider = provider;
     }
 

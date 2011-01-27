@@ -30,13 +30,13 @@
  */
 package org.vortikal.web.actions.report.subresource;
 
-public class SubresourcePermissions extends Subresource {
+public class SubResourcePermissions extends SubResource {
     private boolean readRestricted = false;
     private boolean inheritedAcl = true;
     /* private String read;
     private String write;
     private String admin; */
-    public SubresourcePermissions(String uri, String name, String title, boolean collection,
+    public SubResourcePermissions(String uri, String name, String title, boolean collection,
                                   boolean readRestricted, boolean inheritedAcl) { /*, String read, String write, String admin) { */
         super(uri, name, title, collection);
         this.readRestricted = readRestricted;

@@ -17,12 +17,12 @@
     <property name="handler" ref="subresource.handler" />
   </bean>
 
-  <bean id="subresource.handler" class="org.vortikal.web.service.subresource.SubresourceJSONService">
+  <bean id="subresource.handler" class="org.vortikal.web.service.subresource.SubResourceJSONService">
     <property name="provider" ref="subresource.provider" />
   </bean>
   
   <!-- TODO: move to vortikal.repository? -->
-  <bean id="subresource.provider" class="org.vortikal.web.actions.report.subresource.SubresourcePermissionsProvider">
+  <bean id="subresource.provider" class="org.vortikal.web.actions.report.subresource.SubResourcePermissionsProvider">
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="repository" ref="repository" />
     <property name="documentTypeDefinition" ref="documentResourceTypeDefinition" />

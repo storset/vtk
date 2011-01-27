@@ -30,13 +30,13 @@
  */
 package org.vortikal.web.actions.report.subresource;
 
-public class Subresource {
+public class SubResource {
     private String uri;
     private String name;
     private String title;
     private boolean collection;
 
-    public Subresource(String uri, String name, String title, boolean collection) {
+    public SubResource(String uri, String name, String title, boolean collection) {
         this.uri = uri;
         this.name = name;
         this.title = title;

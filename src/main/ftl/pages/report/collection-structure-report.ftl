@@ -35,13 +35,13 @@
      
      var addTooltip = function() {
        $("#tree a[title]").tooltip({
-		 tip: '.tooltip',
-		 effect: 'fade',
-		 fadeOutSpeed: 100,
-		 predelay: 15,
-		 position: "bottom right",
-		 offset: [-265, 0]
-	   });
+         tip: '.tooltip',
+	 effect: 'fade',
+	 fadeOutSpeed: 100,
+	 predelay: 15,
+	 position: "top right",
+	 offset: [-220, 0]
+      });
      };
      
      setTimeout(addTooltip, 500);

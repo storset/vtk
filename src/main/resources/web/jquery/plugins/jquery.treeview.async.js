@@ -14,6 +14,7 @@
  * USIT added JSON: 1. possible to set classes also on <li> (in addition to <span>)
  *                  2. uri / <a>
  *                  3. title on <a>
+ *                  4. update settings.url on toggle()
  *
  */
 

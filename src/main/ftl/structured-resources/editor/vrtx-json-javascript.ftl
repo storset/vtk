@@ -286,7 +286,7 @@
 	htmlTemplate += '<\/div>';
 	htmlTemplate += '<div class=\"vrtx-url-browse\">';
 	htmlTemplate += '<input type=\"text\" name=\"' + inputFieldName + '\" id=\"' + inputFieldName + '\" value=\"\" size=\"40\" \/>';
-    htmlTemplate += '<button type=\"button\" onclick=\"browseServer($(this).parent().find(\'input\').attr(\'id\'), \'${fckeditorBase.url}\', \'${resourceContext.parentURI?js_string}\', \'${fckBrowse.url.pathRepresentation}\');\"><@vrtx.msg code="editor.browseImages" /><\/button>';	
+    htmlTemplate += '<button type=\"button\" onclick=\"browseServer($(this).parent().find(\'input\').attr(\'id\'), \'${fckeditorBase.url}\', \'${resourceContext.parentURI?js_string}\', \'${fckBrowse.url.pathRepresentation}\',\'File\');\"><@vrtx.msg code="editor.browseImages" /><\/button>';	
     htmlTemplate += '<\/div>';
 	htmlTemplate += '<\/div>';
 	

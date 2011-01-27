@@ -19,7 +19,7 @@ resourcetype organizational-unit {
     responsibilities : html,
     selectedEmployees : string multiple,
     numberOfEmployeesToDisplay : string,
-    urlToEmployeesList : string,
+    urlToEmployeesList : resource_ref,
     displayEmployees : boolean,
     content : html noextract,
     hasBodyContent : derived (content) eval (content?exists),

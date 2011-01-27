@@ -2,7 +2,7 @@ resourcetype featured-content {
 
   properties {
     title : string overrides title,
-    featured-items : json (featuredStickTitle : string, featuredTitle : string, featuredDate : datetime, featuredPicture : image_ref, featuredContent : html, featuredWebaddressText : string, featuredWebaddress : string) multiple noextract
+    featured-items : json (featuredStickTitle : string, featuredTitle : string, featuredDate : datetime, featuredPicture : image_ref, featuredContent : html, featuredWebaddressText : string, featuredWebaddress : resource_ref) multiple noextract
   }
   
   view-components {

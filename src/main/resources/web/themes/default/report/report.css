@@ -54,15 +54,19 @@ div.vrtx-report table#vrtx-report-document-table tr.even td {
 }
 
 .tooltip {
-  display:none;
-  background-color:#ffa;
-  border:1px solid #cc9;
-  padding:3px;
-  font-size:13px;
+  display: none;
+  background-color: #ffa;
+  border: 1px solid #cc9;
+  padding: 10px;
+  font-size: 1em;
+  z-index: 9999;
   /* Progressive enhancements */
-  box-shadow: 2px 2px 11px #666;
-  -moz-box-shadow: 2px 2px 11px #666;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
   -webkit-box-shadow: 2px 2px 11px #666;
+  -moz-box-shadow: 2px 2px 11px #666;
+  box-shadow: 2px 2px 11px #666;
 }
 
 /* Help */

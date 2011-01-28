@@ -318,9 +318,9 @@ resourcetype organizational-unit {
     employees : (en : "Employees", no : "Ansatte", nn : "Ansatte"),
     employeesLink : (en : "All employees in", no : "Alle ansatte i", nn : "Alle ansatte i"),
     displayEmployees : (
-      en : "Show employees registrated in UiO's payroll- and personalsystem",
-      no : "Vis ansatte registrert i UiOs lønns- og personalsystem",
-      nn : "Vis ansatte registrerte i lønns- og personalsystemet til UiO"),
+      en : "Show employees registrated in UiO's payroll- and personalsystem (requires valid area code)",
+      no : "Vis ansatte registrert i UiOs lønns- og personalsystem (krever gyldig stedkode)",
+      nn : "Vis ansatte registrerte i lønns- og personalsystemet til UiO (krev gyldig stedkode)"),
     selectedEmployees : (
       en : "Employees to display at the top of the list",
       no : "Ansatte som skal vises øverst i listen",

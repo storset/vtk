@@ -117,11 +117,7 @@ public class SubResourcePermissionsProvider {
                   
                   int i = 0; 
                   int len = privilegedPseudoPrincipals.length + privilegedUsers.length + privilegedGroups.length;
-                  int breakPoint = 3; // break on every 3 principals
                   for(Principal p : privilegedPseudoPrincipals) {
-                    if(i % breakPoint == 0 && i > 0) {
-                      combined.append ("<br />");  
-                    }
                     if(len == 1 || i == len - 1) {
                       combined.append(p.getName());  
                     } else {
@@ -130,9 +126,6 @@ public class SubResourcePermissionsProvider {
                     i++;
                   }
                   for(Principal p : privilegedUsers) {
-                    if(i % breakPoint == 0 && i > 0) {
-                      combined.append ("<br />");  
-                    }
                     if(len == 1 || i == len - 1) {
                       combined.append(p.getName());  
                     } else {
@@ -141,9 +134,6 @@ public class SubResourcePermissionsProvider {
                     i++;
                   }
                   for(Principal p : privilegedGroups) {
-                    if(i % breakPoint == 0 && i > 0) {
-                      combined.append ("<br />");  
-                    }
                     if(len == 1 || i == len - 1) {
                       combined.append(p.getName());  
                     } else {

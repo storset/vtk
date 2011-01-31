@@ -47,7 +47,6 @@ import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
 import org.vortikal.repository.search.WildcardPropertySelect;
 import org.vortikal.repository.search.query.AndQuery;
-import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriDepthQuery;
@@ -58,9 +57,7 @@ public class SubResourcePermissionsProvider {
 
     private Searcher searcher;
     private Repository repository;
-    private ResourceTypeDefinition documentTypeDefinition;
-    private ResourceTypeDefinition structuredDocumentTypeDefinition;
-    private ResourceTypeDefinition collectionTypeDefinition;
+    //private ResourceTypeDefinition resourceTypeDefinition;
     
     private static Log logger = LogFactory.getLog(SubResourcePermissionsProvider.class);
     
@@ -74,13 +71,7 @@ public class SubResourcePermissionsProvider {
         AndQuery mainQuery = new AndQuery();
         mainQuery.add(new UriPrefixQuery(url.toString()));
         mainQuery.add(new UriDepthQuery(depth));
-        OrQuery resourceQuery = new OrQuery();
-        
-        // Document OR StructuredDocument(JSON) OR collection
-        resourceQuery.add(new TypeTermQuery(documentTypeDefinition.getName(), TermOperator.IN));
-        resourceQuery.add(new TypeTermQuery(structuredDocumentTypeDefinition.getName(), TermOperator.IN));
-        resourceQuery.add(new TypeTermQuery(collectionTypeDefinition.getName(), TermOperator.IN));
-        mainQuery.add(resourceQuery);
+        //mainQuery.add(new TypeTermQuery(resourceTypeDefinition.getName(), TermOperator.IN));
         
         Search search = new Search();
         search.setQuery(mainQuery);
@@ -133,17 +124,9 @@ public class SubResourcePermissionsProvider {
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
-    
-    public void setDocumentTypeDefinition(ResourceTypeDefinition documentTypeDefinition) {
-        this.documentTypeDefinition = documentTypeDefinition;
+/*
+    public void setResourceTypeDefinition(ResourceTypeDefinition resourceTypeDefinition) {
+        this.resourceTypeDefinition = resourceTypeDefinition;
     }
-    
-    public void setStructuredDocumentTypeDefinition(ResourceTypeDefinition structuredDocumentTypeDefinition) {
-        this.structuredDocumentTypeDefinition = structuredDocumentTypeDefinition;
-    }
-
-    public void setCollectionTypeDefinition(ResourceTypeDefinition collectionTypeDefinition) {
-        this.collectionTypeDefinition = collectionTypeDefinition;
-    }
-    
+  */  
 }

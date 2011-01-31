@@ -25,9 +25,6 @@
   <bean id="subresource.provider" class="org.vortikal.web.actions.report.subresource.SubResourcePermissionsProvider">
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="repository" ref="repository" />
-    <property name="documentTypeDefinition" ref="documentResourceTypeDefinition" />
-    <property name="structuredDocumentTypeDefinition" ref="json.managedObjectResourceType" />
-    <property name="collectionTypeDefinition" ref="collectionResourceTypeDefinition" />
   </bean>
 
 </beans>

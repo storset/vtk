@@ -98,6 +98,16 @@
     </property>
     <property name="handler" ref="editor.imageEditHandler" />
   </bean>
+
+  <bean id="editor.videoEditService" parent="editor.abstractEditService" >
+    <property name="assertions">
+      <list>
+        <ref bean="contentTypeMatchesVideo" />
+      </list>
+    </property>
+    <property name="handler" ref="editor.videoEditHandler" />
+  </bean>
+
   
   <bean id="editor.articleListingEditService" parent="editor.abstractEditService">
     <property name="assertions">
@@ -297,7 +307,12 @@
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToManage" />
   </bean>
-  
+
+  <bean id="editor.videoEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+    <property name="resourceManager" ref="editor.videoResourceManager" />
+    <property name="formView" value="editor.editView" />
+    <property name="successView" value="redirectToManage" />
+  </bean>  
 
   <bean id="editor.personEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
     <property name="resourceManager" ref="editor.personResourceManager" />
@@ -322,7 +337,6 @@
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToPreviewCollection" />
   </bean>
-
 
   <bean id="editor.articleListingEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
     <property name="resourceManager" ref="editor.articleListingResourceManager" />
@@ -388,6 +402,25 @@
       </bean>
     </property>
   </bean>  
+  
+    <bean id="editor.videoResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager"
+    parent="repositoryAware">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
+    <property name="contentResourceType" ref="documentResourceTypeDefinition" />
+    <property name="editPropertyProvider">
+      <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
+        <property name="preContentProperties">
+          <list>
+            <ref bean="userTitlePropDef" />
+            <ref bean="descriptionPropDef" />
+            <ref bean="keywordsPropDef" />
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>  
+  
   
   <bean id="editor.collectionResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager"
     parent="repositoryAware">

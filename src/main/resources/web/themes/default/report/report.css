@@ -62,20 +62,20 @@ span.file a {
 
 .tip {
   display: none;
-  background-color: #ffe;
-  border: 1px solid #333;
+  background-color: #fff;
+  border: 1px solid #666;
   padding: 7px 10px;
-  font-size: 1em;
+  font-size: 90%;
   color: black;
   /* Progressive enhancements */
-  -webkit-border-radius: 10px;
+  /*-webkit-border-radius: 10px;
   -moz-border-radius: 10px;
   border-radius: 10px;
   -webkit-box-shadow: 2px 2px 11px #666;
   -moz-box-shadow: 2px 2px 11px #666;
-  box-shadow: 2px 2px 11px #666;
+  box-shadow: 2px 2px 11px #666;*/
 }
-
+/*
 .greenTip {
   background-color: #337409;
   color: #fff !important;
@@ -90,6 +90,7 @@ span.file a {
 .redTip a {
   color: #fff !important;
 }
+*/
 
 /* ^ Tooltip */
 

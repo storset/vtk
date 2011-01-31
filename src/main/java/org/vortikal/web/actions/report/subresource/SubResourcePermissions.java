@@ -33,17 +33,17 @@ package org.vortikal.web.actions.report.subresource;
 public class SubResourcePermissions extends SubResource {
     private boolean readRestricted = false;
     private boolean inheritedAcl = true;
-    /* private String read;
+    private String read;
     private String write;
-    private String admin; */
+    private String admin; 
     public SubResourcePermissions(String uri, String name, String title, boolean collection,
-                                  boolean readRestricted, boolean inheritedAcl) { /*, String read, String write, String admin) { */
+                                  boolean readRestricted, boolean inheritedAcl, String read, String write, String admin) {
         super(uri, name, title, collection);
         this.readRestricted = readRestricted;
         this.inheritedAcl = inheritedAcl;
-       /* this.read = read;
+        this.read = read;
         this.write = write;
-        this.admin = admin; */
+        this.admin = admin; 
     }
     public boolean isReadRestricted() {
         return this.readRestricted;
@@ -51,7 +51,7 @@ public class SubResourcePermissions extends SubResource {
     public boolean isInheritedAcl() {
         return this.inheritedAcl;
     }
-    /*
+    
     public String getRead() {
         return this.read;
     }
@@ -61,5 +61,5 @@ public class SubResourcePermissions extends SubResource {
     public String getAdmin() {
         return this.admin;
     }
-    */
+    
 }

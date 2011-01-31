@@ -123,15 +123,26 @@ public class SubResourceJSONService implements Controller, InitializingBean {
             }
             
             if(sr.isInheritedAcl()) {
-              title.append("Has inherited permissions.");
+              title.append("Has inherited permissions.<br />");
             } else {
-              title.append("Has individual permissions.");
+              title.append("Has individual permissions.<br />");
               listClasses = "not-inherited";
             }
+            
+            if(sr.getRead() != "") {
+              title.append("<br /><strong>Read:</strong> " + sr.getRead());   
+            }
+            if(sr.getWrite() != "") {
+              title.append("<br /><strong>Write:</strong> " + sr.getWrite());  
+            }
+            if(sr.getAdmin() != "") {
+              title.append("<br /><strong>Admin:</strong> " + sr.getAdmin());
+            }
+            
             o.put("title", title.toString());
             o.put("listClasses", listClasses);
             o.put("spanClasses", spanClasses);
-
+            
             list.add(o);
         }
         response.setStatus(HttpServletResponse.SC_OK);

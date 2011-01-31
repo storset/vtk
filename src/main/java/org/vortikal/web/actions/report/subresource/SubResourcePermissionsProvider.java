@@ -35,8 +35,10 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Privilege;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -49,6 +51,7 @@ import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.security.AuthenticationException;
+import org.vortikal.security.Principal;
 
 public class SubResourcePermissionsProvider {
 
@@ -57,10 +60,8 @@ public class SubResourcePermissionsProvider {
 
     private static Log logger = LogFactory.getLog(SubResourcePermissionsProvider.class);
     
-    @SuppressWarnings("unchecked")
     public List<SubResourcePermissions> buildSearchAndPopulateSubresources(String uri, String token) {
-        List<SubResourcePermissions> subresources = new ArrayList();
-      
+
         // MainQuery (depth + 1 from uri)
         Path url = Path.fromString(uri);
         int depth = url.getDepth() + 1;
@@ -73,10 +74,16 @@ public class SubResourcePermissionsProvider {
         search.setPropertySelect(new WildcardPropertySelect());
         ResultSet rs = searcher.execute(token, search);
         
+        List<SubResourcePermissions> subresources = populateSubResources(token, rs);
+        return subresources;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private List<SubResourcePermissions> populateSubResources(String token, ResultSet rs) {
         List<PropertySet> results = rs.getAllResults();
+        List<SubResourcePermissions> subresources = new ArrayList();
+        
         Resource res = null;
-
-        // Retrieve resource and populate sub-resources
         for(PropertySet result : results) {
           String resourceURI = result.getURI().toString();
           String resourceName = result.getName();
@@ -84,6 +91,9 @@ public class SubResourcePermissionsProvider {
           boolean resourceisCollection = false;
           boolean resourceIsReadRestricted = false;
           boolean resourceIsInheritedAcl = false;
+          String resourceRead = "";
+          String resourceWrite = "";
+          String resourceAdmin = "";
           try {
             res = this.repository.retrieve(token, result.getURI(), true);
             if (res != null) {
@@ -95,6 +105,61 @@ public class SubResourcePermissionsProvider {
               if(res.isInheritedAcl()) {
                 resourceIsInheritedAcl = true;
               }
+              
+              Acl acl = res.getAcl();
+              for (Privilege action: Privilege.values()) {
+                  String actionName = action.getName();
+                  Principal[] privilegedUsers = acl.listPrivilegedUsers(action);
+                  Principal[] privilegedGroups = acl.listPrivilegedGroups(action);
+                  Principal[] privilegedPseudoPrincipals = acl.listPrivilegedPseudoPrincipals(action);
+                  StringBuilder combined = new StringBuilder();
+                  
+                  
+                  int i = 0; 
+                  int len = privilegedPseudoPrincipals.length + privilegedUsers.length + privilegedGroups.length;
+                  int breakPoint = 3; // break on every 3 principals
+                  for(Principal p : privilegedPseudoPrincipals) {
+                    if(i % breakPoint == 0 && i > 0) {
+                      combined.append ("<br />");  
+                    }
+                    if(len == 1 || i == len - 1) {
+                      combined.append(p.getName());  
+                    } else {
+                      combined.append(p.getName() + ", ");
+                    }
+                    i++;
+                  }
+                  for(Principal p : privilegedUsers) {
+                    if(i % breakPoint == 0 && i > 0) {
+                      combined.append ("<br />");  
+                    }
+                    if(len == 1 || i == len - 1) {
+                      combined.append(p.getName());  
+                    } else {
+                      combined.append(p.getName() + ", ");
+                    }
+                    i++;
+                  }
+                  for(Principal p : privilegedGroups) {
+                    if(i % breakPoint == 0 && i > 0) {
+                      combined.append ("<br />");  
+                    }
+                    if(len == 1 || i == len - 1) {
+                      combined.append(p.getName());  
+                    } else {
+                      combined.append(p.getName() + ", ");
+                    }
+                    i++;
+                  }
+                  if(actionName == "read") {
+                    resourceRead = combined.toString();
+                  } else if(actionName == "write") {
+                    resourceWrite = combined.toString();
+                  } else if(actionName == "all") {
+                    resourceAdmin = combined.toString();
+                  }
+              }
+              
             }
           } catch (ResourceNotFoundException e) {
             logger.error("ResourceNotFoundException " + e.getMessage());
@@ -106,7 +171,7 @@ public class SubResourcePermissionsProvider {
             logger.error("Exception " + e.getMessage());
           }
           subresources.add(new SubResourcePermissions(resourceURI, resourceName, resourceTitle, resourceisCollection, 
-                                                      resourceIsReadRestricted, resourceIsInheritedAcl));
+                                                      resourceIsReadRestricted, resourceIsInheritedAcl, resourceRead, resourceWrite, resourceAdmin));
         }
         return subresources;
     }

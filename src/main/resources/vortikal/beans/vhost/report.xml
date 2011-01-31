@@ -110,7 +110,7 @@
         </entry>
         <entry key="jsURLs">
           <list>
-            <value>${webResources.baseURL}/jquery/plugins/jquery-tools-1.2.5-tooltip.js</value>
+            <value>${webResources.baseURL}/jquery/plugins/jquery.vortexTips.js</value>
             <value>${webResources.baseURL}/jquery/plugins/jquery.treeview.js</value>
             <value>${webResources.baseURL}/jquery/plugins/jquery.treeview.async.js</value>
           </list>

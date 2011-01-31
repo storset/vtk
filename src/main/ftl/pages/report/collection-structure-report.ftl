@@ -33,30 +33,13 @@
        })
        
        $("#tree").delegate("a", "click", function(e){
-	     return false;
+	       // don't want click on links
+	       return false;
        });
+       
+       $("#tree").vortexTips("span.restricted", "red");
+       $("#tree").vortexTips("span.allowed-for-all", "green");
      });
-     
-     var addTooltip = function() {
-       $("#tree span.allowed-for-all a[title]").tooltip({
-         tip: '.tooltip-allowed-for-all',
-	     effect: 'fade',
-	     fadeOutSpeed: 5000,
-	     predelay: 15,
-	     position: "top right",
-	     offset: [-220, 0]
-      });
-      $("#tree span.restricted a[title]").tooltip({
-         tip: '.tooltip-restricted',
-	     effect: 'fade',
-	     fadeOutSpeed: 5000,
-	     predelay: 15,
-	     position: "top right",
-	     offset: [-220, 0]
-      });
-     };
-     
-     setTimeout(addTooltip, 500);
 
      // -->
   </script>
@@ -73,9 +56,7 @@
 	  <@vrtx.msg code="report.collection-structure.about" />
 	</p>
 	<div class="vrtx-report">
-
-      <span class="tooltip tooltip-allowed-for-all">&nbsp;</span>
-      <span class="tooltip tooltip-restricted">&nbsp;</span>
+	
 	  <ul id="tree" class="filetree treeview-gray"></ul>
 	  
 	  <div id="vrtx-report-help">

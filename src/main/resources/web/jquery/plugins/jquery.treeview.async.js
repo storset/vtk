@@ -127,7 +127,6 @@ $.fn.treeview = function(settings) {
 				$.extend(settings, ajaxUrl);
 				var childList = $this.removeClass("hasChildren").find("ul");
 				load(settings, this.id, childList, container);
-				setTimeout(addTooltip, 500);
 			}
 			if (userToggle) {
 				userToggle.apply(this, arguments);

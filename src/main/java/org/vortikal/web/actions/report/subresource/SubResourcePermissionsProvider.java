@@ -41,14 +41,11 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceNotFoundException;
-import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
 import org.vortikal.repository.search.WildcardPropertySelect;
 import org.vortikal.repository.search.query.AndQuery;
-import org.vortikal.repository.search.query.TermOperator;
-import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.security.AuthenticationException;
@@ -57,8 +54,7 @@ public class SubResourcePermissionsProvider {
 
     private Searcher searcher;
     private Repository repository;
-    //private ResourceTypeDefinition resourceTypeDefinition;
-    
+
     private static Log logger = LogFactory.getLog(SubResourcePermissionsProvider.class);
     
     @SuppressWarnings("unchecked")
@@ -71,8 +67,6 @@ public class SubResourcePermissionsProvider {
         AndQuery mainQuery = new AndQuery();
         mainQuery.add(new UriPrefixQuery(url.toString()));
         mainQuery.add(new UriDepthQuery(depth));
-        //mainQuery.add(new TypeTermQuery(resourceTypeDefinition.getName(), TermOperator.IN));
-        
         Search search = new Search();
         search.setQuery(mainQuery);
         search.setLimit(500);
@@ -124,9 +118,4 @@ public class SubResourcePermissionsProvider {
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
-/*
-    public void setResourceTypeDefinition(ResourceTypeDefinition resourceTypeDefinition) {
-        this.resourceTypeDefinition = resourceTypeDefinition;
-    }
-  */  
 }

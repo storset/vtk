@@ -100,22 +100,21 @@ public class SubResourceJSONService implements Controller, InitializingBean {
             
             o.put("text", sr.getName());
             o.put("uri", sr.getUri());
-  
-            // TODO: localize text
-            StringBuilder title = new StringBuilder();
+ 
             String listClasses = "";
             String spanClasses = "";
-            title.append("Permissions for ");
+            
+            // TODO: localize text
+            StringBuilder title = new StringBuilder();
+            title.append("Permissions for <strong>" + sr.getName() + "</strong>");
+            title.append(" (<a href=&quot;" + sr.getUri() + "?vrtx=admin&mode=permissions&quot;>edit</a>)<hr />");
+            
             if(sr.isCollection()) {
-              title.append("folder "); 
               spanClasses = "folder";
               o.put("hasChildren", true);
             } else {
-              title.append("file ");
               spanClasses = "file";
             }
-            title.append("(<a href=&quot;" + sr.getUri() + "?vrtx=admin&mode=permissions&quot;>edit</a>)<hr />");
-
             if(sr.isReadRestricted()) {
               spanClasses += " restricted";
             } else {

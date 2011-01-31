@@ -116,7 +116,9 @@
       </#if>
       <#-- List collections: -->
       <#if subFolderMenu?exists> 
-  	    <@subfolder.displaySubFolderMenu subFolderMenu />
+      	<div id="vrtx-collection-listing-subfolders">
+  	    	<@subfolder.displaySubFolderMenu subFolderMenu />
+  	    </div>
 	  </#if> 
   </#if> 
 </#if>

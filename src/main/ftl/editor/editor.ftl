@@ -62,6 +62,8 @@
     
     <#if !isCollection>
     <@autocomplete.addAutoCompleteScripts srcBase="${webResources?html}"/>
+    <#else>
+    <script type="text/javascript" src="${jsBaseURL?html}/collectionlisting/manually-approve.js"></script>
     </#if>
     
    <#global baseFolder = "/" />
@@ -392,6 +394,11 @@
             </select>
           </#if>
         <#else>
+        
+          <#if name = 'manually-approve-from'>
+            <div id="manually-approve-container">
+            </div>
+          </#if>
 
           <#if name = 'recursive-listing-subfolders'>
             <label>${vrtx.getMsg("editor.recursive-listing.featured-articles")}</label>

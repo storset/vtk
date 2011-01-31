@@ -36,7 +36,7 @@
 			var nPos = pos;
 			nPos.top = (pos.top - yOffset) + topOffset;
 			nPos.left = (pos.left - xOffset) + leftOffset;
-			tip.css('position', 'absolute').css('z-index', '1000');
+			tip.css('position', 'absolute').css('z-index', '1000').css('width', '300px');
 			tip.css(nPos).fadeIn(animInSpeed);
 		  } else if (e.type == "mouseleave") {
 			$(this).attr('title', tipText);

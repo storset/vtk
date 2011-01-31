@@ -76,6 +76,10 @@ span.file a {
   box-shadow: 2px 2px 11px #666;*/
 }
 
+.tip .inherited-permissions {
+  color: #999;
+}
+
 /* ^ Tooltip */
 
 /* Help */

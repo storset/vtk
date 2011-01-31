@@ -123,7 +123,7 @@ public class SubResourceJSONService implements Controller, InitializingBean {
             }
             
             if(sr.isInheritedAcl()) {
-              title.append("Has inherited permissions.<br />");
+              title.append("Has inherited permissions.<br /><span class=&quot;inherited-permissions&quot;>");
             } else {
               title.append("Has individual permissions.<br />");
               listClasses = "not-inherited";
@@ -137,6 +137,10 @@ public class SubResourceJSONService implements Controller, InitializingBean {
             }
             if(sr.getAdmin() != "") {
               title.append("<br /><strong>Admin:</strong> " + sr.getAdmin());
+            }
+            
+            if(sr.isInheritedAcl()) {
+              title.append("</span>"); 
             }
             
             o.put("title", title.toString());

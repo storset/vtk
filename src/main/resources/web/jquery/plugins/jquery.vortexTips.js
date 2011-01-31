@@ -18,7 +18,8 @@
 		
 		var html = "<span class='tip'>&nbsp;</span>";
 		var animInSpeed = 300;
-		var animOutSpeed = 5000;
+		var animOutSpeed = 3000;
+		var preAnimOutDelay = 5000;
 		var tip;
 		var tipText;
 		
@@ -40,9 +41,11 @@
 			tip.css(nPos).fadeIn(animInSpeed);
 		  } else if (e.type == "mouseleave") {
 			$(this).attr('title', tipText);
-			tip.fadeOut(animOutSpeed, function() {
+			setTimeout(function() {
+			  tip.fadeOut(animOutSpeed, function() {
 				$(this).remove();
-			});
+			  });
+			}, preAnimOutDelay);
 		  }
 		});
    }

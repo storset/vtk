@@ -5,3 +5,5 @@
  *   -> defines minimum nr of hits before scrollbar is added to dropdown
 
 2. jquery.treeview.async.js is modified for use in Vortex with new JSON-data (see file)
+
+3. jquery.vortexTips.js is a modified version of jquery.tinyTips.js for use in Vortex (see file)

@@ -26,29 +26,33 @@
   </#if>
   <script type="text/javascript">
      <!--
-     $(window).ready(function(){
+     $(document).ready(function(){
        $("#tree").treeview({
          animated: "fast",
          url: "?vrtx=admin&service=subresource-retrieve&uri=${report.uri}"
        })
+       
+       $("#tree").delegate("ul li a", "click", function(e){
+	     return false;
+       });
      });
      
      var addTooltip = function() {
        $("#tree span.allowed-for-all a[title]").tooltip({
          tip: '.tooltip-allowed-for-all',
-	 effect: 'fade',
-	 fadeOutSpeed: 100,
-	 predelay: 15,
-	 position: "top right",
-	 offset: [-220, 0]
+	     effect: 'fade',
+	     fadeOutSpeed: 100,
+	     predelay: 15,
+	     position: "top right",
+	     offset: [-220, 0]
       });
       $("#tree span.restricted a[title]").tooltip({
          tip: '.tooltip-restricted',
-	 effect: 'fade',
-	 fadeOutSpeed: 100,
-	 predelay: 15,
-	 position: "top right",
-	 offset: [-220, 0]
+	     effect: 'fade',
+	     fadeOutSpeed: 100,
+	     predelay: 15,
+	     position: "top right",
+	     offset: [-220, 0]
       });
      };
      

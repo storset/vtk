@@ -1,4 +1,4 @@
-/* Copyright (c) 2010, University of Oslo, Norway
+/* Copyright (c) 2011, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -113,8 +113,6 @@ public class SubResourcePermissionsProvider {
                   Principal[] privilegedGroups = acl.listPrivilegedGroups(action);
                   Principal[] privilegedPseudoPrincipals = acl.listPrivilegedPseudoPrincipals(action);
                   StringBuilder combined = new StringBuilder();
-                  
-                  
                   int i = 0; 
                   int len = privilegedPseudoPrincipals.length + privilegedUsers.length + privilegedGroups.length;
                   for(Principal p : privilegedPseudoPrincipals) {

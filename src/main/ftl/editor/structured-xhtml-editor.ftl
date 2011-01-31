@@ -30,7 +30,7 @@
     <#if h1 != '' && h1.content == userTitle>
       ${body.removeContent(h1)}
     </#if>
-    <script type="text/javascript" language="Javascript"><!--
+    <script type="text/javascript"><!--
       var dirtyChecks = new Object();
       var needConfirmation = true;
 
@@ -60,7 +60,7 @@
           <input type="text" name="resource.userTitle" id="resource.userTitle" size="40" value="${userTitle}" />
         </div>
       </div>
-      <script type="text/javascript" language="Javascript"><!--
+      <script type="text/javascript"><!--
         dirtyChecks['resource.userTitle'] = function() {
            return document.getElementById('resource.userTitle').value != '${userTitle}';
         };
@@ -76,7 +76,7 @@
                                fontFormats='p;h2;h3;h4;h5;h6;pre'
                                fullpage=false enableFileBrowsers=true />
       </div>
-      <script type="text/javascript" language="Javascript"><!--
+      <script type="text/javascript"><!--
         dirtyChecks['resource.content'] = function() {
            return FCKeditorAPI.GetInstance('resource.content').IsDirty();
         }

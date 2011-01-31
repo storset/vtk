@@ -12,7 +12,7 @@
 <#if media?exists && contentType?exists >
   <div class="vrtx-media-ref">
     <#if contentType == "audio" || contentType == "audio/mpeg" || contentType == "audio/mp3">
-      <script type="text/javascript" language="JavaScript" src="${audioFlashPlayerJsURL?html}/"></script>  
+      <script type="text/javascript" src="${audioFlashPlayerJsURL?html}/"></script>  
       <object type="application/x-shockwave-flash" data="${audioFlashPlayerFlashURL?html}" height="24" width="290">
         <param name="movie" value="${audioFlashPlayerFlashURL?html}"/>
         <param name="FlashVars" value="playerID=1&amp;soundFile=${media?url("UTF-8")}"/> 

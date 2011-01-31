@@ -2,7 +2,7 @@
 
 <#assign titleMsg = vrtx.getMsg("actions.showInWindowsExplorer") />
 
-<script language="JavaScript" type="text/javascript">
+<script type="text/javascript">
 <!--          
  if (is_ie5up && is_win) 
  {

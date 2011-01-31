@@ -17,7 +17,7 @@
   *
   -->
 <#macro ping url interval=300 method="GET">
-  <script language="JavaScript" type="text/javascript"><!--
+  <script type="text/javascript"><!--
      var intervalSec = ${interval};
      var req;
           

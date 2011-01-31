@@ -30,7 +30,7 @@ ${vrtx.getMsg("collectionListing.confirmation.delete")} <span class="vrtx-confir
   </button>
 </form>
 
-<script language="javascript"><!--
+<script type="text/javascript"><!--
    function focus(){
       $("#deleteResourceAction").focus();
    }

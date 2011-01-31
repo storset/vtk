@@ -4,9 +4,9 @@
 <#macro script >
   <#assign locale = springMacroRequestContext.getLocale() />
   
-  <script language="Javascript" type="text/javascript" src="${webResources?html}/jquery/plugins/jquery.scrollTo-1.4.2-min.js"></script>
+  <script type="text/javascript" src="${webResources?html}/jquery/plugins/jquery.scrollTo-1.4.2-min.js"></script>
 
-  <script language="Javascript" type="text/javascript"> <!-- 
+  <script type="text/javascript"> <!-- 
    
   LIST_OF_JSON_ELEMENTS = new Array();
   $(document).ready(function() {

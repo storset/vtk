@@ -16,7 +16,7 @@
     <button type="submit" id="logoutAction" name="logoutAction"><@vrtx.msg code="decorating.authenticationComponent.logout" default="logout"/></button>
   </form>
   <!-- Hide submit button, display a link instead: -->
-  <script type="text/javascript" language="Javascript"><!--
+  <script type="text/javascript"><!--
 	   	document.getElementById("logoutAction").style.display = "none";
 		var logoutLink = document.createElement("a");
 		logoutLink.setAttribute("href","javascript:document.getElementById('logoutForm').submit();");

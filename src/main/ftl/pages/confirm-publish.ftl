@@ -35,7 +35,7 @@ ${vrtx.getMsg("confirm-publish.confirmation.publish")}
   </button>
 </form>
 
-<script language="javascript"><!--
+<script type="text/javascript"><!--
    function focus(){
       $("#publishResourceAction").focus();
    }

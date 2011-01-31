@@ -13,13 +13,13 @@
   <@editor.addCkScripts />
   <@vrtxJSONJavascript.script />
   
-  <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/plugins/shortcut.js"></script>
-  <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/admin-ck-helper.js"></script>
-  <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/admin-prop-change.js"></script>
+  <script type="text/javascript" src="${jsBaseURL?html}/plugins/shortcut.js"></script>
+  <script type="text/javascript" src="${jsBaseURL?html}/admin-ck-helper.js"></script>
+  <script type="text/javascript" src="${jsBaseURL?html}/admin-prop-change.js"></script>
   
   <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
   
-  <script language="Javascript" type="text/javascript"><!--
+  <script type="text/javascript"><!--
   	
  	shortcut.add("Ctrl+S",function() {
   		$("#updateAction").click();
@@ -46,7 +46,7 @@
     }
     //-->
   </script>
-  <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/imageref.js"></script>
+  <script type="text/javascript" src="${jsBaseURL?html}/imageref.js"></script>
   
   <@editor.addDatePickerScripts />
   

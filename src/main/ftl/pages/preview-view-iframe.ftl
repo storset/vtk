@@ -52,7 +52,7 @@
   <title>${(title.title)?default(resourceContext.currentResource.name)}</title>
   <#include "/system/css.ftl"/> 
   <#include "/system/javascript.ftl"/>
-  <script language="javascript"><!--
+  <script type="text/javascript"><!--
   function linkCheckResponseLocalizer(status) {
       switch (status) {
          case 'NOT_FOUND':

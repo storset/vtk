@@ -5,7 +5,7 @@
 <#assign unCheckedMessage = vrtx.getMsg("tabMenu2.moveUnCheckedMessage",
          "You must check at least one element to move") />
 
-<script type="text/javascript" language="Javascript"><!--  
+<script type="text/javascript"><!--  
   var moveUncheckedMessage = '${unCheckedMessage}';
  //-->
 </script>

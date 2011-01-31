@@ -178,7 +178,7 @@
         <#assign arrayOfIds = arrayOfIds + ")" />
         	<input type="hidden" class="id" value="${counter}" />
         <input type="button" class="vrtx-remove-button" value="${vrtx.getMsg("editor.remove")}" />
-        <script language="Javascript" type="text/javascript">
+        <script type="text/javascript">
        	     $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-remove-button").click(
 			 	function(){
 			 		removeNode("${inputFieldName}", ${counter} ,  ${arrayOfIds} );
@@ -211,7 +211,7 @@
         <#assign arrayOfIds = arrayOfIds + ")" />
        	<input type="hidden" class="id" value="${counter}" />
         <input type="button" class="vrtx-remove-button" value="${vrtx.getMsg("editor.remove")}" />
-       	<script language="Javascript" type="text/javascript">
+       	<script type="text/javascript">
        	     $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-remove-button").click(
 			 	function(){
 			 		removeNode("${inputFieldName}", ${counter},  ${arrayOfIds});
@@ -221,7 +221,7 @@
         <#if (counter > 0) >
        
           <input type="button" class="vrtx-move-up-button" value="&uarr; ${vrtx.getMsg("editor.move-up")}"  /> 
-       	   <script language="Javascript" type="text/javascript">
+       	   <script type="text/javascript">
        	        $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-move-up-button").click(
     				function(){
      					swapContent(${counter}, ${arrayOfIds}, -1, "${inputFieldName}");
@@ -232,7 +232,7 @@
         <#if map_has_next >
           
           <input type="button"  class="vrtx-move-down-button" value="&darr; ${vrtx.getMsg("editor.move-down")}"  />
-          <script language="Javascript" type="text/javascript">       	
+          <script type="text/javascript">       	
           	$("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-move-down-button").click(
 	     		function(){
 	     			swapContent(${counter}, ${arrayOfIds}, 1, "${inputFieldName}");

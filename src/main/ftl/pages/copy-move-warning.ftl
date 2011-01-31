@@ -48,7 +48,7 @@
   </button>
 </form>
 
-<script language="javascript"><!--
+<script type="text/javascript"><!--
 	function f_focus(){
 		$("#confirmAction").focus();
 	}

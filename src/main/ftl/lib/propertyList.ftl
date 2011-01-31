@@ -513,7 +513,7 @@
           </select>
 
           <#if form.hierarchicalHelpUrl?exists>
-            <script language="javascript" type="text/javascript">
+            <script type="text/javascript">
                 function popitup(url) {
                   var fixedUrl = url + '&selected=' + document.getElementById('value').value;
 	          var newwindow=window.open(fixedUrl,'vocabulary','scrollbars=1');
@@ -549,7 +549,7 @@
               <#if item.format?exists>(${item.format})</#if>
             </#if>
             <#if form.hierarchicalHelpUrl?exists>
-          <script language="javascript" type="text/javascript">
+          <script type="text/javascript">
                 function popitup(url) {
                   var fixedUrl = url + '&selected=' + document.getElementById('value').value;
 	          var newwindow=window.open(fixedUrl,'vocabulary','scrollbars=1');

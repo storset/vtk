@@ -3,7 +3,7 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 
 
-<script type="text/javascript" language="Javascript">
+<script type="text/javascript">
 <!--  
 
   var deleteUncheckedMessage = '${vrtx.getMsg("tabMenu2.deleteUnCheckedMessage")}';         

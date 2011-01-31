@@ -23,9 +23,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>Plain text edit</title>
-  <script type="text/javascript" language="Javascript" src="${md5jsURL?html}"></script>
+  <script type="text/javascript" src="${md5jsURL?html}"></script>
   <@ping.ping url=pingURL['url'] interval=300/>
-  <script type="text/javascript" language="Javascript"><!--
+  <script type="text/javascript"><!--
 
     var before = null;
     var saveButton = false;

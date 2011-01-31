@@ -39,7 +39,7 @@
     </div>
   </form>
   
-  <script language="JavaScript" type="text/javascript">
+  <script type="text/javascript">
   <!--          
   document.createcollection.name.focus();
   // -->

@@ -23,11 +23,11 @@
     <@ping.ping url=pingURL['url'] interval=300 />    
     <@editor.addCkScripts />
 
-    <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/tooltip.js"></script>
+    <script type="text/javascript" src="${jsBaseURL?html}/tooltip.js"></script>
     
-  	<script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/plugins/shortcut.js"></script>
-    <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/admin-ck-helper.js"></script>
-    <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/admin-prop-change.js"></script>
+  	<script type="text/javascript" src="${jsBaseURL?html}/plugins/shortcut.js"></script>
+    <script type="text/javascript" src="${jsBaseURL?html}/admin-ck-helper.js"></script>
+    <script type="text/javascript" src="${jsBaseURL?html}/admin-prop-change.js"></script>
     
     <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
     <#assign isCollection = resource.resourceType = 'collection' || resource.resourceType?contains("-listing")/>
@@ -56,7 +56,7 @@
      
     //-->
     </script>
-    <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/imageref.js"></script>
+    <script type="text/javascript" src="${jsBaseURL?html}/imageref.js"></script>
     
     <@editor.addDatePickerScripts true />
     
@@ -121,13 +121,13 @@
 
       <#--
       <#if (resource.content)?exists>
-      <script language="Javascript" type="text/javascript">
+      <script type="text/javascript">
         <!--
           disableSubmit();
         // -->
       </script>
       <#-- <#else> -->
-      <script language="Javascript" type="text/javascript">
+      <script type="text/javascript">
         <!--
           enableSubmit();
         // -->
@@ -193,7 +193,7 @@
 </#macro>
 
 <#macro handleProps>
-  <script language="Javascript" type="text/javascript"><!--
+  <script type="text/javascript"><!--
     function propChange() {
       <@propChangeTests resource.preContentProperties />
       <@propChangeTests resource.postContentProperties />

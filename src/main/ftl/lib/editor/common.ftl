@@ -7,10 +7,10 @@
 <#import "../vortikal.ftl" as vrtx />
 
 <#macro addCkScripts>
-  <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/serverbrowsedialog.js"></script>
-  <script language="Javascript" type="text/javascript" src="${fckeditorBase.url?html}/ckeditor.js"></script>
-  <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/admin-ck-setup.js"></script>
-  <script language="Javascript" type="text/javascript" src="${fckeditorBase.url?html}/adapters/jquery.js"></script>
+  <script type="text/javascript" src="${jsBaseURL?html}/serverbrowsedialog.js"></script>
+  <script type="text/javascript" src="${fckeditorBase.url?html}/ckeditor.js"></script>
+  <script type="text/javascript" src="${jsBaseURL?html}/admin-ck-setup.js"></script>
+  <script type="text/javascript" src="${fckeditorBase.url?html}/adapters/jquery.js"></script>
 </#macro>
 
 <#macro addDatePickerScripts oldEditor=false>
@@ -27,7 +27,7 @@
 </#macro>
 
 <#macro createEditor content completeEditor=false withoutSubSuper=false>
-  <script language="Javascript" type="text/javascript"><!--
+  <script type="text/javascript"><!--
     var cssFileList = new Array(
       <#if fckEditorAreaCSSURL?exists>
         <#list fckEditorAreaCSSURL as cssURL>

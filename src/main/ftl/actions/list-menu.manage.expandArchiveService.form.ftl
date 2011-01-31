@@ -29,7 +29,7 @@
       <input type="submit" name="cancelAction" value="<@vrtx.msg code="actions.expandArchive.cancel" default="Cancel"/>">
     </div>
   </form>
-  <script language="JavaScript" type="text/javascript">
+  <script type="text/javascript">
   <!--          
   document.form.name.focus();
   // -->

@@ -37,8 +37,8 @@
 	       return false;
        });
        
-       $("#tree").vortexTips("span.restricted", "red");
-       $("#tree").vortexTips("span.allowed-for-all", "green");
+       $("#tree").vortexTips("span.restricted", "red", 180, 30); // class, backgroundColor, leftOffset, topOffset
+       $("#tree").vortexTips("span.allowed-for-all", "green", 180, 30); // class, backgroundColor, leftOffset, topOffset
      });
 
      // -->

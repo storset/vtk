@@ -14,7 +14,7 @@
  */
 
 (function($){  
-	$.fn.vortexTips = function (subSelector, color) {
+	$.fn.vortexTips = function (subSelector, color, leftOffset, topOffset) {
 		
 		var name = color + "Tip";
 		var html = "<span class='tip " + name + "'>&nbsp;</span>";
@@ -35,8 +35,8 @@
 			var xOffset = (tip.width() / 2) - ($(this).width() / 2);
 			var pos = $(this).offset();
 			var nPos = pos;
-			nPos.top = pos.top - yOffset;
-			nPos.left = pos.left - xOffset;
+			nPos.top = (pos.top - yOffset) + topOffset;
+			nPos.left = (pos.left - xOffset) + leftOffset;
 			tip.css('position', 'absolute').css('z-index', '1000');
 			tip.css(nPos).fadeIn(animInSpeed);
 		  } else if (e.type == "mouseleave") {

@@ -111,7 +111,7 @@ public class SubResourceJSONService implements Controller, InitializingBean {
               spanClasses = "folder";
               o.put("hasChildren", true);
             } else {
-              title.append("document ");
+              title.append("file ");
               spanClasses = "file";
             }
             title.append("(<a href=&quot;" + sr.getUri() + "?vrtx=admin&mode=permissions&quot;>edit</a>)<hr />");

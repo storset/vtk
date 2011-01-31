@@ -87,6 +87,15 @@
         <ref bean="resourceIsImageListing" />
       </list>
     </property>
+    <property name="handler" ref="editor.imageListingEditHandler" />
+  </bean>
+  
+  <bean id="editor.imageEditService" parent="editor.abstractEditService" >
+    <property name="assertions">
+      <list>
+        <ref bean="resourceTypeIsImage" />
+      </list>
+    </property>
     <property name="handler" ref="editor.imageEditHandler" />
   </bean>
   
@@ -282,6 +291,13 @@
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToPreviewCollection" />
   </bean>
+  
+  <bean id="editor.imageEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+    <property name="resourceManager" ref="editor.imageResourceManager" />
+    <property name="formView" value="editor.editView" />
+    <property name="successView" value="redirectToManage" />
+  </bean>
+  
 
   <bean id="editor.personEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
     <property name="resourceManager" ref="editor.personResourceManager" />
@@ -301,11 +317,12 @@
     <property name="successView" value="redirectToPreviewCollection" />
   </bean>
 
-  <bean id="editor.imageEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
-    <property name="resourceManager" ref="editor.imageResourceManager" />
+  <bean id="editor.imageListingEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+    <property name="resourceManager" ref="editor.imageListingResourceManager" />
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToPreviewCollection" />
   </bean>
+
 
   <bean id="editor.articleListingEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
     <property name="resourceManager" ref="editor.articleListingResourceManager" />
@@ -353,6 +370,24 @@
       </bean>
     </property>
   </bean>
+
+  <bean id="editor.imageResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager"
+    parent="repositoryAware">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
+    <property name="contentResourceType" ref="documentResourceTypeDefinition" />
+    <property name="editPropertyProvider">
+      <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
+        <property name="preContentProperties">
+          <list>
+            <ref bean="userTitlePropDef" />
+            <ref bean="descriptionPropDef" />
+            <ref bean="keywordsPropDef" />
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>  
   
   <bean id="editor.collectionResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager"
     parent="repositoryAware">
@@ -461,8 +496,7 @@
     </property>
   </bean>
 
-  <bean id="editor.imageResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager"
-    parent="repositoryAware">
+  <bean id="editor.imageListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager" parent="repositoryAware">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
     <property name="contentResourceType" ref="documentResourceTypeDefinition" />

@@ -14,10 +14,9 @@
  */
 
 (function($){  
-	$.fn.vortexTips = function (subSelector, color, leftOffset, topOffset) {
+	$.fn.vortexTips = function (subSelector, leftOffset, topOffset) {
 		
-		var name = color + "Tip";
-		var html = "<span class='tip " + name + "'>&nbsp;</span>";
+		var html = "<span class='tip'>&nbsp;</span>";
 		var animInSpeed = 300;
 		var animOutSpeed = 5000;
 		var tip;

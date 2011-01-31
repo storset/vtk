@@ -23,18 +23,18 @@
 function load(settings, root, child, container) {
 	function createNode(parent) {
         var linkOrPlainText = "";
-        if(this.uri && this.hasChildren) {
+        if(this.uri) {
           if(this.title) {
             var theuri = this.uri;
             if(this.uriPostfix) {
               theuri += this.uriPostfix;
             }
             linkOrPlainText = "<a href='" + theuri
-                          + "' title='" + this.title + "'>" 
-                          + this.text + "</a>"
+                            + "' title='" + this.title + "'>" 
+                            + this.text + "</a>"
           } else {
             linkOrPlainText = "<a href='" + this.uri + "'>" 
-                          + this.text + "</a>"
+                            + this.text + "</a>"
           }
         } else {
           linkOrPlainText = this.text;

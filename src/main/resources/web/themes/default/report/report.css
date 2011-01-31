@@ -53,6 +53,11 @@ div.vrtx-report table#vrtx-report-document-table tr.even td {
   background-color: #eeeeee;
 }
 
+span.file a {
+  text-decoration: none !important;
+  color: black !important;
+}
+
 /* Tooltip */
 
 .tooltip {

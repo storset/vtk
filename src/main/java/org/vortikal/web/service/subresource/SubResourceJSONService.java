@@ -100,33 +100,33 @@ public class SubResourceJSONService implements Controller, InitializingBean {
             
             o.put("text", sr.getName());
             o.put("uri", sr.getUri());
-            o.put("uriPostfix", "?vrtx=admin&mode=permissions");
-            
+  
             // TODO: localize text
             StringBuilder title = new StringBuilder();
             String listClasses = "";
             String spanClasses = "";
+            title.append("Permissions for ");
             if(sr.isCollection()) {
-              title.append("Folder ");
+              title.append("folder "); 
               spanClasses = "folder";
               o.put("hasChildren", true);
             } else {
-              title.append("Document ");
+              title.append("document ");
               spanClasses = "file";
             }
-            title.append("<strong>" + sr.getName() + "</strong> ");
-            if(sr.isInheritedAcl()) {
-              title.append("is inheriting permissions,<br />");
-            } else {
-              title.append("has own permissions,<br />");
-              listClasses = "not-inherited";
-            }
+            title.append("(<a href=&quot;" + sr.getUri() + "?vrtx=admin&mode=permissions&quot;>edit</a>)<hr />");
+
             if(sr.isReadRestricted()) {
-              title.append("and have read restrictions.");
               spanClasses += " restricted";
             } else {
-              title.append("and is allowed to read for all.");
               spanClasses += " allowed-for-all";    
+            }
+            
+            if(sr.isInheritedAcl()) {
+              title.append("Has inherited permissions.");
+            } else {
+              title.append("Has individual permissions.");
+              listClasses = "not-inherited";
             }
             o.put("title", title.toString());
             o.put("listClasses", listClasses);

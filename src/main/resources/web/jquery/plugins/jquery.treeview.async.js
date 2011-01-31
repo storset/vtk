@@ -12,7 +12,7 @@
  * Revision: $Id$
  *
  * USIT added JSON: 1. possible to set classes also on <li> (in addition to <span>)
- *                  2. uri and uriPostfix -> <a>
+ *                  2. uri -> <a>
  *                  3. title -> <a>
  *                  4. update settings.url on toggle()
  *
@@ -26,9 +26,6 @@ function load(settings, root, child, container) {
         if(this.uri) {
           if(this.title) {
             var theuri = this.uri;
-            if(this.uriPostfix) {
-              theuri += this.uriPostfix;
-            }
             linkOrPlainText = "<a href='" + theuri
                             + "' title='" + this.title + "'>" 
                             + this.text + "</a>"

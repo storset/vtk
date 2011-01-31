@@ -32,7 +32,7 @@
          url: "?vrtx=admin&service=subresource-retrieve&uri=${report.uri}"
        })
        
-       $("#tree").delegate("ul li a", "click", function(e){
+       $("#tree").delegate("a", "click", function(e){
 	     return false;
        });
      });
@@ -41,7 +41,7 @@
        $("#tree span.allowed-for-all a[title]").tooltip({
          tip: '.tooltip-allowed-for-all',
 	     effect: 'fade',
-	     fadeOutSpeed: 100,
+	     fadeOutSpeed: 5000,
 	     predelay: 15,
 	     position: "top right",
 	     offset: [-220, 0]
@@ -49,7 +49,7 @@
       $("#tree span.restricted a[title]").tooltip({
          tip: '.tooltip-restricted',
 	     effect: 'fade',
-	     fadeOutSpeed: 100,
+	     fadeOutSpeed: 5000,
 	     predelay: 15,
 	     position: "top right",
 	     offset: [-220, 0]

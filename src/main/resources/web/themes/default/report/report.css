@@ -81,6 +81,10 @@ span.file a {
   background-color: #740909 !important;
 }
 
+.tooltip a {
+  color: #fff;
+}
+
 /* ^ Tooltip */
 
 /* Help */

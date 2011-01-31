@@ -62,7 +62,7 @@ public class SubResourcePermissionsProvider {
     
     public List<SubResourcePermissions> buildSearchAndPopulateSubresources(String uri, String token) {
 
-        // MainQuery (depth + 1 from uri)
+        // MainQuery (depth + 1 from uri and all resources)
         Path url = Path.fromString(uri);
         int depth = url.getDepth() + 1;
         AndQuery mainQuery = new AndQuery();
@@ -84,6 +84,7 @@ public class SubResourcePermissionsProvider {
         List<SubResourcePermissions> subresources = new ArrayList();
         
         Resource res = null;
+        
         for(PropertySet result : results) {
           String resourceURI = result.getURI().toString();
           String resourceName = result.getName();
@@ -94,6 +95,7 @@ public class SubResourcePermissionsProvider {
           String resourceRead = "";
           String resourceWrite = "";
           String resourceAdmin = "";
+          
           try {
             res = this.repository.retrieve(token, result.getURI(), true);
             if (res != null) {
@@ -117,25 +119,25 @@ public class SubResourcePermissionsProvider {
                   int len = privilegedPseudoPrincipals.length + privilegedUsers.length + privilegedGroups.length;
                   for(Principal p : privilegedPseudoPrincipals) {
                     if(len == 1 || i == len - 1) {
-                      combined.append(p.getName());  
+                      combined.append(p.getDescription());  
                     } else {
-                      combined.append(p.getName() + ", ");
+                      combined.append(p.getDescription() + ", ");
                     }
                     i++;
                   }
                   for(Principal p : privilegedUsers) {
                     if(len == 1 || i == len - 1) {
-                      combined.append(p.getName());  
+                      combined.append(p.getDescription());  
                     } else {
-                      combined.append(p.getName() + ", ");
+                      combined.append(p.getDescription() + ", ");
                     }
                     i++;
                   }
                   for(Principal p : privilegedGroups) {
                     if(len == 1 || i == len - 1) {
-                      combined.append(p.getName());  
+                      combined.append(p.getDescription());  
                     } else {
-                      combined.append(p.getName() + ", ");
+                      combined.append(p.getDescription() + ", ");
                     }
                     i++;
                   }

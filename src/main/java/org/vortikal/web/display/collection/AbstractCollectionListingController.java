@@ -116,7 +116,7 @@ public abstract class AbstractCollectionListingController implements ListingCont
 
 		Map<String, Object> model = new HashMap<String, Object>();
 
-		Map<String,Object> subfolders = getSubolderMenu(collection, request);
+		Map<String,Object> subfolders = getSubFolderMenu(collection, request);
 		if(subfolders.size() > 0){
 			model.put("subFolderMenu",subfolders);
 		}
@@ -164,7 +164,7 @@ public abstract class AbstractCollectionListingController implements ListingCont
 		return new ModelAndView(this.viewName, model);
 	}
 
-	protected Map<String, Object> getSubolderMenu(Resource collection, HttpServletRequest request) {
+	protected Map<String, Object> getSubFolderMenu(Resource collection, HttpServletRequest request) {
 		Map<String, Object> result = new HashMap<String, Object>();
 
 			result = subFolderMenuProvider.getSubfolderMenuWithGeneratedResultSets(collection, request);

@@ -46,6 +46,11 @@
   width: 19px;
   height: 18px;
 }
+
+.ui-datepicker .ui-datepicker-next {
+  right: 4px;
+}
+
 .ui-datepicker .ui-datepicker-prev-hover, 
 .ui-datepicker .ui-datepicker-next-hover {
 	top: 2px;
@@ -54,7 +59,7 @@
 }
 
 .ui-datepicker .ui-datepicker-prev-hover { left:2px; }
-.ui-datepicker .ui-datepicker-next-hover { right:2px; }
+.ui-datepicker .ui-datepicker-next-hover { right:4px; }
 
 #vrtx-event-calendar .ui-datepicker .ui-datepicker-prev span {
   background-image: url(../../jquery/plugins/ui/jquery-ui-tabs-customized/css/ui-lightness/images/left.png);

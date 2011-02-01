@@ -92,7 +92,7 @@
 }
 
 #vrtx-event-calendar .ui-widget-content table .ui-datepicker-unselectable span {
-  border-width: thin thin 0 0;
+  border-width: 1px 1px 0 0;
   text-align: center;
   background-image: none !important;
   background-color: #fff !important;
@@ -103,7 +103,7 @@
 /* Don't use .ui-state-hover */
 #vrtx-event-calendar .ui-widget-content table a,
 #vrtx-event-calendar .ui-widget-content table .ui-state-hover {
-  border-width: thin thin 0 0 !important;
+  border-width: 1px 1px 0 0 !important;
   text-align: center;
   background-image: none !important;
   background-color: #fff !important;

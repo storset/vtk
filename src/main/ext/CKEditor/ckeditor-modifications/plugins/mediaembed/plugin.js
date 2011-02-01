@@ -116,7 +116,7 @@ var divAlign = "";
             {
                 label: 'Embed Media',
                 command: 'mediaembed',
-                icon: this.path.toLowerCase() + 'images/icon.gif'
+                icon: this.path.toLowerCase() + 'images/icon.png'
             } );
             
             editor.on( 'doubleclick', function( evt ){
@@ -146,7 +146,7 @@ var divAlign = "";
             	        label: lang.edit,
             	        command: 'mediaembedmod',
             	        group: 'mediaembed',
-            	        icon: this.path.toLowerCase() + 'images/icon.gif',
+            	        icon: this.path.toLowerCase() + 'images/icon.png',
             	        order: 1
             		},
 					RemoveMedia:
@@ -154,7 +154,7 @@ var divAlign = "";
 						label: lang.remove,
 						command: 'MediaEmbedRemove',
 						group: 'mediaembed',
-						icon: this.path.toLowerCase() + 'images/iconremove.gif',
+						icon: this.path.toLowerCase() + 'images/iconremove.png',
 						order: 5
 					}
             	    

@@ -1,7 +1,6 @@
 CKEDITOR.editorConfig = function( config )
 {
 
-config.forcePasteAsPlainText = true;
 config.toolbarCanCollapse = false;
 config.disableNativeSpellChecker = false;
 config.browserContextMenuOnCtrl = true;

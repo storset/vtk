@@ -62,7 +62,15 @@ resourcetype frontpage {
           [if type != null && type != ""]
             [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
             [def cssClasses concat(cssClasses, type)]
-          [endif]          
+          [endif]    
+          [if number = 1]
+            [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
+            [def cssClasses concat(cssClasses, "vrtx-additional-content-first")]           
+          [endif]
+          [if number = _size]
+            [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
+            [def cssClasses concat(cssClasses, "vrtx-additional-content-last")]
+          [endif]      
 
           [if cssClasses != null && cssClasses != ""]
               <div class="vrtx-frontpage-box [val cssClasses]" id="vrtx-main-content-[val number]">
@@ -143,28 +151,32 @@ resourcetype frontpage {
             [else]
               [def cssClasses concat(cssClasses, "vrtx-more-false")]
             [endif]
-            
             [if main-content = "true"]
               [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
               [def cssClasses concat(cssClasses, "white-box")]
             [endif]
-            
             [if title != null && title != ""]
             [else]
               [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
               [def cssClasses concat(cssClasses, "vrtx-header-false")]
             [endif]
-            
             [if (urlText = "" || urlText = null) && (content = "" || content = null) 
              && (picture = "" || picture = null) && (title != null && title != "")]
               [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
               [def cssClasses concat(cssClasses, "vrtx-only-title")]
             [endif]
-            
             [if type != null && type != ""]
               [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
               [def cssClasses concat(cssClasses, type)]
             [endif]
+            [if number = 1]
+              [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
+              [def cssClasses concat(cssClasses, "vrtx-additional-content-first")]           
+            [endif]
+            [if number = _size]
+              [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
+              [def cssClasses concat(cssClasses, "vrtx-additional-content-last")]
+            [endif]    
 
             [if cssClasses != null && cssClasses != ""]
               <div class="vrtx-frontpage-box [val cssClasses]" id="vrtx-additional-content-[val number]">

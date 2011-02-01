@@ -1,7 +1,7 @@
 ﻿/* 
  *  vortexTips plugin
  *  
- *  Based loosely tinyTips v1.1 by Mike Merritt (se license.txt)
+ *  Based loosely on tinyTips v1.1 by Mike Merritt (se license.txt)
  *  Modified by Øyvind Hatland (USIT)
  *  
  *  Changes

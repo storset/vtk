@@ -16,7 +16,12 @@
           </#list>
 	</ul>
       </#if>
-    <input type="file" name="file"  multiple>
+	<input id="file" type="file" name="file">
+    <script type="text/javascript">
+    <!--
+		$("#file").attr("multiple","multiple");
+	-->
+	</script>
     <div id="submitButtons">
       <input type="submit" name="save" value="<@vrtx.msg code="actions.fileUploadService.save" default="Save"/>">
       <input type="submit" name="cancelAction" value="<@vrtx.msg code="actions.fileUploadService.cancel" default="Cancel"/>">

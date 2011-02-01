@@ -106,8 +106,8 @@ public class SubResourceJSONService implements Controller, InitializingBean {
             
             // TODO: localize text
             StringBuilder title = new StringBuilder();
-            title.append("Permissions for <strong>" + sr.getName() + "</strong>");
-            title.append(" (<a href=&quot;" + sr.getUri() + "?vrtx=admin&mode=permissions&quot;>edit</a>)<hr />");
+            
+            title.append("<strong>" + sr.getName() + "</strong>");
             
             if(sr.isCollection()) {
               spanClasses = "folder";
@@ -122,20 +122,22 @@ public class SubResourceJSONService implements Controller, InitializingBean {
             }
             
             if(sr.isInheritedAcl()) {
-              title.append("Has inherited permissions.<br /><span class=&quot;inherited-permissions&quot;>");
+              title.append(" has inherited permissions (<a href=&quot;" + sr.getUri() 
+                         + "?vrtx=admin&mode=permissions&quot;>edit</a>)<hr /><span class=&quot;inherited-permissions&quot;>");
             } else {
-              title.append("Has individual permissions.<br />");
+              title.append(" has individual permissions (<a href=&quot;" + sr.getUri() 
+                         + "?vrtx=admin&mode=permissions&quot;>edit</a>)<hr />");
               listClasses = "not-inherited";
             }
             
             if(sr.getRead() != "") {
-              title.append("<br /><strong>Read:</strong> " + sr.getRead());   
+              title.append("Read: " + sr.getRead());   
             }
             if(sr.getWrite() != "") {
-              title.append("<br /><strong>Write:</strong> " + sr.getWrite());  
+              title.append("<br />Write: " + sr.getWrite());  
             }
             if(sr.getAdmin() != "") {
-              title.append("<br /><strong>Admin:</strong> " + sr.getAdmin());
+              title.append("<br />Admin: " + sr.getAdmin());
             }
             
             if(sr.isInheritedAcl()) {

@@ -593,8 +593,3 @@ span.show-tooltip-text {
 span.cke_skin_kama {
   padding: 0px !important;
 }
-
-/* Fix IE mediaembed-icon */
-.cke_icon { 
-  filter: !important;
-}

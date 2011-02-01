@@ -8,7 +8,8 @@ var paramsStandard = {
   "width" : 507,
   "height" : 322,
   "autoplay" : "false",
-  "contentType" : ""
+  "contentType" : "",
+  "streamType" : ""
 };
 
 var params = {
@@ -16,7 +17,8 @@ var params = {
   "width" : 507,
   "height" : 322,
   "autoplay" : "false",
-  "contentType" : ""
+  "contentType" : "",
+  "streamType" : ""
 };
 
 var divAlign = "";
@@ -114,7 +116,7 @@ var divAlign = "";
             {
                 label: 'Embed Media',
                 command: 'mediaembed',
-                icon: this.path.toLowerCase() + 'images/icon.gif'
+                icon: this.path.toLowerCase() + 'images/icon.png'
             } );
             
             editor.on( 'doubleclick', function( evt ){
@@ -144,7 +146,7 @@ var divAlign = "";
             	        label: lang.edit,
             	        command: 'mediaembedmod',
             	        group: 'mediaembed',
-            	        icon: this.path.toLowerCase() + 'images/icon.gif',
+            	        icon: this.path.toLowerCase() + 'images/icon.png',
             	        order: 1
             		},
 					RemoveMedia:
@@ -152,7 +154,7 @@ var divAlign = "";
 						label: lang.remove,
 						command: 'MediaEmbedRemove',
 						group: 'mediaembed',
-						icon: this.path.toLowerCase() + 'images/iconremove.gif',
+						icon: this.path.toLowerCase() + 'images/iconremove.png',
 						order: 5
 					}
             	    
@@ -201,6 +203,10 @@ function insertOrModifyComponent(editor, iframeId, init) {
 			  var autoplay = contents.find("#chkAutoplay");
 			  if(autoplay.attr("checked") == true) {
 			    content = content + " autoplay=[true]";
+			  }
+			  var streamLive = contents.find("#chkLiveStream");
+			  if(streamLive.attr("checked") == true) {
+			    content = content + " stream-type=[live]";
 			  }
 			  var align = contents.find("#txtAlign").val();
 
@@ -268,6 +274,12 @@ function putDialogValues(iframeId, init) {
     	      } else {
     	        contents.find("#chkAutoplay").attr("checked", false);  
     	      }
+    	      var liveStream = init ? paramsStandard.streamType : params.streamType;
+    	      if(liveStream == "live") {
+    	        contents.find("#chkLiveStream").attr("checked", true);  	
+    	      } else {
+    	        contents.find("#chkLiveStream").attr("checked", false);  
+    	      }
     	      if(divAlign != "" && divAlign != " " && !init) {
       	        contents.find("#txtAlign").val(divAlign);
       	      } else {
@@ -280,6 +292,7 @@ function putDialogValues(iframeId, init) {
         	    params.width = paramsStandard.width;
         	    params.height = paramsStandard.height;
         	    params.autoplay = paramsStandard.autoplay;
+        	    params.streamType = paramsStandard.streamType;
         	    params.contentType = paramsStandard.contentType;
         	    divAlign = "";  
     	      }
@@ -310,10 +323,13 @@ function extractMediaPlayerProps(HTML, element) {
 	divAlign = $.trim(className.replace(/vrtx-media-player[\w-]*/g, ""));
   		
     for(var name in params) {
-      if(name != "contentType") {
-        regexp = new RegExp('(?:' + name + '[\\s]*?=[\\s]*?\\[[\\s]*?)(.*?)(?=[\\s]*?\\])'); // non-capturing group for prop=. TODO: positive lookbehind (non-capturing)
-      } else {
+      if(name == "contentType") {
     	regexp = new RegExp('(?:content\\-type[\\s]*?=[\\s]*?\\[[\\s]*?)(.*?)(?=[\\s]*?\\])');
+      } else if(name == "streamType") {
+    	regexp = new RegExp('(?:stream\\-type[\\s]*?=[\\s]*?\\[[\\s]*?)(.*?)(?=[\\s]*?\\])'); 
+      } else {
+    	// non-capturing group for prop=. TODO: positive lookbehind (non-capturing)
+    	regexp = new RegExp('(?:' + name + '[\\s]*?=[\\s]*?\\[[\\s]*?)(.*?)(?=[\\s]*?\\])');
       }
       
   	  var param = regexp.exec(HTML);

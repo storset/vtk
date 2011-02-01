@@ -65,8 +65,14 @@
       }
   }
   
-  function linkCheckCompleted(requests) {
-     $("body").find("#vrtx-link-check-spinner").remove();
+  function linkCheckCompleted(requests, brokenLinks) {
+    if(brokenLinks > 0) {
+      $("body").find("#vrtx-link-check-spinner")
+        .html(brokenLinks + ' <@vrtx.msg code="linkcheck.brokenlinks" default=" broken links"/>')
+        .addClass("vrtx-broken-links");
+    } else {
+      $("body").find("#vrtx-link-check-spinner").remove();
+    }
   }
 
   $(document).ready(function() {

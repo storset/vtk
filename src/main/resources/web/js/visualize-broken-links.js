@@ -30,6 +30,7 @@ function visualizeBrokenLinks(options) {
         return;
     }
     var reqs = 0;
+    var brokenLinks = 0;
     $.each(urls, function(k, list) {
         var data = "";
         for (var j = 0, listLength = list.length; j < listLength; j++) {
@@ -43,12 +44,12 @@ function visualizeBrokenLinks(options) {
             dataType : 'json',
             context : context,
             success : function(results, status, resp) {
-                return linkCheckResponse(results, $(this), options.responseLocalizer, linkClass);
+        	  brokenLinks += linkCheckResponse(results, $(this), options.responseLocalizer, linkClass);
             },
             complete : function(req, status) {
                 reqs++;
                 if (reqs == urlsLength && options.completed) {
-                    options.completed(reqs);
+                    options.completed(reqs, brokenLinks);
                 }
             }
         });
@@ -57,12 +58,18 @@ function visualizeBrokenLinks(options) {
 
 function linkCheckResponse(results, context, localizer, linkClass) {
 	var links = context.contents().find("a." + linkClass);
+	var brokenLinks = 0;
 	for (var j = 0, linksLength = links.length; j < linksLength; j++) {
         var href = $(links[j]).attr('href');
         for (var i = 0, resultsLength = results.length; i < resultsLength; i++) {
             if (results[i].status != "OK") {
                 if (href == results[i].link) {
-                    var color = (results[i].status == "NOT_FOUND") ? "red" : "brown";
+                    if (results[i].status == "NOT_FOUND") {
+                      var color = "red";
+                      brokenLinks++;
+                    } else {
+                      var color = "brown";
+                    }
                     var msg = (localizer) ? localizer(results[i].status) : results[i].status;
                     $(links[j]).append(" - [" + msg + "]").css("color", color).removeClass(linkClass);
                     break;
@@ -70,4 +77,5 @@ function linkCheckResponse(results, context, localizer, linkClass) {
             }
         }
 	}
+	return brokenLinks;
 }

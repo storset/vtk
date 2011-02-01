@@ -20,12 +20,15 @@
 		
 		var html = "<span class='tip'>&nbsp;</span>";
 		var animInSpeed = 300;
-		var animOutSpeed = 5000;
+		var animOutPreDelay = 4000;
+		var animOutSpeed = 3000;
 		var tip;
 		var tipText;
+		var fadeOutTimer;
 		
 		$(this).delegate(subSelector + " a", "mouseover mouseleave", function(e) {
 		  if(e.type == "mouseover") {
+			clearTimeout(fadeOutTimer); // remove fadeOutTimer
 		    $("#contents").append(html);
 			tip = $(".tip"); tip.hide();
 			var link = $(this);
@@ -43,9 +46,11 @@
 			tip.css(nPos).fadeIn(animInSpeed);
 		  } else if (e.type == "mouseleave") {
 			$(this).attr('title', tipText);
-			tip.fadeOut(animOutSpeed, function() {
-			  $(this).remove();
-			});
+			fadeOutTimer = setTimeout(function() {
+			  tip.fadeOut(animOutSpeed, function() {
+			    $(this).remove();
+			  });
+			}, animOutPreDelay);
 		  }
 		});
    }

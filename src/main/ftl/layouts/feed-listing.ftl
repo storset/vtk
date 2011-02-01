@@ -39,7 +39,11 @@
      <ul class="items">
        <#assign "counter" = 1>
        <#list entries[0..maxMsgs-1] as entry>
-		 <li class="item-${counter}">
+         <#if counter == maxMsgs>
+           <li class="item-${counter} item-last">
+         <#else>
+		   <li class="item-${counter}">
+		 </#if>
        	 <#list elementOrder as element >
          	<@displayEntry entry conf element />
          </#list>

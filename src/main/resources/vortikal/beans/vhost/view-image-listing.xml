@@ -84,7 +84,7 @@
             <entry key="table">
               <list>
                 <value>${jsBaseURL}/plugins/tablesort-1.5.min.js</value>
-                <!-- <value>${jsBaseURL}/plugins/customsort-norwegian-mod.js</value> -->
+                <value>${jsBaseURL}/plugins/tablesort-customsort.js</value>
               </list>
             </entry>
             <entry key="gallery">

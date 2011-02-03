@@ -1,35 +1,44 @@
 /*
     sortEnglishDateTime
-    -----------------------
+    -------------------
 
     This function sorts English dateTime vaues such as:
 
     1st January 2003, 23:32:01
-    23/03/1972 � 10:22:22
+    23/03/1972 à 10:22:22
     1970/13/03 at 23:22:01
     
     The function is "safe" i.e. non-dateTime data (like the word "Unknown") can be passed in and is sorted properly.
+    
+    UPDATE 08/01/2009: 1. Full or Short-hand english month names (e.g. "March" or "Mar") now require a space
+                       or a comma after them to be properly parsed.
+                       2. If no timestamp is given, a fake timestamp "00:00:00" is added to the string this enables
+                       the function to parse both date and datetime data.
 */
 var sortEnglishDateTime = fdTableSort.sortNumeric;
 
 function sortEnglishDateTimePrepareData(tdNode, innerText) {
         // You can localise the function here
-        var months = ['jan','feb','mar','apr','mai','jun','jul','aug','sep','okt','nov','des'];
+        var months = ['january','february','march','april','may','june','july','august','september','october','november','december','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
 
         // Lowercase the text
-        var aa = innerText.toLowerCase();
-
-        // Replace the longhand months with an integer equivalent
-        for(var i = 0; i < months.length; i++) {
-                aa = aa.replace(months[i], (i+13)%12);
+        var aa = innerText.toLowerCase();         
+        
+        // Replace the longhand and shorthand months with an integer equivalent
+        for(var i = 0; i < months.length; i++) {                 
+                aa = aa.replace(new RegExp(months[i] + '([\\s|,]{1})'), (i+13)%12 + " ");
         };
 
         // Replace multiple spaces and anything that is not valid in the parsing of the date, then trim
         aa = aa.replace(/\s+/g, " ").replace(/([^\d\s\/-:.])/g, "").replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+        
+        // REMOVED: No timestamp at the end, then return -1
+        //if(aa.search(/(\d){2}:(\d){2}(:(\d){2})?$/) == -1) { return -1; };
 
-        // No timestamp at the end, then return -1
-        if(aa.search(/(\d){2}:(\d){2}(:(\d){2})?$/) == -1) { return -1; };
-
+        // No timestamp at the end, then create a false one         
+        if(aa.search(/(\d){2}:(\d){2}(:(\d){2})?$/) == -1) { aa += " 00:00:00"; };
+        
+        
         // Grab the timestamp
         var timestamp = aa.match(/(\d){2}:(\d){2}(:(\d){2})?$/)[0].replace(/:/g, "");
 
@@ -73,7 +82,7 @@ function sortEnglishDateTimePrepareData(tdNode, innerText) {
 
 /*
     sortAlphaNumeric
-    -----------------------
+    ----------------
 
     This function sorts alphaNumeric values e.g. 1, e, 1a, -23c, 54z
     
@@ -323,7 +332,6 @@ function sortImagePrepareData(td, innerText) {
 /*
         sortFileSize
         ------------
-
 
         1 Byte = 8 Bit
         1 Kilobyte = 1024 Bytes

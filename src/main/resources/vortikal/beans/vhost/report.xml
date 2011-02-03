@@ -128,12 +128,6 @@
             <value>${themeBaseURL}/report/report.css</value>
           </list>
         </entry>
-        <entry key="jsURLs">
-          <list>
-            <value>${jsBaseURL}/plugins/tablesort.js</value>
-            <value>${jsBaseURL}/plugins/customsort-norwegian-mod.js</value>
-          </list>
-        </entry>
       </map>
     </property>
   </bean>

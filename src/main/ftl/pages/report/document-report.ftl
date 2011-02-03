@@ -10,11 +10,6 @@
     <link rel="stylesheet" href="${cssURL}" />
     </#list>
   </#if>
-  <#if jsURLs?exists>
-    <#list jsURLs as jsURL>
-    <script type="text/javascript" src="${jsURL}"></script>
-    </#list>
-  </#if>
   </head>
   <body>
   <div class="resourceInfo">

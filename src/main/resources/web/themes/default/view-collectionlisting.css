@@ -71,6 +71,29 @@ div.vrtx-collections ul {
 	margin-bottom: 0;
 }
 
+ div#vrtx-collection-listing-subfolders {
+    border: 1px solid #ccc;
+    clear: right;
+    height: 1%;
+    margin: 0px 0px 1.5em;
+    padding: 1em;
+    float: left;
+    width: 100%;
+  }
+
+  div#vrtx-collection-listing-subfolders div.menu-title {
+    font-weight: bold;
+    font-size: 1.2em;
+    margin: 0px 0px 0.5em;
+  }
+
+  div#vrtx-collection-listing-subfolders ul {
+    list-style-type: square;
+    margin-bottom: 0px;
+    margin-top: 0px;
+    float: left;
+  }
+
 /* START vrtx-resource (standard, article, events) */
 div.vrtx-resource {
 	width: 100%;

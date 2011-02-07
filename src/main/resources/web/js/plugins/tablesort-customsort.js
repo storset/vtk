@@ -18,9 +18,18 @@
 var sortEnglishDateTime = fdTableSort.sortNumeric;
 
 function sortEnglishDateTimePrepareData(tdNode, innerText) {
-        // You can localise the function here
-        var months = ['january','february','march','april','may','june','july','august','september','october','november','december','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
-
+	
+	    // USIT added: get lang from HTML-attribute
+	    var htmlLang = $("html").attr("lang");
+	    
+	    // You can localise the function here. 
+	    if(htmlLang == "no") {
+	      // USIT added
+		  var months = ['januar','februar','mars','april','mai','juni','juli','august','september','oktober','november','desember','jan','feb','mar','apr','mai','jun','jul','aug','sep','okt','nov','des'];	
+	    } else {
+	      var months = ['january','february','march','april','may','june','july','august','september','october','november','december','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+	    }
+	    
         // Lowercase the text
         var aa = innerText.toLowerCase();         
         
@@ -196,7 +205,16 @@ function sortByTwelveHourTimestampPrepareData(tdNode, innerText) {
 var sortEnglishLonghandDateFormat = fdTableSort.sortNumeric;
 
 function sortEnglishLonghandDateFormatPrepareData(tdNode, innerText) {
-        var months = ['january','february','march','april','may','june','july','august','september','october','november','december'];
+       // USIT added: get lang from HTML-attribute
+	    var htmlLang = $("html").attr("lang");
+	    
+	    // You can localise the function here. 
+	    if(htmlLang == "no") {
+	      // USIT added
+		  var months = ['januar','februar','mars','april','mai','juni','juli','august','september','oktober','november','desember'];	
+	    } else {
+	      var months = ['january','february','march','april','may','june','july','august','september','october','november','december'];
+	    }
 
         var aa = innerText.toLowerCase();
 

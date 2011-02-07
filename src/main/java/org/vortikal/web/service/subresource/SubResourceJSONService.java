@@ -130,15 +130,16 @@ public class SubResourceJSONService implements Controller, InitializingBean {
               listClasses = "not-inherited";
             }
             
-            if(sr.getRead() != "") {
-              title.append(this.getLocalizedTitle(request, "permissions.privilege.read", null) + ": " + sr.getRead());   
-            }
-            if(sr.getWrite() != "") {
-              title.append("<br />" + this.getLocalizedTitle(request, "permissions.privilege.write", null) + ": " + sr.getWrite());  
-            }
-            if(sr.getAdmin() != "") {
-              title.append("<br />"+ this.getLocalizedTitle(request, "permissions.privilege.all", null) + ": " + sr.getAdmin());
-            }
+            String notAssigned = this.getLocalizedTitle(request, "permissions.not.assigned", null).toLowerCase();
+            
+            String read = sr.getRead().isEmpty() ? notAssigned : sr.getRead();
+            title.append(this.getLocalizedTitle(request, "permissions.privilege.read", null) + ": " + read);
+            
+            String write = sr.getWrite().isEmpty() ? notAssigned : sr.getWrite();
+            title.append("<br />" + this.getLocalizedTitle(request, "permissions.privilege.write", null) + ": " + write);
+            
+            String admin = sr.getAdmin().isEmpty() ? notAssigned : sr.getAdmin();
+            title.append("<br />" + this.getLocalizedTitle(request, "permissions.privilege.all", null) + ": " + admin);
             
             if(sr.isInheritedAcl()) {
               title.append("</span>"); 

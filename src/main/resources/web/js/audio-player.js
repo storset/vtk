@@ -1,27 +1,129 @@
-var ap_instances = new Array();
-
-function ap_stopAll(playerID) {
-	var len = ap_instances.length;
-	for(var i = 0;i<len;i++) {
-		try {
-			if(ap_instances[i] != playerID) document.getElementById("audioplayer" + ap_instances[i].toString()).SetVariable("closePlayer", 1);
-			else document.getElementById("audioplayer" + ap_instances[i].toString()).SetVariable("closePlayer", 0);
-		} catch( errorObject ) {
-			// stop any errors
+var AudioPlayer = function () {
+	var instances = [];
+	var activePlayerID;
+	var playerURL = "";
+	var defaultOptions = {};
+	var currentVolume = -1;
+	var requiredFlashVersion = "9";
+	
+	function getPlayer(playerID) {
+		if (document.all && !window[playerID]) {
+			for (var i = 0; i < document.forms.length; i++) {
+				if (document.forms[i][playerID]) {
+					return document.forms[i][playerID];
+					break;
+				}
+			}
 		}
+		return document.all ? window[playerID] : document[playerID];
 	}
-}
+	
+	function addListener (playerID, type, func) {
+		getPlayer(playerID).addListener(type, func);
+	}
+	
+	return {
+		setup: function (url, options) {
+			playerURL = url;
+			defaultOptions = options;
+			if (swfobject.hasFlashPlayerVersion(requiredFlashVersion)) {
+				swfobject.switchOffAutoHideShow();
+				swfobject.createCSS("p.audioplayer_container span", "visibility:hidden;height:24px;overflow:hidden;padding:0;border:none;");
+			}
+		},
 
-function ap_registerPlayers() {
-	var objectID;
-	var objectTags = document.getElementsByTagName("object");
-	var len = objectTags.length;
-	for(var i=0;i<len;i++) {
-		objectID = objectTags[i].id;
-		if(objectID.indexOf("audioplayer") == 0) {
-			ap_instances[i] = objectID.substring(11, objectID.length);
+		getPlayer: function (playerID) {
+			return getPlayer(playerID);
+		},
+		
+		addListener: function (playerID, type, func) {
+			addListener(playerID, type, func);
+		},
+		
+		embed: function (elementID, options) {
+			var instanceOptions = {};
+			var key;
+			
+			var flashParams = {};
+			var flashVars = {};
+			var flashAttributes = {};
+	
+			// Merge default options and instance options
+			for (key in defaultOptions) {
+				instanceOptions[key] = defaultOptions[key];
+			}
+			for (key in options) {
+				instanceOptions[key] = options[key];
+			}
+			
+			if (instanceOptions.transparentpagebg == "yes") {
+				flashParams.bgcolor = "#FFFFFF";
+				flashParams.wmode = "transparent";
+			} else {
+				if (instanceOptions.pagebg) {
+					flashParams.bgcolor = "#" + instanceOptions.pagebg;
+				}
+				flashParams.wmode = "opaque";
+			}
+			
+			flashParams.menu = "false";
+			
+			for (key in instanceOptions) {
+				if (key == "pagebg" || key == "width" || key == "transparentpagebg") {
+					continue;
+				}
+				flashVars[key] = instanceOptions[key];
+			}
+			
+			flashAttributes.name = elementID;
+			flashAttributes.style = "outline: none";
+			
+			flashVars.playerID = elementID;
+			
+			swfobject.embedSWF(playerURL, elementID, instanceOptions.width.toString(), "24", requiredFlashVersion, false, flashVars, flashParams, flashAttributes);
+			
+			instances.push(elementID);
+		},
+		
+		syncVolumes: function (playerID, volume) {	
+			currentVolume = volume;
+			for (var i = 0; i < instances.length; i++) {
+				if (instances[i] != playerID) {
+					getPlayer(instances[i]).setVolume(currentVolume);
+				}
+			}
+		},
+		
+		activate: function (playerID, info) {
+			if (activePlayerID && activePlayerID != playerID) {
+				getPlayer(activePlayerID).close();
+			}
+
+			activePlayerID = playerID;
+		},
+		
+		load: function (playerID, soundFile, titles, artists) {
+			getPlayer(playerID).load(soundFile, titles, artists);
+		},
+		
+		close: function (playerID) {
+			getPlayer(playerID).close();
+			if (playerID == activePlayerID) {
+				activePlayerID = null;
+			}
+		},
+		
+		open: function (playerID, index) {
+			if (index == undefined) {
+				index = 1;
+			}
+			getPlayer(playerID).open(index == undefined ? 0 : index-1);
+		},
+		
+		getVolume: function (playerID) {
+			return currentVolume;
 		}
+		
 	}
-}
-
-var ap_clearID = setInterval( ap_registerPlayers, 100 );
+	
+}();

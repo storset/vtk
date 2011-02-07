@@ -53,7 +53,7 @@ div.vrtx-report table#vrtx-report-document-table tr.even td {
   background-color: #eeeeee;
 }
 
-span.file a {
+div.vrtx-report span.file a {
   text-decoration: none !important;
   color: black !important;
 }
@@ -81,7 +81,7 @@ span.file a {
 }
 
 .tip.file,
-.tip.folder {
+.tip.folder {div.vrtx-report 
   background-repeat: no-repeat;
   background-position: 10px 8px;
 }

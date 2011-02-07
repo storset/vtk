@@ -104,7 +104,6 @@ public class SubResourceJSONService implements Controller, InitializingBean {
             String listClasses = "";
             String spanClasses = "";
             
-            // TODO: localize text
             StringBuilder title = new StringBuilder();
             
             title.append("<strong id=&quot;title&quot;>" + sr.getName() + "</strong>");

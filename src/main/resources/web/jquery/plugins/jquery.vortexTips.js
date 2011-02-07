@@ -32,6 +32,8 @@
 		    $("#contents").append(html);
 			tip = $(".tip"); tip.hide();
 			var link = $(this);
+			var classes = link.parent().attr("class") + " " + link.parent().parent().attr("class");
+			tip.addClass(classes);
 		    var title = link.attr('title');
 		    tip.html(title);
 		    tipText = link.attr('title');

@@ -107,7 +107,7 @@ public class SubResourceJSONService implements Controller, InitializingBean {
             // TODO: localize text
             StringBuilder title = new StringBuilder();
             
-            title.append("<strong>" + sr.getName() + "</strong>");
+            title.append("<strong id=&quot;title&quot;>" + sr.getName() + "</strong>");
             
             if(sr.isCollection()) {
               spanClasses = "folder";

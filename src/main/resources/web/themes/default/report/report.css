@@ -80,6 +80,42 @@ span.file a {
   color: #999;
 }
 
+.tip.file,
+.tip.folder {
+  background-repeat: no-repeat;
+  background-position: 10px 8px;
+}
+
+.tip.file #title,
+.tip.folder #title {
+  padding-left: 18px;
+}
+
+.tip.allowed-for-all.folder {
+  background-image: url(images/folder-closed-allowed-for-all.gif);
+}
+.tip.allowed-for-all.not-inherited.folder {
+  background-image: url(images/folder-closed-allowed-for-all-not-inherited.gif);
+}
+.tip.restricted.folder {
+  background-image: url(images/folder-closed-restricted.gif);
+}
+.tip.restricted.not-inherited.folder {
+  background-image: url(images/folder-closed-restricted-not-inherited.gif);
+}
+.tip.restricted.file {
+  background-image: url(images/file-restricted.gif);
+}
+.tip.restricted.not-inherited.file {
+  background-image: url(images/file-restricted-not-inherited.gif);
+}
+.tip.allowed-for-all.file {
+  background-image: url(images/file-allowed-for-all.gif);
+}
+.tip.allowed-for-all.not-inherited.file {
+  background-image: url(images/file-allowed-for-all-not-inherited.gif);
+}
+
 /* ^ Tooltip */
 
 /* Help */

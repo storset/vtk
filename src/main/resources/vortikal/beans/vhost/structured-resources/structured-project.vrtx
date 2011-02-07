@@ -10,6 +10,7 @@ resourcetype structured-project {
     content : html noextract,
     participantsUsernames : string multiple,
     participants : json (participantName:string, participantUrl:string) multiple,
+    numberOfParticipantsToDisplay : string,
     contactInfo : html noextract,
     tags : string multiple overrides tags,
     rssFeeds : json (rssTitle:string, rssUrl:string) multiple
@@ -17,6 +18,7 @@ resourcetype structured-project {
   
   edit-rules {
     caption (size[small]),
+    numberOfParticipantsToDisplay (dropdown),
     group introImageAndCaption (picture, caption) (after introduction) vertical,
     tags tooltip (en : "(Tag1, Tag2, ...)", no : "(Emneord1, Emneord2, ...)", nn : "(Emneord1, Emneord2, ...)")
   }
@@ -58,7 +60,7 @@ resourcetype structured-project {
       [def img-author null]
       [def style null]
       
-	  [if img-uri != null]	
+	  [if img-uri != null]
       	[def img resource(img-uri)]      
       [endif]
       [if img != null] 
@@ -192,6 +194,12 @@ resourcetype structured-project {
        no : ("true" = "Pågående", "false" = "Avsluttet"),
        nn : ("true" = "Pågående", "false" = "Avslutta")
      }
+     
+    numberOfParticipantsToDisplay {
+       en : (range = "25..1"),
+       no : (range = "25..1"),
+       nn : (range = "25..1")
+     }
   }
   
   localization {
@@ -217,6 +225,10 @@ resourcetype structured-project {
     header : (en : "Edit project", no : "Rediger prosjekt", nn : "Rediger prosjekt"),
     publishedDate : (en : "Published", no :"Publisert", nn:"Publisert"),
     contentLastModifiedDate : (en : "Last modified", no : "Sist endret", nn : "Sist endra"),
+      numberOfParticipantsToDisplay : (
+      en : "Number of participants to show",
+      no : "Antall deltakere som skal vises",
+      nn : "Antall deltakarar som skal visast"),
     completed : (en : "completed", no : "avsluttet", nn : "avslutta")
   }
 }

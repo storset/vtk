@@ -119,33 +119,40 @@ public class SubResourcePermissionsProvider {
                   StringBuilder combined = new StringBuilder();
                   int i = 0; 
                   int len = privilegedPseudoPrincipals.length + privilegedUsers.length + privilegedGroups.length;
+                  boolean all = false;
+                  
                   for(Principal p : privilegedPseudoPrincipals) {
                     String pseudo = this.getLocalizedTitle(request, "pseudoPrincipal." + p.getName(), null);
                     if(p.getName() == "pseudo:owner") {
                       pseudo += "&nbsp;(" + res.getOwner().getDescription() + ")";
-                    }  
+                    }
+                    if(p.getName() == "pseudo:all") {
+                      all = true;
+                    }
                     if(len == 1 || i == len - 1) {
                       combined.append(pseudo);  
-                    } else {
+                    } else if(!all) {
                       combined.append(pseudo + ", ");
                     }
                     i++;
                   }
-                  for(Principal p : privilegedUsers) {
-                    if(len == 1 || i == len - 1) {
-                      combined.append(p.getDescription());  
-                    } else {
-                      combined.append(p.getDescription() + ", ");
+                  if(!all) {
+                    for(Principal p : privilegedUsers) {
+                      if(len == 1 || i == len - 1) {
+                        combined.append(p.getDescription());  
+                      } else {
+                        combined.append(p.getDescription() + ", ");
+                      }
+                      i++;
                     }
-                    i++;
-                  }
-                  for(Principal p : privilegedGroups) {
-                    if(len == 1 || i == len - 1) {
-                      combined.append(p.getDescription());  
-                    } else {
-                      combined.append(p.getDescription() + ", ");
+                    for(Principal p : privilegedGroups) {
+                      if(len == 1 || i == len - 1) {
+                        combined.append(p.getDescription());  
+                      } else {
+                        combined.append(p.getDescription() + ", ");
+                      }
+                      i++;
                     }
-                    i++;
                   }
                   if(actionName == "read") {
                     resourceRead = combined.toString();

@@ -33,6 +33,8 @@ package org.vortikal.web.actions.report.subresource;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Acl;
@@ -60,7 +62,7 @@ public class SubResourcePermissionsProvider {
 
     private static Log logger = LogFactory.getLog(SubResourcePermissionsProvider.class);
     
-    public List<SubResourcePermissions> buildSearchAndPopulateSubresources(String uri, String token) {
+    public List<SubResourcePermissions> buildSearchAndPopulateSubresources(String uri, String token, HttpServletRequest request) {
 
         // MainQuery (depth + 1 from uri and all resources)
         Path url = Path.fromString(uri);
@@ -74,12 +76,12 @@ public class SubResourcePermissionsProvider {
         search.setPropertySelect(new WildcardPropertySelect());
         ResultSet rs = searcher.execute(token, search);
         
-        List<SubResourcePermissions> subresources = populateSubResources(token, rs);
+        List<SubResourcePermissions> subresources = populateSubResources(token, rs, request);
         return subresources;
     }
     
     @SuppressWarnings("unchecked")
-    private List<SubResourcePermissions> populateSubResources(String token, ResultSet rs) {
+    private List<SubResourcePermissions> populateSubResources(String token, ResultSet rs, HttpServletRequest request) {
         List<PropertySet> results = rs.getAllResults();
         List<SubResourcePermissions> subresources = new ArrayList();
         
@@ -118,10 +120,14 @@ public class SubResourcePermissionsProvider {
                   int i = 0; 
                   int len = privilegedPseudoPrincipals.length + privilegedUsers.length + privilegedGroups.length;
                   for(Principal p : privilegedPseudoPrincipals) {
+                    String pseudo = this.getLocalizedTitle(request, "pseudoPrincipal." + p.getName(), null);
+                    if(p.getName() == "pseudo:owner") {
+                      pseudo += "&nbsp;(" + res.getOwner().getDescription() + ")";
+                    }  
                     if(len == 1 || i == len - 1) {
-                      combined.append(p.getDescription());  
+                      combined.append(pseudo);  
                     } else {
-                      combined.append(p.getDescription() + ", ");
+                      combined.append(pseudo + ", ");
                     }
                     i++;
                   }
@@ -164,6 +170,14 @@ public class SubResourcePermissionsProvider {
                                                       resourceIsReadRestricted, resourceIsInheritedAcl, resourceRead, resourceWrite, resourceAdmin));
         }
         return subresources;
+    }
+    
+    public String getLocalizedTitle(HttpServletRequest request, String key, Object[] params) {
+        org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(request);
+        if (params != null) {
+            return springRequestContext.getMessage(key, params);
+        }
+        return springRequestContext.getMessage(key);
     }
 
     public void setSearcher(Searcher searcher) {

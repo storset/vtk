@@ -77,7 +77,7 @@ public class SubResourceJSONService implements Controller, InitializingBean {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
         
-        List<SubResourcePermissions> subresources = provider.buildSearchAndPopulateSubresources(uri, token);
+        List<SubResourcePermissions> subresources = provider.buildSearchAndPopulateSubresources(uri, token, request);
         
         writeResults(subresources, request, response);
         return null;
@@ -122,24 +122,24 @@ public class SubResourceJSONService implements Controller, InitializingBean {
             }
             
             if(sr.isInheritedAcl()) {
-              title.append(" " + this.getLocalizedTitle(request, "report.collection-structure.inherited-permissions", null) + " (<a href=&quot;" + sr.getUri() 
+              title.append(" " + provider.getLocalizedTitle(request, "report.collection-structure.inherited-permissions", null) + " (<a href=&quot;" + sr.getUri() 
                          + "?vrtx=admin&mode=permissions&quot;>edit</a>)<hr /><span class=&quot;inherited-permissions&quot;>");
             } else {
-              title.append(" " + this.getLocalizedTitle(request, "report.collection-structure.own-permissions", null) + " (<a href=&quot;" + sr.getUri() 
+              title.append(" " + provider.getLocalizedTitle(request, "report.collection-structure.own-permissions", null) + " (<a href=&quot;" + sr.getUri() 
                          + "?vrtx=admin&mode=permissions&quot;>edit</a>)<hr />");
               listClasses = "not-inherited";
             }
             
-            String notAssigned = this.getLocalizedTitle(request, "permissions.not.assigned", null).toLowerCase();
+            String notAssigned = provider.getLocalizedTitle(request, "permissions.not.assigned", null).toLowerCase();
             
             String read = sr.getRead().isEmpty() ? notAssigned : sr.getRead();
-            title.append(this.getLocalizedTitle(request, "permissions.privilege.read", null) + ": " + read);
+            title.append(provider.getLocalizedTitle(request, "permissions.privilege.read", null) + ": " + read);
             
             String write = sr.getWrite().isEmpty() ? notAssigned : sr.getWrite();
-            title.append("<br />" + this.getLocalizedTitle(request, "permissions.privilege.write", null) + ": " + write);
+            title.append("<br />" + provider.getLocalizedTitle(request, "permissions.privilege.write", null) + ": " + write);
             
             String admin = sr.getAdmin().isEmpty() ? notAssigned : sr.getAdmin();
-            title.append("<br />" + this.getLocalizedTitle(request, "permissions.privilege.all", null) + ": " + admin);
+            title.append("<br />" + provider.getLocalizedTitle(request, "permissions.privilege.all", null) + ": " + admin);
             
             if(sr.isInheritedAcl()) {
               title.append("</span>"); 
@@ -159,14 +159,6 @@ public class SubResourceJSONService implements Controller, InitializingBean {
         } finally {
             writer.close();
         }
-    }
-    
-    public String getLocalizedTitle(HttpServletRequest request, String key, Object[] params) {
-        org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(request);
-        if (params != null) {
-            return springRequestContext.getMessage(key, params);
-        }
-        return springRequestContext.getMessage(key);
     }
     
     @Override

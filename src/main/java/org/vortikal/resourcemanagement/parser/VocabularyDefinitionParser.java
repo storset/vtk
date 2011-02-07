@@ -137,10 +137,13 @@ public class VocabularyDefinitionParser {
                 Integer end = checkRangeEntry(rangeEntry
                         .substring(rangeEntry.lastIndexOf(".") + 1, rangeEntry.length()));
                 if (start > end) {
-                    throw new IllegalArgumentException("Start cannot be greater than end in a range");
-                }
-                for (Integer i = start; i <= end; i++) {
-                    rangeList.add(i);
+                    for (Integer i = start; i >= end; i--) {
+                        rangeList.add(i);
+                    }
+                } else {
+                    for (Integer i = start; i <= end; i++) {
+                        rangeList.add(i);
+                    }
                 }
             } else {
                 rangeList.add(checkRangeEntry(rangeEntry));

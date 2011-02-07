@@ -79,7 +79,7 @@ public class SubResourceJSONService implements Controller, InitializingBean {
         
         List<SubResourcePermissions> subresources = provider.buildSearchAndPopulateSubresources(uri, token);
         
-        writeResults(subresources, response);
+        writeResults(subresources, request, response);
         return null;
     }
 
@@ -93,7 +93,7 @@ public class SubResourceJSONService implements Controller, InitializingBean {
         }
     }
     
-    private void writeResults(List<SubResourcePermissions> subresources, HttpServletResponse response) throws Exception {
+    private void writeResults(List<SubResourcePermissions> subresources, HttpServletRequest request, HttpServletResponse response) throws Exception {
         JSONArray list = new JSONArray();
         for (SubResourcePermissions sr: subresources) {
             JSONObject o = new JSONObject();
@@ -122,22 +122,22 @@ public class SubResourceJSONService implements Controller, InitializingBean {
             }
             
             if(sr.isInheritedAcl()) {
-              title.append(" has inherited permissions (<a href=&quot;" + sr.getUri() 
+              title.append(" " + this.getLocalizedTitle(request, "report.collection-structure.inherited-permissions", null) + " (<a href=&quot;" + sr.getUri() 
                          + "?vrtx=admin&mode=permissions&quot;>edit</a>)<hr /><span class=&quot;inherited-permissions&quot;>");
             } else {
-              title.append(" has individual permissions (<a href=&quot;" + sr.getUri() 
+              title.append(" " + this.getLocalizedTitle(request, "report.collection-structure.own-permissions", null) + " (<a href=&quot;" + sr.getUri() 
                          + "?vrtx=admin&mode=permissions&quot;>edit</a>)<hr />");
               listClasses = "not-inherited";
             }
             
             if(sr.getRead() != "") {
-              title.append("Read: " + sr.getRead());   
+              title.append(this.getLocalizedTitle(request, "permissions.privilege.read", null) + ": " + sr.getRead());   
             }
             if(sr.getWrite() != "") {
-              title.append("<br />Write: " + sr.getWrite());  
+              title.append("<br />" + this.getLocalizedTitle(request, "permissions.privilege.write", null) + ": " + sr.getWrite());  
             }
             if(sr.getAdmin() != "") {
-              title.append("<br />Admin: " + sr.getAdmin());
+              title.append("<br />"+ this.getLocalizedTitle(request, "permissions.privilege.all", null) + ": " + sr.getAdmin());
             }
             
             if(sr.isInheritedAcl()) {
@@ -158,6 +158,14 @@ public class SubResourceJSONService implements Controller, InitializingBean {
         } finally {
             writer.close();
         }
+    }
+    
+    public String getLocalizedTitle(HttpServletRequest request, String key, Object[] params) {
+        org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(request);
+        if (params != null) {
+            return springRequestContext.getMessage(key, params);
+        }
+        return springRequestContext.getMessage(key);
     }
     
     @Override

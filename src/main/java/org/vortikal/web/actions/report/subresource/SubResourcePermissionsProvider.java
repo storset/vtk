@@ -128,9 +128,10 @@ public class SubResourcePermissionsProvider {
                     }
                     if(p.getName() == "pseudo:all") {
                       all = true;
+                      combined.append(pseudo);
                     }
-                    if(len == 1 || i == len - 1) {
-                      combined.append(pseudo);  
+                    if((len == 1 || i == len - 1) && !all) {
+                      combined.append(pseudo);
                     } else if(!all) {
                       combined.append(pseudo + ", ");
                     }

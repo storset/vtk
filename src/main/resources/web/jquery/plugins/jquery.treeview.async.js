@@ -121,8 +121,17 @@ $.fn.treeview = function(settings) {
 		toggle: function() {
 			var $this = $(this);
 			if ($this.hasClass("hasChildren")) {
+				var subFolder = $(this).find("a").attr("href").split("?")[0];
+				if($.browser.msie && $.browser.version <= 7) { // dirty but only way to fix broken IE 7 DOM
+				   var uioCutpoint = "uio.no/";
+				   var devCutpoint = ":9322/";
+				   var uioEnd = window.location.href.indexOf(uioCutpoint) + uioCutpoint.length;
+				   uioEnd = uioEnd > uioCutpoint.length ? uioEnd : window.location.href.indexOf(devCutpoint) + devCutpoint.length;
+				   var base = window.location.href.substring(0, uioEnd);
+				   subFolder = "/" + subFolder.replace(base, "");
+				}
 		        var ajaxUrl = {
-		  		  url: "?vrtx=admin&service=subresource-retrieve&uri=" + $(this).find("a").attr("href").split("?")[0]
+		  		  url: "?vrtx=admin&service=subresource-retrieve&uri=" + subFolder
 		  		};
 				$.extend(settings, ajaxUrl);
 				var childList = $this.removeClass("hasChildren").find("ul");

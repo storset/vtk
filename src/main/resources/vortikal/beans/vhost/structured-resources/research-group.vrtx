@@ -9,6 +9,7 @@ resourcetype research-group {
     content : html noextract,
     participantsUsernames : string multiple,
     participants : json (participantName:string, participantUrl:string) multiple,
+    numberOfParticipantsToDisplay : string,
     contactInfo : html noextract,
     tags : string multiple overrides tags,
     rssFeeds : json (rssTitle:string, rssUrl:string) multiple
@@ -16,6 +17,7 @@ resourcetype research-group {
   
   edit-rules {
     caption (size[small]),
+    numberOfParticipantsToDisplay (dropdown),
     group introImageAndCaption (picture, caption) (after introduction) vertical,
     tags tooltip (en : "(Tag1, Tag2, ...)", no : "(Emneord1, Emneord2, ...)", nn : "(Emneord1, Emneord2, ...)")
   }
@@ -173,6 +175,15 @@ resourcetype research-group {
     </html>
     ##
   }
+  
+  vocabulary {
+    numberOfParticipantsToDisplay {
+       en : (range = "25..1"),
+       no : (range = "25..1"),
+       nn : (range = "25..1")
+     }
+  }
+  
     
   localization {
     name : (en : "Name", no : "Navn", nn : "Navn"),
@@ -195,6 +206,10 @@ resourcetype research-group {
     contactInfoView : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
     header : (en : "Edit resarch group", no : "Rediger forskergruppe", nn : "Rediger forskargruppe"),
     publishedDate : (en : "Published", no :"Publisert", nn:"Publisert"),
+    numberOfParticipantsToDisplay : (
+      en : "Number of participants to show",
+      no : "Antall deltakere som skal vises",
+      nn : "Antall deltakarar som skal visast"),
     contentLastModifiedDate : (en : "Last modified", no : "Sist endret", nn : "Sist endra")
   }
 }

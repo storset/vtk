@@ -130,15 +130,18 @@ public class SubResourceJSONService implements Controller, InitializingBean {
             }
             
             String notAssigned = provider.getLocalizedTitle(request, "permissions.not.assigned", null).toLowerCase();
+            title.append("<table><tbody>");
             
             String read = sr.getRead().isEmpty() ? notAssigned : sr.getRead();
-            title.append(provider.getLocalizedTitle(request, "permissions.privilege.read", null) + ": " + read);
+            title.append("<tr><td>" + provider.getLocalizedTitle(request, "permissions.privilege.read", null) + ":</td><td>" + read + "</td></tr>");
             
             String write = sr.getWrite().isEmpty() ? notAssigned : sr.getWrite();
-            title.append("<br />" + provider.getLocalizedTitle(request, "permissions.privilege.write", null) + ": " + write);
+            title.append("<tr><td>" + provider.getLocalizedTitle(request, "permissions.privilege.write", null) + ":</td><td>" + write + "</td></tr>");
             
             String admin = sr.getAdmin().isEmpty() ? notAssigned : sr.getAdmin();
-            title.append("<br />" + provider.getLocalizedTitle(request, "report.collection-structure.admin-permission", null) + ": " + admin);
+            title.append("<tr><td>" + provider.getLocalizedTitle(request, "report.collection-structure.admin-permission", null) + ":</td><td>" + admin + "</td></tr>");
+            
+            title.append("</tbody></table>");
             
             if(sr.isInheritedAcl()) {
               title.append("</span>"); 

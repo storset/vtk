@@ -116,6 +116,11 @@ div.vrtx-report span.file a {
   background-image: url(images/file-allowed-for-all-not-inherited.gif);
 }
 
+.tip table td {
+  padding: 2px 6px 2px 0;
+  vertical-align: top;
+}
+
 /* ^ Tooltip */
 
 /* Help */

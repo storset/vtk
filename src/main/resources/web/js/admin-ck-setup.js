@@ -1,15 +1,15 @@
 var inlineToolbar = [ [ 'Source', 'PasteText', 'Link', 'Unlink', 'Bold',
-                        'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript',
+                        'Italic',  'Strike', 'Subscript', 'Superscript',
                           'SpecialChar' ] ];
 
 var withoutSubSuperToolbar = [ [ 'Source', 'PasteText', 'Link', 'Unlink', 'Bold',
-                       'Italic', 'Underline', 'Strike', 'SpecialChar' ] ];
+                       'Italic',  'Strike', 'SpecialChar' ] ];
 
 var completeToolbar = [ [ 'Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
                           'RemoveFormat', '-', 'Link', 'Unlink', 'Anchor',
                           'Image', 'CreateDiv', 'MediaEmbed', 'Table',
                           'HorizontalRule', 'SpecialChar' 
-                        ],['Format', 'Bold', 'Italic', 'Underline', 'Strike',
+                        ],['Format', 'Bold', 'Italic',  'Strike',
                            'Subscript', 'Superscript', 'NumberedList',
                            'BulletedList', 'Outdent', 'Indent', 'JustifyLeft',
                            'JustifyCenter', 'JustifyRight', 'TextColor',
@@ -19,14 +19,14 @@ var completeToolbarOld = [ [ 'Source', 'PasteText', 'PasteFromWord', '-', 'Undo'
                           'RemoveFormat', '-', 'Link', 'Unlink', 'Anchor',
                           'Image', 'CreateDiv', 'MediaEmbed', 'Table',
                           'HorizontalRule', 'SpecialChar' 
-                        ],['Format', 'Bold', 'Italic', 'Underline', 'Strike',
+                        ],['Format', 'Bold', 'Italic',  'Strike',
                            'Subscript', 'Superscript', 'NumberedList',
                            'BulletedList', 'Outdent', 'Indent', 'JustifyLeft',
                            'JustifyCenter', 'JustifyRight', 'TextColor',
                            'Maximize' ]];
 
 var commentsToolbar = [ [ 'Source', 'PasteText', 'Bold',
-                          'Italic', 'Underline', 'Strike', 'NumberedList',
+                          'Italic',  'Strike', 'NumberedList',
                           'BulletedList', 'Link', 'Unlink' ] ];
 
 function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, baseDocumentUrl, browsePath,

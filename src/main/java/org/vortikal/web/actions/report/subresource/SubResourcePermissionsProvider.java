@@ -85,32 +85,32 @@ public class SubResourcePermissionsProvider {
         List<PropertySet> results = rs.getAllResults();
         List<SubResourcePermissions> subresources = new ArrayList();
         
-        Resource res = null;
+        Resource r = null;
         
         for(PropertySet result : results) {
-          String resourceURI = result.getURI().toString();
-          String resourceName = result.getName();
-          String resourceTitle = "";
-          boolean resourceisCollection = false;
-          boolean resourceIsReadRestricted = false;
-          boolean resourceIsInheritedAcl = false;
-          String resourceRead = "";
-          String resourceWrite = "";
-          String resourceAdmin = "";
+          String rURI = result.getURI().toString();
+          String rName = result.getName();
+          String rTitle = "";
+          boolean rIsCollection = false;
+          boolean rIsReadRestricted = false;
+          boolean rIsInheritedAcl = false;
+          String rRead = "";
+          String rWrite = "";
+          String rAdmin = "";
           
           try {
-            res = this.repository.retrieve(token, result.getURI(), true);
-            if (res != null) {
-              resourceTitle = res.getTitle();
-              resourceisCollection = res.isCollection();
-              if(res.isReadRestricted()) {
-                resourceIsReadRestricted = true;
+            r = this.repository.retrieve(token, result.getURI(), true);
+            if (r != null) {
+              rTitle = r.getTitle();
+              rIsCollection = r.isCollection();
+              if(r.isReadRestricted()) {
+                rIsReadRestricted = true;
               }
-              if(res.isInheritedAcl()) {
-                resourceIsInheritedAcl = true;
+              if(r.isInheritedAcl()) {
+                rIsInheritedAcl = true;
               }
               
-              Acl acl = res.getAcl();
+              Acl acl = r.getAcl();
               for (Privilege action: Privilege.values()) {
                   String actionName = action.getName();
                   Principal[] privilegedUsers = acl.listPrivilegedUsers(action);
@@ -124,7 +124,7 @@ public class SubResourcePermissionsProvider {
                   for(Principal p : privilegedPseudoPrincipals) {
                     String pseudo = this.getLocalizedTitle(request, "pseudoPrincipal." + p.getName(), null);
                     if(p.getName() == "pseudo:owner") {
-                      pseudo += "&nbsp;(" + res.getOwner().getDescription() + ")";
+                      pseudo += "&nbsp;(" + r.getOwner().getDescription() + ")";
                     }
                     if(p.getName() == "pseudo:all") {
                       all = true;
@@ -156,11 +156,11 @@ public class SubResourcePermissionsProvider {
                     }
                   }
                   if(actionName == "read") {
-                    resourceRead = combined.toString();
+                    rRead = combined.toString();
                   } else if(actionName == "write") {
-                    resourceWrite = combined.toString();
+                    rWrite = combined.toString();
                   } else if(actionName == "all") {
-                    resourceAdmin = combined.toString();
+                    rAdmin = combined.toString();
                   }
               }
               
@@ -174,8 +174,8 @@ public class SubResourcePermissionsProvider {
           } catch (Exception e) {
             logger.error("Exception " + e.getMessage());
           }
-          subresources.add(new SubResourcePermissions(resourceURI, resourceName, resourceTitle, resourceisCollection, 
-                                                      resourceIsReadRestricted, resourceIsInheritedAcl, resourceRead, resourceWrite, resourceAdmin));
+          subresources.add(new SubResourcePermissions(rURI, rName, rTitle, rIsCollection, rIsReadRestricted, 
+                                                      rIsInheritedAcl, rRead, rWrite, rAdmin));
         }
         return subresources;
     }

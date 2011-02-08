@@ -97,16 +97,11 @@ public class SubResourceJSONService implements Controller, InitializingBean {
         JSONArray list = new JSONArray();
         for (SubResourcePermissions sr: subresources) {
             JSONObject o = new JSONObject();
-            
-            o.put("text", sr.getName());
-            o.put("uri", sr.getUri());
- 
+
             String listClasses = "";
             String spanClasses = "";
             
-            StringBuilder title = new StringBuilder();
-            
-            title.append("<span id=&quot;title-wrapper&quot;><strong id=&quot;title&quot;>" + sr.getName() + "</strong>");
+            // Add classes
             
             if(sr.isCollection()) {
               spanClasses = "folder";
@@ -120,6 +115,11 @@ public class SubResourceJSONService implements Controller, InitializingBean {
               spanClasses += " allowed-for-all";    
             }
             
+            // Generate title
+            
+            StringBuilder title = new StringBuilder();
+            title.append("<span id=&quot;title-wrapper&quot;><strong id=&quot;title&quot;>" + sr.getName() + "</strong>");
+            
             if(sr.isInheritedAcl()) {
               title.append(" " + provider.getLocalizedTitle(request, "report.collection-structure.inherited-permissions", null) + " (<a href=&quot;" + sr.getUri() 
                          + "?vrtx=admin&mode=permissions&quot;>edit</a>)</span><span class=&quot;inherited-permissions&quot;>");
@@ -128,6 +128,8 @@ public class SubResourceJSONService implements Controller, InitializingBean {
                          + "?vrtx=admin&mode=permissions&quot;>edit</a>)</span>");
               listClasses = "not-inherited";
             }
+            
+            // Generate table with permissions
             
             String notAssigned = provider.getLocalizedTitle(request, "permissions.not.assigned", null).toLowerCase();
             title.append("<table><tbody>");
@@ -147,10 +149,14 @@ public class SubResourceJSONService implements Controller, InitializingBean {
               title.append("</span>"); 
             }
             
+            // Add to JSON-object
+            o.put("text", sr.getName());
+            o.put("uri", sr.getUri());
             o.put("title", title.toString());
             o.put("listClasses", listClasses);
             o.put("spanClasses", spanClasses);
             
+            // Add object to JSON-array
             list.add(o);
         }
         response.setStatus(HttpServletResponse.SC_OK);

@@ -138,7 +138,7 @@ public class SubResourceJSONService implements Controller, InitializingBean {
             title.append("<br />" + provider.getLocalizedTitle(request, "permissions.privilege.write", null) + ": " + write);
             
             String admin = sr.getAdmin().isEmpty() ? notAssigned : sr.getAdmin();
-            title.append("<br />" + provider.getLocalizedTitle(request, "permissions.privilege.all", null) + ": " + admin);
+            title.append("<br />" + provider.getLocalizedTitle(request, "report.collection-structure.admin-permission", null) + ": " + admin);
             
             if(sr.isInheritedAcl()) {
               title.append("</span>"); 

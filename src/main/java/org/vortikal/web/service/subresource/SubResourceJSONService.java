@@ -106,7 +106,7 @@ public class SubResourceJSONService implements Controller, InitializingBean {
             
             StringBuilder title = new StringBuilder();
             
-            title.append("<strong id=&quot;title&quot;>" + sr.getName() + "</strong>");
+            title.append("<span id=&quot;title-wrapper&quot;><strong id=&quot;title&quot;>" + sr.getName() + "</strong>");
             
             if(sr.isCollection()) {
               spanClasses = "folder";
@@ -122,10 +122,10 @@ public class SubResourceJSONService implements Controller, InitializingBean {
             
             if(sr.isInheritedAcl()) {
               title.append(" " + provider.getLocalizedTitle(request, "report.collection-structure.inherited-permissions", null) + " (<a href=&quot;" + sr.getUri() 
-                         + "?vrtx=admin&mode=permissions&quot;>edit</a>)<hr /><span class=&quot;inherited-permissions&quot;>");
+                         + "?vrtx=admin&mode=permissions&quot;>edit</a>)</span><span class=&quot;inherited-permissions&quot;>");
             } else {
               title.append(" " + provider.getLocalizedTitle(request, "report.collection-structure.own-permissions", null) + " (<a href=&quot;" + sr.getUri() 
-                         + "?vrtx=admin&mode=permissions&quot;>edit</a>)<hr />");
+                         + "?vrtx=admin&mode=permissions&quot;>edit</a>)</span>");
               listClasses = "not-inherited";
             }
             

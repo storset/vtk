@@ -91,6 +91,14 @@ div.vrtx-report span.file a {
   padding-left: 18px;
 }
 
+.tip.file #title-wrapper,
+.tip.folder #title-wrapper {
+  display: block;
+  padding-bottom: 5px;
+  margin-bottom: 5px;
+  border-bottom: 1px solid #aaa;
+}
+
 .tip.allowed-for-all.folder {
   background-image: url(images/folder-closed-allowed-for-all.gif);
 }

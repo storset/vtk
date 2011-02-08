@@ -76,7 +76,7 @@ div.vrtx-report span.file a {
   box-shadow: 2px 2px 11px #666;*/
 }
 
-.tip .inherited-permissions {
+.tip .inherited-permissions table td {
   color: #999;
 }
 

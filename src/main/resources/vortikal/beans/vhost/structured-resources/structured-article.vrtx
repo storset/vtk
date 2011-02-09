@@ -23,7 +23,7 @@ resourcetype structured-article : structured-document {
   }
 
   view-components {
-
+  
     author {
       ##
       [def authors resource-prop(".", "author")]
@@ -37,44 +37,7 @@ resourcetype structured-article : structured-document {
       ##
     }
     
-    related-content-in-additional-column {
-      ##
-      [resource-props "."]
-      [def document structured-document()]
-      [def thehideAdditionalContent document.properties.hideAdditionalContent]
-      [def theRelated-content document.properties.related-content]
-
-      [if (thehideAdditionalContent = "false")]
-        [if theRelated-content != null]
-          <div id="vrtx-additional-content">
-            <div id="vrtx-related-content">
-              [val theRelated-content # unescaped]
-            </div>
-          </div>
-        [endif]
-      [endif]
-      ##
-    }
-    
-  related-content-in-main-column {
-      ##
-      [resource-props "."]
-      [def document structured-document()]
-      [def thehideAdditionalContent document.properties.hideAdditionalContent]
-      [def theRelated-content document.properties.related-content]
-      
-      [if (thehideAdditionalContent = "true")]
-          [if theRelated-content != null]
-            <div id="vrtx-related-content">
-              [val theRelated-content # unescaped]
-            </div>
-          [endif]
-      [endif]
-      ##
-    }
-    
   }
-
 
   view {
     ##
@@ -125,9 +88,6 @@ resourcetype structured-article : structured-document {
     author: (en : "Author", no : "Forfatter", nn : "Forfattar"),
     published-date: (en : "Publishing time", no : "Publiseringstidspunkt", nn : "Publiseringstidspunkt"),
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
-    hideAdditionalContent : (en : "Hide right-column", no : "Skjul høyrekolonne", nn : "Skjul høyrekolonne"),
-    related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold"),
-    relatedContent : (en : "Related content (default as right-column)", no : "Relatert innhold (default som høyrekolonne)", nn : "Relatert innhold (default som høyrekolonne)"),
     header : (en : "Edit article", no : "Rediger artikkel", nn : "Rediger artikkel")
   }
 }

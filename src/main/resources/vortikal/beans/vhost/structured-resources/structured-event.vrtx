@@ -6,7 +6,9 @@ resourcetype structured-event : structured-document {
     location : string,
     mapurl : string,
     organizers : json (organizer:string, organizer-url:string) multiple,
-    tags : string multiple overrides tags
+    tags : string multiple overrides tags,
+    related-content : html noextract,
+    hideAdditionalContent : boolean defaultvalue("false")
   }
 
   edit-rules {
@@ -75,6 +77,7 @@ resourcetype structured-event : structured-document {
             [call "comp:introduction-image"]
             [call "json:field" {"select":"content"}]
             [call "comp:organizer"]
+            [call "comp:related-content-in-main-column"]
             [call "resource:tags"]
             [call "comp:vrtx-date-info"]
             <div class="vrtx-social-components">
@@ -83,10 +86,19 @@ resourcetype structured-event : structured-document {
             </div>
             [call "resource:comments"]
           </div>
+          [call "comp:related-content-in-additional-column"]
        </div>
       </body>
     </html>
     ##
+  }
+  
+  vocabulary {
+    hideAdditionalContent {
+      en : ("true" = "Yes", "false" = "No"),
+      no : ("true" = "Ja", "false" = "Nei"),
+      nn : ("true" = "Ja", "false" = "Nei")
+    }
   }
   
   localization {

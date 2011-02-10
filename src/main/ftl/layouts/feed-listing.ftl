@@ -2,7 +2,7 @@
 <#if feed.entries?size &gt; 0 || conf.includeIfEmpty>
 <div class="vrtx-feed <#if conf.itemPicture?exists >with-images</#if>">
   <#if overrideFeedTitle?exists>
-  	<a class="feed-title" href="${feed.link}">${overrideFeedTitle?html}</a>
+  	<a class="feed-title" href="${feed.link}">${overrideFeedTitle}</a>
   <#elseif conf.feedTitle?exists>
     <a class="feed-title" href="${feed.link}">${feed.title?html}</a> 
   <#elseif conf.feedTitleValue?exists>

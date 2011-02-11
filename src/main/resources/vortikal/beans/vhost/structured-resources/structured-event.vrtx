@@ -8,7 +8,7 @@ resourcetype structured-event : structured-document {
     organizers : json (organizer:string, organizer-url:string) multiple,
     tags : string multiple overrides tags,
     related-content : html noextract,
-    hideAdditionalContent : boolean defaultvalue("false")
+    hideAdditionalContentEvent : boolean defaultvalue("false")
   }
 
   edit-rules {
@@ -56,6 +56,42 @@ resourcetype structured-event : structured-document {
       [endif]
       ##
     }
+    
+    related-content-in-additional-column {
+      ##
+      [resource-props "."]
+      [def document structured-document()]
+      [def thehideAdditionalContent document.properties.hideAdditionalContentEvent]
+      [def theRelated-content document.properties.related-content]
+
+      [if (thehideAdditionalContent = "false")]
+        [if theRelated-content != null]
+          <div id="vrtx-additional-content">
+            <div id="vrtx-related-content">
+              [val theRelated-content # unescaped]
+            </div>
+          </div>
+        [endif]
+      [endif]
+      ##
+    }
+    
+    related-content-in-main-column {
+      ##
+      [resource-props "."]
+      [def document structured-document()]
+      [def thehideAdditionalContent document.properties.hideAdditionalContentEvent]
+      [def theRelated-content document.properties.related-content]
+      
+      [if (thehideAdditionalContent = "true")]
+          [if theRelated-content != null]
+            <div id="vrtx-related-content">
+              [val theRelated-content # unescaped]
+            </div>
+          [endif]
+      [endif]
+      ##
+    }
   }
   
   view {
@@ -68,7 +104,7 @@ resourcetype structured-event : structured-document {
       </head>
       <body id="vrtx-structured-event">
        <div id="vrtx-content">
-         <div id="vrtx-main-content" class="vrtx-hide-additional-content-[call "resource:property" {"id":"resource:hideAdditionalContent"}]">
+         <div id="vrtx-main-content" class="vrtx-hide-additional-content-[call "resource:property" {"id":"resource:hideAdditionalContentEvent"}]">
             <h1>[call "comp:title"]</h1>
             [call "comp:introduction"]
             <div class="vrtx-byline">
@@ -94,7 +130,7 @@ resourcetype structured-event : structured-document {
   }
   
   vocabulary {
-    hideAdditionalContent {
+    hideAdditionalContentEvent {
       en : ("true" = "Yes", "false" = "No"),
       no : ("true" = "Ja", "false" = "Nei"),
       nn : ("true" = "Ja", "false" = "Nei")
@@ -112,6 +148,9 @@ resourcetype structured-event : structured-document {
     organizer-and : (en: "and", no : "og", nn : "og"),
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
     timeAndPlace : (en : "Time and place", no : "Tid og sted", nn : "Tid og stad"),
+    hideAdditionalContentEvent : (en : "Hide right-column", no : "Skjul høyrekolonne", nn : "Skjul høyrekolonne"),
+    related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold"),
+    relatedContent : (en : "Related content (default as right-column)", no : "Relatert innhold (default som høyrekolonne)", nn : "Relatert innhold (default som høyrekolonne)"),
     header : (en : "Edit event", no : "Rediger arrangement", nn : "Rediger arrangement")
   }
 }

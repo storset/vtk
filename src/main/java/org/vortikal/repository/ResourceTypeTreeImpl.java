@@ -64,7 +64,8 @@ import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.repository.resourcetype.ValueFormatterRegistry;
 
 
-public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContextAware, ResourceTypeTree {
+public class ResourceTypeTreeImpl 
+    implements ResourceTypeTree, InitializingBean, ApplicationContextAware {
 
     private static Log logger = LogFactory.getLog(ResourceTypeTreeImpl.class);
     
@@ -183,6 +184,7 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
         propDef.setName(name);
         propDef.setValueFactory(this.valueFactory);
         propDef.setValueFormatterRegistry(this.valueFormatterRegistry);
+        
         propDef.afterPropertiesSet();
         return propDef;
     }
@@ -215,7 +217,7 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
         return children;
     }
 
-    public List<String> getResourceTypeDescendants(String name) {
+    public List<String> getDescendants(String name) {
          return this.resourceTypeDescendantNames.get(name);
     }
 

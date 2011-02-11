@@ -83,7 +83,7 @@ public class HierarchicalTermQueryBuilder<T> implements QueryBuilder {
         TermsFilter tf = new TermsFilter();
         tf.addTerm(new Term(this.fieldName, this.term.toString()));
 
-        List<T> descendantNames = this.hierarchicalVocabulary.getResourceTypeDescendants(this.term);
+        List<T> descendantNames = this.hierarchicalVocabulary.getDescendants(this.term);
         if (descendantNames != null && !descendantNames.isEmpty()) {
             for (T descendantName: descendantNames) {
                 tf.addTerm(new Term(this.fieldName, descendantName.toString()));

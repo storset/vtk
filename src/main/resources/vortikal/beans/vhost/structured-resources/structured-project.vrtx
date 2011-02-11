@@ -196,9 +196,9 @@ resourcetype structured-project {
      }
      
     numberOfParticipantsToDisplay {
-       en : (range = "25..1"),
-       no : (range = "25..1"),
-       nn : (range = "25..1")
+       en : (range = "1..25"),
+       no : (range = "1..25"),
+       nn : (range = "1..25")
      }
   }
   

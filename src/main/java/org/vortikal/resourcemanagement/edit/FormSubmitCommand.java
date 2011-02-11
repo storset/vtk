@@ -40,6 +40,7 @@ import org.vortikal.resourcemanagement.EditablePropertyDescription;
 import org.vortikal.resourcemanagement.JSONPropertyAttributeDescription;
 import org.vortikal.resourcemanagement.JSONPropertyDescription;
 import org.vortikal.resourcemanagement.PropertyDescription;
+import org.vortikal.resourcemanagement.SimplePropertyDescription;
 import org.vortikal.resourcemanagement.StructuredResource;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.resourcemanagement.EditRule.EditRuleType;
@@ -58,11 +59,17 @@ public class FormSubmitCommand extends UpdateCancelCommand {
         this.listComponentServiceURL = listComponentServiceURL;
         this.resource = resource;
         StructuredResourceDescription type = resource.getType();
+
         for (PropertyDescription def : type.getAllPropertyDescriptions()) {
-            if (def instanceof EditablePropertyDescription) {
+            if (def instanceof SimplePropertyDescription) {
+                SimplePropertyDescription editable = (SimplePropertyDescription) def;
+                FormElementBox elementBox = new FormElementBox(def.getName());
+                elementBox.addFormElement(new FormElement(editable, null, resource.getProperty(def.getName()),editable.getDefaultValue()));
+                this.elements.add(elementBox);
+            } else if (def instanceof EditablePropertyDescription) {
                 EditablePropertyDescription editable = (EditablePropertyDescription) def;
                 FormElementBox elementBox = new FormElementBox(def.getName());
-                elementBox.addFormElement(new FormElement(editable, null, resource.getProperty(def.getName())));
+                elementBox.addFormElement(new FormElement(editable, null, resource.getProperty(def.getName()),null));
                 this.elements.add(elementBox);
             }
         }

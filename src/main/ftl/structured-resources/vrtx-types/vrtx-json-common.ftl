@@ -10,8 +10,12 @@
 
 <#macro printPropertyEditView form elem locale>
     <#assign localizedTitle = form.resource.getLocalizedMsg(elem.name, locale, null) />
-    
+
+  
+
     <#switch elem.description.type>
+
+
       <#case "string">
         <#assign fieldSize="40" />
         <#if elem.description.edithints?exists && elem.description.edithints['size']?exists >
@@ -36,6 +40,7 @@
           tooltip=form.resource.getLocalizedTooltip(elem.name, locale)
           valuemap=elem.description.getValuemap(locale)
           dropdown=dropdown
+          defaultValue=	elem.getDefaultValue()   
           />
         <#break>
       <#case "simple_html">
@@ -77,6 +82,7 @@
           classes=elem.name
           description=elem.description 
           tooltip=form.resource.getLocalizedTooltip(elem.name, locale)
+          defaultValue=elem.getDefaultValue()   
           />
         <#break>
       <#case "image_ref">

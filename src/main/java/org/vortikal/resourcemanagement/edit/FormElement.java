@@ -41,11 +41,13 @@ public class FormElement {
     private EditablePropertyDescription description;
     private ValidationError error;
     private Object value;
+    private Object defaultValue;
 
-    public FormElement(EditablePropertyDescription description, ValidationError error, Object value) {
+    public FormElement(EditablePropertyDescription description, ValidationError error, Object value, Object defaultValue) {
         this.description = description;
         this.error = error;
         this.value = value;
+        this.defaultValue = defaultValue;
     }
 
     public String getName() {
@@ -111,6 +113,14 @@ public class FormElement {
 
     public boolean valueIsList() {
         return this.value instanceof List<?>;
+    }
+
+    public void setDefaultValue(Object defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
+    public Object getDefaultValue() {
+        return defaultValue;
     }
 
 }

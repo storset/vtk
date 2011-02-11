@@ -1,5 +1,8 @@
-<#macro printPropertyEditView title inputFieldName description value="true" tooltip="" classes="">
+<#macro printPropertyEditView title inputFieldName description value="" tooltip="" classes="" defaultValue="true">
 <#assign locale = springMacroRequestContext.getLocale() />
+<#if value=="" >
+<#local value = defaultValue />
+</#if>
 <div class="vrtx-radio ${classes}">
   <label for="${inputFieldName}">${title}</label><#if "${tooltip}" != ""><div class="tooltip">${tooltip}</div></#if>
   <div class="vrtx-radio-buttons">

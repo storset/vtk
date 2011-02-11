@@ -1,14 +1,17 @@
-<#macro printPropertyEditView title inputFieldName value="" tooltip="" classes="" inputFieldSize=20 valuemap="" dropdown=false>
+<#macro printPropertyEditView title inputFieldName value="" tooltip="" classes="" inputFieldSize=20 valuemap="" dropdown=false defaultValue="">
 <div class="vrtx-string ${classes}">
   <label for="${inputFieldName}">${title}</label>
   <div class="inputfield">
   <#if dropdown && valuemap?exists && valuemap?is_hash>
+  <#if value=="" >
+  <#local value=defaultValue />
+  </#if> 
   <select name="${inputFieldName}" id="${inputFieldName}">
     <#list valuemap?keys as key>
     <#if key = "range">
       <#local rangeList = valuemap[key] />
       <#list rangeList as rangeEntry >
-        <option value="${rangeEntry?html}" <#if value == rangeEntry?string> selected </#if>>${rangeEntry}</option>
+        <option value="<#if rangeEntry?string != defaultValue>${rangeEntry?html}</#if>" <#if value == rangeEntry?string> selected </#if>>${rangeEntry}</option>
       </#list>
     <#else>
       <#if value != "">

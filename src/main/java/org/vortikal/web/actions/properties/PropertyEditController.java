@@ -46,7 +46,6 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.vortikal.repository.HierarchicalVocabulary;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
@@ -129,8 +128,6 @@ public class PropertyEditController extends SimpleFormController
     private String propertyListModelName;
     private String propertyMapModelName;
 
-    private Service vocabularyChooserService;
-
     private PrincipalManager principalManager;
 
     @Required public void setPropertyListModelName(String propertyListModelName) {
@@ -211,22 +208,14 @@ public class PropertyEditController extends SimpleFormController
 
         Vocabulary<Value> vocabulary = definition.getVocabulary();
         if (vocabulary != null) {
-            if ((vocabulary instanceof HierarchicalVocabulary<?>) && this.vocabularyChooserService != null) {
-                hierarchicalHelpUrl = this.vocabularyChooserService.constructLink(resource, securityContext.getPrincipal(), urlParameters);
-            } else {
-                Value[] definitionAllowedValues = vocabulary.getAllowedValues();
-                formAllowedValues = new ArrayList<String>();
-                
-                if (!definition.isMandatory()) {
-                    formAllowedValues.add("");
-                }
-                
-                for (Value v : definitionAllowedValues) {
-                    formAllowedValues.add(v.toString());
-                }
+            Value[] definitionAllowedValues = vocabulary.getAllowedValues();
+            formAllowedValues = new ArrayList<String>();
+            if (!definition.isMandatory()) {
+                formAllowedValues.add("");
             }
-
-
+            for (Value v : definitionAllowedValues) {
+                formAllowedValues.add(v.toString());
+            }
         }
         
         Service service = requestContext.getService();
@@ -610,10 +599,6 @@ public class PropertyEditController extends SimpleFormController
         }
 
         return propDef.getNamespace().getUri().equals(inputNamespace);
-    }
-
-    public void setVocabularyChooserService(Service vocabularyChooserService) {
-        this.vocabularyChooserService = vocabularyChooserService;
     }
 
     @Required

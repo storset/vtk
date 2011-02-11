@@ -68,7 +68,7 @@ resourcetype structured-event : structured-document {
       </head>
       <body id="vrtx-structured-event">
        <div id="vrtx-content">
-         <div id="vrtx-main-content">
+         <div id="vrtx-main-content" class="vrtx-hide-additional-content-[call "resource:property" {"id":"resource:hideAdditionalContent"}]">
             <h1>[call "comp:title"]</h1>
             [call "comp:introduction"]
             <div class="vrtx-byline">

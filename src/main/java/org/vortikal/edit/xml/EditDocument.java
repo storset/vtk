@@ -54,8 +54,8 @@ import org.jdom.output.XMLOutputter;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.Resource;
 import org.vortikal.repository.Repository.Depth;
+import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
@@ -115,6 +115,7 @@ public class EditDocument extends Document {
 
         /* turn on schema support */
         builder.setFeature("http://apache.org/xml/features/validation/schema", true);
+
 
         builder.setXMLFilter(new XMLSpaceCorrectingXMLFilter());
 

@@ -114,7 +114,7 @@ public class MockResourceTypeTree implements ResourceTypeTree {
     public void registerDynamicResourceType(PrimaryResourceTypeDefinition def) {
     }
 
-    public List<String> getResourceTypeDescendants(String entry) {
+    public List<String> getDescendants(String entry) {
         return null;
     }
 

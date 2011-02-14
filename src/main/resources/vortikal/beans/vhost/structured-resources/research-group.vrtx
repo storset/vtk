@@ -9,7 +9,7 @@ resourcetype research-group {
     content : html noextract,
     participantsUsernames : string multiple,
     participants : json (participantName:string, participantUrl:string) multiple,
-    numberOfParticipantsToDisplay : string,
+    numberOfParticipantsToDisplay : string defaultvalue("10"),
     contactInfo : html noextract,
     tags : string multiple overrides tags,
     rssFeeds : json (rssTitle:string, rssUrl:string) multiple
@@ -178,9 +178,9 @@ resourcetype research-group {
   
   vocabulary {
     numberOfParticipantsToDisplay {
-       en : (range = "25..1"),
-       no : (range = "25..1"),
-       nn : (range = "25..1")
+       en : (range = "1..25"),
+       no : (range = "1..25"),
+       nn : (range = "1..25")
      }
   }
   

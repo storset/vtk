@@ -415,7 +415,7 @@
     <!-- OpenID -->
     <dependency>
       <groupId>org.openid4java</groupId>
-      <artifactId>openid4java</artifactId>
+      <artifactId>openid4java-consumer</artifactId>
       <version>0.9.5</version>
     </dependency>
 

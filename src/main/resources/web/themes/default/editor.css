@@ -161,7 +161,8 @@ div#vrtx-resource\.importance {
   clear: left;
 }
 
-div#vrtx-resource\.hidden {
+div#vrtx-resource\.hidden,
+div#vrtx-resource\.hide-additional-content {
   float: left;
   clear: left;
   margin: 0.5em 0 1em 0;
@@ -169,19 +170,20 @@ div#vrtx-resource\.hidden {
 }
 
 /* Override breaks in options */
-div#vrtx-resource\.hidden br {
+div#vrtx-resource\.hidden br,
+div#vrtx-resource\.hide-additional-content br {
   display: none;
 }
 
-div#vrtx-resource\.hidden #resource\.hidden\.true {
+div#vrtx-resource\.hidden #resource\.hidden\.true,
+div#vrtx-resource\.hidden #resource\.hidden\.unspecified,
+div#vrtx-resource\.hide-additional-content #resource\.hide-additional-content\.false,
+div#vrtx-resource\.hide-additional-content #resource\.hide-additional-content\.unspecified {
   float: left;
 }
 
-div#vrtx-resource\.hidden #resource\.hidden\.unspecified {
-  float: left;
-}
-
-label.resource\.hidden {
+label.resource\.hidden,
+label.resource\.hide-additional-content {
   float: left;
   margin-right: 0px;
 }

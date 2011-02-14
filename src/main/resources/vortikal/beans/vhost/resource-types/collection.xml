@@ -16,6 +16,7 @@
         <ref bean="introductionMixinResourceTypeDef" />
         <ref bean="visualProfileMixinResourceTypeDef" />
         <ref bean="navigationMixinResourceTypeDef" />
+        <ref bean="additionalContentMixinResourceTypeDef" />
       </list>
     </property>
     <property name="parentTypeDefinition" ref="resourceResourceTypeDefinition" />

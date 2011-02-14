@@ -474,6 +474,8 @@
             <ref bean="manuallyApproveFromPropDef" />
             <ref bean="collection.hideLastModifiedPropDef" />
             <ref bean="collection.hideIntroductionPropDef" />
+            <ref bean="additionalContentPropDef" />
+            <ref bean="additionalContentHidePropDef" />
           </list>
         </property>
       </bean>
@@ -524,6 +526,8 @@
             <ref bean="aggregationPropDef" />
             <ref bean="recursiveAggregationPropDef" />
             <ref bean="projectListing.displayTypePropDef" />
+            <ref bean="additionalContentPropDef" />
+            <ref bean="additionalContentHidePropDef" />
           </list>
         </property>
       </bean>
@@ -549,6 +553,8 @@
             <ref bean="aggregationPropDef" />
             <ref bean="recursiveAggregationPropDef" />
             <ref bean="researchGroupListing.displayTypePropDef" />
+            <ref bean="additionalContentPropDef" />
+            <ref bean="additionalContentHidePropDef" />
           </list>
         </property>
       </bean>
@@ -605,6 +611,8 @@
             <ref bean="articleListing.hideIntroductionPropDef" />
             <ref bean="articleListing.hideIntroductionImagePropDef" />
             <ref bean="hideNumberOfCommentsPropDef" />
+            <ref bean="additionalContentPropDef" />
+            <ref bean="additionalContentHidePropDef" />
           </list>
         </property>
       </bean>
@@ -628,6 +636,8 @@
             <ref bean="hiddenPropDef" />
             <ref bean="pageLimitPropDef" />
             <ref bean="blogListing.recursiveListingPropDef" />
+            <ref bean="additionalContentPropDef" />
+            <ref bean="additionalContentHidePropDef" />
           </list>
         </property>
       </bean>
@@ -660,6 +670,8 @@
             <ref bean="hideNumberOfCommentsPropDef" />
             <ref bean="eventListing.displayTypePropDef" />
             <ref bean="eventListing.eventTypeTitlePropDef" />
+            <ref bean="additionalContentPropDef" />
+            <ref bean="additionalContentHidePropDef" />
           </list>
         </property>
       </bean>

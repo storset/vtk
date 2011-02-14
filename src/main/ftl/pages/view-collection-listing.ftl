@@ -131,6 +131,16 @@
        </div>
      </#if>
 
+    <#-- regular additional content -->
+    <#assign additionalContent = vrtx.propValue(resource, "additional-content") />
+    <#assign hideAdditionalContent = vrtx.propValue(resource, "hide-additional-content")?string />
+    <#if additionalContent?has_content && collection.resourceType != 'image-listing'
+         && !isEventCalendarListing && !isBlogListing>
+      <#if (hideAdditionalContent?exists && hideAdditionalContent == 'false')>
+        <div id="vrtx-main-content">
+      </#if>
+    </#if>
+
      <#-- List resources: -->
   	 <!--stopindex-->
      <#if collection.resourceType = 'event-listing'>
@@ -161,7 +171,7 @@
            <#elseif collection.resourceType = 'blog-listing'>
               <@blogs.displayBlogs searchComponent collection />
            <#else>
-             <@coll.displayCollection collectionListing=searchComponent />
+             <@coll.displayColle<@vrtx.invokeComponentRefs additionalContent />ction collectionListing=searchComponent />
            </#if>
          </#list>
        </#if>
@@ -184,6 +194,17 @@
 	    </#if>
      </div>
      <@projects.projectListingViewServiceURL />
+     <#if additionalContent?has_content && collection.resourceType != 'image-listing'
+          && !isEventCalendarListing && !isBlogListing>
+       <#if (hideAdditionalContent?exists && hideAdditionalContent == 'false')>
+         </div>
+         <div id="vrtx-additional-content">
+           <@vrtx.invokeComponentRefs additionalContent />
+         </div>
+       <#else>
+         <@vrtx.invokeComponentRefs additionalContent /> 
+       </#if>
+     </#if>
      <#if isEventCalendarListing>
        </div>
     </#if>

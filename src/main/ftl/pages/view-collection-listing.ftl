@@ -171,7 +171,7 @@
            <#elseif collection.resourceType = 'blog-listing'>
               <@blogs.displayBlogs searchComponent collection />
            <#else>
-             <@coll.displayColle<@vrtx.invokeComponentRefs additionalContent />ction collectionListing=searchComponent />
+             <@coll.displayCollection collectionListing=searchComponent />
            </#if>
          </#list>
        </#if>

@@ -184,6 +184,9 @@
     <constructor-arg>
       <bean class="org.vortikal.resourcemanagement.view.StructuredResourceDisplayController$ComponentSupport" />
     </constructor-arg>
+    <constructor-arg>
+      <ref bean="structuredResources.defaultFunctions" />
+    </constructor-arg>
   </bean>
 
   <bean id="structuredResources.defaultFunctions"
@@ -203,6 +206,7 @@
         <ref bean="structuredResources.searchFunction" />
         <ref bean="structuredResources.viewURLFunction" />
         <ref bean="structuredResources.toDateFunction" />
+        <ref bean="structuredResources.localizedFunction" />
       </set>
     </property>
   </bean>
@@ -277,6 +281,14 @@
     </constructor-arg>
   </bean>
 
+  <bean id="structuredResources.localizedFunction" class="org.vortikal.resourcemanagement.view.tl.LocalizationFunction">
+    <constructor-arg>
+      <bean class="org.vortikal.text.tl.Symbol">
+        <constructor-arg value="localized"/>
+      </bean>
+    </constructor-arg>
+    <constructor-arg value="structured-resource" />
+  </bean>
 
 
 

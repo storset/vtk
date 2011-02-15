@@ -35,18 +35,20 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.resourcemanagement.view.StructuredResourceDisplayController;
 import org.vortikal.text.html.HtmlPage;
-import org.vortikal.text.tl.Token;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.DirectiveNodeFactory;
 import org.vortikal.text.tl.DirectiveParseContext;
 import org.vortikal.text.tl.Node;
+import org.vortikal.text.tl.Token;
 import org.vortikal.text.tl.expr.Expression;
+import org.vortikal.text.tl.expr.Function;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.ComponentResolver;
 import org.vortikal.web.decorating.DecoratorComponent;
@@ -60,12 +62,14 @@ public class ComponentInvokerNodeFactory implements DirectiveNodeFactory {
         ComponentInvokerNodeFactory.class.getName() + ".ComponentStack";
     
     private ComponentSupport componentSupport;
+    private Set<Function> functions;
     
-    public ComponentInvokerNodeFactory(ComponentSupport componentSupport) {
+    public ComponentInvokerNodeFactory(ComponentSupport componentSupport, Set<Function> functions) {
         if (componentSupport == null) {
             throw new IllegalArgumentException("Constructor argument is NULL");
         }
         this.componentSupport = componentSupport;
+        this.functions = functions;
     }
     
 
@@ -95,7 +99,7 @@ public class ComponentInvokerNodeFactory implements DirectiveNodeFactory {
         }
         
         final Token arg1 = args.remove(0);
-        final Expression expression = args.size() > 0 ? new Expression(args) : null;
+        final Expression expression = args.size() > 0 ? new Expression(this.functions, args) : null;
 
         return new Node() {
             @SuppressWarnings("unchecked")

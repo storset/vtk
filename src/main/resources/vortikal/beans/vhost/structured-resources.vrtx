@@ -3,6 +3,7 @@ include structured-resources/structured-article.vrtx
 include structured-resources/structured-event.vrtx
 include structured-resources/structured-document.vrtx
 include structured-resources/structured-project.vrtx
+include structured-resources/structured-master.vrtx
 include structured-resources/boxes.vrtx
 include structured-resources/frontpage.vrtx
 include structured-resources/featured-content.vrtx

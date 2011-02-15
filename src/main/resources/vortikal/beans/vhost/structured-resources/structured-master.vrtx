@@ -1,0 +1,189 @@
+resourcetype structured-master{
+
+  properties {
+    name : string,
+    title : derived (name) eval (name) overrides title,
+    status-available : boolean,
+    introduction : simple_html,
+    picture : image_ref,
+    caption : simple_html,
+    content : html noextract,
+    participantsUsernames : string multiple,
+    participants : json (participantName:string, participantUrl:string) multiple,
+    numberOfParticipantsToDisplay : string,
+    tags : string multiple overrides tags
+  }
+  
+  edit-rules {
+    caption (size[small]),
+    numberOfParticipantsToDisplay (dropdown),
+    group introImageAndCaption (picture, caption) (after introduction) vertical,
+    tags tooltip (en : "(Tag1, Tag2, ...)", no : "(Emneord1, Emneord2, ...)", nn : "(Emneord1, Emneord2, ...)")
+  }
+
+  scripts {
+    participantsUsernames multipleinputfields,
+    tags autocomplete (minChars : "1")
+  }
+    
+  view-components {
+  
+      introduction {
+      ##
+      [def intro resource-prop(".", "introduction")]
+      [if intro != null]
+        <div class="vrtx-introduction">[val intro # unescaped]</div>
+      [endif]
+      ##
+    }
+  
+    completed {
+      ##
+      [resource-props "."]
+      [def document structured-document()]
+      [def available document.properties.status-available]
+      [if (available = "false")]
+           ([localized "completed"])
+      [endif]
+      ##
+    }
+    
+    introduction-image {
+      ##
+      [def img-uri resource-prop(".", "picture")]
+      [def caption resource-prop(".", "caption")]
+      [def pixel-width null]
+      [def img null]
+      [def pixel-width null]
+      [def img-author null]
+      [def style null]
+      
+	  [if img-uri != null]
+      	[def img resource(img-uri)]      
+      [endif]
+      [if img != null] 
+	  	[def pixel-width resource-prop(img-uri, "pixelWidth")]
+	  	[def img-author resource-prop(img-uri, "authorName")]
+  	  [endif]
+  	  [if pixel-width != null]
+	  	[def style concat("width:", pixel-width, "px")]
+	  [endif]
+	  
+	  [if img-uri != null]
+	    [if pixel-width != null]  
+		  <div class="vrtx-introduction-image" style="[val style]">
+	    [else]
+		  <div class="vrtx-introduction-image">
+	    [endif]
+	  	
+	    [if caption != null]
+		  <img src="[val img-uri]" alt="[val caption # unescaped 'flattened']"/>
+	    [else]
+		  <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
+	    [endif]
+	  
+	    [if caption != null]
+	      <div class="vrtx-imagetext">
+	        <div class="vrtx-imagedescription">[val caption # unescaped]</div>
+	        [if img-author != null]
+	          <span class="vrtx-photo">
+	            <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val img-author]
+	          </span>
+	        [endif]
+	      </div>
+	    [elseif img-author != null]
+	      <div class="vrtx-imagetext">
+	        [if img-author != null]
+	          <span class="vrtx-photo">
+	            <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val img-author]
+	          </span>
+	        [endif]
+	      </div> 
+	    [endif]
+	    </div>
+	  [endif]
+      ##
+    }
+    
+     vrtx-date-info{
+      ##
+      [resource-props "."]
+      [if publish-date != null]
+        <div class="vrtx-date-info">
+        <span class="published-date-label">[localized "publishedDate"]</span> <span class="published-date">[val publish-date] </span>
+        [if publish-date < contentLastModified]
+          - <span class="last-modified-date">[localized "contentLastModifiedDate"]</span> <span class="last-modified-date">[val contentLastModified]</span>
+        [endif]
+        </div>
+      [endif]
+      ##
+    }
+  }
+
+  view {
+    ##    
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <title>[call "json:field" {"select":"name"}] [call "comp:completed"]</title>
+      </head>
+      <body id="vrtx-structured-project">
+        <div id="vrtx-content">
+          <div id="vrtx-main-content">
+            <h1>[call "json:field" {"select":"name"}] [call "comp:completed"]</h1>
+            [call "comp:introduction"]
+            [call "comp:introduction-image"]
+            [call "json:field" {"select":"content"}]
+            [call "resource:tags"]
+            [call "comp:vrtx-date-info"]
+          </div>
+          <div id="vrtx-additional-content">
+            [call "resource:person-list"]
+          </div>
+        </div>
+      </body>
+    </html>
+    ##
+  }
+  
+  vocabulary {
+     status-available {
+       en : ("true" = "Available", "false" = "Unavailable"),
+       no : ("true" = "Ledig", "false" = "Tatt"),
+       nn : ("true" = "Ledig", "false" = "Tatt")
+     }
+     
+    numberOfParticipantsToDisplay {
+       en : (range = "25..1"),
+       no : (range = "25..1"),
+       nn : (range = "25..1")
+     }
+  }
+  
+  localization {
+    name : (en : "Name", no : "Navn", nn : "Navn"),
+    introduction : (en : "Introduction",no : "Innledning", nn : "Innleiing"),
+    status-available : (en : "Status", no : "Status", nn : "Status"),
+    picture : (en: "Image", no: "Bilde", nn : "Bilete"),
+    introduction-image-alt : (en: "Image", en: "Bilde", en: "Bilete"),
+    caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
+    photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
+    participantsHeader : (en : "Supervisors", no : "Veiledere", nn : "Rettleiarar"),
+    participantsUsernames : (en : "Supervisors from UiO (enter the supervisor username)",no : "Veiledere fra UiO (fyll inn veilederens brukernavn)", nn :"Rettleiarar fra UiO (fyll inn rettleiarens brukernavn)"),
+    participants : (en : "Other supervisors", no : "Andre veiledere", nn : "Andre rettleiarar"),
+    participantName : (en : "Name",no : "Navn", nn :"Namn"),
+    participantUrl : (en : "Webaddress",no : "Webadresse", nn :"Webadresse"),
+    tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
+    content : (en : "Content", no :"Innhold",nn : "Innhold"),
+    contactInfo : (en : "Contact information", no : "Kontaktinformasjon", nn : "Kontaktinformasjon"),
+    contactInfoView : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
+    header : (en : "Edit master project", no : "Rediger masteroppgave", nn : "Rediger masteroppgåve"),
+    publishedDate : (en : "Published", no :"Publisert", nn:"Publisert"),
+    contentLastModifiedDate : (en : "Last modified", no : "Sist endret", nn : "Sist endra"),
+      numberOfParticipantsToDisplay : (
+      en : "Number of supervisors to show",
+      no : "Antall veiledere som skal vises",
+      nn : "Antall veiledarar som skal visast"),
+    completed : (en : "unavailable", no : "tatt", nn : "tatt")
+  }
+}

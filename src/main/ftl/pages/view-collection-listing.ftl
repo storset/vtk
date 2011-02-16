@@ -206,7 +206,9 @@
            </div>
          </div>
        <#else>
-         <@vrtx.invokeComponentRefs additionalContent /> 
+         <div id="vrtx-related-content">
+           <@vrtx.invokeComponentRefs additionalContent />
+         </div>
        </#if>
      </#if>
      <#if isEventCalendarListing>

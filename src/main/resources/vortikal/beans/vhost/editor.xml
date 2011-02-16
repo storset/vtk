@@ -452,7 +452,7 @@
 
   <bean id="editor.collectionResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager" parent="repositoryAware">
     <property name="htmlParser" ref="decorating.htmlParser" />
-    <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
+    <property name="htmlPropsFilter" ref="personResourceManager.htmlPropsFilter" />
     <property name="contentResourceType" ref="documentResourceTypeDefinition" />
     <property name="editPropertyProvider">
       <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
@@ -509,7 +509,7 @@
 
   <bean id="editor.projectResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager" parent="repositoryAware">
     <property name="htmlParser" ref="decorating.htmlParser" />
-    <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
+    <property name="htmlPropsFilter" ref="personResourceManager.htmlPropsFilter" />
     <property name="contentResourceType" ref="documentResourceTypeDefinition" />
     <property name="editPropertyProvider">
       <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
@@ -536,7 +536,7 @@
 
   <bean id="editor.researchGroupResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager" parent="repositoryAware">
     <property name="htmlParser" ref="decorating.htmlParser" />
-    <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
+    <property name="htmlPropsFilter" ref="personResourceManager.htmlPropsFilter" />
     <property name="contentResourceType" ref="documentResourceTypeDefinition" />
     <property name="editPropertyProvider">
       <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
@@ -587,7 +587,7 @@
 
   <bean id="editor.articleListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager" parent="repositoryAware">
     <property name="htmlParser" ref="decorating.htmlParser" />
-    <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
+    <property name="htmlPropsFilter" ref="personResourceManager.htmlPropsFilter" />
     <property name="contentResourceType" ref="documentResourceTypeDefinition" />
     <property name="editPropertyProvider">
       <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
@@ -621,7 +621,7 @@
 
   <bean id="editor.blogListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager" parent="repositoryAware">
     <property name="htmlParser" ref="decorating.htmlParser" />
-    <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
+    <property name="htmlPropsFilter" ref="personResourceManager.htmlPropsFilter" />
     <property name="contentResourceType" ref="documentResourceTypeDefinition" />
     <property name="editPropertyProvider">
       <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
@@ -645,7 +645,7 @@
 
   <bean id="editor.eventListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager" parent="repositoryAware">
     <property name="htmlParser" ref="decorating.htmlParser" />
-    <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
+    <property name="htmlPropsFilter" ref="personResourceManager.htmlPropsFilter" />
     <property name="contentResourceType" ref="documentResourceTypeDefinition" />
     <property name="editPropertyProvider">
       <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">

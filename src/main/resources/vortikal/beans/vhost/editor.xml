@@ -637,7 +637,6 @@
             <ref bean="pageLimitPropDef" />
             <ref bean="blogListing.recursiveListingPropDef" />
             <ref bean="additionalContentPropDef" />
-            <ref bean="additionalContentHidePropDef" />
           </list>
         </property>
       </bean>

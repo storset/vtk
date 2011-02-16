@@ -135,10 +135,10 @@
 </#if>
 
      <#-- XXX: Person listing "additional content" placed under introduction -->
-     <#assign additionalContent = vrtx.propValue(resource, "additionalContent", "", "pl") />
-     <#if additionalContent?has_content>
+     <#assign additionalContentPersonListing = vrtx.propValue(resource, "additionalContent", "", "pl") />
+     <#if additionalContentPersonListing?has_content>
        <div class="vrtx-additional-content">
-         <@vrtx.invokeComponentRefs additionalContent />
+         <@vrtx.invokeComponentRefs additionalContentPersonListing />
        </div>
      </#if>
 

@@ -123,7 +123,7 @@
   </#if> 
 </#if>
 
-     <#-- XXX: "additional content" (for person listing) -->
+     <#-- XXX: Person listing "additional content" placed under introduction -->
      <#assign additionalContent = vrtx.propValue(resource, "additionalContent", "", "pl") />
      <#if additionalContent?has_content>
        <div class="vrtx-additional-content">
@@ -131,7 +131,7 @@
        </div>
      </#if>
 
-    <#-- regular additional content -->
+    <#-- Regular "additional content" placed either at bottom or in right-column -->
     <#assign additionalContent = vrtx.propValue(resource, "additional-content") />
     <#assign hideAdditionalContent = vrtx.propValue(resource, "hide-additional-content")?string />
     <#if additionalContent?has_content && collection.resourceType != 'image-listing'
@@ -199,7 +199,9 @@
        <#if (hideAdditionalContent?exists && hideAdditionalContent == 'false')>
          </div>
          <div id="vrtx-additional-content">
-           <@vrtx.invokeComponentRefs additionalContent />
+           <div id="vrtx-related-content"> 
+             <@vrtx.invokeComponentRefs additionalContent />
+           </div>
          </div>
        <#else>
          <@vrtx.invokeComponentRefs additionalContent /> 

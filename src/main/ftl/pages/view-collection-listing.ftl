@@ -137,7 +137,8 @@
     <#if additionalContent?has_content && collection.resourceType != 'image-listing'
          && collection.resourceType != 'person-listing' && !isEventCalendarListing && !isBlogListing>
       <#if (hideAdditionalContent?exists && hideAdditionalContent == 'false')>
-        <div id="vrtx-main-content">
+        <div id="vrtx-content">
+          <div id="vrtx-main-content">
       </#if>
     </#if>
 
@@ -197,10 +198,11 @@
      <#if additionalContent?has_content && collection.resourceType != 'image-listing'
           && collection.resourceType != 'person-listing' && !isEventCalendarListing && !isBlogListing>
        <#if (hideAdditionalContent?exists && hideAdditionalContent == 'false')>
-         </div>
-         <div id="vrtx-additional-content">
-           <div id="vrtx-related-content"> 
-             <@vrtx.invokeComponentRefs additionalContent />
+           </div>
+           <div id="vrtx-additional-content">
+             <div id="vrtx-related-content"> 
+               <@vrtx.invokeComponentRefs additionalContent />
+             </div>
            </div>
          </div>
        <#else>

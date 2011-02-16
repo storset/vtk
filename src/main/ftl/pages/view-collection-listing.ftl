@@ -92,19 +92,18 @@
     <div id="vrtx-calendar-listing">
   </#if>
   
-<#if !isEventCalendarListing>
-
-    <#-- Regular "additional content" placed either at bottom or in right-column -->
-    <#assign additionalContent = vrtx.propValue(resource, "additional-content") />
-    <#assign hideAdditionalContent = vrtx.propValue(resource, "hide-additional-content")?string />
-    <#if additionalContent?has_content && collection.resourceType != 'image-listing'
-         && collection.resourceType != 'person-listing' && !isBlogListing>
-      <#if (hideAdditionalContent?exists && hideAdditionalContent == 'false')>
-        <div id="vrtx-content">
-          <div id="vrtx-main-content">
-      </#if>
+  <#-- Regular "additional content" placed either at bottom or in right-column -->
+  <#assign additionalContent = vrtx.propValue(resource, "additional-content") />
+  <#assign hideAdditionalContent = vrtx.propValue(resource, "hide-additional-content")?string />
+  <#if additionalContent?has_content && collection.resourceType != 'image-listing'
+       && collection.resourceType != 'person-listing' && !isEventCalendarListing && !isBlogListing>
+    <#if (hideAdditionalContent?exists && hideAdditionalContent == 'false')>
+      <div id="vrtx-content">
+        <div id="vrtx-main-content">
     </#if>
-
+  </#if>
+  
+<#if !isEventCalendarListing>
     <h1>${title}
       <@projects.completed />
       <#if page?has_content>

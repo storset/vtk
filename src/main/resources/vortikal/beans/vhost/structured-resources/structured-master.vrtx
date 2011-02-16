@@ -8,22 +8,22 @@ resourcetype structured-master{
     picture : image_ref,
     caption : simple_html,
     content : html noextract,
-    participantsUsernames : string multiple,
-    participants : json (participantName:string, participantUrl:string) multiple,
+    supervisorsUsernames : string multiple,
+    supervisors : json (supervisorName:string, supervisorUrl:string) multiple,
     credits: string,
-    numberOfParticipantsToDisplay : string,
+    numberOfSupervisorsToDisplay : string,
     tags : string multiple overrides tags
   }
   
   edit-rules {
     caption (size[small]),
-    numberOfParticipantsToDisplay (dropdown),
+    numberOfSupervisorsToDisplay (dropdown),
     group introImageAndCaption (picture, caption) (after introduction) vertical,
     tags tooltip (en : "(Tag1, Tag2, ...)", no : "(Emneord1, Emneord2, ...)", nn : "(Emneord1, Emneord2, ...)")
   }
 
   scripts {
-    participantsUsernames multipleinputfields,
+    supervisorsUsernames multipleinputfields,
     tags autocomplete (minChars : "1")
   }
     
@@ -154,7 +154,7 @@ resourcetype structured-master{
        nn : ("true" = "Ledig", "false" = "Tatt")
      }
      
-    numberOfParticipantsToDisplay {
+    numberOfSupervisorsToDisplay {
        en : (range = "25..1"),
        no : (range = "25..1"),
        nn : (range = "25..1")
@@ -169,11 +169,11 @@ resourcetype structured-master{
     introduction-image-alt : (en: "Image", en: "Bilde", en: "Bilete"),
     caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
     photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
-    participantsHeader : (en : "Supervisors", no : "Veiledere", nn : "Rettleiarar"),
-    participantsUsernames : (en : "Supervisors from UiO (enter the supervisor username)",no : "Veiledere fra UiO (fyll inn veilederens brukernavn)", nn :"Rettleiarar fra UiO (fyll inn rettleiarens brukernavn)"),
-    participants : (en : "Other supervisors", no : "Andre veiledere", nn : "Andre rettleiarar"),
-    participantName : (en : "Name",no : "Navn", nn :"Namn"),
-    participantUrl : (en : "Webaddress",no : "Webadresse", nn :"Webadresse"),
+    supervisorsHeader : (en : "Supervisors", no : "Veiledere", nn : "Rettleiarar"),
+    supervisorsUsernames : (en : "Supervisors from UiO (enter the supervisor username)",no : "Veiledere fra UiO (fyll inn veilederens brukernavn)", nn :"Rettleiarar fra UiO (fyll inn rettleiarens brukernavn)"),
+    supervisors : (en : "Other supervisors", no : "Andre veiledere", nn : "Andre rettleiarar"),
+    supervisorName : (en : "Name",no : "Navn", nn :"Namn"),
+    supervisorUrl : (en : "Webaddress",no : "Webadresse", nn :"Webadresse"),
     credits: (en : "Scope (credits)", no: "Omfang (studiepoeng)", nn: "Omfang (studiepoeng)"),
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
     content : (en : "Content", no :"Innhold",nn : "Innhold"),
@@ -182,7 +182,7 @@ resourcetype structured-master{
     header : (en : "Edit master project", no : "Rediger masteroppgave", nn : "Rediger masteroppgåve"),
     publishedDate : (en : "Published", no :"Publisert", nn:"Publisert"),
     contentLastModifiedDate : (en : "Last modified", no : "Sist endret", nn : "Sist endra"),
-      numberOfParticipantsToDisplay : (
+      numberOfSupervisorsToDisplay : (
       en : "Number of supervisors to show",
       no : "Antall veiledere som skal vises",
       nn : "Antall veiledarar som skal visast"),

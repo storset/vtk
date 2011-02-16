@@ -48,6 +48,8 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.actions.report.subresource.SubResourcePermissions;
 import org.vortikal.web.actions.report.subresource.SubResourcePermissionsProvider;
+import org.vortikal.web.service.Service;
+import org.vortikal.web.service.ServiceImpl;
 import org.vortikal.web.service.URL;
 
 public class SubResourceJSONService implements Controller, InitializingBean {
@@ -120,12 +122,15 @@ public class SubResourceJSONService implements Controller, InitializingBean {
             StringBuilder title = new StringBuilder();
             title.append("<span id=&quot;title-wrapper&quot;><strong id=&quot;title&quot;>" + sr.getName() + "</strong>");
             
+            Service s = new ServiceImpl();
+            String uriService = s.constructURL(Path.fromString(sr.getUri())).getPathRepresentation();
+
             if(sr.isInheritedAcl()) {
-              title.append(" " + provider.getLocalizedTitle(request, "report.collection-structure.inherited-permissions", null) + " (<a href=&quot;" + sr.getUri() 
-                         + "?vrtx=admin&mode=permissions&quot;>edit</a>)</span><span class=&quot;inherited-permissions&quot;>");
+              title.append(" " + provider.getLocalizedTitle(request, "report.collection-structure.inherited-permissions", null) + " (<a href=&quot;" + uriService
+                         + "&quot;>edit</a>)</span><span class=&quot;inherited-permissions&quot;>");
             } else {
-              title.append(" " + provider.getLocalizedTitle(request, "report.collection-structure.own-permissions", null) + " (<a href=&quot;" + sr.getUri() 
-                         + "?vrtx=admin&mode=permissions&quot;>edit</a>)</span>");
+              title.append(" " + provider.getLocalizedTitle(request, "report.collection-structure.own-permissions", null) + " (<a href=&quot;" + uriService 
+                         + "&quot;>edit</a>)</span>");
               listClasses = "not-inherited";
             }
             

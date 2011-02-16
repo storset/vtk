@@ -3,6 +3,7 @@
 <#macro displayBlogs blogListing collection>
 	<#assign introduction = vrtx.getIntroduction(collection) />
 	<#assign introductionImage = vrtx.propValue(collection, "picture") />
+	<#assign additionalContent = vrtx.propValue(collection, "additional-content") />
 	<div class="container">
 		<div class="main-article-listing">
 		<#if page == 1>
@@ -22,6 +23,11 @@
 		<div class="additional-information">
 			<@tagCloud.createTagCloud true />
 			<@listComments />
+			<#if additionalContent?has_content>
+			  <div id="vrtx-related-content">
+                <@vrtx.invokeComponentRefs additionalContent />
+			  </div>
+			</#if>
 		</div>
 	</div>
 </#macro>

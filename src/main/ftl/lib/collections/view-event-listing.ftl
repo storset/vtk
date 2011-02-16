@@ -167,6 +167,12 @@
       </script>
       <div type="text" id="datepicker"></div>
     </div>
+    <#assign additionalContent = vrtx.propValue(collection, "additional-content") />
+    <#if additionalContent?has_content>
+	  <div id="vrtx-related-content">
+        <@vrtx.invokeComponentRefs additionalContent />
+	  </div>
+	</#if>
   </div>
 
 </#macro>

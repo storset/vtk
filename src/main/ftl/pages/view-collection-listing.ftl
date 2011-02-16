@@ -135,7 +135,7 @@
     <#assign additionalContent = vrtx.propValue(resource, "additional-content") />
     <#assign hideAdditionalContent = vrtx.propValue(resource, "hide-additional-content")?string />
     <#if additionalContent?has_content && collection.resourceType != 'image-listing'
-         && !isEventCalendarListing && !isBlogListing>
+         && collection.resourceType != 'person-listing' && !isEventCalendarListing && !isBlogListing>
       <#if (hideAdditionalContent?exists && hideAdditionalContent == 'false')>
         <div id="vrtx-main-content">
       </#if>
@@ -195,7 +195,7 @@
      </div>
      <@projects.projectListingViewServiceURL />
      <#if additionalContent?has_content && collection.resourceType != 'image-listing'
-          && !isEventCalendarListing && !isBlogListing>
+          && collection.resourceType != 'person-listing' && !isEventCalendarListing && !isBlogListing>
        <#if (hideAdditionalContent?exists && hideAdditionalContent == 'false')>
          </div>
          <div id="vrtx-additional-content">

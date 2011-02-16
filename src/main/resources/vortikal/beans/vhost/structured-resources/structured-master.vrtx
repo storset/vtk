@@ -10,6 +10,7 @@ resourcetype structured-master{
     content : html noextract,
     participantsUsernames : string multiple,
     participants : json (participantName:string, participantUrl:string) multiple,
+    credits: string,
     numberOfParticipantsToDisplay : string,
     tags : string multiple overrides tags
   }
@@ -173,6 +174,7 @@ resourcetype structured-master{
     participants : (en : "Other supervisors", no : "Andre veiledere", nn : "Andre rettleiarar"),
     participantName : (en : "Name",no : "Navn", nn :"Namn"),
     participantUrl : (en : "Webaddress",no : "Webadresse", nn :"Webadresse"),
+    credits: (en : "Scope (credits)", no: "Omfang (studiepoeng)", nn: "Omfang (studiepoeng)"),
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
     content : (en : "Content", no :"Innhold",nn : "Innhold"),
     contactInfo : (en : "Contact information", no : "Kontaktinformasjon", nn : "Kontaktinformasjon"),

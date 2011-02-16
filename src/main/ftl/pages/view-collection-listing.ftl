@@ -98,7 +98,7 @@
     <#assign additionalContent = vrtx.propValue(resource, "additional-content") />
     <#assign hideAdditionalContent = vrtx.propValue(resource, "hide-additional-content")?string />
     <#if additionalContent?has_content && collection.resourceType != 'image-listing'
-         && collection.resourceType != 'person-listing' && !isEventCalendarListing && !isBlogListing>
+         && collection.resourceType != 'person-listing' && !isBlogListing>
       <#if (hideAdditionalContent?exists && hideAdditionalContent == 'false')>
         <div id="vrtx-content">
           <div id="vrtx-main-content">

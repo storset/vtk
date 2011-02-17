@@ -11,8 +11,8 @@ $(document).ready(function() {
 		   new Array("#vrtx-resource\\.event-type-title"));
   
   showHide(new Array("#resource\\.display-type\\.unspecified", "#resource\\.display-type\\.calendar"), 
-		   "#resource\\.display-type\\.unspecified:checked",
-		   null, 
+		   "#resource\\.display-type\\.calendar:checked",
+		   'calendar', 
 		   new Array("#vrtx-resource\\.hide-additional-content"));
 
 });

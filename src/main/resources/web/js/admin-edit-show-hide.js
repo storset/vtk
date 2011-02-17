@@ -9,13 +9,20 @@ $(document).ready(function() {
 		   "#resource\\.display-type\\.calendar:checked",
 		   null, 
 		   new Array("#vrtx-resource\\.event-type-title"));
+  
+  showHide(new Array("#resource\\.display-type\\.unspecified", "#resource\\.display-type\\.calendar"), 
+		   "#resource\\.display-type\\.unspecified:checked",
+		   null, 
+		   new Array("#vrtx-resource\\.hide-additional-content"));
 
 });
 
 /**
- * radioIds: Multiple id's for radiobuttons binding click events (Array)
- * conditionHide: Condition to be checked for hiding
- * conditionHideEqual: What it should equal 
+ * Show and hide properties<br /><br />
+ * 
+ * radioIds: Multiple id's for radiobuttons binding click events (Array)<br />
+ * conditionHide: Condition to be checked for hiding<br />
+ * conditionHideEqual: What it should equal<br />
  * showHideProps: Multiple props / id's / classnames to show / hide (Array)
  */
 function showHide(radioIds, conditionHide, conditionHideEqual, showHideProps) {
@@ -53,7 +60,7 @@ function showHideProperty(id, init, show) {
     if(show) {
 	  $(id).slideDown(100);
 	} else {
-          $(id).slideUp(100);
+      $(id).slideUp(100);
 	}
   }
 }

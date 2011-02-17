@@ -794,7 +794,9 @@ table.directoryListing tr.person-listing td.name,
 table.directoryListing tr.project-listing td.name,
 table.directoryListing tr.research-group-listing td.name,
 table.directoryListing tr.blog-listing td.name,
-table.directoryListing tr.image-listing td.name
+table.directoryListing tr.image-listing td.name,
+table.directoryListing tr.audio-video-listing td.name,
+table.directoryListing tr.master-listing td.name
   {
   background-position: 4px 4px;
   background-image: url(icons/dir2.gif);

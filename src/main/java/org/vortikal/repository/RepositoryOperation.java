@@ -57,7 +57,8 @@ public enum RepositoryOperation {
     DELETE_COMMENT("deleteComment", true),
     DELETE_ALL_COMMENTS("deleteAllComments", true),
     UPDATE_COMMENT("updateComment", true),
-    SEARCH("search", false);
+    SEARCH("search", false),
+    GET_TYPE_INFO("getTypeInfo", false);
 
     private String name;
     private boolean write;
@@ -103,6 +104,7 @@ public enum RepositoryOperation {
         ALL_OPERATIONS.put(DELETE_ALL_COMMENTS.getName(), DELETE_ALL_COMMENTS);
         ALL_OPERATIONS.put(UPDATE_COMMENT.getName(), UPDATE_COMMENT);
         ALL_OPERATIONS.put(SEARCH.getName(), SEARCH);
+        ALL_OPERATIONS.put(GET_TYPE_INFO.getName(), GET_TYPE_INFO);
         
     }
     

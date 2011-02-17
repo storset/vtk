@@ -125,7 +125,11 @@ implements ServletContextAware {
     throws Exception {
 
         String esi = request.getStringParameter("esi");
+        
         if (esi != null) {
+            if (!esi.startsWith("/")) {
+                throw new DecoratorComponentException("Invalid ESI URL: must start with '/'");
+            }
             Writer writer = response.getWriter();
             writer.write("<esi:include src=\"" + HtmlUtil.escapeHtmlString(esi) + "\" />");
             writer.flush();
@@ -184,9 +188,9 @@ implements ServletContextAware {
         try {
             r = this.repository.retrieve(token, uri, false);
         } catch (ResourceNotFoundException e) {
-        	if (ignoreNotFound) {
-        		return;
-        	}
+            if (ignoreNotFound) {
+                return;
+            }
             throw new DecoratorComponentException(
                     "Resource '" + address + "' not found");
         } catch (AuthenticationException e) {
@@ -213,6 +217,7 @@ implements ServletContextAware {
 
         if (elementParam != null && ContentTypeHelper.isHTMLOrXHTMLContentType(r.getContentType())) {
             HtmlPage page = this.htmlParser.parse(is, characterEncoding);
+
             String result = "";
             List<HtmlElement> elements = page.select(elementParam);
             if (elements.size() > 0) {

@@ -14,13 +14,13 @@ import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Assertion;
 import org.vortikal.web.service.Service;
 
-public class ProjectListingViewServiceURLProvider implements ReferenceDataProvider {
+public class ResourceServiceSwitchURLProvider implements ReferenceDataProvider {
 
     private Service service;
     private Repository repository;
     
-    private String viewAll;
-    private String viewSubset;
+    private String linkToServiceName;
+    private String linkToResourceName;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -32,19 +32,19 @@ public class ProjectListingViewServiceURLProvider implements ReferenceDataProvid
         Resource resource = this.getRepository().retrieve(token, resourceURI, true);
 
         String link = getService().constructLink(resource.getURI());
-        boolean isViewAllService = true;
+        boolean displayResource = true;
         List<Assertion> serviceAssertions = getService().getAssertions();
         for (Assertion assertion : serviceAssertions) {
             if (!assertion.matches(request, resource, SecurityContext.getSecurityContext().getPrincipal())) {
-                isViewAllService = false;
+                displayResource = false;
                 break;
             }
         }
 
-        if (!isViewAllService) {
-            model.put(viewAll, link);
+        if (displayResource) {
+            model.put(linkToResourceName, resource.getURI().toString());
         } else {
-            model.put(viewSubset, resource.getURI().toString());
+            model.put(linkToServiceName, link);
         }
     }
 
@@ -64,20 +64,12 @@ public class ProjectListingViewServiceURLProvider implements ReferenceDataProvid
         return service;
     }
 
-    public void setViewAll(String viewAll) {
-        this.viewAll = viewAll;
+    public void setLinkToServiceName(String linkToServiceName) {
+        this.linkToServiceName = linkToServiceName;
     }
 
-    public String getViewAll() {
-        return viewAll;
-    }
-
-    public void setViewSubset(String viewSubset) {
-        this.viewSubset = viewSubset;
-    }
-
-    public String getViewSubset() {
-        return viewSubset;
+    public void setLinkToResourceName(String linkToResourceName) {
+        this.linkToResourceName = linkToResourceName;
     }
 
 }

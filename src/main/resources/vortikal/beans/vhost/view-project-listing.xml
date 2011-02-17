@@ -87,11 +87,11 @@
     </property>
   </bean>
 
-  <bean id="projectListingViewServiceURLProvider" class="org.vortikal.web.referencedata.provider.ProjectListingViewServiceURLProvider"
+  <bean id="projectListingViewServiceURLProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceSwitchURLProvider"
     parent="repositoryAware">
     <property name="service" ref="projectListing.viewCompletedProjectsService" />
-    <property name="viewAll" value="viewAllProjectsLink" />
-    <property name="viewSubset" value="viewOngoingProjectsLink" />
+    <property name="linkToServiceName" value="viewAllProjectsLink" />
+    <property name="linkToResourceName" value="viewOngoingProjectsLink" />
   </bean>
 
   <bean id="projectListing.feedService" parent="collectionListing.atomService">

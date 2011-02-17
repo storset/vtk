@@ -16,8 +16,11 @@ import org.vortikal.web.service.Service;
 
 public class ProjectListingViewServiceURLProvider implements ReferenceDataProvider {
 
-    private Service viewAllProjects;
+    private Service service;
     private Repository repository;
+    
+    private String viewAll;
+    private String viewSubset;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -28,9 +31,9 @@ public class ProjectListingViewServiceURLProvider implements ReferenceDataProvid
 
         Resource resource = this.getRepository().retrieve(token, resourceURI, true);
 
-        String link = getViewAllProjects().constructLink(resource.getURI());
+        String link = getService().constructLink(resource.getURI());
         boolean isViewAllService = true;
-        List<Assertion> serviceAssertions = getViewAllProjects().getAssertions();
+        List<Assertion> serviceAssertions = getService().getAssertions();
         for (Assertion assertion : serviceAssertions) {
             if (!assertion.matches(request, resource, SecurityContext.getSecurityContext().getPrincipal())) {
                 isViewAllService = false;
@@ -39,18 +42,10 @@ public class ProjectListingViewServiceURLProvider implements ReferenceDataProvid
         }
 
         if (!isViewAllService) {
-            model.put("viewAllProjectsLink", link);
+            model.put(viewAll, link);
         } else {
-            model.put("viewOngoingProjectsLink", resource.getURI().toString());
+            model.put(viewSubset, resource.getURI().toString());
         }
-    }
-
-    public void setViewAllProjects(Service viewAllProjects) {
-        this.viewAllProjects = viewAllProjects;
-    }
-
-    public Service getViewAllProjects() {
-        return viewAllProjects;
     }
 
     public void setRepository(Repository repository) {
@@ -59,6 +54,30 @@ public class ProjectListingViewServiceURLProvider implements ReferenceDataProvid
 
     public Repository getRepository() {
         return repository;
+    }
+
+    public void setService(Service service) {
+        this.service = service;
+    }
+
+    public Service getService() {
+        return service;
+    }
+
+    public void setViewAll(String viewAll) {
+        this.viewAll = viewAll;
+    }
+
+    public String getViewAll() {
+        return viewAll;
+    }
+
+    public void setViewSubset(String viewSubset) {
+        this.viewSubset = viewSubset;
+    }
+
+    public String getViewSubset() {
+        return viewSubset;
     }
 
 }

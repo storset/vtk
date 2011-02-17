@@ -325,7 +325,7 @@ function extractMediaPlayerProps(HTML, element) {
     for(var name in params) {
       if(name == "contentType") {
     	regexp = new RegExp('(?:content\\-type[\\s]*?=[\\s]*?\\[[\\s]*?)(.*?)(?=[\\s]*?\\])');
-      } else if(name == "streamType")
+      } else if(name == "streamType") {
     	regexp = new RegExp('(?:stream\\-type[\\s]*?=[\\s]*?\\[[\\s]*?)(.*?)(?=[\\s]*?\\])'); 
       } else {
     	// non-capturing group for prop=. TODO: positive lookbehind (non-capturing)

@@ -19,11 +19,9 @@ import org.vortikal.web.service.Assertion;
 import org.vortikal.web.service.Service;
 
 public class MasterCollectionListingController extends AlphabeticalCollectionListingController {
-
-    AlphabeticalCollectionListingController saker;
     
     private ListRelatedPersonsComponent listRelatedPersonsComponent;
-    private Service takenAssignments; 
+    private boolean isTakenAssignmentListing; 
     
     protected int defaultPageLimit = 100;
 
@@ -36,17 +34,8 @@ public class MasterCollectionListingController extends AlphabeticalCollectionLis
 
         if (!(type != null && "alphabetical".equals(type.getStringValue()))) {
 
-            boolean isTakenAssignmentListing = true;
-            List<Assertion> serviceAssertions = takenAssignments.getAssertions();
-            for (Assertion assertion : serviceAssertions) {
-                if (!assertion.matches(request, collection, SecurityContext.getSecurityContext().getPrincipal())) {
-                    isTakenAssignmentListing = false;
-                    break;
-                }
-            }
-
-            if (isTakenAssignmentListing) {
-                
+       
+            if (isTakenAssignmentListing()) {                
                 super.getAlphabeticalOrdredProjects(request, collection, model, pageLimit);
                 model.put("overrideListingType", "alphabetical");
             }
@@ -87,11 +76,11 @@ public class MasterCollectionListingController extends AlphabeticalCollectionLis
         return listRelatedPersonsComponent;
     }
 
-    public void setTakenAssignments(Service takenAssignments) {
-        this.takenAssignments = takenAssignments;
+    public void setTakenAssignmentListing(boolean isTakenAssignmentListing) {
+        this.isTakenAssignmentListing = isTakenAssignmentListing;
     }
 
-    public Service getTakenAssignments() {
-        return takenAssignments;
+    public boolean isTakenAssignmentListing() {
+        return isTakenAssignmentListing;
     }
 }

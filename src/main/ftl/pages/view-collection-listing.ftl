@@ -28,6 +28,7 @@
 <#import "/lib/collections/view-article-listing.ftl" as articles />
 <#import "/lib/collections/view-event-listing.ftl" as events />
 <#import "/lib/collections/view-project-listing.ftl" as projects />
+<#import "/lib/collections/view-master-listing.ftl" as master />
 <#import "/lib/collections/view-research-group-listing.ftl" as groups />
 <#import "/lib/collections/view-person-listing.ftl" as persons />
 <#import "/lib/collections/view-image-listing.ftl" as images />
@@ -106,6 +107,7 @@
 <#if !isEventCalendarListing>
     <h1>${title}
       <@projects.completed />
+      <@master.completed />
       <#if page?has_content>
         <#if "${page}" != "1"> - <@vrtx.msg code="viewCollectionListing.page" /> ${page}</#if>
       </#if>
@@ -160,6 +162,13 @@
            	  	<#else>
              		<@projects.displayProjects searchComponent />
            		</#if>
+           	<#elseif collection.resourceType = 'master-listing'>
+           		<#assign listingType = vrtx.propValue(collection, 'display-type', '', 'master') />
+           	  	<#if listingType = "alphabetical" || overrideListingType?exists>    
+           	  		<@master.displayMastersAlphabetical searchComponent />
+           	  	<#else>
+             		<@master.displayTable searchComponent collection />
+           		</#if>
             <#elseif collection.resourceType = 'research-group-listing'>
            		<#assign listingType = vrtx.propValue(collection, 'display-type', '', 'rg') />
            	  	<#if listingType = "alphabetical" >
@@ -195,6 +204,7 @@
 	    </#if>
      </div>
      <@projects.projectListingViewServiceURL />
+     <@master.masterListingViewServiceURL />
      <#if additionalContent?has_content && collection.resourceType != 'image-listing'
           && collection.resourceType != 'person-listing' && !isEventCalendarListing && !isBlogListing>
        <#if (hideAdditionalContent?exists && hideAdditionalContent == 'false')>

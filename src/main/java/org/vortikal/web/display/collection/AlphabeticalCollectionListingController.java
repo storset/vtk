@@ -21,7 +21,7 @@ import org.vortikal.web.service.URL;
 public class AlphabeticalCollectionListingController extends CollectionListingController {
 
     private PropertyTypeDefinition titlePropDef;
-    private PropertyTypeDefinition displayTypePropDef;
+    protected PropertyTypeDefinition displayTypePropDef;
 
     @Override
     public void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
@@ -42,7 +42,7 @@ public class AlphabeticalCollectionListingController extends CollectionListingCo
      * value that is a list of files starting with the key char. The key is
      * upper case.
      */
-    private void getAlphabeticalOrdredProjects(HttpServletRequest request, Resource collection,
+    public void getAlphabeticalOrdredProjects(HttpServletRequest request, Resource collection,
             Map<String, Object> model, int pageLimit) throws Exception {
         int page = ListingPager.getPage(request, ListingPager.UPCOMING_PAGE_PARAM);
         int limit = pageLimit;

@@ -11,8 +11,10 @@
   <import resource="event-listing.xml" />
   <import resource="person-listing.xml" />
   <import resource="project-listing.xml" />
+  <import resource="master-listing.xml" />
   <import resource="research-group-listing.xml" />
   <import resource="image-listing.xml" />
+ <!-- <import resource="audio-video-listing.xml" /> -->
   <import resource="image.xml" />
   <import resource="audio.xml" />
   <import resource="video.xml" />
@@ -26,7 +28,7 @@
   <import resource="event.xml" />
   <import resource="xml.xml" />
   <import resource="managed-xml.xml" />
-  <import resource="odf.xml" />  
+  <import resource="odf.xml" />
   <import resource="json.xml" />
 
   <!-- Studinfo -->
@@ -36,11 +38,11 @@
   <import resource="studieprogram.xml" />
   <import resource="studieretning.xml" />
   <import resource="utvekslingsavtale.xml" />
-  
+
   <!-- Felles / Common -->
   <import resource="artikkelsamling.xml" />
 
-  <!-- UiO  -->
+  <!-- UiO -->
   <import resource="artikkel.xml" />
   <import resource="disputas.xml" />
   <import resource="proveforelesning.xml" />
@@ -56,22 +58,22 @@
 
   <!-- Portal.xml - søkedokumentet -->
   <import resource="portal.xml" />
-  
+
   <!-- Romskjema -->
   <import resource="deprecated/romskjema.xml" />
 
   <!-- MUV -->
   <import resource="muv-artikkel.xml" />
-    
+
   <!-- CEES -->
   <import resource="researcher.xml" />
   <import resource="project.xml" />
 
-   <!-- MIXINs -->
+  <!-- MIXINs -->
   <import resource="mixins/introduction-mixin.xml" />
   <import resource="mixins/navigation.xml" />
   <import resource="mixins/additional-content-mixin.xml" />
   <import resource="mixins/ssi.xml" />
   <import resource="mixins/visual-profile.xml" />
-  
+
 </beans>

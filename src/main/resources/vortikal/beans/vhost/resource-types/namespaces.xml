@@ -3,18 +3,14 @@
 
 <beans>
 
-  <bean id="DEFAULT_NAMESPACE"
-        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
-    <property name="staticField"
-              value="org.vortikal.repository.Namespace.DEFAULT_NAMESPACE" />
+  <bean id="DEFAULT_NAMESPACE" class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField" value="org.vortikal.repository.Namespace.DEFAULT_NAMESPACE" />
   </bean>
 
-  <bean id="CUSTOM_NAMESPACE"
-        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
-    <property name="staticField"
-              value="org.vortikal.repository.Namespace.CUSTOM_NAMESPACE" />
+  <bean id="CUSTOM_NAMESPACE" class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField" value="org.vortikal.repository.Namespace.CUSTOM_NAMESPACE" />
   </bean>
- 
+
   <bean id="CONTENT_NAMESPACE" class="org.vortikal.repository.Namespace">
     <constructor-arg value="content" />
     <constructor-arg value="http://www.uio.no/content" />
@@ -29,22 +25,22 @@
     <constructor-arg value="el" />
     <constructor-arg value="http://www.uio.no/resource-types/event-listing" />
   </bean>
-  
+
   <bean id="PERSON_LISTING_NAMESPACE" class="org.vortikal.repository.Namespace">
     <constructor-arg value="pl" />
     <constructor-arg value="http://www.uio.no/resource-types/person-listing" />
   </bean>
-  
+
   <bean id="PROJECT_LISTING_NAMESPACE" class="org.vortikal.repository.Namespace">
     <constructor-arg value="prl" />
     <constructor-arg value="http://www.uio.no/resource-types/project-listing" />
   </bean>
-  
+
   <bean id="RESEARCH_GROUP_LISTING_NAMESPACE" class="org.vortikal.repository.Namespace">
     <constructor-arg value="rg" />
     <constructor-arg value="http://www.uio.no/resource-types/research-group-listing" />
   </bean>
-  
+
   <bean id="BLOG_LISTING_NAMESPACE" class="org.vortikal.repository.Namespace">
     <constructor-arg value="bl" />
     <constructor-arg value="http://www.uio.no/resource-types/blog-listing" />
@@ -54,5 +50,16 @@
     <constructor-arg value="imgl" />
     <constructor-arg value="http://www.uio.no/resource-types/image-listing" />
   </bean>
+
+  <bean id="AUDIO_VIDEO_LISTING_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="audvideo" />
+    <constructor-arg value="http://www.uio.no/resource-types/audio-video-listing" />
+  </bean>
+
+  <bean id="MASTER_LISTING_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="master" />
+    <constructor-arg value="http://www.uio.no/resource-types/master-listing" />
+  </bean>
+
 
 </beans>

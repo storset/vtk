@@ -18,12 +18,12 @@ $(document).ready(function() {
 });
 
 /**
- * Show and hide properties<br /><br />
+ * Show and hide properties
  * 
- * radioIds: Multiple id's for radiobuttons binding click events (Array)<br />
- * conditionHide: Condition to be checked for hiding<br />
- * conditionHideEqual: What it should equal<br />
- * showHideProps: Multiple props / id's / classnames to show / hide (Array)
+ * @param radioIds: Multiple id's for radiobuttons binding click events (Array)
+ * @param conditionHide: Condition to be checked for hiding
+ * @param conditionHideEqual: What it should equal
+ * @param showHideProps: Multiple props / id's / classnames to show / hide (Array)
  */
 function showHide(radioIds, conditionHide, conditionHideEqual, showHideProps) {
   var showHidePropertiesFunc = showHideProperties;

@@ -89,7 +89,9 @@
 
   <bean id="projectListingViewServiceURLProvider" class="org.vortikal.web.referencedata.provider.ProjectListingViewServiceURLProvider"
     parent="repositoryAware">
-    <property name="viewAllProjects" ref="projectListing.viewCompletedProjectsService" />
+    <property name="service" ref="projectListing.viewCompletedProjectsService" />
+    <property name="viewAll" value="viewAllProjectsLink" />
+    <property name="viewSubset" value="viewOngoingProjectsLink" />
   </bean>
 
   <bean id="projectListing.feedService" parent="collectionListing.atomService">

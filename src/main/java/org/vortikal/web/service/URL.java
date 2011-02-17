@@ -481,6 +481,22 @@ public class URL {
 
     /**
      * Utility method to create a URL from a servlet request. 
+     * Decodes the uri and query string parameters using UTF-8 encoding.
+     *
+     * @param request the servlet request
+     * @return the generated URL
+     */
+    public static URL create(HttpServletRequest request) {
+        try {
+            return create(request, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException(
+                    "UTF-8 encoding not supported on this system");
+        }
+    }
+
+    /**
+     * Utility method to create a URL from a servlet request. 
      * Decodes the path and query string parameters using the 
      * supplied encoding.
      *
@@ -492,29 +508,10 @@ public class URL {
      */
     public static URL create(HttpServletRequest request, String encoding) 
     throws UnsupportedEncodingException {
-        String path = request.getRequestURI();
-        if (path == null || "".equals(path)) path = "/";
-
-        boolean collection = false;
-        if (path.endsWith("/")) {
-            collection = true;
-            if (!path.equals("/")) {
-                path = path.substring(0, path.length() - 1);
-            }
-        }
-        
-        String host = request.getServerName();
-        int port = request.getServerPort();
-
-        Path uri = Path.fromString(path);
-        uri = decode(uri, encoding);
-        
-        URL url = new URL(PROTOCOL_HTTP, host, uri);
-        url.setPort(new Integer(port));
+        URL url = parse(request.getRequestURL().toString());
         if (request.isSecure()) {
             url.setProtocol(PROTOCOL_HTTPS);
         }
-        url.setCollection(collection);
         Map<String, String[]> queryStringMap = splitQueryString(
                 request.getQueryString());
 
@@ -530,22 +527,6 @@ public class URL {
     }
     
     
-    /**
-     * Utility method to create a URL from a servlet request. 
-     * Decodes the uri and query string parameters using UTF-8 encoding.
-     *
-     * @param request the servlet request
-     * @return the generated URL
-     */
-    public static URL create(HttpServletRequest request) {
-        try {
-            return create(request, "utf-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalStateException(
-                    "UTF-8 encoding not supported on this system");
-        }
-    }
-
     private static enum ParseState {
         PROTOCOL,
         HOST,
@@ -721,6 +702,15 @@ public class URL {
         return resultURL;
     }
     
+    /**
+     * Creates a URL relative to this (base) URL from a given input string.
+     * <p>
+     * For example, given a base URL of <code>http://a/b/c/d</code> and the input 
+     * string <code>../g</code>, the resulting URL will be <code>http://a/b/g</code>.
+     * </p>
+     * @param rel the input string
+     * @return the resulting relative URL 
+     */
     public URL relativeURL(String rel) {
         if (rel == null) {
             throw new IllegalArgumentException("Malformed URL: " + rel);

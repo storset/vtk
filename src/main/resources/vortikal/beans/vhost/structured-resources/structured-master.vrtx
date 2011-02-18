@@ -11,7 +11,7 @@ resourcetype structured-master{
     supervisorsUsernames : string multiple,
     supervisors : json (supervisorName:string, supervisorUrl:string) multiple,
     credits: string,
-    numberOfSupervisorsToDisplay : string,
+    numberOfSupervisorsToDisplay : string defaultvalue("10"),
     tags : string multiple overrides tags
   }
   
@@ -139,7 +139,7 @@ resourcetype structured-master{
             [call "comp:vrtx-date-info"]
           </div>
           <div id="vrtx-additional-content">
-            [call "resource:person-list"]
+            [call "resource:master-list"]
           </div>
         </div>
       </body>

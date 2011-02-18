@@ -54,9 +54,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.Vocabulary;
-import org.vortikal.repository.resourcetype.Constraint;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
-import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
@@ -278,10 +276,10 @@ public class PropertyEditController extends SimpleFormController
                     }
                 }
 
-                Constraint constraint = command.getDefinition().getConstraint();
-                if (constraint != null) {
-                    constraint.validate(value);
-                }
+//                Constraint constraint = command.getDefinition().getConstraint();
+//                if (constraint != null) {
+//                    constraint.validate(value);
+//                }
 
                 Vocabulary<Value> vocabulary = command.getDefinition().getVocabulary();
 
@@ -427,11 +425,6 @@ public class PropertyEditController extends SimpleFormController
 
     }
     
-    private boolean isApplicableProperty(PropertyTypeDefinition def,
-                                         PrimaryResourceTypeDefinition resourceType) {
-        return resourceType.hasPropertyDefinition(def);
-    }
-    
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -446,14 +439,13 @@ public class PropertyEditController extends SimpleFormController
 
         for (PropertyTypeDefinition def: this.propertyTypeDefinitions) {
 
-            if (!isApplicableProperty(def, typeInfo.getResourceType())) {
+            if (!typeInfo.getResourceType().hasPropertyDefinition(def)) {
                 if (this.logger.isDebugEnabled()) {
                     this.logger.debug("Property type definition " + def
                                  + " not applicable for resource " + resource + ", skipping");
                 }
                 continue;
             }
-
             Property property = resource.getProperty(def);
             String editURL = null;
             String format = null;

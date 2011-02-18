@@ -41,15 +41,14 @@ import java.util.Set;
 
 import net.sf.json.JSONObject;
 
-import org.vortikal.repository.resourcetype.Constraint;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatException;
 import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.repository.resourcetype.ValueSeparator;
-import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.value.BinaryValue;
 import org.vortikal.security.Principal;
 
@@ -390,12 +389,6 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
             }
         }
         
-        Constraint constraint = this.propertyTypeDefinition.getConstraint();
-
-        if (constraint != null) {
-            constraint.validate(value);
-        }
-
         Vocabulary<Value> vocabulary = this.propertyTypeDefinition.getVocabulary();
         if (vocabulary != null && vocabulary.getAllowedValues() != null) {
             List<Value> valuesList = Arrays.asList(vocabulary.getAllowedValues());

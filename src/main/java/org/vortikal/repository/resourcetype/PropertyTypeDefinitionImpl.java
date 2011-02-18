@@ -57,9 +57,9 @@ import org.vortikal.security.Principal;
  */
 public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, InitializingBean {
 
-	private Map<String, Object> metadata = new HashMap<String, Object>();
+    private Map<String, Object> metadata = new HashMap<String, Object>();
 	
-	private Namespace namespace;
+    private Namespace namespace;
     
     private String name;
     private Type type = PropertyType.Type.STRING;
@@ -71,7 +71,6 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     private RepositoryAction protectionLevel = PropertyType.PROTECTION_LEVEL_ACL_WRITE;
     private boolean mandatory = false;
     private Value defaultValue;
-    private Constraint constraint;
     private PropertyEvaluator propertyEvaluator;
     private PropertyValidator validator;
     private Value[] allowedValues;
@@ -93,7 +92,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     }
     
     public void setMetadata(Map<String, Object> metadata) {
-    	this.metadata = metadata;
+        this.metadata = metadata;
     }
     
     public void addMetadata(String key, Object value) {
@@ -200,14 +199,6 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         this.propertyEvaluator = propertyEvaluator;
     }
     
-    public Constraint getConstraint() {
-        return this.constraint;
-    }
-
-    public void setConstraint(Constraint constraint) {
-        this.constraint = constraint;
-    }
-
     public boolean isMandatory() {
         return this.mandatory;
     }
@@ -215,7 +206,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     public void setMandatory(boolean mandatory) {
         this.mandatory = mandatory;
     }
-
+    
     public boolean isMultiple() {
         return this.multiple;
     }

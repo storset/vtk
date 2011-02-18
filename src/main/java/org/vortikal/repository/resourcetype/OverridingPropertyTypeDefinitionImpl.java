@@ -50,13 +50,8 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridableProperty
     private Map<String, Object> metadata = new HashMap<String, Object>();
 	
     private OverridablePropertyTypeDefinition overriddenPropDef;
-    
     private PropertyEvaluator propertyEvaluator;
     private Value defaultValue;
-
-    public Constraint getConstraint() {
-        return this.overriddenPropDef.getConstraint();
-    }
 
     public PropertyEvaluator getPropertyEvaluator() {
         if (this.propertyEvaluator != null) {
@@ -105,8 +100,6 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridableProperty
         return this.overriddenPropDef.isMultiple();
     }
 
-    
-    
     public void setOverriddenPropDef(OverridablePropertyTypeDefinition overriddenPropDef) {
         this.overriddenPropDef = overriddenPropDef;
     }

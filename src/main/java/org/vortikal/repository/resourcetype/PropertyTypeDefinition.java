@@ -82,8 +82,6 @@ public interface PropertyTypeDefinition {
 
     public Value getDefaultValue();
 
-    public Constraint getConstraint();
-
     public PropertyEvaluator getPropertyEvaluator();
 
     public PropertyValidator getValidator();

@@ -5,8 +5,8 @@
 </#if>
 
 <#macro listPersons >
-<div class="vrtx-project-participants">
-  <h2><a href="${showAllPersons}"><@vrtx.msg code="person-list.project-participants" default="Participants" /></a></h2>
+<div class="${name}-participants">
+  <h2><a href="${showAllPersons}"><@vrtx.msg code="${name}.project-participants" /></a></h2>
   <ul>
   	<#local i = 0 />
     <#list relatedPersons as person>

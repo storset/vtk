@@ -95,6 +95,7 @@ public class ListRelatedPersonsComponent extends ViewRenderingDecoratorComponent
         model.put("relatedPersons", relatedPersons);
         model.put("showAllPersons", displayRelatedPersonsService.constructLink(uri));
         model.put("numberOfParticipantsToDisplay", getShowNumberOfParticipants(currentResource));
+        model.put("name",getName());
     }
 
     private int getShowNumberOfParticipants(Resource resource) {

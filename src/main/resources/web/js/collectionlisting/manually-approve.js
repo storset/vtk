@@ -8,21 +8,21 @@ function toggleManuallyApprovedContainer(resources, manuallyApproved) {
   // container, else display.
   // "manuallyApproved" contains list of resources already manually
   // approved. Use to mark resources.
-  
+
   // TODO: i18n ++
 
-  var pages = 1, prPage = 10, len = approve.length;
+  var pages = 1, prPage = 10, len = resources.length;
   var total = len > prPage ? (parseInt(len / prPage) + 1) : 1;
 
   var html = "<div id='approve-page-" + pages + "'><h3>Manually approve resources - page " + pages + "/" + total + "</h3><ul>";
 
   for(var i = 0; i < len; i++) {
-    if(approve[i].approved) {
+    if(resources[i].approved) {
       html += "<li><input type='checkbox' checked='checked' />";
     } else {
       html += "<li><input type='checkbox' />";
     }
-    html += "<a href='" + approve[i].uri + "'>" + approve[i].title + "</a></li>";
+    html += "<a href='" + resources[i].uri + "'>" + resources[i].title + "</a></li>";
     if((i+1) % prPage == 0) {
       pages++;
       html += "</ul>";

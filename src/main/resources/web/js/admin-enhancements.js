@@ -585,10 +585,10 @@ $(document).ready(function() {
          if((i+1) % prPage == 0) {
            pages++;
            html += "</ul>";
-           if(i > prPage && i < len-1) {
-             html += "<a href='#page-" + (pages - 1) + "' class='prev' id='page-" + (pages - 1) + "'>Prev</a>";
-           }
            if(i < len-1) {
+             if(i > prPage) {
+               html += "<a href='#page-" + (pages - 1) + "' class='prev' id='page-" + (pages - 1) + "'>Prev</a>";
+             }
              html += "<a href='#page-" + pages + "' class='next' id='page-" + pages + "'>Next</a>";
              html += "</div><div id='approve-page-" + pages + "'>";
              html += "<h3>Manually approve resources - page " + pages + "/" + total + "</h3>";

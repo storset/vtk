@@ -572,8 +572,8 @@ $(document).ready(function() {
 	//TODO: i18n
     $("#resource\\.manually-approve-from").focus(function() {
        var pages = 1, prPage = 10, len = approve.length;
-       var total = len > prPage ? (parseInt(len / 10) + 1) : 1; 
-       
+       var total = len > prPage ? (parseInt(len / prPage) + 1) : 1;
+
        var html = "<div id='approve-page-" + pages + "'><h3>Manually approve resources - page " + pages + "/" + total + "</h3><ul>";
        for(var i = 0; i < len; i++) {
          if(approve[i].approved) {

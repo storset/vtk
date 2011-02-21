@@ -337,3 +337,285 @@ $(document).ready(function(){
             $(this).find("input").each(checkedClass);
     });
 });
+
+$(document).ready(function() {
+    //TODO: AJAX get JSON of resources
+	var approve = [
+        {
+          "title": "artikkel.html",
+          "uri": "/artikkel.html",
+          "approved" : false
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : true
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : true
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : true
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : true
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : true
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : true
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : true
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : true
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : true
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : true
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : true
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : true
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : true
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : true
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : false
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : true
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : false
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : true
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : true
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : true
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : false
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : false
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : true
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : true
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : false
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : true
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : true
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : true
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : true
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : false
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : false
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : true
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : true
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : true
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : true
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : false
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : true
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : false
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : false
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : false
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : false
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : false
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : false
+        },
+        {
+          "title": "artikkel2.html",
+          "uri": "/om/artikkel.html",
+          "approved" : false
+        }
+      ];
+	//TODO: i18n
+    $("#resource\\.manually-approve-from").focus(function() {
+       var pages = 1, prPage = 5;
+       
+       var html = "<div id='approve-page-" + pages + "'><h2>Page " + pages + "</h2><ul>";
+       for(var i = 0, len = approve.length; i < len; i++) {
+         if(approve[i].approved) {
+           html += "<li><input type='checkbox' checked='checked' />";
+         } else {
+           html += "<li><input type='checkbox' />";
+         }
+         html += "<a href='" + approve[i].uri + "'>" + approve[i].title + "</a></li>";
+         if((i+1) % 5 == 0) {
+           pages++;
+           html += "</ul>";
+           if(i > prPage && i < len-1) {
+             html += "<a href='#page-" + (pages - 1) + "' class='prev' id='page-" + (pages - 1) + "'>Prev</a>";
+           }
+           if(i < len-1) {
+             html += "&nbsp;<a href='#page-" + pages + "' class='next' id='page-" + pages + "'>Next</a>";
+             html += "</div><div id='approve-page-" + pages + "'>";
+             html += "<h2>Page " + pages + "</h2>";
+           }
+           html += "<ul>";
+         }
+       }
+       html += "</ul><a href='#page-" + (pages - 1) + "' class='prev' id='page-" + (pages - 1) + "'>Prev</a></div>";
+       $("#manually-approve-container").html(html);
+       $("#manually-approve-container div").not("#approve-page-1").hide();
+    });
+
+    // Paging - next
+    $("#manually-approve-container").delegate(".next", "click", function() {
+      var that = $(this).parent();
+      var next = that.next();
+      if(next) {
+         $(that).hide();    
+         $(next).show();
+      }
+      return false;  
+    });
+    // Paging - previous
+    $("#manually-approve-container").delegate(".prev", "click", function() {
+      var that = $(this).parent();
+      var prev = that.prev();
+      if(prev) {
+         $(that).hide();    
+         $(prev).show();
+      }
+      return false;  
+    });
+ });

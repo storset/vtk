@@ -589,15 +589,15 @@ $(document).ready(function() {
              if(i > prPage) {
                html += "<a href='#page-" + (pages - 1) + "' class='prev' id='page-" + (pages - 1) + "'>Prev</a>";
              }
-             html += "<a href='#page-" + pages + "' class='next' id='page-" + pages + "'>Next</a>";
-             html += "</div><div id='approve-page-" + pages + "'>";
-             html += "<h3>Manually approve resources - page " + pages + "/" + total + "</h3>";
+             html += "<a href='#page-" + pages + "' class='next' id='page-" + pages + "'>Next</a>"
+                  + "</div><div id='approve-page-" + pages + "'>"
+                  + "<h3>Manually approve resources - page " + pages + "/" + total + "</h3>";
            }
            html += "<ul>";
          }
        }
-       html += "</ul><a href='#page-" + (pages - 1) + "' class='prev' id='page-" + (pages - 1) + "'>Prev</a></div>";
-       html += "<div id='manually-approve-save-cancel'><input type='submit' id='manually-approve-save' value='Save' />"
+       html += "</ul><a href='#page-" + (pages - 1) + "' class='prev' id='page-" + (pages - 1) + "'>Prev</a></div>"
+             + "<div id='manually-approve-save-cancel'><input type='submit' id='manually-approve-save' value='Save' />"
     	     + "<a href='#' id='manually-approve-cancel'>Cancel</a></div>";
        $("#manually-approve-container").html(html).slideDown("fast");
        $("#manually-approve-container div").not("#approve-page-1").not("#manually-approve-save-cancel").hide();

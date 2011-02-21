@@ -571,17 +571,18 @@ $(document).ready(function() {
       ];
 	//TODO: i18n
     $("#resource\\.manually-approve-from").focus(function() {
-       var pages = 1, prPage = 5;
+       var pages = 1, prPage = 10, len = approve.length;
+       var total = len > prPage ? (parseInt(len / 10) + 1) : 1; 
        
-       var html = "<div id='approve-page-" + pages + "'><h2>Page " + pages + "</h2><ul>";
-       for(var i = 0, len = approve.length; i < len; i++) {
+       var html = "<div id='approve-page-" + pages + "'><h3>Manually approve resources - page " + pages + "/" + total + "</h3><ul>";
+       for(var i = 0; i < len; i++) {
          if(approve[i].approved) {
            html += "<li><input type='checkbox' checked='checked' />";
          } else {
            html += "<li><input type='checkbox' />";
          }
          html += "<a href='" + approve[i].uri + "'>" + approve[i].title + "</a></li>";
-         if((i+1) % 5 == 0) {
+         if((i+1) % prPage == 0) {
            pages++;
            html += "</ul>";
            if(i > prPage && i < len-1) {
@@ -590,7 +591,7 @@ $(document).ready(function() {
            if(i < len-1) {
              html += "<a href='#page-" + pages + "' class='next' id='page-" + pages + "'>Next</a>";
              html += "</div><div id='approve-page-" + pages + "'>";
-             html += "<h2>Page " + pages + "</h2>";
+             html += "<h3>Manually approve resources - page " + pages + "/" + total + "</h3>";
            }
            html += "<ul>";
          }

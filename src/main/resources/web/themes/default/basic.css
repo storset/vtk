@@ -1056,7 +1056,7 @@ table.directoryListing tr td {
   width: 320px;
   background: #fff;
   border: 1px solid #ccc;
-  padding: 6px 12px 12px 12px;
+  padding: 12px;
   display: none;
   z-index: 9999;
   font-size: 90%;

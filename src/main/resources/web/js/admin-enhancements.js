@@ -340,6 +340,8 @@ $(document).ready(function(){
 
 $(document).ready(function() {
     //TODO: AJAX get JSON of resources
+	
+	// Dummy JSON
 	var approve = [
         {
           "title": "artikkel.html",
@@ -586,7 +588,7 @@ $(document).ready(function() {
              html += "<a href='#page-" + (pages - 1) + "' class='prev' id='page-" + (pages - 1) + "'>Prev</a>";
            }
            if(i < len-1) {
-             html += "&nbsp;<a href='#page-" + pages + "' class='next' id='page-" + pages + "'>Next</a>";
+             html += "<a href='#page-" + pages + "' class='next' id='page-" + pages + "'>Next</a>";
              html += "</div><div id='approve-page-" + pages + "'>";
              html += "<h2>Page " + pages + "</h2>";
            }
@@ -594,8 +596,22 @@ $(document).ready(function() {
          }
        }
        html += "</ul><a href='#page-" + (pages - 1) + "' class='prev' id='page-" + (pages - 1) + "'>Prev</a></div>";
-       $("#manually-approve-container").html(html);
-       $("#manually-approve-container div").not("#approve-page-1").hide();
+       html += "<div id='manually-approve-save-cancel'><input type='submit' id='manually-approve-save' value='Save' />"
+    	     + "<a href='#' id='manually-approve-cancel'>Cancel</a></div>";
+       $("#manually-approve-container").html(html).slideDown("fast");
+       $("#manually-approve-container div").not("#approve-page-1").not("#manually-approve-save-cancel").hide();
+    });
+    
+    $("#manually-approve-container").delegate("#manually-approve-save", "click", function() {
+    	// TODO: implement save..
+    	
+    	$(this).parent().parent().slideUp("fast");
+        return false;  
+    });
+    
+    $("#manually-approve-container").delegate("#manually-approve-cancel", "click", function() {
+    	$(this).parent().parent().slideUp("fast");
+        return false;  
     });
 
     // Paging - next

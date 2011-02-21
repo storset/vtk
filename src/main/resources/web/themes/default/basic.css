@@ -1039,3 +1039,76 @@ table.directoryListing tr td {
 .directoryListingHeader .checkbox{
     text-align:center;
 }
+
+/* Manually approve container */
+
+#vrtx-resource\.manually-approve-from {
+  position: relative;
+}
+
+#vrtx-resource\.manually-approve-from h2 {
+  margin-bottom: 15px !important;
+}
+
+#manually-approve-container {
+  position: absolute;
+  top: 45px;
+  width: 278px;
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 6px 12px 12px 12px;
+  display: none;
+  z-index: 9999;
+}
+
+#manually-approve-save-cancel {
+  border-top: 1px dotted #ccc;
+  clear: both;
+  float: left;
+  margin-top: 5px;
+  padding-top: 10px;
+  width: 278px;
+}
+
+#manually-approve-container .next,
+#manually-approve-container .prev {
+  margin-top: 10px;
+  display: block;
+}
+
+#manually-approve-container #manually-approve-save,
+#manually-approve-container .prev {
+  float: left;
+}
+
+#manually-approve-container #manually-approve-cancel,
+#manually-approve-container .next {
+  float: right;
+}
+
+#manually-approve-container #manually-approve-cancel {
+  margin-top: 3px;
+  display: block;
+}
+
+#manually-approve-container ul {
+  list-style: none;
+  margin: 0px;
+  padding: 0px;
+}
+
+#manually-approve-container ul li {
+  list-style: none;
+  margin: 0px;
+  padding: 0px;
+}
+
+#manually-approve-container a {
+  text-decoration: none;
+}
+
+#manually-approve-container a:hover {
+  text-decoration: underline;
+}
+
+/* ^ Manually approve container */

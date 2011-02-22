@@ -282,11 +282,10 @@ function retrieveResources(folders, resourceType) {
 
 $(document).ready(function() {
 
-    // TODO: get folders from textfield
-    var resources = retrieveResources("/om/", "resource");
-
     // TODO: registrate click() for a button instead of focus() on textfield
     $("#resource\\.manually-approve-from").focus(function() {
+      // TODO: get folders from textfield
+      var resources = retrieveResources("/om/", "resource");
       toggleManuallyApprovedContainer(resources, "");
     });
 

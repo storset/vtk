@@ -59,8 +59,9 @@
   <bean id="manuallyApprovedResourcesPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
     parent="abstractPropDef">
     <property name="name" value="manually-approved-resources" />
-    <property name="type" value="BINARY" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="type" value="STRING" />
+    <property name="multiple" value="true" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
   </bean>
   
   <bean id="recursiveAggregationPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"

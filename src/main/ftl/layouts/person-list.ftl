@@ -6,7 +6,11 @@
 
 <#macro listPersons >
 <div class="${name}-participants">
+<#if name != "master-list" >
   <h2><a href="${showAllPersons}"><@vrtx.msg code="${name}.project-participants" /></a></h2>
+<#else>
+  <h2><@vrtx.msg code="${name}.project-participants" /></h2>
+</#if>
   <ul>
   	<#local i = 0 />
     <#list relatedPersons as person>
@@ -21,6 +25,8 @@
 	  </#if>
     </#list>
   </ul>
-  <a class="all-messages" href="${showAllPersons}"><@vrtx.msg code="decorating.feedComponent.allMessages" /></a>
+  <#if name != "master-list" >
+  	<a class="all-messages" href="${showAllPersons}"><@vrtx.msg code="decorating.feedComponent.allMessages" /></a>
+  </#if>
 </div>
 </#macro>

@@ -8,16 +8,17 @@ resourcetype structured-master{
     picture : image_ref,
     caption : simple_html,
     content : html noextract,
+    related-content : html noextract,
     supervisorsUsernames : string multiple,
     supervisors : json (supervisorName:string, supervisorUrl:string) multiple,
-    credits: string,
-    numberOfSupervisorsToDisplay : string defaultvalue("10"),
+    numberOfSupervisorsToDisplay : string defaultvalue("100"),
+    credits: string  defaultvalue("60"),
     tags : string multiple overrides tags
   }
   
   edit-rules {
     caption (size[small]),
-    numberOfSupervisorsToDisplay (dropdown),
+    credits (dropdown),
     group introImageAndCaption (picture, caption) (after introduction) vertical,
     tags tooltip (en : "(Tag1, Tag2, ...)", no : "(Emneord1, Emneord2, ...)", nn : "(Emneord1, Emneord2, ...)")
   }
@@ -48,7 +49,18 @@ resourcetype structured-master{
       [endif]
       ##
     }
-    
+
+    related-content-in-additional-column {
+      ##
+      [resource-props "."]
+      [def document structured-document()]
+      [def theRelated-content document.properties.related-content]
+      [if theRelated-content != null]
+              [val theRelated-content # unescaped]
+      [endif]
+      ##
+    }
+
     introduction-image {
       ##
       [def img-uri resource-prop(".", "picture")]
@@ -140,6 +152,9 @@ resourcetype structured-master{
           </div>
           <div id="vrtx-additional-content">
             [call "resource:master-list"]
+            <h2>[localized "credits"]</h2>
+            [call "json:field" {"select":"credits"}]
+    		[call "comp:related-content-in-additional-column"]
           </div>
         </div>
       </body>
@@ -153,12 +168,12 @@ resourcetype structured-master{
        no : ("true" = "Ledig", "false" = "Tatt"),
        nn : ("true" = "Ledig", "false" = "Tatt")
      }
-     
-    numberOfSupervisorsToDisplay {
-       en : (range = "25..1"),
-       no : (range = "25..1"),
-       nn : (range = "25..1")
+	credits {
+       en : (range = "60,30"),
+       no : (range = "60,30"),
+       nn : (range = "60,30")
      }
+
   }
   
   localization {
@@ -169,6 +184,7 @@ resourcetype structured-master{
     introduction-image-alt : (en: "Image", en: "Bilde", en: "Bilete"),
     caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
     photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
+    related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold"),
     supervisorsHeader : (en : "Supervisors", no : "Veiledere", nn : "Rettleiarar"),
     supervisorsUsernames : (en : "Supervisors from UiO (enter the supervisor username)",no : "Veiledere fra UiO (fyll inn veilederens brukernavn)", nn :"Rettleiarar fra UiO (fyll inn rettleiarens brukernavn)"),
     supervisors : (en : "Other supervisors", no : "Andre veiledere", nn : "Andre rettleiarar"),

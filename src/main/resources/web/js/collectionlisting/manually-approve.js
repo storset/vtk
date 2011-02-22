@@ -2,7 +2,7 @@
  * JS for handling manually approved resources
  */
 
-function toggleManuallyApprovedContainer(resources, manuallyApproved) {
+function toggleManuallyApprovedContainer(resources) {
   // Toggle visibility of container for list of resources to manually approve.
   // "resources" is complete list (array) of resources. If empty, hide
   // container, else display.
@@ -11,37 +11,40 @@ function toggleManuallyApprovedContainer(resources, manuallyApproved) {
 
   // TODO: i18n ++
 
-  var pages = 1, prPage = 10, len = resources.length;
-  var total = len > prPage ? (parseInt(len / prPage) + 1) : 1;
-
-  var html = "<div id='approve-page-" + pages + "'><h3>Manually approve resources - page " + pages + "/" + total + "</h3><ul>";
-
+  var pages = 1, prPage = 25, len = resources.length;
+  var totalPages = len > prPage ? (parseInt(len / prPage) + 1) : 1;
+  
+  var html = "<div id='approve-page-" + pages + "'>"
+           + "<table><thead><tr><th>Tittel</th><th>Uri</th><th>Publisert</th></thead></tr><tbody>";
+  
   for(var i = 0; i < len; i++) {
     if(resources[i].approved) {
-      html += "<li><input type='checkbox' checked='checked' />";
+      html += "<tr><td><input type='checkbox' checked='checked' />";
     } else {
-      html += "<li><input type='checkbox' />";
+      html += "<tr><td><input type='checkbox' />";
     }
-    html += "<a href='" + resources[i].uri + "'>" + resources[i].title + "</a></li>";
+    html += "<a title='" + resources[i].name + "' href='" + resources[i].uri + "'>" + resources[i].title + "</a></td>"
+          + "<td>" + resources[i].uri + "</td><td>" + resources[i].published + "</td></tr>";
     if((i+1) % prPage == 0) {
+      html += "</tbody></table>";
+      html += "<span class='approve-info'>Viser " + (((pages-1) * prPage)+1) + "-" + (pages * prPage) + " av " + len + "</span>";
       pages++;
-      html += "</ul>";
       if(i < len-1) {
         if(i > prPage) {
           html += "<a href='#page-" + (pages - 1) + "' class='prev' id='page-" + (pages - 1) + "'>Prev</a>";
         }
         html += "<a href='#page-" + pages + "' class='next' id='page-" + pages + "'>Next</a>"
-              + "</div><div id='approve-page-" + pages + "'>"
-              + "<h3>Manually approve resources - page " + pages + "/" + total + "</h3>";
+              + "</div><div id='approve-page-" + pages + "'>";
       }
-      html += "<ul>";
+      html += "<table><thead><tr><th>Tittel</th><th>Uri</th><th>Publisert</th></tr></thead><tbody>";
     }
   }
-  html += "</ul><a href='#page-" + (pages - 1) + "' class='prev' id='page-" + (pages - 1) + "'>Prev</a></div>"
-        + "<div id='manually-approve-save-cancel'><input type='submit' id='manually-approve-save' value='Save' />"
-        + "<a href='#' id='manually-approve-cancel'>Cancel</a></div>";
+  html += "</tbody></table><span class='approve-info'>Viser " + (((pages-1) * prPage)+1) + "-" + len + " av " + len + "</span>";
+  if(len > prPage) {
+    html += "<a href='#page-" + (pages - 1) + "' class='prev' id='page-" + (pages - 1) + "'>Prev</a></div>";
+  }
 
-  $("#manually-approve-container").html(html).slideDown("fast");
+  $("#manually-approve-container").html(html).show("fast");
   $("#manually-approve-container div").not("#approve-page-1").not("#manually-approve-save-cancel").hide();
 
 }
@@ -53,257 +56,661 @@ function retrieveResources(folders, resourceType) {
   // Dummy JSON
   return [
         {
-          "title": "artikkel.html",
-          "uri": "/artikkel.html",
+          "title": "Lorem ipsum dolore",
+          "uri": "/om/artikkel.html",
+          "published": "2011-02-13",
           "approved" : false
         },
         {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
+          "title": "Dette er en lengre tittel",
+          "uri": "/om/artikkel2.html",
+          "published": "2011-01-10",
           "approved" : true
         },
         {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : true
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : true
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : true
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : true
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : true
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : true
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : true
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : true
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : true
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : true
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : true
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : true
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : true
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
+          "title": "Lorem ipsum dolore",
+          "uri": "/om/dokument.html",
+          "published": "2010-11-07",
           "approved" : false
         },
         {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : true
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : false
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : true
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : true
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : true
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : false
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : false
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : true
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : true
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : false
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : true
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : true
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : true
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : true
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : false
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : false
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : true
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : true
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : true
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : true
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : false
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : true
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : false
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : false
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : false
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : false
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : false
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : false
-        },
-        {
-          "title": "artikkel2.html",
-          "uri": "/om/artikkel.html",
-          "approved" : false
-        }
+            "title": "Lorem ipsum dolore",
+            "uri": "/om/artikkel.html",
+            "published": "2011-02-13",
+            "approved" : false
+          },
+          {
+            "title": "Dette er en lengre tittel",
+            "uri": "/om/artikkel2.html",
+            "published": "2011-01-10",
+            "approved" : true
+          },
+          {
+            "title": "Lorem ipsum dolore",
+            "uri": "/om/dokument.html",
+            "published": "2010-11-07",
+            "approved" : false
+          },
+          {
+              "title": "Lorem ipsum dolore",
+              "uri": "/om/artikkel.html",
+              "published": "2011-02-13",
+              "approved" : false
+            },
+            {
+              "title": "Dette er en lengre tittel",
+              "uri": "/om/artikkel2.html",
+              "published": "2011-01-10",
+              "approved" : true
+            },
+            {
+              "title": "Lorem ipsum dolore",
+              "uri": "/om/dokument.html",
+              "published": "2010-11-07",
+              "approved" : false
+            },
+            {
+                "title": "Lorem ipsum dolore",
+                "uri": "/om/artikkel.html",
+                "published": "2011-02-13",
+                "approved" : false
+              },
+              {
+                "title": "Dette er en lengre tittel",
+                "uri": "/om/artikkel2.html",
+                "published": "2011.01.10",
+                "approved" : true
+              },
+              {
+                "title": "Lorem ipsum dolore",
+                "uri": "/om/dokument.html",
+                "published": "2010.11.07",
+                "approved" : false
+              },
+              {
+                  "title": "Lorem ipsum dolore",
+                  "uri": "/om/artikkel.html",
+                  "published": "2011.02.13",
+                  "approved" : false
+                },
+                {
+                  "title": "Dette er en lengre tittel",
+                  "uri": "/om/artikkel2.html",
+                  "published": "2011.01.10",
+                  "approved" : true
+                },
+                {
+                  "title": "Lorem ipsum dolore",
+                  "uri": "/om/dokument.html",
+                  "published": "2010.11.07",
+                  "approved" : false
+                },
+                {
+                    "title": "Lorem ipsum dolore",
+                    "uri": "/om/artikkel.html",
+                    "published": "2011.02.13",
+                    "approved" : false
+                  },
+                  {
+                    "title": "Dette er en lengre tittel",
+                    "uri": "/om/artikkel2.html",
+                    "published": "2011.01.10",
+                    "approved" : true
+                  },
+                  {
+                    "title": "Lorem ipsum dolore",
+                    "uri": "/om/dokument.html",
+                    "published": "2010.11.07",
+                    "approved" : false
+                  },{
+                      "title": "Lorem ipsum dolore",
+                      "uri": "/om/artikkel.html",
+                      "published": "2011.02.13",
+                      "approved" : false
+                    },
+                    {
+                      "title": "Dette er en lengre tittel",
+                      "uri": "/om/artikkel2.html",
+                      "published": "2011.01.10",
+                      "approved" : true
+                    },
+                    {
+                      "title": "Lorem ipsum dolore",
+                      "uri": "/om/dokument.html",
+                      "published": "2010.11.07",
+                      "approved" : false
+                    },
+                    {
+                        "title": "Lorem ipsum dolore",
+                        "uri": "/om/artikkel.html",
+                        "published": "2011.02.13",
+                        "approved" : false
+                      },
+                      {
+                        "title": "Dette er en lengre tittel",
+                        "uri": "/om/artikkel2.html",
+                        "published": "2011.01.10",
+                        "approved" : true
+                      },
+                      {
+                        "title": "Lorem ipsum dolore",
+                        "uri": "/om/dokument.html",
+                        "published": "2010.11.07",
+                        "approved" : false
+                      },
+                      {
+                          "title": "Lorem ipsum dolore",
+                          "uri": "/om/artikkel.html",
+                          "published": "2011.02.13",
+                          "approved" : false
+                        },
+                        {
+                          "title": "Dette er en lengre tittel",
+                          "uri": "/om/artikkel2.html",
+                          "published": "2011.01.10",
+                          "approved" : true
+                        },
+                        {
+                          "title": "Lorem ipsum dolore",
+                          "uri": "/om/dokument.html",
+                          "published": "2010.11.07",
+                          "approved" : false
+                        },
+                        {
+                            "title": "Lorem ipsum dolore",
+                            "uri": "/om/artikkel.html",
+                            "published": "2011.02.13",
+                            "approved" : false
+                          },
+                          {
+                            "title": "Dette er en lengre tittel",
+                            "uri": "/om/artikkel2.html",
+                            "published": "2011.01.10",
+                            "approved" : true
+                          },
+                          {
+                            "title": "Lorem ipsum dolore",
+                            "uri": "/om/dokument.html",
+                            "published": "2010.11.07",
+                            "approved" : false
+                          },
+                          {
+                              "title": "Lorem ipsum dolore",
+                              "uri": "/om/artikkel.html",
+                              "published": "2011.02.13",
+                              "approved" : false
+                            },
+                            {
+                              "title": "Dette er en lengre tittel",
+                              "uri": "/om/artikkel2.html",
+                              "published": "2011.01.10",
+                              "approved" : true
+                            },
+                            {
+                              "title": "Lorem ipsum dolore",
+                              "uri": "/om/dokument.html",
+                              "published": "2010.11.07",
+                              "approved" : false
+                            },
+                            {
+                                "title": "Lorem ipsum dolore",
+                                "uri": "/om/artikkel.html",
+                                "published": "2011.02.13",
+                                "approved" : false
+                              },
+                              {
+                                "title": "Dette er en lengre tittel",
+                                "uri": "/om/artikkel2.html",
+                                "published": "2011.01.10",
+                                "approved" : true
+                              },
+                              {
+                                "title": "Lorem ipsum dolore",
+                                "uri": "/om/dokument.html",
+                                "published": "2010.11.07",
+                                "approved" : false
+                              },{
+                                  "title": "Lorem ipsum dolore",
+                                  "uri": "/om/artikkel.html",
+                                  "published": "2011.02.13",
+                                  "approved" : false
+                                },
+                                {
+                                  "title": "Dette er en lengre tittel",
+                                  "uri": "/om/artikkel2.html",
+                                  "published": "2011.01.10",
+                                  "approved" : true
+                                },
+                                {
+                                  "title": "Lorem ipsum dolore",
+                                  "uri": "/om/dokument.html",
+                                  "published": "2010.11.07",
+                                  "approved" : false
+                                },
+                                {
+                                    "title": "Lorem ipsum dolore",
+                                    "uri": "/om/artikkel.html",
+                                    "published": "2011.02.13",
+                                    "approved" : false
+                                  },
+                                  {
+                                    "title": "Dette er en lengre tittel",
+                                    "uri": "/om/artikkel2.html",
+                                    "published": "2011.01.10",
+                                    "approved" : true
+                                  },
+                                  {
+                                    "title": "Lorem ipsum dolore",
+                                    "uri": "/om/dokument.html",
+                                    "published": "2010.11.07",
+                                    "approved" : false
+                                  },
+                                  {
+                                      "title": "Lorem ipsum dolore",
+                                      "uri": "/om/artikkel.html",
+                                      "published": "2011.02.13",
+                                      "approved" : false
+                                    },
+                                    {
+                                      "title": "Dette er en lengre tittel",
+                                      "uri": "/om/artikkel2.html",
+                                      "published": "2011.01.10",
+                                      "approved" : true
+                                    },
+                                    {
+                                      "title": "Lorem ipsum dolore",
+                                      "uri": "/om/dokument.html",
+                                      "published": "2010.11.07",
+                                      "approved" : false
+                                    },
+                                    {
+                                        "title": "Lorem ipsum dolore",
+                                        "uri": "/om/artikkel.html",
+                                        "published": "2011.02.13",
+                                        "approved" : false
+                                      },
+                                      {
+                                        "title": "Dette er en lengre tittel",
+                                        "uri": "/om/artikkel2.html",
+                                        "published": "2011.01.10",
+                                        "approved" : true
+                                      },
+                                      {
+                                        "title": "Lorem ipsum dolore",
+                                        "uri": "/om/dokument.html",
+                                        "published": "2010.11.07",
+                                        "approved" : false
+                                      },
+                                      {
+                                          "title": "Lorem ipsum dolore",
+                                          "uri": "/om/artikkel.html",
+                                          "published": "2011.02.13",
+                                          "approved" : false
+                                        },
+                                        {
+                                          "title": "Dette er en lengre tittel",
+                                          "uri": "/om/artikkel2.html",
+                                          "published": "2011.01.10",
+                                          "approved" : true
+                                        },
+                                        {
+                                          "title": "Lorem ipsum dolore",
+                                          "uri": "/om/dokument.html",
+                                          "published": "2010.11.07",
+                                          "approved" : false
+                                        },
+                                        {
+                                            "title": "Lorem ipsum dolore",
+                                            "uri": "/om/artikkel.html",
+                                            "published": "2011.02.13",
+                                            "approved" : false
+                                          },
+                                          {
+                                            "title": "Dette er en lengre tittel",
+                                            "uri": "/om/artikkel2.html",
+                                            "published": "2011.01.10",
+                                            "approved" : true
+                                          },
+                                          {
+                                            "title": "Lorem ipsum dolore",
+                                            "uri": "/om/dokument.html",
+                                            "published": "2010.11.07",
+                                            "approved" : false
+                                          },{
+                                              "title": "Lorem ipsum dolore",
+                                              "uri": "/om/artikkel.html",
+                                              "published": "2011.02.13",
+                                              "approved" : false
+                                            },
+                                            {
+                                              "title": "Dette er en lengre tittel",
+                                              "uri": "/om/artikkel2.html",
+                                              "published": "2011.01.10",
+                                              "approved" : true
+                                            },
+                                            {
+                                              "title": "Lorem ipsum dolore",
+                                              "uri": "/om/dokument.html",
+                                              "published": "2010.11.07",
+                                              "approved" : false
+                                            },
+                                            {
+                                                "title": "Lorem ipsum dolore",
+                                                "uri": "/om/artikkel.html",
+                                                "published": "2011.02.13",
+                                                "approved" : false
+                                              },
+                                              {
+                                                "title": "Dette er en lengre tittel",
+                                                "uri": "/om/artikkel2.html",
+                                                "published": "2011.01.10",
+                                                "approved" : true
+                                              },
+                                              {
+                                                "title": "Lorem ipsum dolore",
+                                                "uri": "/om/dokument.html",
+                                                "published": "2010.11.07",
+                                                "approved" : false
+                                              },
+                                              {
+                                                  "title": "Lorem ipsum dolore",
+                                                  "uri": "/om/artikkel.html",
+                                                  "published": "2011.02.13",
+                                                  "approved" : false
+                                                },
+                                                {
+                                                  "title": "Dette er en lengre tittel",
+                                                  "uri": "/om/artikkel2.html",
+                                                  "published": "2011.01.10",
+                                                  "approved" : true
+                                                },
+                                                {
+                                                  "title": "Lorem ipsum dolore",
+                                                  "uri": "/om/dokument.html",
+                                                  "published": "2010.11.07",
+                                                  "approved" : false
+                                                },
+                                                {
+                                                    "title": "Lorem ipsum dolore",
+                                                    "uri": "/om/artikkel.html",
+                                                    "published": "2011.02.13",
+                                                    "approved" : false
+                                                  },
+                                                  {
+                                                    "title": "Dette er en lengre tittel",
+                                                    "uri": "/om/artikkel2.html",
+                                                    "published": "2011.01.10",
+                                                    "approved" : true
+                                                  },
+                                                  {
+                                                    "title": "Lorem ipsum dolore",
+                                                    "uri": "/om/dokument.html",
+                                                    "published": "2010.11.07",
+                                                    "approved" : false
+                                                  },
+                                                  {
+                                                      "title": "Lorem ipsum dolore",
+                                                      "uri": "/om/artikkel.html",
+                                                      "published": "2011.02.13",
+                                                      "approved" : false
+                                                    },
+                                                    {
+                                                      "title": "Dette er en lengre tittel",
+                                                      "uri": "/om/artikkel2.html",
+                                                      "published": "2011.01.10",
+                                                      "approved" : true
+                                                    },
+                                                    {
+                                                      "title": "Lorem ipsum dolore",
+                                                      "uri": "/om/dokument.html",
+                                                      "published": "2010.11.07",
+                                                      "approved" : false
+                                                    },
+                                                    {
+                                                        "title": "Lorem ipsum dolore",
+                                                        "uri": "/om/artikkel.html",
+                                                        "published": "2011.02.13",
+                                                        "approved" : false
+                                                      },
+                                                      {
+                                                        "title": "Dette er en lengre tittel",
+                                                        "uri": "/om/artikkel2.html",
+                                                        "published": "2011.01.10",
+                                                        "approved" : true
+                                                      },
+                                                      {
+                                                        "title": "Lorem ipsum dolore",
+                                                        "uri": "/om/dokument.html",
+                                                        "published": "2010.11.07",
+                                                        "approved" : false
+                                                      },{
+                                                          "title": "Lorem ipsum dolore",
+                                                          "uri": "/om/artikkel.html",
+                                                          "published": "2011.02.13",
+                                                          "approved" : false
+                                                        },
+                                                        {
+                                                          "title": "Dette er en lengre tittel",
+                                                          "uri": "/om/artikkel2.html",
+                                                          "published": "2011.01.10",
+                                                          "approved" : true
+                                                        },
+                                                        {
+                                                          "title": "Lorem ipsum dolore",
+                                                          "uri": "/om/dokument.html",
+                                                          "published": "2010.11.07",
+                                                          "approved" : false
+                                                        },
+                                                        {
+                                                            "title": "Lorem ipsum dolore",
+                                                            "uri": "/om/artikkel.html",
+                                                            "published": "2011.02.13",
+                                                            "approved" : false
+                                                          },
+                                                          {
+                                                            "title": "Dette er en lengre tittel",
+                                                            "uri": "/om/artikkel2.html",
+                                                            "published": "2011.01.10",
+                                                            "approved" : true
+                                                          },
+                                                          {
+                                                            "title": "Lorem ipsum dolore",
+                                                            "uri": "/om/dokument.html",
+                                                            "published": "2010.11.07",
+                                                            "approved" : false
+                                                          },
+                                                          {
+                                                              "title": "Lorem ipsum dolore",
+                                                              "uri": "/om/artikkel.html",
+                                                              "published": "2011.02.13",
+                                                              "approved" : false
+                                                            },
+                                                            {
+                                                              "title": "Dette er en lengre tittel",
+                                                              "uri": "/om/artikkel2.html",
+                                                              "published": "2011.01.10",
+                                                              "approved" : true
+                                                            },
+                                                            {
+                                                              "title": "Lorem ipsum dolore",
+                                                              "uri": "/om/dokument.html",
+                                                              "published": "2010.11.07",
+                                                              "approved" : false
+                                                            },
+                                                            {
+                                                                "title": "Lorem ipsum dolore",
+                                                                "uri": "/om/artikkel.html",
+                                                                "published": "2011.02.13",
+                                                                "approved" : false
+                                                              },
+                                                              {
+                                                                "title": "Dette er en lengre tittel",
+                                                                "uri": "/om/artikkel2.html",
+                                                                "published": "2011.01.10",
+                                                                "approved" : true
+                                                              },
+                                                              {
+                                                                "title": "Lorem ipsum dolore",
+                                                                "uri": "/om/dokument.html",
+                                                                "published": "2010.11.07",
+                                                                "approved" : false
+                                                              },
+                                                              {
+                                                                  "title": "Lorem ipsum dolore",
+                                                                  "uri": "/om/artikkel.html",
+                                                                  "published": "2011.02.13",
+                                                                  "approved" : false
+                                                                },
+                                                                {
+                                                                  "title": "Dette er en lengre tittel",
+                                                                  "uri": "/om/artikkel2.html",
+                                                                  "published": "2011.01.10",
+                                                                  "approved" : true
+                                                                },
+                                                                {
+                                                                  "title": "Lorem ipsum dolore",
+                                                                  "uri": "/om/dokument.html",
+                                                                  "published": "2010.11.07",
+                                                                  "approved" : false
+                                                                },
+                                                                {
+                                                                    "title": "Lorem ipsum dolore",
+                                                                    "uri": "/om/artikkel.html",
+                                                                    "published": "2011.02.13",
+                                                                    "approved" : false
+                                                                  },
+                                                                  {
+                                                                    "title": "Dette er en lengre tittel",
+                                                                    "uri": "/om/artikkel2.html",
+                                                                    "published": "2011.01.10",
+                                                                    "approved" : true
+                                                                  },
+                                                                  {
+                                                                    "title": "Lorem ipsum dolore",
+                                                                    "uri": "/om/dokument.html",
+                                                                    "published": "2010.11.07",
+                                                                    "approved" : false
+                                                                  },{
+                                                                      "title": "Lorem ipsum dolore",
+                                                                      "uri": "/om/artikkel.html",
+                                                                      "published": "2011.02.13",
+                                                                      "approved" : false
+                                                                    },
+                                                                    {
+                                                                      "title": "Dette er en lengre tittel",
+                                                                      "uri": "/om/artikkel2.html",
+                                                                      "published": "2011.01.10",
+                                                                      "approved" : true
+                                                                    },
+                                                                    {
+                                                                      "title": "Lorem ipsum dolore",
+                                                                      "uri": "/om/dokument.html",
+                                                                      "published": "2010.11.07",
+                                                                      "approved" : false
+                                                                    },
+                                                                    {
+                                                                        "title": "Lorem ipsum dolore",
+                                                                        "uri": "/om/artikkel.html",
+                                                                        "published": "2011.02.13",
+                                                                        "approved" : false
+                                                                      },
+                                                                      {
+                                                                        "title": "Dette er en lengre tittel",
+                                                                        "uri": "/om/artikkel2.html",
+                                                                        "published": "2011.01.10",
+                                                                        "approved" : true
+                                                                      },
+                                                                      {
+                                                                        "title": "Lorem ipsum dolore",
+                                                                        "uri": "/om/dokument.html",
+                                                                        "published": "2010.11.07",
+                                                                        "approved" : false
+                                                                      },
+                                                                      {
+                                                                          "title": "Lorem ipsum dolore",
+                                                                          "uri": "/om/artikkel.html",
+                                                                          "published": "2011.02.13",
+                                                                          "approved" : false
+                                                                        },
+                                                                        {
+                                                                          "title": "Dette er en lengre tittel",
+                                                                          "uri": "/om/artikkel2.html",
+                                                                          "published": "2011.01.10",
+                                                                          "approved" : true
+                                                                        },
+                                                                        {
+                                                                          "title": "Lorem ipsum dolore",
+                                                                          "uri": "/om/dokument.html",
+                                                                          "published": "2010.11.07",
+                                                                          "approved" : false
+                                                                        },
+                                                                        {
+                                                                            "title": "Lorem ipsum dolore",
+                                                                            "uri": "/om/artikkel.html",
+                                                                            "published": "2011.02.13",
+                                                                            "approved" : false
+                                                                          },
+                                                                          {
+                                                                            "title": "Dette er en lengre tittel",
+                                                                            "uri": "/om/artikkel2.html",
+                                                                            "published": "2011.01.10",
+                                                                            "approved" : true
+                                                                          },
+                                                                          {
+                                                                            "title": "Lorem ipsum dolore",
+                                                                            "uri": "/om/dokument.html",
+                                                                            "published": "2010.11.07",
+                                                                            "approved" : false
+                                                                          },
+                                                                          {
+                                                                              "title": "Lorem ipsum dolore",
+                                                                              "uri": "/om/artikkel.html",
+                                                                              "published": "2011.02.13",
+                                                                              "approved" : false
+                                                                            },
+                                                                            {
+                                                                              "title": "Dette er en lengre tittel",
+                                                                              "uri": "/om/artikkel2.html",
+                                                                              "published": "2011.01.10",
+                                                                              "approved" : true
+                                                                            },
+                                                                            {
+                                                                              "title": "Lorem ipsum dolore",
+                                                                              "uri": "/om/dokument.html",
+                                                                              "published": "2010.11.07",
+                                                                              "approved" : false
+                                                                            },
+                                                                            {
+                                                                                "title": "Lorem ipsum dolore",
+                                                                                "uri": "/om/artikkel.html",
+                                                                                "published": "2011.02.13",
+                                                                                "approved" : false
+                                                                              },
+                                                                              {
+                                                                                "title": "Dette er en lengre tittel",
+                                                                                "uri": "/om/artikkel2.html",
+                                                                                "published": "2011.01.10",
+                                                                                "approved" : true
+                                                                              },
+                                                                              {
+                                                                                "title": "Lorem ipsum dolore",
+                                                                                "uri": "/om/dokument.html",
+                                                                                "published": "2010.11.07",
+                                                                                "approved" : false
+                                                                              }
     ];
 }
 
 $(document).ready(function() {
 
-    // TODO: registrate click() for a button instead of focus() on textfield
-    $("#resource\\.manually-approve-from").focus(function(e) {
+    // TODO: registrate click() for update button
+    //$("#resource\\.manually-approve-from").focus(function(e) {
       var folders = $(this).val().split(",");
       var resources = retrieveResources(folders, "resource");
-      toggleManuallyApprovedContainer(resources, "");
-      e.preventPropagation();
-      return false; 
-    });
-
-    // Action - Save
-    $("#manually-approve-container").delegate("#manually-approve-save", "click", function() {
-    	// TODO: implement save..
-
-    	$(this).parent().parent().slideUp("fast");
-        return false;
-    });
-
-    // Action - Cancel
-    $("#manually-approve-container").delegate("#manually-approve-cancel", "click", function() {
-    	$(this).parent().parent().slideUp("fast");
-        return false;
-    });
+      toggleManuallyApprovedContainer(resources);
+      //e.preventPropagation();
+      //return false; 
+    //});
 
     // Paging - Next
     $("#manually-approve-container").delegate(".next", "click", function() {

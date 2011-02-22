@@ -1042,74 +1042,52 @@ table.directoryListing tr td {
 
 /* Manually approve container */
 
-#vrtx-resource\.manually-approve-from {
-  position: relative;
-}
-
-#vrtx-resource\.manually-approve-from h3 {
-  margin-bottom: 15px !important;
-}
-
-#manually-approve-container {
-  position: absolute;
-  top: 45px;
-  width: 320px;
-  background: #fff;
-  border: 1px solid #ccc;
-  padding: 12px;
-  display: none;
-  z-index: 9999;
+#vrtx-resource\.manually-approve-from #manually-approve-container-title {
+  margin-top: 1em;
   font-size: 90%;
 }
 
-#manually-approve-save-cancel {
-  border-top: 1px dotted #ccc;
-  clear: both;
+#manually-approve-container {
+  margin: 1em 0 3em 0;
+  font-size: 90%;
+}
+
+#manually-approve-container table {
+  border-collapse: collapse;
+  border: 1px solid #ccc;
+}
+
+#manually-approve-container table input {
+  margin-right: 0.5em;
+}
+
+#manually-approve-container table th {
+  text-align: left;
+  border-bottom: 1px solid #ccc; 
+}
+
+#manually-approve-container table th,
+#manually-approve-container table td {
+  vertical-align: top; 
+  padding: 0.5em;
+  border-right: 1px solid #ccc; 
+}
+
+#manually-approve-container .approve-info {
+  display: block;
   float: left;
-  margin-top: 5px;
-  padding-top: 10px;
-  width: 320px;
+  margin: 0.5em 1em 1em 0;
 }
 
 #manually-approve-container .next,
 #manually-approve-container .prev {
-  margin-top: 10px;
+  margin: 0.5em 0 1em 0;
   display: block;
-}
-
-#manually-approve-container #manually-approve-save,
-#manually-approve-container .prev {
   float: left;
 }
 
-#manually-approve-container #manually-approve-cancel,
-#manually-approve-container .next {
-  float: right;
-}
-
-#manually-approve-container #manually-approve-cancel {
-  margin-top: 3px;
-  display: block;
-}
-
-#manually-approve-container ul {
-  list-style: none;
-  margin: 0px;
-  padding: 0px;
-}
-
-#manually-approve-container ul li {
-  list-style: none;
-  margin: 0px;
-  padding: 0px;
-}
-
-#manually-approve-container a {
-  text-decoration: none;
-}
-
-#manually-approve-container a:hover {
-  text-decoration: underline;
+#manually-approve-container .prev {
+  margin-right: 1em;
 }
 
 /* ^ Manually approve container */

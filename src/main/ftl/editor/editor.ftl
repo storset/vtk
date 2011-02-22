@@ -394,21 +394,22 @@
             </select>
           </#if>
         <#else>
-        
-          <#if name = 'manually-approve-from'>
-            <div id="manually-approve-container">
-            </div>
-          </#if>
 
           <#if name = 'recursive-listing-subfolders'>
             <label>${vrtx.getMsg("editor.recursive-listing.featured-articles")}</label>
           </#if>
-          <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32" />         
+          <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32" /> 
           <#if name = 'recursive-listing-subfolders'>
             <label>${vrtx.getMsg("editor.recursive-listing.featured-articles.hint")}</label>
           </#if>
           <#if description != "">
             <span class="input-description">(${description})</span>
+          </#if>
+          
+          <#if name = 'manually-approve-from'>
+            <div id="manually-approve-container-title">Manuelt godkjente ressurser</div>
+            <div id="manually-approve-container">
+            </div>
           </#if>
         
         </#if>

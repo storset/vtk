@@ -703,14 +703,18 @@ function retrieveResources(folders, resourceType) {
 
 $(document).ready(function() {
 
-    // TODO: registrate click() for update button
-    //$("#resource\\.manually-approve-from").focus(function(e) {
+    var folders = $(this).val().split(",");
+    var resources = retrieveResources(folders, "resource");
+    toggleManuallyApprovedContainer(resources);
+	
+    // Refresh table
+    $("#manually-approve-refresh").click(function(e) {
       var folders = $(this).val().split(",");
       var resources = retrieveResources(folders, "resource");
       toggleManuallyApprovedContainer(resources);
-      //e.preventPropagation();
-      //return false; 
-    //});
+      e.preventPropagation();
+      return false; 
+    });
 
     // Paging - Next
     $("#manually-approve-container").delegate(".next", "click", function() {

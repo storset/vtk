@@ -408,6 +408,7 @@
           
           <#if name = 'manually-approve-from'>
             <div id="manually-approve-container-title">Manuelt godkjente ressurser</div>
+            <a id="manually-approve-refresh" href="#refresh" name="refresh">Oppdater liste</a>
             <div id="manually-approve-container">
             </div>
           </#if>

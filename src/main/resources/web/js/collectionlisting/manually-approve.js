@@ -31,9 +31,10 @@ function toggleManuallyApprovedContainer(resources) {
       pages++;
       if(i < len-1) {
         if(i > prPage) {
-          html += "<a href='#page-" + (pages - 1) + "' class='prev' id='page-" + (pages - 1) + "'>Prev</a>";
+          html += "<a href='#page-" + (pages - 1) + "' class='prev' id='page-" + (pages - 1) + "'>Forrige " + prPage + "</a>";
         }
-        html += "<a href='#page-" + pages + "' class='next' id='page-" + pages + "'>Next</a>"
+        var nextPrPage = pages < totalPages || len % prPage == 0 ? prPage : len % prPage;
+        html += "<a href='#page-" + pages + "' class='next' id='page-" + pages + "'>Neste " + nextPrPage + "</a>"
               + "</div><div id='approve-page-" + pages + "'>";
       }
       html += "<table><thead><tr><th>Tittel</th><th>Uri</th><th>Publisert</th></tr></thead><tbody>";
@@ -41,7 +42,7 @@ function toggleManuallyApprovedContainer(resources) {
   }
   html += "</tbody></table><span class='approve-info'>Viser " + (((pages-1) * prPage)+1) + "-" + len + " av " + len + "</span>";
   if(len > prPage) {
-    html += "<a href='#page-" + (pages - 1) + "' class='prev' id='page-" + (pages - 1) + "'>Prev</a></div>";
+    html += "<a href='#page-" + (pages - 1) + "' class='prev' id='page-" + (pages - 1) + "'>Forrige " + prPage + "</a></div>";
   }
 
   $("#manually-approve-container").html(html).show("fast");

@@ -23,7 +23,7 @@ function toggleManuallyApprovedContainer(resources) {
     } else {
       html += "<tr><td><input type='checkbox' />";
     }
-    html += "<a title='" + resources[i].name + "' href='" + resources[i].uri + "'>" + resources[i].title + "</a></td>"
+    html += "<a href='" + resources[i].uri + "'>" + resources[i].title + "</a></td>"
           + "<td>" + resources[i].uri + "</td><td>" + resources[i].published + "</td></tr>";
     if((i+1) % prPage == 0) {
       html += "</tbody></table>";

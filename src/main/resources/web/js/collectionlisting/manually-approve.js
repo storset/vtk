@@ -706,17 +706,12 @@ $(document).ready(function() {
     var folders = $(this).val().split(",");
     var resources = retrieveResources(folders, "resource");
     toggleManuallyApprovedContainer(resources);
-    
-    $("#resource\\.manually-approve-from").change(function(e) {
-      $("#manually-approve-refresh").slideDown("fast");
-    });
 	
     // Refresh table
     $("#manually-approve-refresh").click(function(e) {
       var folders = $(this).val().split(",");
       var resources = retrieveResources(folders, "resource");
       toggleManuallyApprovedContainer(resources);
-      $(this).slideUp("fast");
       e.preventPropagation();
       return false; 
     });

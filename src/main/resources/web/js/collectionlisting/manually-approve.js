@@ -31,22 +31,25 @@ function toggleManuallyApprovedContainer(resources) {
       pages++;
       if(i < len-1) {
         if(i > prPage) {
-          html += "<a href='#page-" + (pages - 1) + "' class='prev' id='page-" + (pages - 1) + "'>Forrige " + prPage + "</a>";
+          html += "<a href='#page-" + (pages-1) + "' class='prev' id='page-" + (pages-1) + "'>Forrige " + prPage + "</a>";
         }
         var nextPrPage = pages < totalPages || len % prPage == 0 ? prPage : len % prPage;
         html += "<a href='#page-" + pages + "' class='next' id='page-" + pages + "'>Neste " + nextPrPage + "</a>"
-              + "</div><div id='approve-page-" + pages + "'>";
+              + "</div><div id='approve-page-" + pages + "'>"
+              + "<table><thead><tr><th>Tittel</th><th>Uri</th><th>Publisert</th></tr></thead><tbody>";
       }
-      html += "<table><thead><tr><th>Tittel</th><th>Uri</th><th>Publisert</th></tr></thead><tbody>";
     }
   }
-  html += "</tbody></table><span class='approve-info'>Viser " + (((pages-1) * prPage)+1) + "-" + len + " av " + len + "</span>";
-  if(len > prPage) {
-    html += "<a href='#page-" + (pages - 1) + "' class='prev' id='page-" + (pages - 1) + "'>Forrige " + prPage + "</a></div>";
+  if(len % prPage != 0) {
+    html += "</tbody></table><span class='approve-info'>Viser " + (((pages-1) * prPage)+1) + "-" + len + " av " + len + "</span>";
   }
+  if(len > prPage) {
+    html += "<a href='#page-" + (pages-1) + "' class='prev' id='page-" + (pages-1) + "'>Forrige " + prPage + "</a>";
+  }
+  html += "</div>";
 
-  $("#manually-approve-container").html(html).show("fast");
-  $("#manually-approve-container div").not("#approve-page-1").not("#manually-approve-save-cancel").hide();
+  $("#manually-approve-container").html(html);
+  $("#manually-approve-container div").not("#approve-page-1").hide();
 
 }
 
@@ -56,54 +59,24 @@ function retrieveResources(folders, resourceType) {
 
   // Dummy JSON
   return [
-        {
-          "title": "Lorem ipsum dolore",
-          "uri": "/om/artikkel.html",
-          "published": "2011-02-13",
-          "approved" : false
-        },
-        {
-          "title": "Dette er en lengre tittel",
-          "uri": "/om/artikkel2.html",
-          "published": "2011-01-10",
-          "approved" : true
-        },
-        {
-          "title": "Lorem ipsum dolore",
-          "uri": "/om/dokument.html",
-          "published": "2010-11-07",
-          "approved" : false
-        },
-        {
-            "title": "Lorem ipsum dolore",
-            "uri": "/om/artikkel.html",
-            "published": "2011-02-13",
-            "approved" : false
-          },
-          {
-            "title": "Dette er en lengre tittel",
-            "uri": "/om/artikkel2.html",
-            "published": "2011-01-10",
-            "approved" : true
-          },
-          {
-            "title": "Lorem ipsum dolore",
-            "uri": "/om/dokument.html",
-            "published": "2010-11-07",
-            "approved" : false
-          },
-          {
-              "title": "Lorem ipsum dolore",
-              "uri": "/om/artikkel.html",
-              "published": "2011-02-13",
-              "approved" : false
-            },
-            {
-              "title": "Dette er en lengre tittel",
-              "uri": "/om/artikkel2.html",
-              "published": "2011-01-10",
-              "approved" : true
-            },
+      {
+       "title": "Lorem ipsum dolore",
+       "uri": "/om/dokument.html",
+       "published": "2010-11-07",
+       "approved" : false
+     },
+     {
+      "title": "Lorem ipsum dolore",
+      "uri": "/om/artikkel.html",
+      "published": "2011-02-13",
+      "approved" : false
+    },
+    {
+      "title": "Dette er en lengre tittel",
+      "uri": "/om/artikkel2.html",
+      "published": "2011.01.10",
+      "approved" : true
+    },
             {
               "title": "Lorem ipsum dolore",
               "uri": "/om/dokument.html",

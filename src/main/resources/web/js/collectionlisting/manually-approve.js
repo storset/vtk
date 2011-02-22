@@ -51,7 +51,7 @@ function retrieveResources(folders, resourceType) {
   // Needs Vortex-service.
 
   // Dummy JSON
-  return = [
+  return [
         {
           "title": "artikkel.html",
           "uri": "/artikkel.html",

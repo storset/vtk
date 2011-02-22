@@ -5,7 +5,9 @@
   <bean id="structured.articleListing.searchComponent" parent="articleListing.searchComponent">
     <property name="name" value="structured.articleListing.defaultArticles" />
     <property name="query">
-      <value>(uri = {$currentFolder}/* AND uri NOT IN {$featuredArticles}) AND (type IN structured-article)</value>
+      <value>((uri = {$currentFolder}/* AND uri NOT IN {$featuredArticles}) AND (type IN structured-article))
+        OR (uri IN {$manuallyApprovedResources})
+      </value>
     </property>
     <property name="searchSorting" ref="structured.articleListing.searchSorting" />
   </bean>

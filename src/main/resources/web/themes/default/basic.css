@@ -1063,14 +1063,19 @@ table.directoryListing tr td {
 
 #manually-approve-container table th {
   text-align: left;
-  border-bottom: 1px solid #ccc; 
+  border-bottom: 1px solid #ccc;
+  background-color: #eee;
+}
+
+#manually-approve-container table td {
+  background-color: #fff;
 }
 
 #manually-approve-container table th,
 #manually-approve-container table td {
   vertical-align: top; 
   padding: 0.5em;
-  border-right: 1px solid #ccc; 
+  border-right: 1px solid #ccc;
 }
 
 #manually-approve-container .approve-info {

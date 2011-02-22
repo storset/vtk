@@ -703,13 +703,13 @@ function retrieveResources(folders, resourceType) {
 
 $(document).ready(function() {
 
-    var folders = $(this).val().split(",");
+    var folders = $("#resource\\.manually-approve-from").val().split(",");
     var resources = retrieveResources(folders, "resource");
     toggleManuallyApprovedContainer(resources);
 	
     // Refresh table
     $("#manually-approve-refresh").click(function(e) {
-      var folders = $(this).val().split(",");
+      var folders = $("#resource\\.manually-approve-from").val().split(",");
       var resources = retrieveResources(folders, "resource");
       toggleManuallyApprovedContainer(resources);
       return false; 

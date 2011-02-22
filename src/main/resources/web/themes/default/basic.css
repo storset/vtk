@@ -1048,19 +1048,20 @@ table.directoryListing tr td {
 }
 
 #manually-approve-container {
-  margin: 1em 0 3em 0;
+  margin: 0.5em 0 3em 0;
   font-size: 90%;
 }
 
 #manually-approve-refresh {
   display: block;
-  margin: 0.5em 0 0.25em 0;
+  margin: 0.5em 0 0 0;
   font-size: 90%;
 }
 
 #manually-approve-container table {
   border-collapse: collapse;
   border: 1px solid #ccc;
+  clear: both;
 }
 
 #manually-approve-container table input {

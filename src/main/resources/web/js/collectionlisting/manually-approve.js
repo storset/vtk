@@ -31,7 +31,7 @@ function toggleManuallyApprovedContainer(resources) {
       pages++;
       if(i < len-1) {
         if(i > prPage) {
-          html += "<a href='#page-" + (pages-1) + "' class='prev' id='page-" + (pages-1) + "'>Forrige " + prPage + "</a>";
+          html += "<a href='#page-" + (pages-2) + "' class='prev' id='page-" + (pages-2) + "'>Forrige " + prPage + "</a>";
         }
         var nextPrPage = pages < totalPages || len % prPage == 0 ? prPage : len % prPage;
         html += "<a href='#page-" + pages + "' class='next' id='page-" + pages + "'>Neste " + nextPrPage + "</a>"
@@ -59,24 +59,6 @@ function retrieveResources(folders, resourceType) {
 
   // Dummy JSON
   return [
-      {
-       "title": "Lorem ipsum dolore",
-       "uri": "/om/dokument.html",
-       "published": "2010-11-07",
-       "approved" : false
-     },
-     {
-      "title": "Lorem ipsum dolore",
-      "uri": "/om/artikkel.html",
-      "published": "2011-02-13",
-      "approved" : false
-    },
-    {
-      "title": "Dette er en lengre tittel",
-      "uri": "/om/artikkel2.html",
-      "published": "2011.01.10",
-      "approved" : true
-    },
             {
               "title": "Lorem ipsum dolore",
               "uri": "/om/dokument.html",
@@ -89,6 +71,18 @@ function retrieveResources(folders, resourceType) {
                 "published": "2011-02-13",
                 "approved" : false
               },
+              {
+                  "title": "Lorem ipsum dolore",
+                  "uri": "/om/dokument.html",
+                  "published": "2010-11-07",
+                  "approved" : false
+                },
+                {
+                    "title": "Lorem ipsum dolore",
+                    "uri": "/om/artikkel.html",
+                    "published": "2011-02-13",
+                    "approved" : false
+                  },
               {
                 "title": "Dette er en lengre tittel",
                 "uri": "/om/artikkel2.html",

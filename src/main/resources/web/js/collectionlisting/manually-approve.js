@@ -712,7 +712,6 @@ $(document).ready(function() {
       var folders = $(this).val().split(",");
       var resources = retrieveResources(folders, "resource");
       toggleManuallyApprovedContainer(resources);
-      e.preventPropagation();
       return false; 
     });
 

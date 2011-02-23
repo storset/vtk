@@ -10,7 +10,7 @@ function toggleManuallyApprovedContainer(resources) {
   // TODO: i18n ++
   // TODO: refactor duplicate code
 	
-  var startTime = new Date();
+  //var startTime = new Date();
 	
   var pages = 1, prPage = 25, len = resources.length, remainder = len % prPage;
   var totalPages = len > prPage ? (parseInt(len / prPage) + 1) : 1;
@@ -86,7 +86,7 @@ function toggleManuallyApprovedContainer(resources) {
       }
       html += "</div>";
       $("#manually-approve-container").append(html)
-        .prepend("Tid: " + (new Date() - startTime) + "ms")
+        //.prepend("Tid: " + (new Date() - startTime) + "ms")
         .find("#approve-spinner").remove();
       $("#manually-approve-container div").not("#approve-page-1").hide();
     }

@@ -63,7 +63,7 @@ function retrieveResources(serviceUri, folders) {
   var getUri = serviceUri + "/?vrtx=manually-approve-resources";
   if(folders != null) {
 	for(var i = 0, len = folders.length; i < len; i++) {
-	  getUri += "&folders=" + folders[i];  
+	  getUri += "&folders=" + $.trim(folders[i]);  
 	}
   }
 	
@@ -82,10 +82,9 @@ $(document).ready(function() {
 
     retrieveResources(".", null);
     
-	
     // Refresh table
     $("#manually-approve-refresh").click(function(e) {
-      var folders = $("#resource\\.manually-approve-from").val().split(", ");
+      var folders = $("#resource\\.manually-approve-from").val().split(",");
       retrieveResources(".", folders);
       return false; 
     });

@@ -27,7 +27,7 @@ function toggleManuallyApprovedContainer(resources) {
       html += "<tr><td><input type='checkbox' />";
     }
     html += "<a href='" + resources[i].uri + "'>" + resources[i].title + "</a></td>"
-          + "<td>" + resources[i].uri + "</td><td>" + resources[i].published + "</td></tr>";
+          + "<td class='uri'>" + resources[i].uri + "</td><td>" + resources[i].published + "</td></tr>";
     if((i+1) % prPage == 0) {
       html += "</tbody></table>";
       html += "<span class='approve-info'>Viser " + (((pages-1) * prPage)+1) + "-" + (pages * prPage) + " av " + len + "</span>";
@@ -81,6 +81,19 @@ $(document).ready(function() {
       var folders = $("#resource\\.manually-approve-from").val().split(",");
       retrieveResources(".");
       return false; 
+    });
+    
+    // Add / remove uri's
+    $("#manually-approve-container").delegate("input", "click", function(e) {
+      var textfield = $("#resource\\.manually-approved-resources");
+      var val = textfield.val();
+      var uri = $(this).parent().parent().find("td.uri").text();
+      if($(this).attr("checked")) {
+        val += uri + ", ";
+      } else {
+    	val = val.replace(uri + ", ", "");  
+      }
+      textfield.val(val);
     });
 
     // Paging - Next

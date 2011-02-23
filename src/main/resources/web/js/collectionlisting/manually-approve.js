@@ -151,7 +151,7 @@ $(document).ready(function() {
     $("#manually-approve-container").delegate(".next", "click", function() {
       var that = $(this).parent();
       var next = that.next();
-      if(next && next.attr("id").indexOf("approve-page") != -1) {
+      if(next.attr("id") && next.attr("id").indexOf("approve-page") != -1) {
          $(that).hide();
          $(next).show();
       }
@@ -162,7 +162,7 @@ $(document).ready(function() {
     $("#manually-approve-container").delegate(".prev", "click", function() {
       var that = $(this).parent();
       var prev = that.prev();
-      if(prev && prev.attr("id").indexOf("approve-page") != -1) {
+      if(prev.attr("id") && prev.attr("id").indexOf("approve-page") != -1) {
          $(that).hide();
          $(prev).show();
       }

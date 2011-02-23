@@ -14,7 +14,7 @@ function toggleManuallyApprovedContainer(resources) {
   //       Need either to create all tables and add rows when next/prev paging (pri),
   //       or use setTimeout loop on all pages after first page
 
-  var pages = 1, prPage = 25, len = resources.length;
+  var pages = 1, prPage = 25, len = resources.length, remainder = len % prPage;
   var totalPages = len > prPage ? (parseInt(len / prPage) + 1) : 1;
   
   var html = "<div id='approve-page-" + pages + "'>"
@@ -36,14 +36,14 @@ function toggleManuallyApprovedContainer(resources) {
         if(i > prPage) {
           html += "<a href='#page-" + (pages-2) + "' class='prev' id='page-" + (pages-2) + "'>Forrige " + prPage + "</a>";
         }
-        var nextPrPage = pages < totalPages || len % prPage == 0 ? prPage : len % prPage;
+        var nextPrPage = pages < totalPages || remainder == 0 ? prPage : remainder;
         html += "<a href='#page-" + pages + "' class='next' id='page-" + pages + "'>Neste " + nextPrPage + "</a>"
               + "</div><div id='approve-page-" + pages + "'>"
               + "<table><thead><tr><th>Tittel</th><th>Uri</th><th>Publisert</th></tr></thead><tbody>";
       }
     }
   }
-  if(len % prPage != 0) {
+  if(remainder != 0) {
     html += "</tbody></table><span class='approve-info'>Viser " + (((pages-1) * prPage)+1) + "-" + len + " av " + len + "</span>";
   }
   if(len > prPage) {

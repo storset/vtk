@@ -5,22 +5,20 @@
 function toggleManuallyApprovedContainer(resources) {
   // Toggle visibility of container for list of resources to manually approve.
   // "resources" is complete list (array) of resources. If empty, hide
-  // container, else display.
-  // "manuallyApproved" contains list of resources already manually
-  // approved. Use to mark resources.
+  // container, else display. Use to mark resources.
 
   // TODO: i18n ++
-  // TODO: hmmm.. Too slow with 51s in IE 7 and 2s in Chrome when 3000 resources
-  //       Need either to create all tables and add rows when next/prev paging (pri),
-  //       or use setTimeout loop on all pages after first page
-
+	
+  var startTime = new Date();
+	
   var pages = 1, prPage = 25, len = resources.length, remainder = len % prPage;
   var totalPages = len > prPage ? (parseInt(len / prPage) + 1) : 1;
-  
+
   var html = "<div id='approve-page-" + pages + "'>"
            + "<table><thead><tr><th>Tittel</th><th>Uri</th><th>Publisert</th></thead></tr><tbody>";
   
-  for(var i = 0; i < len; i++) {
+  var i = 0;
+  setTimeout(function() { // Genererate tables asynchronous
     if(resources[i].approved) {
       html += "<tr><td><input type='checkbox' checked='checked' />";
     } else {
@@ -42,26 +40,30 @@ function toggleManuallyApprovedContainer(resources) {
               + "<table><thead><tr><th>Tittel</th><th>Uri</th><th>Publisert</th></tr></thead><tbody>";
       }
     }
-  }
-  if(remainder != 0) {
-    html += "</tbody></table><span class='approve-info'>Viser " + (((pages-1) * prPage)+1) + "-" + len + " av " + len + "</span>";
-  }
-  if(len > prPage) {
-    html += "<a href='#page-" + (pages-1) + "' class='prev' id='page-" + (pages-1) + "'>Forrige " + prPage + "</a>";
-  }
-  html += "</div>";
-
-  $("#manually-approve-container").html(html);
-  $("#manually-approve-container div").not("#approve-page-1").hide();
-
+    i++;
+    if(i < len) {
+      setTimeout(arguments.callee, 1);	
+    } else {
+      if(remainder != 0) {
+        html += "</tbody></table><span class='approve-info'>Viser " + (((pages-1) * prPage)+1) + "-" + len + " av " + len + "</span>";
+      }
+      if(len > prPage) {
+        html += "<a href='#page-" + (pages-1) + "' class='prev' id='page-" + (pages-1) + "'>Forrige " + prPage + "</a>";
+      }
+      html += "</div>";
+      $("#manually-approve-container").html(html);
+      $("#manually-approve-container div").not("#approve-page-1").hide();
+      $("#manually-approve-container").prepend("Tid: " + (new Date() - startTime) + "ms");
+    }
+  }, 1);
 }
 
 function retrieveResources(serviceUri, folders) {
   // Retrieve and return array of resources for folders to manually approve from.
   // Needs Vortex-service.
-	
-  var startTime = new Date();
-	
+  
+  $("#manually-approve-container").html("<img src='/vrtx/__vrtx/static-resources/themes/default/icons/tabmenu-spinner.gif' alt='spinner' />");
+  
   var getUri = serviceUri + "/?vrtx=manually-approve-resources";
   if(folders != null) {
 	for(var i = 0, len = folders.length; i < len; i++) {
@@ -75,7 +77,6 @@ function retrieveResources(serviceUri, folders) {
 	success: function(data){
 	  if(data != null && data.length > 0) {
 	    toggleManuallyApprovedContainer(data);
-	    $("#manually-approve-container").prepend("Tid: " + (new Date() - startTime) + "ms");
 	  }
 	}
   });

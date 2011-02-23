@@ -56,11 +56,19 @@ function toggleManuallyApprovedContainer(resources) {
 
 }
 
-function retrieveResources(serviceUri) {
+function retrieveResources(serviceUri, folders) {
   // Retrieve and return array of resources for folders to manually approve from.
   // Needs Vortex-service.
+	
+  var getUri = serviceUri + "/?vrtx=manually-approve-resources";
+  if(folders != null) {
+	for(var i = 0, len = folders.length; i < len; i++) {
+	  getUri += "&folders=" + folders[i];  
+	}
+  }
+	
   $.ajax({
-    url: serviceUri + "/?vrtx=manually-approve-resources",
+    url: getUri,
 	dataType: "json",
 	success: function(data){
 	  if(data != null && data.length > 0) {
@@ -72,14 +80,13 @@ function retrieveResources(serviceUri) {
 
 $(document).ready(function() {
 
-    var folders = $("#resource\\.manually-approve-from").val().split(",");
-    retrieveResources(".");
+    retrieveResources(".", null);
     
 	
     // Refresh table
     $("#manually-approve-refresh").click(function(e) {
-      var folders = $("#resource\\.manually-approve-from").val().split(",");
-      retrieveResources(".");
+      var folders = $("#resource\\.manually-approve-from").val().split(", ");
+      retrieveResources(".", folders);
       return false; 
     });
     

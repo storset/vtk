@@ -56,7 +56,7 @@ function toggleManuallyApprovedContainer(resources) {
 
 }
 
-function retrieveResources(folders, resourceType) {
+function retrieveResources(serviceUri) {
   // Retrieve and return array of resources for folders to manually approve from.
   // Needs Vortex-service.
 	

@@ -18,6 +18,39 @@ function toggleManuallyApprovedContainer(resources) {
            + "<table><thead><tr><th>Tittel</th><th>Uri</th><th>Publisert</th></thead></tr><tbody>";
   
   var i = 0;
+  
+  if(len > prPage) {
+  
+  for(; i < prPage; i++) {
+    if(resources[i].approved) {
+	  html += "<tr><td><input type='checkbox' checked='checked' />";
+	} else {
+	  html += "<tr><td><input type='checkbox' />";
+	}
+	html += "<a href='" + resources[i].uri + "'>" + resources[i].title + "</a></td>"
+	      + "<td class='uri'>" + resources[i].uri + "</td><td>" + resources[i].published + "</td></tr>";
+	if((i+1) % prPage == 0) {
+	  html += "</tbody></table>"
+	      	+ "<span class='approve-info'>Viser " + (((pages-1) * prPage)+1) + "-" + (pages * prPage) + " av " + len + "</span>";
+	  pages++;
+	  if(i < len-1) {
+	    if(i > prPage) {
+	      html += "<a href='#page-" + (pages-2) + "' class='prev' id='page-" + (pages-2) + "'>Forrige " + prPage + "</a>";
+	    }
+	    var nextPrPage = pages < totalPages || remainder == 0 ? prPage : remainder;
+	    html += "<a href='#page-" + pages + "' class='next' id='page-" + pages + "'>Neste " + nextPrPage + "</a>"
+	          + "</div>";
+	  }
+    }  	    
+  }
+  
+  $("#manually-approve-container").append(html);
+
+  html = "<div id='approve-page-" + pages + "'>"
+       + "<table><thead><tr><th>Tittel</th><th>Uri</th><th>Publisert</th></tr></thead><tbody>";
+  
+  }
+  
   setTimeout(function() { // Genererate tables asynchronous
     if(resources[i].approved) {
       html += "<tr><td><input type='checkbox' checked='checked' />";
@@ -27,8 +60,8 @@ function toggleManuallyApprovedContainer(resources) {
     html += "<a href='" + resources[i].uri + "'>" + resources[i].title + "</a></td>"
           + "<td class='uri'>" + resources[i].uri + "</td><td>" + resources[i].published + "</td></tr>";
     if((i+1) % prPage == 0) {
-      html += "</tbody></table>";
-      html += "<span class='approve-info'>Viser " + (((pages-1) * prPage)+1) + "-" + (pages * prPage) + " av " + len + "</span>";
+      html += "</tbody></table>"
+    	    + "<span class='approve-info'>Viser " + (((pages-1) * prPage)+1) + "-" + (pages * prPage) + " av " + len + "</span>";
       pages++;
       if(i < len-1) {
         if(i > prPage) {
@@ -51,9 +84,10 @@ function toggleManuallyApprovedContainer(resources) {
         html += "<a href='#page-" + (pages-1) + "' class='prev' id='page-" + (pages-1) + "'>Forrige " + prPage + "</a>";
       }
       html += "</div>";
-      $("#manually-approve-container").html(html);
+      $("#manually-approve-container").append(html)
+        .prepend("Tid: " + (new Date() - startTime) + "ms")
+        .find("#approve-spinner").remove();
       $("#manually-approve-container div").not("#approve-page-1").hide();
-      $("#manually-approve-container").prepend("Tid: " + (new Date() - startTime) + "ms");
     }
   }, 1);
 }
@@ -62,7 +96,8 @@ function retrieveResources(serviceUri, folders) {
   // Retrieve and return array of resources for folders to manually approve from.
   // Needs Vortex-service.
   
-  $("#manually-approve-container").html("<img src='/vrtx/__vrtx/static-resources/themes/default/icons/tabmenu-spinner.gif' alt='spinner' />");
+  $("#manually-approve-container").html("<span id='approve-spinner'><img src='/vrtx/__vrtx/static-resources/themes/default/icons/tabmenu-spinner.gif' alt='spinner' />"
+		                              + "&nbsp;Genererer tabeller med ressurser...</span>");
   
   var getUri = serviceUri + "/?vrtx=manually-approve-resources";
   if(folders != null) {
@@ -118,7 +153,7 @@ $(document).ready(function() {
     $("#manually-approve-container").delegate(".next", "click", function() {
       var that = $(this).parent();
       var next = that.next();
-      if(next) {
+      if(next && next.attr("id").indexOf("approve-page") != -1) {
          $(that).hide();
          $(next).show();
       }
@@ -129,7 +164,7 @@ $(document).ready(function() {
     $("#manually-approve-container").delegate(".prev", "click", function() {
       var that = $(this).parent();
       var prev = that.prev();
-      if(prev) {
+      if(prev && prev.attr("id").indexOf("approve-page") != -1) {
          $(that).hide();
          $(prev).show();
       }

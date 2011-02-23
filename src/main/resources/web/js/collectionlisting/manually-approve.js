@@ -46,6 +46,8 @@ function toggleManuallyApprovedContainer(resources) {
     $("#manually-approve-container").html(html);
     html = "<div id='approve-page-" + pages + "'>"
          + "<table><thead><tr><th>Tittel</th><th>Uri</th><th>Publisert</th></tr></thead><tbody>";
+  } else {
+	  $("#manually-approve-container").html(""); // clear if only one page
   }
   
   $("#manually-approve-container").prepend("<span id='approve-spinner'><img src='/vrtx/__vrtx/static-resources/themes/default/icons/tabmenu-spinner.gif' alt='spinner' />"

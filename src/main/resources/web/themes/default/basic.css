@@ -1062,6 +1062,11 @@ table.directoryListing tr td {
   font-size: 90%;
 }
 
+#approve-spinner {
+  margin: 0.5em 0;
+  float: left;
+}
+
 #manually-approve-container table {
   border-collapse: collapse;
   border: 1px solid #ccc;

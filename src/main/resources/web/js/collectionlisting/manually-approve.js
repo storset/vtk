@@ -8,6 +8,7 @@ function toggleManuallyApprovedContainer(resources) {
   // container, else display. Use to mark resources.
 
   // TODO: i18n ++
+  // TODO: refactor duplicate code
 	
   var startTime = new Date();
 	
@@ -19,39 +20,38 @@ function toggleManuallyApprovedContainer(resources) {
   
   var i = 0;
   
-  if(len > prPage) {
-  
-  for(; i < prPage; i++) {
-    if(resources[i].approved) {
-	  html += "<tr><td><input type='checkbox' checked='checked' />";
-	} else {
-	  html += "<tr><td><input type='checkbox' />";
-	}
-	html += "<a href='" + resources[i].uri + "'>" + resources[i].title + "</a></td>"
-	      + "<td class='uri'>" + resources[i].uri + "</td><td>" + resources[i].published + "</td></tr>";
-	if((i+1) % prPage == 0) {
-	  html += "</tbody></table>"
-	      	+ "<span class='approve-info'>Viser " + (((pages-1) * prPage)+1) + "-" + (pages * prPage) + " av " + len + "</span>";
-	  pages++;
-	  if(i < len-1) {
-	    if(i > prPage) {
-	      html += "<a href='#page-" + (pages-2) + "' class='prev' id='page-" + (pages-2) + "'>Forrige " + prPage + "</a>";
-	    }
-	    var nextPrPage = pages < totalPages || remainder == 0 ? prPage : remainder;
-	    html += "<a href='#page-" + pages + "' class='next' id='page-" + pages + "'>Neste " + nextPrPage + "</a>"
-	          + "</div>";
+  if(len > prPage) { // If more than one page
+    for(; i < prPage; i++) { // Generate first page synchronous
+      if(resources[i].approved) {
+	    html += "<tr><td><input type='checkbox' checked='checked' />";
+	  } else {
+	    html += "<tr><td><input type='checkbox' />";
 	  }
-    }  	    
+	  html += "<a href='" + resources[i].uri + "'>" + resources[i].title + "</a></td>"
+	        + "<td class='uri'>" + resources[i].uri + "</td><td>" + resources[i].published + "</td></tr>";
+	  if((i+1) % prPage == 0) {
+	    html += "</tbody></table>"
+	       	  + "<span class='approve-info'>Viser " + (((pages-1) * prPage)+1) + "-" + (pages * prPage) + " av " + len + "</span>";
+	    pages++;
+	    if(i < len-1) {
+	      if(i > prPage) {
+	        html += "<a href='#page-" + (pages-2) + "' class='prev' id='page-" + (pages-2) + "'>Forrige " + prPage + "</a>";
+	      }
+	      var nextPrPage = pages < totalPages || remainder == 0 ? prPage : remainder;
+	      html += "<a href='#page-" + pages + "' class='next' id='page-" + pages + "'>Neste " + nextPrPage + "</a>"
+	            + "</div>";
+	    }
+      }  	    
+    }
+    $("#manually-approve-container").append(html);
+    html = "<div id='approve-page-" + pages + "'>"
+         + "<table><thead><tr><th>Tittel</th><th>Uri</th><th>Publisert</th></tr></thead><tbody>";
   }
   
-  $("#manually-approve-container").append(html);
-
-  html = "<div id='approve-page-" + pages + "'>"
-       + "<table><thead><tr><th>Tittel</th><th>Uri</th><th>Publisert</th></tr></thead><tbody>";
+  $("#manually-approve-container").prepend("<span id='approve-spinner'><img src='/vrtx/__vrtx/static-resources/themes/default/icons/tabmenu-spinner.gif' alt='spinner' />"
+                                      + "&nbsp;Genererer rad <span id='approve-row'></span>...</span>");
   
-  }
-  
-  setTimeout(function() { // Genererate tables asynchronous
+  setTimeout(function() { // Generate rest of pages asynchronous
     if(resources[i].approved) {
       html += "<tr><td><input type='checkbox' checked='checked' />";
     } else {
@@ -72,6 +72,9 @@ function toggleManuallyApprovedContainer(resources) {
               + "</div><div id='approve-page-" + pages + "'>"
               + "<table><thead><tr><th>Tittel</th><th>Uri</th><th>Publisert</th></tr></thead><tbody>";
       }
+    }
+    if(i == prPage || i % 10 == 0) {
+      $("#approve-row").html(i);
     }
     i++;
     if(i < len) {
@@ -95,9 +98,6 @@ function toggleManuallyApprovedContainer(resources) {
 function retrieveResources(serviceUri, folders) {
   // Retrieve and return array of resources for folders to manually approve from.
   // Needs Vortex-service.
-  
-  $("#manually-approve-container").html("<span id='approve-spinner'><img src='/vrtx/__vrtx/static-resources/themes/default/icons/tabmenu-spinner.gif' alt='spinner' />"
-		                              + "&nbsp;Genererer tabeller med ressurser...</span>");
   
   var getUri = serviceUri + "/?vrtx=manually-approve-resources";
   if(folders != null) {

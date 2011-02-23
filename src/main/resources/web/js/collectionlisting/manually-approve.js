@@ -89,9 +89,17 @@ $(document).ready(function() {
       var val = textfield.val();
       var uri = $(this).parent().parent().find("td.uri").text();
       if($(this).attr("checked")) {
-        val += uri + ", ";
+    	if(val.length) {
+          val += ", " + uri;
+    	} else {
+    	  val = uri;	
+    	}
       } else {
-    	val = val.replace(uri + ", ", "");  
+    	if(val.indexOf(uri) == 0) { // not first
+    	  val = val.replace(uri, ""); 
+    	} else {
+    	  val = val.replace(", " + uri, ""); 
+    	}
       }
       textfield.val(val);
     });

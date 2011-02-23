@@ -61,7 +61,6 @@ function retrieveResources(serviceUri) {
   // Needs Vortex-service.
   $.ajax({
     url: serviceUri + "/?vrtx=manually-approve-resources",
-	context: document.body,
 	dataType: "json",
 	success: function(data){
 	  if(data != null && data.length > 0) {

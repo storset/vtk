@@ -14,7 +14,7 @@ $(document).ready(function() {
       return false; 
     });
     
-    // Add / remove uri's
+    // Add / remove manually approved uri's
     $("#manually-approve-container").delegate("input", "click", function(e) {
       var textfield = $("#resource\\.manually-approved-resources");
       var val = textfield.val();

@@ -60,6 +60,8 @@ function retrieveResources(serviceUri, folders) {
   // Retrieve and return array of resources for folders to manually approve from.
   // Needs Vortex-service.
 	
+  var startTime = new Date();
+	
   var getUri = serviceUri + "/?vrtx=manually-approve-resources";
   if(folders != null) {
 	for(var i = 0, len = folders.length; i < len; i++) {
@@ -73,6 +75,7 @@ function retrieveResources(serviceUri, folders) {
 	success: function(data){
 	  if(data != null && data.length > 0) {
 	    toggleManuallyApprovedContainer(data);
+	    $("#manually-approve-container").prepend("Tid: " + (new Date() - startTime) + "ms");
 	  }
 	}
   });
@@ -81,7 +84,7 @@ function retrieveResources(serviceUri, folders) {
 $(document).ready(function() {
 
     retrieveResources(".", null);
-    
+
     // Refresh table
     $("#manually-approve-refresh").click(function(e) {
       var folders = $("#resource\\.manually-approve-from").val().split(",");

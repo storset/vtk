@@ -22,15 +22,16 @@ function toggleManuallyApprovedContainer(resources) {
   var i = 0;  
   
   // Function pointers
+  var generateTableRowFunc = generateTableRow;
+  var generateTableEndAndPageInfoFunc = generateTableEndAndPageInfo;
   var generateNavAndEndPageFunc = generateNavAndEndPage; 
   var generateStartPageAndTableHeadFunc = generateStartPageAndTableHead;
-  var generateRowFunc = generateRow;
   
   if(moreThanOnePage) { // If more than one page
     for(; i < prPage; i++) { // Generate first page synchronous
-      html += generateRowFunc(resources[i]);
+      html += generateTableRowFunc(resources[i]);
     }
-    html += "</tbody></table><span class='approve-info'>Viser " + (((pages-1) * prPage)+1) + "-" + (pages * prPage) + " av " + len + "</span>";
+    html += generateTableEndAndPageInfoFunc(pages, prPage, len, false);
     pages++;
     html += generateNavAndEndPageFunc(i, html, prPage, remainder, pages, totalPages);
     $("#manually-approve-container").html(html);
@@ -43,9 +44,9 @@ function toggleManuallyApprovedContainer(resources) {
                                       + "&nbsp;Genererer side <span id='approve-spinner-generated-pages'>" + pages + "</span> av " + totalPages + "...</span>");
   
   setTimeout(function() { // Generate rest of pages asynchronous
-	html += generateRowFunc(resources[i]);
+	html += generateTableRowFunc(resources[i]);
     if((i+1) % prPage == 0) {
-      html += "</tbody></table><span class='approve-info'>Viser " + (((pages-1) * prPage)+1) + "-" + (pages * prPage) + " av " + len + "</span>";
+      html += generateTableEndAndPageInfoFunc(pages, prPage, len, false);
       pages++;
       if(i < len-1) {
     	html += generateNavAndEndPageFunc(i, html, prPage, remainder, pages, totalPages);
@@ -62,7 +63,7 @@ function toggleManuallyApprovedContainer(resources) {
       setTimeout(arguments.callee, 1);	
     } else {
       if(remainder != 0) {
-        html += "</tbody></table><span class='approve-info'>Viser " + (((pages-1) * prPage)+1) + "-" + len + " av " + len + "</span>";
+        html += generateTableEndAndPageInfoFunc(pages, prPage, len, true);
       }
       if(len > prPage) {
         html += "<a href='#page-" + (pages-1) + "' class='prev' id='page-" + (pages-1) + "'>Forrige " + prPage + "</a>";
@@ -78,7 +79,9 @@ function toggleManuallyApprovedContainer(resources) {
   }, 1);
 }
 
-function generateRow(resource) {
+/* HTML generation functions */
+
+function generateTableRow(resource) {
   var html = "";
   if(resource.approved) {
     html += "<tr><td><input type='checkbox' checked='checked' />";
@@ -90,8 +93,9 @@ function generateRow(resource) {
   return html;
 }
 
-function generateStartPageAndTableHead(pages) {
-  return "<div id='approve-page-" + pages + "'><table><thead><tr><th>Tittel</th><th>Uri</th><th>Publisert</th></tr></thead><tbody>";
+function generateTableEndAndPageInfo(pages, prPage, len, lastRow) {
+  var last = lastRow ? len : pages * prPage;	
+  return "</tbody></table><span class='approve-info'>Viser " + (((pages-1) * prPage)+1) + "-" + last + " av " + len + "</span>";
 }
 
 function generateNavAndEndPage(i, html, prPage, remainder, pages, totalPages) {
@@ -104,6 +108,12 @@ function generateNavAndEndPage(i, html, prPage, remainder, pages, totalPages) {
   html += "<a href='#page-" + pages + "' class='next' id='page-" + pages + "'>Neste " + nextPrPage + "</a></div>";
   return html; 
 }
+
+function generateStartPageAndTableHead(pages) {
+  return "<div id='approve-page-" + pages + "'><table><thead><tr><th>Tittel</th><th>Uri</th><th>Publisert</th></tr></thead><tbody>";
+}
+
+/* ^ HTML generation functions */
 
 function retrieveResources(serviceUri, folders) {
   // Retrieve and return array of resources for folders to manually approve from.

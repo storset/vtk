@@ -49,7 +49,7 @@ function toggleManuallyApprovedContainer(resources) {
   }
   
   $("#manually-approve-container").prepend("<span id='approve-spinner'><img src='/vrtx/__vrtx/static-resources/themes/default/icons/tabmenu-spinner.gif' alt='spinner' />"
-                                      + "&nbsp;Genererer rad <span id='approve-row'></span>...</span>");
+                                      + "&nbsp;Genererer side <span id='approve-row'>" + pages + "</span> av " + totalPages + "...</span>");
   
   setTimeout(function() { // Generate rest of pages asynchronous
     if(resources[i].approved) {
@@ -72,9 +72,7 @@ function toggleManuallyApprovedContainer(resources) {
               + "</div><div id='approve-page-" + pages + "'>"
               + "<table><thead><tr><th>Tittel</th><th>Uri</th><th>Publisert</th></tr></thead><tbody>";
       }
-    }
-    if(i == prPage || i % 10 == 0) {
-      $("#approve-row").html(i);
+      $("#approve-row").html(pages);
     }
     i++;
     if(i < len) {

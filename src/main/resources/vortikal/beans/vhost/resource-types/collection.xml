@@ -62,6 +62,15 @@
     <property name="type" value="STRING" />
     <property name="multiple" value="true" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="metadata">
+      <map>
+        <entry key="editingHints">
+          <map>
+            <entry key="checkbox" value="true" />
+          </map>
+        </entry>
+      </map>
+    </property>
   </bean>
   
   <bean id="recursiveAggregationPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"

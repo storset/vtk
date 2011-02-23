@@ -67,6 +67,8 @@ import org.vortikal.web.RequestContext;
 
 public class ManuallyApproveResourcesHandler implements Controller {
 
+    private static final String FOLDERS_PARAM = "folders";
+
     private Repository repository;
     private PropertyTypeDefinition manuallyApproveFromPropDef;
     private PropertyTypeDefinition manuallyApprovedResourcesPropDef;
@@ -84,18 +86,30 @@ public class ManuallyApproveResourcesHandler implements Controller {
         Resource currentCollection = this.repository.retrieve(token, currentCollectionPath, false);
         Property manuallyApproveFromProp = currentCollection.getProperty(this.manuallyApproveFromPropDef);
         Property manuallyApprovedResourcesProp = currentCollection.getProperty(this.manuallyApprovedResourcesPropDef);
-        if (manuallyApproveFromProp == null && manuallyApprovedResourcesProp == null) {
+        String[] folders = request.getParameterValues(FOLDERS_PARAM);
+
+        // Nothing to work with, need at least one of these
+        if (manuallyApproveFromProp == null && manuallyApprovedResourcesProp == null && folders == null) {
             return null;
         }
 
-        Value[] manuallyApproveFromValues = manuallyApproveFromProp.getValues();
         OrQuery or = new OrQuery();
-        for (Value manuallyApproveFromValue : manuallyApproveFromValues) {
+        // Parameter "folders" overrides what's already stored, because user
+        // might change content and update service before storing resource
+        if (folders != null && folders.length > 0) {
+            for (String folder : folders) {
+                or.add(new UriPrefixQuery(folder));
+            }
+        } else if (manuallyApproveFromProp != null) {
+            Value[] manuallyApproveFromValues = manuallyApproveFromProp.getValues();
+            for (Value manuallyApproveFromValue : manuallyApproveFromValues) {
 
-            // XXX Ignore if is child of current collection and recursive search
-            // is already selected, or if is already part of aggregation
+                // XXX Ignore if is child of current collection and recursive
+                // search
+                // is already selected, or if is already part of aggregation
 
-            or.add(new UriPrefixQuery(manuallyApproveFromValue.getStringValue()));
+                or.add(new UriPrefixQuery(manuallyApproveFromValue.getStringValue()));
+            }
         }
 
         String resourceTypePointer = this.listingResourceTypeMappingPointers.get(currentCollection.getResourceType());

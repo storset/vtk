@@ -87,7 +87,7 @@ public class StaticURIServiceURLProvider implements ReferenceDataProvider {
     public void referenceData(Map model, HttpServletRequest request)
         throws Exception {
 
-        URL url = this.parameters != null ?
+        URL url = this.parameters == null ?
             this.service.constructURL(this.path) :
             this.service.constructURL(this.path, this.parameters);
         

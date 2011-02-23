@@ -51,7 +51,7 @@ function toggleManuallyApprovedContainer(resources) {
   }
   
   $("#manually-approve-container").prepend("<span id='approve-spinner'><img src='/vrtx/__vrtx/static-resources/themes/default/icons/tabmenu-spinner.gif' alt='spinner' />"
-                                      + "&nbsp;Genererer side <span id='approve-row'>" + pages + "</span> av " + totalPages + "...</span>");
+                                      + "&nbsp;Genererer side <span id='approve-spinner-generated-pages'>" + pages + "</span> av " + totalPages + "...</span>");
   
   setTimeout(function() { // Generate rest of pages asynchronous
     if(resources[i].approved) {
@@ -71,10 +71,15 @@ function toggleManuallyApprovedContainer(resources) {
         }
         var nextPrPage = pages < totalPages || remainder == 0 ? prPage : remainder;
         html += "<a href='#page-" + pages + "' class='next' id='page-" + pages + "'>Neste " + nextPrPage + "</a>"
-              + "</div><div id='approve-page-" + pages + "'>"
-              + "<table><thead><tr><th>Tittel</th><th>Uri</th><th>Publisert</th></tr></thead><tbody>";
+              + "</div>";
+        $("#manually-approve-container").append(html);
+        if(len > prPage) { 
+          $("#manually-approve-container #approve-page-" + (pages-1)).hide();
+        }
+        html = "<div id='approve-page-" + pages + "'>"
+               + "<table><thead><tr><th>Tittel</th><th>Uri</th><th>Publisert</th></tr></thead><tbody>";
       }
-      $("#approve-row").html(pages);
+      $("#approve-spinner-generated-pages").html(pages);
     }
     i++;
     if(i < len) {
@@ -90,7 +95,9 @@ function toggleManuallyApprovedContainer(resources) {
       $("#manually-approve-container").append(html)
         //.prepend("Tid: " + (new Date() - startTime) + "ms")
         .find("#approve-spinner").remove();
-      $("#manually-approve-container div").not("#approve-page-1").hide();
+      if(len > prPage) { 
+        $("#manually-approve-container #approve-page-" + pages).hide();
+      }
     }
   }, 1);
 }

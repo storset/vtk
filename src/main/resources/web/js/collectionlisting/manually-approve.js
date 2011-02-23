@@ -12,15 +12,16 @@ function toggleManuallyApprovedContainer(resources) {
 	
   //var startTime = new Date();
 	
-  var pages = 1, prPage = 25, len = resources.length, remainder = len % prPage;
-  var totalPages = len > prPage ? (parseInt(len / prPage) + 1) : 1;
+  var pages = 1, prPage = 25, len = resources.length,
+      remainder = len % prPage, moreThanOnePage = len > prPage,
+      totalPages = len > prPage ? (parseInt(len / prPage) + 1) : 1;
 
   var html = "<div id='approve-page-" + pages + "'>"
            + "<table><thead><tr><th>Tittel</th><th>Uri</th><th>Publisert</th></thead></tr><tbody>";
   
   var i = 0;
   
-  if(len > prPage) { // If more than one page
+  if(moreThanOnePage) { // If more than one page
     for(; i < prPage; i++) { // Generate first page synchronous
       if(resources[i].approved) {
 	    html += "<tr><td><input type='checkbox' checked='checked' />";
@@ -73,7 +74,7 @@ function toggleManuallyApprovedContainer(resources) {
         html += "<a href='#page-" + pages + "' class='next' id='page-" + pages + "'>Neste " + nextPrPage + "</a>"
               + "</div>";
         $("#manually-approve-container").append(html);
-        if(len > prPage) { 
+        if(moreThanOnePage) { 
           $("#manually-approve-container #approve-page-" + (pages-1)).hide();
         }
         html = "<div id='approve-page-" + pages + "'>"

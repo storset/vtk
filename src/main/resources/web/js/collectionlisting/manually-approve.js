@@ -43,7 +43,7 @@ function toggleManuallyApprovedContainer(resources) {
 	    }
       }  	    
     }
-    $("#manually-approve-container").append(html);
+    $("#manually-approve-container").html(html);
     html = "<div id='approve-page-" + pages + "'>"
          + "<table><thead><tr><th>Tittel</th><th>Uri</th><th>Publisert</th></tr></thead><tbody>";
   }

@@ -19,66 +19,41 @@ function toggleManuallyApprovedContainer(resources) {
   var html = "<div id='approve-page-" + pages + "'>"
            + "<table><thead><tr><th>Tittel</th><th>Uri</th><th>Publisert</th></thead></tr><tbody>";
   
-  var i = 0;
+  var i = 0;  
+  
+  // Function pointers
+  var generateNavAndEndPageFunc = generateNavAndEndPage; 
+  var generateStartPageAndTableHeadFunc = generateStartPageAndTableHead;
+  var generateRowFunc = generateRow;
   
   if(moreThanOnePage) { // If more than one page
     for(; i < prPage; i++) { // Generate first page synchronous
-      if(resources[i].approved) {
-	    html += "<tr><td><input type='checkbox' checked='checked' />";
-	  } else {
-	    html += "<tr><td><input type='checkbox' />";
-	  }
-	  html += "<a href='" + resources[i].uri + "'>" + resources[i].title + "</a></td>"
-	        + "<td class='uri'>" + resources[i].uri + "</td><td>" + resources[i].published + "</td></tr>";
-	  if((i+1) % prPage == 0) {
-	    html += "</tbody></table>"
-	       	  + "<span class='approve-info'>Viser " + (((pages-1) * prPage)+1) + "-" + (pages * prPage) + " av " + len + "</span>";
-	    pages++;
-	    if(i < len-1) {
-	      if(i > prPage) {
-	        html += "<a href='#page-" + (pages-2) + "' class='prev' id='page-" + (pages-2) + "'>Forrige " + prPage + "</a>";
-	      }
-	      var nextPrPage = pages < totalPages || remainder == 0 ? prPage : remainder;
-	      html += "<a href='#page-" + pages + "' class='next' id='page-" + pages + "'>Neste " + nextPrPage + "</a>"
-	            + "</div>";
-	    }
-      }  	    
+      html += generateRowFunc(resources[i]);
     }
+    html += "</tbody></table><span class='approve-info'>Viser " + (((pages-1) * prPage)+1) + "-" + (pages * prPage) + " av " + len + "</span>";
+    pages++;
+    html += generateNavAndEndPageFunc(i, html, prPage, remainder, pages, totalPages);
     $("#manually-approve-container").html(html);
-    html = "<div id='approve-page-" + pages + "'>"
-         + "<table><thead><tr><th>Tittel</th><th>Uri</th><th>Publisert</th></tr></thead><tbody>";
+    html = generateStartPageAndTableHeadFunc(pages);
   } else {
-	  $("#manually-approve-container").html(""); // clear if only one page
+	$("#manually-approve-container").html(""); // clear if only one page
   }
   
   $("#manually-approve-container").prepend("<span id='approve-spinner'><img src='/vrtx/__vrtx/static-resources/themes/default/icons/tabmenu-spinner.gif' alt='spinner' />"
                                       + "&nbsp;Genererer side <span id='approve-spinner-generated-pages'>" + pages + "</span> av " + totalPages + "...</span>");
   
   setTimeout(function() { // Generate rest of pages asynchronous
-    if(resources[i].approved) {
-      html += "<tr><td><input type='checkbox' checked='checked' />";
-    } else {
-      html += "<tr><td><input type='checkbox' />";
-    }
-    html += "<a href='" + resources[i].uri + "'>" + resources[i].title + "</a></td>"
-          + "<td class='uri'>" + resources[i].uri + "</td><td>" + resources[i].published + "</td></tr>";
+	html += generateRowFunc(resources[i]);
     if((i+1) % prPage == 0) {
-      html += "</tbody></table>"
-    	    + "<span class='approve-info'>Viser " + (((pages-1) * prPage)+1) + "-" + (pages * prPage) + " av " + len + "</span>";
+      html += "</tbody></table><span class='approve-info'>Viser " + (((pages-1) * prPage)+1) + "-" + (pages * prPage) + " av " + len + "</span>";
       pages++;
       if(i < len-1) {
-        if(i > prPage) {
-          html += "<a href='#page-" + (pages-2) + "' class='prev' id='page-" + (pages-2) + "'>Forrige " + prPage + "</a>";
-        }
-        var nextPrPage = pages < totalPages || remainder == 0 ? prPage : remainder;
-        html += "<a href='#page-" + pages + "' class='next' id='page-" + pages + "'>Neste " + nextPrPage + "</a>"
-              + "</div>";
+    	html += generateNavAndEndPageFunc(i, html, prPage, remainder, pages, totalPages);
         $("#manually-approve-container").append(html);
         if(moreThanOnePage) { 
           $("#manually-approve-container #approve-page-" + (pages-1)).hide();
         }
-        html = "<div id='approve-page-" + pages + "'>"
-               + "<table><thead><tr><th>Tittel</th><th>Uri</th><th>Publisert</th></tr></thead><tbody>";
+        html = generateStartPageAndTableHeadFunc(pages);
       }
       $("#approve-spinner-generated-pages").html(pages);
     }
@@ -101,6 +76,33 @@ function toggleManuallyApprovedContainer(resources) {
       }
     }
   }, 1);
+}
+
+function generateRow(resource) {
+  var html = "";
+  if(resource.approved) {
+    html += "<tr><td><input type='checkbox' checked='checked' />";
+  } else {
+	html += "<tr><td><input type='checkbox' />";
+  }
+  html += "<a href='" + resource.uri + "'>" + resource.title + "</a></td>"
+	    + "<td class='uri'>" + resource.uri + "</td><td>" + resource.published + "</td></tr>";
+  return html;
+}
+
+function generateStartPageAndTableHead(pages) {
+  return "<div id='approve-page-" + pages + "'><table><thead><tr><th>Tittel</th><th>Uri</th><th>Publisert</th></tr></thead><tbody>";
+}
+
+function generateNavAndEndPage(i, html, prPage, remainder, pages, totalPages) {
+  var html = "";
+  if(i > prPage) {
+    var prevPage = pages - 2;
+    html += "<a href='#page-" + prevPage + "' class='prev' id='page-" + prevPage + "'>Forrige " + prPage + "</a>";
+  }
+  var nextPrPage = pages < totalPages || remainder == 0 ? prPage : remainder;
+  html += "<a href='#page-" + pages + "' class='next' id='page-" + pages + "'>Neste " + nextPrPage + "</a></div>";
+  return html; 
 }
 
 function retrieveResources(serviceUri, folders) {

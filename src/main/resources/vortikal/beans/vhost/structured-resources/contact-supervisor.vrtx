@@ -32,7 +32,7 @@ resourcetype contact-supervisor {
                <div class="vrtx-contact-supervisor-box" id="[val id]">
              [else]
               <div class="vrtx-contact-supervisor-box">
-    	   [endif]
+             [endif]
 
              <div class="vrtx-contact-supervisor-description">
                [if description != null && description != ""]

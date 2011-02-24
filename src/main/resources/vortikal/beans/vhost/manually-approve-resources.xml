@@ -25,6 +25,7 @@
     <property name="collectionPropDef" ref="collectionPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
     <property name="publishDatePropDef" ref="publishDatePropDef" />
+    <property name="aggregationPropDef" ref="aggregationPropDef" />
     <property name="listingResourceTypeMappingPointers">
       <map>
         <entry key="article-listing" value="${override.listing.prefix}article" />

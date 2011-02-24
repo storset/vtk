@@ -79,6 +79,7 @@ public class ManuallyApproveResourcesHandler implements Controller {
     private PropertyTypeDefinition titlePropDef;
     private Map<String, String> listingResourceTypeMappingPointers;
     private PropertyTypeDefinition publishDatePropDef;
+    private PropertyTypeDefinition aggregationPropDef;
     private Service viewService;
 
     @Override
@@ -89,6 +90,7 @@ public class ManuallyApproveResourcesHandler implements Controller {
         Resource currentCollection = this.repository.retrieve(token, currentCollectionPath, false);
         Property manuallyApproveFromProp = currentCollection.getProperty(this.manuallyApproveFromPropDef);
         Property manuallyApprovedResourcesProp = currentCollection.getProperty(this.manuallyApprovedResourcesPropDef);
+        Property aggregationProp = currentCollection.getProperty(this.aggregationPropDef);
         String[] folders = request.getParameterValues(FOLDERS_PARAM);
 
         // Nothing to work with, need at least one of these
@@ -102,7 +104,7 @@ public class ManuallyApproveResourcesHandler implements Controller {
         // might change content and update service before storing resource
         if (folders != null) {
             for (String folder : folders) {
-                if (this.isValidFolder(folder)) {
+                if (this.isValidFolder(folder, aggregationProp)) {
                     validatedFolders.add(folder);
                 }
             }
@@ -110,7 +112,7 @@ public class ManuallyApproveResourcesHandler implements Controller {
             Value[] manuallyApproveFromValues = manuallyApproveFromProp.getValues();
             for (Value manuallyApproveFromValue : manuallyApproveFromValues) {
                 String folder = manuallyApproveFromValue.getStringValue();
-                if (this.isValidFolder(folder)) {
+                if (this.isValidFolder(folder, aggregationProp)) {
                     validatedFolders.add(manuallyApproveFromValue.getStringValue());
                 }
             }
@@ -189,19 +191,38 @@ public class ManuallyApproveResourcesHandler implements Controller {
         return null;
     }
 
-    private boolean isValidFolder(String folder) {
+    private boolean isValidFolder(String folder, Property aggregationProp) {
         if (StringUtils.isBlank(folder)) {
             return false;
         }
-        // XXX Ignore if is child of current collection and recursive
-        // search is already selected, or if is already part of aggregation
         // XXX Handle absolute uris (http/www)
-        try {
-            Path.fromString(folder);
-        } catch (IllegalArgumentException iae) {
+        Path folderPath = this.getPath(folder);
+        if (folderPath == null) {
             return false;
         }
+        if (aggregationProp != null) {
+            Value[] aggregationValues = aggregationProp.getValues();
+            for (Value aggregationValue : aggregationValues) {
+                Path aggregationPath = this.getPath(aggregationValue.toString());
+                if (aggregationPath == null) {
+                    continue;
+                }
+                if (folderPath.equals(aggregationPath) || aggregationPath.isAncestorOf(folderPath)) {
+                    return false;
+                }
+            }
+        }
+        // XXX Ignore if is child of current collection and recursive
+        // search is already selected
         return true;
+    }
+
+    private Path getPath(String folder) {
+        try {
+            return Path.fromString(folder);
+        } catch (IllegalArgumentException iae) {
+            return null;
+        }
     }
 
     private String getPublishDate(Property publishDateProp) {
@@ -252,6 +273,11 @@ public class ManuallyApproveResourcesHandler implements Controller {
     @Required
     public void setPublishDatePropDef(PropertyTypeDefinition publishDatePropDef) {
         this.publishDatePropDef = publishDatePropDef;
+    }
+
+    @Required
+    public void setAggregationPropDef(PropertyTypeDefinition aggregationPropDef) {
+        this.aggregationPropDef = aggregationPropDef;
     }
 
     @Required

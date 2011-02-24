@@ -80,6 +80,7 @@ public class ManuallyApproveResourcesHandler implements Controller {
     private Map<String, String> listingResourceTypeMappingPointers;
     private PropertyTypeDefinition publishDatePropDef;
     private PropertyTypeDefinition aggregationPropDef;
+    private PropertyTypeDefinition recursivePropDef;
     private Service viewService;
 
     @Override
@@ -91,6 +92,7 @@ public class ManuallyApproveResourcesHandler implements Controller {
         Property manuallyApproveFromProp = currentCollection.getProperty(this.manuallyApproveFromPropDef);
         Property manuallyApprovedResourcesProp = currentCollection.getProperty(this.manuallyApprovedResourcesPropDef);
         Property aggregationProp = currentCollection.getProperty(this.aggregationPropDef);
+        Property recursiveProp = currentCollection.getProperty(this.recursivePropDef);
         String[] folders = request.getParameterValues(FOLDERS_PARAM);
 
         // Nothing to work with, need at least one of these
@@ -104,7 +106,7 @@ public class ManuallyApproveResourcesHandler implements Controller {
         // might change content and update service before storing resource
         if (folders != null) {
             for (String folder : folders) {
-                if (this.isValidFolder(folder, aggregationProp)) {
+                if (this.isValidFolder(currentCollectionPath, folder, aggregationProp, recursiveProp)) {
                     validatedFolders.add(folder);
                 }
             }
@@ -112,7 +114,7 @@ public class ManuallyApproveResourcesHandler implements Controller {
             Value[] manuallyApproveFromValues = manuallyApproveFromProp.getValues();
             for (Value manuallyApproveFromValue : manuallyApproveFromValues) {
                 String folder = manuallyApproveFromValue.getStringValue();
-                if (this.isValidFolder(folder, aggregationProp)) {
+                if (this.isValidFolder(currentCollectionPath, folder, aggregationProp, recursiveProp)) {
                     validatedFolders.add(manuallyApproveFromValue.getStringValue());
                 }
             }
@@ -191,13 +193,18 @@ public class ManuallyApproveResourcesHandler implements Controller {
         return null;
     }
 
-    private boolean isValidFolder(String folder, Property aggregationProp) {
+    private boolean isValidFolder(Path currentCollectionPath, String folder, Property aggregationProp,
+            Property recursiveProp) {
         if (StringUtils.isBlank(folder)) {
             return false;
         }
-        // XXX Handle absolute uris (http/www)
+        // XXX Validate absolute uris (http/www)
         Path folderPath = this.getPath(folder);
-        if (folderPath == null) {
+        if (folderPath == null || folderPath.equals(currentCollectionPath)) {
+            return false;
+        }
+        if ((recursiveProp != null && recursiveProp.getBooleanValue())
+                || currentCollectionPath.isAncestorOf(folderPath)) {
             return false;
         }
         if (aggregationProp != null) {
@@ -278,6 +285,11 @@ public class ManuallyApproveResourcesHandler implements Controller {
     @Required
     public void setAggregationPropDef(PropertyTypeDefinition aggregationPropDef) {
         this.aggregationPropDef = aggregationPropDef;
+    }
+
+    @Required
+    public void setRecursivePropDef(PropertyTypeDefinition recursivePropDef) {
+        this.recursivePropDef = recursivePropDef;
     }
 
     @Required

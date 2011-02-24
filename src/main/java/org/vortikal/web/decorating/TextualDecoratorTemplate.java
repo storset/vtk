@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.decorating;
 
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Locale;
@@ -193,15 +194,21 @@ public class TextualDecoratorTemplate implements Template {
                 && (this.lastModified == this.templateSource.getLastModified())) {
             return;
         }
-        
+
         Reader reader = new InputStreamReader(
                 this.templateSource.getInputStream(), 
                 this.templateSource.getCharacterEncoding());
 
-        this.fragments = this.parser.parse(reader);
+        try {
+            this.fragments = this.parser.parse(reader);
+        } finally {
+            reader.close();
+        }
+
         this.lastModified = templateSource.getLastModified();
     }
     
+    @Override
     public String toString() {
         return this.getClass().getName() + ": " + this.templateSource;
     }

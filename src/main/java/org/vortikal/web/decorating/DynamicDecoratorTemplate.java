@@ -198,6 +198,8 @@ public class DynamicDecoratorTemplate implements Template {
         } catch (Throwable t) {
             logger.warn("Failed to compile template " + this, t);
             this.compiledTemplate = getErrorTemplate(t);
+        } finally {
+            reader.close();
         }
         this.lastModified = templateSource.getLastModified();
     }

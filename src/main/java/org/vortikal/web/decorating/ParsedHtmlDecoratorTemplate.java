@@ -30,6 +30,8 @@
  */
 package org.vortikal.web.decorating;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -168,13 +170,21 @@ public class ParsedHtmlDecoratorTemplate implements Template {
                 TemplateSource templateSource) throws InvalidTemplateException {
 
             HtmlPage page = null;
+            InputStream is = null;
             try {
+                is = templateSource.getInputStream();
                 page = htmlParser.parse(
-                        templateSource.getInputStream(), 
+                        is,
                         templateSource.getCharacterEncoding());
             } catch (Exception e) {
                 throw new InvalidTemplateException(
                         "Error parsing template " + templateSource, e);
+            } finally {
+                if (is != null) {
+                    try {
+                        is.close();
+                    } catch (IOException io) {}
+                }
             }
             this.root = createNode(page.getRootElement(), componentParser);
         }

@@ -32,7 +32,9 @@ package org.vortikal.web.service;
 
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -41,6 +43,7 @@ import javax.servlet.http.HttpServletResponse;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -93,23 +96,34 @@ public class ManuallyApproveResourcesHandler implements Controller {
             return null;
         }
 
-        OrQuery or = new OrQuery();
+        List<String> validatedFolders = new ArrayList<String>();
+
         // Parameter "folders" overrides what's already stored, because user
         // might change content and update service before storing resource
-        if (folders != null && folders.length > 0) {
+        if (folders != null) {
             for (String folder : folders) {
-                or.add(new UriPrefixQuery(folder));
+                if (this.isValidFolder(folder)) {
+                    validatedFolders.add(folder);
+                }
             }
         } else if (manuallyApproveFromProp != null) {
             Value[] manuallyApproveFromValues = manuallyApproveFromProp.getValues();
             for (Value manuallyApproveFromValue : manuallyApproveFromValues) {
-
-                // XXX Ignore if is child of current collection and recursive
-                // search
-                // is already selected, or if is already part of aggregation
-
-                or.add(new UriPrefixQuery(manuallyApproveFromValue.getStringValue()));
+                String folder = manuallyApproveFromValue.getStringValue();
+                if (this.isValidFolder(folder)) {
+                    validatedFolders.add(manuallyApproveFromValue.getStringValue());
+                }
             }
+        }
+
+        // No valid folders to display contents from, finish
+        if (validatedFolders.size() == 0) {
+            return null;
+        }
+
+        OrQuery or = new OrQuery();
+        for (String folder : validatedFolders) {
+            or.add(new UriPrefixQuery(folder));
         }
 
         String resourceTypePointer = this.listingResourceTypeMappingPointers.get(currentCollection.getResourceType());
@@ -173,6 +187,21 @@ public class ManuallyApproveResourcesHandler implements Controller {
         writer.close();
 
         return null;
+    }
+
+    private boolean isValidFolder(String folder) {
+        if (StringUtils.isBlank(folder)) {
+            return false;
+        }
+        // XXX Ignore if is child of current collection and recursive
+        // search is already selected, or if is already part of aggregation
+        // XXX Handle absolute uris (http/www)
+        try {
+            Path.fromString(folder);
+        } catch (IllegalArgumentException iae) {
+            return false;
+        }
+        return true;
     }
 
     private String getPublishDate(Property publishDateProp) {

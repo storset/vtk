@@ -124,6 +124,13 @@
   position: relative;
 }
 
+.vrtx-image-listing-include #over {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 999;
+}
+
 .vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.prev,
 .vrtx-image-listing-include .vrtx-image-listing-include-container-nav a.next {
   text-decoration: none !important;

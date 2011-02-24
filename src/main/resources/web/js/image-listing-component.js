@@ -126,9 +126,11 @@
 
 	 function calculateImage(image, init) {
 	   if(settings.fadeInOutTime > 0 && !init) {
-         $(wrapperContainer).stop().fadeTo(settings.fadeInOutTime, settings.fadedOutOpacity, function() {
-           $(wrapperContainerLink).remove();
-           $(wrapperContainer).append(images[image.attr("src")]);
+		 $(wrapperContainer).append("<div id='over'>" + $(wrapperContainerLink).html() + "</div>");
+		 $(wrapperContainerLink).remove();
+		 $(wrapperContainer).append(images[image.attr("src")]);
+         $("#over").fadeTo(settings.fadeInOutTime, settings.fadedOutOpacity, function() {
+           $(this).remove();
            scaleAndCalculatePosition();
            // TODO: cleanup / optimize
            $(wrapperContainer + "-description").remove();
@@ -141,9 +143,6 @@
               || ($(image).attr("title") && $(image).attr("title") != "")) {
 	         $(wrapperContainer + "-description").css("width", $(wrapper + " " + container).width());
            }
-	       
-           $(wrapperContainer).fadeTo(settings.fadeInOutTime, 1, function() {});
-           $(wrapperContainer + " img").fadeTo(0, 1);
 		 });
 	   } else {
          if(init) {

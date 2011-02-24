@@ -1082,19 +1082,33 @@ table.directoryListing tr td {
 
 #manually-approve-container table {
   border-collapse: collapse;
-  border: 1px solid #ccc;
+  border: 1px solid powderBlue;
   clear: both;
-  width: 1048px;
+  width: 845px;
 }
 
 #manually-approve-container table input {
   margin-right: 0.5em;
 }
 
+#manually-approve-container table tr.even td {
+  background-color: #eee;
+}
+
 #manually-approve-container table th {
   text-align: left;
-  border-bottom: 1px solid #ccc;
+  border: none;
   background-color: #eee;
+  font-size: 80%;
+  padding: 3px;
+}
+
+#manually-approve-container table th#approve-published {
+  width: 1%;
+}
+
+#manually-approve-container table td.approve-published {
+  white-space: nowrap;
 }
 
 #manually-approve-container table td {
@@ -1104,8 +1118,8 @@ table.directoryListing tr td {
 #manually-approve-container table th,
 #manually-approve-container table td {
   vertical-align: top; 
-  padding: 0.5em 0.75em;
-  border-right: 1px solid #ccc;
+  padding: 3px 15px 3px 3px;
+  padding-right: 15px;
 }
 
 #manually-approve-container .approve-info {

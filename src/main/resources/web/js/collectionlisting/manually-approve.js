@@ -121,7 +121,7 @@ function generateManuallyApprovedContainer(resources) {
   //If more than one page
   if(moreThanOnePage) { 
     for(; i < prPage; i++) { // Generate first page synchronous
-      html += generateTableRowFunc(resources[i]);
+      html += generateTableRowFunc(resources[i], i);
     }
     html += generateTableEndAndPageInfoFunc(pages, prPage, len, false);
     pages++;
@@ -137,7 +137,7 @@ function generateManuallyApprovedContainer(resources) {
   
   // Generate rest of pages asynchronous
   setTimeout(function() { 
-	html += generateTableRowFunc(resources[i]);
+	html += generateTableRowFunc(resources[i], i);
     if((i+1) % prPage == 0) {
       html += generateTableEndAndPageInfoFunc(pages, prPage, len, false);
       pages++;
@@ -174,15 +174,19 @@ function generateManuallyApprovedContainer(resources) {
 
 /* HTML generation functions */
 
-function generateTableRow(resource) {
-  var html = "";
-  if(resource.approved) {
-    html += "<tr><td><input type='checkbox' checked='checked' />";
+function generateTableRow(resource, i) {
+  if(i & 1) {
+    var html = "<tr class='even'>";
   } else {
-	html += "<tr><td><input type='checkbox' />";
+	var html = "<tr>";	  
+  }
+  if(resource.approved) {
+    html += "<td><input type='checkbox' checked='checked' />";
+  } else {
+	html += "<td><input type='checkbox' />";
   }
   html += "<a class='approve-link' href='" + resource.uri + "' title='" + resource.uri + "'>" + resource.title + "</a></td>"
-	    + "<td>" + resource.uri + "</td><td>" + resource.published + "</td></tr>";
+	    + "<td>" + resource.uri + "</td><td class='approve-published'>" + resource.published + "</td></tr>";
   return html;
 }
 
@@ -203,7 +207,7 @@ function generateNavAndEndPage(i, html, prPage, remainder, pages, totalPages) {
 }
 
 function generateStartPageAndTableHead(pages) {
-  return "<div id='approve-page-" + pages + "'><table><thead><tr><th>Tittel</th><th>Kilde</th><th>Publisert</th></tr></thead><tbody>";
+  return "<div id='approve-page-" + pages + "'><table><thead><tr><th>Tittel</th><th>Kilde</th><th id='approve-published'>Publisert</th></tr></thead><tbody>";
 }
 
 /* ^ HTML generation functions */

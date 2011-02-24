@@ -1042,9 +1042,18 @@ table.directoryListing tr td {
 
 /* Manually approve container */
 
+#resource\.manually-approve-from {
+  float: left;
+}
+
 #vrtx-resource\.manually-approve-from #manually-approve-container-title {
-  margin-top: 1em;
   font-size: 90%;
+  float: left;
+  margin-left: 1em;
+}
+
+#vrtx-resource\.manually-approve-from #manually-approve-container-title button {
+  cursor: pointer;
 }
 
 #vrtx-resource\.manually-approved-resources {
@@ -1052,25 +1061,30 @@ table.directoryListing tr td {
 }
 
 #manually-approve-container {
-  margin: 0.5em 0 3em 0;
+  margin: 1em 0 3em 0;
   font-size: 90%;
+  float: left;
+  clear: left;
 }
 
 #manually-approve-refresh {
-  display: block;
-  margin: 0.5em 0 0 0;
-  font-size: 90%;
+  float: left;
 }
 
 #approve-spinner {
-  margin: 0.5em 0;
   float: left;
+  display: block;
+  font-size: 90%;
+  background: url(icons/tabmenu-spinner.gif) no-repeat 0 6px;
+  margin: 0 0 0 1em;
+  padding: 0.5em 0 0 24px;
 }
 
 #manually-approve-container table {
   border-collapse: collapse;
   border: 1px solid #ccc;
   clear: both;
+  width: 1048px;
 }
 
 #manually-approve-container table input {
@@ -1104,11 +1118,11 @@ table.directoryListing tr td {
 #manually-approve-container .prev {
   margin: 0.5em 0 1em 0;
   display: block;
-  float: left;
+  float: right;
 }
 
-#manually-approve-container .prev {
-  margin-right: 1em;
+#manually-approve-container .next {
+  margin-left: 1em;
 }
 
 /* ^ Manually approve container */

@@ -18,7 +18,7 @@ $(document).ready(function() {
     $("#manually-approve-container").delegate("input", "click", function(e) {
       var textfield = $("#resource\\.manually-approved-resources");
       var val = textfield.val();
-      var uri = $(this).parent().parent().find("td.uri").text();
+      var uri = $(this).parent().parent().find("a.approve-link").attr("href");
       if($(this).attr("checked")) {
     	if(val.length) {
           val += ", " + uri;
@@ -133,8 +133,7 @@ function generateManuallyApprovedContainer(resources) {
   }
   
   // Add spinner
-  $("#manually-approve-container").prepend("<span id='approve-spinner'><img src='/vrtx/__vrtx/static-resources/themes/default/icons/tabmenu-spinner.gif' alt='spinner' />"
-                                      + "&nbsp;Genererer side <span id='approve-spinner-generated-pages'>" + pages + "</span> av " + totalPages + "...</span>");
+  $("#manually-approve-container-title").append("<span id='approve-spinner'>Genererer side <span id='approve-spinner-generated-pages'>" + pages + "</span> av " + totalPages + "...</span>");
   
   // Generate rest of pages asynchronous
   setTimeout(function() { 
@@ -163,8 +162,8 @@ function generateManuallyApprovedContainer(resources) {
         html += "<a href='#page-" + (pages-1) + "' class='prev' id='page-" + (pages-1) + "'>Forrige " + prPage + "</a>";
       }
       html += "</div>";
-      $("#manually-approve-container").append(html)
-        .find("#approve-spinner").remove();
+      $("#manually-approve-container").append(html);
+      $("#approve-spinner").remove();
       if(len > prPage) { 
         $("#manually-approve-container #approve-page-" + pages).hide();
       }
@@ -182,8 +181,8 @@ function generateTableRow(resource) {
   } else {
 	html += "<tr><td><input type='checkbox' />";
   }
-  html += "<a href='" + resource.uri + "'>" + resource.title + "</a></td>"
-	    + "<td class='uri'>" + resource.uri + "</td><td>" + resource.published + "</td></tr>";
+  html += "<a class='approve-link' href='" + resource.uri + "' title='" + resource.uri + "'>" + resource.title + "</a></td>"
+	    + "<td>" + resource.uri + "</td><td>" + resource.published + "</td></tr>";
   return html;
 }
 
@@ -193,18 +192,18 @@ function generateTableEndAndPageInfo(pages, prPage, len, lastRow) {
 }
 
 function generateNavAndEndPage(i, html, prPage, remainder, pages, totalPages) {
-  var html = "";
+  var nextPrPage = pages < totalPages || remainder == 0 ? prPage : remainder;
+  var html = "<a href='#page-" + pages + "' class='next' id='page-" + pages + "'>Neste " + nextPrPage + "</a>";
   if(i > prPage) {
     var prevPage = pages - 2;
     html += "<a href='#page-" + prevPage + "' class='prev' id='page-" + prevPage + "'>Forrige " + prPage + "</a>";
   }
-  var nextPrPage = pages < totalPages || remainder == 0 ? prPage : remainder;
-  html += "<a href='#page-" + pages + "' class='next' id='page-" + pages + "'>Neste " + nextPrPage + "</a></div>";
+  html += "</div>";
   return html; 
 }
 
 function generateStartPageAndTableHead(pages) {
-  return "<div id='approve-page-" + pages + "'><table><thead><tr><th>Tittel</th><th>Uri</th><th>Publisert</th></tr></thead><tbody>";
+  return "<div id='approve-page-" + pages + "'><table><thead><tr><th>Tittel</th><th>Kilde</th><th>Publisert</th></tr></thead><tbody>";
 }
 
 /* ^ HTML generation functions */

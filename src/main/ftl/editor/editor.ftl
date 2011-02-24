@@ -407,8 +407,7 @@
           </#if>
           
           <#if name = 'manually-approve-from'>
-            <div id="manually-approve-container-title">Manuelt godkjente ressurser</div>
-            <a id="manually-approve-refresh" href=".">Oppdater liste</a>
+            <div id="manually-approve-container-title"><button id="manually-approve-refresh" href=".">Oppdater liste</a></button></div>
             <div id="manually-approve-container">
             </div>
           </#if>

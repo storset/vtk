@@ -148,8 +148,10 @@ div#vrtx-resource\.navigationTitle {
   position: relative;
 }
 
-div#vrtx-resource\.navigationTitle input,div#vrtx-resource\.navigationTitle div
-  {
+div#vrtx-resource\.navigationTitle input,
+div#vrtx-resource\.navigationTitle div,
+div#vrtx-resource\.aggregation input,
+div#vrtx-resource\.manually-approve-from input#resource\.manually-approve-from {
   width: 317px;
   display: inline;
 }

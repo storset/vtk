@@ -129,9 +129,9 @@
 		 $(wrapperContainer).append("<div id='over'>" + $(wrapperContainerLink).html() + "</div>");
 		 $(wrapperContainerLink).remove();
 		 $(wrapperContainer).append(images[image.attr("src")]);
+		 scaleAndCalculatePosition();
          $("#over").fadeTo(settings.fadeInOutTime, settings.fadedOutOpacity, function() {
            $(this).remove();
-           scaleAndCalculatePosition();
            // TODO: cleanup / optimize
            $(wrapperContainer + "-description").remove();
 	       $("<div class='" + container.substring(1) + "-description'>"

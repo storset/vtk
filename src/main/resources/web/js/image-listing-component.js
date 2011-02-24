@@ -126,11 +126,11 @@
 
 	 function calculateImage(image, init) {
 	   if(settings.fadeInOutTime > 0 && !init) {
-		 $(wrapperContainer).append("<div id='over'>" + $(wrapperContainerLink).html() + "</div>");
+		 $(wrapperContainer).append("<div class='over'>" + $(wrapperContainerLink).html() + "</div>");
 		 $(wrapperContainerLink).remove();
 		 $(wrapperContainer).append(images[image.attr("src")]);
 		 scaleAndCalculatePosition();
-         $("#over").fadeTo(settings.fadeInOutTime, settings.fadedOutOpacity, function() {
+         $(".over").fadeTo(settings.fadeInOutTime, settings.fadedOutOpacity, function() {
            $(this).remove();
            // TODO: cleanup / optimize
            $(wrapperContainer + "-description").remove();

@@ -124,7 +124,7 @@
   position: relative;
 }
 
-.vrtx-image-listing-include #over {
+.vrtx-image-listing-include .over {
   position: absolute;
   top: 0px;
   left: 0px;

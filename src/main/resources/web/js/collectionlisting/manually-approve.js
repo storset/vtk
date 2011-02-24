@@ -105,7 +105,7 @@ function retrieveResources(serviceUri, folders) {
 function generateManuallyApprovedContainer(resources) {
 
   // Initial setup
-  var pages = 1, prPage = 25, len = resources.length,
+  var pages = 1, prPage = 15, len = resources.length,
       remainder = len % prPage, moreThanOnePage = len > prPage,
       totalPages = len > prPage ? (parseInt(len / prPage) + 1) : 1;
       

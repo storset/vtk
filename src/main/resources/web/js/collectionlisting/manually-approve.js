@@ -43,6 +43,7 @@ $(document).ready(function() {
       textfield.val(val);
     });
     
+    // Show refresh button only if textfield has changed
     $("#resource\\.manually-approve-from").keyup(function(e) {
       var val = $("#resource\\.manually-approve-from").val();
       if(val != lastVal) {

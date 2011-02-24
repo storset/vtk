@@ -186,7 +186,7 @@ function generateTableRow(resource, i) {
 	html += "<td><input type='checkbox' />";
   }
   html += "<a class='approve-link' href='" + resource.uri + "' title='" + resource.uri + "'>" + resource.title + "</a></td>"
-	    + "<td>" + resource.uri + "</td><td class='approve-published'>" + resource.published + "</td></tr>";
+	    + "<td>&lt;kilde kommer her&gt;</td><td class='approve-published'>" + resource.published + "</td></tr>";
   return html;
 }
 

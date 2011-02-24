@@ -2,12 +2,6 @@
  * JS for handling manually approved resources
  */
 
-
-var lastVal = "";
-$(window).load(function() {
-  lastVal = $("#resource\\.manually-approve-from").val();
-});
-
 $(document).ready(function() {
 
 	// Retrieve initial resources
@@ -15,19 +9,8 @@ $(document).ready(function() {
 
     // Refresh when folders to approve from are changed
     $("#manually-approve-refresh").click(function(e) {
-      var val = $("#resource\\.manually-approve-from").val();
-      if(val == lastVal) {
-    	if(!$("#manually-approve-container #approve-msg").length) {
-    	  $("#manually-approve-container").prepend("<span id='approve-msg'>Du må gjøre noe med hvilke mapper som skal godkjennes fra.</span>");
-    	  setTimeout(function() {
-            $("#manually-approve-container #approve-msg").fadeOut("fast", function() { $(this).remove(); });
-    	  }, 3000);
-    	}
-      } else {
-        var folders = $("#resource\\.manually-approve-from").val().split(",");
-        retrieveResources(".", folders);
-        lastVal = val;
-      }
+      var folders = $("#resource\\.manually-approve-from").val().split(",");
+      retrieveResources(".", folders);
       return false; 
     });
     
@@ -49,6 +32,7 @@ $(document).ready(function() {
     	  val = val.replace(", " + uri, ""); 
     	}
       }
+      textfield.val(val);
     });
 
     // Paging - next

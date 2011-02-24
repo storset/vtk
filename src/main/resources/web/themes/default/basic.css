@@ -1049,11 +1049,11 @@ table.directoryListing tr td {
 #vrtx-resource\.manually-approve-from #manually-approve-container-title {
   font-size: 90%;
   float: left;
-  margin-left: 1em;
 }
 
 #vrtx-resource\.manually-approve-from #manually-approve-container-title button {
   cursor: pointer;
+  margin-left: 1em;
 }
 
 #vrtx-resource\.manually-approved-resources {
@@ -1069,6 +1069,7 @@ table.directoryListing tr td {
 
 #manually-approve-refresh {
   float: left;
+  display: none;
 }
 
 #approve-spinner {

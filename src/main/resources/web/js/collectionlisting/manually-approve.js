@@ -2,6 +2,12 @@
  * JS for handling manually approved resources
  */
 
+var lastVal = "";
+
+$(window).ready(function() {
+  lastVal = $("#resource\\.manually-approve-from").val();
+});
+
 $(document).ready(function() {
 
 	// Retrieve initial resources
@@ -9,8 +15,10 @@ $(document).ready(function() {
 
     // Refresh when folders to approve from are changed
     $("#manually-approve-refresh").click(function(e) {
-      var folders = $("#resource\\.manually-approve-from").val().split(",");
+      var val = $("#resource\\.manually-approve-from").val(); lastVal = val;
+      var folders = val.split(",");
       retrieveResources(".", folders);
+      $(this).hide();
       return false; 
     });
     
@@ -34,9 +42,18 @@ $(document).ready(function() {
       }
       textfield.val(val);
     });
+    
+    $("#resource\\.manually-approve-from").keyup(function(e) {
+      var val = $("#resource\\.manually-approve-from").val();
+      if(val != lastVal) {
+        $("#manually-approve-refresh").show();   
+      } else {
+    	$("#manually-approve-refresh:visible").hide();     
+      }
+    });
 
     // Paging - next
-    $("#manually-approve-container").delegate(".next", "click", function() {
+    $("#manually-approve-container").delegate(".next", "click", function(e) {
       var that = $(this).parent();
       var next = that.next();
       if(next.attr("id") && next.attr("id").indexOf("approve-page") != -1) {
@@ -47,7 +64,7 @@ $(document).ready(function() {
     });
 
     // Paging - previous
-    $("#manually-approve-container").delegate(".prev", "click", function() {
+    $("#manually-approve-container").delegate(".prev", "click", function(e) {
       var that = $(this).parent();
       var prev = that.prev();
       if(prev.attr("id") && prev.attr("id").indexOf("approve-page") != -1) {
@@ -157,6 +174,8 @@ function generateManuallyApprovedContainer(resources) {
     } else {
       if(remainder != 0) {
         html += generateTableEndAndPageInfoFunc(pages, prPage, len, true);
+      } else {
+    	pages--;  
       }
       if(len > prPage) {
         html += "<a href='#page-" + (pages-1) + "' class='prev' id='page-" + (pages-1) + "'>Forrige " + prPage + "</a>";
@@ -165,6 +184,7 @@ function generateManuallyApprovedContainer(resources) {
       $("#manually-approve-container").append(html);
       $("#approve-spinner").remove();
       if(len > prPage) { 
+    	alert("hallojs side " + pages);
         $("#manually-approve-container #approve-page-" + pages).hide();
       }
     }

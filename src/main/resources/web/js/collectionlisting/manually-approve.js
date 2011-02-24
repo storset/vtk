@@ -183,8 +183,7 @@ function generateManuallyApprovedContainer(resources) {
       html += "</div>";
       $("#manually-approve-container").append(html);
       $("#approve-spinner").remove();
-      if(len > prPage) { 
-    	alert("hallojs side " + pages);
+      if(len > prPage) {
         $("#manually-approve-container #approve-page-" + pages).hide();
       }
     }

@@ -40,8 +40,8 @@ import org.antlr.runtime.tree.CommonTree;
 import org.apache.commons.lang.LocaleUtils;
 import org.vortikal.repository.resource.ResourcetreeLexer;
 import org.vortikal.resourcemanagement.EditRule;
-import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.resourcemanagement.EditRule.EditRuleType;
+import org.vortikal.resourcemanagement.StructuredResourceDescription;
 
 @SuppressWarnings("unchecked")
 public class EditRuleParser {
@@ -76,7 +76,8 @@ public class EditRuleParser {
                                     .getChild(0).getText(), true));
                             break;
                         default:
-                            throw new IllegalStateException("Unknown edit rule: " + editRuleDescription);
+                            throw new IllegalStateException(srd.getName() + ": unknown edit rule: " 
+                                    + editRuleDescription.getText());
                         }
                     }
                 }

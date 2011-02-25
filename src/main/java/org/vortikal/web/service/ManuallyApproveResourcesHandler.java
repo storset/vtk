@@ -176,9 +176,11 @@ public class ManuallyApproveResourcesHandler implements Controller {
                 // XXX Complete uri, with protocoll and host. Wait for now...
                 // obj.put("uri",
                 // viewService.constructURL(ps.getURI()).toString());
-                obj.put("uri", ps.getURI().toString());
+                Path resourcePath = ps.getURI();
+                obj.put("uri", resourcePath.toString());
+                obj.put("source", resourcePath.getParent().toString());
                 obj.put("published", this.getPublishDate(ps.getProperty(this.publishDatePropDef)));
-                boolean approved = manuallyApprovedResourcesProp == null ? false : this.isAlreadyApproved(ps.getURI()
+                boolean approved = manuallyApprovedResourcesProp == null ? false : this.isAlreadyApproved(resourcePath
                         .toString(), manuallyApprovedResourcesProp);
                 obj.put("approved", approved);
                 arr.add(obj);

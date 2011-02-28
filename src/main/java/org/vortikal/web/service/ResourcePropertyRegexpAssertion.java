@@ -75,11 +75,10 @@ public class ResourcePropertyRegexpAssertion
 
 
     public String toString() {
-        StringBuffer sb = new StringBuffer();
-		
-        sb.append(super.toString());
-        sb.append("; pattern = ").append(this.pattern.pattern());
-        sb.append("; invert = ").append(this.invert);
+        StringBuilder sb = new StringBuilder();
+        sb.append("property.").append(this.name);
+        sb.append(this.invert ? " !~ " : " ~ ");
+        sb.append(this.pattern.pattern());
         return sb.toString();
     }
 

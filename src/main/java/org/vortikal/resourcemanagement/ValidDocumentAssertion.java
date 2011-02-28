@@ -45,7 +45,6 @@ import org.vortikal.text.JSONUtil;
  */
 public class ValidDocumentAssertion implements RepositoryContentEvaluationAssertion {
 
-//	private Repository repository;
 	private StructuredResourceManager resourceManager;
 	
 //	@Override
@@ -53,41 +52,6 @@ public class ValidDocumentAssertion implements RepositoryContentEvaluationAssert
         return matches(resource, principal, null);
     }
 
-//	public boolean matches(Resource resource, Principal principal) {
-//		try {
-//			SecurityContext securityContext = SecurityContext.getSecurityContext();
-//			String token = securityContext.getToken();
-//
-//			InputStream inputStream = this.repository.getInputStream(
-//					token, resource.getURI(), true);
-//			byte[] buffer = StreamUtil.readInputStream(inputStream);
-//			String content = new String(buffer, "utf-8");
-//			JSONObject object = JSONObject.fromObject(content);
-//                
-//			Object o = JSONUtil.select(object, "resourcetype");
-//			if (o == null) {
-//				return false;
-//			}
-//			StructuredResourceDescription description = resourceManager.get(o.toString());
-//			if (description == null) {
-//				return false;
-//			}
-//			StructuredResource r = new StructuredResource(description);
-//			r.parse(content);
-//			return true;
-//		} catch(Throwable t) {
-//			return false;
-//		}
-//	}
-
-//	public boolean conflicts(Assertion assertion) {
-//		return false;
-//	}
-
-//
-//	public void setRepository(Repository repository) {
-//		this.repository = repository;
-//	}
 
     public boolean matches(Resource resource, Principal principal, Content content) {
         // Could fallback to Resource.getInputStream instead,but that will not work in all cases when
@@ -118,5 +82,9 @@ public class ValidDocumentAssertion implements RepositoryContentEvaluationAssert
     @Required
     public void setResourceManager(StructuredResourceManager resourceManager) {
         this.resourceManager = resourceManager;
+    }
+    
+    public String toString() {
+        return "resource.content = <Valid JSON>";
     }
 }

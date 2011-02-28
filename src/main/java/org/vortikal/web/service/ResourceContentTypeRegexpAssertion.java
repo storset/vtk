@@ -93,12 +93,13 @@ public class ResourceContentTypeRegexpAssertion
 
 
     public String toString() {
-        StringBuffer sb = new StringBuffer();
-		
-        sb.append(super.toString());
-        sb.append("; pattern = ").append(this.pattern.pattern());
+        StringBuilder sb = new StringBuilder();
+        sb.append("property.content-type ~ ");
+        sb.append(this.pattern.pattern());
         if (this.exceptionPattern != null) {
-            sb.append("; exceptionPattern = ").append(this.exceptionPattern.pattern());
+            sb.append(" && (content-type !~ ");
+            sb.append(this.exceptionPattern.pattern());
+            sb.append(")");
         }
         return sb.toString();
     }

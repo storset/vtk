@@ -72,11 +72,8 @@ public class ResourceContentTypeAssertion
 
 
     public String toString() {
-        StringBuffer sb = new StringBuffer();
-		
-        sb.append(super.toString());
-        sb.append("; contentType = ").append(this.contentType);
-		
+        StringBuilder sb = new StringBuilder();
+        sb.append("property.contentType = " + this.contentType);
         return sb.toString();
     }
 

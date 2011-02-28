@@ -73,8 +73,8 @@ public class ResourceIsCollectionAssertion
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append(super.toString());
+        StringBuilder sb = new StringBuilder();
+        sb.append(this.invert ? "!resource.collection" : "resource.collection");
         return sb.toString();
     }
 }

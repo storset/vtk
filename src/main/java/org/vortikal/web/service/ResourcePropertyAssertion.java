@@ -124,13 +124,13 @@ public class ResourcePropertyAssertion
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer();
-		
-        sb.append(super.toString());
-        sb.append("; namespace = ").append(this.namespace);
-        sb.append("; name = ").append(this.name);
-        sb.append("; value = ").append(this.value);
-
+        StringBuilder sb = new StringBuilder();
+        sb.append("property.").append(this.name);
+        if (this.checkExistenceOnly) {
+            sb.append(" exists");
+        } else {
+            sb.append(" = ").append(this.value);
+        }
         return sb.toString();
     }
 

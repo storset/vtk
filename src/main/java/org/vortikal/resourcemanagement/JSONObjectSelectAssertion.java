@@ -69,39 +69,12 @@ public class JSONObjectSelectAssertion implements RepositoryContentEvaluationAss
     
     public JSONObjectSelectAssertion createAssertion(String expression, Set<String> expectedValues) {
         JSONObjectSelectAssertion assertion = new JSONObjectSelectAssertion();
-//        assertion.setRepository(this.repository);
-//        assertion.setToken(this.token);
         assertion.setExpression(expression);
         assertion.setExpectedValues(expectedValues);
         return assertion;
     }
     
     
-//    @Override
-//    public boolean matches(Resource resource, Principal principal) {
-//        if (resource.isCollection()) {
-//            return false;
-//        }
-//        try {
-//            InputStream inputStream = this.repository.getInputStream(
-//                this.token, resource.getURI(), true);
-//            byte[] buffer = StreamUtil.readInputStream(inputStream);
-//            String content = new String(buffer, "utf-8");
-//            JSONObject object = JSONObject.fromObject(content);
-//            
-//            Object o = JSONUtil.select(object, this.expression);
-//            if (this.expectedValues == null || this.expectedValues.isEmpty()) {
-//                return o != null;
-//            }
-//            if (o == null) {
-//                return false;
-//            }
-//            return this.expectedValues.contains(o.toString());
-//            
-//        } catch (Exception e) {
-//            return false;
-//        }
-//    }
     
     public boolean matches(Resource resource, Principal principal) {
         return matches(resource, principal, null);
@@ -127,18 +100,6 @@ public class JSONObjectSelectAssertion implements RepositoryContentEvaluationAss
             return false;
         }        
     }
-
-//    public boolean conflicts(Assertion assertion) {
-//        return false;
-//    }
-
-//    @Required public void setRepository(Repository repository) {
-//        this.repository = repository;
-//    }
-//
-//    @Required public void setToken(String token) {
-//        this.token = token;
-//    }
 
     @Required public void setExpression(String expression) {
         this.expression = expression;
@@ -167,6 +128,6 @@ public class JSONObjectSelectAssertion implements RepositoryContentEvaluationAss
     }
     
     public String toString() {
-        return this.getClass().getName() + ": expr=" + this.expression + ", expectedValues: " + this.expectedValues;
+        return "content.json." + this.expression + " in " + this.expectedValues;
     }
 }

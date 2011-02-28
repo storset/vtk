@@ -45,16 +45,14 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.web.RequestContext;
 import org.vortikal.web.actions.report.subresource.SubResourcePermissions;
 import org.vortikal.web.actions.report.subresource.SubResourcePermissionsProvider;
 import org.vortikal.web.service.Service;
-import org.vortikal.web.service.ServiceImpl;
-import org.vortikal.web.service.URL;
 
 public class SubResourceJSONService implements Controller, InitializingBean {
     
     private SubResourcePermissionsProvider provider;
+    private Service permissionsService;
       
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -70,11 +68,6 @@ public class SubResourceJSONService implements Controller, InitializingBean {
         if(uri == null) {
           return null;
         }
-
-        Path path = RequestContext.getRequestContext().getCurrentCollection();
-        URL base = URL.create(request);
-        base.clearParameters();
-        base.setPath(path);
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
@@ -122,8 +115,7 @@ public class SubResourceJSONService implements Controller, InitializingBean {
             StringBuilder title = new StringBuilder();
             title.append("<span id=&quot;title-wrapper&quot;><strong id=&quot;title&quot;>" + sr.getName() + "</strong>");
             
-            Service s = new ServiceImpl();
-            String uriService = s.constructURL(Path.fromString(sr.getUri())).getPathRepresentation();
+            String uriService = permissionsService.constructURL(Path.fromString(sr.getUri())).getPathRepresentation();
 
             if(sr.isInheritedAcl()) {
               title.append(" " + provider.getLocalizedTitle(request, "report.collection-structure.inherited-permissions", null) + " (<a href=&quot;" + uriService
@@ -181,6 +173,10 @@ public class SubResourceJSONService implements Controller, InitializingBean {
 
     public void setProvider(SubResourcePermissionsProvider provider) {
         this.provider = provider;
+    }
+    
+    public void setPermissionsService(Service permissionsService) {
+        this.permissionsService = permissionsService;
     }
 
 }

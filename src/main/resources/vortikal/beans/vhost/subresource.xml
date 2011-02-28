@@ -19,6 +19,7 @@
 
   <bean id="subresource.handler" class="org.vortikal.web.service.subresource.SubResourceJSONService">
     <property name="provider" ref="subresource.provider" />
+    <property name="permissionsService" ref="permissionsService" />
   </bean>
   
   <!-- TODO: move to vortikal.repository? -->

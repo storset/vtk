@@ -190,6 +190,10 @@ label.resource\.hide-additional-content {
   margin-right: 0px;
 }
 
+#vrtx-resource\.additional-content {
+  margin-top: 1em;
+}
+
 label.resource\.display-type {
   display: inline;
 }

@@ -1,0 +1,12 @@
+.treeview li {
+  float: left;
+  clear: left;
+  padding-bottom: 0px;
+}
+
+.treeview:after {
+  content: "";
+  display: block;
+  height: 0;
+  clear: both;
+}

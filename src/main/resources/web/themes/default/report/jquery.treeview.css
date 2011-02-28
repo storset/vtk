@@ -23,12 +23,6 @@
 	padding: 3px 0pt 3px 20px;
 }
 
-*:first-child+html .treeview li {
-  float: left;
-  clear: left;
-  padding-bottom: 0px;
-}
-
 .treeview a.selected {
 	background-color: #eee;
 }

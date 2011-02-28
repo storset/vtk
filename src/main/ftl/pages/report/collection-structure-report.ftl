@@ -19,6 +19,9 @@
     <link rel="stylesheet" href="${cssURL}" />
     </#list>
   </#if>
+  <!--[if lte IE 8]>
+    <link rel="stylesheet" type="text/css" href="/vrtx/__vrtx/static-resources/themes/default/report/jquery.treeview.ie.css" />
+  <![endif]-->
   <#if jsURLs?exists>
     <#list jsURLs as jsURL>
     <script type="text/javascript" src="${jsURL}"></script>

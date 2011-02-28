@@ -33,6 +33,7 @@
         <entry key="event-listing" value="${override.listing.prefix}event" />
       </map>
     </property>
+    <property name="aggregationResolver" ref="aggregationResolver" />
     <property name="viewService" ref="viewService" />
   </bean>
 

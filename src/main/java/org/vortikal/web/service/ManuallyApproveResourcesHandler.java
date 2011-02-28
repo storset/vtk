@@ -70,6 +70,7 @@ import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.repository.search.query.UriSetQuery;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.display.collection.aggregation.AggregationResolver;
 
 public class ManuallyApproveResourcesHandler implements Controller {
 
@@ -84,6 +85,7 @@ public class ManuallyApproveResourcesHandler implements Controller {
     private PropertyTypeDefinition aggregationPropDef;
     private PropertyTypeDefinition recursivePropDef;
     private Map<String, String> listingResourceTypeMappingPointers;
+    private AggregationResolver aggregationResolver;
     private Service viewService;
 
     @Override
@@ -128,6 +130,22 @@ public class ManuallyApproveResourcesHandler implements Controller {
         if (validatedFolders.size() == 0 && manuallyApprovedResourcesProp == null) {
             return null;
         }
+
+        // Step one of headache: resolve aggregation
+        Set<String> l = new HashSet<String>();
+        for (String folder : validatedFolders) {
+            List<Path> aggregatedPaths = this.aggregationResolver.getAggregationPaths(Path.fromString(folder));
+            if (aggregatedPaths != null) {
+                for (Path aggregatedPath : aggregatedPaths) {
+                    l.add(aggregatedPath.toString());
+                }
+            }
+        }
+        validatedFolders.addAll(l);
+
+        // Step two of headache: resolve already manually approved resource from
+        // folders to manually approve from
+        // XXX implement
 
         OrQuery or = new OrQuery();
         for (String folder : validatedFolders) {
@@ -302,6 +320,11 @@ public class ManuallyApproveResourcesHandler implements Controller {
     @Required
     public void setRecursivePropDef(PropertyTypeDefinition recursivePropDef) {
         this.recursivePropDef = recursivePropDef;
+    }
+
+    @Required
+    public void setAggregationResolver(AggregationResolver aggregationResolver) {
+        this.aggregationResolver = aggregationResolver;
     }
 
     @Required

@@ -15,7 +15,7 @@
       <script type="text/javascript" src="${audioFlashPlayerJsURL?html}/"></script>  
       <object type="application/x-shockwave-flash" data="${audioFlashPlayerFlashURL?html}" height="24" width="290">
         <param name="movie" value="${audioFlashPlayerFlashURL?html}"/>
-        <param name="FlashVars" value="playerID=1&amp;soundFile=${media?url("UTF-8")}"/> 
+        <param name="FlashVars" value="playerID=1&amp;soundFile=${media}"/>
         <param name="quality" value="high"/>
         <param name="menu" value="false"/>
         <param name="wmode" value="transparent"/>
@@ -62,7 +62,7 @@
 			 	<#if streamType?exists && streamType == "live"> 
 			 	streamType="live"
 			 	</#if>
-			 	flashvars="src=${media?url("UTF-8")}">
+			 	flashvars="src=${media}">
 		 	</embed>
 		</object>
 		<#if contentType == "video/mp4" && !media?starts_with("rtmp")>

@@ -5,7 +5,7 @@
 </#if>
 
 <#macro listPersons >
-<div class="${name}-participants">
+<div class="vrtx-participants">
 <#if name != "master-list" >
   <h2><a href="${showAllPersons}"><@vrtx.msg code="${name}.project-participants" /></a></h2>
 <#else>

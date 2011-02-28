@@ -32,7 +32,6 @@ package org.vortikal.web.service;
 
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -105,7 +104,7 @@ public class ManuallyApproveResourcesHandler implements Controller {
             return null;
         }
 
-        List<String> validatedFolders = new ArrayList<String>();
+        Set<String> validatedFolders = new HashSet<String>();
 
         // Parameter "folders" overrides what's already stored, because user
         // might change content and update service before storing resource
@@ -125,27 +124,40 @@ public class ManuallyApproveResourcesHandler implements Controller {
             }
         }
 
+        Set<String> manuallyApprovedResources = new HashSet<String>();
+        if (manuallyApprovedResourcesProp != null) {
+            Value[] manuallyApprovedValues = manuallyApprovedResourcesProp.getValues();
+            for (Value manuallyApprovedResource : manuallyApprovedValues) {
+                manuallyApprovedResources.add(manuallyApprovedResource.getStringValue());
+            }
+        }
+
         // No valid folders to display contents from and no already manually
         // approved resources -> finish
-        if (validatedFolders.size() == 0 && manuallyApprovedResourcesProp == null) {
+        if (validatedFolders.size() == 0 && manuallyApprovedResources.size() == 0) {
             return null;
         }
 
         // Step one of headache: resolve aggregation
-        Set<String> l = new HashSet<String>();
+        Set<String> aggregatedFolders = new HashSet<String>();
         for (String folder : validatedFolders) {
             List<Path> aggregatedPaths = this.aggregationResolver.getAggregationPaths(Path.fromString(folder));
             if (aggregatedPaths != null) {
                 for (Path aggregatedPath : aggregatedPaths) {
-                    l.add(aggregatedPath.toString());
+                    aggregatedFolders.add(aggregatedPath.toString());
                 }
             }
         }
-        validatedFolders.addAll(l);
+        validatedFolders.addAll(aggregatedFolders);
 
         // Step two of headache: resolve already manually approved resource from
         // folders to manually approve from
-        // XXX implement
+        for (String validatedFolder : validatedFolders) {
+            Set<String> s = this.getManuallyApprovedResources(validatedFolder, token);
+            if (s != null) {
+                manuallyApprovedResources.addAll(s);
+            }
+        }
 
         OrQuery or = new OrQuery();
         for (String folder : validatedFolders) {
@@ -165,15 +177,10 @@ public class ManuallyApproveResourcesHandler implements Controller {
             query = or;
         }
 
-        if (manuallyApprovedResourcesProp != null) {
+        if (manuallyApprovedResources.size() > 0) {
             OrQuery q = new OrQuery();
             q.add(query);
-            Set<String> uris = new HashSet<String>();
-            Value[] manuallyApprovedResources = manuallyApprovedResourcesProp.getValues();
-            for (Value manuallyApprovedResource : manuallyApprovedResources) {
-                uris.add(manuallyApprovedResource.getStringValue());
-            }
-            q.add(new UriSetQuery(uris));
+            q.add(new UriSetQuery(manuallyApprovedResources));
             query = q;
         }
 
@@ -225,6 +232,25 @@ public class ManuallyApproveResourcesHandler implements Controller {
         writer.flush();
         writer.close();
 
+        return null;
+    }
+
+    private Set<String> getManuallyApprovedResources(String validatedFolder, String token) {
+        try {
+            Resource collection = this.repository.retrieve(token, Path.fromString(validatedFolder), false);
+            Property prop = collection.getProperty(this.manuallyApprovedResourcesPropDef);
+            if (prop == null) {
+                return null;
+            }
+            Set<String> s = new HashSet<String>();
+            Value[] manuallyApprovedValues = prop.getValues();
+            for (Value manuallyApprovedResource : manuallyApprovedValues) {
+                s.add(manuallyApprovedResource.getStringValue());
+            }
+            return s;
+        } catch (Exception e) {
+            // XXX: log, but don't break everything
+        }
         return null;
     }
 

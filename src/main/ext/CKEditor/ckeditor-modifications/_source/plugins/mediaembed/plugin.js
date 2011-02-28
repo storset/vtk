@@ -335,7 +335,7 @@ function extractMediaPlayerProps(HTML, element) {
   	  var param = regexp.exec(HTML);
   	  if(param != null) {
  		if(param.length = 2) {
- 		  if(name == "url") { // Unescape URL to avoid «double encoding»
+ 		  if(name == "url") { // Decode to avoid «double encoding»
  			params[name] = $.trim(decodeURIComponent(param[1]));  
  		  } else {
  		    params[name] = $.trim(param[1]); // get the capturing group

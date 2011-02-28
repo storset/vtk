@@ -34,8 +34,10 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -65,6 +67,7 @@ import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
+import org.vortikal.repository.search.query.UriSetQuery;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 
@@ -77,10 +80,10 @@ public class ManuallyApproveResourcesHandler implements Controller {
     private PropertyTypeDefinition manuallyApprovedResourcesPropDef;
     private PropertyTypeDefinition collectionPropDef;
     private PropertyTypeDefinition titlePropDef;
-    private Map<String, String> listingResourceTypeMappingPointers;
     private PropertyTypeDefinition publishDatePropDef;
     private PropertyTypeDefinition aggregationPropDef;
     private PropertyTypeDefinition recursivePropDef;
+    private Map<String, String> listingResourceTypeMappingPointers;
     private Service viewService;
 
     @Override
@@ -120,8 +123,9 @@ public class ManuallyApproveResourcesHandler implements Controller {
             }
         }
 
-        // No valid folders to display contents from, finish
-        if (validatedFolders.size() == 0) {
+        // No valid folders to display contents from and no already manually
+        // approved resources -> finish
+        if (validatedFolders.size() == 0 && manuallyApprovedResourcesProp == null) {
             return null;
         }
 
@@ -143,12 +147,23 @@ public class ManuallyApproveResourcesHandler implements Controller {
             query = or;
         }
 
+        if (manuallyApprovedResourcesProp != null) {
+            OrQuery q = new OrQuery();
+            q.add(query);
+            Set<String> uris = new HashSet<String>();
+            Value[] manuallyApprovedResources = manuallyApprovedResourcesProp.getValues();
+            for (Value manuallyApprovedResource : manuallyApprovedResources) {
+                uris.add(manuallyApprovedResource.getStringValue());
+            }
+            q.add(new UriSetQuery(uris));
+            query = q;
+        }
+
         Search search = new Search();
         search.setQuery(query);
         SortingImpl sorting = new SortingImpl();
         sorting.addSortField(new PropertySortField(this.publishDatePropDef, SortFieldDirection.DESC));
         search.setSorting(sorting);
-        // XXX Handle limit
         search.setLimit(1000);
 
         ResultSet rs = this.repository.search(token, search);
@@ -275,11 +290,6 @@ public class ManuallyApproveResourcesHandler implements Controller {
     }
 
     @Required
-    public void setListingResourceTypeMappingPointers(Map<String, String> listingResourceTypeMappingPointers) {
-        this.listingResourceTypeMappingPointers = listingResourceTypeMappingPointers;
-    }
-
-    @Required
     public void setPublishDatePropDef(PropertyTypeDefinition publishDatePropDef) {
         this.publishDatePropDef = publishDatePropDef;
     }
@@ -297,6 +307,11 @@ public class ManuallyApproveResourcesHandler implements Controller {
     @Required
     public void setViewService(Service viewService) {
         this.viewService = viewService;
+    }
+
+    @Required
+    public void setListingResourceTypeMappingPointers(Map<String, String> listingResourceTypeMappingPointers) {
+        this.listingResourceTypeMappingPointers = listingResourceTypeMappingPointers;
     }
 
 }

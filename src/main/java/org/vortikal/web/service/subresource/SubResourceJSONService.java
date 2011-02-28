@@ -127,10 +127,11 @@ public class SubResourceJSONService implements Controller, InitializingBean {
 
             if(sr.isInheritedAcl()) {
               title.append(" " + provider.getLocalizedTitle(request, "report.collection-structure.inherited-permissions", null) + " (<a href=&quot;" + uriService
-                         + "&quot;>edit</a>)</span><span class=&quot;inherited-permissions&quot;>");
+                         + "&quot;>" + provider.getLocalizedTitle(request, "report.collection-structure.edit", null)
+                         + "</a>)</span><span class=&quot;inherited-permissions&quot;>");
             } else {
               title.append(" " + provider.getLocalizedTitle(request, "report.collection-structure.own-permissions", null) + " (<a href=&quot;" + uriService 
-                         + "&quot;>edit</a>)</span>");
+                         + "&quot;>" + provider.getLocalizedTitle(request, "report.collection-structure.edit", null) + "</a>)</span>");
               listClasses = "not-inherited";
             }
             

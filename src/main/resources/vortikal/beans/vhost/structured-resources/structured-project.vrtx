@@ -13,7 +13,8 @@ resourcetype structured-project {
     numberOfParticipantsToDisplay : string defaultvalue("10"),
     contactInfo : html noextract,
     tags : string multiple overrides tags,
-    rssFeeds : json (rssTitle:string, rssUrl:string) multiple
+    rssFeeds : json (rssTitle:string, rssUrl:string) multiple,
+    relatedGroups : resource_ref multiple
   }
   
   edit-rules {
@@ -25,6 +26,7 @@ resourcetype structured-project {
 
   scripts {
     participantsUsernames multipleinputfields,
+    relatedGroups multipleinputfields,
     tags autocomplete (minChars : "1")
   }
     
@@ -180,6 +182,7 @@ resourcetype structured-project {
           <div id="vrtx-additional-content">
             [call "comp:contact-info"]
             [call "resource:person-list"]
+            [call "resource:groups-related-to-project"]
             [call "comp:feeds"]
           </div>
         </div>

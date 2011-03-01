@@ -18,7 +18,6 @@ function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDown
     registerClicks(name);
     
     var isResourceRef = false;
-    alert($(id).parent().attr("class").indexOf("vrtx-resource-ref-browse"));
     if($(id).parent().attr("class").indexOf("vrtx-resource-ref-browse") != -1) {
       isResourceRef = true;	
     }

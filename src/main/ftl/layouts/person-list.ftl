@@ -26,7 +26,7 @@
     </#list>
   </ul>
   <#if name != "master-list" >
-  	<a class="all-messages" href="${showAllPersons}"><@vrtx.msg code="decorating.feedComponent.allMessages" /></a>
+  	<a class="all-messages" href="${showAllPersons}"><@vrtx.msg code="person-list.showAllPersons" /></a>
   </#if>
 </div>
 </#macro>

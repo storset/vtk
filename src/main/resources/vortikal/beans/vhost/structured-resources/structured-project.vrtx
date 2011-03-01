@@ -218,6 +218,7 @@ resourcetype structured-project {
     participants : (en : "Other participants", no : "Andre deltakere", nn : "Andre deltakarar"),
     participantName : (en : "Name",no : "Navn", nn :"Namn"),
     participantUrl : (en : "Webaddress",no : "Webadresse", nn :"Webadresse"),
+    relatedGroups : (en : "Involved research groups", no : "Involverte forskergrupper", nn : "Involverte forskargrupper"),
     rssFeeds : (en : "Subscribe to RSS-feeds",no : "Abonner på RSS-strømmer", nn :"Abonner på RSS-strømmar"),
     rssTitle : (en : "Title",no : "Tittel", nn : "Tittel"),
     rssUrl : (en : "Webaddress",no : "Webadresse", nn :"Webadresse"),

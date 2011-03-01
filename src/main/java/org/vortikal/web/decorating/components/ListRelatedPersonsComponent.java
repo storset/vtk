@@ -65,7 +65,7 @@ public class ListRelatedPersonsComponent extends ViewRenderingDecoratorComponent
     private String ldapOfficeNumberKey;
     private String ldapEmailKey;
     
-    private static final int PARAMETER_LIMIT_DEFAULT = 100;
+    private static final int PARAMETER_LIMIT_DEFAULT = 50;
     private static final String PARAMETER_LIMIT = "limit";
     private static final String PARAMETER_LIMIT_DESC = "Limit number of related persons listed";
 
@@ -100,7 +100,7 @@ public class ListRelatedPersonsComponent extends ViewRenderingDecoratorComponent
 
     private int getShowNumberOfParticipants(Resource resource) {
         if(getDefPonterNumberOfParticipantsToDisplay() == null)
-                return Integer.MAX_VALUE;
+                return PARAMETER_LIMIT_DEFAULT;
         PropertyTypeDefinition propDef = resourceTypeTree
                 .getPropertyDefinitionByPointer(getDefPonterNumberOfParticipantsToDisplay());
         Property prop = resource.getProperty(propDef);

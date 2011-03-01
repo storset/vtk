@@ -55,7 +55,9 @@ resourcetype structured-master{
       [def document structured-document()]
       [def theRelated-content document.properties.related-content]
       [if theRelated-content != null]
-              [val theRelated-content # unescaped]
+        <div id="vrtx-related-content">
+          [val theRelated-content # unescaped]
+        </div>
       [endif]
       ##
     }
@@ -151,9 +153,11 @@ resourcetype structured-master{
           </div>
           <div id="vrtx-additional-content">
             [call "resource:master-list"]
-            <h2>[localized "credits"]</h2>
-            [call "json:field" {"select":"credits"}]
-    		[call "comp:related-content-in-additional-column"]
+            <div id="vrtx-master-credits" class="vrtx-frontpage-box">
+              <h2>[localized "credits"]</h2>
+              [call "json:field" {"select":"credits"}]
+            </div>
+            [call "comp:related-content-in-additional-column"]
           </div>
         </div>
       </body>

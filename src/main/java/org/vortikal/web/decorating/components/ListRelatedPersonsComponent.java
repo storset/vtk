@@ -99,6 +99,8 @@ public class ListRelatedPersonsComponent extends ViewRenderingDecoratorComponent
     }
 
     private int getShowNumberOfParticipants(Resource resource) {
+        if(getDefPonterNumberOfParticipantsToDisplay() == null)
+                return Integer.MAX_VALUE;
         PropertyTypeDefinition propDef = resourceTypeTree
                 .getPropertyDefinitionByPointer(getDefPonterNumberOfParticipantsToDisplay());
         Property prop = resource.getProperty(propDef);

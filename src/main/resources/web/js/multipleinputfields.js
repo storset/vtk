@@ -113,7 +113,7 @@ function removeFormField(name, that) {
     //logMultipleInputFields("Number of inputfields: " + LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]);
     //logMultipleInputFields("Next number for inputfield: " + COUNTER_FOR_MULTIPLE_INPUT_FIELD[name]);
 
-    var fields = "." + name + " div.inputfield div.vrtx-multipleinputfield";
+    var fields = "." + name + " div.vrtx-multipleinputfield";
 
 	if($(fields).eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).has("button.movedown")) {
 	  $(fields).eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).find("button.movedown").remove();

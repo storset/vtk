@@ -28,7 +28,7 @@ function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDown
     }
     $(id).after("<div id='vrtx-" + name + "-add'>"
 		      + "<button  onClick=\"addFormField('" + name + "',null, '"
-		      + removeName + "','" + moveUpName + "','" + moveDownName + "','" + browseName + "','" + size + "'," + isResourceRef + "'," + false + "); return false;\">"
+		      + removeName + "','" + moveUpName + "','" + moveDownName + "','" + browseName + "','" + size + "'," + isResourceRef + "," + false + "); return false;\">"
 		      + addName + "</button></div>");
     
     var addFormFieldFunc = addFormField;
@@ -77,7 +77,7 @@ function addFormField(name, value, removeName, moveUpName, moveDownName, browseN
         browseButton = "<button type='button' class='browse-resource-ref'>" + browseName + "</button>";
     }
     
-    if(!isResourceRef) {
+    if(!isResourceRef) { // TODO: check if field is «resource_ref»
       var html = "<div class='vrtx-multipleinputfield' id='" + idstr + "row-" + i + "'>"
                + "<input value='" + value + "' type='text' size='" + size + "' id='" + idstr + i + "' />"
                + removeButton + moveUpButton + moveDownButton + "</div>";

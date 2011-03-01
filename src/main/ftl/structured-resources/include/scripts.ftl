@@ -15,7 +15,7 @@
   <#if containsMultipleInputFieldScripts>
     <@multipleinputfields.addMultipleInputFieldsScripts srcBase="${jsBaseURL?html}" />
   </#if>
-  <script type="text/javascript">
+  <script type="text/javascript"><!--
     $(document).ready(function() {
       <#list scripts as script>
         <#if script.type == 'AUTOCOMPLETE' >
@@ -23,13 +23,14 @@
         <#elseif script.type == 'SHOWHIDE' >
           <@showhide.addShowHide script />
         <#elseif script.type == 'MULTIPLEINPUTFIELDS' >
-           browseBase = '${fckeditorBase.url?html}';
-           browseBaseFolder = '${baseFolder}';
-           browseBasePath = '${fckBrowse.url.pathRepresentation}';
+          browseBase = '${fckeditorBase.url?html}';
+          browseBaseFolder = '${baseFolder}';
+          browseBasePath = '${fckBrowse.url.pathRepresentation}';
           <@multipleinputfields.addMultipleInputFields script />
         </#if>
       </#list>
     });
+    //-->
   </script>
 </#macro>
 

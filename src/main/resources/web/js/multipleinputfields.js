@@ -77,7 +77,7 @@ function addFormField(name, value, removeName, moveUpName, moveDownName, browseN
         browseButton = "<button type='button' class='browse-resource-ref'>" + browseName + "</button>";
     }
     
-    if(!isResourceRef) { // TODO: check if field is «resource_ref»
+    if(!isResourceRef) {
       var html = "<div class='vrtx-multipleinputfield' id='" + idstr + "row-" + i + "'>"
                + "<input value='" + value + "' type='text' size='" + size + "' id='" + idstr + i + "' />"
                + removeButton + moveUpButton + moveDownButton + "</div>";

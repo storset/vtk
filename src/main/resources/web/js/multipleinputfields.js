@@ -16,19 +16,25 @@ function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDown
     var size = $(id).attr("size");
 
     registerClicks(name);
+    
+    var isResourceRef = false;
+    alert($(id).parent().attr("class").indexOf("vrtx-resource-ref-browse"));
+    if($(id).parent().attr("class").indexOf("vrtx-resource-ref-browse") != -1) {
+      isResourceRef = true;	
+    }
 
     $(id).hide();
-    if($(id).next().is("button")) {
+    if($(id).next().is("button") && isResourceRef) {
       $(id).next().hide();
     }
     $(id).after("<div id='vrtx-" + name + "-add'>"
 		      + "<button  onClick=\"addFormField('" + name + "',null, '"
-		      + removeName + "','" + moveUpName + "','" + moveDownName + "','" + browseName + "','" + size + "'," + false + "); return false;\">"
-		      + addName + "</button></div>");;
-
+		      + removeName + "','" + moveUpName + "','" + moveDownName + "','" + browseName + "','" + size + "'," + isResourceRef + "'," + false + "); return false;\">"
+		      + addName + "</button></div>");
+    
     var addFormFieldFunc = addFormField;
     for (var i = 0; i < LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]; i++) {
-       addFormFieldFunc(name, jQuery.trim(formFields[i]), removeName, moveUpName, moveDownName, browseName, size, true);
+       addFormFieldFunc(name, jQuery.trim(formFields[i]), removeName, moveUpName, moveDownName, browseName, size, isResourceRef, true);
     }
 }
 
@@ -47,7 +53,7 @@ function registerClicks(name) {
   });
 }
 
-function addFormField(name, value, removeName, moveUpName, moveDownName, browseName, size, init) {
+function addFormField(name, value, removeName, moveUpName, moveDownName, browseName, size, isResourceRef, init) {
 	if (value == null) { value = ""; }
 
     var idstr = "vrtx-" + name + "-";
@@ -71,8 +77,8 @@ function addFormField(name, value, removeName, moveUpName, moveDownName, browseN
     if(browseButton != null) {
         browseButton = "<button type='button' class='browse-resource-ref'>" + browseName + "</button>";
     }
-
-    if(name != "relatedGroups") {
+    
+    if(!isResourceRef) {
       var html = "<div class='vrtx-multipleinputfield' id='" + idstr + "row-" + i + "'>"
                + "<input value='" + value + "' type='text' size='" + size + "' id='" + idstr + i + "' />"
                + removeButton + moveUpButton + moveDownButton + "</div>";

@@ -115,7 +115,7 @@ resourcetype structured-project {
        [def document structured-document()]
        [def contactinfo document.properties.contactInfo]
        [if contactinfo != null]
-         <div class="vrtx-project-contactinfo">
+         <div class="vrtx-project-contactinfo vrtx-frontpage-box">
            <h2>[localized "contactInfoView"]</h2>
             [val contactinfo # unescaped]
          </div>

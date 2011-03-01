@@ -257,7 +257,8 @@ div.person-listing,
 div.project-listing,
 div.research-group-listing,
 div.blog-listing,
-div.image-listing {
+div.image-listing,
+div.master-listing {
   background: transparent url(icons/dir.png) no-repeat 0px 5px;
 }
 
@@ -268,7 +269,8 @@ div.person-listing h1,
 div.project-listing h1,
 div.research-group-listing h1,
 div.blog-listing h1,
-div.image-listing h1 {
+div.image-listing h1,
+div.master-listing h1 {
   margin: 0 0 0 38px;
 }
 

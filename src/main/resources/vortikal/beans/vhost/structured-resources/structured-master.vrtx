@@ -11,8 +11,7 @@ resourcetype structured-master{
     related-content : html noextract,
     supervisorsUsernames : string multiple,
     supervisors : json (supervisorName:string, supervisorUrl:string) multiple,
-    numberOfSupervisorsToDisplay : string defaultvalue("100"),
-    credits: string  defaultvalue("60"),
+    credits : string,
     tags : string multiple overrides tags
   }
   

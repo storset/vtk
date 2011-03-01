@@ -168,6 +168,7 @@ resourcetype research-group {
           <div id="vrtx-additional-content">
             [call "comp:contact-info"]
             [call "resource:person-list"]
+            [call "resource:projects-related-to-group"]
             [call "comp:feeds"]
           </div> 
         </div>

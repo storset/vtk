@@ -1,6 +1,6 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 <#if (realtedDocuments?size > 0) >
-<div class="vrtx-${viewName}">
+<div class="vrtx-${viewName} vrtx-frontpage-box">
   <h2><@vrtx.msg code="${viewName}.title" /></h2>
   <ul>
     <#list realtedDocuments as document>

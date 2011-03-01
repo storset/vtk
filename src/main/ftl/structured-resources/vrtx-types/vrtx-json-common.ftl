@@ -11,10 +11,7 @@
 <#macro printPropertyEditView form elem locale>
     <#assign localizedTitle = form.resource.getLocalizedMsg(elem.name, locale, null) />
 
-  
-
     <#switch elem.description.type>
-
 
       <#case "string">
         <#assign fieldSize="40" />

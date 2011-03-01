@@ -278,7 +278,7 @@
  * limit
  *
  * Limits a string to a maximum number of characters
- * Example: <@vrtx.limit nchars='3'>some text</@vrtx.limit> --> produces 'som'
+ * Example: <@vrtx.limit nchars='3'>some text</@vrtx.limit> - produces 'som'
  *
  * @param nchars the maximum number of characters
  * @param elide whether or not to append '...' to the string in case

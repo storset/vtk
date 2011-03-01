@@ -23,6 +23,9 @@
         <#elseif script.type == 'SHOWHIDE' >
           <@showhide.addShowHide script />
         <#elseif script.type == 'MULTIPLEINPUTFIELDS' >
+           browseBase = '${fckeditorBase.url?html}';
+           browseBaseFolder = '${baseFolder}';
+           browseBasePath = '${fckBrowse.url.pathRepresentation}';
           <@multipleinputfields.addMultipleInputFields script />
         </#if>
       </#list>

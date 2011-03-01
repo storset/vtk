@@ -73,6 +73,7 @@ form > div {
 .vrtx-simple-html-small,
 .vrtx-html,
 .vrtx-string,
+.vrtx-resource-ref,
 .vrtx-date,
 .vrtx-image-ref,
 .vrtx-checkbox,
@@ -123,6 +124,7 @@ div.vrtx-json-element {
 
 /* Not grouped becomes bigger */
 .vrtx-string > label,
+.vrtx-resource-ref * > label,
 .vrtx-html > label,
 .vrtx-simple-html > label,
 .vrtx-media-ref * > label,
@@ -208,7 +210,8 @@ iframe, .fieldset {
 }
 
 .vrtx-multipleinputfield button.movedown,
-.vrtx-multipleinputfield button.moveup {
+.vrtx-multipleinputfield button.moveup,
+.vrtx-resource-ref .vrtx-multipleinputfield button.remove {
   width: 70px;
   margin-left: 15px;
 }

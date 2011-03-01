@@ -50,15 +50,15 @@
   
   <@editor.addDatePickerScripts />
   
-  <#if form.resource.type.scripts?exists>
-    <@scripts.includeScripts form.resource.type.scripts />
-  </#if>
-  
   <#global baseFolder = "/" />
   <#if resourceContext.parentURI?exists>
     <#global baseFolder = resourceContext.parentURI?html />
   </#if>
   
+  <#if form.resource.type.scripts?exists>
+    <@scripts.includeScripts form.resource.type.scripts />
+  </#if>
+ 
 </head>
 <body>
 

@@ -32,8 +32,12 @@ public class ListResourceTitleComponent extends ViewRenderingDecoratorComponent 
         if (resourceRefProp != null && resourceRefProp.getValues() != null) {
             for (Value x : resourceRefProp.getValues()) {
                 try {
-                    Path p = Path.fromString(x.getStringValue());
-                    Resource currentResource = this.repository.retrieve(token, p, true);
+                    String path = x.getStringValue();
+                    if(!path.equals("/") && path.endsWith("/")){
+                        path = path.substring(0, path.length()-1);
+                    }
+                    Path p = Path.fromString(path);
+                    Resource currentResource = this.repository.retrieve(token, p, false);
                     relatedDocuments.add(new RelatedDocument(currentResource.getTitle(), p.toString()));
                 } catch (Exception e) {
                     // ignore exceptions

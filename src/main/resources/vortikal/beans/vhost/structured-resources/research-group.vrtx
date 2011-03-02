@@ -12,7 +12,8 @@ resourcetype research-group {
     numberOfParticipantsToDisplay : string defaultvalue("10"),
     contactInfo : html noextract,
     tags : string multiple overrides tags,
-    rssFeeds : json (rssTitle:string, rssUrl:string) multiple
+    rssFeeds : json (rssTitle:string, rssUrl:string) multiple,
+    listRelatedProjects : boolean defaultvalue("true")
   }
   
   edit-rules {

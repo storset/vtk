@@ -54,6 +54,7 @@ import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalFactory;
 
 public class SubResourcePermissionsProvider {
 
@@ -123,10 +124,10 @@ public class SubResourcePermissionsProvider {
                   
                   for(Principal p : privilegedPseudoPrincipals) {
                     String pseudo = this.getLocalizedTitle(request, "pseudoPrincipal." + p.getName(), null);
-                    if(p.getName() == "pseudo:owner") {
+                    if(p.getName() == PrincipalFactory.NAME_OWNER) {
                       pseudo += "&nbsp;(" + r.getOwner().getDescription() + ")";
                     }
-                    if(p.getName() == "pseudo:all") {
+                    if(p.getName() == PrincipalFactory.NAME_ALL) {
                       all = true;
                       combined.append(pseudo);
                     }

@@ -180,9 +180,14 @@ resourcetype research-group {
   
   vocabulary {
     numberOfParticipantsToDisplay {
-       en : (range = "1..25"),
-       no : (range = "1..25"),
-       nn : (range = "1..25")
+       en : (range = "1..25,30,35,40,45,50"),
+       no : (range = "1..25,30,35,40,45,50"),
+       nn : (range = "1..25,30,35,40,45,50")
+     }
+     listRelatedProjects{
+      en : ("true" = "Yes", "false" = "No"),
+      no : ("true" = "Ja", "false" = "Nei"),
+      nn : ("true" = "Ja", "false" = "Nei")
      }
   }
   
@@ -208,6 +213,7 @@ resourcetype research-group {
     contactInfoView : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
     header : (en : "Edit resarch group", no : "Rediger forskergruppe", nn : "Rediger forskargruppe"),
     publishedDate : (en : "Published", no :"Publisert", nn:"Publisert"),
+    listRelatedProjects : (en : "Show related projects", no : "Vis tilhørende prosjekter", nn : "Vis tilhøyrande prosjekt"),
     numberOfParticipantsToDisplay : (
       en : "Number of participants to show",
       no : "Antall deltakere som skal vises",

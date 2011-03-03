@@ -9,7 +9,7 @@ resourcetype research-group {
     content : html noextract,
     participantsUsernames : string multiple,
     participants : json (participantName:string, participantUrl:string) multiple,
-    numberOfParticipantsToDisplay : string defaultvalue("10"),
+    numberOfParticipantsToDisplay : string defaultvalue("50"),
     contactInfo : html noextract,
     tags : string multiple overrides tags,
     rssFeeds : json (rssTitle:string, rssUrl:string) multiple,

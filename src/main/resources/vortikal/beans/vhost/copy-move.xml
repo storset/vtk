@@ -111,8 +111,7 @@
   </bean>
 
   <bean id="copyMove.warningProvider"
-        class="org.vortikal.web.actions.copymove.CopyMoveWarningProvider"
-        parent="repositoryAware">
+        class="org.vortikal.web.actions.copymove.CopyMoveWarningProvider">
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="confirmationService" ref="copyMove.confirmationService" />
     <property name="categories">
@@ -143,8 +142,7 @@
   </bean>        
 
   <bean id="copyMove.warningHandler" 
-    class="org.vortikal.web.display.file.DisplayResourceController"
-    parent="repositoryAware">
+    class="org.vortikal.web.display.file.DisplayResourceController">
     <property name="viewName" value="copyMove.warningView" />
   </bean>
 
@@ -159,14 +157,12 @@
   </bean>
 
   <bean id="copyToSelectedFolderHandler" 
-    class="org.vortikal.web.actions.copymove.CopyMoveToSelectedFolderController"
-    parent="repositoryAware">
+    class="org.vortikal.web.actions.copymove.CopyMoveToSelectedFolderController">
     <property name="viewName" value="manageCollectionListing" />
   </bean>
 
   <bean id="moveToSelectedFolderHandler" 
-    class="org.vortikal.web.actions.copymove.CopyMoveToSelectedFolderController"
-    parent="repositoryAware">
+    class="org.vortikal.web.actions.copymove.CopyMoveToSelectedFolderController">
     <property name="viewName" value="manageCollectionListing" />
   </bean>
 
@@ -184,14 +180,12 @@
     <property name="referenceDataProviders">
       <list>
         <ref bean="copyMove.warningProvider" />
-        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
-              parent="repositoryAware">
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
           <property name="service" ref="copyToSelectedFolderService" />
           <property name="modelName" value="copy" />
           <property name="matchAssertions" value="true" />
         </bean>
-        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
-              parent="repositoryAware">
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
           <property name="service" ref="moveToSelectedFolderService" />
           <property name="modelName" value="move" />
           <property name="matchAssertions" value="true" />

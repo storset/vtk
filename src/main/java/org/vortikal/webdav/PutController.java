@@ -43,12 +43,12 @@ import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.ReadOnlyException;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.PropertyType;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.filter.UploadLimitInputStreamFilter;
@@ -116,23 +116,21 @@ public class PutController extends AbstractWebdavController {
                 filterRequest(request);
         }
 
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String token = securityContext.getToken();
         RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
         Path uri = requestContext.getResourceURI();
 
         Map<String, Object> model = new HashMap<String, Object>();
 
         try {
-
             /* Get the document or collection: */
-
             Resource resource = null;
-            boolean exists = this.repository.exists(token, uri);
+            boolean exists = repository.exists(token, uri);
 
             if (exists) {
                 this.logger.debug("Resource '" + uri + "' already exists");
-                resource = this.repository.retrieve(token, uri, false);
+                resource = repository.retrieve(token, uri, false);
                 this.ifHeader = new IfHeaderImpl(request);
 
                 if (this.supportIfHeaders) {
@@ -157,14 +155,14 @@ public class PutController extends AbstractWebdavController {
                         "Trying to PUT to collection resource '" + uri + "'");
                 }
                 InputStream inStream = request.getInputStream();
-                this.repository.storeContent(token, resource.getURI(), inStream);
+                repository.storeContent(token, resource.getURI(), inStream);
 
             } else {
 
                 /* check for parent: */
                 Path parentURI = uri.getParent();                
 
-                if (!this.repository.exists(token, parentURI)) {
+                if (!repository.exists(token, parentURI)) {
                     if (this.logger.isDebugEnabled()) {
                         this.logger.debug("Parent " + parentURI +
                                      " does not exist. CONFLICT.");
@@ -184,11 +182,11 @@ public class PutController extends AbstractWebdavController {
                     this.logger.debug("Resource does not exist (creating)");
                 }
                 InputStream inStream = request.getInputStream();
-                resource = this.repository.createDocument(token, uri, inStream);
+                resource = repository.createDocument(token, uri, inStream);
             }
 
-            resource = this.repository.retrieve(token, resource.getURI(), false);
-            TypeInfo typeInfo = this.repository.getTypeInfo(resource);
+            resource = repository.retrieve(token, resource.getURI(), false);
+            TypeInfo typeInfo = repository.getTypeInfo(resource);
             
             boolean store = false;
             
@@ -214,7 +212,7 @@ public class PutController extends AbstractWebdavController {
             }
 
             if (store) {
-                resource = this.repository.store(token, resource);
+                resource = repository.store(token, resource);
             }
 
             if (exists) {
@@ -229,41 +227,26 @@ public class PutController extends AbstractWebdavController {
             return new ModelAndView(this.viewName, model);
 
         } catch (ResourceNotFoundException e) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Caught ResourceNotFoundException for URI " + uri);
-            }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_NOT_FOUND));
 
         } catch (ResourceLockedException e) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Caught ResourceLockedException for URI " + uri);
-            }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpUtil.SC_LOCKED));
             
         } catch (IllegalOperationException e) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Caught IllegalOperationException for URI " + uri, e);
-            }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_FORBIDDEN));
 
         } catch (WebdavConflictException e) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Caught WebdavConflictException for URI " + uri, e);
-            }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_CONFLICT));
 
         } catch (ReadOnlyException e) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Caught ReadOnlyException for URI " + uri);
-            }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_FORBIDDEN));

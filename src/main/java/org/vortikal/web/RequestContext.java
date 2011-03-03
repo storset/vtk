@@ -38,13 +38,16 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.context.BaseContext;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
+import org.vortikal.security.SecurityContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 
 /**
- * Request context. Lives troughout one request, and contains the
+ * Request context. Lives throughout one request, and contains the
  * servlet request, the current {@link Service} and the requested
  * resource URI. The request context can be obtained from application
  * code in the following way:
@@ -55,7 +58,9 @@ import org.vortikal.web.service.URL;
 public class RequestContext {
 
     private final HttpServletRequest servletRequest;
+    private final SecurityContext securityContext;
     private final boolean inRepository;
+    private final Repository repository;
     private final Service service;
     private final Path resourceURI;
     private final Path currentCollection;
@@ -75,13 +80,16 @@ public class RequestContext {
      * (<code>null</code> if no index file exists)
      */
     public RequestContext(HttpServletRequest servletRequest,
+                          SecurityContext securityContext,
                           Service service, Resource resource, Path uri,
                           Path indexFileURI, boolean isIndexFile, 
-                          boolean inRepository) {
+                          boolean inRepository, Repository repository) {
         this.servletRequest = servletRequest;
+        this.securityContext = securityContext;
         this.indexFileURI = indexFileURI;
         this.service = service;
         this.isIndexFile = isIndexFile;
+        this.repository = repository;
         this.inRepository = inRepository;
         if (resource != null) {
             this.resourceURI = resource.getURI();
@@ -98,12 +106,13 @@ public class RequestContext {
     
     /**
      * Creates a new request context without a resource object.
+     * @deprecated this constructor is used only in unit tests
      */
     public RequestContext(HttpServletRequest servletRequest,
                           Service service, Path uri) {
-        this(servletRequest, service, null, uri, null, false, true);
+        this(servletRequest, null, service, null, uri, null, false, true, null);
     }
-
+    
     public static void setRequestContext(RequestContext requestContext) {
         BaseContext ctx = BaseContext.getContext();
         ctx.setAttribute(RequestContext.class.getName(), requestContext);
@@ -225,5 +234,17 @@ public class RequestContext {
     
     public boolean isInRepository() {
         return this.inRepository;
+    }
+    
+    public Repository getRepository() {
+        return this.repository;
+    }
+    
+    public String getSecurityToken() {
+        return this.securityContext.getToken();
+    }
+    
+    public Principal getPrincipal() {
+        return this.securityContext.getPrincipal();
     }
 }

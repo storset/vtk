@@ -34,7 +34,7 @@
     <property name="parameterValue" value="source" />
   </bean>
 
-  <bean id="getSourceHandler" class="org.vortikal.web.display.file.DisplayResourceController" parent="repositoryAware">
+  <bean id="getSourceHandler" class="org.vortikal.web.display.file.DisplayResourceController">
     <property name="viewName" value="getSourceDisplayResource" />
     <property name="ignoreLastModified" value="true" />
   </bean>

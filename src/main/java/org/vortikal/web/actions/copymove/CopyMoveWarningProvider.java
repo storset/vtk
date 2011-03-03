@@ -54,7 +54,6 @@ import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.security.PrincipalFactory;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.CategorizableReferenceDataProvider;
 import org.vortikal.web.service.Service;
@@ -62,18 +61,17 @@ import org.vortikal.web.service.URL;
 
 public class CopyMoveWarningProvider implements CategorizableReferenceDataProvider {
 
-    private Repository repository;
     private Service confirmationService;
     private Searcher searcher;
     private Set<?> categories;
     
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public void referenceData(Map model, HttpServletRequest request)
             throws Exception {
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String token = securityContext.getToken();
         RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
+        Repository repository = requestContext.getRepository();
 
         HttpSession session = request.getSession(false);
         if (session == null) {
@@ -92,17 +90,16 @@ public class CopyMoveWarningProvider implements CategorizableReferenceDataProvid
         }
 
         if ("copy-resources".equals(sessionBean.getAction())) {
-            // XXX: refactor:
-            Resource destAclResource = findNearestAcl(token, destinationUri);
+            Resource destAclResource = findNearestAcl(requestContext, destinationUri);
             Acl destAcl = destAclResource.getAcl();
             if (destAcl.containsEntry(Privilege.READ, PrincipalFactory.ALL)
                     || destAcl.containsEntry(Privilege.READ_PROCESSED, PrincipalFactory.ALL)) {
                 for (String uri : sessionBean.getFilesToBeCopied()) {
                     // Resource to copy might have been deleted or moved, check for existence
-                    if (!this.repository.exists(token, Path.fromString(uri))) {
+                    if (!repository.exists(token, Path.fromString(uri))) {
                         continue;
                     }
-                    Resource srcAclResource = findNearestAcl(token, Path.fromString(uri));
+                    Resource srcAclResource = findNearestAcl(requestContext, Path.fromString(uri));
                     Acl srcAcl = srcAclResource.getAcl();
                     if (!srcAclResource.isInheritedAcl() 
                             && !(srcAcl.containsEntry(Privilege.READ, PrincipalFactory.ALL)
@@ -128,14 +125,14 @@ public class CopyMoveWarningProvider implements CategorizableReferenceDataProvid
         // 2. destParentUri has read:all or read-processed:all
         // 2. exists((uri in (filesToBeCopied)/*) and inherits-from sourceParentUri)
         
-        Resource srcAclResource = findNearestAcl(token, sourceParentUri);
+        Resource srcAclResource = findNearestAcl(requestContext, sourceParentUri);
         Acl srcAcl = srcAclResource.getAcl();
         if (srcAcl.containsEntry(Privilege.READ, PrincipalFactory.ALL)
                 || srcAcl.containsEntry(Privilege.READ_PROCESSED, PrincipalFactory.ALL)) {
             return;
         }
 
-        Resource destAclResource = findNearestAcl(token, destinationUri);
+        Resource destAclResource = findNearestAcl(requestContext, destinationUri);
         Acl destAcl = destAclResource.getAcl();
         if (!(destAcl.containsEntry(Privilege.READ, PrincipalFactory.ALL)
                 || destAcl.containsEntry(Privilege.READ_PROCESSED, PrincipalFactory.ALL))) {
@@ -177,10 +174,12 @@ public class CopyMoveWarningProvider implements CategorizableReferenceDataProvid
     }
 
     
-    private Resource findNearestAcl(String token, Path uri) throws Exception {
-        Resource resource = this.repository.retrieve(token, uri, false);
+    private Resource findNearestAcl(RequestContext requestContext, Path uri) throws Exception {
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
+        Resource resource = repository.retrieve(token, uri, false);
         if (resource.isInheritedAcl()) {
-            return findNearestAcl(token, uri.getParent());
+            return findNearestAcl(requestContext, uri.getParent());
         }
         return resource;
     }
@@ -191,11 +190,6 @@ public class CopyMoveWarningProvider implements CategorizableReferenceDataProvid
             return null;
         }
         return Path.fromString(filesToBeCopied.get(0)).getParent();
-    }
-
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
     }
 
     @Required

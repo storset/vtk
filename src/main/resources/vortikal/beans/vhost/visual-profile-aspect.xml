@@ -86,8 +86,7 @@
     </property>
   </bean>
 
-  <bean id="visualProfileAspect.editor" class="org.vortikal.web.actions.properties.ConfigurableJSONPropertyEditor"
-        parent="repositoryAware">
+  <bean id="visualProfileAspect.editor" class="org.vortikal.web.actions.properties.ConfigurableJSONPropertyEditor">
     <property name="propertyDefinition" ref="resourceAspectsPropDef" />
     <property name="toplevelField" value="visual-profile" />
     <property name="commandName" value="form" />

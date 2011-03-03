@@ -162,7 +162,7 @@
       </list>
     </property>
     <property name="handler">
-      <bean class="org.vortikal.edit.fckeditor.FCKeditorConnector" parent="repositoryAware">
+      <bean class="org.vortikal.edit.fckeditor.FCKeditorConnector">
         <property name="viewService" ref="viewService" />
         <property name="browseViewName" value="editor.browseView" />
         <property name="uploadStatusViewName" value="editor.uploadStatusView" />
@@ -170,8 +170,7 @@
     </property>
   </bean>
 
-  <bean id="editor.getSourceStripHeadersInterceptor" class="org.vortikal.web.interceptors.HeaderControlHandlerInterceptor"
-    parent="repositoryAware">
+  <bean id="editor.getSourceStripHeadersInterceptor" class="org.vortikal.web.interceptors.HeaderControlHandlerInterceptor">
     <property name="includeLastModifiedHeader" value="false" />
     <property name="includeEtagHeader" value="false" />
   </bean>
@@ -225,17 +224,12 @@
           <property name="path" value="${editor.fck.resourcesURL}" />
           <property name="modelName" value="fckeditorBase" />
         </bean>
-        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider" parent="repositoryAware">
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
           <property name="service" ref="viewService" />
           <property name="modelName" value="fckeditorBase" />
           <property name="urlName" value="documentURL" />
           <property name="staticURLProtocol" value="${webProtocolRestricted}" />
         </bean>
-        <!--bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider" parent="repositoryAware">
-          <property name="modelName" value="manuallyApprove" />
-          <property name="urlName" value="url" />
-          <property name="service" ref="editor.collection.manuallyApproveResourcesService" />
-        </bean-->
         <bean class="org.vortikal.web.referencedata.provider.StaticURIServiceURLProvider">
           <property name="service" ref="editor.browseService" />
           <property name="path" value="${editor.fck.browseURL}" />
@@ -387,8 +381,7 @@
 
   <bean id="editor.propertyEditPreprocessors" class="org.vortikal.edit.editor.TagsEditPreprocessor" />
 
-  <bean id="editor.unstructuredXhtmlResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager"
-    parent="repositoryAware">
+  <bean id="editor.unstructuredXhtmlResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
     <property name="contentResourceType" ref="htmlResourceTypeDefinition" />
@@ -403,7 +396,7 @@
     </property>
   </bean>
 
-  <bean id="editor.imageResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager" parent="repositoryAware">
+  <bean id="editor.imageResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
     <property name="contentResourceType" ref="documentResourceTypeDefinition" />
@@ -420,7 +413,7 @@
     </property>
   </bean>
 
-  <bean id="editor.videoResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager" parent="repositoryAware">
+  <bean id="editor.videoResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
     <property name="contentResourceType" ref="documentResourceTypeDefinition" />
@@ -437,7 +430,7 @@
     </property>
   </bean>
 
-  <bean id="editor.audioResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager" parent="repositoryAware">
+  <bean id="editor.audioResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
     <property name="contentResourceType" ref="documentResourceTypeDefinition" />
@@ -454,7 +447,7 @@
     </property>
   </bean>
 
-  <bean id="editor.collectionResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager" parent="repositoryAware">
+  <bean id="editor.collectionResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlPropsFilter" ref="personResourceManager.htmlPropsFilter" />
     <property name="contentResourceType" ref="documentResourceTypeDefinition" />
@@ -487,7 +480,7 @@
     </property>
   </bean>
 
-  <bean id="editor.personResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager" parent="repositoryAware">
+  <bean id="editor.personResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlPropsFilter" ref="personResourceManager.htmlPropsFilter" />
     <property name="contentResourceType" ref="documentResourceTypeDefinition" />
@@ -512,7 +505,7 @@
     </property>
   </bean>
 
-  <bean id="editor.projectResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager" parent="repositoryAware">
+  <bean id="editor.projectResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlPropsFilter" ref="personResourceManager.htmlPropsFilter" />
     <property name="contentResourceType" ref="documentResourceTypeDefinition" />
@@ -539,7 +532,7 @@
     </property>
   </bean>
 
-  <bean id="editor.researchGroupResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager" parent="repositoryAware">
+  <bean id="editor.researchGroupResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlPropsFilter" ref="personResourceManager.htmlPropsFilter" />
     <property name="contentResourceType" ref="documentResourceTypeDefinition" />
@@ -566,7 +559,7 @@
     </property>
   </bean>
 
-  <bean id="editor.imageListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager" parent="repositoryAware">
+  <bean id="editor.imageListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
     <property name="contentResourceType" ref="documentResourceTypeDefinition" />
@@ -590,7 +583,7 @@
     </property>
   </bean>
 
-  <bean id="editor.articleListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager" parent="repositoryAware">
+  <bean id="editor.articleListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlPropsFilter" ref="personResourceManager.htmlPropsFilter" />
     <property name="contentResourceType" ref="documentResourceTypeDefinition" />
@@ -626,7 +619,7 @@
     </property>
   </bean>
 
-  <bean id="editor.blogListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager" parent="repositoryAware">
+  <bean id="editor.blogListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlPropsFilter" ref="personResourceManager.htmlPropsFilter" />
     <property name="contentResourceType" ref="documentResourceTypeDefinition" />
@@ -650,7 +643,7 @@
     </property>
   </bean>
 
-  <bean id="editor.eventListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager" parent="repositoryAware">
+  <bean id="editor.eventListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlPropsFilter" ref="personResourceManager.htmlPropsFilter" />
     <property name="contentResourceType" ref="documentResourceTypeDefinition" />

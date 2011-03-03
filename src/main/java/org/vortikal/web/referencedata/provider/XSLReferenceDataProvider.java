@@ -30,8 +30,6 @@
  */
 package org.vortikal.web.referencedata.provider;
 
-
-
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -50,12 +48,10 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
 import org.w3c.dom.NodeList;
-
 
 /**
  * XSL reference data provider
@@ -65,7 +61,6 @@ import org.w3c.dom.NodeList;
  *
  * <p>Configurable properties:
  * <ul>
- *   <li>repository - the content repository
  *   <li>service - the {@link Service} for constructing path URLs
  *   <li><code>requireDocumentInModel</code> - whether to throw an
  *   exception when (normally required) <code>jdomDocument</code>
@@ -118,34 +113,27 @@ public class XSLReferenceDataProvider implements ReferenceDataProvider {
     private static final String CONTENT_LANGUAGE = "contentLanguage";
     private static final String PATH_ELEMENTS = "pathElements";
     private static final String CURRENT_USER = "currentUser";
-    
+
     protected Log logger = LogFactory.getLog(this.getClass());
-    
+
     private String modelName = null;
-    private Repository repository; 
     private Service adminService;
     private boolean supplyRequestParameters = true;
-    
+
     private boolean matchAdminServiceAssertions = false;
-    
+
     private BreadCrumbProvider breadCrumbProvider; 
-        
+
     @Required
     public void setModelName(String modelName) {
         this.modelName = modelName;
     }
 
     @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
-    
-    @Required
     public void setAdminService(Service adminService) {
         this.adminService = adminService;
     }
-    
+
     public void setSupplyRequestParameters(boolean supplyRequestParameters) {
         this.supplyRequestParameters = supplyRequestParameters;
     }
@@ -160,30 +148,25 @@ public class XSLReferenceDataProvider implements ReferenceDataProvider {
         this.breadCrumbProvider = breadCrumbProvider;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void referenceData(Map model, HttpServletRequest request) {
-        
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        Principal principal = securityContext.getPrincipal();
-        String token = securityContext.getToken();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Principal principal = requestContext.getPrincipal();
+        String token = requestContext.getSecurityToken();
 
         Path uri = RequestContext.getRequestContext().getResourceURI();
-
         Resource resource = (Resource) model.get("resource");
 
         try {
-
             if (resource == null) {
-                resource = this.repository.retrieve(token, uri, true);
+                Repository repository = requestContext.getRepository();
+                resource = repository.retrieve(token, uri, true);
             }
-
             Map<String, Object> subModel = (Map<String, Object>) model.get(this.modelName);
             if (subModel == null) {
                 subModel = new HashMap<String, Object>();
                 model.put(this.modelName, subModel);
             }
-
-            /* setting variables */
 
             /* this property is only set if the page requires authentication */
             String currentUser = (principal != null) ? principal.getName()
@@ -206,7 +189,6 @@ public class XSLReferenceDataProvider implements ReferenceDataProvider {
         } catch (Throwable t) {
             this.logger.warn("Unable to provide complete XSLT reference data", t);
         }
-
     }
 
     @SuppressWarnings("unchecked")
@@ -218,54 +200,51 @@ public class XSLReferenceDataProvider implements ReferenceDataProvider {
 
         for (Enumeration<String> e = request.getParameterNames(); e.hasMoreElements();) {
             String parameterName = e.nextElement();
-        
+
             Element element = new Element("parameter");
             element.setAttribute("name", parameterName);
             element.setText(request.getParameter(parameterName));
             children.add(element);
         }
-            
+
         DOMOutputter oupt = new DOMOutputter();
         org.w3c.dom.Document domDoc = null;
-            
+
         domDoc = oupt.output(doc);
         return domDoc.getDocumentElement().getChildNodes();
     }
-    
-    private NodeList buildPaths(HttpServletRequest request) {
 
+    private NodeList buildPaths(HttpServletRequest request) {
         Document doc = new Document(new Element(PATH_ELEMENTS));
         Element pathElements = doc.getRootElement();
 
         Map<String, Object> model = new HashMap<String, Object>();
         this.breadCrumbProvider.referenceData(model, request);
-        
+
         BreadcrumbElement[] crumbs = 
             (BreadcrumbElement[])model.get("breadcrumb");
 
         for (int i = crumbs.length - 1; i >= 0; i--) {
             BreadcrumbElement element = crumbs[i];
-          Element pathElement = new Element("pathElement");
-          String title = element.getTitle();
-          if (title == null) title = "";
-          pathElement.setAttribute("title", title);
-          String url = "";
-          if(element.getURL() != null)
-              url = element.getURL().toString();
-          pathElement.setAttribute("URL", url);
-          pathElements.addContent(0, pathElement);
+            Element pathElement = new Element("pathElement");
+            String title = element.getTitle();
+            if (title == null) title = "";
+            pathElement.setAttribute("title", title);
+            String url = "";
+            if(element.getURL() != null)
+                url = element.getURL().toString();
+            pathElement.setAttribute("URL", url);
+            pathElements.addContent(0, pathElement);
             if (logger.isDebugEnabled()) {
                 logger.debug("Built path element: title = "
                         + element.getTitle() + ", URL = " + element.getURL());
             }
-
         }
         // Convert the JDOM element to a org.w3c.dom Element:
-
         DOMOutputter oupt = new DOMOutputter();
         NodeList nodeList = null;
         org.w3c.dom.Document domDoc = null;
-        
+
         try {
             domDoc = oupt.output(doc);
             nodeList =  domDoc.getDocumentElement().getChildNodes();
@@ -277,10 +256,6 @@ public class XSLReferenceDataProvider implements ReferenceDataProvider {
             logger.debug("pathElements: " + pathElements);
             logger.debug("nodeList: " + nodeList.getLength());
         }
-
         return nodeList;
     }
-
-
-
 }

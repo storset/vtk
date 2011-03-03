@@ -33,30 +33,21 @@ package org.vortikal.web.actions.lock;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
-
 import org.vortikal.repository.Lock;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 
 
 public class LockRefreshController implements Controller {
 
-    private Repository repository = null;
     private int timeoutSeconds = 60 * 30;
     private String viewName = null;
     private boolean unlock = false;
     
-    
-    @Required public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
     public void setTimeoutSeconds(int timeoutSeconds) {
         this.timeoutSeconds = timeoutSeconds;
     }
@@ -67,25 +58,23 @@ public class LockRefreshController implements Controller {
     
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        
-        String token = securityContext.getToken();
+        String token = requestContext.getSecurityToken();
+        Repository repository = requestContext.getRepository();
 
-        Resource resource = this.repository.retrieve(securityContext.getToken(),
-                                                requestContext.getResourceURI(), false);
+        Resource resource = repository.retrieve(token, requestContext.getResourceURI(), false);
         
         Lock lock = resource.getLock();
-        Principal principal = securityContext.getPrincipal();
+        Principal principal = requestContext.getPrincipal();
 
         if (lock != null && lock.getPrincipal().equals(principal)) {
             if (this.unlock) {
-                this.repository.unlock(token, resource.getURI(), lock.getLockToken());
+                repository.unlock(token, resource.getURI(), lock.getLockToken());
             } else {
                 long now = System.currentTimeMillis();
 
                 if (lock.getTimeout().getTime() < now + this.timeoutSeconds * 1000) {
                     // Refresh lock:
-                    resource = this.repository.lock(token, resource.getURI(), lock.getOwnerInfo(),
+                    resource = repository.lock(token, resource.getURI(), lock.getOwnerInfo(),
                             lock.getDepth(), this.timeoutSeconds, lock.getLockToken());
                 }
             }

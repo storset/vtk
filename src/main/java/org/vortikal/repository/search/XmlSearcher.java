@@ -58,7 +58,6 @@ import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -87,7 +86,6 @@ public class XmlSearcher {
     private Parser parser;
     private ResourceTypeTree resourceTypeTree;
     private int maxResults = 2000;
-    private Repository repository;
     private String defaultLocale = Locale.getDefault().getLanguage();
 
     private Service linkToService;
@@ -100,11 +98,6 @@ public class XmlSearcher {
 
     public void setMaxResults(int maxResults) {
         this.maxResults = maxResults;
-    }
-
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
     }
 
     public void setDefaultLocale(String defaultLocale) {
@@ -135,12 +128,10 @@ public class XmlSearcher {
     public Document executeDocumentQuery(String query, String sort,
             int maxResults, String fields, boolean authorizeCurrentPrincipal) throws QueryException {
         String token = null;
-        
         if (authorizeCurrentPrincipal) {
-            SecurityContext securityContext = SecurityContext.getSecurityContext();
-            token = securityContext.getToken();
+            RequestContext requestContext = RequestContext.getRequestContext();
+            token = requestContext.getSecurityToken();
         }
-        
         return executeDocumentQuery(token, query, sort, maxResults, fields);
     }
 
@@ -471,9 +462,9 @@ public class XmlSearcher {
         private void resolveLocale() {
             try {
                 RequestContext requestContext = RequestContext.getRequestContext();
-                SecurityContext securityContext = SecurityContext.getSecurityContext();
-                String token = securityContext.getToken();
+                String token = requestContext.getSecurityToken();
                 Path uri = requestContext.getResourceURI();
+                Repository repository = requestContext.getRepository();
                 Resource resource = repository.retrieve(token, uri, true);
                 String contentLanguage = resource.getContentLanguage();
                 if (contentLanguage != null) {
@@ -483,7 +474,7 @@ public class XmlSearcher {
                     }
                     this.locale = new Locale(lang);
                 }
-                
+
             } catch (Throwable t) { 
                 if (logger.isDebugEnabled()) {
                     logger.debug("Unable to resolve locale of resource", t);

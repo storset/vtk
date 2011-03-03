@@ -1,4 +1,4 @@
- /* Copyright (c) 2004, 2008, University of Oslo, Norway
+/* Copyright (c) 2004, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,6 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
@@ -97,7 +96,6 @@ import org.vortikal.web.service.URL;
  */
 public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBean {
 
-    private Repository repository;
     private Service service;
     private String breadcrumbName = "breadcrumb";
     private PropertyTypeDefinition ignoreProperty;
@@ -106,32 +104,27 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
     private boolean skipIndexFile;
     private PropertyTypeDefinition navigationTitlePropDef;
     private int displayFromLevel = 0;
-    
+
     private final Logger logger = Logger.getLogger(BreadCrumbProvider.class);
 
-	@Required
-    public final void setRepository(final Repository newRepository) {
-        this.repository = newRepository;
-    }
-
-	@Required
-	public void setService(Service service) {
+    @Required
+    public void setService(Service service) {
         this.service = service;
     }
-    
+
     public void setBreadcrumbName(String breadcrumbName) {
         this.breadcrumbName = breadcrumbName;
     }
-    
+
     public void setIgnoreProperty(PropertyTypeDefinition ignoreProperty) {
         this.ignoreProperty = ignoreProperty;
     }
 
     public void setTitleOverrideProperties(
-        PropertyTypeDefinition[] titleOverrideProperties) {
+            PropertyTypeDefinition[] titleOverrideProperties) {
         this.titleOverrideProperties = titleOverrideProperties;
     }
-    
+
     public void setSkipIndexFile(boolean skipIndexFile) {
         this.skipIndexFile = skipIndexFile;
     }
@@ -139,34 +132,29 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
     public void setSkipCurrentResource(boolean skipCurrentResource) {
         this.skipCurrentResource = skipCurrentResource;
     }
-    
+
     public void setNavigationTitlePropDef(
-			PropertyTypeDefinition navigationTitlePropDef) {
-		this.navigationTitlePropDef = navigationTitlePropDef;
-	}
-    
+            PropertyTypeDefinition navigationTitlePropDef) {
+        this.navigationTitlePropDef = navigationTitlePropDef;
+    }
+
     public final void afterPropertiesSet() throws Exception {
-        if (this.repository == null) {
-            throw new BeanInitializationException(
-                "Property 'repository' not set");
-        }
         if (this.service == null) {
             throw new BeanInitializationException(
-                "Property 'service' not set");
+            "Property 'service' not set");
         }
         if (this.breadcrumbName == null) {
             throw new BeanInitializationException(
-                "Property 'breadcrumbName' cannot be null");
+            "Property 'breadcrumbName' cannot be null");
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public void referenceData(Map model, HttpServletRequest request) {
-        
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String token = securityContext.getToken();
-        Principal principal = securityContext.getPrincipal();
+
         RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
         Path uri = requestContext.getResourceURI();
 
         try{
@@ -186,44 +174,44 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
                 && ("false".equals(includeServiceName) || Boolean.FALSE.equals(includeServiceName))) {
             displayServiceName = false;
         }
-        
+
         boolean displayHidden = false;
         Object displayHiddenFromNavigation = model.get("display-folders-hidden-from-navigation");
         if (displayHiddenFromNavigation != null 
                 && ("true".equals(displayHiddenFromNavigation) || Boolean.TRUE.equals(displayHiddenFromNavigation))) {
             displayHidden = true;
         }
-        
+
         String serviceName = null;
         if (!skipLastElement && displayServiceName) {
-        	try {
-            	Service service = requestContext.getService();
-            	Resource resource = this.repository.retrieve(token, uri, true);
-            	serviceName = service.getLocalizedName(resource, request);
-        	} catch (Exception e) {
-        		// Let's not fail the entire breadcrumb just 
-        		// because we can't show the service name
-        		logger.error("An error occured while getting the servicename", e);
-        	}
+            try {
+                Service service = requestContext.getService();
+                Resource resource = repository.retrieve(token, uri, true);
+                serviceName = service.getLocalizedName(resource, request);
+            } catch (Exception e) {
+                // Let's not fail the entire breadcrumb just 
+                // because we can't show the service name
+                logger.error("An error occured while getting the servicename", e);
+            }
         }
-        
+
         List<BreadcrumbElement> breadCrumb = 
-            generateBreadcrumb(token, principal, uri, skipLastElement, requestContext.isIndexFile(), displayHidden, serviceName);
+            generateBreadcrumb(requestContext, uri, skipLastElement, requestContext.isIndexFile(), displayHidden, serviceName);
         model.put(this.breadcrumbName, breadCrumb.toArray(new BreadcrumbElement[breadCrumb.size()]));
     }
 
 
-    private List<BreadcrumbElement> generateBreadcrumb(String token, Principal principal, Path uri, boolean skipLastElement,
-    		boolean isIndexFile, boolean displayHidden, String serviceName) {
-        
+    private List<BreadcrumbElement> generateBreadcrumb(RequestContext requestContext, Path uri, boolean skipLastElement,
+            boolean isIndexFile, boolean displayHidden, String serviceName) {
+
         List<BreadcrumbElement> breadCrumb = new ArrayList<BreadcrumbElement>();
         if (uri.isRoot()) {
             return breadCrumb;
         }
-        
+
         List<String> path = uri.getElements();
         List<Path> incrementalPath = uri.getPaths();
-            
+
         int length = path.size();
         if (this.skipIndexFile && isIndexFile) {
             length--;
@@ -231,42 +219,46 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
         if (skipLastElement) {
             length--;
         }
-        
+
         BreadcrumbElement serviceNameCrumb = null;
         if (serviceName != null && !"".equals(serviceName.trim())) {
-        	serviceNameCrumb = new BreadcrumbElement(null, serviceName, null);
+            serviceNameCrumb = new BreadcrumbElement(null, serviceName, null);
         }
+        
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
+        Principal principal = requestContext.getPrincipal();
 
         for (int i = displayFromLevel; i < length; i++) {
             try {
-                Resource r = this.repository.retrieve(token, incrementalPath.get(i), true);
+                Resource r = repository.retrieve(token, incrementalPath.get(i), true);
 
                 if (!displayHidden && hasIgnoreProperty(r)) {
                     continue;
                 }
-                String title = getTitle(r);
+                String title = getTitle(requestContext, r);
                 String navigationTitle = null;
                 if (this.navigationTitlePropDef != null) {
-            		navigationTitle = getNavigationTitle(r);
-            	}
-            	title = StringUtils.isBlank(navigationTitle) ? title : navigationTitle;
-            	
-            	URL url = this.service.constructURL(r, principal, false);
-            	if (!skipLastElement) {
+                    navigationTitle = getNavigationTitle(r);
+                }
+                title = StringUtils.isBlank(navigationTitle) ? title : navigationTitle;
+
+                URL url = this.service.constructURL(r, principal, false);
+                if (!skipLastElement) {
                     if (i == length - 1) {
-                    	if (serviceNameCrumb != null) {
-                    		breadCrumb.add(new BreadcrumbElement(url, title));
-                    		breadCrumb.add(serviceNameCrumb);
-                    	} else {
-                    		breadCrumb.add(new BreadcrumbElement(null, title, null));
-                    	}
+                        if (serviceNameCrumb != null) {
+                            breadCrumb.add(new BreadcrumbElement(url, title));
+                            breadCrumb.add(serviceNameCrumb);
+                        } else {
+                            breadCrumb.add(new BreadcrumbElement(null, title, null));
+                        }
                     } else {
-                    	breadCrumb.add(new BreadcrumbElement(url, title));
+                        breadCrumb.add(new BreadcrumbElement(url, title));
                     }
-            	} else {
-            	    breadCrumb.add(new BreadcrumbElement(url, title));
-            	}
-                
+                } else {
+                    breadCrumb.add(new BreadcrumbElement(url, title));
+                }
+
             } catch (Exception e) {
                 breadCrumb.add(new BreadcrumbElement(null, path.get(i)));
                 String msg = e.getMessage();
@@ -287,10 +279,10 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
         }
         return false;
     }
-    
-    private String getTitle(Resource resource) {
+
+    private String getTitle(RequestContext requestContext, Resource resource) {
         if (this.titleOverrideProperties != null
-            && this.titleOverrideProperties.length > 0) {
+                && this.titleOverrideProperties.length > 0) {
 
             // Check titleOverrideProperties in correct order
             for (PropertyTypeDefinition overridePropDef: this.titleOverrideProperties) {
@@ -300,18 +292,20 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
                 }
             }
         }
-        if (resource.getName().equals("/")) return this.repository.getId();
+        if (resource.getName().equals("/")) {
+            return requestContext.getRepository().getId();
+        }
         return resource.getName();
     }
-    
+
     private String getNavigationTitle(Resource resource) {
-    	Property prop = resource.getProperty(this.navigationTitlePropDef);
-    	if (prop != null) {
-    		return prop.getStringValue();
-    	}
-    	return null;
+        Property prop = resource.getProperty(this.navigationTitlePropDef);
+        if (prop != null) {
+            return prop.getStringValue();
+        }
+        return null;
     }
-    
+
     public String toString() {
         StringBuilder sb = new StringBuilder(this.getClass().getName());
         sb.append(" [ ");

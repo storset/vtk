@@ -41,8 +41,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.lang.time.FastDateFormat;
 
+import org.apache.commons.lang.time.FastDateFormat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jdom.Document;
@@ -62,10 +62,10 @@ import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.InvalidModelException;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
 
@@ -111,7 +111,7 @@ public class PropfindView implements View, InitializingBean {
      * @param response a <code>HttpServletResponse</code> value
      * @exception Exception if an error occurs
      */
-    @SuppressWarnings({ "unchecked", "deprecation" })
+    @SuppressWarnings({ "unchecked", "deprecation", "rawtypes" })
     @Override
     public void render(Map model, HttpServletRequest request,
                        HttpServletResponse response) throws Exception {
@@ -241,7 +241,8 @@ public class PropfindView implements View, InitializingBean {
                                          boolean appendPropertyValues,
                                          boolean isWildcardPropRequest) throws Exception {
 
-        Principal p = SecurityContext.getSecurityContext().getPrincipal();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Principal p = requestContext.getPrincipal();
 
         Element responseElement = new Element("response", WebdavConstants.DAV_NAMESPACE);
         String href = this.webdavService.constructLink(resource, p);

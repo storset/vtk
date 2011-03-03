@@ -41,7 +41,6 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
@@ -72,8 +71,6 @@ public class ResourcePropertiesDecoratorComponent extends AbstractDecoratorCompo
     private static final String TYPE_IDENTIFIER = "type";
     private static final String URI_IDENTIFIER = "uri";
 
-    private Repository repository;
-
     private boolean forProcessing = true;
 
     private ResourceTypeTree resourceTypeTree;
@@ -81,14 +78,13 @@ public class ResourcePropertiesDecoratorComponent extends AbstractDecoratorCompo
 
     
     
-    @Required public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
     public void render(DecoratorRequest request, DecoratorResponse response)
             throws Exception {
-        String token = SecurityContext.getSecurityContext().getToken();
-        Path uri = RequestContext.getRequestContext().getResourceURI();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
+        Path uri = requestContext.getResourceURI();
+        
         String format = request.getStringParameter(PARAMETER_FORMAT);
        
         if (this.relative) {

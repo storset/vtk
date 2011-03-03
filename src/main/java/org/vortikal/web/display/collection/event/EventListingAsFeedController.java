@@ -33,7 +33,6 @@ package org.vortikal.web.display.collection.event;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.abdera.model.Feed;
 import org.springframework.beans.factory.annotation.Required;
@@ -55,11 +54,13 @@ public class EventListingAsFeedController extends AtomFeedController {
     private String overridePublishDatePropDefPointer;
 
     @Override
-    protected Feed createFeed(HttpServletRequest request, HttpServletResponse response, String token) throws Exception {
-        Path uri = RequestContext.getRequestContext().getResourceURI();
-        Resource collection = this.repository.retrieve(token, uri, false);
+    protected Feed createFeed(RequestContext requestContext) throws Exception {
+        Path uri = requestContext.getResourceURI();
+        String token = requestContext.getSecurityToken();
+        Resource collection = requestContext.getRepository().retrieve(token, uri, false);
+        HttpServletRequest request = requestContext.getServletRequest();
 
-        String feedTitle = getTitle(collection);
+        String feedTitle = getTitle(collection, requestContext);
 
         Listing feedContent = null;
         boolean showIntroduction = true;
@@ -89,7 +90,7 @@ public class EventListingAsFeedController extends AtomFeedController {
 
         Feed feed = populateFeed(collection, feedTitle, showIntroduction);
         for (PropertySet feedEntry : feedContent.getFiles()) {
-            addEntry(feed, token, feedEntry);
+            addEntry(feed, requestContext, feedEntry);
         }
 
         return feed;

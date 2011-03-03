@@ -17,8 +17,7 @@
     <property name="successView" value="redirectToManage" />
   </bean>
 
-  <bean id="editor.blogListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager"
-    parent="repositoryAware">
+  <bean id="editor.blogListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
  <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
     <property name="contentResourceType" ref="documentResourceTypeDefinition" />

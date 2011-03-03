@@ -44,12 +44,11 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
-import org.springframework.web.servlet.support.RequestContext;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
-import org.vortikal.security.SecurityContext;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.listing.ListingPager;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
@@ -73,9 +72,8 @@ public class TagsController implements Controller {
     private String hostName;
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String token = securityContext.getToken();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
 
         String tag = request.getParameter(TagsHelper.TAG_PARAMETER);
         Resource scope = this.tagsHelper.getScope(token, request);
@@ -156,7 +154,8 @@ public class TagsController implements Controller {
                     URL url = altService.constructURL(scope.getURI());
                     this.processUrl(url, tag, resourceTypes, sortFieldParams);
                     String title = altService.getName();
-                    RequestContext rc = new RequestContext(request);
+                    org.springframework.web.servlet.support.RequestContext rc = 
+                        new org.springframework.web.servlet.support.RequestContext(request);
                     title = rc
                             .getMessage(altService.getName(), new Object[] { scope.getTitle() }, altService.getName());
 

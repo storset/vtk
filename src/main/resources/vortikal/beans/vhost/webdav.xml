@@ -55,8 +55,7 @@
   </bean>
 
   <bean id="webdav.davMountHandler" 
-    class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController"
-    parent="repositoryAware">
+    class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController">
     <property name="viewName" value="webdav.davMount" />
   </bean>
 
@@ -396,40 +395,32 @@
         class="org.vortikal.web.http.HttpMethodNotImplementedHandler"/>
 
   <bean id="webdavCollectionListingHandler"
-        class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController"
-        parent="repositoryAware" >
+        class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController">
     <property name="viewName" value="webdavCollectionListingView" />
   </bean>
 
-  <bean id="webdavOptionsHandler" class="org.vortikal.webdav.OptionsController"
-    parent="repositoryAware" />
+  <bean id="webdavOptionsHandler" class="org.vortikal.webdav.OptionsController" />
 
-  <bean id="webdavGetHandler" class="org.vortikal.web.display.file.DisplayResourceController"
-    parent="repositoryAware">
+  <bean id="webdavGetHandler" class="org.vortikal.web.display.file.DisplayResourceController">
     <property name="viewName" value="webdavDisplayResource" />
     <property name="ignoreLastModified" value="true" />
     <property name="supportIfHeaders" value="${webdavSupportIfHeaders}" />
   </bean>
 
-  <bean id="webdavHeadHandler" class="org.vortikal.webdav.HeadController"
-    parent="repositoryAware" />
+  <bean id="webdavHeadHandler" class="org.vortikal.webdav.HeadController" />
 
-  <bean id="webdavPropfindHandler" class="org.vortikal.webdav.PropfindController"
-    parent="repositoryAware" />
+  <bean id="webdavPropfindHandler" class="org.vortikal.webdav.PropfindController" />
 
-  <bean id="webdavLockHandler" class="org.vortikal.webdav.LockController"
-        parent="repositoryAware">
+  <bean id="webdavLockHandler" class="org.vortikal.webdav.LockController">
     <property name="supportIfHeaders" value="${webdavSupportIfHeaders}" />
     <property name="deniedFileNames" ref="webdav.deniedFileNamePatterns" />
   </bean>
 
-  <bean id="webdavUnlockHandler" class="org.vortikal.webdav.UnlockController"
-    parent="repositoryAware">
+  <bean id="webdavUnlockHandler" class="org.vortikal.webdav.UnlockController">
     <property name="supportIfHeaders" value="${webdavSupportIfHeaders}" />
   </bean>
 
-  <bean id="webdavPutHandler" class="org.vortikal.webdav.PutController"
-    parent="repositoryAware">
+  <bean id="webdavPutHandler" class="org.vortikal.webdav.PutController">
     <property name="maxUploadSize" value="${upload.maxFileSize}" />
     <property name="supportIfHeaders" value="${webdavSupportIfHeaders}"/>
     <property name="obeyClientCharacterEncoding" value="false" />
@@ -441,28 +432,23 @@
     <property name="trim" value="true" />
   </bean>
 
-  <bean id="webdavMkColHandler" class="org.vortikal.webdav.MkColController"
-    parent="repositoryAware">
+  <bean id="webdavMkColHandler" class="org.vortikal.webdav.MkColController">
     <property name="deniedFileNames" ref="webdav.deniedFileNamePatterns" />
   </bean>
 
-  <bean id="webdavCopyHandler" class="org.vortikal.webdav.CopyController"
-        parent="repositoryAware">
+  <bean id="webdavCopyHandler" class="org.vortikal.webdav.CopyController">
     <property name="supportIfHeaders" value="${webdavSupportIfHeaders}" />
   </bean>
 
-  <bean id="webdavMoveHandler" class="org.vortikal.webdav.MoveController"
-    parent="repositoryAware">
+  <bean id="webdavMoveHandler" class="org.vortikal.webdav.MoveController">
     <property name="supportIfHeaders" value="${webdavSupportIfHeaders}" />
   </bean>
 
-  <bean id="webdavDeleteHandler" class="org.vortikal.webdav.DeleteController"
-    parent="repositoryAware">
+  <bean id="webdavDeleteHandler" class="org.vortikal.webdav.DeleteController">
     <property name="supportIfHeaders" value="${webdavSupportIfHeaders}" />
   </bean>
 
-  <bean id="webdavProppatchHandler" class="org.vortikal.webdav.ProppatchController"
-    parent="repositoryAware">
+  <bean id="webdavProppatchHandler" class="org.vortikal.webdav.ProppatchController">
     <property name="supportIfHeaders" value="${webdavSupportIfHeaders}" />
     <property name="webdavService" ref="webdavService"/>
   </bean>
@@ -545,8 +531,7 @@
     <property name="url" value="layouts/breadcrumb.ftl" />
     <property name="referenceDataProviders">
       <list>
-        <bean class="org.vortikal.web.referencedata.provider.BreadCrumbProvider" 
-              parent="repositoryAware">
+        <bean class="org.vortikal.web.referencedata.provider.BreadCrumbProvider">
           <property name="breadcrumbName" value="breadcrumb" />
           <property name="service" ref="webdavService"/>
         </bean>
@@ -573,7 +558,6 @@
     <property name="referenceDataProviders">
       <list>
         <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
-          <property name="repository" ref="repository" />
           <property name="service" ref="webdav.davMountService" />
           <property name="modelName" value="davMountService" />
           <property name="urlName" value="url" />
@@ -589,8 +573,7 @@
   <bean id="webdavCollectionListingHeadView" parent="webdavCollectionListingView" />
 
   <bean id="webdavDisplayResourceHandlerInterceptor"
-        class="org.vortikal.web.interceptors.HeaderControlHandlerInterceptor"
-        parent="repositoryAware">
+        class="org.vortikal.web.interceptors.HeaderControlHandlerInterceptor">
     <property name="includeLastModifiedHeader" value="false" />
     <property name="includeEtagHeader" value="${webdavSupportETags}" />
     <!-- Because of a bug in Resin (does not distinguish between GET
@@ -611,7 +594,6 @@
       <list>
         <ref bean="resourceContextProvider" />
         <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
-          <property name="repository" ref="repository" />
           <property name="service" ref="webdavService" />
           <property name="modelName" value="webdavService" />
           <property name="urlName" value="url" />
@@ -663,16 +645,14 @@
   <bean id="LOCK" class="org.vortikal.webdav.LockView"/>
 
   <bean id="webdavBreadCrumbProvider"
-        class="org.vortikal.web.referencedata.provider.BreadCrumbProvider" 
-        parent="repositoryAware">
+        class="org.vortikal.web.referencedata.provider.BreadCrumbProvider">
     <property name="service" ref="webdavService"/>
     <property name="skipCurrentResource" value="true" />
     <property name="skipIndexFile" value="true" />
   </bean>
 
   <bean id="webdavCollectionListingProvider"
-        class="org.vortikal.web.referencedata.provider.CollectionListingProvider" 
-        parent="repositoryAware" >
+        class="org.vortikal.web.referencedata.provider.CollectionListingProvider">
     <property name="browsingService" ref="webdavService" />
     <property name="retrieveForProcessing" value="false" />
   </bean>

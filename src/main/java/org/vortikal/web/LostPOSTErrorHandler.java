@@ -34,12 +34,13 @@ package org.vortikal.web;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.security.UnsupportedRequestMethodAPE;
 
 /**
@@ -72,9 +73,9 @@ public final class LostPOSTErrorHandler {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     private String getErrorLogEntry(HttpServletRequest req, String incidentId, Throwable error) {
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
         String httpMethod = req.getMethod();
 
         Map requestParameters = req.getParameterMap();
@@ -107,7 +108,6 @@ public final class LostPOSTErrorHandler {
         sb.append("Message: ").append(error.getMessage()).append(" - ");
         sb.append("Full request URL: [").append(requestURL).append("], ");
         sb.append("Request context: [").append(requestContext).append("], ");
-        sb.append("security context: [").append(securityContext).append("], ");
         sb.append("method: [").append(httpMethod).append("], ");
         sb.append("request parameters: [").append(params).append("], ");
         sb.append("user agent: [").append(req.getHeader("User-Agent")).append("], ");

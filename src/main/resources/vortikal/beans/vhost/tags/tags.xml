@@ -72,8 +72,7 @@
     <property name="tagsHelper" ref="tagsHelper" />
   </bean>
 
-  <bean id="tags.searchComponent" class="org.vortikal.web.search.QueryPartsSearchComponent"
-    parent="repositoryAware">
+  <bean id="tags.searchComponent" class="org.vortikal.web.search.QueryPartsSearchComponent">
     <property name="name" value="tags.searchComponent" />
     <property name="viewService" ref="webService" />
     <property name="resourceManager" ref="resourceManager" />

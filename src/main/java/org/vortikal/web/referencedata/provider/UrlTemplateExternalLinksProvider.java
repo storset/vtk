@@ -48,18 +48,17 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
 
 /**
- * Provides external links/URLs by use of template/pattern and dynamic values. Supported fields: "%{url}" (service URL)
+ * Provides external links/URLs by use of template/pattern and dynamic values. 
+ * 
+ * Supported fields: "%{url}" (service URL)
  * and "%{foo:bar}" (property values of current resource).
  * 
  * Example: http://www.foo.com/share?url=%{url}
- * 
- * TODO: proper docs
  */
 public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
 
@@ -69,20 +68,19 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
     private int fieldValueSizeLimit = 250;
     private String fieldValueTruncationIndicator = "...";
     private Map<String, UrlTemplate> urlTemplates;
-    private Repository repository;
     private String modelKey = "externalLinks";
 
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
 
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String token = securityContext.getToken();
-
+        String token = requestContext.getSecurityToken();
+        Repository repository = requestContext.getRepository();
+        
         RenderContext ctx = new RenderContext();
-        ctx.resource = this.repository.retrieve(token, requestContext.getResourceURI(), true);
-        ctx.principal = securityContext.getPrincipal();
+        ctx.resource = repository.retrieve(token, requestContext.getResourceURI(), true);
+        ctx.principal = requestContext.getPrincipal();
         ctx.service = requestContext.getService();
         ctx.request = request;
 
@@ -95,7 +93,6 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
             link.setUrl(encodedUrl);
             links.add(link);
         }
-
         model.put(this.modelKey, links);
     }
 
@@ -106,7 +103,6 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
             List<TemplateNode> templateNodes = new ArrayList<TemplateNode>();
 
             Matcher fieldPatternMatcher = FIELD_PATTERN.matcher(urlTemplate);
-
             int pos = 0;
             while (fieldPatternMatcher.find()) {
                 int fieldStart = fieldPatternMatcher.start(1);
@@ -115,17 +111,14 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
                 if (fieldStart > pos) {
                     templateNodes.add(new StaticEncodedText(urlTemplate.substring(pos, fieldStart)));
                 }
-
                 String fieldId = urlTemplate.substring(fieldStart + 2, fieldEnd - 1);
                 templateNodes.add(dynamicNode(fieldId));
 
                 pos = fieldEnd;
             }
-
             if (pos < urlTemplate.length()) {
                 templateNodes.add(new StaticEncodedText(urlTemplate.substring(pos, urlTemplate.length())));
             }
-
             this.templateNodes = templateNodes;
         }
 
@@ -138,7 +131,6 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
             return url.toString();
         }
     }
-
 
     // Factory method for dynamic node renderers. Might consider making this configurable (only if need arises).
     private TemplateNode dynamicNode(String field) {
@@ -160,7 +152,6 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
 
             node = new TruncatingWrapper(new ResourcePropertyValue(prefix, name));
         }
-
         return new UrlEncodingWrapper(node);
     }
 
@@ -178,36 +169,28 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
 
     private class StaticEncodedText implements TemplateNode {
         private String text;
-
-
         StaticEncodedText(String text) {
             this.text = text;
         }
-
-
         public String render(RenderContext ctx) {
             return this.text;
         }
-
     }
 
     private class ServiceUrl implements TemplateNode {
         public String render(RenderContext ctx) {
             return ctx.service.constructLink(ctx.resource, ctx.principal);
         }
-
     }
 
     private class ResourcePropertyValue implements TemplateNode {
         private String prefix;
         private String name;
 
-
         ResourcePropertyValue(String prefix, String name) {
             this.prefix = prefix;
             this.name = name;
         }
-
 
         public String render(RenderContext ctx) {
             String retVal = "";
@@ -222,20 +205,15 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
                     }
                 }
             }
-
             return retVal;
         }
-
     }
 
     private class UrlEncodingWrapper implements TemplateNode {
         private TemplateNode wrappedNode;
-
-
         UrlEncodingWrapper(TemplateNode wrapped) {
             this.wrappedNode = wrapped;
         }
-
 
         public String render(RenderContext ctx) {
             try {
@@ -244,18 +222,13 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
                 return "";
             }
         }
-
     }
 
     private class TruncatingWrapper implements TemplateNode {
         private TemplateNode wrappedNode;
-
-
         TruncatingWrapper(TemplateNode wrapped) {
             this.wrappedNode = wrapped;
         }
-
-
         public String render(RenderContext ctx) {
             String retVal = this.wrappedNode.render(ctx);
             if (retVal.length() > UrlTemplateExternalLinksProvider.this.fieldValueSizeLimit) {
@@ -266,7 +239,6 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
         }
 
     }
-
 
     @Required
     public void setUrlTemplates(Map<String, String> urlTemplates) {
@@ -279,25 +251,15 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
         }
     }
 
-
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
-
     public void setModelKey(String modelKey) {
         this.modelKey = modelKey;
     }
-
 
     public void setFieldValueSizeLimit(int fieldValueSizeLimit) {
         this.fieldValueSizeLimit = fieldValueSizeLimit;
     }
 
-
     public void setFieldValueTruncationIndicator(String fieldValueTruncationIndicator) {
         this.fieldValueTruncationIndicator = fieldValueTruncationIndicator;
     }
-
 }

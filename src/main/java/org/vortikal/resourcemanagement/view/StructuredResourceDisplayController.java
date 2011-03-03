@@ -53,7 +53,6 @@ import org.vortikal.resourcemanagement.StructuredResource;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.resourcemanagement.StructuredResourceManager;
 import org.vortikal.resourcemanagement.view.tl.ComponentInvokerNodeFactory;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.text.html.HtmlPageParser;
@@ -76,7 +75,6 @@ public class StructuredResourceDisplayController implements Controller, Initiali
 
     private static final String COMPONENT_NS = "comp";
 
-    private Repository repository;
     private String viewName;
     private StructuredResourceManager resourceManager;
     private TemplateManager templateManager;
@@ -95,11 +93,13 @@ public class StructuredResourceDisplayController implements Controller, Initiali
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        Path uri = RequestContext.getRequestContext().getResourceURI();
-        String token = SecurityContext.getSecurityContext().getToken();
-        Resource r = this.repository.retrieve(token, uri, true);
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Path uri = requestContext.getResourceURI();
+        String token = requestContext.getSecurityToken();
+        Repository repository = requestContext.getRepository();
+        Resource r = repository.retrieve(token, uri, true);
 
-        InputStream stream = this.repository.getInputStream(token, uri, true);
+        InputStream stream = repository.getInputStream(token, uri, true);
         byte[] buff = StreamUtil.readInputStream(stream);
         String encoding = "utf-8";
         String source = new String(buff, encoding);
@@ -222,10 +222,6 @@ public class StructuredResourceDisplayController implements Controller, Initiali
             // Don't allow access to HTML page in 'call-component' component..
             return null;
         }
-    }
-
-    public void setRepository(Repository repository) {
-        this.repository = repository;
     }
 
     public void setViewName(String viewName) {

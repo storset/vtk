@@ -42,7 +42,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
@@ -51,13 +50,12 @@ import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.TypeInfo;
-import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.util.repository.ContentTypeHelper;
 import org.vortikal.util.repository.TextResourceContentHelper;
@@ -86,8 +84,6 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  * <p>Configurable JavaBean properties
  * (and those defined by {@link SimpleFormController superclass}):
  * <ul>
- *   <li><code>repository</code> - the content {@link Repository
- *   repository} (required)
  *   <li><code>cancelView</code> - the {@link String view name} to return
  *   when user (required) cancels the operation
  *   <li><code>lockTimeoutSeconds</code> - the number of seconds for
@@ -97,15 +93,13 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  *  resource content in, if unable to guess.
  * </ul>
  */
-public class PlaintextEditController extends SimpleFormController
-  implements InitializingBean {
+public class PlaintextEditController extends SimpleFormController {
 
     private PropertyTypeDefinition updateEncodingProperty;
     
     private Log logger = LogFactory.getLog(this.getClass().getName());
     
     private String manageView;
-    private Repository repository;
     private int lockTimeoutSeconds = 300;
 
     private String defaultCharacterEncoding = "utf-8";
@@ -113,11 +107,6 @@ public class PlaintextEditController extends SimpleFormController
     
     private Service[] tooltipServices;
     
-
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
 
     public void setLockTimeoutSeconds(int lockTimeoutSeconds) {
         this.lockTimeoutSeconds = lockTimeoutSeconds;
@@ -139,31 +128,28 @@ public class PlaintextEditController extends SimpleFormController
     public void setTooltipServices(Service[] tooltipServices) {
         this.tooltipServices = tooltipServices;
     }
-    
-    
-    public void afterPropertiesSet() {
-        this.textResourceContentHelper = new TextResourceContentHelper(
-            this.repository, this.defaultCharacterEncoding);
-    }
-    
 
+    @Required
+    public void setTextResourceContentHelper(TextResourceContentHelper helper) {
+        this.textResourceContentHelper = helper;
+    }
 
     protected Object formBackingObject(HttpServletRequest request)
         throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
         
         Path uri = requestContext.getResourceURI();
-        String token = securityContext.getToken();
-        Principal principal = securityContext.getPrincipal();
+        String token = requestContext.getSecurityToken();
+        Principal principal = requestContext.getPrincipal();
+        Repository repository = requestContext.getRepository();
         
-        this.repository.lock(token, uri, principal.getQualifiedName(), 
+        repository.lock(token, uri, principal.getQualifiedName(), 
                 Depth.ZERO, this.lockTimeoutSeconds, null);
 
-        Resource resource = this.repository.retrieve(token, uri, false);
+        Resource resource = repository.retrieve(token, uri, false);
         String url = service.constructLink(resource, principal);
-        String content = getTextualContent(resource, token);
+        String content = getTextualContent(resource, requestContext);
         
         List<Map<String, String>> tooltips = resolveTooltips(resource, principal);
         return new PlaintextEditCommand(content, url, tooltips);
@@ -188,11 +174,11 @@ public class PlaintextEditController extends SimpleFormController
         	doSubmitAction(command);
         }
         
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String token = securityContext.getToken();
         RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
+
         Path uri = requestContext.getResourceURI();
-        this.repository.unlock(token, uri, null);
+        requestContext.getRepository().unlock(token, uri, null);
         
         return new ModelAndView(this.manageView);    
     }
@@ -201,14 +187,14 @@ public class PlaintextEditController extends SimpleFormController
 
     protected void doSubmitAction(Object command) throws Exception {        
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
         Path uri = requestContext.getResourceURI();
-        String token = securityContext.getToken();
-
+        String token = requestContext.getSecurityToken();
+        Repository repository = requestContext.getRepository();
+        
         PlaintextEditCommand plaintextEditCommand = (PlaintextEditCommand) command;
 
-        Resource resource = this.repository.retrieve(token, uri, false);
-        TypeInfo typeInfo = this.repository.getTypeInfo(token, uri);
+        Resource resource = repository.retrieve(token, uri, false);
+        TypeInfo typeInfo = repository.getTypeInfo(token, uri);
         String storedEncoding = resource.getCharacterEncoding();
         String postedEncoding = getPostedEncoding(resource, plaintextEditCommand);
 
@@ -250,7 +236,7 @@ public class PlaintextEditController extends SimpleFormController
                     PropertyType.CHARACTERENCODING_USER_SPECIFIED_PROP_NAME);
             prop.setStringValue(characterEncoding);
             resource.addProperty(prop);
-            this.repository.store(token, resource);
+            repository.store(token, resource);
         }
 
         String content = plaintextEditCommand.getContent();
@@ -258,24 +244,24 @@ public class PlaintextEditController extends SimpleFormController
         if (this.logger.isDebugEnabled()) {
             this.logger.debug("Decoding posted string using encoding: " + characterEncoding);
         }
-        this.repository.storeContent(token, uri, 
+        repository.storeContent(token, uri, 
                 new ByteArrayInputStream(content.getBytes(characterEncoding)));
 
     }
     
 
 
-    private String getTextualContent(Resource resource, String token)
-        throws Exception {
-
+    private String getTextualContent(Resource resource, RequestContext requestContext)
+    throws Exception {
+        String token = requestContext.getSecurityToken();
         String encoding = resource.getCharacterEncoding();
         try {
             Charset.forName(encoding);
         } catch (Throwable t) {
             encoding = this.defaultCharacterEncoding;
         }
-        InputStream is = this.repository.getInputStream(token, resource.getURI(),
-                                                   false);
+        InputStream is = requestContext.getRepository().getInputStream(
+                token, resource.getURI(), false);
 
         return StreamUtil.streamToString(is, encoding);
     }

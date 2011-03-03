@@ -43,8 +43,8 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.Resource;
 import org.vortikal.repository.Repository.Depth;
+import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
@@ -59,8 +59,6 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
     private static final String NORMAL_FOLDER_IDENTIFIER = "NORMAL_FOLDER";
 
     private ResourceTemplateManager templateManager;
-
-    private Repository repository = null;
 
     private PropertyTypeDefinition userTitlePropDef;
     private boolean downcaseCollectionNames = false;
@@ -86,18 +84,13 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         this.userTitlePropDef = userTitlePropDef;
     }
 
-    @Required public void setRepository(Repository repository) {
-        this.repository = repository;
-    } 
-
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
-
-        Resource resource = this.repository.retrieve(securityContext.getToken(),
+        Repository repository = requestContext.getRepository();
+        Resource resource = repository.retrieve(requestContext.getSecurityToken(),
                 requestContext.getResourceURI(), false);
-        String url = service.constructLink(resource, securityContext.getPrincipal());
+        String url = service.constructLink(resource, requestContext.getPrincipal());
 
         CreateCollectionCommand command = new CreateCollectionCommand(url);
 
@@ -115,22 +108,19 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
     }
 
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     protected Map referenceData(HttpServletRequest request) throws Exception {
-
         RequestContext requestContext = RequestContext.getRequestContext();        
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-
         Map<String, Object> model = new HashMap<String, Object>();
 
         Path uri = requestContext.getResourceURI();
-        String token = securityContext.getToken();
+        String token = requestContext.getSecurityToken();
 
         List <ResourceTemplate> templates = templateManager.getFolderTemplates(token, uri);
 
         HttpServletRequest servletRequest = requestContext.getServletRequest();
         org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(servletRequest);
-        Map <String, String> tmp = new LinkedHashMap <String, String>();
+        Map<String, String> tmp = new LinkedHashMap <String, String>();
 
         String standardCollectionName = 
             new MessageLocalizer("property.standardCollectionName", "Standard collection", null, springRequestContext).get(null).toString();
@@ -153,23 +143,22 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
 
 
     protected void doSubmitAction(Object command) throws Exception {        
-        RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-
         CreateCollectionCommand createFolderCommand =
             (CreateCollectionCommand) command;
         if (createFolderCommand.getCancelAction() != null) {
             createFolderCommand.setDone(true);
             return;
         }
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
         Path uri = requestContext.getResourceURI();
-        String token = securityContext.getToken();
+        String token = requestContext.getSecurityToken();
 
         // The location of the folder that we shall copy
         String source = createFolderCommand.getSourceURI();
         if (source== null || source.equals(NORMAL_FOLDER_IDENTIFIER)) { 
             // Just create a new folder if no "folder-template" is selected
-            createNewFolder(command, uri, token);
+            createNewFolder(command, uri, requestContext);
             createFolderCommand.setDone(true);            
             return;
         }
@@ -182,8 +171,8 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         Path destinationURI = uri.extend(name);
 
         // Copy folder-template to destination (implicit rename) 
-        this.repository.copy(token, sourceURI, destinationURI, Depth.ZERO, false, false);
-        Resource dest = this.repository.retrieve(token, destinationURI, false);
+        repository.copy(token, sourceURI, destinationURI, Depth.ZERO, false, false);
+        Resource dest = repository.retrieve(token, destinationURI, false);
 
         dest.removeProperty(this.userTitlePropDef);
 
@@ -193,28 +182,26 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
             titleProp.setStringValue(title);
             dest.addProperty(titleProp);
         }
-
-
-        this.repository.store(token, dest);
-
+        repository.store(token, dest);
         createFolderCommand.setDone(true);
-
     }
 
-    private void createNewFolder(Object command, Path uri, String token) throws Exception{
+    private void createNewFolder(Object command, Path uri, RequestContext requestContext) throws Exception{
         CreateCollectionCommand createCollectionCommand = (CreateCollectionCommand) command;
 
         String title = createCollectionCommand.getName();
         String name = fixCollectionName(title);
         Path newURI = uri.extend(name);
-        Resource collection = this.repository.createCollection(token, newURI);
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
+        Resource collection = repository.createCollection(token, newURI);
 
         if (!title.equals(name)) {
             title = title.substring(0, 1).toUpperCase() + title.substring(1);
             Property titleProp = this.userTitlePropDef.createProperty();
             titleProp.setStringValue(title);
             collection.addProperty(titleProp);
-            this.repository.store(token, collection);
+            repository.store(token, collection);
         }
     }
 
@@ -240,7 +227,6 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
             Object command, BindException errors) throws Exception {
         super.onBindAndValidate(request, command, errors);
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
 
         CreateCollectionCommand createCollectionCommand =
             (CreateCollectionCommand) command;
@@ -248,7 +234,8 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
             return;
         }
         Path uri = requestContext.getResourceURI();
-        String token = securityContext.getToken();
+        String token = requestContext.getSecurityToken();
+        Repository repository = requestContext.getRepository();
 
         String name = createCollectionCommand.getName();       
         if (null == name || "".equals(name.trim())) {
@@ -272,7 +259,7 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         }
         Path newURI = uri.extend(name);
 
-        boolean exists = this.repository.exists(token, newURI);
+        boolean exists = repository.exists(token, newURI);
         if (exists) {
             errors.rejectValue("name",
                     "manage.create.collection.exists",
@@ -285,6 +272,5 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
             "Cannot copy a collection into itself");
         }
     }
-
 }
 

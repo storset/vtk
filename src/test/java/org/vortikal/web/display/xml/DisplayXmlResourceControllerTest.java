@@ -48,7 +48,6 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.display.xml.DisplayXmlResourceController;
 
 
 public class DisplayXmlResourceControllerTest extends TestCase {
@@ -68,10 +67,10 @@ public class DisplayXmlResourceControllerTest extends TestCase {
         this.request = new MockHttpServletRequest();
         this.controller = new DisplayXmlResourceController();
         BaseContext.pushContext();
-        RequestContext requestContext = new RequestContext(this.request, null, this.uri);
-        RequestContext.setRequestContext(requestContext);
         SecurityContext securityContext = new SecurityContext(this.token, null);
         SecurityContext.setSecurityContext(securityContext);
+        RequestContext requestContext = new RequestContext(this.request, null, this.uri);
+        RequestContext.setRequestContext(requestContext);
     }
 
     protected void tearDown() throws Exception {
@@ -88,8 +87,6 @@ public class DisplayXmlResourceControllerTest extends TestCase {
         
         context.checking(new Expectations() {{ one(mockRepository).retrieve(token, uri, true); will(returnValue(mockResource)); }});
         
-        this.controller.setRepository(mockRepository);
-
         lastModified = this.controller.getLastModified(this.request);
         assertEquals(-1, lastModified);
 

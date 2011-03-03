@@ -86,8 +86,7 @@
 
 
   <bean name="commenting.postCommentController"
-        class="org.vortikal.web.commenting.PostCommentController"
-        parent="repositoryAware">
+        class="org.vortikal.web.commenting.PostCommentController">
     <property name="formView" value="commenting.redirectToDefault" />
     <property name="successView" value="commenting.redirectToDefault" />
     <property name="commandName" value="postCommentForm" />
@@ -150,27 +149,23 @@
   </bean>
 
   <bean name="commenting.deleteCommentController"
-        class="org.vortikal.web.commenting.DeleteCommentController"
-        parent="repositoryAware">
+        class="org.vortikal.web.commenting.DeleteCommentController">
     <property name="viewName" value="commenting.redirectToDefault" />
   </bean>
 
   <bean name="commenting.deleteAllCommentsController"
-        class="org.vortikal.web.commenting.DeleteCommentController"
-        parent="repositoryAware">
+        class="org.vortikal.web.commenting.DeleteCommentController">
     <property name="deleteAllComments" value="true" />
     <property name="viewName" value="commenting.redirectToDefault" />
   </bean>
 
   <bean name="commenting.resourceCommentsController"
-        class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController"
-        parent="repositoryAware">
+        class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController">
     <property name="viewName" value="commenting.resourceCommentsView" />
   </bean>
 
   <bean name="commenting.displayFeedController"
-        class="org.vortikal.web.commenting.CommentsFeedController"
-        parent="repositoryAware">
+        class="org.vortikal.web.commenting.CommentsFeedController">
     <property name="viewService" ref="viewService" />
     <property name="viewName" value="commenting.feedView" />
   </bean>
@@ -251,8 +246,7 @@
   </bean>
 
   <bean id="commenting.redirectToDefaultProvider" 
-        class="org.vortikal.web.referencedata.provider.RedirectProvider"
-        parent="repositoryAware">
+        class="org.vortikal.web.referencedata.provider.RedirectProvider">
     <property name="redirectToService" ref="displayResourceService" />
     <property name="urlAnchor" value="comment-form" />
   </bean>
@@ -262,8 +256,7 @@
     <property name="url" value="commenting/resource-comments.ftl" />
     <property name="contentType" value="text/html;charset=utf-8" />
     <property name="referenceDataProviders">
-      <bean class="org.vortikal.web.commenting.RecentCommentsProvider"
-            parent="repositoryAware">
+      <bean class="org.vortikal.web.commenting.RecentCommentsProvider">
         <property name="deepCommentsListing" value="true" />
         <property name="maxComments" value="100" />
         <property name="viewService" ref="viewService" />
@@ -283,8 +276,7 @@
     <property name="url" value="commenting/recent-comments-component.ftl" />
     <property name="contentType" value="text/html;charset=utf-8" />
     <property name="referenceDataProviders">
-      <bean class="org.vortikal.web.commenting.RecentCommentsProvider"
-            parent="repositoryAware">
+      <bean class="org.vortikal.web.commenting.RecentCommentsProvider">
         <property name="deepCommentsListing" value="true" />
         <property name="maxComments" value="10" />
         <property name="viewService" ref="viewService" />
@@ -371,8 +363,7 @@
   <bean id="commenting.commentsView.referenceDataProviders" class="org.springframework.beans.factory.config.ListFactoryBean">
     <property name="sourceList">
       <list>
-        <bean class="org.vortikal.web.commenting.CommentsProvider"
-              parent="repositoryAware">
+        <bean class="org.vortikal.web.commenting.CommentsProvider">
           <property name="postCommentService" ref="commenting.postCommentService" />
           <property name="deleteCommentService" ref="commenting.deleteCommentService" />
           <property name="deleteAllCommentsService" ref="commenting.deleteAllCommentsService" />
@@ -385,12 +376,6 @@
           <property name="path" value="${editor.fck.resourcesURL}" />
           <property name="modelName" value="fckeditorBase" />
         </bean>
-        <!-- <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
-          <property name="repository" ref="repository" />
-          <property name="modelName" value="fckeditorBase" />
-          <property name="urlName" value="documentURL" />
-          <property name="service" ref="viewService" />
-        </bean> -->
         <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
           <property name="modelDataMap">
             <map>

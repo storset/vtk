@@ -8,8 +8,7 @@
   <!-- WEB controllers -->
 
   <bean id="logoutHandler" 
-    class="org.vortikal.web.actions.logout.LogoutController"
-    parent="repositoryAware">
+    class="org.vortikal.web.actions.logout.LogoutController">
     <property name="redirectService" ref="viewService" />
     <property name="securityInitializer" ref="securityInitializer" />
     <property name="commandName" value="form" />
@@ -21,20 +20,17 @@
   </bean>
 
   <bean id="httpOptionsHandler"
-        class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController"
-        parent="repositoryAware">
+        class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController">
     <property name="supportedMethods" value="OPTIONS" />
     <property name="viewName" value="httpOptions" />
   </bean>
   
-  <bean id="displayIndexFileHandler" class="org.vortikal.web.display.index.IndexFileController"
-        parent="repositoryAware">
+  <bean id="displayIndexFileHandler" class="org.vortikal.web.display.index.IndexFileController">
     <property name="uriCharacterEncoding" value="${indexFileHandlerURIEncoding}" />
   </bean>
 
   <bean id="collectionListingAsFeedHandler" 
-    class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController"
-    parent="repositoryAware">
+    class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController">
     <property name="viewName" value="collectionListingAsFeed" />
   </bean>
   
@@ -43,15 +39,13 @@
   
   
   <bean id="displayResourceHandler" 
-    class="org.vortikal.web.display.file.DisplayResourceController"
-    parent="repositoryAware">
+    class="org.vortikal.web.display.file.DisplayResourceController">
     <property name="displayProcessed" value="true" />
     <property name="ignoreLastModified" value="false" />
   </bean>
 
   <bean id="displayHTMLResourceHandler" 
-    class="org.vortikal.web.display.file.DisplayResourceController"
-    parent="repositoryAware">
+    class="org.vortikal.web.display.file.DisplayResourceController">
     <property name="displayProcessed" value="true" />
     <property name="viewName" value="displayHTMLResource" />
     <property name="ignoreLastModified" value="true" />

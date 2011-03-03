@@ -43,7 +43,6 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.PropertyType;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
@@ -52,22 +51,13 @@ public class ContentTypeController extends SimpleFormController {
 
     private static Log logger = LogFactory.getLog(ContentTypeController.class);
     
-    private Repository repository = null;
-    
-    
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
+        Repository repository = requestContext.getRepository();
         Service service = requestContext.getService();
-        
-        Resource resource = this.repository.retrieve(securityContext.getToken(),
+        Resource resource = repository.retrieve(requestContext.getSecurityToken(),
                                                 requestContext.getResourceURI(), false);
-        String url = service.constructLink(resource, securityContext.getPrincipal());
-         
+        String url = service.constructLink(resource, requestContext.getPrincipal());
         ContentTypeCommand command =
             new ContentTypeCommand(resource.getContentType(), url);
         return command;
@@ -76,10 +66,9 @@ public class ContentTypeController extends SimpleFormController {
 
     protected void doSubmitAction(Object command) throws Exception {        
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        
+        Repository repository = requestContext.getRepository();
         Path uri = requestContext.getResourceURI();
-        String token = securityContext.getToken();
+        String token = requestContext.getSecurityToken();
 
         ContentTypeCommand contentTypeCommand =
             (ContentTypeCommand) command;
@@ -89,12 +78,11 @@ public class ContentTypeController extends SimpleFormController {
             return;
         }
         
-        Resource resource = this.repository.retrieve(token, uri, false);
-        TypeInfo typeInfo = this.repository.getTypeInfo(token, uri);
+        Resource resource = repository.retrieve(token, uri, false);
+        TypeInfo typeInfo = repository.getTypeInfo(token, uri);
 
         String contentType = contentTypeCommand.getContentType();
 
-        // XXX: waiting for validator code both for prop and command
         if (contentType == null || "".equals(contentTypeCommand.getContentType().trim())) {
             contentTypeCommand.setDone(true);
             return;
@@ -109,10 +97,7 @@ public class ContentTypeController extends SimpleFormController {
                          resource.getContentType() + 
                          "' for resource " + uri);
         }
-        this.repository.store(token, resource);
+        repository.store(token, resource);
         contentTypeCommand.setDone(true);
     }
-    
-
 }
-

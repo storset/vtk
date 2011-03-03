@@ -45,21 +45,13 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 public class CommentsFeedController implements Controller {
-
-    private Repository repository;
     private String viewName;
     private Service viewService;
-
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
 
     @Required
     public void setViewName(String viewName) {
@@ -72,9 +64,11 @@ public class CommentsFeedController implements Controller {
     }
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
-        String token = SecurityContext.getSecurityContext().getToken();
-        Path uri = RequestContext.getRequestContext().getResourceURI();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        Principal principal = requestContext.getPrincipal();
+        String token = requestContext.getSecurityToken();
+        Path uri = requestContext.getResourceURI();
         Resource resource = repository.retrieve(token, uri, true);
 
         List<Comment> comments = repository.getComments(token, resource, true, 50);
@@ -84,7 +78,7 @@ public class CommentsFeedController implements Controller {
         resourceMap.put(resource.getURI().toString(), resource);
         urlMap.put(resource.getURI().toString(), this.viewService.constructURL(resource.getURI()));
         for (Comment comment : comments) {
-            Resource r = this.repository.retrieve(token, comment.getURI(), true);
+            Resource r = repository.retrieve(token, comment.getURI(), true);
             resourceMap.put(r.getURI().toString(), r);
             urlMap.put(r.getURI().toString(), this.viewService.constructURL(r.getURI()));
         }

@@ -46,7 +46,6 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceNotFoundException;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 
 /**
@@ -56,14 +55,8 @@ import org.vortikal.web.RequestContext;
  */
 public class DeleteCommentController extends AbstractController implements InitializingBean {
 
-    private Repository repository;
     private String viewName;
     private boolean deleteAllComments = false;
-    
-    
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
     
     public void setViewName(String viewName) {
         this.viewName = viewName;
@@ -73,16 +66,11 @@ public class DeleteCommentController extends AbstractController implements Initi
         this.deleteAllComments = deleteAllComments;
     }
     
-
     public void afterPropertiesSet() throws Exception {
         if (this.viewName == null)
             throw new BeanInitializationException("Property 'viewName' must be set");
     }
 
-    protected Repository getRepository() {
-        return this.repository;
-    }
-    
     protected String getViewName() {
         return this.viewName;
     }
@@ -90,24 +78,22 @@ public class DeleteCommentController extends AbstractController implements Initi
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
-
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String token = securityContext.getToken();
-        
+        String token = requestContext.getSecurityToken();
+        Repository repository = requestContext.getRepository();
         Path uri = requestContext.getResourceURI();
-        Resource resource = this.repository.retrieve(token, uri, true);
+        Resource resource = repository.retrieve(token, uri, true);
 
         if (this.deleteAllComments) {
-            this.repository.deleteAllComments(token, resource);
+            repository.deleteAllComments(token, resource);
         } else {
             String id = request.getParameter("comment-id");
             if (id == null) throw new ResourceNotFoundException(uri);
-            List<Comment> comments = this.repository.getComments(token, resource);
+            List<Comment> comments = repository.getComments(token, resource);
             Comment comment = findComment(id, comments);
             if (comment == null) {
                 throw new ResourceNotFoundException(uri);
             }
-            this.repository.deleteComment(token, resource, comment);
+            repository.deleteComment(token, resource, comment);
         }
         
         Map<String, Object> model = new HashMap<String, Object>();

@@ -34,8 +34,6 @@ import java.awt.image.BufferedImage;
 
 public interface ImageService {
     
-    public ScaledImage scaleImage(String path, String width, String height) throws Exception;
-    
     public ScaledImage scaleImage(BufferedImage image, String format, String width, String height) throws Exception;
 
 }

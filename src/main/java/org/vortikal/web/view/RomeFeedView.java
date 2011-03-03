@@ -46,7 +46,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.View;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.service.Service;
@@ -124,7 +124,7 @@ public class RomeFeedView implements View, ReferenceDataProviding {
      * @see org.springframework.web.servlet.View#render(java.util.Map,
      *      javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public void render(Map model, HttpServletRequest request, HttpServletResponse response)
             throws Exception {
 
@@ -151,8 +151,7 @@ public class RomeFeedView implements View, ReferenceDataProviding {
         // (Each entry is set with a title, link, published date and a description)
         // ( -> Description can be plain text or HTML)
         List<SyndEntry> feedEntries = new ArrayList<SyndEntry>();
-
-        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
+        Principal principal = RequestContext.getRequestContext().getPrincipal();
 
         for (int i = 0; i < resources.length; i++) {
             SyndEntry entry = getSyndEntryForResource(resources[i], principal);

@@ -50,7 +50,6 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.AuthenticationException;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.xml.TransformerManager;
 
@@ -60,8 +59,6 @@ import org.vortikal.xml.TransformerManager;
  * 
  * <p>Configurable JavaBean properties:
  * <ul>
- *   <li><code>repository</code> - the content {@link Repository
- *   repository}
  *   <li><code>transformerManager</code> - the XSLT {@link
  *   TransformerManager transformer manager}
  *   <li><code>viewName</code> - the name used for the submodel
@@ -93,7 +90,6 @@ public class DisplayXmlResourceController implements Controller, LastModified {
     private static Log logger = LogFactory.getLog(DisplayXmlResourceController.class);
 
     public static final String DEFAULT_VIEW_NAME = "transformXmlResource";
-    private Repository repository;
     private TransformerManager transformerManager;
     private String childName;
     private String viewName = DEFAULT_VIEW_NAME;
@@ -103,11 +99,6 @@ public class DisplayXmlResourceController implements Controller, LastModified {
     
     public void setChildName(String childName) {
         this.childName = childName;
-    }
-
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
     }
 
     @Required
@@ -137,8 +128,9 @@ public class DisplayXmlResourceController implements Controller, LastModified {
             return -1;
         }
 
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
 
         Path uri = requestContext.getResourceURI();
 
@@ -149,8 +141,7 @@ public class DisplayXmlResourceController implements Controller, LastModified {
         Resource resource = null;
 
         try {
-            resource = repository.retrieve(
-                securityContext.getToken(), uri, true);
+            resource = repository.retrieve(token, uri, true);
                          
         } catch (RepositoryException e) {
             // These exceptions are expected
@@ -182,12 +173,12 @@ public class DisplayXmlResourceController implements Controller, LastModified {
     public ModelAndView handleRequest(HttpServletRequest request,
                                       HttpServletResponse response) throws Exception {
 		
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
         Path uri = requestContext.getResourceURI();
-        String token = securityContext.getToken();
+        String token = requestContext.getSecurityToken();
         Map<String, Object> model = new HashMap<String, Object>();
-        Resource resource = this.repository.retrieve(token, uri, true);
+        Resource resource = repository.retrieve(token, uri, true);
 
         if (resource.isCollection()) {
             throw new IllegalStateException(
@@ -195,7 +186,7 @@ public class DisplayXmlResourceController implements Controller, LastModified {
         }
         model.put("resource", resource);
 
-        InputStream stream = this.repository.getInputStream(token, uri, true);
+        InputStream stream = repository.getInputStream(token, uri, true);
 
         // Build a JDOM tree of the input stream:
         Document document = null;

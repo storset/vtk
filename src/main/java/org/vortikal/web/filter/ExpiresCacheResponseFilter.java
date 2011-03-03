@@ -49,7 +49,6 @@ import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
@@ -57,7 +56,6 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
 
     private static Log logger = LogFactory.getLog(ExpiresCacheResponseFilter.class);
     
-    private Repository repository;
     private PropertyTypeDefinition expiresPropDef;
     private int globalMaxAge = -1;
     private Service rootService;
@@ -68,8 +66,6 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
             HttpServletResponse response) {
 
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-
         Path uri = requestContext.getResourceURI();
 
         if (!requestContext.isInRepository()) {
@@ -113,12 +109,12 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
             service = service.getParent();
         }
         
-        String token = securityContext.getToken();
-
+        String token = requestContext.getSecurityToken();
+        Repository repository = requestContext.getRepository();
         try {
-            Resource resource = this.repository.retrieve(token, uri, true);
+            Resource resource = repository.retrieve(token, uri, true);
             if (this.excludedResourceTypes != null) {
-                TypeInfo typeInfo = this.repository.getTypeInfo(resource);
+                TypeInfo typeInfo = repository.getTypeInfo(resource);
                 
                 for (String t: this.excludedResourceTypes) {
                     if (typeInfo.isOfType(t)) {
@@ -130,7 +126,7 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
                 }
             }
             boolean anonymousReadable = 
-                this.repository.isAuthorized(resource, RepositoryAction.READ_PROCESSED, null, false);
+                repository.isAuthorized(resource, RepositoryAction.READ_PROCESSED, null, false);
             if (!anonymousReadable) {
                 if (logger.isDebugEnabled()) {
                     logger.debug(uri + ": ignore: restricted");
@@ -155,10 +151,6 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
         }
         logger.debug(uri + ": ignore");
         return response;
-    }
-
-    public void setRepository(Repository repository) {
-        this.repository = repository;
     }
 
     public void setExpiresPropDef(PropertyTypeDefinition expiresPropDef) {

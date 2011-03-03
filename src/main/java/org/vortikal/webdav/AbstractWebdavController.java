@@ -70,12 +70,7 @@ public abstract class AbstractWebdavController implements Controller {
     private List<Pattern> deniedFileNamePatterns = new ArrayList<Pattern>();
     protected boolean supportIfHeaders = true;
     protected IfHeader ifHeader;
-    protected Repository repository = null;
 
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-    
     public void setSupportIfHeaders(boolean supportIfHeaders) {
         this.supportIfHeaders = supportIfHeaders;
     }
@@ -90,7 +85,6 @@ public abstract class AbstractWebdavController implements Controller {
             this.deniedFileNamePatterns.add(p);
         }
     }
-
     
     /**
      * Maps WebDAV property names to resource property names
@@ -103,12 +97,10 @@ public abstract class AbstractWebdavController implements Controller {
      */
     public static final Set<String> SPECIAL_DAV_PROPERTIES;
 
-
     /**
      * The set of all WebDAV property names
      */
     public static final Set<String> DAV_PROPERTIES;
-
 
     static {
         MAPPED_DAV_PROPERTIES = new HashMap<String, String>();
@@ -130,8 +122,6 @@ public abstract class AbstractWebdavController implements Controller {
         DAV_PROPERTIES.addAll(MAPPED_DAV_PROPERTIES.keySet());
         DAV_PROPERTIES.addAll(SPECIAL_DAV_PROPERTIES);
     }
-    
-
 
     /**
      * Determines whether a DAV property name is supported.

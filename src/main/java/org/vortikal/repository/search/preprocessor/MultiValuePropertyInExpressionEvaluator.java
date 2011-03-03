@@ -33,20 +33,17 @@ package org.vortikal.repository.search.preprocessor;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.search.QueryException;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 
 public abstract class MultiValuePropertyInExpressionEvaluator implements ExpressionEvaluator {
 
     private Log logger = LogFactory.getLog(MultiValuePropertyInExpressionEvaluator.class);
-    private Repository repository;
 
     protected abstract String getVariableName();
 
@@ -59,14 +56,14 @@ public abstract class MultiValuePropertyInExpressionEvaluator implements Express
         }
 
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        if (requestContext != null && securityContext != null) {
+        if (requestContext != null) {
 
-            String securityToken = securityContext.getToken();
+            String securityToken = requestContext.getSecurityToken();
             Path uri = requestContext.getResourceURI();
+            Repository repository = requestContext.getRepository();
 
             try {
-                Resource resource = this.repository.retrieve(securityToken, uri, true);
+                Resource resource = repository.retrieve(securityToken, uri, true);
 
                 if (!resource.isCollection()) {
                     if (this.logger.isDebugEnabled()) {
@@ -105,10 +102,4 @@ public abstract class MultiValuePropertyInExpressionEvaluator implements Express
     public boolean matches(String token) {
         return getVariableName().equals(token);
     }
-
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
 }

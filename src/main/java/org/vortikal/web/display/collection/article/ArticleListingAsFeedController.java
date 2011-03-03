@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.abdera.model.Feed;
 import org.springframework.beans.factory.annotation.Required;
@@ -53,15 +52,17 @@ public class ArticleListingAsFeedController extends AtomFeedController {
     private PropertyTypeDefinition overridePublishDatePropDef;
 
     @Override
-    protected Feed createFeed(HttpServletRequest request, HttpServletResponse response, String token) throws Exception {
+    protected Feed createFeed(RequestContext requestContext) throws Exception {
 
-        Path uri = RequestContext.getRequestContext().getResourceURI();
-        Resource collection = this.repository.retrieve(token, uri, true);
+        Path uri = requestContext.getResourceURI();
+        String token = requestContext.getSecurityToken();
+        Resource collection = requestContext.getRepository().retrieve(token, uri, true);
 
-        String feedTitle = getTitle(collection);
+        String feedTitle = getTitle(collection, requestContext);
         Feed feed = populateFeed(collection, feedTitle);
 
         List<Listing> results = new ArrayList<Listing>();
+        HttpServletRequest request = requestContext.getServletRequest();
         Listing featuredArticles = this.searcher.getFeaturedArticles(request, collection, 1, this.entryCountLimit, 0);
         if (featuredArticles.size() > 0) {
             results.add(featuredArticles);
@@ -74,10 +75,9 @@ public class ArticleListingAsFeedController extends AtomFeedController {
 
         for (Listing searchResult : results) {
             for (PropertySet result : searchResult.getFiles()) {
-                addEntry(feed, token, result);
+                addEntry(feed, requestContext, result);
             }
         }
-
         return feed;
     }
 
@@ -99,5 +99,4 @@ public class ArticleListingAsFeedController extends AtomFeedController {
     public void setOverridePublishDatePropDef(PropertyTypeDefinition overridePublishDatePropDef) {
         this.overridePublishDatePropDef = overridePublishDatePropDef;
     }
-
 }

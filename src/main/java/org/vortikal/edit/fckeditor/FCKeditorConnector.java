@@ -58,25 +58,20 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.PropertyType;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.MimeHelper;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 
 
 public class FCKeditorConnector implements Controller {
-    private Repository repository;
     private Service viewService;
     private String browseViewName;
     private String uploadStatusViewName;
     private int maxUploadSize = 1000000;
     
 
-    @Required public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-    
     @Required public void setViewService(Service viewService) {
         this.viewService = viewService;
     }
@@ -101,8 +96,8 @@ public class FCKeditorConnector implements Controller {
 
         FCKeditorFileBrowserCommand command = new FCKeditorFileBrowserCommand(request);
 
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String token = securityContext.getToken();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
 
         Locale locale = RequestContextUtils.getLocale(request);
         
@@ -152,11 +147,11 @@ public class FCKeditorConnector implements Controller {
                 break;
 
             case CreateFolder:
-                model.put("error", createFolder(command, token));
+                model.put("error", createFolder(command, requestContext));
                 break;
 
             case FileUpload:
-                return uploadFile(command, token, request); 
+                return uploadFile(command, requestContext); 
 
             default:
                 model.put("error", 1);
@@ -170,7 +165,10 @@ public class FCKeditorConnector implements Controller {
     private Map<String, Map<String, Object>> listResources(String token, FCKeditorFileBrowserCommand command,
                                            Filter filter, Locale locale) throws Exception {
 
-        Resource[] children = this.repository.listChildren(
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        
+        Resource[] children = repository.listChildren(
             token, command.getCurrentFolder(), true);
 
         Map<String, Map<String, Object>> result = 
@@ -195,15 +193,17 @@ public class FCKeditorConnector implements Controller {
     
     
 
-    private int createFolder(FCKeditorFileBrowserCommand command, String token) {
+    private int createFolder(FCKeditorFileBrowserCommand command, RequestContext requestContext) {
 
+        String token = requestContext.getSecurityToken();
+        Repository repository = requestContext.getRepository();
         Path curFolder = command.getCurrentFolder();
         Path newFolderURI = curFolder.extend(command.getNewFolderName());
         try {
-            if (this.repository.exists(token, newFolderURI)) {
+            if (repository.exists(token, newFolderURI)) {
                 return 101;
             }
-            this.repository.createCollection(token, newFolderURI);
+            repository.createCollection(token, newFolderURI);
             return 0;
         } catch (AuthorizationException e) {
             return 103;
@@ -213,13 +213,16 @@ public class FCKeditorConnector implements Controller {
     }
     
     @SuppressWarnings("unchecked")
-    private ModelAndView uploadFile(FCKeditorFileBrowserCommand command, String token, HttpServletRequest request) {
+    private ModelAndView uploadFile(FCKeditorFileBrowserCommand command, RequestContext requestContext) {
         Map<String, Object> model = new HashMap<String, Object>();
         
         FileItemFactory factory = new DiskFileItemFactory(
             this.maxUploadSize, new File(System.getProperty("java.io.tmpdir")));
         ServletFileUpload upload = new ServletFileUpload(factory);
-    
+        HttpServletRequest request = requestContext.getServletRequest();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
+        
         FileItem uploadItem = null;
         try {
             List<FileItem> fileItems = upload.parseRequest(request);
@@ -232,16 +235,16 @@ public class FCKeditorConnector implements Controller {
             String name = cleanupFileName(uploadItem.getName());
             Path uri = command.getCurrentFolder().extend(name);
             boolean existed = false;
-            if (this.repository.exists(token, uri)) {
+            if (repository.exists(token, uri)) {
                 existed = true;
-                uri = newFileName(command, token, uploadItem);
+                uri = newFileName(command, requestContext, uploadItem);
             }
 
             InputStream inStream = uploadItem.getInputStream();
-            this.repository.createDocument(token, uri, inStream);
+            repository.createDocument(token, uri, inStream);
 
-            Resource newResource = this.repository.retrieve(token, uri, true);
-            TypeInfo typeInfo = this.repository.getTypeInfo(token, uri);
+            Resource newResource = repository.retrieve(token, uri, true);
+            TypeInfo typeInfo = repository.getTypeInfo(token, uri);
             
             String contentType = uploadItem.getContentType();
             if (contentType == null || MimeHelper.DEFAULT_MIME_TYPE.equals(contentType)) {
@@ -252,7 +255,7 @@ public class FCKeditorConnector implements Controller {
                     Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTTYPE_PROP_NAME);
             prop.setStringValue(contentType);
             newResource.addProperty(prop);
-            this.repository.store(token, newResource);
+            repository.store(token, newResource);
             
             URL fileURL = this.viewService.constructURL(uri);
 
@@ -281,8 +284,10 @@ public class FCKeditorConnector implements Controller {
     }
     
     private Path newFileName(FCKeditorFileBrowserCommand command,
-                                   String token, FileItem item) throws Exception {
-        
+                                   RequestContext requestContext, FileItem item) throws Exception {
+
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
         String name = item.getName();
         Path base = command.getCurrentFolder();
 
@@ -300,7 +305,7 @@ public class FCKeditorConnector implements Controller {
         }
         Path newURI = base.extend(name + "(" + number + ")" + dot + extension);
         number++;
-        while (this.repository.exists(token, newURI)) {
+        while (repository.exists(token, newURI)) {
             newURI = base.extend(name + "(" + number + ")" + dot + extension);
             number++;
         }

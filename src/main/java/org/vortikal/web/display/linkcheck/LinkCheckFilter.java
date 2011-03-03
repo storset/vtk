@@ -33,7 +33,6 @@ package org.vortikal.web.display.linkcheck;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.text.html.HtmlAttribute;
 import org.vortikal.text.html.HtmlContent;
 import org.vortikal.text.html.HtmlElement;
@@ -53,11 +52,10 @@ public class LinkCheckFilter implements HtmlPageFilter, HtmlNodeFilter {
 
     @Override
     public boolean match(HtmlPage page) {
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        if (securityContext.getPrincipal() == null) {
+        RequestContext requestContext = RequestContext.getRequestContext();
+        if (requestContext.getPrincipal() == null) {
             return false;
         }
-        RequestContext requestContext = RequestContext.getRequestContext();
         HttpServletRequest request = requestContext.getServletRequest();
         return "true".equals(request.getParameter("link-check"));
     }

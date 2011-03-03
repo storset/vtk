@@ -71,7 +71,6 @@
         class="org.vortikal.web.referencedata.provider.ResourceMessageProvider">
     <property name="modelName" value="tabMessage" />
     <property name="localizationKey" value="xmledit.tabMessage" />
-    <property name="repository" ref="repository" />
   </bean>
 
   <bean id="editTabHelpURLProvider"

@@ -131,7 +131,7 @@
         <ref bean="viewIframeCSSProvider" />
         <ref bean="viewIframeJSProvider" />
         <ref bean="resourceContextProvider" />
-        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider" parent="repositoryAware">
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
           <property name="service" ref="linkCheck.validationService" />
           <property name="modelName" value="linkcheck" />
           <property name="urlName" value="URL" />
@@ -145,8 +145,7 @@
 
 
   <bean id="resourceDetailProvider"
-        class="org.vortikal.web.referencedata.provider.ResourceDetailProvider"
-        parent="repositoryAware">
+        class="org.vortikal.web.referencedata.provider.ResourceDetailProvider">
     <property name="serviceMap">
       <map>
         <entry key="ownershipServiceURL" value-ref="ownershipService" />
@@ -161,39 +160,33 @@
   </bean>
 
   <bean id="redirectToAboutProvider" 
-        class="org.vortikal.web.referencedata.provider.RedirectProvider"
-        parent="repositoryAware">
+        class="org.vortikal.web.referencedata.provider.RedirectProvider">
     <property name="redirectToService" ref="aboutResourceService" />
   </bean>
 
   <bean id="redirectToPreviewCollectionProvider" 
         class="org.vortikal.web.referencedata.provider.RedirectProvider">
-    <property name="repository" ref="repository" />
     <property name="redirectToService" ref="previewCollectionListingService" />
   </bean>
 
   <bean id="redirectToManageProvider" 
-        class="org.vortikal.web.referencedata.provider.RedirectProvider"
-        parent="repositoryAware">
+        class="org.vortikal.web.referencedata.provider.RedirectProvider">
     <property name="redirectToService" ref="manageService" />
   </bean>
 
   <bean id="redirectToPermissionsProvider" 
-    class="org.vortikal.web.referencedata.provider.RedirectProvider"
-    parent="repositoryAware">
+    class="org.vortikal.web.referencedata.provider.RedirectProvider">
     <property name="redirectToService" ref="permissionsService" />
   </bean>
 
   <bean id="leaveAdminLinkProvider"
-        class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
-        parent="repositoryAware">
+        class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
     <property name="service" ref="viewService" />
     <property name="modelName" value="leaveAdmin" />
   </bean>
 
   <bean id="parentLinkProvider"
-        class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
-        parent="repositoryAware">
+        class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
     <property name="service" ref="manageService" />
     <property name="modelName" value="tabMenu1" />
     <property name="linkToParent" value="true" />
@@ -204,7 +197,6 @@
     class="org.vortikal.web.view.components.menu.DefaultListMenuProvider">
     <constructor-arg ref="tabServicesFactory" />
     <constructor-arg value="tabs"/>
-    <constructor-arg ref="repository"/>
     <property name="matchAncestorServices" value="true" />
   </bean>
 
@@ -220,15 +212,13 @@
   </bean>
 
   <bean id="resourceContextProvider" 
-        class="org.vortikal.web.referencedata.provider.ResourceContextProvider" 
-        parent="repositoryAware">
+        class="org.vortikal.web.referencedata.provider.ResourceContextProvider">
     <property name="retrieveForProcessing" value="true" />
     <property name="resourceWrapperManager" ref="resourceManager" />
   </bean>
 
   <bean id="switchLocaleActionsProvider" 
-        class="org.vortikal.web.referencedata.provider.SwitchLocaleProvider"
-        parent="repositoryAware">
+        class="org.vortikal.web.referencedata.provider.SwitchLocaleProvider">
     <description>
       Map of links for locale switching
     </description>
@@ -248,7 +238,6 @@
     class="org.vortikal.web.view.components.menu.DefaultListMenuProvider">
     <constructor-arg ref="lockActionServicesFactory" />
     <constructor-arg value="lockUnlockActions" />
-    <constructor-arg ref="repository" />
   </bean>
 
   <bean id="lockActionServicesFactory"
@@ -261,7 +250,6 @@
     class="org.vortikal.web.view.components.menu.DefaultListMenuProvider">
     <constructor-arg ref="readPermissionFactory" />
     <constructor-arg value="readPermissions" />
-    <constructor-arg ref="repository" />
   </bean>
   
     <bean id="readPermissionFactory"
@@ -271,8 +259,7 @@
   </bean>
 
   <bean id="viewBreadCrumbProvider"
-        class="org.vortikal.web.referencedata.provider.BreadCrumbProvider" 
-        parent="repositoryAware">
+        class="org.vortikal.web.referencedata.provider.BreadCrumbProvider">
     <description>
       Breadcrumb provider that generates links to the view service
     </description>
@@ -348,8 +335,7 @@
 
  
   <bean id="redirectToPublishProvider" 
-        class="org.vortikal.web.referencedata.provider.RedirectProvider"
-        parent="repositoryAware">
+        class="org.vortikal.web.referencedata.provider.RedirectProvider">
     <property name="redirectToService" ref="publish.editPublishingService" />
   </bean>
   

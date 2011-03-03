@@ -25,7 +25,7 @@
     <property name="handler" ref="deleteResourcesHandler" />
   </bean>
 
-  <bean id="deleteResourcesHandler" class="org.vortikal.web.actions.delete.DeleteResourcesController" parent="repositoryAware">
+  <bean id="deleteResourcesHandler" class="org.vortikal.web.actions.delete.DeleteResourcesController">
     <property name="viewName" value="manageCollectionListing" />
   </bean>
 

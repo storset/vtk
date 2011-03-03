@@ -38,11 +38,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.ResourceNotModifiedException;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.webdav.ifheader.IfMatchHeader;
@@ -60,17 +60,14 @@ public class HeadController extends AbstractWebdavController {
     public ModelAndView handleRequest(HttpServletRequest request,
                                       HttpServletResponse response) throws Exception {
          
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String token = securityContext.getToken();
         RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
         Path uri = requestContext.getResourceURI();
+        Repository repository = requestContext.getRepository();
         Map<String, Object> model = new HashMap<String, Object>();
 
         try {
-            
-            Resource resource =
-                this.repository.retrieve(token, uri, false);
-
+            Resource resource = repository.retrieve(token, uri, false);
             if (resource.isCollection()) {
                 if (this.logger.isDebugEnabled()) {
                     this.logger.debug("HEAD on collection: setting status 404");

@@ -52,7 +52,6 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.PropertyAspectDescription;
 import org.vortikal.util.repository.PropertyAspectField;
 import org.vortikal.util.repository.PropertyAspectResolver;
@@ -62,7 +61,6 @@ import org.vortikal.web.service.URL;
 
 public class ConfigurableJSONPropertyEditor extends SimpleFormController {
 
-    private Repository repository;
     private PropertyTypeDefinition propertyDefinition;
     private String toplevelField;
     private PropertyAspectDescription fieldConfig;
@@ -74,9 +72,10 @@ public class ConfigurableJSONPropertyEditor extends SimpleFormController {
         }
         
         RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
         Path uri = requestContext.getResourceURI();
-        String token = SecurityContext.getSecurityContext().getToken();
-        Resource resource = this.repository.retrieve(token, uri, false);
+        String token = requestContext.getSecurityToken();
+        Resource resource = repository.retrieve(token, uri, false);
         Property property = resource.getProperty(this.propertyDefinition);
         JSONObject toplevel = null;
         
@@ -89,7 +88,7 @@ public class ConfigurableJSONPropertyEditor extends SimpleFormController {
         Locale requestLocale = RequestContextUtils.getLocale(request);
         
         PropertyAspectResolver resolver = new PropertyAspectResolver(
-                this.repository, this.propertyDefinition, this.fieldConfig);
+                repository, this.propertyDefinition, this.fieldConfig);
         JSONObject combined = uri == Path.ROOT ? null 
                 : resolver.resolve(uri.getParent(), this.toplevelField);
         
@@ -120,13 +119,14 @@ public class ConfigurableJSONPropertyEditor extends SimpleFormController {
             Object object, BindException errors) throws Exception {
         
         RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
         Path uri = requestContext.getResourceURI();
 
         Locale requestLocale = RequestContextUtils.getLocale(request);
         List<FormElement> elements = new ArrayList<FormElement>();
         
         PropertyAspectResolver resolver = new PropertyAspectResolver(
-                this.repository, this.propertyDefinition, this.fieldConfig);
+                repository, this.propertyDefinition, this.fieldConfig);
         JSONObject combined = uri == Path.ROOT ? null 
                 : resolver.resolve(uri.getParent(), this.toplevelField);
 
@@ -151,9 +151,11 @@ public class ConfigurableJSONPropertyEditor extends SimpleFormController {
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,
                                     Object command, BindException errors) throws Exception {    
 
-        Path uri = RequestContext.getRequestContext().getResourceURI();
-        String token = SecurityContext.getSecurityContext().getToken();
-        Resource resource = this.repository.retrieve(token, uri, false);
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        Path uri = requestContext.getResourceURI();
+        String token = requestContext.getSecurityToken();
+        Resource resource = repository.retrieve(token, uri, false);
         Form form = (Form) command;
 
         if (form.getCancelAction() != null) {
@@ -186,7 +188,7 @@ public class ConfigurableJSONPropertyEditor extends SimpleFormController {
         propertyValue.put(this.toplevelField, toplevel);
         property.setJSONValue(propertyValue);
         
-        this.repository.store(token, resource);
+        repository.store(token, resource);
 
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("form", form);
@@ -277,11 +279,6 @@ public class ConfigurableJSONPropertyEditor extends SimpleFormController {
         }
     }
     
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
     @Required
     public void setPropertyDefinition(PropertyTypeDefinition propertyDefinition) {
         this.propertyDefinition = propertyDefinition;

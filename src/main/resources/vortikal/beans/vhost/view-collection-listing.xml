@@ -30,8 +30,7 @@
     <property name="handler" ref="collectionListing.atomHandler" />
   </bean>
   
-  <bean id="collectionListing.handler" class="org.vortikal.web.display.collection.CollectionListingController"
-    parent="repositoryAware">
+  <bean id="collectionListing.handler" class="org.vortikal.web.display.collection.CollectionListingController">
     <property name="resourceManager" ref="resourceManager" />
      <property name="searchSorting" ref="collectionListing.searchSorting" />
     <property name="viewName" value="collectionListing.view" />
@@ -55,8 +54,7 @@
     <property name="searchComponent" ref="collectionListing.searchComponent" />
   </bean>
   
-  <bean id="collectionListing.searchComponent" class="org.vortikal.web.search.QueryStringSearchComponent"
-    parent="repositoryAware">
+  <bean id="collectionListing.searchComponent" class="org.vortikal.web.search.QueryStringSearchComponent">
     <property name="name" value="collectionListing.searchComponent" />
     <property name="viewService" ref="webService" />
     <property name="resourceManager" ref="resourceManager" />

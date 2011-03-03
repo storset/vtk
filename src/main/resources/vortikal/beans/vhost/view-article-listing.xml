@@ -25,8 +25,7 @@
     <property name="handler" ref="articleListing.atomHandler" />
   </bean>
 
-  <bean id="articleListing.handler" class="org.vortikal.web.display.collection.article.ArticleListingController"
-    parent="repositoryAware">
+  <bean id="articleListing.handler" class="org.vortikal.web.display.collection.article.ArticleListingController">
     <property name="resourceManager" ref="resourceManager" />
     <property name="subFolderMenuProvider" ref="subFolderMenuProvider" />
     <property name="pageLimitPropDef" ref="pageLimitPropDef" />
@@ -56,8 +55,7 @@
     <property name="featuredArticlesPropDef" ref="articleListing.featuredArticlesPropDef" />
   </bean>
 
-  <bean id="articleListing.searchComponent" class="org.vortikal.web.search.QueryStringSearchComponent"
-    parent="repositoryAware">
+  <bean id="articleListing.searchComponent" class="org.vortikal.web.search.QueryStringSearchComponent">
     <property name="name" value="articleListing.defaultArticles" />
     <property name="viewService" ref="webService" />
     <property name="resourceManager" ref="resourceManager" />

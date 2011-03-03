@@ -44,38 +44,26 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.PropertyType;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
-
 public class ContentLanguageController extends SimpleFormController {
-
     private static Log logger = LogFactory.getLog(ContentLanguageController.class);
-    
-    private Repository repository = null;
     private String[] possibleLanguages;
     
-    public void setRepository(Repository repository) {
-        this.repository = repository;
+    public void setPossibleLanguages(String[] possibleLanguages) {
+        this.possibleLanguages = possibleLanguages;
     }
-    
-	public void setPossibleLanguages(String[] possibleLanguages) {
-		this.possibleLanguages = possibleLanguages;
-	}
 	
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
+        Repository repository = requestContext.getRepository();
         Service service = requestContext.getService();
-        
-        Resource resource = this.repository.retrieve(securityContext.getToken(),
+        Resource resource = repository.retrieve(requestContext.getSecurityToken(),
                                                 requestContext.getResourceURI(), false);
-        String url = service.constructLink(resource, securityContext.getPrincipal());
-         
+        String url = service.constructLink(resource, requestContext.getPrincipal());
         String language = resource.getContentLanguage();
-
         ContentLanguageCommand command =
             new ContentLanguageCommand(language, this.possibleLanguages, url);
         return command;
@@ -84,10 +72,9 @@ public class ContentLanguageController extends SimpleFormController {
 
     protected void doSubmitAction(Object command) throws Exception {        
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        
+        Repository repository = requestContext.getRepository();
         Path uri = requestContext.getResourceURI();
-        String token = securityContext.getToken();
+        String token = requestContext.getSecurityToken();
 
         ContentLanguageCommand contentLanguageCommand =
             (ContentLanguageCommand) command;
@@ -97,8 +84,8 @@ public class ContentLanguageController extends SimpleFormController {
             return;
         }
         
-        Resource resource = this.repository.retrieve(token, uri, false);
-        TypeInfo typeInfo = this.repository.getTypeInfo(token, uri);
+        Resource resource = repository.retrieve(token, uri, false);
+        TypeInfo typeInfo = repository.getTypeInfo(token, uri);
         Locale locale = LocaleHelper.getLocale(contentLanguageCommand.getContentLanguage());
         
         if (locale == null) {
@@ -115,9 +102,7 @@ public class ContentLanguageController extends SimpleFormController {
                          resource.getContentLanguage() + 
                          "' for resource " + uri);
         }
-        this.repository.store(token, resource);
+        repository.store(token, resource);
         contentLanguageCommand.setDone(true);
     }
-    
 }
-

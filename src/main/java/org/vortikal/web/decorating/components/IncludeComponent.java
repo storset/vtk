@@ -52,7 +52,6 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.search.preprocessor.QueryStringPreProcessor;
 import org.vortikal.security.AuthenticationException;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageParser;
@@ -100,13 +99,8 @@ implements ServletContextAware {
 
     private ServletContext servletContext;
     private ContentCache<String, URLObject> httpIncludeCache;
-    private Repository repository;
     private HtmlPageParser htmlParser;
     private QueryStringPreProcessor uriPreProcessor;
-
-    @Required public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
 
     @Required public void setServletContext(ServletContext servletContext) {
         this.servletContext = servletContext;
@@ -176,17 +170,19 @@ implements ServletContextAware {
 
     private void handleDirectInclude(String address, DecoratorRequest request,
             DecoratorResponse response, boolean ignoreNotFound) throws Exception {
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
         String token = null;
 
         boolean asCurrentPrincipal = "true".equals(request.getStringParameter(
                 PARAMETER_AS_CURRENT_USER));
         if (asCurrentPrincipal) {
-            token = SecurityContext.getSecurityContext().getToken();
+            token = requestContext.getSecurityToken();
         }
         Path uri = Path.fromString(address);
         Resource r = null;
         try {
-            r = this.repository.retrieve(token, uri, false);
+            r = repository.retrieve(token, uri, false);
         } catch (ResourceNotFoundException e) {
             if (ignoreNotFound) {
                 return;
@@ -211,7 +207,7 @@ implements ServletContextAware {
         }
 
         String characterEncoding = r.getCharacterEncoding();
-        InputStream is = this.repository.getInputStream(token, uri, true);
+        InputStream is = repository.getInputStream(token, uri, true);
 
         String elementParam = request.getStringParameter(PARAMETER_ELEMENT);
 

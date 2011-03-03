@@ -143,14 +143,14 @@
   <!-- Plaintext edit controller -->
   
   <bean id="plaintextEditHandler"
-        class="org.vortikal.edit.plaintext.PlaintextEditController"
-        parent="repositoryAware">
+        class="org.vortikal.edit.plaintext.PlaintextEditController">
     <property name="formView" value="plaintextEdit" />
     <property name="successView" value="plaintextEdit" />
     <property name="manageView" value="redirectToManage" />
     <property name="commandName" value="plaintextEditForm" />
     <property name="commandClass" value="org.vortikal.edit.plaintext.PlaintextEditCommand" />
     <property name="tooltipServices" ref="plaintextEditTooltipURLServicesFactory" />
+    <property name="textResourceContentHelper" ref="textResourceContentHelper" />
   </bean>
 
 
@@ -158,6 +158,10 @@
     class="org.vortikal.context.CategoryResolvingFactoryBean">
     <property name="clazz" value="org.vortikal.web.service.Service" />
     <property name="category" value="plaintextEditTooltipService" />
+  </bean>
+
+  <bean id="textResourceContentHelper" class="org.vortikal.util.repository.TextResourceContentHelper">
+    <constructor-arg ref="repository" />
   </bean>
 
 

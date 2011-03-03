@@ -50,12 +50,12 @@ import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Lock;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.ReadOnlyException;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.security.AuthenticationException;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.InvalidRequestException;
 import org.vortikal.web.RequestContext;
@@ -84,14 +84,14 @@ public class LockController extends AbstractWebdavController {
      */
     public ModelAndView handleRequest(HttpServletRequest request, 
             HttpServletResponse response) throws Exception {
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String token = securityContext.getToken();
         RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
         Path uri = requestContext.getResourceURI();
         Map<String, Object> model = new HashMap<String, Object>();
         Resource resource;
         
-        if (securityContext.getPrincipal() == null) {
+        if (requestContext.getPrincipal() == null) {
             throw new AuthenticationException(
                 "A principal is required to lock resources");
         }
@@ -99,7 +99,7 @@ public class LockController extends AbstractWebdavController {
         String lockToken = null;
         
         try {
-            String ownerInfo = securityContext.getPrincipal().toString();
+            String ownerInfo = requestContext.getPrincipal().toString();
             String depthString = request.getHeader("Depth");
             if (depthString == null) {
                 depthString = "infinity";
@@ -118,10 +118,10 @@ public class LockController extends AbstractWebdavController {
             }
             int timeout = parseTimeoutHeader(request.getHeader("TimeOut"));
            
-            boolean exists = this.repository.exists(token, uri);
+            boolean exists = repository.exists(token, uri);
 
             if (exists) {
-                resource = this.repository.retrieve(token, uri, false);
+                resource = repository.retrieve(token, uri, false);
                 this.ifHeader = new IfHeaderImpl(request);
                 
                 // XXX: Requiring if-header if already locked breaks Adobe/Contributt (yes, butt)
@@ -161,7 +161,7 @@ public class LockController extends AbstractWebdavController {
                 if (this.logger.isDebugEnabled()) {
                     this.logger.debug("Creating null resource");
                 }
-                this.repository.createDocument(token, uri, new ByteArrayInputStream(new byte[0]));
+                repository.createDocument(token, uri, new ByteArrayInputStream(new byte[0]));
                 
                 // Should get real lockOwnerInfo, even if resource don't exist when locked
                 if (request.getContentLength() > 0) {
@@ -182,7 +182,7 @@ public class LockController extends AbstractWebdavController {
                 this.logger.debug(msg);
             }
 
-            resource = this.repository.lock(token, uri, ownerInfo, depth, timeout, lockToken);
+            resource = repository.lock(token, uri, ownerInfo, depth, timeout, lockToken);
 
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Locking " + uri + " succeeded");

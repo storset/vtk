@@ -41,7 +41,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Assertion;
@@ -64,9 +63,6 @@ import org.vortikal.web.service.Assertion;
  *   <li><code>localizationKey</code> - the localization key to use
  *   when looking up the message to display in the model. The
  *   resource's name is used as a parameter.
- *   <li><code>repository</code> - the {@link Repository} to retrieve
- *   resources from. Only needed when configuration property
- *   <code>resourceInModelKey</code> is not specified.
  *   <li><code>modelName</code> - the name to use for the sub-model in
  *   the main model. 
  *   <li><code>assertions</code> - an array of {@link Assertion
@@ -83,14 +79,12 @@ import org.vortikal.web.service.Assertion;
  */
 public class ResourceMessageProvider implements ReferenceDataProvider, InitializingBean {
 
-    private Log logger = LogFactory.getLog(this.getClass());
+    private static Log logger = LogFactory.getLog(ResourceMessageProvider.class);
 
     private String resourceInModelKey;
     private String localizationKey;
-    private Repository repository;
     private String modelName;
     private Assertion[] assertions;
-
 
     public void setResourceInModelKey(String resourceInModelKey) {
         this.resourceInModelKey = resourceInModelKey;
@@ -100,10 +94,6 @@ public class ResourceMessageProvider implements ReferenceDataProvider, Initializ
         this.localizationKey = localizationKey;
     }
 
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
     public void setModelName(String modelName) {
         this.modelName = modelName;
     }
@@ -111,45 +101,36 @@ public class ResourceMessageProvider implements ReferenceDataProvider, Initializ
     public void setAssertions(Assertion[] assertions) {
         this.assertions = assertions;
     }
-    
 
     public void afterPropertiesSet() {
-
         if (this.localizationKey == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'localizationKey' not set");
         }
-
         if (this.modelName == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'modelName' not set");
-        }
-
-        if (this.resourceInModelKey == null && this.repository == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'repository' must be set when property "
-                + "'resourceInModelKey' is null");
         }
     }
     
 
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void referenceData(Map model, HttpServletRequest request)
             throws Exception {
 
         Resource resource = getResource(model);
         String message = null;
         if (resource != null) {
-            SecurityContext securityContext = SecurityContext.getSecurityContext();
-            Principal principal = securityContext.getPrincipal();
+            RequestContext requestContext = RequestContext.getRequestContext();
+            Principal principal = requestContext.getPrincipal();
             boolean proceed = true;
 
             if (this.assertions != null) {
                 for (int i = 0; i < this.assertions.length; i++) {
                     if (!this.assertions[i].matches(request, resource, principal)) {
-                        if (this.logger.isDebugEnabled()) {
-                            this.logger.debug("Assertion " + this.assertions[i]
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("Assertion " + this.assertions[i]
                                          + " did not match for resource " + resource);
                         }
                         proceed = false;
@@ -172,15 +153,15 @@ public class ResourceMessageProvider implements ReferenceDataProvider, Initializ
     }
     
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private Resource getResource(Map model) {
         Resource resource = null;
 
         // Try to locate the resource in the model:
         if (this.resourceInModelKey != null) {
 
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Trying to locate resource in model with key '"
+            if (logger.isDebugEnabled()) {
+                logger.debug("Trying to locate resource in model with key '"
                              + this.resourceInModelKey+ "'");
             }
 
@@ -190,8 +171,8 @@ public class ResourceMessageProvider implements ReferenceDataProvider, Initializ
             for (int i = 0; i < accessors.length; i++) {
                 Object o = m.get(accessors[i]);
                 if (o == null) {
-                    if (this.logger.isDebugEnabled()) {
-                        this.logger.debug("Key '" + accessors[i] + "' not present in model");
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Key '" + accessors[i] + "' not present in model");
                     }
                     return null;
                 }
@@ -211,16 +192,14 @@ public class ResourceMessageProvider implements ReferenceDataProvider, Initializ
 
         try {
             RequestContext requestContext = RequestContext.getRequestContext();
-            SecurityContext securityContext = SecurityContext.getSecurityContext();
-            resource = this.repository.retrieve(securityContext.getToken(),
-                                                requestContext.getResourceURI(),
-                                                true);
+            Repository repository = requestContext.getRepository();
+            String token = requestContext.getSecurityToken();
+            resource = repository.retrieve(token, requestContext.getResourceURI(),
+                                           true);
             return resource;
-
         } catch (Throwable t) {
             return null;
         }
-
     }
     
     public String toString() {

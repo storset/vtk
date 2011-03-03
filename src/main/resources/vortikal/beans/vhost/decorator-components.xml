@@ -94,8 +94,7 @@
     </property>
   </bean>
 
-  <bean id="decorating.manageURLComponent.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
-    parent="repositoryAware">
+  <bean id="decorating.manageURLComponent.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
     <property name="modelName" value="manageLink" />
     <property name="urlName" value="url" />
     <property name="service" ref="manageService" />
@@ -166,7 +165,6 @@
 
   <bean id="decorating.resourceMediaComponent" class="org.vortikal.web.decorating.components.ResourceMediaPlayerComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />
-    <property name="repository" ref="repository" />
     <property name="name" value="media-player" />
     <property name="description" value="Inserts media player if it is an article document" />
     <property name="view" ref="decorating.mediaComponent.view" />
@@ -196,7 +194,7 @@
     </property>
   </bean>
 
-  <bean id="decorating.resourceTagsComponent" parent="repositoryAware"
+  <bean id="decorating.resourceTagsComponent"
     class="org.vortikal.web.decorating.components.PropertyLinkedValueDecoratorComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="tags" />
@@ -243,8 +241,7 @@
     </property>
   </bean>
 
-  <bean id="socialWebsitesProvider" class="org.vortikal.web.referencedata.provider.UrlTemplateExternalLinksProvider"
-    parent="repositoryAware">
+  <bean id="socialWebsitesProvider" class="org.vortikal.web.referencedata.provider.UrlTemplateExternalLinksProvider">
     <property name="modelKey" value="socialWebsites" />
     <property name="urlTemplates">
       <map>
@@ -260,15 +257,15 @@
     </property>
   </bean>
 
-  <bean id="decorating.resourcePropertyComponent" parent="repositoryAware"
-    class="org.vortikal.web.decorating.components.ResourcePropertiesDecoratorComponent">
+  <bean id="decorating.resourcePropertyComponent" 
+        class="org.vortikal.web.decorating.components.ResourcePropertiesDecoratorComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="property" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
 
-  <bean id="decorating.includeResourcePropertyComponent" parent="repositoryAware"
-    class="org.vortikal.web.decorating.components.ResourcePropertiesDecoratorComponent">
+  <bean id="decorating.includeResourcePropertyComponent" 
+        class="org.vortikal.web.decorating.components.ResourcePropertiesDecoratorComponent">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="property" />
     <property name="relative" value="true" />
@@ -395,7 +392,7 @@
     <property name="safeHtmlFilter" ref="safeHtml.filter" />
   </bean>
 
-  <bean id="decorating.abstractListMenuComponent" abstract="true" parent="repositoryAware">
+  <bean id="decorating.abstractListMenuComponent" abstract="true">
     <property name="titlePropDef" ref="titlePropDef" />
     <property name="hiddenPropDef" ref="hiddenPropDef" />
     <property name="importancePropDef" ref="importancePropDef" />
@@ -441,7 +438,6 @@
   </bean>
 
   <bean id="subFolderMenuProvider" class="org.vortikal.web.decorating.components.SubFolderMenuProvider"
-        parent="repositoryAware"
         depends-on="resourceTypeTree">
     <property name="subFolderMenuComponent" ref="decorating.subFolderMenuComponent" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
@@ -453,8 +449,7 @@
     <property name="url" value="layouts/subfolder-menu.ftl" />
   </bean>
 
-  <bean id="decorating.authenticationComponent" class="org.vortikal.web.decorating.components.AuthenticationComponent"
-    parent="repositoryAware">
+  <bean id="decorating.authenticationComponent" class="org.vortikal.web.decorating.components.AuthenticationComponent">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="login" />
     <property name="view" ref="decorating.authenticationComponent.view" />
@@ -478,7 +473,7 @@
   </bean>
 
 
-  <bean id="decorating.includeComponent" class="org.vortikal.web.decorating.components.IncludeComponent" parent="repositoryAware">
+  <bean id="decorating.includeComponent" class="org.vortikal.web.decorating.components.IncludeComponent">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="file" />
     <property name="description" value="Includes the contents of another document in the page" />
@@ -512,8 +507,7 @@
     <property name="maxLength" value="${decorating.includeComponent.maxDocumentSize}" />
   </bean>
 
-  <bean id="decorating.imageListingComponent" class="org.vortikal.web.decorating.components.ImageListingComponent"
-    parent="repositoryAware">
+  <bean id="decorating.imageListingComponent" class="org.vortikal.web.decorating.components.ImageListingComponent">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="image-listing" />
     <property name="view" ref="decorating.imageListing.view" />

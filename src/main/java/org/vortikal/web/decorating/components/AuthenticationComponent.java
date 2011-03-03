@@ -38,7 +38,6 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
@@ -52,7 +51,6 @@ public class AuthenticationComponent extends ViewRenderingDecoratorComponent {
     private Service defaultLoginService;
     private Map<String, Service> alternativeLoginServices;
     private Service logoutService;
-    private Repository repository;
 
     @Required
     public void setDefaultLoginService(Service loginService) {
@@ -70,14 +68,6 @@ public class AuthenticationComponent extends ViewRenderingDecoratorComponent {
         this.logoutService = logoutService;
     }
 
-    @Required
-    public void setRepository(Repository repository) {
-        if (repository == null) {
-            throw new IllegalArgumentException("Argument cannot be null");
-        }
-        this.repository = repository;
-    }
-
     protected String getDescriptionInternal() {
         return DESCRIPTION;
     }
@@ -91,14 +81,14 @@ public class AuthenticationComponent extends ViewRenderingDecoratorComponent {
             throws Exception {
 
         super.processModel(model, request, response);
-        Path uri = RequestContext.getRequestContext().getResourceURI();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-
-        Principal principal = securityContext.getPrincipal();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        Path uri = requestContext.getResourceURI();
+        Principal principal = requestContext.getPrincipal();
+        String token = requestContext.getSecurityToken();
         model.put("principal", principal);
 
-        String token = securityContext.getToken();
-        Resource resource = this.repository.retrieve(token, uri, true);
+        Resource resource = repository.retrieve(token, uri, true);
 
         String destinationService = request.getStringParameter("destination-service");
         Service alternativeService = alternativeLoginServices.get(destinationService);

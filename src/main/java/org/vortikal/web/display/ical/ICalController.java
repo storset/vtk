@@ -50,13 +50,11 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.HtmlValueFormatter;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.util.net.NetUtils;
 import org.vortikal.web.RequestContext;
 
 public class ICalController implements Controller {
 
-    private Repository repository;
     private PropertyTypeDefinition startDatePropDef;
     private PropertyTypeDefinition endDatePropDef;
     private PropertyTypeDefinition locationPropDef;
@@ -64,10 +62,12 @@ public class ICalController implements Controller {
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        String token = SecurityContext.getSecurityContext().getToken();
-        Path uri = RequestContext.getRequestContext().getResourceURI();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
+        Path uri = requestContext.getResourceURI();
 
-        Resource event = this.repository.retrieve(token, uri, true);
+        Resource event = repository.retrieve(token, uri, true);
 
         String iCal = createICal(event);
         if (iCal == null) {
@@ -171,11 +171,6 @@ public class ICalController implements Controller {
         // Remove multiple whitespaces between words
         flattenedDescription = flattenedDescription.replaceAll("\\b\\s{2,}\\b", " ");
         return flattenedDescription;
-    }
-
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
     }
 
     @Required

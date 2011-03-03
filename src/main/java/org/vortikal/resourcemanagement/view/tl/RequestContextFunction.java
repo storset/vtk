@@ -33,7 +33,6 @@ package org.vortikal.resourcemanagement.view.tl;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.vortikal.security.SecurityContext;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Symbol;
 import org.vortikal.text.tl.expr.Function;
@@ -57,7 +56,7 @@ public class RequestContextFunction extends Function {
                 requestContext.getResourceURI()));
         URL url = URL.create(requestContext.getServletRequest());
         result.put("request-url", urlToMap(url));
-        result.put("principal", SecurityContext.getSecurityContext().getPrincipal());
+        result.put("principal", requestContext.getPrincipal());
         return result;
     }
     

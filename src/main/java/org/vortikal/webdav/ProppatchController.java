@@ -56,6 +56,7 @@ import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.ReadOnlyException;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
@@ -67,7 +68,6 @@ import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatException;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.text.html.HtmlUtil;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.InvalidRequestException;
@@ -88,16 +88,16 @@ public class ProppatchController extends AbstractWebdavController  {
     public ModelAndView handleRequest(HttpServletRequest request,
                                       HttpServletResponse response) throws Exception {
          
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String token = securityContext.getToken();
-        Principal principal = securityContext.getPrincipal();
         RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
+        Principal principal = requestContext.getPrincipal();
         Path uri = requestContext.getResourceURI();
         Map<String, Object> model = new HashMap<String, Object>();
 
         try {
-            Resource resource = this.repository.retrieve(token, uri, false);
-            TypeInfo typeInfo = this.repository.getTypeInfo(token, uri);
+            Resource resource = repository.retrieve(token, uri, false);
+            TypeInfo typeInfo = repository.getTypeInfo(token, uri);
             this.ifHeader = new IfHeaderImpl(request);
             verifyIfHeader(resource, true);
             
@@ -115,7 +115,7 @@ public class ProppatchController extends AbstractWebdavController  {
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("storing modified Resource");
             }
-            resource = this.repository.store(token, resource);
+            resource = repository.store(token, resource);
 
             XMLOutputter xmlOutputter = new XMLOutputter(format);
             String xml = xmlOutputter.outputString(doc);
@@ -195,9 +195,6 @@ public class ProppatchController extends AbstractWebdavController  {
 
         return new ModelAndView("PROPPATCH", model);
     }
-   
-    
-    
     
     @SuppressWarnings("deprecation")
     private void writeDavErrorResponse(HttpServletResponse response, Integer status, Exception e) throws Exception { 
@@ -236,9 +233,6 @@ public class ProppatchController extends AbstractWebdavController  {
             }
         }       
     }
-
-    
-    
     
     /**
      * Builds a JDOM tree from the XML request body.
@@ -264,9 +258,6 @@ public class ProppatchController extends AbstractWebdavController  {
             throw new InvalidRequestException("Invalid XML in request body");
         }
     }
-   
-
-
 
     /**
      * Verifies that a JDOM tree constitutes a valid PROPPATCH request
@@ -306,9 +297,6 @@ public class ProppatchController extends AbstractWebdavController  {
              * 'set' or 'remove' element */
         }
     }
-   
-
-
     
     /**
      * Performs setting or removing of properties on a resource 
@@ -317,7 +305,7 @@ public class ProppatchController extends AbstractWebdavController  {
      * @param requestBody a <code>Document</code> value
      * @exception InvalidRequestException if an error occurs
      */
-    @SuppressWarnings("unchecked") 
+    @SuppressWarnings("rawtypes")
     protected Document doPropertyUpdate(Resource resource, TypeInfo typeInfo, Document requestBody, 
             Principal principal)
         throws ResourceNotFoundException, AuthorizationException,
@@ -364,9 +352,6 @@ public class ProppatchController extends AbstractWebdavController  {
         return new Document(multistatus);
     }
 
-
-
-
     /**
      * Sets a list of properties on a resource .
      *
@@ -375,7 +360,7 @@ public class ProppatchController extends AbstractWebdavController  {
      * objects representing DAV 'prop' elements (see RFC 2518,
      * sec. 12.11)
      */
-    @SuppressWarnings("unchecked") 
+    @SuppressWarnings("rawtypes")
     protected void setProperties(Element propstat,
                                  Resource resource,
                                  TypeInfo typeInfo,
@@ -396,8 +381,6 @@ public class ProppatchController extends AbstractWebdavController  {
         propstat.addContent(statusElement);
     }
     
-
-
     /**
      * Sets a single property on a resource .
      *
@@ -418,7 +401,6 @@ public class ProppatchController extends AbstractWebdavController  {
             this.logger.debug("Setting property with namespace: " + nameSpace);
         }
 
-        
         if (nameSpace.toUpperCase().equals(WebdavConstants.DAV_NAMESPACE.getURI())) {
 
             if (propertyName.equals("displayname")) {
@@ -500,9 +482,7 @@ public class ProppatchController extends AbstractWebdavController  {
         resultElement.addContent(resultPropertyElement);
     }
     
-    
-
-    @SuppressWarnings("unchecked") 
+    @SuppressWarnings("rawtypes")
     protected void removeProperties(Element propstat, Resource resource, 
             List propElements) {
         Element resultPropElement = new Element("prop", WebdavConstants.DAV_NAMESPACE);
@@ -520,7 +500,6 @@ public class ProppatchController extends AbstractWebdavController  {
     
 
     protected void removeProperty(Element resultElement, Resource resource, Element propElement) {
-
         if (propElement.getNamespace().equals(WebdavConstants.DAV_NAMESPACE)) {
             return; 
         }
@@ -538,8 +517,6 @@ public class ProppatchController extends AbstractWebdavController  {
         resultElement.addContent(resultPropertyElement);
     }
     
-
-
     /**
      * Builds a string representation of a property element.
      *

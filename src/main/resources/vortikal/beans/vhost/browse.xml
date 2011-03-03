@@ -37,8 +37,7 @@
 
 
   <bean id="defaultBrowseHandler" 
-    class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController"
-    parent="repositoryAware">
+    class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController">
     <property name="viewName" value="browse" />
   </bean>
 
@@ -107,8 +106,7 @@
     <property name="url" value="layouts/breadcrumb.ftl" />
     <property name="referenceDataProviders">
       <list>
-        <bean class="org.vortikal.web.referencedata.provider.BreadCrumbProvider" 
-              parent="repositoryAware">
+        <bean class="org.vortikal.web.referencedata.provider.BreadCrumbProvider">
           <property name="breadcrumbName" value="breadcrumb" />
           <property name="service" ref="browseService"/>
         </bean>
@@ -178,8 +176,7 @@
   </bean>
 
   <bean id="browseCollectionListingProvider"
-        class="org.vortikal.web.referencedata.provider.CollectionListingProvider" 
-        parent="repositoryAware" >
+        class="org.vortikal.web.referencedata.provider.CollectionListingProvider">
     <property name="browsingService" ref="browseService" />
     <property name="childInfoItems">
       <list>
@@ -194,8 +191,7 @@
 
 
   <bean id="browseBreadCrumbProvider" 
-        class="org.vortikal.web.referencedata.provider.BreadCrumbProvider" 
-        parent="repositoryAware">
+        class="org.vortikal.web.referencedata.provider.BreadCrumbProvider">
     <description>
       Breadcrumb provider that generates links to the browse service
     </description>
@@ -204,8 +200,7 @@
 
 
   <bean id="browseUrlProvider" 
-        class="org.vortikal.web.referencedata.provider.BrowseUrlProvider" 
-        parent="repositoryAware">
+        class="org.vortikal.web.referencedata.provider.BrowseUrlProvider">
     <description>
       Generates a link to a document in the repository (for
       xml-edit in elements like "webadresse")
@@ -218,7 +213,6 @@
     class="org.vortikal.web.view.components.menu.DefaultListMenuProvider">
     <constructor-arg ref="browseActionServicesFactory" />
     <constructor-arg value="globalMenu" />
-    <constructor-arg ref="repository" />
   </bean>
 
 

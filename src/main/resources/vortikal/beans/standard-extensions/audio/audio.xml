@@ -32,8 +32,7 @@
 
 
   <bean id="displayAudioResourceHandler"
-        class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController"
-        parent="repositoryAware">
+        class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController">
     <description>This is used as parent for all similar handlers</description>
     <property name="viewName" value="displayAudioResource"/>
   </bean> 

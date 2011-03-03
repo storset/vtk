@@ -40,7 +40,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.shell.AbstractConsole;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -49,25 +48,21 @@ import org.vortikal.web.service.Service;
 public class CommandExecutorController extends SimpleFormController {
 
     private AbstractConsole console;
-    private Repository repository;
     
     
     public void setConsole(AbstractConsole console) {
         this.console = console;
     }
     
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-    
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
         Service service = requestContext.getService();
         
-        Resource resource = this.repository.retrieve(
-            securityContext.getToken(), requestContext.getResourceURI(), false);
-        String url = service.constructLink(resource, securityContext.getPrincipal());
+        Resource resource = repository.retrieve(
+            token, requestContext.getResourceURI(), false);
+        String url = service.constructLink(resource, requestContext.getPrincipal());
          
         ExecutorCommand command = new ExecutorCommand(url);
         return command;

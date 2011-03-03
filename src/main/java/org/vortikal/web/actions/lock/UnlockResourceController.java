@@ -38,47 +38,30 @@ import org.springframework.web.servlet.mvc.AbstractController;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 
 /**
  * Controller that unlocks a resource (if it was previously locked).
  */
 public class UnlockResourceController extends AbstractController {
-
     public static final String DEFAULT_VIEW_NAME = "redirectToManage";
-
-    private Repository repository;
     private String viewName = DEFAULT_VIEW_NAME;
-    
-    
-    /**
-     * @param repository The repository to set.
-     */
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-    
 
     public void setViewName(String viewName) {
         this.viewName = viewName;
     }
 
-
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        
+        Repository repository = requestContext.getRepository();
         Path uri = requestContext.getResourceURI();
-        String token = securityContext.getToken();
+        String token = requestContext.getSecurityToken();
 
-        Resource resource = this.repository.retrieve(token, uri, false);
-
+        Resource resource = repository.retrieve(token, uri, false);
         if (resource.getLock() != null) {
-            this.repository.unlock(token, uri, null);
+            repository.unlock(token, uri, null);
         }
-        
         return new ModelAndView(this.viewName);
     }
 

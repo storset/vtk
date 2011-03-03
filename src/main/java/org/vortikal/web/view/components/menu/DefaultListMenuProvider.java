@@ -37,7 +37,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
@@ -50,7 +49,6 @@ import org.vortikal.web.service.URL;
  * <p>
  * Constructor arguments:
  * <ul>
- * <li><code>repository</code> - the content repository
  * <li><code>services</code> - required array of {@link Service}s to create ListMenu to
  * <li><code>label</code> - required ListMenu type descriptor
  * <li> <code>modelName</code> - the name to use as model key. The default is 'label', override if you have multiple list
@@ -89,7 +87,6 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
 
     private String modelName;
     private String label;
-    private Repository repository;
     private Service[] services;
     private ReferenceDataProvider[] referenceDataProviders;
     private boolean matchAncestorServices = false;
@@ -97,31 +94,28 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
     private boolean retrieveForProcessing = false;
 
 
-    public DefaultListMenuProvider(String label, Service[] services, Repository repository) {
-        this(label, label, true, services, repository);
+    public DefaultListMenuProvider(String label, Service[] services) {
+        this(label, label, true, services);
     }
 
 
-    public DefaultListMenuProvider(String label, String modelName, Service[] services, Repository repository) {
-        this(label, modelName, true, services, repository);
+    public DefaultListMenuProvider(String label, String modelName, Service[] services) {
+        this(label, modelName, true, services);
+    }
+
+    public DefaultListMenuProvider(String label, String modelName, boolean matchAssertions, Service[] services) {
+        this(label, modelName, matchAssertions, services, null);
     }
 
     public DefaultListMenuProvider(String label, String modelName, boolean matchAssertions, Service[] services,
-            Repository repository) {
-        this(label, modelName, matchAssertions, services, null, repository);
-    }
-
-    public DefaultListMenuProvider(String label, String modelName, boolean matchAssertions, Service[] services,
-            ReferenceDataProvider[] referenceDataProviders, Repository repository) {
+            ReferenceDataProvider[] referenceDataProviders) {
         if (label == null) throw new IllegalArgumentException("Argument 'label' cannot be null");
         if (modelName == null) throw new IllegalArgumentException("Argument 'modelName' cannot be null");
-        if (repository == null) throw new IllegalArgumentException("Argument 'repository' cannot be null");
         if (services == null) throw new IllegalArgumentException("Argument 'services' cannot be null");
 
         this.label = label;
         this.modelName = modelName;
         this.services = services;
-        this.repository = repository;
         this.matchAssertions = matchAssertions;
         this.referenceDataProviders = referenceDataProviders;
     }
@@ -136,17 +130,17 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
     }
 
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
 
         ListMenu<String> menu = new ListMenu<String>();
         menu.setLabel(this.label);
 
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-
-        Principal principal = securityContext.getPrincipal();
-        Resource resource = this.repository.retrieve(securityContext.getToken(), requestContext.getResourceURI(),
+        Principal principal = requestContext.getPrincipal();
+        Repository repository = requestContext.getRepository();
+        Resource resource = repository.retrieve(requestContext.getSecurityToken(), 
+                requestContext.getResourceURI(),
                 this.retrieveForProcessing);
         Service currentService = requestContext.getService();
 

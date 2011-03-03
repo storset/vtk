@@ -36,7 +36,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.mvc.LastModified;
@@ -47,7 +46,6 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyType;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.RequestContext;
 
@@ -55,16 +53,14 @@ public class DisplayThumbnailController implements Controller, LastModified {
 	
     private static final Logger log = Logger.getLogger(DisplayThumbnailController.class);
 	
-    private Repository repository;
-
     @Override
     public long getLastModified(HttpServletRequest request) {
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
         try {
-            Resource resource = this.repository.retrieve(
-                securityContext.getToken(), 
-                requestContext.getResourceURI(), true);
+            Resource resource = repository.retrieve(
+                token, requestContext.getResourceURI(), true);
             return resource.getLastModified().getTime();
         } catch (Throwable t) {
             return -1;
@@ -73,11 +69,12 @@ public class DisplayThumbnailController implements Controller, LastModified {
 
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
+        Path uri = requestContext.getResourceURI();
 
-        String token = SecurityContext.getSecurityContext().getToken();
-        Path uri = RequestContext.getRequestContext().getResourceURI();
-
-        Resource image = this.repository.retrieve(token, uri, true);
+        Resource image = repository.retrieve(token, uri, true);
         Property thumbnail = image.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.THUMBNAIL_PROP_NAME);
 
         if (thumbnail == null || StringUtils.isBlank(thumbnail.getBinaryMimeType())) {
@@ -98,10 +95,5 @@ public class DisplayThumbnailController implements Controller, LastModified {
         StreamUtil.pipe(binaryStream.getStream(), response.getOutputStream(), length, true);
 
         return null;
-    }
-
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
     }
 }

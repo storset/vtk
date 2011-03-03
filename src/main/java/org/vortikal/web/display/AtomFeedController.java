@@ -62,8 +62,8 @@ import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatter;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.text.html.HtmlUtil;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
 public abstract class AtomFeedController implements Controller {
@@ -71,7 +71,6 @@ public abstract class AtomFeedController implements Controller {
     private final Log logger = LogFactory.getLog(AtomFeedController.class);
     public static final String TAG_PREFIX = "tag:";
 
-    protected Repository repository;
     protected Service viewService;
     protected Abdera abdera;
     protected ResourceTypeTree resourceTypeTree;
@@ -92,7 +91,7 @@ public abstract class AtomFeedController implements Controller {
     private String structuredPicturePropDefPointer;
     private String structuredMediaPropDefPointer;
 
-    protected abstract Feed createFeed(HttpServletRequest request, HttpServletResponse response, String token)
+    protected abstract Feed createFeed(RequestContext requestContext)
             throws Exception;
 
     protected abstract Property getPublishDate(PropertySet resource);
@@ -103,8 +102,8 @@ public abstract class AtomFeedController implements Controller {
     }
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String token = SecurityContext.getSecurityContext().getToken();
-        Feed feed = createFeed(request, response, token);
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Feed feed = createFeed(requestContext);
         if (feed != null) {
             response.setContentType("application/atom+xml;charset=utf-8");
             feed.writeTo("prettyxml", response.getWriter());
@@ -112,10 +111,10 @@ public abstract class AtomFeedController implements Controller {
         return null;
     }
 
-    protected String getTitle(Resource collection) {
+    protected String getTitle(Resource collection, RequestContext requestContext) {
         String feedTitle = collection.getTitle();
         if (Path.ROOT.equals(collection.getURI())) {
-            feedTitle = this.repository.getId();
+            feedTitle = requestContext.getRepository().getId();
         }
         return feedTitle;
     }
@@ -163,7 +162,7 @@ public abstract class AtomFeedController implements Controller {
         return feed;
     }
 
-    protected void addEntry(Feed feed, String token, PropertySet result) {
+    protected void addEntry(Feed feed, RequestContext requestContext, PropertySet result) {
         try {
 
             Entry entry = Abdera.getInstance().newEntry();
@@ -229,6 +228,8 @@ public abstract class AtomFeedController implements Controller {
                     Path propRef = getPropRef(result, mediaRef.getStringValue());
                     mediaLink.setHref(viewService.constructLink(propRef));
                     mediaLink.setRel("enclosure");
+                    Repository repository = requestContext.getRepository();
+                    String token = requestContext.getSecurityToken();
                     Resource mediaResource = repository.retrieve(token, propRef, true);
                     mediaLink.setMimeType(mediaResource.getContentType());
                     entry.addLink(mediaLink);
@@ -403,11 +404,6 @@ public abstract class AtomFeedController implements Controller {
             // Don't do anything special, imgAlt isn't all that important
             return "feed_image";
         }
-    }
-
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
     }
 
     @Required

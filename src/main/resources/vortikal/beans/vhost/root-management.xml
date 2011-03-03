@@ -100,7 +100,6 @@
     class="org.vortikal.web.view.components.menu.DefaultListMenuProvider">
     <constructor-arg ref="rootManage.tabServicesFactory" />
     <constructor-arg value="tabs"/>
-    <constructor-arg ref="repository"/>
     <property name="matchAncestorServices" value="true" />
   </bean>
 
@@ -333,13 +332,11 @@
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
-        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
-              parent="repositoryAware">
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
           <property name="service" ref="setRepositoryReadOnlyService" />
           <property name="modelName" value="setReadOnlyUrl" />
         </bean>
-        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
-              parent="repositoryAware">
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
           <property name="service" ref="unsetRepositoryReadOnlyService" />
           <property name="modelName" value="unsetReadOnlyUrl" />
         </bean>

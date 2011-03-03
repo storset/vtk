@@ -49,11 +49,10 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.collection.event.EventListingHelper;
-import org.vortikal.web.display.collection.event.EventListingSearcher;
 import org.vortikal.web.display.collection.event.EventListingHelper.SpecificDateSearchType;
+import org.vortikal.web.display.collection.event.EventListingSearcher;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.service.Service;
@@ -61,7 +60,6 @@ import org.vortikal.web.service.URL;
 
 public class EventCalenderContentProvider implements ReferenceDataProvider {
 
-    private Repository repository;
     private EventListingHelper helper;
     private EventListingSearcher searcher;
     private ResourceTypeTree resourceTypeTree;
@@ -72,7 +70,7 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
     private Service viewAllPreviousService;
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
 
         SpecificDateSearchType searchType = this.helper.getSpecificDateSearchType(request);
@@ -81,10 +79,11 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
             String requestedDate = request.getParameter(EventListingHelper.REQUEST_PARAMETER_DATE);
             model.put("requestedDate", requestedDate);
         }
-
-        String token = SecurityContext.getSecurityContext().getToken();
-        Path resourceURI = RequestContext.getRequestContext().getResourceURI();
-        Resource resource = this.repository.retrieve(token, resourceURI, true);
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
+        Path resourceURI = requestContext.getResourceURI();
+        Repository repository = requestContext.getRepository();
+        Resource resource = repository.retrieve(token, resourceURI, true);
 
         setAllowedDates(request, resource, model);
         setCalendarTitles(request, resource, model);
@@ -101,7 +100,7 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
 
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private void setAllowedDates(HttpServletRequest request, Resource resource, Map model) throws Exception {
         Property displayTypeProp = resource.getProperty(this.displayTypePropDef);
         if (displayTypeProp != null && "calendar".equals(displayTypeProp.getStringValue())) {
@@ -186,11 +185,6 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
         }
         sb.append("]");
         return sb.toString();
-    }
-
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
     }
 
     @Required

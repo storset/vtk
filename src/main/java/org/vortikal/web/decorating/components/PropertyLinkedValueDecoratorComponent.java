@@ -44,7 +44,6 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
@@ -57,20 +56,17 @@ public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecorato
     private static final String PARAMETER_SERVICEURL = "service-url";
 
     private String defaultURLpattern;
-    private Repository repository;
     private PropertyTypeDefinition propertyTypeDefinition;
 
     private boolean forProcessing = true;
 
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
     protected void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
 
-        String token = SecurityContext.getSecurityContext().getToken();
-        Path uri = RequestContext.getRequestContext().getResourceURI();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
+        Repository repository = requestContext.getRepository();
+        Path uri = requestContext.getResourceURI();
 
         Resource resource = repository.retrieve(token, uri, this.forProcessing);
         Property prop = resource.getProperty(this.propertyTypeDefinition);
@@ -78,11 +74,9 @@ public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecorato
         if (prop == null) {
             prop = resource.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, this.propertyTypeDefinition.getName());
         }
-
         if (prop == null) {
             return;
         }
-
         String title = request.getStringParameter(PARAMETER_TITLE);
         model.put("title", title);
 
@@ -117,19 +111,13 @@ public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecorato
 
     public void afterPropertiesSet() throws Exception {
         super.afterPropertiesSet();
-
-        if (this.repository == null) {
-            throw new BeanInitializationException("JavaBean property 'repository' not set");
-        }
         if (this.propertyTypeDefinition == null) {
             throw new BeanInitializationException("JavaBean property 'propertyTypeDefinition' not set");
         }
-
         if (this.propertyTypeDefinition.getType() != PropertyType.Type.STRING) {
             throw new BeanInitializationException("JavaBean property 'propertyTypeDefinition' not of required type "
                     + "PropertyType.Type.STRING");
         }
-
         if (this.defaultURLpattern == null) {
             throw new BeanInitializationException("JavaBean property 'defaultURLpattern' not set");
         }
@@ -143,13 +131,6 @@ public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecorato
         return DESCRIPTION;
     }
 
-    protected Map<String, String> getParameterDescriptionsInternal() {
-        Map<String, String> map = new HashMap<String, String>();
-        map.put(PARAMETER_TITLE, PARAMETER_TITLE_DESC);
-        map.put(PARAMETER_SERVICEURL, "Optional URL to tag service (default is '" + defaultURLpattern + "')");
-        return map;
-    }
-
     public void setPropertyTypeDefinition(PropertyTypeDefinition propertyTypeDefinition) {
         this.propertyTypeDefinition = propertyTypeDefinition;
     }
@@ -158,4 +139,10 @@ public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecorato
         this.defaultURLpattern = defaultURLpattern;
     }
 
+    protected Map<String, String> getParameterDescriptionsInternal() {
+        Map<String, String> map = new HashMap<String, String>();
+        map.put(PARAMETER_TITLE, PARAMETER_TITLE_DESC);
+        map.put(PARAMETER_SERVICEURL, "Optional URL to tag service (default is '" + defaultURLpattern + "')");
+        return map;
+    }
 }

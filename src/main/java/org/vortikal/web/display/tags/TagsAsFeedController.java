@@ -33,7 +33,6 @@ package org.vortikal.web.display.tags;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.abdera.model.Feed;
 import org.apache.commons.lang.StringUtils;
@@ -56,13 +55,15 @@ public class TagsAsFeedController extends AtomFeedController {
     private TagsHelper tagsHelper;
 
     @Override
-    protected Feed createFeed(HttpServletRequest request, HttpServletResponse response, String token) throws Exception {
+    protected Feed createFeed(RequestContext requestContext) throws Exception {
+
+        String token = requestContext.getSecurityToken();
+        HttpServletRequest request = requestContext.getServletRequest();
 
         Resource scope = this.tagsHelper.getScope(token, request);
 
         String tag = request.getParameter(TagsHelper.TAG_PARAMETER);
         if (StringUtils.isBlank(tag)) {
-            response.sendError(404, "Missing tag parameter");
             return null;
         }
 
@@ -74,7 +75,7 @@ public class TagsAsFeedController extends AtomFeedController {
         Listing searchResult = searchComponent.execute(request, scope, 1, this.entryCountLimit, 0);
 
         for (PropertySet result : searchResult.getFiles()) {
-            addEntry(feed, token, result);
+            addEntry(feed, requestContext, result);
         }
 
         return feed;

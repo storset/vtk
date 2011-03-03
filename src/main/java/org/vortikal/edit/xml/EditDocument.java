@@ -95,11 +95,9 @@ public class EditDocument extends Document {
     public static EditDocument createEditDocument(Repository repository, int lockTimeoutSeconds)
             throws JDOMException, Exception {
 
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
-
-        String token = securityContext.getToken();
-        Principal principal = securityContext.getPrincipal();
+        String token = requestContext.getSecurityToken();
+        Principal principal = requestContext.getPrincipal();
         Path uri = requestContext.getResourceURI();
 
         repository.lock(token, uri, principal.getQualifiedName(), Depth.ZERO, lockTimeoutSeconds,

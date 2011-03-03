@@ -41,7 +41,6 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.reporting.DataReportException;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
@@ -114,9 +113,9 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
             throws Exception {
 
         super.processModel(model, request, response);
-
-        Path scopeUri = RequestContext.getRequestContext().getCurrentCollection();
-        String token = SecurityContext.getSecurityContext().getToken();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Path scopeUri = requestContext.getCurrentCollection();
+        String token = requestContext.getSecurityToken();
 
         if (request.getStringParameter(PARAMETER_SCOPE) != null) {
             scopeUri = buildScopePath(request.getStringParameter(PARAMETER_SCOPE));

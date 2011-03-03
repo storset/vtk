@@ -41,11 +41,11 @@ import org.vortikal.repository.FailedDependencyException;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.ReadOnlyException;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.ResourceOverwriteException;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.InvalidRequestException;
 import org.vortikal.web.RequestContext;
@@ -67,15 +67,15 @@ public class MoveController extends AbstractWebdavController {
     public ModelAndView handleRequest(HttpServletRequest request,
                                       HttpServletResponse response) throws Exception {
 
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String token = securityContext.getToken();
         RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
         Path uri = requestContext.getResourceURI();
         String destHeader = request.getHeader("Destination");
         Map<String, Object> model = new HashMap<String, Object>();
 
         try {
-            Resource resource = this.repository.retrieve(token, uri, false);
+            Resource resource = repository.retrieve(token, uri, false);
             this.ifHeader = new IfHeaderImpl(request);
             verifyIfHeader(resource, true);
             
@@ -95,22 +95,13 @@ public class MoveController extends AbstractWebdavController {
                 overwrite = false;
             } 
 
-            boolean existed = this.repository.exists(token, destURI);
+            boolean existed = repository.exists(token, destURI);
             
             if (existed) {
-                Resource destination = this.repository.retrieve(token, destURI, false);
+                Resource destination = repository.retrieve(token, destURI, false);
                 verifyIfHeader(destination, true);
             }
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Moving " + uri + " to " + destHeader + ", depth = "
-                             + depth + ", overwrite = " + overwrite
-                             + ", existed = " + existed);
-            }
-            this.repository.move(token, uri, destURI, overwrite);
-
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Moving " + uri + " to " + destHeader + " succeeded");
-            }
+            repository.move(token, uri, destURI, overwrite);
 
             if (existed) {
                 model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
@@ -123,64 +114,36 @@ public class MoveController extends AbstractWebdavController {
             return new ModelAndView("MOVE", model);
 
         } catch (InvalidRequestException e) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Caught InvalidRequestException for URI "
-                             + uri, e);
-            }            
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_BAD_REQUEST));
 
         } catch (IllegalOperationException e) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Caught IllegalOperationException for URI "
-                             + uri, e);
-            }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_FORBIDDEN));
 
         } catch (ReadOnlyException e) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Caught ReadOnlyException for URI "
-                             + uri, e);
-            }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_FORBIDDEN));
 
         } catch (FailedDependencyException e) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Caught FailedDependencyException for URI "
-                             + uri, e);
-            }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_PRECONDITION_FAILED));
 
         } catch (ResourceOverwriteException e) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Caught ResourceOverwriteException for URI "
-                             + uri, e);
-            }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_PRECONDITION_FAILED));
 
         } catch (ResourceLockedException e) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Caught ResourceLockedException for URI "
-                             + uri, e);
-            }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpUtil.SC_LOCKED));
 
         } catch (ResourceNotFoundException e) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Caught ResourceNotFoundException for URI "
-                             + uri, e);
-            }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_NOT_FOUND));

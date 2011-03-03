@@ -30,85 +30,39 @@
  */
 package org.vortikal.web.service;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.security.token.TokenManager;
 import org.vortikal.security.web.AuthenticationHandler;
+import org.vortikal.web.RequestContext;
 
+public class LogoutSupportedAssertion extends AbstractRepositoryAssertion {
 
-public class LogoutSupportedAssertion extends AbstractRepositoryAssertion implements InitializingBean {
+    private TokenManager tokenManager;
 
-    private Log logger = LogFactory.getLog(this.getClass());
-    
-
-    private TokenManager tokenManager = null;
-
-
+    @Required
     public void setTokenManager(TokenManager tokenManager) {
         this.tokenManager = tokenManager;
     }
     
-    public void afterPropertiesSet() {
-        if (this.tokenManager == null) {
-            throw new BeanInitializationException(
-                "Bean property 'tokenManager' must be set");
-        }
-    }
-    
-
     public boolean matches(Resource resource, Principal principal) {
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String token = securityContext.getToken();
-
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
         if (token == null) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("No authentication token present, match = false");
-            }
             return false;
         }
-
         AuthenticationHandler handler = this.tokenManager.getAuthenticationHandler(token);
-
         if (handler == null) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("No authentication handler for token "
-                             + token + ", match = false");
-            }
             return false;
         }
-
         if (!handler.isLogoutSupported()) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Authentication handler " + handler
-                             + " does not support logout, match = false");
-            }
             return false;
         }
-
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("Authentication handler " + handler
-                         + " supports logout, match = true");
-        }
-        
         return true;
     }
-
 
     public boolean conflicts(Assertion assertion) {
         return false;
     }
-
-
-    public String toString() {
-        StringBuffer sb = new StringBuffer();
-		
-        sb.append(super.toString());
-        return sb.toString();
-    }
-
 }

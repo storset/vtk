@@ -41,7 +41,6 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.resourcemanagement.view.StructuredResourceDisplayController;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Symbol;
 import org.vortikal.text.tl.expr.Function;
@@ -49,11 +48,8 @@ import org.vortikal.web.RequestContext;
 
 public class ResourcePropHandler extends Function {
 
-    private Repository repository;
-
-    public ResourcePropHandler(Symbol symbol, Repository repository) {
+    public ResourcePropHandler(Symbol symbol) {
         super(symbol, 2);
-        this.repository = repository;
     }
 
     @Override
@@ -88,9 +84,10 @@ public class ResourcePropHandler extends Function {
                 } else {
                     uri = Path.fromString(ref);
                 }
-                String token = SecurityContext.getSecurityContext().getToken();
+                String token = requestContext.getSecurityToken();
+                Repository repository = requestContext.getRepository();
                 try {
-                    resource = this.repository.retrieve(token, uri, true);
+                    resource = repository.retrieve(token, uri, true);
                 } catch (Throwable t) {
                     throw new RuntimeException(t);
                 }

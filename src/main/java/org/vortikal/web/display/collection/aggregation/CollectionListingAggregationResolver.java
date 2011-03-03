@@ -48,7 +48,7 @@ import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.UriPrefixQuery;
-import org.vortikal.security.SecurityContext;
+import org.vortikal.web.RequestContext;
 
 public class CollectionListingAggregationResolver implements AggregationResolver {
 
@@ -73,13 +73,13 @@ public class CollectionListingAggregationResolver implements AggregationResolver
     private int maxRecursiveDepth = DEFAULT_RECURSIVE_DEPTH;
 
     public List<Path> getAggregationPaths(Path pathToResource) {
-        String token = SecurityContext.getSecurityContext().getToken();
-        Resource resource = getResource(token, pathToResource);
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Resource resource = getResource(requestContext, pathToResource);
         if (resource == null) {
             return null;
         }
         List<Path> paths = new ArrayList<Path>();
-        getAggregationPaths(paths, pathToResource, resource, token, 0);
+        getAggregationPaths(paths, pathToResource, resource, requestContext, 0);
         return paths;
     }
 
@@ -127,9 +127,8 @@ public class CollectionListingAggregationResolver implements AggregationResolver
         // the actual paths to aggregate from
         // used to create an OrQuery to extend the original query with
         List<Path> paths = new ArrayList<Path>();
-
-        String token = SecurityContext.getSecurityContext().getToken();
-        getAggregationPaths(paths, collection.getURI(), collection, token, 0);
+        RequestContext requestContext = RequestContext.getRequestContext();
+        getAggregationPaths(paths, collection.getURI(), collection, requestContext, 0);
 
         // no valid paths to aggregate from were supplied
         if (paths.size() == 0) {
@@ -147,23 +146,23 @@ public class CollectionListingAggregationResolver implements AggregationResolver
         return aggregatedFoldersQuery;
     }
 
-    private void getAggregationPaths(List<Path> paths, Path startingPath, Resource collection, String token, int depth) {
+    private void getAggregationPaths(List<Path> paths, Path startingPath, Resource collection, RequestContext requestContext, int depth) {
         List<Path> addedPaths = addToPaths(collection, paths, startingPath);
         Property recursiveAggregationProp = collection.getProperty(this.recursiveAggregationPropDef);
         if ((recursiveAggregationProp != null && recursiveAggregationProp.getBooleanValue())
                 && depth < this.maxRecursiveDepth) {
             depth += 1;
             for (Path path : addedPaths) {
-                Resource resource = getResource(token, path);
+                Resource resource = getResource(requestContext, path);
                 if (resource == null) {
                     paths.remove(path);
                     continue;
                 }
-                getAggregationPaths(paths, startingPath, resource, token, depth);
+                getAggregationPaths(paths, startingPath, resource, requestContext, depth);
             }
         } else {
             for (Path path : addedPaths) {
-                Resource resource = getResource(token, path);
+                Resource resource = getResource(requestContext, path);
                 if (resource == null) {
                     paths.remove(path);
                     continue;
@@ -172,9 +171,11 @@ public class CollectionListingAggregationResolver implements AggregationResolver
         }
     }
 
-    private Resource getResource(String token, Path path) {
+    private Resource getResource(RequestContext requestContext, Path path) {
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
         try {
-            Resource resource = this.repository.retrieve(token, path, false);
+            Resource resource = repository.retrieve(token, path, false);
             if (!resource.isCollection()) {
                 return null;
             }

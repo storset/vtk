@@ -46,7 +46,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceWrapper;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceUnlinkableException;
 
@@ -114,11 +114,11 @@ public class ResourceEditController extends SimpleFormController {
     }
 
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     protected Map referenceData(HttpServletRequest request, Object command, Errors errors) throws Exception {
         Resource resource = ((ResourceWrapper) command).getResource();
-        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
+        Principal principal = RequestContext.getRequestContext().getPrincipal();
 
         Map model = super.referenceData(request, command, errors);
 

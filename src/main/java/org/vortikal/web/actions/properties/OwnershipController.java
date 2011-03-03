@@ -34,8 +34,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Namespace;
@@ -47,50 +45,32 @@ import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
 
-public class OwnershipController extends SimpleFormController implements InitializingBean {
-
+public class OwnershipController extends SimpleFormController {
     private static Log logger = LogFactory.getLog(OwnershipController.class);
     
-    private Repository repository = null;
     private PrincipalFactory principalFactory;
-
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
-    public void afterPropertiesSet() throws Exception {
-        if (this.repository == null) {
-            throw new BeanInitializationException(
-                "Bean property 'repository' must be set");
-        }
-    }
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
+        Repository repository = requestContext.getRepository();
         Service service = requestContext.getService();
-        
-        Resource resource = this.repository.retrieve(securityContext.getToken(),
+        Resource resource = repository.retrieve(requestContext.getSecurityToken(),
                                                 requestContext.getResourceURI(), false);
-        String url = service.constructLink(resource, securityContext.getPrincipal());
-         
+        String url = service.constructLink(resource, requestContext.getPrincipal());
         OwnershipCommand command =
             new OwnershipCommand(resource.getOwner().getName(), url);
         return command;
     }
 
-
     protected void doSubmitAction(Object command) throws Exception {        
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        
+        Repository repository = requestContext.getRepository();
         Path uri = requestContext.getResourceURI();
-        String token = securityContext.getToken();
+        String token = requestContext.getSecurityToken();
 
         OwnershipCommand ownershipCommand =
             (OwnershipCommand) command;
@@ -100,8 +80,8 @@ public class OwnershipController extends SimpleFormController implements Initial
             return;
         }
 
-        Resource resource = this.repository.retrieve(token, uri, false);
-        TypeInfo typeInfo = this.repository.getTypeInfo(token, uri);
+        Resource resource = repository.retrieve(token, uri, false);
+        TypeInfo typeInfo = repository.getTypeInfo(token, uri);
         String owner = resource.getOwner().getQualifiedName();
         
         if (!owner.equals(ownershipCommand.getOwner())) {
@@ -112,7 +92,7 @@ public class OwnershipController extends SimpleFormController implements Initial
             Property prop = typeInfo.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.OWNER_PROP_NAME);
             prop.setPrincipalValue(principalFactory.getPrincipal(ownershipCommand.getOwner(), Principal.Type.USER));
             resource.addProperty(prop);
-            this.repository.store(token, resource);
+            repository.store(token, resource);
         }
         ownershipCommand.setDone(true);
     }
@@ -121,6 +101,4 @@ public class OwnershipController extends SimpleFormController implements Initial
     public void setPrincipalFactory(PrincipalFactory principalFactory) {
         this.principalFactory = principalFactory;
     }
-
 }
-

@@ -45,7 +45,6 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
@@ -64,12 +63,14 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
     public void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
 
-        String token = getToken(request);
         int displayFromLevel = getIntegerGreaterThanZero(PARAMETER_DISPLAY_FROM_LEVEL, request, -1);
         int maxSiblings = getIntegerGreaterThanZero(PARAMETER_MAX_NUMBER_OF_SIBLINGS, request, Integer.MAX_VALUE);
 
-        Path uri = RequestContext.getRequestContext().getResourceURI();
-        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
+        Repository repository = requestContext.getRepository();
+        Path uri = requestContext.getResourceURI();
+        Principal principal = requestContext.getPrincipal();
 
         List<BreadcrumbElement> breadCrumbElements = getBreadcrumbElements();
         Resource currentResource = null;
@@ -105,7 +106,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         breadCrumbElements.add(new BreadcrumbElement(markedUrl, getMenuTitle(currentResource)));
 
         List<MenuItem<PropertySet>> childElements = null;
-        childElements = generateChildElements(currentResource.getChildURIs(), principal, currentResource, token);
+        childElements = generateChildElements(currentResource.getChildURIs(), currentResource, requestContext);
 
         // If there is no children of the current resource, then we shall
         // instead display the children of the parent node.
@@ -118,7 +119,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
             }
             
             if (childResource != null) {
-                childElements = generateChildElements(childResource.getChildURIs(), principal, currentResource, token);
+                childElements = generateChildElements(childResource.getChildURIs(), currentResource, requestContext);
                 breadCrumbElements.remove(breadCrumbElements.size() - 1);
                 if (childElements.size() > maxSiblings) {
                     childElements = new ArrayList<MenuItem<PropertySet>>();
@@ -139,7 +140,6 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         BreadCrumbProvider p = new BreadCrumbProvider();
         p.setSkipCurrentResource(true);
         p.setService(viewService);
-        p.setRepository(repository);
         p.setBreadcrumbName(breadcrumbName);
         p.setSkipIndexFile(false);
         PropertyTypeDefinition titleProp[] = new PropertyTypeDefinition[2];
@@ -157,8 +157,10 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         return result;
     }
 
-    private List<MenuItem<PropertySet>> generateChildElements(List<Path> children, Principal principal,
-            Resource currentResource, String token) throws Exception {
+    private List<MenuItem<PropertySet>> generateChildElements(List<Path> children,
+            Resource currentResource, RequestContext requestContext) throws Exception {
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
         List<MenuItem<PropertySet>> items = new ArrayList<MenuItem<PropertySet>>();
         for (Path childPath : children) {
             Resource childResource = null;
@@ -188,11 +190,6 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         return resource.getTitle();
     }
 
-    private String getToken(DecoratorRequest request) {
-            SecurityContext securityContext = SecurityContext.getSecurityContext();
-            return securityContext.getToken();
-    }
-
     private int getIntegerGreaterThanZero(String prameter, DecoratorRequest request, int returnWhenParamNotFound) {
         int value = returnWhenParamNotFound;
         try {
@@ -208,14 +205,6 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
 
     private void intergerMustBeGreaterThanZeroException(String prameter) {
         throw new DecoratorComponentException("Parameter '" + prameter + "' must be an integer > 0");
-    }
-
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
-    public Repository getRepository() {
-        return repository;
     }
 
     protected Map<String, String> getParameterDescriptionsInternal() {

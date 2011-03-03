@@ -36,7 +36,6 @@ import org.vortikal.repository.store.PrincipalMetadataDAO;
 import org.vortikal.security.Principal;
 import org.vortikal.security.Principal.Type;
 import org.vortikal.security.PrincipalFactory;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
@@ -49,7 +48,6 @@ public class ListRelatedPersonsComponent extends ViewRenderingDecoratorComponent
     private PropertyTypeDefinition titlePropDef;
     private ResourceTypeTree resourceTypeTree;
     private PrincipalFactory principalFactory;
-    private Repository repository;
     private ResourceAwareLocaleResolver localeResolver;
     private Service displayRelatedPersonsService;
 
@@ -73,8 +71,10 @@ public class ListRelatedPersonsComponent extends ViewRenderingDecoratorComponent
     public void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
 
-        String token = SecurityContext.getSecurityContext().getToken();
-        Path uri = RequestContext.getRequestContext().getResourceURI();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
+        Path uri = requestContext.getResourceURI();
 
         Resource currentResource = repository.retrieve(token, uri, true);
 
@@ -89,7 +89,7 @@ public class ListRelatedPersonsComponent extends ViewRenderingDecoratorComponent
             }
         }
 
-        List<RelatedPerson> relatedPersons = getRelatedPersons(request.getServletRequest(), token, currentResource,
+        List<RelatedPerson> relatedPersons = getRelatedPersons(request.getServletRequest(), requestContext, currentResource,
                 limit);
 
         model.put("relatedPersons", relatedPersons);
@@ -99,8 +99,9 @@ public class ListRelatedPersonsComponent extends ViewRenderingDecoratorComponent
     }
 
     private int getShowNumberOfParticipants(Resource resource) {
-        if(getDefPonterNumberOfParticipantsToDisplay() == null)
+        if (getDefPonterNumberOfParticipantsToDisplay() == null) {
                 return PARAMETER_LIMIT_DEFAULT;
+        }
         PropertyTypeDefinition propDef = resourceTypeTree
                 .getPropertyDefinitionByPointer(getDefPonterNumberOfParticipantsToDisplay());
         Property prop = resource.getProperty(propDef);
@@ -109,7 +110,7 @@ public class ListRelatedPersonsComponent extends ViewRenderingDecoratorComponent
         return propDef.getDefaultValue().getIntValue();
     }
 
-    public List<RelatedPerson> getRelatedPersons(HttpServletRequest request, String token, Resource currentResource,
+    public List<RelatedPerson> getRelatedPersons(HttpServletRequest request, RequestContext requestContext, Resource currentResource,
             int limit) {
         Locale currentResourceLocale = this.localeResolver.resolveResourceLocale(request, currentResource.getURI());
 
@@ -120,7 +121,7 @@ public class ListRelatedPersonsComponent extends ViewRenderingDecoratorComponent
 
         if (participantsUsernamesProp != null) {
             Value[] participantUsernames = participantsUsernamesProp.getValues();
-            relatedPersons = getRelatedPersonsFromUsernames(request, token, currentResourceLocale, participantUsernames);
+            relatedPersons = getRelatedPersonsFromUsernames(request, requestContext, currentResourceLocale, participantUsernames);
         }
 
         // External persons added manually
@@ -154,7 +155,7 @@ public class ListRelatedPersonsComponent extends ViewRenderingDecoratorComponent
         return relatedPersons;
     }
 
-    private List<RelatedPerson> getRelatedPersonsFromUsernames(HttpServletRequest request, String token, Locale locale,
+    private List<RelatedPerson> getRelatedPersonsFromUsernames(HttpServletRequest request, RequestContext requestContext, Locale locale,
             Value[] participantUsernames) {
 
         // Three sources of related persons that need to be consolidated:
@@ -163,7 +164,7 @@ public class ListRelatedPersonsComponent extends ViewRenderingDecoratorComponent
         // 3. External persons manually added to project
 
         Set<String> usernamesWithDocument = new HashSet<String>();
-        List<RelatedPerson> relatedPersons = getRelatedPersonsFromDocuments(request, token, locale,
+        List<RelatedPerson> relatedPersons = getRelatedPersonsFromDocuments(request, requestContext, locale,
                 participantUsernames);
         for (RelatedPerson p : relatedPersons) {
             usernamesWithDocument.add(p.username);
@@ -195,11 +196,13 @@ public class ListRelatedPersonsComponent extends ViewRenderingDecoratorComponent
         return relatedPersons;
     }
 
-    private List<RelatedPerson> getRelatedPersonsFromDocuments(HttpServletRequest request, String token, Locale locale,
+    private List<RelatedPerson> getRelatedPersonsFromDocuments(HttpServletRequest request, 
+            RequestContext requestContext, Locale locale,
             Value[] participantUsernames) {
         PropertyTypeDefinition usernamePropDef = resourceTypeTree.getPropertyTypeDefinition(
                 Namespace.STRUCTURED_RESOURCE_NAMESPACE, "username");
-
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
         // Set up search
         AndQuery mainQuery = new AndQuery();
         mainQuery.add(new TypeTermQuery("person", TermOperator.IN));
@@ -221,7 +224,7 @@ public class ListRelatedPersonsComponent extends ViewRenderingDecoratorComponent
         search.setPropertySelect(select);
 
         // Find all person documents for set of usernames, no sorting necessary.
-        ResultSet rs = this.repository.search(token, search);
+        ResultSet rs = repository.search(token, search);
 
         // Map single username to list of docs for that user.
         Map<String, List<PropertySet>> usernameDocs = new HashMap<String, List<PropertySet>>();
@@ -347,11 +350,6 @@ public class ListRelatedPersonsComponent extends ViewRenderingDecoratorComponent
     @Required
     public void setPrincipalFactory(PrincipalFactory principalFactory) {
         this.principalFactory = principalFactory;
-    }
-
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
     }
 
     @Required

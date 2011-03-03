@@ -164,6 +164,8 @@ public class RequestContextInitializer implements ContextInitializer {
 
     public void createContext(HttpServletRequest request) throws Exception {
 
+        SecurityContext securityContext = SecurityContext.getSecurityContext();
+        
     	URL url;
     	try {
     	    url = URL.create(request);
@@ -218,11 +220,11 @@ public class RequestContextInitializer implements ContextInitializer {
             // Set an initial request context (with the resource, but
             // without the matched service)
             RequestContext.setRequestContext(
-                new RequestContext(request, service, resource, 
-                        uri, indexFileUri, isIndexFile, inRepository));
+                new RequestContext(request, securityContext, service, resource, 
+                        uri, indexFileUri, isIndexFile, inRepository, this.repository));
             
             // Resolve the request to a service:
-            if (resolveService(service, request, resource)) {
+            if (resolveService(service, request, resource, securityContext)) {
                 break;
             }
              
@@ -258,13 +260,12 @@ public class RequestContextInitializer implements ContextInitializer {
      * 
      */
     private boolean resolveService(Service service, HttpServletRequest request,
-                                   Resource resource) {
+                                   Resource resource, SecurityContext securityContext) {
 		
         if (logger.isTraceEnabled()) {
             logger.trace("Matching for service " + service.getName() +
                          ", having assertions: " + service.getAssertions());
         }
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
 
         try {
@@ -284,11 +285,12 @@ public class RequestContextInitializer implements ContextInitializer {
             }
         } catch (AuthenticationException e) {
             RequestContext.setRequestContext(
-                new RequestContext(request, service, resource,
+                new RequestContext(request, securityContext, service, resource,
                                    requestContext.getResourceURI(),
                                    requestContext.getIndexFileURI(), 
                                    requestContext.isIndexFile(), 
-                                   requestContext.isInRepository()));
+                                   requestContext.isInRepository(),
+                                   this.repository));
             throw(e);
         }
 
@@ -300,7 +302,7 @@ public class RequestContextInitializer implements ContextInitializer {
             }
 
             for (Service child : children) {
-                if (resolveService(child, request, resource)) {
+                if (resolveService(child, request, resource, securityContext)) {
                     return true;
                 }
             }
@@ -311,11 +313,12 @@ public class RequestContextInitializer implements ContextInitializer {
         }
 
         RequestContext.setRequestContext(
-            new RequestContext(request, service, resource,
+            new RequestContext(request, securityContext, service, resource,
                                requestContext.getResourceURI(),
                                requestContext.getIndexFileURI(), 
                                requestContext.isIndexFile(), 
-                               requestContext.isInRepository()));
+                               requestContext.isInRepository(),
+                               this.repository));
         return true;
     }
 

@@ -44,7 +44,6 @@ import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceWrapper;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
@@ -55,7 +54,6 @@ import org.vortikal.web.service.Service;
  * <p>
  * Configurable properties:
  * <ul>
- * <li><code>repository</code> - the {@link Repository content repository}
  * <li><code>retrieveForProcessing</code> - boolean indicating whether to retrieve resources using the
  * <code>forProcessing</code> flag set to <code>false</code> or false. The default is <code>true</code>.
  * <li><code>getResourceFromModel</code> - boolean indicating if the provider should use the resource from the model
@@ -82,48 +80,33 @@ import org.vortikal.web.service.Service;
  */
 public class ResourceContextProvider implements InitializingBean, ReferenceDataProvider {
 
-    private Repository repository = null;
     private boolean retrieveForProcessing = false;
     private boolean getResourceFromModel = false;
     private String resourceFromModelKey = "resource";
     private String modelName = "resourceContext";
     private ResourceWrapperManager resourceWrapperManager;
 
-
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
-
     public void setRetrieveForProcessing(boolean retrieveForProcessing) {
         this.retrieveForProcessing = retrieveForProcessing;
     }
-
 
     public void setGetResourceFromModel(boolean getResourceFromModel) {
         this.getResourceFromModel = getResourceFromModel;
     }
 
-
     public void setResourceFromModelKey(String resourceFromModelKey) {
         this.resourceFromModelKey = resourceFromModelKey;
     }
-
 
     public void setModelName(String modelName) {
         this.modelName = modelName;
     }
 
-
     public void setResourceWrapperManager(ResourceWrapperManager resourceWrapperManager) {
         this.resourceWrapperManager = resourceWrapperManager;
     }
 
-
     public void afterPropertiesSet() throws Exception {
-        if (this.repository == null) {
-            throw new BeanInitializationException("Bean property 'repository' must be set");
-        }
         if (this.modelName == null) {
             throw new BeanInitializationException("Bean property 'modelName' must be set");
         }
@@ -134,16 +117,16 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
     }
 
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
 
         Map<String, Object> resourceContextModel = new HashMap<String, Object>();
 
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
         Service currentService = requestContext.getService();
+        Repository repository = requestContext.getRepository();
 
-        Principal principal = securityContext.getPrincipal();
+        Principal principal = requestContext.getPrincipal();
 
         Resource resource = null;
         Path parent = null;
@@ -154,11 +137,10 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
 
         if (resource == null) {
             try {
-                resource = this.repository.retrieve(securityContext.getToken(), requestContext.getResourceURI(),
+                resource = repository.retrieve(requestContext.getSecurityToken(), 
+                        requestContext.getResourceURI(),
                         this.retrieveForProcessing);
-
-            } catch (RepositoryException e) {
-            }
+            } catch (RepositoryException e) { }
         }
         if (resource != null) {
             parent = resource.getURI().getParent();
@@ -175,9 +157,9 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
         resourceContextModel.put("currentURI", requestContext.getResourceURI());
         resourceContextModel.put("parentURI", parent);
         resourceContextModel.put("currentServiceName", currentService.getName());
-        resourceContextModel.put("repositoryId", this.repository.getId());
+        resourceContextModel.put("repositoryId", repository.getId());
         resourceContextModel.put("requestContext", requestContext);
-        resourceContextModel.put("repositoryReadOnly", this.repository.isReadOnly());
+        resourceContextModel.put("repositoryReadOnly", repository.isReadOnly());
 
         model.put(this.modelName, resourceContextModel);
     }

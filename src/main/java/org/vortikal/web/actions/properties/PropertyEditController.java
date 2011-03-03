@@ -62,7 +62,6 @@ import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFactoryImpl;
 import org.vortikal.repository.resourcetype.ValueFormatException;
 import org.vortikal.security.PrincipalManager;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
@@ -115,7 +114,6 @@ public class PropertyEditController extends SimpleFormController
 
     private String toggleRequestParameter = "toggle";
 
-    private Repository repository;
     private PropertyTypeDefinition[] propertyTypeDefinitions;
     private PropertyEditHook[] editHooks;
     
@@ -127,34 +125,6 @@ public class PropertyEditController extends SimpleFormController
     private String propertyMapModelName;
 
     private PrincipalManager principalManager;
-
-    @Required public void setPropertyListModelName(String propertyListModelName) {
-        this.propertyListModelName = propertyListModelName;
-    }
-    
-    @Required public void setPropertyMapModelName(String propertyMapModelName) {
-        this.propertyMapModelName = propertyMapModelName;
-    }
-    
-    @Required public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
-    @Required public void setPropertyTypeDefinitions(PropertyTypeDefinition[] propertyTypeDefinitions) {
-        this.propertyTypeDefinitions = propertyTypeDefinitions;
-    }
-    
-    public void setEditHooks(PropertyEditHook[] editHooks) {
-        this.editHooks = editHooks;
-    }
-    
-    @Required public void setDateFormat(String dateFormat) {
-        this.dateFormat = dateFormat;
-    }
-
-    public ReferenceDataProvider[] getReferenceDataProviders() {
-        return new ReferenceDataProvider[] {this};
-    }
 
     protected Object formBackingObject(HttpServletRequest request)
         throws Exception {
@@ -180,9 +150,9 @@ public class PropertyEditController extends SimpleFormController
         }
 
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        Resource resource = this.repository.retrieve(securityContext.getToken(),
-                                                     requestContext.getResourceURI(), false);
+        Repository repository = requestContext.getRepository();
+        Resource resource = repository.retrieve(requestContext.getSecurityToken(),
+                requestContext.getResourceURI(), false);
         String value = null;
 
         Property property = resource.getProperty(definition);
@@ -218,7 +188,7 @@ public class PropertyEditController extends SimpleFormController
         
         Service service = requestContext.getService();
         String editURL = service.constructLink(resource, 
-                securityContext.getPrincipal(), urlParameters);
+                requestContext.getPrincipal(), urlParameters);
 
         return new PropertyEditCommand(editURL, definition, value, formAllowedValues, hierarchicalHelpUrl);
     }
@@ -312,9 +282,9 @@ public class PropertyEditController extends SimpleFormController
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,
                                     Object command, BindException errors) throws Exception {    
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
+        Repository repository = requestContext.getRepository();
         
-        String token = securityContext.getToken();
+        String token = requestContext.getSecurityToken();
 
         PropertyEditCommand propertyCommand =
             (PropertyEditCommand) command;
@@ -325,8 +295,8 @@ public class PropertyEditController extends SimpleFormController
             return new ModelAndView(getSuccessView());
         }
         Path uri = requestContext.getResourceURI();
-        Resource resource = this.repository.retrieve(token, uri, false);
-        TypeInfo typeInfo = this.repository.getTypeInfo(token, uri);
+        Resource resource = repository.retrieve(token, uri, false);
+        TypeInfo typeInfo = repository.getTypeInfo(token, uri);
         for (PropertyTypeDefinition def: this.propertyTypeDefinitions) {
             
             if (isFocusedProperty(def, propertyCommand.getNamespace(),
@@ -339,11 +309,11 @@ public class PropertyEditController extends SimpleFormController
 
                 if (Namespace.DEFAULT_NAMESPACE.equals(def.getNamespace()) &&
                     PropertyType.OWNER_PROP_NAME.equals(def.getName()) &&
-                    !resource.getOwner().equals(securityContext.getPrincipal()) &&
+                    !resource.getOwner().equals(requestContext.getPrincipal()) &&
                     "true".equals(request.getParameter(this.toggleRequestParameter))) {
 
                     // Using toggle submit parameter to take ownership:
-                    stringValue = securityContext.getPrincipal().getQualifiedName();
+                    stringValue = requestContext.getPrincipal().getQualifiedName();
                     
                 } else if (isToggleProperty(def)
                     && "true".equals(request.getParameter(this.toggleRequestParameter))) {
@@ -406,7 +376,7 @@ public class PropertyEditController extends SimpleFormController
                         }
                     }
                     
-                    this.repository.store(token, resource);
+                    repository.store(token, resource);
                 } catch (ConstraintViolationException e) {
                     if (logger.isDebugEnabled()) {
                         logger.debug("Error storing resource " + resource
@@ -428,12 +398,13 @@ public class PropertyEditController extends SimpleFormController
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
+        Repository repository = requestContext.getRepository();
         Service service = requestContext.getService();
-        String token = securityContext.getToken();
+        String token = requestContext.getSecurityToken();
         Path uri = requestContext.getResourceURI();
-        Resource resource = this.repository.retrieve(token, uri, false);
-        TypeInfo typeInfo = this.repository.getTypeInfo(token, uri);
+        
+        Resource resource = repository.retrieve(token, uri, false);
+        TypeInfo typeInfo = repository.getTypeInfo(token, uri);
         List<PropertyItem> propsList = new ArrayList<PropertyItem>();
         Map<String, PropertyItem> propsMap = new HashMap<String, PropertyItem>();
 
@@ -452,8 +423,8 @@ public class PropertyEditController extends SimpleFormController
             String toggleURL = null;
             String toggleValue = null;
             
-            if (this.repository.isAuthorized(resource, def.getProtectionLevel(),
-                                      securityContext.getPrincipal(), true)) {
+            if (repository.isAuthorized(resource, def.getProtectionLevel(),
+                                      requestContext.getPrincipal(), true)) {
                 
                 Map<String, String> urlParameters = new HashMap<String, String>();
                 String namespaceURI = def.getNamespace().getUri();
@@ -467,7 +438,7 @@ public class PropertyEditController extends SimpleFormController
                 }
 
                 try {
-                    editURL = service.constructLink(resource, securityContext.getPrincipal(),
+                    editURL = service.constructLink(resource, requestContext.getPrincipal(),
                             urlParameters);
                 } catch (ServiceUnlinkableException e) {
                     // Assertion doesn't match, OK in this case
@@ -475,12 +446,12 @@ public class PropertyEditController extends SimpleFormController
 
                 if (Namespace.DEFAULT_NAMESPACE.equals(def.getNamespace()) &&
                     PropertyType.OWNER_PROP_NAME.equals(def.getName()) &&
-                    !resource.getOwner().equals(securityContext.getPrincipal())) {
+                    !resource.getOwner().equals(requestContext.getPrincipal())) {
 
                     // Using toggle parameter to take ownership:
                     urlParameters.put(this.toggleRequestParameter, "true");
                     toggleURL = service.constructLink(resource,
-                                                      securityContext.getPrincipal(),
+                                                      requestContext.getPrincipal(),
                                                       urlParameters);
 
                 } else if (isToggleProperty(def)) {
@@ -490,7 +461,7 @@ public class PropertyEditController extends SimpleFormController
                     }
                     urlParameters.put(this.toggleRequestParameter, "true");
                     toggleURL = service.constructLink(resource, 
-                                                      securityContext.getPrincipal(),
+                                                      requestContext.getPrincipal(),
                                                       urlParameters);
                 }
             }
@@ -602,6 +573,30 @@ public class PropertyEditController extends SimpleFormController
     @Required
     public void setPrincipalManager(PrincipalManager principalManager) {
         this.principalManager = principalManager;
+    }
+
+    @Required public void setPropertyListModelName(String propertyListModelName) {
+        this.propertyListModelName = propertyListModelName;
+    }
+    
+    @Required public void setPropertyMapModelName(String propertyMapModelName) {
+        this.propertyMapModelName = propertyMapModelName;
+    }
+    
+    @Required public void setPropertyTypeDefinitions(PropertyTypeDefinition[] propertyTypeDefinitions) {
+        this.propertyTypeDefinitions = propertyTypeDefinitions;
+    }
+    
+    public void setEditHooks(PropertyEditHook[] editHooks) {
+        this.editHooks = editHooks;
+    }
+    
+    @Required public void setDateFormat(String dateFormat) {
+        this.dateFormat = dateFormat;
+    }
+
+    public ReferenceDataProvider[] getReferenceDataProviders() {
+        return new ReferenceDataProvider[] {this};
     }
 
 }

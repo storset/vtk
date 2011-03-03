@@ -64,7 +64,6 @@ import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
 import org.vortikal.security.AuthenticationException;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.text.html.AbstractHtmlPageFilter;
 import org.vortikal.text.html.HtmlAttribute;
 import org.vortikal.text.html.HtmlContent;
@@ -91,41 +90,40 @@ import org.vortikal.web.service.URL;
  * </ol> 
  */
 public class CSRFPreventionHandler extends AbstractHtmlPageFilter 
-    implements HandlerFilter {
+implements HandlerFilter {
 
     private File tempDir = new File(System.getProperty("java.io.tmpdir"));
     private int maxUploadSize = 100000000;
-    
-    
+
     public static final String TOKEN_REQUEST_PARAMETER = "csrf-prevention-token";
-	private static final String SECRET_SESSION_ATTRIBUTE = "csrf-prevention-secret";
-	private static Log logger = LogFactory.getLog(CSRFPreventionHandler.class);
+    private static final String SECRET_SESSION_ATTRIBUTE = "csrf-prevention-secret";
+    private static Log logger = LogFactory.getLog(CSRFPreventionHandler.class);
     private String ALGORITHM = "HmacSHA1";
-    
+
     /**
      * Utility method that can be called, e.g. from views
      * @return a new CSRF prevention token
      */
     public String newToken(URL url) throws Exception {
-    	RequestContext requestContext = RequestContext.getRequestContext();
-    	HttpServletRequest servletRequest = requestContext.getServletRequest();
-    	HttpSession session = servletRequest.getSession(false);
-    	if (session == null) {
-    	    throw new IllegalStateException("Session does not exist");
-    	}
-    	url = URL.create(url);
-    	url.setRef(null);
-    	return generateToken(url, session);
+        RequestContext requestContext = RequestContext.getRequestContext();
+        HttpServletRequest servletRequest = requestContext.getServletRequest();
+        HttpSession session = servletRequest.getSession(false);
+        if (session == null) {
+            throw new IllegalStateException("Session does not exist");
+        }
+        url = URL.create(url);
+        url.setRef(null);
+        return generateToken(url, session);
     }
-    
+
     @Override
     public boolean match(HtmlPage page) {
         return true;
     }
-    
+
     @Override
     public void filter(HttpServletRequest request, HandlerFilterChain chain)
-            throws Exception {
+    throws Exception {
         if (!"POST".equals(request.getMethod())) {
             chain.filter(request);
             return;
@@ -155,22 +153,22 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
         }
         HtmlAttribute method = element.getAttribute("method");
         if (method == null || "".equals(method.getValue().trim()) 
-            || "get".equals(method.getValue().toLowerCase())) {
+                || "get".equals(method.getValue().toLowerCase())) {
             return NodeResult.keep;
         }
-        
+
         HtmlElement[] inputs = element.getChildElements("input");
         for (HtmlElement input: inputs) {
-        	HtmlAttribute name = input.getAttribute("name");
-        	if (name != null && TOKEN_REQUEST_PARAMETER.equals(name.getValue())) {
-				return NodeResult.keep;
-        	}
+            HtmlAttribute name = input.getAttribute("name");
+            if (name != null && TOKEN_REQUEST_PARAMETER.equals(name.getValue())) {
+                return NodeResult.keep;
+            }
         }
 
         URL url;
         HtmlAttribute actionAttr = element.getAttribute("action");
         if (actionAttr == null || actionAttr.getValue() == null 
-            || "".equals(actionAttr.getValue().trim())) {
+                || "".equals(actionAttr.getValue().trim())) {
             HttpServletRequest request = 
                 RequestContext.getRequestContext().getServletRequest();
             url = URL.create(request);
@@ -179,7 +177,7 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
                 url = parseActionURL(actionAttr.getValue());
             } catch (Throwable t) {
                 logger.warn("Unable to find URL in action attribute: " 
-                            + actionAttr.getValue(), t);
+                        + actionAttr.getValue(), t);
                 return NodeResult.keep;
             }
         }
@@ -189,7 +187,7 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
         HttpSession session = requestContext.getServletRequest().getSession(false);
 
         if (session != null) {
-        	
+
             String csrfPreventionToken = generateToken(url, session);
             HtmlElement input = createElement("input", true, true);
             List<HtmlAttribute> attrs = new ArrayList<HtmlAttribute>();
@@ -199,15 +197,15 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
             input.setAttributes(attrs.toArray(new HtmlAttribute[attrs.size()]));
             element.addContent(0, input);
             element.addContent(0, new HtmlText() {
-                    public String getContent() {
-                        return "\r\n";
-                    }
-                });
+                public String getContent() {
+                    return "\r\n";
+                }
+            });
             element.addContent(new HtmlText() {
-                    public String getContent() {
-                        return "\r\n";
-                    }
-                });
+                public String getContent() {
+                    return "\r\n";
+                }
+            });
         }
         return NodeResult.keep;
     }
@@ -226,7 +224,7 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
             String result = new String(TextUtils.toHex(hashed));
             if (logger.isDebugEnabled()) {
                 logger.debug("Generate token: url: " + url + ", token: " 
-                             + result + ", secret: " + secret);
+                        + result + ", secret: " + secret);
             }
             return result;
         } catch (Exception e) {
@@ -285,32 +283,32 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
         return url;
     }
 
-    
+
     private void verifyToken(HttpServletRequest request) throws Exception {
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        if (securityContext.getPrincipal() == null) {
+        RequestContext requestContext = RequestContext.getRequestContext();
+        if (requestContext.getPrincipal() == null) {
             throw new AuthenticationException("Illegal anonymous action");
         }
         HttpSession session = request.getSession(false);
         if (session == null) {
             throw new IllegalStateException("A session must be present");
         }
-        Service service = RequestContext.getRequestContext().getService();
+        Service service = requestContext.getService();
         if (Boolean.TRUE.equals(service.getAttribute("disable-csrf-checking"))) {
             return;
         }
         SecretKey secret = (SecretKey) 
-            session.getAttribute(SECRET_SESSION_ATTRIBUTE);
+        session.getAttribute(SECRET_SESSION_ATTRIBUTE);
         if (secret == null) {
             throw new AuthorizationException(
-                "Missing CSRF prevention secret in session");
+                    "Missing CSRF prevention secret in session");
         }
 
         String suppliedToken = request.getParameter(TOKEN_REQUEST_PARAMETER);
 
         if (suppliedToken == null) {
             throw new AuthorizationException(
-                "Missing CSRF prevention token in request");
+            "Missing CSRF prevention token in request");
         }
 
         URL requestURL = URL.create(request);
@@ -318,15 +316,15 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
 
         if (logger.isDebugEnabled()) {
             logger.debug("Check token: url: " + requestURL 
-                         + ", supplied token: " + suppliedToken 
-                         + ", computed token: " + computed + ", secret: " + secret);
+                    + ", supplied token: " + suppliedToken 
+                    + ", computed token: " + computed + ", secret: " + secret);
         }
         if (!computed.equals(suppliedToken)) {
             throw new AuthorizationException("CSRF prevention token mismatch");
         }
     }
 
-    
+
     private class MultipartWrapper extends HttpServletRequestWrapper {
         private HttpServletRequest request;
         private File tempFile;
@@ -338,7 +336,7 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
             super(request);
             this.request = request;
             this.fileSizeMax = fileSizeMax;
-            
+
             if (request.getContentLength() > 0) {
                 writeTempFile(request, tempDir);
                 parseRequest();
@@ -354,7 +352,7 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
                 this.tempFile.delete();
             }
         }
-        
+
         @Override
         public ServletInputStream getInputStream() throws IOException {
             FileInputStream fileStream = new FileInputStream(this.tempFile);
@@ -383,7 +381,7 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
                 }
                 combined.put(s, l);
             }
-            
+
             for (String s: this.params.keySet()) {
                 List<String> l = combined.get(s);
                 if (l == null) {
@@ -434,7 +432,7 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
         public BufferedReader getReader() throws IOException {
             return new BufferedReader(new InputStreamReader(getInputStream()));
         }
-        
+
         private void addParameter(String name, String value) {
             List<String> values = this.params.get(name);
             if (values == null) {
@@ -443,7 +441,7 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
             }
             values.add(value);
         }
-        
+
         private void writeTempFile(HttpServletRequest request, File tempDir) throws IOException, FileUploadException {
             this.tempFile = File.createTempFile("multipart-filter", null, tempDir);
             if (logger.isDebugEnabled()) {
@@ -468,7 +466,7 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
                 out.close();
             }
         }
-        
+
         private void parseRequest() throws FileUploadException, IOException {
             ServletFileUpload upload = new ServletFileUpload();
             upload.setFileSizeMax(this.fileSizeMax);
@@ -490,11 +488,11 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
             }
         }
     }
-    
+
     public void setMaxUploadSize(int maxUploadSize) {
         this.maxUploadSize = maxUploadSize;
     }
-    
+
     public void setTempDir(String tempDirPath) {
         File tmp = new File(tempDirPath);
         if (!tmp.exists()) {

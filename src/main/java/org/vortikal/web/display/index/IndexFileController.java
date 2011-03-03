@@ -48,7 +48,6 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.AuthenticationException;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.servlet.ConfigurableRequestWrapper;
 import org.vortikal.web.servlet.VortikalServlet;
@@ -75,16 +74,9 @@ import org.vortikal.web.servlet.VortikalServlet;
 public class IndexFileController
   implements Controller, LastModified, InitializingBean, ServletContextAware {
 
-    private Repository repository;
     private ServletContext servletContext;
     private String uriCharacterEncoding = "utf-8";
     
-
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-    
-
     public void setServletContext(ServletContext servletContext) {
         this.servletContext = servletContext;
       
@@ -94,13 +86,8 @@ public class IndexFileController
         Charset.forName(uriCharacterEncoding);
         this.uriCharacterEncoding = uriCharacterEncoding;
     }
-    
 
     public void afterPropertiesSet() {
-        if (this.repository == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'repository' not set");
-        }
         if (this.servletContext == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'servletContext' not set");
@@ -119,12 +106,11 @@ public class IndexFileController
                                       HttpServletResponse response)
         throws Exception {
 
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
-        
-        String token = securityContext.getToken();
+        String token = requestContext.getSecurityToken();
         Path currentURI = requestContext.getResourceURI();
-        Resource res = this.repository.retrieve(token, currentURI, true);
+        Repository repository = requestContext.getRepository();
+        Resource res = repository.retrieve(token, currentURI, true);
         if (!res.isCollection()) {
             throw new IllegalStateException("Resource " + res + " is not a collection");
         }
@@ -132,7 +118,7 @@ public class IndexFileController
         Path indexURI = requestContext.getIndexFileURI();
         Resource indexFile = null;
         try {
-            indexFile = this.repository.retrieve(token, indexURI, true);
+            indexFile = repository.retrieve(token, indexURI, true);
         } catch (AuthenticationException e) { 
             throw e;
         } catch (AuthorizationException e) { 

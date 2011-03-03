@@ -58,7 +58,6 @@ import org.vortikal.resourcemanagement.StructuredResource;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.resourcemanagement.StructuredResourceManager;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.text.html.HtmlPageParser;
@@ -70,7 +69,6 @@ import org.vortikal.web.service.URL;
 public class StructuredResourceEditor extends SimpleFormController {
 
     private StructuredResourceManager resourceManager;
-    private Repository repository;
     private HtmlPageFilter safeHtmlFilter;
     private Service listComponentsService;
 
@@ -81,12 +79,14 @@ public class StructuredResourceEditor extends SimpleFormController {
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         lock();
-        Path uri = RequestContext.getRequestContext().getResourceURI();
-        String token = SecurityContext.getSecurityContext().getToken();
-        Resource resource = this.repository.retrieve(token, uri, false);
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Path uri = requestContext.getResourceURI();
+        String token = requestContext.getSecurityToken();
+        Repository repository = requestContext.getRepository();
+        Resource resource = repository.retrieve(token, uri, false);
         StructuredResourceDescription description = this.resourceManager.get(resource.getResourceType());
 
-        InputStream stream = this.repository.getInputStream(token, uri, true);
+        InputStream stream = repository.getInputStream(token, uri, true);
         String encoding = resource.getCharacterEncoding();
         if (encoding == null) {
             encoding = "utf-8";
@@ -110,11 +110,13 @@ public class StructuredResourceEditor extends SimpleFormController {
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("form", command);
         form.sync();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
         Path uri = RequestContext.getRequestContext().getResourceURI();
-        String token = SecurityContext.getSecurityContext().getToken();
+        String token = requestContext.getSecurityToken();
 
         InputStream stream = new ByteArrayInputStream(form.getResource().toJSON().toString(3).getBytes("utf-8"));
-        this.repository.storeContent(token, uri, stream);
+        repository.storeContent(token, uri, stream);
 
         if (form.getUpdateViewAction() != null) {
             unlock();
@@ -125,10 +127,6 @@ public class StructuredResourceEditor extends SimpleFormController {
 
     public void setResourceManager(StructuredResourceManager resourceManager) {
         this.resourceManager = resourceManager;
-    }
-
-    public void setRepository(Repository repository) {
-        this.repository = repository;
     }
 
     @Override
@@ -249,16 +247,19 @@ public class StructuredResourceEditor extends SimpleFormController {
     }
 
     public void unlock() throws Exception {
-        String token = SecurityContext.getSecurityContext().getToken();
-        Path uri = RequestContext.getRequestContext().getResourceURI();
-        this.repository.unlock(token, uri, null);
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
+        Path uri = requestContext.getResourceURI();
+        requestContext.getRepository().unlock(token, uri, null);
     }
 
     public void lock() throws Exception {
-        String token = SecurityContext.getSecurityContext().getToken();
-        Path uri = RequestContext.getRequestContext().getResourceURI();
-        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
-        this.repository.lock(token, uri, principal.getQualifiedName(), Depth.ZERO, 600, null);
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
+        Path uri = requestContext.getResourceURI();
+        Principal principal = requestContext.getPrincipal();
+        requestContext.getRepository().lock(token, uri, principal.getQualifiedName(), 
+                Depth.ZERO, 600, null);
     }
 
     public void setSafeHtmlFilter(HtmlPageFilter safeHtmlFilter) {

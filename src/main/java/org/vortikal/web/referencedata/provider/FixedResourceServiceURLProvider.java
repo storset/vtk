@@ -41,11 +41,10 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceUnlinkableException;
-
 
 /**
  * URL (link) reference data provider. Puts a URL to a fixed resource
@@ -54,7 +53,6 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  * 
  * <p>Configurable JavaBean properties:
  * <ul>
- *  <li><code>repository</code> - the content {@link Repository repository}
  *  <li><code>modelName</code> - the name to use for the submodel generated
  *  <li><code>service</code> - the {@link Service} used to construct the URL
  *  <li><code>uri</code> - the URI (path) of the resource in the repository
@@ -81,7 +79,6 @@ public class FixedResourceServiceURLProvider
 
     private String modelName;
     private Service service;
-    private Repository repository;
     private boolean matchAssertions;
     private Path uri;
     private String appendPath;
@@ -93,10 +90,6 @@ public class FixedResourceServiceURLProvider
     
     public void setService(Service service) {
         this.service = service;
-    }
-    
-    public void setRepository(Repository repository) {
-        this.repository = repository;
     }
     
     public void setUri(String uri) {
@@ -128,10 +121,6 @@ public class FixedResourceServiceURLProvider
             throw new BeanInitializationException(
                 "Bean property 'uri' must be set");
         }
-        if (this.repository == null) {
-            throw new BeanInitializationException(
-                "Bean property 'repository' must be set");
-        }
         if (this.appendPath != null && !this.appendPath.startsWith("/")) {
             throw new BeanInitializationException(
                 "Bean property 'appendPath' must start with a '/' character");
@@ -140,18 +129,16 @@ public class FixedResourceServiceURLProvider
     
 
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void referenceData(Map model, HttpServletRequest request)
         throws Exception {
-
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        
-        Principal principal = securityContext.getPrincipal();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Principal principal = requestContext.getPrincipal();
+        Repository repository = requestContext.getRepository();
 
         Resource resource = null;
-
         try {
-            resource = this.repository.retrieve(securityContext.getToken(), this.uri, true);
+            resource = repository.retrieve(requestContext.getSecurityToken(), this.uri, true);
         } catch (Throwable t) { }
 
         Map<String, String> urlMap = (Map<String, String>) model.get(this.modelName);

@@ -33,20 +33,18 @@ package org.vortikal.web.actions.copymove;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.security.SecurityContext;
+import org.vortikal.web.RequestContext;
 
 public class RenameCommandValidator implements Validator {
 
-    private Repository repository;
     private static Log logger = LogFactory.getLog(RenameCommandValidator.class);
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public boolean supports(Class clazz) {
         return (clazz == RenameCommand.class);
     }
@@ -73,9 +71,12 @@ public class RenameCommandValidator implements Validator {
         Resource resource = renameCommand.getResource();
         Path newUri = renameCommand.getRenamePath();
 
-        String token = SecurityContext.getSecurityContext().getToken();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
+        Repository repository = requestContext.getRepository();
+
         try {
-            if (this.repository.exists(token, newUri)) {
+            if (repository.exists(token, newUri)) {
                 Resource existing = repository.retrieve(token, newUri, false);
                 if (renameCommand.getOverwrite() == null) {
                     if (resource.isCollection() || existing.isCollection()) {
@@ -92,10 +93,4 @@ public class RenameCommandValidator implements Validator {
             errors.reject("manage.rename.resource.validation.failed", "Validiation failed");
         }
     }
-
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
 }

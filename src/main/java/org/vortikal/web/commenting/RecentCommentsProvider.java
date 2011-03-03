@@ -46,7 +46,6 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
@@ -54,7 +53,6 @@ import org.vortikal.web.service.URL;
 
 public class RecentCommentsProvider implements ReferenceDataProvider {
 
-    private Repository repository;
     private boolean deepCommentsListing;
     private int maxComments = 100;
     private Service viewService;
@@ -62,11 +60,6 @@ public class RecentCommentsProvider implements ReferenceDataProvider {
     private Service recentCommentsService;
     private boolean includeCommentsFromUnpublished;
     private PropertyTypeDefinition publishedDatePropDef;
-
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
 
     public void setDeepCommentsListing(boolean deepCommentsListing) {
         this.deepCommentsListing = deepCommentsListing;
@@ -100,10 +93,12 @@ public class RecentCommentsProvider implements ReferenceDataProvider {
         this.publishedDatePropDef = publishedDatePropDef;
     }
 
-    @SuppressWarnings(value = { "unchecked" })
+    @SuppressWarnings(value = { "rawtypes", "unchecked" })
     public void referenceData(Map model, HttpServletRequest servletRequest) throws Exception {
-        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
-        String token = SecurityContext.getSecurityContext().getToken();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
+        Principal principal = requestContext.getPrincipal();
         Path uri = RequestContext.getRequestContext().getResourceURI();
 
         Resource resource = repository.retrieve(token, uri, true);
@@ -111,7 +106,7 @@ public class RecentCommentsProvider implements ReferenceDataProvider {
         // collection:
         if (!resource.isCollection() && this.deepCommentsListing) {
             uri = uri.getParent();
-            resource = this.repository.retrieve(token, uri, true);
+            resource = repository.retrieve(token, uri, true);
         }
 
         List<Comment> comments = repository.getComments(token, resource, this.deepCommentsListing, this.maxComments);
@@ -121,7 +116,7 @@ public class RecentCommentsProvider implements ReferenceDataProvider {
         List<Comment> filteredComments = new ArrayList<Comment>();
         for (Comment comment : comments) {
             try {
-                Resource r = this.repository.retrieve(token, comment.getURI(), true);
+                Resource r = repository.retrieve(token, comment.getURI(), true);
                 // Don't include comments from resources that have no published
                 // date
                 Property publishedDate = null;

@@ -31,6 +31,8 @@
 package org.vortikal.web.actions.properties;
 
 
+import java.nio.charset.Charset;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
@@ -43,7 +45,6 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.PropertyType;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.ContentTypeHelper;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -54,25 +55,16 @@ import org.vortikal.web.service.Service;
  * on resources.
  */
 public class CharacterEncodingController extends SimpleFormController {
-
     private static Log logger = LogFactory.getLog(CharacterEncodingController.class);
     
-    private Repository repository = null;
-    
-    
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
+        Repository repository = requestContext.getRepository();
         Service service = requestContext.getService();
         
-        Resource resource = this.repository.retrieve(securityContext.getToken(),
+        Resource resource = repository.retrieve(requestContext.getSecurityToken(),
                                                 requestContext.getResourceURI(), false);
-        String url = service.constructLink(resource, securityContext.getPrincipal());
-         
+        String url = service.constructLink(resource, requestContext.getPrincipal());
         CharacterEncodingCommand command =
             new CharacterEncodingCommand(resource.getCharacterEncoding(), url);
         return command;
@@ -81,10 +73,10 @@ public class CharacterEncodingController extends SimpleFormController {
 
     protected void doSubmitAction(Object command) throws Exception {        
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
         
         Path uri = requestContext.getResourceURI();
-        String token = securityContext.getToken();
+        String token = requestContext.getSecurityToken();
+        Repository repository = requestContext.getRepository();
 
         CharacterEncodingCommand encodingCommand =
             (CharacterEncodingCommand) command;
@@ -94,8 +86,8 @@ public class CharacterEncodingController extends SimpleFormController {
             return;
         }
         
-        Resource resource = this.repository.retrieve(token, uri, false);
-        TypeInfo typeInfo = this.repository.getTypeInfo(token, uri);
+        Resource resource = repository.retrieve(token, uri, false);
+        TypeInfo typeInfo = repository.getTypeInfo(token, uri);
         
         if (!ContentTypeHelper.isTextContentType(resource.getContentType())) {
             encodingCommand.setDone(true);
@@ -109,8 +101,9 @@ public class CharacterEncodingController extends SimpleFormController {
         } else {
             Property prop = typeInfo.createProperty(Namespace.DEFAULT_NAMESPACE, 
                     PropertyType.CHARACTERENCODING_USER_SPECIFIED_PROP_NAME);
-            // XXX: Needs check for understandable encoding
-            prop.setStringValue(encodingCommand.getCharacterEncoding().trim());
+            String encoding = encodingCommand.getCharacterEncoding().trim();
+            Charset.forName(encoding);
+            prop.setStringValue(encoding);
             resource.addProperty(prop);
         }
 
@@ -119,8 +112,7 @@ public class CharacterEncodingController extends SimpleFormController {
                          resource.getCharacterEncoding() + 
                          "' for resource " + uri);
         }
-        this.repository.store(token, resource);
-
+        repository.store(token, resource);
         encodingCommand.setDone(true);
     }
     

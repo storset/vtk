@@ -44,7 +44,6 @@ import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlNodeFilter;
 import org.vortikal.text.html.HtmlPage;
@@ -53,7 +52,6 @@ import org.vortikal.web.RequestContext;
 
 public class HtmlController implements Controller {
 
-    private Repository repository;
     private HtmlPageParser parser;
     private List<HtmlNodeFilter> parseFilters;
     private String viewName;
@@ -63,12 +61,12 @@ public class HtmlController implements Controller {
             HttpServletResponse response) throws Exception {
 
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String token = securityContext.getToken();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
         Path uri = requestContext.getResourceURI();
 
-        Resource resource = this.repository.retrieve(token, uri, true);
-        InputStream is = this.repository.getInputStream(token, uri, true);
+        Resource resource = repository.retrieve(token, uri, true);
+        InputStream is = repository.getInputStream(token, uri, true);
 
         HtmlPage page = this.parser.parse(is, resource.getCharacterEncoding(), 
                     this.parseFilters);
@@ -89,10 +87,6 @@ public class HtmlController implements Controller {
 
     @Required public void setParser(HtmlPageParser parser) {
         this.parser = parser;
-    }
-
-    @Required public void setRepository(Repository repository) {
-        this.repository = repository;
     }
 
     @Required public void setViewName(String viewName) {

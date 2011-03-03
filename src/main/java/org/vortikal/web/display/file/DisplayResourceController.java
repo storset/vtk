@@ -53,7 +53,6 @@ import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceNotModifiedException;
 import org.vortikal.security.AuthenticationException;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.webdav.PreconditionFailedException;
@@ -67,8 +66,6 @@ import org.vortikal.webdav.ifheader.IfNoneMatchHeader;
  *
  * <p>Configurable JavaBean properties:
  * <ul>
- *   <li><code>repository</code> - the {@link Repository content
- *       repository}</li>
  *   <li><code>childName</code> - if childName is set and the current
  *       resource is a collection, the child resource of that name is
  *       retrieved instead of the requested resource
@@ -121,7 +118,6 @@ public class DisplayResourceController
 
     private static Log logger = LogFactory.getLog(DisplayResourceController.class);
 
-    private Repository repository;
     private String childName;
     private String viewName = DEFAULT_VIEW_NAME;
     private View view = null;
@@ -134,11 +130,6 @@ public class DisplayResourceController
     
     public void setChildName(String childName) {
         this.childName = childName;
-    }
-
-
-    public void setRepository(Repository repository) {
-        this.repository = repository;
     }
 
 
@@ -185,10 +176,6 @@ public class DisplayResourceController
         if (this.unsupportedResourceTypes == null) {
             this.unsupportedResourceTypes = new HashSet<String>();
         }
-        if (this.repository == null) {
-            throw new BeanInitializationException(
-                    "JavaBean property 'repository' must be specified");
-        }
         if (this.viewName == null && this.view == null) {
             throw new BeanInitializationException(
                 "At least one of JavaBean properties 'viewName' or 'view' must "
@@ -201,19 +188,17 @@ public class DisplayResourceController
     public ModelAndView handleRequest(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
-
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
         Path uri = requestContext.getResourceURI();
 
         if (this.childName != null) {
             uri = uri.extend(this.childName);
         }
 
-        String token = securityContext.getToken();
-
         Map<String, Object> model = new HashMap<String, Object>();
-        Resource resource = this.repository.retrieve(token, uri, this.displayProcessed);
+        Resource resource = repository.retrieve(token, uri, this.displayProcessed);
         if (this.unsupportedResourceTypes.contains(resource.getContentType())) {
             return new ModelAndView(this.unsupportedResourceView);
         }
@@ -229,13 +214,11 @@ public class DisplayResourceController
                 throw new ResourceNotModifiedException(uri);
             }
         }
-        
         model.put("resource", resource);
-
 
         if (!resource.isCollection()) {
 
-            InputStream stream = this.repository.getInputStream(token, uri, true);
+            InputStream stream = repository.getInputStream(token, uri, true);
 
             if (!this.streamToString || !resource.getContentType().startsWith("text/")) {
                 model.put("resourceStream", stream);
@@ -273,10 +256,9 @@ public class DisplayResourceController
             }
             return -1;
         }
-
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
-
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
         Resource resource = null;
         
         Path uri = requestContext.getResourceURI();
@@ -291,9 +273,7 @@ public class DisplayResourceController
         }
 
         try {
-            resource = this.repository.retrieve(
-                securityContext.getToken(), uri, true);
-
+            resource = repository.retrieve(token, uri, true);
         } catch (RepositoryException e) {
             // These exceptions are expected
             if (logger.isDebugEnabled()) {
@@ -301,7 +281,6 @@ public class DisplayResourceController
                              + uri, e);
             }
             return -1;
-
         } catch (AuthenticationException e) {
             // These exceptions are expected
             if (logger.isDebugEnabled()) {
@@ -309,7 +288,6 @@ public class DisplayResourceController
                              + uri, e);
             }
             return -1;
-
         } catch (Throwable t) {
             if (logger.isInfoEnabled()) {
                 logger.info(
@@ -318,18 +296,15 @@ public class DisplayResourceController
             }
             return -1;
         }
-        
         if (resource.isCollection() && this.ignoreLastModifiedOnCollections) {
             logger.debug("Ignorig last-modified value for resource "
                          + uri + ": resource is collection");
             return -1;
         }
-
         if (logger.isDebugEnabled()) {
             logger.debug("Returning last-modified value for resource "
                          + uri + ": " + resource.getLastModified());
         }
-
         return resource.getLastModified().getTime();
     }
 

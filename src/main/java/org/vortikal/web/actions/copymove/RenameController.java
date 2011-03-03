@@ -37,30 +37,27 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
 public class RenameController extends SimpleFormController {
 
     private static Log logger = LogFactory.getLog(RenameController.class);
-    private Repository repository;
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
-
-        Resource resource = this.repository
-                .retrieve(securityContext.getToken(), requestContext.getResourceURI(), false);
-        String url = service.constructLink(resource, securityContext.getPrincipal());
+        Repository repository = requestContext.getRepository();
+        
+        Resource resource = repository.retrieve(
+                requestContext.getSecurityToken(), requestContext.getResourceURI(), false);
+        String url = service.constructLink(resource, requestContext.getPrincipal());
 
         RenameCommand command = new RenameCommand(resource, url);
         return command;
@@ -68,10 +65,9 @@ public class RenameController extends SimpleFormController {
 
     protected ModelAndView onSubmit(Object command, BindException errors) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
 
         Path uri = requestContext.getResourceURI();
-        String token = securityContext.getToken();
+        String token = requestContext.getSecurityToken();
 
         RenameCommand renameCommand = (RenameCommand) command;
 
@@ -83,7 +79,8 @@ public class RenameController extends SimpleFormController {
             return new ModelAndView(getFormView());
         }
 
-        Resource resource = this.repository.retrieve(token, uri, false);
+        Repository repository = requestContext.getRepository();
+        Resource resource = repository.retrieve(token, uri, false);
         String name = resource.getName();
 
         boolean overwrite = false;
@@ -94,8 +91,8 @@ public class RenameController extends SimpleFormController {
         try {
             Path newUri = renameCommand.getRenamePath();
             if (!name.equals(renameCommand.getName())) {
-                this.repository.move(token, uri, newUri, overwrite);
-                resource = this.repository.retrieve(token, newUri, false);
+                repository.move(token, uri, newUri, overwrite);
+                resource = repository.retrieve(token, newUri, false);
             }
             Map<String, Object> model = new HashMap<String, Object>();
             model.put("resource", resource);
@@ -105,10 +102,5 @@ public class RenameController extends SimpleFormController {
             errors.reject("manage.rename.resource.validation.failed", "Renaming of resource failed");
             return new ModelAndView(getFormView(), errors.getModel());
         }
-    }
-
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
     }
 }

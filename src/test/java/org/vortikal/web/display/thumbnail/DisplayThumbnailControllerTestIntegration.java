@@ -18,8 +18,8 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceImpl;
 import org.vortikal.repository.resourcetype.PropertyType;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 import org.vortikal.web.AbstractControllerTest;
 
 public class DisplayThumbnailControllerTestIntegration extends AbstractControllerTest {
@@ -34,7 +34,6 @@ public class DisplayThumbnailControllerTestIntegration extends AbstractControlle
     protected void setUp() throws Exception {
         super.setUp();
         controller = new DisplayThumbnailController();
-        controller.setRepository(mockRepository);
     }
 
     @Override

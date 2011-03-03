@@ -35,7 +35,7 @@
     <property name="repository" ref="repository" />
   </bean>
 
-  <bean id="trashCanHandler" class="org.vortikal.web.actions.trashcan.TrashCanController" parent="repositoryAware">
+  <bean id="trashCanHandler" class="org.vortikal.web.actions.trashcan.TrashCanController">
     <property name="formView" value="trashCan" />
     <property name="successView" value="redirectToManage" />
     <property name="commandClass" value="org.vortikal.web.actions.trashcan.TrashCanCommand" />

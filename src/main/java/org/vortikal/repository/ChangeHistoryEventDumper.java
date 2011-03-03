@@ -44,99 +44,99 @@ import org.vortikal.security.SecurityContext;
  */
 public class ChangeHistoryEventDumper extends AbstractRepositoryEventDumper {
 
-	protected final static int propertiesLastModifiedThreshold = 30;
-	protected boolean reportAll = true;
-	
+    protected final static int propertiesLastModifiedThreshold = 30;
+    protected boolean reportAll = true;
+
     @Required
     public void setReportAll(boolean reportAll) {
         this.reportAll = reportAll;
     }
-    
+
     public void created(Resource resource) {
-    	if (reportAll) {
-    		Principal changer = SecurityContext.getSecurityContext().getPrincipal();
-    		logVersioningEvent("CREATED", false, resource.getURI(), 
-                               "", resource.isCollection(), changer);
-    	}
+        if (reportAll) {
+            Principal changer = SecurityContext.getSecurityContext().getPrincipal();
+            logVersioningEvent("CREATED", false, resource.getURI(), 
+                    "", resource.isCollection(), changer);
+        }
     }
 
     public void deleted(Path uri, int resourceId, boolean collection) {
-    	if (reportAll) {
-    		Principal changer = SecurityContext.getSecurityContext().getPrincipal();
-    		logVersioningEvent("DELETED", false, uri, 
-                               "", collection, changer);
-    	}
+        if (reportAll) {
+            Principal changer = SecurityContext.getSecurityContext().getPrincipal();
+            logVersioningEvent("DELETED", false, uri, 
+                    "", collection, changer);
+        }
     }
 
     public void modified(Resource resource, Resource originalResource) {
-		Principal changer = SecurityContext.getSecurityContext().getPrincipal();
-    	boolean security = false;
-    	StringBuilder desc = new StringBuilder();
-    	if (!resource.getOwner().equals(originalResource.getOwner())) {
-    		security = true;
-    		desc.append("Owner_CHANGE: ").append(originalResource.getOwner());
-    		desc.append(" to: ").append(resource.getOwner()).append(" ");
-    	}
-    	if (!resource.getCreatedBy().equals(originalResource.getCreatedBy())) {
-    		security = true;
-    		desc.append("CreatedBy_CHANGE: ").append(originalResource.getCreatedBy());
-    		desc.append(" to: ").append(resource.getCreatedBy()).append(" ");
-    	}    
-    	if (!resource.getPropertiesModifiedBy().equals(changer)) {
-    		security = true;
-    		desc.append("PropertiesModifiedBy_CHANGE: ").append(originalResource.getPropertiesModifiedBy());
-    		desc.append(" to: ").append(resource.getPropertiesModifiedBy()).append(" ");
-    	}  
-    	if (!resource.getContentModifiedBy().equals(originalResource.getContentModifiedBy())) {
-    		// Does not happen as side effect of content change (modified event does not happen in that case)
-    		security = true;
-    		desc.append("ContentModifiedBy_CHANGE: ").append(originalResource.getContentModifiedBy());
-    		desc.append(" to: ").append(resource.getContentModifiedBy()).append(" ");
-    	}
-    	if (!resource.getCreationTime().equals(originalResource.getCreationTime())) {
-    		security = true;
-    		desc.append("CreationTime_CHANGE: ").append(originalResource.getCreationTime());
-    		desc.append(" to: ").append(resource.getCreationTime()).append(" ");
-    	}
-    	if (!resource.getContentLastModified().equals(originalResource.getContentLastModified())) {
-    		// Does not happen as side effect of content change (modified event does not happen in that case)
-    		security = true;
-    		desc.append("ContentLastModified_CHANGE: ").append(originalResource.getContentLastModified());
-    		desc.append(" to: ").append(resource.getContentLastModified()).append(" ");
-    	}
-    	Date now = new Date();
-    	Date threshold = new Date(now.getTime() - propertiesLastModifiedThreshold * 1000);
-       	Date propertiesLastModified = resource.getPropertiesLastModified();
+        Principal changer = SecurityContext.getSecurityContext().getPrincipal();
+        boolean security = false;
+        StringBuilder desc = new StringBuilder();
+        if (!resource.getOwner().equals(originalResource.getOwner())) {
+            security = true;
+            desc.append("Owner_CHANGE: ").append(originalResource.getOwner());
+            desc.append(" to: ").append(resource.getOwner()).append(" ");
+        }
+        if (!resource.getCreatedBy().equals(originalResource.getCreatedBy())) {
+            security = true;
+            desc.append("CreatedBy_CHANGE: ").append(originalResource.getCreatedBy());
+            desc.append(" to: ").append(resource.getCreatedBy()).append(" ");
+        }    
+        if (!resource.getPropertiesModifiedBy().equals(changer)) {
+            security = true;
+            desc.append("PropertiesModifiedBy_CHANGE: ").append(originalResource.getPropertiesModifiedBy());
+            desc.append(" to: ").append(resource.getPropertiesModifiedBy()).append(" ");
+        }  
+        if (!resource.getContentModifiedBy().equals(originalResource.getContentModifiedBy())) {
+            // Does not happen as side effect of content change (modified event does not happen in that case)
+            security = true;
+            desc.append("ContentModifiedBy_CHANGE: ").append(originalResource.getContentModifiedBy());
+            desc.append(" to: ").append(resource.getContentModifiedBy()).append(" ");
+        }
+        if (!resource.getCreationTime().equals(originalResource.getCreationTime())) {
+            security = true;
+            desc.append("CreationTime_CHANGE: ").append(originalResource.getCreationTime());
+            desc.append(" to: ").append(resource.getCreationTime()).append(" ");
+        }
+        if (!resource.getContentLastModified().equals(originalResource.getContentLastModified())) {
+            // Does not happen as side effect of content change (modified event does not happen in that case)
+            security = true;
+            desc.append("ContentLastModified_CHANGE: ").append(originalResource.getContentLastModified());
+            desc.append(" to: ").append(resource.getContentLastModified()).append(" ");
+        }
+        Date now = new Date();
+        Date threshold = new Date(now.getTime() - propertiesLastModifiedThreshold * 1000);
+        Date propertiesLastModified = resource.getPropertiesLastModified();
         if ((propertiesLastModified.compareTo(now) > 0) || (propertiesLastModified.compareTo(threshold) < 0)) {
-        	// propertiesLastModified after now or before threshold
-    		security = true;
-    		desc.append("PropertiesLastModified_CHANGE: ").append(originalResource.getPropertiesLastModified());
-    		desc.append(" to: ").append(propertiesLastModified).append(" ");
-    	}
-    	if (reportAll || security) {
-    		logVersioningEvent("MODIFIED_PROPS", security, resource.getURI(), 
-                               desc.toString(), resource.isCollection(), changer);
-    	}
+            // propertiesLastModified after now or before threshold
+            security = true;
+            desc.append("PropertiesLastModified_CHANGE: ").append(originalResource.getPropertiesLastModified());
+            desc.append(" to: ").append(propertiesLastModified).append(" ");
+        }
+        if (reportAll || security) {
+            logVersioningEvent("MODIFIED_PROPS", security, resource.getURI(), 
+                    desc.toString(), resource.isCollection(), changer);
+        }
     }
 
     public void contentModified(Resource resource) {
-    	if (reportAll) {
-    		Principal changer = SecurityContext.getSecurityContext().getPrincipal();
-    		logVersioningEvent("MODIFIED_CONTENT", false, resource.getURI(),
-        		               "", resource.isCollection(), changer);
-    	}
+        if (reportAll) {
+            Principal changer = SecurityContext.getSecurityContext().getPrincipal();
+            logVersioningEvent("MODIFIED_CONTENT", false, resource.getURI(),
+                    "", resource.isCollection(), changer);
+        }
     }
 
     public void aclModified(Resource resource, Resource originalResource,
-                            Acl newACL, Acl originalACL) {
-       	Principal changer = SecurityContext.getSecurityContext().getPrincipal();
+            Acl newACL, Acl originalACL) {
+        Principal changer = SecurityContext.getSecurityContext().getPrincipal();
         logVersioningEvent("MODIFIED_ACL", true, resource.getURI(),
-    			           "", resource.isCollection(), changer);
+                "", resource.isCollection(), changer);
     }
-        
+
     protected void logVersioningEvent(String operation, boolean security, Path uri, String description,
-    		                          boolean collection, Principal principal) {
-    	ChangeHistoryLog.change(operation, security, uri, description, collection, principal);
-		
-	}
+            boolean collection, Principal principal) {
+        ChangeHistoryLog.change(operation, security, uri, description, collection, principal);
+
+    }
 }

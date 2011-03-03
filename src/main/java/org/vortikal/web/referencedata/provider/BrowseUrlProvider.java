@@ -40,11 +40,9 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
-
 
 /**
  * Creates model data for the browse application. 
@@ -53,7 +51,6 @@ import org.vortikal.web.service.Service;
  *  
  * <p>Configurable properties:
  * <ul>
- *   <li><code>repository</code> - the content repository
  *   <li><code>viewService</code> - the service for which to construct a viewURL
  * </ul>
  *
@@ -67,36 +64,26 @@ public class BrowseUrlProvider implements ReferenceDataProvider, InitializingBea
 
     private static final String BROWSE_SESSION_ATTRIBUTE = "browsesession";
 
-    private Repository repository = null;
     private Service viewService;
-
-    public final void setRepository(final Repository newRepository) {
-        this.repository = newRepository;
-    }
 
     public void setViewService(Service viewService) {
         this.viewService = viewService;
     }
 
     public final void afterPropertiesSet() throws Exception {
-        if (this.repository == null) {
-            throw new BeanInitializationException("Property 'repository' not set");
-        }
         if (this.viewService == null) {
             throw new BeanInitializationException("Property 'viewService' not set");
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
-
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String token = securityContext.getToken();
-        Principal principal = securityContext.getPrincipal();
         RequestContext requestContext = RequestContext.getRequestContext();
-
+        String token = requestContext.getSecurityToken();
+        Principal principal = requestContext.getPrincipal();
         Path uri = requestContext.getResourceURI();
-        Resource resource = this.repository.retrieve(token, uri, false);
+        Repository repository = requestContext.getRepository();
+        Resource resource = repository.retrieve(token, uri, false);
 
         // This is the url to the parent of the document that's being edited
 
@@ -128,9 +115,6 @@ public class BrowseUrlProvider implements ReferenceDataProvider, InitializingBea
 
         model.put("browseURL", viewUrl);
         model.put("editField", sessionBean.getEditField());
-
     }
-
-
 }
 

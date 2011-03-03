@@ -48,14 +48,12 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.Message;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
 public class PublishResourceController extends SimpleFormController implements InitializingBean {
 
-    protected Repository repository;
     private String viewName;
     private PropertyTypeDefinition publishDatePropDef;
     private static final String ACTION_PARAM = "action";
@@ -69,14 +67,14 @@ public class PublishResourceController extends SimpleFormController implements I
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
+        Repository repository = requestContext.getRepository();
         Service service = requestContext.getService();
 
         Path uri = requestContext.getResourceURI();
-        String token = securityContext.getToken();
-        Principal principal = securityContext.getPrincipal();
+        String token = requestContext.getSecurityToken();
+        Principal principal = requestContext.getPrincipal();
 
-        Resource resource = this.repository.retrieve(token, uri, false);
+        Resource resource = repository.retrieve(token, uri, false);
         String url = service.constructLink(resource, principal);
 
         return new PublishResourceCommand(url);
@@ -84,13 +82,12 @@ public class PublishResourceController extends SimpleFormController implements I
 
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
             BindException errors) throws Exception {
-
         Map<String, Object> model = new HashMap<String, Object>();
-
-        String token = SecurityContext.getSecurityContext().getToken();
-
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
         Path resourceURI = RequestContext.getRequestContext().getResourceURI();
-        Resource resource = this.repository.retrieve(token, resourceURI, true);
+        Resource resource = repository.retrieve(token, resourceURI, true);
 
         PublishResourceCommand publishResourceCommand = (PublishResourceCommand) command;
 
@@ -111,19 +108,10 @@ public class PublishResourceController extends SimpleFormController implements I
                 resource.removeProperty(this.publishDatePropDef);
                 msgCode += "unpublish";
             }
-
-            this.repository.store(token, resource);
-
+            repository.store(token, resource);
             RequestContext.getRequestContext().addInfoMessage(new Message(msgCode));
-
         }
-
         return new ModelAndView(this.viewName, model);
-
-    }
-
-    public void setRepository(Repository repository) {
-        this.repository = repository;
     }
 
     public void setViewName(String viewName) {

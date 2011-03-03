@@ -44,7 +44,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
-import org.vortikal.security.SecurityContext;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.actions.report.subresource.SubResourcePermissions;
 import org.vortikal.web.actions.report.subresource.SubResourcePermissionsProvider;
 import org.vortikal.web.service.Service;
@@ -57,23 +57,18 @@ public class SubResourceJSONService implements Controller, InitializingBean {
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String uri = null;
-        
         try {
           uri = (String) request.getParameter("uri");  
         } catch (Exception e) {
             badRequest(e, response);
             return null;
         }
-        
-        if(uri == null) {
+        if (uri == null) {
           return null;
         }
-
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String token = securityContext.getToken();
-        
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
         List<SubResourcePermissions> subresources = provider.buildSearchAndPopulateSubresources(uri, token, request);
-        
         writeResults(subresources, request, response);
         return null;
     }
@@ -98,13 +93,13 @@ public class SubResourceJSONService implements Controller, InitializingBean {
             
             // Add classes
             
-            if(sr.isCollection()) {
+            if (sr.isCollection()) {
               spanClasses = "folder";
               o.put("hasChildren", true);
             } else {
               spanClasses = "file";
             }
-            if(sr.isReadRestricted()) {
+            if (sr.isReadRestricted()) {
               spanClasses += " restricted";
             } else {
               spanClasses += " allowed-for-all";    
@@ -117,7 +112,7 @@ public class SubResourceJSONService implements Controller, InitializingBean {
             
             String uriService = permissionsService.constructURL(Path.fromString(sr.getUri())).getPathRepresentation();
 
-            if(sr.isInheritedAcl()) {
+            if (sr.isInheritedAcl()) {
               title.append(" " + provider.getLocalizedTitle(request, "report.collection-structure.inherited-permissions", null) + " (<a href=&quot;" + uriService
                          + "&quot;>" + provider.getLocalizedTitle(request, "report.collection-structure.edit", null)
                          + "</a>)</span><span class=&quot;inherited-permissions&quot;>");
@@ -143,7 +138,7 @@ public class SubResourceJSONService implements Controller, InitializingBean {
             
             title.append("</tbody></table>");
             
-            if(sr.isInheritedAcl()) {
+            if (sr.isInheritedAcl()) {
               title.append("</span>"); 
             }
             

@@ -36,8 +36,7 @@
     <property name="resourceTypeDefinition" ref="eventResourceTypeDefinition" />
   </bean>
 
-  <bean id="article.displayHandler"  class="org.vortikal.web.decorating.HtmlController"
-        parent="repositoryAware">
+  <bean id="article.displayHandler"  class="org.vortikal.web.decorating.HtmlController">
     <property name="parser" ref="decorating.htmlParser" />
     <property name="parseFilters" ref="article.htmlFilters" />
     <property name="viewName" value="displayArticle" />
@@ -64,8 +63,7 @@
   </bean>
 
   <bean id="resourceManager"
-        class="org.vortikal.edit.editor.ResourceWrapperManager"
-        parent="repositoryAware">
+        class="org.vortikal.edit.editor.ResourceWrapperManager">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
     <property name="contentResourceType" ref="xhtml10TransResourceTypeDefinition" />
@@ -354,7 +352,7 @@
 
 
   <bean id="article.commentsFeedLinkComponent"
-        class="org.vortikal.web.commenting.CommentsFeedUrlProvider" parent="repositoryAware">
+        class="org.vortikal.web.commenting.CommentsFeedUrlProvider">
     <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="comments-feed-link" />
     <property name="description" value="Inserts a link reference to the feed of comments for articles" />
@@ -367,7 +365,6 @@
       <list>
         <ref bean="resourceContextProvider" />
         <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
-          <property name="repository" ref="repository" />
           <property name="modelName" value="commentsFeed" />
           <property name="urlName" value="url" />
           <property name="service" ref="commenting.feedService" />
@@ -387,7 +384,6 @@
       <list>
       <ref bean="commenting.commentsView.referenceDataProviders" />
       <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
-        <property name="repository" ref="repository" />
         <property name="uri" value="/" />
         <property name="appendPath" value="${flash.baseURL}/audioplayer.swf" />
         <property name="service" ref="viewService" />
@@ -395,7 +391,6 @@
         <property name="urlName" value="flashURL" />
       </bean>
       <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
-        <property name="repository" ref="repository" />
         <property name="uri" value="/" />
         <property name="appendPath" value="${jsBaseURL}/audio-player.js" />
         <property name="service" ref="viewService" />

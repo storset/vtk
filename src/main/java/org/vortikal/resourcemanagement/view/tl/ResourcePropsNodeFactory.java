@@ -44,21 +44,14 @@ import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.resourcemanagement.view.StructuredResourceDisplayController;
-import org.vortikal.security.SecurityContext;
-import org.vortikal.text.tl.Token;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.DirectiveNodeFactory;
 import org.vortikal.text.tl.DirectiveParseContext;
 import org.vortikal.text.tl.Node;
+import org.vortikal.text.tl.Token;
 import org.vortikal.web.RequestContext;
 
 public class ResourcePropsNodeFactory implements DirectiveNodeFactory {
-
-    private Repository repository = null;
-    
-    public ResourcePropsNodeFactory(Repository repository) {
-        this.repository = repository;
-    }
 
     public Node create(DirectiveParseContext ctx) throws Exception {
         List<Token> tokens = ctx.getArguments();
@@ -70,11 +63,12 @@ public class ResourcePropsNodeFactory implements DirectiveNodeFactory {
         return new Node() {
             public boolean render(Context ctx, Writer out) throws Exception {
                 Resource resource;
-                String token = SecurityContext.getSecurityContext().getToken();
+                RequestContext requestContext = RequestContext.getRequestContext();
+                String token = requestContext.getSecurityToken();
+                Repository repository = requestContext.getRepository();
                 String ref = arg1.getValue(ctx).toString();
-
+                
                 if (ref.equals(".")) {
-                    RequestContext requestContext = RequestContext.getRequestContext();
                     HttpServletRequest request = requestContext.getServletRequest();
                     Object o = request.getAttribute(StructuredResourceDisplayController.MVC_MODEL_REQ_ATTR);
                     if (o == null) {

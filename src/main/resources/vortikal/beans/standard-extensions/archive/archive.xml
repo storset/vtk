@@ -34,8 +34,7 @@
   </bean>
   
   <bean id="manage.createArchiveHandler"
-        class="org.vortikal.web.actions.convert.ArchiveController"
-        parent="repositoryAware">
+        class="org.vortikal.web.actions.convert.ArchiveController">
     <property name="extension" value=".jar" />
     <property name="parentViewOnSuccess" value="true" />
     <property name="copyAction" ref="manage.createArchiveAction" />
@@ -45,9 +44,7 @@
     <property name="commandClass"
               value="org.vortikal.web.actions.convert.ArchiveCommand" />
     <property name="validator">
-      <bean
-          class="org.vortikal.web.actions.convert.CreateArchiveCommandValidator"
-          parent="repositoryAware" />
+      <bean class="org.vortikal.web.actions.convert.CreateArchiveCommandValidator" />
     </property>
   </bean>
   
@@ -90,8 +87,7 @@
   </bean>
   
   <bean id="manage.expandArchiveHandler"
-        class="org.vortikal.web.actions.convert.ArchiveController"
-        parent="repositoryAware">
+        class="org.vortikal.web.actions.convert.ArchiveController">
     <property name="parentViewOnSuccess" value="true" />
     <property name="copyAction" ref="manage.expandArchiveAction" />
     <property name="formView" value="admin" />
@@ -100,9 +96,7 @@
     <property name="commandClass"
               value="org.vortikal.web.actions.convert.ArchiveCommand" />
     <property name="validator">
-      <bean
-          class="org.vortikal.web.actions.convert.ArchiveCommandValidator"
-          parent="repositoryAware" />
+      <bean class="org.vortikal.web.actions.convert.ArchiveCommandValidator" />
     </property>
   </bean>
   

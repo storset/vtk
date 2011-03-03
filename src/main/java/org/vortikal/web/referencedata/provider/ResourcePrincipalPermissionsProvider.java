@@ -45,7 +45,6 @@ import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.ResourcePrincipalPermissionAssertion;
@@ -56,7 +55,6 @@ import org.vortikal.web.service.ResourcePrincipalPermissionAssertion;
  * 
  * Configurable properties:
  * <ul>
- *  <li><code>repository</code> - the {@link Repository} is required
  *  <li><code>modelName</code> - name of sub model (default resourcePrincipalPermissions)
  *  <li><code>permission</code> - what permission to check, see the {@link ResourcePrincipalPermissionAssertion}
  *  <li><code>requiresAuthentication</code> - whether authentication is explicitly
@@ -76,17 +74,12 @@ public class ResourcePrincipalPermissionsProvider implements ReferenceDataProvid
     private static Log logger = LogFactory.getLog(
             ResourcePrincipalPermissionsProvider.class);
 
-    private Repository repository = null;
     private String modelName = "resourcePrincipalPermissions";
     private RepositoryAction permission = null;
     private boolean requiresAuthentication = false;
     private boolean anonymous = false;
     private boolean considerLocks = true;
         
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-    
     public void setModelName(String modelName) {
         this.modelName = modelName;
     }
@@ -108,10 +101,6 @@ public class ResourcePrincipalPermissionsProvider implements ReferenceDataProvid
     }
     
     public void afterPropertiesSet() {
-        if (this.repository == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'repository' must be set");
-        }
         if (this.modelName == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'modelName' must be set");
@@ -119,24 +108,20 @@ public class ResourcePrincipalPermissionsProvider implements ReferenceDataProvid
     }
 
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public void referenceData(Map model, HttpServletRequest request)
         throws Exception {
-
         boolean result = false;
-        
         Map<String, Object> permissionsModel = new HashMap<String, Object>();
-
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
-        
         String scheme = request.getScheme();
         
-        Principal principal = securityContext.getPrincipal();
+        Principal principal = requestContext.getPrincipal();
         Path uri = requestContext.getResourceURI();
-        String token = securityContext.getToken();        
+        String token = requestContext.getSecurityToken();
+        Repository repository = requestContext.getRepository();
 
-        Resource resource = this.repository.retrieve(token, uri, false);
+        Resource resource = repository.retrieve(token, uri, false);
         if (resource == null) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Resource is null [match = false]");
@@ -152,10 +137,10 @@ public class ResourcePrincipalPermissionsProvider implements ReferenceDataProvid
             }
             try {
                 if (this.anonymous) {
-                    result = this.repository.isAuthorized(resource, this.permission, 
+                    result = repository.isAuthorized(resource, this.permission, 
                             null, this.considerLocks);
                 } else {
-                    result = this.repository.isAuthorized(resource, this.permission, 
+                    result = repository.isAuthorized(resource, this.permission, 
                             principal, this.considerLocks);
                 }
             } catch (Exception e) {

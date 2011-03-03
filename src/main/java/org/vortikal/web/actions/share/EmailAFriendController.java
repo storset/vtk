@@ -52,7 +52,6 @@ import org.vortikal.edit.editor.ResourceWrapperManager;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -60,7 +59,6 @@ import org.vortikal.web.service.URL;
 
 public class EmailAFriendController implements Controller {
 
-    private Repository repository;
     private String viewName;
     private String siteName;
     private ResourceWrapperManager resourceManager;
@@ -71,11 +69,12 @@ public class EmailAFriendController implements Controller {
     private Service viewService;
     
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-
-        String token = SecurityContext.getSecurityContext().getToken();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
+        Repository repository = requestContext.getRepository();
         Path uri = RequestContext.getRequestContext().getResourceURI();
 
-        Resource resource = this.repository.retrieve(token, uri, true);
+        Resource resource = repository.retrieve(token, uri, true);
         if (resource == null) {
             return null;
         }
@@ -174,10 +173,6 @@ public class EmailAFriendController implements Controller {
         helper.setText(mailBody, true);
 
         return mimeMessage;
-    }
-
-    public void setRepository(Repository repository) {
-        this.repository = repository;
     }
 
     @Required

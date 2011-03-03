@@ -43,7 +43,7 @@ import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
-import org.vortikal.security.SecurityContext;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
 import org.vortikal.web.search.SearchSorting;
@@ -82,8 +82,10 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
             model.put("excludeScripts", excludeScripts);
         }
 
-        String token = SecurityContext.getSecurityContext().getToken();
-        Resource requestedResource = this.repository.retrieve(token, Path.fromString(url), false);
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
+        Resource requestedResource = repository.retrieve(token, Path.fromString(url), false);
 
         if (!requestedResource.isCollection()) {
             return;
@@ -136,11 +138,6 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
         } catch (NumberFormatException nfe) {
         }
         return 0;
-    }
-
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
     }
 
     @Required

@@ -38,7 +38,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.web.servlet.support.RequestContext;
 import org.vortikal.edit.editor.ResourceWrapperManager;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
@@ -50,7 +49,7 @@ import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.SortingImpl;
 import org.vortikal.repository.search.query.Query;
-import org.vortikal.security.SecurityContext;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.collection.aggregation.CollectionListingAggregationResolver;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -64,7 +63,6 @@ public abstract class QuerySearchComponent implements SearchComponent {
     private Service viewService;
     private PropertyTypeDefinition recursivePropDef;
     private List<PropertyDisplayConfig> listableProperties;
-    private Repository repository;
 
     private SearchSorting searchSorting;
 
@@ -76,27 +74,27 @@ public abstract class QuerySearchComponent implements SearchComponent {
     public static interface QueryManipulator {
         public Object process(Object query);
     }
-    
+
     public Listing execute(HttpServletRequest request, Resource collection, int page, int pageLimit, int baseOffset)
-            throws Exception {
+    throws Exception {
         return execute(request, collection, page, pageLimit, baseOffset, this.defaultRecursive);
     }
-    
+
     public Listing execute(HttpServletRequest request, Resource collection, int page, int pageLimit, int baseOffset,
             boolean recursive) throws Exception {
 
         return execute(request, collection, page, pageLimit, baseOffset, recursive, null);
     }
-    
+
     public Listing execute(HttpServletRequest request, Resource collection, int page, int pageLimit, int baseOffset,
             boolean recursive, QueryManipulator manipulator) throws Exception {
-        
+
         if (this.recursivePropDef != null && collection.getProperty(this.recursivePropDef) != null) {
             recursive = collection.getProperty(this.recursivePropDef).getBooleanValue();
         }
 
         Search search = new Search();
-        
+
         Query query = getQuery(collection, request, recursive, manipulator);
         int offset = baseOffset + (pageLimit * (page - 1));
 
@@ -104,7 +102,9 @@ public abstract class QuerySearchComponent implements SearchComponent {
         search.setLimit(pageLimit + 1);
         search.setCursor(offset);
 
-        String token = SecurityContext.getSecurityContext().getToken();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
+        Repository repository = requestContext.getRepository();
 
         String[] sortingParams = request.getParameterValues(Listing.SORTING_PARAM);
         if (sortingParams != null && sortingParams.length > 0) {
@@ -113,7 +113,7 @@ public abstract class QuerySearchComponent implements SearchComponent {
             search.setSorting(new SortingImpl(this.searchSorting.getSortFields(collection)));
         }
 
-        ResultSet result = this.repository.search(token, search);
+        ResultSet result = repository.search(token, search);
 
         boolean more = result.getSize() == pageLimit + 1;
         int num = result.getSize();
@@ -143,7 +143,8 @@ public abstract class QuerySearchComponent implements SearchComponent {
 
         String title = null;
         if (this.titleLocalizationKey != null) {
-            RequestContext springRequestContext = new RequestContext(request);
+            org.springframework.web.servlet.support.RequestContext springRequestContext = 
+                new org.springframework.web.servlet.support.RequestContext(request);
             title = springRequestContext.getMessage(this.titleLocalizationKey, (String) null);
         }
 
@@ -198,14 +199,9 @@ public abstract class QuerySearchComponent implements SearchComponent {
     public void setDefaultRecursive(boolean defaultRecursive) {
         this.defaultRecursive = defaultRecursive;
     }
-    
+
     public boolean isDefaultRecursive() {
         return this.defaultRecursive;
-    }
-
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
     }
 
     public void setAggregationResolver(CollectionListingAggregationResolver aggregationResolver) {

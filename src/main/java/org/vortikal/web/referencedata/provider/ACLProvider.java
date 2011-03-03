@@ -47,7 +47,6 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
@@ -88,7 +87,6 @@ import org.vortikal.web.service.Service;
  */
 public class ACLProvider implements ReferenceDataProvider, InitializingBean {
 
-    private Repository repository = null;
     private Service aclInheritanceService = null;
     
     private Map<Privilege, Principal> groupingPrivilegePrincipalMap;
@@ -96,10 +94,6 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
     private Map<Privilege, Service> aclEditServices;
     
     private String modelName = "aclInfo";
-    
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
     
     public void setAclInheritanceService(Service aclInheritanceService) {
         this.aclInheritanceService = aclInheritanceService;
@@ -119,10 +113,6 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
     
 
     public void afterPropertiesSet() {
-        if (this.repository == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'repository' must be set");
-        }
         if (this.aclInheritanceService == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'aclInheritanceService' must be set");
@@ -142,19 +132,18 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
     }
 
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public void referenceData(Map model, HttpServletRequest request)
         throws Exception {
 
         Map<String, Object> aclModel = new HashMap<String, Object>();
 
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
         Path uri = requestContext.getResourceURI();
-        String token = securityContext.getToken();
+        String token = requestContext.getSecurityToken();
         
-        
-        Resource resource = this.repository.retrieve(token, uri, false);
+        Resource resource = repository.retrieve(token, uri, false);
         Acl acl = resource.getAcl();
         Map<String, String> editURLs = new HashMap<String, String>();
 
@@ -164,7 +153,7 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
                 Service editService = this.aclEditServices.get(action);
                 try {
                     String url = editService.constructLink(
-                        resource, securityContext.getPrincipal());
+                        resource, requestContext.getPrincipal());
                     editURLs.put(privilegeName, url);
                 } catch (Exception e) { }
             }
@@ -173,7 +162,7 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
         try {
             if (this.aclInheritanceService != null) {
                 String url = this.aclInheritanceService.constructLink(
-                    resource, securityContext.getPrincipal());
+                    resource, requestContext.getPrincipal());
                 editURLs.put("inheritance", url);
             }
         } catch (Exception e) { }

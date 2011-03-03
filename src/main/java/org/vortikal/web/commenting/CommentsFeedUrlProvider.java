@@ -4,8 +4,8 @@ import java.util.Map;
 
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Privilege;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
@@ -16,7 +16,9 @@ public class CommentsFeedUrlProvider extends ViewRenderingDecoratorComponent {
     protected void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
         super.processModel(model, request, response);
-        String token = SecurityContext.getSecurityContext().getToken();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
         Path uri = RequestContext.getRequestContext().getResourceURI();
         Resource resource = repository.retrieve(token, uri, true);
         boolean commentsEnabled = false;

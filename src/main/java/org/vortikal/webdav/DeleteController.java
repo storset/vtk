@@ -41,10 +41,10 @@ import org.vortikal.repository.FailedDependencyException;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.ReadOnlyException;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.webdav.ifheader.IfHeaderImpl;
@@ -64,20 +64,20 @@ public class DeleteController extends AbstractWebdavController {
      * @param response the <code>HttpServletResponse</code> response object
      */
     public ModelAndView handleRequest(HttpServletRequest request,
-                                      HttpServletResponse response) throws Exception{
+            HttpServletResponse response) throws Exception{
 
-        
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String token = securityContext.getToken();
+
         RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
         Path uri = requestContext.getResourceURI();
+        Repository repository = requestContext.getRepository();
         Map<String, Object> model = new HashMap<String, Object>();
         try {
             this.ifHeader = new IfHeaderImpl(request);
-            Resource resource = this.repository.retrieve(token, uri, false);
-            
+            Resource resource = repository.retrieve(token, uri, false);
+
             verifyIfHeader(resource, true);
-            
+
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Attempting to delete resource " + uri);
             }
@@ -87,54 +87,54 @@ public class DeleteController extends AbstractWebdavController {
             // locking problems sorted out.
             // See VTK-2002
             boolean recoverable = false;
-//            String permanent = request.getParameter("permanent");
-//            if ("true".equals(permanent)) {
-//                recoverable = false;
-//            }
+            //            String permanent = request.getParameter("permanent");
+            //            if ("true".equals(permanent)) {
+            //                recoverable = false;
+            //            }
 
             // Delete the document or collection:
-            this.repository.delete(token, uri, recoverable);
+            repository.delete(token, uri, recoverable);
 
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Resource " + uri + " deleted");
             }
 
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
-                      new Integer(HttpServletResponse.SC_OK));
+                    new Integer(HttpServletResponse.SC_OK));
             return new ModelAndView("DELETE", model);
-         
+
         } catch (ResourceNotFoundException e) {
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
-                      new Integer(HttpServletResponse.SC_NOT_FOUND));
+                    new Integer(HttpServletResponse.SC_NOT_FOUND));
 
         } catch (ResourceLockedException e) {
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Caught ResourceLockedException for URI "
-                             + uri);
+                        + uri);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
-                      new Integer(HttpUtil.SC_LOCKED));
+                    new Integer(HttpUtil.SC_LOCKED));
 
         } catch (IllegalOperationException e) {
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
-                      new Integer(HttpServletResponse.SC_FORBIDDEN));
+                    new Integer(HttpServletResponse.SC_FORBIDDEN));
 
         } catch (ReadOnlyException e) {
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
-                      new Integer(HttpServletResponse.SC_FORBIDDEN));
+                    new Integer(HttpServletResponse.SC_FORBIDDEN));
 
         } catch (FailedDependencyException e) {
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
-                      new Integer(HttpUtil.SC_MULTI_STATUS));
+                    new Integer(HttpUtil.SC_MULTI_STATUS));
         }
 
         return new ModelAndView("DELETE", model);
     }
-   
-   
+
+
 }

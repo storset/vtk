@@ -107,7 +107,6 @@ public class RepositoryURIResolver extends AbstractPathBasedURIResolver
                 }
             } catch (Throwable t) { }
         }
-
         try {
             Resource r = this.repository.retrieve(token, path,
                                                   this.retrieveForProcessing);

@@ -33,37 +33,23 @@ package org.vortikal.web.service;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.AuthenticationException;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 
 /**
- * Handler interceptor retrieving resource on before handler excecution, 
+ * Handler intercepter retrieving resource on before handler excecution, 
  * effectively authorizing for read processed permission.
  * 
  * <p>Optionally delegates further resource evaluation to sub classes through
  * {@link #handleInternal}.
- * 
- * <p>Required JavaBean property:
- * <ul>
- *   <li><code>repository</code> - the {@link Repository}
- * </ul>
  */
-public class ResourceRetrievingHandlerInterceptor implements InitializingBean, HandlerInterceptor {
+public class ResourceRetrievingHandlerInterceptor implements HandlerInterceptor {
 
-    private Repository repository;
-    
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-    
     public final boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         Resource resource = retrieveResource();
         return handleInternal(resource, request);
@@ -82,20 +68,11 @@ public class ResourceRetrievingHandlerInterceptor implements InitializingBean, H
         throws RepositoryException, AuthenticationException, Exception {
         
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String token = securityContext.getToken();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
 
-        Resource resource = this.repository.retrieve(token, requestContext.getResourceURI(), true);
+        Resource resource = repository.retrieve(token, requestContext.getResourceURI(), true);
         return resource;
-    }
-
-
-
-    public void afterPropertiesSet() throws Exception {
-    if (this.repository == null) {
-        throw new BeanInitializationException(
-            "JavaBean property 'repository' not specified");
-    }                
     }
 
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {

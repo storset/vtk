@@ -41,14 +41,13 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.security.SecurityContext;
+import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
 public abstract class CopyController extends SimpleFormController {
 
     private String cancelView;
-    private Repository repository;
     private String extension;
     private String resourceName;
     private boolean parentViewOnSuccess;
@@ -61,22 +60,24 @@ public abstract class CopyController extends SimpleFormController {
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
-
-        Resource resource = repository.retrieve(securityContext.getToken(), requestContext.getResourceURI(), false);
-        String url = service.constructLink(resource, securityContext.getPrincipal());
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
+        Principal principal = requestContext.getPrincipal();
+        
+        Resource resource = repository.retrieve(token, requestContext.getResourceURI(), false);
+        String url = service.constructLink(resource, principal);
 
         String name = resource.getName();
-        if (name.indexOf(".") > 0)
+        if (name.indexOf(".") > 0) {
             name = name.substring(0, name.lastIndexOf("."));
-
-        if (this.extension != null)
+        }
+        if (this.extension != null) {
             name += this.extension;
-
-        if (this.resourceName != null)
+        }
+        if (this.resourceName != null) {
             name = this.resourceName;
-
+        }
         return this.createCommand(name, url);
     }
 
@@ -85,8 +86,8 @@ public abstract class CopyController extends SimpleFormController {
         Map<String, Object> model = new HashMap<String, Object>();
 
         RequestContext requestContext = RequestContext.getRequestContext();
-        String token = SecurityContext.getSecurityContext().getToken();
-
+        String token = requestContext.getSecurityToken();
+        Repository repository = requestContext.getRepository();
         Path uri = requestContext.getResourceURI();
 
         CopyCommand copyCommand = (CopyCommand) command;
@@ -108,19 +109,14 @@ public abstract class CopyController extends SimpleFormController {
 
         Resource resource = null;
 
-        if (this.parentViewOnSuccess)
-            resource = this.repository.retrieve(token, copyToCollection, false);
-        else
-            resource = this.repository.retrieve(token, copyUri, false);
-
+        if (this.parentViewOnSuccess) {
+            resource = repository.retrieve(token, copyToCollection, false);
+        } else {
+            resource = repository.retrieve(token, copyUri, false);
+        }
         model.put("resource", resource);
 
         return new ModelAndView(getSuccessView(), model);
-    }
-
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
     }
 
     @Required

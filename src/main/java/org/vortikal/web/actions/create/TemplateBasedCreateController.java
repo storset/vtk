@@ -42,9 +42,8 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.Resource;
 import org.vortikal.repository.Repository.Depth;
-import org.vortikal.security.SecurityContext;
+import org.vortikal.repository.Resource;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.templates.ResourceTemplate;
@@ -56,53 +55,41 @@ public class TemplateBasedCreateController extends SimpleFormController {
     private ResourceTemplateManager templateManager;
     private boolean downcaseNames = false;
     private Map<String, String> replaceNameChars; 
-    private Repository repository;
 
     protected Object formBackingObject(HttpServletRequest request)
     throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
-
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
-
         Path uri = requestContext.getResourceURI();
-        String token = SecurityContext.getSecurityContext().getToken();
+        String token = requestContext.getSecurityToken();
+        Repository repository = requestContext.getRepository();
 
-        Resource resource = this.repository.retrieve(securityContext.getToken(),
-                requestContext.getResourceURI(), false);
-
-        String url = service.constructLink(resource, securityContext.getPrincipal());
-
+        Resource resource = repository.retrieve(token, uri, false);
+        String url = service.constructLink(resource, requestContext.getPrincipal());
         CreateDocumentCommand command = new CreateDocumentCommand(url);
 
         List <ResourceTemplate> l = this.templateManager.getDocumentTemplates(token, uri);        
-
         // Set first available template as the selected 
         if (!l.isEmpty()) {
             command.setSourceURI(l.get(0).getUri().toString());
         }
-
         return command;
     }
 
 
-    @SuppressWarnings("unchecked" )
+    @SuppressWarnings("rawtypes")
     protected Map referenceData(HttpServletRequest request) throws Exception {       
         RequestContext requestContext = RequestContext.getRequestContext();        
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
+        String token = requestContext.getSecurityToken();
 
         Map<String, Object> model = new HashMap<String, Object>();
-
         Path uri = requestContext.getResourceURI();
-        String token = securityContext.getToken();
-
         List <ResourceTemplate> l = templateManager.getDocumentTemplates(token, uri);
 
         Map <String, String> templates = new LinkedHashMap <String, String>();
         for (ResourceTemplate t: l) {
             templates.put(t.getUri().toString(),t.getName());
         }
-
         model.put("templates", templates);		    	
         return model;
     }
@@ -116,20 +103,20 @@ public class TemplateBasedCreateController extends SimpleFormController {
             (CreateDocumentCommand) command;
 
         if (createDocumentCommand.getCancelAction() != null) return;
-        
+
         if (createDocumentCommand.getSourceURI() == null
-            || createDocumentCommand.getSourceURI().trim().equals("")) {
+                || createDocumentCommand.getSourceURI().trim().equals("")) {
             errors.rejectValue("sourceURI",
-                               "manage.create.document.missing.template",
-                               "You must choose a document type");
+                    "manage.create.document.missing.template",
+            "You must choose a document type");
         }
 
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
 
         Path uri = requestContext.getResourceURI();
-        String token = securityContext.getToken();
-        
+        String token = requestContext.getSecurityToken();
+        Repository repository = requestContext.getRepository();
+
         String name = createDocumentCommand.getName();
         if (null == name || "".equals(name.trim())) {
             errors.rejectValue("name",
@@ -144,36 +131,34 @@ public class TemplateBasedCreateController extends SimpleFormController {
             "This is an invalid document name");
         }
         name = fixDocumentName(name);
-        
+
         if (name.isEmpty()) {
             errors.rejectValue("name",
                     "manage.create.document.invalid.name",
             "This is an invalid document name");
             return;
         }
-        
+
         Path destinationURI = uri.extend(name);
 
-        if (this.repository.exists(token, destinationURI)) {
+        if (repository.exists(token, destinationURI)) {
             errors.rejectValue("name", "manage.create.document.exists",
             "A resource of this name already exists");
         }
-
     }
 
     
     protected void doSubmitAction(Object command) throws Exception {        
-        RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-
         CreateDocumentCommand createDocumentCommand =
             (CreateDocumentCommand) command;
         if (createDocumentCommand.getCancelAction() != null) {
             createDocumentCommand.setDone(true);
             return;
         }
+        RequestContext requestContext = RequestContext.getRequestContext();
         Path uri = requestContext.getResourceURI();
-        String token = securityContext.getToken();
+        String token = requestContext.getSecurityToken();
+        Repository repository = requestContext.getRepository();
 
         // The location of the file that we will be copying
         Path sourceURI = Path.fromString(createDocumentCommand.getSourceURI());
@@ -182,15 +167,10 @@ public class TemplateBasedCreateController extends SimpleFormController {
         name = fixDocumentName(name);
         Path destinationURI = uri.extend(name);
 
-        this.repository.copy(token, sourceURI, destinationURI, Depth.ZERO, false, false);
+        repository.copy(token, sourceURI, destinationURI, Depth.ZERO, false, false);
         createDocumentCommand.setDone(true);
 
     }
-
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    } 
 
     @Required
     public void setTemplateManager(ResourceTemplateManager templateManager) {

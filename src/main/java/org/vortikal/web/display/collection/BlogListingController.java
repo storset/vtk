@@ -8,8 +8,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Comment;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.security.SecurityContext;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 import org.vortikal.web.tags.RepositoryTagElementsDataProvider;
@@ -25,8 +26,9 @@ public class BlogListingController extends CollectionListingController {
     public void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
             throws Exception {
         super.runSearch(request, collection, model, pageLimit);
-
-        String token = SecurityContext.getSecurityContext().getToken();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
+        Repository repository = requestContext.getRepository();
         List<TagElement> tagElements = tagElementsProvider.getTagElements(collection.getURI(), token, 1, 5, 20, 1);
         model.put("tagElements", tagElements);
         List<Comment> comments = repository.getComments(token, collection, true, 4);
@@ -35,7 +37,7 @@ public class BlogListingController extends CollectionListingController {
         Map<String, URL> urlMap = new HashMap<String, URL>();
 
         for (Comment comment : comments) {
-            Resource r = this.repository.retrieve(token, comment.getURI(), true);
+            Resource r = repository.retrieve(token, comment.getURI(), true);
             resourceMap.put(r.getURI().toString(), r);
             urlMap.put(r.getURI().toString(), this.getViewService().constructURL(r.getURI()));
         }

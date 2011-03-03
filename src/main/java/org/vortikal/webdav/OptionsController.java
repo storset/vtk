@@ -39,10 +39,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.security.AuthenticationException;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 
 /**
@@ -59,9 +59,9 @@ public class OptionsController extends AbstractWebdavController {
     public ModelAndView handleRequest(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String token = securityContext.getToken();
         RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
         Path uri = requestContext.getResourceURI();
         Map<String, Object> model = new HashMap<String, Object>();
 
@@ -70,7 +70,7 @@ public class OptionsController extends AbstractWebdavController {
         
         Resource resource;
         try {
-            resource = this.repository.retrieve(token, uri, false);
+            resource = repository.retrieve(token, uri, false);
             model.put(WebdavConstants.WEBDAVMODEL_ETAG, resource.getEtag());
 
         } catch (ResourceNotFoundException e) {

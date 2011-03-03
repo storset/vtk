@@ -41,7 +41,6 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
@@ -55,7 +54,6 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  * 
  * Configurable properties:
  * <ul>
- *   <li><code>repository</code> - the content repository
  *   <li><code>modelName</code> - the name to use for the submodel
  *       generated (default <code>locales</code>)
  *   <li><code>locales</code> - a map containing keys that are
@@ -76,37 +74,28 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  * 
  */
 public class SwitchLocaleProvider implements ReferenceDataProvider {
-
-    private Repository repository = null;
     private String modelName = "locales";
     private Map<String, Service> locales;
-
-
-    @Required public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
 
     @Required public void setModelName(String modelName) {
         this.modelName = modelName;
     }
 
-
     @Required public void setLocales(Map<String, Service> locales) {
         this.locales = locales;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void referenceData(Map model, HttpServletRequest request)
         throws Exception {
         Map<String, Object> localeMap = new HashMap<String, Object>();
 
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        
-        Principal principal = securityContext.getPrincipal();
-        Resource resource = this.repository.retrieve(
-            securityContext.getToken(), requestContext.getResourceURI(), false);
+        Principal principal = requestContext.getPrincipal();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
+        Resource resource = repository.retrieve(
+            token, requestContext.getResourceURI(), false);
 
         org.springframework.web.servlet.support.RequestContext springContext =
             new org.springframework.web.servlet.support.RequestContext(request);

@@ -67,7 +67,6 @@
   
   <bean id="structuredResources.displayHandler"
         class="org.vortikal.resourcemanagement.view.StructuredResourceDisplayController"
-    parent="repositoryAware"
     depends-on="structuredResource.parser">
     <property name="viewName" value="structuredResources.displayView" />
     <property name="resourceManager" ref="structuredResources.resourceManager" />
@@ -84,7 +83,6 @@
     <property name="configProviders">
       <list>
         <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
-          <property name="repository" ref="repository" />
           <property name="uri" value="/" />
           <property name="appendPath" value="${flash.baseURL}/audioplayer.swf" />
           <property name="service" ref="viewService" />
@@ -92,7 +90,6 @@
           <property name="urlName" value="flashURL" />
         </bean>
         <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
-          <property name="repository" ref="repository" />
           <property name="uri" value="/" />
           <property name="appendPath" value="${jsBaseURL}/audio-player.js" />
           <property name="service" ref="viewService" />
@@ -172,9 +169,7 @@
     <property name="functions" ref="structuredResources.defaultFunctions" />
   </bean>
 
-  <bean id="structuredResources.resourcePropsDirective" class="org.vortikal.resourcemanagement.view.tl.ResourcePropsNodeFactory">
-    <constructor-arg ref="repository" />
-  </bean>
+  <bean id="structuredResources.resourcePropsDirective" class="org.vortikal.resourcemanagement.view.tl.ResourcePropsNodeFactory" />
 
   <bean id="structuredResources.localizedDirective" class="org.vortikal.resourcemanagement.view.tl.LocalizationNodeFactory">
     <constructor-arg value="structured-resource" />
@@ -225,7 +220,6 @@
         <constructor-arg value="resource" />
       </bean>
     </constructor-arg>
-    <constructor-arg ref="repository" />
   </bean>
 
   <bean id="structuredResources.resourcePropFunction" class="org.vortikal.resourcemanagement.view.tl.ResourcePropHandler">
@@ -234,7 +228,6 @@
         <constructor-arg value="resource-prop" />
       </bean>
     </constructor-arg>
-    <constructor-arg ref="repository" />
   </bean>
 
   <bean id="structuredResources.resourcePropObjValFunction" class="org.vortikal.resourcemanagement.view.tl.ResourcePropObjectValueHandler">
@@ -243,7 +236,6 @@
         <constructor-arg value="resource-prop-obj-val" />
       </bean>
     </constructor-arg>
-    <constructor-arg ref="repository" />
   </bean>
 
   <bean id="structuredResources.structuredDocumentFunction" class="org.vortikal.resourcemanagement.view.tl.JSONDocumentProvider">
@@ -307,7 +299,6 @@
   <bean id="structuredResources.editHandler" class="org.vortikal.resourcemanagement.edit.StructuredResourceEditor">
     <property name="safeHtmlFilter" ref="resourceManager.htmlPropsFilter" />
     <property name="resourceManager" ref="structuredResources.resourceManager" />
-    <property name="repository" ref="repository" />
     <property name="formView" value="structuredResources.editView" />
     <property name="successView" value="redirectToManage" />
     <property name="listComponentsService" ref="jsonDocumentsComponentsService" />
@@ -351,7 +342,6 @@
           <property name="modelName" value="fckBrowse" />
         </bean>
         <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
-          <property name="repository" ref="repository" />
           <property name="service" ref="viewService" />
           <property name="modelName" value="fckeditorBase" />
           <property name="urlName" value="documentURL" />

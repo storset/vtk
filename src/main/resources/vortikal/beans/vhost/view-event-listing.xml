@@ -25,7 +25,7 @@
     <property name="handler" ref="eventListing.atomHandler" />
   </bean>
 
-  <bean id="eventListing.handler" class="org.vortikal.web.display.collection.event.EventListingController" parent="repositoryAware">
+  <bean id="eventListing.handler" class="org.vortikal.web.display.collection.event.EventListingController">
     <property name="resourceManager" ref="resourceManager" />
     <property name="subFolderMenuProvider" ref="subFolderMenuProvider" />
     <property name="viewName" value="${override.listing.prefix}eventListing.view" />
@@ -84,8 +84,7 @@
     <property name="eventTypeTitlePropDef" ref="eventListing.eventTypeTitlePropDef" />
   </bean>
 
-  <bean id="eventListing.upcomingEventsSearchComponent" class="org.vortikal.web.search.QueryStringSearchComponent"
-    parent="repositoryAware">
+  <bean id="eventListing.upcomingEventsSearchComponent" class="org.vortikal.web.search.QueryStringSearchComponent">
     <property name="name" value="eventListing.upcomingEventsSearchComponent" />
     <property name="titleLocalizationKey" value="eventListing.upcomingEvents" />
     <property name="viewService" ref="webService" />
@@ -111,8 +110,7 @@
     <property name="defaultSortOrder" ref="SORT_ORDER.ASC" />
   </bean>
 
-  <bean id="eventListing.previousEventsSearchComponent" class="org.vortikal.web.search.QueryStringSearchComponent"
-    parent="repositoryAware">
+  <bean id="eventListing.previousEventsSearchComponent" class="org.vortikal.web.search.QueryStringSearchComponent">
     <property name="name" value="eventListing.previousEventsSearchComponent" />
     <property name="titleLocalizationKey" value="eventListing.previousEvents" />
     <property name="viewService" ref="webService" />

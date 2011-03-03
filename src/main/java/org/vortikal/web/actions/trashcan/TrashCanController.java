@@ -38,9 +38,6 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -49,7 +46,6 @@ import org.vortikal.repository.RecoverableResource;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.Message;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.actions.trashcan.TrashCanObjectSorter.Order;
@@ -57,26 +53,21 @@ import org.vortikal.web.service.Service;
 
 public class TrashCanController extends SimpleFormController {
 
-    private static Log logger = LogFactory.getLog(TrashCanController.class);
-
-    private Repository repository;
-
     @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
         Path uri = requestContext.getResourceURI();
-        String token = securityContext.getToken();
 
-        Resource resource = this.repository.retrieve(token, uri, false);
+        Resource resource = repository.retrieve(token, uri, false);
         Service service = requestContext.getService();
-        Principal principal = securityContext.getPrincipal();
+        Principal principal = requestContext.getPrincipal();
 
         String submitURL = service.constructLink(resource, principal);
         TrashCanCommand command = new TrashCanCommand(submitURL, resource);
 
-        List<RecoverableResource> recoverableResources = this.repository.getRecoverableResources(token, uri);
+        List<RecoverableResource> recoverableResources = repository.getRecoverableResources(token, uri);
         List<TrashCanObject> trashCanObjects = new ArrayList<TrashCanObject>();
         for (RecoverableResource rr : recoverableResources) {
             TrashCanObject tco = new TrashCanObject();
@@ -102,17 +93,19 @@ public class TrashCanController extends SimpleFormController {
             return this.showNewForm(request, response);
         }
 
-        String token = SecurityContext.getSecurityContext().getToken();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
         Path parentURI = trashCanCommand.getParentResource().getURI();
         List<RecoverableResource> selectedResources = trashCanCommand.getSelectedResources();
 
         if (trashCanCommand.getRecoverAction() != null) {
 
-            RecoveryObject recoveryObject = this.getRecoverableResources(parentURI, selectedResources);
+            RecoveryObject recoveryObject = getRecoverableResources(parentURI, selectedResources);
 
             // Recover what u can
             for (RecoverableResource rr : recoveryObject.getRecoverable()) {
-                this.repository.recover(token, parentURI, rr);
+                repository.recover(token, parentURI, rr);
             }
 
             // Check for conflicted resources, notify user of failed recovery
@@ -134,7 +127,7 @@ public class TrashCanController extends SimpleFormController {
         } else if (trashCanCommand.getDeletePermanentAction() != null) {
 
             for (RecoverableResource rr : selectedResources) {
-                this.repository.deleteRecoverable(token, parentURI, rr);
+                repository.deleteRecoverable(token, parentURI, rr);
             }
             if (selectedResources.size() == trashCanCommand.getTrashCanObjects().size()) {
                 return new ModelAndView(this.getSuccessView());
@@ -146,8 +139,9 @@ public class TrashCanController extends SimpleFormController {
         }
     }
 
-    private RecoveryObject getRecoverableResources(Path parentURI, List<RecoverableResource> selectedResources) {
-
+    private RecoveryObject getRecoverableResources(Path parentURI, 
+            List<RecoverableResource> selectedResources) throws Exception {
+        
         List<String> duplicateConflicted = new ArrayList<String>();
         Set<String> duplicates = new HashSet<String>();
         for (RecoverableResource rr : selectedResources) {
@@ -169,18 +163,10 @@ public class TrashCanController extends SimpleFormController {
         return new RecoveryObject(recoverable, conflicted);
     }
 
-    private boolean exists(Path path) {
-        try {
-            return this.repository.exists(null, path);
-        } catch (Exception e) {
-            logger.warn("An error occured while checking resource existense for " + path, e);
-        }
-        return false;
-    }
-
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
+    private boolean exists(Path path) throws Exception {
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        return repository.exists(null, path);
     }
 
     class RecoveryObject {

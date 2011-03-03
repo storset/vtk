@@ -34,15 +34,12 @@ package org.vortikal.web.actions.properties;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.TypeInfo;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
@@ -65,22 +62,8 @@ import org.vortikal.web.service.Service;
  * namespace.
  * 
  */
-public class SetResourcePropertyController
-  extends SimpleFormController implements InitializingBean {
+public class SetResourcePropertyController extends SimpleFormController {
 
-    private Repository repository = null;
-    
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
-    public void afterPropertiesSet() {
-        if (this.repository == null) {
-            throw new BeanInitializationException(
-                "Bean property 'repository' not set");
-        }
-    }
-    
     protected boolean isFormSubmission(HttpServletRequest request) {
         String namespace = request.getParameter("namespace");
         String name = request.getParameter("name");
@@ -90,9 +73,8 @@ public class SetResourcePropertyController
     
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
-
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
+        Repository repository = requestContext.getRepository();
         Service service = requestContext.getService();
         
         String namespace = request.getParameter("namespace");
@@ -105,7 +87,7 @@ public class SetResourcePropertyController
                 "Both parameters 'name' and 'namespace' must be provided with the request");
         }
 
-        Resource resource = this.repository.retrieve(securityContext.getToken(),
+        Resource resource = repository.retrieve(requestContext.getSecurityToken(),
                                                 requestContext.getResourceURI(), false);
         Namespace ns = Namespace.getNamespace(namespace);
 
@@ -113,20 +95,17 @@ public class SetResourcePropertyController
         if (property != null)
             value = property.getStringValue();
 
-        String url = service.constructLink(resource, securityContext.getPrincipal());
+        String url = service.constructLink(resource, requestContext.getPrincipal());
 
          ResourcePropertyCommand command =
              new ResourcePropertyCommand(namespace, name, value, url);
         return command;
     }
-    
-    
 
     protected void doSubmitAction(Object command) throws Exception {        
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        
-        String token = securityContext.getToken();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
 
         ResourcePropertyCommand propertyCommand =
             (ResourcePropertyCommand) command;
@@ -136,9 +115,9 @@ public class SetResourcePropertyController
             return;
         }
 
-        Resource resource = this.repository.retrieve(
+        Resource resource = repository.retrieve(
             token, requestContext.getResourceURI(), false);
-        TypeInfo typeInfo = this.repository.getTypeInfo(token, requestContext.getResourceURI());
+        TypeInfo typeInfo = repository.getTypeInfo(token, requestContext.getResourceURI());
         Namespace ns = Namespace.getNamespace(propertyCommand.getNamespace());
 
         Property property = resource.getProperty(ns, propertyCommand.getName());
@@ -147,8 +126,7 @@ public class SetResourcePropertyController
             resource.addProperty(property);
         }
         property.setStringValue(propertyCommand.getValue());
-
-        this.repository.store(token, resource);
+        repository.store(token, resource);
         propertyCommand.setDone(true);
     }
 }

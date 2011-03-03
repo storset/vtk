@@ -32,8 +32,7 @@
 
 
   <bean id="webConsoleHandler"
-        class="org.vortikal.web.display.shell.CommandExecutorController"
-        parent="repositoryAware">
+        class="org.vortikal.web.display.shell.CommandExecutorController">
 
     <property name="formView" value="webConsole" />
     <property name="successView" value="webConsole" />

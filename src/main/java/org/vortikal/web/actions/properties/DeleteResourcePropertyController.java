@@ -35,53 +35,29 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
-
 /**
  * Controller for deleting resource properties. 
- *
- * @version $Id$
  */
-public class DeleteResourcePropertyController
-  extends SimpleFormController implements InitializingBean {
-
-
+public class DeleteResourcePropertyController extends SimpleFormController {
     private static Log logger = LogFactory.getLog(DeleteResourcePropertyController.class);
-    
-    private Repository repository = null;
-    
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
-    public void afterPropertiesSet() {
-        if (this.repository == null) {
-            throw new BeanInitializationException(
-                "Bean property 'repository' not set");
-        }
-    }
     
     protected boolean isFormSubmission(HttpServletRequest request) {
         String namespace = request.getParameter("namespace");
         String name = request.getParameter("name");
         return (namespace != null && name != null);
     }
-    
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
-
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
+        Repository repository = requestContext.getRepository();
         Service service = requestContext.getService();
         
         String namespace = request.getParameter("namespace");
@@ -92,24 +68,19 @@ public class DeleteResourcePropertyController
             throw new ServletException(
                 "Both parameters 'name' and 'namespace' must be provided with the request");
         }
-
-        Resource resource = this.repository.retrieve(securityContext.getToken(),
+        Resource resource = repository.retrieve(requestContext.getSecurityToken(),
                                                 requestContext.getResourceURI(), false);
-
-        String url = service.constructLink(resource, securityContext.getPrincipal());
+        String url = service.constructLink(resource, requestContext.getPrincipal());
 
          ResourcePropertyCommand command =
              new ResourcePropertyCommand(namespace, name, null, url);
         return command;
     }
     
-    
-
     protected void doSubmitAction(Object command) throws Exception {        
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        
-        String token = securityContext.getToken();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
 
         ResourcePropertyCommand propertyCommand =
             (ResourcePropertyCommand) command;
@@ -122,7 +93,7 @@ public class DeleteResourcePropertyController
         Namespace ns = Namespace.getNamespace(propertyCommand.getNamespace());
         String name = propertyCommand.getName();
         
-        Resource resource = this.repository.retrieve(token, requestContext.getResourceURI(), false);
+        Resource resource = repository.retrieve(token, requestContext.getResourceURI(), false);
         Property property = resource.getProperty(ns, name);
         if (property == null) {
             if (logger.isDebugEnabled())
@@ -134,7 +105,7 @@ public class DeleteResourcePropertyController
             return;
         }
         resource.removeProperty(ns, name);
-        this.repository.store(token, resource);
+        repository.store(token, resource);
         propertyCommand.setDone(true);
     }
 }

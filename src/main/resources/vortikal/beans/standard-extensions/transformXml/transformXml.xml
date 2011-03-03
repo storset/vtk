@@ -4,8 +4,7 @@
 <beans>
 
   <bean id="transformXmlHandlerInterceptor"
-        class="org.vortikal.web.interceptors.HeaderControlHandlerInterceptor"
-        parent="repositoryAware">
+        class="org.vortikal.web.interceptors.HeaderControlHandlerInterceptor">
     <property name="includeLastModifiedHeader" value="false" />
     <property name="includeEtagHeader" value="false" />
   </bean>
@@ -50,8 +49,7 @@
     <property name="order" value="-2"/>
   </bean>
 
-  <bean id="rawXmlQueryHandler" class="org.vortikal.web.display.search.XmlQueryController"
-        parent="repositoryAware">
+  <bean id="rawXmlQueryHandler" class="org.vortikal.web.display.search.XmlQueryController">
     <property name="xmlSearcher" ref="xmlSearcher" />
   </bean>
 
@@ -127,8 +125,7 @@
     <property name="handler" ref="displayXmlResourceHandler" />
   </bean>
 
-   <bean id="propertyAccessor" class="org.vortikal.web.view.PropertyAccessor"
-         parent="repositoryAware">
+   <bean id="propertyAccessor" class="org.vortikal.web.view.PropertyAccessor">
      <property name="resourceTypeTree" ref="resourceTypeTree" />
    </bean>
 
@@ -140,8 +137,7 @@
     <property name="referenceDataProviders">
       <list>
         <ref bean="xslBeanProvider" />
-        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
-          parent="repositoryAware">
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
           <property name="service" ref="rssTransformService" />
           <property name="modelName" value="xsltParameters" />
           <property name="urlName" value="RSS-URL" />
@@ -168,8 +164,7 @@
     <property name="referenceDataProviders">
       <list>
         <ref bean="xslBeanProvider" />
-        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
-              parent="repositoryAware">
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
           <property name="service" ref="viewService" />
           <property name="modelName" value="xsltParameters" />
           <property name="urlName" value="VIEW-URL" />
@@ -180,8 +175,7 @@
 
 
   <bean id="xslBeanProvider"
-        class="org.vortikal.web.referencedata.provider.XSLReferenceDataProvider"
-        parent="repositoryAware">
+        class="org.vortikal.web.referencedata.provider.XSLReferenceDataProvider">
     <description>
       This reference data provider adds some metadata to the model for use when transforming XML documents.
     </description>
@@ -191,8 +185,7 @@
   </bean>
 
   <bean id="xmlSearcher"
-        class="org.vortikal.repository.search.XmlSearcher"
-        parent="repositoryAware">
+        class="org.vortikal.repository.search.XmlSearcher">
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="parser" ref="searchParser" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
@@ -205,8 +198,7 @@
 
 
   <bean id="rawXmlQueryURLProvider"
-        class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
-        parent="repositoryAware">
+        class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
     <property name="modelName" value="xsltParameters" />
     <property name="urlName" value="rawXmlQueryURL" />
     <property name="service" ref="rawXmlQueryService" />
@@ -329,27 +321,15 @@
    
 
   <bean id="previewXmlResourceHandler" 
-    class="org.vortikal.web.display.url.ResourceServiceURLController"
-    parent="repositoryAware">
+    class="org.vortikal.web.display.url.ResourceServiceURLController">
     <!--property name="service" ref="displayResourceService" /-->
     <property name="service" ref="displayResourceService" />
     <property name="viewName" value="previewAdminIframe" />
   </bean>
 
 
-  <!--
-  <bean id="displayXmlResourceHandler" 
-    class="org.vortikal.web.display.xml.DisplayXmlResourceController"
-    parent="repositoryAware">
-    <property name="handleLastModified" value="false" />
-    <property name="transformerManager" ref="transformerManager" />
-    <property name="viewName" value="transformXmlResource"/>
-  </bean>
-  -->
-
   <bean id="displayXmlResourceHandler"
-        class="org.vortikal.web.display.xml.DisplayXmlResourceController"
-        parent="repositoryAware">
+        class="org.vortikal.web.display.xml.DisplayXmlResourceController">
     <description>This is used as parent for all similar handlers</description>
     <property name="transformerManager" ref="transformerManager" />
     <property name="viewName" value="transformXmlResource"/>
@@ -374,8 +354,7 @@
 
 
   <bean id="displayRssResourceHandler" 
-    class="org.vortikal.web.display.xml.DisplayXmlResourceController"
-    parent="repositoryAware">
+    class="org.vortikal.web.display.xml.DisplayXmlResourceController">
     <property name="transformerManager" ref="rssTransformerManager" />
     <property name="viewName" value="transformRssResource" />
   </bean>

@@ -35,61 +35,15 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.regex.Pattern;
-
-import javax.imageio.ImageIO;
 
 import org.apache.commons.lang.StringUtils;
-import org.vortikal.repository.Path;
-import org.vortikal.repository.Repository;
-import org.vortikal.security.SecurityContext;
 
 public class ImageServiceImpl implements ImageService {
-
-    private Repository repository;
-
-    private static final Pattern REPO_IMAGE_REGEX_PATTERN = Pattern.compile("^(/)\\S*\\.(?i:png|gif|jp(e?)g)$");
-    private static final Pattern WEB_IMAGE_REGEX_PATTERN = Pattern
-            .compile("^(http(s?)\\:\\/\\/|www)\\S*\\.(?i:png|gif|jp(e?)g)$");
-
-    public ScaledImage scaleImage(String path, String width, String height) throws Exception {
-        BufferedImage originalImage = getImage(path);
-        String format = path.substring(path.lastIndexOf(".") + 1);
-        return scaleImage(originalImage, format, width, height);
-    }
 
     public ScaledImage scaleImage(BufferedImage image, String format, String width, String height) throws Exception {
         Dimension scaleDimension = getDimension(width, height, image);
         BufferedImage scaledImage = getScaledInstance(image, scaleDimension.width, scaleDimension.height);
         return new ScaledImage(scaledImage, format);
-    }
-
-    private BufferedImage getImage(String path) throws Exception {
-
-        BufferedImage originalImage = null;
-
-        if (isRepoImage(path)) {
-            String token = SecurityContext.getSecurityContext().getToken();
-            InputStream imageStream = repository.getInputStream(token, Path.fromString(path), true);
-            originalImage = ImageIO.read(imageStream);
-        } else if (isWebImage(path)) {
-            originalImage = ImageIO.read(new URL(path));
-        } else {
-            throw new IOException("Can not fetch requested image, uknown pathformat: '" + path + "'");
-        }
-
-        return originalImage;
-    }
-
-    private boolean isRepoImage(String path) {
-        return REPO_IMAGE_REGEX_PATTERN.matcher(path).matches();
-    }
-
-    private boolean isWebImage(String path) {
-        return WEB_IMAGE_REGEX_PATTERN.matcher(path).matches();
     }
 
     private Dimension getDimension(String width, String height, BufferedImage originalImage) {
@@ -149,9 +103,4 @@ public class ImageServiceImpl implements ImageService {
         return ret;
 
     }
-
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
 }

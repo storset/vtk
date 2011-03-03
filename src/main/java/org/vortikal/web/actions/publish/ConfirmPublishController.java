@@ -43,26 +43,25 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 public class ConfirmPublishController implements Controller {
 
-    private Repository repository;
     private String viewName;
     private Service publishService;
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
 
-        String token = SecurityContext.getSecurityContext().getToken();
-        Path resourceURI = RequestContext.getRequestContext().getResourceURI();
-
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        Path resourceURI = requestContext.getResourceURI();
+        String token = requestContext.getSecurityToken();
+        
         Resource item = repository.retrieve(token, resourceURI, true);
-
-        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
+        Principal principal = requestContext.getPrincipal();
         URL url = publishService.constructURL(item, principal);
 
         model.put("url", url);
@@ -70,11 +69,6 @@ public class ConfirmPublishController implements Controller {
         model.put("type", publishService.getName());
 
         return new ModelAndView(this.viewName, model);
-    }
-
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
     }
 
     @Required
@@ -86,5 +80,4 @@ public class ConfirmPublishController implements Controller {
     public void setPublishService(Service publishService) {
         this.publishService = publishService;
     }
-
 }

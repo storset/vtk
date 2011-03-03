@@ -46,12 +46,9 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.Resource;
 import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
-
 
 public class BeanContextComponentResolver
   implements ComponentResolver, ApplicationContextAware, InitializingBean {
@@ -64,7 +61,6 @@ public class BeanContextComponentResolver
     private Set<String> availableComponentNamespaces = new HashSet<String>();
     private Set<String> prohibitedComponentNamespaces = new HashSet<String>();
     private ResourceTypeDefinition resourceType;
-    private Repository repository;
     
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
@@ -82,10 +78,6 @@ public class BeanContextComponentResolver
         this.resourceType = resourceType;
     }
     
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-    
     public void afterPropertiesSet() {
         if (this.applicationContext == null) {
             throw new BeanInitializationException(
@@ -98,10 +90,6 @@ public class BeanContextComponentResolver
         if (this.prohibitedComponentNamespaces == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'prohibitedComponentNamespaces' not specified");
-        }
-        if (this.resourceType != null && this.repository == null) {
-            throw new BeanInitializationException(
-                 "JavaBean property 'repository' required when 'resourceType' is specified");
         }
     }
     
@@ -192,18 +180,9 @@ public class BeanContextComponentResolver
     private TypeInfo getResourceTypeInfo() {
         try {
             RequestContext requestContext = RequestContext.getRequestContext();
-            SecurityContext securityContext = SecurityContext.getSecurityContext();
-            return this.repository.getTypeInfo(securityContext.getToken(), requestContext.getResourceURI()); 
-        } catch (Throwable t) {
-            return null;
-        }
-    }
-    
-    private Resource getCurrentResource() {
-        try {
-            RequestContext requestContext = RequestContext.getRequestContext();
-            SecurityContext securityContext = SecurityContext.getSecurityContext();
-            return this.repository.retrieve(securityContext.getToken(), requestContext.getResourceURI(), true); 
+            Repository repository = requestContext.getRepository();
+            String token = requestContext.getSecurityToken();
+            return repository.getTypeInfo(token, requestContext.getResourceURI()); 
         } catch (Throwable t) {
             return null;
         }

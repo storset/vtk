@@ -30,7 +30,6 @@
  */
 package org.vortikal.resourcemanagement.view.tl;
 
-import org.vortikal.repository.Repository;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Symbol;
@@ -40,8 +39,8 @@ import org.vortikal.text.tl.Symbol;
  */
 public class ResourcePropObjectValueHandler extends ResourcePropHandler {
 
-    public ResourcePropObjectValueHandler(Symbol symbol, Repository repository) {
-        super(symbol, repository);
+    public ResourcePropObjectValueHandler(Symbol symbol) {
+        super(symbol);
     }
     
     @Override

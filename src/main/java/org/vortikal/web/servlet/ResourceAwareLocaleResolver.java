@@ -47,8 +47,6 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.web.RequestContext;
 
-
-
 /**
  * Resolves locale for the current resource.
  * 
@@ -74,23 +72,19 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
     public Locale resolveLocale(HttpServletRequest request) {
         RequestContext requestContext = RequestContext.getRequestContext();
         Path uri = requestContext.getResourceURI();
-
         // Try getting request from RequestContext if it's not provided
         if (request == null) {
             request = requestContext.getServletRequest();
         }
-
         return resolveResourceLocale(request, uri);
     }
 
     public Locale resolveResourceLocale(Path uri) {
         // Try to get request from RequestContext
         HttpServletRequest request = null;
-
         if (RequestContext.exists()) {
             request = RequestContext.getRequestContext().getServletRequest();
         }
-
         return resolveResourceLocale(request, uri);
     }
 

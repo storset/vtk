@@ -72,7 +72,7 @@ public class VShell extends AbstractConsole {
 
     
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     protected void init() {
         if (this.commands == null) {
             Map m = BeanFactoryUtils.beansOfTypeIncludingAncestors(

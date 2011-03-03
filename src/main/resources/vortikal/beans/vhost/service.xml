@@ -208,8 +208,7 @@
     <property name="handler" ref="displayThumbnailHandler" />
   </bean>
 
-  <bean id="displayThumbnailHandler" class="org.vortikal.web.display.thumbnail.DisplayThumbnailController"
-    parent="repositoryAware" />  
+  <bean id="displayThumbnailHandler" class="org.vortikal.web.display.thumbnail.DisplayThumbnailController" />  
 
    <!-- Resource-aware locale resolver (for viewService)  -->
 
@@ -270,7 +269,6 @@
   <bean id="expiresCacheResponseFilter" class="org.vortikal.web.filter.ExpiresCacheResponseFilter"
         parent="defaultResponseFilterCategoryBean">
     <property name="expiresPropDef" ref="expiresSecPropDef" />
-    <property name="repository" ref="repository" />
     <!--property name="rootService" ref="viewService" /-->
     <property name="globalMaxAge" value="${webCache.globalMaxAge}" />
     <property name="excludedResourceTypes">
@@ -394,8 +392,7 @@
   </bean>
 
 
-  <bean id="previewViewIframeHandler" class="org.vortikal.web.display.url.ResourceServiceURLController"
-    parent="repositoryAware">
+  <bean id="previewViewIframeHandler" class="org.vortikal.web.display.url.ResourceServiceURLController">
     <property name="viewName" value="previewViewIframe" />
     <property name="service" ref="viewService" />
   </bean>
@@ -532,8 +529,6 @@
     <property name="method" value="load" />
   </bean>
   
-  <bean id="imageService" class="org.vortikal.graphics.ImageServiceImpl">
-    <property name="repository" ref="repository" />
-  </bean>
+  <bean id="imageService" class="org.vortikal.graphics.ImageServiceImpl" />
 
 </beans>

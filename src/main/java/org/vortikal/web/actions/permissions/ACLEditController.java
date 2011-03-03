@@ -55,13 +55,11 @@ import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.Principal.Type;
 import org.vortikal.security.PrincipalFactory;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
 public class ACLEditController extends SimpleFormController implements InitializingBean {
 
-    private Repository repository;
     private Privilege privilege;
     private PrincipalFactory principalFactory;
 
@@ -79,26 +77,16 @@ public class ACLEditController extends SimpleFormController implements Initializ
                 new StringArrayPropertyEditor());
     }
 
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
     public void setPrivilegePrincipalMap(
             Map<Privilege, Principal> privilegePrincipalMap) {
         this.privilegePrincipalMap = privilegePrincipalMap;
     }
 
     public void afterPropertiesSet() {
-        if (this.repository == null) {
-            throw new BeanInitializationException(
-                    "Bean property 'repository' must be set");
-        }
         if (this.groupingPrincipal == null) {
             throw new BeanInitializationException(
                     "Bean property 'groupingPrincipal' must be set");
         }
-        
-
         if (this.privilege == null) {
             throw new BeanInitializationException(
                     "Bean property 'privilege' must be set");
@@ -118,21 +106,19 @@ public class ACLEditController extends SimpleFormController implements Initializ
     }
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
-
-        Path uri = RequestContext.getRequestContext().getResourceURI();
-        String token = SecurityContext.getSecurityContext().getToken();
-
-        Resource resource = this.repository.retrieve(token, uri, false);
-        return getACLEditCommand(resource);
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Path uri = requestContext.getResourceURI();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
+        Resource resource = repository.retrieve(token, uri, false);
+        return getACLEditCommand(resource, requestContext.getPrincipal());
     }
 
-    private ACLEditCommand getACLEditCommand(Resource resource) throws Exception {
+    private ACLEditCommand getACLEditCommand(Resource resource, Principal principal) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
 
-        String submitURL = service
-                .constructLink(resource, securityContext.getPrincipal());
+        String submitURL = service.constructLink(resource, principal);
         ACLEditCommand command = new ACLEditCommand(submitURL);
 
         command.setResource(resource);
@@ -165,8 +151,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
             if (!(PrincipalFactory.OWNER.equals(authorizedUser) || this.groupingPrincipal
                     .equals(authorizedUser))) {
 
-                String url = service.constructLink(resource, securityContext
-                        .getPrincipal(), parameters);
+                String url = service.constructLink(resource, principal, parameters);
                 removeUserURLs.put(authorizedUser.getName(), url);
             }
         }
@@ -180,7 +165,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
             parameters.put("groupNames", authorizedGroup.getName());
             // Switch grouping when removing individual groups:
             parameters.put("grouped", "false");
-            String url = service.constructLink(resource, securityContext.getPrincipal(),
+            String url = service.constructLink(resource, principal,
                     parameters);
             removeGroupURLs.put(authorizedGroup.getName(), url);
         }
@@ -216,14 +201,15 @@ public class ACLEditController extends SimpleFormController implements Initializ
     protected ModelAndView onSubmit(HttpServletRequest request,
             HttpServletResponse response, Object command, BindException errors)
             throws Exception {
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
 
         ACLEditCommand editCommand = (ACLEditCommand) command;
 
         Resource resource = editCommand.getResource();
         Acl acl = resource.getAcl();
 
-        String token = securityContext.getToken();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
 
         // did the user cancel?
         if (editCommand.getCancelAction() != null) {
@@ -241,7 +227,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
         if (editCommand.getSaveAction() != null) {
             addToAcl(acl, editCommand.getUserNameEntries(), Type.USER);
             addToAcl(acl, editCommand.getGroupNames(), Type.GROUP);
-            this.repository.storeACL(token, resource);
+            repository.storeACL(token, resource);
             return new ModelAndView(getSuccessView());
         }
 
@@ -261,7 +247,8 @@ public class ACLEditController extends SimpleFormController implements Initializ
             }
 
             return showForm(request, response, new BindException(
-                    getACLEditCommand(editCommand.getResource()), this.getCommandName()));
+                    getACLEditCommand(editCommand.getResource(), 
+                            requestContext.getPrincipal()), this.getCommandName()));
 
         } else if (editCommand.getRemoveGroupAction() != null) {
             String[] groupNames = editCommand.getGroupNames();
@@ -272,17 +259,20 @@ public class ACLEditController extends SimpleFormController implements Initializ
                 acl.removeEntry(this.privilege, group);
             }
             return showForm(request, response, new BindException(
-                    getACLEditCommand(resource), this.getCommandName()));
+                    getACLEditCommand(resource, requestContext.getPrincipal()), 
+                    getCommandName()));
 
         } else if (editCommand.getAddUserAction() != null) {
             addToAcl(acl, editCommand.getUserNameEntries(), Type.USER);
             return showForm(request, response, new BindException(
-                    getACLEditCommand(resource), this.getCommandName()));
+                    getACLEditCommand(resource, requestContext.getPrincipal()), 
+                    getCommandName()));
 
         } else if (editCommand.getAddGroupAction() != null) {
             addToAcl(acl, editCommand.getGroupNames(), Type.GROUP);
             return showForm(request, response, new BindException(
-                    getACLEditCommand(resource), this.getCommandName()));
+                    getACLEditCommand(resource, requestContext.getPrincipal()), 
+                    getCommandName()));
 
         } else {
             return new ModelAndView(getSuccessView());

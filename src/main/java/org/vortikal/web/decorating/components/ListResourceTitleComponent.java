@@ -7,9 +7,9 @@ import java.util.Map;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
@@ -21,9 +21,11 @@ public class ListResourceTitleComponent extends ViewRenderingDecoratorComponent 
     @Override
     public void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
-        String token = SecurityContext.getSecurityContext().getToken();
-        Path uri = RequestContext.getRequestContext().getResourceURI();
-        Resource resource = this.repository.retrieve(token, uri, true);
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Path uri = requestContext.getResourceURI();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
+        Resource resource = repository.retrieve(token, uri, true);
 
         Property resourceRefProp = resource.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE,
                 getMultipleResourceRefField());
@@ -32,12 +34,8 @@ public class ListResourceTitleComponent extends ViewRenderingDecoratorComponent 
         if (resourceRefProp != null && resourceRefProp.getValues() != null) {
             for (Value x : resourceRefProp.getValues()) {
                 try {
-                    String path = x.getStringValue();
-                    if(!path.equals("/") && path.endsWith("/")){
-                        path = path.substring(0, path.length()-1);
-                    }
-                    Path p = Path.fromString(path);
-                    Resource currentResource = this.repository.retrieve(token, p, false);
+                    Path p = Path.fromString(x.getStringValue());
+                    Resource currentResource = repository.retrieve(token, p, true);
                     relatedDocuments.add(new RelatedDocument(currentResource.getTitle(), p.toString()));
                 } catch (Exception e) {
                     // ignore exceptions

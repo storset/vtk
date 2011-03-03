@@ -40,7 +40,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 
 /**
@@ -62,7 +61,6 @@ public class SelectiveProtocolManager extends RequestProtocolAssertion
 
     private Set<Service> fileServices;
     private Set<Service> collectionServices;
-    private Repository repository;
     private boolean selectiveAccessEnabled = false;
     
     
@@ -175,7 +173,6 @@ public class SelectiveProtocolManager extends RequestProtocolAssertion
                                 Object handler, Exception ex) {
     }
     
-    
     public void setFileServices(Set<Service> services) {
         this.fileServices = services;
     }
@@ -184,19 +181,15 @@ public class SelectiveProtocolManager extends RequestProtocolAssertion
         this.collectionServices = services;
     }
 
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-    
     public void setSelectiveAccessEnabled(boolean selectiveAccessEnabled) {
         this.selectiveAccessEnabled = selectiveAccessEnabled;
     }
 
     private Resource retrieveResource() throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String token = securityContext.getToken();
-        Resource resource = this.repository.retrieve(token, requestContext.getResourceURI(), true);
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
+        Resource resource = repository.retrieve(token, requestContext.getResourceURI(), true);
         return resource;
     }
     

@@ -37,7 +37,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 
 
@@ -49,32 +48,13 @@ import org.vortikal.web.RequestContext;
 public class ResourceAwareParameterizableViewController
   extends ParameterizableViewController {
 
-    protected Repository repository;
-    
-
-    /**
-     * Sets the value of repository
-     *
-     * @param repository Value to assign to this.repository
-     */
-    public void setRepository(Repository repository)  {
-        this.repository = repository;
-    }
-
-    protected void initApplicationContext() {
-        super.initApplicationContext();
-        if (this.repository == null) {
-            throw new IllegalArgumentException("repository is required");
-        }
-    }
-
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
                                                  HttpServletResponse response) throws Exception {
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
         Path uri = requestContext.getResourceURI();
-        String token = securityContext.getToken();
-        this.repository.retrieve(token, uri, true);
+        String token = requestContext.getSecurityToken();
+        Repository repository = requestContext.getRepository();
+        repository.retrieve(token, uri, true);
         return super.handleRequestInternal(request, response);
     }
 }

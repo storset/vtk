@@ -39,7 +39,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.repository.Path;
@@ -47,7 +46,6 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.RequestContext;
@@ -102,7 +100,6 @@ import org.vortikal.web.RequestContext;
 public class HeaderControlHandlerInterceptor implements HandlerInterceptor {
     private Log logger = LogFactory.getLog(this.getClass());
 
-    private Repository repository;
     private boolean includeLastModifiedHeader = false;
     private boolean includeContentLanguageHeader = false;
     private boolean includeEtagHeader = false;
@@ -145,16 +142,14 @@ public class HeaderControlHandlerInterceptor implements HandlerInterceptor {
             return;
         }
         Resource resource = null;
-        @SuppressWarnings("unchecked") Map model = modelAndView.getModel();
+        @SuppressWarnings("rawtypes") Map model = modelAndView.getModel();
 
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-
+        Repository repository = requestContext.getRepository();
         Path uri = requestContext.getResourceURI();
-        String token = securityContext.getToken();
-
+        String token = requestContext.getSecurityToken();
         try {
-            resource = this.repository.retrieve(token, uri, true);
+            resource = repository.retrieve(token, uri, true);
         } catch (Throwable t) { }
 
         if (resource != null) {
@@ -271,9 +266,11 @@ public class HeaderControlHandlerInterceptor implements HandlerInterceptor {
     @SuppressWarnings("rawtypes") 
     protected void setCacheControlHeader(Resource resource, Map model, 
                                          HttpServletRequest request, HttpServletResponse response) throws Exception {
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
         if (resource == null || this.includeNoCacheHeader) {
             response.setHeader("Cache-Control", "no-cache");
-        } else if (!this.repository.isAuthorized(resource, RepositoryAction.READ_PROCESSED, null, false)) {
+        } else if (!repository.isAuthorized(resource, RepositoryAction.READ_PROCESSED, null, false)) {
             response.setHeader("Cache-Control", "private");
         }
     }
@@ -296,10 +293,5 @@ public class HeaderControlHandlerInterceptor implements HandlerInterceptor {
             }
             response.setHeader(header, value);
         }
-    }
-
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
     }
 }

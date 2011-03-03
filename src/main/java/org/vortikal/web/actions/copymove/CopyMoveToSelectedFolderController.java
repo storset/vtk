@@ -46,7 +46,6 @@ import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Repository.Depth;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.Message;
 import org.vortikal.web.RequestContext;
 
@@ -78,25 +77,20 @@ public class CopyMoveToSelectedFolderController implements Controller {
     private static Log logger = LogFactory.getLog(CopyMoveToSelectedFolderController.class);
     static final String COPYMOVE_SESSION_ATTRIBUTE = "copymovesession";
     private String viewName = "DEFAULT_VIEW_NAME";
-    private Repository repository;
     private static final Pattern COPY_POSTFIX_PATTERN = Pattern.compile("\\(\\d+\\)$");
 
     public void setViewName(String viewName) {
         this.viewName = viewName;
     }
 
-    public final void setRepository(final Repository newRepository) {
-        this.repository = newRepository;
-    }
-
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String token = securityContext.getToken();
         RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
         Path destinationUri = requestContext.getCurrentCollection();
-
+        Repository repository = requestContext.getRepository();
+        
         CopyMoveSessionBean sessionBean = (CopyMoveSessionBean) request.getSession(true).getAttribute(
                 COPYMOVE_SESSION_ATTRIBUTE);
 
@@ -132,15 +126,15 @@ public class CopyMoveToSelectedFolderController implements Controller {
             try {
                 if (moveAction) {
 
-                    if (!this.repository.exists(token, newResourceUri)) {
-                        this.repository.move(token, resourceUri, newResourceUri, false);
+                    if (!repository.exists(token, newResourceUri)) {
+                        repository.move(token, resourceUri, newResourceUri, false);
                     } else {
                         throw new RuntimeException("Trying to move to resource with same filename: " + newResourceUri);
                     }
 
                 } else {
-                    if (!this.repository.exists(token, newResourceUri)) {
-                        this.repository.copy(token, resourceUri, newResourceUri, Depth.INF, false, false);
+                    if (!repository.exists(token, newResourceUri)) {
+                        repository.copy(token, resourceUri, newResourceUri, Depth.INF, false, false);
                     } else {
                         if (logger.isDebugEnabled()) {
                             logger.debug("Trying to duplicate resource: " + newResourceUri);
@@ -149,11 +143,11 @@ public class CopyMoveToSelectedFolderController implements Controller {
                         Path newUri = newResourceUri;
 
                         int number = 1;
-                        while (this.repository.exists(token, newUri)) {
+                        while (repository.exists(token, newUri)) {
                             newUri = appendCopySuffix(newUri, number);
                             number++;
                         }
-                        this.repository.copy(token, resourceUri, newUri, Depth.INF, false, false);
+                        repository.copy(token, resourceUri, newUri, Depth.INF, false, false);
                     }
                 }
             } catch (AuthorizationException e) {

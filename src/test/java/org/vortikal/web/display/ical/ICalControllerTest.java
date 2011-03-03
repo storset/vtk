@@ -14,9 +14,9 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceImpl;
 import org.vortikal.repository.resourcetype.DateValueFormatter;
 import org.vortikal.repository.resourcetype.HtmlValueFormatter;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.StringValueFormatter;
-import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.web.AbstractControllerTest;
 
 public class ICalControllerTest extends AbstractControllerTest {
@@ -32,7 +32,6 @@ public class ICalControllerTest extends AbstractControllerTest {
     protected void setUp() throws Exception {
         super.setUp();
         controller = new ICalController();
-        controller.setRepository(mockRepository);
 
         startDatePropDef = getPropDef(Namespace.DEFAULT_NAMESPACE, "start-date", Type.DATE, new DateValueFormatter());
         controller.setStartDatePropDef(startDatePropDef);

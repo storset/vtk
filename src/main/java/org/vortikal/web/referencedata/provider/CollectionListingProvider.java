@@ -49,7 +49,6 @@ import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.ResourceSorter;
 import org.vortikal.util.repository.ResourceSorter.Order;
 import org.vortikal.web.RequestContext;
@@ -129,7 +128,6 @@ public class CollectionListingProvider implements ReferenceDataProvider {
                                       "content-type", 
                                       "owner" }));
     
-    private Repository repository;
     private Map<String, Service> linkedServices = new HashMap<String, Service>();
     private Service browsingService;
     private boolean retrieveForProcessing = false;
@@ -143,10 +141,6 @@ public class CollectionListingProvider implements ReferenceDataProvider {
         new String[] {DEFAULT_SORT_BY_PARAMETER, "content-length", "last-modified"};
     
 
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
     public void setLinkedServices(Map<String, Service> linkedServices)  {
         this.linkedServices = linkedServices;
     }
@@ -159,13 +153,7 @@ public class CollectionListingProvider implements ReferenceDataProvider {
         this.retrieveForProcessing = retrieveForProcessing;
     }
 
-
     public void afterPropertiesSet() {
-        if (this.repository == null) {
-            throw new BeanInitializationException(
-                "JavaBean Property 'repository' must be set");
-        }
-
         if (this.browsingService == null) {
             throw new BeanInitializationException(
                     "JavaBean Property 'browsingService' must be set");    
@@ -182,29 +170,27 @@ public class CollectionListingProvider implements ReferenceDataProvider {
     }
 
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void referenceData(Map model, HttpServletRequest request)
         throws Exception {
 
         Map<String, Object> collectionListingModel = new HashMap<String, Object>();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
         Path uri = requestContext.getResourceURI();
-        String token = securityContext.getToken();
-        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
+        String token = requestContext.getSecurityToken();
+        Principal principal = requestContext.getPrincipal();
+        Repository repository = requestContext.getRepository();
         collectionListingModel.put("childInfoItems", this.childInfoItems);
         Resource[] children = null;
 
-        Resource resource = this.repository.retrieve(token, uri,
+        Resource resource = repository.retrieve(token, uri,
                                                 this.retrieveForProcessing);
         if (!resource.isCollection()) {
             // Can't do anything unless resource is a collection
             return;
         }
-
-        children = this.repository.listChildren(token, uri, true);
-
-        children = filterChildren(token, children);
+        children = repository.listChildren(token, uri, true);
+        children = filterChildren(requestContext, children);
 
         // Sort children according to input parameters 
         String sortBy = request.getParameter("sort-by");
@@ -269,7 +255,7 @@ public class CollectionListingProvider implements ReferenceDataProvider {
         String parentURL = null;
         if (resource.getURI().getParent() != null) {
             try {
-                Resource parent = this.repository.retrieve(token, resource.getURI().getParent(), true);
+                Resource parent = repository.retrieve(token, resource.getURI().getParent(), true);
                 parentURL = this.browsingService.constructLink(parent, principal);
             } catch (RepositoryException e) {
                 // Ignore
@@ -283,21 +269,22 @@ public class CollectionListingProvider implements ReferenceDataProvider {
         model.put("collectionListing", collectionListingModel);
     }
 
-    private Resource[] filterChildren(String token, Resource[] children) throws Exception {
+    private Resource[] filterChildren(RequestContext requestContext, Resource[] children) throws Exception {
 
         if (this.matchingResourceTypes == null) {
             return children;
         }
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
         
         List<Resource> filteredChildren = new ArrayList<Resource>();
         for (Resource resource: children) {
-            TypeInfo type = this.repository.getTypeInfo(token, resource.getURI());
+            TypeInfo type = repository.getTypeInfo(token, resource.getURI());
             for (ResourceTypeDefinition resourceDef: this.matchingResourceTypes) {
                 if (type.isOfType(resourceDef))
                     filteredChildren.add(resource);
             }
         }
-            
         return filteredChildren.toArray(new Resource[filteredChildren.size()]);
     }
     

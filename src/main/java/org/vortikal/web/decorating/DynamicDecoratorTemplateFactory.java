@@ -48,7 +48,6 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.resourcemanagement.view.tl.ComponentInvokerNodeFactory;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.text.tl.CaptureNodeFactory;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.DefineNodeFactory;
@@ -104,7 +103,7 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
         functions.add(new ResourceLocaleFunction(new Symbol("resource-locale")));
         functions.add(new TemplateParameterFunction(new Symbol("template-param")));
         functions.add(new ResourceAspectFunction(new Symbol("resource-aspect"), this.aspectsPropdef, this.fieldConfig));
-        functions.add(new ResourcePropHandler(new Symbol("resource-prop"), this.repository));
+        functions.add(new ResourcePropHandler(new Symbol("resource-prop")));
         this.functions = functions;
         
         Map<String, DirectiveNodeFactory> directiveHandlers = new HashMap<String, DirectiveNodeFactory>();
@@ -247,11 +246,8 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
     
     private class ResourcePropHandler extends Function {
 
-        private Repository repository;
-
-        public ResourcePropHandler(Symbol symbol, Repository repository) {
+        public ResourcePropHandler(Symbol symbol) {
             super(symbol, 2);
-            this.repository = repository;
         }
 
         @Override
@@ -268,12 +264,15 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
             }
 
             if (resource == null) {
+                RequestContext requestContext = RequestContext
+                        .getRequestContext();
+                Repository repository = requestContext.getRepository();
                 Path uri = ".".equals(ref) 
-                ? RequestContext.getRequestContext().getResourceURI()
+                ? requestContext.getResourceURI()
                         : Path.fromString(ref);
-                String token = SecurityContext.getSecurityContext().getToken();
+                String token = requestContext.getSecurityToken();
                 try {
-                    resource = this.repository.retrieve(token, uri, true);
+                    resource = repository.retrieve(token, uri, true);
                 } catch (Throwable t) {
                     throw new RuntimeException(t);
                 }

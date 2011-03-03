@@ -54,7 +54,6 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.security.AuthenticationException;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.util.io.BoundedInputStream;
 import org.vortikal.util.io.SizeLimitException;
 import org.vortikal.util.web.HttpUtil;
@@ -119,13 +118,13 @@ public class PropfindController extends AbstractWebdavController {
     public ModelAndView handleRequest(HttpServletRequest request,
                                       HttpServletResponse response) throws Exception {
          
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String token = securityContext.getToken();
         RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
         Path uri = requestContext.getResourceURI();
         Map<String, Object> model = new HashMap<String, Object>();
         try {
-            Resource resource = this.repository.retrieve(token, uri, false);
+            Resource resource = repository.retrieve(token, uri, false);
 
             /* Parse the request body XML: */
             Document requestBody = parseRequestBody(request);
@@ -196,13 +195,14 @@ public class PropfindController extends AbstractWebdavController {
         Resource resource, Document requestBody, String depth, String token)
         throws InvalidRequestException, ResourceNotFoundException,
         AuthenticationException, AuthorizationException, Exception {
+        Repository repository = RequestContext.getRequestContext().getRepository();
         
         Map<String, Object> model = new HashMap<String, Object>();
 
         List<Resource> resourceList = new ArrayList<Resource>();
         if (resource.isCollection()) {
             resourceList = getResourceDescendants(
-                resource.getURI(), depth, this.repository, token);
+                resource.getURI(), depth, repository, token);
         }
         if (depth.equals("0") || depth.equals("1")) {
             resourceList.add(resource);
@@ -261,7 +261,6 @@ public class PropfindController extends AbstractWebdavController {
      * @return a <code>List</code> of DAV property elements
      * represented as <code>org.jdom.Element</code> objects.
      */
-    @SuppressWarnings("unchecked")
     protected List<Element> getRequestedProperties(Document requestBody, Resource res) {
         List<Element> propList = new ArrayList<Element>();
 
@@ -316,7 +315,8 @@ public class PropfindController extends AbstractWebdavController {
             Element propertyElement = requestBody.getRootElement().getChild(
                 "prop", WebdavConstants.DAV_NAMESPACE);
       
-            for (Iterator propIter = propertyElement.getChildren().iterator();
+            for (@SuppressWarnings("rawtypes")
+            Iterator propIter = propertyElement.getChildren().iterator();
                  propIter.hasNext();) {
 
                 Element requestedProperty = (Element) propIter.next();

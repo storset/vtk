@@ -37,13 +37,12 @@ import java.nio.charset.Charset;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceWrapper;
 import org.vortikal.repository.TypeInfo;
-import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.text.html.HtmlPageParser;
@@ -51,7 +50,6 @@ import org.vortikal.web.RequestContext;
 
 public class ResourceWrapperManager {
 
-    private Repository repository;
     private HtmlPageParser htmlParser;
     private HtmlPageFilter htmlPropsFilter;
     private EditablePropertyProvider editPropertyProvider = new ResourceTypeEditablePropertyProvider();
@@ -91,8 +89,9 @@ public class ResourceWrapperManager {
     }
 
     private void populateWrapper(ResourceWrapper wrapper, Path uri, boolean forProcessing) throws Exception {
-        String token = SecurityContext.getSecurityContext().getToken();
-        Resource resource = this.repository.retrieve(token, uri, forProcessing);
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
+        Resource resource = requestContext.getRepository().retrieve(token, uri, forProcessing);
         populateWrapper(wrapper, resource, forProcessing);
     }
 
@@ -101,14 +100,15 @@ public class ResourceWrapperManager {
         if (resource == null) {
             throw new IllegalArgumentException("Resource cannot be NULL");
         }
-        String token = SecurityContext.getSecurityContext().getToken();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
         wrapper.setResource(resource);
 
         if (wrapper instanceof ResourceEditWrapper) {
             ResourceEditWrapper editWrapper = (ResourceEditWrapper) wrapper;
-            TypeInfo type = this.repository.getTypeInfo(token, wrapper.getURI());
+            TypeInfo type = requestContext.getRepository().getTypeInfo(token, wrapper.getURI());
             if (type.isOfType(this.contentResourceType)) {
-                InputStream is = this.repository.getInputStream(token, resource.getURI(), forProcessing);
+                InputStream is = requestContext.getRepository().getInputStream(token, resource.getURI(), forProcessing);
                 HtmlPage content = null;
 
                 if (resource.getCharacterEncoding() != null) {
@@ -131,12 +131,14 @@ public class ResourceWrapperManager {
     }    
 
     public void store(ResourceEditWrapper wrapper) throws Exception {
-        String token = SecurityContext.getSecurityContext().getToken();
-        Path uri = RequestContext.getRequestContext().getResourceURI();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
+        Path uri = requestContext.getResourceURI();
         Resource resource = wrapper.getResource();
-
+        Repository repository = requestContext.getRepository();
+        
         if (wrapper.isPropChange()) {
-            resource = this.repository.store(token, resource);
+            resource = repository.store(token, resource);
         }
 
         if (wrapper.isContentChange()) {
@@ -147,23 +149,18 @@ public class ResourceWrapperManager {
                 // Store default encoding if unsupported encoding
                 if (Charset.isSupported(resource.getCharacterEncoding())) {
                     bytes = wrapper.getContent().getStringRepresentation().getBytes(resource.getCharacterEncoding());
-                    this.repository.storeContent(token, uri, new ByteArrayInputStream(bytes));
+                    repository.storeContent(token, uri, new ByteArrayInputStream(bytes));
 
                 } else {
                     bytes = wrapper.getContent().getStringRepresentation().getBytes(defaultCharacterEncoding);
-                    this.repository.storeContent(token, uri, new ByteArrayInputStream(bytes));
+                    repository.storeContent(token, uri, new ByteArrayInputStream(bytes));
                 }
             } else {
                 bytes = wrapper.getContent().getStringRepresentation().getBytes(defaultCharacterEncoding);
-                this.repository.storeContent(token, uri, new ByteArrayInputStream(bytes));
+                repository.storeContent(token, uri, new ByteArrayInputStream(bytes));
             }
         }
         wrapper.setResource(resource);
-    }
-
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
     }
 
     @Required
@@ -182,16 +179,18 @@ public class ResourceWrapperManager {
     }
 
     public void unlock() throws Exception {
-        String token = SecurityContext.getSecurityContext().getToken();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
         Path uri = RequestContext.getRequestContext().getResourceURI();
-        this.repository.unlock(token, uri, null);
+        requestContext.getRepository().unlock(token, uri, null);
     }
 
     public void lock() throws Exception {
-        String token = SecurityContext.getSecurityContext().getToken();
-        Path uri = RequestContext.getRequestContext().getResourceURI();
-        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
-        this.repository.lock(token, uri, principal.getQualifiedName(), Depth.ZERO, 600, null);
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
+        Path uri = requestContext.getResourceURI();
+        Principal principal = requestContext.getPrincipal();
+        requestContext.getRepository().lock(token, uri, principal.getQualifiedName(), Depth.ZERO, 600, null);
     }
 
     public void setEditPropertyProvider(EditablePropertyProvider editPropertyProvider) {

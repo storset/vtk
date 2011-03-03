@@ -41,7 +41,6 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.security.web.SecurityInitializer;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -64,7 +63,6 @@ public class LogoutController extends SimpleFormController implements Initializi
 
     private Service redirectService = null;
     private SecurityInitializer securityInitializer = null;
-    private Repository repository;
 
     public void setRedirectService(Service redirectService) {
         this.redirectService = redirectService;
@@ -72,10 +70,6 @@ public class LogoutController extends SimpleFormController implements Initializi
     
     public void setSecurityInitializer(SecurityInitializer securityInitializer) {
         this.securityInitializer = securityInitializer;
-    }
-    
-    public void setRepository(Repository repository) {
-        this.repository = repository;
     }
     
     public void afterPropertiesSet() {
@@ -86,10 +80,6 @@ public class LogoutController extends SimpleFormController implements Initializi
         if (this.securityInitializer == null) {
             throw new BeanInitializationException(
                 "Bean property 'securityInitializer' not set");
-        }
-        if (this.repository == null) {
-            throw new BeanInitializationException(
-                "Bean property 'repository' not set");
         }
     }
     
@@ -121,12 +111,12 @@ public class LogoutController extends SimpleFormController implements Initializi
     @Override
     protected Object formBackingObject(HttpServletRequest request)
             throws Exception {
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        Principal principal = securityContext.getPrincipal();
         RequestContext requestContext = RequestContext.getRequestContext();
+        Principal principal = requestContext.getPrincipal();
+        Repository repository = requestContext.getRepository();
         
-        Resource resource = this.repository.retrieve(
-                securityContext.getToken(), requestContext.getResourceURI(), true);
+        Resource resource = repository.retrieve(
+                requestContext.getSecurityToken(), requestContext.getResourceURI(), true);
                     
         Service service = requestContext.getService();
         URL submitURL = service.constructURL(resource, principal);
@@ -138,12 +128,12 @@ public class LogoutController extends SimpleFormController implements Initializi
     protected ModelAndView onSubmit(HttpServletRequest request,
             HttpServletResponse response, Object command, BindException errors)
             throws Exception {
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        Principal principal = securityContext.getPrincipal();
         RequestContext requestContext = RequestContext.getRequestContext();
+        Principal principal = requestContext.getPrincipal();
+        Repository repository = requestContext.getRepository();
         
-        Resource resource = this.repository.retrieve(
-                securityContext.getToken(), requestContext.getResourceURI(), true);
+        Resource resource = repository.retrieve(
+                requestContext.getSecurityToken(), requestContext.getResourceURI(), true);
 
         LogoutCommand logoutCommand = (LogoutCommand) command;
 

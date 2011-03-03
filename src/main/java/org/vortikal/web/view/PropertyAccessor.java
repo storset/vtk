@@ -41,60 +41,52 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 
 public class PropertyAccessor {
 
-    private Repository repository;
     private ResourceTypeTree resourceTypeTree;
 
     public String propertyValue(String uri, String prefix, String name, String format) {
-        
-            Path path = RequestContext.getRequestContext().getResourceURI();
-            
-            if (uri != null && !uri.equals("")) {
-                if (uri.startsWith("/")) {
-                    path = Path.fromString(uri);
-                } else {
-                    path = RequestContext.getRequestContext().getCurrentCollection();
-                    path = path.expand(uri);
-                }
+
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Path path = requestContext.getResourceURI();
+
+        if (uri != null && !uri.equals("")) {
+            if (uri.startsWith("/")) {
+                path = Path.fromString(uri);
+            } else {
+                path = requestContext.getCurrentCollection();
+                path = path.expand(uri);
             }
+        }
 
-            if (prefix != null && prefix.equals("")) {
-                prefix = null;
-            }
+        if (prefix != null && prefix.equals("")) {
+            prefix = null;
+        }
 
-            PropertyTypeDefinition def =
-                resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
+        PropertyTypeDefinition def =
+            resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
 
-            if (def == null) {
-                return "";
-            }
-            
-            if (format != null && format.equals("")) {
-                format = null;
-            }
-
-            String token = SecurityContext.getSecurityContext().getToken();
-            HttpServletRequest request = RequestContext.getRequestContext().getServletRequest();
-            Locale locale = 
-                new org.springframework.web.servlet.support.RequestContext(request).getLocale();
-
-            try {
-                Resource resource = this.repository.retrieve(token, path, true);
-                Property prop = resource.getProperty(def);
-                if (prop != null)
-                    return prop.getFormattedValue(format, locale);
-            } catch (Exception e) {
-            }
-
+        if (def == null) {
             return "";
-    }
+        }
 
-    @Required public void setRepository(Repository repository) {
-        this.repository = repository;
+        if (format != null && format.equals("")) {
+            format = null;
+        }
+        String token = requestContext.getSecurityToken();
+        HttpServletRequest request = requestContext.getServletRequest();
+        Locale locale = 
+            new org.springframework.web.servlet.support.RequestContext(request).getLocale();
+        Repository repository = requestContext.getRepository();
+        try {
+            Resource resource = repository.retrieve(token, path, true);
+            Property prop = resource.getProperty(def);
+            if (prop != null)
+                return prop.getFormattedValue(format, locale);
+        } catch (Exception e) { }
+        return "";
     }
 
     @Required public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {

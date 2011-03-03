@@ -43,8 +43,7 @@
   </bean>
 
   <bean id="openid.authenticationFormHandler"
-        class="org.vortikal.web.display.url.ResourceServiceURLController"
-        parent="repositoryAware">
+        class="org.vortikal.web.display.url.ResourceServiceURLController">
     <property name="service" ref="viewService" />
     <property name="viewName" value="openid.authenticationForm" />
   </bean>

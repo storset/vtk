@@ -8,15 +8,15 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.components.ListRelatedPersonsComponent;
 import org.vortikal.web.decorating.components.ListRelatedPersonsComponent.RelatedPerson;
 import org.vortikal.web.display.listing.ListingPager;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
-import org.vortikal.web.service.Assertion;
-import org.vortikal.web.service.Service;
 
 public class MasterCollectionListingController extends AlphabeticalCollectionListingController {
     
@@ -48,7 +48,9 @@ public class MasterCollectionListingController extends AlphabeticalCollectionLis
             int pageLimit) throws Exception {
         int page = ListingPager.getPage(request, ListingPager.UPCOMING_PAGE_PARAM);
         int limit = pageLimit;
-        String token = SecurityContext.getSecurityContext().getToken();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
 
         Map<String, List<RelatedPerson>> personsRelatedToMaster = new HashMap<String, List<RelatedPerson>>();
 
@@ -59,7 +61,7 @@ public class MasterCollectionListingController extends AlphabeticalCollectionLis
 
             for (PropertySet file : files) {
                 Resource currentResource = repository.retrieve(token, file.getURI(), true);
-                List<RelatedPerson> persons = getListRelatedPersonsComponent().getRelatedPersons(request, token, currentResource, limit);
+                List<RelatedPerson> persons = getListRelatedPersonsComponent().getRelatedPersons(request, requestContext, currentResource, limit);
                 personsRelatedToMaster.put(file.toString(), persons);
             }
 

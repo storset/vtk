@@ -35,10 +35,10 @@ import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
 import org.vortikal.repository.search.query.Query;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Symbol;
 import org.vortikal.text.tl.expr.Function;
+import org.vortikal.web.RequestContext;
 
 public class SearchResultValueProvider extends Function {
 
@@ -57,7 +57,8 @@ public class SearchResultValueProvider extends Function {
     public Object eval(Context ctx, Object... args) {
         Object arg = args[0];
         String queryString = arg.toString();
-        String token = SecurityContext.getSecurityContext().getToken();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
         Query query = queryParserFactory.getParser().parse(queryString);
         Search search = new Search();
         search.setLimit(100);

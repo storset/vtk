@@ -62,7 +62,6 @@ import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.repository.search.query.UriTermQuery;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
@@ -335,6 +334,9 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
 
     private ResultSet search(String token, Query query) {
 
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        
         // We are searching for collections
         AndQuery q = new AndQuery();
         q.add(new TypeTermQuery(this.collectionResourceType.getQName(), TermOperator.IN));
@@ -356,7 +358,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         search.setLimit(this.searchLimit);
         search.setPropertySelect(select);
 
-        return this.repository.search(token, search);
+        return repository.search(token, search);
     }
 
     private boolean isActive(Path currentURI, Path uri) {
@@ -545,8 +547,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
 
             boolean authenticated = "true".equals(request.getStringParameter(PARAMETER_AUTENTICATED));
             if (authenticated) {
-                SecurityContext securityContext = SecurityContext.getSecurityContext();
-                this.token = securityContext.getToken();
+                this.token = requestContext.getSecurityToken();
             }
 
             this.style = request.getStringParameter(PARAMETER_STYLE);
@@ -770,10 +771,6 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         this.navigationTitlePropDef = navigationTitlePropDef;
     }
     
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
     public void setModelName(String modelName) {
         this.modelName = modelName;
     }

@@ -41,7 +41,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.View;
-import org.vortikal.repository.Repository;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
@@ -53,7 +52,6 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
     private View view;
     private Set<String> exposedParameters = new HashSet<String>();
     private boolean exposeMvcModel = false;
-    protected Repository repository;
 
     @Required
     public void setView(View view) {
@@ -144,10 +142,5 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
     protected Map<String, String> getParameterDescriptionsInternal() {
         return null;
     }
-    
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
     
 }

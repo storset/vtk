@@ -44,7 +44,6 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.text.html.EnclosingHtmlContent;
 import org.vortikal.text.html.HtmlComment;
 import org.vortikal.text.html.HtmlContent;
@@ -65,17 +64,11 @@ import org.vortikal.web.service.URL;
  */
 public class PostCommentController extends SimpleFormController {
 
-    private Repository repository = null;
     private String formSessionAttributeName;
     private HtmlPageParser parser;
     private HtmlPageFilter htmlFilter;
     private int maxCommentLength = 10000;
     private boolean requireCommentTitle = false;
-
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
 
     @Required
     public void setHtmlParser(HtmlPageParser parser) {
@@ -101,11 +94,12 @@ public class PostCommentController extends SimpleFormController {
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
+        String token = requestContext.getSecurityToken();
+        Repository repository = requestContext.getRepository();
         Service service = requestContext.getService();
-        Resource resource = this.repository.retrieve(securityContext.getToken(), requestContext
-                .getResourceURI(), false);
-        URL url = service.constructURL(resource, securityContext.getPrincipal());
+        Resource resource = repository.retrieve(token, 
+                requestContext.getResourceURI(), false);
+        URL url = service.constructURL(resource, requestContext.getPrincipal());
         PostCommentCommand command = new PostCommentCommand(url);
         return command;
     }
@@ -164,11 +158,10 @@ public class PostCommentController extends SimpleFormController {
 
     protected void doSubmitAction(Object command) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
         Path uri = requestContext.getResourceURI();
-        String token = securityContext.getToken();
-
-        Resource resource = this.repository.retrieve(token, uri, false);
+        String token = requestContext.getSecurityToken();
+        Repository repository = requestContext.getRepository();
+        Resource resource = repository.retrieve(token, uri, false);
 
         PostCommentCommand commentCommand = (PostCommentCommand) command;
         if (commentCommand.getCancelAction() != null) {

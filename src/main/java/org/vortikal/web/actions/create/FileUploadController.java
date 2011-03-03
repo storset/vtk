@@ -50,7 +50,6 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
@@ -60,12 +59,7 @@ public class FileUploadController extends SimpleFormController {
 
     private File tempDir = new File(System.getProperty("java.io.tmpdir"));
 
-    private Repository repository = null;
     private int maxUploadSize = 100000000;
-
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
 
     public void setMaxUploadSize(int maxUploadSize) {
         this.maxUploadSize = maxUploadSize;
@@ -84,13 +78,13 @@ public class FileUploadController extends SimpleFormController {
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
+        Repository repository = requestContext.getRepository();
 
-        Resource resource = this.repository
-                .retrieve(securityContext.getToken(), requestContext.getResourceURI(), false);
+        Resource resource = repository
+                .retrieve(requestContext.getSecurityToken(), requestContext.getResourceURI(), false);
 
-        String url = service.constructLink(resource, securityContext.getPrincipal());
+        String url = service.constructLink(resource, requestContext.getPrincipal());
 
         FileUploadCommand command = new FileUploadCommand(url);
         return command;
@@ -119,6 +113,11 @@ public class FileUploadController extends SimpleFormController {
             }
         }
 
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
+        Repository repository = requestContext.getRepository();
+        Path uri = RequestContext.getRequestContext().getResourceURI();
+        
         // Check for existing files
         for (FileItem uploadItem : items) {
             String name = stripWindowsPath(uploadItem.getName());
@@ -126,13 +125,8 @@ public class FileUploadController extends SimpleFormController {
             if (name == null || name.trim().equals("")) {
                 return new ModelAndView(getSuccessView());
             }
-
-            String token = SecurityContext.getSecurityContext().getToken();
-            Path uri = RequestContext.getRequestContext().getResourceURI();
-
             Path itemURI = uri.extend(name);
-
-            boolean exists = this.repository.exists(token, itemURI);
+            boolean exists = repository.exists(token, itemURI);
             if (exists) {
                 errors.rejectValue("file", "manage.upload.resource.exists", "A resource with this name already exists");
                 return showForm(request, response, errors);
@@ -150,8 +144,6 @@ public class FileUploadController extends SimpleFormController {
             }
 
             String name = stripWindowsPath(uploadItem.getName());
-            String token = SecurityContext.getSecurityContext().getToken();
-            Path uri = RequestContext.getRequestContext().getResourceURI();
             Path itemURI = uri.extend(name);
 
             if (logger.isDebugEnabled()) {
@@ -160,7 +152,7 @@ public class FileUploadController extends SimpleFormController {
 
             try {
                 InputStream inStream = uploadItem.getInputStream();
-                this.repository.createDocument(token, itemURI, inStream);
+                repository.createDocument(token, itemURI, inStream);
             } catch (Exception e) {
                 logger.warn("Caught exception while performing file upload", e);
                 errors.rejectValue("file", "manage.upload.error",

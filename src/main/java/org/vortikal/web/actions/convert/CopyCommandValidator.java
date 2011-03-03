@@ -33,35 +33,33 @@ package org.vortikal.web.actions.convert;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
-import org.vortikal.security.SecurityContext;
+import org.vortikal.web.RequestContext;
 
 public abstract class CopyCommandValidator implements Validator {
 
     private static Log logger = LogFactory.getLog(CopyCommandValidator.class);
 
-    protected Repository repository;
-
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     protected abstract boolean supportsClass(Class clazz);
 
     protected abstract Path getCopyToURI(String name);
 
     protected abstract boolean validateName(String name, Errors errors);
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public boolean supports(Class clazz) {
         return this.supportsClass(clazz);
     }
 
     public void validate(Object command, Errors errors) {
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String token = securityContext.getToken();
-
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
+        Repository repository = requestContext.getRepository();
+        
         CopyCommand copyCommand = (CopyCommand) command;
         if (copyCommand.getCancelAction() != null)
             return;
@@ -73,11 +71,11 @@ public abstract class CopyCommandValidator implements Validator {
             return;
 
         }
-        if (!this.validateName(name, errors)) {
+        if (!validateName(name, errors)) {
             return;
         }
 
-        Path newURI = this.getCopyToURI(name);
+        Path newURI = getCopyToURI(name);
 
         try {
             boolean exists = repository.exists(token, newURI);
@@ -89,10 +87,4 @@ public abstract class CopyCommandValidator implements Validator {
             logger.warn("Unable to validate resource rename input", e);
         }
     }
-
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
 }

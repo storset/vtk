@@ -45,13 +45,11 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
 public class EditPublishingController extends SimpleFormController {
 
-    private Repository repository;
     private PropertyTypeDefinition publishDatePropDef;
     private PropertyTypeDefinition unpublishDatePropDef;
 
@@ -59,14 +57,13 @@ public class EditPublishingController extends SimpleFormController {
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
 
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-
+        Repository repository = requestContext.getRepository();
         Path uri = requestContext.getResourceURI();
-        String token = securityContext.getToken();
-        Resource resource = this.repository.retrieve(token, uri, false);
+        String token = requestContext.getSecurityToken();
+        Resource resource = repository.retrieve(token, uri, false);
 
         Service service = requestContext.getService();
-        String submitURL = service.constructLink(resource, securityContext.getPrincipal());
+        String submitURL = service.constructLink(resource, requestContext.getPrincipal());
 
         EditPublishingCommand command = new EditPublishingCommand(submitURL);
         command.setResource(resource);
@@ -74,7 +71,7 @@ public class EditPublishingController extends SimpleFormController {
         return command;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     protected Map referenceData(HttpServletRequest request) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("formName", this.getCommandName());
@@ -114,12 +111,10 @@ public class EditPublishingController extends SimpleFormController {
         } else {
             resource.removeProperty(propTypeDef);
         }
-        String token = SecurityContext.getSecurityContext().getToken();
-        this.repository.store(token, resource);
-    }
-
-    public void setRepository(Repository repository) {
-        this.repository = repository;
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
+        repository.store(token, resource);
     }
 
     public void setPublishDatePropDef(PropertyTypeDefinition publishDatePropDef) {

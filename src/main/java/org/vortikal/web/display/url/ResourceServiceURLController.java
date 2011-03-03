@@ -43,7 +43,6 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
@@ -54,7 +53,6 @@ import org.vortikal.web.service.Service;
  *
  * <p>Configurable properties:
  * <ul>
- *   <li><code>repository</code> - the content repository
  *   <li><code>service</code> - the service used to construct the URL</li>
  *   <li><code>viewName</code> - the name of the returned view</li>
  * </ul>
@@ -72,33 +70,25 @@ public class ResourceServiceURLController implements Controller {
     
     private Service service = null;
     private String viewName = DEFAULT_VIEW_NAME;
-    private Repository repository = null;
 
     @Required public void setService(Service service) {
         this.service = service;
     }
 
-
     public void setViewName(String viewName) {
         this.viewName = viewName;
     }
     
-
-    @Required public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-    
-    
     public ModelAndView handleRequest(HttpServletRequest arg0,
                                       HttpServletResponse arg1) throws Exception {
 
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        Principal principal = securityContext.getPrincipal();
         RequestContext requestContext = RequestContext.getRequestContext();
-        String token = securityContext.getToken();
-
+        Principal principal = requestContext.getPrincipal();
+        String token = requestContext.getSecurityToken();
+        Repository repository = requestContext.getRepository();
         Path uri = requestContext.getResourceURI();
-        Resource resource = this.repository.retrieve(token, uri, false);
+
+        Resource resource = repository.retrieve(token, uri, false);
         String resourceURL = this.service.constructLink(resource, principal, false);
 
         Map<String, Object> model = new HashMap<String, Object>();

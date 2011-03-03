@@ -45,16 +45,13 @@ import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
-
 public class CommentsProvider implements ReferenceDataProvider {
     
-    private Repository repository;
     private Service postCommentService;
     private Service deleteCommentService;
     private Service deleteAllCommentsService;
@@ -63,15 +60,10 @@ public class CommentsProvider implements ReferenceDataProvider {
     private String formSessionAttributeName;
     
 
-    @Required public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
     @Required public void setPostCommentService(Service postCommentService) {
         this.postCommentService = postCommentService;
     }
     
-
     @Required public void setDeleteCommentService(Service deleteCommentService) {
         this.deleteCommentService = deleteCommentService;
     }
@@ -107,10 +99,12 @@ public class CommentsProvider implements ReferenceDataProvider {
             }
         }
 
-        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
-        String token = SecurityContext.getSecurityContext().getToken();
-        Path uri = RequestContext.getRequestContext().getResourceURI();
-        Service currentService = RequestContext.getRequestContext().getService();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Principal principal = requestContext.getPrincipal();
+        String token = requestContext.getSecurityToken();
+        Path uri = requestContext.getResourceURI();
+        Service currentService = requestContext.getService();
+        Repository repository = requestContext.getRepository();
 
         model.put("principal", principal);
 
@@ -121,7 +115,7 @@ public class CommentsProvider implements ReferenceDataProvider {
         boolean commentsEnabled =
             resource.getAcl().getActions().contains(Privilege.ADD_COMMENT);
         model.put("commentsEnabled", commentsEnabled);
-        model.put("repositoryReadOnly", this.repository.isReadOnly());
+        model.put("repositoryReadOnly", repository.isReadOnly());
 
         Map<String, URL> deleteCommentURLs = new HashMap<String, URL>();
 
@@ -166,7 +160,7 @@ public class CommentsProvider implements ReferenceDataProvider {
         if (this.resourceCommentsFeedService != null) {
             
             // Only provide feed subscription link if resource is READ for ALL.
-            if (this.repository.isAuthorized(resource, RepositoryAction.READ, PrincipalFactory.ALL, false)) {
+            if (repository.isAuthorized(resource, RepositoryAction.READ, PrincipalFactory.ALL, false)) {
                 try {
                     URL feedURL = this.resourceCommentsFeedService.constructURL(resource, principal);
                     model.put("feedURL", feedURL);

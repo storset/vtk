@@ -41,7 +41,6 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
@@ -56,7 +55,6 @@ import org.vortikal.web.service.URL;
  * 
  * <p>Configurable JavaBean properties:
  * <ul>
- *  <li><code>repository</code> - the content {@link Repository repository}
  *  <li><code>modelName</code> - the name to use for the submodel generated
  *  <li><code>service</code> - the {@link Service} used to construct the URL
  *  <li><code>linkToParent</code> - if this property is set to
@@ -86,7 +84,6 @@ public class ResourceServiceURLProvider implements ReferenceDataProvider {
 
     private String modelName = null;
     private Service service = null;
-    private Repository repository;
     private boolean matchAssertions = false;
     private boolean linkToParent = false;
     private String urlName = "url";
@@ -105,10 +102,6 @@ public class ResourceServiceURLProvider implements ReferenceDataProvider {
         this.service = service;
     }
     
-    @Required public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-    
     public void setLinkToParent(boolean linkToParent) {
         this.linkToParent = linkToParent;
     }
@@ -125,7 +118,6 @@ public class ResourceServiceURLProvider implements ReferenceDataProvider {
         this.titleName = titleName;
     }
 
-
     public void setStaticURLHost(String staticURLHost) {
         this.staticURLHost = staticURLHost;
     }
@@ -141,15 +133,14 @@ public class ResourceServiceURLProvider implements ReferenceDataProvider {
         this.staticURLParameters = staticURLParameters;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void referenceData(Map model, HttpServletRequest request)
         throws Exception {
 
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        
-        Principal principal = securityContext.getPrincipal();
-
+        Principal principal = requestContext.getPrincipal();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
         Resource resource = null;
         Path uri = requestContext.getResourceURI();
         
@@ -159,8 +150,7 @@ public class ResourceServiceURLProvider implements ReferenceDataProvider {
 
         try {
             if (uri != null) { // Will be null for root resource if this.linkToParent is true
-                resource = this.repository.retrieve(
-                        securityContext.getToken(), uri, true);
+                resource = repository.retrieve(token, uri, true);
             }
         } catch (Throwable t) { }
 

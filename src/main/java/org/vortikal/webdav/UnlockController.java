@@ -30,7 +30,6 @@
  */
 package org.vortikal.webdav;
 
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,16 +38,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.InvalidRequestException;
 import org.vortikal.web.RequestContext;
 import org.vortikal.webdav.ifheader.IfHeaderImpl;
-
-
 
 /**
  * Handler for UNLOCK requests
@@ -56,70 +53,43 @@ import org.vortikal.webdav.ifheader.IfHeaderImpl;
  */
 public class UnlockController extends AbstractWebdavController {
 
-
     public ModelAndView handleRequest(HttpServletRequest request,
                                       HttpServletResponse response) throws Exception {
          
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String token = securityContext.getToken();
         RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
         Path uri = requestContext.getResourceURI();
         Map<String, Object> model = new HashMap<String, Object>();
         try {
             this.ifHeader = new IfHeaderImpl(request);
-            Resource resource = this.repository.retrieve(token, uri, false);
-
+            Resource resource = repository.retrieve(token, uri, false);
             verifyIfHeader(resource, false);
-            
             String lockToken = getLockToken(request);
-            this.logger.debug("lockToken:" + lockToken);
-            this.logger.debug("resource.getLock():" + resource.getLock());
-            
             if (resource.getLock() != null && !resource.getLock().getLockToken().equals(lockToken)) {
                 throw new PreconditionFailedException();
             }
-            
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Attempting to unlock " + uri + ", lock token: "
-                             + lockToken);
-            }
-            this.repository.unlock(token, uri, lockToken);
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Unlocking " + uri + " succeeded");
-            }
-
+            repository.unlock(token, uri, lockToken);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_OK));
             model.put(WebdavConstants.WEBDAVMODEL_ETAG, resource.getEtag());
 
         } catch (InvalidRequestException e) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Caught InvalidRequestException for URI " + uri, e);
-            }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_BAD_REQUEST));
 
         } catch (ResourceNotFoundException e) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Caught ResourceNotFoundException for URI " + uri);
-            }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_NOT_FOUND));
 
         } catch (PreconditionFailedException e) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Caught PreconditionFailedException for URI " + uri);
-            }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_PRECONDITION_FAILED));
             
         } catch (ResourceLockedException e) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Caught ResourceLockedException for URI " + uri);
-            }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpUtil.SC_LOCKED));
@@ -127,10 +97,6 @@ public class UnlockController extends AbstractWebdavController {
         return new ModelAndView("UNLOCK", model);
     }
    
-
-
-
-
     protected String getLockToken(HttpServletRequest request)
         throws InvalidRequestException {
 
@@ -145,7 +111,6 @@ public class UnlockController extends AbstractWebdavController {
             throw new InvalidRequestException("Invalid Lock-Token header: \""
                                               + header + "\"");
         }
-        
         if (! (lockToken.startsWith("<") && lockToken.endsWith(">"))) {
             //throw new InvalidRequestException("Invalid Lock-Token header: \""
             //                                  + header + "\"");
@@ -161,7 +126,4 @@ public class UnlockController extends AbstractWebdavController {
 
         return lockToken;
     }
-    
 }
-
-

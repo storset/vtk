@@ -39,7 +39,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
@@ -55,7 +54,6 @@ import org.vortikal.web.service.URL;
  * <ul>
  *   <li><code>redirectToService</code> - the {@link Service service}
  *   for which to construct the redirect URL
- *   <li><code>repository</code> - the content {@link Repository repository}
  *   <li><code>urlAnchor</code> - anchor to append to redirect URL (optional)
  * </ul>
  *
@@ -67,16 +65,11 @@ import org.vortikal.web.service.URL;
 public class RedirectProvider implements InitializingBean, ReferenceDataProvider {
 
     private Service redirectToService;
-    private Repository repository = null;
     private String urlAnchor;
     
 
     public void setRedirectToService(Service redirectToService) {
         this.redirectToService = redirectToService;
-    }
-
-    public void setRepository(Repository repository) {
-        this.repository = repository;
     }
 
     public void setUrlAnchor(String urlAnchor) {
@@ -89,21 +82,15 @@ public class RedirectProvider implements InitializingBean, ReferenceDataProvider
             throw new BeanInitializationException(
                 "Bean property 'redirectToService' must be set");
         }
-        if (this.repository == null) {
-            throw new BeanInitializationException(
-                "Bean property 'repository' must be set");
-        }
     }
 
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void referenceData(Map model, HttpServletRequest request)
         throws Exception {
         
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-
-        Principal principal = securityContext.getPrincipal();
+        Principal principal = requestContext.getPrincipal();
 
         Resource resource = null;
         if (model != null) {
@@ -111,15 +98,15 @@ public class RedirectProvider implements InitializingBean, ReferenceDataProvider
         }
 
         if (resource == null) {
-            resource = this.repository.retrieve(
-                securityContext.getToken(), requestContext.getResourceURI(), false);
+            Repository repository = requestContext.getRepository();
+            resource = repository.retrieve(
+                requestContext.getSecurityToken(), requestContext.getResourceURI(), false);
         }
         
         URL redirectURL = this.redirectToService.constructURL(resource, principal);
         if (this.urlAnchor != null) {
             redirectURL.setRef(this.urlAnchor);
         }
-
         model.put("redirectURL", redirectURL.toString());
     }
 

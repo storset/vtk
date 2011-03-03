@@ -4,8 +4,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.security.SecurityContext;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
 
@@ -50,8 +51,10 @@ public class IncludeMediaPlayerComponent extends ResourceMediaPlayerComponent {
 
         Resource mediaResource = null;
         if (url != null && url.startsWith("/")) {
+            RequestContext requestContext = RequestContext.getRequestContext();
+            Repository repository = requestContext.getRepository();
+            String token = requestContext.getSecurityToken();
             try {
-                String token = SecurityContext.getSecurityContext().getToken();
                 mediaResource = repository.retrieve(token, Path.fromString(url), false);
             } catch (Exception e) {
             }

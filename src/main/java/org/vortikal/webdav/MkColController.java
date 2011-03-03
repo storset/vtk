@@ -40,9 +40,9 @@ import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.ReadOnlyException;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.RequestContext;
 
@@ -60,19 +60,16 @@ public class MkColController extends AbstractWebdavController {
     public ModelAndView handleRequest(HttpServletRequest request,
                                       HttpServletResponse response) throws Exception {
          
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String token = securityContext.getToken();
         RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
         Path uri = requestContext.getResourceURI();
 
         Map<String, Object> model = new HashMap<String, Object>();
 
         try {
-         
             String contentLength = request.getHeader("Content-Length");
-
             if (contentLength != null && !contentLength.equals("0")) {
-                
                 model.put(WebdavConstants.WEBDAVMODEL_ERROR,
                           new WebdavUnsupportedMediaException());
                 model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
@@ -80,7 +77,7 @@ public class MkColController extends AbstractWebdavController {
                 return new ModelAndView("MKCOL", model);
             }
 
-            if (this.repository.exists(token, uri)) {
+            if (repository.exists(token, uri)) {
                 model.put(WebdavConstants.WEBDAVMODEL_ERROR,
                           new WebdavMethodNotAllowedException());
                 model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
@@ -92,9 +89,9 @@ public class MkColController extends AbstractWebdavController {
                 throw new IllegalOperationException("Rejecting resource creation: '"
                                                     + uri + "'");
             }
-            this.repository.createCollection(token, uri);
+            repository.createCollection(token, uri);
 
-            Resource resource = this.repository.retrieve(token, uri, false);
+            Resource resource = repository.retrieve(token, uri, false);
             model.put(WebdavConstants.WEBDAVMODEL_CREATED_RESOURCE, resource);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_CREATED));

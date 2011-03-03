@@ -43,7 +43,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 
 public abstract class AutoCompleteController implements Controller {
@@ -89,10 +88,10 @@ public abstract class AutoCompleteController implements Controller {
     }
 
     protected CompletionContext getCompletionContext(HttpServletRequest request) {
-        String token = SecurityContext.getSecurityContext().getToken();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
         Path contextUri = getContextUri(request);
         Locale preferredLocale = getPreferredLocale(request);
-
         return new CompletionContextImpl(contextUri, preferredLocale, token);
     }
 

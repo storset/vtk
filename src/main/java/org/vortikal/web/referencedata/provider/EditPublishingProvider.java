@@ -41,7 +41,6 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
@@ -55,18 +54,18 @@ public class EditPublishingProvider implements ReferenceDataProvider {
     private Service editUnpublishDateService;
     private PropertyTypeDefinition publishedPropDef;
 
-    private Repository repository;
-
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
+        Path resourceURI = requestContext.getResourceURI();
+        Repository repository = requestContext.getRepository();
 
-        String token = SecurityContext.getSecurityContext().getToken();
-        Path resourceURI = RequestContext.getRequestContext().getResourceURI();
-
-        Resource resource = this.repository.retrieve(token, resourceURI, true);
+        Resource resource = repository.retrieve(token, resourceURI, true);
         Property publishedProp = resource.getProperty(this.publishedPropDef);
-        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
+
+        Principal principal = requestContext.getPrincipal();
 
         URL editPublishDateUrl = this.editPublishDateService.constructURL(resource, principal);
         model.put("editPublishDateUrl", editPublishDateUrl);
@@ -107,11 +106,6 @@ public class EditPublishingProvider implements ReferenceDataProvider {
     @Required
     public void setPublishedPropDef(PropertyTypeDefinition publishedPropDef) {
         this.publishedPropDef = publishedPropDef;
-    }
-
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
     }
 
 }

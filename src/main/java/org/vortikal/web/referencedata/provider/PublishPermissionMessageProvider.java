@@ -35,14 +35,13 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.web.servlet.support.RequestContext;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
-import org.vortikal.security.SecurityContext;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 
 /**
@@ -73,27 +72,25 @@ public class PublishPermissionMessageProvider implements ReferenceDataProvider {
 
     private String localizationKey;
     private String modelName;
-    private Repository repository;
     private ResourceTypeTree resourceTypeTree;
     private ResourceTypeDefinition jsonResourceTypeDefinition;
     private PropertyTypeDefinition publishedPropDef;
 
-    // TODO: this whole file is kinda muddy. but wanted as a tabMessage..
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
-
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String token = securityContext.getToken();
-
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
+        Repository repository = requestContext.getRepository();
         Path uri = org.vortikal.web.RequestContext.getRequestContext().getResourceURI();
-        Resource resource = this.repository.retrieve(token, uri, false);
+        Resource resource = repository.retrieve(token, uri, false);
 
         String permission = ".allowed";
         if (resource.isReadRestricted()) {
             permission = ".restricted";
         }
 
-        RequestContext springContext = new RequestContext(request);
+        org.springframework.web.servlet.support.RequestContext springContext = 
+            new org.springframework.web.servlet.support.RequestContext(request);
         String messagePermission = springContext.getMessage(this.localizationKey + permission, new Object[] {},
                 this.localizationKey);
         model.put(this.modelName + "Permission", messagePermission);
@@ -125,11 +122,6 @@ public class PublishPermissionMessageProvider implements ReferenceDataProvider {
         sb.append(", localizationKey = ").append(this.localizationKey);
         sb.append(" ]");
         return sb.toString();
-    }
-
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
     }
 
     @Required

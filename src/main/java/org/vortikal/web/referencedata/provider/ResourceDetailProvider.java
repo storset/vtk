@@ -39,7 +39,6 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
@@ -52,7 +51,6 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  * 
  * <p>Configurable properties:
  * <ul>
- *   <li><code>repository</code> - the content repository
  *   <li><code>serviceMap</code> - a <code>java.util.Map</code>
  *       containing mappings between names and instances of {@link
  *       Service} objects, which will be used to construct links in
@@ -77,43 +75,31 @@ import org.vortikal.web.service.ServiceUnlinkableException;
 public class ResourceDetailProvider implements InitializingBean, ReferenceDataProvider {
 
     private Map<String, Service> serviceMap = null;
-    private Repository repository = null;
-    
         
     public void setServiceMap(Map<String, Service> serviceMap) {
         this.serviceMap = serviceMap;
     }
     
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
     public void afterPropertiesSet() throws Exception {
-        if (this.repository == null) {
-            throw new BeanInitializationException(
-                "Bean property 'repository' must be set");
-        }
         if (this.serviceMap == null) {
             throw new BeanInitializationException(
                 "Bean property 'serviceMap' must be set");
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void referenceData(Map model, HttpServletRequest request)
         throws Exception {
         Map<String, Object> resourceDetailModel = new HashMap<String, Object>();
 
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
         
         Resource resource = null;
         try {
-             resource = this.repository.retrieve(
-                 securityContext.getToken(), requestContext.getResourceURI(), false);
-        } catch (Throwable t) {
-            // Ignore
-        }
+             resource = repository.retrieve(
+                 requestContext.getSecurityToken(), requestContext.getResourceURI(), false);
+        } catch (Throwable t) { }
 
         for (Map.Entry<String, Service> entry: this.serviceMap.entrySet()) {
             String key = entry.getKey();
@@ -123,7 +109,7 @@ public class ResourceDetailProvider implements InitializingBean, ReferenceDataPr
             try {
                 if (resource != null) {
                     url = service.constructLink(
-                        resource, securityContext.getPrincipal());
+                        resource, requestContext.getPrincipal());
                 }
             } catch (ServiceUnlinkableException e) {
                 // Ignore

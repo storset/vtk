@@ -44,7 +44,6 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 
@@ -56,7 +55,6 @@ import org.vortikal.web.referencedata.ReferenceDataProvider;
  * 
  * <p>Configurable properties:
  * <ul>
- *  <li> <code>repository</code> - the content {@link Repository}
  *  <li> <code>modelNames</code> - a {@link Map} from {@link
  *      Property#getNamespace namespaces} to submodel names that are
  *      generated. For every namespace in the <code>properties</code>
@@ -111,7 +109,6 @@ import org.vortikal.web.referencedata.ReferenceDataProvider;
  *   property does not exist.
  * </ul>
  *
- * XXX: This class should be converted to use the new properties API
  */
 public class ResourcePropertiesValueProvider 
   implements ReferenceDataProvider, InitializingBean {
@@ -119,7 +116,6 @@ public class ResourcePropertiesValueProvider
     private static Log logger =
         LogFactory.getLog(ResourcePropertiesValueProvider.class);
 
-    private Repository repository = null;
     private String[] properties = null;
 
     private String[] namespaces = null;
@@ -128,33 +124,19 @@ public class ResourcePropertiesValueProvider
     private Map<String, String> localizationKeys = null;
     private Map<String, String> modelNames = null;
 
-
-
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-    
-
     public void setModelNames(Map<String, String> modelNames) {
         this.modelNames = modelNames;
     }
     
-
     public void setProperties(String[] properties) {
         this.properties = properties;
     }
     
-
     public void setLocalizationKeys(Map<String, String> localizationKeys) {
         this.localizationKeys = localizationKeys;
     }
     
-
     public void afterPropertiesSet() {
-        if (this.repository == null) {
-            throw new BeanInitializationException(
-                "Bean property 'repository' must be set");
-        }
         if (this.modelNames == null) {
             throw new BeanInitializationException(
                 "Bean property 'modelNames' must be set");
@@ -187,14 +169,13 @@ public class ResourcePropertiesValueProvider
     
 
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void referenceData(Map model, HttpServletRequest request)
             throws Exception {
-
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        
-        Resource resource = this.repository.retrieve(securityContext.getToken(),
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
+        Resource resource = repository.retrieve(token,
                                                 requestContext.getResourceURI(),
                                                 true);
 

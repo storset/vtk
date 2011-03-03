@@ -51,29 +51,6 @@ public class ImageServiceImplTestIntegration extends TestCase {
         assertProperResize(notScaledImage, null, null);
     }
     
-    public void testFailUknownPathFormat() {
-    	ScaledImage scaledImage = null;
-    	String[] invalidPaths = {"", "http://www.uio.no/image.pn", "http://www.uio.no", "www.uio.no/image.jg"};
-    	for (int i = 0; i < invalidPaths.length; i++) {
-    		try {
-    			scaledImage = imageService.scaleImage(invalidPaths[i], "200", "200");
-    			fail();
-    		} catch (Exception e) {
-    			assertNull("Should be null", scaledImage);
-    			assertTrue("Wrong exception", e.getMessage().contains("uknown pathformat"));
-    		}
-		}
-    }
-    
-    public void testScaleByPath() throws Exception {
-    	String scaledWidth = "100";
-    	ScaledImage scaledImage = imageService.scaleImage(
-    			"http://www.uio.no/profil/portal/grafikk/s1/logobeiges1.gif", scaledWidth, "");
-    	assertNotNull("No image was fetched", scaledImage);
-    	assertEquals("Wrong format", "gif", scaledImage.getOriginalFormat());
-    	assertEquals("Wrong width after resizing", scaledWidth, String.valueOf(scaledImage.getImage().getWidth()));
-    }
-    
     public void testGetImageBytes() throws Exception {
     	String scaledWidth = "100";
     	BufferedImage originalImage = ImageIO.read(this.getClass().getResourceAsStream(pngImage));

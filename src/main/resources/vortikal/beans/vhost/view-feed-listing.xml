@@ -3,7 +3,7 @@
 <beans>
 
   <bean id="viewAsFeedHandler" class="org.vortikal.web.display.AtomFeedController" abstract="true"
-    parent="repositoryAware" depends-on="resourceTypetree">
+    depends-on="resourceTypetree">
     <property name="viewService" ref="viewService" />
     <property name="abdera" ref="abdera" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />

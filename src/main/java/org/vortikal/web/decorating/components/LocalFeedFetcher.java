@@ -117,12 +117,20 @@ public class LocalFeedFetcher implements ServletContextAware {
             url.clearParameters();
             url.setPath(Path.ROOT);
             if (uri.indexOf("?") == -1) {
+                if (uri.endsWith("/") && !uri.equals("/")) {
+                    uri = uri.substring(0, uri.length() - 1);
+                    url.setCollection(true);
+                }
                 Path path = Path.fromString(uri);
                 url.setPath(path);
             } else {
                 String queryString = uri.substring(uri.indexOf("?") + 1);
                 Map<String, String[]> query = URL.splitQueryString(queryString);
                 String requestPath = uri.substring(0, uri.indexOf("?"));
+                if (requestPath.endsWith("/") && !requestPath.equals("/")) {
+                    requestPath = requestPath.substring(0, requestPath.length() - 1);
+                    url.setCollection(true);
+                }
                 Path path = Path.fromString(requestPath);
                 url.setPath(path);
                 for (String param: query.keySet()) {

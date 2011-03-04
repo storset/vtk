@@ -60,8 +60,6 @@ public class CollectionListingAggregationResolverTest extends AbstractController
         super.setUp();
         this.aggregationReslover = new CollectionListingAggregationResolver();
         this.aggregationReslover.setAggregationPropDef(getAggregatedPropTypeDef());
-        this.aggregationReslover.setRecursiveAggregationPropDef(getRecursiveAggregatedPropDef());
-        this.aggregationReslover.setRepository(mockRepository);
     }
 
     public void testRecursiveAggregation() {

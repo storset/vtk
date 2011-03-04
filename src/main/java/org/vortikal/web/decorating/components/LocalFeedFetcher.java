@@ -72,7 +72,12 @@ public class LocalFeedFetcher implements ServletContextAware {
     private InputStream retrieveLocalStream(String uri, DecoratorRequest request)
         throws Exception {
 
+        
         HttpServletRequest servletRequest = request.getServletRequest();
+        URL baseURL = URL.parse(servletRequest.getRequestURL().toString());
+        baseURL.clearParameters();
+        baseURL.setPath(Path.ROOT);
+
         if (servletRequest.getAttribute(IncludeComponent.INCLUDE_ATTRIBUTE_NAME) != null) {
             throw new DecoratorComponentException("Error including URI '" + uri
                     + "': possible include loop detected ");
@@ -93,6 +98,28 @@ public class LocalFeedFetcher implements ServletContextAware {
 
         BufferedResponse servletResponse = new BufferedResponse();
         rd.forward(requestWrapper, servletResponse);
+
+        int status = servletResponse.getStatus();
+        
+        // Follow one redirect:
+        if (status == HttpServletResponse.SC_MOVED_PERMANENTLY 
+                || status == HttpServletResponse.SC_MOVED_TEMPORARILY) {
+            Map<String, Object> headers = servletResponse.getHeaders();
+            for (String name: headers.keySet()) {
+                if ("Location".equals(name)) {
+                    String value = (String) headers.get(name);
+                    URL url = URL.parse(value);
+
+                    if (url.toString().startsWith(baseURL.toString())) {
+                         requestWrapper = new RequestWrapper(
+                                 servletRequest, url.getPathRepresentation());
+                        servletResponse = new BufferedResponse();
+                        rd.forward(requestWrapper, servletResponse);
+                    }
+                }
+            }
+        }
+        
         if (servletResponse.getStatus() != HttpServletResponse.SC_OK) {
             return null;
         }
@@ -100,7 +127,8 @@ public class LocalFeedFetcher implements ServletContextAware {
         return new ByteArrayInputStream(servletResponse.getContentBuffer());
     }
 
-    @Required public void setFeedBuilder(SyndFeedBuilder feedBuilder) {
+    @Required
+    public void setFeedBuilder(SyndFeedBuilder feedBuilder) {
         this.feedBuilder = feedBuilder;
     }
 

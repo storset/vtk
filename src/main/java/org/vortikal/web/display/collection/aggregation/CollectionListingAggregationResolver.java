@@ -54,9 +54,7 @@ public class CollectionListingAggregationResolver implements AggregationResolver
 
     private static Log logger = LogFactory.getLog(CollectionListingAggregationResolver.class);
 
-    private Repository repository;
     private PropertyTypeDefinition aggregationPropDef;
-    private PropertyTypeDefinition recursiveAggregationPropDef;
 
     private final static int DEFAULT_LIMIT = 5;
     private final static int DEFAULT_RECURSIVE_DEPTH = 2;
@@ -146,11 +144,10 @@ public class CollectionListingAggregationResolver implements AggregationResolver
         return aggregatedFoldersQuery;
     }
 
-    private void getAggregationPaths(List<Path> paths, Path startingPath, Resource collection, RequestContext requestContext, int depth) {
+    private void getAggregationPaths(List<Path> paths, Path startingPath, Resource collection,
+            RequestContext requestContext, int depth) {
         List<Path> addedPaths = addToPaths(collection, paths, startingPath);
-        Property recursiveAggregationProp = collection.getProperty(this.recursiveAggregationPropDef);
-        if ((recursiveAggregationProp != null && recursiveAggregationProp.getBooleanValue())
-                && depth < this.maxRecursiveDepth) {
+        if (depth < this.maxRecursiveDepth) {
             depth += 1;
             for (Path path : addedPaths) {
                 Resource resource = getResource(requestContext, path);
@@ -272,16 +269,8 @@ public class CollectionListingAggregationResolver implements AggregationResolver
         return false;
     }
 
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
     public void setAggregationPropDef(PropertyTypeDefinition aggregationPropDef) {
         this.aggregationPropDef = aggregationPropDef;
-    }
-
-    public void setRecursiveAggregationPropDef(PropertyTypeDefinition recursiveAggregationPropDef) {
-        this.recursiveAggregationPropDef = recursiveAggregationPropDef;
     }
 
     public void setLimit(int limit) {

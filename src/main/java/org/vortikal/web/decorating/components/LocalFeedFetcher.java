@@ -35,8 +35,8 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -46,7 +46,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.context.ServletContextAware;
+import org.vortikal.repository.Path;
 import org.vortikal.web.decorating.DecoratorRequest;
+import org.vortikal.web.service.URL;
 import org.vortikal.web.servlet.BufferedResponse;
 import org.vortikal.web.servlet.VortikalServlet;
 
@@ -58,6 +60,10 @@ public class LocalFeedFetcher implements ServletContextAware {
     private SyndFeedBuilder feedBuilder;
 
     public SyndFeed getFeed(String url, DecoratorRequest request) throws Exception {
+        if (url == null || !url.startsWith("/")) {
+            throw new IllegalArgumentException("Invalid URL: " + url 
+                    + ": must start with '/'");
+        }
         InputStream stream = retrieveLocalStream(url, request);
         SyndFeed feed = this.feedBuilder.build(stream);
         return feed;
@@ -72,7 +78,6 @@ public class LocalFeedFetcher implements ServletContextAware {
                     + "': possible include loop detected ");
         }
 
-        // XXX: encode URI?
         RequestWrapper requestWrapper = new RequestWrapper(servletRequest, uri);
         requestWrapper.setAttribute(IncludeComponent.INCLUDE_ATTRIBUTE_NAME, new Object());
 
@@ -104,57 +109,76 @@ public class LocalFeedFetcher implements ServletContextAware {
     }
 
     private class RequestWrapper extends HttpServletRequestWrapper {
-
-        private String requestUri;
-        private String queryString;
-        private Map<String, String> params = new HashMap<String, String>();
+        private URL requestURL;
         
         public RequestWrapper(HttpServletRequest request, String uri) {
             super(request);
+            URL url = URL.parse(request.getRequestURL().toString());
+            url.clearParameters();
+            url.setPath(Path.ROOT);
             if (uri.indexOf("?") == -1) {
-                this.requestUri = uri;
+                Path path = Path.fromString(uri);
+                url.setPath(path);
             } else {
-                this.requestUri = uri.substring(0, uri.indexOf("?"));
-                this.queryString = uri.substring(uri.indexOf("?") + 1);
-                StringTokenizer tokenizer = new StringTokenizer(this.queryString, "&");
-                while (tokenizer.hasMoreTokens()) {
-                    String s = tokenizer.nextToken();
-                    if (s.indexOf("=") == -1) {
-                        params.put(s, null);
-                    } else {
-                        params.put(s.substring(0, s.indexOf("=")),
-                                   s.substring(s.indexOf("=") + 1));
+                String queryString = uri.substring(uri.indexOf("?") + 1);
+                Map<String, String[]> query = URL.splitQueryString(queryString);
+                String requestPath = uri.substring(0, uri.indexOf("?"));
+                Path path = Path.fromString(requestPath);
+                url.setPath(path);
+                for (String param: query.keySet()) {
+                    for (String value: query.get(param)) {
+                        url.addParameter(param, value);
                     }
                 }
             }
+            this.requestURL = url;
         }
         
+        @Override
+        public StringBuffer getRequestURL() {
+            return new StringBuffer(this.requestURL.toString());
+        }
+
+        @Override
         public String getRequestURI() {
-            return requestUri;
+            return this.requestURL.getPathEncoded();
         }
 
+        @Override
         public String getQueryString() {
-            return this.queryString;
+            String s = this.requestURL.getQueryString();
+            if (s != null) {
+                return "?" + s;
+            }
+            return null;
         }
 
+        @Override
         public String getParameter(String name) {
-            return this.params.get(name);
+            return this.requestURL.getParameter(name);
         }
 
+        @Override
         public Map<String, String> getParameterMap() {
-            return Collections.unmodifiableMap(this.params);
+            Map<String, String> m = new HashMap<String, String>();
+            for (String name: this.requestURL.getParameterNames()) {
+                m.put(name, this.requestURL.getParameter(name));
+            }
+            return m;
         }
 
+        @Override
         public Enumeration<String> getParameterNames() {
-            return Collections.enumeration(this.params.keySet());
+            return Collections.enumeration(this.requestURL.getParameterNames());
         }
 
+        @Override
         public String[] getParameterValues(String name) {
-            String value = this.params.get(name);
-            if (value == null)
+            List<String> values = this.requestURL.getParameters(name);
+            if (values == null) {
                 return null;
-            return new String[] {value};
+            }
+            return values.toArray(new String[values.size()]);
         }
     }
-
 }

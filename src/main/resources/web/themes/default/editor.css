@@ -56,7 +56,10 @@ label {
   font-size: .9em;
 }
 
-.cke_dialog_contents
+
+.cke_dialog label {
+  display: inline;
+}
 
 .recursive-listing-subfolders label {
   display: inline;

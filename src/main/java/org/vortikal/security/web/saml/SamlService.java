@@ -139,13 +139,15 @@ public abstract class SamlService {
     
     public void setRequestIDSessionAttribute(HttpServletRequest request, URL url, UUID uuid) {
         HttpSession session = request.getSession(true);
-        @SuppressWarnings("unchecked")
-        Map<URL, UUID> attr = (Map<URL, UUID>) session.getAttribute(REQUEST_ID_SESSION_ATTR);
-        if (attr == null) {
-            attr = new HashMap<URL, UUID>();
-            session.setAttribute(REQUEST_ID_SESSION_ATTR, attr);
+        synchronized(session) {
+            @SuppressWarnings("unchecked")
+            Map<URL, UUID> attr = (Map<URL, UUID>) session.getAttribute(REQUEST_ID_SESSION_ATTR);
+            if (attr == null) {
+                attr = new HashMap<URL, UUID>();
+                session.setAttribute(REQUEST_ID_SESSION_ATTR, attr);
+            }
+            attr.put(url, uuid);
         }
-        attr.put(url, uuid);
     }
     
 

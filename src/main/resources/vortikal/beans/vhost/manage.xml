@@ -1875,6 +1875,7 @@
 
   <!-- Locale resolver for manage service  -->
   <bean id="manageLocaleResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+    <property name="cookieDomain" value="${manage.localeResolver.cookieDomain}" />
     <property name="cookieMaxAge" value="315360000" />
     <property name="defaultLocale">
       <bean class="java.util.Locale">

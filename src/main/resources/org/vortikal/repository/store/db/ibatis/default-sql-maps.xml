@@ -698,6 +698,23 @@
   </insert>
 
 
+  <insert id="insertChangeLogEntryInheritedToInheritance" 
+          parameterClass="java.util.Map">
+    insert into changelog_entry 
+      (changelog_entry_id, logger_id, logger_type,
+      operation, timestamp, uri, resource_id, is_collection)
+    select <include refid="nextChangelogEntryId" />, #entry.loggerId#, #entry.loggerType#,
+      #entry.operation,handler=org.vortikal.repository.store.db.ibatis.ChangeLogEntryOperationTypeHandlerCallback#, 
+      #entry.timestamp#, vr2.uri, vr2.resource_id, vr2.is_collection 
+    from vortex_resource vr1,
+         vortex_resource vr2
+    where vr1.resource_id = #entry.resourceId:NUMERIC:-1# 
+    and (vr2.resource_id = #entry.resourceId:NUMERIC:-1#
+         or (vr2.acl_inherited_from = vr1.acl_inherited_from 
+             and vr2.uri like #uriWildcard# escape '@'))
+  </insert>
+
+
   <insert id="insertChangeLogEntry" 
           parameterClass="org.vortikal.repository.ChangeLogEntry">
     insert into changelog_entry 

@@ -51,4 +51,7 @@ public interface ChangeLogDAO {
     public void addChangeLogEntryInherited(ChangeLogEntry entry)
         throws DataAccessException;
     
+    public void addChangeLogEntryInheritedToInheritance(ChangeLogEntry entry)
+    throws DataAccessException;
+
 }

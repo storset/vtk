@@ -164,4 +164,17 @@ public class SqlMapChangeLogDAO extends AbstractSqlMapDataAccessor
         getSqlMapClientTemplate().insert(sqlMap, entry);
     }
 
+    @Override
+    public void addChangeLogEntryInheritedToInheritance(ChangeLogEntry entry) 
+        throws DataAccessException {
+        String sqlMap = null;
+        
+        sqlMap = getSqlMap("insertChangeLogEntryInheritedToInheritance");
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("entry", entry);
+        parameters.put("uriWildcard", 
+                       SqlDaoUtils.getUriSqlWildcard(entry.getUri(), SQL_ESCAPE_CHAR));
+        getSqlMapClientTemplate().insert(sqlMap, parameters);
+    }
+
 }

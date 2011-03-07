@@ -111,7 +111,11 @@ public class ProcessedContentEventDumperAll extends AbstractRepositoryEventDumpe
                 resource.isCollection(), 
                 new Date());
 
-        this.changeLogDAO.addChangeLogEntryInherited(entry);
+        if (resource.isInheritedAcl()) {
+            this.changeLogDAO.addChangeLogEntryInheritedToInheritance(entry); 
+        } else {
+            this.changeLogDAO.addChangeLogEntryInherited(entry);             
+        }
         
     }
 

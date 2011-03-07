@@ -138,8 +138,11 @@ public class ProcessedContentEventDumperOpen extends AbstractRepositoryEventDump
                 op, ((ResourceImpl) resource).getID(),
                 resource.isCollection(), 
                 new Date());
-
-        this.changeLogDAO.addChangeLogEntryInherited(entry);        
+        if (resource.isInheritedAcl()) {
+            this.changeLogDAO.addChangeLogEntryInheritedToInheritance(entry); 
+        } else {
+            this.changeLogDAO.addChangeLogEntryInherited(entry);             
+        }
     }
 
 }

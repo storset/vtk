@@ -102,13 +102,15 @@
             
             <#if personsRelatedToMaster[master]?exists >
 				<#list personsRelatedToMaster[master] as person>
-					  <div>
-					  <#if person.url?exists>
-						<a href="${person.url?html}">${person.name?html}</a>
-					  <#else>
-						${person.name?html}
+						<#if person.name?exists >
+						  <div>
+						  <#if person.url?exists>
+							<a href="${person.url?html}">${person.name?html}</a>
+						  <#else>
+							${person.name?html}
+						  </#if>
+						  </div>
 					  </#if>
-					  </div>
 				</#list>
             </#if> 
             	            

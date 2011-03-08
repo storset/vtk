@@ -298,25 +298,33 @@
     <property name="targetObject" ref="decorating.documentComponentResolver" />
     <property name="targetMethod" value="listComponents" />
     <property name="modelName" value="componentList" />
-    <property name="viewName" value="listDecoratorComponents" />
+    <property name="viewName" value="listDocumentDecoratorComponents" />
   </bean>
   
   <bean id="listDecoratorComponentsViewResolver"
         class="org.vortikal.web.decorating.MappingViewResolver">
     <property name="views">
       <map>
-        <entry key="listDecoratorComponents" value-ref="listDecoratorComponentsView" />        
+        <entry key="listDecoratorComponents" value-ref="listDecoratorComponentsView" />
+        <entry key="listDocumentDecoratorComponents" value-ref="listDocumentDecoratorComponentsView" />
       </map>
     </property>
   </bean>
 
   <bean id="listDecoratorComponentsView" parent="freemarkerView">
     <property name="url" value="pages/list-decorator-components.ftl" />
-    <property name="referenceDataProviders">
-      <list>
-      </list>
-    </property>
   </bean>
 
 
+  <bean id="listDocumentDecoratorComponentsView" parent="listDecoratorComponentsView">
+    <property name="attributesMap">
+      <map>
+        <entry key="hiddenComponents">
+          <bean id="decorating.hiddenComponents" class="org.vortikal.context.CSVSetFactoryBean">
+            <property name="csvList" value="${decorating.hiddenComponents}" />
+          </bean>
+        </entry>
+      </map>
+    </property>
+  </bean>
 </beans>

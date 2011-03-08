@@ -1,8 +1,7 @@
 resourcetype structured-master{
 
   properties {
-    name : string,
-    title : derived (name) eval (name) overrides title,
+    title : string overrides title,
     status-available : boolean,
     introduction : simple_html,
     picture : image_ref,
@@ -28,7 +27,14 @@ resourcetype structured-master{
   }
     
   view-components {
-  
+  	title {
+      ##
+      [def v resource-prop(".", "title")]
+      [if v != null]
+        [val v]
+      [endif]
+      ##
+    }
       introduction {
       ##
       [def intro resource-prop(".", "introduction")]
@@ -144,7 +150,7 @@ resourcetype structured-master{
       <body id="vrtx-structured-project">
         <div id="vrtx-content">
           <div id="vrtx-main-content">
-            <h1>[call "json:field" {"select":"name"}] [call "comp:completed"]</h1>
+            <h1>[call "json:field" {"select":"title"}] [call "comp:completed"]</h1>
             [call "comp:introduction"]
             [call "comp:introduction-image"]
             [call "json:field" {"select":"content"}]
@@ -180,7 +186,7 @@ resourcetype structured-master{
   }
   
   localization {
-    name : (en : "Name", no : "Navn", nn : "Navn"),
+    title : (en : "Title", no : "Tittel", nn : "Tittel"),
     introduction : (en : "Introduction",no : "Innledning", nn : "Innleiing"),
     status-available : (en : "Status", no : "Status", nn : "Status"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),

@@ -10,6 +10,7 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 
 <#if media?exists && contentType?exists >
+
   <div class="vrtx-media-ref">
     <#if contentType == "audio" || contentType == "audio/mpeg" || contentType == "audio/mp3">
       <script type="text/javascript" src="${audioFlashPlayerJsURL?html}/"></script>  

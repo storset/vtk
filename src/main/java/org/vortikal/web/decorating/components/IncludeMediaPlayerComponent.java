@@ -55,7 +55,7 @@ public class IncludeMediaPlayerComponent extends ResourceMediaPlayerComponent {
             Repository repository = requestContext.getRepository();
             String token = requestContext.getSecurityToken();
             try {
-                mediaResource = repository.retrieve(token, Path.fromString(url), false);
+                mediaResource = repository.retrieve(token, Path.fromString(url), true);
             } catch (Exception e) {
             }
         }

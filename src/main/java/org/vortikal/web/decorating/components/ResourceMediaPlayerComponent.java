@@ -25,7 +25,7 @@ public class ResourceMediaPlayerComponent extends ViewRenderingDecoratorComponen
         String token = requestContext.getSecurityToken();
         Path uri = requestContext.getResourceURI();
         Repository repository = requestContext.getRepository();
-        Resource currentDocument = repository.retrieve(token, uri, false);
+        Resource currentDocument = repository.retrieve(token, uri, true);
 
         Property mediaProperty = currentDocument.getProperty(Namespace.DEFAULT_NAMESPACE, "media");
         if (mediaProperty == null) {

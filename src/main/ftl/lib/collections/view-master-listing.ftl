@@ -101,17 +101,26 @@
             <td class="vrtx-table-persons">
             
             <#if personsRelatedToMaster[master]?exists >
+				<ul>
 				<#list personsRelatedToMaster[master] as person>
-						<#if person.name?exists >
-						  <div>
-						  <#if person.url?exists>
-							<a href="${person.url?html}">${person.name?html}</a>
+							<#assign url = vrtx.getMetadata(person, "url") />
+				            <#assign surname = vrtx.getMetadata(person, "surname") />
+           					 <#assign firstName = vrtx.getMetadata(person, "firstName") />
+           					 <#assign name = "" />
+					         <#if surname != "" && firstName != "">
+					            <#assign name = firstName + " " + surname />
+					         </#if>
+					<#if name?exists >
+						  <li>
+						  <#if url?exists>
+							<a href="${url?html}">${name?html}</a>
 						  <#else>
-							${person.name?html}
+							${name?html}
 						  </#if>
-						  </div>
+						  </li>
 					  </#if>
 				</#list>
+				</ul>
             </#if> 
             	            
             </td>

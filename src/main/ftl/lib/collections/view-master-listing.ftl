@@ -106,13 +106,18 @@
 							<#assign url = vrtx.getMetadata(person, "url") />
 				            <#assign surname = vrtx.getMetadata(person, "surname") />
            					 <#assign firstName = vrtx.getMetadata(person, "firstName") />
+           					 <#assign description = vrtx.getMetadata(person "description") />
            					 <#assign name = "" />
 					         <#if surname != "" && firstName != "">
 					            <#assign name = firstName + " " + surname />
+					         <#else>
+					         	<#assign url = "" />
+					         	<#assign name = description />
 					         </#if>
+					   
 					<#if name?exists >
 						  <li>
-						  <#if url?exists>
+						  <#if url?exists && url != "">
 							<a href="${url?html}">${name?html}</a>
 						  <#else>
 							${name?html}

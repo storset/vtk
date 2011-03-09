@@ -115,7 +115,6 @@ public class URL {
         this.path = path;
     }
     
-
     public String getProtocol() {
         return this.protocol;
     }
@@ -459,25 +458,6 @@ public class URL {
 
         return sb.toString();
     }
-
-    /**
-     * Utility method to create a URL from an existing URL. The newly
-     * created URL will contain the exact same data as the existing
-     * one.
-     *
-     * @param url the existing URL
-     * @return the generated URL
-     */
-    public static URL create(URL url) {
-        URL newURL = new URL(url.getProtocol(), url.getHost(), url.getPath());
-        newURL.port = url.port;
-        newURL.characterEncoding = url.characterEncoding;
-        newURL.parameters = new LinkedHashMap<String, List<String>>(url.parameters);
-        newURL.collection = url.collection;
-        newURL.ref = url.ref;
-        return newURL;
-    }
-
 
     /**
      * Utility method to create a URL from a servlet request. 

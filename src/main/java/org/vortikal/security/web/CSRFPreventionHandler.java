@@ -111,7 +111,7 @@ implements HandlerFilter {
         if (session == null) {
             throw new IllegalStateException("Session does not exist");
         }
-        url = URL.create(url);
+        url = new URL(url);
         url.setRef(null);
         return generateToken(url, session);
     }

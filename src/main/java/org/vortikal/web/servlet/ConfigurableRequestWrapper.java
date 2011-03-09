@@ -83,7 +83,7 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
      */
     public ConfigurableRequestWrapper(HttpServletRequest request, URL url) {
         super(request);
-        this.url = URL.create(url);
+        this.url = new URL(url);
         initHeaders();
     }
 
@@ -206,7 +206,7 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
     }
     
     public StringBuffer getRequestURL() {
-        URL url = URL.create(this.url);
+        URL url = new URL(this.url);
         url.clearParameters();
         return new StringBuffer(url.toString());
     }

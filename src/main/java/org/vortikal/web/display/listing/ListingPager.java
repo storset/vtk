@@ -46,7 +46,7 @@ public class ListingPager {
 
         int j = 1;
         for (int i = 0; i < pages; i++) {
-            URL url = URL.create(baseURL);
+            URL url = new URL(baseURL);
             if (i == 0) {
                 urls.add(url);
                 continue;

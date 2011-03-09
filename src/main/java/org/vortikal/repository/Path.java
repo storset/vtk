@@ -282,7 +282,7 @@ public final class Path implements Comparable<Path> {
      * 
      * @param expansion
      *            the (relative) path with which to extend this path
-     * @return the expanded path (or <code>null</code>) if the expansion string
+     * @return the expanded path, or <code>null</code> if the expansion string
      *         contains too many <code>../</code> sequences
      */
     public Path expand(String expansion) {

@@ -96,8 +96,8 @@
             <#local title = vrtx.propValue(master, 'title')?html />
             <td class="vrtx-table-title"><a href="${master.URI}">${title}</a></td>
             <#local publishDate = vrtx.propValue(master, 'publish-date', 'short', '') />
-            <td class="vrtx-table-publish-date">${publishDate}</td>
-            <td>${vrtx.propValue(master, 'credits')?html}</td>
+            <td class="vrtx-creation-time">${publishDate}</td>
+            <td class="vrtx-table-scope">${vrtx.propValue(master, 'credits')?html}</td>
             <td class="vrtx-table-persons">
             
             <#if personsRelatedToMaster[master]?exists >

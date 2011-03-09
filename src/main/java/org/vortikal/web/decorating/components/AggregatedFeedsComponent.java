@@ -195,8 +195,10 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
                 descriptionNoImage.put(entry.toString(), null);
                 continue;
             }
-            
-            Filter filter = new Filter(getNoImgHtmlFilter(), getBaseURL(entry.getUri(), requestURL), requestURL);
+            URL baseURL = new URL(requestURL);
+            baseURL.clearParameters();
+
+            Filter filter = new Filter(getNoImgHtmlFilter(), baseURL, requestURL);
             HtmlFragment fragment = super.filterEntry(entry, filter);
             descriptionNoImage.put(entry.toString(), fragment.getStringRepresentation());
             if (filter.getImage() != null) {

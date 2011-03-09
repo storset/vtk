@@ -194,7 +194,8 @@ public class FeedComponent extends AbstractFeedComponent {
 
         SyndFeed feed = null;
         URL requestURL = RequestContext.getRequestContext().getRequestURL();
-        URL baseURL = getBaseURL(url, requestURL);
+        URL baseURL = new URL(requestURL);
+        baseURL.clearParameters();
         try {
             if (url.startsWith("/")) {
                 feed = this.localFeedFetcher.getFeed(url, request);

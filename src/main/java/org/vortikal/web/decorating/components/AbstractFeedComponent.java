@@ -213,13 +213,6 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
         return resultOrder;
     }
 
-    protected URL getBaseURL(String feedURL, URL requestURL) {
-        URL u = requestURL.relativeURL(feedURL);
-        u.clearParameters();
-        u.setRef(null);
-        return u;
-    }
-    
     public void setImgHtmlFilter(HtmlPageFilter imgHtmlFilter) {
         this.imgHtmlFilter = imgHtmlFilter;
     }

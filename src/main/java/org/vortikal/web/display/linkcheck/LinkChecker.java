@@ -33,7 +33,6 @@ package org.vortikal.web.display.linkcheck;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
-import java.util.Map;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
@@ -41,7 +40,6 @@ import net.sf.ehcache.Element;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.Path;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
@@ -62,15 +60,23 @@ public class LinkChecker implements InitializingBean {
     public static class LinkCheckResult {
         private String link;
         private Status status;
+        private String reason;
         public LinkCheckResult(String link, Status status) {
+            this(link, status, null);
+        }
+        public LinkCheckResult(String link, Status status, String reason) {
             this.link = link;
             this.status = status;
+            this.reason = reason;
         }
         public String getLink() {
             return this.link;
         }
         public String getStatus() {
             return this.status.toString();
+        }
+        public String getReason() {
+            return this.reason;
         }
     }
     
@@ -90,9 +96,9 @@ public class LinkChecker implements InitializingBean {
         boolean internal = !isExternalLink(href);
         URL url;
         try {
-            url = getURL(href, base);
+            url = base.relativeURL(href);
         } catch (Throwable t) {
-            return new LinkCheckResult(href, Status.MALFORMED_URL);
+            return new LinkCheckResult(href, Status.MALFORMED_URL, t.getMessage());
         }
         if (internal) {
             Status status = indexLookup(url);
@@ -105,14 +111,15 @@ public class LinkChecker implements InitializingBean {
         if (cached != null) {
             return (LinkCheckResult) cached.getObjectValue();
         }
-        Status status;
+        Status status = null;
+        String reason = null;
         try {
             status = validateURL(url);
         } catch (Throwable t) {
-            t.printStackTrace();
             status = Status.ERROR;
+            reason = t.getMessage();
         }
-        LinkCheckResult result = new LinkCheckResult(href, status);
+        LinkCheckResult result = new LinkCheckResult(href, status, reason);
         this.cache.put(new Element(href, result));
         return result;
     }
@@ -192,51 +199,6 @@ public class LinkChecker implements InitializingBean {
         return link.startsWith("http://") || link.startsWith("https://");
     }
 
-    private URL getURL(String href, URL base) {
-        href = href.trim();
-        if (href.contains("#")) {
-            href = href.substring(0, href.indexOf("#"));
-        }
-        Map<String, String[]> queryMap = null;
-        if (href.contains("?")) {
-            queryMap = URL.splitQueryString(href.substring(href.indexOf("?")));
-            href = href.substring(0, href.indexOf("?"));
-        }
-        if ("".equals(href.trim())) {
-            href = base.toString();
-        }
-        href = trimTrailingSlash(href);
-
-        URL url;
-        if (href.startsWith("http://") || href.startsWith("https://")) {
-            url = URL.parse(href);
-        } else {
-            url = new URL(base);
-            if (href.startsWith("/")) {
-                url.setPath(Path.fromString(href));
-            } else {
-                url.setPath(base.getPath().expand(href));
-            }
-        }
-        if (queryMap != null) {
-            for (String name: queryMap.keySet()) {
-                String[] strings = queryMap.get(name);
-                for (String value: strings) {
-                    url.addParameter(name, value);
-                }
-            }
-        }
-        return url;
-    }
-
-
-    private String trimTrailingSlash(String pathString) {
-        while (pathString.endsWith("/") && !Path.ROOT.toString().equals(pathString)) {
-            pathString = pathString.substring(0, pathString.lastIndexOf("/"));
-        }
-        return pathString;
-    }
-    
     @Required
     public void setSearcher(Searcher searcher) {
         this.searcher = searcher;

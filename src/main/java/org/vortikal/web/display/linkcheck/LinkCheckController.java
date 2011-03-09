@@ -46,8 +46,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
-import org.vortikal.repository.Path;
-import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.linkcheck.LinkChecker.LinkCheckResult;
 import org.vortikal.web.service.URL;
 
@@ -64,10 +62,8 @@ public class LinkCheckController implements Controller, InitializingBean {
             badRequest(e, response);
             return null;
         }
-        Path path = RequestContext.getRequestContext().getCurrentCollection();
         URL base = URL.create(request);
         base.clearParameters();
-        base.setPath(path);
         List<LinkCheckResult> results = checkLinks(urls, base);
         writeResults(results, response);
         return null;
@@ -98,6 +94,9 @@ public class LinkCheckController implements Controller, InitializingBean {
             JSONObject o = new JSONObject();
             o.put("link", result.getLink());
             o.put("status", result.getStatus());
+            if (result.getReason() != null) {
+                o.put("message", result.getReason());
+            }
             list.add(o);
         }
         response.setStatus(HttpServletResponse.SC_OK);

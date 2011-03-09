@@ -47,7 +47,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpSession;
 
-import org.vortikal.repository.Path;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.service.URL;
 
@@ -90,15 +89,6 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
         initHeaders();
     }
 
-    /**
-     * Sets the request URI (path)
-     *
-     * @param requestURI the resource path (must start with a slash (<code>/</code>).
-     */
-    public void setRequestURI(String requestURI) {
-        this.url.setPath(Path.fromString(requestURI));
-    }
-    
     /**
      * Sets the HTTP method. The default is <code>GET</code>.
      */

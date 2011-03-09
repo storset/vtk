@@ -49,6 +49,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.service.URL;
 import org.vortikal.web.servlet.ConfigurableRequestWrapper;
 import org.vortikal.web.servlet.VortikalServlet;
 
@@ -130,12 +131,10 @@ public class IndexFileController
             throw new IllegalStateException("Index file '" + indexURI
                                             + "' not a regular file");
         }
-
-        String encodedURI = new String(indexURI.toString().getBytes("utf-8"),
-                                       this.uriCharacterEncoding);
-
-        ConfigurableRequestWrapper requestWrapper = new ConfigurableRequestWrapper(request);
-        requestWrapper.setRequestURI(encodedURI);
+        URL indexFileURL = URL.create(request);
+        indexFileURL.setCollection(false);
+        indexFileURL.setPath(indexURI);
+        ConfigurableRequestWrapper requestWrapper = new ConfigurableRequestWrapper(request, indexFileURL);
 
         String servletName = (String) request.getAttribute(
                 VortikalServlet.SERVLET_NAME_REQUEST_ATTRIBUTE);

@@ -84,10 +84,12 @@ public class SessionValidationRequestFilter extends AbstractRequestFilter
             this.request = request;
         }
         
+        @Override
         public HttpSession getSession() {
             return getSession(false);
         }
-        
+
+        @Override
         public HttpSession getSession(boolean create) {
             HttpSession s = this.request.getSession(create);
             if (s == null) {

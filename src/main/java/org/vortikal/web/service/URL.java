@@ -715,7 +715,8 @@ public class URL {
         if (rel == null) {
             throw new IllegalArgumentException("Malformed URL: " + rel);
         }
-        if ("".equals(rel.trim())) {
+        rel = rel.trim();
+        if ("".equals(rel)) {
             return new URL(this);
         }
         if (rel.startsWith(PROTOCOL_HTTP + ":") || rel.startsWith(PROTOCOL_HTTPS + ":")) {
@@ -768,8 +769,11 @@ public class URL {
             if (!this.collection) {
                 path = path.getParent();
             }
-            
             path = path.expand(rel);
+            if (path == null) {
+                throw new IllegalArgumentException(
+                        "Error expanding relative URL: " + rel);
+            }
         }
         URL url = new URL(this);
         url.setHost(host);

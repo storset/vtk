@@ -81,7 +81,7 @@
   <#local masters=masterListing.files />
   <#if (masters?size > 0)>
     <div class="vrtx-master-table">
-      <table class="rowstyle-alt colstyle-alt no-arrow" cellpadding="5" border="1">
+      <table class="sortable" cellpadding="5" border="1">
         <thead>
           <tr>
             <th id="vrtx-table-title" class="sortable-text">${vrtx.getMsg("property.title")}</th>
@@ -91,12 +91,17 @@
           </tr>
         </thead>
         <tbody>
+        <#assign masterCount = 1 />
         <#list masters as master>
-          <tr>
+          <#if (masterCount % 2 == 0)>
+            <tr id="vrtx-master-${masterCount}" class="even">
+          <#else>
+            <tr id="vrtx-master-${masterCount}">
+          </#if>
             <#local title = vrtx.propValue(master, 'title')?html />
             <td class="vrtx-table-title"><a href="${master.URI}">${title}</a></td>
             <#local publishDate = vrtx.propValue(master, 'publish-date', 'short', '') />
-            <td class="vrtx-creation-time">${publishDate}</td>
+            <td class="vrtx-table-creation-time">${publishDate}</td>
             <td class="vrtx-table-scope">${vrtx.propValue(master, 'credits')?html}</td>
             <td class="vrtx-table-persons">
             
@@ -131,9 +136,10 @@
 				</#list>
 			  </ul>
             </#if> 
-            	            
+                        
             </td>
           </tr>
+          <#assign masterCount = masterCount + 1 />
         </#list>
         </tbody>
       </table>

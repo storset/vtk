@@ -139,56 +139,68 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
         this.headers = new HashMap<String, Set<String>>();
     }
     
+    @Override
     public String getScheme() {
         return this.url.getProtocol();
     }
-    
+
+    @Override
     public String getServerName() {
         return this.url.getHost();
     }
     
+    @Override
     public int getServerPort() {
         return this.url.getPort();
     }
 
+    @Override
     public boolean isSecure() {
         return "https".equals(this.url.getProtocol());
     }
 
+    @Override
     public String getContextPath() {
         return "";
     }
 
+    @Override
     public String getPathInfo() {
         return this.url.getPath().toString();
     }
 
+    @Override
     public String getServletPath() {
         return "";
     }
 
+    @Override
     public String getPathTranslated() {
         return null;
     }
 
+    @Override
     public String getRealPath(String path) {
         return null;
     }
 
+    @Override
     public String getQueryString() {
         return this.url.getQueryString();
     }
 
+    @Override
     public String getRequestURI() {
         return this.url.getPath().toString();
     }
     
+    @Override
     public StringBuffer getRequestURL() {
-        URL url = new URL(this.url);
-        url.clearParameters();
+        URL url = new URL(this.url).clearParameters();
         return new StringBuffer(url.toString());
     }
 
+    @Override
     public String getParameter(String name) {
         String val = this.url.getParameter(name);
         if (val != null) {
@@ -200,6 +212,7 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
         return null;
     }
 
+    @Override
     public String[] getParameterValues(String name) {
         List<String> values = this.url.getParameters(name);
         if (values != null) {
@@ -212,6 +225,7 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
         return null;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Map<String, String[]> getParameterMap() {
         Map<String, String[]> params;
@@ -239,11 +253,13 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
         return params;
     }
         
+    @Override
     public Enumeration<String> getParameterNames() {
         Map<String, String[]> params = getParameterMap();
         return Collections.enumeration(params.keySet());
     }
     
+    @Override
     public String getHeader(String name) {
         Set<String> values = this.headers.get(name);
         if (values == null) {
@@ -252,6 +268,7 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
         return values.iterator().next();
     }
     
+    @Override
     public long getDateHeader(String name) {
         Set<String> values = this.headers.get(name);
         if (values == null) {
@@ -265,6 +282,7 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
         return d.getTime();
     }
     
+    @Override
     public int getIntHeader(String name) {
         Set<String> values = this.headers.get(name);
         if (values == null) {
@@ -279,6 +297,7 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
     }
     
 
+    @Override
     public Enumeration<?> getHeaders(String name) {
         Set<String> values = this.headers.get(name);
         if (values == null) {
@@ -287,12 +306,14 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
         return Collections.<String>enumeration(values);
     }
     
+    @Override
     public Enumeration<?> getHeaderNames() {
         Set<String> values = this.headers.keySet();
         return Collections.enumeration(values);
     }
     
     // XXX: if create is specified, should return dummy session?
+    @Override
     public HttpSession getSession(boolean create) {
         if (this.anonymous && !create) {
             return null;
@@ -300,6 +321,7 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
         return super.getSession(create);
     }
     
+    @Override
     public HttpSession getSession() {
         if (this.anonymous) {
             return null;
@@ -307,6 +329,7 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
         return super.getSession();
     }
     
+    @Override
     public String getAuthType() {
         if (this.anonymous) {
             return null;
@@ -315,6 +338,7 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
     }
     
 
+    @Override
     public String getRemoteUser() {
         if (this.anonymous) {
             return null;
@@ -322,6 +346,7 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
         return super.getRemoteUser();
     }
 
+    @Override
     public boolean isUserInRole(String role) {
         if (this.anonymous) {
             return false;
@@ -329,6 +354,7 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
         return super.isUserInRole(role);
     }
 
+    @Override
     public Principal getUserPrincipal() {
         if (this.anonymous) {
             return null;
@@ -336,6 +362,7 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
         return super.getUserPrincipal();
     }
 
+    @Override
     public String getRequestedSessionId() {
         if (this.anonymous) {
             return null;
@@ -343,6 +370,7 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
         return super.getRequestedSessionId();
     }
 
+    @Override
     public boolean isRequestedSessionIdValid() {
         if (this.anonymous) {
             return false;
@@ -350,6 +378,7 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
         return super.isRequestedSessionIdValid();
     }
 
+    @Override
     public boolean isRequestedSessionIdFromCookie() {
         if (this.anonymous) {
             return true;
@@ -357,6 +386,7 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
         return super.isRequestedSessionIdFromCookie();
     }
     
+    @Override
     public boolean isRequestedSessionIdFromURL() {
         if (this.anonymous) {
             return false;
@@ -364,10 +394,12 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
         return super.isRequestedSessionIdFromURL();
     }
 
+    @Override
     public boolean isRequestedSessionIdFromUrl() {
         return super.isRequestedSessionIdFromUrl();
     }
     
+    @Override
     public Cookie[] getCookies() {
         if (this.anonymous) {
             return filterAnonymousCookies();

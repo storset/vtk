@@ -61,6 +61,7 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
 
     private String method = "GET";
     private URL url;
+    private URL wrappedURL;
     private boolean anonymous = false;
     private Map<String, Set<String>> headers;
 
@@ -72,6 +73,7 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
     public ConfigurableRequestWrapper(HttpServletRequest request) {
         super(request);
         this.url = URL.create(request);
+        this.wrappedURL = new URL(this.url);
         initHeaders();
     }
     
@@ -84,22 +86,9 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
     public ConfigurableRequestWrapper(HttpServletRequest request, URL url) {
         super(request);
         this.url = new URL(url);
+        this.wrappedURL = URL.create(request);
         initHeaders();
     }
-
-    /**
-     * Creates a new request wrapper based on a request and a URI (path)
-     *
-     * @param request the wrapped request
-     * @param uri the resource path (must start with a slash (<code>/</code>).
-     */
-    public ConfigurableRequestWrapper(HttpServletRequest request, String uri) {
-        super(request);
-        this.url = URL.create(request);
-        this.url.setPath(Path.fromString(uri));
-        initHeaders();
-    }
-
 
     /**
      * Sets the request URI (path)
@@ -110,7 +99,6 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
         this.url.setPath(Path.fromString(requestURI));
     }
     
-
     /**
      * Sets the HTTP method. The default is <code>GET</code>.
      */
@@ -216,7 +204,10 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
         if (val != null) {
             return val;
         }
-        return super.getParameter(name);
+        if ("POST".equals(getMethod()) && this.url.equals(this.wrappedURL)) {
+            return super.getParameter(name);
+        }
+        return null;
     }
 
     public String[] getParameterValues(String name) {
@@ -225,12 +216,21 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
             String[] result = new String[values.size()];
             return values.toArray(result);
         }
-        return super.getParameterValues(name);
+        if ("POST".equals(getMethod()) && this.url.equals(this.wrappedURL)) {
+            return super.getParameterValues(name);
+        }
+        return null;
     }
 
     @SuppressWarnings("unchecked")
     public Map<String, String[]> getParameterMap() {
-        Map<String, String[]> params = new HashMap<String, String[]>(super.getParameterMap());
+        Map<String, String[]> params;
+        if ("POST".equals(getMethod()) && this.url.equals(this.wrappedURL)) {
+            params = new HashMap<String, String[]>(super.getParameterMap());
+        } else {
+            params = new HashMap<String, String[]>();
+        }
+        
         List<String> queryNames = this.url.getParameterNames();
         for (String queryParam: queryNames) {
             if (params.containsKey(queryParam)) {

@@ -32,6 +32,7 @@
 package org.vortikal.repository.store;
 
 import java.util.Locale;
+
 import org.vortikal.security.Principal;
 import org.vortikal.security.Principal.Type;
 
@@ -42,25 +43,36 @@ public class PrincipalSearchImpl implements PrincipalSearch {
 
     protected String searchString;
     protected Principal.Type principalType;
+    protected SearchType searchType;
     protected Locale preferredLocale;
 
     public PrincipalSearchImpl(String searchString) {
-        this(Principal.Type.USER, searchString, null);
+        this(Principal.Type.USER, searchString, null, null);
     }
 
     public PrincipalSearchImpl(Principal.Type type, String searchString) {
-        this(type, searchString, null);
+        this(type, searchString, null, null);
     }
 
     public PrincipalSearchImpl(Principal.Type type, String searchString, Locale preferredLocale) {
+        this(type, searchString, preferredLocale, null);
+    }
+
+    public PrincipalSearchImpl(Principal.Type type, String searchString, Locale preferredLocale, SearchType searchType) {
         this.principalType = type;
         this.searchString = searchString;
         this.preferredLocale = preferredLocale;
+        this.searchType = searchType;
     }
 
     @Override
     public Type getPrincipalType() {
         return this.principalType;
+    }
+
+    @Override
+    public SearchType getSearchType() {
+        return this.searchType;
     }
 
     @Override
@@ -100,14 +112,17 @@ public class PrincipalSearchImpl implements PrincipalSearch {
             return false;
         }
 
-        PrincipalSearchImpl po = (PrincipalSearchImpl)other;
+        PrincipalSearchImpl po = (PrincipalSearchImpl) other;
 
-        if (this.principalType != po.principalType) return false;
+        if (this.principalType != po.principalType)
+            return false;
 
         if (this.preferredLocale != null) {
-            if (!this.preferredLocale.equals(po.preferredLocale)) return false;
+            if (!this.preferredLocale.equals(po.preferredLocale))
+                return false;
         } else {
-            if (po.preferredLocale != null) return false;
+            if (po.preferredLocale != null)
+                return false;
         }
 
         if (this.searchString == null) {
@@ -116,5 +131,5 @@ public class PrincipalSearchImpl implements PrincipalSearch {
             return this.searchString.equals(po.searchString);
         }
     }
-    
+
 }

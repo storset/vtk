@@ -38,18 +38,27 @@ import org.vortikal.security.Principal;
  */
 public interface PrincipalSearch {
 
+    public static enum SearchType {
+        SIMPLE_NAME_PREFIX, FULL_USER_SEARCH, LISTING_BY_FILTER, SEARCH_BY_UID
+    }
+
     /**
      * Principal type for the search (GROUP or USER).
      */
-    Principal.Type getPrincipalType();
+    public Principal.Type getPrincipalType();
+
+    /**
+     * Search type of the search (USERID or NAME_OR_USERID)
+     */
+    public SearchType getSearchType();
 
     /**
      * Free-form search string.
      */
-    String getSearchString();
+    public String getSearchString();
 
     /**
      * Preferred Locale (may be <code>null</code>).
      */
-    Locale getPreferredLocale();
+    public Locale getPreferredLocale();
 }

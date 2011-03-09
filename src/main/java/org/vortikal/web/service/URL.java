@@ -120,7 +120,12 @@ public class URL {
     }
     
 
-    public void setProtocol(String protocol) {
+    /**
+     * Sets the protocol component of this URL
+     * @param protocol one of (<code<http</code>, <code<https</code>)
+     * @return this URL
+     */
+    public URL setProtocol(String protocol) {
         if (protocol != null) {
             protocol = protocol.trim();
         }
@@ -135,6 +140,7 @@ public class URL {
         } else if (PROTOCOL_HTTPS.equals(protocol) && PORT_80.equals(this.port)) {
             this.port = PORT_443;
         }
+        return this;
     }
 
     
@@ -143,12 +149,18 @@ public class URL {
     }
     
 
-    public void setHost(String host) {
+    /**
+     * Sets the host component of this URL
+     * @param host the host name/domain
+     * @return this URL
+     */
+    public URL setHost(String host) {
         if (host == null || "".equals(host.trim())) {
             throw new IllegalArgumentException(
                 "Invalid hostname: '" + host + "'");
         }
         this.host = host;
+        return this;
     }
     
 
@@ -157,12 +169,18 @@ public class URL {
     }
     
 
-    public void setPort(Integer port) {
+    /**
+     * Sets the port component of this URL
+     * @param port the port number
+     * @return this URL
+     */
+    public URL setPort(Integer port) {
         if (port != null && port.intValue() <= 0) {
             throw new IllegalArgumentException(
                 "Invalid port number: " + port.intValue());
         }
         this.port = port;
+        return this;
     }
 
 
@@ -170,55 +188,102 @@ public class URL {
         return this.path;
     }
     
-
-    public void setPathOnly(boolean pathOnly) {
+    /**
+     * Specifies whether this URL should present 
+     * itself as a relative ("path only") URL.
+     * @param pathOnly whether to act as a "path only" URL
+     * @return this URL
+     */
+    public URL setPathOnly(boolean pathOnly) {
         this.pathOnly = pathOnly;
+        return this;
     }
 
     public boolean isPathOnly() {
         return this.pathOnly;
     }
 
-    public void setPath(Path path) {
+    /**
+     * Sets the path component of this URL.
+     * @param path the path to set
+     * @return this URL
+     */
+    public URL setPath(Path path) {
         if (path == null) {
             throw new IllegalArgumentException("Path cannot be NULL");
         }
         this.path = path;
+        return this;
     }
-    
+
+    /**
+     * Specifies whether this URL has a trailing slash when printed.
+     * @param collection a boolean indicating a trailing slash
+     * @return this URL
+     */
+    public URL setCollection(boolean collection) {
+        this.collection = collection;
+        return this;
+    }
+
     public boolean isCollection() {
         return this.collection;
     }
     
-    public void setCollection(boolean collection) {
-        this.collection = collection;
-    }
-    
-    public void addParameter(String name, String value) {
+    /**
+     * Adds a query string parameter to the URL.
+     * If the parameter already existed, the new value is 
+     * added to the existing value set for that parameter.
+     * @param name the parameter name
+     * @param value the parameter value
+     * @return this URL
+     */
+    public URL addParameter(String name, String value) {
         List<String> values = this.parameters.get(name);
         if (values == null) {
             values = new ArrayList<String>();
             this.parameters.put(name, values);
         }
         values.add(value);
+        return this;
     }
     
-    public void setParameter(String name, String value) {
+    /**
+     * Sets a query string parameter on the URL.
+     * If the parameter already existed, this method 
+     * overrides the existing value(s).
+     * @param name the parameter name
+     * @param value the parameter value
+     * @return this URL
+     */
+    public URL setParameter(String name, String value) {
         if (this.parameters.containsKey(name)) {
             this.parameters.remove(name);
         }
         List<String> values = new ArrayList<String>();
         values.add(value);
         this.parameters.put(name, values);
+        return this;
     }
 
-    public void removeParameter(String name) {
+    /**
+     * Removes a query string parameter on this URL.
+     * @param name the parameter name
+     * @return this URL
+     */
+    public URL removeParameter(String name) {
         this.parameters.remove(name);
+        return this;
     }
     
 
-    public void clearParameters() {
+    /**
+     * Clears all query string parameters on this URL.
+     * @return this URL
+     */
+    public URL clearParameters() {
         this.parameters = new LinkedHashMap<String, List<String>>();
+        return this;
     }
     
 
@@ -281,13 +346,16 @@ public class URL {
     
     /**
      * Sets the character encoding used when URL-encoding the path.
+     * @param characterEncoding the character encoding
+     * @return this URL
      */
-    public void setCharacterEncoding(String characterEncoding) {
+    public URL setCharacterEncoding(String characterEncoding) {
         if (characterEncoding == null) {
             throw new IllegalArgumentException("Character encoding must be specified");
         }
         java.nio.charset.Charset.forName(characterEncoding);
         this.characterEncoding = characterEncoding;
+        return this;
     }
 
     @Override

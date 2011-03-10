@@ -406,7 +406,6 @@
           <list>
             <ref bean="userTitlePropDef" />
             <ref bean="descriptionPropDef" />
-            <ref bean="keywordsPropDef" />
           </list>
         </property>
       </bean>
@@ -423,7 +422,6 @@
           <list>
             <ref bean="userTitlePropDef" />
             <ref bean="descriptionPropDef" />
-            <ref bean="keywordsPropDef" />
           </list>
         </property>
       </bean>
@@ -440,7 +438,6 @@
           <list>
             <ref bean="userTitlePropDef" />
             <ref bean="descriptionPropDef" />
-            <ref bean="keywordsPropDef" />
           </list>
         </property>
       </bean>

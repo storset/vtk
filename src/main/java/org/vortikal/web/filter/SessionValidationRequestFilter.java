@@ -62,7 +62,7 @@ public class SessionValidationRequestFilter extends AbstractRequestFilter
         if (this.authorizedAddresses.contains(clientAddress)) {
             return request;
         }
-        return new SessionValidationRequestWrapper(request);
+        return new RequestWrapper(request);
     }
     
     public void setAuthorizedAddresses(Set<String> authorizedAddresses) {
@@ -71,15 +71,15 @@ public class SessionValidationRequestFilter extends AbstractRequestFilter
         }
         this.authorizedAddresses = authorizedAddresses;
     }
-
-    private static class SessionValidationRequestWrapper extends HttpServletRequestWrapper {
+    
+    private static class RequestWrapper extends HttpServletRequestWrapper {
 
         private static final String CLIENT_ADDR_SESSION_ATTRIBUTE = 
-            SessionValidationRequestWrapper.class.getName() + ".clientAddrAttribute";
+            RequestWrapper.class.getName() + ".clientAddrAttribute";
 
         private HttpServletRequest request;
 
-        public SessionValidationRequestWrapper(HttpServletRequest request) {
+        public RequestWrapper(HttpServletRequest request) {
             super(request);
             this.request = request;
         }
@@ -114,6 +114,11 @@ public class SessionValidationRequestFilter extends AbstractRequestFilter
                 }
             }
             return s;
+        }
+        
+        @Override
+        public String toString() {
+            return this.getClass().getName() + "[" + this.request + "]";
         }
     }
 }

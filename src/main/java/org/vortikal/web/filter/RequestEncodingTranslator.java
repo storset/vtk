@@ -45,6 +45,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repository.Path;
+import org.vortikal.web.service.URL;
 
 
 /**
@@ -102,6 +104,7 @@ public class RequestEncodingTranslator extends AbstractRequestFilter
     private class TranslatingRequestWrapper extends HttpServletRequestWrapper {
 
     	private String uri;
+    	private String requestURL;
     	
         public TranslatingRequestWrapper(HttpServletRequest request,
                                          String fromEncoding, String toEncoding) {
@@ -109,21 +112,27 @@ public class RequestEncodingTranslator extends AbstractRequestFilter
             try {
             	String uri = request.getRequestURI();
             	uri = new String(uri.getBytes(fromEncoding), toEncoding);
-            	if (logger.isDebugEnabled()) {
-            		logger.debug("Translated uri: from '" + uri 
-            				+ "' to '" + uri
-            				+ "' using encoding '" + toEncoding + "' (from '"
-            				+ fromEncoding + "')");
-            	}
             	this.uri = uri;
+            	
+            	URL url = URL.parse(request.getRequestURL().toString());
+            	Path p = URL.encode(url.getPath(), fromEncoding);
+            	url.setPath(URL.decode(p, toEncoding));
+            	this.requestURL = url.toString();
+            	
             } catch (Exception e) {
                 logger.warn("Unable to translate uri: " + request.getRequestURI(), e);
                 this.uri = request.getRequestURI();
             }
         }
         
+        @Override
         public String getRequestURI() {
         	return this.uri;
+        }
+        
+        @Override
+        public StringBuffer getRequestURL() {
+            return new StringBuffer(this.requestURL);
         }
         
         @Override
@@ -145,7 +154,7 @@ public class RequestEncodingTranslator extends AbstractRequestFilter
         }
 
         @Override
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings("rawtypes")
         public Enumeration getHeaders(String name) {
             Enumeration e = super.getHeaders(name);
             if (!translatedHeaders.contains(name) 

@@ -150,6 +150,13 @@ public final class Context {
         return this.stack.toString();
     }
     
+    public boolean hasAttribute(String name) {
+        if (this.attributes == null) {
+            return false;
+        }
+        return this.attributes.containsKey(name);
+    }
+    
     public Object getAttribute(String name) {
         if (this.attributes == null) {
             return null;
@@ -162,6 +169,13 @@ public final class Context {
             this.attributes = new HashMap<String, Object>();
         }
         this.attributes.put(name, value);
+    }
+    
+    public void removeAttribute(String name) {
+        if (this.attributes == null) {
+            return;
+        }
+        this.attributes.remove(name);
     }
 
     private boolean validateSymbol(String symbol) {

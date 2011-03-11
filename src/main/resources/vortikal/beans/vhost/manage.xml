@@ -683,6 +683,16 @@
     </property>
     <property name="handler" ref="previewImageHandler" />
   </bean>
+  
+  <bean id="previewMediaService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="previewService" />
+    <property name="assertions">
+      <list>
+        <ref bean="contentTypeMatchesMedia" />
+      </list>
+    </property>
+    <property name="handler" ref="previewMediaHandler" />
+  </bean>
 
   <bean id="previewTextService" class="org.vortikal.web.service.ServiceImpl">
     <property name="order" value="10" />
@@ -1022,6 +1032,12 @@
     <property name="service" ref="viewService" />
   </bean>
 
+  <bean id="previewMediaHandler" class="org.vortikal.web.display.url.ResourceServiceURLController">
+    <property name="viewName" value="previewMedia" />
+    <property name="service" ref="viewService" />
+  </bean>
+
+
   <bean id="previewTextHandler" class="org.vortikal.web.display.file.DisplayResourceController">
     <!-- XXX preview size limit.. -->
     <property name="ignoreLastModified" value="true" />
@@ -1043,6 +1059,7 @@
         <entry key="redirectToAbout" value-ref="redirectToAboutView" />
         <entry key="permissions" value-ref="permissionsView" />
         <entry key="previewImage" value-ref="previewImageView" />
+        <entry key="previewMedia" value-ref="previewMediaPlayerView" />
         <entry key="previewAdminIframe" value-ref="previewAdminIframeView" />
         <entry key="previewText" value-ref="previewTextView" />
         <entry key="previewText.documentTooLarge" value-ref="previewText.documentTooLargeView" />
@@ -1465,7 +1482,7 @@
 
   <!-- Views -->
   <bean id="previewImageView" parent="freemarkerView">
-    <property name="url" value="pages/preview-image.ftl" />
+    <property name="url" value="pages/preview-service.ftl" />
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
@@ -1474,6 +1491,18 @@
       </list>
     </property>
   </bean>
+  
+  <bean id="previewMediaPlayerView" parent="freemarkerView">
+    <property name="url" value="pages/preview-service.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+        <ref bean="mediaPlayerService.urlProvider" />
+        <ref bean="iframeJSProvider" />
+      </list>
+    </property>
+  </bean>
+  
 
   <bean id="previewAdminIframeView" parent="freemarkerView">
     <property name="url" value="pages/preview-admin-iframe.ftl" />

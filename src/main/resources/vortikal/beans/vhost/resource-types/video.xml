@@ -5,9 +5,8 @@
 
   <!-- Video resource -->
 
-  <bean id="videoResourceTypeDefinition"
-        class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="video"/>
+  <bean id="videoResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="video" />
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="parentTypeDefinition" ref="fileResourceTypeDefinition" />
     <property name="assertions">
@@ -17,11 +16,71 @@
     </property>
   </bean>
 
-
-  <bean id="contentTypeMatchesVideo" 
-        class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
+  <bean id="contentTypeMatchesVideo" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
     <property name="pattern" value="video/(.+)" />
   </bean>
+
+  <bean id="mediaPlayerService" class="org.vortikal.web.service.ServiceImpl">
+
+    <property name="parent" ref="viewService" />
+    <property name="order" value="0" />
+
+    <property name="assertions">
+      <list>
+        <ref bean="contentTypeMatchesMedia" />
+
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="vrtx" />
+          <property name="parameterValue" value="player" />
+        </bean>
+
+      </list>
+    </property>
+
+    <property name="handler" ref="displayMediaResource" />
+
+  </bean>
+
+
+  <bean id="displayMediaResource" class="org.vortikal.web.display.media.DisplayMediaController">
+    <property name="mediaPlayerComponent" ref="decorating.resourceMediaComponent" />
+    <property name="viewName" value="viewMediaPlayer" />
+    <property name="descriptionPropDef" ref="descriptionPropDef" />
+  </bean>
+
+  <bean id="displayMediaResourceViewResolver" parent="decoratorViewResolver">
+    <property name="views">
+      <map>
+        <entry key="viewMediaPlayer" value-ref="displayMediaResourceView" />
+      </map>
+    </property>
+  </bean>
+
+  <bean name="displayMediaResourceView" parent="freemarkerView">
+    <property name="url" value="pages/media-player.ftl" />
+    <property name="attributes">
+      <map>
+        <entry key="height" value="322px" />
+        <entry key="width" value="507px" />
+        <entry key="autoplay" value="false" />
+        <entry key="audioFlashPlayerJsURL" value="${jsBaseURL}/audio-player.js" />
+        <entry key="audioFlashPlayerFlashURL" value="${flash.baseURL}/audioplayer.swf" />
+        <entry key="strobe" value="${flash.baseURL}/StrobeMediaPlayback_1.0-full/10.1/StrobeMediaPlayback.swf" />
+      </map>
+    </property>
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+      </list>
+    </property>
+  </bean>
+  
+    <bean id="mediaPlayerService.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+    <property name="modelName" value="previewImage" />
+    <property name="urlName" value="URL" />
+    <property name="service" ref="mediaPlayerService" />
+  </bean>
+  
 
 </beans>
 

@@ -9,6 +9,8 @@
   
 <#import "/lib/vortikal.ftl" as vrtx />
 
+<#macro mediaPlayer >
+
 <#if media?exists && contentType?exists >
 
   <div class="vrtx-media-ref">
@@ -75,3 +77,5 @@
   </div>
   
 </#if>
+
+</#macro>

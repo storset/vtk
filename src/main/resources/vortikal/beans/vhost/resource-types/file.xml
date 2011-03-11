@@ -124,6 +124,10 @@
     <property name="pattern" value="image/(.+)" />
   </bean>
 
+  <bean id="contentTypeMatchesMedia" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
+    <property name="pattern" value="(audio/(.+))|(video/(.+))" />
+  </bean>
+
   <bean id="contentTypeMatchesZip" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
     <property name="pattern" value="application/zip" />
   </bean>

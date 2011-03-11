@@ -34,24 +34,28 @@ public class ResourceMediaPlayerComponent extends ViewRenderingDecoratorComponen
         if(mediaProperty == null){
             return;
         }
-        String media = mediaProperty.getStringValue();
+        String URL = mediaProperty.getStringValue();
 
+        addMediaPlayer(model, token, repository, URL);
+    }
+
+    public void addMediaPlayer(Map<Object, Object> model, String token, Repository repository, String URL) {
         Resource mediaResource = null;
         try {
-            mediaResource = repository.retrieve(token, Path.fromString(media), false);
+            mediaResource = repository.retrieve(token, Path.fromString(URL), false);
         } catch (Exception e) {
         }
 
-        model.put("extension", getExtension(media));
+        model.put("extension", getExtension(URL));
         model.put("autoplay", "false");
         
         if (mediaResource != null) {
             model.put("contentType", mediaResource.getContentType());
         } else {
-            model.put("contentType", extentionToMimetype.get(getExtension(media)));
+            model.put("contentType", extentionToMimetype.get(getExtension(URL)));
         }
 
-        createLocalUrlToMediaFile(media, model);
+        createLocalUrlToMediaFile(URL, model);
     }
 
     public String getExtension(String url) {

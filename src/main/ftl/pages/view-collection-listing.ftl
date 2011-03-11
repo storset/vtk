@@ -186,6 +186,8 @@
          </#list>
        </#if>
      </#if>
+     <@projects.projectListingViewServiceURL />
+     <@master.masterListingViewServiceURL />
 	 <div class="vrtx-paging-feed-wrapper">
 		<#-- Previous/next URLs: -->
 		<#if pageThroughUrls?exists >
@@ -203,8 +205,6 @@
 	        </#list>
 	    </#if>
      </div>
-     <@projects.projectListingViewServiceURL />
-     <@master.masterListingViewServiceURL />
      <#if additionalContent?has_content && collection.resourceType != 'image-listing'
           && collection.resourceType != 'person-listing' && !isEventCalendarListing && !isBlogListing>
        <#if (hideAdditionalContent?exists && hideAdditionalContent == 'false')>

@@ -16,7 +16,8 @@
 </#macro>
 
 <#macro masterListingViewServiceURL >
-	<div id="vrtx-master-listing-completed-ongoing">
+  <#if viewAllMastersLink?exists || viewOngoingMastersLink?exists>
+	<div id="vrtx-listing-completed-ongoing">
 	  <#if viewAllMastersLink?exists>
 	  	<a href="${viewAllMastersLink}">${vrtx.getMsg("masters.viewCompleted")}</a>
 	  </#if>
@@ -24,6 +25,7 @@
 	  	<a href="${viewOngoingMastersLink}">${vrtx.getMsg("masters.viewOngoing")}</a>
 	  </#if>
 	</div>
+  </#if>
 </#macro>
 
 <#macro displayMasters masterListing>

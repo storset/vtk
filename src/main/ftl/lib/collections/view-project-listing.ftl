@@ -16,14 +16,16 @@
 </#macro>
 
 <#macro projectListingViewServiceURL >
-	<div>
-	  <#if viewAllProjectsLink?exists>
-	  	<a href="${viewAllProjectsLink}">${vrtx.getMsg("projects.viewCompletedProjects")}</a>
-	  </#if>
-	  <#if viewOngoingProjectsLink?exists>
-	  	<a href="${viewOngoingProjectsLink}">${vrtx.getMsg("projects.viewOngoingProjects")}</a>
-	  </#if>
-	</div>
+    <#if viewAllProjectsLink?exists || viewOngoingProjectsLink?exists>
+	  <div id="vrtx-listing-completed-ongoing">
+	    <#if viewAllProjectsLink?exists>
+	  	  <a href="${viewAllProjectsLink}">${vrtx.getMsg("projects.viewCompletedProjects")}</a>
+	    </#if>
+	    <#if viewOngoingProjectsLink?exists>
+	  	  <a href="${viewOngoingProjectsLink}">${vrtx.getMsg("projects.viewOngoingProjects")}</a>
+	    </#if>
+	  </div>
+	<#/if>
 </#macro>
 
 <#macro displayProjects projectListing>

@@ -180,9 +180,9 @@ resourcetype research-group {
   
   vocabulary {
     numberOfParticipantsToDisplay {
-       en : (range = "1..25,30,35,40,45,50"),
-       no : (range = "1..25,30,35,40,45,50"),
-       nn : (range = "1..25,30,35,40,45,50")
+       en : (range = "0..25,30,35,40,45,50"),
+       no : (range = "0..25,30,35,40,45,50"),
+       nn : (range = "0..25,30,35,40,45,50")
      }
      listRelatedProjects{
       en : ("true" = "Yes", "false" = "No"),

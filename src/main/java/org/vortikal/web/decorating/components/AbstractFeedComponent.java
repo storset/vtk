@@ -35,6 +35,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
 import org.vortikal.text.html.HtmlAttribute;
 import org.vortikal.text.html.HtmlContent;
 import org.vortikal.text.html.HtmlElement;
@@ -42,6 +44,7 @@ import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.text.html.HtmlPageParser;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.service.URL;
 
@@ -62,6 +65,17 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
     private HtmlPageFilter imgHtmlFilter;
     private HtmlPageFilter noImgHtmlFilter;
     private List<String> defaultElementOrder;
+    
+    /**
+     * Retrieves the resource corresponding to a local feed for authorization purposes
+     */
+    protected Resource retrieveLocalResource(URL feedURL) throws Exception {
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
+        return repository.retrieve(token, feedURL.getPath(), true);
+    }
+    
 
     boolean prameterHasValue(String param, String includeParamValue, DecoratorRequest request) {
         String itemDescriptionString = request.getStringParameter(param);

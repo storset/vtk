@@ -32,24 +32,19 @@ package org.vortikal.web.decorating.components;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.context.ServletContextAware;
-import org.vortikal.repository.Path;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.service.URL;
 import org.vortikal.web.servlet.BufferedResponse;
+import org.vortikal.web.servlet.ConfigurableRequestWrapper;
 import org.vortikal.web.servlet.VortikalServlet;
 
 import com.sun.syndication.feed.synd.SyndFeed;
@@ -59,31 +54,23 @@ public class LocalFeedFetcher implements ServletContextAware {
     private ServletContext servletContext;
     private SyndFeedBuilder feedBuilder;
 
-    public SyndFeed getFeed(String url, DecoratorRequest request) throws Exception {
-        if (url == null || !url.startsWith("/")) {
-            throw new IllegalArgumentException("Invalid URL: " + url 
-                    + ": must start with '/'");
-        }
-        InputStream stream = retrieveLocalStream(url, request);
+    public SyndFeed getFeed(URL url, DecoratorRequest request) throws Exception {
+        InputStream stream = openStream(url, request);
         SyndFeed feed = this.feedBuilder.build(stream);
         return feed;
     }
+    
 
-    private InputStream retrieveLocalStream(String uri, DecoratorRequest request)
+    private InputStream openStream(URL url, DecoratorRequest request)
         throws Exception {
-
-        
         HttpServletRequest servletRequest = request.getServletRequest();
-        URL baseURL = URL.parse(servletRequest.getRequestURL().toString());
-        baseURL.clearParameters();
-        baseURL.setPath(Path.ROOT);
 
         if (servletRequest.getAttribute(IncludeComponent.INCLUDE_ATTRIBUTE_NAME) != null) {
-            throw new DecoratorComponentException("Error including URI '" + uri
+            throw new DecoratorComponentException("Error including feed '" + url
                     + "': possible include loop detected ");
         }
 
-        RequestWrapper requestWrapper = new RequestWrapper(servletRequest, uri);
+        ConfigurableRequestWrapper requestWrapper = new ConfigurableRequestWrapper(servletRequest, url);
         requestWrapper.setAttribute(IncludeComponent.INCLUDE_ATTRIBUTE_NAME, new Object());
 
         String servletName = (String) servletRequest
@@ -108,11 +95,11 @@ public class LocalFeedFetcher implements ServletContextAware {
             for (String name: headers.keySet()) {
                 if ("Location".equals(name)) {
                     String value = (String) headers.get(name);
-                    URL url = URL.parse(value);
+                    URL location = URL.parse(value);
 
-                    if (url.toString().startsWith(baseURL.toString())) {
-                         requestWrapper = new RequestWrapper(
-                                 servletRequest, url.getPathRepresentation());
+                    if (location.getHost().equals(url.getHost())) {
+                         requestWrapper = new ConfigurableRequestWrapper(
+                                 servletRequest, location);
                         servletResponse = new BufferedResponse();
                         rd.forward(requestWrapper, servletResponse);
                     }
@@ -134,87 +121,5 @@ public class LocalFeedFetcher implements ServletContextAware {
 
     public void setServletContext(ServletContext servletContext) {
         this.servletContext = servletContext;
-    }
-
-    private class RequestWrapper extends HttpServletRequestWrapper {
-        private URL requestURL;
-        
-        public RequestWrapper(HttpServletRequest request, String uri) {
-            super(request);
-            URL url = URL.parse(request.getRequestURL().toString());
-            url.clearParameters();
-            url.setPath(Path.ROOT);
-            if (uri.indexOf("?") == -1) {
-                if (uri.endsWith("/") && !uri.equals("/")) {
-                    uri = uri.substring(0, uri.length() - 1);
-                    url.setCollection(true);
-                }
-                Path path = Path.fromString(uri);
-                url.setPath(path);
-            } else {
-                String queryString = uri.substring(uri.indexOf("?") + 1);
-                Map<String, String[]> query = URL.splitQueryString(queryString);
-                String requestPath = uri.substring(0, uri.indexOf("?"));
-                if (requestPath.endsWith("/") && !requestPath.equals("/")) {
-                    requestPath = requestPath.substring(0, requestPath.length() - 1);
-                    url.setCollection(true);
-                }
-                Path path = Path.fromString(requestPath);
-                url.setPath(path);
-                for (String param: query.keySet()) {
-                    for (String value: query.get(param)) {
-                        url.addParameter(param, value);
-                    }
-                }
-            }
-            this.requestURL = url;
-        }
-        
-        @Override
-        public StringBuffer getRequestURL() {
-            return new StringBuffer(this.requestURL.toString());
-        }
-
-        @Override
-        public String getRequestURI() {
-            return this.requestURL.getPathEncoded();
-        }
-
-        @Override
-        public String getQueryString() {
-            String s = this.requestURL.getQueryString();
-            if (s != null) {
-                return "?" + s;
-            }
-            return null;
-        }
-
-        @Override
-        public String getParameter(String name) {
-            return this.requestURL.getParameter(name);
-        }
-
-        @Override
-        public Map<String, String> getParameterMap() {
-            Map<String, String> m = new HashMap<String, String>();
-            for (String name: this.requestURL.getParameterNames()) {
-                m.put(name, this.requestURL.getParameter(name));
-            }
-            return m;
-        }
-
-        @Override
-        public Enumeration<String> getParameterNames() {
-            return Collections.enumeration(this.requestURL.getParameterNames());
-        }
-
-        @Override
-        public String[] getParameterValues(String name) {
-            List<String> values = this.requestURL.getParameters(name);
-            if (values == null) {
-                return null;
-            }
-            return values.toArray(new String[values.size()]);
-        }
     }
 }

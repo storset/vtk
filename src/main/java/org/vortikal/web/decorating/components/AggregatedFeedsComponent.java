@@ -173,8 +173,12 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
             model.put("feedMapping", new FeedMapping(feedMapping));
         }
 
+        URL requestURL = RequestContext.getRequestContext().getRequestURL();
+        URL baseURL = new URL(requestURL);
+        baseURL.clearParameters();
+
         String[] urlArray = urls.split(",");
-        parseFeeds(request, entries, feedMapping, urlArray);
+        parseFeeds(request, entries, feedMapping, baseURL, urlArray);
 
         try {
             sort(entries);
@@ -187,7 +191,6 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
         List<String> elementOrder = getElementOrder(PARAMETER_FEED_ELEMENT_ORDER, request);
         model.put("elementOrder", elementOrder);
 
-        URL requestURL = RequestContext.getRequestContext().getRequestURL();
         Map<String, String> descriptionNoImage = new HashMap<String, String>();
         Map<String, String> imgMap = new HashMap<String, String>();
         for (SyndEntry entry: entries) {
@@ -195,9 +198,6 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
                 descriptionNoImage.put(entry.toString(), null);
                 continue;
             }
-            URL baseURL = new URL(requestURL);
-            baseURL.clearParameters();
-
             Filter filter = new Filter(getNoImgHtmlFilter(), baseURL, requestURL);
             HtmlFragment fragment = super.filterEntry(entry, filter);
             descriptionNoImage.put(entry.toString(), fragment.getStringRepresentation());
@@ -239,16 +239,19 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
 
 
     void parseFeeds(DecoratorRequest request, List<SyndEntry> entries, Map<SyndEntry, SyndFeed> feedMapping,
-            String[] urlArray) {
+            URL baseURL, String[] urlArray) {
         for (String url : urlArray) {
             url = url.trim();
 
             SyndFeed tmpFeed = null;
+            URL feedURL = baseURL.relativeURL(url);
+            
             try {
-                if (!url.startsWith("/")) {
-                    tmpFeed = this.cache.get(url);
+                if (feedURL.getHost().equals(baseURL.getHost())) {
+                    retrieveLocalResource(feedURL);
+                    tmpFeed = this.localFeedFetcher.getFeed(feedURL, request);
                 } else {
-                    tmpFeed = this.localFeedFetcher.getFeed(url, request);
+                    tmpFeed = this.cache.get(url);
                 }
             } catch (Exception e) {
                 String m = e.getMessage();

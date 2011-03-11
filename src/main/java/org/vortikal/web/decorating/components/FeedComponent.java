@@ -197,14 +197,15 @@ public class FeedComponent extends AbstractFeedComponent {
         URL baseURL = new URL(requestURL);
         baseURL.clearParameters();
         try {
-            if (url.startsWith("/")) {
-                feed = this.localFeedFetcher.getFeed(url, request);
+            URL feedURL = baseURL.relativeURL(url);
+            if (feedURL.getHost().equals(requestURL.getHost())) {
+                retrieveLocalResource(feedURL);
+                feed = this.localFeedFetcher.getFeed(feedURL, request);
             } else {
-                url = baseURL.relativeURL(url).toString();
                 feed = this.cache.get(url);
             }
         } catch (Exception e) {
-            throw new RuntimeException("Could not read feed url " + url + " (" + e.getMessage() + ")", e);
+            throw new RuntimeException("Could not read feed url " + url + ": " + e.getMessage(), e);
         }
 
         List<String> elementOrder = getElementOrder(PARAMETER_FEED_ELEMENT_ORDER, request);

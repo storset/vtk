@@ -17,7 +17,7 @@
 <@mediaPlayer.mediaPlayer />
 
 <#if description?exists >
-<div>
+<div id="vrtx-introduction">
 	${description}
 </div>
 </#if>

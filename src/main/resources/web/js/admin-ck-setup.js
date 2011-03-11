@@ -49,7 +49,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   var isWithoutSubSuper = withoutSubSuper != null ? withoutSubSuper : false;
 
   //CKEditor configurations
-  if (name.indexOf("introduction") != -1) {
+  if (name.indexOf("introduction") != -1 || name.indexOf("resource.description") != -1) {
     setCKEditorConfig(name, linkBrowseUrl, null, null, 
 			          defaultLanguage, cssFileList, 150, 400, 40, inlineToolbar, isCompleteEditor, false, baseDocumentUrl);
   } else if (name.indexOf("caption") != -1) {

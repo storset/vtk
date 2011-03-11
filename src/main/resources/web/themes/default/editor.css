@@ -345,7 +345,8 @@ div.additionalContent textarea {
   height: 133px;
 }
 
-div.introduction {
+div.introduction,
+div.description {
   clear: left;
   float: left;
   width: 500px;
@@ -353,10 +354,15 @@ div.introduction {
   margin-bottom: 1em; /*1em;*/
 }
 
-div.introduction textarea {
+div.introduction textarea,
+div.description textarea {
   height: 22.5ex; /* Used when fck-editor is disabled */
   width: 500px;
 }
+/*
+#cke_contents_resource\.description {
+  height: 150px !important;
+}*/
 
 /* div.introduction iframe {
   height: 13ex;

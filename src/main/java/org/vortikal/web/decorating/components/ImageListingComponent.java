@@ -52,7 +52,6 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
 
     private static final int LIMIT = 5;
     private static final int MAX_FADE_EFFECT = 999; //ms
-    private Repository repository;
 
     private SearchSorting searchSorting;
 
@@ -100,7 +99,7 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
         search.setLimit(searchLimit);
         search.setSorting(new SortingImpl(this.searchSorting.getSortFields(requestedResource)));
 
-        ResultSet rs = this.repository.search(token, search);
+        ResultSet rs = repository.search(token, search);
 
         model.put("images", rs.getAllResults());
         model.put("folderTitle", requestedResource.getTitle());

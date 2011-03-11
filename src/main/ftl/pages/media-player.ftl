@@ -1,4 +1,3 @@
-
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "/layouts/media-player.ftl" as mediaPlayer />
 
@@ -14,12 +13,13 @@
 
 <h1>${title}</h2>
 
+<#if description?exists >
+  <div id="vrtx-meta-description">
+    ${description}
+  </div>
+</#if>
+
 <@mediaPlayer.mediaPlayer />
 
-<#if description?exists >
-<div id="vrtx-introduction">
-	${description}
-</div>
-</#if>
 </body>
 </html>

@@ -49,7 +49,13 @@ public class ResourceNotFoundException extends RepositoryException {
     public Path getURI() {
         return this.uri;
     }
+
+    @Override
+    public String getMessage() {
+        return "resource not found: " + this.uri;
+    }
     
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(this.getClass().getName());
         sb.append(": ").append(this.uri);

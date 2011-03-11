@@ -25,7 +25,7 @@
 	  	  <a href="${viewOngoingProjectsLink}">${vrtx.getMsg("projects.viewOngoingProjects")}</a>
 	    </#if>
 	  </div>
-	<#/if>
+	</#if>
 </#macro>
 
 <#macro displayProjects projectListing>

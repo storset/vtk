@@ -36,19 +36,15 @@
   </bean>
 
   <bean id="viewImageInfoService" class="org.vortikal.web.service.ServiceImpl">
-
     <property name="parent" ref="viewService" />
     <property name="order" value="0" />
-
     <property name="assertions">
       <list>
         <ref bean="contentTypeMatchesImage" />
         <ref bean="imageWithInfoAssertion" />
       </list>
     </property>
-
     <property name="handler" ref="imageWithInfoHandler" />
-
   </bean>
 
   <bean id="imageWithInfoHandler" class="org.vortikal.web.display.image.DisplayImageWithInfoController">

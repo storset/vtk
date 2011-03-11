@@ -128,8 +128,13 @@ resourcetype person {
           [endif]
           [if username != null && username != ""]
             <div class="vrtx-person-contact-info-line vrtx-username">
-               <span class="vrtx-label">[localized "username"]</span>
-               <span class="vrtx-value">[val username]</span>
+              <span class="vrtx-label">[localized "username"]</span>
+              [def requestContext request-context()]
+              [if requestContext.principal]
+                <span class="vrtx-value">[val username]</span>
+              [else]
+                [call "include:login"]
+              [endif]
             </div>
           [endif]
           [if alternativeVisitingAddress != null && alternativeVisitingAddress != ""]
@@ -270,7 +275,7 @@ resourcetype person {
         [def titleValue resource-prop(".", "title")]
         [if (firstName != null && surname != null)]
         <div class="vcard">
-             <span class="fn n">
+          <span class="fn n">
             <span class="given-name">[val firstName]</span>
             <span class="family-name">[val surname]</span>
           </span>

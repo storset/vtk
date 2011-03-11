@@ -1469,6 +1469,8 @@
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
+        <ref bean="viewImageInfoService.urlProvider" />
+        <ref bean="iframeJSProvider" />
       </list>
     </property>
   </bean>

@@ -5,9 +5,8 @@
 
   <!-- Image resource -->
 
-  <bean id="imageResourceTypeDefinition"
-        class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="image"/>
+  <bean id="imageResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="image" />
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="parentTypeDefinition" ref="fileResourceTypeDefinition" />
     <property name="assertions">
@@ -24,8 +23,53 @@
     </property>
   </bean>
 
-  <bean id="imageHeightPropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  <bean id="imageWithInfoAssertion" class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="vrtx" />
+    <property name="parameterValue" value="image-info" />
+  </bean>
+
+
+  <bean id="viewImageInfoService.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+    <property name="modelName" value="previewImage" />
+    <property name="urlName" value="URL" />
+    <property name="service" ref="viewImageInfoService" />
+  </bean>
+
+  <bean id="viewImageInfoService" class="org.vortikal.web.service.ServiceImpl">
+
+    <property name="parent" ref="viewService" />
+    <property name="order" value="0" />
+
+    <property name="assertions">
+      <list>
+        <ref bean="contentTypeMatchesImage" />
+        <ref bean="imageWithInfoAssertion" />
+      </list>
+    </property>
+
+    <property name="handler" ref="imageWithInfoHandler" />
+
+  </bean>
+
+  <bean id="imageWithInfoHandler" class="org.vortikal.web.display.image.DisplayImageWithInfoController">
+    <property name="viewName" value="imageWithInfoView" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="descriptionPropDef" ref="descriptionPropDef" />
+  </bean>
+
+  <bean id="imageWithInfoViewResolver" parent="decoratorViewResolver">
+    <property name="views">
+      <map>
+        <entry key="imageWithInfoView" value-ref="imageWithInfoView" />
+      </map>
+    </property>
+  </bean>
+
+  <bean name="imageWithInfoView" parent="freemarkerView">
+    <property name="url" value="pages/image-as-html.ftl" />
+  </bean>
+
+  <bean id="imageHeightPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="pixelHeight" />
     <property name="type" value="INT" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -33,13 +77,11 @@
     <property name="propertyEvaluator" ref="imageHeightEvaluator" />
   </bean>
 
-  <bean id="imageHeightEvaluator" 
-        class="org.vortikal.repository.resourcetype.property.ImageDimensionEvaluator">
+  <bean id="imageHeightEvaluator" class="org.vortikal.repository.resourcetype.property.ImageDimensionEvaluator">
     <property name="evaluateHeight" value="true" />
   </bean>
 
-  <bean id="imageWidthPropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  <bean id="imageWidthPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="pixelWidth" />
     <property name="type" value="INT" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -47,13 +89,11 @@
     <property name="propertyEvaluator" ref="imageWidthEvaluator" />
   </bean>
 
-  <bean id="imageWidthEvaluator" 
-        class="org.vortikal.repository.resourcetype.property.ImageDimensionEvaluator">
+  <bean id="imageWidthEvaluator" class="org.vortikal.repository.resourcetype.property.ImageDimensionEvaluator">
     <property name="evaluateHeight" value="false" />
   </bean>
-  
-  <bean id="thumbnailPropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+
+  <bean id="thumbnailPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="thumbnail" />
     <property name="type" value="BINARY" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -61,8 +101,7 @@
     <property name="propertyEvaluator" ref="thumbnailEvaluator" />
   </bean>
 
-  <bean id="thumbnailEvaluator" 
-        class="org.vortikal.repository.resourcetype.property.ThumbnailEvaluator">
+  <bean id="thumbnailEvaluator" class="org.vortikal.repository.resourcetype.property.ThumbnailEvaluator">
     <property name="imageService" ref="imageService" />
     <property name="width" value="${resourcetype.image.thumbnail.width}" />
     <property name="scaleUp" ref="scaleUp" />
@@ -77,7 +116,7 @@
       </set>
     </property>
   </bean>
-  
+
   <bean id="scaleUp" class="java.lang.Boolean">
     <constructor-arg type="boolean" value="false" />
   </bean>
@@ -85,7 +124,7 @@
   <bean id="resourceTypeIsImage" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
     <property name="resourceTypeDefinition" ref="imageResourceTypeDefinition" />
   </bean>
-  
+
 </beans>
 
 

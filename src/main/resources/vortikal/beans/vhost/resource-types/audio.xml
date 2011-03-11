@@ -13,13 +13,6 @@
     <property name="assertions" ref="contentTypeMatchesAudio" />
     <property name="propertyTypeDefinitions">
       <list>
-        <!--
-        <ref bean="audioChannelsPropDef" />
-        <ref bean="audioEncodingPropDef" />
-        <ref bean="audioFrameRatePropDef" />
-        <ref bean="audioFrameSizePropDef" />
-        <ref bean="audioSampleRatePropDef" />
-        -->
         <ref bean="audioTitlePropDef" />
         <ref bean="audioAuthorPropDef" />
         <ref bean="audioAlbumPropDef" />

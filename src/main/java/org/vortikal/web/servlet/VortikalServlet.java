@@ -257,7 +257,7 @@ public class VortikalServlet extends DispatcherServlet {
     }
     
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     private void initErrorHandlers() {
         Map handlers = getWebApplicationContext().getBeansOfType(
             ErrorHandler.class, false, false);

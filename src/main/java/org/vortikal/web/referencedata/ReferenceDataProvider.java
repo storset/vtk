@@ -46,7 +46,7 @@ public interface ReferenceDataProvider {
      * renderer.
      * @param model the model Map to populate with reference data.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public void referenceData(Map model, HttpServletRequest request) throws Exception;
     
 }

@@ -191,7 +191,8 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
 
     @Override
     public String getRequestURI() {
-        return this.url.getPath().toString();
+        URL u = new URL(this.url).clearParameters();
+        return u.getPathRepresentation();
     }
     
     @Override
@@ -405,6 +406,11 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
             return filterAnonymousCookies();
         }
         return super.getCookies();
+    }
+    
+    @Override
+    public String toString() {
+        return this.getClass().getName() + "[" + super.toString() + "]";
     }
     
     private Cookie[] filterAnonymousCookies() {

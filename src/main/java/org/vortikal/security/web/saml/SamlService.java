@@ -473,9 +473,7 @@ public abstract class SamlService {
 
 
     private URL getServiceProviderURL(HttpServletRequest request) {
-        URL url = URL.create(request);
-        url.clearParameters();
-        url.setPath(this.serviceProviderURI);
+        URL url = URL.create(request).clearParameters().setPath(this.serviceProviderURI);
         return url;
     }
 

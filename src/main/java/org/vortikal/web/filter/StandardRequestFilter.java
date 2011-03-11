@@ -52,7 +52,7 @@ import org.vortikal.web.service.URL;
  * <ol>
  * <li>Ensures that the URI is not empty or <code>null</code>.
  * <li>Translates '*' as request URI to '/' (relevant for a host global OPTIONS request).
- * <li>Supports the de-facto header <code>X-Forwarded-For</code> with a client IP
+ * <li>Supports the <code>X-Forwarded-For</code> header with a client IP
  * <li>Also supports translating forwarded requests using a header with optional 
  *    fields <code>{host, port, protocol, client}</code>
  *    Example: <code>X-My-Forward-Header: host=example.com,port=443,protocol=https</code>
@@ -86,17 +86,19 @@ public class StandardRequestFilter extends AbstractRequestFilter {
     }
 
     public HttpServletRequest filterRequest(HttpServletRequest request) {
-        return new StandardRequestWrapper(request);
+        return new RequestWrapper(request);
     }
 
-    private class StandardRequestWrapper extends HttpServletRequestWrapper {
+    private class RequestWrapper extends HttpServletRequestWrapper {
+        private HttpServletRequest request;
         private String uri;
         private URL requestURL;
         private String client = null;
         private Set<String> absorbedHeaders = new HashSet<String>();
         
-        public StandardRequestWrapper(HttpServletRequest request) {
+        public RequestWrapper(HttpServletRequest request) {
             super(request);
+            this.request = request;
             String requestURI = request.getRequestURI();
             this.uri = translateUri(requestURI);
             if (logger.isDebugEnabled()) {
@@ -232,6 +234,11 @@ public class StandardRequestFilter extends AbstractRequestFilter {
                 return this.client;
             }
             return super.getRemoteHost();
+        }
+
+        @Override
+        public String toString() {
+            return this.getClass().getName() + "[" + this.request + "]";
         }
 
         private String translateUri(String requestURI) {

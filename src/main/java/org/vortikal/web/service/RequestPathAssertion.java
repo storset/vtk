@@ -59,7 +59,8 @@ public class RequestPathAssertion implements Assertion {
     }
 
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
-        return request.getRequestURI().equals(this.path.toString());
+        URL url = URL.create(request);
+        return url.getPath().equals(this.path);
     }
 
     public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {

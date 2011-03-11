@@ -122,6 +122,7 @@ public class RequestEncodingTranslator extends AbstractRequestFilter
             } catch (Exception e) {
                 logger.warn("Unable to translate uri: " + request.getRequestURI(), e);
                 this.uri = request.getRequestURI();
+                this.requestURL = request.getRequestURL().toString();
             }
         }
         

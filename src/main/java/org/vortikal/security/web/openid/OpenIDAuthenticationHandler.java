@@ -168,7 +168,7 @@ public class OpenIDAuthenticationHandler
             // Save original URL in session:
             URL originalURL = URL.create(request);
             session.setAttribute(ORIGINAL_URI_SESSION_ATTRIBUTE, originalURL);
-            String redirectURL = this.formService.constructLink(Path.fromString(request.getRequestURI()));
+            String redirectURL = this.formService.constructLink(originalURL.getPath());
                 try {
                     response.sendRedirect(redirectURL);
                 } catch (Exception e) {

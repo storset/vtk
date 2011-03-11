@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 
@@ -50,28 +50,21 @@ import org.vortikal.security.Principal;
  *   </li>
  * </ul>
  */
-public class RequestURIRegexpAssertion
-  implements Assertion, InitializingBean {
+public class RequestURIRegexpAssertion implements Assertion {
 
-    private Pattern pattern = null;
+    private Pattern pattern;
 
-
+    @Required
     public void setPattern(String pattern) {
         this.pattern = Pattern.compile(pattern);
     }
     
-
-    public void afterPropertiesSet() {
-        if (this.pattern == null) throw new IllegalArgumentException(
-            "Property 'pattern' cannot be null");
-    }
-    
-
+    @Override
     public boolean conflicts(Assertion assertion) {
         return false;
     }
 
-
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
 		
@@ -81,21 +74,19 @@ public class RequestURIRegexpAssertion
         return sb.toString();
     }
 
-
+    @Override
     public void processURL(URL url) {
         // Empty
     }
 
+    @Override
     public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
         return true;
     }
 
-
+    @Override
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
         Matcher m = this.pattern.matcher(request.getRequestURI());
         return m.find();
     }
-
-
-
 }

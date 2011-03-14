@@ -1482,23 +1482,57 @@
 
   <!-- Views -->
   <bean id="previewImageView" parent="freemarkerView">
-    <property name="url" value="pages/preview-service.ftl" />
+    <property name="url" value="pages/preview-admin-iframe.ftl" />
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
         <ref bean="viewImageInfoService.urlProvider" />
         <ref bean="iframeJSProvider" />
+         <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
+          <property name="modelName" value="permissions_ACTION_READ" />
+          <property name="permission" ref="ACTION_READ" />
+          <property name="anonymous" value="true" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
+          <property name="modelName" value="permissions_ACTION_READ_PROCESSED" />
+          <property name="permission" ref="ACTION_READ_PROCESSED" />
+          <property name="anonymous" value="true" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
+          <property name="modelDataMap">
+            <map>
+              <entry key="enableSelectiveProtocols" value="${manage.enableSelectiveProtocols}" />
+            </map>
+          </property>
+         </bean>
       </list>
     </property>
   </bean>
   
   <bean id="previewMediaPlayerView" parent="freemarkerView">
-    <property name="url" value="pages/preview-service.ftl" />
+    <property name="url" value="pages/preview-admin-iframe.ftl" />
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
         <ref bean="mediaPlayerService.urlProvider" />
         <ref bean="iframeJSProvider" />
+         <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
+          <property name="modelName" value="permissions_ACTION_READ" />
+          <property name="permission" ref="ACTION_READ" />
+          <property name="anonymous" value="true" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
+          <property name="modelName" value="permissions_ACTION_READ_PROCESSED" />
+          <property name="permission" ref="ACTION_READ_PROCESSED" />
+          <property name="anonymous" value="true" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
+          <property name="modelDataMap">
+            <map>
+              <entry key="enableSelectiveProtocols" value="${manage.enableSelectiveProtocols}" />
+            </map>
+          </property>
+         </bean>
       </list>
     </property>
   </bean>

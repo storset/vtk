@@ -55,8 +55,13 @@
     <#if !previewViewParameter?exists>
       <#assign previewViewParameter = 'vrtx=previewViewIframe' />
     </#if>
-
-    <#assign url = resourceReference />
+    
+	<#if previewImage?exists >
+		<#assign url = previewImage.URL />
+	<#elseif resourceReference?exists >
+    	<#assign url = resourceReference />	  
+    </#if>
+    
     <#if url?contains("?")>
       <#assign url = url + "&amp;" + previewViewParameter />
     <#else>

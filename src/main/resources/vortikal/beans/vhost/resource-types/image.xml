@@ -53,7 +53,7 @@
     <property name="descriptionPropDef" ref="descriptionPropDef" />
   </bean>
 
-  <bean id="imageWithInfoViewResolver" parent="decoratorViewResolver">
+  <bean id="imageWithInfoViewResolver" parent="adminViewResolver">
     <property name="views">
       <map>
         <entry key="imageWithInfoView" value-ref="imageWithInfoView" />

@@ -48,7 +48,7 @@
     <property name="descriptionPropDef" ref="descriptionPropDef" />
   </bean>
 
-  <bean id="displayMediaResourceViewResolver" parent="decoratorViewResolver">
+  <bean id="displayMediaResourceViewResolver" parent="adminViewResolver">
     <property name="views">
       <map>
         <entry key="viewMediaPlayer" value-ref="displayMediaResourceView" />

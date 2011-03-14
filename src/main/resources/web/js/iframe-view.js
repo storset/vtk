@@ -15,7 +15,7 @@ $(document).ready(function()
 		{
 			// iframe load event not firing in IE8 when page w. iframe is inside another iframe
 			// Setting the iframe src seems to fix the problem
-			var previewViewIframe = $("iframe#previewViewIframe")[0]
+			var previewViewIframe = $("iframe#previewViewIframe")[0];
 			if (previewViewIframe) {
 				var iSource = previewViewIframe.src;
 				previewViewIframe.src = '';

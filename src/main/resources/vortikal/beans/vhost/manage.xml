@@ -1487,7 +1487,7 @@
       <list>
         <ref bean="resourceContextProvider" />
         <ref bean="viewImageInfoService.urlProvider" />
-        <ref bean="iframeJSProvider" />
+        <ref bean="iframeJSProviderAlone" />
          <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
           <property name="modelName" value="permissions_ACTION_READ" />
           <property name="permission" ref="ACTION_READ" />
@@ -1515,7 +1515,7 @@
       <list>
         <ref bean="resourceContextProvider" />
         <ref bean="mediaPlayerService.urlProvider" />
-        <ref bean="iframeJSProvider" />
+        <ref bean="iframeJSProviderAlone" />
          <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
           <property name="modelName" value="permissions_ACTION_READ" />
           <property name="permission" ref="ACTION_READ" />
@@ -1669,6 +1669,23 @@
             <value>${jquery.baseURL}/jquery-${jquery.version}.min.js</value>
             <value>${jsBaseURL}/admin-enhancements.js</value>
             <value>${jsBaseURL}/iframe-admin.js</value>
+            <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.js</value>
+            <value>${jsBaseURL}/plugins/thickbox-modified/check-unsaved-changes.js</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+  
+  <bean id="iframeJSProviderAlone" class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
+    <property name="modelDataMap">
+      <map>
+        <entry key="jsURLs">
+          <list>
+            <value>${jsBaseURL}/browser-sniffer.js</value>
+            <value>${jquery.baseURL}/jquery-${jquery.version}.min.js</value>
+            <value>${jsBaseURL}/admin-enhancements.js</value>
+            <value>${jsBaseURL}/iframe-admin-alone.js</value>
             <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.js</value>
             <value>${jsBaseURL}/plugins/thickbox-modified/check-unsaved-changes.js</value>
           </list>

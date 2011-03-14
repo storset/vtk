@@ -65,11 +65,11 @@ resourcetype frontpage {
           [endif]    
           [if number = 1]
             [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
-            [def cssClasses concat(cssClasses, "vrtx-additional-content-first")]           
+            [def cssClasses concat(cssClasses, "vrtx-main-content-first")]           
           [endif]
           [if number = _size]
             [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
-            [def cssClasses concat(cssClasses, "vrtx-additional-content-last")]
+            [def cssClasses concat(cssClasses, "vrtx-main-content-last")]
           [endif]      
 
           [if cssClasses != null && cssClasses != ""]

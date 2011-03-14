@@ -1,5 +1,4 @@
-/*  Need to use postMessage for iframe resizing since cross domain is typical case now.  
- *  Not essential functionality. Only works in browsers which support postMessage
+/*  Iframe resizing when only one iframe
  */
 $(document).ready(function()
 	{

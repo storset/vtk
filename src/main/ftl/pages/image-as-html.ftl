@@ -3,7 +3,7 @@
 <head>
   <title>${title}</title>
   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/jquery-1.5.1.min.js"></script> 
-  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/iframe-view-not-iframe.js"></script> 
+  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/iframe-view-not-another-iframe.js"></script> 
 </head>
 <body>
 

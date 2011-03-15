@@ -324,7 +324,7 @@ public class RequestContextInitializer implements ContextInitializer {
 
 
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(this.getClass().getName());
         sb.append(": ").append(System.identityHashCode(this));
         return sb.toString();

@@ -53,7 +53,7 @@
 
       	<object width="${width}" height="${height}"> 
 			<param name="movie" value="${strobe?html}"></param>
-			<param name="flashvars" value="src=${media}"></param>
+			<param name="flashvars" value="src=${media}&autoPlay=${autoplay}"></param>
 			<param name="allowFullScreen" value="true"></param>
 			<param name="allowscriptaccess" value="always"></param>	
 			<embed src="${strobe?html}"
@@ -65,7 +65,7 @@
 			 	<#if streamType?exists && streamType == "live"> 
 			 	streamType="live"
 			 	</#if>
-			 	flashvars="src=${media}">
+			 	flashvars="src=${media}&autoPlay=${autoplay}">
 		 	</embed>
 		</object>
 		<#if contentType == "video/mp4" && !media?starts_with("rtmp")>
@@ -77,7 +77,6 @@
   </div>
   
 </#if>
-
 </#macro>
 
 <@mediaPlayer />

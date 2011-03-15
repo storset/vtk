@@ -45,7 +45,7 @@ public class IncludeMediaPlayerComponent extends ResourceMediaPlayerComponent {
         if (autoplay != null && !"".equals(autoplay))
             model.put("autoplay", autoplay);
         else
-            model.put("autoplay", "false");
+            model.put("autoplay", autoplay);
         if (streamType != null)
             model.put("streamType", streamType);
 

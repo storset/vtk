@@ -104,6 +104,7 @@ public class ResourceTypeAssertion extends AbstractRepositoryAssertion {
 
                     match = typeInfo.isOfType(this.resourceTypeDefinition);
                 } else {
+                    // XXX should not this also test for isOfType: ??
                     match = typeInfo.getResourceType().getName().equals(this.resourceType);
                 }
             }

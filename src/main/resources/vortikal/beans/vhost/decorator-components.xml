@@ -168,16 +168,7 @@
     <property name="name" value="media-player" />
     <property name="description" value="Inserts media player if it is an article document" />
     <property name="view" ref="decorating.mediaComponent.view" />
-    <property name="extentionToMimetype">
-      <map>
-        <entry key="mp4" value="video/mp4" />
-        <entry key="mov" value="video/quicktime" />
-        <entry key="mp3" value="audio/mpeg" />
-        <entry key="swf" value="application/x-shockwave-flash" />
-        <entry key="flv" value="video/x-flv" />
-      </map>
-    </property>
-    <property name="viewService" ref="viewService" />
+    <property name="mediaPlayer" ref="mediaPlayer" />
   </bean>
 
   <bean id="decorating.mediaComponent.view" parent="freemarkerView">

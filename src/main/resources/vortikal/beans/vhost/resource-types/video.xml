@@ -21,29 +21,35 @@
   </bean>
 
   <bean id="mediaPlayerService" class="org.vortikal.web.service.ServiceImpl">
-
     <property name="parent" ref="viewService" />
     <property name="order" value="0" />
-
     <property name="assertions">
       <list>
         <ref bean="contentTypeMatchesMedia" />
-
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="vrtx" />
           <property name="parameterValue" value="player" />
         </bean>
-
       </list>
     </property>
-
     <property name="handler" ref="displayMediaResource" />
-
   </bean>
 
+  <bean id="mediaPlayer" class="org.vortikal.web.display.media.MediaPlayer">
+    <property name="extentionToMimetype">
+      <map>
+        <entry key="mp4" value="video/mp4" />
+        <entry key="mov" value="video/quicktime" />
+        <entry key="mp3" value="audio/mpeg" />
+        <entry key="swf" value="application/x-shockwave-flash" />
+        <entry key="flv" value="video/x-flv" />
+      </map>
+    </property>
+    <property name="viewService" ref="viewService" />
+  </bean>
 
   <bean id="displayMediaResource" class="org.vortikal.web.display.media.DisplayMediaController">
-    <property name="mediaPlayerComponent" ref="decorating.resourceMediaComponent" />
+    <property name="mediaPlayer" ref="mediaPlayer" />
     <property name="viewName" value="viewMediaPlayer" />
     <property name="descriptionPropDef" ref="descriptionPropDef" />
   </bean>
@@ -91,7 +97,4 @@
     <property name="service" ref="mediaPlayerService" />
   </bean>
 
-
 </beans>
-
-

@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
@@ -14,50 +15,47 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.decorating.components.ResourceMediaPlayerComponent;
 
 public class DisplayMediaController implements Controller {
 
-    private ResourceMediaPlayerComponent mediaPlayerComponent;
-    private String viewName;  
+    private String viewName;
     private PropertyTypeDefinition descriptionPropDef;
+    private MediaPlayer mediaPlayer;
+
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        
-        Map<Object,Object> model = new HashMap<Object,Object>();
-        
+
+        Map<Object, Object> model = new HashMap<Object, Object>();
+
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
         Path uri = requestContext.getResourceURI();
         Repository repository = requestContext.getRepository();
         Resource resource = repository.retrieve(token, uri, true);
-        
-        getMediaPlayerComponent().addMediaPlayer(model, token, repository, uri.toString());
-        
-        Property descriptionProp = resource.getProperty(getDescriptionPropDef());
-        
+
+        this.mediaPlayer.addMediaPlayer(model, token, repository, uri.toString());
+
+        Property descriptionProp = resource.getProperty(this.descriptionPropDef);
+
         if (descriptionProp != null)
             model.put("description", descriptionProp.getStringValue());
-        
-        return new ModelAndView(viewName,model);
+
+        return new ModelAndView(this.viewName, model);
     }
+
+    @Required
     public void setViewName(String viewName) {
         this.viewName = viewName;
     }
-    public String getViewName() {
-        return viewName;
-    }
-    public void setMediaPlayerComponent(ResourceMediaPlayerComponent mediaPlayerComponent) {
-        this.mediaPlayerComponent = mediaPlayerComponent;
-    }
-    public ResourceMediaPlayerComponent getMediaPlayerComponent() {
-        return mediaPlayerComponent;
-    }
+
+    @Required
     public void setDescriptionPropDef(PropertyTypeDefinition descriptionPropDef) {
         this.descriptionPropDef = descriptionPropDef;
     }
-    public PropertyTypeDefinition getDescriptionPropDef() {
-        return descriptionPropDef;
+
+    @Required
+    public void setMediaPlayer(MediaPlayer mediaPlayer) {
+        this.mediaPlayer = mediaPlayer;
     }
 
 }

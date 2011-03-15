@@ -35,7 +35,7 @@ public class IncludeMediaPlayerComponent extends ResourceMediaPlayerComponent {
         String contentType = request.getStringParameter(PARAMETER_CONTENT_TYPE);
         String streamType = request.getStringParameter(PARAMETER_STREAM_TYPE);
 
-        createLocalUrlToMediaFile(url, model);
+        this.mediaPlayer.createLocalUrlToMediaFile(url, model);
 
         // Overwrites default values
         if (height != null && !"".equals(height))
@@ -60,13 +60,13 @@ public class IncludeMediaPlayerComponent extends ResourceMediaPlayerComponent {
             }
         }
 
-        String extension = getExtension(url);
+        String extension = this.mediaPlayer.getExtension(url);
         if (contentType != null && !"".equals(contentType)) {
             model.put("contentType", contentType);
         } else if (mediaResource != null) {
             model.put("contentType", mediaResource.getContentType());
-        } else if (extentionToMimetype.containsKey(extension)) {
-            model.put("contentType", extentionToMimetype.get(extension));
+        } else if (this.mediaPlayer.getExtentionToMimetype().containsKey(extension)) {
+            model.put("contentType", this.mediaPlayer.getExtentionToMimetype().get(extension));
         }
 
         model.put("extension", extension);

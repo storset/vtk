@@ -71,29 +71,24 @@ div.vrtx-collections ul {
 	margin-bottom: 0;
 }
 
- div#vrtx-collection-listing-subfolders {
+ div.vrtx-collections {}
+  
+  div.vrtx-collections div.vrtx-subfolder-menu {
     border: 1px solid #ccc;
     clear: right;
-    height: 1%;
     margin: 0px 0px 1.5em;
     padding: 1em;
     float: left;
     width: 100%;
   }
-  
-  div#vrtx-collection-listing-subfolder div.vrtx-subfolder-menu {
-    border: none;
-    padding: 0px;
-    height: auto;
-  }
 
-  div#vrtx-collection-listing-subfolders div.menu-title {
+  div.vrtx-collections div.menu-title {
     font-weight: bold;
     font-size: 1.2em;
     margin: 0px 0px 0.5em;
   }
 
-  div#vrtx-collection-listing-subfolders ul {
+  div.vrtx-collections ul {
     list-style-type: square;
     margin-bottom: 0px;
     margin-top: 0px;

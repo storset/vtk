@@ -39,9 +39,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   var flashBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=' + browsePath;
 
   /* Fix for div container display in IE */
-  var ieversion = new Number(RegExp.$1);
-  var browser = navigator.userAgent;
-  if(browser.indexOf("MSIE") > -1 && ieversion <= 7){
+  if($.browser.msie > -1 && $.browser.version <= 7){
     cssFileList.push("/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css");
   }
   

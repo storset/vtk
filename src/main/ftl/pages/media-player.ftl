@@ -15,7 +15,7 @@
 </head>
 <body>
 
-<h1>${title}</h2>
+<h1>${title}</h1>
 
 <#if description?exists >
   <div id="vrtx-meta-description">

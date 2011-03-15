@@ -392,57 +392,56 @@
     <property name="safeHtmlFilter" ref="safeHtml.filter" />
   </bean>
 
-  <bean id="decorating.abstractListMenuComponent" abstract="true">
+  <bean id="decorating.menuGenerator" class="org.vortikal.web.decorating.components.menu.MenuGenerator">
     <property name="titlePropDef" ref="titlePropDef" />
     <property name="hiddenPropDef" ref="hiddenPropDef" />
     <property name="importancePropDef" ref="importancePropDef" />
     <property name="collectionResourceType" ref="collectionResourceTypeDefinition" />
     <property name="navigationTitlePropDef" ref="navigationTitlePropDef" />
+    <property name="viewService" ref="webService" />
   </bean>
 
-  <bean id="decorating.listMenuComponent" class="org.vortikal.web.decorating.components.ListMenuComponent"
+  <bean id="decorating.abstractListMenuComponent" abstract="true">
+    <property name="menuGenerator" ref="decorating.menuGenerator" />
+  </bean>
+
+  <bean id="decorating.listMenuComponent" class="org.vortikal.web.decorating.components.menu.ListMenuComponent"
         parent="decorating.abstractListMenuComponent">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="uri-menu" />
     <property name="view" ref="decorating.listMenuComponent.view" />
-    <property name="viewService" ref="webService" />
   </bean>
 
   <bean name="decorating.listMenuComponent.view" parent="freemarkerView">
     <property name="url" value="layouts/list-menu.ftl" />
   </bean>
 
-  <bean id="decorating.breadcrumbMenuComponent" class="org.vortikal.web.decorating.components.BreadcrumbMenuComponent"
+  <bean id="decorating.breadcrumbMenuComponent" class="org.vortikal.web.decorating.components.menu.BreadcrumbMenuComponent"
     parent="decorating.abstractListMenuComponent">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="breadcrumb-menu" />
     <property name="view" ref="decorating.breadcrumbMenuComponent.view" />
-    <property name="viewService" ref="webService" />
   </bean>
 
   <bean name="decorating.breadcrumbMenuComponent.view" parent="freemarkerView">
     <property name="url" value="layouts/breadcrumb-menu.ftl" />
   </bean>
 
-  <bean id="decorating.subFolderMenuComponent" class="org.vortikal.web.decorating.components.SubFolderMenuComponent"
+  <bean id="decorating.subFolderMenuComponent" class="org.vortikal.web.decorating.components.menu.SubFolderMenuComponent"
     parent="decorating.abstractListMenuComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="subfolder-menu" />
     <property name="searchLimit" value="1000" />
     <property name="view" ref="decorating.subFolderMenuComponent.view" />
-    <property name="resourceTypeTree" ref="resourceTypeTree" />
-    <property name="viewService" ref="webService" />
-    <property name="reportService" ref="reportService" />
     <property name="modelName" value="subFolderMenu" />
     <property name="description" value="Lists the subfolders of the current folder" />
   </bean>
 
-  <bean id="subFolderMenuProvider" class="org.vortikal.web.decorating.components.SubFolderMenuProvider"
+  <bean id="subFolderMenuProvider" class="org.vortikal.web.decorating.components.menu.SubFolderMenuProvider"
         depends-on="resourceTypeTree">
-    <property name="subFolderMenuComponent" ref="decorating.subFolderMenuComponent" />
+    <property name="menuGenerator" ref="decorating.menuGenerator" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="sortPropDef" ref="collection.sortingPropDef" />
-    <property name="hiddenPropDef" ref="hiddenPropDef" />
   </bean>
 
   <bean name="decorating.subFolderMenuComponent.view" parent="freemarkerView">

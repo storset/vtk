@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.decorating.components;
+package org.vortikal.web.decorating.components.menu;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,6 +48,7 @@ import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
+import org.vortikal.web.decorating.components.DecoratorComponentException;
 import org.vortikal.web.referencedata.provider.BreadCrumbProvider;
 import org.vortikal.web.referencedata.provider.BreadcrumbElement;
 import org.vortikal.web.service.URL;
@@ -74,14 +75,14 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
 
         List<BreadcrumbElement> breadCrumbElements = getBreadcrumbElements();
         Resource currentResource = null;
-        
+
         currentResource = repository.retrieve(token, uri, true);
-        
+
         if ((!currentResource.isCollection() && (displayFromLevel + 1) > breadCrumbElements.size())
                 || (displayFromLevel > breadCrumbElements.size())) {
             return;
         }
-        
+
         for (int i = 0; i < displayFromLevel; i++) {
             if (breadCrumbElements.size() > 0) {
                 breadCrumbElements.remove(0);
@@ -94,7 +95,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
             } catch (AuthorizationException e) {
                 model.put("breadcrumb", breadCrumbElements);
                 return;
-            } catch (AuthenticationException e){
+            } catch (AuthenticationException e) {
                 model.put("breadcrumb", breadCrumbElements);
                 return;
             }
@@ -102,7 +103,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
                 breadCrumbElements.remove(breadCrumbElements.size() - 1);
             }
         }
-        URL markedUrl = this.viewService.constructURL(currentResource, principal, false);
+        URL markedUrl = this.menuGenerator.getViewService().constructURL(currentResource, principal, false);
         breadCrumbElements.add(new BreadcrumbElement(markedUrl, getMenuTitle(currentResource)));
 
         List<MenuItem<PropertySet>> childElements = null;
@@ -115,9 +116,9 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
             try {
                 childResource = repository.retrieve(token, currentResource.getURI().getParent(), true);
             } catch (AuthorizationException e) {
-            } catch (AuthenticationException e){               
+            } catch (AuthenticationException e) {
             }
-            
+
             if (childResource != null) {
                 childElements = generateChildElements(childResource.getChildURIs(), currentResource, requestContext);
                 breadCrumbElements.remove(breadCrumbElements.size() - 1);
@@ -139,12 +140,12 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         String breadcrumbName = "breadcrumb";
         BreadCrumbProvider p = new BreadCrumbProvider();
         p.setSkipCurrentResource(true);
-        p.setService(viewService);
+        p.setService(this.menuGenerator.getViewService());
         p.setBreadcrumbName(breadcrumbName);
         p.setSkipIndexFile(false);
         PropertyTypeDefinition titleProp[] = new PropertyTypeDefinition[2];
-        titleProp[0] = navigationTitlePropDef;
-        titleProp[1] = titlePropDef;
+        titleProp[0] = this.menuGenerator.getNavigationTitlePropDef();
+        titleProp[1] = this.menuGenerator.getTitlePropDef();
         p.setTitleOverrideProperties(titleProp);
         p.afterPropertiesSet();
         Map<String, BreadcrumbElement[]> map = new HashMap<String, BreadcrumbElement[]>();
@@ -157,8 +158,8 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         return result;
     }
 
-    private List<MenuItem<PropertySet>> generateChildElements(List<Path> children,
-            Resource currentResource, RequestContext requestContext) throws Exception {
+    private List<MenuItem<PropertySet>> generateChildElements(List<Path> children, Resource currentResource,
+            RequestContext requestContext) throws Exception {
         Repository repository = requestContext.getRepository();
         String token = requestContext.getSecurityToken();
         List<MenuItem<PropertySet>> items = new ArrayList<MenuItem<PropertySet>>();
@@ -168,13 +169,14 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
                 childResource = repository.retrieve(token, childPath, true);
             } catch (AuthorizationException e) {
                 continue; // can't access resource - not displayed in menu
-            } catch (AuthenticationException e){
+            } catch (AuthenticationException e) {
                 continue; // can't access resource - not displayed in menu
             }
             if (!childResource.isCollection()) {
                 continue;
             }
-            if (childResource.getProperty(this.hiddenPropDef) != null && !childResource.equals(currentResource)) {
+            if (childResource.getProperty(this.menuGenerator.getHiddenPropDef()) != null
+                    && !childResource.equals(currentResource)) {
                 continue; // hidden
             }
             items.add(buildItem(childResource));
@@ -183,7 +185,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
     }
 
     private String getMenuTitle(Resource resource) {
-        Property prop = resource.getProperty(this.navigationTitlePropDef);
+        Property prop = resource.getProperty(this.menuGenerator.getNavigationTitlePropDef());
         if (prop != null) {
             return prop.getStringValue();
         }

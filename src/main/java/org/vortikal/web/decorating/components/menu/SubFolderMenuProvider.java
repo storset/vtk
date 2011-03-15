@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.decorating.components;
+package org.vortikal.web.decorating.components.menu;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -36,6 +36,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
@@ -51,16 +52,14 @@ import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.decorating.components.SubFolderMenuComponent.MenuRequest;
 import org.vortikal.web.view.components.menu.ListMenu;
 
 public class SubFolderMenuProvider {
-    private SubFolderMenuComponent subFolderMenuComponent;
 
-    protected PropertyTypeDefinition hiddenPropDef;
+    private MenuGenerator menuGenerator;
     private PropertyTypeDefinition sortPropDef;
-    protected int collectionDisplayLimit = 1000;
     private ResourceTypeTree resourceTypeTree;
+    private int collectionDisplayLimit = 1000;
 
     public Map<String, Object> getSubfolderMenuWithGeneratedResultSets(Resource collection, HttpServletRequest request) {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -101,14 +100,12 @@ public class SubFolderMenuProvider {
             sortByName = true;
         }
 
-        SubFolderMenuComponent subfolderMenu = subFolderMenuComponent;
-
-        MenuRequest menuRequest = subfolderMenu.getNewMenuRequest(collection.getURI(), title, sortProperty,
+        MenuRequest menuRequest = this.menuGenerator.getMenuRequest(collection.getURI(), title, sortProperty,
                 ascendingSort, sortByName, resultSets, groupResultSetsBy, freezeAtLevel, depth, displayFromLevel,
                 maxNumberOfChildren, display, locale, token, searchLimit, includeURIs);
 
-        ListMenu<PropertySet> menu = subfolderMenu.buildListMenu(rs, menuRequest);
-        return subfolderMenu.buildMenuModel(menu, menuRequest);
+        ListMenu<PropertySet> menu = this.menuGenerator.buildListMenu(rs, menuRequest, null);
+        return this.menuGenerator.buildMenuModel(menu, menuRequest);
     }
 
     protected ResultSet listCollections(Path uri, RequestContext requestContext) {
@@ -140,12 +137,9 @@ public class SubFolderMenuProvider {
         return sortProp;
     }
 
-    public void setSubFolderMenuComponent(SubFolderMenuComponent subFolderMenuComponent) {
-        this.subFolderMenuComponent = subFolderMenuComponent;
-    }
-
-    public void setHiddenPropDef(PropertyTypeDefinition hiddenPropDef) {
-        this.hiddenPropDef = hiddenPropDef;
+    @Required
+    public void setMenuGenerator(MenuGenerator menuGenerator) {
+        this.menuGenerator = menuGenerator;
     }
 
     public void setSortPropDef(PropertyTypeDefinition sortPropDef) {

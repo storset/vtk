@@ -50,7 +50,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.decorating.components.SubFolderMenuProvider;
+import org.vortikal.web.decorating.components.menu.SubFolderMenuProvider;
 import org.vortikal.web.search.SearchSorting;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;

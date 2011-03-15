@@ -80,6 +80,12 @@ div.vrtx-collections ul {
     float: left;
     width: 100%;
   }
+  
+  div#vrtx-collection-listing-subfolder div.vrtx-subfolder-menu {
+    border: none;
+    padding: 0px;
+    height: auto;
+  }
 
   div#vrtx-collection-listing-subfolders div.menu-title {
     font-weight: bold;

@@ -12,6 +12,14 @@
       <script type="text/javascript" src="${jsURL}"></script>
     </#list>
   </#if>
+  <style type="text/css">
+    /* When no decoration */
+    a.vrtx-media {
+      clear: left;
+      display: block;
+      margin: 10px 0px 0px;
+    }
+  </style>
 </head>
 <body>
 

@@ -1487,7 +1487,7 @@
       <list>
         <ref bean="resourceContextProvider" />
         <ref bean="viewImageInfoService.urlProvider" />
-        <ref bean="iframeJSProviderAlone" />
+        <ref bean="iframeJSProvider" />
          <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
           <property name="modelName" value="permissions_ACTION_READ" />
           <property name="permission" ref="ACTION_READ" />
@@ -1515,7 +1515,7 @@
       <list>
         <ref bean="resourceContextProvider" />
         <ref bean="mediaPlayerService.urlProvider" />
-        <ref bean="iframeJSProviderAlone" />
+        <ref bean="iframeJSProvider" />
          <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
           <property name="modelName" value="permissions_ACTION_READ" />
           <property name="permission" ref="ACTION_READ" />

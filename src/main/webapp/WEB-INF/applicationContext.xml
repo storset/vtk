@@ -19,7 +19,6 @@
         class="org.springframework.beans.factory.config.MapFactoryBean">
     <property name="sourceMap">
       <map>
-        <entry key="/+" value="/" />
         <entry key="\+" value="%2B" />
         <entry key="%25" value="%" />
       </map>

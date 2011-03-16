@@ -189,6 +189,18 @@ public class ResourceTypeTreeImpl
         return propDef;
     }
 
+    public boolean isDeadProperty(Namespace namespace, String name) {
+        Map<String, PropertyTypeDefinition> map = this.propertyTypeDefinitions.get(namespace);
+        if (map != null) {
+            PropertyTypeDefinition propDef = map.get(name);
+            if (propDef != null) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public void afterPropertiesSet() throws Exception {
         init();
     }

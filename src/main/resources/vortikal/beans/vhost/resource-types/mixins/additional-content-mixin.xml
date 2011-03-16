@@ -17,7 +17,7 @@
 
   <bean id="additionalContentPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="contentRelation" value="PRE_CONTENT" />
-    <property name="name" value="additional-content"/>
+    <property name="name" value="additionalContents"/>
     <property name="type" value="HTML"/>
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
     <property name="mandatory" value="false"/>

@@ -94,7 +94,7 @@
   </#if>
   
   <#-- Regular "additional content" placed either at bottom or in right-column -->
-  <#assign additionalContent = vrtx.propValue(resource, "additional-content") />
+  <#assign additionalContent = vrtx.propValue(resource, "additionalContents") />
   <#assign hideAdditionalContent = vrtx.propValue(resource, "hide-additional-content")?string />
   <#if additionalContent?has_content && collection.resourceType != 'image-listing'
        && collection.resourceType != 'person-listing' && !isEventCalendarListing && !isBlogListing>

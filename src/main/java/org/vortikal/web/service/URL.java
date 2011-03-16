@@ -565,9 +565,15 @@ public class URL {
 
         for (String key: queryStringMap.keySet()) {
             String[] values = queryStringMap.get(key);
-            key = decode(key, encoding);
+            try {
+                key = decode(key, encoding);
+            } catch (IllegalArgumentException e) { }
             for (String value: values) {
-                url.addParameter(key, decode(value));
+                try {
+                    url.addParameter(key, decode(value));
+                } catch (IllegalArgumentException e) {
+                    url.addParameter(key, value);
+                }
             }
         }
         url.setCharacterEncoding(encoding);

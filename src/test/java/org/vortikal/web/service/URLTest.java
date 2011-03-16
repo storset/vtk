@@ -191,6 +191,7 @@ public class URLTest extends TestCase {
 
         url = URL.parse("http://a/b/");
         assertEquals("http://a/c/", url.relativeURL("        ../c/     ").toString());
+        assertEquals("http://a/b/%c3%a6", url.relativeURL("%c3%a6").toString().toLowerCase());
     }
     
     public void testIsEncoded() {

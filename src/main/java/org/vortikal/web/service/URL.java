@@ -773,6 +773,9 @@ public class URL {
      * For example, given a base URL of <code>http://a/b/c/d</code> and the input 
      * string <code>../g</code>, the resulting URL will be <code>http://a/b/g</code>.
      * </p>
+     * <p>
+     * The input string is assumed to be URL encoded.
+     * </p>
      * @param rel the input string
      * @return the resulting relative URL 
      */
@@ -840,6 +843,7 @@ public class URL {
                         "Error expanding relative URL: " + rel);
             }
         }
+        path = decode(path);
         URL url = new URL(this);
         url.setHost(host);
         url.setCollection(coll);

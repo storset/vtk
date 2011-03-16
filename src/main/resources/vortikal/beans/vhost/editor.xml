@@ -673,7 +673,7 @@
   <bean id="personResourceManager.htmlPropsFilter" class="org.vortikal.text.html.SimpleHtmlPageFilter">
     <property name="keepComments" value="false" />
     <property name="illegalElements" ref="personResourceManager.htmlPropsFilter.illegalHtmlElementSet" />
-    <!-- <property name="validElements" ref="personResourceManager.htmlPropsFilter.validHtmlElementSet" /> -->
+    <property name="validElements" ref="personResourceManager.htmlPropsFilter.validHtmlElementSet" />
   </bean>
 
   <bean id="personResourceManager.htmlPropsFilter.illegalHtmlElementSet" class="org.springframework.beans.factory.config.SetFactoryBean">

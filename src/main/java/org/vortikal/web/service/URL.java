@@ -540,6 +540,9 @@ public class URL {
         } catch (UnsupportedEncodingException e) {
             throw new IllegalStateException(
                     "UTF-8 encoding not supported on this system");
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Unable to parse request URL: " 
+                    + request.getRequestURL());
         }
     }
 
@@ -551,11 +554,11 @@ public class URL {
      * @param request the servlet request
      * @param encoding the character encoding to use
      * @return the generated URL
-     * @throws UnsupportedEncodingException if the specified 
-     * character encoding is not supported on this system
+     * @throws UnsupportedEncodingException if an error 
+     * occurred while parsing the URL
      */
     public static URL create(HttpServletRequest request, String encoding) 
-    throws UnsupportedEncodingException {
+    throws Exception {
         URL url = parse(request.getRequestURL().toString());
         if (request.isSecure()) {
             url.setProtocol(PROTOCOL_HTTPS);
@@ -714,10 +717,18 @@ public class URL {
             }
         }
         Path resultPath = Path.ROOT;
-        for (String elem : p.getElements()) {
-            if (!"/".equals(elem)) {
-                String decoded = decode(elem);
+        // Special case: '/%20' -> '/'
+        if (p.getElements().size() == 2) {
+            String decoded = decode(p.getElements().get(1));
+            if (!"".equals(decoded.trim())) {
                 resultPath = resultPath.expand(decoded);
+            }
+        } else {
+            for (String elem : p.getElements()) {
+                if (!"/".equals(elem)) {
+                    String decoded = decode(elem);
+                    resultPath = resultPath.expand(decoded);
+                }
             }
         }
         Integer portNumber = null;

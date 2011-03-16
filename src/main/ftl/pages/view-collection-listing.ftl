@@ -211,13 +211,13 @@
            </div>
            <div id="vrtx-additional-content">
              <div id="vrtx-related-content"> 
-               <@vrtx.invokeComponentRefs additionalContents />
+               <@vrtx.invokeComponentRefs additionalContent />
              </div>
            </div>
          </div>
        <#else>
          <div id="vrtx-related-content">
-           <@vrtx.invokeComponentRefs additionalContents />
+           <@vrtx.invokeComponentRefs additionalContent />
          </div>
        </#if>
      </#if>

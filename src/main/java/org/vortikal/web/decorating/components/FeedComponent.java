@@ -194,19 +194,21 @@ public class FeedComponent extends AbstractFeedComponent {
 
         SyndFeed feed = null;
         URL requestURL = RequestContext.getRequestContext().getRequestURL();
-        URL baseURL = new URL(requestURL);
-        baseURL.clearParameters();
+        URL baseURL;
         try {
-            URL feedURL = baseURL.relativeURL(url);
+            URL feedURL = requestURL.relativeURL(url);
             if (feedURL.getHost().equals(requestURL.getHost())) {
+                baseURL = new URL(requestURL);
                 retrieveLocalResource(feedURL);
                 feed = this.localFeedFetcher.getFeed(feedURL, request);
             } else {
+                baseURL = new URL(feedURL);
                 feed = this.cache.get(url);
             }
         } catch (Exception e) {
             throw new RuntimeException("Could not read feed url " + url + ": " + e.getMessage(), e);
         }
+        baseURL.clearParameters();
 
         List<String> elementOrder = getElementOrder(PARAMETER_FEED_ELEMENT_ORDER, request);
         model.put("elementOrder", elementOrder);

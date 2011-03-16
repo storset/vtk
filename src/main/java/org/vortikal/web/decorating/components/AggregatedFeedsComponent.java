@@ -174,11 +174,12 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
         }
 
         URL requestURL = RequestContext.getRequestContext().getRequestURL();
-        URL baseURL = new URL(requestURL);
-        baseURL.clearParameters();
 
         String[] urlArray = urls.split(",");
-        parseFeeds(request, entries, feedMapping, baseURL, urlArray);
+        Map<String, String> imgMap = new HashMap<String, String>();
+        Map<String, String> descriptionNoImage = new HashMap<String, String>();
+
+        parseFeeds(request, entries, feedMapping, imgMap, descriptionNoImage, requestURL, urlArray);
 
         try {
             sort(entries);
@@ -191,22 +192,6 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
         List<String> elementOrder = getElementOrder(PARAMETER_FEED_ELEMENT_ORDER, request);
         model.put("elementOrder", elementOrder);
 
-        Map<String, String> descriptionNoImage = new HashMap<String, String>();
-        Map<String, String> imgMap = new HashMap<String, String>();
-        for (SyndEntry entry: entries) {
-            if (entry.getDescription() == null) {
-                descriptionNoImage.put(entry.toString(), null);
-                continue;
-            }
-            Filter filter = new Filter(getNoImgHtmlFilter(), baseURL, requestURL);
-            HtmlFragment fragment = super.filterEntry(entry, filter);
-            descriptionNoImage.put(entry.toString(), fragment.getStringRepresentation());
-            if (filter.getImage() != null) {
-                imgMap.put(entry.toString(), filter.getImage().getEnclosedContent());
-            } else {
-                imgMap.put(entry.toString(), null);
-            }
-        }
         model.put("descriptionNoImage", descriptionNoImage);        
         model.put("imageMap", imgMap);
     
@@ -238,19 +223,23 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
     }
 
 
-    void parseFeeds(DecoratorRequest request, List<SyndEntry> entries, Map<SyndEntry, SyndFeed> feedMapping,
-            URL baseURL, String[] urlArray) {
+    void parseFeeds(DecoratorRequest request, List<SyndEntry> entries, 
+            Map<SyndEntry, SyndFeed> feedMapping,
+            Map<String, String> imgMap, Map<String, String> descriptionNoImage,
+            URL requestURL, String[] urlArray) throws Exception {
+
         for (String url : urlArray) {
             url = url.trim();
-
             SyndFeed tmpFeed = null;
-            URL feedURL = baseURL.relativeURL(url);
-            
+            URL feedURL = requestURL.relativeURL(url);
+            URL baseURL;
             try {
-                if (feedURL.getHost().equals(baseURL.getHost())) {
+                if (feedURL.getHost().equals(requestURL.getHost())) {
+                    baseURL = new URL(requestURL);
                     retrieveLocalResource(feedURL);
                     tmpFeed = this.localFeedFetcher.getFeed(feedURL, request);
                 } else {
+                    baseURL = new URL(feedURL);
                     tmpFeed = this.cache.get(url);
                 }
             } catch (Exception e) {
@@ -265,11 +254,23 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
             }
             @SuppressWarnings("unchecked")
             List<SyndEntry> tmpEntries = tmpFeed.getEntries();
-            entries.addAll(tmpEntries);
 
-            for (SyndEntry entry : tmpEntries) {
+            for (SyndEntry entry: tmpEntries) {
+                if (entry.getDescription() == null) {
+                    descriptionNoImage.put(entry.toString(), null);
+                    continue;
+                }
+                Filter filter = new Filter(getNoImgHtmlFilter(), baseURL, requestURL);
+                HtmlFragment fragment = super.filterEntry(entry, filter);
+                descriptionNoImage.put(entry.toString(), fragment.getStringRepresentation());
+                if (filter.getImage() != null) {
+                    imgMap.put(entry.toString(), filter.getImage().getEnclosedContent());
+                } else {
+                    imgMap.put(entry.toString(), null);
+                }
                 feedMapping.put(entry, tmpFeed);
             }
+            entries.addAll(tmpEntries);
         }
     }
 

@@ -160,17 +160,22 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
         RequestContext requestContext = RequestContext.getRequestContext();
         Path uri = requestContext.getResourceURI();
         Resource resource = null;
+        TypeInfo typeInfo = null;
         String token = SecurityContext.getSecurityContext().getToken();
         try {
             resource = this.repository.retrieve(token, uri, true);
+            typeInfo = this.repository.getTypeInfo(resource);
+            
         } catch (ResourceNotFoundException e) {
         } catch (AuthorizationException e) {
         } catch (Throwable t) {
             throw new RuntimeException(
                     "Unrecoverable error when decorating '" + uri + "'", t);
         }
-        
-        if (resource != null && this.maxDocumentSize > 0 
+
+        if (resource != null && this.maxDocumentSize > 0
+                // FIXME: check response.length instead:
+                && typeInfo.isOfType("text") 
                 && resource.getContentLength() >= this.maxDocumentSize) {
             descriptor.parse = false;
             descriptor.tidy = false;

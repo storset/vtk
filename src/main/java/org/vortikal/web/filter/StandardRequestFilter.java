@@ -100,11 +100,17 @@ public class StandardRequestFilter extends AbstractRequestFilter {
             super(request);
             this.request = request;
             String requestURI = request.getRequestURI();
-            this.uri = translateUri(requestURI);
+            this.uri = translate(requestURI);
             if (logger.isDebugEnabled()) {
-                logger.debug("Translated uri: from '" + requestURI + "' to '" + this.uri + "'");
+                logger.debug("Translated requestURI: from '" + requestURI + "' to '" + this.uri + "'");
             }
-            this.requestURL = URL.parse(request.getRequestURL().toString());
+
+            String requestURL = request.getRequestURL().toString();
+            this.requestURL = URL.parse(translate(requestURL));
+            if (logger.isDebugEnabled()) {
+                logger.debug("Translated requestURL: from '" + requestURL + "' to '" + this.requestURL + "'");
+            }
+            
             if (xForwardedFor != null && xForwardedFor.matcher(request.getRequestURL()).matches()) {
                 String xForwardHeader = request.getHeader("X-Forwarded-For");
                 if (xForwardHeader != null) {
@@ -241,7 +247,7 @@ public class StandardRequestFilter extends AbstractRequestFilter {
             return this.getClass().getName() + "[" + this.request + "]";
         }
 
-        private String translateUri(String requestURI) {
+        private String translate(String requestURI) {
             if (requestURI == null 
                     || "".equals(requestURI)
                     || "*".equals(requestURI)) {

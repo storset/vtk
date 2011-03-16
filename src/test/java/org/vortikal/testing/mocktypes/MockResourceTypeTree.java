@@ -130,4 +130,9 @@ public class MockResourceTypeTree implements ResourceTypeTree {
         return null;
     }
 
+    @Override
+    public boolean isDeadProperty(Namespace ns, String name) {
+        return false;
+    }
+
 }

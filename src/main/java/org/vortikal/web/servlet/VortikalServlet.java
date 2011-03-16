@@ -549,7 +549,7 @@ public class VortikalServlet extends DispatcherServlet {
      * @param req the servlet request
      * @param t the error to log
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     private void logError(String message, HttpServletRequest req, Throwable t) {
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
@@ -607,7 +607,7 @@ public class VortikalServlet extends DispatcherServlet {
      * @exception ServletException if an error occurs during error
      * handling
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     private void handleError(HttpServletRequest req, HttpServletResponse resp,
                              Throwable t) throws ServletException {
 

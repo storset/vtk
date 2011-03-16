@@ -25,7 +25,7 @@
         <param name="menu" value="false"/>
         <param name="wmode" value="transparent"/>
       </object>
-      <a class="vrtx-media" href="${media?url('UTF-8')}"><@vrtx.msg code="article.audio-file" /></a>
+      <a class="vrtx-media" href="${media}"><@vrtx.msg code="article.audio-file" /></a>
     
      <#elseif contentType == "video/quicktime" >
     
@@ -38,7 +38,7 @@
         <embed src="${media}" width="${width}" height="${height}" autoplay="${autoplay}" controller="true" loop="false" scale="aspect" pluginspage="http://www.apple.com/quicktime/download/">
         </embed>
       </object> 
-	  <a class="vrtx-media" href="${media?url('UTF-8')}"><@vrtx.msg code="article.media-file" /></a>
+	  <a class="vrtx-media" href="${media}"><@vrtx.msg code="article.media-file" /></a>
 
 	<#elseif contentType == "application/x-shockwave-flash" && extension == "swf">
 	
@@ -71,7 +71,7 @@
 		 	</embed>
 		</object>
 		<#if contentType == "video/mp4" && !media?starts_with("rtmp")>
-			<a class="vrtx-media" href="${media?url('UTF-8')}"><@vrtx.msg code="article.video-file" /></a>
+			<a class="vrtx-media" href="${media}"><@vrtx.msg code="article.video-file" /></a>
 		</#if>
     <#else>
       	<a class="vrtx-media" href="${media}"><@vrtx.msg code="article.media-file" /></a>

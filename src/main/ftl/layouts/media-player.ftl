@@ -20,34 +20,34 @@
     
       <object type="application/x-shockwave-flash" data="${audioFlashPlayerFlashURL?html}" height="24" width="290">
         <param name="movie" value="${audioFlashPlayerFlashURL?html}"/>
-        <param name="FlashVars" value="playerID=1&amp;soundFile=${media}<#if autoplay?exists && autoplay = "true">&amp;autostart=yes</#if>"/>
+        <param name="FlashVars" value="playerID=1&amp;soundFile=${media?url('UTF-8')}<#if autoplay?exists && autoplay = "true">&amp;autostart=yes</#if>"/>
         <param name="quality" value="high"/>
         <param name="menu" value="false"/>
         <param name="wmode" value="transparent"/>
       </object>
-      <a class="vrtx-media" href="${media}"><@vrtx.msg code="article.audio-file" /></a>
+      <a class="vrtx-media" href="${media?url('UTF-8')}"><@vrtx.msg code="article.audio-file" /></a>
     
      <#elseif contentType == "video/quicktime" >
     
       <object classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" width="${width}" height="${height}" codebase="http://www.apple.com/qtactivex/qtplugin.cab">
-        <param name="src" value="${media}"/>
+        <param name="src" value="${media?url('UTF-8')}"/>
         <param name="autoplay" value="${autoplay}"/>
         <param name="controller" value="true"/>
         <param name="loop" value="false"/>
         <param name="scale" value="aspect" />         
-        <embed src="${media}" width="${width}" height="${height}" autoplay="${autoplay}" controller="true" loop="false" scale="aspect" pluginspage="http://www.apple.com/quicktime/download/">
+        <embed src="${media?url('UTF-8')}" width="${width}" height="${height}" autoplay="${autoplay}" controller="true" loop="false" scale="aspect" pluginspage="http://www.apple.com/quicktime/download/">
         </embed>
       </object> 
-	  <a class="vrtx-media" href="${media}"><@vrtx.msg code="article.media-file" /></a>
+	  <a class="vrtx-media" href="${media?url('UTF-8')}"><@vrtx.msg code="article.media-file" /></a>
 
 	<#elseif contentType == "application/x-shockwave-flash" && extension == "swf">
 	
 		<OBJECT 
 			type="application/x-shockwave-flash"
-			data="${media}" 
+			data="${media?url('UTF-8')}" 
 			width="${width}" 
 			height="${height}">
-		    <PARAM name="movie" value="${media}" />
+		    <PARAM name="movie" value="${media?url('UTF-8')}" />
 		    <PARAM name="FlashVars" value="autoplay=${autoplay}" />
 		</OBJECT>
 		
@@ -55,7 +55,7 @@
 
       	<object width="${width}" height="${height}"> 
 			<param name="movie" value="${strobe?html}"></param>
-			<param name="flashvars" value="src=${media}<#if autoplay?exists>&autoPlay=${autoplay}</#if>"></param>
+			<param name="flashvars" value="src=${media?url('UTF-8')}<#if autoplay?exists>&autoPlay=${autoplay}</#if>"></param>
 			<param name="allowFullScreen" value="true"></param>
 			<param name="allowscriptaccess" value="always"></param>	
 			<embed src="${strobe?html}"
@@ -67,14 +67,14 @@
 			 	<#if streamType?exists && streamType == "live"> 
 			 	streamType="live"
 			 	</#if>
-			 	flashvars="src=${media}<#if autoplay?exists>&autoPlay=${autoplay}</#if>">
+			 	flashvars="src=${media?url('UTF-8')}<#if autoplay?exists>&autoPlay=${autoplay}</#if>">
 		 	</embed>
 		</object>
 		<#if contentType == "video/mp4" && !media?starts_with("rtmp")>
-			<a class="vrtx-media" href="${media}"><@vrtx.msg code="article.video-file" /></a>
+			<a class="vrtx-media" href="${media?url('UTF-8')}"><@vrtx.msg code="article.video-file" /></a>
 		</#if>
     <#else>
-      	<a class="vrtx-media" href="${media}"><@vrtx.msg code="article.media-file" /></a>
+      	<a class="vrtx-media" href="${media?url('UTF-8')}"><@vrtx.msg code="article.media-file" /></a>
     </#if>
   </div>
   

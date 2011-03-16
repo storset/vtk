@@ -193,7 +193,8 @@ label.resource\.hide-additional-content {
   margin-right: 0px;
 }
 
-#vrtx-resource\.additional-content {
+#vrtx-resource\.additional-content,
+#vrtx-resource\.additionalContents {
   margin-top: 1em;
 }
 

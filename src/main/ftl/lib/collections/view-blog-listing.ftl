@@ -3,7 +3,7 @@
 <#macro displayBlogs blogListing collection>
 	<#assign introduction = vrtx.getIntroduction(collection) />
 	<#assign introductionImage = vrtx.propValue(collection, "picture") />
-	<#assign additionalContent = vrtx.propValue(collection, "additional-content") />
+	<#assign additionalContent = vrtx.propValue(collection, "additionalContents") />
 	<div class="container">
 		<div class="main-article-listing">
 		<#if page == 1>

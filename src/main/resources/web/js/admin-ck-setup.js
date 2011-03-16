@@ -53,7 +53,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   } else if (name.indexOf("caption") != -1) {
     setCKEditorConfig(name, linkBrowseUrl, null, null, 
 			          defaultLanguage, cssFileList, 104, 400, 40, inlineToolbar, isCompleteEditor, false, baseDocumentUrl);
-  } else if (name.indexOf("additional-content") != -1) {
+  } else if (name.indexOf("additional-content") != -1 || name.indexOf("additionalContents") != -1) {
 	setCKEditorConfig(name, linkBrowseUrl, null, null, 
 		              defaultLanguage, cssFileList, 150, 400, 40, completeToolbar, true, false, baseDocumentUrl);
   } else if (isCompleteEditor) {	  

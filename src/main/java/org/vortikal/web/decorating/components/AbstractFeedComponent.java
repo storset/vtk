@@ -32,9 +32,7 @@ package org.vortikal.web.decorating.components;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.text.html.HtmlAttribute;
@@ -151,50 +149,8 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
                 return;
             }
             String val = attr.getValue();
-            URL url = null;
-            if (val.startsWith("http://") || val.startsWith("https://")) {
-                try {
-                    url = URL.parse(val);
-                } catch (Throwable t) {
-                    return;
-                }
-            } else {
-                if (val.contains("#")) {
-                    val = val.substring(0, val.indexOf("#"));
-                }
-                String query = "";
-                if (val.contains("?")) {
-                    query = val.substring(val.indexOf("?"));
-                    val = val.substring(0, val.indexOf("?"));
-                }
-                Path newPath = null;
-                try {
-                    if (val.startsWith("/")) {
-                        newPath = Path.fromString(val);
-                    } else {
-                        newPath = this.base.getPath().expand(val);
-                    }
-                } catch (Throwable t) {
-                    return;
-                }
-                if (newPath == null) {
-                    return;
-                }
-                url = new URL(this.base);
-                url.setPath(newPath);
-                url.clearParameters();
-                if (!"".equals(query.trim())) {
-                    Map<String, String[]> split = URL.splitQueryString(query);
-                    for (String s: split.keySet()) {
-                        for (String v: split.get(s)) {
-                            url.addParameter(s, v);
-                        }
-                    }
-                }
-            }
-            url.setCollection(false);
+            URL url = this.base.relativeURL(val);
             attr.setValue(url.toString());
-            
             if (url.getHost().equals(this.requestURL.getHost())) {
                 attr.setValue(url.getPathRepresentation());
             }

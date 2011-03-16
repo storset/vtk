@@ -88,7 +88,14 @@ div.vrtx-collections ul {
     list-style-type: square;
     margin-bottom: 0px;
     margin-top: 0px;
+    margin-left: 0px;
+    padding-left: 1em;
+    padding-right: 2em;
     float: left;
+  }
+  
+  div.vrtx-collections ul li {
+    list-style-position: inside;
   }
 
 /* START vrtx-resource (standard, article, events) */

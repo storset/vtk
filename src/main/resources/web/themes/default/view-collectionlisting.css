@@ -70,16 +70,11 @@ div.vrtx-collections ul {
 	margin-top: 0;
 	margin-bottom: 0;
 }
-
- div.vrtx-collections {}
   
   div.vrtx-collections div.vrtx-subfolder-menu {
-    border: 1px solid #ccc;
-    clear: right;
-    margin: 0px 0px 1.5em;
-    padding: 1em;
-    float: left;
-    width: 100%;
+    border: none;
+    padding: 0px;
+    height: 1%; /* Triggers hasLayout in IE browser */
   }
 
   div.vrtx-collections div.menu-title {

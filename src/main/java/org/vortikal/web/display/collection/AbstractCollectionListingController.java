@@ -115,8 +115,10 @@ public abstract class AbstractCollectionListingController implements ListingCont
         Map<String, Object> model = new HashMap<String, Object>();
 
         Map<String,Object> subfolders = getSubFolderMenu(collection, request);
-        if(subfolders.size() > 0){
-            model.put("subFolderMenu",subfolders);
+        
+        int size = (Integer) subfolders.get("size");
+        if(size > 0) {
+            model.put("subFolderMenu", subfolders);
         }
         model.put("collection", this.resourceManager.createResourceWrapper(collection));
 

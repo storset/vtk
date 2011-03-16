@@ -30,9 +30,10 @@
   <script type="text/javascript">
      <!--
      $(document).ready(function(){
+       var timestamp = 1 - new Date();
        $("#tree").treeview({
          animated: "fast",
-         url: "?vrtx=admin&service=subresource-retrieve&uri=${report.uri}"
+         url: "?vrtx=admin&service=subresource-retrieve&uri=${report.uri}&ts=" + timestamp
        })
        
        $("#tree").delegate("a", "click", function(e){

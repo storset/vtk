@@ -673,7 +673,7 @@
   <bean id="personResourceManager.htmlPropsFilter" class="org.vortikal.text.html.SimpleHtmlPageFilter">
     <property name="keepComments" value="false" />
     <property name="illegalElements" ref="personResourceManager.htmlPropsFilter.illegalHtmlElementSet" />
-    <property name="validElements" ref="personResourceManager.htmlPropsFilter.validHtmlElementSet" />
+    <!-- <property name="validElements" ref="personResourceManager.htmlPropsFilter.validHtmlElementSet" /> -->
   </bean>
 
   <bean id="personResourceManager.htmlPropsFilter.illegalHtmlElementSet" class="org.springframework.beans.factory.config.SetFactoryBean">
@@ -742,6 +742,19 @@
         <bean class="org.vortikal.text.html.HtmlElementDescriptor">
           <property name="name" value="h4" />
         </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="h5" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="h6" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="pre" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="hr" />
+          <property name="validAsEmpty" value="true" />
+        </bean> 
         <bean class="org.vortikal.text.html.HtmlElementDescriptor">
           <property name="name" value="ul" />
           <property name="attributes">

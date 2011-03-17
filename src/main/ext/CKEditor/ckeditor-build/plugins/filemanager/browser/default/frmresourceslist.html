@@ -86,10 +86,11 @@ function GetUrlParam( paramName )
 	var oRegex = new RegExp( '[\?&amp;]' + paramName + '=([^&amp;]+)', 'i' ) ;
 	var oMatch = oRegex.exec( window.top.location.search ) ;
  
-	if ( oMatch && oMatch.length > 1 )
+	if ( oMatch && oMatch.length > 1 ) {
 		return decodeURIComponent( oMatch[1] ) ;
-	else
+	} else {
 		return '' ;
+    }
 }
 
 function OpenFolder( folderPath )
@@ -101,15 +102,15 @@ function OpenFolder( folderPath )
 function OpenFile( fileUrl )
 {
 	//PATCH: Using CKEditors API we set the file in preview window.	
-
 	if(window.top.opener.CKEDITOR) {
 	  funcNum = GetUrlParam('CKEditorFuncNum') ;
-	  window.top.opener.CKEDITOR.tools.callFunction( funcNum, encodeURI( fileUrl ).replace( '#', '%23' ));
+	  // Vortex integration - avoid double encoding
+	  // window.top.opener.CKEDITOR.tools.callFunction( funcNum, encodeURI( fileUrl ).replace( '#', '%23' ));
+	  window.top.opener.CKEDITOR.tools.callFunction( funcNum, fileUrl);
 	  window.top.opener.SetUrl( fileUrl ) ;
-       }
-	else {
-          window.top.opener.SetUrl( fileUrl ) ;
-        }
+    } else {
+      window.top.opener.SetUrl( fileUrl ) ;
+    }
 
    window.top.close() ;
    window.top.opener.focus() ;

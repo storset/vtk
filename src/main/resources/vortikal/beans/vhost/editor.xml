@@ -468,8 +468,8 @@
             <ref bean="manuallyApprovedResourcesPropDef" /-->
             <ref bean="collection.hideLastModifiedPropDef" />
             <ref bean="collection.hideIntroductionPropDef" />
-            <!-- <ref bean="additionalContentPropDef" />
-            <ref bean="additionalContentHidePropDef" /> -->
+            <ref bean="additionalContentPropDef" />
+            <ref bean="additionalContentHidePropDef" />
           </list>
         </property>
       </bean>
@@ -518,8 +518,8 @@
             <ref bean="pageLimitPropDef" />
             <ref bean="aggregationPropDef" />
             <ref bean="projectListing.displayTypePropDef" />
-            <!-- <ref bean="additionalContentPropDef" />
-            <ref bean="additionalContentHidePropDef" /> -->
+            <ref bean="additionalContentPropDef" />
+            <ref bean="additionalContentHidePropDef" />
           </list>
         </property>
       </bean>
@@ -544,8 +544,8 @@
             <ref bean="pageLimitPropDef" />
             <ref bean="aggregationPropDef" />
             <ref bean="researchGroupListing.displayTypePropDef" />
-            <!-- <ref bean="additionalContentPropDef" />
-            <ref bean="additionalContentHidePropDef" /> -->
+            <ref bean="additionalContentPropDef" />
+            <ref bean="additionalContentHidePropDef" />
           </list>
         </property>
       </bean>
@@ -602,8 +602,8 @@
             <ref bean="articleListing.hideIntroductionPropDef" />
             <ref bean="articleListing.hideIntroductionImagePropDef" />
             <ref bean="hideNumberOfCommentsPropDef" />
-            <!-- <ref bean="additionalContentPropDef" />
-            <ref bean="additionalContentHidePropDef" /> -->
+            <ref bean="additionalContentPropDef" />
+            <ref bean="additionalContentHidePropDef" />
           </list>
         </property>
       </bean>
@@ -627,7 +627,7 @@
             <ref bean="hiddenPropDef" />
             <ref bean="pageLimitPropDef" />
             <ref bean="blogListing.recursiveListingPropDef" />
-            <!-- <ref bean="additionalContentPropDef" /> -->
+            <ref bean="additionalContentPropDef" />
           </list>
         </property>
       </bean>
@@ -659,8 +659,8 @@
             <ref bean="hideNumberOfCommentsPropDef" />
             <ref bean="eventListing.displayTypePropDef" />
             <ref bean="eventListing.eventTypeTitlePropDef" />
-            <!-- <ref bean="additionalContentPropDef" />
-            <ref bean="additionalContentHidePropDef" /> -->
+            <ref bean="additionalContentPropDef" />
+            <ref bean="additionalContentHidePropDef" />
           </list>
         </property>
       </bean>
@@ -769,6 +769,19 @@
               <value>id</value>
               <value>name</value>
               <value>class</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="img" />
+          <property name="validAsEmpty" value="true" />
+          <property name="attributes">
+            <set>
+              <value>id</value>
+              <value>style</value>
+              <value>class</value>
+              <value>src</value>
+              <value>alt</value>
             </set>
           </property>
         </bean>

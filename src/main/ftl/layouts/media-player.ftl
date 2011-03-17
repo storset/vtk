@@ -30,12 +30,12 @@
      <#elseif contentType == "video/quicktime" >
     
       <object classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" width="${width}" height="${height}" codebase="http://www.apple.com/qtactivex/qtplugin.cab">
-        <param name="src" value="${media}"/>
+        <param name="src" value="${media?url('UTF-8')}"/>
         <param name="autoplay" value="${autoplay}"/>
         <param name="controller" value="true"/>
         <param name="loop" value="false"/>
         <param name="scale" value="aspect" />         
-        <embed src="${media}" width="${width}" height="${height}" autoplay="${autoplay}" controller="true" loop="false" scale="aspect" pluginspage="http://www.apple.com/quicktime/download/">
+        <embed src="${media?url('UTF-8')}" width="${width}" height="${height}" autoplay="${autoplay}" controller="true" loop="false" scale="aspect" pluginspage="http://www.apple.com/quicktime/download/">
         </embed>
       </object> 
 	  <a class="vrtx-media" href="${media}"><@vrtx.msg code="article.media-file" /></a>
@@ -44,7 +44,7 @@
 	
 		<OBJECT 
 			type="application/x-shockwave-flash"
-			data="${media?url('UTF-8')}" 
+			data="${media}" 
 			width="${width}" 
 			height="${height}">
 		    <PARAM name="movie" value="${media?url('UTF-8')}" />

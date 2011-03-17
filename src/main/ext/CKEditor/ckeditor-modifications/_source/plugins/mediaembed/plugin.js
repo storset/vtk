@@ -187,7 +187,7 @@ function insertOrModifyComponent(editor, iframeId, init) {
 	  
 	    var url = contents.find("#txtUrl").val();
 		if(url != "" && url.indexOf(".") != -1) {
-			  var content = "${include:media-player url=["+url+"]";			    
+			  var content = "${include:media-player url=["+encodeURI(url)+"]";			    
 			  var contentType = contents.find("#txtContentType").val();
 			  if(contentType.length > 0) {
 			    content = content + " content-type=["+contentType+"]";
@@ -336,7 +336,7 @@ function extractMediaPlayerProps(HTML, element) {
   	  if(param != null) {
  		if(param.length = 2) {
  		  if(name == "url") {
- 			params[name] = $.trim(param[1]);  
+ 			params[name] = decodeURI($.trim(param[1]));  
  		  } else {
  		    params[name] = $.trim(param[1]); // get the capturing group
  		  }

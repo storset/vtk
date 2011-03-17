@@ -16,6 +16,6 @@
   </Files>
   </#if>
   <#if error?exists>
-  <Error number="${error?html}" />
+  <Error number="${error?html}" msg="${customMessage?html?if_exists}" />
   </#if>
 </Connector>

@@ -71,6 +71,7 @@ public class MediaPlayer {
     }
 
     public void createLocalUrlToMediaFile(String mediaUri, Map<Object, Object> model) {
+        mediaUri = URL.decode(mediaUri); // Decode if encoded
         Path uri = null;
         URL localURL = null;
         try {

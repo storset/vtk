@@ -753,6 +753,16 @@
           </property>
         </bean>
         <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="ol" />
+          <property name="attributes">
+            <set>
+              <value>id</value>
+              <value>name</value>
+              <value>class</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
           <property name="name" value="li" />
           <property name="attributes">
             <set>

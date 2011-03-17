@@ -100,10 +100,7 @@ function OpenFolder( folderPath )
 
 function OpenFile( fileUrl )
 {
-	//PATCH: Using CKEditors API we set the file in preview window.	
-	
-	alert(fileUrl);
-
+	//PATCH: Using CKEditors API we set the file in preview window.
 	if(window.top.opener.CKEDITOR) {
 	  funcNum = GetUrlParam('CKEditorFuncNum') ;
 	  // Vortex integration - avoid double encoding

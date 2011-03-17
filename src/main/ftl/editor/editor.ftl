@@ -267,7 +267,9 @@
 
       <#-- hack for setting collection titles: -->
       <#elseif (type = 'HTML' && name='userTitle') || (type = 'STRING' && name='navigationTitle')
-        && (resource.resourceType = 'event-listing' || resource.resourceType = 'article-listing' || resource.resourceType = 'collection')>
+        && (resource.resourceType = 'event-listing' || resource.resourceType = 'article-listing' || resource.resourceType = 'collection' ||
+            resource.resourceType = 'person-listing' || resource.resourceType = 'project-listing' || resource.resourceType = 'research-group-listing' ||
+            resource.resourceType = 'blog-listing' || resource.resourceType = 'image-listing' || resource.resourceType = 'master-listing')>
   
         <#if name == 'navigationTitle'>
                <a class="show-tooltip" href="#" title="<@vrtx.msg code='editor.tooltip.navigation-title'/>">__</a>

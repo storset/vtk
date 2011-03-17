@@ -779,6 +779,7 @@
               <value>id</value>
               <value>name</value>
               <value>class</value>
+              <value>style</value>
             </set>
           </property>
         </bean>
@@ -802,6 +803,7 @@
               <value>id</value>
               <value>name</value>
               <value>class</value>
+              <value>style</value>
             </set>
           </property>
         </bean>

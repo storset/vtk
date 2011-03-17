@@ -44,7 +44,7 @@
 	
 		<OBJECT 
 			type="application/x-shockwave-flash"
-			data="${media?url('UTF-8')}}" 
+			data="${media?url('UTF-8')}" 
 			width="${width}" 
 			height="${height}">
 		    <PARAM name="movie" value="${media?url('UTF-8')}" />

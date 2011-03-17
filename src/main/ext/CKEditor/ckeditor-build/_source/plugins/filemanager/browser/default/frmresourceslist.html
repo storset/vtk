@@ -104,7 +104,9 @@ function OpenFile( fileUrl )
 
 	if(window.top.opener.CKEDITOR) {
 	  funcNum = GetUrlParam('CKEditorFuncNum') ;
-	  window.top.opener.CKEDITOR.tools.callFunction( funcNum, encodeURI( fileUrl ).replace( '#', '%23' ));
+	  // Vortex integration - avoid double encoding
+	  // window.top.opener.CKEDITOR.tools.callFunction( funcNum, encodeURI( fileUrl ).replace( '#', '%23' ));
+	  window.top.opener.CKEDITOR.tools.callFunction( funcNum, fileUrl);
 	  window.top.opener.SetUrl( fileUrl ) ;
        }
 	else {

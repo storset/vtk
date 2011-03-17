@@ -130,8 +130,9 @@ $.fn.treeview = function(settings) {
 				   var base = window.location.href.substring(0, uioEnd);
 				   subFolder = "/" + subFolder.replace(base, "");
 				}
+				var timestamp = 1 - new Date();
 		        var ajaxUrl = {
-		  		  url: "?vrtx=admin&service=subresource-retrieve&uri=" + subFolder
+		  		  url: "?vrtx=admin&service=subresource-retrieve&uri=" + subFolder + "&ts=" + timestamp
 		  		};
 				$.extend(settings, ajaxUrl);
 				var childList = $this.removeClass("hasChildren").find("ul");

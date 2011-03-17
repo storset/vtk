@@ -700,6 +700,8 @@
             <set>
               <value>href</value>
               <value>rel</value>
+              <value>class</value>
+              <value>id</value>
             </set>
           </property>
         </bean>
@@ -754,7 +756,9 @@
         <bean class="org.vortikal.text.html.HtmlElementDescriptor">
           <property name="name" value="hr" />
           <property name="validAsEmpty" value="true" />
-        </bean> 
+        </bean>
+        
+        <!-- Lists -->
         <bean class="org.vortikal.text.html.HtmlElementDescriptor">
           <property name="name" value="ul" />
           <property name="attributes">
@@ -785,8 +789,25 @@
             </set>
           </property>
         </bean>
+        
+        <!-- Table -->
         <bean class="org.vortikal.text.html.HtmlElementDescriptor">
-          <property name="name" value="div" />
+          <property name="name" value="table" />
+          <property name="attributes">
+            <set>
+              <value>id</value>
+              <value>name</value>
+              <value>class</value>
+              <value>style</value>
+              <value>align</value>
+              <value>cellpadding</value>
+              <value>cellspacing</value>
+              <value>summery</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="td" />
           <property name="attributes">
             <set>
               <value>id</value>
@@ -797,6 +818,39 @@
           </property>
         </bean>
         <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="tr" />
+          <property name="attributes">
+            <set>
+              <value>id</value>
+              <value>name</value>
+              <value>class</value>
+              <value>style</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="th" />
+          <property name="attributes">
+            <set>
+              <value>id</value>
+              <value>name</value>
+              <value>class</value>
+              <value>style</value>
+              <value>scope</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="caption" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="tbody" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="thead" />
+        </bean>
+        
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
           <property name="name" value="img" />
           <property name="validAsEmpty" value="true" />
           <property name="attributes">
@@ -806,6 +860,17 @@
               <value>class</value>
               <value>src</value>
               <value>alt</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="div" />
+          <property name="attributes">
+            <set>
+              <value>id</value>
+              <value>name</value>
+              <value>class</value>
+              <value>style</value>
             </set>
           </property>
         </bean>

@@ -149,11 +149,13 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
                 return;
             }
             String val = attr.getValue();
-            URL url = this.base.relativeURL(val);
-            attr.setValue(url.toString());
-            if (url.getHost().equals(this.requestURL.getHost())) {
-                attr.setValue(url.getPathRepresentation());
-            }
+            try {
+                URL url = this.base.relativeURL(val);
+                attr.setValue(url.toString());
+                if (url.getHost().equals(this.requestURL.getHost())) {
+                    attr.setValue(url.getPathRepresentation());
+                }
+            } catch (Exception e) { }
         }
     }
     
@@ -164,8 +166,7 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
         String[] order = null;
         try {
             order = request.getStringParameter(param).split(",");
-        } catch (Exception e) {
-        }
+        } catch (Exception e) { }
 
         if (order == null) {
             return getDefaultElementOrder();

@@ -35,6 +35,7 @@ import java.util.Map;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
@@ -43,23 +44,68 @@ public class MediaPlayer {
     protected Map<String, String> extentionToMimetype;
     protected Service viewService;
 
-    public void addMediaPlayer(Map<Object, Object> model, String token, Repository repository, String URL) {
+    public void addMediaPlayer(Map<Object, Object> model, String resourceReferance, String height, String width,
+            String autoplay, String contentType, String streamType) {
+
+        if (URL.isEncoded(resourceReferance)) {
+            resourceReferance = URL.decode(resourceReferance);
+        }
+
+        if (height != null && !"".equals(height))
+            model.put("height", height);
+        if (width != null && !"".equals(width))
+            model.put("width", width);
+        if (autoplay != null && !"".equals(autoplay))
+            model.put("autoplay", autoplay);
+        if (streamType != null && !"".equals(streamType))
+            model.put("streamType", streamType);
+
+        Resource mediaResource = null;
+        if (resourceReferance != null && resourceReferance.startsWith("/")) {
+            RequestContext requestContext = RequestContext.getRequestContext();
+            Repository repository = requestContext.getRepository();
+            String token = requestContext.getSecurityToken();
+            try {
+                mediaResource = repository.retrieve(token, Path.fromString(resourceReferance), true);
+            } catch (Exception e) {
+            }
+        }
+
+        String extension = getExtension(resourceReferance);
+        if (contentType != null && !"".equals(contentType)) {
+            model.put("contentType", contentType);
+        } else if (mediaResource != null) {
+            model.put("contentType", mediaResource.getContentType());
+        } else if (getExtentionToMimetype().containsKey(extension)) {
+            model.put("contentType", getExtentionToMimetype().get(extension));
+        }
+        model.put("extension", extension);
+
+        createLocalUrlToMediaFile(resourceReferance, model);
+    }
+
+    public void addMediaPlayer(Map<Object, Object> model, String token, Repository repository, String resourceReferance) {
+
+        if (URL.isEncoded(resourceReferance)) {
+            resourceReferance = URL.decode(resourceReferance);
+        }
+
         Resource mediaResource = null;
         try {
-            mediaResource = repository.retrieve(token, Path.fromString(URL), false);
+            mediaResource = repository.retrieve(token, Path.fromString(resourceReferance), false);
         } catch (Exception e) {
         }
 
-        model.put("extension", getExtension(URL));
+        model.put("extension", getExtension(resourceReferance));
         model.put("autoplay", "false");
 
         if (mediaResource != null) {
             model.put("contentType", mediaResource.getContentType());
         } else {
-            model.put("contentType", extentionToMimetype.get(getExtension(URL)));
+            model.put("contentType", extentionToMimetype.get(getExtension(resourceReferance)));
         }
 
-        createLocalUrlToMediaFile(URL, model);
+        createLocalUrlToMediaFile(resourceReferance, model);
     }
 
     public String getExtension(String url) {
@@ -70,20 +116,32 @@ public class MediaPlayer {
         return "";
     }
 
-    public void createLocalUrlToMediaFile(String mediaUri, Map<Object, Object> model) {
-        mediaUri = URL.decode(mediaUri); // Decode if encoded
-        Path uri = null;
-        URL localURL = null;
-        try {
-            uri = Path.fromString(mediaUri);
-            localURL = getViewService().constructURL(uri);
-        } catch (Exception e) {
-        }
-        if (localURL != null) {
-            model.put("media", localURL);
+    public void createLocalUrlToMediaFile(String resourceReferance, Map<Object, Object> model) {
+        if (resourceReferance != null && resourceReferance.startsWith("/")) {
+            URL localURL = null;
+            try {
+                Path uri = null;
+                uri = Path.fromString(resourceReferance);
+                localURL = getViewService().constructURL(uri);
+            } catch (Exception e) {
+                // ignore
+            }
+            if (localURL != null) {
+                model.put("media", localURL);
+            }
+
         } else {
-            model.put("media", mediaUri);
+            URL externalURL = null;
+            try {
+                externalURL = URL.parse(resourceReferance);
+            } catch (Exception e) {
+                // ignore
+            }
+            if (externalURL != null) {
+                model.put("media", externalURL);
+            }
         }
+
     }
 
     public Map<String, String> getExtentionToMimetype() {

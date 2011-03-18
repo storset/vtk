@@ -45,19 +45,9 @@ import org.vortikal.security.PrincipalFactory;
 
 public class ProcessedContentEventDumperAll extends AbstractRepositoryEventDumper {
 
-    private DataAccessor dataAccessor;
     private ChangeLogDAO changeLogDAO;
 
-    @Required
-    public void setDataAccessor(DataAccessor dataAccessor)  {
-        this.dataAccessor = dataAccessor;
-    }
-
-    @Required
-    public void setChangeLogDAO(ChangeLogDAO changeLogDAO)  {
-        this.changeLogDAO = changeLogDAO;
-    }
-
+    @Override
     public void created(Resource resource) {
         ChangeLogEntry entry = changeLogEntry(this.loggerId, this.loggerType, resource.getURI(), 
                 Operation.CREATED,
@@ -67,6 +57,7 @@ public class ProcessedContentEventDumperAll extends AbstractRepositoryEventDumpe
 
     }
 
+    @Override
     public void deleted(Path uri, int resourceId, boolean collection) {
         ChangeLogEntry entry = changeLogEntry(this.loggerId, this.loggerType, uri, 
                 Operation.DELETED,
@@ -75,6 +66,7 @@ public class ProcessedContentEventDumperAll extends AbstractRepositoryEventDumpe
         this.changeLogDAO.addChangeLogEntry(entry, false);
     }
 
+    @Override
     public void modified(Resource resource, Resource originalResource) {
         ChangeLogEntry entry = changeLogEntry(this.loggerId, this.loggerType, resource.getURI(), 
                 Operation.MODIFIED_PROPS,
@@ -84,6 +76,7 @@ public class ProcessedContentEventDumperAll extends AbstractRepositoryEventDumpe
     }
 
 
+    @Override
     public void contentModified(Resource resource) {
         ChangeLogEntry entry = changeLogEntry(this.loggerId, this.loggerType, resource.getURI(),
                 Operation.MODIFIED_CONTENT, -1, resource.isCollection(),
@@ -93,6 +86,7 @@ public class ProcessedContentEventDumperAll extends AbstractRepositoryEventDumpe
     }
 
 
+    @Override
     public void aclModified(Resource resource, Resource originalResource,
                             Acl newACL, Acl originalACL) {
         
@@ -117,6 +111,12 @@ public class ProcessedContentEventDumperAll extends AbstractRepositoryEventDumpe
             this.changeLogDAO.addChangeLogEntryInherited(entry);             
         }
         
+    }
+
+
+    @Required
+    public void setChangeLogDAO(ChangeLogDAO changeLogDAO)  {
+        this.changeLogDAO = changeLogDAO;
     }
 
 }

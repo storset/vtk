@@ -85,6 +85,11 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
 
   config.baseHref = baseDocumentUrl;
   config.contentsCss = cssFileList;
+  
+  // Don't use HTML-entities for structured-documents
+  if(name.indexOf("resource.") != 0) {
+	config.entities = false;  
+  }
   	
   if(linkBrowseUrl != null) {
     config.filebrowserBrowseUrl = linkBrowseUrl;

@@ -30,21 +30,19 @@
  */
 package org.vortikal.security.store;
 
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.util.codec.MD5;
-
 
 /**
  * An implementation of MD5PasswordPrincipalManager that stores its
@@ -67,121 +65,122 @@ import org.vortikal.util.codec.MD5;
  *   store (may be <code>null</code>)
  *   <li><code>order</code> - the order returned in {@link Order#getOrder}
  * </ul>
- * 
  */
-public class PropertyConfigurableMD5Store
-  implements MD5PasswordStore, InitializingBean, Ordered {
+public class PropertyConfigurableMD5Store implements MD5PasswordStore, Ordered {
 
-    private Log logger = LogFactory.getLog(this.getClass());
+    private static Log logger = LogFactory.getLog(PropertyConfigurableMD5Store.class);
 
     private Properties principals;
-    private Map<Principal, List<String>> groups;
+    private Map<Principal, Collection<String>> groups;
     private String realm;
 
     private int order = Integer.MAX_VALUE;
-    
-    
+
+    /**
+     * Sets the principals as a properties mapping of the format
+     * <code>(username@domain, password-md5)</code>
+     * @param principals
+     */
     public void setPrincipals(Properties principals) {
         this.principals = principals;
     }
+    
+    /**
+     * Sets the principals as a list of strings of the format 
+     * <code>username@domain:password-md5</code>.
+     * @param principals
+     */
+    public void setPrincipals(Collection<String> principals) {
+        this.principals = new Properties();
+        for (String s: principals) {
+            if (s == null) {
+                continue;
+            }
+            int idx = s.indexOf(":");
+            if (idx == -1) {
+                continue;
+            }
+            String username = s.substring(0, idx);
+            String hash = s.substring(idx + 1);
+            username = username.trim();
+            hash = hash.trim();
+            if ("".equals(username)) {
+                continue;
+            }
+            this.principals.setProperty(username, hash);
+        }
+    }
 
-
-    public void setGroups(Map<Principal, List<String>> groups) {
+    public void setGroups(Map<Principal, Collection<String>> groups) {
         this.groups = groups;
     }
-    
 
     public void setOrder(int order) {
         this.order = order;
     }
 
-
     public int getOrder() {
         return this.order;
     }
-    
 
-    /**
-     * @deprecated
-     */
     public String getRealm() {
         return this.realm;
     }
-    
     
     public void setRealm(String realm) {
         this.realm = realm;
     }
 
-
-    public void afterPropertiesSet() throws Exception {
-        // XXX: Implement me
-    }
-
-
     public boolean validatePrincipal(Principal principal) {
-
         if (principal == null) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Validate principal: " + principal + ": false");
+            if (logger.isDebugEnabled()) {
+                logger.debug("Validate principal: " + principal + ": false");
             }
             return false;
         }
         
         boolean hit = this.principals.getProperty(principal.getQualifiedName()) != null;
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("Validate principal: " + principal + ": " + hit);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Validate principal: " + principal + ": " + hit);
         }
         return hit;
     }
-    
-
 
     public boolean validateGroup(Principal group) {
-
         if (this.groups == null) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Validate group: " + group + ": false");
+            if (logger.isDebugEnabled()) {
+                logger.debug("Validate group: " + group + ": false");
             }
             return false;
         }
-
-
         boolean hit = this.groups.containsKey(group);
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("Validate group: " + group.getQualifiedName() + ": " + hit);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Validate group: " + group.getQualifiedName() + ": " + hit);
         }
         return hit;
     }
     
-
-    /**
-     * @deprecated
-     */
     public String getMD5HashString(Principal principal) {
         return this.principals.getProperty(principal.getQualifiedName());
     }
     
-
     public boolean isMember(Principal principal, Principal group) {
         if (!this.groups.containsKey(group)) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Check membership for principal " + principal
-                             + ", group: " + group.getQualifiedName() + ": unknown group");
+            if (logger.isDebugEnabled()) {
+                logger.debug("Check membership for principal " + principal
+                        + ", group: " + group.getQualifiedName() + ": unknown group");
             }
             return false;
         }
 
-        List<String> members = this.groups.get(group);
+        Collection<String> members = this.groups.get(group);
         boolean hit = members.contains(principal.getQualifiedName());
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("Check membership for principal " + principal
+        if (logger.isDebugEnabled()) {
+            logger.debug("Check membership for principal " + principal
                          + ", group: " + group.getQualifiedName() + ": " + hit);
         }
         return hit;
     }
-
-
 
     public void authenticate(Principal principal, String password)
         throws AuthenticationException {
@@ -196,24 +195,22 @@ public class PropertyConfigurableMD5Store
                 + ", " + "wrong credentials.");
         }
 
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("Successfully authenticated principal: " + principal);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Successfully authenticated principal: " + principal);
         }
 
     }
 
-
     public Set<Principal> getMemberGroups(Principal principal) {
         Set<Principal> pGroups = new HashSet<Principal>();
-        for (Map.Entry<Principal, List<String>> entry: this.groups.entrySet()) {
+        for (Map.Entry<Principal, Collection<String>> entry: this.groups.entrySet()) {
             Principal group = entry.getKey();
-            List<String> members = entry.getValue();
+            Collection<String> members = entry.getValue();
             if (members.contains(principal.getQualifiedName())) {
                 pGroups.add(group);      
             }
         }
         return pGroups;
     }
-
 }
 

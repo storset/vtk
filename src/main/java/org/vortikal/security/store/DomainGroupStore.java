@@ -39,11 +39,12 @@ import java.util.Set;
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.GroupStore;
 import org.vortikal.security.Principal;
+import org.vortikal.security.Principal.Type;
+import org.vortikal.security.PrincipalImpl;
 
 public class DomainGroupStore implements GroupStore {
 
     private int order = Integer.MAX_VALUE;
-    
     private List<Principal> knownGroups = new ArrayList<Principal>();
     
     public boolean validateGroup(Principal group)
@@ -60,7 +61,6 @@ public class DomainGroupStore implements GroupStore {
             if ((pDomain == null && gDomain == null) || (pDomain != null && pDomain.equals(gDomain))) 
                 return true;
         }
-        
         return false;
     }
 
@@ -75,10 +75,15 @@ public class DomainGroupStore implements GroupStore {
     public void setKnownGroups(Principal[] knownGroups) {
         this.knownGroups = Arrays.asList(knownGroups);
     }
+    
+    public void setKnownGroups(List<String> groups) {
+        this.knownGroups = new ArrayList<Principal>();
+        for (String g: groups) {
+            Principal p = new PrincipalImpl(g, Type.GROUP);
+            this.knownGroups.add(p);
+        }
+    }
 
-    /**
-     * @see org.vortikal.security.GroupStore#getMemberGroups(org.vortikal.security.Principal)
-     */
     public Set<Principal> getMemberGroups(Principal principal) {
         Set<Principal> groups = new HashSet<Principal>();
         for (Principal group: this.knownGroups) {
@@ -87,5 +92,4 @@ public class DomainGroupStore implements GroupStore {
         }
         return groups;
     }
-
 }

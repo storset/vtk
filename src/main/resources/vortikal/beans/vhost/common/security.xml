@@ -132,14 +132,13 @@
   <bean id="domainGroupStore"
     class="org.vortikal.security.store.DomainGroupStore">
     <property name="order" value="0" />
-    <property name="knownGroups">
-      <list>
-        <ref bean="uioDomainGroup" />
-        <ref bean="feideDomainGroup" />
-        <ref bean="webIdDomainGroup" />
-      </list>
-    </property>
+    <property name="knownGroups" ref="domainGroupStore.groups" />
   </bean>
+
+  <bean id="domainGroupStore.groups" class="org.vortikal.context.CSVSetFactoryBean">
+    <property name="csvList" value="${domainGroupStore.groups}" />
+  </bean>
+
 
   <bean id="localPrincipalStore" class="org.vortikal.security.store.PropertyConfigurableMD5Store">
     <property name="order" value="10" />
@@ -147,49 +146,22 @@
     <property name="principals" ref="localPrincipals" />
     <property name="groups">
       <map>
-        <entry key-ref="systemUsersGroup">
-          <list>
-            <value>root@localhost</value>
-            <value>vortex@localhost</value>
-            <value>user@localhost</value>
-            <value>nobody@localhost</value>
-          </list>
-        </entry>
+        <entry key-ref="systemUsersGroup" value-ref="systemUsersGroup.members" />
       </map>
     </property>
   </bean>
 
-  <bean id="localPrincipals" class="java.util.Properties">
-    <constructor-arg index="0" type="java.util.Properties">
-      <props>
-       <prop key="root@localhost">${password.root@localhost}</prop>
-        <prop key="vortex@localhost">${password.vortex@localhost}</prop>
-        <prop key="user@localhost">${password.user@localhost}</prop>
-        <!-- is not possible to authenticate as: -->
-        <prop key="trusteduser@localhost">NO_REAL_VALUE</prop>
-        <prop key="nobody@localhost">NO_REAL_VALUE</prop>
-      </props>
-    </constructor-arg>
+  <bean id="systemUsersGroup.members" class="org.vortikal.context.CSVSetFactoryBean">
+    <property name="csvList" value="${systemUsersGroup.members}" />
+  </bean>
+
+  <bean id="localPrincipals" class="org.vortikal.context.CSVSetFactoryBean">
+    <property name="csvList" value="${localPrincipals}" />
   </bean>
 
   <!-- Special principals and tokens -->
   <bean id="systemUsersGroup" class="org.vortikal.security.PrincipalImpl">
     <constructor-arg value="system-users@localhost" />
-    <constructor-arg value="GROUP" />
-  </bean>
-
-  <bean id="uioDomainGroup" class="org.vortikal.security.PrincipalImpl">
-    <constructor-arg value="alle@uio.no" />
-    <constructor-arg value="GROUP" />
-  </bean>
-
-  <bean id="feideDomainGroup" class="org.vortikal.security.PrincipalImpl">
-    <constructor-arg value="alle@feide.no" />
-    <constructor-arg value="GROUP" />
-  </bean>
-
-  <bean id="webIdDomainGroup" class="org.vortikal.security.PrincipalImpl">
-    <constructor-arg value="alle@webid.uio.no" />
     <constructor-arg value="GROUP" />
   </bean>
   
@@ -242,14 +214,6 @@
               value="org.vortikal.security.PrincipalFactory.ALL" />
   </bean>
 
-  <!-- 
-  <bean id="PRINCIPAL_AUTHENTICATED"
-        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
-    <property name="staticField"
-              value="org.vortikal.security.PrincipalFactory.AUTHENTICATED" />
-  </bean>
-   -->
-   
   <!-- Principal factory and related beans -->
   <bean id="principalFactory" class="org.vortikal.security.PrincipalFactory" />
 

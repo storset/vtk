@@ -33,7 +33,7 @@ public class DisplayMediaController implements Controller {
         Repository repository = requestContext.getRepository();
         Resource resource = repository.retrieve(token, uri, true);
 
-        this.mediaPlayer.addMediaPlayer(model, token, repository, uri.toString());
+        mediaPlayer.addMediaPlayer(model, uri.toString());
 
         Property descriptionProp = resource.getProperty(this.descriptionPropDef);
 

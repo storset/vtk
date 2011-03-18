@@ -37,7 +37,7 @@ public class ResourceMediaPlayerComponent extends ViewRenderingDecoratorComponen
 
         String resourceReferance = mediaProperty.getStringValue();
 
-        mediaPlayer.addMediaPlayer(model, token, repository, resourceReferance);
+        mediaPlayer.addMediaPlayer(model, resourceReferance);
     }
 
     @Required

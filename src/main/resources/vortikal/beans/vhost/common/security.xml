@@ -135,6 +135,8 @@
     <property name="knownGroups">
       <list>
         <ref bean="uioDomainGroup" />
+        <ref bean="feideDomainGroup" />
+        <ref bean="webIdDomainGroup" />
       </list>
     </property>
   </bean>
@@ -181,6 +183,16 @@
     <constructor-arg value="GROUP" />
   </bean>
 
+  <bean id="feideDomainGroup" class="org.vortikal.security.PrincipalImpl">
+    <constructor-arg value="alle@feide.no" />
+    <constructor-arg value="GROUP" />
+  </bean>
+
+  <bean id="webIdDomainGroup" class="org.vortikal.security.PrincipalImpl">
+    <constructor-arg value="alle@webid.uio.no" />
+    <constructor-arg value="GROUP" />
+  </bean>
+  
   <bean id="trustedPrincipal" class="org.vortikal.security.PrincipalImpl">
     <constructor-arg value="trusteduser@localhost" />
     <constructor-arg value="USER" />
@@ -230,18 +242,14 @@
               value="org.vortikal.security.PrincipalFactory.ALL" />
   </bean>
 
+  <!-- 
   <bean id="PRINCIPAL_AUTHENTICATED"
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"
               value="org.vortikal.security.PrincipalFactory.AUTHENTICATED" />
   </bean>
-
-  <bean id="PRINCIPAL_OWNER"
-        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
-    <property name="staticField"
-              value="org.vortikal.security.PrincipalFactory.OWNER" />
-  </bean>
-
+   -->
+   
   <!-- Principal factory and related beans -->
   <bean id="principalFactory" class="org.vortikal.security.PrincipalFactory" />
 

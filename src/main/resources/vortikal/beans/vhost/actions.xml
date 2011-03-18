@@ -18,16 +18,16 @@
               value="org.vortikal.repository.Privilege.READ" />
   </bean>
 
-  <bean id="PRIVILEGE_BIND"
+  <bean id="PRIVILEGE_BIND_TEMPLATE"
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"
-              value="org.vortikal.repository.Privilege.BIND" />
+              value="org.vortikal.repository.Privilege.BIND_TEMPLATE" />
   </bean>
 
-  <bean id="PRIVILEGE_WRITE"
+  <bean id="PRIVILEGE_READ_WRITE"
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"
-              value="org.vortikal.repository.Privilege.WRITE" />
+              value="org.vortikal.repository.Privilege.READ_WRITE" />
   </bean>
 
   <bean id="PRIVILEGE_ALL"
@@ -61,6 +61,12 @@
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"
               value="org.vortikal.repository.RepositoryAction.WRITE" />
+  </bean>
+
+  <bean id="ACTION_READ_WRITE"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField"
+              value="org.vortikal.repository.RepositoryAction.READ_WRITE" />
   </bean>
 
   <bean id="ACTION_CREATE"

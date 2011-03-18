@@ -67,7 +67,6 @@
     <property name="dao" ref="${repositoryBackend}" />
     <property name="commentDAO" ref="${repository.commentDao}" />
     <property name="contentStore" ref="${repository.contentStore}" />
-    <property name="lockManager" ref="repository.lockManager" />
     <property name="repositoryResourceHelper" ref="repositoryResourceHelper" />
     <property name="tempDir" value="${repository.tempDir}" />
     <property name="maxResourceChildren" value="${repository.maxResourceChildren}" />
@@ -170,10 +169,6 @@
       property, that's just about all of them
     </description>
     <property name="repository" ref="repository" />
-  </bean>
-
-  <bean id="repository.lockManager" class="org.vortikal.repository.LockManager">
-    <property name="dao" ref="${repositoryBackend}" />
   </bean>
 
   <bean id="repositoryResourceHelper"

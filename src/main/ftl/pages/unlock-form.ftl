@@ -16,17 +16,25 @@
 <head>
 <title>Unlock resource '${resourceContext.currentResource.name}'</title>
 </head>
+<#assign owner = resourceContext.currentResource.lock.principal.qualifiedName />
+<#assign currentPrincipal = resourceContext.principal.qualifiedName />
+<#if owner = currentPrincipal>
 <body onload="document.forms[0].submit()">
-<noscript>
+<#else>
+<body>
+</#if>
   <h1>Unlock resource '${resourceContext.currentResource.name}'</h1>
-</noscript>
-<form method="post" action="${form.url?html}">
-  <@vrtx.csrfPreventionToken url=form.url />
-  <noscript>
-    Your browser does not support Javascript, in order to unlock the
-    resource please press the submit button:
-    <input type="submit" value="unlock" />
-  </noscript>
-</form>
+
+  <form method="post" action="${form.url?html}">
+    <@vrtx.csrfPreventionToken url=form.url />
+    <p>TODO: fix this message</p>
+    <#if owner != currentPrincipal>
+      You are about to steal a lock from user ${owner}. Resource was last
+    modified on ${resourceContext.currentResource.lastModified?datetime?html}.
+    <#else>
+    </#if>
+    <input type="submit" name="unlock" value="Unlock" />
+    <input type="submit" name="cancel" value="Cancel" />
+  </form>
 </body>
 </html>

@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2011, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,43 +28,27 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.actions.lock;
+package org.vortikal.web.referencedata.provider;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.HashMap;
 
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractController;
-import org.vortikal.repository.Path;
-import org.vortikal.repository.Repository;
-import org.vortikal.repository.Resource;
-import org.vortikal.web.RequestContext;
+import org.vortikal.repository.Privilege;
 
-/**
- * Controller that unlocks a resource (if it was previously locked).
- */
-public class UnlockResourceController extends AbstractController {
+public class PermissionShortcutsProvider {
+    
+    private HashMap<String, ArrayList<String>> shortcutsConfig;
 
-    private String viewName;
-
-    @Required
-    public void setViewName(String viewName) {
-        this.viewName = viewName;
-    }
-
-    protected ModelAndView handleRequestInternal(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
-        RequestContext requestContext = RequestContext.getRequestContext();
-        Repository repository = requestContext.getRepository();
-        Path uri = requestContext.getResourceURI();
-        String token = requestContext.getSecurityToken();
-
-        Resource resource = repository.retrieve(token, uri, false);
-        if (resource.getLock() != null) {
-            repository.unlock(token, uri, null);
+    public ArrayList<String> getShortcuts(Privilege privilege) throws Exception {
+        if(shortcutsConfig.containsKey(privilege.getName())) {
+          return shortcutsConfig.get(privilege.getName());
+        } else {
+          return null;
         }
-        return new ModelAndView(this.viewName);
     }
 
+    public void setShortcutsConfig(HashMap<String, ArrayList<String>> shortcutsConfig) {
+        this.shortcutsConfig = shortcutsConfig;
+    }
+   
 }

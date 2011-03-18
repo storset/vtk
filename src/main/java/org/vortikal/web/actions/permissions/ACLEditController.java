@@ -33,6 +33,7 @@ package org.vortikal.web.actions.permissions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -53,19 +54,17 @@ import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.Principal.Type;
 import org.vortikal.security.PrincipalFactory;
+import org.vortikal.security.Principal.Type;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.referencedata.provider.PermissionShortcutsProvider;
 import org.vortikal.web.service.Service;
 
 public class ACLEditController extends SimpleFormController implements InitializingBean {
 
     private Privilege privilege;
     private PrincipalFactory principalFactory;
-
-    private Map<Privilege, Principal> privilegePrincipalMap;
-
-    private Principal groupingPrincipal = PrincipalFactory.ALL;
+    private PermissionShortcutsProvider permissionShortcutsProvider;
 
     public ACLEditController() {
         setSessionForm(true);
@@ -77,27 +76,10 @@ public class ACLEditController extends SimpleFormController implements Initializ
                 new StringArrayPropertyEditor());
     }
 
-    public void setPrivilegePrincipalMap(
-            Map<Privilege, Principal> privilegePrincipalMap) {
-        this.privilegePrincipalMap = privilegePrincipalMap;
-    }
-
     public void afterPropertiesSet() {
-        if (this.groupingPrincipal == null) {
-            throw new BeanInitializationException(
-                    "Bean property 'groupingPrincipal' must be set");
-        }
         if (this.privilege == null) {
             throw new BeanInitializationException(
                     "Bean property 'privilege' must be set");
-        }
-        if (this.privilegePrincipalMap == null) {
-            throw new BeanInitializationException(
-                    "Bean property 'privilegePrincipalMap' must be set");
-        }
-        Principal p = this.privilegePrincipalMap.get(this.privilege);
-        if (p != null) {
-            this.groupingPrincipal = p;
         }
     }
 
@@ -124,8 +106,6 @@ public class ACLEditController extends SimpleFormController implements Initializ
         command.setResource(resource);
 
         Acl acl = resource.getAcl();
-        command.setGrouped(acl.containsEntry(this.privilege, this.groupingPrincipal));
-        command.setOwner(resource.getOwner().getName());
 
         List<Principal> authorizedUsers = new ArrayList<Principal>(Arrays.asList(acl
                 .listPrivilegedUsers(this.privilege)));
@@ -134,10 +114,16 @@ public class ACLEditController extends SimpleFormController implements Initializ
 
         List<Principal> authorizedGroups = new ArrayList<Principal>(Arrays.asList(acl
                 .listPrivilegedGroups(this.privilege)));
+        
+        List<String> shortcuts = permissionShortcutsProvider.getShortcuts(this.privilege);
+        
+        if(shortcuts != null) {    
+            command.setShortcuts(extractAndCheckShortcuts(authorizedUsers, authorizedGroups, shortcuts));
+        }
 
         command.setUsers(authorizedUsers);
         command.setGroups(authorizedGroups);
-
+        
         Map<String, String> removeUserURLs = new HashMap<String, String>();
         command.setRemoveUserURLs(removeUserURLs);
 
@@ -145,15 +131,8 @@ public class ACLEditController extends SimpleFormController implements Initializ
             Map<String, String> parameters = new HashMap<String, String>();
             parameters.put("removeUserAction", "true");
             parameters.put("userNames", authorizedUser.getName());
-            // Switch grouping when removing individual groups:
-            parameters.put("grouped", "false");
-
-            if (!(PrincipalFactory.OWNER.equals(authorizedUser) || this.groupingPrincipal
-                    .equals(authorizedUser))) {
-
-                String url = service.constructLink(resource, principal, parameters);
-                removeUserURLs.put(authorizedUser.getName(), url);
-            }
+            String url = service.constructLink(resource, principal, parameters);
+            removeUserURLs.put(authorizedUser.getName(), url);
         }
 
         Map<String, String> removeGroupURLs = new HashMap<String, String>();
@@ -163,14 +142,54 @@ public class ACLEditController extends SimpleFormController implements Initializ
             Map<String, String> parameters = new HashMap<String, String>();
             parameters.put("removeGroupAction", "true");
             parameters.put("groupNames", authorizedGroup.getName());
-            // Switch grouping when removing individual groups:
-            parameters.put("grouped", "false");
+
             String url = service.constructLink(resource, principal,
                     parameters);
             removeGroupURLs.put(authorizedGroup.getName(), url);
         }
 
         return command;
+    }
+    
+    private String[][] extractAndCheckShortcuts (List<Principal> authorizedUsers, List<Principal> authorizedGroups, List<String> shortcuts) {
+        String checkedShortcuts[][] = new String[shortcuts.size()][2];
+        Iterator<String> itShortcuts = shortcuts.iterator();
+        int i = 0;
+        
+        while(itShortcuts.hasNext()) {
+            String shortcut = itShortcuts.next();
+            boolean checked = false;
+            
+            if(shortcut.startsWith("user:")) {
+                Iterator<Principal> it = authorizedUsers.iterator();
+                while(it.hasNext()) {
+                    Principal p = it.next();
+                    if(("user:" + p.getName()).equals(shortcut)) {
+                        checked = true;
+                        it.remove();
+                    }
+                }   
+            } else if(shortcut.startsWith("group:")) {
+                Iterator<Principal> it = authorizedGroups.iterator();
+                while(it.hasNext()) {
+                    Principal p = it.next();
+                    if(("group:" + p.getName()).equals(shortcut)) {
+                        checked = true;
+                        it.remove();
+                    }
+                }  
+            }
+            
+            checkedShortcuts[i][0] = shortcut;
+            if(checked) {
+              checkedShortcuts[i][1] = "checked";
+            } else {
+              checkedShortcuts[i][1] = ""; 
+            }
+            i++;
+        }
+        
+        return checkedShortcuts;
     }
 
     protected boolean isFormSubmission(HttpServletRequest request) {
@@ -216,15 +235,9 @@ public class ACLEditController extends SimpleFormController implements Initializ
             return new ModelAndView(getSuccessView());
         }
 
-        // Setting or unsetting the grouping principal:
-        if (editCommand.isGrouped()) {
-            acl.addEntry(this.privilege, this.groupingPrincipal);
-        } else if (acl.containsEntry(this.privilege, this.groupingPrincipal)) {
-            acl.removeEntry(this.privilege, this.groupingPrincipal);
-        }
-
         // Has the user asked to save?
         if (editCommand.getSaveAction() != null) {
+            aclShortcuts(editCommand, acl);
             addToAcl(acl, editCommand.getUserNameEntries(), Type.USER);
             addToAcl(acl, editCommand.getGroupNames(), Type.GROUP);
             repository.storeACL(token, resource);
@@ -233,31 +246,13 @@ public class ACLEditController extends SimpleFormController implements Initializ
 
         // doing remove or add actions
         if (editCommand.getRemoveUserAction() != null) {
-
-            for (String userName : editCommand.getUserNames()) {
-                Principal principal = null;
-                if (userName.startsWith("pseudo")) {
-                    principal = principalFactory.getPrincipal(userName, Type.PSEUDO);
-                } else {
-                    principal = principalFactory.getPrincipal(userName, Type.USER);
-                }
-                if (!PrincipalFactory.OWNER.equals(principal)) {
-                    acl.removeEntry(this.privilege, principal);
-                }
-            }
-
+            removeFromAcl(acl, editCommand.getUserNameEntries(), Type.USER);
             return showForm(request, response, new BindException(
                     getACLEditCommand(editCommand.getResource(), 
                             requestContext.getPrincipal()), this.getCommandName()));
 
         } else if (editCommand.getRemoveGroupAction() != null) {
-            String[] groupNames = editCommand.getGroupNames();
-
-            for (int i = 0; i < groupNames.length; i++) {
-                Principal group = principalFactory
-                        .getPrincipal(groupNames[i], Type.GROUP);
-                acl.removeEntry(this.privilege, group);
-            }
+            removeFromAcl(acl, editCommand.getGroupNames(), Type.GROUP);
             return showForm(request, response, new BindException(
                     getACLEditCommand(resource, requestContext.getPrincipal()), 
                     getCommandName()));
@@ -279,6 +274,82 @@ public class ACLEditController extends SimpleFormController implements Initializ
         }
     }
 
+    private void aclShortcuts(ACLEditCommand editCommand, Acl acl) {
+        String[] updatedShortcuts = editCommand.getUpdatedShortcuts();
+        String[][] shortcuts = editCommand.getShortcuts();
+        
+        for(String[] shortcut : shortcuts) {
+            boolean checkedNotFound = true; // remove condition
+            boolean uncheckedFound = false; // add condition
+            for(String update : updatedShortcuts) {
+                if(shortcut[0].equals(update) && shortcut[1].equals("checked"))  {
+                    checkedNotFound = false; 
+                } else if(shortcut[0].equals(update) && shortcut[1].equals("")) {
+                    uncheckedFound = true;
+                }
+            }
+
+            // Remove
+            if(checkedNotFound) {
+                String[] remove = new String[1];
+                Type type = null;
+
+                if(shortcut[0].startsWith("user:")) {
+                    remove[0] = shortcut[0].replace("user:", "");
+                    type = Type.USER;
+                } else if(shortcut[0].startsWith("group:")) {
+                    remove[0] = shortcut[0].replace("group:", "");
+                    type = Type.GROUP;
+                }
+                removeFromAcl(acl, remove, type);
+            }
+
+            // Add
+            if(uncheckedFound) {
+                String[] add = new String[1];
+                Type type = null;
+                if(shortcut[0].startsWith("user:")) {
+                    add[0] = shortcut[0].replace("user:", "");
+                    if(add[0].startsWith("pseudo:")) {
+                        type = Type.PSEUDO;                          
+                    } else {
+                        type = Type.USER;                           
+                    }
+                } else if(shortcut[0].startsWith("group:")) {
+                    add[0] = shortcut[0].replace("group:", "");
+                    type = Type.GROUP;
+                }  
+                addToAcl(acl, add, type);
+            }
+        }
+    }
+    
+    private void removeFromAcl(Acl acl, List<String> values, Type type) {
+        for (String value : values) {
+            Type tmpType = type;
+            if(type.equals(Type.USER)) {
+              if(value.startsWith("pseudo:")) {
+                  tmpType  = Type.PSEUDO;  
+              }
+            }
+            Principal principal = principalFactory.getPrincipal(value, tmpType);
+            acl.removeEntry(this.privilege, principal);
+        } 
+    }
+    
+    private void removeFromAcl(Acl acl, String[] values, Type type) {
+        for (String value : values) {
+            Type tmpType = type;
+            if(type.equals(Type.USER)) {
+              if(value.startsWith("pseudo:")) {
+                  tmpType  = Type.PSEUDO;  
+              }
+            }
+            Principal principal = principalFactory.getPrincipal(value, tmpType);
+            acl.removeEntry(this.privilege, principal);
+        }
+    }
+
     private void addToAcl(Acl acl, List<String> values, Type type) {
         for (String value : values) {
             Principal p = principalFactory.getPrincipal(value, type);
@@ -296,6 +367,11 @@ public class ACLEditController extends SimpleFormController implements Initializ
     @Required
     public void setPrincipalFactory(PrincipalFactory principalFactory) {
         this.principalFactory = principalFactory;
+    }
+
+    @Required
+    public void setPermissionShortcutsProvider(PermissionShortcutsProvider permissionShortcutsProvider) {
+        this.permissionShortcutsProvider = permissionShortcutsProvider;
     }
 
 }

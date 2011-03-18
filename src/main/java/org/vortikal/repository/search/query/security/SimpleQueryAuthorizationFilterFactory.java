@@ -84,7 +84,6 @@ public class SimpleQueryAuthorizationFilterFactory extends
         aclReadPrincipals.add(principal);
         // Add pseudo-users: pseudo:authenticated (since we are) and pseudo:all
         aclReadPrincipals.add(PrincipalFactory.ALL);
-        aclReadPrincipals.add(PrincipalFactory.AUTHENTICATED); 
         
         return buildACLReadFilter(aclReadPrincipals);
     }

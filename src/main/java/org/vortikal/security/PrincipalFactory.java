@@ -46,13 +46,9 @@ public class PrincipalFactory {
 
     private final Log logger = LogFactory.getLog(PrincipalFactory.class);
     
-    public static final String NAME_AUTHENTICATED = "pseudo:authenticated";
     public static final String NAME_ALL = "pseudo:all";
-    public static final String NAME_OWNER = "pseudo:owner";
 
-    public static Principal OWNER =  new PrincipalImpl(NAME_OWNER);
     public static Principal ALL =  new PrincipalImpl(NAME_ALL);
-    public static Principal AUTHENTICATED =  new PrincipalImpl(NAME_AUTHENTICATED);
     
     // This dao will only be used if configured.
     private PrincipalMetadataDAO principalMetadataDao;
@@ -130,8 +126,6 @@ public class PrincipalFactory {
 
     private Principal getPseudoPrincipal(String name) throws InvalidPrincipalException {
         if (NAME_ALL.equals(name)) return ALL;
-        if (NAME_OWNER.equals(name)) return OWNER;
-        if (NAME_AUTHENTICATED.equals(name)) return AUTHENTICATED;
         throw new InvalidPrincipalException("Pseudo principal with name '"
                 + name + "' doesn't exist");
     }

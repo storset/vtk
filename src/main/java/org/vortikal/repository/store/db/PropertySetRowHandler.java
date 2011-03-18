@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -155,23 +154,7 @@ class PropertySetRowHandler implements RowHandler {
             }
         }
         
-        // Swap 'pseudo:owner' with real owner name
-        if (aclReadPrincipals != null) {
-            
-            // Shallow-copy Set that possibly comes from cache (going to modify)
-            Set<Principal> pseudoOwnerReplaced = new HashSet<Principal>(aclReadPrincipals);
-            
-            if (pseudoOwnerReplaced.remove(PrincipalFactory.OWNER)) {
-              // Replace 'pseudo:owner' with actual owner principal
-              Principal owner = propertySet.getProperty(Namespace.DEFAULT_NAMESPACE, 
-                                      PropertyType.OWNER_PROP_NAME).getPrincipalValue();
-              pseudoOwnerReplaced.add(owner);
-            }
-            
-            return pseudoOwnerReplaced;
-        }
-        
-        return null; // No longer found in database
+        return aclReadPrincipals;
     }
 
     private Principal getPrincipal(String id, Principal.Type type) {

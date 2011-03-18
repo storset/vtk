@@ -430,18 +430,18 @@
     <property name="handler" ref="aclInheritanceHandler" />
   </bean>
 
-  <bean id="editWritePermissionsService" class="org.vortikal.web.service.ServiceImpl">
+  <bean id="editReadWritePermissionsService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="permissionsService" />
     <property name="assertions">
       <list>
         <ref local="writeACLPermissionAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
-          <property name="parameterValue" value="edit-write-permissions" />
+          <property name="parameterValue" value="edit-read-write-permissions" />
         </bean>
       </list>
     </property>
-    <property name="handler" ref="editWritePermissionsHandler" />
+    <property name="handler" ref="editReadWritePermissionsHandler" />
   </bean>
 
   <bean id="editReadPermissionsService" class="org.vortikal.web.service.ServiceImpl">
@@ -831,7 +831,9 @@
     <property name="tempDir" value="${repository.tempDir}" />
   </bean>
 
-  <bean id="manage.unlockResourceHandler" class="org.vortikal.web.actions.lock.UnlockResourceController" />
+  <bean id="manage.unlockResourceHandler" class="org.vortikal.web.actions.lock.UnlockResourceController">
+    <property name="viewName" value="redirectToManage" />
+  </bean>
 
   <bean id="manage.unlockFormHandler" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
     <property name="viewName" value="manage.unlockForm" />
@@ -909,7 +911,6 @@
   </bean>
 
   <bean id="abstractPermissionsHandler" abstract="true" class="org.vortikal.web.actions.permissions.ACLEditController">
-    <property name="privilegePrincipalMap" ref="editPrivilegePrincipalMap" />
     <property name="formView" value="permissions" />
     <property name="commandClass" value="org.vortikal.web.actions.permissions.ACLEditCommand" />
     <property name="validator">
@@ -919,6 +920,7 @@
       </bean>
     </property>
     <property name="principalFactory" ref="principalFactory" />
+    <property name="permissionShortcutsProvider" ref="permissionShortcutsProvider" />
   </bean>
 
   <bean id="editReadPermissionsHandler" parent="abstractPermissionsHandler">
@@ -927,10 +929,10 @@
     <property name="commandName" value="permissionsForm_read" />
   </bean>
 
-  <bean id="editWritePermissionsHandler" parent="abstractPermissionsHandler">
-    <property name="privilege" ref="PRIVILEGE_WRITE" />
+  <bean id="editReadWritePermissionsHandler" parent="abstractPermissionsHandler">
+    <property name="privilege" ref="PRIVILEGE_READ_WRITE" />
     <property name="successView" value="redirectToPermissions" />
-    <property name="commandName" value="permissionsForm_write" />
+    <property name="commandName" value="permissionsForm_read-write" />
   </bean>
 
   <bean id="editAdminPermissionsHandler" parent="abstractPermissionsHandler">
@@ -940,9 +942,9 @@
   </bean>
 
   <bean id="editBindPermissionsHandler" parent="abstractPermissionsHandler">
-    <property name="privilege" ref="PRIVILEGE_BIND" />
+    <property name="privilege" ref="PRIVILEGE_BIND_TEMPLATE" />
     <property name="successView" value="redirectToPermissions" />
-    <property name="commandName" value="permissionsForm_bind" />
+    <property name="commandName" value="permissionsForm_bind-template" />
   </bean>
 
   <bean id="editReadProcessedPermissionsHandler" parent="abstractPermissionsHandler">
@@ -959,19 +961,6 @@
 
   <bean id="permissionsHandler" class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController">
     <property name="viewName" value="permissions" />
-  </bean>
-
-  <bean id="editPrivilegePrincipalMap" class="java.util.HashMap">
-    <constructor-arg>
-      <map>
-        <entry key-ref="PRIVILEGE_READ" value-ref="PRINCIPAL_ALL" />
-        <entry key-ref="PRIVILEGE_WRITE" value-ref="PRINCIPAL_AUTHENTICATED" />
-        <entry key-ref="PRIVILEGE_ALL" value-ref="PRINCIPAL_AUTHENTICATED" />
-        <entry key-ref="PRIVILEGE_ADD_COMMENT" value-ref="PRINCIPAL_AUTHENTICATED" />
-        <entry key-ref="PRIVILEGE_BIND" value-ref="PRINCIPAL_AUTHENTICATED" />
-        <entry key-ref="PRIVILEGE_READ_PROCESSED" value-ref="PRINCIPAL_ALL" />
-      </map>
-    </constructor-arg>
   </bean>
 
   <bean id="setResourcePropertyController" class="org.vortikal.web.actions.properties.SetResourcePropertyController">
@@ -1036,7 +1025,6 @@
     <property name="viewName" value="previewMedia" />
     <property name="service" ref="viewService" />
   </bean>
-
 
   <bean id="previewTextHandler" class="org.vortikal.web.display.file.DisplayResourceController">
     <!-- XXX preview size limit.. -->
@@ -1610,6 +1598,31 @@
       </list>
     </property>
   </bean>
+  
+  <bean id="permissionShortcutsProvider" class="org.vortikal.web.referencedata.provider.PermissionShortcutsProvider">
+    <property name="shortcutsConfig">
+      <map>
+        <entry key="read" value-ref="permissionShortcutsProvider.readShortcuts" />
+        <entry key="read-write" value-ref="permissionShortcutsProvider.readWriteShortcuts" />
+        <entry key="add-comment" value-ref="permissionShortcutsProvider.addCommentShortcuts" />
+      </map>
+    </property>
+  </bean>
+  
+  <bean id="permissionShortcutsProvider.readShortcuts" class="org.vortikal.context.CSVListFactoryBean">
+    <property name="csvList" value="${permissions.shortcuts.read}" />
+    <property name="trim" value="true" />
+  </bean>
+  
+  <bean id="permissionShortcutsProvider.readWriteShortcuts" class="org.vortikal.context.CSVListFactoryBean">
+    <property name="csvList" value="${permissions.shortcuts.read-write}" />
+    <property name="trim" value="true" />
+  </bean>
+  
+  <bean id="permissionShortcutsProvider.addCommentShortcuts" class="org.vortikal.context.CSVListFactoryBean">
+    <property name="csvList" value="${permissions.shortcuts.add-comment}" />
+    <property name="trim" value="true" />
+  </bean>
 
   <bean id="redirectToAboutView" class="org.vortikal.web.view.RedirectView">
     <description>Standard HTTP redirect view to the manage service</description>
@@ -1699,14 +1712,13 @@
     <property name="aclEditServices">
       <map>
         <entry key-ref="PRIVILEGE_READ" value-ref="editReadPermissionsService" />
-        <entry key-ref="PRIVILEGE_WRITE" value-ref="editWritePermissionsService" />
+        <entry key-ref="PRIVILEGE_READ_WRITE" value-ref="editReadWritePermissionsService" />
         <entry key-ref="PRIVILEGE_ALL" value-ref="editAdminPermissionsService" />
         <entry key-ref="PRIVILEGE_ADD_COMMENT" value-ref="editAddCommentPermissionsService" />
-        <entry key-ref="PRIVILEGE_BIND" value-ref="editBindPermissionsService" />
+        <entry key-ref="PRIVILEGE_BIND_TEMPLATE" value-ref="editBindPermissionsService" />
         <entry key-ref="PRIVILEGE_READ_PROCESSED" value-ref="editReadProcessedPermissionsService" />
       </map>
     </property>
-    <property name="groupingPrivilegePrincipalMap" ref="editPrivilegePrincipalMap" />
   </bean>
 
   <bean id="manageCollectionlistingProvider" class="org.vortikal.web.referencedata.provider.CollectionListingProvider">
@@ -1714,7 +1726,6 @@
     <property name="childInfoItems">
       <list>
         <value>name</value>
-        <value>owner</value>
         <value>permissions</value>
         <value>content-length</value>
         <value>locked</value>
@@ -1817,7 +1828,8 @@
   </bean>
 
   <bean id="unlockPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
-    <property name="permission" ref="ACTION_UNLOCK" />
+    <property name="permission" ref="ACTION_ALL" />
+    <property name="considerLocks" value="false" />
   </bean>
 
   <bean id="lockPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">

@@ -91,8 +91,8 @@
       <#assign privilegeHeading><@vrtx.msg code="permissions.privilege.read" default="Read" /></#assign>
       <@permissions.editOrDisplayPrivilege privilegeName="read" privilegeHeading=privilegeHeading />
 
-      <#assign privilegeHeading><@vrtx.msg code="permissions.privilege.write" default="Write" /></#assign>
-      <@permissions.editOrDisplayPrivilege privilegeName="write" privilegeHeading=privilegeHeading />
+      <#assign privilegeHeading><@vrtx.msg code="permissions.privilege.read-write" default="Read and Write" /></#assign>
+      <@permissions.editOrDisplayPrivilege privilegeName="read-write" privilegeHeading=privilegeHeading />
 
       <#assign privilegeHeading><@vrtx.msg code="permissions.privilege.all" default="Admin - all privileges" /></#assign>
       <@permissions.editOrDisplayPrivilege privilegeName="all" privilegeHeading=privilegeHeading />
@@ -100,10 +100,10 @@
       <#assign groupHeading><@vrtx.msg code="permissions.advanced" default="Advanced permissions" /></#assign>
 
       <#assign commentHeading><@vrtx.msg code="permissions.privilege.add-comment" default="Add comments" /></#assign>
-      <#assign bindHeading><@vrtx.msg code="permissions.privilege.bind" default="Create resources only" /></#assign>
+      <#assign bindHeading><@vrtx.msg code="permissions.privilege.bind-template" default="Create resources only" /></#assign>
       <#assign readProHeading><@vrtx.msg code="permissions.privilege.read-processed" default="Read processed only" /></#assign>
       <#if resource.collection>
-        <#assign privilegeList = [{"name":"add-comment", "heading":commentHeading }, {"name":"bind", "heading": bindHeading}, {"name":"read-processed", "heading":readProHeading }] />
+        <#assign privilegeList = [{"name":"add-comment", "heading":commentHeading }, {"name":"bind-template", "heading": bindHeading}, {"name":"read-processed", "heading":readProHeading }] />
       <#else>
         <#assign privilegeList = [{"name":"add-comment", "heading":commentHeading }, {"name":"read-processed", "heading":readProHeading }] />
       </#if>        

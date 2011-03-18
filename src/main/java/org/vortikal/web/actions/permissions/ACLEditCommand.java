@@ -44,14 +44,15 @@ public class ACLEditCommand extends UpdateCancelCommand {
     private String removeUserAction = null;
     private String addGroupAction = null;
     private String removeGroupAction = null;
-    private boolean grouped;
-    private String owner;
     private List<Principal> users;
     private List<Principal> groups;
     private Map<String, String> removeUserURLs;
     private Map<String, String> removeGroupURLs;
     private String userNames[] = new String[0];
     private String groupNames[] = new String[0];
+    private String shortcuts[][] = new String[0][0];
+    private String updatedShortcuts[] = new String[0];
+
     private Resource resource;
     private String saveAction = null;
 
@@ -94,14 +95,6 @@ public class ACLEditCommand extends UpdateCancelCommand {
         this.removeGroupAction = removeGroupAction;
     }
 
-    public boolean isGrouped() {
-        return this.grouped;
-    }
-
-    public void setGrouped(boolean grouped) {
-        this.grouped = grouped;
-    }
-
     public List<Principal> getUsers() {
         return this.users;
     }
@@ -116,14 +109,6 @@ public class ACLEditCommand extends UpdateCancelCommand {
 
     public void setGroups(List<Principal> groups) {
         this.groups = groups;
-    }
-
-    public String getOwner() {
-        return this.owner;
-    }
-
-    public void setOwner(String owner) {
-        this.owner = owner;
     }
 
     public Map<String, String> getRemoveUserURLs() {
@@ -165,6 +150,14 @@ public class ACLEditCommand extends UpdateCancelCommand {
     public void setUserNames(String[] userNames) {
         this.userNames = stripBlanks(userNames);
     }
+    
+    public String[][] getShortcuts() {
+        return shortcuts;
+    }
+
+    public void setShortcuts(String[][] shortcuts) {
+        this.shortcuts = shortcuts;
+    }
 
     private String[] stripBlanks(String[] values) {
         List<String> noBlanks = new ArrayList<String>();
@@ -181,15 +174,19 @@ public class ACLEditCommand extends UpdateCancelCommand {
         sb.append("[addUserAction=").append(this.addUserAction);
         sb.append(", removeUserAction=").append(this.removeUserAction);
         sb.append(", addGroupAction=").append(this.addGroupAction);
-        sb.append(", remoceGroupAction=").append(this.removeGroupAction);
-        sb.append(", grouped=").append(this.grouped);
-        sb.append(", owner=").append(this.owner);
+        sb.append(", removeGroupAction=").append(this.removeGroupAction);
         sb.append(", users=").append(this.users);
         sb.append(", groups=").append(this.groups);
         sb.append(", removeUserURLs=").append(this.removeUserURLs);
         sb.append(", removeGroupURLs=").append(this.removeGroupURLs);
         sb.append(", userNames=").append(java.util.Arrays.asList(this.userNames));
         sb.append(", groupNames=").append(java.util.Arrays.asList(this.groupNames));
+        StringBuilder sbS = new StringBuilder();
+        for(String[] shortcut : this.shortcuts) {
+            sbS.append(shortcut[0] + " " + shortcut[1]);   
+        }
+        sb.append(", shortcuts=").append(sbS.toString());
+        sb.append(", updatedShortcuts=").append(java.util.Arrays.asList(this.updatedShortcuts));
         sb.append(", resource=").append(this.resource);
         sb.append("]");
         return sb.toString();
@@ -217,6 +214,14 @@ public class ACLEditCommand extends UpdateCancelCommand {
 
     public void addUserNameEntry(String userNameEntry) {
         this.userNameEntries.add(userNameEntry.toLowerCase());
+    }
+    
+    public String[] getUpdatedShortcuts() {
+        return this.updatedShortcuts;
+    }
+
+    public void setUpdatedShortcuts(String[] updatedShortcuts) {
+        this.updatedShortcuts = updatedShortcuts;
     }
 
 }

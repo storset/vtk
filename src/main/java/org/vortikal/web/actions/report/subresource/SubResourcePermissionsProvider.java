@@ -124,7 +124,7 @@ public class SubResourcePermissionsProvider {
                   
                   for(Principal p : privilegedPseudoPrincipals) {
                     String pseudo = this.getLocalizedTitle(request, "pseudoPrincipal." + p.getName(), null);
-                    if(p.getName() == PrincipalFactory.NAME_OWNER) {
+                    if(p.getName() == "pseudo:owner") {
                       pseudo += "&nbsp;(" + r.getOwner().getDescription() + ")";
                     }
                     if(p.getName() == PrincipalFactory.NAME_ALL) {

@@ -36,6 +36,7 @@ import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.AuthorizationManager;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
+import org.vortikal.repository.PropertyEvaluationContext.Type;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyValidator;
@@ -86,24 +87,39 @@ public class OwnerEvaluator
 
     public void validate(Property property, PropertyEvaluationContext ctx)
         throws ConstraintViolationException {
-
+        
         Principal owner = property.getPrincipalValue();
         if (owner == null) {
            throw new ConstraintViolationException(
                    "Unable to set owner of resource to NULL");
-       }
-       if (!this.principalManager.validatePrincipal(owner)) {
-           // Keep existing, invalid owner principals, disallow new ones:
-           if (ctx.getEvaluationType() == PropertyEvaluationContext.Type.Create) {
-               throw new ConstraintViolationException(
-                   "Unable to set owner of resource to invalid value: '" 
-                   + owner + "'");
-           }
-       }
-       try {
-           this.authorizationManager.authorizeRootRoleAction(ctx.getPrincipal());
-           // Principal is root, allow any value:
-           return;
-       } catch (AuthorizationException e) { }
-    }
+        }
+        if (!this.principalManager.validatePrincipal(owner)) {
+            // Keep existing, invalid owner principals, disallow new ones:
+            if (ctx.getEvaluationType() == PropertyEvaluationContext.Type.Create) {
+                throw new ConstraintViolationException(
+                    "Unable to set owner of resource to invalid value: '" 
+                    + owner + "'");
+            }
+        }
+        
+        // Require root to change owner to any other value than current user
+        if (ctx.getEvaluationType() == PropertyEvaluationContext.Type.PropertiesChange) {
+            Property existingProp = ctx.getOriginalResource().getProperty(property.getDefinition());
+            Principal existing = existingProp.getPrincipalValue();
+        
+            if ((!existing.equals(owner)) && (!owner.equals(ctx.getPrincipal()))) {
+                try {
+                    this.authorizationManager.authorizeRootRoleAction(ctx.getPrincipal());
+                    // Principal is root, allow any value:
+                    return;
+                } catch (AuthorizationException e) {
+                    throw new ConstraintViolationException(
+                           "Must be root to set other value than current user, new value: '" 
+                           + owner + "'" + " existing: '" + existing + "' by user: '" + ctx.getPrincipal() + "'");                    
+                }
+            }
+               
+        } 
+    }    
 }
+    

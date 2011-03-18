@@ -309,10 +309,10 @@ create index vortex_comment_index1 on vortex_comment(resource_id);
 -- Action types
  
 insert into action_type (action_type_id, name) values (1, 'read');
-insert into action_type (action_type_id, name) values (2, 'write');
+insert into action_type (action_type_id, name) values (2, 'read-write');
 insert into action_type (action_type_id, name) values (3, 'all');
 insert into action_type (action_type_id, name) values (4, 'read-processed');
-insert into action_type (action_type_id, name) values (5, 'bind');
+insert into action_type (action_type_id, name) values (5, 'bind-template');
 insert into action_type (action_type_id, name) values (6, 'add-comment');
 
 
@@ -408,7 +408,7 @@ values (
 );
 
 
--- (pseudo:owner, all)
+-- (vortex@localhost, all)
 
 insert into acl_entry (
     acl_entry_id,
@@ -422,7 +422,7 @@ values (
     acl_entry_seq_pk.nextval,
     vortex_resource_seq_pk.currval,
     3,
-    'pseudo:owner',
+    'vortex@localhost',
     'Y',
     'vortex@localhost',
     sysdate

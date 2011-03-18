@@ -44,5 +44,4 @@ public class ResourceMediaPlayerComponent extends ViewRenderingDecoratorComponen
     public void setMediaPlayer(MediaPlayer mediaPlayer) {
         this.mediaPlayer = mediaPlayer;
     }
-
 }

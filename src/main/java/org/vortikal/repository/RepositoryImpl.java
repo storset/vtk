@@ -43,6 +43,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -84,7 +85,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     private CommentDAO commentDAO;
     private ContentStore contentStore;
     private TokenManager tokenManager;
-    private LockManager lockManager;
     private ResourceTypeTree resourceTypeTree;
     private RepositoryResourceHelper resourceHelper;
     private AuthorizationManager authorizationManager;
@@ -99,7 +99,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     // Default value of 60 days before recoverable resources are purged from
     // trash can
     private int permanentDeleteOverdueLimitInDays = 60;
+    
+    public final static long LOCK_DEFAULT_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+    public final static long LOCK_MAX_TIMEOUT = LOCK_DEFAULT_TIMEOUT;
 
+    private long lockDefaultTimeout = LOCK_DEFAULT_TIMEOUT;
+    private long lockMaxTimeout = LOCK_DEFAULT_TIMEOUT;
+    
     private static Log searchLogger = LogFactory.getLog(RepositoryImpl.class.getName() + ".Search");
     private static Log trashLogger = LogFactory.getLog(RepositoryImpl.class.getName() + ".Trash");
 
@@ -233,7 +239,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new IllegalOperationException("Either parent doesn't exist " + "or parent is document");
         }
 
-        this.lockManager.lockAuthorize(parent, principal);
+        checkLock(parent, principal);
         this.authorizationManager.authorizeCreate(parent.getURI(), principal);
         checkMaxChildren(parent);
 
@@ -297,9 +303,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
 
         if (dest != null) {
-            this.lockManager.lockAuthorize(dest, principal);
+            checkLock(dest, principal);
         }
-        this.lockManager.lockAuthorize(destParent, principal);
+        checkLock(destParent, principal);
         this.authorizationManager.authorizeCopy(srcUri, destUri, principal, overwrite);
         checkMaxChildren(destParent);
 
@@ -359,12 +365,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new IllegalOperationException("Invalid destination resource");
         }
 
-        this.lockManager.lockAuthorize(src, principal);
-        this.lockManager.lockAuthorize(parent, principal);
+        checkLock(src, principal);
+        checkLock(parent, principal);
         if (dest != null) {
-            this.lockManager.lockAuthorize(dest, principal);
+            checkLock(dest, principal);
         }
-        this.lockManager.lockAuthorize(destParent, principal);
+        checkLock(destParent, principal);
 
         this.authorizationManager.authorizeMove(srcUri, destUri, principal, overwrite);
         checkMaxChildren(destParent);
@@ -423,8 +429,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         // to "11-iterations"-problem)
         ResourceImpl parentCollection = this.dao.load(uri.getParent());
         this.authorizationManager.authorizeDelete(uri, principal);
-        this.lockManager.lockAuthorize(parentCollection, principal);
-        this.lockManager.lockAuthorize(r, principal);
+        checkLock(parentCollection, principal);
+        checkLock(r, principal);
         parentCollection.removeChildURI(uri);
         parentCollection = this.resourceHelper.contentModification(parentCollection, principal);
         this.dao.store(parentCollection);
@@ -477,8 +483,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new ResourceNotFoundException(parentUri);
         }
 
-        this.lockManager.lockAuthorize(parent, principal);
-        this.authorizationManager.authorizeWrite(parentUri, principal);
+        checkLock(parent, principal);
+        this.authorizationManager.authorizeReadWrite(parentUri, principal);
 
         this.dao.recover(parentUri, recoverableResource);
         this.contentStore.recover(parentUri, recoverableResource);
@@ -542,13 +548,92 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             }
         }
 
-        this.lockManager.lockAuthorize(r, principal);
-        this.authorizationManager.authorizeWrite(uri, principal);
+        checkLock(r, principal);
+        this.authorizationManager.authorizeReadWrite(uri, principal);
 
-        this.lockManager.lockResource(r, principal, ownerInfo, depth, requestedTimeoutSeconds, (lockToken != null));
+        boolean refresh = lockToken != null;
+        
+        if (!refresh) {
+            r.setLock(null);
+        }
+
+        if (r.getLock() == null) {
+            String newLockToken = "opaquelocktoken:"
+                + UUID.randomUUID().toString();
+
+            Date timeout = new Date(System.currentTimeMillis()
+                    + this.lockDefaultTimeout);
+
+            if ((requestedTimeoutSeconds * 1000) > this.lockMaxTimeout) {
+                timeout = new Date(System.currentTimeMillis()
+                        + this.lockDefaultTimeout);
+            }
+
+            LockImpl lock = new LockImpl(newLockToken, principal, ownerInfo,
+                    depth, timeout);
+            r.setLock(lock);
+        } else {
+            r.setLock(new LockImpl(r.getLock().getLockToken(),
+                    principal, ownerInfo, depth, new Date(System
+                            .currentTimeMillis()
+                            + (requestedTimeoutSeconds * 1000))));
+        }
+        this.dao.store(r);
+        //this.authorizationManager.lockResource(r, principal, ownerInfo, depth, requestedTimeoutSeconds, (lockToken != null));
 
         return r;
     }
+    
+    public void checkLock(Resource resource, Principal principal) throws ResourceLockedException, IOException,
+    AuthenticationException {
+        Lock lock = resource.getLock();
+        if (lock == null) {
+            return;
+        }
+        if (principal == null) {
+            throw new AuthenticationException();
+        }
+        if (lock.getPrincipal().equals(principal)) {
+            return;
+        }
+        throw new ResourceLockedException();
+    }
+
+    
+    public String lockResource(ResourceImpl resource, Principal principal,
+            String ownerInfo, Repository.Depth depth, int desiredTimeoutSeconds,
+            boolean refresh) throws AuthenticationException,
+            AuthorizationException, ResourceLockedException, IOException {
+
+        if (!refresh) {
+            resource.setLock(null);
+        }
+
+        if (resource.getLock() == null) {
+            String lockToken = "opaquelocktoken:"
+                + UUID.randomUUID().toString();
+
+            Date timeout = new Date(System.currentTimeMillis()
+                    + this.lockDefaultTimeout);
+
+            if ((desiredTimeoutSeconds * 1000) > this.lockMaxTimeout) {
+                timeout = new Date(System.currentTimeMillis()
+                        + this.lockDefaultTimeout);
+            }
+
+            LockImpl lock = new LockImpl(lockToken, principal, ownerInfo,
+                    depth, timeout);
+            resource.setLock(lock);
+        } else {
+            resource.setLock(new LockImpl(resource.getLock().getLockToken(),
+                    principal, ownerInfo, depth, new Date(System
+                            .currentTimeMillis()
+                            + (desiredTimeoutSeconds * 1000))));
+        }
+        this.dao.store(resource);
+        return resource.getLock().getLockToken();
+    }
+    
 
     @Override
     public void unlock(String token, Path uri, String lockToken) throws ResourceNotFoundException,
@@ -559,7 +644,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new ResourceNotFoundException(uri);
         }
 
-        this.lockManager.lockAuthorize(r, principal);
+        checkLock(r, principal);
         this.authorizationManager.authorizeUnlock(uri, principal);
 
         if (r.getLock() != null) {
@@ -588,8 +673,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new ResourceNotFoundException(uri);
         }
 
-        this.lockManager.lockAuthorize(original, principal);
-        this.authorizationManager.authorizeWrite(uri, principal);
+        checkLock(original, principal);
+        this.authorizationManager.authorizeReadWrite(uri, principal);
 
         try {
             ResourceImpl originalClone = (ResourceImpl) original.clone();
@@ -630,7 +715,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new IllegalOperationException("Either parent doesn't exist " + "or parent is document");
         }
 
-        this.lockManager.lockAuthorize(parent, principal);
+        checkLock(parent, principal);
         this.authorizationManager.authorizeCreate(parent.getURI(), principal);
         checkMaxChildren(parent);
 
@@ -691,8 +776,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new IllegalOperationException("resource is collection");
         }
 
-        this.lockManager.lockAuthorize(r, principal);
-        this.authorizationManager.authorizeWrite(uri, principal);
+        checkLock(r, principal);
+        this.authorizationManager.authorizeReadWrite(uri, principal);
         File tempFile = null;
         try {
             // Write to a temporary file to avoid locking:
@@ -738,8 +823,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                         return false;
                     }
                     Resource parent = this.dao.load(resource.getURI().getParent());
-                    this.lockManager.lockAuthorize(parent, principal);
-                    this.lockManager.lockAuthorize(resource, principal);
+                    checkLock(parent, principal);
+                    checkLock(resource, principal);
 
                 } else if (action == RepositoryAction.ALL || action == RepositoryAction.ADD_COMMENT
                         || action == RepositoryAction.EDIT_COMMENT
@@ -748,7 +833,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                         || action == RepositoryAction.UNEDITABLE_ACTION || action == RepositoryAction.UNLOCK
                         || action == RepositoryAction.CREATE || action == RepositoryAction.WRITE
                         || action == RepositoryAction.WRITE_ACL) {
-                    this.lockManager.lockAuthorize(resource, principal);
+                    checkLock(resource, principal);
                 }
             }
             this.authorizationManager.authorizeAction(resource.getURI(), action, principal);
@@ -780,7 +865,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         if (r == null) {
             throw new ResourceNotFoundException(resource.getURI());
         }
-        this.lockManager.lockAuthorize(resource, principal);
+        checkLock(resource, principal);
         this.authorizationManager.authorizeAll(resource.getURI(), principal);
 
         try {
@@ -902,7 +987,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                 throw new ResourceNotFoundException(resource.getURI());
             }
 
-            this.lockManager.lockAuthorize(resource, principal);
+            checkLock(resource, principal);
             this.authorizationManager.authorizeAddComment(resource.getURI(), principal);
 
             List<Comment> comments = this.commentDAO.listCommentsByResource(resource, false, this.maxComments);
@@ -963,7 +1048,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                 throw new ResourceNotFoundException(resource.getURI());
             }
 
-            this.lockManager.lockAuthorize(resource, principal);
+            checkLock(resource, principal);
             this.authorizationManager.authorizeEditComment(resource.getURI(), principal);
             this.commentDAO.deleteComment(comment);
 
@@ -998,7 +1083,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                 throw new ResourceNotFoundException(resource.getURI());
             }
 
-            this.lockManager.lockAuthorize(resource, principal);
+            checkLock(resource, principal);
             this.authorizationManager.authorizeEditComment(resource.getURI(), principal);
             this.commentDAO.deleteAllComments(resource);
 
@@ -1045,7 +1130,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                 throw new IllegalArgumentException("Trying to update a non-existing comment");
             }
 
-            this.lockManager.lockAuthorize(resource, principal);
+            checkLock(resource, principal);
             this.authorizationManager.authorizeEditComment(resource.getURI(), principal);
             comment = this.commentDAO.updateComment(comment);
             return comment;
@@ -1189,9 +1274,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         this.id = id;
     }
 
-    @Required
-    public void setLockManager(LockManager lockManager) {
-        this.lockManager = lockManager;
+    public void setLockMaxTimeout(long lockMaxTimeout) {
+        this.lockMaxTimeout = lockMaxTimeout;
+    }
+
+    public void setLockDefaultTimeout(long lockDefaultTimeout) {
+        this.lockDefaultTimeout = lockDefaultTimeout;
     }
 
     @Required

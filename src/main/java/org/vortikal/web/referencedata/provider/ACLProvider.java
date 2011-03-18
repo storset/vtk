@@ -73,8 +73,6 @@ import org.vortikal.web.service.Service;
  *   <li><code>aclEditURLs</code> - map from {@link RepositoryAction actions} to edit URLs
  *   <li><code>privileges</code> - map from {@link Privilege#getName
  *   privilege names} to {@link Privilege privilege objects}
- *   <li><code>groupingPrivilegePrincipalMap</code> - map from
- *   privileges to the grouping pseudo principal
  *   <li><code>inherited</code> - whether or not the ACL of the
  *   current resource is inherited
  *   <li><code>privilegedPseudoPrincipals</code> - map from privileges
@@ -89,8 +87,6 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
 
     private Service aclInheritanceService = null;
     
-    private Map<Privilege, Principal> groupingPrivilegePrincipalMap;
-
     private Map<Privilege, Service> aclEditServices;
     
     private String modelName = "aclInfo";
@@ -107,10 +103,6 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
         this.modelName = modelName;
     }
     
-    public void setGroupingPrivilegePrincipalMap(Map<Privilege, Principal> groupingPrivilegePrincipalMap) {
-        this.groupingPrivilegePrincipalMap = groupingPrivilegePrincipalMap;
-    }
-    
 
     public void afterPropertiesSet() {
         if (this.aclInheritanceService == null) {
@@ -124,10 +116,6 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
         if (this.modelName == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'modelName' must be set");
-        }
-        if (this.groupingPrivilegePrincipalMap == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'groupingPrivilegePrincipalMap' must be set");
         }
     }
 
@@ -185,18 +173,9 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
                 new ArrayList<Principal>(Arrays.asList(acl.listPrivilegedPseudoPrincipals(action)));
             privilegedPseudoPrincipals.put(actionName, ppps);
         }
-        
-        Map<String, Principal> pseudoPrincipalPrivilegeMap = 
-            new HashMap<String, Principal>();
-
-        for (Privilege action: this.groupingPrivilegePrincipalMap.keySet()) {
-            Principal p = this.groupingPrivilegePrincipalMap.get(action);
-            pseudoPrincipalPrivilegeMap.put(action.getName(), p);
-        }
 
         aclModel.put("aclEditURLs", editURLs);
         aclModel.put("privileges", privileges);
-        aclModel.put("groupingPrivilegePrincipalMap", pseudoPrincipalPrivilegeMap);
         aclModel.put("inherited", new Boolean(resource.isInheritedAcl()));
         aclModel.put("privilegedPseudoPrincipals", privilegedPseudoPrincipals);
         aclModel.put("privilegedUsers", privilegedUsers);

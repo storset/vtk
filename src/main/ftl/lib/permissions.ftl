@@ -28,7 +28,7 @@
  * Display privilege as a single group with heading.
  * 
  * @param privilegeName - name of privilege
- * @param privilegeHeading 
+ * @param privilegeHeading - name of group
  *
 -->
 
@@ -44,12 +44,15 @@
            privilegeHeading = privilegeHeading />
       </div>
     </div>
-   <#else>
-
-      <h3 class="${privilegeName}">${privilegeHeading}</h3>
-      <div class="${privilegeName}"><@listPrincipals privilegeName=privilegeName /><#if aclInfo.aclEditURLs[privilegeName]?exists>(&nbsp;<a href="${aclInfo.aclEditURLs[privilegeName]?html}"><@vrtx.msg code="permissions.privilege.edit" default="edit" /></a>&nbsp;)</#if></div>
-    
-    </#if>
+  <#else>
+    <h3 class="${privilegeName}">${privilegeHeading}</h3>
+    <div class="${privilegeName}">
+      <@listPrincipals privilegeName=privilegeName />
+      <#if aclInfo.aclEditURLs[privilegeName]?exists>
+        (&nbsp;<a href="${aclInfo.aclEditURLs[privilegeName]?html}"><@vrtx.msg code="permissions.privilege.edit" default="edit" /></a>&nbsp;)
+      </#if>
+    </div>
+  </#if>
 </#macro>
 
 
@@ -81,157 +84,36 @@
       <#else>
         <td class="key">${privilegeHeading}</td>
         <td>
-             <@listPrincipalsSingleList        
-                privilegeName = privilegeName />
-             <#if aclInfo.aclEditURLs[privilegeName]?exists>(&nbsp;<a href="${aclInfo.aclEditURLs[privilegeName]?html}"><@vrtx.msg code="permissions.privilege.edit" default="edit" /></a>&nbsp;)</#if>
-          </td>
+          <@listPrincipals privilegeName = privilegeName />
+          <#if aclInfo.aclEditURLs[privilegeName]?exists>
+            (&nbsp;<a href="${aclInfo.aclEditURLs[privilegeName]?html}"><@vrtx.msg code="permissions.privilege.edit" default="edit" /></a>&nbsp;)
+          </#if>
+        </td>
       </#if>
       </tr>
     </#list>
   </table>
 </#macro>
 
-
-<#--
- * listPrincipalsSingleList
- *
- * Lists users and groups that have privileges on the current
- * resource as one list. Owners are displayed with a '(owner') suffix.
- *
- * @param privilegeName - name of privilege
- *
--->
-
-<#macro listPrincipalsSingleList privilegeName>
-  <#assign pseudoPrincipals = aclInfo.privilegedPseudoPrincipals[privilegeName] />
-  <#assign groupingPrincipal = aclInfo.groupingPrivilegePrincipalMap[privilegeName] />
-  <#assign users = aclInfo.privilegedUsers[privilegeName] />
-  <#assign groups = aclInfo.privilegedGroups[privilegeName] />
-
-  <#assign grouped = false />
-  <#list pseudoPrincipals as pseudoPrincipal>
-    <#if pseudoPrincipal.name = groupingPrincipal.name>
-      <#assign grouped = true />
-    </#if>
-  </#list>
-
-  <#if grouped>
-    <@vrtx.msg code="permissions.allowedFor.${groupingPrincipal.name}" default="${groupingPrincipal.name}" /><#t/>
-  <#elseif (pseudoPrincipals?size > 0 || users?size > 0 || groups?size > 0)>
-    <#list pseudoPrincipals as pseudoPrincipal>
-      <#compress>
-        <@vrtx.msg code="pseudoPrincipal.${pseudoPrincipal.name}" default="${pseudoPrincipal.name}" /><#t/>
-        <#if pseudoPrincipal.name = "pseudo:owner">&nbsp;(<@vrtx.displayUserPrincipal principal=resourceContext.currentResource.owner />)</#if><#t/>
-      </#compress>
-      <#if pseudoPrincipal_index &lt; pseudoPrincipals?size - 1  || users?size &gt; 0  || groups?size &gt; 0>, <#t/></#if>
-    </#list>
-    <#list users as user>
-      <#compress><@vrtx.displayUserPrincipal principal=user /></#compress><#t/>
-      <#if user_index &lt; users?size - 1 || groups?size &gt; 0>,<#t/></#if>
-    </#list>
-    <#list groups as group>
-      <#compress>${group.name}</#compress><#t/>
-      <#if group_index &lt; groups?size - 1>,<#t/></#if>
-    </#list>
-  <#else>
-    <@vrtx.msg code="permissions.not.assigned" default="Not assigned" /> <#t/>
-  </#if>
-</#macro>
-
-
-<#--
- * listPrincipalsSeparatedLists
- *
- * Lists users and groups that have privileges on the current
- * resource in two tablerows. Paragraph if "everyone" have privileges. 
- * Owners are displayed with a '(owner') suffix.
- *
- * @param privilegeName - name of privilege
- *
--->
-
-<#macro listPrincipalsSeparatedLists privilegeName>
-  <#assign pseudoPrincipals = aclInfo.privilegedPseudoPrincipals[privilegeName] />
-  <#assign groupingPrincipal = aclInfo.groupingPrivilegePrincipalMap[privilegeName] />
-  <#assign users = aclInfo.privilegedUsers[privilegeName] />
-  <#assign groups = aclInfo.privilegedGroups[privilegeName] />
-
-  <#assign grouped = false />
-  <#list pseudoPrincipals as pseudoPrincipal>
-    <#if pseudoPrincipal.name = groupingPrincipal.name>
-      <#assign grouped = true />
-    </#if>
-  </#list>
-
-  <#if grouped>
-    <p><@vrtx.msg code="permissions.allowedFor.${groupingPrincipal.name}" default="${groupingPrincipal.name}" /><#t/></p>
-  <#elseif (pseudoPrincipals?size > 0 || users?size > 0 || groups?size > 0)>
-    <table>
-      <tr>
-        <td class="key"><@vrtx.msg code="permissions.users" default="Users"/>:</td>
-        <td> 
-          <#list pseudoPrincipals as pseudoPrincipal>
-            <#compress>
-              <@vrtx.msg code="pseudoPrincipal.${pseudoPrincipal.name}" default="${pseudoPrincipal.name}" /><#t/>
-              <#if pseudoPrincipal.name = "pseudo:owner">&nbsp;(<@vrtx.displayUserPrincipal principal=resourceContext.currentResource.owner />)</#if><#t/>
-            </#compress>
-            <#if pseudoPrincipal_index &lt; pseudoPrincipals?size - 1  || users?size &gt; 0>, <#t/></#if>
-          </#list>
-          <#list users as user>
-            <#compress><@vrtx.displayUserPrincipal principal=user /></#compress><#t/>
-            <#if user_index &lt; users?size - 1>,<#t/></#if>
-          </#list>
-        </td>
-      </tr>
-      <tr>
-        <td class="key"><@vrtx.msg code="permissions.groups" default="Groups"/>:</td>
-        <td>
-          <#list groups as group>
-            <#compress>${group.name}</#compress><#t/>
-            <#if group_index &lt; groups?size - 1>,<#t/></#if>
-          </#list>
-        </td>
-      </tr>
-    </table>
-  <#else>
-    <p><@vrtx.msg code="permissions.not.assigned" default="Not assigned" /><#t/></p>
-  </#if>
-</#macro>
-
-
 <#--
  * listPrincipals
  *
  * Lists users and groups that have permissions on the current
- * resource. Owners are displayed with a '(owner') suffix.
+ * resource.
  *
- * @param users list of users
- * @param groups list of groups
+ * @param privilegeName - name of privilege
  *
 -->
 
 <#macro listPrincipals privilegeName>
   <#assign pseudoPrincipals = aclInfo.privilegedPseudoPrincipals[privilegeName] />
-  <#assign groupingPrincipal = aclInfo.groupingPrivilegePrincipalMap[privilegeName] />
   <#assign users = aclInfo.privilegedUsers[privilegeName] />
   <#assign groups = aclInfo.privilegedGroups[privilegeName] />
 
-  <#assign grouped = false />
-  <#list pseudoPrincipals as pseudoPrincipal>
-    <#if pseudoPrincipal.name = groupingPrincipal.name>
-      <#assign grouped = true />
-    </#if>
-  </#list>
-
-  <#if grouped>
-    <#compress>
-      <@vrtx.msg code="permissions.allowedFor.${groupingPrincipal.name}" default="${groupingPrincipal.name}" />&nbsp;
-    </#compress>
-  <#elseif (pseudoPrincipals?size > 0 || users?size > 0 || groups?size > 0)>
+  <#if (pseudoPrincipals?size > 0 || users?size > 0 || groups?size > 0)>
     <#list pseudoPrincipals as pseudoPrincipal>
       <#compress>
-        <@vrtx.msg code="pseudoPrincipal.${pseudoPrincipal.name}" default="${pseudoPrincipal.name}" />
-        <#if pseudoPrincipal.name = "pseudo:owner">&nbsp;(<@vrtx.displayUserPrincipal principal=resourceContext.currentResource.owner />)</#if><#t/>
+        <@vrtx.msg code="pseudoPrincipal.${pseudoPrincipal.name}" default="${pseudoPrincipal.name}" /><#t/>
       </#compress>
       <#if pseudoPrincipal_index &lt; pseudoPrincipals?size - 1  || users?size &gt; 0  || groups?size &gt; 0>, <#t/></#if>
     </#list>
@@ -240,7 +122,15 @@
       <#if user_index &lt; users?size - 1 || groups?size &gt; 0>,<#t/></#if>
     </#list>
     <#list groups as group>
-      <#compress>${group.name}</#compress><#t/>
+      <#switch group.name>
+        <#case "alle@uio.no">
+        <#case "alle@feide.no">
+        <#case "alle@webid.no">
+          <#compress><@vrtx.msg code="permissions.shortcut.group:${group.name}" default="${group.name}" /></#compress><#t/>
+          <#break/>
+        <#default>
+          <#compress>${group.name}</#compress><#t/>
+      </#switch>
       <#if group_index &lt; groups?size - 1>,<#t/></#if>
     </#list>
   <#else>
@@ -254,7 +144,7 @@
  *
  * Macro for displaying the 'Edit ACL' form
  *
- * @param formName the - name of the form
+ * @param formName - the name of the form
  * @param privilegeName - the privilege to edit
  *
 -->
@@ -266,123 +156,63 @@
 <#macro editACLFormNew formName privilegeName privilegeHeading>
   <#assign privilege = aclInfo.privileges[privilegeName] />
   <#assign pseudoPrincipals = aclInfo.privilegedPseudoPrincipals[privilegeName] />
-  <#assign groupingPrincipal = aclInfo.groupingPrivilegePrincipalMap[privilegeName] />
-
-  <#assign grouped = false />
 
   <@spring.bind formName + ".submitURL" /> 
   <form class="aclEdit" action="${spring.status.value?html}" method="post">
     <h3>${privilegeHeading}</h3>
-    <ul class="everyoneOrSelectedUsers" id="${privilegeHeading}">
-    <@spring.bind formName + ".grouped" /> 
-    <#assign grouped = spring.status.value />
-    <li>
-      <input onclick="disableInput()"
-             id="permissions.grouped"
-             type="radio"
-             name="${spring.status.expression}"
-             value="true" <#if spring.status.value>checked="checked"</#if>> 
-      <label id="permissions.grouped" for="permissions.grouped">
-        <@vrtx.msg code="permissions.allowedFor.${groupingPrincipal.name}"
-                   default="${groupingPrincipal.name}" /></label>
-    </li>
-    <li><input onclick="enableInput()"
-               id="permissions.selectedPrincipals"
-               type="radio"
-               name="${spring.status.expression}"
-               value="false"
-               <#if !spring.status.value>checked="checked"</#if>> 
-      <label id="permissions.selectedPrincipals" for="permissions.selectedPrincipals">
-        <@vrtx.msg code="permissions.selectedPrincipals" default="Restricted to"/></label>
-    </li>
-    </ul>
-
+    <@spring.bind formName + ".shortcuts" />
+    <@listShortcuts privilegeName privilegeHeading spring.status.value />
     <ul class="principalList" id="principalList">
-    <li class="users">
-      <fieldset>
-      <legend><@vrtx.msg code="permissions.users" default="Users"/></legend>
-      <ul class="users"> 
-      <@spring.bind formName + ".removeUserURLs" />
-      <#assign removeUserURLs=spring.status.value />
-      <@spring.bind formName + ".users" />
-      <#list spring.status.value as user>
-          <#switch user.name>
-            <#case "pseudo:owner">
-              <li><@vrtx.msg code="permissions.owner"
-                             default="owner"/>&nbsp;(<@vrtx.displayUserPrincipal principal=resourceContext.currentResource.owner />)</li>
-              <#break>
-            <#case "pseudo:authenticated">
-            <#case "pseudo:all">
-              <#if user.name != groupingPrincipal.name>
-                <li><@vrtx.msg code="pseudoPrincipal." + user.name default="pseudoPrincipal." + user.name /><#t/>
-                  <#if removeUserURLs?exists && removeUserURLs[user.name]?exists >
-                    &nbsp;(&nbsp;<a href="${removeUserURLs[user.name]?html}"><#t/>
-                      <#t/><@vrtx.msg code="permissions.remove" default="remove"/></a>&nbsp;)
-                  </#if>
+      <@editACLFormGroupsOrUsers "group" />
+      <@editACLFormGroupsOrUsers "user" />
+    </ul>
+    <div id="submitButtons" class="submitButtons">
+      <input type="submit" name="saveAction" value="<@vrtx.msg code="permissions.save" default="Save"/>">
+      <input type="submit" name="cancelAction" value="<@vrtx.msg code="permissions.cancel" default="Cancel"/>">
+    </div>
+  </form>
+</#macro>
+
+<#--
+ * editACLFormGroupsOrUsers
+ *
+ * Displaying groups or users sub-lists in the 'Edit ACL' form
+ *
+ * @param type - "group" or "user"
+ *
+-->
+
+<#macro editACLFormGroupsOrUsers type>
+  <#assign capitalizedType = "${type?capitalize}" />
+  <li class="${type}s">
+    <fieldset>
+      <legend><@vrtx.msg code="permissions.${type}s" default="${capitalizedType}s"/></legend>
+      <@spring.bind formName + ".remove${capitalizedType}URLs" />
+      <#assign removeURLs=spring.status.value />
+      <@spring.bind formName + ".${type}s" /> 
+      <ul class="${type}s">
+        <#list spring.status.value as groupOrUser>
+          <li>
+            <#compress>
+              <#if type == "user">
+                <@vrtx.displayUserPrincipal principal=groupOrUser />
+              <#else>
+                ${groupOrUser.name}
               </#if>
-              <#break>
-            <#default>
-              <li><@vrtx.displayUserPrincipal principal=user />
-                <#if removeUserURLs?exists && removeUserURLs[user.name]?exists >
-                  &nbsp;(&nbsp;<a href="${removeUserURLs[user.name]?html}"><#t/>
-                  <#t/><@vrtx.msg code="permissions.remove" default="remove"/></a>&nbsp;)
-               </#if>
-              </li>
-          </#switch>
+              &nbsp;(&nbsp;<a href="${removeURLs[groupOrUser.name]?html}"><#t/>
+              <#t/><@vrtx.msg code="permissions.remove" default="remove"/></a>&nbsp;)
+            </#compress>
+          </li>
         </#list>
       </ul>
-      <@spring.bind formName + ".userNames" />
+      <@spring.bind formName + ".${type}Names" /> 
       <#assign value=""/>
       <#assign errorsExist = false>
       <#if spring.status.errorMessages?size &gt; 0>
-        <#assign errorsExist = true>
         <div class="errorContainer">
           <ul class="errors">
             <#list spring.status.errorMessages as error> 
-              <li>${error}</li> 
-            </#list>
-          </ul>
-        </div>
-        <#if spring.status.value?exists>
-          <#assign value = spring.status.value />
-        </#if>
-      </#if>
-      <span class="addUser">
-        <input type="text" id="${spring.status.expression}" name="${spring.status.expression}" value="${value?html}" />
-        <@spring.bind formName + ".ac_userNames" />
-        <#assign value=""/>
-        <#if errorsExist>
-          <#assign value = spring.status.value />
-        </#if>        
-        <input type="hidden" id="ac_userNames" name="ac_userNames" value="${value?html}" />
-        <input class="addUserButton" type="submit" name="addUserAction"
-               value="<@vrtx.msg code="permissions.addUser" default="Add User"/>"/>
-      </span>
-      </fieldset>
-    </li>
-    <li class="groups">
-      <fieldset>
-      <legend><@vrtx.msg code="permissions.groups" default="Groups"/></legend>
-      <ul class="groups">
-      <@spring.bind formName + ".removeGroupURLs" />
-      <#assign removeGroupURLs=spring.status.value />
-      <@spring.bind formName + ".groups" /> 
-      <#list spring.status.value as group>
-        <li>
-          <#compress>
-          ${group.name}&nbsp;(&nbsp;<a href="${removeGroupURLs[group.name]?html}"><#t/>
-            <#t/><@vrtx.msg code="permissions.remove" default="remove"/></a>&nbsp;)
-          </#compress>
-        </li>
-      </#list>
-      </ul>
-      <@spring.bind formName + ".groupNames" /> 
-      <#assign value=""/>
-      <#if spring.status.errorMessages?size &gt; 0>
-        <div class="errorContainer">
-          <ul class="errors">
-            <#list spring.status.errorMessages as error> 
-              <li>${error}</li> 
+              <li>${error}</li>
             </#list>
           </ul>
         </div>
@@ -390,22 +220,46 @@
           <#assign value=spring.status.value />
         </#if>
       </#if>
-      <span class="addGroup">      
+      <span class="add${capitalizedType}">      
         <input type="text" id="${spring.status.expression}" name="${spring.status.expression}" value="${value?html}" />
-        <input class="addGroupButton" type="submit" name="addGroupAction"
-               value="<@vrtx.msg code="permissions.addGroup" default="Add Group"/>"/>
+        <#if type == "user">
+          <@spring.bind formName + ".ac_userNames" />
+          <#assign value=""/>
+          <#if errorsExist>
+            <#assign value = spring.status.value />
+          </#if>        
+          <input type="hidden" id="ac_userNames" name="ac_userNames" value="${value?html}" />
+        </#if>
+        <input class="add${capitalizedType}Button" type="submit" name="add${capitalizedType}Action"
+               value="<@vrtx.msg code="permissions.add${capitalizedType}" default="Add ${capitalizedType}"/>"/>
       </span>
     </fieldset>
-    </li>  
-    </ul>
-    <#-- Disable input if 'everyone' has permission: -->
-    <#if grouped><script type="text/javascript">disableInput()</script></#if>
+  </li>
+</#macro>
 
-    <div id="submitButtons" class="submitButtons">
-    <#-- Move buttons if 'everyone' has permission: -->
-    <#if grouped><script type="text/javascript">document.getElementById("submitButtons").style.paddingTop="5px";</script></#if>
-    <input type="submit" name="saveAction" value="<@vrtx.msg code="permissions.save" default="Save"/>">
-    <input type="submit" name="cancelAction" value="<@vrtx.msg code="permissions.cancel" default="Cancel"/>">
-    </div>
-  </form>
+<#--
+ * listShortcuts
+ *
+ * List shortcuts (configurated pr. host)
+ *
+ * @param privilegeName - name of privilege
+ * @param privilegeHeading - privilegeHeading
+ *
+-->
+
+<#macro listShortcuts privilegeName privilegeHeading shortcuts>
+  <ul class="shortcuts" id="${privilegeHeading}">
+    <#list shortcuts as shortcut>
+      <li>
+        <label for="${privilegeName}"> 
+          <#if shortcut[1] == "checked">
+            <input type="checkbox" name="updatedShortcuts" checked="${shortcut[1]}" value="${shortcut[0]}" />
+          <#else>
+            <input type="checkbox" name="updatedShortcuts" value="${shortcut[0]}" />             
+          </#if>
+          <@vrtx.msg code="permissions.shortcut.${shortcut[0]}" />
+        </label>
+      </li>
+    </#list>
+  </ul>
 </#macro>

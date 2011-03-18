@@ -32,8 +32,9 @@ package org.vortikal.repository;
 
 public enum RepositoryAction {
     READ_PROCESSED("read-processed"),
-    READ("read"),
     CREATE("create"),
+    READ("read"),
+    READ_WRITE("read-write"),
     WRITE("write"),
     WRITE_ACL("write-acl"),
     UNLOCK("unlock"),

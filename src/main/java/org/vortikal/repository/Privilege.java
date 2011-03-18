@@ -40,12 +40,12 @@ import java.util.Set;
  * This class defines the privileges supported in an Acl.
  */
 public enum Privilege {
-    READ_PROCESSED(RepositoryAction.READ_PROCESSED),
-    READ(RepositoryAction.READ),
-    BIND(RepositoryAction.CREATE, "bind"),
-    WRITE(RepositoryAction.WRITE),
+    ALL(RepositoryAction.ALL),
+    READ_WRITE(RepositoryAction.READ_WRITE),
     ADD_COMMENT(RepositoryAction.ADD_COMMENT),
-    ALL(RepositoryAction.ALL);
+    READ(RepositoryAction.READ),
+    READ_PROCESSED(RepositoryAction.READ_PROCESSED),
+    BIND_TEMPLATE(RepositoryAction.CREATE, "bind-template");
 
     private RepositoryAction action;
     private String name;

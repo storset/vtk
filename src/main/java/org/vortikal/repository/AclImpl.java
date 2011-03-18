@@ -73,7 +73,6 @@ public class AclImpl implements Acl {
 
     public void clear() {
         this.actionSets = new HashMap<Privilege, Set<Principal>>();
-        addEntry(Privilege.ALL, PrincipalFactory.OWNER);
     }
     
     public boolean isValidEntry(Privilege privilege, Principal principal) {
@@ -84,8 +83,8 @@ public class AclImpl implements Acl {
             throw new IllegalArgumentException("Principal is NULL");
         }
         if (PrincipalFactory.ALL.equals(principal)) {
-            if (Privilege.ALL.equals(privilege) || Privilege.WRITE.equals(privilege)
-                || Privilege.BIND.equals(privilege) || Privilege.ADD_COMMENT.equals(privilege)) {
+            if (Privilege.ALL.equals(privilege) || Privilege.READ_WRITE.equals(privilege) 
+                    || Privilege.ADD_COMMENT.equals(privilege)) {
                 return false;
             }
         }
@@ -142,10 +141,6 @@ public class AclImpl implements Acl {
             throw new IllegalArgumentException("Principal is NULL");
         }
             
-        if (PrincipalFactory.OWNER.equals(principal) &&
-                Privilege.ALL.equals(privilege)) {
-                throw new IllegalArgumentException("Not allowed to remove acl entry");
-        }
         Set<Principal> actionEntry = this.actionSets.get(privilege);
         
         if (actionEntry == null) return;

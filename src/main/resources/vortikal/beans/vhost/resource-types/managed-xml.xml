@@ -185,13 +185,6 @@
           </bean>
         </entry>
 
-        <!-- folder-eval -->
-        <entry key="http://www.uio.no/xsd/folder-eval/folder-eval-report/v001/folder-eval-report.xsd">
-          <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="/folder-eval-report/report-title" />
-          </bean>
-        </entry>
-
         <!-- hf -->
         <entry key="http://www.uio.no/xsd/hf/person/v00.*/person.xsd">
           <bean parent="abstractXPathEvaluator">

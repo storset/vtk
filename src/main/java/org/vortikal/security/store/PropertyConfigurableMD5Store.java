@@ -76,6 +76,11 @@ public class PropertyConfigurableMD5Store implements MD5PasswordStore, Ordered {
 
     private int order = Integer.MAX_VALUE;
 
+    // XXX: this overloading of setPrincipals is problematic in conjunction
+    //      with Spring dep-injection. Spring chooses the wrong-setter for
+    //      Properties-backed principals and fails...
+    //      Maybe just remove the repositoryPrincipalStore-extension..
+
     /**
      * Sets the principals as a properties mapping of the format
      * <code>(username@domain, password-md5)</code>

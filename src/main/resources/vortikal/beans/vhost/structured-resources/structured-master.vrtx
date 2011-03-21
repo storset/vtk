@@ -145,7 +145,7 @@ resourcetype structured-master{
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <title>[call "json:field" {"select":"name"}] [call "comp:completed"]</title>
+        <title>[call "json:field" {"select":"title"}] [call "comp:completed"]</title>
       </head>
       <body id="vrtx-structured-project">
         <div id="vrtx-content">

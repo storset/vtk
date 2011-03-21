@@ -57,7 +57,7 @@
   <#if item.menu?exists>
     <a href="${item.url?html}">${item.label?html}</a>
     <@displaySubMenu item.menu displaySubMenu />
-  <#else> 
+  <#else>
     <#if separator = "none">
       <a href="${item.url?html}">${item.label?html}</a>
     <#else>
@@ -69,20 +69,19 @@
 <#macro displayParentMenu menu currentCount groupCount newDiv subFolderMenu >
   <#if newDiv>
     <#if currentCount != 1>
-    	</div>
+      </div>
     </#if>  
     <div class="vrtx-group-${groupCount?html}">
-  	</#if>
-    <ul class="resultset-${currentCount?html}">
+  </#if>
+  	
+  <ul class="resultset-${currentCount?html}">
     <#list menu.itemsSorted as item>
-        <li>
-        <@displayItem item=item />
-      	</li>
+      <li><@displayItem item=item /></li>
     </#list>
-    </ul>
-    <#if subFolderMenu.groupResultSetsBy?exists && subFolderMenu.groupResultSetsBy?number &gt; 0 && currentCount == subFolderMenu.resultSets?size>
+  </ul>
+  <#if subFolderMenu.groupResultSetsBy?exists && subFolderMenu.groupResultSetsBy?number &gt; 0 && currentCount == subFolderMenu.resultSets?size>
     </div>
-    </#if>
+  </#if>
 </#macro>
 
 <#macro displaySubMenu menu displaySubMenu >
@@ -93,26 +92,27 @@
       <#assign sized = menu.maxNumberOfItems />
     </#if>
     <#list menu.itemsSorted as item>
-      <#if (i < sized)>
-          <li>
+      <#if (i = sized)>
+        <#break />
+      </#if>
+      <li>
+        <#if commaSeparated>
+          <#if (i < (sized-1))>
+            <@displayItem item=item separator="," />
+          <#else>
+            <@displayItem item=item separator="none" />
           </#if>
-          <#if commaSeparated>
-              <#if (i < (sized-1))>
-                <@displayItem item=item separator="," />
-              <#else>
-                <@displayItem item=item separator="none" />
-              </#if>
-            <#else>
-              <@displayItem item=item />
-            </#if>
-          </li>
-         <#assign i = i + 1 /> 
+        <#else>
+          <@displayItem item=item />
+        </#if>
+      </li>
+      <#assign i = i + 1 /> 
     </#list>
     
   	<#if (menu.totalNumberOfItems > menu.maxNumberOfItems)>
       <li class="vrtx-more">   
-      <a href="${menu.moreUrl?html}"><@vrtx.msg code="subfolder.morelinkTitle" /></a>
-    </li>
-  </#if>
+        <a href="${menu.moreUrl?html}"><@vrtx.msg code="subfolder.morelinkTitle" /></a>
+      </li>
+    </#if>
   </ul>
 </#macro>

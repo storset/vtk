@@ -34,9 +34,12 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -47,7 +50,6 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Path;
 import org.vortikal.web.service.URL;
-
 
 /**
  * Request URI processor that translates the URI (and optionally headers)
@@ -60,6 +62,7 @@ import org.vortikal.web.service.URL;
  *   <li><code>translatedHeaders</code> - a set of header names. 
  *     If <code>*</code> is included in the set, all headers will 
  *     be translated</li>
+ *   <li><code>urlReplacements</code> - a map of regular expression replacements</li>
  * </ul>
  * </p>
  */
@@ -70,7 +73,7 @@ public class RequestEncodingTranslator extends AbstractRequestFilter
     private String toEncoding;
     private Set<String> translatedHeaders = new HashSet<String>();
     private static Log logger = LogFactory.getLog(RequestEncodingTranslator.class);
-    
+    private Map<Pattern, String> urlReplacements;
 
     public void setFromEncoding(String fromEncoding) {
         this.fromEncoding = fromEncoding;
@@ -82,6 +85,15 @@ public class RequestEncodingTranslator extends AbstractRequestFilter
     
     public void setTranslatedHeaders(Set<String> translatedHeaders) {
         this.translatedHeaders = translatedHeaders;
+    }
+    
+    public void setUrlReplacements(Map<String, String> urlReplacements) {
+        this.urlReplacements = new LinkedHashMap<Pattern, String>();
+        for (String key : urlReplacements.keySet()) {
+            Pattern pattern = Pattern.compile(key);
+            String replacement = urlReplacements.get(key);
+            this.urlReplacements.put(pattern, replacement);
+        }
     }
 
     public void afterPropertiesSet() throws Exception {
@@ -102,38 +114,47 @@ public class RequestEncodingTranslator extends AbstractRequestFilter
     }
     
     private class TranslatingRequestWrapper extends HttpServletRequestWrapper {
-
-    	private String uri;
-    	private String requestURL;
+    	private URL requestURL;
     	
         public TranslatingRequestWrapper(HttpServletRequest request,
                                          String fromEncoding, String toEncoding) {
             super(request);
             try {
-            	String uri = request.getRequestURI();
-            	uri = new String(uri.getBytes(fromEncoding), toEncoding);
-            	this.uri = uri;
-            	
-            	URL url = URL.parse(request.getRequestURL().toString());
-            	Path p = URL.encode(url.getPath(), fromEncoding);
-            	url.setPath(URL.decode(p, toEncoding));
-            	this.requestURL = url.toString();
+                String originalURL = request.getRequestURL().toString();
+                String parseString = originalURL;
+                
+                if (urlReplacements != null) {
+                    for (Pattern pattern : urlReplacements.keySet()) {
+                        String replacement = urlReplacements.get(pattern);
+                        parseString = pattern.matcher(parseString).replaceAll(replacement);
+                    }
+                }
+                
+            	URL url = URL.parse(parseString);
+            	if (!URL.isEncoded(originalURL)) {
+            	    Path p = URL.encode(url.getPath(), fromEncoding);
+            	    url.setPath(URL.decode(p, toEncoding));
+                }
+                this.requestURL = url;
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Translated requestURL from '" + request.getRequestURL() 
+                            + "' to '" + this.requestURL);
+                }
             	
             } catch (Exception e) {
                 logger.warn("Unable to translate uri: " + request.getRequestURI(), e);
-                this.uri = request.getRequestURI();
-                this.requestURL = request.getRequestURL().toString();
+                this.requestURL = URL.parse(request.getRequestURL().toString());
             }
         }
         
         @Override
         public String getRequestURI() {
-        	return this.uri;
+            return new URL(this.requestURL).clearParameters().getPathRepresentation();
         }
         
         @Override
         public StringBuffer getRequestURL() {
-            return new StringBuffer(this.requestURL);
+            return new StringBuffer(this.requestURL.toString());
         }
         
         @Override
@@ -189,7 +210,7 @@ public class RequestEncodingTranslator extends AbstractRequestFilter
 
         public String toString() {
             StringBuilder sb = new StringBuilder(this.getClass().getName());
-            sb.append(": ").append(this.uri);
+            sb.append(": ").append(this.requestURL);
             return sb.toString();
         }
     }

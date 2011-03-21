@@ -91,7 +91,6 @@ public class StandardRequestFilter extends AbstractRequestFilter {
 
     private class RequestWrapper extends HttpServletRequestWrapper {
         private HttpServletRequest request;
-        private String uri;
         private URL requestURL;
         private String client = null;
         private Set<String> absorbedHeaders = new HashSet<String>();
@@ -99,12 +98,6 @@ public class StandardRequestFilter extends AbstractRequestFilter {
         public RequestWrapper(HttpServletRequest request) {
             super(request);
             this.request = request;
-            String requestURI = request.getRequestURI();
-            this.uri = translate(requestURI);
-            if (logger.isDebugEnabled()) {
-                logger.debug("Translated requestURI: from '" + requestURI + "' to '" + this.uri + "'");
-            }
-
             String requestURL = request.getRequestURL().toString();
             this.requestURL = URL.parse(translate(requestURL));
             if (logger.isDebugEnabled()) {
@@ -223,7 +216,7 @@ public class StandardRequestFilter extends AbstractRequestFilter {
 
         @Override
         public String getRequestURI() {
-            return this.uri;
+            return new URL(this.requestURL).clearParameters().getPathRepresentation();
         }
         
         @Override

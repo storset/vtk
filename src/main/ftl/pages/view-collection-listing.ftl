@@ -98,9 +98,11 @@
   <#assign hideAdditionalContent = vrtx.propValue(resource, "hide-additional-content")?string />
   <#if additionalContent?has_content && collection.resourceType != 'image-listing'
        && collection.resourceType != 'person-listing' && !isEventCalendarListing && !isBlogListing>
+    <div id="vrtx-content">
     <#if (hideAdditionalContent?exists && hideAdditionalContent == 'false')>
-      <div id="vrtx-content">
-        <div id="vrtx-main-content">
+        <div id="vrtx-main-content" class="vrtx-hide-additional-content-false">
+    <#else>
+        <div id="vrtx-main-content" class="vrtx-hide-additional-content-true">   
     </#if>
   </#if>
   
@@ -208,17 +210,19 @@
      <#if additionalContent?has_content && collection.resourceType != 'image-listing'
           && collection.resourceType != 'person-listing' && !isEventCalendarListing && !isBlogListing>
        <#if (hideAdditionalContent?exists && hideAdditionalContent == 'false')>
-           </div>
-           <div id="vrtx-additional-content">
-             <div id="vrtx-related-content"> 
+            </div><#-- end vrtx-main-content -->
+            <div id="vrtx-additional-content">
+              <div id="vrtx-related-content"> 
+                <@vrtx.invokeComponentRefs additionalContent />
+              </div>
+            </div>
+          </div><#-- end vrtx-content -->
+       <#else>
+             <div id="vrtx-related-content" class="vrtx-related-content-after-listing">
                <@vrtx.invokeComponentRefs additionalContent />
              </div>
-           </div>
-         </div>
-       <#else>
-         <div id="vrtx-related-content" class="vrtx-related-content-after-listing">
-           <@vrtx.invokeComponentRefs additionalContent />
-         </div>
+           </div><#-- end vrtx-main-content -->
+         </div><#-- end vrtx-content -->
        </#if>
      </#if>
      <#if isEventCalendarListing>

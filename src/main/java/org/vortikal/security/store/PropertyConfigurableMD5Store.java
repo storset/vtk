@@ -86,7 +86,7 @@ public class PropertyConfigurableMD5Store implements MD5PasswordStore, Ordered {
      * <code>(username@domain, password-md5)</code>
      * @param principals
      */
-    public void setPrincipals(Properties principals) {
+    public void setPrincipalsMap(Properties principals) {
         this.principals = principals;
     }
     

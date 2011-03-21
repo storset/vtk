@@ -427,7 +427,10 @@ h2.vrtx-title {
 
 .vrtx-json #additional-content .vrtx-string,
 .vrtx-json #main-content .vrtx-string,
-.vrtx-json #contact-supervisor-box .vrtx-string {
+.vrtx-json #contact-supervisor-box .vrtx-string,
+.vrtx-json #additional-content .vrtx-resource-ref,
+.vrtx-json #main-content .vrtx-resource-ref,
+.vrtx-json #contact-supervisor-box .vrtx-resource-ref  {
   clear: none;
 }
 

@@ -216,7 +216,7 @@
            </div>
          </div>
        <#else>
-         <div id="vrtx-related-content">
+         <div id="vrtx-related-content" class="vrtx-related-content-after-listing">
            <@vrtx.invokeComponentRefs additionalContent />
          </div>
        </#if>

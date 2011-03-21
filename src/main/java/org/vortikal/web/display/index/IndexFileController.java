@@ -30,13 +30,13 @@
  */
 package org.vortikal.web.display.index;
 
-import java.nio.charset.Charset;
-
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
@@ -67,35 +67,22 @@ import org.vortikal.web.servlet.VortikalServlet;
  * <p>Configurable JavaBean properties:
  * <ul>
  *   <li><code>repository</code> - the content {@link Repository repository}
- *   <li><code>uriCharacterEncoding</code> - the character encoding to
- *   use when encoding the index file request URI. Default is
- *   <code>utf-8</code>.
  * </ul>
  */
 public class IndexFileController
   implements Controller, LastModified, InitializingBean, ServletContextAware {
-
-    private ServletContext servletContext;
-    private String uriCharacterEncoding = "utf-8";
+    private static final Log logger = LogFactory.getLog(IndexFileController.class);
     
+    private ServletContext servletContext;
+
     public void setServletContext(ServletContext servletContext) {
         this.servletContext = servletContext;
       
     }
-
-    public void setUriCharacterEncoding(String uriCharacterEncoding) {
-        Charset.forName(uriCharacterEncoding);
-        this.uriCharacterEncoding = uriCharacterEncoding;
-    }
-
     public void afterPropertiesSet() {
         if (this.servletContext == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'servletContext' not set");
-        }
-        if (this.uriCharacterEncoding == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'uriCharacterEncoding' not set");
         }
     }
     
@@ -117,6 +104,7 @@ public class IndexFileController
         }
         
         Path indexURI = requestContext.getIndexFileURI();
+        logger.info("Index file URI: " + indexURI);
         Resource indexFile = null;
         try {
             indexFile = repository.retrieve(token, indexURI, true);
@@ -134,6 +122,7 @@ public class IndexFileController
         URL indexFileURL = URL.create(request);
         indexFileURL.setCollection(false);
         indexFileURL.setPath(indexURI);
+        logger.info("Dispatch to: " + indexFileURL);
         ConfigurableRequestWrapper requestWrapper = new ConfigurableRequestWrapper(request, indexFileURL);
 
         String servletName = (String) request.getAttribute(

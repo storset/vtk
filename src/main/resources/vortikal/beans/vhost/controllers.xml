@@ -25,9 +25,7 @@
     <property name="viewName" value="httpOptions" />
   </bean>
   
-  <bean id="displayIndexFileHandler" class="org.vortikal.web.display.index.IndexFileController">
-    <property name="uriCharacterEncoding" value="${indexFileHandlerURIEncoding}" />
-  </bean>
+  <bean id="displayIndexFileHandler" class="org.vortikal.web.display.index.IndexFileController" />
 
   <bean id="collectionListingAsFeedHandler" 
     class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController">

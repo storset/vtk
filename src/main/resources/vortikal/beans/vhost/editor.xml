@@ -702,6 +702,7 @@
               <value>rel</value>
               <value>class</value>
               <value>id</value>
+              <value>target</value>
             </set>
           </property>
         </bean>
@@ -730,7 +731,10 @@
           <property name="name" value="strike" />
         </bean>
         <bean class="org.vortikal.text.html.HtmlElementDescriptor">
-          <property name="name" value="u" />
+          <property name="name" value="b" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="i" />
         </bean>
 
 

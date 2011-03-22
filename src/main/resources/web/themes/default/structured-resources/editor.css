@@ -373,7 +373,13 @@ input.vrtx-move-down-button  {
 
 .selectedPublications,
 .additional-content,
-.urlToEmployeesList {
+.urlToEmployeesList,
+#participants .vrtx-json-element,
+#projects .vrtx-json-element,
+#rssFeeds .vrtx-json-element,
+#groups .vrtx-json-element,
+#organizers .vrtx-json-element,
+#supervisors .vrtx-json-element {
   width: 98% !important;
 }
 

@@ -104,7 +104,7 @@ public class IndexFileController
         }
         
         Path indexURI = requestContext.getIndexFileURI();
-        logger.info("Index file URI: " + indexURI);
+        logger.debug("Index file URI: " + indexURI);
         Resource indexFile = null;
         try {
             indexFile = repository.retrieve(token, indexURI, true);
@@ -122,7 +122,7 @@ public class IndexFileController
         URL indexFileURL = URL.create(request);
         indexFileURL.setCollection(false);
         indexFileURL.setPath(indexURI);
-        logger.info("Dispatch to: " + indexFileURL);
+        logger.debug("Dispatch to: " + indexFileURL);
         ConfigurableRequestWrapper requestWrapper = new ConfigurableRequestWrapper(request, indexFileURL);
 
         String servletName = (String) request.getAttribute(

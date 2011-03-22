@@ -67,7 +67,7 @@
       <#list images as image>
         <#local title = vrtx.propValue(image, 'title')?html />
         <#if count % 4 == 0 && count % 5 == 0>
-          <li class="vrtx-thumb-last last last-four last-five">
+          <li class="vrtx-image-entry last last-four last-five">
         <#elseif count % 4 == 0>
           <li class="vrtx-image-entry last last-four">
         <#elseif count % 5 == 0>

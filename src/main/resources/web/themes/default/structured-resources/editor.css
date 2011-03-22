@@ -372,7 +372,8 @@ input.vrtx-move-down-button  {
 }
 
 .selectedPublications,
-.additional-content {
+.additional-content,
+.urlToEmployeesList {
   width: 98% !important;
 }
 

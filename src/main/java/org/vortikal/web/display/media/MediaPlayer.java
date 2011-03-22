@@ -32,11 +32,9 @@ package org.vortikal.web.display.media;
 
 import java.util.Map;
 
-import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.security.AuthenticationException;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -47,21 +45,10 @@ public class MediaPlayer {
     protected Service viewService;
 
     public void addMediaPlayer(Map<Object, Object> model, String resourceReferance, String height, String width,
-            String autoplay, String contentType, String streamType) throws AuthorizationException {
+            String autoplay, String contentType, String streamType) {
 
         if (URL.isEncoded(resourceReferance)) {
             resourceReferance = URL.decode(resourceReferance);
-        }
-
-        Resource mediaResource = null;
-        try {
-            mediaResource = getLocalResource(resourceReferance);
-        } catch (AuthorizationException e) {
-            return; // not able to read local resource - abort
-        } catch (AuthenticationException e) {
-            return; // not able to read local resource - abort
-        } catch (Exception e) {
-            // ignore 
         }
 
         if (height != null && !"".equals(height))
@@ -72,6 +59,17 @@ public class MediaPlayer {
             model.put("autoplay", autoplay);
         if (streamType != null && !"".equals(streamType))
             model.put("streamType", streamType);
+
+        Resource mediaResource = null;
+        if (resourceReferance != null && resourceReferance.startsWith("/")) {
+            RequestContext requestContext = RequestContext.getRequestContext();
+            Repository repository = requestContext.getRepository();
+            String token = requestContext.getSecurityToken();
+            try {
+                mediaResource = repository.retrieve(token, Path.fromString(resourceReferance), true);
+            } catch (Exception e) {
+            }
+        }
 
         String extension = getExtension(resourceReferance);
         if (contentType != null && !"".equals(contentType)) {
@@ -86,7 +84,7 @@ public class MediaPlayer {
         createLocalUrlToMediaFile(resourceReferance, model);
     }
 
-    public void addMediaPlayer(Map<Object, Object> model, String resourceReferance) throws AuthorizationException {
+    public void addMediaPlayer(Map<Object, Object> model, String token, Repository repository, String resourceReferance) {
 
         if (URL.isEncoded(resourceReferance)) {
             resourceReferance = URL.decode(resourceReferance);
@@ -94,13 +92,8 @@ public class MediaPlayer {
 
         Resource mediaResource = null;
         try {
-            mediaResource = getLocalResource(resourceReferance);
-        } catch (AuthorizationException e) {
-            return; // not able to read local resource - abort
-        } catch (AuthenticationException e) {
-            return; // not able to read local resource - abort
+            mediaResource = repository.retrieve(token, Path.fromString(resourceReferance), false);
         } catch (Exception e) {
-            // ignore
         }
 
         model.put("extension", getExtension(resourceReferance));
@@ -113,21 +106,6 @@ public class MediaPlayer {
         }
 
         createLocalUrlToMediaFile(resourceReferance, model);
-    }
-
-    public Resource getLocalResource(String resourceReferance) throws Exception {
-        Resource mediaResource = null;
-        if (resourceReferance != null && resourceReferance.startsWith("/")) {
-            RequestContext requestContext = RequestContext.getRequestContext();
-            Repository repository = requestContext.getRepository();
-            String token = requestContext.getSecurityToken();
-            try {
-                mediaResource = repository.retrieve(token, Path.fromString(resourceReferance), true);
-            } catch (Exception e) {
-                throw e;
-            }
-        }
-        return mediaResource;
     }
 
     public String getExtension(String url) {
@@ -162,8 +140,11 @@ public class MediaPlayer {
             if (externalURL != null) {
                 model.put("media", externalURL);
             }
+            //TODO: extend URL class to support rtmp protocol?    
+            if(resourceReferance.toLowerCase().startsWith("rtmp://")){
+                model.put("media", resourceReferance);
+            }
         }
-
     }
 
     public Map<String, String> getExtentionToMimetype() {

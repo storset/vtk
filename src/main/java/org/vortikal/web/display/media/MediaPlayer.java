@@ -162,8 +162,11 @@ public class MediaPlayer {
             if (externalURL != null) {
                 model.put("media", externalURL);
             }
+            //TODO: extend URL class to support rtmp protocol?    
+            if(resourceReferance.toLowerCase().startsWith("rtmp://")){
+                model.put("media", resourceReferance);
+            }
         }
-
     }
 
     public Map<String, String> getExtentionToMimetype() {

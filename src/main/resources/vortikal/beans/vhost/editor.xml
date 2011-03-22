@@ -703,6 +703,7 @@
               <value>class</value>
               <value>id</value>
               <value>target</value>
+              <value>title</value>
             </set>
           </property>
         </bean>
@@ -730,15 +731,14 @@
         <bean class="org.vortikal.text.html.HtmlElementDescriptor">
           <property name="name" value="strike" />
         </bean>
+
+        <!-- Additional legal elements: -->
         <bean class="org.vortikal.text.html.HtmlElementDescriptor">
           <property name="name" value="b" />
         </bean>
         <bean class="org.vortikal.text.html.HtmlElementDescriptor">
           <property name="name" value="i" />
         </bean>
-
-
-        <!-- Additional legal elements: -->
         <bean class="org.vortikal.text.html.HtmlElementDescriptor">
           <property name="name" value="h2" />
         </bean>

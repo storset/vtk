@@ -96,7 +96,7 @@ public class SubResourcePermissionsProvider {
           boolean rIsReadRestricted = false;
           boolean rIsInheritedAcl = false;
           String rRead = "";
-          String rWrite = "";
+          String rReadWrite = "";
           String rAdmin = "";
           
           try {
@@ -124,9 +124,6 @@ public class SubResourcePermissionsProvider {
                   
                   for(Principal p : privilegedPseudoPrincipals) {
                     String pseudo = this.getLocalizedTitle(request, "pseudoPrincipal." + p.getName(), null);
-                    if(p.getName() == "pseudo:owner") {
-                      pseudo += "&nbsp;(" + r.getOwner().getDescription() + ")";
-                    }
                     if(p.getName() == PrincipalFactory.NAME_ALL) {
                       all = true;
                       combined.append(pseudo);
@@ -158,8 +155,8 @@ public class SubResourcePermissionsProvider {
                   }
                   if(actionName == "read") {
                     rRead = combined.toString();
-                  } else if(actionName == "write") {
-                    rWrite = combined.toString();
+                  } else if(actionName == "read-write") {
+                    rReadWrite = combined.toString();
                   } else if(actionName == "all") {
                     rAdmin = combined.toString();
                   }
@@ -176,7 +173,7 @@ public class SubResourcePermissionsProvider {
             logger.error("Exception " + e.getMessage());
           }
           subresources.add(new SubResourcePermissions(rURI, rName, rTitle, rIsCollection, rIsReadRestricted, 
-                                                      rIsInheritedAcl, rRead, rWrite, rAdmin));
+                                                      rIsInheritedAcl, rRead, rReadWrite, rAdmin));
         }
         return subresources;
     }

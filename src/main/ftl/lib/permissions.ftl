@@ -122,15 +122,8 @@
       <#if user_index &lt; users?size - 1 || groups?size &gt; 0>,<#t/></#if>
     </#list>
     <#list groups as group>
-      <#switch group.name>
-        <#case "alle@uio.no">
-        <#case "alle@feide.no">
-        <#case "alle@webid.no">
-          <#compress><@vrtx.msg code="permissions.shortcut.group:${group.name}" default="${group.name}" /></#compress><#t/>
-          <#break/>
-        <#default>
-          <#compress>${group.name}</#compress><#t/>
-      </#switch>
+      <#local lkey = "permissions.shortcut.group" + group.name />
+      <#compress><@vrtx.msg code=lkey default="${group.name}" /></#compress><#t/>
       <#if group_index &lt; groups?size - 1>,<#t/></#if>
     </#list>
   <#else>

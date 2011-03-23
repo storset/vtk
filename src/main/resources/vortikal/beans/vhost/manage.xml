@@ -113,6 +113,7 @@
     <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" />
   </bean>
 
+
   <bean id="manage.serviceAssertion" class="org.vortikal.web.service.AndAssertion">
     <property name="assertions">
       <list>
@@ -920,7 +921,7 @@
       </bean>
     </property>
     <property name="principalFactory" ref="principalFactory" />
-    <property name="permissionShortcutsProvider" ref="permissionShortcutsProvider" />
+    <property name="permissionShortcuts" ref="permissionShortcuts" />
   </bean>
 
   <bean id="editReadPermissionsHandler" parent="abstractPermissionsHandler">
@@ -1599,12 +1600,13 @@
     </property>
   </bean>
   
-  <bean id="permissionShortcutsProvider" class="org.vortikal.web.referencedata.provider.PermissionShortcutsProvider">
-    <property name="shortcutsConfig">
+  <bean id="permissionShortcuts"
+        class="org.springframework.beans.factory.config.MapFactoryBean">
+    <property name="sourceMap">
       <map>
-        <entry key="read" value-ref="permissionShortcutsProvider.readShortcuts" />
-        <entry key="read-write" value-ref="permissionShortcutsProvider.readWriteShortcuts" />
-        <entry key="add-comment" value-ref="permissionShortcutsProvider.addCommentShortcuts" />
+        <entry key-ref="PRIVILEGE_READ" value-ref="permissionShortcutsProvider.readShortcuts" />
+        <entry key-ref="PRIVILEGE_READ_WRITE" value-ref="permissionShortcutsProvider.readWriteShortcuts" />
+        <entry key-ref="PRIVILEGE_ADD_COMMENT" value-ref="permissionShortcutsProvider.addCommentShortcuts" />
       </map>
     </property>
   </bean>

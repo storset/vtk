@@ -54,17 +54,16 @@ import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.Principal.Type;
+import org.vortikal.security.PrincipalFactory;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.referencedata.provider.PermissionShortcutsProvider;
 import org.vortikal.web.service.Service;
 
 public class ACLEditController extends SimpleFormController implements InitializingBean {
 
     private Privilege privilege;
     private PrincipalFactory principalFactory;
-    private PermissionShortcutsProvider permissionShortcutsProvider;
+    private Map<Privilege, List<String>> permissionShortcuts;
 
     public ACLEditController() {
         setSessionForm(true);
@@ -115,9 +114,9 @@ public class ACLEditController extends SimpleFormController implements Initializ
         List<Principal> authorizedGroups = new ArrayList<Principal>(Arrays.asList(acl
                 .listPrivilegedGroups(this.privilege)));
         
-        List<String> shortcuts = permissionShortcutsProvider.getShortcuts(this.privilege);
+        List<String> shortcuts = this.permissionShortcuts.get(this.privilege);
         
-        if(shortcuts != null) {    
+        if (shortcuts != null) {    
             command.setShortcuts(extractAndCheckShortcuts(authorizedUsers, authorizedGroups, shortcuts));
         }
 
@@ -151,29 +150,29 @@ public class ACLEditController extends SimpleFormController implements Initializ
         return command;
     }
     
-    private String[][] extractAndCheckShortcuts (List<Principal> authorizedUsers, List<Principal> authorizedGroups, List<String> shortcuts) {
+    private String[][] extractAndCheckShortcuts (List<Principal> authorizedUsers, 
+            List<Principal> authorizedGroups, List<String> shortcuts) {
+        
         String checkedShortcuts[][] = new String[shortcuts.size()][2];
-        Iterator<String> itShortcuts = shortcuts.iterator();
         int i = 0;
         
-        while(itShortcuts.hasNext()) {
-            String shortcut = itShortcuts.next();
+        for (String shortcut: shortcuts) {
             boolean checked = false;
             
-            if(shortcut.startsWith("user:")) {
+            if (shortcut.startsWith("user:")) {
                 Iterator<Principal> it = authorizedUsers.iterator();
-                while(it.hasNext()) {
+                while (it.hasNext()) {
                     Principal p = it.next();
-                    if(("user:" + p.getName()).equals(shortcut)) {
+                    if (("user:" + p.getName()).equals(shortcut)) {
                         checked = true;
                         it.remove();
                     }
-                }   
-            } else if(shortcut.startsWith("group:")) {
+                }
+            } else if (shortcut.startsWith("group:")) {
                 Iterator<Principal> it = authorizedGroups.iterator();
-                while(it.hasNext()) {
+                while (it.hasNext()) {
                     Principal p = it.next();
-                    if(("group:" + p.getName()).equals(shortcut)) {
+                    if (("group:" + p.getName()).equals(shortcut)) {
                         checked = true;
                         it.remove();
                     }
@@ -181,7 +180,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
             }
             
             checkedShortcuts[i][0] = shortcut;
-            if(checked) {
+            if (checked) {
               checkedShortcuts[i][1] = "checked";
             } else {
               checkedShortcuts[i][1] = ""; 
@@ -278,26 +277,26 @@ public class ACLEditController extends SimpleFormController implements Initializ
         String[] updatedShortcuts = editCommand.getUpdatedShortcuts();
         String[][] shortcuts = editCommand.getShortcuts();
         
-        for(String[] shortcut : shortcuts) {
+        for (String[] shortcut : shortcuts) {
             boolean checkedNotFound = true; // remove condition
             boolean uncheckedFound = false; // add condition
-            for(String update : updatedShortcuts) {
-                if(shortcut[0].equals(update) && shortcut[1].equals("checked"))  {
+            for (String update : updatedShortcuts) {
+                if (shortcut[0].equals(update) && shortcut[1].equals("checked"))  {
                     checkedNotFound = false; 
-                } else if(shortcut[0].equals(update) && shortcut[1].equals("")) {
+                } else if (shortcut[0].equals(update) && shortcut[1].equals("")) {
                     uncheckedFound = true;
                 }
             }
 
             // Remove
-            if(checkedNotFound) {
+            if (checkedNotFound) {
                 String[] remove = new String[1];
                 Type type = null;
 
-                if(shortcut[0].startsWith("user:")) {
+                if (shortcut[0].startsWith("user:")) {
                     remove[0] = shortcut[0].replace("user:", "");
                     type = Type.USER;
-                } else if(shortcut[0].startsWith("group:")) {
+                } else if (shortcut[0].startsWith("group:")) {
                     remove[0] = shortcut[0].replace("group:", "");
                     type = Type.GROUP;
                 }
@@ -305,17 +304,17 @@ public class ACLEditController extends SimpleFormController implements Initializ
             }
 
             // Add
-            if(uncheckedFound) {
+            if (uncheckedFound) {
                 String[] add = new String[1];
                 Type type = null;
-                if(shortcut[0].startsWith("user:")) {
+                if (shortcut[0].startsWith("user:")) {
                     add[0] = shortcut[0].replace("user:", "");
-                    if(add[0].startsWith("pseudo:")) {
+                    if (add[0].startsWith("pseudo:")) {
                         type = Type.PSEUDO;                          
                     } else {
                         type = Type.USER;                           
                     }
-                } else if(shortcut[0].startsWith("group:")) {
+                } else if (shortcut[0].startsWith("group:")) {
                     add[0] = shortcut[0].replace("group:", "");
                     type = Type.GROUP;
                 }  
@@ -327,8 +326,8 @@ public class ACLEditController extends SimpleFormController implements Initializ
     private void removeFromAcl(Acl acl, List<String> values, Type type) {
         for (String value : values) {
             Type tmpType = type;
-            if(type.equals(Type.USER)) {
-              if(value.startsWith("pseudo:")) {
+            if (type.equals(Type.USER)) {
+              if (value.startsWith("pseudo:")) {
                   tmpType  = Type.PSEUDO;  
               }
             }
@@ -340,8 +339,8 @@ public class ACLEditController extends SimpleFormController implements Initializ
     private void removeFromAcl(Acl acl, String[] values, Type type) {
         for (String value : values) {
             Type tmpType = type;
-            if(type.equals(Type.USER)) {
-              if(value.startsWith("pseudo:")) {
+            if (type.equals(Type.USER)) {
+              if (value.startsWith("pseudo:")) {
                   tmpType  = Type.PSEUDO;  
               }
             }
@@ -370,8 +369,8 @@ public class ACLEditController extends SimpleFormController implements Initializ
     }
 
     @Required
-    public void setPermissionShortcutsProvider(PermissionShortcutsProvider permissionShortcutsProvider) {
-        this.permissionShortcutsProvider = permissionShortcutsProvider;
+    public void setPermissionShortcuts(Map<Privilege, List<String>> permissionShortcuts) {
+        this.permissionShortcuts = permissionShortcuts;
     }
 
 }

@@ -31,6 +31,7 @@
 package org.vortikal.repository;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Set;
 
 import org.vortikal.repository.store.DataAccessor;
@@ -107,7 +108,7 @@ public final class AuthorizationManager {
         
         switch (action) {
         case UNEDITABLE_ACTION:
-            throw new AuthorizationException("Uneditable");
+            throw new AuthorizationException(uri + ": uneditable");
         case READ_PROCESSED:
             authorizeReadProcessed(uri, principal);
             break;
@@ -572,8 +573,13 @@ public final class AuthorizationManager {
         }
 
         // At this point a principal should always be available:
-        if (principal == null) throw new AuthenticationException();
-            
+        if (principal == null) {
+            throw new AuthenticationException(
+                    "Principal NULL not authorized to access " 
+                    + resource.getURI() + " for privilege(s) " 
+                    + Arrays.asList(privileges));
+        }
+
         for (int i = 0; i < privileges.length; i++) {
             Privilege action = privileges[i];
             Set<Principal> principalSet = acl.getPrincipalSet(action);
@@ -583,7 +589,10 @@ public final class AuthorizationManager {
                 return;
             }
         }
-       throw new AuthorizationException();
+        throw new AuthenticationException(
+                "Principal " + principal + " not authorized to access " 
+                + resource.getURI() + " for privilege(s) " 
+                + Arrays.asList(privileges));
     }
     
     // Temporary fix for problems with DAO returning null for resources not found

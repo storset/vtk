@@ -96,13 +96,7 @@
               <#local description = vrtx.propValue(image, 'description', '', 'content')?html />
               <div class="vrtx-image-description">
                 <#if description?has_content>
-                  <#if (description?string?length > 20) >
-                    ${description?substring(0, 20)}...
-                  <#else>
-                    ${description}
-                  </#if>
-                <#else>
-                   
+                  <@vrtx.flattenHtml value=description escape=false />
                 </#if>
               </div>
             </div>
@@ -153,11 +147,6 @@
     <#assign count = 1 />
     <#list images as image>
         <#assign description = vrtx.propValue(image, 'description', '', 'content')?html />
-        <#-- <#if description?has_content>
-          <#if (description?string?length > 97) >
-            <#assign description = description?substring(0, 97) + "..." />
-          </#if>
-        </#if> -->
         <#assign title = vrtx.propValue(image, 'title')?html />
         <#if count % 5 == 0 && count % 6 == 0>
           <li class="vrtx-thumb-last vrtx-thumb-last-five vrtx-thumb-last-six">
@@ -217,7 +206,11 @@
             <td class="vrtx-table-image"><a href="${image.URI}"><img src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt="${title}" /></a></td>
             <td class="vrtx-table-title"><a href="${image.URI}">${title}</a></td>
             <#local description = vrtx.propValue(image, 'description', '', 'content')?html />
-            <td class="vrtx-table-description">${description}</td>
+            <td class="vrtx-table-description">
+              <#if description?has_content>
+                <@vrtx.flattenHtml value=description escape=false />
+              </#if>
+            </td>
             <#local width = vrtx.propValue(image, 'pixelWidth') />
             <#local height = vrtx.propValue(image, 'pixelHeight') />
             <td class="vrtx-table-dimensions-width">${width} px</td>

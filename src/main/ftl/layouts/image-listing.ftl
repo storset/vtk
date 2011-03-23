@@ -49,11 +49,6 @@
     <#assign count = 1 />
     <#list images as image>
         <#assign description = vrtx.propValue(image, 'description', '', 'content')?html />
-        <#-- <#if description?has_content>
-          <#if (description?string?length > 97) >
-            <#assign description = description?substring(0, 97) + "..." />
-          </#if>
-        </#if> -->
         <#assign title = vrtx.propValue(image, 'userTitle')?html />
         <#if count % 4 == 0 && count % 5 == 0>
           <li class="vrtx-thumb-last vrtx-thumb-last-four vrtx-thumb-last-five">

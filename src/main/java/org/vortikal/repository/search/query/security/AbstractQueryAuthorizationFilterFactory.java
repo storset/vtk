@@ -70,8 +70,8 @@ public abstract class AbstractQueryAuthorizationFilterFactory implements
     }
     
     protected boolean isAuthorizedByRole(Principal principal) {
-        return (this.roleManager.hasRole(principal, RoleManager.READ_EVERYTHING)
-             || this.roleManager.hasRole(principal, RoleManager.ROOT));
+        return (this.roleManager.hasRole(principal, RoleManager.Role.READ_EVERYTHING)
+             || this.roleManager.hasRole(principal, RoleManager.Role.ROOT));
     }
 
     @Required

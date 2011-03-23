@@ -64,6 +64,6 @@ public class ResourceOwnerAssertion
     public boolean matches(Resource resource, Principal principal) {
 
         return resource.getOwner().equals(principal)
-            || this.roleManager.hasRole(principal, RoleManager.ROOT);
+            || this.roleManager.hasRole(principal, RoleManager.Role.ROOT);
     }
 }

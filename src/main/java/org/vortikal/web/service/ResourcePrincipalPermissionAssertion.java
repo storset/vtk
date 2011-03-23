@@ -148,6 +148,7 @@ public class ResourcePrincipalPermissionAssertion
         this.considerLocks = considerLocks;
     }
     
+    @Override
     public void afterPropertiesSet() throws Exception {
         if (this.principalManager == null) {
             throw new BeanInitializationException(
@@ -167,18 +168,20 @@ public class ResourcePrincipalPermissionAssertion
         }
         
         
-        this.rootPrincipals = this.roleManager.getPrincipals(RoleManager.ROOT);
-        this.readPrincipals = this.roleManager.getPrincipals(RoleManager.READ_EVERYTHING);
+        this.rootPrincipals = this.roleManager.getPrincipals(RoleManager.Role.ROOT);
+        this.readPrincipals = this.roleManager.getPrincipals(RoleManager.Role.READ_EVERYTHING);
     }
 
 
+    @Override
     public boolean conflicts(Assertion assertion) {
         return false;
     }
 
 
+    @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(super.toString());
         sb.append("[permission = ").append(this.permission);
         sb.append("; requiresAuthentication = ");
@@ -186,6 +189,7 @@ public class ResourcePrincipalPermissionAssertion
         return sb.toString();
     }
 
+    @Override
     public boolean matches(Resource resource, Principal principal) {
         if (resource == null) {
             if (logger.isDebugEnabled()) {

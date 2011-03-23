@@ -47,16 +47,17 @@ import org.vortikal.security.Principal;
  * <code>READ_EVERYTHING</code>, i.e. read access to all resources.
  */
 public class RoleManager {
-    public static final int ROOT = 0;
-    public static final int READ_EVERYTHING = 1;
-//     public static final int ADMIN = 2;
+
+    public static enum Role {
+        ROOT,
+        READ_EVERYTHING
+    }
 
     private Set<String> rootRole = new HashSet<String>();
     private Set<String> readEverythingRole = new HashSet<String>();
 
 
-
-    public boolean hasRole(Principal principal, int role) {
+    public boolean hasRole(Principal principal, Role role) {
 
         // XXX: throw exception?
         if (principal == null) return false;
@@ -76,7 +77,7 @@ public class RoleManager {
     }
 
 
-    public Set<String> getPrincipals(int role) {
+    public Set<String> getPrincipals(Role role) {
 
         switch (role) {
         case ROOT:

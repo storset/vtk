@@ -66,7 +66,7 @@ public final class AuthorizationManager {
      * have root privileges.
      */
     public void authorizeRootRoleAction(Principal principal) throws AuthorizationException {
-        if (!this.roleManager.hasRole(principal, RoleManager.ROOT)) {
+        if (!this.roleManager.hasRole(principal, RoleManager.Role.ROOT)) {
             throw new AuthorizationException(
                 "Principal '" + principal
                 + "' not authorized to perform repository administration");
@@ -76,7 +76,7 @@ public final class AuthorizationManager {
     private void checkReadOnly(Principal principal) throws ReadOnlyException {
         
         if (isReadOnly() && !this.roleManager.hasRole(principal, 
-                RoleManager.ROOT)) {
+                RoleManager.Role.ROOT)) {
             throw new ReadOnlyException();
         }
     }
@@ -166,8 +166,8 @@ public final class AuthorizationManager {
 
         ResourceImpl resource = loadResource(uri);
 
-        if (this.roleManager.hasRole(principal, RoleManager.ROOT) ||
-                this.roleManager.hasRole(principal, RoleManager.READ_EVERYTHING))
+        if (this.roleManager.hasRole(principal, RoleManager.Role.ROOT) ||
+                this.roleManager.hasRole(principal, RoleManager.Role.READ_EVERYTHING))
             return;
 
         aclAuthorize(principal, resource, READ_PROCESSED_AUTH_PRIVILEGES);
@@ -192,8 +192,8 @@ public final class AuthorizationManager {
 
         ResourceImpl resource = loadResource(uri);
 
-        if (this.roleManager.hasRole(principal, RoleManager.ROOT) ||
-                this.roleManager.hasRole(principal, RoleManager.READ_EVERYTHING)) {
+        if (this.roleManager.hasRole(principal, RoleManager.Role.ROOT) ||
+                this.roleManager.hasRole(principal, RoleManager.Role.READ_EVERYTHING)) {
             return;
         }
         aclAuthorize(principal, resource, READ_AUTH_PRIVILEGES);
@@ -222,7 +222,7 @@ public final class AuthorizationManager {
 
         ResourceImpl resource = loadResource(uri);
         
-        if (this.roleManager.hasRole(principal, RoleManager.ROOT)) {
+        if (this.roleManager.hasRole(principal, RoleManager.Role.ROOT)) {
             return;
         }
         aclAuthorize(principal, resource, CREATE_AUTH_PRIVILEGES);
@@ -248,7 +248,7 @@ public final class AuthorizationManager {
 
         ResourceImpl resource = loadResource(uri);
         
-        if (this.roleManager.hasRole(principal, RoleManager.ROOT)) {
+        if (this.roleManager.hasRole(principal, RoleManager.Role.ROOT)) {
             return;
         }
         aclAuthorize(principal, resource, READ_WRITE_AUTH_PRIVILEGES);
@@ -273,7 +273,7 @@ public final class AuthorizationManager {
 
         ResourceImpl resource = loadResource(uri);
         
-        if (this.roleManager.hasRole(principal, RoleManager.ROOT)) {
+        if (this.roleManager.hasRole(principal, RoleManager.Role.ROOT)) {
             return;
         }
         aclAuthorize(principal, resource, ADD_COMMENT_AUTH_PRIVILEGES);
@@ -300,7 +300,7 @@ public final class AuthorizationManager {
 
         ResourceImpl resource = loadResource(uri);
         
-        if (this.roleManager.hasRole(principal, RoleManager.ROOT)) {
+        if (this.roleManager.hasRole(principal, RoleManager.Role.ROOT)) {
             return;
         }
         aclAuthorize(principal, resource, EDIT_COMMENT_AUTH_PRIVILEGES);
@@ -329,7 +329,7 @@ public final class AuthorizationManager {
         
         ResourceImpl resource = loadResource(uri);
         
-        if (this.roleManager.hasRole(principal, RoleManager.ROOT)) {
+        if (this.roleManager.hasRole(principal, RoleManager.Role.ROOT)) {
             return;
         }
         aclAuthorize(principal, resource, ALL_AUTH_PRIVILEGES);
@@ -357,7 +357,7 @@ public final class AuthorizationManager {
 
         checkReadOnly(principal);
         
-        if (this.roleManager.hasRole(principal, RoleManager.ROOT)) {
+        if (this.roleManager.hasRole(principal, RoleManager.Role.ROOT)) {
             return;
         }
 
@@ -439,7 +439,7 @@ public final class AuthorizationManager {
                 "NULL principal not authorized to edit properties using admin privilege ");
         }
         
-        if (this.roleManager.hasRole(principal, RoleManager.ROOT)) {
+        if (this.roleManager.hasRole(principal, RoleManager.Role.ROOT)) {
             return;
         }
 
@@ -463,7 +463,7 @@ public final class AuthorizationManager {
         throws AuthenticationException, AuthorizationException,
         IOException {
 
-        if (!this.roleManager.hasRole(principal, RoleManager.ROOT)) {
+        if (!this.roleManager.hasRole(principal, RoleManager.Role.ROOT)) {
             throw new AuthorizationException();
         }
         authorizeReadWrite(uri, principal);

@@ -135,21 +135,19 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         ResourceImpl resource = null;
         resource = this.dao.load(uri);
 
-        if (resource == null)
+        if (resource == null) {
             throw new ResourceNotFoundException(uri);
-
-        if (forProcessing)
+        }
+        if (forProcessing) {
             this.authorizationManager.authorizeReadProcessed(uri, principal);
-        else
+        } else {
             this.authorizationManager.authorizeRead(uri, principal);
-
+        }
         try {
             return (Resource) resource.clone();
-
         } catch (CloneNotSupportedException e) {
             throw new IOException("An internal error occurred: unable to " + "clone() resource: " + resource);
         }
-
     }
 
     @Override
@@ -183,11 +181,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new IllegalOperationException("Resource is collection");
         }
 
-        if (forProcessing)
+        if (forProcessing) {
             this.authorizationManager.authorizeReadProcessed(uri, principal);
-        else
+        } else {
             this.authorizationManager.authorizeRead(uri, principal);
-
+        }
         InputStream is = this.contentStore.getInputStream(uri);
         return is;
     }
@@ -205,11 +203,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new IllegalOperationException("Can't list children for non-collection resources");
         }
 
-        if (forProcessing)
+        if (forProcessing) {
             this.authorizationManager.authorizeReadProcessed(uri, principal);
-        else
+        } else {
             this.authorizationManager.authorizeRead(uri, principal);
-
+        }
         ResourceImpl[] list = this.dao.loadChildren(collection);
         Resource[] children = new Resource[list.length];
 

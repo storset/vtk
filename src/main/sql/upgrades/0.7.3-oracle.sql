@@ -1,1 +1,18 @@
--- TODO: reflect contents of 0.7.3-postgresql.sql
+-- Map old permissions to new:
+update action_type set name = 'read-write' where action_type_id = 2;
+update action_type set name = 'bind-template' where action_type_id = 5;
+
+-- Resolve ACL entries with 'pseudo:owner':
+update acl_entry a
+set user_or_group_name =
+   (select resource_owner
+   from vortex_resource r
+   where r.resource_id = a.resource_id)
+where a.user_or_group_name = 'pseudo:owner';
+
+update acl_entry a
+set user_or_group_name =
+  (select resource_owner
+  from vortex_resource r
+  where r.resource_id = a.resource_id)
+where a.user_or_group_name = 'pseudo:authenticated';

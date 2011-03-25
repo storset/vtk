@@ -32,7 +32,6 @@ package org.vortikal.web.decorating.components;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -91,10 +90,9 @@ public class LocalFeedFetcher implements ServletContextAware {
         // Follow one redirect:
         if (status == HttpServletResponse.SC_MOVED_PERMANENTLY 
                 || status == HttpServletResponse.SC_MOVED_TEMPORARILY) {
-            Map<String, Object> headers = servletResponse.getHeaders();
-            for (String name: headers.keySet()) {
+            for (String name: servletResponse.getHeaderNames()) {
                 if ("Location".equals(name)) {
-                    String value = (String) headers.get(name);
+                    String value = (String) servletResponse.getHeaderValue(name);
                     URL location = URL.parse(value);
 
                     if (location.getHost().equals(url.getHost())) {

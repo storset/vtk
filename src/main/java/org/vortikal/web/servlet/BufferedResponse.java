@@ -35,6 +35,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -48,15 +50,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.vortikal.util.io.BoundedOutputStream;
 import org.vortikal.util.io.StreamUtil;
-
-
+import org.vortikal.util.web.HttpUtil;
 
 /**
  * A HttpServletResponse implementation that buffers the content and
  * headers. An optional limit can be set on the buffer size.
- * 
- * <p>FIXME: What to do with statusMessage?
- * <br>FIXME: Allow several headers having the same name?
  */
 public class BufferedResponse implements StatusAwareHttpServletResponse {
 
@@ -69,8 +67,9 @@ public class BufferedResponse implements StatusAwareHttpServletResponse {
 
     private long maxBufferSize = -1;
     private int status = 200;
+    private String statusMessage;
     private ByteArrayOutputStream bufferStream = new ByteArrayOutputStream();
-    private Map<String, Object> headers = new HashMap<String, Object>(); 
+    private Map<String, List<Object>> headers = new HashMap<String, List<Object>>(); 
     private List<Cookie> cookies = new ArrayList<Cookie>();
     private int bufferSize = 1000;
     private String contentType = null;
@@ -79,14 +78,12 @@ public class BufferedResponse implements StatusAwareHttpServletResponse {
     private String characterEncoding = null;
     private boolean committed = false;
     
-
     /**
      * Creates a buffered response with no limit on the buffer size.
      */
     public BufferedResponse() {
     }
     
-
     /**
      * Creates a buffered response with a limited buffer size.
      *
@@ -97,7 +94,8 @@ public class BufferedResponse implements StatusAwareHttpServletResponse {
     public BufferedResponse(long maxBufferSize) {
         this.maxBufferSize = maxBufferSize;
     }
-    
+
+    @Override
     public String getContentType() {
         if (this.characterEncoding != null) {
             return this.contentType + ";charset=" + this.characterEncoding;
@@ -117,6 +115,7 @@ public class BufferedResponse implements StatusAwareHttpServletResponse {
         return new String(this.bufferStream.toByteArray(), DEFAULT_CHAR_ENCODING);
     }
 
+    @Override
     public int getStatus() {
         return this.status;
     }
@@ -125,11 +124,10 @@ public class BufferedResponse implements StatusAwareHttpServletResponse {
         if (this.contentLength >= 0) {
             return this.contentLength;
         }
-        
         return this.bufferStream.size();
     }
     
-
+    @Override
     public String getCharacterEncoding() {
         if (this.characterEncoding == null) {
             return "iso-8859-1";
@@ -137,26 +135,28 @@ public class BufferedResponse implements StatusAwareHttpServletResponse {
         return this.characterEncoding;
     }
 
+    @Override
     public PrintWriter getWriter() {
         return new WrappedServletOutputStreamWriter(new WrappedServletOutputStream(
                                             this.bufferStream, this.getCharacterEncoding()));
     }
 
+    @Override
     public void setBufferSize(int bufferSize) {
         this.bufferSize = bufferSize;
     }
 
-    /**
-     * @deprecated Use reset() instead
-     */
+    @Override
     public void resetBuffer() {
         this.bufferStream.reset();
     }
     
+    @Override
     public boolean isCommitted() {
         return this.committed;
     }
 
+    @Override
     public void reset() {
         if (this.committed) {
             throw new IllegalStateException(
@@ -168,10 +168,12 @@ public class BufferedResponse implements StatusAwareHttpServletResponse {
         this.bufferStream.reset();
     }
 
+    @Override
     public void flushBuffer() {
         this.committed = true;
     }
 
+    @Override
     public ServletOutputStream getOutputStream() {
         OutputStream outputStream = this.bufferStream;
         if (this.maxBufferSize > 0) {
@@ -182,127 +184,295 @@ public class BufferedResponse implements StatusAwareHttpServletResponse {
         return servletStream;
     }
 
+    @Override
     public void setContentType(String contentType) {
+        if (contentType == null) {
+            return;
+        }
         processContentTypeHeader(contentType);
     }
 
-    /**
-     * A negative contentLength implies checking the buffer for actual size.
-     * @see javax.servlet.ServletResponse#setContentLength(int)
-     */
+    @Override
     public void setContentLength(int contentLength) {
-        if (contentLength >= 0)
-            this.contentLength = contentLength;
+        if (contentLength < 0) {
+            return;
+        }
+        this.contentLength = contentLength;
     }
 
+    @Override
     public Locale getLocale() {
         return this.locale;
     }
 
+    @Override
     public void setLocale(Locale locale) {
+        if (locale == null) {
+            return;
+        }
         this.locale = locale;
     }
 
+    @Override
     public int getBufferSize() {
         return this.bufferSize;
     }
 
+    @Override
     public void addCookie(Cookie cookie) {
+        if (cookie == null) {
+            return;
+        }
         this.cookies.add(cookie);
     }
     
     public List<Cookie> getCookies() {
-        return this.cookies;
+        return Collections.unmodifiableList(this.cookies);
     }
 
+    @Override
     public boolean containsHeader(String header) {
         return this.headers.containsKey(header);
     }
 
+    @Override
     public String encodeURL(String url) {
         return url;
     }
 
+    @Override
     public String encodeRedirectURL(String url) {
         return url;
     }
 
+    @Override
     public String encodeUrl(String url) {
         return url;
     }
 
+    @Override
     public String encodeRedirectUrl(String url) {
         return url;
     }
 
+    @Override
     public void sendError(int status, String statusMessage) {
         this.status = status;
         this.committed = true;
     }
 
+    @Override
     public void sendError(int status) {
         this.status = status;
         this.committed = true;
     }
 
+    @Override
     public void sendRedirect(String url) {
         this.status = HttpServletResponse.SC_MOVED_TEMPORARILY;
-        this.headers.put("Location", url);
+        setHeaderInternal("Location", url);
         this.committed = true;
     }
 
+    @Override
     public void setDateHeader(String header, long date) {
-        this.headers.put(header, new Date(date));
+        if (header == null || date <= 0) {
+            return;
+        }
+        setHeaderInternal(header, new Date(date));
     }
 
+    @Override
     public void addDateHeader(String header, long date) {
-        this.headers.put(header, new Date(date));
+        if (header == null || date <= 0) {
+            return;
+        }
+        addHeaderInternal(header, new Date(date));
     }
 
+    @Override
     public void setHeader(String header, String value) {
+        if (header == null || value == null) {
+            return;
+        }
         header = header.trim();
         value = value.trim();
+        setHeaderInternal(header, value);
         applyHeaderSideEffects(header, value);
-        this.headers.put(header, value);
     }
 
+    @Override
     public void addHeader(String header, String value) {
+        if (header == null || value == null) {
+            return;
+        }
         header = header.trim();
+        addHeaderInternal(header, value);
         applyHeaderSideEffects(header, value);
-        this.headers.put(header, value);
     }
 
+    @Override
     public void setIntHeader(String header, int value) {
+        if (header == null) {
+            return;
+        }
         header = header.trim();
+        setHeaderInternal(header, new Integer(value));
         applyHeaderSideEffects(header, String.valueOf(value));
-        this.headers.put(header, new Integer(value));
     }
 
+    @Override
     public void addIntHeader(String header, int value) {
+        if (header == null) {
+            return;
+        }
         header = header.trim();
+        addHeaderInternal(header, new Integer(value));
         applyHeaderSideEffects(header, String.valueOf(value));
-        this.headers.put(header, new Integer(value));
     }
-
+    
+    @Override
     public void setCharacterEncoding(String characterEncoding) {
         this.characterEncoding = characterEncoding;
     }
     
+    @Override
     public void setStatus(int status) {
         this.status = status;
+        this.statusMessage = HttpUtil.getStatusMessage(status);
     }
 
+    @Override
     public void setStatus(int status, String statusMessage) {
         this.status = status;
+        this.statusMessage = statusMessage;
     }
 
-    public Map<String, Object> getHeaders() {
-        return this.headers;
+    /**
+     * Gets the set of header names
+     * @return the set of header names
+     */
+    public Collection<String> getHeaderNames() {
+        return Collections.unmodifiableCollection(this.headers.keySet());
     }
     
+    /**
+     * Gets the set of values for a given header name
+     * @param header the header name
+     * @return the set of values for the header, or <code>null</code> 
+     * if no values exists
+     */
+    public Collection<Object> getHeaderValues(String header) {
+        List<Object> values = this.headers.get(header);
+        if (values == null) {
+            return null;
+        }
+        if (values.size() == 0) {
+            return null;
+        }
+        return Collections.unmodifiableCollection(values);
+    }
 
+    /**
+     * Gets the value for a given header name. If the header has multiple entries, 
+     * only one value is returned (order unspecified)
+     * @param header the header name
+     * @return the value of the header
+     */
+    public Object getHeaderValue(String header) {
+        List<Object> values = this.headers.get(header);
+        if (values == null) {
+            return null;
+        }
+        if (values.size() == 0) {
+            return null;
+        }
+        return values.get(0);
+    }
+    
+    
+    /**
+     * Write metadata and contents of buffered response to another response.
+     */
+    @SuppressWarnings("deprecation")
+    public void writeTo(HttpServletResponse response, boolean closeOutputStream) 
+        throws IOException {
+        // Write/copy metadata
+        response.setContentLength(getContentLength());
+        String contentType = getContentType();
+        if (contentType != null) {
+            response.setContentType(contentType);
+        }
+        if (this.statusMessage != null) {
+            response.setStatus(this.status, this.statusMessage);
+        } else {
+            response.setStatus(this.status);
+        }
+        response.setLocale(this.locale);
+
+        for (String header: getHeaderNames()) {
+            Collection<Object> values = getHeaderValues(header);
+            boolean add = values.size() == 1;
+            for (Object value: values) {
+                writeHeaderTo(response, header, value, add);
+            }
+        }
+        for (Cookie cookie: getCookies()) {
+            response.addCookie(cookie);
+        }
+
+        // Write/copy content
+        StreamUtil.dump(getContentBuffer(),
+                response.getOutputStream(), closeOutputStream);
+    }
+
+    private void writeHeaderTo(HttpServletResponse response, String header, Object value, boolean add) {
+        if (value instanceof String) {
+            if (add) {
+                response.addHeader(header, (String) value);
+            } else {
+                response.setHeader(header, (String) value);
+            }
+        } else if (value instanceof Integer) {
+            if (add) {
+                response.addIntHeader(header, ((Integer)value).intValue());
+            } else {
+                response.setIntHeader(header, ((Integer)value).intValue());
+            }
+        } else if (value instanceof Date) {
+            if (add) {
+                response.addDateHeader(header, ((Date)value).getTime());
+            } else {
+                response.setDateHeader(header, ((Date)value).getTime());
+            }
+        } else {
+            if (add) {
+                response.addHeader(header, value.toString());
+            } else {
+                response.setHeader(header, value.toString());
+                
+            }
+        }
+    }
+
+    private void addHeaderInternal(String header, Object value) {
+        List<Object> list = this.headers.get(header);
+        if (list == null) {
+            list = new ArrayList<Object>();
+            this.headers.put(header, list);
+        }
+        list.add(value);
+    }
+
+    private void setHeaderInternal(String header, Object value) {
+        List<Object> list = new ArrayList<Object>();
+        list.add(value);
+        this.headers.put(header, list);
+        
+    }
+
+    
     private void applyHeaderSideEffects(String header, String value) {
-
         if (CONTENT_TYPE.equalsIgnoreCase(header)) {
             processContentTypeHeader(value);
         } else if (CONTENT_LENGTH.equalsIgnoreCase(header)) {
@@ -331,48 +501,10 @@ public class BufferedResponse implements StatusAwareHttpServletResponse {
             }
             this.contentType = contentType;
             this.characterEncoding = characterEncoding;
-            this.headers.put(CONTENT_TYPE, contentType);
+            setHeaderInternal(CONTENT_TYPE, contentType);
         } else {
             this.contentType = value;
-            this.headers.put(CONTENT_TYPE, value);
+            setHeaderInternal(CONTENT_TYPE, value);
         }
     }
-    
-    /**
-     * Write metadata and contents of buffered response to another response.
-     * 
-     */
-    public void writeTo(HttpServletResponse response, boolean closeOutputStream) 
-        throws IOException {
-        // Write/copy metadata
-        response.setContentLength(this.getContentLength());
-        response.setContentType(this.getContentType());
-        response.setStatus(this.getStatus());
-        response.setLocale(this.getLocale());
-        
-        Map <String, Object> headers = this.getHeaders();
-        for (Map.Entry<String, Object> entry: headers.entrySet()) {
-            
-            String header = entry.getKey();
-            Object value = entry.getValue();
-            if (value instanceof String) {
-                response.setHeader(header, (String)value);
-            } else if (value instanceof Integer) {
-                response.setIntHeader(header, ((Integer)value).intValue());
-            } else if (value instanceof Date) {
-                response.setDateHeader(header, ((Date)value).getTime());
-            } else {
-                response.setHeader(header, value.toString());
-            }
-        }
-        
-        for (Cookie cookie: this.getCookies()) {
-            response.addCookie(cookie);
-        }
-
-        // Write/copy content
-        StreamUtil.dump(this.getContentBuffer(),
-                response.getOutputStream(), closeOutputStream);
-    }
-    
 }

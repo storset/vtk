@@ -103,7 +103,6 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  *   <li><code>editHooks</code> - a list of {@link
  *   PropertyEditHook} objects, allowing hooks to be run when specific
  *   properties are created, removed and edited.
- *   <li><code>vocabularyChooserService</code> - optional url to a service helping to choose a value, to be opened in another window.
  * </ul>
  *
  */

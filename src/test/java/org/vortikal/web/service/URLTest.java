@@ -107,6 +107,31 @@ public class URLTest extends TestCase {
         assertEquals(Path.fromString("/baz"), url.getPath());
         assertEquals("ref", url.getRef());
         
+        
+        url = URL.parse("rtmp://foo");
+        assertEquals(Integer.valueOf(80), url.getPort());
+        assertEquals(Path.ROOT, url.getPath());
+        assertTrue(url.isCollection());
+        assertEquals("rtmp://foo/", url.toString());
+        
+        url = URL.parse("rtmp://foo");
+        assertEquals(Integer.valueOf(80), url.getPort());
+        assertEquals(Path.ROOT, url.getPath());
+        assertTrue(url.isCollection());
+        assertEquals("rtmp://foo/", url.toString());
+        
+        url = URL.parse("rtmp://foo:9322");
+        assertEquals(Integer.valueOf(9322), url.getPort());
+        assertEquals(Path.ROOT, url.getPath());
+        assertTrue(url.isCollection());
+        assertEquals("rtmp://foo:9322/", url.toString());
+        
+        // real rtmp URL
+        String rtmpUrl = "rtmp://stream-prod01.uio.no/vod/mp4:uio/intermedia/rektor/rektor_jub.mp4";
+        url = URL.parse(rtmpUrl);
+        assertEquals(rtmpUrl, url.toString());
+        
+        
     }
 
     public void testSplitQueryString() {

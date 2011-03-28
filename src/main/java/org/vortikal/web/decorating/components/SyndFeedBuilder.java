@@ -35,7 +35,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.Path;
 import org.vortikal.text.html.HtmlAttribute;
 import org.vortikal.text.html.HtmlContent;
 import org.vortikal.text.html.HtmlElement;
@@ -85,7 +84,8 @@ public class SyndFeedBuilder {
 
         for (Object o : feed.getEntries()) {
             SyndEntry entry = (SyndEntry) o;
-            entry.setLink(resolveLink(entry.getLink(), base));
+            String link = base.relativeURL(entry.getLink()).toString();
+            entry.setLink(link);
             
             SyndContent desc = entry.getDescription();
             if (desc != null) {
@@ -115,37 +115,6 @@ public class SyndFeedBuilder {
         }
     }
 
-    private String resolveLink(String link, URL base) {
-        if (base == null) {
-            return link;
-        }
-        if (link.startsWith("http://") || link.startsWith("https://")) {
-            return link;
-        }
-        String rest = "";
-        if (link.contains("?")) {
-            rest = link.substring(link.indexOf("?"));
-        } else if (link.contains("#")) {
-            rest = link.substring(link.indexOf("#"));
-        }
-        if (rest.length() > 0) {
-            link = link.substring(0, link.length() - rest.length());
-        }
-        if (link.startsWith("/")) {
-            while (link.endsWith("/") && !"/".equals(link)) {
-                link = link.substring(0, link.length() - 1);
-            }
-            Path p = Path.fromString(link);
-            URL url = new URL(base);
-            url.setPath(p);
-            return url.toString() + rest;
-        }        
-        URL url = new URL(base);
-        url.setPath(url.getPath().extend(link));
-        return url.toString() + rest;
-    }
-    
-
     private class ImageFilter implements HtmlPageFilter {
         private URL base;
         public ImageFilter(URL base) {
@@ -164,8 +133,7 @@ public class SyndFeedBuilder {
                     if (src != null) {
                         String link = src.getValue();
                         if (link != null) {
-                            link = resolveLink(link, base);
-                            src.setValue(link);
+                            src.setValue(base.relativeURL(link).toString());
                         }
                     }
                 }

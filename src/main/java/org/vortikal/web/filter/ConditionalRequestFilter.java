@@ -31,6 +31,7 @@
 package org.vortikal.web.filter;
 
 import javax.servlet.http.HttpServletRequest;
+
 import org.vortikal.web.service.Assertion;
 
 
@@ -66,7 +67,9 @@ public class ConditionalRequestFilter extends AbstractRequestFilter {
         }
         return request;
     }
-}
     
-
-
+    public String toString() {
+        return this.getClass().getName() + "(" + this.assertion 
+            + ", " + this.requestFilter + ")";
+    }
+}

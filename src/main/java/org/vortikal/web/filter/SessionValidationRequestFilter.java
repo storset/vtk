@@ -37,6 +37,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Provides a minimum of protection against session hijacking.
  * Upon session creation the client address is stored in the session, 
@@ -54,6 +57,8 @@ import javax.servlet.http.HttpSession;
  */
 public class SessionValidationRequestFilter extends AbstractRequestFilter 
     implements RequestFilter {
+
+    private static final Log logger = LogFactory.getLog(SessionValidationRequestFilter.class);
 
     private Set<String> authorizedAddresses = new HashSet<String>();
     
@@ -95,9 +100,12 @@ public class SessionValidationRequestFilter extends AbstractRequestFilter
             if (s == null) {
                 return null;
             }
-            String clientAddress = request.getRemoteAddr();
+            String clientAddress = this.request.getRemoteAddr();
             Object o = s.getAttribute(CLIENT_ADDR_SESSION_ATTRIBUTE);
             if (o == null || ! (o instanceof String)) {
+                logger.warn("Expected attribute of type string in session under key: " 
+                            + CLIENT_ADDR_SESSION_ATTRIBUTE + ", found: " + o
+                            + "; invalidating session");
                 s.invalidate();
                 s = this.request.getSession(create);
                 if (s != null) {
@@ -107,6 +115,10 @@ public class SessionValidationRequestFilter extends AbstractRequestFilter
             }
             String originatingAddress = (String) o;
             if (!clientAddress.equals(originatingAddress)) {
+                logger.info("Client address mismatch in session of request " 
+                        + this.request.getRequestURL() + "; actual client address: " 
+                        + clientAddress + ", originating address: " + originatingAddress
+                        + "; invalidating session");
                 s.invalidate();
                 s = this.request.getSession(create);
                 if (s != null) {

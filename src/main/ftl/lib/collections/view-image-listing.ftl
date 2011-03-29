@@ -61,8 +61,7 @@
 
   <#local images=imageListing.files />
   <#if (images?size > 0)>
-    <script type="text/javascript">
-     <!--
+    <script type="text/javascript"><!--
        $(window).load(function() {
          if($("#right-main").length) {
            var cut = ".last-four";

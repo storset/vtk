@@ -40,13 +40,15 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Comment;
 import org.vortikal.repository.Path;
-import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.RequestContext.RepositoryTraversal;
+import org.vortikal.web.RequestContext.TraversalCallback;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -94,7 +96,7 @@ public class RecentCommentsProvider implements ReferenceDataProvider {
     }
 
     @SuppressWarnings(value = { "rawtypes", "unchecked" })
-    public void referenceData(Map model, HttpServletRequest servletRequest) throws Exception {
+    public void referenceData(final Map model, HttpServletRequest servletRequest) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();
         String token = requestContext.getSecurityToken();
@@ -134,7 +136,8 @@ public class RecentCommentsProvider implements ReferenceDataProvider {
             }
         }
 
-        boolean commentsEnabled = resource.getAcl().getActions().contains(Privilege.ADD_COMMENT);
+        boolean commentsAllowed =
+            repository.isAuthorized(resource, RepositoryAction.ADD_COMMENT, principal, false);
 
         URL baseCommentURL = null;
         try {
@@ -158,12 +161,25 @@ public class RecentCommentsProvider implements ReferenceDataProvider {
             }
         }
 
+        model.put("commentsEnabled", false);
+        RepositoryTraversal traversal = requestContext.rootTraversal(token, uri);
+        traversal.traverse(new TraversalCallback() {
+            public boolean callback(Resource resource) {
+                for (Property p: resource.getProperties()) {
+                    if (p.getDefinition().getName().equals("commentsEnabled")) {
+                        model.put("commentsEnabled", p.getBooleanValue());
+                        return false;
+                    }
+                }
+                return true;
+            }
+        });
         model.put("resource", resource);
         model.put("principal", principal);
         model.put("comments", filteredComments);
         model.put("resourceMap", resourceMap);
         model.put("commentURLMap", commentURLMap);
-        model.put("commentsEnabled", Boolean.valueOf(commentsEnabled));
+        model.put("commentsAllowed", commentsAllowed);
         model.put("baseCommentURL", baseCommentURL);
         model.put("feedURL", feedURL);
         model.put("recentCommentsURL", recentCommentsURL);

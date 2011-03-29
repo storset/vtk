@@ -39,13 +39,15 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Comment;
 import org.vortikal.repository.Path;
-import org.vortikal.repository.Privilege;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.RequestContext.RepositoryTraversal;
+import org.vortikal.web.RequestContext.TraversalCallback;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -85,7 +87,7 @@ public class CommentsProvider implements ReferenceDataProvider {
     }
     
     @SuppressWarnings(value={"rawtypes", "unchecked"}) 
-    public void referenceData(Map model, HttpServletRequest servletRequest) throws Exception {
+    public void referenceData(final Map model, HttpServletRequest servletRequest) throws Exception {
         
         if (this.formSessionAttributeName != null) {
 
@@ -112,9 +114,26 @@ public class CommentsProvider implements ReferenceDataProvider {
         List<Comment> comments = repository.getComments(token, resource);
         model.put("comments", comments);
 
-        boolean commentsEnabled =
-            resource.getAcl().getActions().contains(Privilege.ADD_COMMENT);
-        model.put("commentsEnabled", commentsEnabled);
+        boolean commentsAllowed =
+            repository.isAuthorized(resource, RepositoryAction.ADD_COMMENT, principal, false);
+        model.put("commentsAllowed", commentsAllowed);
+        
+        boolean locked = resource.getLock() != null;
+        model.put("commentsLocked", commentsAllowed && locked);
+        
+        model.put("commentsEnabled", false);
+        RepositoryTraversal traversal = requestContext.rootTraversal(token, uri);
+        traversal.traverse(new TraversalCallback() {
+            public boolean callback(Resource resource) {
+                for (Property p: resource.getProperties()) {
+                    if (p.getDefinition().getName().equals("commentsEnabled")) {
+                        model.put("commentsEnabled", p.getBooleanValue());
+                        return false;
+                    }
+                }
+                return true;
+            }});
+        
         model.put("repositoryReadOnly", repository.isReadOnly());
 
         Map<String, URL> deleteCommentURLs = new HashMap<String, URL>();

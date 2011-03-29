@@ -22,15 +22,14 @@
           are 'comments' and 'config'">
 </#if>
 
-
-<#if !commentsEnabled && comments?size = 0>
+<#if !commentsEnabled>
   <#-- display nothing -->
 <#else>
 <@fck.declareEditor />
 <div class="vrtx-comments" id="comments">
   <#if comments?exists>
     <div class="comments-header">
-    
+
     <div id="comments-header-left">
       <#assign header>
         <@vrtx.msg code="commenting.header"
@@ -119,26 +118,26 @@
   <div class="add-comment" id="comment-form">
     <div class="add-comment-header"><@vrtx.msg code="commenting.form.add-comment" default="Add comment" /></div>
 
-    <#if !commentsEnabled>
-      <p><@vrtx.msg code="commenting.disabled"
-                    default="Commenting is disabled on this resource." /></p>
-
-    <#elseif repositoryReadOnly?exists && repositoryReadOnly>
-       <p><@vrtx.msg code="commenting.read.only"
-                    default="You cannot add comments because the system is currently in read only mode." /></p>
-      
-    <#elseif !postCommentURL?exists && !principal?exists && loginURL?exists>
+    <#if !principal?exists>
       <#assign completeLoginURL>${loginURL?html}&amp;anchor=comment-form</#assign>
       <#assign defaultMsg>
         To comment on this resource you have to <a href="${completeLoginURL}">log in</a>
       </#assign>
       <p><@vrtx.rawMsg code="commenting.not-logged-in" default=defaultMsg args=[completeLoginURL] /></p>
 
-    <#elseif principal?exists && !postCommentURL?exists>
-      <p><@vrtx.msg code="commenting.denied"
+    <#elseif repositoryReadOnly>
+       <p><@vrtx.msg code="commenting.read.only"
+                    default="You cannot add comments because the system is currently in read only mode." /></p>
+      
+    <#elseif commentsAllowed && commentsLocked>
+      <p><@vrtx.msg code="commenting.locked"
                     default="You can not comment this resource at the moment because it is locked by another user." /></p>
 
-    <#elseif postCommentURL?exists>
+    <#elseif !commentsAllowed>
+      <p><@vrtx.msg code="commenting.denied"
+                    default="You are not allowed to comment on this resource." /></p>
+
+    <#elseif commentsAllowed && postCommentURL?exists>
       <div id="comment-syntax-desc" class="comment-syntax-desc">
         <div class="syntax-head"><@vrtx.msg code="commenting.form.syntax-description" default="Allowed HTML syntax" />:</div>
         <p>

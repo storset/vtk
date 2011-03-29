@@ -68,7 +68,7 @@ public class AclImpl implements Acl {
     public Set<Principal> getPrincipalSet(Privilege action) {
         Set<Principal> set = this.actionSets.get(action);
         if (set == null) {
-            return new HashSet<Principal>();
+            return Collections.emptySet();
         }
         return Collections.unmodifiableSet(set);
     }

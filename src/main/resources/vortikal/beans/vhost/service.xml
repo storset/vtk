@@ -213,8 +213,7 @@
    <!-- Resource-aware locale resolver (for viewService)  -->
 
    <bean id="viewServiceResourceAwareLocaleResolver"
-         class="org.vortikal.web.servlet.ResourceAwareLocaleResolver"
-         parent="repositoryAware">
+         class="org.vortikal.web.servlet.ResourceAwareLocaleResolver">
      <property name="defaultLocale" value="${view.defaultLocale}" />
      <property name="trustedToken" ref="trustedToken" />
    </bean>

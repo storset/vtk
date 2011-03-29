@@ -224,7 +224,7 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
 
         public ResourceAspectFunction(Symbol symbol, PropertyTypeDefinition aspectsPropdef, PropertyAspectDescription fieldConfig) {
             super(symbol, 1);
-            this.resolver = new PropertyAspectResolver(repository, aspectsPropdef, fieldConfig);
+            this.resolver = new PropertyAspectResolver(aspectsPropdef, fieldConfig);
         }
         
         @Override

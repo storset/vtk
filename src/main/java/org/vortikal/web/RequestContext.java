@@ -247,4 +247,33 @@ public class RequestContext {
     public Principal getPrincipal() {
         return this.securityContext.getPrincipal();
     }
+    
+    public RepositoryTraversal rootTraversal(String token, Path uri) {
+        return new RepositoryTraversal(this.repository, token, uri);
+    }
+    
+    public static final class RepositoryTraversal {
+        private Repository repository;
+        private String token;
+        private Path uri;
+        private RepositoryTraversal(Repository repository, String token, Path uri) {
+            this.repository = repository;
+            this.token = token;
+            this.uri = uri;
+        }
+        public void traverse(TraversalCallback callback) throws Exception {
+            Path uri = this.uri;
+            while (uri != null) {
+                Resource resource = this.repository.retrieve(this.token, uri, true);
+                if (!callback.callback(resource)) {
+                    return;
+                }
+                uri = uri.getParent();
+            }
+        }
+    }
+    
+    public static interface TraversalCallback {
+        public boolean callback(Resource resource);
+    }
 }

@@ -88,7 +88,7 @@ public class ConfigurableJSONPropertyEditor extends SimpleFormController {
         Locale requestLocale = RequestContextUtils.getLocale(request);
         
         PropertyAspectResolver resolver = new PropertyAspectResolver(
-                repository, this.propertyDefinition, this.fieldConfig);
+                this.propertyDefinition, this.fieldConfig);
         JSONObject combined = uri == Path.ROOT ? null 
                 : resolver.resolve(uri.getParent(), this.toplevelField);
         
@@ -119,14 +119,13 @@ public class ConfigurableJSONPropertyEditor extends SimpleFormController {
             Object object, BindException errors) throws Exception {
         
         RequestContext requestContext = RequestContext.getRequestContext();
-        Repository repository = requestContext.getRepository();
         Path uri = requestContext.getResourceURI();
 
         Locale requestLocale = RequestContextUtils.getLocale(request);
         List<FormElement> elements = new ArrayList<FormElement>();
         
         PropertyAspectResolver resolver = new PropertyAspectResolver(
-                repository, this.propertyDefinition, this.fieldConfig);
+                this.propertyDefinition, this.fieldConfig);
         JSONObject combined = uri == Path.ROOT ? null 
                 : resolver.resolve(uri.getParent(), this.toplevelField);
 

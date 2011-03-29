@@ -30,22 +30,18 @@
  */
 package org.vortikal.web.servlet;
 
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.LocaleResolver;
 import org.vortikal.repository.Path;
-import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.RequestContext.RepositoryTraversal;
+import org.vortikal.web.RequestContext.TraversalCallback;
 
 /**
  * Resolves locale for the current resource.
@@ -56,9 +52,6 @@ import org.vortikal.web.RequestContext;
  *   <li>The nearest parent with {@link Resource#getContentLanguage() contentLanguage} set
  *   <li>defaultLocale
  *   
- *   XXX: Needs to be fixed (will give wrong locale if read-processed is used?), 
- *   should probably use a trusted token?
- *
  */
 public class ResourceAwareLocaleResolver implements LocaleResolver {
     
@@ -66,7 +59,6 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
         ResourceAwareLocaleResolver.class.getName() + ".RequestAttribute";
     
     private Locale defaultLocale;
-    private Repository repository;
     private String trustedToken = null;
 
     public Locale resolveLocale(HttpServletRequest request) {
@@ -76,18 +68,39 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
         if (request == null) {
             request = requestContext.getServletRequest();
         }
-        return resolveResourceLocale(request, uri);
+        return resolveResourceLocale(uri);
     }
+
 
     public Locale resolveResourceLocale(Path uri) {
-        // Try to get request from RequestContext
-        HttpServletRequest request = null;
-        if (RequestContext.exists()) {
-            request = RequestContext.getRequestContext().getServletRequest();
-        }
-        return resolveResourceLocale(request, uri);
-    }
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Locale locale = this.defaultLocale;
+        try {
+            RepositoryTraversal traversal = requestContext.rootTraversal(this.trustedToken, uri);
+            final StringBuilder lang = new StringBuilder();
 
+            traversal.traverse(new TraversalCallback() {
+                @Override
+                public boolean callback(Resource resource) {
+                    String s = resource.getContentLanguage();
+                    if (s == null) {
+                        return true;
+                    }
+                    lang.insert(0, s);
+                    return false;
+                }});
+            if (lang.length() == 0) {
+                return this.defaultLocale;
+            }
+            Locale l = LocaleHelper.getLocale(lang.toString());
+            if (l != null) {
+                locale = l;
+            }
+        } catch (Exception e) { }
+        return locale;
+    }
+    
+    /*
     @SuppressWarnings("unchecked")
     public Locale resolveResourceLocale(HttpServletRequest request, Path uri) {
 
@@ -205,10 +218,12 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
         }
     }
 
+    */
     public void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale) {
         throw new UnsupportedOperationException(
                 "This locale resolver does not support explicitly setting the request locale");
     }
+
     
     /**
      * Set the default locale that this resolver will return if
@@ -218,11 +233,6 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
      */
     public void setDefaultLocale(Locale defaultLocale) {
         this.defaultLocale = defaultLocale;
-    }
-
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
     }
 
     public void setTrustedToken(String trustedToken) {

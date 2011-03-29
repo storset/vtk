@@ -1,4 +1,4 @@
-/* Copyright (c) 2010, University of Oslo, Norway
+/* Copyright (c) 2011, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,56 +30,43 @@
  */
 package org.vortikal.util.repository;
 
-import net.sf.json.JSONObject;
-
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.RequestContext.RepositoryTraversal;
 import org.vortikal.web.RequestContext.TraversalCallback;
 
-public class PropertyAspectResolver {
-
-    private PropertyTypeDefinition aspectsPropdef;
-    PropertyAspectDescription fieldConfig;
+public final class InheritedPropertyResolver {
     
-    public PropertyAspectResolver(PropertyTypeDefinition aspectsPropdef, PropertyAspectDescription fieldConfig) {
-        this.aspectsPropdef = aspectsPropdef;
-        this.fieldConfig = fieldConfig;
-    }
+    private String token = null;
 
-    public JSONObject resolve(final Path uri, final String aspect) throws Exception {
+    public Resource resolve(final String propName) throws Exception {
+        if (!RequestContext.exists()) {
+            return null;
+        }
         RequestContext requestContext = RequestContext.getRequestContext();
-        final JSONObject result = new JSONObject();
-        String token = requestContext.getSecurityToken();
+        
+        Path uri = requestContext.getResourceURI();
+        String token = this.token != null ? this.token : requestContext.getSecurityToken();
+        
         RepositoryTraversal traversal = requestContext.rootTraversal(token, uri);
-
+        final Resource[] result = new Resource[1];
         traversal.traverse(new TraversalCallback() {
+            @Override
             public boolean callback(Resource resource) {
-                Property property = resource.getProperty(aspectsPropdef);
-                if (property != null) {
-                    JSONObject value = property.getJSONValue();
-                    
-                    if (value.get(aspect) != null) {
-                        value = value.getJSONObject(aspect);
-
-                        for (PropertyAspectField field : fieldConfig.getFields()) {
-                            Object key = field.getIdentifier();
-                            Object newValue = value.get(key);
-
-                            if (resource.getURI().equals(uri)) {
-                                result.put(key, newValue);
-                                
-                            } else if (field.isInherited() && result.get(key) == null) {
-                                result.put(key, newValue);
-                            }
-                        }
+                for (Property p: resource.getProperties()) {
+                    if (p.getDefinition().getName().equals(propName)) {
+                        result[0] = resource;
+                        return false;
                     }
                 }
                 return true;
             }});
-        return result;
+        return result[0];
     }
- }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+}

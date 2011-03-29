@@ -72,8 +72,8 @@
 
 <#function resourceLanguage>
   <#if resourceLocaleResolver?exists>
-	<#local l = resourceLocaleResolver.resolveLocale(null)?string />
-	<#return getMsg("language."+l, l) />
+     <#local l = resourceLocaleResolver.resolveLocale(null)?string />
+     <#return getMsg("language."+l, l) />
   </#if>
 </#function>
 
@@ -134,13 +134,13 @@
 
 <#-- FIXME: Only works for CreateDocument -->
 <#macro formRadioButtons path options pre post attributes="">
-	<@spring.bind path/>
-	<#list options?keys as value>${pre}
-	<input type="radio" name="${spring.status.expression}" id="${value}" value="${value}"
-	  <#if spring.status.value?default("") == value>checked="checked"</#if> onclick="javascript:changetemplatename('${options[value]}')" ${attributes}
-	<@spring.closeTag/><label for="${value}">${options[value]}</label>
-	${post}
-	</#list>
+  <@spring.bind path/>
+  <#list options?keys as value>${pre}
+  <input type="radio" name="${spring.status.expression}" id="${value}" value="${value}"
+    <#if spring.status.value?default("") == value>checked="checked"</#if> onclick="javascript:changetemplatename('${options[value]}')" ${attributes}
+  <@spring.closeTag/><label for="${value}">${options[value]}</label>
+  ${post}
+  </#list>
 </#macro>
 
 
@@ -170,24 +170,24 @@
 </#macro>
 
 <#function relativeLinkConstructor resourceUri serviceName >
-	<#if linkConstructor(resourceUri,serviceName)?exists >
-		<#local constructedURL = linkConstructor(resourceUri,serviceName) />
-	</#if>
-	<#if constructedURL?exists && resourceUri?exists && !resourceUri?contains("://") >
-		<#return constructedURL.getPathRepresentation() />	
-	<#elseif resourceUri?exists >
-		<#return resourceUri />
-	<#else>
-		<#return "" />
-	</#if>
+  <#if linkConstructor(resourceUri,serviceName)?exists >
+    <#local constructedURL = linkConstructor(resourceUri,serviceName) />
+  </#if>
+  <#if constructedURL?exists && resourceUri?exists && !resourceUri?contains("://") >
+    <#return constructedURL.getPathRepresentation() />
+  <#elseif resourceUri?exists >
+    <#return resourceUri />
+  <#else>
+    <#return "" />
+  </#if>
 </#function>
 
 <#function linkConstructor resourceUri serviceName >
-	<#if VRTX_LINK_CONSTRUCTOR?exists && resourceUri?exists && serviceName?exists >
-		<#if VRTX_LINK_CONSTRUCTOR.construct(resourceUri,null,serviceName)?exists>
-			<#return VRTX_LINK_CONSTRUCTOR.construct(resourceUri,null,serviceName) />
-		</#if>
-	</#if>
+  <#if VRTX_LINK_CONSTRUCTOR?exists && resourceUri?exists && serviceName?exists >
+    <#if VRTX_LINK_CONSTRUCTOR.construct(resourceUri,null,serviceName)?exists>
+      <#return VRTX_LINK_CONSTRUCTOR.construct(resourceUri,null,serviceName) />
+    </#if>
+  </#if>
 </#function>
 
 <#--
@@ -207,12 +207,12 @@
 -->
 <#function calcDate value format>
   <#if VRTX_DATE_VALUE_FORMATTER?exists>
-	  <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />
-	  <#local val = constructor("org.vortikal.repository.resourcetype.Value", value, false) />
-	  <#local locale = springMacroRequestContext.getLocale() />
-	  <#return VRTX_DATE_VALUE_FORMATTER.valueToString(val, format, locale) />
+    <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />
+    <#local val = constructor("org.vortikal.repository.resourcetype.Value", value, false) />
+    <#local locale = springMacroRequestContext.getLocale() />
+    <#return VRTX_DATE_VALUE_FORMATTER.valueToString(val, format, locale) />
   <#else>
-      <#return "Undefined" />
+    <#return "Undefined" />
   </#if>
 </#function>
 

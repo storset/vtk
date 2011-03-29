@@ -317,6 +317,7 @@
          <entry key="VRTX_MESSAGE_SOURCE" value-ref="defaultMessageSource" />
          <entry key="VRTX_CSRF_PREVENTION_HANDLER" value-ref="system.csrfPreventionHandler" />
          <entry key="VRTX_LINK_CONSTRUCTOR" value-ref="linkConstructor" />
+         <entry key="VRTX_INHERITED_PROPERTY_RESOLVER" value-ref="inheritedPropertyResolver" />
        </map>
      </property>
    </bean>
@@ -330,6 +331,9 @@
 
    <bean id="linkConstructor" class="org.vortikal.web.view.LinkConstructorImpl" />
    
+   <bean id="inheritedPropertyResolver" class="org.vortikal.util.repository.InheritedPropertyResolver">
+     <property name="token" ref="trustedToken" />
+   </bean>
 
   <bean id="romeFeedView" class="org.vortikal.web.view.RomeFeedView"  abstract="true" />
 

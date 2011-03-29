@@ -113,7 +113,6 @@
     <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" />
   </bean>
 
-
   <bean id="manage.serviceAssertion" class="org.vortikal.web.service.AndAssertion">
     <property name="assertions">
       <list>
@@ -809,6 +808,7 @@
         <ref bean="characterEncodingPropDef" />
         <ref bean="plaintextEditPropDef" />
         <ref bean="xhtml10TransTypePropDef" />
+        <ref bean="commentsEnabledPropDef" />
 
         <!-- Collection type: -->
         <ref bean="collection.typePropDef" />

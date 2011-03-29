@@ -297,8 +297,8 @@
  * 
 -->
 <#macro defaultFormWrapper item>
-  <#local localizedValueLookupKeyPrefix = getLocalizedValueLookupKeyPrefix(item) />
-  <#local name = vrtx.getMsg(localizedValueLookupKeyPrefix, item.definition.name) />
+  <#local msgPrefix = localizationPrefix(item) />
+  <#local name = vrtx.getMsg(msgPrefix, item.definition.name) />
   <h3>${name}:</h3>
   <ul class="property">
     <#nested />
@@ -371,19 +371,19 @@
  *        Default is 'defaultPropertyDisplay'
 -->
 <#macro propertyDisplay item toggle=false defaultItem=false displayMacro='defaultPropertyDisplay'>
-  <#local localizedValueLookupKeyPrefix = getLocalizedValueLookupKeyPrefix(item) />  
-  <#local name = vrtx.getMsg(localizedValueLookupKeyPrefix, item.definition.name) />
+  <#local msgPrefix = localizationPrefix(item) />  
+  <#local name = vrtx.getMsg(msgPrefix, item.definition.name) />
   
   <#assign valueItem=item />
 
   <#assign prefix=false />
     <#if !defaultItem?is_boolean>
-      <#local localizedValueLookupKeyPrefix = getLocalizedValueLookupKeyPrefix(item) />
+      <#local msgPrefix = localizationPrefix(item) />
       <#if item.property?exists && item.property.value == defaultItem.property.value>
-        <#assign prefix = vrtx.getMsg(localizedValueLookupKeyPrefix + ".set", "") />
+        <#assign prefix = vrtx.getMsg(msgPrefix + ".set", "") />
       <#else>
         <#assign valueItem=defaultItem />
-        <#assign prefix = vrtx.getMsg(localizedValueLookupKeyPrefix + ".unset", "") />
+        <#assign prefix = vrtx.getMsg(msgPrefix + ".unset", "") />
       </#if>
       <#if prefix == "">
         <#assign prefix=false />
@@ -413,7 +413,7 @@
           ${valueItem.property.dateValue?datetime?string.long}
         <#else>
           <#local label>
-            <@vrtx.msg code="${localizedValueLookupKeyPrefix}.value.${valueItem.property.value?string}"
+            <@vrtx.msg code="${msgPrefix}.value.${valueItem.property.value?string}"
                        default="${valueItem.property.value}" />
           </#local>
           ${label}
@@ -422,7 +422,7 @@
     <#else>
       <#local defaultNotSet><@vrtx.msg code="resource.property.unset" default="Not set" /></#local>
       <#local label>
-        <@vrtx.msg code="${localizedValueLookupKeyPrefix}.unset" default="${defaultNotSet}" />
+        <@vrtx.msg code="${msgPrefix}.unset" default="${defaultNotSet}" />
       </#local>
       ${label}
     </#if>
@@ -462,7 +462,7 @@
         formErrorWrapperMacro='defaultFormErrorWrapper'
         defaultItem=false>
 
-  <#local localizedValueLookupKeyPrefix = getLocalizedValueLookupKeyPrefix(item) />
+  <#local msgPrefix = localizationPrefix(item) />
 
     <#local editWrapper = resolveMacro(editWrapperMacro) />
     <#local formWrapper = resolveMacro(formWrapperMacro) />
@@ -480,13 +480,13 @@
           <#list form.possibleValues as alternative>
             <@formInputWrapper item>
             <#if alternative?has_content>
-              <#local label><@vrtx.msg code="${localizedValueLookupKeyPrefix}.value.${alternative}" default="${alternative}" /></#local>
+              <#local label><@vrtx.msg code="${msgPrefix}.value.${alternative}" default="${alternative}" /></#local>
               <input id="${alternative}" type="radio" name="value" value="${alternative}"
                          <#if form.value?has_content && form.value = alternative>checked</#if>>
                <label for="${alternative}">${label}</label>
             <#else>
               <#local defaultNotSet><@vrtx.msg code="resource.property.unset" default="Not set" /></#local>
-              <#local label><@vrtx.msg code="${localizedValueLookupKeyPrefix}.unset" default="${defaultNotSet}" /></#local>
+              <#local label><@vrtx.msg code="${msgPrefix}.unset" default="${defaultNotSet}" /></#local>
                 <input id="unset" type="radio" name="value" value=""
                            <#if !form.value?has_content>checked</#if>>
                   <label for="unset">${label}</label>
@@ -506,7 +506,7 @@
               <option value="${alternative}" <#if form.value?has_content && form.value = alternative>selected="true"</#if> label="${label}">${label}</option>
             <#else>
               <#local defaultNotSet><@vrtx.msg code="resource.property.unset" default="Not set" /></#local>
-              <#local label><@vrtx.msg code="${localizedValueLookupKeyPrefix}.unset" default="${defaultNotSet}" /></#local>
+              <#local label><@vrtx.msg code="${msgPrefix}.unset" default="${defaultNotSet}" /></#local>
               <option id="unset" value="" <#if !form.value?has_content>selected="true"</#if> label="${label}">${label}</option>
             </#if>
           </#list>
@@ -618,18 +618,18 @@
 -->
 <#macro propertyItemEditURL item toggle=false>
   <#if toggle && item.toggleURL?exists>
-    <#local localizedValueLookupKeyPrefix = getLocalizedValueLookupKeyPrefix(item) />
+    <#local msgPrefix = localizationPrefix(item) />
     <#local defaultToggle>
       <@vrtx.msg code="propertyEditor.toggle" default="toggle" />
     </#local>
     <#local label>
       <#if item.toggleValue?exists>
         <@vrtx.msg
-           code="${localizedValueLookupKeyPrefix}.toggle.value.${item.toggleValue}" 
+           code="${msgPrefix}.toggle.value.${item.toggleValue}" 
            default="${defaultToggle}" />
         <#else>
         <@vrtx.msg
-           code="${localizedValueLookupKeyPrefix}.toggle.unset" default="${defaultToggle}" />
+           code="${msgPrefix}.toggle.unset" default="${defaultToggle}" />
       </#if>
     </#local>
      ( <a href="${item.toggleURL?html}">${label}</a> )
@@ -662,12 +662,12 @@
 
 
 <#--
- * getLocalizedValueLookupKeyPrefix
+ * localizationPrefix
  *
  * Internal utility function.
  *
 -->
-<#function getLocalizedValueLookupKeyPrefix item>
+<#function localizationPrefix item>
   <#if item.definition.namespace.prefix?exists>
     <#return 'property.' + item.definition.namespace.prefix + ':' + item.definition.name />
    <#else>

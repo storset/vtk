@@ -38,6 +38,7 @@
         <ref bean="userTitlePropDef" />
         <ref bean="titlePropDef" />
         <ref bean="contentLocalePropDef" />
+        <ref bean="commentsEnabledPropDef" />
         <ref bean="numberOfCommentsPropDef" />
         <ref bean="publishDatePropDef" />
         <ref bean="unpublishDatePropDef" />
@@ -47,6 +48,34 @@
     </property>
   </bean>
   
+  <bean id="commentsEnabledPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="name" value="commentsEnabled" />
+    <property name="type" value="BOOLEAN" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+      <property name="messageSourceBaseName" value="vortikal.beans.vhost.resource-types.properties.commentsEnabled" />
+        <property name="type" value="BOOLEAN" />
+        <property name="values">
+          <list>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="boolean">
+                <value>true</value>
+              </constructor-arg>
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="boolean">
+                <value>false</value>
+              </constructor-arg>
+            </bean>
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
   <bean id="numberOfCommentsPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
     parent="abstractPropDef">
     <property name="name" value="numberOfComments" />

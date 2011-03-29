@@ -84,7 +84,7 @@
 
       <!-- Owner -->
       <#assign ownerItem = aboutItems['owner'] />
-      <#assign msgPrefix = propList.getLocalizedValueLookupKeyPrefix(ownerItem) />
+      <#assign msgPrefix = propList.localizationPrefix(ownerItem) />
       <tr>
         <td class="key">
           <@vrtx.msg code=msgPrefix default=ownerItem.definition.name />
@@ -129,30 +129,33 @@
       <@propList.defaultPropertyDisplay
              name = vrtx.getMsg("resource.webdavURL", "WebDAV address")
              value = url />
-
       
-      
+      <!-- Source address -->
       <#if resourceDetail.getSourceURL?exists>
-		  <#assign url><a id="vrtx-aboutSourceAddress" href="${resourceDetail.getSourceURL?html}">${resourceDetail.getSourceURL?html}</a></#assign>
-		  <@propList.defaultPropertyDisplay
-		         name = vrtx.getMsg("resource.sourceURL")
-		         value = url />
-	  </#if>
+        <#assign url><a id="vrtx-aboutSourceAddress" href="${resourceDetail.getSourceURL?html}">${resourceDetail.getSourceURL?html}</a></#assign>
+        <@propList.defaultPropertyDisplay
+             name = vrtx.getMsg("resource.sourceURL")
+             value = url />
+      </#if>
+
       <!-- Content language -->
       <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'contentLocale' displayMacro = 'languagePropertyDisplay' />
 
-    <#if !resource.collection>
-      <!-- Size -->
-      <#assign size>
-       <#if resourceContext.currentResource.contentLength?exists>
-          <@vrtx.calculateResourceSize resourceContext.currentResource.contentLength />       
-       <#else>
-	 <@vrtx.msg code="property.contentLength.unavailable" default="Not available" />
-       </#if>
-      </#assign>
-      <@propList.defaultPropertyDisplay
-             name = vrtx.getMsg("property.contentLength", "Size")
-             value = size />
+      <!-- Comments -->
+      <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'commentsEnabled' displayMacro = 'commentsEnabledPropertyDisplay' />
+
+      <#if !resource.collection>
+        <!-- Size -->
+        <#assign size>
+         <#if resourceContext.currentResource.contentLength?exists>
+            <@vrtx.calculateResourceSize resourceContext.currentResource.contentLength />       
+         <#else>
+            <@vrtx.msg code="property.contentLength.unavailable" default="Not available" />
+         </#if>
+        </#assign>
+        <@propList.defaultPropertyDisplay
+               name = vrtx.getMsg("property.contentLength", "Size")
+               value = size />
     </#if>
   </table>
 
@@ -250,6 +253,31 @@
       <#local l=vrtx.resourceLanguage()?string />
       <#if value?trim != l?trim>, <@vrtx.msg "language.inherits" "inherits"/> ${l?lower_case}
       </#if>
+      </#compress>
+      <#if editURL != "">
+        ${editURL}
+      </#if>
+    </td>
+  </tr>
+</#macro>
+
+<#macro commentsEnabledPropertyDisplay name value prefix=false editURL="">
+  <#local result = vrtx.resolveInheritedProperty("commentsEnabled") />
+  <tr>
+    <td class="key">
+      ${name}:
+    </td>
+    <td class="value">
+      <#if prefix?is_string>
+        ${prefix}
+      </#if>
+      <#if result.localizedValue?exists>
+        ${result.localizedValue?trim}
+      <#else>
+        ${value?trim}
+      </#if>
+      <#compress>
+      <#--if result.inherited>&nbsp;<@vrtx.msg "property.inherited"  "(inherited)" /></#if-->
       </#compress>
       <#if editURL != "">
         ${editURL}

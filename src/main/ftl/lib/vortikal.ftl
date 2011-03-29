@@ -486,3 +486,26 @@
     </#if>
   </#compress>
 </#macro>
+
+
+<#function resolveInheritedProperty propertyName>
+  <#assign resource = VRTX_INHERITED_PROPERTY_RESOLVER.resolve(propertyName)?default("undefined") />
+  <#if resourceContext.currentResource.URI = "/">
+    <#local inherited = false />
+  <#elseif !resource?exists || resource == "undefined">
+    <#local inherited = true />
+  <#elseif resource.URI != resourceContext.currentResource.URI>
+    <#local inherited = true />
+  <#else>
+    <#local inherited = false />
+  </#if>
+  <#if resource == "undefined">
+    <#return {"exists":false, "inherited":inherited} />
+  <#else>
+    <#assign value = propValue(resource, propertyName)?default("") />
+    <#assign localizedValue = propValue(resource, propertyName, 'localized')?default("") />
+    <#assign prop = getProp(resource, propertyName) />
+    <#return {"exists":true, "resource":resource, "property":prop,
+             "value":value, "localizedValue":localizedValue, "inherited":inherited} />
+  </#if>
+</#function>

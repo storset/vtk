@@ -170,7 +170,7 @@ public final class EventListingHelper implements InitializingBean {
         Calendar requestedCal = Calendar.getInstance();
         requestedCal.setTime(date);
         if (searchType != SpecificDateSearchType.Year) {
-            Locale locale = this.localeResolver.resolveResourceLocale(request, collection.getURI());
+            Locale locale = this.localeResolver.resolveResourceLocale(collection.getURI());
             String format = "full-month-year-short";
             if (searchType == SpecificDateSearchType.Month) {
                 format = "full-month-year";

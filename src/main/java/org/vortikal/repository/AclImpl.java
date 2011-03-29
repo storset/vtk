@@ -31,6 +31,7 @@
 package org.vortikal.repository;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -53,14 +54,15 @@ public class AclImpl implements Acl {
     public boolean hasPrivilege(Privilege privilege, Principal principal) {
         Set<Principal> actionSet = this.actionSets.get(privilege);
         
-        if (actionSet != null && actionSet.contains(principal)) 
+        if (actionSet != null && actionSet.contains(principal)) { 
             return true;
+        }
         return false;
     }
 
  
     public Set<Privilege> getActions() {
-        return this.actionSets.keySet();
+        return Collections.unmodifiableSet(this.actionSets.keySet());
     }
 
     public Set<Principal> getPrincipalSet(Privilege action) {
@@ -68,7 +70,7 @@ public class AclImpl implements Acl {
         if (set == null) {
             return new HashSet<Principal>();
         }
-        return set;
+        return Collections.unmodifiableSet(set);
     }
 
     public void clear() {
@@ -164,6 +166,9 @@ public class AclImpl implements Acl {
 
 
     public Principal[] listPrivilegedUsers(Privilege privilege) {
+        if (privilege == null) {
+            throw new IllegalArgumentException("Privilege is NULL");
+        }
         Set<Principal> principals = this.actionSets.get(privilege);
 
         if (principals == null) {

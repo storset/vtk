@@ -60,13 +60,25 @@ public class Value implements Cloneable, Comparable<Value> {
             throw new ValueFormatException("String value too large: " + stringValue.length() + " (max size = "
                     + MAX_LENGTH + ")");
         }
-        if (type != Type.STRING && type != Type.HTML && 
-                type != Type.IMAGE_REF && type != Type.JSON) {
-            throw new IllegalArgumentException("Invalid type for this constructor: " + type);
+        switch (type) {
+        case STRING:
+        case HTML:
+        case JSON:
+        case IMAGE_REF:
+            this.type = type;
+            this.stringValue = stringValue;
+            break;
+        case BOOLEAN:
+            if ("true".equals(stringValue) || "false".equals(stringValue)) {
+                this.type = Type.BOOLEAN;
+                this.booleanValue = "true".equals(stringValue);
+                break;
+            }
+        default:
+            throw new IllegalArgumentException(
+                    "Invalid type [" + type + "] " 
+                    + "for constructor of value [" + stringValue + "]");
         }
-
-        this.type = type;
-        this.stringValue = stringValue;
     }
 
     public Value(boolean booleanValue) {

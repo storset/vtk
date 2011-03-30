@@ -60,6 +60,10 @@ public class UnlockResourceController extends AbstractController {
         Path uri = requestContext.getResourceURI();
         String token = requestContext.getSecurityToken();
 
+        if (request.getParameter("cancel") != null) {
+            return new ModelAndView(this.viewName);
+        }
+
         Resource resource = repository.retrieve(token, uri, false);
         if (resource.getLock() != null) {
             repository.unlock(token, uri, null);

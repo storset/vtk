@@ -649,7 +649,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new ResourceNotFoundException(uri);
         }
 
-        checkLock(r, principal);
         this.authorizationManager.authorizeUnlock(uri, principal);
 
         if (r.getLock() != null) {

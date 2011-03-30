@@ -14,7 +14,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-<title>Unlock resource '${resourceContext.currentResource.name}'</title>
+<title>${vrtx.getMsg("unlockwarning.title")} '${resourceContext.currentResource.name}'</title>
 </head>
 <#assign owner = resourceContext.currentResource.lock.principal.qualifiedName />
 <#assign currentPrincipal = resourceContext.principal.qualifiedName />
@@ -23,18 +23,22 @@
 <#else>
 <body>
 </#if>
-  <h1>Unlock resource '${resourceContext.currentResource.name}'</h1>
-
+  <h1>${vrtx.getMsg("unlockwarning.title")} '${resourceContext.currentResource.name}'</h1>
   <form method="post" action="${form.url?html}">
     <@vrtx.csrfPreventionToken url=form.url />
-    <p>TODO: fix this message</p>
     <#if owner != currentPrincipal>
-      You are about to steal a lock from user ${owner}. Resource was last
-    modified on ${resourceContext.currentResource.lastModified?datetime?html}.
+    <p>${vrtx.getMsg("unlockwarning.steal")} ${owner}.</p> 
+    <p>${vrtx.getMsg("unlockwarning.modified")} ${resourceContext.currentResource.lastModified?datetime?html}.</p>
+    <p>${vrtx.getMsg("unlockwarning.explanation")}</p>
     <#else>
     </#if>
-    <input type="submit" name="unlock" value="Unlock" />
-    <input type="submit" name="cancel" value="Cancel" />
+    <button tabindex="1" type="submit" name="unlock" value="Unlock" >
+      ${vrtx.getMsg("unlockwarning.unlock")}
+    </button>
+    <button tabindex="2" type="submit" name="cancel" value="Cancel" >
+      ${vrtx.getMsg("unlockwarning.cancel")}
+    </button>
   </form>
 </body>
 </html>
+ 

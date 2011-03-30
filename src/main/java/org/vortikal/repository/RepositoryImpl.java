@@ -40,10 +40,14 @@ import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -96,6 +100,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     private PeriodicThread periodicThread;
     private int maxResourceChildren = 3000;
 
+    private Map<Privilege, List<Pattern>> usersBlacklist = new HashMap<Privilege, List<Pattern>>();
+    private Map<Privilege, List<Pattern>> groupsBlacklist = new HashMap<Privilege, List<Pattern>>();
+    
     // Default value of 60 days before recoverable resources are purged from
     // trash can
     private int permanentDeleteOverdueLimitInDays = 60;
@@ -1163,7 +1170,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new IllegalOperationException("Cannot copy or move a resource into itself");
         }
     }
-
+    
     private void validateACL(Acl acl, Acl originalAcl) throws InvalidPrincipalException {
         Set<Privilege> actions = acl.getActions();
         for (Privilege action : actions) {
@@ -1177,6 +1184,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                 } else {
                     valid = true;
                 }
+                if (blacklisted(principal, action)) {
+                    valid = false;
+                }
+
                 if (!valid) {
                     // Preserve invalid principals already in ACL
                     if (!originalAcl.containsEntry(action, principal)) {
@@ -1186,6 +1197,26 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             }
         }
     }
+
+    private boolean blacklisted(Principal principal, Privilege action) {
+        Map<Privilege, List<Pattern>> map = principal.isUser() ? 
+                this.usersBlacklist : this.groupsBlacklist;
+        if (map == null) {
+            return false;
+        }
+        List<Pattern> list = map.get(action);
+        if (list == null) {
+            return false;
+        }
+        for (Pattern pattern: list) {
+            Matcher m = pattern.matcher(principal.getQualifiedName());
+            if (m.find()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     /**
      * Writes to a temporary file (used to avoid lengthy blocking on file
@@ -1330,7 +1361,35 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
         this.maxResourceChildren = maxResourceChildren;
     }
+    
 
+    public void setPermissionBlacklist(Map<Privilege, List<String>> blacklist) {
+        for (Privilege privilege: blacklist.keySet()) {
+            List<String> principals = blacklist.get(privilege);
+            for (String spec: principals) {
+                String principal;
+                boolean user;
+                if (spec.startsWith("user:")) {
+                    principal = spec.substring("user:".length());
+                    user = true;
+                } else if (spec.startsWith("group:")) {
+                    principal = spec.substring("group:".length());
+                    user = false;
+                } else {
+                    throw new IllegalArgumentException("Illegal principal specification: " + spec);
+                }
+                principal = principal.replaceAll("\\.", "\\\\.");
+                principal = principal.replaceAll("\\*", ".*");
+                Pattern pattern = Pattern.compile(principal);
+                Map<Privilege, List<Pattern>> map = user ? this.usersBlacklist : this.groupsBlacklist;
+                if (!map.containsKey(privilege)) {
+                    map.put(privilege, new ArrayList<Pattern>());
+                }
+                map.get(privilege).add(pattern);
+            }
+        }
+    }
+    
     public void init() {
         this.periodicThread = new PeriodicThread(600);
         this.periodicThread.start();

@@ -73,6 +73,7 @@
     <property name="permanentDeleteOverdueLimitInDays" value="${repository.permanentDeleteOverdueLimitInDays}" />
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="permissionBlacklist" ref="repository.acl.blacklist" />
   </bean>
 
   <!--  Repository cache purge control wrapper -->
@@ -218,5 +219,51 @@
     <property name="tempDir" value="${repository.tempDir}" />
     <property name="principalFactory" ref="principalFactory" />
   </bean>
+
+
+  <bean id="repository.acl.blacklist"
+        class="org.springframework.beans.factory.config.MapFactoryBean">
+    <property name="sourceMap">
+      <map>
+        <entry key-ref="PRIVILEGE_ALL" value-ref="repository.acl.blacklist.all" />
+        <entry key-ref="PRIVILEGE_READ_WRITE" value-ref="repository.acl.blacklist.readWrite" />
+        <entry key-ref="PRIVILEGE_ADD_COMMENT" value-ref="repository.acl.blacklist.addComment" />
+        <entry key-ref="PRIVILEGE_BIND_TEMPLATE" value-ref="repository.acl.blacklist.bindTemplate" />
+        <entry key-ref="PRIVILEGE_READ" value-ref="repository.acl.blacklist.read" />
+        <entry key-ref="PRIVILEGE_READ_PROCESSED" value-ref="repository.acl.blacklist.readProcessed" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="repository.acl.blacklist.all" class="org.vortikal.context.CSVListFactoryBean">
+    <property name="csvList" value="${permissions.blacklist.all}" />
+    <property name="trim" value="true" />
+  </bean>
+
+  <bean id="repository.acl.blacklist.readWrite" class="org.vortikal.context.CSVListFactoryBean">
+    <property name="csvList" value="${permissions.blacklist.read-write}" />
+    <property name="trim" value="true" />
+  </bean>
+
+  <bean id="repository.acl.blacklist.addComment" class="org.vortikal.context.CSVListFactoryBean">
+    <property name="csvList" value="${permissions.blacklist.add-comment}" />
+    <property name="trim" value="true" />
+  </bean>
+
+  <bean id="repository.acl.blacklist.bindTemplate" class="org.vortikal.context.CSVListFactoryBean">
+    <property name="csvList" value="${permissions.blacklist.bind-template}" />
+    <property name="trim" value="true" />
+  </bean>
+
+  <bean id="repository.acl.blacklist.read" class="org.vortikal.context.CSVListFactoryBean">
+    <property name="csvList" value="${permissions.blacklist.read}" />
+    <property name="trim" value="true" />
+  </bean>
+
+  <bean id="repository.acl.blacklist.readProcessed" class="org.vortikal.context.CSVListFactoryBean">
+    <property name="csvList" value="${permissions.blacklist.read-processed}" />
+    <property name="trim" value="true" />
+  </bean>
+
 
 </beans>

@@ -73,8 +73,8 @@ import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
-import org.vortikal.security.Principal.Type;
 import org.vortikal.security.PrincipalFactory;
+import org.vortikal.security.Principal.Type;
 import org.vortikal.web.RequestContext;
 
 public class ResourceArchiver {
@@ -88,6 +88,8 @@ public class ResourceArchiver {
 
     private final String dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ";
     private final String commentPath = "META-INF/COMMENTS/";
+    private final String versionAttribute = "X-vrtx-archive-version";
+    private final String encodedAttribute = "X-vrtx-archive-encoded";
 
     public interface EventListener {
         public void expanded(Path uri);
@@ -148,15 +150,17 @@ public class ResourceArchiver {
 
         JarInputStream jarIn = new JarInputStream(new BufferedInputStream(source));
         Manifest manifest = jarIn.getManifest();
+        boolean legacyAcl = false;
         if (manifest != null) {
-            String archiveVersion = manifest.getMainAttributes().getValue("X-vrtx-archive-version");
-            if (archiveVersion != null && !"1.0".equals(archiveVersion)) {
+            String archiveVersion = manifest.getMainAttributes().getValue(this.versionAttribute);
+            if (!isValidArchiveVersion(archiveVersion)) {
                 throw new RuntimeException("Incompatible archive version: " + archiveVersion);
             }
+            legacyAcl = "1.0".equals(archiveVersion);
         }
 
         boolean decodeValues = manifest != null
-                && "true".equals(manifest.getMainAttributes().getValue("X-vrtx-archive-encoded"));
+                && "true".equals(manifest.getMainAttributes().getValue(this.encodedAttribute));
 
         JarEntry entry;
         Set<Path> dirCache = new HashSet<Path>();
@@ -197,7 +201,7 @@ public class ResourceArchiver {
                 canStorePropsAndPermissions = writeFile(token, uri, jarIn);
             }
             if (canStorePropsAndPermissions) {
-                storePropsAndPermissions(token, entry, uri, decodeValues, listener);
+                storePropsAndPermissions(token, entry, uri, decodeValues, legacyAcl, listener);
             }
             if (listener != null) {
                 listener.expanded(uri);
@@ -215,6 +219,10 @@ public class ResourceArchiver {
                 logger.error("Could not add comment to resource '" + comment.getURI() + "': " + t.getMessage());
             }
         }
+    }
+
+    private boolean isValidArchiveVersion(String archiveVersion) {
+        return archiveVersion != null && ("1.0".equals(archiveVersion) || "2.0".equals(archiveVersion));
     }
 
     private Comment getArchivedComment(JarInputStream jarIn, Path base) throws Exception {
@@ -268,8 +276,8 @@ public class ResourceArchiver {
 
         out.println("Manifest-Version: 1.0");
         out.println("Created-By: vrtx");
-        out.println("X-vrtx-archive-version: 1.0");
-        out.println("X-vrtx-archive-encoded: true");
+        out.println(this.versionAttribute + ": 2.0");
+        out.println(this.encodedAttribute + ": true");
 
         addManifestEntry(token, rootLevel, r, out, ignoreList);
         out.flush();
@@ -517,7 +525,7 @@ public class ResourceArchiver {
     }
 
     private void storePropsAndPermissions(String token, JarEntry entry, Path resourceURI, boolean decode,
-            EventListener listener) throws Exception {
+            boolean legacyAcl, EventListener listener) throws Exception {
         Attributes attributes = entry.getAttributes();
         if (attributes == null) {
             return;
@@ -539,7 +547,7 @@ public class ResourceArchiver {
                     propsModified = true;
                 }
             } else if (name.startsWith("X-vrtx-acl-")) {
-                if (setAclEntry(resource, name, attributes, decode, listener)) {
+                if (setAclEntry(resource, name, attributes, decode, legacyAcl, listener)) {
                     aclModified = true;
                 }
             }
@@ -648,8 +656,18 @@ public class ResourceArchiver {
     }
 
     private boolean setAclEntry(Resource resource, String name, Attributes attributes, boolean decode,
-            EventListener listener) throws Exception {
+            boolean legacyAcl, EventListener listener) throws Exception {
+
         String actionName = name.substring("X-vrtx-acl-".length());
+        if (legacyAcl) {
+            if (this.isIgnorableLegacyAction(actionName)) {
+                logger
+                        .warn("Will ignore legacy acl entry action '" + actionName + "' on resource "
+                                + resource.getURI());
+                return false;
+            }
+            actionName = this.remapActionName(actionName);
+        }
         Privilege action = Privilege.forName(actionName);
 
         String values = attributes.getValue(name);
@@ -666,7 +684,15 @@ public class ResourceArchiver {
             switch (type) {
             case 'p':
                 try {
-                    p = principalFactory.getPrincipal(principalName, Type.PSEUDO);
+                    if (legacyAcl) {
+                        if ("pseudo:authenticated".equals(principalName)) {
+                            p = principalFactory.getPrincipal("alle@uio.no", Type.GROUP);
+                        } else if ("pseudo:owner".equals(principalName)) {
+                            break;
+                        }
+                    } else {
+                        p = principalFactory.getPrincipal(principalName, Type.PSEUDO);
+                    }
                 } catch (InvalidPrincipalException e) {
                     // The pseudo principal doesn't exist, drop it
                 }
@@ -694,6 +720,18 @@ public class ResourceArchiver {
             }
         }
         return !resource.isInheritedAcl();
+    }
+
+    private boolean isIgnorableLegacyAction(String actionName) {
+        return RepositoryAction.ADD_COMMENT.toString().equals(actionName)
+                || RepositoryAction.EDIT_COMMENT.toString().equals(actionName) || "bind".equals(actionName);
+    }
+
+    private String remapActionName(String actionName) {
+        if (RepositoryAction.WRITE.toString().equals(actionName)) {
+            return RepositoryAction.READ_WRITE.toString();
+        }
+        return actionName;
     }
 
     private boolean writeFile(String token, Path uri, ZipInputStream is) {

@@ -34,9 +34,11 @@ import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
+import org.vortikal.web.RequestContext;
+import org.vortikal.web.RequestContext.RepositoryTraversal;
+import org.vortikal.web.RequestContext.TraversalCallback;
 
 /**
- * XXX: Rewrite to use propTypeDef instead!
  * Assertion for matching on whether the current resource has a
  * property with a given name, namespace and value.
  *
@@ -57,49 +59,50 @@ public class ResourcePropertyAssertion
 
     private Namespace namespace;
     private String name;
-    // XXX: type the 'value' private variable
     private String value;
     private boolean checkExistenceOnly = false;
     private boolean invert = false;
+    private boolean checkInherited = false;
+    private String token = null;
     
     public void setName(String name) {
         this.name = name;
     }
     
-    
     public void setNamespace(Namespace namespace) {
         this.namespace = namespace;
     }
-    
     
     public String getName() {
         return this.name;
     }
 
-
     public Namespace getNamespace() {
         return this.namespace;
     }
-
 
     public String getValue() {
         return this.value;
     }
 
-
     public void setValue(String value) {
         this.value = value;
     }
-
 
     public void setCheckExistenceOnly(boolean checkExistenceOnly) {
         this.checkExistenceOnly = checkExistenceOnly;
     }
     
-
+    public void setCheckInherited(boolean checkInherited) {
+        this.checkInherited = checkInherited;
+    }
+    
+    public void setToken(String token) {
+        this.token = token;
+    }
+    
     public boolean conflicts(Assertion assertion) {
         if (assertion instanceof ResourcePropertyAssertion) {
-
             ResourcePropertyAssertion other = (ResourcePropertyAssertion) assertion;
 			
             if (this.namespace.equals(other.getNamespace()) && 
@@ -123,6 +126,26 @@ public class ResourcePropertyAssertion
         return false;
     }
 
+    public void setInvert(boolean invert) {
+        this.invert = invert;
+    }
+
+    @Override
+    public boolean matches(Resource resource, Principal principal) {
+        try {
+            if (resource == null) {
+                return this.invert;
+            }
+            if (this.checkInherited) {
+                return matchInherited(resource);
+            }
+            return matchResource(resource);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("property.").append(this.name);
@@ -134,28 +157,45 @@ public class ResourcePropertyAssertion
         return sb.toString();
     }
 
-
-    public void setInvert(boolean invert) {
-        this.invert = invert;
-    }
-
-
-    public boolean matches(Resource resource, Principal principal) {
-
-
-        if (resource != null) {
-
-            Property property = resource.getProperty(this.namespace, this.name);
-
-            if (this.checkExistenceOnly) {
-                if (property != null) return !this.invert;
-            } else {
-                if (property != null && this.value.equals(property.getStringValue())) return !this.invert;
-            }
+    private boolean matchResource(Resource resource) {
+        Property property = resource.getProperty(this.namespace, this.name);
+        if (this.checkExistenceOnly) {
+            if (property != null) return !this.invert;
+        } else {
+            if (property != null && this.value.equals(property.getStringValue())) return !this.invert;
         }
-        
         return this.invert;
     }
     
+    private boolean matchInherited(Resource resource) throws Exception {
+        RequestContext requestContext = RequestContext.getRequestContext();
+        final String token = this.token != null ? this.token : requestContext.getSecurityToken();
+        
+        RepositoryTraversal traversal = requestContext.rootTraversal(token, resource.getURI());
+        Callback callback = new Callback(this.name);
+        traversal.traverse(callback);
+        if (callback.result == null) {
+            return this.invert;
+        }
+        return matchResource(callback.result);
+    }
+    
+    private static class Callback implements TraversalCallback {
+        public Resource result;
+        private String propName;
+        public Callback(String propName) {
+            this.propName = propName;
+        }
+        @Override
+        public boolean callback(Resource r) {
+            for (Property p: r.getProperties()) {
+                if (p.getDefinition().getName().equals(propName)) {
+                    this.result = r;
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
 
 }

@@ -26,10 +26,7 @@
     <property name="assertions">
       <list>
         <ref bean="contentTypeMatchesMedia" />
-        <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="vrtx" />
-          <property name="parameterValue" value="player" />
-        </bean>
+        <ref bean="asWebpageAssertion" />
       </list>
     </property>
     <property name="handler" ref="displayMediaResource" />

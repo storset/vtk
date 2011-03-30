@@ -682,6 +682,7 @@
       </list>
     </property>
     <property name="handler" ref="previewImageHandler" />
+    <property name="handlerInterceptors" ref="previewAsWebpageServiceInterceptor" />
   </bean>
   
   <bean id="previewMediaService" class="org.vortikal.web.service.ServiceImpl">
@@ -692,6 +693,7 @@
       </list>
     </property>
     <property name="handler" ref="previewMediaHandler" />
+      <property name="handlerInterceptors" ref="previewAsWebpageServiceInterceptor" />
   </bean>
 
   <bean id="previewTextService" class="org.vortikal.web.service.ServiceImpl">
@@ -759,6 +761,14 @@
     </property>
   </bean>
   
+    <bean id="previewAsWebpageServiceInterceptor" class="org.vortikal.web.ReferenceDataProvidingHandlerInterceptor">
+    <property name="providers">
+     <list>
+       <ref bean="viewAsWebpageMessageProvider" />
+     </list>
+    </property>
+  </bean>
+  
   <bean id="publishPermissionInterceptor" class="org.vortikal.web.ReferenceDataProvidingHandlerInterceptor">
     <property name="providers" ref="publishPermissionMessageProvider" />
   </bean>
@@ -766,6 +776,11 @@
   <bean id="indexFileMessageProvider" class="org.vortikal.web.referencedata.provider.IndexFileMessageProvider">
     <property name="modelName" value="tabMessage" />
     <property name="localizationKey" value="preview.folderWithIndexFile.tabMessage" />
+  </bean>
+ 
+   <bean id="viewAsWebpageMessageProvider" class="org.vortikal.web.referencedata.provider.ResourceMessageProvider">
+    <property name="modelName" value="tabMessage" />
+    <property name="localizationKey" value="preview.viewAsWebpage.tabMessage" />
   </bean>
   
   <bean id="publishPermissionMessageProvider" class="org.vortikal.web.referencedata.provider.PublishPermissionMessageProvider">
@@ -1496,6 +1511,7 @@
          </bean>
       </list>
     </property>
+
   </bean>
   
   <bean id="previewMediaPlayerView" parent="freemarkerView">

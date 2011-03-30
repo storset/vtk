@@ -23,12 +23,6 @@
     </property>
   </bean>
 
-  <bean id="imageWithInfoAssertion" class="org.vortikal.web.service.RequestParameterAssertion">
-    <property name="parameterName" value="vrtx" />
-    <property name="parameterValue" value="image-info" />
-  </bean>
-
-
   <bean id="viewImageInfoService.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
     <property name="modelName" value="previewImage" />
     <property name="urlName" value="URL" />
@@ -41,7 +35,7 @@
     <property name="assertions">
       <list>
         <ref bean="contentTypeMatchesImage" />
-        <ref bean="imageWithInfoAssertion" />
+        <ref bean="asWebpageAssertion" />
       </list>
     </property>
     <property name="handler" ref="imageWithInfoHandler" />

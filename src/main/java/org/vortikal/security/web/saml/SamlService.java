@@ -105,7 +105,6 @@ public abstract class SamlService {
 
     private static final String REQUEST_ID_SESSION_ATTR = SamlAuthenticationHandler.class.getName()
             + ".SamlSavedRequestIDS";
-    
 
     private CertificateManager certificateManager;
 
@@ -124,6 +123,7 @@ public abstract class SamlService {
 
     private String logoutURL;
 
+
     protected UUID getRequestIDSessionAttribute(HttpServletRequest request, URL url) {
         HttpSession session = request.getSession(false);
         if (session == null) {
@@ -134,22 +134,26 @@ public abstract class SamlService {
         if (attr == null) {
             return null;
         }
+        url.setCollection(false);
         return attr.get(url);
     }
-    
+
+
     public void setRequestIDSessionAttribute(HttpServletRequest request, URL url, UUID uuid) {
         HttpSession session = request.getSession(true);
-        synchronized(session.getId().intern()) {
+        synchronized (session.getId().intern()) {
             @SuppressWarnings("unchecked")
             Map<URL, UUID> attr = (Map<URL, UUID>) session.getAttribute(REQUEST_ID_SESSION_ATTR);
             if (attr == null) {
                 attr = new HashMap<URL, UUID>();
                 session.setAttribute(REQUEST_ID_SESSION_ATTR, attr);
             }
+
+            url.setCollection(false);
             attr.put(url, uuid);
         }
     }
-    
+
 
     @Required
     public void setCertificateManager(CertificateManager certificateManager) {

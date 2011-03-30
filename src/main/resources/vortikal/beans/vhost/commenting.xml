@@ -8,7 +8,8 @@
       <list>
         <ref bean="commenting.requestParameterIsAddComment" />
         <ref bean="commenting.isPostRequest" />
-        <ref bean="commenting.isCommentable" />
+        <ref bean="commenting.commentsAllowed" />
+        <ref bean="commenting.commentsEnabled" />
       </list>
     </property>
     <property name="handlerFilters">
@@ -209,7 +210,16 @@
     </property>
   </bean>
 
-  <bean id="commenting.isCommentable"
+  <bean id="commenting.commentsEnabled"
+        class="org.vortikal.web.service.ResourcePropertyAssertion">
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="name" value="commentsEnabled" />
+    <property name="value" value="true" />
+    <property name="checkInherited" value="true" />
+    <property name="token" ref="trustedToken" />
+  </bean>
+
+  <bean id="commenting.commentsAllowed"
         parent="abstractResourcePrincipalPermissionAssertion">
     <property name="privilege" ref="PRIVILEGE_ADD_COMMENT" />
   </bean>

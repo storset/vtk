@@ -180,8 +180,12 @@
   <li class="${type}s">
     <fieldset>
       <legend><@vrtx.msg code="permissions.${type}s" default="${capitalizedType}s"/></legend>
+      
+      <#-- Bind removeUrls -->
       <@spring.bind formName + ".remove${capitalizedType}URLs" />
       <#assign removeURLs=spring.status.value />
+      
+      <#-- Bind and list principals -->
       <@spring.bind formName + ".${type}s" /> 
       <ul class="${type}s">
         <#list spring.status.value as groupOrUser>
@@ -192,13 +196,20 @@
               <#else>
                 ${groupOrUser.name}
               </#if>
+              
+              <#-- Remove link -->
               &nbsp;(&nbsp;<a href="${removeURLs[groupOrUser.name]?html}"><#t/>
               <#t/><@vrtx.msg code="permissions.remove" default="remove"/></a>&nbsp;)
+              
             </#compress>
           </li>
         </#list>
       </ul>
+      
+      <#-- Bind names -->
       <@spring.bind formName + ".${type}Names" /> 
+      
+      <#-- Display errors -->
       <#assign value=""/>
       <#assign errorsExist = false>
       <#if spring.status.errorMessages?size &gt; 0>
@@ -213,6 +224,8 @@
           <#assign value=spring.status.value />
         </#if>
       </#if>
+      
+      <#-- Add -->
       <span class="add${capitalizedType}">      
         <input type="text" id="${spring.status.expression}" name="${spring.status.expression}" value="${value?html}" />
         <#if type == "user">
@@ -224,7 +237,7 @@
           <input type="hidden" id="ac_userNames" name="ac_userNames" value="${value?html}" />
         </#if>
         <input class="add${capitalizedType}Button" type="submit" name="add${capitalizedType}Action"
-               value="<@vrtx.msg code="permissions.add${capitalizedType}" default="Add ${capitalizedType}"/>"/>
+               value="<@vrtx.msg code="permissions.add${capitalizedType}" default="Add ${capitalizedType}"/>"/>   
       </span>
     </fieldset>
   </li>

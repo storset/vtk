@@ -115,9 +115,8 @@ public class ACLEditController extends SimpleFormController implements Initializ
                 .listPrivilegedGroups(this.privilege)));
         
         List<String> shortcuts = this.permissionShortcuts.get(this.privilege);
-        
         if (shortcuts != null) {    
-            command.setShortcuts(extractAndCheckShortcuts(authorizedUsers, authorizedGroups, shortcuts));
+          command.setShortcuts(extractAndCheckShortcuts(authorizedUsers, authorizedGroups, shortcuts));
         }
 
         command.setUsers(authorizedUsers);
@@ -229,13 +228,14 @@ public class ACLEditController extends SimpleFormController implements Initializ
         Repository repository = requestContext.getRepository();
         String token = requestContext.getSecurityToken();
 
-        // did the user cancel?
+        // Did the user cancel?
         if (editCommand.getCancelAction() != null) {
             return new ModelAndView(getSuccessView());
         }
-
+        
         // Has the user asked to save?
         if (editCommand.getSaveAction() != null) {
+            // Remove or add shortcuts
             aclShortcuts(editCommand, acl);
             addToAcl(acl, editCommand.getUserNameEntries(), Type.USER);
             addToAcl(acl, editCommand.getGroupNames(), Type.GROUP);
@@ -243,40 +243,42 @@ public class ACLEditController extends SimpleFormController implements Initializ
             return new ModelAndView(getSuccessView());
         }
 
-        // doing remove or add actions
+        // Doing remove or add actions
         if (editCommand.getRemoveUserAction() != null) {
             removeFromAcl(acl, editCommand.getUserNames(), Type.USER);
             return showForm(request, response, new BindException(
-                    getACLEditCommand(resource, 
-                            requestContext.getPrincipal()), this.getCommandName()));
+                    getACLEditCommand(resource, requestContext.getPrincipal()),
+                    this.getCommandName()));
 
         } else if (editCommand.getRemoveGroupAction() != null) {
             removeFromAcl(acl, editCommand.getGroupNames(), Type.GROUP);
             return showForm(request, response, new BindException(
                     getACLEditCommand(resource, requestContext.getPrincipal()), 
-                    getCommandName()));
+                    this.getCommandName()));
 
         } else if (editCommand.getAddUserAction() != null) {
-            addToAcl(acl, editCommand.getUserNameEntries(), Type.USER);
+            addToAcl(acl, editCommand.getUserNames(), Type.USER);
             return showForm(request, response, new BindException(
                     getACLEditCommand(resource, requestContext.getPrincipal()), 
-                    getCommandName()));
+                    this.getCommandName()));
 
         } else if (editCommand.getAddGroupAction() != null) {
             addToAcl(acl, editCommand.getGroupNames(), Type.GROUP);
             return showForm(request, response, new BindException(
                     getACLEditCommand(resource, requestContext.getPrincipal()), 
-                    getCommandName()));
+                    this.getCommandName()));
 
         } else {
             return new ModelAndView(getSuccessView());
         }
     }
 
-    private void aclShortcuts(ACLEditCommand editCommand, Acl acl) {
+    private String[][] aclShortcuts(ACLEditCommand editCommand, Acl acl) {
+        
         String[] updatedShortcuts = editCommand.getUpdatedShortcuts();
         String[][] shortcuts = editCommand.getShortcuts();
         
+        int count = 0;
         for (String[] shortcut : shortcuts) {
             boolean checkedNotFound = true; // remove condition
             boolean uncheckedFound = false; // add condition
@@ -290,10 +292,11 @@ public class ACLEditController extends SimpleFormController implements Initializ
 
             // Remove
             if (checkedNotFound) {
+                shortcuts[count][1] = "";
                 String[] remove = new String[1];
                 Type type = null;
 
-                if (shortcut[0].startsWith("user:")) {
+                if (shortcuts[count][0].startsWith("user:")) {
                     remove[0] = shortcut[0].replace("user:", "");
                     type = Type.USER;
                 } else if (shortcut[0].startsWith("group:")) {
@@ -305,6 +308,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
 
             // Add
             if (uncheckedFound) {
+                shortcuts[count][1] = "checked";
                 String[] add = new String[1];
                 Type type = null;
                 if (shortcut[0].startsWith("user:")) {
@@ -320,7 +324,11 @@ public class ACLEditController extends SimpleFormController implements Initializ
                 }  
                 addToAcl(acl, add, type);
             }
+            
+            count++;
         }
+        
+        return shortcuts;
     }
     
     private void removeFromAcl(Acl acl, List<String> values, Type type) {

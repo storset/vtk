@@ -123,8 +123,6 @@ public class ACLEditController extends SimpleFormController implements Initializ
         command.setGroups(authorizedGroups);
         
         Map<String, String> removeUserURLs = new HashMap<String, String>();
-        command.setRemoveUserURLs(removeUserURLs);
-
         for (Principal authorizedUser : authorizedUsers) {
             Map<String, String> parameters = new HashMap<String, String>();
             parameters.put("removeUserAction", "true");
@@ -132,10 +130,9 @@ public class ACLEditController extends SimpleFormController implements Initializ
             String url = service.constructLink(resource, principal, parameters);
             removeUserURLs.put(authorizedUser.getName(), url);
         }
+        command.setRemoveUserURLs(removeUserURLs);
 
         Map<String, String> removeGroupURLs = new HashMap<String, String>();
-        command.setRemoveGroupURLs(removeGroupURLs);
-
         for (Principal authorizedGroup : authorizedGroups) {
             Map<String, String> parameters = new HashMap<String, String>();
             parameters.put("removeGroupAction", "true");
@@ -145,6 +142,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
                     parameters);
             removeGroupURLs.put(authorizedGroup.getName(), url);
         }
+        command.setRemoveGroupURLs(removeGroupURLs);
 
         return command;
     }
@@ -233,12 +231,11 @@ public class ACLEditController extends SimpleFormController implements Initializ
             return new ModelAndView(getSuccessView());
         }
         
+        // Remove or add shortcuts
+        aclShortcuts(editCommand, acl);
+        
         // Has the user asked to save?
-        if (editCommand.getSaveAction() != null) {
-            // Remove or add shortcuts
-            aclShortcuts(editCommand, acl);
-            addToAcl(acl, editCommand.getUserNameEntries(), Type.USER);
-            addToAcl(acl, editCommand.getGroupNames(), Type.GROUP);
+        if (editCommand.getSaveAction() != null) {      
             repository.storeACL(token, resource);
             return new ModelAndView(getSuccessView());
         }
@@ -273,7 +270,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
         }
     }
 
-    private String[][] aclShortcuts(ACLEditCommand editCommand, Acl acl) {
+    private void aclShortcuts(ACLEditCommand editCommand, Acl acl) {
         
         String[] updatedShortcuts = editCommand.getUpdatedShortcuts();
         String[][] shortcuts = editCommand.getShortcuts();
@@ -328,20 +325,8 @@ public class ACLEditController extends SimpleFormController implements Initializ
             count++;
         }
         
-        return shortcuts;
-    }
-    
-    private void removeFromAcl(Acl acl, List<String> values, Type type) {
-        for (String value : values) {
-            Type tmpType = type;
-            if (type.equals(Type.USER)) {
-              if (value.startsWith("pseudo:")) {
-                  tmpType  = Type.PSEUDO;  
-              }
-            }
-            Principal principal = principalFactory.getPrincipal(value, tmpType);
-            acl.removeEntry(this.privilege, principal);
-        } 
+        editCommand.setUpdatedShortcuts(new String[0]);
+        editCommand.setShortcuts(shortcuts);
     }
     
     private void removeFromAcl(Acl acl, String[] values, Type type) {
@@ -354,13 +339,6 @@ public class ACLEditController extends SimpleFormController implements Initializ
             }
             Principal principal = principalFactory.getPrincipal(value, tmpType);
             acl.removeEntry(this.privilege, principal);
-        }
-    }
-
-    private void addToAcl(Acl acl, List<String> values, Type type) {
-        for (String value : values) {
-            Principal p = principalFactory.getPrincipal(value, type);
-            acl.addEntry(this.privilege, p);
         }
     }
 

@@ -232,7 +232,11 @@ public class ACLEditController extends SimpleFormController implements Initializ
         }
         
         // Remove or add shortcuts
-        aclShortcuts(editCommand, acl);
+        // TODO: does not work when remove command - skip until find solution
+        if(editCommand.getRemoveUserAction() == null 
+           && editCommand.getRemoveGroupAction() == null) {
+          aclShortcuts(editCommand, acl);
+        }
         
         // Has the user asked to save?
         if (editCommand.getSaveAction() != null) {      

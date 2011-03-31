@@ -73,8 +73,8 @@ import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.Principal.Type;
+import org.vortikal.security.PrincipalFactory;
 import org.vortikal.web.RequestContext;
 
 public class ResourceArchiver {
@@ -90,6 +90,9 @@ public class ResourceArchiver {
     private final String commentPath = "META-INF/COMMENTS/";
     private final String versionAttribute = "X-vrtx-archive-version";
     private final String encodedAttribute = "X-vrtx-archive-encoded";
+    
+    private Map<String, String> legacyAclMappings = new HashMap<String, String>();
+    
 
     public interface EventListener {
         public void expanded(Path uri);
@@ -362,46 +365,47 @@ public class ResourceArchiver {
     }
 
     private void addAcl(Resource r, PrintWriter out) throws Exception {
-        if (!r.isInheritedAcl()) {
-            Acl acl = r.getAcl();
-            for (Privilege action : acl.getActions()) {
-                StringBuilder entry = new StringBuilder("X-vrtx-acl-");
-                entry.append(action.getName()).append(": ");
+        if (r.isInheritedAcl()) {
+            return;
+        }
+        Acl acl = r.getAcl();
+        for (Privilege action : acl.getActions()) {
+            StringBuilder entry = new StringBuilder("X-vrtx-acl-");
+            entry.append(action.getName()).append(": ");
 
-                boolean empty = true;
+            boolean empty = true;
 
-                Principal[] users = acl.listPrivilegedUsers(action);
-                for (int i = 0; i < users.length; i++) {
-                    Principal user = users[i];
-                    if (i > 0)
-                        entry.append(",");
-                    entry.append("u:").append(user.getQualifiedName());
-                    empty = false;
-                }
+            Principal[] users = acl.listPrivilegedUsers(action);
+            for (int i = 0; i < users.length; i++) {
+                Principal user = users[i];
+                if (i > 0)
+                    entry.append(",");
+                entry.append("u:").append(user.getQualifiedName());
+                empty = false;
+            }
 
-                Principal[] groups = acl.listPrivilegedGroups(action);
-                for (int i = 0; i < groups.length; i++) {
-                    Principal group = groups[i];
-                    if (!empty || i > 0)
-                        entry.append(",");
-                    entry.append("g:").append(group.getQualifiedName());
-                    empty = false;
-                }
+            Principal[] groups = acl.listPrivilegedGroups(action);
+            for (int i = 0; i < groups.length; i++) {
+                Principal group = groups[i];
+                if (!empty || i > 0)
+                    entry.append(",");
+                entry.append("g:").append(group.getQualifiedName());
+                empty = false;
+            }
 
-                Principal[] pseudos = acl.listPrivilegedPseudoPrincipals(action);
-                for (int i = 0; i < pseudos.length; i++) {
-                    Principal pseudo = pseudos[i];
-                    if (!empty || i > 0)
-                        entry.append(",");
-                    entry.append("p:").append(pseudo.getQualifiedName());
-                    empty = false;
-                }
+            Principal[] pseudos = acl.listPrivilegedPseudoPrincipals(action);
+            for (int i = 0; i < pseudos.length; i++) {
+                Principal pseudo = pseudos[i];
+                if (!empty || i > 0)
+                    entry.append(",");
+                entry.append("p:").append(pseudo.getQualifiedName());
+                empty = false;
+            }
 
-                if (!empty) {
-                    encode(entry);
-                    ensure72Bytes(entry);
-                    out.println(entry.toString());
-                }
+            if (!empty) {
+                encode(entry);
+                ensure72Bytes(entry);
+                out.println(entry.toString());
             }
         }
     }
@@ -556,14 +560,8 @@ public class ResourceArchiver {
             this.repository.store(token, resource);
         }
         if (aclModified) {
-            // XXX: Repository API not "friendly" to special clients like
-            // resource archiver/expander wrt. ACL modifications. One shouldn't
-            // have to call storeACL twice. And don't validate acl when writing
-            // acl
-            // to db, add it the same way it was
-            this.repository.storeACL(token, resource, false); // Switch
-            // inheritance off
-            this.repository.storeACL(token, resource, false); // Store new ACL
+            resource = this.repository.storeACL(
+                    token, resource.getURI(), resource.getAcl(), false);
         }
     }
 
@@ -677,6 +675,7 @@ public class ResourceArchiver {
         String[] list = values.split(",");
 
         Acl acl = resource.getAcl();
+        boolean modified = false;
         for (String value : list) {
             String principalName = value.substring(2);
             Principal p = null;
@@ -689,6 +688,8 @@ public class ResourceArchiver {
                             p = principalFactory.getPrincipal("alle@uio.no", Type.GROUP);
                         } else if ("pseudo:owner".equals(principalName)) {
                             break;
+                        } else {
+                             p = principalFactory.getPrincipal(principalName, Type.PSEUDO);
                         }
                     } else {
                         p = principalFactory.getPrincipal(principalName, Type.PSEUDO);
@@ -705,9 +706,10 @@ public class ResourceArchiver {
                 break;
             }
             if (p != null) {
-                resource.setInheritedAcl(false);
+                // XXX: repository.isValidEntry()?
                 if (acl.isValidEntry(action, p)) {
                     acl.addEntry(action, p);
+                    modified = true;
                 } else {
                     if (listener != null) {
                         listener.warn(resource.getURI(), "Invalid acl entry: " + p + ":" + action + ", skipping");
@@ -715,11 +717,11 @@ public class ResourceArchiver {
                 }
             } else {
                 if (listener != null) {
-                    listener.warn(resource.getURI(), "Invalid principal: " + p + ", skipping");
+                    listener.warn(resource.getURI(), "Invalid principal: " + principalName + ", skipping");
                 }
             }
         }
-        return !resource.isInheritedAcl();
+        return modified;
     }
 
     private boolean isIgnorableLegacyAction(String actionName) {
@@ -828,6 +830,12 @@ public class ResourceArchiver {
     @Required
     public void setPrincipalFactory(PrincipalFactory principalFactory) {
         this.principalFactory = principalFactory;
+    }
+    
+    public void setLegacyAclMappings(Map<String, String> legacyAclMappings) {
+        for (Map.Entry<String, String> entry: legacyAclMappings.entrySet()) {
+            this.legacyAclMappings.put(entry.getKey(), entry.getValue());
+        }
     }
 
     @SuppressWarnings("unchecked")

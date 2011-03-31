@@ -110,21 +110,9 @@ public interface Resource extends PropertySet, Cloneable {
 
 
     /**
-     * Sets the Access Control List (ACL) for a resource.
-     */
-    public void setAcl(Acl acl);
-
-
-    /**
      * Determines whether this resource has an inherited ACL.
      */
     public boolean isInheritedAcl();
-
-
-    /**
-     * Sets this resource's ACL inheritance flag (called prior to performing a {@link Repository#storeACL} operation).
-     */
-    public void setInheritedAcl(boolean inheritedAcl);
 
 
     /**

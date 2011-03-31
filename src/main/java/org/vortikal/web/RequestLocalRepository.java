@@ -37,11 +37,13 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Comment;
 import org.vortikal.repository.FailedDependencyException;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Privilege;
 import org.vortikal.repository.ReadOnlyException;
 import org.vortikal.repository.RecoverableResource;
 import org.vortikal.repository.Repository;
@@ -295,23 +297,40 @@ public class RequestLocalRepository implements Repository {
     }
 
     @Override
-    public void storeACL(String token, Resource resource) throws Exception {
+    public Resource storeACL(String token, Path uri, Acl acl) throws Exception {
 
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();
         if (ctx != null) {
             ctx.clear();
         }
-        this.repository.storeACL(token, resource);
+        return this.repository.storeACL(token, uri, acl);
     }
 
     @Override
-    public void storeACL(String token, Resource resource, boolean validateACL) throws Exception {
+    public Resource storeACL(String token, Path uri, Acl acl, boolean validateACL) throws Exception {
 
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();
         if (ctx != null) {
             ctx.clear();
         }
-        this.repository.storeACL(token, resource, validateACL);
+        return this.repository.storeACL(token, uri, acl, validateACL);
+    }
+    
+    @Override
+    public Resource deleteACL(String token, Path uri)
+            throws ResourceNotFoundException, AuthorizationException,
+            AuthenticationException, IllegalOperationException,
+            ReadOnlyException, Exception {
+        RepositoryContext ctx = RepositoryContext.getRepositoryContext();
+        if (ctx != null) {
+            ctx.clear();
+        }
+        return this.repository.deleteACL(token, uri);
+    }
+
+    @Override
+    public boolean isValidAclEntry(Privilege privilege, Principal principal) {
+        return this.repository.isValidAclEntry(privilege, principal);
     }
 
     @Override

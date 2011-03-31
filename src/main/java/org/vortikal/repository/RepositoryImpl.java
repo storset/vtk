@@ -850,88 +850,106 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     }
 
     @Override
-    public void storeACL(String token, Resource resource) throws ResourceNotFoundException, AuthorizationException,
+    public Resource storeACL(String token, Path uri, Acl acl) throws ResourceNotFoundException, AuthorizationException,
             AuthenticationException, IllegalOperationException, ReadOnlyException, IOException {
-        this.storeACL(token, resource, true);
+        return this.storeACL(token, uri, acl, true);
     }
 
     @Override
-    public void storeACL(String token, Resource resource, boolean validateACL) throws ResourceNotFoundException,
+    public Resource storeACL(String token, Path uri, Acl acl, boolean validateACL) throws ResourceNotFoundException,
             AuthorizationException, AuthenticationException, IllegalOperationException, ReadOnlyException, IOException {
 
-        if (resource == null) {
-            throw new IllegalArgumentException("Resource is null");
+        if (uri == null) {
+            throw new IllegalArgumentException("URI is null");
+        }
+        if (acl == null) {
+            throw new IllegalArgumentException("ACL is null");
         }
 
         Principal principal = this.tokenManager.getPrincipal(token);
 
-        ResourceImpl r = this.dao.load(resource.getURI());
+        ResourceImpl r = this.dao.load(uri);
         if (r == null) {
-            throw new ResourceNotFoundException(resource.getURI());
+            throw new ResourceNotFoundException(uri);
         }
-        checkLock(resource, principal);
-        this.authorizationManager.authorizeAll(resource.getURI(), principal);
+        checkLock(r, principal);
+        this.authorizationManager.authorizeAll(r.getURI(), principal);
 
         try {
             Resource original = (Resource) r.clone();
-
-            if (original.isInheritedAcl() && resource.isInheritedAcl()) {
-                /* No ACL change */
-                return;
-            }
-            ResourceImpl parent = null;
-            if (!r.getURI().isRoot()) {
-                parent = this.dao.load(r.getURI().getParent());
-            }
-
-            if (resource.getURI().isRoot() && resource.isInheritedAcl()) {
-                throw new IllegalOperationException("The root resource cannot have an inherited ACL");
-            }
-
-            if (original.isInheritedAcl() && !resource.isInheritedAcl()) {
-                /*
-                 * Switching from inheritance. Make the new ACL a copy of the
-                 * parent's ACL, since the supplied one may contain other ACEs
-                 * than the one we now inherit from.
-                 */
-                AclImpl newAcl = (AclImpl) parent.getAcl().clone();
-                r.setAcl(newAcl);
-                r.setInheritedAcl(false);
-                r.setAclInheritedFrom(PropertySetImpl.NULL_RESOURCE_ID);
-
-            } else if (!original.isInheritedAcl() && resource.isInheritedAcl()) {
-                /*
-                 * Switching to inheritance. The new ACL is the same as the
-                 * parent's ACL.
-                 */
-                AclImpl newAcl = (AclImpl) parent.getAcl().clone();
-                r.setAcl(newAcl);
-                r.setAclInheritedFrom(parent.getID());
-                r.setInheritedAcl(true);
-
-                // If we are switching on inheritance, then never validate ACL.
-                validateACL = false;
-            } else {
-                /* Updating the entries */
-                AclImpl newAcl = (AclImpl) resource.getAcl().clone();
-                r.setInheritedAcl(false);
-                r.setAcl(newAcl);
-            }
-
+            r.setAcl(acl);
+            r.setInheritedAcl(false);
+            r.setAclInheritedFrom(PropertySetImpl.NULL_RESOURCE_ID);
+            
             if (validateACL) {
-                validateACL(r.getAcl(), original.getAcl());
+                validateNewAcl(acl, original.getAcl());
             }
-
             this.dao.storeACL(r);
-
-            ACLModificationEvent event = new ACLModificationEvent(this, (Resource) r.clone(), original, r.getAcl(),
+            ACLModificationEvent event = new ACLModificationEvent(
+                    this, (Resource) r.clone(), original, r.getAcl(),
                     original.getAcl());
 
             this.context.publishEvent(event);
+            
+            return (Resource) r.clone();
 
         } catch (CloneNotSupportedException e) {
             throw new IOException(e.getMessage());
         }
+    }
+    
+    
+
+    @Override
+    public Resource deleteACL(String token, Path uri)
+            throws ResourceNotFoundException, AuthorizationException,
+            AuthenticationException, IllegalOperationException,
+            ReadOnlyException, Exception {
+        if (uri == null) {
+            throw new IllegalArgumentException("URI is null");
+        }
+        if (uri == Path.ROOT) {
+            throw new IllegalOperationException("The root resource cannot have an inherited ACL");
+        }
+        Principal principal = this.tokenManager.getPrincipal(token);
+
+        ResourceImpl r = this.dao.load(uri);
+        if (r == null) {
+            throw new ResourceNotFoundException(uri);
+        }
+        checkLock(r, principal);
+        this.authorizationManager.authorizeAll(r.getURI(), principal);
+        
+        if (r.isInheritedAcl()) {
+            throw new IllegalOperationException("Resource " + r.getURI() 
+                    + " already has an inherited ACL");
+        }
+        try {
+            ResourceImpl parent = this.dao.load(uri.getParent());
+
+            Resource original = (Resource) r.clone();
+            AclImpl newAcl = (AclImpl) parent.getAcl().clone();
+            r.setAcl(newAcl);
+            r.setAclInheritedFrom(parent.getID());
+            r.setInheritedAcl(true);
+
+            this.dao.storeACL(r);
+            ACLModificationEvent event = new ACLModificationEvent(
+                    this, (Resource) r.clone(), original, r.getAcl(),
+                    original.getAcl());
+
+            this.context.publishEvent(event);
+            
+            return (Resource) r.clone();
+            
+        } catch (CloneNotSupportedException e) {
+            throw new IOException(e.getMessage());
+        }
+    }
+
+    @Override
+    public boolean isValidAclEntry(Privilege privilege, Principal principal) {
+        return validateAclEntry(privilege, principal);
     }
 
     @Override
@@ -1169,24 +1187,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new IllegalOperationException("Cannot copy or move a resource into itself");
         }
     }
-    
-    private void validateACL(Acl acl, Acl originalAcl) throws InvalidPrincipalException {
+
+    private void validateNewAcl(Acl acl, Acl originalAcl) throws InvalidPrincipalException {
         Set<Privilege> actions = acl.getActions();
         for (Privilege action : actions) {
             Set<Principal> principals = acl.getPrincipalSet(action);
             for (Principal principal : principals) {
-                boolean valid = false;
-                if (principal.getType() == Principal.Type.USER) {
-                    valid = this.principalManager.validatePrincipal(principal);
-                } else if (principal.getType() == Principal.Type.GROUP) {
-                    valid = this.principalManager.validateGroup(principal);
-                } else {
-                    valid = true;
-                }
-                if (blacklisted(principal, action)) {
-                    valid = false;
-                }
-
+                boolean valid = validateAclEntry(action, principal);
                 if (!valid) {
                     // Preserve invalid principals already in ACL
                     if (!originalAcl.containsEntry(action, principal)) {
@@ -1195,6 +1202,21 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                 }
             }
         }
+    }
+    
+    private boolean validateAclEntry(Privilege action, Principal principal) {
+        boolean valid = false;
+        if (principal.getType() == Principal.Type.USER) {
+            valid = this.principalManager.validatePrincipal(principal);
+        } else if (principal.getType() == Principal.Type.GROUP) {
+            valid = this.principalManager.validateGroup(principal);
+        } else {
+            valid = true;
+        }
+        if (blacklisted(principal, action)) {
+            valid = false;
+        }
+        return valid;
     }
 
     private boolean blacklisted(Principal principal, Privilege action) {

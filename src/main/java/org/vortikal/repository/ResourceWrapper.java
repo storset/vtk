@@ -219,14 +219,6 @@ public class ResourceWrapper implements Resource {
         this.resource.removeAllProperties();
     }
 
-    public void setAcl(Acl acl) {
-        this.resource.setAcl(acl);
-    }
-
-    public void setInheritedAcl(boolean inheritedAcl) {
-        this.resource.setInheritedAcl(inheritedAcl);
-    }
-
     public List<Property> getProperties() {
         return this.resource.getProperties();
     }

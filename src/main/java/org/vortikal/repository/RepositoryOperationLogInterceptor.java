@@ -91,6 +91,8 @@ public class RepositoryOperationLogInterceptor implements MethodInterceptor {
                 operation == RepositoryOperation.CREATE              ||
                 operation == RepositoryOperation.DELETE              ||
                 operation == RepositoryOperation.STORE_CONTENT       ||
+                operation == RepositoryOperation.STORE_ACL           ||
+                operation == RepositoryOperation.DELETE_ACL          ||
                 operation == RepositoryOperation.GET_COMMENTS) {            
 
             Path uri = (Path)args[1];            
@@ -104,7 +106,6 @@ public class RepositoryOperationLogInterceptor implements MethodInterceptor {
             params = "(" + srcUri + ", " + dstUri + ")";
             
         } else if (RepositoryOperation.STORE == operation            ||
-                RepositoryOperation.STORE_ACL == operation           ||
                 RepositoryOperation.DELETE_COMMENT == operation      ||
                 RepositoryOperation.DELETE_ALL_COMMENTS == operation ||
                 RepositoryOperation.UPDATE_COMMENT == operation) {

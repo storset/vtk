@@ -295,15 +295,28 @@ public class CachePurgeControlRepositoryWrapper implements Repository {
     }
 
     @Override
-    public void storeACL(String token, Resource resource) throws ResourceNotFoundException, AuthorizationException,
+    public Resource storeACL(String token, Path uri, Acl acl) throws ResourceNotFoundException, AuthorizationException,
             AuthenticationException, IllegalOperationException, ReadOnlyException, Exception {
-        this.wrappedRepository.storeACL(token, resource); // Tx
+        return this.wrappedRepository.storeACL(token, uri, acl); // Tx
     }
 
     @Override
-    public void storeACL(String token, Resource resource, boolean validateACL) throws ResourceNotFoundException,
+    public Resource storeACL(String token, Path uri, Acl acl, boolean validateACL) throws ResourceNotFoundException,
             AuthorizationException, AuthenticationException, IllegalOperationException, ReadOnlyException, Exception {
-        this.wrappedRepository.storeACL(token, resource, validateACL);
+        return this.wrappedRepository.storeACL(token, uri, acl, validateACL); // Tx
+    }
+    
+    @Override
+    public Resource deleteACL(String token, Path uri)
+            throws ResourceNotFoundException, AuthorizationException,
+            AuthenticationException, IllegalOperationException,
+            ReadOnlyException, Exception {
+        return this.wrappedRepository.deleteACL(token, uri); // Tx
+    }
+
+    @Override
+    public boolean isValidAclEntry(Privilege privilege, Principal principal) {
+        return this.wrappedRepository.isValidAclEntry(privilege, principal);
     }
 
     @Override

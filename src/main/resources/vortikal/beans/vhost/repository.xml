@@ -38,6 +38,7 @@
                               and execution(* org.vortikal.repository.Repository.*(..))
                               and not execution(* org.vortikal.repository.Repository.search(..))
                               and not execution(* org.vortikal.repository.Repository.getTypeInfo(org.vortikal.repository.Resource))
+                              and not execution(* org.vortikal.repository.Repository.isValidAclEntry(..))
                               and not execution(* org.vortikal.repository.Repository.isReadOnly())
                               and not execution(* org.vortikal.repository.Repository.getId())"/>
 

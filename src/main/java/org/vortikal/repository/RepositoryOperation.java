@@ -52,6 +52,8 @@ public enum RepositoryOperation {
     GET_INPUTSTREAM("getInputStream", false),
     STORE_CONTENT("storeContent", true),
     STORE_ACL("storeACL", true),
+    DELETE_ACL("deleteACL", true),
+    IS_VALID_ACL_ENTRY("isValidAclEntry", false),
     GET_COMMENTS("getComment", true),
     ADD_COMMENT("addComment", true),
     DELETE_COMMENT("deleteComment", true),

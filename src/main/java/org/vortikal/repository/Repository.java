@@ -614,16 +614,21 @@ public interface Repository {
      * @exception Exception
      *                if an I/O error occurs
      */
-    public void storeACL(String token, Resource resource) throws ResourceNotFoundException, AuthorizationException,
+    public Resource storeACL(String token, Path uri, Acl acl) throws ResourceNotFoundException, AuthorizationException,
             AuthenticationException, IllegalOperationException, ReadOnlyException, Exception;
 
     // HACK
     // Add this for now to be used in ResourceArchiver when expanding archive
-    public void storeACL(String token, Resource resource, boolean validateACL) throws ResourceNotFoundException,
+    public Resource storeACL(String token, Path uri, Acl acl, boolean validateACL) throws ResourceNotFoundException,
             AuthorizationException, AuthenticationException, IllegalOperationException, ReadOnlyException, Exception;
 
     // END HACK
+    
+    public Resource deleteACL(String token, Path uri) throws ResourceNotFoundException, AuthorizationException,
+            AuthenticationException, IllegalOperationException, ReadOnlyException, Exception;
 
+    public boolean isValidAclEntry(Privilege privilege, Principal principal); 
+    
     /**
      * Checks whether a principal is allowed to perform an operation on a
      * resource.

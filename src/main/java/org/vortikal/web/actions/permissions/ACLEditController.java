@@ -254,7 +254,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
                     this.getCommandName()));
 
         } else if (editCommand.getAddUserAction() != null) {
-            addToAcl(acl, editCommand.getUserNames(), Type.USER);
+            addToAcl(acl, editCommand.getUserNameEntries(), Type.USER);
             return showForm(request, response, new BindException(
                     getACLEditCommand(resource, requestContext.getPrincipal()), 
                     this.getCommandName()));
@@ -329,6 +329,19 @@ public class ACLEditController extends SimpleFormController implements Initializ
         editCommand.setShortcuts(shortcuts);
     }
     
+    private void removeFromAcl(Acl acl, List<String> values, Type type) {
+        for (String value : values) {
+            Type tmpType = type;
+            if (type.equals(Type.USER)) {
+              if (value.startsWith("pseudo:")) {
+                  tmpType  = Type.PSEUDO;  
+              }
+            }
+            Principal principal = principalFactory.getPrincipal(value, tmpType);
+            acl.removeEntry(this.privilege, principal);
+        } 
+    }
+    
     private void removeFromAcl(Acl acl, String[] values, Type type) {
         for (String value : values) {
             Type tmpType = type;
@@ -339,6 +352,13 @@ public class ACLEditController extends SimpleFormController implements Initializ
             }
             Principal principal = principalFactory.getPrincipal(value, tmpType);
             acl.removeEntry(this.privilege, principal);
+        }
+    }
+
+    private void addToAcl(Acl acl, List<String> values, Type type) {
+        for (String value : values) {
+            Principal p = principalFactory.getPrincipal(value, type);
+            acl.addEntry(this.privilege, p);
         }
     }
 

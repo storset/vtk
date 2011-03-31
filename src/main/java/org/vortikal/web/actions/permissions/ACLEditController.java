@@ -247,7 +247,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
         if (editCommand.getRemoveUserAction() != null) {
             removeFromAcl(acl, editCommand.getUserNames(), Type.USER);
             return showForm(request, response, new BindException(
-                    getACLEditCommand(editCommand.getResource(), 
+                    getACLEditCommand(resource, 
                             requestContext.getPrincipal()), this.getCommandName()));
 
         } else if (editCommand.getRemoveGroupAction() != null) {

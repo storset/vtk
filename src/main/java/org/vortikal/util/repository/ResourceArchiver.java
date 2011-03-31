@@ -91,7 +91,8 @@ public class ResourceArchiver {
     private final String versionAttribute = "X-vrtx-archive-version";
     private final String encodedAttribute = "X-vrtx-archive-encoded";
     
-    private Map<String, String> legacyAclMappings = new HashMap<String, String>();
+    private Map<String, String> legacyPrincipalMappings = new HashMap<String, String>();
+    private Map<String, String> legacyActionMappings = new HashMap<String, String>();
     
 
     public interface EventListener {
@@ -658,13 +659,17 @@ public class ResourceArchiver {
 
         String actionName = name.substring("X-vrtx-acl-".length());
         if (legacyAcl) {
-            if (this.isIgnorableLegacyAction(actionName)) {
-                logger
-                        .warn("Will ignore legacy acl entry action '" + actionName + "' on resource "
-                                + resource.getURI());
-                return false;
+            if (this.legacyActionMappings.containsKey(actionName)) {
+                String mapping = this.legacyActionMappings.get(actionName);
+                if (mapping == null || mapping.trim().equals("")) {
+                    listener.warn(resource.getURI(), "legacy: ignoring acl entry action " + actionName);
+                    logger.warn("Will ignore legacy acl entry action '" + actionName + "' on resource "
+                            + resource.getURI());
+                    return false;
+                }
+                listener.warn(resource.getURI(), "legacy: mapping acl entry action: " + actionName + ": " + mapping);
+                actionName = mapping;
             }
-            actionName = this.remapActionName(actionName);
         }
         Privilege action = Privilege.forName(actionName);
 
@@ -678,22 +683,23 @@ public class ResourceArchiver {
         boolean modified = false;
         for (String value : list) {
             String principalName = value.substring(2);
+            if (legacyAcl) {
+                if (this.legacyPrincipalMappings.containsKey(principalName)) {
+                    String mapping = this.legacyPrincipalMappings.get(principalName);
+                    if (mapping == null || "".equals(mapping.trim())) {
+                        listener.warn(resource.getURI(), "legacy: dropping principal from ACL: " + principalName);
+                        continue;
+                    }
+                    listener.warn(resource.getURI(), "legacy: mapping principal in ACL: " + principalName + ": " + mapping);
+                    principalName = mapping;
+                }
+            }
             Principal p = null;
             char type = value.charAt(0);
             switch (type) {
             case 'p':
                 try {
-                    if (legacyAcl) {
-                        if ("pseudo:authenticated".equals(principalName)) {
-                            p = principalFactory.getPrincipal("alle@uio.no", Type.GROUP);
-                        } else if ("pseudo:owner".equals(principalName)) {
-                            break;
-                        } else {
-                             p = principalFactory.getPrincipal(principalName, Type.PSEUDO);
-                        }
-                    } else {
-                        p = principalFactory.getPrincipal(principalName, Type.PSEUDO);
-                    }
+                    p = principalFactory.getPrincipal(principalName, Type.PSEUDO);
                 } catch (InvalidPrincipalException e) {
                     // The pseudo principal doesn't exist, drop it
                 }
@@ -722,18 +728,6 @@ public class ResourceArchiver {
             }
         }
         return modified;
-    }
-
-    private boolean isIgnorableLegacyAction(String actionName) {
-        return RepositoryAction.ADD_COMMENT.toString().equals(actionName)
-                || RepositoryAction.EDIT_COMMENT.toString().equals(actionName) || "bind".equals(actionName);
-    }
-
-    private String remapActionName(String actionName) {
-        if (RepositoryAction.WRITE.toString().equals(actionName)) {
-            return RepositoryAction.READ_WRITE.toString();
-        }
-        return actionName;
     }
 
     private boolean writeFile(String token, Path uri, ZipInputStream is) {
@@ -832,10 +826,14 @@ public class ResourceArchiver {
         this.principalFactory = principalFactory;
     }
     
-    public void setLegacyAclMappings(Map<String, String> legacyAclMappings) {
-        for (Map.Entry<String, String> entry: legacyAclMappings.entrySet()) {
-            this.legacyAclMappings.put(entry.getKey(), entry.getValue());
+    public void setLegacyPrincipalMappings(Map<String, String> legacyPrincipalMappings) {
+        for (Map.Entry<String, String> entry: legacyPrincipalMappings.entrySet()) {
+            this.legacyPrincipalMappings.put(entry.getKey(), entry.getValue());
         }
+    }
+
+    public void setLegacyActionMappings(Map<String, String> legacyActionMappings) {
+        this.legacyActionMappings = legacyActionMappings;
     }
 
     @SuppressWarnings("unchecked")

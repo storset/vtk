@@ -219,8 +219,17 @@
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="tempDir" value="${repository.tempDir}" />
     <property name="principalFactory" ref="principalFactory" />
+    <property name="legacyPrincipalMappings" ref="repository.archiver.legacyPrincipalMappings" />
+    <property name="legacyActionMappings" ref="repository.archiver.legacyActionMappings" />
   </bean>
 
+  <bean id="repository.archiver.legacyPrincipalMappings" class="org.vortikal.context.CSVMapFactoryBean">
+    <property name="csvList" value="${archiver.legacyPrincipalMappings}" />
+  </bean>
+
+  <bean id="repository.archiver.legacyActionMappings" class="org.vortikal.context.CSVMapFactoryBean">
+    <property name="csvList" value="${archiver.legacyActionMappings}" />
+  </bean>
 
   <bean id="repository.acl.blacklist"
         class="org.springframework.beans.factory.config.MapFactoryBean">

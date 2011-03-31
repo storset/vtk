@@ -236,6 +236,8 @@ public class ACLEditController extends SimpleFormController implements Initializ
         
         // Has the user asked to save?
         if (editCommand.getSaveAction() != null) {      
+            addToAcl(acl, editCommand.getUserNameEntries(), Type.USER);
+            addToAcl(acl, editCommand.getGroupNames(), Type.GROUP);
             repository.storeACL(token, resource);
             return new ModelAndView(getSuccessView());
         }

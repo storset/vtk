@@ -372,36 +372,6 @@ public class ACLEditController extends SimpleFormController implements Initializ
     }
 
     /**
-     * Add groups or users to ACL (for getUserNameEntries()).
-     * 
-     * @param acl
-     *            the ACL object         
-     * @param repository
-     *            the repository object
-     * @param errors
-     *            ACL validation errors
-     * @param values
-     *            groups or users to remove
-     * @param type
-     *            type of ACL (GROUP or USER)
-     */
-    private void addToAcl(Acl acl, Repository repository, BindException errors, List<String> values, Type type) {
-        for (String value : values) {
-            Principal principal = principalFactory.getPrincipal(value, type);
-            if(repository.isValidAclEntry(this.privilege, principal)) {
-              acl.addEntry(this.privilege, principal);
-            } else {
-              //TODO: is this ok?
-              if(type == Type.GROUP) {
-                errors.rejectValue("groupNames", "permissions.group.invalid.value", new Object[] { value }, "Group '" + value + "' is not valid");                 
-              } else {
-                errors.rejectValue("userNames", "permissions.user.invalid.value", new Object[] { value }, "User '" + value + "' is not valid");
-              }
-            }
-        }
-    }
-
-    /**
      * Add groups or users to ACL.
      * 
      * @param acl
@@ -416,6 +386,36 @@ public class ACLEditController extends SimpleFormController implements Initializ
      *            type of ACL (GROUP or USER)
      */
     private void addToAcl(Acl acl, Repository repository, BindException errors, String[] values, Type type) {
+        for (String value : values) {
+            Principal principal = principalFactory.getPrincipal(value, type);
+            if(repository.isValidAclEntry(this.privilege, principal)) {
+              acl.addEntry(this.privilege, principal);
+            } else {
+              //TODO: is this ok?
+              if(type == Type.GROUP) {
+                errors.rejectValue("groupNames", "permissions.group.invalid.value", new Object[] { value }, "Group '" + value + "' is not valid");                 
+              } else {
+                errors.rejectValue("userNames", "permissions.user.invalid.value", new Object[] { value }, "User '" + value + "' is not valid");
+              }
+            }
+        }
+    }
+    
+    /**
+     * Add groups or users to ACL (for getUserNameEntries()).
+     * 
+     * @param acl
+     *            the ACL object         
+     * @param repository
+     *            the repository object
+     * @param errors
+     *            ACL validation errors
+     * @param values
+     *            groups or users to remove
+     * @param type
+     *            type of ACL (GROUP or USER)
+     */
+    private void addToAcl(Acl acl, Repository repository, BindException errors, List<String> values, Type type) {
         for (String value : values) {
             Principal principal = principalFactory.getPrincipal(value, type);
             if(repository.isValidAclEntry(this.privilege, principal)) {

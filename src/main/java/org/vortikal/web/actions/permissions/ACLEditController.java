@@ -260,26 +260,22 @@ public class ACLEditController extends SimpleFormController implements Initializ
         // Doing remove or add actions
         if (editCommand.getRemoveUserAction() != null) {
             removeFromAcl(acl, editCommand.getUserNames(), Type.USER);
-            BindException bex = new BindException(getACLEditCommand(resource, requestContext.getPrincipal()), this.getCommandName());
-            bex.addAllErrors(errors);
-            return showForm(request, response, bex);
+            return showForm(request, response, new BindException(getACLEditCommand(resource, requestContext.getPrincipal()), this.getCommandName()));
 
         } else if (editCommand.getRemoveGroupAction() != null) {
             removeFromAcl(acl, editCommand.getGroupNames(), Type.GROUP);
-            BindException bex = new BindException(getACLEditCommand(resource, requestContext.getPrincipal()), this.getCommandName());
-            bex.addAllErrors(errors);
-            return showForm(request, response, bex);
+            return showForm(request, response, new BindException(getACLEditCommand(resource, requestContext.getPrincipal()), this.getCommandName()));
 
         } else if (editCommand.getAddUserAction() != null) {
             addToAcl(acl, repository, errors, editCommand.getUserNameEntries(), Type.USER);
             BindException bex = new BindException(getACLEditCommand(resource, requestContext.getPrincipal()), this.getCommandName());
-            bex.addAllErrors(errors);
+            bex.addAllErrors(errors); // Add validation errors
             return showForm(request, response, bex);
 
         } else if (editCommand.getAddGroupAction() != null) {
             addToAcl(acl, repository, errors, editCommand.getGroupNames(), Type.GROUP);
             BindException bex = new BindException(getACLEditCommand(resource, requestContext.getPrincipal()), this.getCommandName());
-            bex.addAllErrors(errors);
+            bex.addAllErrors(errors); // Add validation errors
             return showForm(request, response, bex);
 
         } else {

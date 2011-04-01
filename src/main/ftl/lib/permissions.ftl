@@ -221,7 +221,11 @@
           </ul>
         </div>
         <#if spring.status.value?exists>
-          <#assign value=spring.status.value />
+          <#if spring.status.value?is_sequence>
+            <#-- TODO: fix -->
+          <#else>
+            <#assign value=spring.status.value />
+          </#if>
         </#if>
       </#if>
       

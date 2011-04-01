@@ -246,27 +246,27 @@ public class ACLEditController extends SimpleFormController implements Initializ
         // Doing remove or add actions
         if (editCommand.getRemoveUserAction() != null) {
             removeFromAcl(acl, editCommand.getUserNames(), Type.USER);
-            return showForm(request, response, new BindException(
-                    getACLEditCommand(resource, requestContext.getPrincipal()),
-                    this.getCommandName()));
+            BindException bex = new BindException(getACLEditCommand(resource, requestContext.getPrincipal()), this.getCommandName());
+            bex.addAllErrors(errors);
+            return showForm(request, response, bex);
 
         } else if (editCommand.getRemoveGroupAction() != null) {
             removeFromAcl(acl, editCommand.getGroupNames(), Type.GROUP);
-            return showForm(request, response, new BindException(
-                    getACLEditCommand(resource, requestContext.getPrincipal()), 
-                    this.getCommandName()));
+            BindException bex = new BindException(getACLEditCommand(resource, requestContext.getPrincipal()), this.getCommandName());
+            bex.addAllErrors(errors);
+            return showForm(request, response, bex);
 
         } else if (editCommand.getAddUserAction() != null) {
             addToAcl(acl, repository, errors, editCommand.getUserNameEntries(), Type.USER);
-            return showForm(request, response, new BindException(
-                    getACLEditCommand(resource, requestContext.getPrincipal()), 
-                    this.getCommandName()));
+            BindException bex = new BindException(getACLEditCommand(resource, requestContext.getPrincipal()), this.getCommandName());
+            bex.addAllErrors(errors);
+            return showForm(request, response, bex);
 
         } else if (editCommand.getAddGroupAction() != null) {
             addToAcl(acl, repository, errors, editCommand.getGroupNames(), Type.GROUP);
-            return showForm(request, response, new BindException(
-                    getACLEditCommand(resource, requestContext.getPrincipal()), 
-                    this.getCommandName()));
+            BindException bex = new BindException(getACLEditCommand(resource, requestContext.getPrincipal()), this.getCommandName());
+            bex.addAllErrors(errors);
+            return showForm(request, response, bex);
 
         } else {
             return new ModelAndView(getSuccessView());
@@ -354,11 +354,14 @@ public class ACLEditController extends SimpleFormController implements Initializ
             if(repository.isValidAclEntry(this.privilege, principal)) {
               acl.addEntry(this.privilege, principal);
             } else {
-              //TODO:
-              //errors.rejectValue("name",
-              //          "manage.create.course.missing.name",
-              //          "A name must be provided for the course collection");
-              //return;
+              //TODO: will this work?
+              if(type == Type.GROUP) {
+                System.out.println("*********************** Error invalid " + value);
+                errors.rejectValue("groupNames", "permissions.group.invalid.value", new Object[] { value }, "Group '" + value + "' is not valid");                 
+              } else {
+                errors.rejectValue("userNames", "permissions.user.invalid.value", new Object[] { value }, "User '" + value + "' is not valid");
+              }
+              return;
             }
         }
     }
@@ -369,11 +372,14 @@ public class ACLEditController extends SimpleFormController implements Initializ
             if(repository.isValidAclEntry(this.privilege, principal)) {
               acl.addEntry(this.privilege, principal);
             } else {
-              //TODO:
-              //errors.rejectValue("name",
-              //          "manage.create.course.missing.name",
-              //          "A name must be provided for the course collection");
-              //return;
+              //TODO: will this work?
+              if(type == Type.GROUP) {
+                System.out.println("*********************** Error invalid " + value);
+                errors.rejectValue("groupNames", "permissions.group.invalid.value", new Object[] { value }, "Group '" + value + "' is not valid");                 
+              } else {
+                errors.rejectValue("userNames", "permissions.user.invalid.value", new Object[] { value }, "User '" + value + "' is not valid");
+              }
+              return;
             }
         }
     }

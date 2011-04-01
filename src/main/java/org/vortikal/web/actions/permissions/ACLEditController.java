@@ -322,19 +322,6 @@ public class ACLEditController extends SimpleFormController implements Initializ
         }
     }
     
-    private void removeFromAcl(Acl acl, List<String> values, Type type) {
-        for (String value : values) {
-            Type tmpType = type;
-            if (type.equals(Type.USER)) {
-              if (value.startsWith("pseudo:")) {
-                  tmpType  = Type.PSEUDO;  
-              }
-            }
-            Principal principal = principalFactory.getPrincipal(value, tmpType);
-            acl.removeEntry(this.privilege, principal);
-        } 
-    }
-    
     private void removeFromAcl(Acl acl, String[] values, Type type) {
         for (String value : values) {
             Type tmpType = type;
@@ -348,6 +335,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
         }
     }
 
+    // For getUserNameEntries()
     private void addToAcl(Acl acl, Repository repository, BindException errors, List<String> values, Type type) {
         for (String value : values) {
             Principal principal = principalFactory.getPrincipal(value, type);

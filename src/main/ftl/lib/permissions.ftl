@@ -222,7 +222,18 @@
         </div>
         <#if spring.status.value?exists>
           <#if spring.status.value?is_sequence>
-            <#-- TODO: fix -- or is it ok that invalid groups disappear? -->
+            <#assign valueCSV = "" />
+            <#if (spring.status.value?size > 1)>
+              <#assign count = 0 />
+              <#list spring.status.value as theValue>
+                <#assign valueCSV = valueCSV + theValue />
+                <#if (count < spring.status.value?size)><#assign valueCSV = valueCSV + "," /></#if>
+                <#assign count = count + 1 />
+              </#list>
+              <#assign value=valueCSV />
+            <#else>
+              <#assign value=spring.status.value[0] />
+            </#if>
           <#else>
             <#assign value=spring.status.value />
           </#if>

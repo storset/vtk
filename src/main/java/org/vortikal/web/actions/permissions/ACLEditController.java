@@ -360,7 +360,6 @@ public class ACLEditController extends SimpleFormController implements Initializ
               } else {
                 errors.rejectValue("userNames", "permissions.user.invalid.value", new Object[] { value }, "User '" + value + "' is not valid");
               }
-              return;
             }
         }
     }
@@ -377,7 +376,6 @@ public class ACLEditController extends SimpleFormController implements Initializ
               } else {
                 errors.rejectValue("userNames", "permissions.user.invalid.value", new Object[] { value }, "User '" + value + "' is not valid");
               }
-              return;
             }
         }
     }

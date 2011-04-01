@@ -45,7 +45,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.propertyeditors.StringArrayPropertyEditor;
 import org.springframework.validation.BindException;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -55,8 +54,8 @@ import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.Principal.Type;
 import org.vortikal.security.PrincipalFactory;
+import org.vortikal.security.Principal.Type;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 

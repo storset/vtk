@@ -684,14 +684,15 @@ public class ResourceArchiver {
         for (String value : list) {
             String principalName = value.substring(2);
             if (legacyAcl) {
-                if (this.legacyPrincipalMappings.containsKey(principalName)) {
-                    String mapping = this.legacyPrincipalMappings.get(principalName);
+                if (this.legacyPrincipalMappings.containsKey(value)) {
+                    String mapping = this.legacyPrincipalMappings.get(value);
                     if (mapping == null || "".equals(mapping.trim())) {
                         listener.warn(resource.getURI(), "legacy: dropping principal from ACL: " + principalName);
                         continue;
                     }
-                    listener.warn(resource.getURI(), "legacy: mapping principal in ACL: " + principalName + ": " + mapping);
-                    principalName = mapping;
+                    listener.warn(resource.getURI(), "legacy: mapping principal in ACL: " 
+                            + principalName + ": " + mapping);
+                    principalName = mapping.substring(2);
                 }
             }
             Principal p = null;

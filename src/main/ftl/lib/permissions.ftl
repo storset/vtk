@@ -224,11 +224,8 @@
           <#if spring.status.value?is_sequence>
             <#assign valueCSV = "" />
             <#if (spring.status.value?size > 1)>
-              <#assign count = 0 />
               <#list spring.status.value as theValue>
-                <#assign valueCSV = valueCSV + theValue />
-                <#if (count < spring.status.value?size)><#assign valueCSV = valueCSV + "," /></#if>
-                <#assign count = count + 1 />
+                <#assign valueCSV = valueCSV + theValue + "," />
               </#list>
               <#assign value=valueCSV />
             <#else>

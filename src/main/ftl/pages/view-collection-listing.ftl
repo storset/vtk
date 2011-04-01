@@ -93,17 +93,14 @@
     <div id="vrtx-calendar-listing">
   </#if>
   
-  <#-- Regular "additional content" placed either at bottom or in right-column -->
+  <#-- Regular "additional content" placed in right-column -->
   <#assign additionalContent = vrtx.propValue(resource, "additionalContents") />
-  <#assign hideAdditionalContent = vrtx.propValue(resource, "hide-additional-content")?string />
-  <#if additionalContent?has_content && collection.resourceType != 'image-listing'
+  <#if collection.resourceType != 'image-listing'
        && collection.resourceType != 'person-listing' && !isEventCalendarListing && !isBlogListing>
     <div id="vrtx-content">
-    <#if (hideAdditionalContent?exists && hideAdditionalContent == 'false')>
-        <div id="vrtx-main-content" class="vrtx-hide-additional-content-false">
-    <#else>
-        <div id="vrtx-main-content" class="vrtx-hide-additional-content-true">   
-    </#if>
+      <#if additionalContent?has_content>
+        <div id="vrtx-main-content">
+      </#if>
   </#if>
   
 <#if !isEventCalendarListing>
@@ -207,27 +204,21 @@
 	        </#list>
 	    </#if>
      </div>
-     <#if additionalContent?has_content && collection.resourceType != 'image-listing'
+     <#if collection.resourceType != 'image-listing'
           && collection.resourceType != 'person-listing' && !isEventCalendarListing && !isBlogListing>
-       <#if (hideAdditionalContent?exists && hideAdditionalContent == 'false')>
-            </div><#-- end vrtx-main-content -->
-            <div id="vrtx-additional-content">
-              <div id="vrtx-related-content"> 
-                <@vrtx.invokeComponentRefs additionalContent />
-              </div>
-            </div>
-          </div><#-- end vrtx-content -->
-       <#else>
-             <div id="vrtx-related-content" class="vrtx-related-content-after-listing">
+         <#if additionalContent?has_content>
+           </div><#-- end vrtx-main-content -->
+           <div id="vrtx-additional-content">
+             <div id="vrtx-related-content"> 
                <@vrtx.invokeComponentRefs additionalContent />
              </div>
-           </div><#-- end vrtx-main-content -->
-         </div><#-- end vrtx-content -->
-       </#if>
+           </div>
+         </#if>
+       </div><#-- end vrtx-content -->
      </#if>
      <#if isEventCalendarListing>
        </div>
-    </#if>
+     </#if>
     <!--startindex-->
   </body>
 </html>

@@ -10,7 +10,6 @@
     <property name="propertyTypeDefinitions">
       <list>
         <ref bean="additionalContentPropDef" />
-        <ref bean="additionalContentHidePropDef" />
       </list>
     </property>
   </bean>  
@@ -21,39 +20,6 @@
     <property name="type" value="HTML"/>
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
     <property name="mandatory" value="false"/>
-  </bean>
-  
-  <bean id="additionalContentHidePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
-        parent="abstractPropDef">
-    <property name="contentRelation" value="PRE_CONTENT" />
-    <property name="name" value="hide-additional-content"/>
-    <property name="type" value="BOOLEAN"/>
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
-    <property name="mandatory" value="false"/>
-    <property name="vocabulary">
-      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
-        <property name="type" value="BOOLEAN" />
-        <property name="messageSourceBaseName" value="vortikal.beans.vhost.resource-types.mixins.properties.additional-content" />
-        <property name="values">
-          <list>
-            <bean class="org.vortikal.repository.resourcetype.Value">
-              <constructor-arg type="boolean">
-                <value>false</value>
-              </constructor-arg>
-            </bean>
-          </list>
-        </property>
-      </bean>
-    </property>
-    <property name="metadata">
-      <map>
-        <entry key="editingHints">
-          <map>
-            <entry key="radio" value="true" />
-          </map>
-        </entry>
-      </map>
-    </property>
   </bean>
 
 </beans>

@@ -361,20 +361,24 @@ public class ACLEditController extends SimpleFormController implements Initializ
     }
 
     private void addToAcl(Acl acl, List<String> values, Type type) {
-        Principal principal = principalFactory.getPrincipal(value, type);
-        if(acl.isValidEntry(this.privilege, principal)) {
-          acl.addEntry(this.privilege, principal);
-        } else {
-          // TODO: notify user
+        for (String value : values) {
+            Principal principal = principalFactory.getPrincipal(value, type);
+            if(acl.isValidEntry(this.privilege, principal)) {
+              acl.addEntry(this.privilege, principal);
+            } else {
+              // TODO: notify user
+            }
         }
     }
 
     private void addToAcl(Acl acl, String[] values, Type type) {
-        Principal principal = principalFactory.getPrincipal(value, type);
-        if(acl.isValidEntry(this.privilege, principal)) {
-          acl.addEntry(this.privilege, principal);
-        } else {
-          // TODO: notify user
+        for (String value : values) {
+            Principal principal = principalFactory.getPrincipal(value, type);
+            if(acl.isValidEntry(this.privilege, principal)) {
+              acl.addEntry(this.privilege, principal);
+            } else {
+              // TODO: notify user
+            }
         }
     }
 

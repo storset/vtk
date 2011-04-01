@@ -298,8 +298,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
                 shortcuts[count][1] = "";
                 String[] remove = new String[1];
                 Type type = null;
-
-                if (shortcuts[count][0].startsWith("user:")) {
+                if (shortcut[0].startsWith("user:")) {
                     remove[0] = shortcut[0].replace("user:", "");
                     type = Type.USER;
                 } else if (shortcut[0].startsWith("group:")) {
@@ -362,16 +361,20 @@ public class ACLEditController extends SimpleFormController implements Initializ
     }
 
     private void addToAcl(Acl acl, List<String> values, Type type) {
-        for (String value : values) {
-            Principal p = principalFactory.getPrincipal(value, type);
-            acl.addEntry(this.privilege, p);
+        Principal principal = principalFactory.getPrincipal(value, type);
+        if(acl.isValidEntry(this.privilege, principal)) {
+          acl.addEntry(this.privilege, principal);
+        } else {
+          // TODO: notify user
         }
     }
 
     private void addToAcl(Acl acl, String[] values, Type type) {
-        for (String value : values) {
-            Principal principal = principalFactory.getPrincipal(value, type);
-            acl.addEntry(this.privilege, principal);
+        Principal principal = principalFactory.getPrincipal(value, type);
+        if(acl.isValidEntry(this.privilege, principal)) {
+          acl.addEntry(this.privilege, principal);
+        } else {
+          // TODO: notify user
         }
     }
 

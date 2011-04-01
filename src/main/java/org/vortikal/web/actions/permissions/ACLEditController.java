@@ -177,11 +177,8 @@ public class ACLEditController extends SimpleFormController implements Initializ
             }
             
             checkedShortcuts[i][0] = shortcut;
-            if (checked) {
-              checkedShortcuts[i][1] = "checked";
-            } else {
-              checkedShortcuts[i][1] = ""; 
-            }
+            checkedShortcuts[i][1] = checked ? "checked" : "";
+            
             i++;
         }
         

@@ -149,55 +149,6 @@ public class ACLEditController extends SimpleFormController implements Initializ
 
         return command;
     }
-    
-    /**
-     * Extracts shortcuts for users and groups (set to 'checked' and remove).
-     * 
-     * @param authorizedUsers
-     *            the authorized users
-     * @param authorizedGroups
-     *            the authorized groups
-     * @param shortcuts
-     *            the configured shortcuts
-     * @return a <code>String[][]</code> object containing checked / un-checked shortcuts
-     */
-    private String[][] extractAndCheckShortcuts (List<Principal> authorizedUsers, 
-            List<Principal> authorizedGroups, List<String> shortcuts) {
-        
-        String checkedShortcuts[][] = new String[shortcuts.size()][2];
-        int i = 0;
-        
-        for (String shortcut: shortcuts) {
-            boolean checked = false;
-            
-            if (shortcut.startsWith("user:")) {
-                Iterator<Principal> it = authorizedUsers.iterator();
-                while (it.hasNext()) {
-                    Principal p = it.next();
-                    if (("user:" + p.getName()).equals(shortcut)) {
-                        checked = true;
-                        it.remove();
-                    }
-                }
-            } else if (shortcut.startsWith("group:")) {
-                Iterator<Principal> it = authorizedGroups.iterator();
-                while (it.hasNext()) {
-                    Principal p = it.next();
-                    if (("group:" + p.getName()).equals(shortcut)) {
-                        checked = true;
-                        it.remove();
-                    }
-                }  
-            }
-            
-            checkedShortcuts[i][0] = shortcut;
-            checkedShortcuts[i][1] = checked ? "checked" : "";
-            
-            i++;
-        }
-        
-        return checkedShortcuts;
-    }
 
     protected boolean isFormSubmission(HttpServletRequest request) {
         return "POST".equals(request.getMethod())
@@ -281,6 +232,55 @@ public class ACLEditController extends SimpleFormController implements Initializ
         } else {
             return new ModelAndView(getSuccessView());
         }
+    }
+    
+    /**
+     * Extracts shortcuts for users and groups (set to 'checked' and remove).
+     * 
+     * @param authorizedUsers
+     *            the authorized users
+     * @param authorizedGroups
+     *            the authorized groups
+     * @param shortcuts
+     *            the configured shortcuts
+     * @return a <code>String[][]</code> object containing checked / un-checked shortcuts
+     */
+    private String[][] extractAndCheckShortcuts (List<Principal> authorizedUsers, 
+            List<Principal> authorizedGroups, List<String> shortcuts) {
+        
+        String checkedShortcuts[][] = new String[shortcuts.size()][2];
+        int i = 0;
+        
+        for (String shortcut: shortcuts) {
+            boolean checked = false;
+            
+            if (shortcut.startsWith("user:")) {
+                Iterator<Principal> it = authorizedUsers.iterator();
+                while (it.hasNext()) {
+                    Principal p = it.next();
+                    if (("user:" + p.getName()).equals(shortcut)) {
+                        checked = true;
+                        it.remove();
+                    }
+                }
+            } else if (shortcut.startsWith("group:")) {
+                Iterator<Principal> it = authorizedGroups.iterator();
+                while (it.hasNext()) {
+                    Principal p = it.next();
+                    if (("group:" + p.getName()).equals(shortcut)) {
+                        checked = true;
+                        it.remove();
+                    }
+                }  
+            }
+            
+            checkedShortcuts[i][0] = shortcut;
+            checkedShortcuts[i][1] = checked ? "checked" : "";
+            
+            i++;
+        }
+        
+        return checkedShortcuts;
     }
 
     /**

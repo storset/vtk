@@ -97,20 +97,27 @@ public class ResourceArchiver {
 
     public interface EventListener {
         public void expanded(Path uri);
-
         public void archived(Path uri);
-
         public void warn(Path uri, String msg);
     }
-
+    
+    private static final EventListener NULL_LISTENER = new EventListener() {
+        public void expanded(Path uri) { }
+        public void archived(Path uri) { }
+        public void warn(Path uri, String msg) { }
+    };
+    
     public void createArchive(String token, Resource r, OutputStream out, Map<String, Object> properties)
             throws Exception {
-        createArchive(token, r, out, properties, null);
+        createArchive(token, r, out, properties, NULL_LISTENER);
     }
 
     public void createArchive(String token, Resource r, OutputStream out, Map<String, Object> properties,
             EventListener listener) throws Exception {
-
+        if (listener == null) {
+            listener = NULL_LISTENER;
+        }
+        
         List<String> ignoreList = this.getIgnoreList(properties);
 
         logger.info("Creating archive '" + r.getURI() + "'");
@@ -207,9 +214,7 @@ public class ResourceArchiver {
             if (canStorePropsAndPermissions) {
                 storePropsAndPermissions(token, entry, uri, decodeValues, legacyAcl, listener);
             }
-            if (listener != null) {
-                listener.expanded(uri);
-            }
+            listener.expanded(uri);
         }
         jarIn.close();
 
@@ -501,8 +506,7 @@ public class ResourceArchiver {
             }
 
         }
-        if (listener != null)
-            listener.archived(r.getURI());
+        listener.archived(r.getURI());
     }
 
     private void archiveComments(String token, Resource r, JarOutputStream jo) throws IOException {
@@ -580,9 +584,7 @@ public class ResourceArchiver {
         }
         String rawValue = parseRawValue(valueString);
         if (rawValue == null || "".equals(rawValue.trim())) {
-            if (listener != null) {
-                listener.warn(resource.getURI(), "empty value for property '" + propDef.getName() + "', skipping");
-            }
+            listener.warn(resource.getURI(), "empty value for property '" + propDef.getName() + "', skipping");
             return false;
         }
         Property prop = resource.getProperty(propDef);
@@ -718,14 +720,10 @@ public class ResourceArchiver {
                     acl.addEntry(action, p);
                     modified = true;
                 } else {
-                    if (listener != null) {
-                        listener.warn(resource.getURI(), "Invalid acl entry: " + p + ":" + action + ", skipping");
-                    }
+                    listener.warn(resource.getURI(), "Invalid acl entry: " + p + ":" + action + ", skipping");
                 }
             } else {
-                if (listener != null) {
-                    listener.warn(resource.getURI(), "Invalid principal: " + principalName + ", skipping");
-                }
+                listener.warn(resource.getURI(), "Invalid principal: " + principalName + ", skipping");
             }
         }
         return modified;

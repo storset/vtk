@@ -274,11 +274,9 @@ public class ACLEditController extends SimpleFormController implements Initializ
     }
 
     private void aclShortcuts(Acl acl, Repository repository, BindException errors, ACLEditCommand editCommand) {
-        
         String[] updatedShortcuts = editCommand.getUpdatedShortcuts();
         String[][] shortcuts = editCommand.getShortcuts();
-        
-        int count = 0;
+
         for (String[] shortcut : shortcuts) {
             boolean checkedNotFound = true; // remove condition
             boolean uncheckedFound = false; // add condition
@@ -292,7 +290,6 @@ public class ACLEditController extends SimpleFormController implements Initializ
 
             // Remove
             if (checkedNotFound) {
-                shortcuts[count][1] = "";
                 String[] remove = new String[1];
                 Type type = null;
                 if (shortcut[0].startsWith("user:")) {
@@ -307,7 +304,6 @@ public class ACLEditController extends SimpleFormController implements Initializ
 
             // Add
             if (uncheckedFound) {
-                shortcuts[count][1] = "checked";
                 String[] add = new String[1];
                 Type type = null;
                 if (shortcut[0].startsWith("user:")) {
@@ -323,13 +319,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
                 }  
                 addToAcl(acl, repository, errors, add, type);
             }
-            
-            count++;
         }
-        
-        // XXX: These have no effect
-        //editCommand.setUpdatedShortcuts(new String[0]);
-        //editCommand.setShortcuts(shortcuts);
     }
     
     private void removeFromAcl(Acl acl, List<String> values, Type type) {

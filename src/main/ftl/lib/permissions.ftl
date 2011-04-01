@@ -222,7 +222,7 @@
         </div>
         <#if spring.status.value?exists>
           <#if spring.status.value?is_sequence>
-            <#-- TODO: fix -->
+            <#-- TODO: fix -- or is it ok that invalid groups disappear? -->
           <#else>
             <#assign value=spring.status.value />
           </#if>

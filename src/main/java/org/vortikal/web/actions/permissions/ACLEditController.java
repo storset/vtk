@@ -151,7 +151,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
     }
     
     /**
-     * Extracts checked / un-checked shortcuts from users and groups (and remove).
+     * Extracts shortcuts for users and groups (set to 'checked' and remove).
      * 
      * @param authorizedUsers
      *            the authorized users
@@ -287,6 +287,18 @@ public class ACLEditController extends SimpleFormController implements Initializ
         }
     }
 
+    /**
+     * Add and remove ACLs for updated shortcuts.
+     * 
+     * @param acl
+     *            the ACL object
+     * @param repository
+     *            the repository object
+     * @param errors
+     *            ACL validation errors
+     * @param editCommand
+     *            the command object
+     */
     private void aclShortcuts(Acl acl, Repository repository, BindException errors, ACLEditCommand editCommand) {
         String[] updatedShortcuts = editCommand.getUpdatedShortcuts();
         String[][] shortcuts = editCommand.getShortcuts();
@@ -336,6 +348,16 @@ public class ACLEditController extends SimpleFormController implements Initializ
         }
     }
     
+    /**
+     * Remove groups or users from ACL.
+     * 
+     * @param acl
+     *            the ACL object
+     * @param values
+     *            groups or users to remove
+     * @param type
+     *            type of ACL (GROUP or USER)
+     */
     private void removeFromAcl(Acl acl, String[] values, Type type) {
         for (String value : values) {
             Type tmpType = type;
@@ -349,7 +371,20 @@ public class ACLEditController extends SimpleFormController implements Initializ
         }
     }
 
-    // For getUserNameEntries()
+    /**
+     * Add groups or users to ACL (for getUserNameEntries()).
+     * 
+     * @param acl
+     *            the ACL object         
+     * @param repository
+     *            the repository object
+     * @param errors
+     *            ACL validation errors
+     * @param values
+     *            groups or users to remove
+     * @param type
+     *            type of ACL (GROUP or USER)
+     */
     private void addToAcl(Acl acl, Repository repository, BindException errors, List<String> values, Type type) {
         for (String value : values) {
             Principal principal = principalFactory.getPrincipal(value, type);
@@ -366,6 +401,20 @@ public class ACLEditController extends SimpleFormController implements Initializ
         }
     }
 
+    /**
+     * Add groups or users to ACL.
+     * 
+     * @param acl
+     *            the ACL object         
+     * @param repository
+     *            the repository object
+     * @param errors
+     *            ACL validation errors
+     * @param values
+     *            groups or users to remove
+     * @param type
+     *            type of ACL (GROUP or USER)
+     */
     private void addToAcl(Acl acl, Repository repository, BindException errors, String[] values, Type type) {
         for (String value : values) {
             Principal principal = principalFactory.getPrincipal(value, type);

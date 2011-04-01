@@ -354,9 +354,8 @@ public class ACLEditController extends SimpleFormController implements Initializ
             if(repository.isValidAclEntry(this.privilege, principal)) {
               acl.addEntry(this.privilege, principal);
             } else {
-              //TODO: will this work?
+              //TODO: is this ok?
               if(type == Type.GROUP) {
-                System.out.println("*********************** Error invalid " + value);
                 errors.rejectValue("groupNames", "permissions.group.invalid.value", new Object[] { value }, "Group '" + value + "' is not valid");                 
               } else {
                 errors.rejectValue("userNames", "permissions.user.invalid.value", new Object[] { value }, "User '" + value + "' is not valid");
@@ -372,9 +371,8 @@ public class ACLEditController extends SimpleFormController implements Initializ
             if(repository.isValidAclEntry(this.privilege, principal)) {
               acl.addEntry(this.privilege, principal);
             } else {
-              //TODO: will this work?
+              //TODO: is this ok?
               if(type == Type.GROUP) {
-                System.out.println("*********************** Error invalid " + value);
                 errors.rejectValue("groupNames", "permissions.group.invalid.value", new Object[] { value }, "Group '" + value + "' is not valid");                 
               } else {
                 errors.rejectValue("userNames", "permissions.user.invalid.value", new Object[] { value }, "User '" + value + "' is not valid");

@@ -189,7 +189,7 @@ public class ResourceArchiver {
                 try {
                     comments.add(getArchivedComment(jarIn, base));
                 } catch (Throwable t) {
-                    logger.error("Could not handle comment", t);
+                    logger.error("Could not handle comment in " + entryPath, t);
                 }
                 continue;
             }
@@ -682,19 +682,19 @@ public class ResourceArchiver {
         Acl acl = resource.getAcl();
         boolean modified = false;
         for (String value : list) {
-            String principalName = value.substring(2);
             if (legacyAcl) {
                 if (this.legacyPrincipalMappings.containsKey(value)) {
                     String mapping = this.legacyPrincipalMappings.get(value);
                     if (mapping == null || "".equals(mapping.trim())) {
-                        listener.warn(resource.getURI(), "legacy: dropping principal from ACL: " + principalName);
+                        listener.warn(resource.getURI(), "legacy: dropping principal from ACL: " + value.substring(2));
                         continue;
                     }
                     listener.warn(resource.getURI(), "legacy: mapping principal in ACL: " 
-                            + principalName + ": " + mapping);
-                    principalName = mapping.substring(2);
+                            + value + ": " + mapping);
+                    value = mapping;
                 }
             }
+            String principalName = value.substring(2);
             Principal p = null;
             char type = value.charAt(0);
             switch (type) {

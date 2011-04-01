@@ -49,10 +49,13 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Acl;
+import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceNotFoundException;
+import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.Principal.Type;
@@ -147,6 +150,17 @@ public class ACLEditController extends SimpleFormController implements Initializ
         return command;
     }
     
+    /**
+     * Extracts checked / un-checked shortcuts from users and groups (and remove).
+     * 
+     * @param authorizedUsers
+     *            the authorized users
+     * @param authorizedGroups
+     *            the authorized groups
+     * @param shortcuts
+     *            the configured shortcuts
+     * @return a <code>String[][]</code> object containing checked / un-checked shortcuts
+     */
     private String[][] extractAndCheckShortcuts (List<Principal> authorizedUsers, 
             List<Principal> authorizedGroups, List<String> shortcuts) {
         

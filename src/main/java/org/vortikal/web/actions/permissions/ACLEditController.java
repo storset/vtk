@@ -45,6 +45,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.propertyeditors.StringArrayPropertyEditor;
 import org.springframework.validation.BindException;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -235,13 +236,13 @@ public class ACLEditController extends SimpleFormController implements Initializ
         // TODO: does not work when remove command - skip until find solution
         if(editCommand.getRemoveUserAction() == null 
            && editCommand.getRemoveGroupAction() == null) {
-          aclShortcuts(editCommand, acl);
+          aclShortcuts(acl, repository, errors, editCommand);
         }
         
         // Has the user asked to save?
         if (editCommand.getSaveAction() != null) {      
-            addToAcl(acl, editCommand.getUserNameEntries(), Type.USER);
-            addToAcl(acl, editCommand.getGroupNames(), Type.GROUP);
+            addToAcl(acl, repository, errors, editCommand.getUserNameEntries(), Type.USER);
+            addToAcl(acl, repository, errors, editCommand.getGroupNames(), Type.GROUP);
             resource = repository.storeACL(token, resource.getURI(), acl);
             return new ModelAndView(getSuccessView());
         }
@@ -260,13 +261,13 @@ public class ACLEditController extends SimpleFormController implements Initializ
                     this.getCommandName()));
 
         } else if (editCommand.getAddUserAction() != null) {
-            addToAcl(acl, editCommand.getUserNameEntries(), Type.USER);
+            addToAcl(acl, repository, errors, editCommand.getUserNameEntries(), Type.USER);
             return showForm(request, response, new BindException(
                     getACLEditCommand(resource, requestContext.getPrincipal()), 
                     this.getCommandName()));
 
         } else if (editCommand.getAddGroupAction() != null) {
-            addToAcl(acl, editCommand.getGroupNames(), Type.GROUP);
+            addToAcl(acl, repository, errors, editCommand.getGroupNames(), Type.GROUP);
             return showForm(request, response, new BindException(
                     getACLEditCommand(resource, requestContext.getPrincipal()), 
                     this.getCommandName()));
@@ -276,7 +277,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
         }
     }
 
-    private void aclShortcuts(ACLEditCommand editCommand, Acl acl) {
+    private void aclShortcuts(Acl acl, Repository repository, BindException errors, ACLEditCommand editCommand) {
         
         String[] updatedShortcuts = editCommand.getUpdatedShortcuts();
         String[][] shortcuts = editCommand.getShortcuts();
@@ -324,14 +325,15 @@ public class ACLEditController extends SimpleFormController implements Initializ
                     add[0] = shortcut[0].replace("group:", "");
                     type = Type.GROUP;
                 }  
-                addToAcl(acl, add, type);
+                addToAcl(acl, repository, errors, add, type);
             }
             
             count++;
         }
         
-        editCommand.setUpdatedShortcuts(new String[0]);
-        editCommand.setShortcuts(shortcuts);
+        // XXX: These have no effect
+        //editCommand.setUpdatedShortcuts(new String[0]);
+        //editCommand.setShortcuts(shortcuts);
     }
     
     private void removeFromAcl(Acl acl, List<String> values, Type type) {
@@ -360,24 +362,32 @@ public class ACLEditController extends SimpleFormController implements Initializ
         }
     }
 
-    private void addToAcl(Acl acl, List<String> values, Type type) {
+    private void addToAcl(Acl acl, Repository repository, BindException errors, List<String> values, Type type) {
         for (String value : values) {
             Principal principal = principalFactory.getPrincipal(value, type);
-            if(acl.isValidEntry(this.privilege, principal)) {
+            if(repository.isValidAclEntry(this.privilege, principal)) {
               acl.addEntry(this.privilege, principal);
             } else {
-              // TODO: notify user
+              //TODO:
+              //errors.rejectValue("name",
+              //          "manage.create.course.missing.name",
+              //          "A name must be provided for the course collection");
+              //return;
             }
         }
     }
 
-    private void addToAcl(Acl acl, String[] values, Type type) {
+    private void addToAcl(Acl acl, Repository repository, BindException errors, String[] values, Type type) {
         for (String value : values) {
             Principal principal = principalFactory.getPrincipal(value, type);
-            if(acl.isValidEntry(this.privilege, principal)) {
+            if(repository.isValidAclEntry(this.privilege, principal)) {
               acl.addEntry(this.privilege, principal);
             } else {
-              // TODO: notify user
+              //TODO:
+              //errors.rejectValue("name",
+              //          "manage.create.course.missing.name",
+              //          "A name must be provided for the course collection");
+              //return;
             }
         }
     }

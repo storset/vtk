@@ -313,7 +313,11 @@ public class ACLEditController extends SimpleFormController implements Initializ
                 Type type = null;
                 if (shortcut[0].startsWith("user:")) {
                     remove[0] = shortcut[0].replace("user:", "");
-                    type = Type.USER;
+                    if (remove[0].startsWith("pseudo:")) {
+                        type = Type.PSEUDO;                          
+                    } else {
+                        type = Type.USER;                           
+                    }
                 } else if (shortcut[0].startsWith("group:")) {
                     remove[0] = shortcut[0].replace("group:", "");
                     type = Type.GROUP;

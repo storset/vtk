@@ -589,7 +589,7 @@ public final class AuthorizationManager {
                 return;
             }
         }
-        throw new AuthenticationException(
+        throw new AuthorizationException(
                 "Principal " + principal + " not authorized to access " 
                 + resource.getURI() + " for privilege(s) " 
                 + Arrays.asList(privileges));

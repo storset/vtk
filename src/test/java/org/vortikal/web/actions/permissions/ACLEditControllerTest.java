@@ -3,14 +3,11 @@ package org.vortikal.web.actions.permissions;
 import java.util.ArrayList;
 import java.util.List;
 
+import junit.framework.TestCase;
+
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.Principal.Type;
-import org.vortikal.web.actions.copymove.CopyMoveToSelectedFolderController;
-
-import sun.security.acl.PrincipalImpl;
-
-import junit.framework.TestCase;
 
 public class ACLEditControllerTest extends TestCase {
     
@@ -46,10 +43,13 @@ public class ACLEditControllerTest extends TestCase {
         
         assertEquals("user:pseudo:all", extractedShortcuts[0][0]);
         assertEquals("checked", extractedShortcuts[0][1]);
+        
         assertEquals("group:alle@uio.no", extractedShortcuts[1][0]);
         assertEquals("checked", extractedShortcuts[1][1]);
+        
         assertEquals("group:alle@feide.uio.no", extractedShortcuts[2][0]);
         assertEquals("", extractedShortcuts[2][1]);
+        
         assertEquals("group:alle@webid.uio.no", extractedShortcuts[3][0]);
         assertEquals("", extractedShortcuts[3][1]);
         

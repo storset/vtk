@@ -170,7 +170,7 @@ public class ACLEditCommand extends UpdateCancelCommand {
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer(this.getClass().getName());
+        StringBuilder sb = new StringBuilder(this.getClass().getName());
         sb.append("[addUserAction=").append(this.addUserAction);
         sb.append(", removeUserAction=").append(this.removeUserAction);
         sb.append(", addGroupAction=").append(this.addGroupAction);

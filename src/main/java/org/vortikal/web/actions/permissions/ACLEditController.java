@@ -242,7 +242,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
      *            the configured shortcuts
      * @return a <code>String[][]</code> object containing checked / un-checked shortcuts
      */
-    private String[][] extractAndCheckShortcuts (List<Principal> authorizedUsers, 
+    protected String[][] extractAndCheckShortcuts (List<Principal> authorizedUsers, 
             List<Principal> authorizedGroups, List<String> shortcuts) {
         
         String checkedShortcuts[][] = new String[shortcuts.size()][2];
@@ -292,7 +292,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
      * @param editCommand
      *            the command object
      */
-    private void aclShortcuts(Acl acl, Repository repository, BindException errors, ACLEditCommand editCommand) {
+    protected void aclShortcuts(Acl acl, Repository repository, BindException errors, ACLEditCommand editCommand) {
         String[] updatedShortcuts = editCommand.getUpdatedShortcuts();
         String[][] shortcuts = editCommand.getShortcuts();
 

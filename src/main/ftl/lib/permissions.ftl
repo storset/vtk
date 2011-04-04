@@ -197,10 +197,12 @@
                 ${groupOrUser.name}
               </#if>
               
-              <#-- Remove link -->
-              &nbsp;(&nbsp;<a href="${removeURLs[groupOrUser.name]?html}"><#t/>
-              <#t/><@vrtx.msg code="permissions.remove" default="remove"/></a>&nbsp;)
-              
+              <#-- Remove -->
+              <@spring.bind formName + ".submitURL" /> 
+              <form class="aclEdit" action="${spring.status.value?html}" method="post">
+                 <input type="hidden" name="${type}Names" value="${groupOrUser.name?html}" />
+                 &nbsp;(&nbsp;<input name="remove${capitalizedType}Action" type="submit" value="<@vrtx.msg code='permissions.remove' default='remove' />"/>&nbsp;)
+              </form>
             </#compress>
           </li>
         </#list>

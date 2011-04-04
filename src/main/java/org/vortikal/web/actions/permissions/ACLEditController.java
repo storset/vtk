@@ -148,10 +148,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
     }
 
     protected boolean isFormSubmission(HttpServletRequest request) {
-        return "POST".equals(request.getMethod())
-                || ("GET".equals(request.getMethod()) && (request
-                        .getParameter("removeUserAction") != null || request
-                        .getParameter("removeGroupAction") != null));
+        return "POST".equals(request.getMethod());
     }
 
     /**
@@ -191,11 +188,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
         }
         
         // Remove or add shortcuts
-        // TODO: does not work when remove command - skip until find solution
-        if(editCommand.getRemoveUserAction() == null 
-           && editCommand.getRemoveGroupAction() == null) {
-          aclShortcuts(acl, repository, errors, editCommand);
-        }
+        aclShortcuts(acl, repository, errors, editCommand);
         
         // Has the user asked to save?
         if (editCommand.getSaveAction() != null) {      
@@ -292,7 +285,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
      * @param editCommand
      *            the command object
      */
-    protected void aclShortcuts(Acl acl, Repository repository, BindException errors, ACLEditCommand editCommand) {
+    private void aclShortcuts(Acl acl, Repository repository, BindException errors, ACLEditCommand editCommand) {
         String[] updatedShortcuts = editCommand.getUpdatedShortcuts();
         String[][] shortcuts = editCommand.getShortcuts();
 

@@ -15,6 +15,20 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <title>${vrtx.getMsg("unlockwarning.title")} '${resourceContext.currentResource.name}'</title>
+<link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/basic.css" type="text/css"/>
+<style type="text/css">
+  body {
+    margin: 2em 0 0 2em;
+    width: 600px;
+  }
+  #vrtx-unlock-buttons {
+    clear: left;
+    padding: 0.5em 0;
+    border-top: 1px solid #777;
+    border-bottom: 1px solid #777;
+    margin: 1em 0;
+  }
+</style>
 </head>
 <#assign owner = resourceContext.currentResource.lock.principal.qualifiedName />
 <#assign currentPrincipal = resourceContext.principal.qualifiedName />
@@ -27,17 +41,19 @@
   <form method="post" action="${form.url?html}">
     <@vrtx.csrfPreventionToken url=form.url />
     <#if owner != currentPrincipal>
-    <p>${vrtx.getMsg("unlockwarning.steal")} ${owner}.</p> 
-    <p>${vrtx.getMsg("unlockwarning.modified")} ${resourceContext.currentResource.lastModified?datetime?html}.</p>
+    <p>${vrtx.getMsg("unlockwarning.steal")}: <strong>${owner}</strong>.</p> 
+    <p>${vrtx.getMsg("unlockwarning.modified")}: <strong>${resourceContext.currentResource.lastModified?datetime?html}</strong>.</p>
     <p>${vrtx.getMsg("unlockwarning.explanation")}</p>
     <#else>
     </#if>
-    <button tabindex="1" type="submit" name="unlock" value="Unlock" >
-      ${vrtx.getMsg("unlockwarning.unlock")}
-    </button>
-    <button tabindex="2" type="submit" name="cancel" value="Cancel" >
-      ${vrtx.getMsg("unlockwarning.cancel")}
-    </button>
+    <div id="vrtx-unlock-buttons">
+      <button tabindex="1" type="submit" name="unlock" value="Unlock" >
+        ${vrtx.getMsg("unlockwarning.unlock")}
+      </button>
+      <button tabindex="2" type="submit" name="cancel" value="Cancel" >
+        ${vrtx.getMsg("unlockwarning.cancel")}
+      </button>
+    </div>
   </form>
 </body>
 </html>

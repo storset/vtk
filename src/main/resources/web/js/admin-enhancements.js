@@ -75,7 +75,19 @@ function logoutButtonAsLink() {
         btn.click();
         return false;
     });
+}
 
+function removePermissionButtonAsLink() {
+    var btn = $('input.removePermission');
+    if (btn.size() == 0) {
+        return;
+    }
+    btn.hide();
+    btn.after('<a href="javascript:void(0);">' + btn.attr('value') + '</a>');
+    $('#logoutAction\\.link').click(function() {
+        btn.click();
+        return false;
+    });
 }
 
 function copyMoveButtonsAsLinks() {
@@ -318,6 +330,7 @@ function switchCheckedClasslass(obj){
 
 $(document).ready(logoutButtonAsLink);
 $(document).ready(copyMoveButtonsAsLinks);
+$(document).ready(removePermissionButtonAsLink);
 $(document).ready(placeMoveButtonInActiveTab);
 $(document).ready(placeCopyButtonInActiveTab);
 $(document).ready(placeDeleteButtonInActiveTab);

@@ -151,13 +151,14 @@
   <#assign pseudoPrincipals = aclInfo.privilegedPseudoPrincipals[privilegeName] />
 
   <@spring.bind formName + ".submitURL" /> 
-  <form class="aclEdit" action="${spring.status.value?html}" method="post">
+  <#assign submitUrl = spring.status.value />
+  <form class="aclEdit" action="${submitUrl?html}" method="post">
     <h3>${privilegeHeading}</h3>
     <@spring.bind formName + ".shortcuts" />
     <@listShortcuts privilegeName privilegeHeading spring.status.value />
     <ul class="principalList" id="principalList">
-      <@editACLFormGroupsOrUsers "group" />
-      <@editACLFormGroupsOrUsers "user" />
+      <@editACLFormGroupsOrUsers "group" submitUrl />
+      <@editACLFormGroupsOrUsers "user" submitUrl />
     </ul>
     <div id="submitButtons" class="submitButtons">
       <input type="submit" name="saveAction" value="<@vrtx.msg code="permissions.save" default="Save"/>">
@@ -175,7 +176,7 @@
  *
 -->
 
-<#macro editACLFormGroupsOrUsers type>
+<#macro editACLFormGroupsOrUsers type submitUrl>
   <#assign capitalizedType = "${type?capitalize}" />
   <li class="${type}s">
     <fieldset>
@@ -198,10 +199,9 @@
               </#if>
               
               <#-- Remove -->
-              <@spring.bind formName + ".submitURL" /> 
-              <form class="aclEdit" action="${spring.status.value?html}" method="post">
+              <form class="aclEditRemovePermission" action="${submitUrl?html}" method="post">
                  <input type="hidden" name="${type}Names" value="${groupOrUser.name?html}" />
-                 &nbsp;(&nbsp;<input name="remove${capitalizedType}Action" type="submit" value="<@vrtx.msg code='permissions.remove' default='remove' />"/>&nbsp;)
+                 &nbsp;(&nbsp;<input class="removePermission" name="remove${capitalizedType}Action" type="submit" value="<@vrtx.msg code='permissions.remove' default='remove' />"/>&nbsp;)
               </form>
             </#compress>
           </li>

@@ -593,6 +593,12 @@ div.expandedForm { /* Permissions */
   padding-bottom: 1em;
 }
 
+.expandedForm form.aclEdit form.aclEdit {
+  padding: 0 !important;
+  margin: 0 !important;
+  display: inline !important;
+}
+
 .expandedForm h3 {
   font-size: 100%;
   border-bottom: 0px;

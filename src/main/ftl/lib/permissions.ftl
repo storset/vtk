@@ -198,11 +198,9 @@
                 ${groupOrUser.name}
               </#if>
               
-              <#-- Remove -->
-              <form class="aclEditRemovePermission" action="${submitUrl?html}" method="post">
-                 <input type="hidden" name="${type}Names" value="${groupOrUser.name?html}" />
-                 &nbsp;(&nbsp;<input class="removePermission" name="remove${capitalizedType}Action" type="submit" value="<@vrtx.msg code='permissions.remove' default='remove' />"/>&nbsp;)
-              </form>
+              <#-- Remove - TODO: how not to remove all userNames or groupNames -->
+              <input type="hidden" name="${type}Names" value="${groupOrUser.name?html}" />
+              &nbsp;(&nbsp;<input class="removePermission" name="remove${capitalizedType}Action" type="submit" value="<@vrtx.msg code='permissions.remove' default='remove' />"/>&nbsp;)  
             </#compress>
           </li>
         </#list>

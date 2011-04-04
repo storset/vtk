@@ -82,10 +82,11 @@ function removePermissionButtonAsLink() {
     if (btn.size() == 0) {
         return;
     }
+    
     btn.hide();
-    btn.after('<a href="javascript:void(0);">' + btn.attr('value') + '</a>');
-    $('#logoutAction\\.link').click(function() {
-        btn.click();
+    btn.after('<a class="removePermissionLink" href="javascript:void(0);">' + btn.attr('value') + '</a>');
+    $('.removePermissionLink').click(function() {
+        $(this).prev().click();
         return false;
     });
 }

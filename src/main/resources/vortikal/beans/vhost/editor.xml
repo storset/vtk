@@ -230,6 +230,11 @@
           <property name="urlName" value="documentURL" />
           <property name="staticURLProtocol" value="${webProtocolRestricted}" />
         </bean>
+      <!--   <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+          <property name="modelName" value="manuallyApprove" />
+          <property name="urlName" value="url" />
+          <property name="service" ref="editor.collection.manuallyApproveResourcesService" />
+        </bean>  -->
         <bean class="org.vortikal.web.referencedata.provider.StaticURIServiceURLProvider">
           <property name="service" ref="editor.browseService" />
           <property name="path" value="${editor.fck.browseURL}" />
@@ -332,7 +337,9 @@
     <property name="successView" value="redirectToPreviewCollection" />
   </bean>
 
-  <bean id="editor.projectEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+
+  
+   <bean id="editor.projectEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
     <property name="resourceManager" ref="editor.projectResourceManager" />
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToPreviewCollection" />
@@ -346,6 +353,12 @@
 
   <bean id="editor.imageListingEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
     <property name="resourceManager" ref="editor.imageListingResourceManager" />
+    <property name="formView" value="editor.editView" />
+    <property name="successView" value="redirectToPreviewCollection" />
+  </bean>
+  
+ <bean id="editor.audioVideoListingEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+    <property name="resourceManager" ref="editor.audioVideoListingResourceManager" />
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToPreviewCollection" />
   </bean>
@@ -405,11 +418,13 @@
         <property name="preContentProperties">
           <list>
             <ref bean="userTitlePropDef" />
+            <ref bean="photographerNamePropDef"/>
             <ref bean="descriptionPropDef" />
           </list>
         </property>
       </bean>
     </property>
+  
   </bean>
 
   <bean id="editor.videoResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
@@ -571,6 +586,28 @@
       </bean>
     </property>
   </bean>
+  
+    <bean id="editor.audioVideoListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
+    <property name="contentResourceType" ref="documentResourceTypeDefinition" />
+    <property name="editPropertyProvider">
+      <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
+        <property name="preContentProperties">
+          <list>
+            <ref bean="userTitlePropDef" />
+            <ref bean="introductionPropDef" />
+            <ref bean="navigationTitlePropDef" />
+            <ref bean="importancePropDef" />
+            <ref bean="hiddenPropDef" />
+            <ref bean="pageLimitPropDef" />
+            <ref bean="aggregationPropDef" />
+            <ref bean="collection.sortingPropDef" />
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
 
   <bean id="editor.articleListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
     <property name="htmlParser" ref="decorating.htmlParser" />
@@ -676,7 +713,6 @@
       <set>
         <value>script</value>
         <value>style</value>
-        <!-- <value>form</value> <value>input</value> -->
         <value>frameset</value>
         <value>frame</value>
         <value>iframe</value>

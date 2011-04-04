@@ -5,8 +5,9 @@
 
   <!-- Image resource -->
 
-  <bean id="imageResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="image" />
+  <bean id="imageResourceTypeDefinition"
+        class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="image"/>
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="parentTypeDefinition" ref="fileResourceTypeDefinition" />
     <property name="assertions">
@@ -16,9 +17,8 @@
     </property>
     <property name="propertyTypeDefinitions">
       <list>
-        <ref bean="imageHeightPropDef" />
-        <ref bean="imageWidthPropDef" />
         <ref bean="thumbnailPropDef" />
+        <ref bean="photographerNamePropDef"/>
       </list>
     </property>
   </bean>

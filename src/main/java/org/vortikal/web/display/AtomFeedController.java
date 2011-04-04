@@ -68,7 +68,7 @@ import org.vortikal.web.service.Service;
 
 public abstract class AtomFeedController implements Controller {
 
-    private final Log logger = LogFactory.getLog(AtomFeedController.class);
+    protected final Log logger = LogFactory.getLog(AtomFeedController.class);
     public static final String TAG_PREFIX = "tag:";
 
     protected Service viewService;
@@ -80,6 +80,34 @@ public abstract class AtomFeedController implements Controller {
     private PropertyTypeDefinition titlePropDef;
     private PropertyTypeDefinition lastModifiedPropDef;
     private PropertyTypeDefinition creationTimePropDef;
+
+    public PropertyTypeDefinition getTitlePropDef() {
+        return titlePropDef;
+    }
+
+    protected PropertyTypeDefinition getLastModifiedPropDef() {
+        return lastModifiedPropDef;
+    }
+
+    public PropertyTypeDefinition getCreationTimePropDef() {
+        return creationTimePropDef;
+    }
+
+    public String getAuthorPropDefPointer() {
+        return authorPropDefPointer;
+    }
+
+    public String getIntroductionPropDefPointer() {
+        return introductionPropDefPointer;
+    }
+
+    public String getPicturePropDefPointer() {
+        return picturePropDefPointer;
+    }
+
+    public String getMediaPropDefPointer() {
+        return mediaPropDefPointer;
+    }
 
     private String authorPropDefPointer;
     private String introductionPropDefPointer;
@@ -128,6 +156,7 @@ public abstract class AtomFeedController implements Controller {
             URIException, UnsupportedEncodingException {
 
         Feed feed = abdera.newFeed();
+        
         Property publishedDateProp = getPublishDate(collection);
         publishedDateProp = publishedDateProp == null ? collection.getProperty(this.creationTimePropDef)
                 : publishedDateProp;
@@ -235,8 +264,7 @@ public abstract class AtomFeedController implements Controller {
                     entry.addLink(mediaLink);
                 } catch (Throwable t) {
                     // Don't break the entire entry if media link breaks
-                    logger.warn("An error occured while setting media link for feed entry, " 
-                            + result.getURI(), t);
+                    logger.warn("An error occured while setting media link for feed entry, " + result.getURI(), t);
                 }
             }
 
@@ -265,8 +293,8 @@ public abstract class AtomFeedController implements Controller {
             }
             String imgPath = picture.getFormattedValue("thumbnail", Locale.getDefault());
             String imgAlt = getImageAlt(imgPath);
-            sb.append("<img src=\"" + HtmlUtil.escapeHtmlString(imgPath) 
-                    + "\" alt=\"" + HtmlUtil.escapeHtmlString(imgAlt) + "\"/>");
+            sb.append("<img src=\"" + HtmlUtil.escapeHtmlString(imgPath) + "\" alt=\""
+                    + HtmlUtil.escapeHtmlString(imgAlt) + "\"/>");
         }
 
         if (summary != null) {
@@ -275,7 +303,7 @@ public abstract class AtomFeedController implements Controller {
         return sb.toString();
     }
 
-    private Property getMediaRef(PropertySet resource) {
+    protected Property getMediaRef(PropertySet resource) {
         PropertyTypeDefinition mediaPropDef = this.resourceTypeTree
                 .getPropertyDefinitionByPointer(this.mediaPropDefPointer);
         if (mediaPropDef != null) {
@@ -298,7 +326,7 @@ public abstract class AtomFeedController implements Controller {
         return null;
     }
 
-    private Property getAuthor(PropertySet resource) {
+    protected Property getAuthor(PropertySet resource) {
         PropertyTypeDefinition authorPropDef = this.resourceTypeTree
                 .getPropertyDefinitionByPointer(this.authorPropDefPointer);
         if (authorPropDef != null) {

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <bean id="audioVideoListing.viewService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="collectionListing.viewService" />
+    <property name="order" value="0" />
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsAudioVideoListing" />
+      </list>
+    </property>
+    <property name="handler" ref="audioVideoListing.handler" />
+    <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
+  </bean>
+
+  <bean id="audioVideoListing.handler" class="org.vortikal.web.display.collection.CollectionListingController"
+    parent="collectionListing.handler">
+    <property name="searchComponents">
+      <list>
+        <ref bean="audioVideoListing.searchComponent" />
+      </list>
+    </property>
+    <property name="viewName" value="audioVideoListing.view" />
+   
+  </bean>
+
+  <bean id="audioVideoListing.searchComponent" parent="collectionListing.searchComponent">
+    <property name="name" value="audioVideoListing.defaultListing" />
+    <property name="defaultRecursive" value="true" />
+    <property name="query">
+      <value>(uri = {$currentFolder}/*) AND (type IN audio OR type IN video)</value>
+    </property>
+  </bean>
+
+  <bean id="audioVideoListing.viewResolver" parent="decoratorViewResolver">
+    <property name="views">
+      <map>
+        <entry key="audioVideoListing.view" value-ref="audioVideoListing.view" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="audioVideoListing.view" parent="collectionListing.view">
+  </bean>
+
+  <bean id="audioVideoListing.feedService" parent="collectionListing.atomService">
+    <property name="order" value="-2" />
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsAudioVideoListing" />
+        <ref bean="feedParameterSetAssertion" />
+      </list>
+    </property>
+    <property name="handler" ref="audioVideoListing.feedHandler" />
+  </bean>
+
+  <bean id="audioVideoListing.feedHandler" class="org.vortikal.web.display.collection.AudioVideoListingAsFeedController"
+    parent="viewAsFeedHandler">
+    <property name="searchComponent" ref="audioVideoListing.searchComponent" />
+  </bean>
+  
+</beans>

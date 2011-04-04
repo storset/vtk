@@ -83,4 +83,11 @@
     <property name="mandatory" value="false" />
   </bean>
 
+  <bean id="photographerNamePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="photographerName" />
+    <property name="type" value="STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+  </bean>
+
 </beans>

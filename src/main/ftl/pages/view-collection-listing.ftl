@@ -33,6 +33,7 @@
 <#import "/lib/collections/view-person-listing.ftl" as persons />
 <#import "/lib/collections/view-image-listing.ftl" as images />
 <#import "/lib/collections/view-blog-listing.ftl" as blogs />
+<#import "/lib/collections/view-audio-video-listing.ftl" as audioVideo />
 
 <#assign resource = collection />
 <#assign title = vrtx.propValue(resource, "title", "flattened") />
@@ -179,8 +180,10 @@
              <@images.displayImages searchComponent collection />
            <#elseif collection.resourceType = 'blog-listing'>
               <@blogs.displayBlogs searchComponent collection />
+           <#elseif collection.resourceType = 'audio-video-listing' >
+           	  <@audioVideo.displayCollection collectionListing=searchComponent />
            <#else>
-             <@coll.displayCollection collectionListing=searchComponent />
+              <@coll.displayCollection collectionListing=searchComponent />
            </#if>
          </#list>
        </#if>

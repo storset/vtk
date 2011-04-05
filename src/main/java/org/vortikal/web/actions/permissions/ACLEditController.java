@@ -385,9 +385,9 @@ public class ACLEditController extends SimpleFormController implements Initializ
             } else {
               //TODO: is this ok?
               if(type == Type.GROUP) {
-                errors.rejectValue("groupNames", "permissions.group.invalid.value", new Object[] { value }, "Group '" + value + "' is not valid");                 
+                errors.rejectValue("groupNames", "permissions.group.invalid.value", new Object[] { value }, "The group '" + value + "' is not valid");                 
               } else {
-                errors.rejectValue("userNames", "permissions.user.invalid.value", new Object[] { value }, "User '" + value + "' is not valid");
+                errors.rejectValue("userNames", "permissions.user.invalid.value", new Object[] { value }, "The user '" + value + "' is not valid");
               }
             }
         }

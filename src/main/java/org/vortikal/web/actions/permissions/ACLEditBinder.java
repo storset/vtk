@@ -53,10 +53,10 @@ public class ACLEditBinder extends ServletRequestDataBinder {
         super.bind(request);
         ACLEditCommand command = (ACLEditCommand) getTarget();
         
-        Enumeration<String> params = request.getParameterNames();
-        
         List<String> removedUsers = new ArrayList();
         List<String> removedGroups = new ArrayList();
+        
+        Enumeration<String> params = request.getParameterNames();
 
         while(params.hasMoreElements()) {
             String param = params.nextElement();

@@ -327,11 +327,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
                 Type type = null;
                 if (shortcut[0].startsWith(USER_PREFIX)) {
                     remove[0] = shortcut[0].replace(USER_PREFIX, "");
-                    if (remove[0].startsWith(PSEUDO_PREFIX)) {
-                        type = Type.PSEUDO;                          
-                    } else {
-                        type = Type.USER;                           
-                    }
+                    type = Type.USER;                           
                 } else if (shortcut[0].startsWith(GROUP_PREFIX)) {
                     remove[0] = shortcut[0].replace(GROUP_PREFIX, "");
                     type = Type.GROUP;
@@ -345,15 +341,11 @@ public class ACLEditController extends SimpleFormController implements Initializ
                 Type type = null;
                 if (shortcut[0].startsWith(USER_PREFIX)) {
                     add[0] = shortcut[0].replace(USER_PREFIX, "");
-                    if (add[0].startsWith(PSEUDO_PREFIX)) {
-                        type = Type.PSEUDO;                          
-                    } else {
-                        type = Type.USER;                           
-                    }
+                    type = Type.USER;                           
                 } else if (shortcut[0].startsWith(GROUP_PREFIX)) {
                     add[0] = shortcut[0].replace(GROUP_PREFIX, "");
                     type = Type.GROUP;
-                }  
+                }   
                 addToAcl(acl, repository, errors, add, type);
             }
         }
@@ -371,17 +363,11 @@ public class ACLEditController extends SimpleFormController implements Initializ
      */
     private void removeFromAcl(Acl acl, String[] values, Type type) {
         for (String value : values) {
-            Type tmpType = type;
-            if (type.equals(Type.USER)) {
-              if (value.startsWith(PSEUDO_PREFIX)) {
-                  tmpType  = Type.PSEUDO;  
-              }
-            }
-            Principal principal = principalFactory.getPrincipal(value, tmpType);
+            Principal principal = principalFactory.getPrincipal(value, typePseudoUser(type, value));
             acl.removeEntry(this.privilege, principal);
         }
     }
-
+    
     /**
      * Add groups or users to ACL.
      * 
@@ -398,7 +384,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
      */
     private void addToAcl(Acl acl, Repository repository, BindException errors, String[] values, Type type) {
         for (String value : values) {
-            Principal principal = principalFactory.getPrincipal(value, type);
+            Principal principal = principalFactory.getPrincipal(value, typePseudoUser(type, value));
             if(repository.isValidAclEntry(this.privilege, principal)) {
               acl.addEntry(this.privilege, principal);
             } else {
@@ -428,7 +414,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
      */
     private void addToAcl(Acl acl, Repository repository, BindException errors, List<String> values, Type type) {
         for (String value : values) {
-            Principal principal = principalFactory.getPrincipal(value, type);
+            Principal principal = principalFactory.getPrincipal(value, typePseudoUser(type, value));
             if(repository.isValidAclEntry(this.privilege, principal)) {
               acl.addEntry(this.privilege, principal);
             } else {
@@ -440,6 +426,25 @@ public class ACLEditController extends SimpleFormController implements Initializ
               }
             }
         }
+    }
+    
+    /**
+     * Check if pseudo-user and set correct type
+     * 
+     * @param type
+     *            the type
+     * @param value
+     *            group or user
+     * @return type
+     *            type of ACL (GROUP or USER or PSEUDO)
+     */
+    private Type typePseudoUser(Type type, String value) { 
+        if (type.equals(Type.USER)) {
+          if (value.startsWith(PSEUDO_PREFIX)) {
+              type = Type.PSEUDO;  
+          }
+        }
+        return type;
     }
 
     @Required

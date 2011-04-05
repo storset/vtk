@@ -58,8 +58,6 @@ import org.vortikal.security.Principal.Type;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
-import com.sun.tools.internal.xjc.reader.xmlschema.bindinfo.BIConversion.User;
-
 public class ACLEditController extends SimpleFormController implements InitializingBean {
 
     private Privilege privilege;

@@ -123,22 +123,38 @@ public class ResourceEditDataBinder extends ServletRequestDataBinder {
 
             Property prop = resource.getProperty(propDef);
             if (prop == null) {
-                if (value != null && !value.trim().equals("")) {
-                    try {
-                        prop = propDef.createProperty();
-                        resource.addProperty(prop);
-                        setPropValue(value, prop);
-                        command.setPropChange(true);
-                    } catch (Throwable t) {
-                        command.reject(propDef, t.getMessage());
-                        resource.removeProperty(propDef);
-                    }
-                    continue;
-                } else if (propDef.isMandatory()) {
+                if ((value == null || value.trim().equals("")) && propDef.isMandatory()) {
                     command.reject(propDef, propDef.getName() + " is required ");
                     continue;
                 }
-            } else if (value == null || value.trim().equals("")) {
+                if (value == null || value.trim().equals("")) {
+                    continue;
+                }
+                try {
+                    prop = propDef.createProperty();
+                    Object o = getValue(value, prop);
+                    if (o == null && propDef.isMandatory()) {
+                        command.reject(propDef, propDef.getName() + " is required ");
+                        continue;
+                    }
+                    if (o == null) {
+                        continue;
+                    }
+                    if (o instanceof Value[]) {
+                        prop.setValues((Value[]) o);
+                    } else {
+                        prop.setValue((Value) o);
+                    }
+                    resource.addProperty(prop);
+                    command.setPropChange(true);
+                } catch (Throwable t) {
+                    command.reject(propDef, t.getMessage());
+                    resource.removeProperty(propDef);
+                }
+                continue;
+            } 
+            
+            if (value == null || value.trim().equals("")) {
                 if (propDef.isMandatory()) {
                     command.reject(propDef, propDef.getName() + " is required");
                     continue;
@@ -146,19 +162,34 @@ public class ResourceEditDataBinder extends ServletRequestDataBinder {
                 command.setPropChange(true);
                 resource.removeProperty(propDef);
                 continue;
-            } else {
-                try {
-                    setPropValue(value, prop);
-                    command.setPropChange(true);
-                } catch (Throwable t) {
-                    command.reject(propDef, t.getMessage());
+            } 
+            
+            try {
+                Object o = getValue(value, prop);
+                if (o == null && propDef.isMandatory()) {
+                    command.reject(propDef, propDef.getName() + " is required ");
+                    continue;
                 }
+                if (o == null) {
+                    resource.removeProperty(propDef);
+                    command.setPropChange(true);
+                    continue;
+                }
+                if (o instanceof Value[]) {
+                    Value[] values = (Value[]) o;
+                    prop.setValues(values);
+                    command.setPropChange(true);
+                    continue;
+                } 
+                prop.setValue((Value) o);
+                command.setPropChange(true);
+            } catch (Throwable t) {
+                command.reject(propDef, t.getMessage());
             }
         }
     }
-
-
-    protected void setPropValue(String valueString, Property prop) throws IllegalArgumentException {
+    
+    protected Object getValue(String valueString, Property prop) {
         PropertyTypeDefinition propDef = prop.getDefinition();
 
         if (this.propertyPreprocessors != null && this.propertyPreprocessors.containsKey(propDef)) {
@@ -177,21 +208,25 @@ public class ResourceEditDataBinder extends ServletRequestDataBinder {
                     values.add(propDef.getValueFormatter().stringToValue(string.trim(), null, null));
                 }
             }
-            prop.setValues(values.toArray(new Value[values.size()]));
+            return values.toArray(new Value[values.size()]);
         } else if (prop.getDefinition().getType() == PropertyType.Type.HTML) {
 
             try {
                 HtmlFragment fragment = this.htmlParser.parseFragment(valueString);
                 fragment.filter(this.htmlPropsFilter);
-                Value value = new Value(fragment.getStringRepresentation(), PropertyType.Type.HTML);
-                prop.setValue(value);
+                String s = fragment.getStringRepresentation();
+                if ("".equals(s.trim())) {
+                    return null;
+                }
+                Value value = new Value(s, PropertyType.Type.HTML);
+                return value;
             } catch (Throwable t) {
                 throw new IllegalArgumentException(t);
             }
 
         } else {
             Value value = propDef.getValueFormatter().stringToValue(valueString, null, null);
-            prop.setValue(value);
+            return value;
         }
     }
 

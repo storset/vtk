@@ -58,6 +58,7 @@ public class ACLEditBinder extends ServletRequestDataBinder {
         
         Enumeration<String> params = request.getParameterNames();
 
+        // Iterate parameters and if finds remove-action: extract group- / username
         while(params.hasMoreElements()) {
             String param = params.nextElement();
             if(param.startsWith(REMOVE_GROUP_PREFIX)) {

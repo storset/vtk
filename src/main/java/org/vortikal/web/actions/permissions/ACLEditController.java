@@ -194,11 +194,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
         if (editCommand.getSaveAction() != null) {      
             addToAcl(acl, repository, errors, editCommand.getUserNameEntries(), Type.USER);
             addToAcl(acl, repository, errors, editCommand.getGroupNames(), Type.GROUP);
-            if(errors.hasErrors()) {
-              BindException bex = new BindException(getACLEditCommand(resource, requestContext.getPrincipal()), this.getCommandName());
-              bex.addAllErrors(errors); // Add validation errors
-              return showForm(request, response, bex);  
-            } else {
+            if(!errors.hasErrors()) {
               if(!acl.isEmpty()) {
                 resource = repository.storeACL(token, resource.getURI(), acl);
               } else {
@@ -207,7 +203,11 @@ public class ACLEditController extends SimpleFormController implements Initializ
                 bex.addAllErrors(errors); // Add empty ACL error
                 return showForm(request, response, bex); 
               }
-              return new ModelAndView(getSuccessView());
+              return new ModelAndView(getSuccessView()); 
+            } else {
+              BindException bex = new BindException(getACLEditCommand(resource, requestContext.getPrincipal()), this.getCommandName());
+              bex.addAllErrors(errors); // Add validation errors
+              return showForm(request, response, bex);  
             }
         }
 

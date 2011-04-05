@@ -41,6 +41,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
@@ -92,7 +93,6 @@ public class SubResourceJSONService implements Controller, InitializingBean {
             String spanClasses = "";
             
             // Add classes
-            
             if (sr.isCollection()) {
               spanClasses = "folder";
               o.put("hasChildren", true);
@@ -106,7 +106,6 @@ public class SubResourceJSONService implements Controller, InitializingBean {
             }
             
             // Generate title
-            
             StringBuilder title = new StringBuilder();
             title.append("<span id=&quot;title-wrapper&quot;><strong id=&quot;title&quot;>" + sr.getName() + "</strong>");
             
@@ -123,7 +122,6 @@ public class SubResourceJSONService implements Controller, InitializingBean {
             }
             
             // Generate table with permissions
-            
             String notAssigned = provider.getLocalizedTitle(request, "permissions.not.assigned", null).toLowerCase();
             title.append("<table><tbody>");
             
@@ -166,10 +164,12 @@ public class SubResourceJSONService implements Controller, InitializingBean {
     public void afterPropertiesSet() throws Exception {
     }
 
+    @Required
     public void setProvider(SubResourcePermissionsProvider provider) {
         this.provider = provider;
     }
     
+    @Required
     public void setPermissionsService(Service permissionsService) {
         this.permissionsService = permissionsService;
     }

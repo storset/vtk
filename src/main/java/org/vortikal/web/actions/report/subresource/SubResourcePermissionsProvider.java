@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
@@ -186,10 +187,12 @@ public class SubResourcePermissionsProvider {
         return springRequestContext.getMessage(key);
     }
 
+    @Required
     public void setSearcher(Searcher searcher) {
         this.searcher = searcher;
     }
     
+    @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
     }

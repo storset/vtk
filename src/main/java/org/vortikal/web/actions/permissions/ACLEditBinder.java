@@ -53,8 +53,6 @@ public class ACLEditBinder extends ServletRequestDataBinder {
         super.bind(request);
         ACLEditCommand command = (ACLEditCommand) getTarget();
         
-        // Intercept and check if parameter/name has remove<TYPE> prefix,
-        // and then update command-obj with corresponding user-/groupname from postfix (with correct action).
         Enumeration<String> params = request.getParameterNames();
         
         List<String> removedUsers = new ArrayList();

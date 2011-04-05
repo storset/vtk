@@ -30,7 +30,9 @@
  */
 package org.vortikal.web.actions.permissions;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 
 import javax.servlet.ServletRequest;
 
@@ -50,23 +52,32 @@ public class ACLEditBinder extends ServletRequestDataBinder {
     public void bind(ServletRequest request) {
         super.bind(request);
         ACLEditCommand command = (ACLEditCommand) getTarget();
+        
+        // Intercept and check if parameter/name has remove<TYPE> prefix,
+        // and then update command-obj with corresponding action and user-/groupnames from postfix.
         Enumeration<String> params = request.getParameterNames();
         
+        List<String> removedUsers = new ArrayList();
+        List<String> removedGroups = new ArrayList();
+
         while(params.hasMoreElements()) {
             String param = params.nextElement();
             if(param.startsWith(REMOVE_GROUP_PREFIX)) {
-                String groupName[] = new String[1];
-                groupName[0] = param.replaceFirst(REMOVE_GROUP_PREFIX, "");
-                command.setRemoveGroupAction("removeGroupAction");
-                command.setGroupNames(groupName);
-                break;
+                removedGroups.add(param.substring(REMOVE_GROUP_PREFIX.length()));
             } else if(param.startsWith(REMOVE_USER_PREFIX)) {
-                String userName[] = new String[1];
-                userName[0] = param.replaceFirst(REMOVE_USER_PREFIX, "");
-                command.setRemoveUserAction("removeUserAction");
-                command.setUserNames(userName);
-                break;
+                removedUsers.add(param.substring(REMOVE_USER_PREFIX.length()));
             }
+        }
+ 
+        if(removedGroups.size() > 0) {
+            String[] groupList = removedGroups.toArray(new String[]{});
+            command.setRemoveGroupAction("removeGroupAction");
+            command.setGroupNames(groupList); 
+        }
+        if(removedUsers.size() > 0) {
+            String[] userList = removedUsers.toArray(new String[]{});
+            command.setRemoveUserAction("removeUserAction");
+            command.setUserNames(userList); 
         }
     }
 }

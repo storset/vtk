@@ -52,6 +52,8 @@ public interface Acl extends Cloneable {
     public Set<Privilege> getActions();
 
     public void clear();
+    
+    public boolean isEmpty();
 
     public boolean isValidEntry(Privilege action, Principal principal);
     

@@ -865,6 +865,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         if (acl == null) {
             throw new IllegalArgumentException("ACL is null");
         }
+        if (acl.isEmpty()) {
+            throw new IllegalArgumentException("Cannot store empty ACL: " + uri);
+        }
 
         Principal principal = this.tokenManager.getPrincipal(token);
 

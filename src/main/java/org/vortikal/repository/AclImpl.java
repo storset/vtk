@@ -59,7 +59,6 @@ public class AclImpl implements Acl {
         }
         return false;
     }
-
  
     public Set<Privilege> getActions() {
         return Collections.unmodifiableSet(this.actionSets.keySet());
@@ -75,6 +74,10 @@ public class AclImpl implements Acl {
 
     public void clear() {
         this.actionSets = new HashMap<Privilege, Set<Principal>>();
+    }
+    
+    public boolean isEmpty() {
+        return this.actionSets.isEmpty();
     }
     
     public boolean isValidEntry(Privilege privilege, Principal principal) {
@@ -145,8 +148,13 @@ public class AclImpl implements Acl {
             
         Set<Principal> actionEntry = this.actionSets.get(privilege);
         
-        if (actionEntry == null) return;
+        if (actionEntry == null) {
+            return;
+        }
         actionEntry.remove(principal);
+        if (actionEntry.isEmpty()) {
+            this.actionSets.remove(privilege);
+        }
     }
 
 

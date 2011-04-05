@@ -200,7 +200,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
               } else {
                 errors.rejectValue("groupNames", "permissions.no.acl", new Object[] {}, "Resource can not be without permissions");
                 BindException bex = new BindException(getACLEditCommand(resource, requestContext.getPrincipal()), this.getCommandName());
-                bex.addAllErrors(errors); // Add empty ACL error
+                bex.addAllErrors(errors); // Add error when empty ACL
                 return showForm(request, response, bex); 
               }
               return new ModelAndView(getSuccessView()); 

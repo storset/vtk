@@ -157,6 +157,10 @@ public class ResourceArchiver {
     public void expandArchive(String token, InputStream source, Path base, Map<String, Object> properties,
             EventListener listener) throws Exception {
 
+        if (listener == null) {
+            listener = NULL_LISTENER;
+        }
+
         List<String> ignoreList = this.getIgnoreList(properties);
 
         JarInputStream jarIn = new JarInputStream(new BufferedInputStream(source));

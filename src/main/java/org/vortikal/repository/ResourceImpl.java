@@ -245,7 +245,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         for (Property prop : getProperties()) {
             resource.addProperty(prop);
         }
-        resource.setAcl(new AclImpl());
+        resource.setAcl(new Acl());
         return resource;
     }
 

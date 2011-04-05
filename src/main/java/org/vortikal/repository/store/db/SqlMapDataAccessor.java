@@ -48,7 +48,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.orm.ibatis.SqlMapClientCallback;
 import org.vortikal.repository.Acl;
-import org.vortikal.repository.AclImpl;
 import org.vortikal.repository.Lock;
 import org.vortikal.repository.LockImpl;
 import org.vortikal.repository.Namespace;
@@ -840,7 +839,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
 
             resourceIds.add(id);
         }
-        Map<Integer, AclImpl> map = loadAclMap(new ArrayList<Integer>(resourceIds));
+        Map<Integer, Acl> map = loadAclMap(new ArrayList<Integer>(resourceIds));
 
         if (map.isEmpty()) {
             throw new DataAccessException("Database inconsistency: no ACL entries exist for " + "resources "
@@ -848,7 +847,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         }
 
         for (ResourceImpl resource : resources) {
-            AclImpl acl = null;
+            Acl acl = null;
 
             if (resource.getAclInheritedFrom() != -1) {
                 acl = map.get(resource.getAclInheritedFrom());
@@ -861,14 +860,14 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
                         + resource.getAclInheritedFrom() + ")");
             }
 
-            acl = (AclImpl) acl.clone();
+            acl = (Acl) acl.clone();
             resource.setAcl(acl);
         }
     }
 
-    private Map<Integer, AclImpl> loadAclMap(List<Integer> resourceIds) {
+    private Map<Integer, Acl> loadAclMap(List<Integer> resourceIds) {
 
-        Map<Integer, AclImpl> resultMap = new HashMap<Integer, AclImpl>();
+        Map<Integer, Acl> resultMap = new HashMap<Integer, Acl>();
         if (resourceIds.isEmpty()) {
             return resultMap;
         }
@@ -891,7 +890,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         return resultMap;
     }
 
-    private void loadAclBatch(List<Integer> resourceIds, Map<Integer, AclImpl> resultMap) {
+    private void loadAclBatch(List<Integer> resourceIds, Map<Integer, Acl> resultMap) {
         Map<String, Object> parameterMap = new HashMap<String, Object>();
         parameterMap.put("resourceIds", resourceIds);
 
@@ -905,10 +904,10 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
             Integer resourceId = (Integer) map.get("resourceId");
             String privilege = (String) map.get("action");
 
-            AclImpl acl = resultMap.get(resourceId);
+            Acl acl = resultMap.get(resourceId);
 
             if (acl == null) {
-                acl = new AclImpl();
+                acl = new Acl();
                 resultMap.put(resourceId, acl);
             }
 

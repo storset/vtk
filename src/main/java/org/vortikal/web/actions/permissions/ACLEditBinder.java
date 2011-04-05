@@ -31,11 +31,11 @@
 package org.vortikal.web.actions.permissions;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 
 import javax.servlet.ServletRequest;
 
+import org.apache.commons.collections.EnumerationUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
 
 public class ACLEditBinder extends ServletRequestDataBinder {
@@ -53,20 +53,11 @@ public class ACLEditBinder extends ServletRequestDataBinder {
         super.bind(request);
         ACLEditCommand command = (ACLEditCommand) getTarget();
         
-        List<String> removedUsers = new ArrayList();
-        List<String> removedGroups = new ArrayList();
+        List<String> removedUsers = new ArrayList<String>();
+        List<String> removedGroups = new ArrayList<String>();
+        List<String> params = EnumerationUtils.toList(request.getParameterNames());
         
-        Enumeration<String> params = request.getParameterNames();
-
-        // Iterate parameters and if finds remove-action: extract group- / username
-        while(params.hasMoreElements()) {
-            String param = params.nextElement();
-            if(param.startsWith(REMOVE_GROUP_PREFIX)) {
-                removedGroups.add(param.substring(REMOVE_GROUP_PREFIX.length()));
-            } else if(param.startsWith(REMOVE_USER_PREFIX)) {
-                removedUsers.add(param.substring(REMOVE_USER_PREFIX.length()));
-            }
-        }
+        extractGroupsAndUsersForRemoval(removedUsers, removedGroups, params);
  
         if(removedGroups.size() > 0) {
             String[] groupList = removedGroups.toArray(new String[]{});
@@ -77,6 +68,26 @@ public class ACLEditBinder extends ServletRequestDataBinder {
             String[] userList = removedUsers.toArray(new String[]{});
             command.setRemoveUserAction("removeUserAction");
             command.setUserNames(userList); 
+        }
+    }
+
+    /**
+     * Extracts groups and users for removal (from request parameters)
+     * 
+     * @param removedUsers
+     *            list to add users for removal
+     * @param removedGroups
+     *            list to add groups for removal
+     * @param params
+     *            request parameters
+     */
+    protected void extractGroupsAndUsersForRemoval(List<String> removedUsers, List<String> removedGroups, List<String> params) {
+        for(String param : params) {
+            if(param.startsWith(REMOVE_GROUP_PREFIX)) {
+                removedGroups.add(param.substring(REMOVE_GROUP_PREFIX.length()));
+            } else if(param.startsWith(REMOVE_USER_PREFIX)) {
+                removedUsers.add(param.substring(REMOVE_USER_PREFIX.length()));
+            }
         }
     }
 }

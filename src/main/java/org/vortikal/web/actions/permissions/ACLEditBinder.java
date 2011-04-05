@@ -55,15 +55,17 @@ public class ACLEditBinder extends ServletRequestDataBinder {
         while(params.hasMoreElements()) {
             String param = params.nextElement();
             if(param.startsWith(REMOVE_GROUP_PREFIX)) {
-                String groupNames[] = new String[1];
-                groupNames[0] = param.replaceFirst(REMOVE_GROUP_PREFIX, "");
+                String groupName[] = new String[1];
+                groupName[0] = param.replaceFirst(REMOVE_GROUP_PREFIX, "");
                 command.setRemoveGroupAction("removeGroupAction");
-                command.setGroupNames(groupNames);
+                command.setGroupNames(groupName);
+                break;
             } else if(param.startsWith(REMOVE_USER_PREFIX)) {
-                String userNames[] = new String[1];
-                userNames[0] = param.replaceFirst(REMOVE_USER_PREFIX, "");
+                String userName[] = new String[1];
+                userName[0] = param.replaceFirst(REMOVE_USER_PREFIX, "");
                 command.setRemoveUserAction("removeUserAction");
-                command.setUserNames(userNames);
+                command.setUserNames(userName);
+                break;
             }
         }
     }

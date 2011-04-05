@@ -154,7 +154,7 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         Path uri = requestContext.getResourceURI();
         String token = requestContext.getSecurityToken();
 
-        // The location of the folder that we shall copy
+        // The location of the folder to copy
         String source = createFolderCommand.getSourceURI();
         if (source== null || source.equals(NORMAL_FOLDER_IDENTIFIER)) { 
             // Just create a new folder if no "folder-template" is selected
@@ -257,7 +257,15 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
             "This is an invalid collection name");
             return;
         }
-        Path newURI = uri.extend(name);
+        Path newURI;
+        try {
+            newURI = uri.extend(name);
+        } catch (Throwable t) {
+            errors.rejectValue("name",
+                    "manage.create.collection.invalid.name",
+            "This is an invalid collection name");
+            return;
+        }
 
         boolean exists = repository.exists(token, newURI);
         if (exists) {

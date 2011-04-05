@@ -199,8 +199,7 @@
               </#if>
               
               <#-- Remove - TODO: how not to remove all userNames or groupNames -->
-              <input type="hidden" name="${type}Names" value="${groupOrUser.name?html}" />
-              &nbsp;(&nbsp;<input class="removePermission" name="remove${capitalizedType}Action" type="submit" value="<@vrtx.msg code='permissions.remove' default='remove' />"/>&nbsp;)  
+              &nbsp;(&nbsp;<input class="removePermission" name="remove${capitalizedType}.${groupOrUser.name?html}" type="submit" value="<@vrtx.msg code='permissions.remove' default='remove' />"/>&nbsp;)  
             </#compress>
           </li>
         </#list>
@@ -229,7 +228,9 @@
               </#list>
               <#assign value=valueCSV />
             <#else>
-              <#assign value=spring.status.value[0] />
+              <#if spring.status.value[0]?exists>
+                <#assign value=spring.status.value[0] />
+              </#if>
             </#if>
           <#else>
             <#assign value=spring.status.value />

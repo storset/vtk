@@ -224,6 +224,18 @@ public class ACLEditController extends SimpleFormController implements Initializ
         }
     }
     
+    
+    
+    @Override
+    protected ServletRequestDataBinder createBinder(HttpServletRequest request, Object command) throws Exception {
+        // Returner en ny binder som mapper input til command-objektet, istedenfor default-binderen:
+
+        ACLEditBinder binder = new ACLEditBinder(command, getCommandName());
+        prepareBinder(binder);
+        initBinder(request, binder);
+        return binder; 
+    }
+    
     /**
      * Extracts shortcuts for users and groups (set to 'checked' and remove).
      * 

@@ -22,12 +22,22 @@ public class ACLEditBinderTest extends TestCase {
        List<String> params = new ArrayList<String>();
        
        params.add("removeUser.oyvihatl");
+       params.add("removeUser.pseudo:all");
+       
        params.add("removeGroup.vrtx-core");
+       params.add("removeGroup.alle@uio.no");
+       params.add("removeGroup.alle@feide.no");
+       params.add("removeGroup.alle@webid.uio.no");
         
        binder.extractGroupsAndUsersForRemoval(removedUsers, removedGroups, params);
        
        assertEquals("oyvihatl", removedUsers.get(0));
+       assertEquals("pseudo:all", removedUsers.get(1));
+       
        assertEquals("vrtx-core", removedGroups.get(0));
+       assertEquals("alle@uio.no", removedGroups.get(1));
+       assertEquals("alle@feide.no", removedGroups.get(2));
+       assertEquals("alle@webid.uio.no", removedGroups.get(3));
        
     }
 

@@ -199,7 +199,14 @@ public class ACLEditController extends SimpleFormController implements Initializ
               bex.addAllErrors(errors); // Add validation errors
               return showForm(request, response, bex);  
             } else {
-              resource = repository.storeACL(token, resource.getURI(), acl);
+              if(!acl.isEmpty()) {
+                resource = repository.storeACL(token, resource.getURI(), acl);
+              } else {
+                errors.rejectValue("groupNames", "permissions.no.acl", new Object[] {}, "Resource can not be without permissions");
+                BindException bex = new BindException(getACLEditCommand(resource, requestContext.getPrincipal()), this.getCommandName());
+                bex.addAllErrors(errors); // Add no ACL error
+                return showForm(request, response, bex); 
+              }
               return new ModelAndView(getSuccessView());
             }
         }

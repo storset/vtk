@@ -182,10 +182,6 @@
     <fieldset>
       <legend><@vrtx.msg code="permissions.${type}s" default="${capitalizedType}s"/></legend>
       
-      <#-- Bind removeUrls -->
-      <@spring.bind formName + ".remove${capitalizedType}URLs" />
-      <#assign removeURLs=spring.status.value />
-      
       <#-- Bind and list principals -->
       <@spring.bind formName + ".${type}s" /> 
       <ul class="${type}s">
@@ -198,7 +194,7 @@
                 ${groupOrUser.name}
               </#if>
               
-              <#-- Remove - TODO: how not to remove all userNames or groupNames -->
+              <#-- Remove -->
               &nbsp;(&nbsp;<input class="removePermission" name="remove${capitalizedType}.${groupOrUser.name?html}" type="submit" value="<@vrtx.msg code='permissions.remove' default='remove' />"/>&nbsp;)  
             </#compress>
           </li>

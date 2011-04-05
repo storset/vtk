@@ -32,7 +32,6 @@ package org.vortikal.web.actions.permissions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -121,28 +120,6 @@ public class ACLEditController extends SimpleFormController implements Initializ
 
         command.setUsers(authorizedUsers);
         command.setGroups(authorizedGroups);
-        
-        Map<String, String> removeUserURLs = new HashMap<String, String>();
-        for (Principal authorizedUser : authorizedUsers) {
-            Map<String, String> parameters = new HashMap<String, String>();
-            parameters.put("removeUserAction", "true");
-            parameters.put("userNames", authorizedUser.getName());
-            String url = service.constructLink(resource, principal, parameters);
-            removeUserURLs.put(authorizedUser.getName(), url);
-        }
-        command.setRemoveUserURLs(removeUserURLs);
-
-        Map<String, String> removeGroupURLs = new HashMap<String, String>();
-        for (Principal authorizedGroup : authorizedGroups) {
-            Map<String, String> parameters = new HashMap<String, String>();
-            parameters.put("removeGroupAction", "true");
-            parameters.put("groupNames", authorizedGroup.getName());
-
-            String url = service.constructLink(resource, principal,
-                    parameters);
-            removeGroupURLs.put(authorizedGroup.getName(), url);
-        }
-        command.setRemoveGroupURLs(removeGroupURLs);
 
         return command;
     }
@@ -191,7 +168,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
         aclShortcuts(acl, repository, errors, editCommand);
         
         // Has the user asked to save?
-        if (editCommand.getSaveAction() != null) {      
+        if (editCommand.getSaveAction() != null) {     
             addToAcl(acl, repository, errors, editCommand.getUserNameEntries(), Type.USER);
             addToAcl(acl, repository, errors, editCommand.getGroupNames(), Type.GROUP);
             if(!errors.hasErrors()) {

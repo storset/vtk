@@ -32,7 +32,6 @@ package org.vortikal.web.actions.permissions;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -46,8 +45,6 @@ public class ACLEditCommand extends UpdateCancelCommand {
     private String removeGroupAction = null;
     private List<Principal> users;
     private List<Principal> groups;
-    private Map<String, String> removeUserURLs;
-    private Map<String, String> removeGroupURLs;
     private String userNames[] = new String[0];
     private String groupNames[] = new String[0];
     private String shortcuts[][] = new String[0][0];
@@ -110,23 +107,7 @@ public class ACLEditCommand extends UpdateCancelCommand {
     public void setGroups(List<Principal> groups) {
         this.groups = groups;
     }
-
-    public Map<String, String> getRemoveUserURLs() {
-        return this.removeUserURLs;
-    }
-
-    public void setRemoveUserURLs(Map<String, String> removeUserURLs) {
-        this.removeUserURLs = removeUserURLs;
-    }
-
-    public Map<String, String> getRemoveGroupURLs() {
-        return this.removeGroupURLs;
-    }
-
-    public void setRemoveGroupURLs(Map<String, String> removeGroupURLs) {
-        this.removeGroupURLs = removeGroupURLs;
-    }
-
+    
     public void setResource(Resource resource) {
         this.resource = resource;
     }
@@ -177,8 +158,6 @@ public class ACLEditCommand extends UpdateCancelCommand {
         sb.append(", removeGroupAction=").append(this.removeGroupAction);
         sb.append(", users=").append(this.users);
         sb.append(", groups=").append(this.groups);
-        sb.append(", removeUserURLs=").append(this.removeUserURLs);
-        sb.append(", removeGroupURLs=").append(this.removeGroupURLs);
         sb.append(", userNames=").append(java.util.Arrays.asList(this.userNames));
         sb.append(", groupNames=").append(java.util.Arrays.asList(this.groupNames));
         StringBuilder sbS = new StringBuilder();

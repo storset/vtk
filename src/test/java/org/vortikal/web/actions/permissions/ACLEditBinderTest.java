@@ -28,17 +28,21 @@ public class ACLEditBinderTest extends TestCase {
        params.add("removeGroup.alle@uio.no");
        params.add("removeGroup.alle@feide.no");
        params.add("removeGroup.alle@webid.uio.no");
+       
+       params.add("foobar.vrtxadm");
         
        binder.extractGroupsAndUsersForRemoval(removedUsers, removedGroups, params);
        
+       assertEquals(2, removedUsers.size());
        assertEquals("oyvihatl", removedUsers.get(0));
        assertEquals("pseudo:all", removedUsers.get(1));
        
+       assertEquals(4, removedGroups.size());
        assertEquals("vrtx-core", removedGroups.get(0));
        assertEquals("alle@uio.no", removedGroups.get(1));
        assertEquals("alle@feide.no", removedGroups.get(2));
        assertEquals("alle@webid.uio.no", removedGroups.get(3));
-       
+  
     }
 
 }

@@ -73,6 +73,17 @@ public class ACLEditController extends SimpleFormController implements Initializ
         binder.registerCustomEditor(java.lang.String[].class,
                 new StringArrayPropertyEditor());
     }
+    
+    /**
+     * Override to handle removal of permissions.
+     */
+    @Override
+    protected ServletRequestDataBinder createBinder(HttpServletRequest request, Object command) throws Exception {
+        ACLEditBinder binder = new ACLEditBinder(command, getCommandName());
+        prepareBinder(binder);
+        initBinder(request, binder);
+        return binder; 
+    }
 
     public void afterPropertiesSet() {
         if (this.privilege == null) {
@@ -131,6 +142,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
     /**
      * Override to reset actions in case of errors.
      */
+    @Override
     protected ModelAndView processFormSubmission(HttpServletRequest req,
             HttpServletResponse resp, Object command, BindException errors)
             throws Exception {
@@ -212,14 +224,6 @@ public class ACLEditController extends SimpleFormController implements Initializ
         } else {
             return new ModelAndView(getSuccessView());
         }
-    }
-    
-    @Override
-    protected ServletRequestDataBinder createBinder(HttpServletRequest request, Object command) throws Exception {
-        ACLEditBinder binder = new ACLEditBinder(command, getCommandName());
-        prepareBinder(binder);
-        initBinder(request, binder);
-        return binder; 
     }
     
     /**

@@ -240,6 +240,8 @@ public class ACLEditController extends SimpleFormController implements Initializ
     protected String[][] extractAndCheckShortcuts (List<Principal> authorizedUsers, 
             List<Principal> authorizedGroups, List<String> shortcuts) {
         
+        // TODO: how to avoid looping twice because of init of 2D array
+        
         int validShortCuts = 0;
         for (String shortcut: shortcuts) {
             if (shortcut.startsWith("user:") || shortcut.startsWith("group:")) {

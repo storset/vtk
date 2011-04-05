@@ -240,11 +240,20 @@ public class ACLEditController extends SimpleFormController implements Initializ
     protected String[][] extractAndCheckShortcuts (List<Principal> authorizedUsers, 
             List<Principal> authorizedGroups, List<String> shortcuts) {
         
-        String checkedShortcuts[][] = new String[shortcuts.size()][2];
+        int validShortCuts = 0;
+        for (String shortcut: shortcuts) {
+            if (shortcut.startsWith("user:") || shortcut.startsWith("group:")) {
+              validShortCuts++;
+            }
+        }
+        
+        String checkedShortcuts[][] = new String[validShortCuts][2];
+        
         int i = 0;
         
         for (String shortcut: shortcuts) {
             boolean checked = false;
+            boolean validShortcut = false;
             
             if (shortcut.startsWith("user:")) {
                 Iterator<Principal> it = authorizedUsers.iterator();
@@ -255,6 +264,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
                         it.remove();
                     }
                 }
+                validShortcut = true;
             } else if (shortcut.startsWith("group:")) {
                 Iterator<Principal> it = authorizedGroups.iterator();
                 while (it.hasNext()) {
@@ -263,13 +273,16 @@ public class ACLEditController extends SimpleFormController implements Initializ
                         checked = true;
                         it.remove();
                     }
-                }  
+                } 
+                validShortcut = true;
             }
             
-            checkedShortcuts[i][0] = shortcut;
-            checkedShortcuts[i][1] = checked ? "checked" : "";
+            if(validShortcut) {
+              checkedShortcuts[i][0] = shortcut;
+              checkedShortcuts[i][1] = checked ? "checked" : "";
             
-            i++;
+              i++;
+            }
         }
         
         return checkedShortcuts;

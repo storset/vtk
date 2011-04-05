@@ -38,8 +38,11 @@ public class ACLEditControllerTest extends TestCase {
         shortcuts.add("group:alle@uio.no");
         shortcuts.add("group:alle@feide.uio.no");
         shortcuts.add("group:alle@webid.uio.no");
+        shortcuts.add("foobar:vrtxadm");
         
         String[][] extractedShortcuts = controller.extractAndCheckShortcuts(authorizedUsers, authorizedGroups, shortcuts);
+        
+        assertEquals(4, extractedShortcuts.length);
         
         assertEquals("user:pseudo:all", extractedShortcuts[0][0]);
         assertEquals("checked", extractedShortcuts[0][1]);

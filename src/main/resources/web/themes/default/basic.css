@@ -152,7 +152,7 @@ div.errorContainer {
 }
 
 ul.errors {
-  padding: 0 0 7px 0;
+  padding: 00;
   margin: 0;
   list-style-type: none;
   color: red;

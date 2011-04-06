@@ -93,16 +93,6 @@ public interface ResourceTypeTree extends HierarchicalVocabulary<String> {
     public PropertyTypeDefinition getPropertyDefinitionByPrefix(String prefix, String name);
 
     /**
-     * Returns <code>true</code> if property does not have an explicit definition
-     * (only an implicit default).
-     *
-     * @param namespace
-     * @param name
-     * @return
-     */
-    public boolean isDeadProperty(Namespace ns, String name);
-
-    /**
      * Gets a property type definition by a pointer
      *
      * @param pointer a pointer referring to a property, given as [resource]:[namespace]:[name]

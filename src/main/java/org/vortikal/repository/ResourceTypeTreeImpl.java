@@ -189,18 +189,6 @@ public class ResourceTypeTreeImpl
         return propDef;
     }
 
-    public boolean isDeadProperty(Namespace namespace, String name) {
-        Map<String, PropertyTypeDefinition> map = this.propertyTypeDefinitions.get(namespace);
-        if (map != null) {
-            PropertyTypeDefinition propDef = map.get(name);
-            if (propDef != null) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     public void afterPropertiesSet() throws Exception {
         init();
     }
@@ -296,7 +284,7 @@ public class ResourceTypeTreeImpl
 
         return null;
     }
-
+    
     /**
      * Search upwards in resource type tree, collect property type definitions
      * from all encountered resource type definitions including mixin resource types.

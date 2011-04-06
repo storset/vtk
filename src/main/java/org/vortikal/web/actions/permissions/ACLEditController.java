@@ -394,7 +394,7 @@ public class ACLEditController extends SimpleFormController {
      * @param shortcut the shortcut (formatted)
      * @param groupOrUserShortcut (unformatted)
      *        group or user
-     * @return type type of ACL (GROUP or USER)
+     * @return type of ACL (GROUP or USER)
      */
     private Type unformatShortcutAndSetType(String[] shortcut, String[] groupOrUserShortcut) {
         Type type = null;

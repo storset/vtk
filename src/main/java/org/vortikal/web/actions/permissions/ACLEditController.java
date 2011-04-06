@@ -105,16 +105,6 @@ public class ACLEditController extends SimpleFormController {
         return getACLEditCommand(resource, resource.getAcl(), requestContext.getPrincipal());
     }
 
-    protected int countValidshortcuts(List<String> theShortcuts) {
-        int valid = 0;
-          for (String shortcut: theShortcuts) {
-            if (shortcut.startsWith(GROUP_PREFIX) || shortcut.startsWith(USER_PREFIX)) {
-              valid++;
-            }
-          }
-          return valid;
-    }
-
     private ACLEditCommand getACLEditCommand(Resource resource, Acl acl, Principal principal) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         Service service = requestContext.getService();
@@ -235,14 +225,28 @@ public class ACLEditController extends SimpleFormController {
     }
     
     /**
-     * Extracts shortcuts for users and groups (set to 'checked' and remove).
+     * Count valid shortcuts
      * 
-     * @param authorizedUsers
-     *            the authorized users
-     * @param authorizedGroups
-     *            the authorized groups
-     * @param shortcuts
-     *            the configured shortcuts
+     * @param theShortcuts the shortcuts
+     * @return number of valid shortcuts
+     */
+    protected int countValidshortcuts(List<String> theShortcuts) {
+        int valid = 0;
+          for (String shortcut: theShortcuts) {
+            if (shortcut.startsWith(GROUP_PREFIX) || shortcut.startsWith(USER_PREFIX)) {
+              valid++;
+            }
+          }
+          return valid;
+    }
+    
+    /**
+     * Extracts shortcuts for users and groups (if exist set to 'checked' and remove).
+     * 
+     * @param authorizedUsers the authorized users
+     * @param authorizedGroups the authorized groups
+     * @param shortcuts the configured shortcuts
+     * @param pre-counted valid shortcuts
      * @return a <code>String[][]</code> object containing checked / not-checked shortcuts
      */
     protected String[][] extractAndCheckShortcuts (List<Principal> authorizedUsers, 

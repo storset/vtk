@@ -5,6 +5,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.junit.Test;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.Principal.Type;
@@ -21,6 +22,7 @@ public class ACLEditControllerTest extends TestCase {
         principalFactory = new PrincipalFactory();
     }
     
+    @Test
     public void testExtractAndCheckShortcuts() {
 
         List<Principal> authorizedUsers = new ArrayList<Principal>();
@@ -40,7 +42,8 @@ public class ACLEditControllerTest extends TestCase {
         shortcuts.add("group:alle@webid.uio.no");
         shortcuts.add("foobar:vrtxadm");
         
-        String[][] extractedShortcuts = controller.extractAndCheckShortcuts(authorizedUsers, authorizedGroups, shortcuts);
+        int validShortcuts = controller.countValidshortcuts(shortcuts);
+        String[][] extractedShortcuts = controller.extractAndCheckShortcuts(authorizedUsers, authorizedGroups, shortcuts, validShortcuts);
         
         assertEquals(4, extractedShortcuts.length);
         

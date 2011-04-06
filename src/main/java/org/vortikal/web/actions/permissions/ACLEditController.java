@@ -99,16 +99,20 @@ public class ACLEditController extends SimpleFormController {
         
         shortcuts = this.permissionShortcuts.get(this.privilege);
         if(shortcuts != null) {
-          int valid = 0;
-          for (String shortcut: shortcuts) {
+          this.validShortcuts = countValidshortcuts(shortcuts);
+        }
+        
+        return getACLEditCommand(resource, resource.getAcl(), requestContext.getPrincipal());
+    }
+
+    protected int countValidshortcuts(List<String> theShortcuts) {
+        int valid = 0;
+          for (String shortcut: theShortcuts) {
             if (shortcut.startsWith(GROUP_PREFIX) || shortcut.startsWith(USER_PREFIX)) {
               valid++;
             }
           }
-          this.validShortcuts = valid;
-        }
-        
-        return getACLEditCommand(resource, resource.getAcl(), requestContext.getPrincipal());
+          return valid;
     }
 
     private ACLEditCommand getACLEditCommand(Resource resource, Acl acl, Principal principal) throws Exception {
@@ -128,7 +132,7 @@ public class ACLEditController extends SimpleFormController {
                 .listPrivilegedPseudoPrincipals(this.privilege)));
 
         if (shortcuts != null) {   
-          command.setShortcuts(extractAndCheckShortcuts(authorizedUsers, authorizedGroups, shortcuts));
+          command.setShortcuts(extractAndCheckShortcuts(authorizedUsers, authorizedGroups, shortcuts, this.validShortcuts));
         }
 
         command.setGroups(authorizedGroups);
@@ -242,9 +246,9 @@ public class ACLEditController extends SimpleFormController {
      * @return a <code>String[][]</code> object containing checked / not-checked shortcuts
      */
     protected String[][] extractAndCheckShortcuts (List<Principal> authorizedUsers, 
-            List<Principal> authorizedGroups, List<String> shortcuts) {
+            List<Principal> authorizedGroups, List<String> shortcuts, int validShortcuts) {
 
-        String checkedShortcuts[][] = new String[this.validShortcuts][2];
+        String checkedShortcuts[][] = new String[validShortcuts][2];
         
         int i = 0;
         

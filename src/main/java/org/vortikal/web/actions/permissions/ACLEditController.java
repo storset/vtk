@@ -225,7 +225,7 @@ public class ACLEditController extends SimpleFormController {
     }
     
     /**
-     * Count valid shortcuts
+     * Count valid shortcuts (with GROUP or USER prefix)
      * 
      * @param theShortcuts the shortcuts
      * @return number of valid shortcuts

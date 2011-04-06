@@ -40,7 +40,7 @@ public class ACLEditControllerTest extends TestCase {
         shortcuts.add("group:alle@uio.no");
         shortcuts.add("group:alle@feide.uio.no");
         shortcuts.add("group:alle@webid.uio.no");
-        shortcuts.add("foobar:vrtxadm");
+        shortcuts.add("foobar:vrtxadm"); // invalid - should be ignored
         
         int validShortcuts = controller.countValidshortcuts(shortcuts);
         String[][] extractedShortcuts = controller.extractAndCheckShortcuts(authorizedUsers, authorizedGroups, shortcuts, validShortcuts);

@@ -32,7 +32,7 @@ public class ACLEditBinderTest extends TestCase {
        params.add("removeGroup.alle@feide.no");
        params.add("removeGroup.alle@webid.uio.no");
        
-       params.add("foobar.vrtxadm");
+       params.add("foobar.vrtxadm"); // invalid - should be ignored
         
        binder.extractGroupsAndUsersForRemoval(removedUsers, removedGroups, params);
        

@@ -36,7 +36,7 @@
 <#import "/lib/collections/view-audio-video-listing.ftl" as audioVideo />
 
 <#assign resource = collection />
-<#assign title = vrtx.propValue(resource, "title", "flattened") />
+<#assign title = vrtx.propValue(resource, "title") />
 <#if overriddenTitle?has_content>
   <#assign title = overriddenTitle />
 </#if>
@@ -105,7 +105,7 @@
   </#if>
   
 <#if !isEventCalendarListing>
-    <h1>${title}
+    <h1>${title?html}
       <@projects.completed />
       <@master.completed />
       <#if page?has_content>

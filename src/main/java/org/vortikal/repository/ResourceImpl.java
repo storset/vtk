@@ -225,8 +225,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         clone.setID(this.id);
 
         if (this.acl != null) {
-            Acl acl = (Acl) this.acl.clone();
-            clone.setAcl(acl);
+            clone.setAcl(this.acl);
         }
         clone.setInheritedAcl(this.aclInherited);
         clone.setAclInheritedFrom(this.getAclInheritedFrom());
@@ -245,7 +244,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         for (Property prop : getProperties()) {
             resource.addProperty(prop);
         }
-        resource.setAcl(new Acl());
+        resource.setAcl(Acl.EMPTY_ACL);
         return resource;
     }
 

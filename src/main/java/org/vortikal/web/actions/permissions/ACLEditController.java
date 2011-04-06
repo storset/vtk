@@ -39,8 +39,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.propertyeditors.StringArrayPropertyEditor;
 import org.springframework.validation.BindException;
@@ -53,12 +51,12 @@ import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.Principal.Type;
+import org.vortikal.security.PrincipalFactory;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
-public class ACLEditController extends SimpleFormController implements InitializingBean {
+public class ACLEditController extends SimpleFormController {
 
     private Privilege privilege;
     private PrincipalFactory principalFactory;
@@ -89,40 +87,26 @@ public class ACLEditController extends SimpleFormController implements Initializ
         return binder; 
     }
 
-    public void afterPropertiesSet() {
-        if (this.privilege == null) {
-            throw new BeanInitializationException(
-                    "Bean property 'privilege' must be set");
-        }
-    }
-
-    public void setPrivilege(Privilege privilege) {
-        this.privilege = privilege;
-    }
-
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         Path uri = requestContext.getResourceURI();
         Repository repository = requestContext.getRepository();
         String token = requestContext.getSecurityToken();
         Resource resource = repository.retrieve(token, uri, false);
-        return getACLEditCommand(resource, requestContext.getPrincipal());
+        return getACLEditCommand(resource, resource.getAcl(), requestContext.getPrincipal());
     }
 
-    private ACLEditCommand getACLEditCommand(Resource resource, Principal principal) throws Exception {
+    private ACLEditCommand getACLEditCommand(Resource resource, Acl acl, Principal principal) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         Service service = requestContext.getService();
 
         String submitURL = service.constructLink(resource, principal);
         ACLEditCommand command = new ACLEditCommand(submitURL);
 
-        command.setResource(resource);
+        command.setAcl(acl);
 
-        Acl acl = resource.getAcl();
-        
         List<Principal> authorizedGroups = new ArrayList<Principal>(Arrays.asList(acl
                 .listPrivilegedGroups(this.privilege)));
-
         List<Principal> authorizedUsers = new ArrayList<Principal>(Arrays.asList(acl
                 .listPrivilegedUsers(this.privilege)));
         authorizedUsers.addAll(Arrays.asList(acl
@@ -168,67 +152,68 @@ public class ACLEditController extends SimpleFormController implements Initializ
 
         ACLEditCommand editCommand = (ACLEditCommand) command;
 
-        Resource resource = editCommand.getResource();
-        Acl acl = resource.getAcl();
+        Acl acl = editCommand.getAcl();
 
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();
         String token = requestContext.getSecurityToken();
+        Path uri = requestContext.getResourceURI();
 
+        Resource resource = repository.retrieve(token, uri, false);
+        
         // Did the user cancel?
         if (editCommand.getCancelAction() != null) {
             return new ModelAndView(getSuccessView());
         }
         
         // Remove or add shortcuts
-        aclShortcuts(acl, repository, errors, editCommand);
+        acl = aclShortcuts(acl, repository, errors, editCommand);
         
         // Has the user asked to save?
         if (editCommand.getSaveAction() != null) {     
-            addToAcl(acl, repository, errors, editCommand.getGroupNames(), Type.GROUP);
-            addToAcl(acl, repository, errors, editCommand.getUserNameEntries(), Type.USER);
+            acl = addToAcl(acl, repository, errors, editCommand.getUserNameEntries(), Type.USER);
+            acl = addToAcl(acl, repository, errors, editCommand.getGroupNames(), Type.GROUP);
             
-            if(!errors.hasErrors()) {
-              if(!acl.isEmpty()) {
-                resource = repository.storeACL(token, resource.getURI(), acl);
-              } else {
+            if (acl.isEmpty()) {
                 errors.rejectValue("groupNames", "permissions.no.acl", new Object[] {}, "Resource can not be without permissions");
-                BindException bex = new BindException(getACLEditCommand(resource, requestContext.getPrincipal()), this.getCommandName());
+                BindException bex = new BindException(getACLEditCommand(resource, acl, requestContext.getPrincipal()), this.getCommandName());
                 bex.addAllErrors(errors); // Add error when empty ACL
                 return showForm(request, response, bex); 
-              }
-              return new ModelAndView(getSuccessView()); 
-            } else {
-              BindException bex = new BindException(getACLEditCommand(resource, requestContext.getPrincipal()), this.getCommandName());
-              bex.addAllErrors(errors); // Add validation errors
-              return showForm(request, response, bex);  
             }
+            
+            if (errors.hasErrors()) {
+                BindException bex = new BindException(getACLEditCommand(resource, acl, requestContext.getPrincipal()), this.getCommandName());
+                bex.addAllErrors(errors); // Add validation errors
+                return showForm(request, response, bex);  
+            }
+            
+            resource = repository.storeACL(token, resource.getURI(), acl);
+            return new ModelAndView(getSuccessView()); 
         }
 
         // Doing remove or add actions
-        if (editCommand.getRemoveGroupAction() != null) {
-            removeFromAcl(acl, editCommand.getGroupNames(), Type.GROUP);
-            return showForm(request, response, new BindException(getACLEditCommand(resource, requestContext.getPrincipal()), this.getCommandName()));
+        if (editCommand.getRemoveUserAction() != null) {
+            acl = removeFromAcl(acl, editCommand.getUserNames(), Type.USER);
+            return showForm(request, response, new BindException(getACLEditCommand(resource, acl, requestContext.getPrincipal()), this.getCommandName()));
 
-        } else if (editCommand.getRemoveUserAction() != null) {
-            removeFromAcl(acl, editCommand.getUserNames(), Type.USER);
-            return showForm(request, response, new BindException(getACLEditCommand(resource, requestContext.getPrincipal()), this.getCommandName()));
-            
-        } else if (editCommand.getAddGroupAction() != null) {
-            addToAcl(acl, repository, errors, editCommand.getGroupNames(), Type.GROUP);
-            BindException bex = new BindException(getACLEditCommand(resource, requestContext.getPrincipal()), this.getCommandName());
+        } else if (editCommand.getRemoveGroupAction() != null) {
+            acl = removeFromAcl(acl, editCommand.getGroupNames(), Type.GROUP);
+            return showForm(request, response, new BindException(getACLEditCommand(resource, acl, requestContext.getPrincipal()), this.getCommandName()));
+
+        } else if (editCommand.getAddUserAction() != null) {
+            acl = addToAcl(acl, repository, errors, editCommand.getUserNameEntries(), Type.USER);
+            BindException bex = new BindException(getACLEditCommand(resource, acl, requestContext.getPrincipal()), this.getCommandName());
             bex.addAllErrors(errors); // Add validation errors
             return showForm(request, response, bex);
 
-        } else if (editCommand.getAddUserAction() != null) {
-            addToAcl(acl, repository, errors, editCommand.getUserNameEntries(), Type.USER);
-            BindException bex = new BindException(getACLEditCommand(resource, requestContext.getPrincipal()), this.getCommandName());
+        } else if (editCommand.getAddGroupAction() != null) {
+            acl = addToAcl(acl, repository, errors, editCommand.getGroupNames(), Type.GROUP);
+            BindException bex = new BindException(getACLEditCommand(resource, acl, requestContext.getPrincipal()), this.getCommandName());
             bex.addAllErrors(errors); // Add validation errors
             return showForm(request, response, bex);
  
-        } else {
-            return new ModelAndView(getSuccessView());
-        }
+        } 
+        return new ModelAndView(getSuccessView());
     }
     
     /**
@@ -244,8 +229,6 @@ public class ACLEditController extends SimpleFormController implements Initializ
      */
     protected String[][] extractAndCheckShortcuts (List<Principal> authorizedUsers, 
             List<Principal> authorizedGroups, List<String> shortcuts) {
-        
-        // TODO: how to avoid looping twice because of init of 2D array
         
         int validShortCuts = 0;
         for (String shortcut: shortcuts) {
@@ -284,10 +267,9 @@ public class ACLEditController extends SimpleFormController implements Initializ
                 validShortcut = true;
             }
             
-            if(validShortcut) {
+            if (validShortcut) {
               checkedShortcuts[i][0] = shortcut;
               checkedShortcuts[i][1] = checked ? "checked" : "";
-            
               i++;
             }
         }
@@ -296,18 +278,15 @@ public class ACLEditController extends SimpleFormController implements Initializ
     }
 
     /**
-     * Add and remove ACLs for updated shortcuts.
+     * Add and remove ACL entries for updated shortcuts.
      * 
-     * @param acl
-     *            the ACL object
-     * @param repository
-     *            the repository object
-     * @param errors
-     *            ACL validation errors
-     * @param editCommand
-     *            the command object
+     * @param acl the ACL object
+     * @param repository the repository object
+     * @param errors ACL validation errors
+     * @param editCommand the command object
+     * @return the modified ACL
      */
-    private void aclShortcuts(Acl acl, Repository repository, BindException errors, ACLEditCommand editCommand) {
+    private Acl aclShortcuts(Acl acl, Repository repository, BindException errors, ACLEditCommand editCommand) {
         String[] updatedShortcuts = editCommand.getUpdatedShortcuts();
         String[][] shortcuts = editCommand.getShortcuts();
 
@@ -327,102 +306,94 @@ public class ACLEditController extends SimpleFormController implements Initializ
             if (checkedNotFound) {
                 String[] groupOrUserShortcut = new String[1];
                 Type type = unformatShortcutAndSetType(shortcut, groupOrUserShortcut);
-                removeFromAcl(acl, groupOrUserShortcut, type);
+                acl = removeFromAcl(acl, groupOrUserShortcut, type);
             }
 
             // Add
             if (uncheckedFound) {
                 String[] groupOrUserShortcut = new String[1];
                 Type type = unformatShortcutAndSetType(shortcut, groupOrUserShortcut);
-                addToAcl(acl, repository, errors, groupOrUserShortcut, type);
+                acl = addToAcl(acl, repository, errors, groupOrUserShortcut, type);
             }
         }
+        return acl;
     }
 
     /**
      * Remove groups or users from ACL.
      * 
-     * @param acl
-     *            the ACL object
-     * @param values
-     *            groups or users to remove
-     * @param type
-     *            type of ACL (GROUP or USER)
+     * @param acl the ACL object
+     * @param values groups or users to remove
+     * @param type type of ACL (GROUP or USER)
+     * @return the modified ACL
      */
-    private void removeFromAcl(Acl acl, String[] values, Type type) {
+    private Acl removeFromAcl(Acl acl, String[] values, Type type) {
         for (String value : values) {
             Principal principal = principalFactory.getPrincipal(value, typePseudoUser(type, value));
-            acl.removeEntry(this.privilege, principal);
+            acl = acl.removeEntry(this.privilege, principal);
         }
+        return acl;
     }
     
     /**
      * Add groups or users to ACL.
      * 
-     * @param acl
-     *            the ACL object         
-     * @param repository
-     *            the repository object
-     * @param errors
-     *            ACL validation errors
-     * @param values
-     *            groups or users to remove
-     * @param type
-     *            type of ACL (GROUP or USER)
+     * @param acl the ACL object         
+     * @param repository the repository object
+     * @param errors ACL validation errors
+     * @param values groups or users to remove
+     * @param type type of ACL (GROUP or USER)
+     * @return the modified ACL
      */
-    private void addToAcl(Acl acl, Repository repository, BindException errors, String[] values, Type type) {
+    private Acl addToAcl(Acl acl, Repository repository, BindException errors, String[] values, Type type) {
         for (String value : values) {
             Principal principal = principalFactory.getPrincipal(value, typePseudoUser(type, value));
-            if(repository.isValidAclEntry(this.privilege, principal)) {
-              acl.addEntry(this.privilege, principal);
+            if (repository.isValidAclEntry(this.privilege, principal)) {
+              acl = acl.addEntry(this.privilege, principal);
             } else {
-              if(type == Type.GROUP) {
+              if (type == Type.GROUP) {
                 errors.rejectValue("groupNames", "permissions.group.invalid.value", new Object[] { value }, "The group '" + value + "' is not valid");                 
               } else {
                 errors.rejectValue("userNames", "permissions.user.invalid.value", new Object[] { value }, "The user '" + value + "' is not valid");
               }
             }
         }
+        return acl;
     }
     
     /**
      * Add groups or users to ACL (for getUserNameEntries()).
      * 
-     * @param acl
-     *            the ACL object         
-     * @param repository
-     *            the repository object
-     * @param errors
-     *            ACL validation errors
-     * @param values
-     *            groups or users to remove
-     * @param type
-     *            type of ACL (GROUP or USER)
+     * @param acl the ACL object         
+     * @param repository the repository object
+     * @param errors ACL validation errors
+     * @param values groups or users to remove
+     * @param type type of ACL (GROUP or USER)
+     * @return the modified ACL
      */
-    private void addToAcl(Acl acl, Repository repository, BindException errors, List<String> values, Type type) {
+    private Acl addToAcl(Acl acl, Repository repository, BindException errors, List<String> values, Type type) {
         for (String value : values) {
             Principal principal = principalFactory.getPrincipal(value, typePseudoUser(type, value));
-            if(repository.isValidAclEntry(this.privilege, principal)) {
-              acl.addEntry(this.privilege, principal);
+            if (repository.isValidAclEntry(this.privilege, principal)) {
+              acl = acl.addEntry(this.privilege, principal);
             } else {
-              if(type == Type.GROUP) {
+              if (type == Type.GROUP) {
                 errors.rejectValue("groupNames", "permissions.group.invalid.value", new Object[] { value }, "Group '" + value + "' is not valid");                 
               } else {
                 errors.rejectValue("userNames", "permissions.user.invalid.value", new Object[] { value }, "User '" + value + "' is not valid");
               }
             }
         }
+        return acl;
     }
     
     /**
      * Unformat shortcut and set type to GROUP or USER
      * 
-     * @param shortcut
-     *            the shortcut (formatted)
+     * @param shortcut the shortcut (formatted)
      * @param groupOrUserShortcut (unformatted)
-     *            group or user
-     * @return type
-     *            type of ACL (GROUP or USER)
+     *        group or user
+     * @return type type of ACL (GROUP or USER)
      */
     private Type unformatShortcutAndSetType(String[] shortcut, String[] groupOrUserShortcut) {
         Type type = null;
@@ -439,12 +410,9 @@ public class ACLEditController extends SimpleFormController implements Initializ
     /**
      * Check if USER is PSEUDO and set correct type
      * 
-     * @param type
-     *            the type
-     * @param value
-     *            group or user
-     * @return type
-     *            type of ACL (GROUP or USER or PSEUDO)
+     * @param type the type
+     * @param value group or user
+     * @return type type of ACL (GROUP or USER or PSEUDO)
      */
     private Type typePseudoUser(Type type, String value) { 
         if (type.equals(Type.USER)) {
@@ -463,6 +431,11 @@ public class ACLEditController extends SimpleFormController implements Initializ
     @Required
     public void setPermissionShortcuts(Map<Privilege, List<String>> permissionShortcuts) {
         this.permissionShortcuts = permissionShortcuts;
+    }
+
+    @Required
+    public void setPrivilege(Privilege privilege) {
+        this.privilege = privilege;
     }
 
 }

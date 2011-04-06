@@ -546,11 +546,9 @@ public class ResourceArchiver {
 
         Resource resource = this.repository.retrieve(token, resourceURI, false);
         boolean propsModified = false;
-        boolean aclModified = false;
 
-        // Clear ACL before extracting resource metadata
-        // (ACL will only be explicitly stored if resource does not inherit ACL)
-        resource.getAcl().clear();
+        // ACL will only be explicitly stored if resource does not inherit ACL
+        Acl acl = resource.getAcl();
 
         for (Object key : attributes.keySet()) {
 
@@ -560,15 +558,14 @@ public class ResourceArchiver {
                     propsModified = true;
                 }
             } else if (name.startsWith("X-vrtx-acl-")) {
-                if (setAclEntry(resource, name, attributes, decode, legacyAcl, listener)) {
-                    aclModified = true;
-                }
+                acl = setAclEntry(resource.getURI(), acl, name, 
+                        attributes, decode, legacyAcl, listener);
             }
         }
         if (propsModified) {
             this.repository.store(token, resource);
         }
-        if (aclModified) {
+        if (!resource.getAcl().equals(acl)) {
             resource = this.repository.storeACL(
                     token, resource.getURI(), resource.getAcl(), false);
         }
@@ -660,7 +657,7 @@ public class ResourceArchiver {
         return valueString.substring(idx);
     }
 
-    private boolean setAclEntry(Resource resource, String name, Attributes attributes, boolean decode,
+    private Acl setAclEntry(Path uri, Acl acl, String name, Attributes attributes, boolean decode,
             boolean legacyAcl, EventListener listener) throws Exception {
 
         String actionName = name.substring("X-vrtx-acl-".length());
@@ -668,12 +665,12 @@ public class ResourceArchiver {
             if (this.legacyActionMappings.containsKey(actionName)) {
                 String mapping = this.legacyActionMappings.get(actionName);
                 if (mapping == null || mapping.trim().equals("")) {
-                    listener.warn(resource.getURI(), "legacy: ignoring acl entry action " + actionName);
+                    listener.warn(uri, "legacy: ignoring acl entry action " + actionName);
                     logger.warn("Will ignore legacy acl entry action '" + actionName + "' on resource "
-                            + resource.getURI());
-                    return false;
+                            + uri);
+                    return acl;
                 }
-                listener.warn(resource.getURI(), "legacy: mapping acl entry action: " + actionName + ": " + mapping);
+                listener.warn(uri, "legacy: mapping acl entry action: " + actionName + ": " + mapping);
                 actionName = mapping;
             }
         }
@@ -685,17 +682,15 @@ public class ResourceArchiver {
         }
         String[] list = values.split(",");
 
-        Acl acl = resource.getAcl();
-        boolean modified = false;
         for (String value : list) {
             if (legacyAcl) {
                 if (this.legacyPrincipalMappings.containsKey(value)) {
                     String mapping = this.legacyPrincipalMappings.get(value);
                     if (mapping == null || "".equals(mapping.trim())) {
-                        listener.warn(resource.getURI(), "legacy: dropping principal from ACL: " + value.substring(2));
+                        listener.warn(uri, "legacy: dropping principal from ACL: " + value.substring(2));
                         continue;
                     }
-                    listener.warn(resource.getURI(), "legacy: mapping principal in ACL: " 
+                    listener.warn(uri, "legacy: mapping principal in ACL: " 
                             + value + ": " + mapping);
                     value = mapping;
                 }
@@ -721,16 +716,15 @@ public class ResourceArchiver {
             if (p != null) {
                 // XXX: repository.isValidEntry()?
                 if (acl.isValidEntry(action, p)) {
-                    acl.addEntry(action, p);
-                    modified = true;
+                    acl = acl.addEntry(action, p);
                 } else {
-                    listener.warn(resource.getURI(), "Invalid acl entry: " + p + ":" + action + ", skipping");
+                    listener.warn(uri, "Invalid acl entry: " + p + ":" + action + ", skipping");
                 }
             } else {
-                listener.warn(resource.getURI(), "Invalid principal: " + principalName + ", skipping");
+                listener.warn(uri, "Invalid principal: " + principalName + ", skipping");
             }
         }
-        return modified;
+        return acl;
     }
 
     private boolean writeFile(String token, Path uri, ZipInputStream is) {

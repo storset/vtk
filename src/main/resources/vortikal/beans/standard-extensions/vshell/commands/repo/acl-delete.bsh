@@ -19,8 +19,10 @@ void execute(context, args, out) {
         out.print("ACL is already inherited");
         return;
     }
-    r.setInheritedAcl(true);
-    repo.storeACL(token, r);
-
-    out.println("ACL deleted");
+    try {
+        repo.deleteACL(token, uri);
+        out.println("ACL deleted");
+    } catch (e) {
+        out.println("ERROR: " + e.getMessage());
+    }
 }

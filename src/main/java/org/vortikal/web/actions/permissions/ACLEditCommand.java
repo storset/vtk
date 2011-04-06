@@ -33,11 +33,13 @@ package org.vortikal.web.actions.permissions;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.vortikal.repository.Resource;
+import org.vortikal.repository.Acl;
 import org.vortikal.security.Principal;
 import org.vortikal.web.actions.UpdateCancelCommand;
 
 public class ACLEditCommand extends UpdateCancelCommand {
+
+    private Acl acl;
 
     private String addUserAction = null;
     private String removeUserAction = null;
@@ -50,7 +52,6 @@ public class ACLEditCommand extends UpdateCancelCommand {
     private String shortcuts[][] = new String[0][0];
     private String updatedShortcuts[] = new String[0];
 
-    private Resource resource;
     private String saveAction = null;
 
     private String ac_userNames[] = new String[0];
@@ -58,6 +59,14 @@ public class ACLEditCommand extends UpdateCancelCommand {
 
     public ACLEditCommand(String submitURL) {
         super(submitURL);
+    }
+
+    public Acl getAcl() {
+        return acl;
+    }
+
+    public void setAcl(Acl acl) {
+        this.acl = acl;
     }
 
     public String getAddUserAction() {
@@ -108,14 +117,6 @@ public class ACLEditCommand extends UpdateCancelCommand {
         this.groups = groups;
     }
     
-    public void setResource(Resource resource) {
-        this.resource = resource;
-    }
-
-    public Resource getResource() {
-        return this.resource;
-    }
-
     public String[] getGroupNames() {
         return this.groupNames;
     }
@@ -152,7 +153,8 @@ public class ACLEditCommand extends UpdateCancelCommand {
 
     public String toString() {
         StringBuilder sb = new StringBuilder(this.getClass().getName());
-        sb.append("[addUserAction=").append(this.addUserAction);
+        sb.append("[acl=").append(this.acl);
+        sb.append(", addUserAction=").append(this.addUserAction);
         sb.append(", removeUserAction=").append(this.removeUserAction);
         sb.append(", addGroupAction=").append(this.addGroupAction);
         sb.append(", removeGroupAction=").append(this.removeGroupAction);
@@ -166,7 +168,6 @@ public class ACLEditCommand extends UpdateCancelCommand {
         }
         sb.append(", shortcuts=").append(sbS.toString());
         sb.append(", updatedShortcuts=").append(java.util.Arrays.asList(this.updatedShortcuts));
-        sb.append(", resource=").append(this.resource);
         sb.append("]");
         return sb.toString();
     }

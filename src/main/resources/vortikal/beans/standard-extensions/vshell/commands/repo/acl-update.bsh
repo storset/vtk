@@ -3,7 +3,7 @@ getDescription() {
 }
 
 getUsage() {
-    return "repo acl update <operation:string> <permission:string> <uri:path> <principals:string...>";
+    return "repo acl update <uri:path> <operation:string> <permission:string> <principals:string...>";
 }
 
 void execute(context, args, out) {
@@ -46,22 +46,24 @@ void execute(context, args, out) {
         }
     }
 
-    action = org.vortikal.repository.Privilege.getActionByName(perm);
+    action = org.vortikal.repository.Privilege.forName(perm);
     
-    acl = r.getAcl();
-    if (r.isInheritedAcl()) {
-        out.println("Removing ACL inheritance");
-        r.setInheritedAcl(false);
-    }
 
-    for (p: newPrincipals) {
-        if ("grant".equals(operation)) {
-            acl.addEntry(action, p);
-        } else {
-            acl.removeEntry(action, p);
+    try {
+
+        acl = r.getAcl();
+
+        for (p: newPrincipals) {
+            if ("grant".equals(operation)) {
+                acl = acl.addEntry(action, p);
+            } else {
+                acl = acl.removeEntry(action, p);
+            }
         }
-    }
 
-    repo.storeACL(token, r);
-    out.println("Stored ACL");
+        r = repo.storeACL(token, r.getURI(), acl);
+        out.println("Stored ACL on " + r.getURI() + ": " + r.getAcl());
+    } catch (e) {
+        out.println("Error: " + e.getMessage());
+    }
 }

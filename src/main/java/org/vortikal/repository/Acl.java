@@ -42,24 +42,31 @@ import java.util.Set;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 
-
 public final class Acl {
+    
+    public static final Acl EMPTY_ACL = new Acl(Collections.<Privilege, Set<Principal>>emptyMap());
 
     /**
      * map: [Privilege --> Set(Principal)]
      */
     private Map<Privilege, Set<Principal>> actionSets = 
         new HashMap<Privilege, Set<Principal>>();
-
+    
+    public Acl(Map<Privilege, Set<Principal>> actionSets) {
+        if (actionSets == null) {
+            throw new IllegalArgumentException("Argument is NULL");
+        }
+        this.actionSets = copyActionSets(actionSets);
+    }
+    
     public boolean hasPrivilege(Privilege privilege, Principal principal) {
         Set<Principal> actionSet = this.actionSets.get(privilege);
-        
         if (actionSet != null && actionSet.contains(principal)) { 
             return true;
         }
         return false;
     }
- 
+    
     public Set<Privilege> getActions() {
         return Collections.unmodifiableSet(this.actionSets.keySet());
     }
@@ -70,10 +77,6 @@ public final class Acl {
             return Collections.emptySet();
         }
         return Collections.unmodifiableSet(set);
-    }
-
-    public void clear() {
-        this.actionSets = new HashMap<Privilege, Set<Principal>>();
     }
     
     public boolean isEmpty() {
@@ -97,30 +100,31 @@ public final class Acl {
     }
     
     
-    public void addEntry(Privilege privilege, Principal principal) {
+    public Acl addEntry(Privilege privilege, Principal principal) {
         if (privilege == null) {
             throw new IllegalArgumentException("Privilege is NULL");
         }
         if (principal == null) {
             throw new IllegalArgumentException("Principal is NULL");
         }
-            
         if (!isValidEntry(privilege, principal)) {
             throw new IllegalArgumentException(
                     "Not allowed to add principal '" + principal + "' to privilege '"
                     + privilege + "'" );
         }
         
-        Set<Principal> actionEntry = this.actionSets.get(privilege);
+        Map<Privilege, Set<Principal>> newAcl = copyActionSets(this.actionSets);
+        
+        Set<Principal> actionEntry = newAcl.get(privilege);
         if (actionEntry == null) {
             actionEntry = new HashSet<Principal>();
-            this.actionSets.put(privilege, actionEntry);
+            newAcl.put(privilege, actionEntry);
         }
-        
         actionEntry.add(principal);
+        return new Acl(newAcl);
     }
     
-    public void addEntryNoValidation(Privilege privilege, Principal principal) {
+    public Acl addEntryNoValidation(Privilege privilege, Principal principal) {
         if (privilege == null) {
             throw new IllegalArgumentException("Privilege is NULL");
         }
@@ -128,16 +132,18 @@ public final class Acl {
             throw new IllegalArgumentException("Principal is NULL");
         }
         
-        Set<Principal> actionEntry = this.actionSets.get(privilege);
+        Map<Privilege, Set<Principal>> newAcl = copyActionSets(this.actionSets);
+        
+        Set<Principal> actionEntry = newAcl.get(privilege);
         if (actionEntry == null) {
             actionEntry = new HashSet<Principal>();
-            this.actionSets.put(privilege, actionEntry);
+            newAcl.put(privilege, actionEntry);
         }
-        
         actionEntry.add(principal);
+        return new Acl(newAcl);
     }
     
-    public void removeEntry(Privilege privilege, Principal principal)
+    public Acl removeEntry(Privilege privilege, Principal principal)
         throws IllegalArgumentException {
         if (privilege == null) {
             throw new IllegalArgumentException("Privilege is NULL");
@@ -146,15 +152,16 @@ public final class Acl {
             throw new IllegalArgumentException("Principal is NULL");
         }
             
-        Set<Principal> actionEntry = this.actionSets.get(privilege);
+        Map<Privilege, Set<Principal>> newAcl = copyActionSets(this.actionSets);
         
-        if (actionEntry == null) {
-            return;
+        Set<Principal> actionEntry = newAcl.get(privilege);
+        if (actionEntry != null) {
+            actionEntry.remove(principal);
+            if (actionEntry.isEmpty()) {
+                newAcl.remove(privilege);
+            }
         }
-        actionEntry.remove(principal);
-        if (actionEntry.isEmpty()) {
-            this.actionSets.remove(privilege);
-        }
+        return new Acl(newAcl);
     }
 
 
@@ -293,20 +300,6 @@ public final class Acl {
         return hashCode;
     }
 
-    public Object clone() {
-        Acl clone = new Acl();
-
-        for (Map.Entry<Privilege, Set<Principal>> entry: this.actionSets.entrySet()) {
-            
-            Privilege action = entry.getKey();
-
-            for (Principal p: entry.getValue()) {
-                clone.addEntryNoValidation(action, p);
-            }
-        }
-        return clone;
-    }
-
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
@@ -334,4 +327,22 @@ public final class Acl {
         return sb.toString();
     }
     
+    private Map<Privilege, Set<Principal>> copyActionSets(Map<Privilege, Set<Principal>> actionSets) {
+        Map<Privilege, Set<Principal>> copy = new HashMap<Privilege, Set<Principal>>();
+        for (Privilege privilege: actionSets.keySet()) {
+            if (privilege == null) {
+                throw new IllegalArgumentException("Privileges cannot be NULL");
+            }
+            Set<Principal> value = actionSets.get(privilege);
+            if (value == null || value.isEmpty()) {
+                throw new IllegalArgumentException(
+                        "Illegal empty mapping in ACL for privilege " + privilege);
+            }
+            Set<Principal> principals = new HashSet<Principal>();
+            principals.addAll(value);
+            copy.put(privilege, principals);
+        }
+        return copy;
+    }
+
 }

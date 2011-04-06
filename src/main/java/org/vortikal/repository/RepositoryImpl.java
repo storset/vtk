@@ -260,8 +260,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             this.dao.store(parent);
 
             // Store new resource
-            Acl newAcl = (Acl) parent.getAcl().clone();
-            newResource.setAcl(newAcl);
+            newResource.setAcl(parent.getAcl());
             newResource.setInheritedAcl(true);
             int aclIneritedFrom = parent.isInheritedAcl() ? parent.getAclInheritedFrom() : parent.getID();
             newResource.setAclInheritedFrom(aclIneritedFrom);
@@ -740,8 +739,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             this.dao.store(parent);
 
             // Store new resource
-            Acl newAcl = (Acl) parent.getAcl().clone();
-            newResource.setAcl(newAcl);
+            newResource.setAcl(parent.getAcl());
             newResource.setInheritedAcl(true);
             int aclIneritedFrom = parent.isInheritedAcl() ? parent.getAclInheritedFrom() : parent.getID();
             newResource.setAclInheritedFrom(aclIneritedFrom);
@@ -931,8 +929,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             ResourceImpl parent = this.dao.load(uri.getParent());
 
             Resource original = (Resource) r.clone();
-            Acl newAcl = (Acl) parent.getAcl().clone();
-            r.setAcl(newAcl);
+            r.setAcl(parent.getAcl());
             r.setAclInheritedFrom(parent.getID());
             r.setInheritedAcl(true);
 

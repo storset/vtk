@@ -37,9 +37,9 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
+import org.vortikal.security.Principal.Type;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.PrincipalManager;
-import org.vortikal.security.Principal.Type;
 
 public class ACLEditCommandValidator implements Validator {
 
@@ -49,7 +49,7 @@ public class ACLEditCommandValidator implements Validator {
     /**
      * @see org.springframework.validation.Validator#supports(java.lang.Class)
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public boolean supports(Class clazz) {
         return (clazz == ACLEditCommand.class);
     }
@@ -63,6 +63,7 @@ public class ACLEditCommandValidator implements Validator {
         }
 
         if (editCommand.getSaveAction() != null) {
+            // XXX: repository.isValidACLEntry(...)
             validateUserNames(editCommand, errors);
             validateGroupNames(editCommand.getGroupNames(), errors);
         }
@@ -75,6 +76,7 @@ public class ACLEditCommandValidator implements Validator {
                         "You must type a value");
             }
 
+            // XXX: repository.isValidACLEntry(...)
             validateUserNames(editCommand, errors);
 
         } else if (editCommand.getAddGroupAction() != null) {
@@ -84,6 +86,7 @@ public class ACLEditCommandValidator implements Validator {
                 errors.rejectValue("groupNames", "permissions.group.missing.value",
                         "You must type a value");
             }
+            // XXX: repository.isValidACLEntry(...)
 
             validateGroupNames(groupNames, errors);
         }
@@ -91,7 +94,6 @@ public class ACLEditCommandValidator implements Validator {
     }
 
     private void validateUserNames(ACLEditCommand editCommand, Errors errors) {
-
         String[] userNames = editCommand.getUserNames();
 
         if (userNames.length > 0) {

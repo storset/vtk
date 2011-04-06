@@ -839,7 +839,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
 
             resourceIds.add(id);
         }
-        Map<Integer, Acl> map = loadAclMap(new ArrayList<Integer>(resourceIds));
+        Map<Integer, AclHolder> map = loadAclMap(new ArrayList<Integer>(resourceIds));
 
         if (map.isEmpty()) {
             throw new DataAccessException("Database inconsistency: no ACL entries exist for " + "resources "
@@ -847,27 +847,25 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         }
 
         for (ResourceImpl resource : resources) {
-            Acl acl = null;
+            AclHolder aclHolder = null;
 
             if (resource.getAclInheritedFrom() != -1) {
-                acl = map.get(resource.getAclInheritedFrom());
+                aclHolder = map.get(resource.getAclInheritedFrom());
             } else {
-                acl = map.get(resource.getID());
+                aclHolder = map.get(resource.getID());
             }
 
-            if (acl == null) {
+            if (aclHolder == null) {
                 throw new DataAccessException("Resource " + resource + " has no ACL entry (ac_inherited_from = "
                         + resource.getAclInheritedFrom() + ")");
             }
-
-            acl = (Acl) acl.clone();
-            resource.setAcl(acl);
+            resource.setAcl(new Acl(aclHolder));
         }
     }
 
-    private Map<Integer, Acl> loadAclMap(List<Integer> resourceIds) {
+    private Map<Integer, AclHolder> loadAclMap(List<Integer> resourceIds) {
 
-        Map<Integer, Acl> resultMap = new HashMap<Integer, Acl>();
+        Map<Integer, AclHolder> resultMap = new HashMap<Integer, AclHolder>();
         if (resourceIds.isEmpty()) {
             return resultMap;
         }
@@ -890,7 +888,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         return resultMap;
     }
 
-    private void loadAclBatch(List<Integer> resourceIds, Map<Integer, Acl> resultMap) {
+    private void loadAclBatch(List<Integer> resourceIds, Map<Integer, AclHolder> resultMap) {
         Map<String, Object> parameterMap = new HashMap<String, Object>();
         parameterMap.put("resourceIds", resourceIds);
 
@@ -904,10 +902,10 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
             Integer resourceId = (Integer) map.get("resourceId");
             String privilege = (String) map.get("action");
 
-            Acl acl = resultMap.get(resourceId);
+            AclHolder acl = resultMap.get(resourceId);
 
             if (acl == null) {
-                acl = new Acl();
+                acl = new AclHolder();
                 resultMap.put(resourceId, acl);
             }
 
@@ -915,14 +913,16 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
             String name = (String) map.get("principal");
             Principal p = null;
 
-            if (isGroup)
+            if (isGroup) {
                 p = principalFactory.getPrincipal(name, Type.GROUP);
-            else if (name.startsWith("pseudo:"))
+            } else if (name.startsWith("pseudo:")) {
                 p = principalFactory.getPrincipal(name, Type.PSEUDO);
-            else
+            } else {
                 p = principalFactory.getPrincipal(name, Type.USER);
+            }
             Privilege action = Privilege.forName(privilege);
-            acl.addEntryNoValidation(action, p);
+            
+            acl.addEntry(action, p);
         }
     }
 
@@ -1235,5 +1235,17 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
     }
+    
+    @SuppressWarnings("serial")
+    private class AclHolder extends HashMap<Privilege, Set<Principal>> {
 
+        public void addEntry(Privilege action, Principal principal) {
+            Set<Principal> set = this.get(action);
+            if (set == null) {
+                set = new HashSet<Principal>();
+                this.put(action, set);
+            }
+            set.add(principal);
+        }
+    }
 }

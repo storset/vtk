@@ -61,7 +61,9 @@ public class ACLEditController extends SimpleFormController {
     private Privilege privilege;
     private PrincipalFactory principalFactory;
     private Map<Privilege, List<String>> permissionShortcuts;
-    List<String> shortcuts;
+    
+    private List<String> shortcuts;
+    private int validShortcuts = 0;
     
     private static final String GROUP_PREFIX = "group:";
     private static final String USER_PREFIX = "user:";
@@ -94,7 +96,16 @@ public class ACLEditController extends SimpleFormController {
         Repository repository = requestContext.getRepository();
         String token = requestContext.getSecurityToken();
         Resource resource = repository.retrieve(token, uri, false);
+        
         shortcuts = this.permissionShortcuts.get(this.privilege);
+        int valid = 0;
+        for (String shortcut: shortcuts) {
+            if (shortcut.startsWith(GROUP_PREFIX) || shortcut.startsWith(USER_PREFIX)) {
+              valid++;
+            }
+        }
+        this.validShortcuts = valid;
+        
         return getACLEditCommand(resource, resource.getAcl(), requestContext.getPrincipal());
     }
 
@@ -230,15 +241,8 @@ public class ACLEditController extends SimpleFormController {
      */
     protected String[][] extractAndCheckShortcuts (List<Principal> authorizedUsers, 
             List<Principal> authorizedGroups, List<String> shortcuts) {
-        
-        int validShortCuts = 0;
-        for (String shortcut: shortcuts) {
-            if (shortcut.startsWith(GROUP_PREFIX) || shortcut.startsWith(USER_PREFIX)) {
-              validShortCuts++;
-            }
-        }
-        
-        String checkedShortcuts[][] = new String[validShortCuts][2];
+
+        String checkedShortcuts[][] = new String[this.validShortcuts][2];
         
         int i = 0;
         

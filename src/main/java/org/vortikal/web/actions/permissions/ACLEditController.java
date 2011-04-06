@@ -405,9 +405,8 @@ public class ACLEditController extends SimpleFormController {
     /**
      * Unformat shortcut and set type to GROUP or USER
      * 
-     * @param shortcut the shortcut (formatted)
-     * @param groupOrUserShortcut (unformatted)
-     *        group or user
+     * @param shortcut formatted shortcut
+     * @param groupOrUserShortcut unformatted group or user shortcut (return by reference)
      * @return type of ACL (GROUP or USER)
      */
     private Type unformatShortcutAndSetType(String[] shortcut, String[] groupOrUserShortcut) {
@@ -425,7 +424,7 @@ public class ACLEditController extends SimpleFormController {
     /**
      * Check if USER is PSEUDO and set correct type
      * 
-     * @param type the type
+     * @param type type of ACL (GROUP or USER)
      * @param value group or user
      * @return type type of ACL (GROUP or USER or PSEUDO)
      */

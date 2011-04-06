@@ -18,13 +18,14 @@
     <property name="handler" ref="editor.collection.listCollectionResourcesHandler" />
   </bean>
 
-  <bean id="editor.collection.listCollectionResourcesHandler" class="org.vortikal.web.service.ManuallyApproveResourcesHandler"
+  <bean id="editor.collection.listCollectionResourcesHandler" class="org.vortikal.web.service.manuallyapprove.ManuallyApproveResourcesHandler"
     parent="repositoryAware">
     <property name="manuallyApproveFromPropDef" ref="manuallyApproveFromPropDef" />
     <property name="manuallyApprovedResourcesPropDef" ref="manuallyApprovedResourcesPropDef" />
     <property name="collectionPropDef" ref="collectionPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
     <property name="publishDatePropDef" ref="publishDatePropDef" />
+    <property name="creationTimePropDef" ref="creationTimePropDef" />
     <property name="aggregationPropDef" ref="aggregationPropDef" />
     <property name="recursivePropDef" ref="collection.recursiveListingPropDef" />
     <property name="listingResourceTypeMappingPointers">

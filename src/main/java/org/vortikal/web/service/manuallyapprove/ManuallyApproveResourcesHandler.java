@@ -28,10 +28,12 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.service;
+package org.vortikal.web.service.manuallyapprove;
 
 import java.io.PrintWriter;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -70,10 +72,12 @@ import org.vortikal.repository.search.query.UriSetQuery;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.collection.aggregation.AggregationResolver;
+import org.vortikal.web.service.Service;
 
 public class ManuallyApproveResourcesHandler implements Controller {
 
     private static final String FOLDERS_PARAM = "folders";
+    private static final String AGGREGATE_PARAM = "aggregate";
 
     private Repository repository;
     private PropertyTypeDefinition manuallyApproveFromPropDef;
@@ -81,6 +85,7 @@ public class ManuallyApproveResourcesHandler implements Controller {
     private PropertyTypeDefinition collectionPropDef;
     private PropertyTypeDefinition titlePropDef;
     private PropertyTypeDefinition publishDatePropDef;
+    private PropertyTypeDefinition creationTimePropDef;
     private PropertyTypeDefinition aggregationPropDef;
     private PropertyTypeDefinition recursivePropDef;
     private Map<String, String> listingResourceTypeMappingPointers;
@@ -98,6 +103,7 @@ public class ManuallyApproveResourcesHandler implements Controller {
         Property aggregationProp = currentCollection.getProperty(this.aggregationPropDef);
         Property recursiveProp = currentCollection.getProperty(this.recursivePropDef);
         String[] folders = request.getParameterValues(FOLDERS_PARAM);
+        String[] aggregate = request.getParameterValues(AGGREGATE_PARAM);
 
         // Nothing to work with, need at least one of these
         if (manuallyApproveFromProp == null && manuallyApprovedResourcesProp == null && folders == null) {
@@ -105,7 +111,6 @@ public class ManuallyApproveResourcesHandler implements Controller {
         }
 
         Set<String> validatedFolders = new HashSet<String>();
-
         // Parameter "folders" overrides what's already stored, because user
         // might change content and update service before storing resource
         if (folders != null) {
@@ -124,107 +129,86 @@ public class ManuallyApproveResourcesHandler implements Controller {
             }
         }
 
-        Set<String> manuallyApprovedResources = new HashSet<String>();
+        Set<String> alreadyApproved = new HashSet<String>();
         if (manuallyApprovedResourcesProp != null) {
-            Value[] manuallyApprovedValues = manuallyApprovedResourcesProp.getValues();
-            for (Value manuallyApprovedResource : manuallyApprovedValues) {
-                manuallyApprovedResources.add(manuallyApprovedResource.getStringValue());
+            String value = manuallyApprovedResourcesProp.getFormattedValue();
+            JSONArray arr = JSONArray.fromObject(value);
+            for (int i = 0; i < arr.size(); i++) {
+                JSONObject obj = arr.getJSONObject(i);
+                alreadyApproved.add(obj.getString("uri"));
             }
         }
 
         // No valid folders to display contents from and no already manually
         // approved resources -> finish
-        if (validatedFolders.size() == 0 && manuallyApprovedResources.size() == 0) {
+        if (validatedFolders.size() == 0 && alreadyApproved.size() == 0) {
             return null;
         }
-
-        // Step one of headache: resolve aggregation
-        Set<String> aggregatedFolders = new HashSet<String>();
-        for (String folder : validatedFolders) {
-            List<Path> aggregatedPaths = this.aggregationResolver.getAggregationPaths(Path.fromString(folder));
-            if (aggregatedPaths != null) {
-                for (Path aggregatedPath : aggregatedPaths) {
-                    aggregatedFolders.add(aggregatedPath.toString());
-                }
-            }
-        }
-        validatedFolders.addAll(aggregatedFolders);
 
         // Step two of headache: resolve already manually approved resource from
         // folders to manually approve from
         for (String validatedFolder : validatedFolders) {
             Set<String> s = this.getManuallyApprovedResources(validatedFolder, token);
             if (s != null) {
-                manuallyApprovedResources.addAll(s);
+                alreadyApproved.addAll(s);
             }
         }
 
-        OrQuery or = new OrQuery();
-        for (String folder : validatedFolders) {
-            or.add(new UriPrefixQuery(folder));
+        List<PropertySet> approvedResources = new ArrayList<PropertySet>();
+        if (alreadyApproved.size() > 0) {
+            ResultSet rs = this.search(new UriSetQuery(alreadyApproved), token);
+            approvedResources.addAll(rs.getAllResults());
         }
 
         String resourceTypePointer = this.listingResourceTypeMappingPointers.get(currentCollection.getResourceType());
-        Query query = null;
+        Query resourceTypeQuery = null;
         if (resourceTypePointer != null) {
-            AndQuery and = new AndQuery();
-            and.add(or);
             resourceTypePointer = resourceTypePointer.startsWith("structured.") ? resourceTypePointer.replace(".", "-")
                     : resourceTypePointer;
-            and.add(new TypeTermQuery(resourceTypePointer, TermOperator.IN));
-            query = and;
-        } else {
-            query = or;
+            resourceTypeQuery = new TypeTermQuery(resourceTypePointer, TermOperator.IN);
         }
 
-        if (manuallyApprovedResources.size() > 0) {
-            OrQuery q = new OrQuery();
-            q.add(query);
-            q.add(new UriSetQuery(manuallyApprovedResources));
-            query = q;
+        List<ManuallyApproveResource> result = new ArrayList<ManuallyApproveResource>();
+        List<PropertySet> psList = new ArrayList<PropertySet>();
+        for (String folder : validatedFolders) {
+            Query query = this.getUriPrefixesQuery(validatedFolders, folder);
+            if (resourceTypeQuery != null) {
+                AndQuery and = new AndQuery();
+                and.add(resourceTypeQuery);
+                and.add(query);
+                query = and;
+            }
+            ResultSet rs = this.search(query, token);
+            for (PropertySet ps : rs.getAllResults()) {
+                Property collectionProp = ps.getProperty(this.collectionPropDef);
+                if (!collectionProp.getBooleanValue()) {
+                    boolean approved = approvedResources.contains(ps);
+                    if (approved) {
+                        psList.add(ps);
+                    }
+                    ManuallyApproveResource m = this.mapPropertySetToManuallyApprovedResource(ps, folder, approved);
+                    result.add(m);
+                }
+            }
         }
-
-        Search search = new Search();
-        search.setQuery(query);
-        SortingImpl sorting = new SortingImpl();
-        sorting.addSortField(new PropertySortField(this.publishDatePropDef, SortFieldDirection.DESC));
-        search.setSorting(sorting);
-        search.setLimit(1000);
-
-        ResultSet rs = this.repository.search(token, search);
-
-        // XXX We need to consider the following:
-        /*
-         * The already manually approved resources must be displayed regardless
-         * of the result of search for resources to manually approve, i.e. if an
-         * already manually approved resource is not among the search result, it
-         * must still be displayed (e.g. for removal).
-         * 
-         * List of resources to manually approve from (search result) must be
-         * marked with contents of already approved resources.
-         * 
-         * Finally, we must enforce a limit as to how many manually approved
-         * resources there can be.
-         */
+        for (PropertySet ps : approvedResources) {
+            if (!psList.contains(ps)) {
+                ManuallyApproveResource m = this.mapPropertySetToManuallyApprovedResource(ps, ps.getURI().getParent()
+                        .toString(), true);
+                result.add(m);
+            }
+        }
+        Collections.sort(result, new ManuallyApproveResourceComparator());
 
         JSONArray arr = new JSONArray();
-        for (PropertySet ps : rs.getAllResults()) {
-            Property collectionProp = ps.getProperty(this.collectionPropDef);
-            if (!collectionProp.getBooleanValue()) {
-                JSONObject obj = new JSONObject();
-                obj.put("title", ps.getProperty(this.titlePropDef).getStringValue());
-                // XXX Complete uri, with protocoll and host. Wait for now...
-                // obj.put("uri",
-                // viewService.constructURL(ps.getURI()).toString());
-                Path resourcePath = ps.getURI();
-                obj.put("uri", resourcePath.toString());
-                obj.put("source", resourcePath.getParent().toString());
-                obj.put("published", this.getPublishDate(ps.getProperty(this.publishDatePropDef)));
-                boolean approved = manuallyApprovedResourcesProp == null ? false : this.isAlreadyApproved(resourcePath
-                        .toString(), manuallyApprovedResourcesProp);
-                obj.put("approved", approved);
-                arr.add(obj);
-            }
+        for (ManuallyApproveResource m : result) {
+            JSONObject obj = new JSONObject();
+            obj.put("title", m.getTitle());
+            obj.put("uri", m.getUri());
+            obj.put("source", m.getSource());
+            obj.put("published", m.getPublishDateAsString());
+            obj.put("approved", m.isApproved());
+            arr.add(obj);
         }
         response.setContentType("text/plain;charset=utf-8");
         PrintWriter writer = response.getWriter();
@@ -233,6 +217,50 @@ public class ManuallyApproveResourcesHandler implements Controller {
         writer.close();
 
         return null;
+    }
+
+    private ManuallyApproveResource mapPropertySetToManuallyApprovedResource(PropertySet ps, String source,
+            boolean approved) {
+        String title = ps.getProperty(this.titlePropDef).getStringValue();
+        Path resourcePath = ps.getURI();
+        String uri = resourcePath.toString();
+        Property dateProp = ps.getProperty(this.publishDatePropDef);
+        if (dateProp == null) {
+            dateProp = ps.getProperty(this.creationTimePropDef);
+        }
+        Date publishDate = dateProp != null ? dateProp.getDateValue() : Calendar.getInstance().getTime();
+        ManuallyApproveResource m = new ManuallyApproveResource(title, uri, source, publishDate, approved);
+        return m;
+    }
+
+    private ResultSet search(Query query, String token) {
+        Search search = new Search();
+        SortingImpl sorting = new SortingImpl();
+        sorting.addSortField(new PropertySortField(this.publishDatePropDef, SortFieldDirection.DESC));
+        search.setSorting(sorting);
+        search.setLimit(1000);
+        search.setQuery(query);
+        return this.repository.search(token, search);
+    }
+
+    private Query getUriPrefixesQuery(Set<String> validatedFolders, String folder) {
+        Query uriPrefixQuery = new UriPrefixQuery(folder);
+        List<Path> aggregatedPaths = this.aggregationResolver.getAggregationPaths(Path.fromString(folder));
+        if (aggregatedPaths == null || aggregatedPaths.size() == 0) {
+            return uriPrefixQuery;
+        } else {
+            OrQuery query = new OrQuery();
+            query.add(uriPrefixQuery);
+            for (Path aggregatedPath : aggregatedPaths) {
+                String s = aggregatedPath.toString();
+                // Don't include aggregated folder if it already is part of
+                // validated list of folders to manually approve from
+                if (!validatedFolders.contains(s)) {
+                    query.add(new UriPrefixQuery(s));
+                }
+            }
+            return query;
+        }
     }
 
     private Set<String> getManuallyApprovedResources(String validatedFolder, String token) {
@@ -293,21 +321,6 @@ public class ManuallyApproveResourcesHandler implements Controller {
         }
     }
 
-    private String getPublishDate(Property publishDateProp) {
-        Date publishDate = publishDateProp.getDateValue();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        return sdf.format(publishDate);
-    }
-
-    private boolean isAlreadyApproved(String uriString, Property manuallyApprovedResourcesProp) {
-        for (Value manuallyApprovedValue : manuallyApprovedResourcesProp.getValues()) {
-            if (uriString.equals(manuallyApprovedValue.getStringValue())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
@@ -336,6 +349,11 @@ public class ManuallyApproveResourcesHandler implements Controller {
     @Required
     public void setPublishDatePropDef(PropertyTypeDefinition publishDatePropDef) {
         this.publishDatePropDef = publishDatePropDef;
+    }
+
+    @Required
+    public void setCreationTimePropDef(PropertyTypeDefinition creationTimePropDef) {
+        this.creationTimePropDef = creationTimePropDef;
     }
 
     @Required

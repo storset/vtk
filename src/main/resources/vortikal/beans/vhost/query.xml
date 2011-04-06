@@ -42,10 +42,9 @@
           <property name="featuredArticlesPropDef" ref="articleListing.featuredArticlesPropDef" />
         </bean>
         
-        <!--bean class="org.vortikal.repository.search.preprocessor.ManuallyApprovedResourcesExpressionEvaluator"
-              parent="repositoryAware">
+        <bean class="org.vortikal.repository.search.preprocessor.ManuallyApprovedResourcesExpressionEvaluator">
           <property name="manuallyApprovedResourcesPropDef" ref="manuallyApprovedResourcesPropDef" />
-        </bean-->
+        </bean>
               
         <bean class="org.vortikal.repository.search.preprocessor.SubfoldersExpressionEvaluator">
           <property name="recursiveListingPropDef" ref="articleListing.recursiveListingPropDef" />

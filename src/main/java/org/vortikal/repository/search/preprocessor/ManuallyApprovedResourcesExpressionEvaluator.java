@@ -30,24 +30,70 @@
  */
 package org.vortikal.repository.search.preprocessor;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.search.QueryException;
+import org.vortikal.web.RequestContext;
 
-public class ManuallyApprovedResourcesExpressionEvaluator extends MultiValuePropertyInExpressionEvaluator {
+public class ManuallyApprovedResourcesExpressionEvaluator implements ExpressionEvaluator {
 
     private final String variableName = "manuallyApprovedResources";
     private PropertyTypeDefinition manuallyApprovedResourcesPropDef;
 
     @Override
-    protected Property getMultiValueProperty(Resource resource) {
-        return resource.getProperty(this.manuallyApprovedResourcesPropDef);
+    public String evaluate(String token) throws QueryException {
+
+        if (!matches(token)) {
+            throw new QueryException("Unknown query token: '" + token + "'");
+        }
+
+        RequestContext requestContext = RequestContext.getRequestContext();
+        if (requestContext != null) {
+
+            String securityToken = requestContext.getSecurityToken();
+            Path uri = requestContext.getResourceURI();
+            Repository repository = requestContext.getRepository();
+
+            try {
+                Resource resource = repository.retrieve(securityToken, uri, true);
+                if (!resource.isCollection()) {
+                    return token;
+                }
+
+                Property manuallyApprovedResourcesProp = resource.getProperty(this.manuallyApprovedResourcesPropDef);
+                if (manuallyApprovedResourcesProp == null) {
+                    return token;
+                }
+
+                StringBuilder multiValueList = new StringBuilder();
+                String value = manuallyApprovedResourcesProp.getFormattedValue();
+                JSONArray arr = JSONArray.fromObject(value);
+                for (int i = 0; i < arr.size(); i++) {
+                    JSONObject obj = arr.getJSONObject(i);
+                    if (StringUtils.isNotBlank(multiValueList.toString())) {
+                        multiValueList.append(",");
+                    }
+                    multiValueList.append(obj.getString("uri").replaceAll(" ", "\\\\ "));
+                }
+                return multiValueList.toString();
+            } catch (Throwable t) {
+                // XXX log
+            }
+        }
+        return token;
     }
 
     @Override
-    protected String getVariableName() {
-        return this.variableName;
+    public boolean matches(String token) {
+        return this.variableName.equals(token);
     }
 
     @Required

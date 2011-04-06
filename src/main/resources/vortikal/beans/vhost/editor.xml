@@ -479,8 +479,8 @@
             <ref bean="pageLimitPropDef" />
             <ref bean="collection.sortingPropDef" />
             <ref bean="aggregationPropDef" />
-            <!--ref bean="manuallyApproveFromPropDef" />
-            <ref bean="manuallyApprovedResourcesPropDef" /-->
+            <ref bean="manuallyApproveFromPropDef" />
+            <ref bean="manuallyApprovedResourcesPropDef" />
             <ref bean="collection.hideLastModifiedPropDef" />
             <ref bean="collection.hideIntroductionPropDef" />
             <ref bean="additionalContentPropDef" />

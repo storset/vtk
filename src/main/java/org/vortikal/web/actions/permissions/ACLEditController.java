@@ -61,6 +61,7 @@ public class ACLEditController extends SimpleFormController {
     private Privilege privilege;
     private PrincipalFactory principalFactory;
     private Map<Privilege, List<String>> permissionShortcuts;
+    List<String> shortcuts;
     
     private static final String GROUP_PREFIX = "group:";
     private static final String USER_PREFIX = "user:";
@@ -93,6 +94,7 @@ public class ACLEditController extends SimpleFormController {
         Repository repository = requestContext.getRepository();
         String token = requestContext.getSecurityToken();
         Resource resource = repository.retrieve(token, uri, false);
+        shortcuts = this.permissionShortcuts.get(this.privilege);
         return getACLEditCommand(resource, resource.getAcl(), requestContext.getPrincipal());
     }
 
@@ -112,8 +114,7 @@ public class ACLEditController extends SimpleFormController {
         authorizedUsers.addAll(Arrays.asList(acl
                 .listPrivilegedPseudoPrincipals(this.privilege)));
 
-        List<String> shortcuts = this.permissionShortcuts.get(this.privilege);
-        if (shortcuts != null) {    
+        if (shortcuts != null) {   
           command.setShortcuts(extractAndCheckShortcuts(authorizedUsers, authorizedGroups, shortcuts));
         }
 
@@ -138,8 +139,8 @@ public class ACLEditController extends SimpleFormController {
             ACLEditCommand editCommand = (ACLEditCommand) command;
             editCommand.setAddGroupAction(null);
             editCommand.setAddUserAction(null);
-            editCommand.setRemoveUserAction(null);
             editCommand.setRemoveGroupAction(null);
+            editCommand.setRemoveUserAction(null);
             editCommand.setSaveAction(null);
             editCommand.getUserNameEntries().removeAll(editCommand.getUserNameEntries());
         }
@@ -171,8 +172,8 @@ public class ACLEditController extends SimpleFormController {
         
         // Has the user asked to save?
         if (editCommand.getSaveAction() != null) {     
-            acl = addToAcl(acl, repository, errors, editCommand.getUserNameEntries(), Type.USER);
             acl = addToAcl(acl, repository, errors, editCommand.getGroupNames(), Type.GROUP);
+            acl = addToAcl(acl, repository, errors, editCommand.getUserNameEntries(), Type.USER);
             
             if (acl.isEmpty()) {
                 errors.rejectValue("groupNames", "permissions.no.acl", new Object[] {}, "Resource can not be without permissions");
@@ -192,27 +193,27 @@ public class ACLEditController extends SimpleFormController {
         }
 
         // Doing remove or add actions
-        if (editCommand.getRemoveUserAction() != null) {
-            acl = removeFromAcl(acl, editCommand.getUserNames(), Type.USER);
-            return showForm(request, response, new BindException(getACLEditCommand(resource, acl, requestContext.getPrincipal()), this.getCommandName()));
-
-        } else if (editCommand.getRemoveGroupAction() != null) {
+        if (editCommand.getRemoveGroupAction() != null) {
             acl = removeFromAcl(acl, editCommand.getGroupNames(), Type.GROUP);
             return showForm(request, response, new BindException(getACLEditCommand(resource, acl, requestContext.getPrincipal()), this.getCommandName()));
 
-        } else if (editCommand.getAddUserAction() != null) {
-            acl = addToAcl(acl, repository, errors, editCommand.getUserNameEntries(), Type.USER);
-            BindException bex = new BindException(getACLEditCommand(resource, acl, requestContext.getPrincipal()), this.getCommandName());
-            bex.addAllErrors(errors); // Add validation errors
-            return showForm(request, response, bex);
+        } else if (editCommand.getRemoveUserAction() != null) {
+            acl = removeFromAcl(acl, editCommand.getUserNames(), Type.USER);
+            return showForm(request, response, new BindException(getACLEditCommand(resource, acl, requestContext.getPrincipal()), this.getCommandName()));
 
         } else if (editCommand.getAddGroupAction() != null) {
             acl = addToAcl(acl, repository, errors, editCommand.getGroupNames(), Type.GROUP);
             BindException bex = new BindException(getACLEditCommand(resource, acl, requestContext.getPrincipal()), this.getCommandName());
             bex.addAllErrors(errors); // Add validation errors
             return showForm(request, response, bex);
- 
-        } 
+     
+        } else if (editCommand.getAddUserAction() != null) {
+            acl = addToAcl(acl, repository, errors, editCommand.getUserNameEntries(), Type.USER);
+            BindException bex = new BindException(getACLEditCommand(resource, acl, requestContext.getPrincipal()), this.getCommandName());
+            bex.addAllErrors(errors); // Add validation errors
+            return showForm(request, response, bex);
+        }
+        
         return new ModelAndView(getSuccessView());
     }
     

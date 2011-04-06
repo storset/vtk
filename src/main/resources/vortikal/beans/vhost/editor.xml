@@ -629,8 +629,8 @@
             <ref bean="articleListing.recursiveListingPropDef" />
             <ref bean="articleListing.recursiveListingSubfoldersPropDef" />
             <ref bean="aggregationPropDef" />
-            <!--ref bean="manuallyApproveFromPropDef" />
-            <ref bean="manuallyApprovedResourcesPropDef" /-->
+            <ref bean="manuallyApproveFromPropDef" />
+            <ref bean="manuallyApprovedResourcesPropDef" />
             <ref bean="articleListing.sortingPropDef" />
             <ref bean="articleListing.hidePublishedDatePropDef" />
             <ref bean="articleListing.hideIntroductionPropDef" />

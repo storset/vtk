@@ -119,22 +119,22 @@ public class ACLEditController extends SimpleFormController implements Initializ
         command.setResource(resource);
 
         Acl acl = resource.getAcl();
+        
+        List<Principal> authorizedGroups = new ArrayList<Principal>(Arrays.asList(acl
+                .listPrivilegedGroups(this.privilege)));
 
         List<Principal> authorizedUsers = new ArrayList<Principal>(Arrays.asList(acl
                 .listPrivilegedUsers(this.privilege)));
         authorizedUsers.addAll(Arrays.asList(acl
                 .listPrivilegedPseudoPrincipals(this.privilege)));
 
-        List<Principal> authorizedGroups = new ArrayList<Principal>(Arrays.asList(acl
-                .listPrivilegedGroups(this.privilege)));
-        
         List<String> shortcuts = this.permissionShortcuts.get(this.privilege);
         if (shortcuts != null) {    
           command.setShortcuts(extractAndCheckShortcuts(authorizedUsers, authorizedGroups, shortcuts));
         }
 
-        command.setUsers(authorizedUsers);
         command.setGroups(authorizedGroups);
+        command.setUsers(authorizedUsers);
 
         return command;
     }
@@ -185,8 +185,9 @@ public class ACLEditController extends SimpleFormController implements Initializ
         
         // Has the user asked to save?
         if (editCommand.getSaveAction() != null) {     
-            addToAcl(acl, repository, errors, editCommand.getUserNameEntries(), Type.USER);
             addToAcl(acl, repository, errors, editCommand.getGroupNames(), Type.GROUP);
+            addToAcl(acl, repository, errors, editCommand.getUserNameEntries(), Type.USER);
+            
             if(!errors.hasErrors()) {
               if(!acl.isEmpty()) {
                 resource = repository.storeACL(token, resource.getURI(), acl);
@@ -205,26 +206,26 @@ public class ACLEditController extends SimpleFormController implements Initializ
         }
 
         // Doing remove or add actions
-        if (editCommand.getRemoveUserAction() != null) {
-            removeFromAcl(acl, editCommand.getUserNames(), Type.USER);
-            return showForm(request, response, new BindException(getACLEditCommand(resource, requestContext.getPrincipal()), this.getCommandName()));
-
-        } else if (editCommand.getRemoveGroupAction() != null) {
+        if (editCommand.getRemoveGroupAction() != null) {
             removeFromAcl(acl, editCommand.getGroupNames(), Type.GROUP);
             return showForm(request, response, new BindException(getACLEditCommand(resource, requestContext.getPrincipal()), this.getCommandName()));
 
-        } else if (editCommand.getAddUserAction() != null) {
-            addToAcl(acl, repository, errors, editCommand.getUserNameEntries(), Type.USER);
-            BindException bex = new BindException(getACLEditCommand(resource, requestContext.getPrincipal()), this.getCommandName());
-            bex.addAllErrors(errors); // Add validation errors
-            return showForm(request, response, bex);
-
+        } else if (editCommand.getRemoveUserAction() != null) {
+            removeFromAcl(acl, editCommand.getUserNames(), Type.USER);
+            return showForm(request, response, new BindException(getACLEditCommand(resource, requestContext.getPrincipal()), this.getCommandName()));
+            
         } else if (editCommand.getAddGroupAction() != null) {
             addToAcl(acl, repository, errors, editCommand.getGroupNames(), Type.GROUP);
             BindException bex = new BindException(getACLEditCommand(resource, requestContext.getPrincipal()), this.getCommandName());
             bex.addAllErrors(errors); // Add validation errors
             return showForm(request, response, bex);
 
+        } else if (editCommand.getAddUserAction() != null) {
+            addToAcl(acl, repository, errors, editCommand.getUserNameEntries(), Type.USER);
+            BindException bex = new BindException(getACLEditCommand(resource, requestContext.getPrincipal()), this.getCommandName());
+            bex.addAllErrors(errors); // Add validation errors
+            return showForm(request, response, bex);
+ 
         } else {
             return new ModelAndView(getSuccessView());
         }
@@ -248,7 +249,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
         
         int validShortCuts = 0;
         for (String shortcut: shortcuts) {
-            if (shortcut.startsWith(USER_PREFIX) || shortcut.startsWith(GROUP_PREFIX)) {
+            if (shortcut.startsWith(GROUP_PREFIX) || shortcut.startsWith(USER_PREFIX)) {
               validShortCuts++;
             }
         }
@@ -261,17 +262,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
             boolean checked = false;
             boolean validShortcut = false;
             
-            if (shortcut.startsWith(USER_PREFIX)) {
-                Iterator<Principal> it = authorizedUsers.iterator();
-                while (it.hasNext()) {
-                    Principal p = it.next();
-                    if ((USER_PREFIX + p.getName()).equals(shortcut)) {
-                        checked = true;
-                        it.remove();
-                    }
-                }
-                validShortcut = true;
-            } else if (shortcut.startsWith(GROUP_PREFIX)) {
+            if (shortcut.startsWith(GROUP_PREFIX)) {
                 Iterator<Principal> it = authorizedGroups.iterator();
                 while (it.hasNext()) {
                     Principal p = it.next();
@@ -280,6 +271,16 @@ public class ACLEditController extends SimpleFormController implements Initializ
                         it.remove();
                     }
                 } 
+                validShortcut = true;
+            } else if (shortcut.startsWith(USER_PREFIX)) {
+                Iterator<Principal> it = authorizedUsers.iterator();
+                while (it.hasNext()) {
+                    Principal p = it.next();
+                    if ((USER_PREFIX + p.getName()).equals(shortcut)) {
+                        checked = true;
+                        it.remove();
+                    }
+                }
                 validShortcut = true;
             }
             
@@ -313,6 +314,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
         for (String[] shortcut : shortcuts) {
             boolean checkedNotFound = true; // remove condition
             boolean uncheckedFound = false; // add condition
+            
             for (String update : updatedShortcuts) {
                 if (shortcut[0].equals(update) && shortcut[1].equals("checked"))  {
                     checkedNotFound = false; 
@@ -323,34 +325,20 @@ public class ACLEditController extends SimpleFormController implements Initializ
 
             // Remove
             if (checkedNotFound) {
-                String[] remove = new String[1];
-                Type type = null;
-                if (shortcut[0].startsWith(USER_PREFIX)) {
-                    remove[0] = shortcut[0].replace(USER_PREFIX, "");
-                    type = Type.USER;                           
-                } else if (shortcut[0].startsWith(GROUP_PREFIX)) {
-                    remove[0] = shortcut[0].replace(GROUP_PREFIX, "");
-                    type = Type.GROUP;
-                }
-                removeFromAcl(acl, remove, type);
+                String[] groupOrUserShortcut = new String[1];
+                Type type = unformatGroupOrUser(shortcut, groupOrUserShortcut);
+                removeFromAcl(acl, groupOrUserShortcut, type);
             }
 
             // Add
             if (uncheckedFound) {
-                String[] add = new String[1];
-                Type type = null;
-                if (shortcut[0].startsWith(USER_PREFIX)) {
-                    add[0] = shortcut[0].replace(USER_PREFIX, "");
-                    type = Type.USER;                           
-                } else if (shortcut[0].startsWith(GROUP_PREFIX)) {
-                    add[0] = shortcut[0].replace(GROUP_PREFIX, "");
-                    type = Type.GROUP;
-                }   
-                addToAcl(acl, repository, errors, add, type);
+                String[] groupOrUserShortcut = new String[1];
+                Type type = unformatGroupOrUser(shortcut, groupOrUserShortcut);
+                addToAcl(acl, repository, errors, groupOrUserShortcut, type);
             }
         }
     }
-    
+
     /**
      * Remove groups or users from ACL.
      * 
@@ -388,7 +376,6 @@ public class ACLEditController extends SimpleFormController implements Initializ
             if(repository.isValidAclEntry(this.privilege, principal)) {
               acl.addEntry(this.privilege, principal);
             } else {
-              //TODO: is this ok?
               if(type == Type.GROUP) {
                 errors.rejectValue("groupNames", "permissions.group.invalid.value", new Object[] { value }, "The group '" + value + "' is not valid");                 
               } else {
@@ -418,7 +405,6 @@ public class ACLEditController extends SimpleFormController implements Initializ
             if(repository.isValidAclEntry(this.privilege, principal)) {
               acl.addEntry(this.privilege, principal);
             } else {
-              //TODO: is this ok?
               if(type == Type.GROUP) {
                 errors.rejectValue("groupNames", "permissions.group.invalid.value", new Object[] { value }, "Group '" + value + "' is not valid");                 
               } else {
@@ -429,7 +415,29 @@ public class ACLEditController extends SimpleFormController implements Initializ
     }
     
     /**
-     * Check if pseudo-user and set correct type
+     * Unformat shortcut and set type to GROUP or USER
+     * 
+     * @param shortcut
+     *            the shortcut (formatted)
+     * @param groupOrUserShortcut (unformatted)
+     *            group or user
+     * @return type
+     *            type of ACL (GROUP or USER)
+     */
+    private Type unformatGroupOrUser(String[] shortcut, String[] groupOrUserShortcut) {
+        Type type = null;
+        if (shortcut[0].startsWith(GROUP_PREFIX)) {
+            groupOrUserShortcut[0] = shortcut[0].replace(GROUP_PREFIX, "");
+            type = Type.GROUP;
+        } else if (shortcut[0].startsWith(USER_PREFIX)) {
+            groupOrUserShortcut[0] = shortcut[0].replace(USER_PREFIX, "");
+            type = Type.USER;     
+        }
+        return type;
+    }
+    
+    /**
+     * Check if USER is PSEUDO and set correct type
      * 
      * @param type
      *            the type

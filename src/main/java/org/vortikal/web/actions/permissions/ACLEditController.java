@@ -98,13 +98,15 @@ public class ACLEditController extends SimpleFormController {
         Resource resource = repository.retrieve(token, uri, false);
         
         shortcuts = this.permissionShortcuts.get(this.privilege);
-        int valid = 0;
-        for (String shortcut: shortcuts) {
+        if(shortcuts != null) {
+          int valid = 0;
+          for (String shortcut: shortcuts) {
             if (shortcut.startsWith(GROUP_PREFIX) || shortcut.startsWith(USER_PREFIX)) {
               valid++;
             }
+          }
+          this.validShortcuts = valid;
         }
-        this.validShortcuts = valid;
         
         return getACLEditCommand(resource, resource.getAcl(), requestContext.getPrincipal());
     }

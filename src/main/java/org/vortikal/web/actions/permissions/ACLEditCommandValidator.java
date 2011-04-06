@@ -63,7 +63,6 @@ public class ACLEditCommandValidator implements Validator {
         }
 
         if (editCommand.getSaveAction() != null) {
-            // XXX: repository.isValidACLEntry(...)
             validateUserNames(editCommand, errors);
             validateGroupNames(editCommand.getGroupNames(), errors);
         }
@@ -76,7 +75,6 @@ public class ACLEditCommandValidator implements Validator {
                         "You must type a value");
             }
 
-            // XXX: repository.isValidACLEntry(...)
             validateUserNames(editCommand, errors);
 
         } else if (editCommand.getAddGroupAction() != null) {
@@ -86,8 +84,6 @@ public class ACLEditCommandValidator implements Validator {
                 errors.rejectValue("groupNames", "permissions.group.missing.value",
                         "You must type a value");
             }
-            // XXX: repository.isValidACLEntry(...)
-
             validateGroupNames(groupNames, errors);
         }
 

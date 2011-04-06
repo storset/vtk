@@ -240,7 +240,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
      *            the authorized groups
      * @param shortcuts
      *            the configured shortcuts
-     * @return a <code>String[][]</code> object containing checked / un-checked shortcuts
+     * @return a <code>String[][]</code> object containing checked / not-checked shortcuts
      */
     protected String[][] extractAndCheckShortcuts (List<Principal> authorizedUsers, 
             List<Principal> authorizedGroups, List<String> shortcuts) {
@@ -262,21 +262,21 @@ public class ACLEditController extends SimpleFormController implements Initializ
             boolean checked = false;
             boolean validShortcut = false;
             
-            if (shortcut.startsWith(GROUP_PREFIX)) {
+            if (shortcut.startsWith(GROUP_PREFIX)) { // Check if shortcut is in authorizedGroups
                 Iterator<Principal> it = authorizedGroups.iterator();
                 while (it.hasNext()) {
-                    Principal p = it.next();
-                    if ((GROUP_PREFIX + p.getName()).equals(shortcut)) {
+                    String userName = it.next().getName();
+                    if ((GROUP_PREFIX + userName).equals(shortcut)) {
                         checked = true;
                         it.remove();
                     }
                 } 
                 validShortcut = true;
-            } else if (shortcut.startsWith(USER_PREFIX)) {
+            } else if (shortcut.startsWith(USER_PREFIX)) { // Check if shortcut is in authorizedUsers
                 Iterator<Principal> it = authorizedUsers.iterator();
                 while (it.hasNext()) {
-                    Principal p = it.next();
-                    if ((USER_PREFIX + p.getName()).equals(shortcut)) {
+                    String groupName = it.next().getName();
+                    if ((USER_PREFIX + groupName).equals(shortcut)) {
                         checked = true;
                         it.remove();
                     }
@@ -326,14 +326,14 @@ public class ACLEditController extends SimpleFormController implements Initializ
             // Remove
             if (checkedNotFound) {
                 String[] groupOrUserShortcut = new String[1];
-                Type type = unformatGroupOrUser(shortcut, groupOrUserShortcut);
+                Type type = unformatShortcutAndSetType(shortcut, groupOrUserShortcut);
                 removeFromAcl(acl, groupOrUserShortcut, type);
             }
 
             // Add
             if (uncheckedFound) {
                 String[] groupOrUserShortcut = new String[1];
-                Type type = unformatGroupOrUser(shortcut, groupOrUserShortcut);
+                Type type = unformatShortcutAndSetType(shortcut, groupOrUserShortcut);
                 addToAcl(acl, repository, errors, groupOrUserShortcut, type);
             }
         }
@@ -424,7 +424,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
      * @return type
      *            type of ACL (GROUP or USER)
      */
-    private Type unformatGroupOrUser(String[] shortcut, String[] groupOrUserShortcut) {
+    private Type unformatShortcutAndSetType(String[] shortcut, String[] groupOrUserShortcut) {
         Type type = null;
         if (shortcut[0].startsWith(GROUP_PREFIX)) {
             groupOrUserShortcut[0] = shortcut[0].replace(GROUP_PREFIX, "");

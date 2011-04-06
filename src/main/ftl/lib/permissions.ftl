@@ -183,23 +183,26 @@
       <legend><@vrtx.msg code="permissions.${type}s" default="${capitalizedType}s"/></legend>
       
       <#-- Bind and list principals -->
-      <@spring.bind formName + ".${type}s" /> 
-      <ul class="${type}s">
-        <#list spring.status.value as groupOrUser>
-          <li>
-            <#compress>
-              <#if type == "user">
-                <@vrtx.displayUserPrincipal principal=groupOrUser />
-              <#else>
-                ${groupOrUser.name}
-              </#if>
+      <@spring.bind formName + ".${type}s" />
+      
+      <#if (spring.status.value?size > 0)>
+        <ul class="${type}s">
+          <#list spring.status.value as groupOrUser>
+            <li>
+              <#compress>
+                <#if type == "user">
+                  <@vrtx.displayUserPrincipal principal=groupOrUser />
+                <#else>
+                  ${groupOrUser.name}
+                </#if>
               
-              <#-- Remove -->
-              &nbsp;(&nbsp;<input class="removePermission" name="remove${capitalizedType}.${groupOrUser.name?html}" type="submit" value="<@vrtx.msg code='permissions.remove' default='remove' />"/>&nbsp;)  
-            </#compress>
-          </li>
-        </#list>
-      </ul>
+                <#-- Remove -->
+                &nbsp;(&nbsp;<input class="removePermission" name="remove${capitalizedType}.${groupOrUser.name?html}" type="submit" value="<@vrtx.msg code='permissions.remove' default='remove' />"/>&nbsp;)  
+              </#compress>
+            </li>
+          </#list>
+        </ul>
+      </#if>
       
       <#-- Bind names -->
       <@spring.bind formName + ".${type}Names" /> 
@@ -263,18 +266,20 @@
 -->
 
 <#macro listShortcuts privilegeName privilegeHeading shortcuts>
-  <ul class="shortcuts" id="${privilegeHeading}">
-    <#list shortcuts as shortcut>
-      <li>
-        <label for="${privilegeName}"> 
-          <#if shortcut[1] == "checked">
-            <input type="checkbox" name="updatedShortcuts" checked="${shortcut[1]}" value="${shortcut[0]}" />
-          <#else>
-            <input type="checkbox" name="updatedShortcuts" value="${shortcut[0]}" />             
-          </#if>
-          <@vrtx.msg code="permissions.shortcut.${shortcut[0]}" />
-        </label>
-      </li>
-    </#list>
-  </ul>
+  <#if (shortcuts?size > 0)>
+    <ul class="shortcuts" id="${privilegeHeading}">
+      <#list shortcuts as shortcut>
+        <li>
+          <label for="${privilegeName}"> 
+            <#if shortcut[1] == "checked">
+              <input type="checkbox" name="updatedShortcuts" checked="${shortcut[1]}" value="${shortcut[0]}" />
+            <#else>
+              <input type="checkbox" name="updatedShortcuts" value="${shortcut[0]}" />             
+            </#if>
+            <@vrtx.msg code="permissions.shortcut.${shortcut[0]}" />
+          </label>
+        </li>
+      </#list>
+    </ul>
+  </#if>
 </#macro>

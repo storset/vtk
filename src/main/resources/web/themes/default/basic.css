@@ -650,7 +650,7 @@ td.expandedForm div.submitButtons {
   float: left;
   clear: both;
   list-style-type: none;
-  padding: 7px 0px 7px 0px;
+  padding: 7px 0px 0px 0px;
   margin: 0;
 }
 
@@ -663,7 +663,7 @@ td.expandedForm div.submitButtons {
   float: left;
   clear: both;
   list-style-type: none;
-  padding: 0 0 0 6px;
+  padding: 7px 0 0 6px;
   margin: 0px;
 }
 
@@ -677,14 +677,10 @@ td.expandedForm div.submitButtons {
   margin-right: 20px;
 }
 
-.expandedForm ul.principalList ul.users {
-  list-style-type: disc;
-  padding: 7px 5px 10px 25px;
-}
-
+.expandedForm ul.principalList ul.users,
 .expandedForm ul.principalList ul.groups {
   list-style-type: disc;
-  padding: 7px 5px 10px 25px;
+  padding: 7px 5px 3px 25px;
 }
 
 .expandedForm ul.principalList ul.users li,
@@ -704,7 +700,9 @@ td.expandedForm div.submitButtons {
 
 .expandedForm span.addGroup,
 .expandedForm span.addUser {
+  display: block;
   white-space: nowrap;
+  padding: 7px 0px 0px 0px;
 }
 
 /* Directory listing section: */

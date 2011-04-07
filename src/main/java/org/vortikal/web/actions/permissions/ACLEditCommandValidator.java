@@ -121,7 +121,7 @@ public class ACLEditCommandValidator implements Validator {
 
             rejectValues("group", noneExistingGroups, VALIDATION_ERROR_NONE_EXISTING, errors);
             rejectValues("group", invalidBlackListedGroups, VALIDATION_ERROR_INVALID_BLACKLISTED, errors);
-            rejectValues("group", invalidGroups, VALIDATION_ERROR_INVALID, errors);
+            rejectValues("group", invalidGroups, VALIDATION_ERROR_INVALID, errors);  
         }
 
     }
@@ -167,7 +167,8 @@ public class ACLEditCommandValidator implements Validator {
                         if (ac_userName != null && !"".equals(ac_userName)) {
                             // Entered name is selected from autocomplete
                             // suggestions and we have username
-                            String validation = validateGroupOrUserName(Type.USER, userName, editCommand);
+       
+                            String validation = validateGroupOrUserName(Type.USER, ac_userName, editCommand);
                             if (validation.equals(VALIDATION_ERROR_NONE_EXISTING)) {
                                 noneExistingUsers += noneExistingUsers.isEmpty() ? userName : ", " + userName;
                             } else if (validation.equals(VALIDATION_ERROR_INVALID_BLACKLISTED)) {
@@ -202,8 +203,7 @@ public class ACLEditCommandValidator implements Validator {
             rejectValues("user", noneExistingUsers, VALIDATION_ERROR_NONE_EXISTING, errors);
             rejectValues("user", invalidBlacklistedUsers, VALIDATION_ERROR_INVALID_BLACKLISTED, errors);
             rejectValues("user", invalidUsers, VALIDATION_ERROR_INVALID, errors);
-            rejectValues("user", tooManyMatchedUsers, VALIDATION_ERROR_TOO_MANY_MATCHES, errors);
-            
+            rejectValues("user", tooManyMatchedUsers, VALIDATION_ERROR_TOO_MANY_MATCHES, errors);  
         }
     }
 

@@ -47,6 +47,11 @@ public class ACLEditCommandValidator implements Validator {
     private PrincipalManager principalManager;
     private PrincipalFactory principalFactory;
     private Repository repository;
+    
+    private static final String VALIDATION_ERROR_NONE_EXISTING = "wrong";
+    private static final String VALIDATION_ERROR_INVALID = "invalid";
+    private static final String VALIDATION_ERROR_ILLEGAL = "illegal";
+    private static final String VALIDATION_OK = "ok";
 
     /**
      * @see org.springframework.validation.Validator#supports(java.lang.Class)
@@ -93,6 +98,10 @@ public class ACLEditCommandValidator implements Validator {
 
     private void validateUserNames(ACLEditCommand editCommand, Errors errors) {
         String[] userNames = editCommand.getUserNames();
+        
+        String noneExistingUsers = new String();
+        String invalidUsers= new String();
+        String illegalUsers = new String();
 
         if (userNames.length > 0) {
             for (String userName : userNames) {
@@ -102,7 +111,15 @@ public class ACLEditCommandValidator implements Validator {
 
                 if (!userName.contains(" ")) {
                     // assume a username and validate it as such
-                    if (!validateUserName(userName, errors, editCommand)) {
+                    String validation = validateGroupOrUserName(Type.USER, userName, editCommand);
+                    if(validation.equals(VALIDATION_ERROR_NONE_EXISTING)) {
+                        noneExistingUsers += userName + ", "; 
+                     } else if(validation.equals(VALIDATION_ERROR_INVALID)) {
+                        invalidUsers += userName + ", "; 
+                     } else if(validation.equals(VALIDATION_ERROR_ILLEGAL)) {
+                        illegalUsers += userName + ", ";  
+                     }
+                    if (!VALIDATION_OK.equals(validation)) {
                         continue;
                     }
                 } else {
@@ -117,7 +134,15 @@ public class ACLEditCommandValidator implements Validator {
                         if (ac_userName != null && !"".equals(ac_userName)) {
                             // Entered name is selected from autocomplete
                             // suggestions and we have username
-                            if (!validateUserName(ac_userName, errors, editCommand)) {
+                            String validation = validateGroupOrUserName(Type.USER, userName, editCommand);
+                            if(validation.equals(VALIDATION_ERROR_NONE_EXISTING)) {
+                                noneExistingUsers += userName + ", ";
+                             } else if(validation.equals(VALIDATION_ERROR_INVALID)) {
+                                invalidUsers += userName + ", ";
+                             } else if(validation.equals(VALIDATION_ERROR_ILLEGAL)) {
+                                illegalUsers += userName + ", ";
+                             }
+                            if (!VALIDATION_OK.equals(validation)) {
                                 continue;
                             }
                             uid = ac_userName;
@@ -148,32 +173,12 @@ public class ACLEditCommandValidator implements Validator {
                 }
                 editCommand.addUserNameEntry(uid);
             }
+            
+            rejectValues("user", noneExistingUsers, VALIDATION_ERROR_NONE_EXISTING, errors);
+            rejectValues("user", invalidUsers, VALIDATION_ERROR_INVALID, errors);
+            rejectValues("user", illegalUsers, VALIDATION_ERROR_ILLEGAL, errors);   
+            
         }
-    }
-
-    private boolean validateUserName(String userName, Errors errors, ACLEditCommand editCommand) {
-        try {
-            Principal user = principalFactory.getPrincipal(userName, Principal.Type.USER);
-
-            if (!this.principalManager.validatePrincipal(user)) {
-                errors.rejectValue("userNames", "permissions.user.wrong.value", new Object[] { userName },
-                     "The user '" + userName + "' does not exist");
-                return false;
-            }
-
-            if (!repository.isValidAclEntry(editCommand.getPrivilege(), user)) {
-                errors.rejectValue("userNames", "permissions.user.invalid.value", new Object[] { userName },
-                     "The user '" + userName + "' is not valid");
-                return false;
-            }
-
-        } catch (InvalidPrincipalException e) {
-            errors.rejectValue("userNames", "permissions.user.illegal.value", new Object[] { userName },
-                     "The user '" + userName + "' is illegal");
-            return false;
-        }
-
-        return true;
     }
 
     private String getAc_userName(String userName, String[] ac_userNames,
@@ -188,6 +193,32 @@ public class ACLEditCommandValidator implements Validator {
         }
         return null;
     }
+    
+    private String validateGroupOrUserName(Type type, String name, ACLEditCommand editCommand) {
+        try {
+            Principal groupOrUser = null;
+            boolean exists = false;
+            
+            if(type == Type.GROUP) {
+                groupOrUser = this.principalFactory.getPrincipal(name, type);
+                exists = this.principalManager.validateGroup(groupOrUser);
+            } else {
+                groupOrUser = this.principalFactory.getPrincipal(name, type);
+                exists = this.principalManager.validatePrincipal(groupOrUser);
+            }
+
+            if (groupOrUser != null && !exists) {
+                return VALIDATION_ERROR_NONE_EXISTING;
+            }
+
+            if (!repository.isValidAclEntry(editCommand.getPrivilege(), groupOrUser)) {
+                return VALIDATION_ERROR_INVALID;
+            }
+        } catch (InvalidPrincipalException e) {
+            return VALIDATION_ERROR_ILLEGAL;
+        }
+        return VALIDATION_OK;
+    }
 
     private void validateGroupNames(ACLEditCommand editCommand, Errors errors) {
         String[] groupNames = editCommand.getGroupNames();
@@ -196,61 +227,42 @@ public class ACLEditCommandValidator implements Validator {
         String illegalGroups = new String();
         
         for (String groupName : groupNames) {
-            try {
-                Principal group = principalFactory.getPrincipal(groupName, Principal.Type.GROUP);
-                if (group != null && !this.principalManager.validateGroup(group)) {
-                    if (noneExistingGroups.isEmpty()) {
-                        noneExistingGroups += groupName;
-                    } else {
-                        noneExistingGroups += ", " + groupName;
-                    }
-                } else {
-                    if (!repository.isValidAclEntry(editCommand.getPrivilege(), group)) {
-                        if (invalidGroups.isEmpty()) {
-                            invalidGroups += groupName;
-                        } else {
-                            invalidGroups += ", " + groupName;
-                        }
-                    }
-                }
-            } catch (InvalidPrincipalException e) {
-                if (illegalGroups.isEmpty()) {
-                    illegalGroups += groupName;
-                } else {
-                    illegalGroups += ", " + groupName;
-                }
+            String validation = validateGroupOrUserName(Type.GROUP, groupName, editCommand);
+            
+            if(validation.equals(VALIDATION_ERROR_NONE_EXISTING)) {
+               noneExistingGroups += groupName + ", "; 
+            } else if(validation.equals(VALIDATION_ERROR_INVALID)) {
+               invalidGroups += groupName + ", ";  
+            } else if(validation.equals(VALIDATION_ERROR_ILLEGAL)) {
+               illegalGroups += groupName + ", ";  
             }
         }
         
-        if (!noneExistingGroups.isEmpty()) {
-            if (!noneExistingGroups.contains(",")) {
-                errors.rejectValue("groupNames", "permissions.group.wrong.value", new Object[] { noneExistingGroups },
-                        "The group " + noneExistingGroups + " does not exist");
-            } else {
-                errors.rejectValue("groupNames", "permissions.group.wrong.values", new Object[] { noneExistingGroups },
-                        "The groups " + noneExistingGroups + " does not exist");
-            }
-        }
-        if (!invalidGroups.isEmpty()) {
-            if (!invalidGroups.contains(",")) {
-                errors.rejectValue("groupNames", "permissions.group.invalid.value", new Object[] { invalidGroups },
-                        "The group " + invalidGroups + " is not valid");
-            } else {
-                errors.rejectValue("groupNames", "permissions.group.invalid.values", new Object[] { invalidGroups },
-                        "The groups " + invalidGroups + " is not valid");
-            }
-        }
-        if (!illegalGroups.isEmpty()) {
-            if (!illegalGroups.contains(",")) {
-                errors.rejectValue("groupNames", "permissions.group.illegal.value", new Object[] { illegalGroups },
-                        "The group " + illegalGroups + " is illegal");
-            } else {
-                errors.rejectValue("groupNames", "permissions.group.illegal.values", new Object[] { illegalGroups },
-                        "The groups " + illegalGroups + " is illegal");
-            }
-        }
+        rejectValues("group", noneExistingGroups, VALIDATION_ERROR_NONE_EXISTING, errors);
+        rejectValues("group", invalidGroups, VALIDATION_ERROR_INVALID, errors);
+        rejectValues("group", illegalGroups, VALIDATION_ERROR_ILLEGAL, errors);
         
     }
+    
+    private void rejectValues(String type, String groupsOrUsers, String errorType, Errors errors) {
+        if(!groupsOrUsers.isEmpty()) {
+            if (!groupsOrUsers.contains(",")) {
+                errors.rejectValue(type + "Names", "permissions." + type + "." + errorType + ".value", new Object[] { groupsOrUsers },
+                        "The " + type + " " + groupsOrUsers + " does not exist, is not valid or is illegal");  
+            } else {
+                errors.rejectValue(type + "Names", "permissions." + type + "." + errorType + ".values", new Object[] { groupsOrUsers },
+                        "The " + type + "s " + groupsOrUsers + " does not exist, are not valid or are illegal");
+            }
+        }
+     }
+    
+    private String oneOrMany(String groupsOrUsers, String groupOrUser) {
+        if(!groupsOrUsers.contains(",")) {
+           return groupOrUser; 
+        } else {
+           return groupsOrUsers + ", " + groupOrUser; 
+        }
+      }
 
     @Required
     public void setPrincipalManager(PrincipalManager principalManager) {

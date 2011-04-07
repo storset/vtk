@@ -86,7 +86,7 @@ public class ACLEditCommandValidator implements Validator {
 
         } else if (editCommand.getAddGroupAction() != null) {
             String[] groupNames = editCommand.getGroupNames();
-
+            
             if (groupNames.length == 0) {
                 errors.rejectValue("groupNames", "permissions.group.missing.value",
                         "You must type a group name");
@@ -113,11 +113,11 @@ public class ACLEditCommandValidator implements Validator {
                     // assume a username and validate it as such
                     String validation = validateGroupOrUserName(Type.USER, userName, editCommand);
                     if(validation.equals(VALIDATION_ERROR_NONE_EXISTING)) {
-                        noneExistingUsers += userName + ", "; 
+                        noneExistingUsers += oneOrMany(noneExistingUsers, userName);
                      } else if(validation.equals(VALIDATION_ERROR_INVALID)) {
-                        invalidUsers += userName + ", "; 
+                        invalidUsers += oneOrMany(invalidUsers, userName); 
                      } else if(validation.equals(VALIDATION_ERROR_ILLEGAL)) {
-                        illegalUsers += userName + ", ";  
+                        illegalUsers += oneOrMany(illegalUsers, userName); 
                      }
                     if (!VALIDATION_OK.equals(validation)) {
                         continue;
@@ -136,11 +136,11 @@ public class ACLEditCommandValidator implements Validator {
                             // suggestions and we have username
                             String validation = validateGroupOrUserName(Type.USER, userName, editCommand);
                             if(validation.equals(VALIDATION_ERROR_NONE_EXISTING)) {
-                                noneExistingUsers += userName + ", ";
+                                noneExistingUsers += oneOrMany(noneExistingUsers, userName);
                              } else if(validation.equals(VALIDATION_ERROR_INVALID)) {
-                                invalidUsers += userName + ", ";
+                                invalidUsers += oneOrMany(invalidUsers, userName);
                              } else if(validation.equals(VALIDATION_ERROR_ILLEGAL)) {
-                                illegalUsers += userName + ", ";
+                                illegalUsers += oneOrMany(illegalUsers, userName);
                              }
                             if (!VALIDATION_OK.equals(validation)) {
                                 continue;
@@ -230,11 +230,11 @@ public class ACLEditCommandValidator implements Validator {
             String validation = validateGroupOrUserName(Type.GROUP, groupName, editCommand);
             
             if(validation.equals(VALIDATION_ERROR_NONE_EXISTING)) {
-               noneExistingGroups += groupName + ", "; 
+               noneExistingGroups += oneOrMany(noneExistingGroups, groupName);
             } else if(validation.equals(VALIDATION_ERROR_INVALID)) {
-               invalidGroups += groupName + ", ";  
+               invalidGroups += oneOrMany(invalidGroups, groupName);
             } else if(validation.equals(VALIDATION_ERROR_ILLEGAL)) {
-               illegalGroups += groupName + ", ";  
+               illegalGroups += oneOrMany(illegalGroups, groupName);
             }
         }
         
@@ -257,10 +257,10 @@ public class ACLEditCommandValidator implements Validator {
      }
     
     private String oneOrMany(String groupsOrUsers, String groupOrUser) {
-        if(!groupsOrUsers.contains(",")) {
+        if(groupsOrUsers.isEmpty()) {
            return groupOrUser; 
         } else {
-           return groupsOrUsers + ", " + groupOrUser; 
+           return ", " + groupOrUser; 
         }
       }
 

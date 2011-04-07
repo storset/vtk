@@ -48,9 +48,9 @@ public class ACLEditCommandValidator implements Validator {
     private PrincipalFactory principalFactory;
     private Repository repository;
     
-    private static final String VALIDATION_ERROR_NONE_EXISTING = "wrong";
-    private static final String VALIDATION_ERROR_INVALID_BLACKLISTED = "invalid";
-    private static final String VALIDATION_ERROR_INVALID = "illegal";
+    private static final String VALIDATION_ERROR_NONE_EXISTING = "none.existing";
+    private static final String VALIDATION_ERROR_INVALID_BLACKLISTED = "invalid.blacklisted";
+    private static final String VALIDATION_ERROR_INVALID = "invalid";
     private static final String VALIDATION_OK = "ok";
 
     /**

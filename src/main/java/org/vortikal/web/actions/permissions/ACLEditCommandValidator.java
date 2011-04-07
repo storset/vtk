@@ -49,8 +49,8 @@ public class ACLEditCommandValidator implements Validator {
     private Repository repository;
     
     private static final String VALIDATION_ERROR_NONE_EXISTING = "wrong";
-    private static final String VALIDATION_ERROR_INVALID = "invalid";
-    private static final String VALIDATION_ERROR_ILLEGAL = "illegal";
+    private static final String VALIDATION_ERROR_INVALID_BLACKLISTED = "invalid";
+    private static final String VALIDATION_ERROR_INVALID = "illegal";
     private static final String VALIDATION_OK = "ok";
 
     /**
@@ -100,8 +100,8 @@ public class ACLEditCommandValidator implements Validator {
         String[] userNames = editCommand.getUserNames();
         
         String noneExistingUsers = new String();
-        String invalidUsers= new String();
-        String illegalUsers = new String();
+        String invalidBlacklistedUsers= new String();
+        String invalidUsers = new String();
 
         if (userNames.length > 0) {
             for (String userName : userNames) {
@@ -114,10 +114,10 @@ public class ACLEditCommandValidator implements Validator {
                     String validation = validateGroupOrUserName(Type.USER, userName, editCommand);
                     if(validation.equals(VALIDATION_ERROR_NONE_EXISTING)) {
                         noneExistingUsers += noneExistingUsers.isEmpty() ? userName : ", " + userName;
+                     } else if(validation.equals(VALIDATION_ERROR_INVALID_BLACKLISTED)) {
+                        invalidBlacklistedUsers += invalidBlacklistedUsers.isEmpty() ? userName : ", " + userName;
                      } else if(validation.equals(VALIDATION_ERROR_INVALID)) {
                         invalidUsers += invalidUsers.isEmpty() ? userName : ", " + userName;
-                     } else if(validation.equals(VALIDATION_ERROR_ILLEGAL)) {
-                        illegalUsers += illegalUsers.isEmpty() ? userName : ", " + userName;
                      }
                     if (!VALIDATION_OK.equals(validation)) {
                         continue;
@@ -137,10 +137,10 @@ public class ACLEditCommandValidator implements Validator {
                             String validation = validateGroupOrUserName(Type.USER, userName, editCommand);
                             if(validation.equals(VALIDATION_ERROR_NONE_EXISTING)) {
                                 noneExistingUsers += noneExistingUsers.isEmpty() ? userName : ", " + userName;
+                             } else if(validation.equals(VALIDATION_ERROR_INVALID_BLACKLISTED)) {
+                                invalidBlacklistedUsers += invalidBlacklistedUsers.isEmpty() ? userName : ", " + userName;
                              } else if(validation.equals(VALIDATION_ERROR_INVALID)) {
                                 invalidUsers += invalidUsers.isEmpty() ? userName : ", " + userName;
-                             } else if(validation.equals(VALIDATION_ERROR_ILLEGAL)) {
-                                illegalUsers += illegalUsers.isEmpty() ? userName : ", " + userName;
                              }
                             if (!VALIDATION_OK.equals(validation)) {
                                 continue;
@@ -171,8 +171,8 @@ public class ACLEditCommandValidator implements Validator {
             }
             
             rejectValues("user", noneExistingUsers, VALIDATION_ERROR_NONE_EXISTING, errors);
-            rejectValues("user", invalidUsers, VALIDATION_ERROR_INVALID, errors);
-            rejectValues("user", illegalUsers, VALIDATION_ERROR_ILLEGAL, errors);   
+            rejectValues("user", invalidBlacklistedUsers, VALIDATION_ERROR_INVALID_BLACKLISTED, errors);
+            rejectValues("user", invalidUsers, VALIDATION_ERROR_INVALID, errors);   
             
         }
     }
@@ -180,24 +180,24 @@ public class ACLEditCommandValidator implements Validator {
     private void validateGroupNames(ACLEditCommand editCommand, Errors errors) {
         String[] groupNames = editCommand.getGroupNames();
         String noneExistingGroups = new String();
+        String invalidBlackListedGroups = new String();
         String invalidGroups = new String();
-        String illegalGroups = new String();
         
         for (String groupName : groupNames) {
             String validation = validateGroupOrUserName(Type.GROUP, groupName, editCommand);
             
             if(validation.equals(VALIDATION_ERROR_NONE_EXISTING)) {
                noneExistingGroups += noneExistingGroups.isEmpty() ? groupName : ", " + groupName;
+            } else if(validation.equals(VALIDATION_ERROR_INVALID_BLACKLISTED)) {
+               invalidBlackListedGroups += invalidBlackListedGroups.isEmpty() ? groupName : ", " + groupName;
             } else if(validation.equals(VALIDATION_ERROR_INVALID)) {
                invalidGroups += invalidGroups.isEmpty() ? groupName : ", " + groupName;
-            } else if(validation.equals(VALIDATION_ERROR_ILLEGAL)) {
-               illegalGroups += illegalGroups.isEmpty() ? groupName : ", " + groupName;
             }
         }
         
         rejectValues("group", noneExistingGroups, VALIDATION_ERROR_NONE_EXISTING, errors);
+        rejectValues("group", invalidBlackListedGroups, VALIDATION_ERROR_INVALID_BLACKLISTED, errors);
         rejectValues("group", invalidGroups, VALIDATION_ERROR_INVALID, errors);
-        rejectValues("group", illegalGroups, VALIDATION_ERROR_ILLEGAL, errors);
         
     }
     
@@ -219,10 +219,10 @@ public class ACLEditCommandValidator implements Validator {
             }
 
             if (!repository.isValidAclEntry(editCommand.getPrivilege(), groupOrUser)) {
-                return VALIDATION_ERROR_INVALID;
+                return VALIDATION_ERROR_INVALID_BLACKLISTED;
             }
         } catch (InvalidPrincipalException e) {
-            return VALIDATION_ERROR_ILLEGAL;
+            return VALIDATION_ERROR_INVALID;
         }
         return VALIDATION_OK;
     }

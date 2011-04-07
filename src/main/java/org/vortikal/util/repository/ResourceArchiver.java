@@ -104,7 +104,9 @@ public class ResourceArchiver {
     private static final EventListener NULL_LISTENER = new EventListener() {
         public void expanded(Path uri) { }
         public void archived(Path uri) { }
-        public void warn(Path uri, String msg) { }
+        public void warn(Path uri, String msg) {
+            logger.warn(uri + ": "+  msg);
+        }
     };
     
     public void createArchive(String token, Resource r, OutputStream out, Map<String, Object> properties)
@@ -114,6 +116,7 @@ public class ResourceArchiver {
 
     public void createArchive(String token, Resource r, OutputStream out, Map<String, Object> properties,
             EventListener listener) throws Exception {
+
         if (listener == null) {
             listener = NULL_LISTENER;
         }
@@ -151,7 +154,7 @@ public class ResourceArchiver {
 
     public void expandArchive(String token, InputStream source, Path base, Map<String, Object> properties)
             throws Exception {
-        expandArchive(token, source, base, properties, null);
+        expandArchive(token, source, base, properties, NULL_LISTENER);
     }
 
     public void expandArchive(String token, InputStream source, Path base, Map<String, Object> properties,
@@ -666,8 +669,6 @@ public class ResourceArchiver {
                 String mapping = this.legacyActionMappings.get(actionName);
                 if (mapping == null || mapping.trim().equals("")) {
                     listener.warn(uri, "legacy: ignoring acl entry action " + actionName);
-                    logger.warn("Will ignore legacy acl entry action '" + actionName + "' on resource "
-                            + uri);
                     return acl;
                 }
                 listener.warn(uri, "legacy: mapping acl entry action: " + actionName + ": " + mapping);
@@ -714,8 +715,7 @@ public class ResourceArchiver {
                 break;
             }
             if (p != null) {
-                // XXX: repository.isValidEntry()?
-                if (acl.isValidEntry(action, p)) {
+                if (this.repository.isValidAclEntry(action, p)) {
                     acl = acl.addEntry(action, p);
                 } else {
                     listener.warn(uri, "Invalid acl entry: " + p + ":" + action + ", skipping");

@@ -74,7 +74,15 @@ public class ACLEditCommandValidator implements Validator {
             validateGroupNames(editCommand, errors);
         }
 
-        if (editCommand.getAddUserAction() != null) {
+        if (editCommand.getAddGroupAction() != null) {
+            String[] groupNames = editCommand.getGroupNames();
+            
+            if (groupNames.length == 0) {
+                errors.rejectValue("groupNames", "permissions.group.missing.value",
+                        "You must type a group name");
+            }
+            validateGroupNames(editCommand, errors);
+        } else if (editCommand.getAddUserAction() != null) {
             String[] userNames = editCommand.getUserNames();
 
             if (userNames.length == 0) {
@@ -84,16 +92,32 @@ public class ACLEditCommandValidator implements Validator {
 
             validateUserNames(editCommand, errors);
 
-        } else if (editCommand.getAddGroupAction() != null) {
-            String[] groupNames = editCommand.getGroupNames();
-            
-            if (groupNames.length == 0) {
-                errors.rejectValue("groupNames", "permissions.group.missing.value",
-                        "You must type a group name");
-            }
-            validateGroupNames(editCommand, errors);
-        }
+        } 
 
+    }
+    
+    private void validateGroupNames(ACLEditCommand editCommand, Errors errors) {
+        String[] groupNames = editCommand.getGroupNames();
+        String noneExistingGroups = new String();
+        String invalidBlackListedGroups = new String();
+        String invalidGroups = new String();
+        
+        for (String groupName : groupNames) {
+            String validation = validateGroupOrUserName(Type.GROUP, groupName, editCommand);
+            
+            if(validation.equals(VALIDATION_ERROR_NONE_EXISTING)) {
+               noneExistingGroups += noneExistingGroups.isEmpty() ? groupName : ", " + groupName;
+            } else if(validation.equals(VALIDATION_ERROR_INVALID_BLACKLISTED)) {
+               invalidBlackListedGroups += invalidBlackListedGroups.isEmpty() ? groupName : ", " + groupName;
+            } else if(validation.equals(VALIDATION_ERROR_INVALID)) {
+               invalidGroups += invalidGroups.isEmpty() ? groupName : ", " + groupName;
+            }
+        }
+        
+        rejectValues("group", noneExistingGroups, VALIDATION_ERROR_NONE_EXISTING, errors);
+        rejectValues("group", invalidBlackListedGroups, VALIDATION_ERROR_INVALID_BLACKLISTED, errors);
+        rejectValues("group", invalidGroups, VALIDATION_ERROR_INVALID, errors);
+        
     }
 
     private void validateUserNames(ACLEditCommand editCommand, Errors errors) {
@@ -110,7 +134,7 @@ public class ACLEditCommandValidator implements Validator {
                 String uid = userName;
 
                 if (!userName.contains(" ")) {
-                    // assume a username and validate it as such
+                    // Assume a username and validate it as such
                     String validation = validateGroupOrUserName(Type.USER, userName, editCommand);
                     if(validation.equals(VALIDATION_ERROR_NONE_EXISTING)) {
                         noneExistingUsers += noneExistingUsers.isEmpty() ? userName : ", " + userName;
@@ -123,9 +147,9 @@ public class ACLEditCommandValidator implements Validator {
                         continue;
                     }
                 } else {
-                    // assume a full name and look for a match in ac_userNames
-                    // if match found, validate corresponsding username
-                    // if no match found, assume full name entered without
+                    // Assume a full name and look for a match in ac_userNames
+                    // If match found: validate corresponding username
+                    // If no match found: assume full name entered without
                     // selecting from autocomplete suggestions
                     // i.e. no username provided -> validate as full name
                     try {
@@ -175,30 +199,6 @@ public class ACLEditCommandValidator implements Validator {
             rejectValues("user", invalidUsers, VALIDATION_ERROR_INVALID, errors);   
             
         }
-    }
-    
-    private void validateGroupNames(ACLEditCommand editCommand, Errors errors) {
-        String[] groupNames = editCommand.getGroupNames();
-        String noneExistingGroups = new String();
-        String invalidBlackListedGroups = new String();
-        String invalidGroups = new String();
-        
-        for (String groupName : groupNames) {
-            String validation = validateGroupOrUserName(Type.GROUP, groupName, editCommand);
-            
-            if(validation.equals(VALIDATION_ERROR_NONE_EXISTING)) {
-               noneExistingGroups += noneExistingGroups.isEmpty() ? groupName : ", " + groupName;
-            } else if(validation.equals(VALIDATION_ERROR_INVALID_BLACKLISTED)) {
-               invalidBlackListedGroups += invalidBlackListedGroups.isEmpty() ? groupName : ", " + groupName;
-            } else if(validation.equals(VALIDATION_ERROR_INVALID)) {
-               invalidGroups += invalidGroups.isEmpty() ? groupName : ", " + groupName;
-            }
-        }
-        
-        rejectValues("group", noneExistingGroups, VALIDATION_ERROR_NONE_EXISTING, errors);
-        rejectValues("group", invalidBlackListedGroups, VALIDATION_ERROR_INVALID_BLACKLISTED, errors);
-        rejectValues("group", invalidGroups, VALIDATION_ERROR_INVALID, errors);
-        
     }
     
     private String validateGroupOrUserName(Type type, String name, ACLEditCommand editCommand) {

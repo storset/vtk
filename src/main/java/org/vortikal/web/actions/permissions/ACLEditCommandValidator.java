@@ -113,11 +113,11 @@ public class ACLEditCommandValidator implements Validator {
                     // assume a username and validate it as such
                     String validation = validateGroupOrUserName(Type.USER, userName, editCommand);
                     if(validation.equals(VALIDATION_ERROR_NONE_EXISTING)) {
-                        noneExistingUsers += oneOrMany(noneExistingUsers, userName);
+                        noneExistingUsers += noneExistingUsers.isEmpty() ? userName : ", " + userName;
                      } else if(validation.equals(VALIDATION_ERROR_INVALID)) {
-                        invalidUsers += oneOrMany(invalidUsers, userName); 
+                        invalidUsers += invalidUsers.isEmpty() ? userName : ", " + userName;
                      } else if(validation.equals(VALIDATION_ERROR_ILLEGAL)) {
-                        illegalUsers += oneOrMany(illegalUsers, userName); 
+                        illegalUsers += illegalUsers.isEmpty() ? userName : ", " + userName;
                      }
                     if (!VALIDATION_OK.equals(validation)) {
                         continue;
@@ -136,11 +136,11 @@ public class ACLEditCommandValidator implements Validator {
                             // suggestions and we have username
                             String validation = validateGroupOrUserName(Type.USER, userName, editCommand);
                             if(validation.equals(VALIDATION_ERROR_NONE_EXISTING)) {
-                                noneExistingUsers += oneOrMany(noneExistingUsers, userName);
+                                noneExistingUsers += noneExistingUsers.isEmpty() ? userName : ", " + userName;
                              } else if(validation.equals(VALIDATION_ERROR_INVALID)) {
-                                invalidUsers += oneOrMany(invalidUsers, userName);
+                                invalidUsers += invalidUsers.isEmpty() ? userName : ", " + userName;
                              } else if(validation.equals(VALIDATION_ERROR_ILLEGAL)) {
-                                illegalUsers += oneOrMany(illegalUsers, userName);
+                                illegalUsers += illegalUsers.isEmpty() ? userName : ", " + userName;
                              }
                             if (!VALIDATION_OK.equals(validation)) {
                                 continue;
@@ -180,18 +180,29 @@ public class ACLEditCommandValidator implements Validator {
             
         }
     }
-
-    private String getAc_userName(String userName, String[] ac_userNames,
-            List<String> userNameEntries) {
-        for (String ac_userName : ac_userNames) {
-            String[] s = ac_userName.split(";");
-            String ac_fullName = s[0].trim();
-            String ac_uid = s[1].trim();
-            if (!userNameEntries.contains(ac_uid) && userName.equals(ac_fullName)) {
-                return ac_uid;
+    
+    private void validateGroupNames(ACLEditCommand editCommand, Errors errors) {
+        String[] groupNames = editCommand.getGroupNames();
+        String noneExistingGroups = new String();
+        String invalidGroups = new String();
+        String illegalGroups = new String();
+        
+        for (String groupName : groupNames) {
+            String validation = validateGroupOrUserName(Type.GROUP, groupName, editCommand);
+            
+            if(validation.equals(VALIDATION_ERROR_NONE_EXISTING)) {
+               noneExistingGroups += noneExistingGroups.isEmpty() ? groupName : ", " + groupName;
+            } else if(validation.equals(VALIDATION_ERROR_INVALID)) {
+               invalidGroups += invalidGroups.isEmpty() ? groupName : ", " + groupName;
+            } else if(validation.equals(VALIDATION_ERROR_ILLEGAL)) {
+               illegalGroups += illegalGroups.isEmpty() ? groupName : ", " + groupName;
             }
         }
-        return null;
+        
+        rejectValues("group", noneExistingGroups, VALIDATION_ERROR_NONE_EXISTING, errors);
+        rejectValues("group", invalidGroups, VALIDATION_ERROR_INVALID, errors);
+        rejectValues("group", illegalGroups, VALIDATION_ERROR_ILLEGAL, errors);
+        
     }
     
     private String validateGroupOrUserName(Type type, String name, ACLEditCommand editCommand) {
@@ -220,30 +231,6 @@ public class ACLEditCommandValidator implements Validator {
         return VALIDATION_OK;
     }
 
-    private void validateGroupNames(ACLEditCommand editCommand, Errors errors) {
-        String[] groupNames = editCommand.getGroupNames();
-        String noneExistingGroups = new String();
-        String invalidGroups = new String();
-        String illegalGroups = new String();
-        
-        for (String groupName : groupNames) {
-            String validation = validateGroupOrUserName(Type.GROUP, groupName, editCommand);
-            
-            if(validation.equals(VALIDATION_ERROR_NONE_EXISTING)) {
-               noneExistingGroups += oneOrMany(noneExistingGroups, groupName);
-            } else if(validation.equals(VALIDATION_ERROR_INVALID)) {
-               invalidGroups += oneOrMany(invalidGroups, groupName);
-            } else if(validation.equals(VALIDATION_ERROR_ILLEGAL)) {
-               illegalGroups += oneOrMany(illegalGroups, groupName);
-            }
-        }
-        
-        rejectValues("group", noneExistingGroups, VALIDATION_ERROR_NONE_EXISTING, errors);
-        rejectValues("group", invalidGroups, VALIDATION_ERROR_INVALID, errors);
-        rejectValues("group", illegalGroups, VALIDATION_ERROR_ILLEGAL, errors);
-        
-    }
-    
     private void rejectValues(String type, String groupsOrUsers, String errorType, Errors errors) {
         if(!groupsOrUsers.isEmpty()) {
             if (!groupsOrUsers.contains(",")) {
@@ -255,15 +242,20 @@ public class ACLEditCommandValidator implements Validator {
             }
         }
      }
-    
-    private String oneOrMany(String groupsOrUsers, String groupOrUser) {
-        if(groupsOrUsers.isEmpty()) {
-           return groupOrUser; 
-        } else {
-           return ", " + groupOrUser; 
-        }
-      }
 
+    private String getAc_userName(String userName, String[] ac_userNames,
+            List<String> userNameEntries) {
+        for (String ac_userName : ac_userNames) {
+            String[] s = ac_userName.split(";");
+            String ac_fullName = s[0].trim();
+            String ac_uid = s[1].trim();
+            if (!userNameEntries.contains(ac_uid) && userName.equals(ac_fullName)) {
+                return ac_uid;
+            }
+        }
+        return null;
+    }
+    
     @Required
     public void setPrincipalManager(PrincipalManager principalManager) {
         this.principalManager = principalManager;

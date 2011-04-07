@@ -271,9 +271,11 @@ public class ManuallyApproveResourcesHandler implements Controller {
                 return null;
             }
             Set<String> s = new HashSet<String>();
-            Value[] manuallyApprovedValues = prop.getValues();
-            for (Value manuallyApprovedResource : manuallyApprovedValues) {
-                s.add(manuallyApprovedResource.getStringValue());
+            String value = prop.getFormattedValue();
+            JSONArray arr = JSONArray.fromObject(value);
+            for (int i = 0; i < arr.size(); i++) {
+                JSONObject obj = arr.getJSONObject(i);
+                s.add(obj.getString("uri"));
             }
             return s;
         } catch (Exception e) {

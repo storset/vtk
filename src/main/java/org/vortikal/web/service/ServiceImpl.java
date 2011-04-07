@@ -221,6 +221,10 @@ public class ServiceImpl implements Service, BeanNameAware {
         return constructLink(resource, principal, null, true);
     }
 
+    public URL constructURL(Resource resource) {
+        return constructURL(resource, null, null, false);
+    }
+    
     public URL constructURL(Resource resource, Principal principal) {
         return constructURL(resource, principal, null, true);
     }

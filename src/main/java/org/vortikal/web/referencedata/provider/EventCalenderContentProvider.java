@@ -88,15 +88,15 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
         setAllowedDates(request, resource, model);
         setCalendarTitles(request, resource, model);
 
-        URL viewAllUpcomingURL = this.viewAllUpcomingService.constructURL(resourceURI);
+        URL viewAllUpcomingURL = this.viewAllUpcomingService.constructURL(resource);
         model.put("viewAllUpcomingURL", viewAllUpcomingURL);
-        model.put("viewAllUpcomingTitle", this.helper.getEventTypeTitle(request, resource,
-                "eventListing.viewAllUpcoming", false));
+        model.put("viewAllUpcomingTitle",
+                this.helper.getEventTypeTitle(request, resource, "eventListing.viewAllUpcoming", false));
 
-        URL viewAllPreviousURL = this.viewAllPreviousService.constructURL(resourceURI);
+        URL viewAllPreviousURL = this.viewAllPreviousService.constructURL(resource);
         model.put("viewAllPreviousURL", viewAllPreviousURL);
-        model.put("viewAllPreviousTitle", this.helper.getEventTypeTitle(request, resource,
-                "eventListing.viewAllPrevious", false));
+        model.put("viewAllPreviousTitle",
+                this.helper.getEventTypeTitle(request, resource, "eventListing.viewAllPrevious", false));
 
     }
 
@@ -166,10 +166,10 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
 
     @SuppressWarnings("unchecked")
     private void setCalendarTitles(HttpServletRequest request, Resource resource, Map model) {
-        model.put("dayHasPlannedEventsTitle", this.helper.getEventTypeTitle(request, resource,
-                "eventListing.calendar.dayHasPlannedEvents", false));
-        model.put("dayHasNoPlannedEventsTitle", this.helper.getEventTypeTitle(request, resource,
-                "eventListing.calendar.dayHasNoPlannedEvents", false));
+        model.put("dayHasPlannedEventsTitle",
+                this.helper.getEventTypeTitle(request, resource, "eventListing.calendar.dayHasPlannedEvents", false));
+        model.put("dayHasNoPlannedEventsTitle",
+                this.helper.getEventTypeTitle(request, resource, "eventListing.calendar.dayHasNoPlannedEvents", false));
     }
 
     private String getEventDatesAsArrayString(Set<String> eventDates) {

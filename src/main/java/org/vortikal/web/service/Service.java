@@ -219,6 +219,8 @@ public interface Service extends Ordered, Categorizable {
     public String constructLink(Path uri);
 
     public URL constructURL(Path uri);
+    
+    public URL constructURL(Resource resource);
 
     public String constructLink(Path uri, Map<String, String> parameters);
 

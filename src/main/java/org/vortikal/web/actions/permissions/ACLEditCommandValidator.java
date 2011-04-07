@@ -147,13 +147,9 @@ public class ACLEditCommandValidator implements Validator {
                             }
                             uid = ac_userName;
                         } else {
-                            List<Principal> matches = this.principalFactory.search(
-                                    userName, Type.USER);
-                            if (matches == null || matches.size() == 0) {
-                                errors.rejectValue("userNames",
-                                        "permissions.user.wrong.value",
-                                        new Object[] { userName }, "User '" + userName
-                                                + "' does not exist");
+                            List<Principal> matches = this.principalFactory.search(userName, Type.USER);
+                            if (matches == null || matches.isEmpty()) {
+                                noneExistingUsers += noneExistingUsers.isEmpty() ? userName : ", " + userName;
                                 continue;
                             } else if (matches.size() > 1) {
                                 errors.rejectValue("userNames",

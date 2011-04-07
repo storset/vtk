@@ -151,6 +151,7 @@ public final class MenuGenerator {
             }
 
             URL moreUrl = this.viewService.constructURL(resource.getURI());
+            moreUrl.setCollection(true);
             subMenu.setMoreUrl(moreUrl);
             subMenu.setMaxNumberOfItems(menuRequest.getMaxNumberOfChildren());
             item.setSubMenu(subMenu);

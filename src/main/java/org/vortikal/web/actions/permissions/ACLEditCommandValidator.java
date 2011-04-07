@@ -240,11 +240,11 @@ public class ACLEditCommandValidator implements Validator {
             if (!groupsOrUsers.contains(",")) {
                 errors.rejectValue(type + "Names", "permissions." + type + "." + errorType + ".value",
                         new Object[] { groupsOrUsers }, "The " + type + " " + groupsOrUsers
-                                + " does not exist, is not valid, is blacklisted, yielded too many matches or cannot be found");
+                                + " does not exist, is not valid, is blacklisted or yielded too many matches");
             } else {
                 errors.rejectValue(type + "Names", "permissions." + type + "." + errorType + ".values",
                         new Object[] { groupsOrUsers }, "The " + type + "s " + groupsOrUsers
-                                + " does not exist, are not valid, are blacklisted, yielded too many matches or cannot be found");
+                                + " does not exist, are not valid, are blacklisted or yielded too many matches");
             }
         }
     }

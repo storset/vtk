@@ -74,7 +74,7 @@ public class ACLEditCommandValidator implements Validator {
 
             if (userNames.length == 0) {
                 errors.rejectValue("userNames", "permissions.user.missing.value",
-                        "You must type a value");
+                        "You must type a username");
             }
 
             validateUserNames(editCommand, errors);
@@ -84,7 +84,7 @@ public class ACLEditCommandValidator implements Validator {
 
             if (groupNames.length == 0) {
                 errors.rejectValue("groupNames", "permissions.group.missing.value",
-                        "You must type a value");
+                        "You must type a group name");
             }
             validateGroupNames(editCommand, errors);
         }
@@ -153,31 +153,26 @@ public class ACLEditCommandValidator implements Validator {
 
     private boolean validateUserName(String userName, Errors errors, ACLEditCommand editCommand) {
         try {
-            Principal user = principalFactory.getPrincipal(userName,
-                    Principal.Type.USER);
+            Principal user = principalFactory.getPrincipal(userName, Principal.Type.USER);
 
             if (!this.principalManager.validatePrincipal(user)) {
-                errors.rejectValue("userNames", "permissions.user.wrong.value",
-                        new Object[] { userName }, "User '" + userName
-                                + "' does not exist");
+                errors.rejectValue("userNames", "permissions.user.wrong.value", new Object[] { userName },
+                     "The user '" + userName + "' does not exist");
                 return false;
             }
-            
+
             if (!repository.isValidAclEntry(editCommand.getPrivilege(), user)) {
-                errors.rejectValue("userNames", "permissions.user.invalid.value",
-                        new Object[] { userName }, "User '" + userName 
-                               + "' is not valid");
-                return false; 
+                errors.rejectValue("userNames", "permissions.user.invalid.value", new Object[] { userName },
+                     "The user '" + userName + "' is not valid");
+                return false;
             }
 
         } catch (InvalidPrincipalException e) {
-            errors.rejectValue("userNames", "permissions.user.illegal.value",
-                        new Object[] { userName }, "User '" + userName
-                              + "' is illegal");
+            errors.rejectValue("userNames", "permissions.user.illegal.value", new Object[] { userName },
+                     "The user '" + userName + "' is illegal");
             return false;
         }
-        
-        
+
         return true;
     }
 
@@ -196,30 +191,65 @@ public class ACLEditCommandValidator implements Validator {
 
     private void validateGroupNames(ACLEditCommand editCommand, Errors errors) {
         String[] groupNames = editCommand.getGroupNames();
-
+        String noneExistingGroups = new String();
+        String invalidGroups = new String();
+        String illegalGroups = new String();
+        
         for (String groupName : groupNames) {
-            Principal group = null;
             try {
-                group = principalFactory.getPrincipal(groupName, Principal.Type.GROUP);
-                
+                Principal group = principalFactory.getPrincipal(groupName, Principal.Type.GROUP);
                 if (group != null && !this.principalManager.validateGroup(group)) {
-                  errors.rejectValue("groupNames", "permissions.group.wrong.value",
-                        new Object[] { groupName }, "Group '" + groupName
-                                    + "' does not exist");
+                    if (noneExistingGroups.length() == 0) {
+                        noneExistingGroups += groupName;
+                    } else {
+                        noneExistingGroups += ", " + groupName;
+                    }
                 } else {
-                  if (!repository.isValidAclEntry(editCommand.getPrivilege(), group)) {
-                    errors.rejectValue("groupNames", "permissions.group.invalid.value",
-                        new Object[] { groupName }, "Group '" + groupName
-                                + "' is not valid");
-                  }
+                    if (!repository.isValidAclEntry(editCommand.getPrivilege(), group)) {
+                        if (invalidGroups.length() == 0) {
+                            invalidGroups += groupName;
+                        } else {
+                            invalidGroups += ", " + groupName;
+                        }
+                    }
                 }
-                
             } catch (InvalidPrincipalException e) {
-                errors.rejectValue("groupNames", "permissions.group.illegal.value",
-                        new Object[] { groupName }, "String '" + groupName
-                                + "' is an illegal group name");
+                if (illegalGroups.length() == 0) {
+                    illegalGroups += groupName;
+                } else {
+                    illegalGroups += ", " + groupName;
+                }
             }
         }
+        
+        if (!noneExistingGroups.isEmpty()) {
+            if (!noneExistingGroups.contains(",")) {
+                errors.rejectValue("groupNames", "permissions.group.wrong.value", new Object[] { noneExistingGroups },
+                        "The group " + noneExistingGroups + " does not exist");
+            } else {
+                errors.rejectValue("groupNames", "permissions.group.wrong.values", new Object[] { noneExistingGroups },
+                        "The groups " + noneExistingGroups + " does not exist");
+            }
+        }
+        if (!invalidGroups.isEmpty()) {
+            if (!invalidGroups.contains(",")) {
+                errors.rejectValue("groupNames", "permissions.group.invalid.value", new Object[] { invalidGroups },
+                        "The group " + invalidGroups + " is not valid");
+            } else {
+                errors.rejectValue("groupNames", "permissions.group.invalid.values", new Object[] { invalidGroups },
+                        "The groups " + invalidGroups + " is not valid");
+            }
+        }
+        if (!illegalGroups.isEmpty()) {
+            if (!illegalGroups.contains(",")) {
+                errors.rejectValue("groupNames", "permissions.group.illegal.value", new Object[] { illegalGroups },
+                        "The group " + illegalGroups + " is illegal");
+            } else {
+                errors.rejectValue("groupNames", "permissions.group.illegal.values", new Object[] { illegalGroups },
+                        "The groups " + illegalGroups + " is illegal");
+            }
+        }
+        
     }
 
     @Required

@@ -32,19 +32,15 @@ package org.vortikal.web.actions.permissions;
 
 import org.vortikal.web.actions.UpdateCancelCommand;
 
-
-
 public class UpdateACLInheritanceCommand extends UpdateCancelCommand {
 
     private boolean inherited = false;
-    
 
     public UpdateACLInheritanceCommand(boolean inherited, String submitURL) {
         super(submitURL);
         this.inherited = inherited;
     }
-
-    
+  
     /**
      * Gets the value of inherited
      *
@@ -64,4 +60,3 @@ public class UpdateACLInheritanceCommand extends UpdateCancelCommand {
     }
     
 }
-

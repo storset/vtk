@@ -113,6 +113,7 @@ public class ACLEditController extends SimpleFormController {
         ACLEditCommand command = new ACLEditCommand(submitURL);
 
         command.setAcl(acl);
+        command.setPrivilege(this.privilege);
 
         List<Principal> authorizedGroups = new ArrayList<Principal>(Arrays.asList(acl
                 .listPrivilegedGroups(this.privilege)));
@@ -363,15 +364,7 @@ public class ACLEditController extends SimpleFormController {
     private Acl addToAcl(Acl acl, Repository repository, BindException errors, String[] values, Type type) {
         for (String value : values) {
             Principal principal = principalFactory.getPrincipal(value, typePseudoUser(type, value));
-            if (repository.isValidAclEntry(this.privilege, principal)) {
-              acl = acl.addEntry(this.privilege, principal);
-            } else {
-              if (type == Type.GROUP) {
-                errors.rejectValue("groupNames", "permissions.group.invalid.value", new Object[] { value }, "The group '" + value + "' is not valid");                 
-              } else {
-                errors.rejectValue("userNames", "permissions.user.invalid.value", new Object[] { value }, "The user '" + value + "' is not valid");
-              }
-            }
+            acl = acl.addEntry(this.privilege, principal);
         }
         return acl;
     }
@@ -389,15 +382,7 @@ public class ACLEditController extends SimpleFormController {
     private Acl addToAcl(Acl acl, Repository repository, BindException errors, List<String> values, Type type) {
         for (String value : values) {
             Principal principal = principalFactory.getPrincipal(value, typePseudoUser(type, value));
-            if (repository.isValidAclEntry(this.privilege, principal)) {
-              acl = acl.addEntry(this.privilege, principal);
-            } else {
-              if (type == Type.GROUP) {
-                errors.rejectValue("groupNames", "permissions.group.invalid.value", new Object[] { value }, "Group '" + value + "' is not valid");                 
-              } else {
-                errors.rejectValue("userNames", "permissions.user.invalid.value", new Object[] { value }, "User '" + value + "' is not valid");
-              }
-            }
+            acl = acl.addEntry(this.privilege, principal);
         }
         return acl;
     }

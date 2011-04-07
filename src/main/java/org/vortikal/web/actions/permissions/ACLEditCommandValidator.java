@@ -35,28 +35,30 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+import org.vortikal.repository.Repository;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
-import org.vortikal.security.Principal.Type;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.PrincipalManager;
+import org.vortikal.security.Principal.Type;
 
 public class ACLEditCommandValidator implements Validator {
 
     private PrincipalManager principalManager;
     private PrincipalFactory principalFactory;
+    private Repository repository;
 
     /**
      * @see org.springframework.validation.Validator#supports(java.lang.Class)
      */
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings("unchecked")
     public boolean supports(Class clazz) {
         return (clazz == ACLEditCommand.class);
     }
-
+ 
     public void validate(Object command, Errors errors) {
         ACLEditCommand editCommand = (ACLEditCommand) command;
-
+        
         // Don't validate on cancel
         if (editCommand.getCancelAction() != null) {
             return;
@@ -64,7 +66,7 @@ public class ACLEditCommandValidator implements Validator {
 
         if (editCommand.getSaveAction() != null) {
             validateUserNames(editCommand, errors);
-            validateGroupNames(editCommand.getGroupNames(), errors);
+            validateGroupNames(editCommand, errors);
         }
 
         if (editCommand.getAddUserAction() != null) {
@@ -84,7 +86,7 @@ public class ACLEditCommandValidator implements Validator {
                 errors.rejectValue("groupNames", "permissions.group.missing.value",
                         "You must type a value");
             }
-            validateGroupNames(groupNames, errors);
+            validateGroupNames(editCommand, errors);
         }
 
     }
@@ -100,7 +102,7 @@ public class ACLEditCommandValidator implements Validator {
 
                 if (!userName.contains(" ")) {
                     // assume a username and validate it as such
-                    if (!validateUserName(userName, errors)) {
+                    if (!validateUserName(userName, errors, editCommand)) {
                         continue;
                     }
                 } else {
@@ -115,7 +117,7 @@ public class ACLEditCommandValidator implements Validator {
                         if (ac_userName != null && !"".equals(ac_userName)) {
                             // Entered name is selected from autocomplete
                             // suggestions and we have username
-                            if (!validateUserName(ac_userName, errors)) {
+                            if (!validateUserName(ac_userName, errors, editCommand)) {
                                 continue;
                             }
                             uid = ac_userName;
@@ -149,23 +151,33 @@ public class ACLEditCommandValidator implements Validator {
         }
     }
 
-    private boolean validateUserName(String userName, Errors errors) {
+    private boolean validateUserName(String userName, Errors errors, ACLEditCommand editCommand) {
         try {
-            Principal principal = principalFactory.getPrincipal(userName,
+            Principal user = principalFactory.getPrincipal(userName,
                     Principal.Type.USER);
 
-            if (!this.principalManager.validatePrincipal(principal)) {
+            if (!this.principalManager.validatePrincipal(user)) {
                 errors.rejectValue("userNames", "permissions.user.wrong.value",
                         new Object[] { userName }, "User '" + userName
                                 + "' does not exist");
                 return false;
             }
+            
+            if (!repository.isValidAclEntry(editCommand.getPrivilege(), user)) {
+                errors.rejectValue("userNames", "permissions.user.invalid.value",
+                        new Object[] { userName }, "User '" + userName 
+                               + "' is not valid");
+                return false; 
+            }
 
         } catch (InvalidPrincipalException e) {
-            errors.rejectValue("userNames", "permissions.user.wrong.value",
-                    new Object[] { userName }, "User '" + userName + "' is illegal");
+            errors.rejectValue("userNames", "permissions.user.illegal.value",
+                        new Object[] { userName }, "User '" + userName
+                              + "' is illegal");
             return false;
         }
+        
+        
         return true;
     }
 
@@ -182,21 +194,31 @@ public class ACLEditCommandValidator implements Validator {
         return null;
     }
 
-    private void validateGroupNames(String[] groupNames, Errors errors) {
+    private void validateGroupNames(ACLEditCommand editCommand, Errors errors) {
+        String[] groupNames = editCommand.getGroupNames();
+
         for (String groupName : groupNames) {
             Principal group = null;
             try {
                 group = principalFactory.getPrincipal(groupName, Principal.Type.GROUP);
+                
+                if (group != null && !this.principalManager.validateGroup(group)) {
+                  errors.rejectValue("groupNames", "permissions.group.wrong.value",
+                        new Object[] { groupName }, "Group '" + groupName
+                                    + "' does not exist");
+                } else {
+                  if (!repository.isValidAclEntry(editCommand.getPrivilege(), group)) {
+                    errors.rejectValue("groupNames", "permissions.group.invalid.value",
+                        new Object[] { groupName }, "Group '" + groupName
+                                + "' is not valid");
+                  }
+                }
+                
             } catch (InvalidPrincipalException e) {
                 errors.rejectValue("groupNames", "permissions.group.illegal.value",
                         new Object[] { groupName }, "String '" + groupName
                                 + "' is an illegal group name");
             }
-
-            if (group != null && !this.principalManager.validateGroup(group))
-                errors.rejectValue("groupNames", "permissions.group.wrong.value",
-                        new Object[] { groupName }, "Group '" + groupName
-                                + "' does not exist");
         }
     }
 
@@ -208,6 +230,11 @@ public class ACLEditCommandValidator implements Validator {
     @Required
     public void setPrincipalFactory(PrincipalFactory principalFactory) {
         this.principalFactory = principalFactory;
+    }
+
+    @Required
+    public void setRepository(Repository repository) {
+        this.repository = repository;
     }
 
 }

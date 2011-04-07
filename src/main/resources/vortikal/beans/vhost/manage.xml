@@ -933,6 +933,7 @@
       <bean class="org.vortikal.web.actions.permissions.ACLEditCommandValidator">
         <property name="principalManager" ref="principalManager" />
         <property name="principalFactory" ref="principalFactory" />
+        <property name="repository" ref="repository" />
       </bean>
     </property>
     <property name="principalFactory" ref="principalFactory" />

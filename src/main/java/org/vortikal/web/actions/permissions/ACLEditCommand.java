@@ -34,12 +34,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.vortikal.repository.Acl;
+import org.vortikal.repository.Privilege;
 import org.vortikal.security.Principal;
 import org.vortikal.web.actions.UpdateCancelCommand;
 
 public class ACLEditCommand extends UpdateCancelCommand {
 
     private Acl acl;
+    private Privilege privilege;
 
     private String addUserAction = null;
     private String removeUserAction = null;
@@ -68,7 +70,15 @@ public class ACLEditCommand extends UpdateCancelCommand {
     public void setAcl(Acl acl) {
         this.acl = acl;
     }
+    
+    public Privilege getPrivilege() {
+        return privilege;
+    }
 
+    public void setPrivilege(Privilege privilege) {
+        this.privilege = privilege;
+    }
+    
     public String getAddUserAction() {
         return this.addUserAction;
     }

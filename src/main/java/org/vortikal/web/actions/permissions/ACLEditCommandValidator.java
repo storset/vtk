@@ -51,6 +51,7 @@ public class ACLEditCommandValidator implements Validator {
     private static final String VALIDATION_ERROR_NONE_EXISTING = "none.existing";
     private static final String VALIDATION_ERROR_INVALID_BLACKLISTED = "invalid.blacklisted";
     private static final String VALIDATION_ERROR_INVALID = "invalid";
+    private static final String VALIDATION_ERROR_TOO_MANY_MATCHES = "too.many.matches";
     private static final String VALIDATION_OK = "ok";
 
 
@@ -134,14 +135,15 @@ public class ACLEditCommandValidator implements Validator {
             String noneExistingUsers = new String();
             String invalidBlacklistedUsers = new String();
             String invalidUsers = new String();
+            String tooManyMatchedUsers = new String();
 
             for (String userName : userNames) {
 
                 userName = userName.trim();
                 String uid = userName;
 
-                if (!userName.contains(" ")) {
-                    // Assume a username and validate it as such
+                // Assume a username and validate it as such
+                if (!userName.contains(" ")) {    
                     String validation = validateGroupOrUserName(Type.USER, userName, editCommand);
                     if (validation.equals(VALIDATION_ERROR_NONE_EXISTING)) {
                         noneExistingUsers += noneExistingUsers.isEmpty() ? userName : ", " + userName;
@@ -184,15 +186,13 @@ public class ACLEditCommandValidator implements Validator {
                                 noneExistingUsers += noneExistingUsers.isEmpty() ? userName : ", " + userName;
                                 continue;
                             } else if (matches.size() > 1) {
-                                errors.rejectValue("userNames", "permissions.user.too.many.matches",
-                                        new Object[] { userName }, userName + " yielded too many matches.");
+                                tooManyMatchedUsers += tooManyMatchedUsers.isEmpty() ? userName : ", " + userName; 
                                 continue;
                             }
                             uid = matches.get(0).getName();
                         }
                     } catch (Exception e) {
-                        errors.rejectValue("userNames", "permissions.exception", new Object[] { userName },
-                                "Cannot find user " + userName);
+                        noneExistingUsers += noneExistingUsers.isEmpty() ? userName : ", " + userName;
                         continue;
                     }
                 }
@@ -202,6 +202,8 @@ public class ACLEditCommandValidator implements Validator {
             rejectValues("user", noneExistingUsers, VALIDATION_ERROR_NONE_EXISTING, errors);
             rejectValues("user", invalidBlacklistedUsers, VALIDATION_ERROR_INVALID_BLACKLISTED, errors);
             rejectValues("user", invalidUsers, VALIDATION_ERROR_INVALID, errors);
+            rejectValues("user", tooManyMatchedUsers, VALIDATION_ERROR_TOO_MANY_MATCHES, errors);
+            
         }
     }
 
@@ -238,11 +240,11 @@ public class ACLEditCommandValidator implements Validator {
             if (!groupsOrUsers.contains(",")) {
                 errors.rejectValue(type + "Names", "permissions." + type + "." + errorType + ".value",
                         new Object[] { groupsOrUsers }, "The " + type + " " + groupsOrUsers
-                                + " does not exist, is not valid or is illegal");
+                                + " does not exist, is not valid, is blacklisted, yielded too many matches or cannot be found");
             } else {
                 errors.rejectValue(type + "Names", "permissions." + type + "." + errorType + ".values",
                         new Object[] { groupsOrUsers }, "The " + type + "s " + groupsOrUsers
-                                + " does not exist, are not valid or are illegal");
+                                + " does not exist, are not valid, are blacklisted, yielded too many matches or cannot be found");
             }
         }
     }

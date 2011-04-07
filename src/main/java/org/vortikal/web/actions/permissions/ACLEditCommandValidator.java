@@ -199,14 +199,14 @@ public class ACLEditCommandValidator implements Validator {
             try {
                 Principal group = principalFactory.getPrincipal(groupName, Principal.Type.GROUP);
                 if (group != null && !this.principalManager.validateGroup(group)) {
-                    if (noneExistingGroups.length() == 0) {
+                    if (noneExistingGroups.isEmpty()) {
                         noneExistingGroups += groupName;
                     } else {
                         noneExistingGroups += ", " + groupName;
                     }
                 } else {
                     if (!repository.isValidAclEntry(editCommand.getPrivilege(), group)) {
-                        if (invalidGroups.length() == 0) {
+                        if (invalidGroups.isEmpty()) {
                             invalidGroups += groupName;
                         } else {
                             invalidGroups += ", " + groupName;
@@ -214,7 +214,7 @@ public class ACLEditCommandValidator implements Validator {
                     }
                 }
             } catch (InvalidPrincipalException e) {
-                if (illegalGroups.length() == 0) {
+                if (illegalGroups.isEmpty()) {
                     illegalGroups += groupName;
                 } else {
                     illegalGroups += ", " + groupName;

@@ -1063,7 +1063,8 @@ table.directoryListing tr td {
 }
 
 #vrtx-resource\.manually-approved-resources {
-  display: none;
+  /* display: none; */
+  clear: left;
 }
 
 #manually-approve-container {

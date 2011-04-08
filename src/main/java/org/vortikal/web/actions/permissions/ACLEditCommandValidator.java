@@ -186,7 +186,7 @@ public class ACLEditCommandValidator implements Validator {
                                 } else if (VALIDATION_ERROR_ILLEGAL.equals(validation)) {
                                     illegal += toCSV(illegal, userName);
                                 }
-                                // *** ^ ***ay?
+                                // *** ^ ***
                                 continue;
                             }
 

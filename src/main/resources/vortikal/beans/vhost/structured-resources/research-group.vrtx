@@ -7,6 +7,7 @@ resourcetype research-group {
     picture : image_ref,
     caption : simple_html,
     content : html noextract,
+    related-content : html noextract,
     participantsUsernames : string multiple,
     participants : json (participantName:string, participantUrl:string) multiple,
     numberOfParticipantsToDisplay : string defaultvalue("50"),
@@ -39,6 +40,19 @@ resourcetype research-group {
       ##
     }
     
+   related-content-in-additional-column {
+      ##
+      [resource-props "."]
+      [def document structured-document()]
+      [def theRelated-content document.properties.related-content]
+      [if theRelated-content != null]
+        <div id="vrtx-related-content">
+          [val theRelated-content # unescaped]
+        </div>
+      [endif]
+      ##
+    }
+        
     introduction-image {
       ##
       [def img-uri resource-prop(".", "picture")]
@@ -171,6 +185,7 @@ resourcetype research-group {
             [call "resource:person-list"]
             [call "resource:projects-related-to-group"]
             [call "comp:feeds"]
+            [call "comp:related-content-in-additional-column"]
           </div> 
         </div>
       </body>
@@ -199,6 +214,7 @@ resourcetype research-group {
     introduction-image-alt : (en: "Image", en: "Bilde", en: "Bilete"),
     caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
     photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
+    related-content : (en : "Related content (right column)", no : "Relatert innhold (vises i høyre kolonne)", nn : "Relatert innhald (visast i høgre kolonne)"),
     participantsHeader : (en : "Participants", no : "Deltakere", nn : "Deltakarar"),
     participantsUsernames : (en : "Participants from UiO (enter the participant username)",no : "Deltakere fra UiO (fyll inn deltakerens brukernavn)", nn :"Deltakarar fra UiO (fyll inn deltakarens brukernavn)"),
     participants : (en : "Other participants", no : "Andre deltakere", nn : "Andre deltakarar"),

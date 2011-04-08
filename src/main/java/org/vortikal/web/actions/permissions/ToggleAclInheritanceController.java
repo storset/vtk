@@ -62,7 +62,6 @@ public class ToggleAclInheritanceController  implements Controller {
 
         Acl acl = resource.getAcl();
         if (resource.isCollection() && resource.isInheritedAcl()) {
-
             resource = repository.storeACL(token, resource.getURI(), acl);
 
         } else if (resource.isInheritedAcl()) {
@@ -75,6 +74,5 @@ public class ToggleAclInheritanceController  implements Controller {
         return new ModelAndView(this.viewName);
     }
     
-
 }
 

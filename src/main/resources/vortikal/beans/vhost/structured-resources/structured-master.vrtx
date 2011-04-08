@@ -178,9 +178,9 @@ resourcetype structured-master{
        nn : ("true" = "Ledig", "false" = "Tatt")
      }
 	credits {
-       en : (range = "60,30"),
-       no : (range = "60,30"),
-       nn : (range = "60,30")
+       en : (range = "60,45,30"),
+       no : (range = "60,45,30"),
+       nn : (range = "60,45,30")
      }
 
   }

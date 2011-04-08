@@ -48,9 +48,9 @@ public class ACLEditCommandValidator implements Validator {
     private PrincipalFactory principalFactory;
     private Repository repository;
 
-    private static final String VALIDATION_ERROR_NONE_EXISTING = "none.existing";
-    private static final String VALIDATION_ERROR_INVALID_BLACKLISTED = "invalid.blacklisted";
-    private static final String VALIDATION_ERROR_INVALID = "invalid";
+    private static final String VALIDATION_ERROR_NOT_FOUND = "not.found";
+    private static final String VALIDATION_ERROR_ILLEGAL_BLACKLISTED = "illegal.blacklisted";
+    private static final String VALIDATION_ERROR_ILLEGAL = "illegal";
     private static final String VALIDATION_ERROR_TOO_MANY_MATCHES = "too.many.matches";
     private static final String VALIDATION_OK = "ok";
 
@@ -110,18 +110,18 @@ public class ACLEditCommandValidator implements Validator {
 
                 String validation = validateGroupOrUserName(Type.GROUP, groupName, editCommand);
 
-                if (validation.equals(VALIDATION_ERROR_NONE_EXISTING)) {
+                if (validation.equals(VALIDATION_ERROR_NOT_FOUND)) {
                     noneExistingGroups += noneExistingGroups.isEmpty() ? groupName : ", " + groupName;
-                } else if (validation.equals(VALIDATION_ERROR_INVALID_BLACKLISTED)) {
+                } else if (validation.equals(VALIDATION_ERROR_ILLEGAL_BLACKLISTED)) {
                     invalidBlackListedGroups += invalidBlackListedGroups.isEmpty() ? groupName : ", " + groupName;
-                } else if (validation.equals(VALIDATION_ERROR_INVALID)) {
+                } else if (validation.equals(VALIDATION_ERROR_ILLEGAL)) {
                     invalidGroups += invalidGroups.isEmpty() ? groupName : ", " + groupName;
                 }
             }
 
-            rejectValues("group", noneExistingGroups, VALIDATION_ERROR_NONE_EXISTING, errors);
-            rejectValues("group", invalidBlackListedGroups, VALIDATION_ERROR_INVALID_BLACKLISTED, errors);
-            rejectValues("group", invalidGroups, VALIDATION_ERROR_INVALID, errors);  
+            rejectValues("group", noneExistingGroups, VALIDATION_ERROR_NOT_FOUND, errors);
+            rejectValues("group", invalidBlackListedGroups, VALIDATION_ERROR_ILLEGAL_BLACKLISTED, errors);
+            rejectValues("group", invalidGroups, VALIDATION_ERROR_ILLEGAL, errors);  
         }
 
     }
@@ -145,11 +145,11 @@ public class ACLEditCommandValidator implements Validator {
                 // Assume a username and validate it as such
                 if (!userName.contains(" ")) {    
                     String validation = validateGroupOrUserName(Type.USER, userName, editCommand);
-                    if (validation.equals(VALIDATION_ERROR_NONE_EXISTING)) {
+                    if (validation.equals(VALIDATION_ERROR_NOT_FOUND)) {
                         noneExistingUsers += noneExistingUsers.isEmpty() ? userName : ", " + userName;
-                    } else if (validation.equals(VALIDATION_ERROR_INVALID_BLACKLISTED)) {
+                    } else if (validation.equals(VALIDATION_ERROR_ILLEGAL_BLACKLISTED)) {
                         invalidBlacklistedUsers += invalidBlacklistedUsers.isEmpty() ? userName : ", " + userName;
-                    } else if (validation.equals(VALIDATION_ERROR_INVALID)) {
+                    } else if (validation.equals(VALIDATION_ERROR_ILLEGAL)) {
                         invalidUsers += invalidUsers.isEmpty() ? userName : ", " + userName;
                     }
                     if (!VALIDATION_OK.equals(validation)) {
@@ -169,12 +169,12 @@ public class ACLEditCommandValidator implements Validator {
                             // suggestions and we have username
        
                             String validation = validateGroupOrUserName(Type.USER, ac_userName, editCommand);
-                            if (validation.equals(VALIDATION_ERROR_NONE_EXISTING)) {
+                            if (validation.equals(VALIDATION_ERROR_NOT_FOUND)) {
                                 noneExistingUsers += noneExistingUsers.isEmpty() ? userName : ", " + userName;
-                            } else if (validation.equals(VALIDATION_ERROR_INVALID_BLACKLISTED)) {
+                            } else if (validation.equals(VALIDATION_ERROR_ILLEGAL_BLACKLISTED)) {
                                 invalidBlacklistedUsers += invalidBlacklistedUsers.isEmpty() ? userName : ", "
                                         + userName;
-                            } else if (validation.equals(VALIDATION_ERROR_INVALID)) {
+                            } else if (validation.equals(VALIDATION_ERROR_ILLEGAL)) {
                                 invalidUsers += invalidUsers.isEmpty() ? userName : ", " + userName;
                             }
                             if (!VALIDATION_OK.equals(validation)) {
@@ -200,9 +200,9 @@ public class ACLEditCommandValidator implements Validator {
                 editCommand.addUserNameEntry(uid);
             }
 
-            rejectValues("user", noneExistingUsers, VALIDATION_ERROR_NONE_EXISTING, errors);
-            rejectValues("user", invalidBlacklistedUsers, VALIDATION_ERROR_INVALID_BLACKLISTED, errors);
-            rejectValues("user", invalidUsers, VALIDATION_ERROR_INVALID, errors);
+            rejectValues("user", noneExistingUsers, VALIDATION_ERROR_NOT_FOUND, errors);
+            rejectValues("user", invalidBlacklistedUsers, VALIDATION_ERROR_ILLEGAL_BLACKLISTED, errors);
+            rejectValues("user", invalidUsers, VALIDATION_ERROR_ILLEGAL, errors);
             rejectValues("user", tooManyMatchedUsers, VALIDATION_ERROR_TOO_MANY_MATCHES, errors);  
         }
     }
@@ -222,14 +222,14 @@ public class ACLEditCommandValidator implements Validator {
             }
 
             if (groupOrUser != null && !exists) {
-                return VALIDATION_ERROR_NONE_EXISTING;
+                return VALIDATION_ERROR_NOT_FOUND;
             }
 
             if (!repository.isValidAclEntry(editCommand.getPrivilege(), groupOrUser)) {
-                return VALIDATION_ERROR_INVALID_BLACKLISTED;
+                return VALIDATION_ERROR_ILLEGAL_BLACKLISTED;
             }
         } catch (InvalidPrincipalException e) {
-            return VALIDATION_ERROR_INVALID;
+            return VALIDATION_ERROR_ILLEGAL;
         }
         return VALIDATION_OK;
     }

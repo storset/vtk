@@ -397,10 +397,10 @@ public class ACLEditController extends SimpleFormController {
     private Type unformatShortcutAndSetType(String[] shortcut, String[] groupOrUserShortcut) {
         Type type = null;
         if (shortcut[0].startsWith(GROUP_PREFIX)) {
-            groupOrUserShortcut[0] = shortcut[0].replace(GROUP_PREFIX, "");
+            groupOrUserShortcut[0] = shortcut[0].substring(GROUP_PREFIX.length());
             type = Type.GROUP;
         } else if (shortcut[0].startsWith(USER_PREFIX)) {
-            groupOrUserShortcut[0] = shortcut[0].replace(USER_PREFIX, "");
+            groupOrUserShortcut[0] = shortcut[0].substring(USER_PREFIX.length());
             type = Type.USER;     
         }
         return type;

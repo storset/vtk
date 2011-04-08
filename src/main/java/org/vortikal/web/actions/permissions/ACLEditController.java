@@ -176,26 +176,12 @@ public class ACLEditController extends SimpleFormController {
         }
         
         // Remove or add shortcuts
-        acl = aclShortcuts(acl, repository, errors, editCommand);
+        acl = aclShortcuts(acl, editCommand);
         
         // Has the user asked to save?
         if (editCommand.getSaveAction() != null) {     
-            acl = addToAcl(acl, repository, errors, editCommand.getGroupNames(), Type.GROUP);
-            acl = addToAcl(acl, repository, errors, editCommand.getUserNameEntries(), Type.USER);
-            
-            if (acl.isEmpty()) {
-                errors.rejectValue("groupNames", "permissions.no.acl", new Object[] {}, "Resource can not be without permissions");
-                BindException bex = new BindException(getACLEditCommand(resource, acl, requestContext.getPrincipal()), this.getCommandName());
-                bex.addAllErrors(errors); // Add error when empty ACL
-                return showForm(request, response, bex); 
-            }
-            
-            if (errors.hasErrors()) {
-                BindException bex = new BindException(getACLEditCommand(resource, acl, requestContext.getPrincipal()), this.getCommandName());
-                bex.addAllErrors(errors); // Add validation errors
-                return showForm(request, response, bex);  
-            }
-            
+            acl = addToAcl(acl, editCommand.getGroupNames(), Type.GROUP);
+            acl = addToAcl(acl, editCommand.getUserNameEntries(), Type.USER);
             resource = repository.storeACL(token, resource.getURI(), acl);
             return new ModelAndView(getSuccessView()); 
         }
@@ -210,16 +196,12 @@ public class ACLEditController extends SimpleFormController {
             return showForm(request, response, new BindException(getACLEditCommand(resource, acl, requestContext.getPrincipal()), this.getCommandName()));
 
         } else if (editCommand.getAddGroupAction() != null) {
-            acl = addToAcl(acl, repository, errors, editCommand.getGroupNames(), Type.GROUP);
-            BindException bex = new BindException(getACLEditCommand(resource, acl, requestContext.getPrincipal()), this.getCommandName());
-            bex.addAllErrors(errors); // Add validation errors
-            return showForm(request, response, bex);
+            acl = addToAcl(acl, editCommand.getGroupNames(), Type.GROUP);
+            return showForm(request, response, new BindException(getACLEditCommand(resource, acl, requestContext.getPrincipal()), this.getCommandName()));
      
         } else if (editCommand.getAddUserAction() != null) {
-            acl = addToAcl(acl, repository, errors, editCommand.getUserNameEntries(), Type.USER);
-            BindException bex = new BindException(getACLEditCommand(resource, acl, requestContext.getPrincipal()), this.getCommandName());
-            bex.addAllErrors(errors); // Add validation errors
-            return showForm(request, response, bex);
+            acl = addToAcl(acl, editCommand.getUserNameEntries(), Type.USER);
+            return showForm(request, response, new BindException(getACLEditCommand(resource, acl, requestContext.getPrincipal()), this.getCommandName()));
         }
         
         return new ModelAndView(getSuccessView());
@@ -302,7 +284,7 @@ public class ACLEditController extends SimpleFormController {
      * @param editCommand the command object
      * @return the modified ACL
      */
-    private Acl aclShortcuts(Acl acl, Repository repository, BindException errors, ACLEditCommand editCommand) {
+    private Acl aclShortcuts(Acl acl, ACLEditCommand editCommand) {
         String[] updatedShortcuts = editCommand.getUpdatedShortcuts();
         String[][] shortcuts = editCommand.getShortcuts();
 
@@ -329,7 +311,7 @@ public class ACLEditController extends SimpleFormController {
             if (uncheckedFound) {
                 String[] groupOrUserShortcut = new String[1];
                 Type type = unformatShortcutAndSetType(shortcut, groupOrUserShortcut);
-                acl = addToAcl(acl, repository, errors, groupOrUserShortcut, type);
+                acl = addToAcl(acl, groupOrUserShortcut, type);
             }
         }
         return acl;
@@ -361,7 +343,7 @@ public class ACLEditController extends SimpleFormController {
      * @param type type of ACL (GROUP or USER)
      * @return the modified ACL
      */
-    private Acl addToAcl(Acl acl, Repository repository, BindException errors, String[] values, Type type) {
+    private Acl addToAcl(Acl acl, String[] values, Type type) {
         for (String value : values) {
             Principal principal = principalFactory.getPrincipal(value, typePseudoUser(type, value));
             acl = acl.addEntry(this.privilege, principal);
@@ -379,7 +361,7 @@ public class ACLEditController extends SimpleFormController {
      * @param type type of ACL (GROUP or USER)
      * @return the modified ACL
      */
-    private Acl addToAcl(Acl acl, Repository repository, BindException errors, List<String> values, Type type) {
+    private Acl addToAcl(Acl acl, List<String> values, Type type) {
         for (String value : values) {
             Principal principal = principalFactory.getPrincipal(value, typePseudoUser(type, value));
             acl = acl.addEntry(this.privilege, principal);

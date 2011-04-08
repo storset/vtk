@@ -35,6 +35,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+import org.vortikal.repository.Acl;
+import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
@@ -92,8 +94,25 @@ public class ACLEditCommandValidator implements Validator {
                 errors.rejectValue("userNames", "permissions.user.missing.value", "You must type a username");
             }
             validateUserNames(editCommand, errors);
-        }
 
+        } else if (editCommand.getRemoveGroupAction() != null || editCommand.getRemoveUserAction() != null) { 
+            Acl acl = editCommand.getAcl();
+            Privilege privilege = editCommand.getPrivilege();
+
+            boolean theLastACE = acl.getTotalACEs() == 1;
+            boolean theLastACEAdmin = (acl.getACEsPrPrivilege(Privilege.ALL) == 1) && privilege.equals(Privilege.ALL);
+
+            if (theLastACE || theLastACEAdmin) {
+                String prefixType = editCommand.getRemoveGroupAction() != null ?  "group" : "user";
+                if (theLastACE) {
+                    errors.rejectValue(prefixType + "Names", "permissions.no.acl", "Resource can not be without permissions");
+                }
+                if (theLastACEAdmin) {
+                    errors.rejectValue(prefixType + "Names", "permissions.all.not.empty",
+                            "Not possible to remove all admin permissions");
+                }
+            }
+        }
     }
 
 

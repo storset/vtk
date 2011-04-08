@@ -15,19 +15,18 @@
         <ref bean="resourceInCollection" />
       </list>
     </property>
-    <property name="handler" ref="editor.collection.listCollectionResourcesHandler" />
+    <property name="handler" ref="editor.collection.manuallyApproveResourcesHandler" />
   </bean>
 
-  <bean id="editor.collection.listCollectionResourcesHandler" class="org.vortikal.web.service.manuallyapprove.ManuallyApproveResourcesHandler"
-    parent="repositoryAware">
+  <bean id="editor.collection.manuallyApproveResourcesHandler" class="org.vortikal.web.service.manuallyapprove.ManuallyApproveResourcesHandler">
+    <property name="searcher" ref="editor.collection.manuallyApproveResourcesSearcher" />
     <property name="manuallyApproveFromPropDef" ref="manuallyApproveFromPropDef" />
     <property name="manuallyApprovedResourcesPropDef" ref="manuallyApprovedResourcesPropDef" />
-    <property name="collectionPropDef" ref="collectionPropDef" />
-    <property name="titlePropDef" ref="titlePropDef" />
-    <property name="publishDatePropDef" ref="publishDatePropDef" />
-    <property name="creationTimePropDef" ref="creationTimePropDef" />
     <property name="aggregationPropDef" ref="aggregationPropDef" />
     <property name="recursivePropDef" ref="collection.recursiveListingPropDef" />
+  </bean>
+
+  <bean id="editor.collection.manuallyApproveResourcesSearcher" class="org.vortikal.web.service.manuallyapprove.ManuallyApproveResourcesSearcher">
     <property name="listingResourceTypeMappingPointers">
       <map>
         <entry key="article-listing" value="${override.listing.prefix}article" />
@@ -35,7 +34,10 @@
       </map>
     </property>
     <property name="aggregationResolver" ref="aggregationResolver" />
-    <property name="viewService" ref="viewService" />
+    <property name="collectionPropDef" ref="collectionPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="publishDatePropDef" ref="publishDatePropDef" />
+    <property name="creationTimePropDef" ref="creationTimePropDef" />
   </bean>
 
 </beans>

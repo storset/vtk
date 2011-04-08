@@ -59,12 +59,12 @@ public class ACLEditBinder extends ServletRequestDataBinder {
         
         extractGroupsAndUsersForRemoval(removedUsers, removedGroups, params);
  
-        if(removedGroups.size() > 0) {
+        if(!removedGroups.isEmpty()) {
             String[] groupList = removedGroups.toArray(new String[]{});
             command.setRemoveGroupAction("removeGroupAction");
             command.setGroupNames(groupList); 
         }
-        if(removedUsers.size() > 0) {
+        if(!removedGroups.isEmpty()) {
             String[] userList = removedUsers.toArray(new String[]{});
             command.setRemoveUserAction("removeUserAction");
             command.setUserNames(userList); 

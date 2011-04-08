@@ -76,8 +76,8 @@ public class ManuallyApproveResourcesSearcher {
         // Get already approved resources on local host
         List<PropertySet> alreadyApprovedResources = new ArrayList<PropertySet>();
         if (alreadyApproved.size() > 0) {
-            Query localAreadyApprovedUriSetQuery = this.getUriSetQuery(alreadyApproved, repository.getId(), true);
-            Search search = this.getSearch(localAreadyApprovedUriSetQuery, token);
+            Query localAlreadyApprovedUriSetQuery = this.getUriSetQuery(alreadyApproved, repository.getId(), true);
+            Search search = this.getSearch(localAlreadyApprovedUriSetQuery, token);
             ResultSet rs = repository.search(token, search);
             alreadyApprovedResources.addAll(rs.getAllResults());
         }
@@ -87,8 +87,8 @@ public class ManuallyApproveResourcesSearcher {
         if (externalSearcher != null) {
             // Get already approved resources from other hosts
             if (alreadyApproved.size() > 0) {
-                Query localAreadyApprovedUriSetQuery = this.getUriSetQuery(alreadyApproved, repository.getId(), false);
-                Search search = this.getSearch(localAreadyApprovedUriSetQuery, token);
+                Query alreadyApprovedUriSetQuery = this.getUriSetQuery(alreadyApproved, repository.getId(), false);
+                Search search = this.getSearch(alreadyApprovedUriSetQuery, token);
                 List<PropertySet> l = this.externalSearcher.search(token, search);
                 alreadyApprovedResources.addAll(l);
             }

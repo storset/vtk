@@ -108,6 +108,8 @@ public class ACLEditCommandValidator implements Validator {
 
             for (String groupName : groupNames) {
                 String validation = validateGroupOrUserName(Type.GROUP, groupName, editCommand);
+                
+                // TODO: is it possible to refactor this in a sensible way?
                 if (!VALIDATION_OK.equals(validation)) {
                     if (VALIDATION_ERROR_NOT_FOUND.equals(validation)) {
                         notFound += toCSV(notFound, groupName);
@@ -145,7 +147,8 @@ public class ACLEditCommandValidator implements Validator {
 
                 // Assume a username and validate it as such
                 if (!userName.contains(" ")) {
-
+                    
+                    // TODO: is it possible to refactor this in a sensible way?
                     String validation = validateGroupOrUserName(Type.USER, userName, editCommand);
                     if (!VALIDATION_OK.equals(validation)) {
                         if (VALIDATION_ERROR_NOT_FOUND.equals(validation)) {
@@ -170,7 +173,8 @@ public class ACLEditCommandValidator implements Validator {
                         // Entered name is selected from autocomplete
                         // suggestions and we have username
                         if (ac_userName != null && !"".equals(ac_userName)) {
-
+                            
+                            // TODO: is it possible to refactor this in a sensible way?
                             String validation = validateGroupOrUserName(Type.USER, ac_userName, editCommand);
                             if (!VALIDATION_OK.equals(validation)) {
                                 if (VALIDATION_ERROR_NOT_FOUND.equals(validation)) {

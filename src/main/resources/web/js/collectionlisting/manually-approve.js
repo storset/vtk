@@ -102,7 +102,11 @@ function retrieveResources(serviceUri, folders) {
 	  }
 	},
 	error: function(xhr, textStatus) {
-	  $("#manually-approve-container").html("readyState: "+xhr.readyState+"<br />status: "+xhr.status);
+      if(xhr.readyState == 4 && xhr.status == 200) {
+    	$("#manually-approve-container").html("The service is not active.");  
+      } else {
+      	$("#manually-approve-container").html("The service returned " + xhr.status + " and failed to retrieve resources.");      	  
+      }
 	}
   });
   

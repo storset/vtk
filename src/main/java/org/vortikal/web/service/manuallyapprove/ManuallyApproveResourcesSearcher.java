@@ -32,13 +32,25 @@ package org.vortikal.web.service.manuallyapprove;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.search.PropertySortField;
+import org.vortikal.repository.search.ResultSet;
+import org.vortikal.repository.search.Search;
+import org.vortikal.repository.search.SortFieldDirection;
+import org.vortikal.repository.search.SortingImpl;
+import org.vortikal.repository.search.query.Query;
+import org.vortikal.repository.search.query.UriSetQuery;
+import org.vortikal.security.SecurityContext;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.collection.aggregation.AggregationResolver;
 
 public class ManuallyApproveResourcesSearcher {
@@ -48,7 +60,6 @@ public class ManuallyApproveResourcesSearcher {
 
     private Map<String, String> listingResourceTypeMappingPointers;
     private AggregationResolver aggregationResolver;
-
     private PropertyTypeDefinition collectionPropDef;
     private PropertyTypeDefinition titlePropDef;
     private PropertyTypeDefinition publishDatePropDef;
@@ -57,20 +68,59 @@ public class ManuallyApproveResourcesSearcher {
     public List<ManuallyApproveResource> getManuallyApproveResources(Resource collection, Set<String> folders,
             Set<String> alreadyApproved) {
 
+        Repository repository = RequestContext.getRequestContext().getRepository();
+        String token = SecurityContext.getSecurityContext().getToken();
+
         List<ManuallyApproveResource> result = new ArrayList<ManuallyApproveResource>();
 
-        // Divide sets of folders and already approved resources into internal
-        // and external
+        // Get already approved resources on local host
+        List<PropertySet> alreadyApprovedResources = new ArrayList<PropertySet>();
+        if (alreadyApproved.size() > 0) {
+            Query localAreadyApprovedUriSetQuery = this.getUriSetQuery(alreadyApproved, repository.getId(), true);
+            Search search = this.getSearch(localAreadyApprovedUriSetQuery, token);
+            ResultSet rs = repository.search(token, search);
+            alreadyApprovedResources.addAll(rs.getAllResults());
+        }
 
         // Perform searches, map property sets to manually approved resource
         // object containers and join results
         if (externalSearcher != null) {
-            // Search "felles systemindex"
+            // Get already approved resources from other hosts
+            if (alreadyApproved.size() > 0) {
+                Query localAreadyApprovedUriSetQuery = this.getUriSetQuery(alreadyApproved, repository.getId(), false);
+                Search search = this.getSearch(localAreadyApprovedUriSetQuery, token);
+                List<PropertySet> l = this.externalSearcher.search(token, search);
+                alreadyApprovedResources.addAll(l);
+            }
         }
 
         // Sort and return
         Collections.sort(result, new ManuallyApproveResourceComparator());
         return result;
+    }
+
+    private Query getUriSetQuery(Set<String> alreadyApproved, String repositoryId, boolean local) {
+        Set<String> uriSet = new HashSet<String>();
+        for (String s : alreadyApproved) {
+            if (local) {
+                if (s.startsWith(repositoryId)) {
+                    uriSet.add(s.replace(repositoryId, ""));
+                }
+            } else if (!s.startsWith(repositoryId)) {
+                uriSet.add(s);
+            }
+        }
+        return new UriSetQuery(uriSet);
+    }
+
+    private Search getSearch(Query query, String token) {
+        Search search = new Search();
+        SortingImpl sorting = new SortingImpl();
+        sorting.addSortField(new PropertySortField(this.publishDatePropDef, SortFieldDirection.DESC));
+        search.setSorting(sorting);
+        search.setLimit(1000);
+        search.setQuery(query);
+        return search;
     }
 
     public void setExternalSearcher(ExternalSearcher externalSearcher) {

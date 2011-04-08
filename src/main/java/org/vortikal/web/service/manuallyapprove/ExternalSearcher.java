@@ -33,9 +33,10 @@ package org.vortikal.web.service.manuallyapprove;
 import java.util.List;
 
 import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.search.Search;
 
 public interface ExternalSearcher {
-    
-    public List<PropertySet> search();
+
+    public List<PropertySet> search(String token, Search search);
 
 }

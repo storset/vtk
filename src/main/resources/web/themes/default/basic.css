@@ -1067,6 +1067,10 @@ table.directoryListing tr td {
   clear: left;
 }
 
+#vrtx-resource\.manually-approve-from .manually-approve-from-ajax-error {
+  color: red;
+}
+
 #manually-approve-container {
   margin: 1em 0 2em 0;
   font-size: 90%;

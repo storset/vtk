@@ -102,11 +102,14 @@ function retrieveResources(serviceUri, folders) {
 	  }
 	},
 	error: function(xhr, textStatus) {
+	  var errMsg = "<span class='manually-approve-from-ajax-error'>";
       if(xhr.readyState == 4 && xhr.status == 200) {
-    	$("#manually-approve-container").html("The service is not active.");  
+    	errMsg += "The service is not active.";
       } else {
-      	$("#manually-approve-container").html("The service returned " + xhr.status + " and failed to retrieve resources.");      	  
+    	errMsg += "The service returned " + xhr.status + " and failed to retrieve resources.";      	  
       }
+      errMsg += "</span>";
+      $("#manually-approve-container").html(errMsg);
 	}
   });
   

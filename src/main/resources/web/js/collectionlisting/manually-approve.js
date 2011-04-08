@@ -102,7 +102,7 @@ function retrieveResources(serviceUri, folders) {
 	  }
 	},
 	error: function(xhr, textStatus) {
-	  $("#manually-approve-container").html("readyState: "+xhr.readyState+"<br />status: "+xhr.status + "<br />responseText: "+xhr.responseText);
+	  $("#manually-approve-container").html("readyState: "+xhr.readyState+"<br />status: "+xhr.status);
 	}
   });
   

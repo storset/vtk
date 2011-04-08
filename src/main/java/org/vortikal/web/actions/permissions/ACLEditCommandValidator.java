@@ -83,7 +83,8 @@ public class ACLEditCommandValidator implements Validator {
             String[] groupNames = editCommand.getGroupNames();
 
             if (groupNames.length == 0) {
-                errors.rejectValue("groupNames", "permissions.group.missing.value", "You must type a group name");
+                errors.rejectValue("groupNames", "permissions.group.missing.value",
+                        "You must type a group name");
             }
             validateGroupNames(editCommand, errors);
 
@@ -91,7 +92,8 @@ public class ACLEditCommandValidator implements Validator {
             String[] userNames = editCommand.getUserNames();
 
             if (userNames.length == 0) {
-                errors.rejectValue("userNames", "permissions.user.missing.value", "You must type a username");
+                errors.rejectValue("userNames", "permissions.user.missing.value",
+                        "You must type a username");
             }
             validateUserNames(editCommand, errors);
 
@@ -99,18 +101,17 @@ public class ACLEditCommandValidator implements Validator {
             Acl acl = editCommand.getAcl();
             Privilege privilege = editCommand.getPrivilege();
 
-            boolean theLastACE = acl.getTotalACEs() == 1;
-            boolean theLastACEAdmin = (acl.getACEsPrPrivilege(Privilege.ALL) == 1) && privilege.equals(Privilege.ALL);
+            boolean isOnlyOneRemainingACE = (acl.getTotalACEs() == 1);
+            boolean isOnlyOneRemainingACEAdmin = (acl.getACEsPrPrivilege(Privilege.ALL) == 1) && privilege.equals(Privilege.ALL);
 
-            if (theLastACE || theLastACEAdmin) {
-                String prefixType = editCommand.getRemoveGroupAction() != null ?  "group" : "user";
-                if (theLastACE) {
-                    errors.rejectValue(prefixType + "Names", "permissions.no.acl", "Resource can not be without permissions");
-                }
-                if (theLastACEAdmin) {
-                    errors.rejectValue(prefixType + "Names", "permissions.all.not.empty",
-                            "Not possible to remove all admin permissions");
-                }
+            String prefixType = editCommand.getRemoveGroupAction() != null ? "group" : "user";
+            if (isOnlyOneRemainingACE) {
+                errors.rejectValue(prefixType + "Names", "permissions.no.acl",
+                        "Resource can not be without permissions");
+            }
+            if (isOnlyOneRemainingACEAdmin) {
+                errors.rejectValue(prefixType + "Names", "permissions.all.not.empty",
+                        "Not possible to remove all admin permissions");
             }
         }
     }

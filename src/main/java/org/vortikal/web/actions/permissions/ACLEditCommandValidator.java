@@ -110,12 +110,11 @@ public class ACLEditCommandValidator implements Validator {
                 String validation = validateGroupOrUserName(Type.GROUP, groupName, editCommand);
                 if (!VALIDATION_OK.equals(validation)) {
                     if (VALIDATION_ERROR_NOT_FOUND.equals(validation)) {
-                        notFound += notFound.isEmpty() ? groupName : ", " + groupName;
+                        notFound += toCSV(notFound, groupName);
                     } else if (VALIDATION_ERROR_ILLEGAL_BLACKLISTED.equals(validation)) {
-                        illegalBlacklisted += illegalBlacklisted.isEmpty() ? groupName : ", "
-                                + groupName;
+                        illegalBlacklisted += toCSV(illegalBlacklisted, groupName);
                     } else if (VALIDATION_ERROR_ILLEGAL.equals(validation)) {
-                        illegal += illegal.isEmpty() ? groupName : ", " + groupName;
+                        illegal += toCSV(illegal, groupName);
                     }
                     continue;
                 }
@@ -123,7 +122,7 @@ public class ACLEditCommandValidator implements Validator {
 
             rejectValues("group", notFound, VALIDATION_ERROR_NOT_FOUND, errors);
             rejectValues("group", illegalBlacklisted, VALIDATION_ERROR_ILLEGAL_BLACKLISTED, errors);
-            rejectValues("group", illegal, VALIDATION_ERROR_ILLEGAL, errors);  
+            rejectValues("group", illegal, VALIDATION_ERROR_ILLEGAL, errors);
         }
 
     }
@@ -140,22 +139,21 @@ public class ACLEditCommandValidator implements Validator {
             String tooManyMatchedUsers = new String();
 
             for (String userName : userNames) {
-                
+
                 userName = userName.trim();
                 String uid = userName;
 
                 // Assume a username and validate it as such
-                if (!userName.contains(" ")) {    
-                    
+                if (!userName.contains(" ")) {
+
                     String validation = validateGroupOrUserName(Type.USER, userName, editCommand);
                     if (!VALIDATION_OK.equals(validation)) {
                         if (VALIDATION_ERROR_NOT_FOUND.equals(validation)) {
-                            notFound += notFound.isEmpty() ? userName : ", " + userName;
+                            notFound += toCSV(notFound, userName);
                         } else if (VALIDATION_ERROR_ILLEGAL_BLACKLISTED.equals(validation)) {
-                            illegalBlacklisted += illegalBlacklisted.isEmpty() ? userName : ", "
-                                    + userName;
+                            illegalBlacklisted += toCSV(illegalBlacklisted, userName);
                         } else if (VALIDATION_ERROR_ILLEGAL.equals(validation)) {
-                            illegal += illegal.isEmpty() ? userName : ", " + userName;
+                            illegal += toCSV(illegal, userName);
                         }
                         continue;
                     }
@@ -168,38 +166,37 @@ public class ACLEditCommandValidator implements Validator {
                     try {
                         String ac_userName = getAc_userName(userName, editCommand.getAc_userNames(), editCommand
                                 .getUserNameEntries());
-                        
+
                         // Entered name is selected from autocomplete
                         // suggestions and we have username
                         if (ac_userName != null && !"".equals(ac_userName)) {
-                            
+
                             String validation = validateGroupOrUserName(Type.USER, ac_userName, editCommand);
                             if (!VALIDATION_OK.equals(validation)) {
                                 if (VALIDATION_ERROR_NOT_FOUND.equals(validation)) {
-                                    notFound += notFound.isEmpty() ? userName : ", " + userName;
+                                    notFound += toCSV(notFound, userName);
                                 } else if (VALIDATION_ERROR_ILLEGAL_BLACKLISTED.equals(validation)) {
-                                    illegalBlacklisted += illegalBlacklisted.isEmpty() ? userName : ", "
-                                            + userName;
+                                    illegalBlacklisted += toCSV(illegalBlacklisted, userName);
                                 } else if (VALIDATION_ERROR_ILLEGAL.equals(validation)) {
-                                    illegal += illegal.isEmpty() ? userName : ", " + userName;
+                                    illegal += toCSV(illegal, userName);
                                 }
                                 continue;
                             }
-                            
+
                             uid = ac_userName;
                         } else {
                             List<Principal> matches = this.principalFactory.search(userName, Type.USER);
                             if (matches == null || matches.isEmpty()) {
-                                notFound += notFound.isEmpty() ? userName : ", " + userName;
+                                notFound += toCSV(notFound, userName);
                                 continue;
                             } else if (matches.size() > 1) {
-                                tooManyMatchedUsers += tooManyMatchedUsers.isEmpty() ? userName : ", " + userName; 
+                                tooManyMatchedUsers += toCSV(tooManyMatchedUsers, userName);
                                 continue;
                             }
                             uid = matches.get(0).getName();
                         }
                     } catch (Exception e) {
-                        //TODO: is it ok with 'not exist' error-message here?
+                        // TODO: is it ok with 'not exist' error-message here?
                         notFound += notFound.isEmpty() ? userName : ", " + userName;
                         continue;
                     }
@@ -210,7 +207,7 @@ public class ACLEditCommandValidator implements Validator {
             rejectValues("user", notFound, VALIDATION_ERROR_NOT_FOUND, errors);
             rejectValues("user", illegalBlacklisted, VALIDATION_ERROR_ILLEGAL_BLACKLISTED, errors);
             rejectValues("user", illegal, VALIDATION_ERROR_ILLEGAL, errors);
-            rejectValues("user", tooManyMatchedUsers, VALIDATION_ERROR_TOO_MANY_MATCHES, errors);  
+            rejectValues("user", tooManyMatchedUsers, VALIDATION_ERROR_TOO_MANY_MATCHES, errors);
         }
     }
 
@@ -267,6 +264,15 @@ public class ACLEditCommandValidator implements Validator {
             }
         }
         return null;
+    }
+
+
+    private String toCSV(String csv, String name) {
+        if (csv.isEmpty()) {
+            return "'" + name.trim() + "'";
+        } else {
+            return ", '" + name.trim() + "'";
+        }
     }
 
 

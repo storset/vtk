@@ -105,7 +105,7 @@ public class ACLEditCommandValidator implements Validator {
             boolean isOnlyOneRemainingACEAdmin = (acl.getACEsPrPrivilege(Privilege.ALL) == 1) && privilege.equals(Privilege.ALL);
 
             String prefixType = editCommand.getRemoveGroupAction() != null ? "group" : "user";
-            // TODO: remove? - will never occur because of check below
+            // TODO: remove? - will never occur because of check below - if not already removed before new permission regime
             if (isOnlyOneRemainingACE) {
                 errors.rejectValue(prefixType + "Names", "permissions.no.acl",
                         "Resource can not be without permissions");

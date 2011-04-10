@@ -625,7 +625,8 @@ public class URL {
                     state = ParseState.HOST;
                     i += 2;
                 } else if (!(c >= 'a' && c <= 'z')) {
-                    throw new IllegalArgumentException("Malformed URL: " + url + " illegal character in protocol: " + c);
+                    throw new IllegalArgumentException("Malformed URL: " + url
+                                    + " illegal character in protocol: " + c);
                 } else {
                     protocol.append(c);
                 }
@@ -638,8 +639,10 @@ public class URL {
                     i--;
                 } else if (c == '?') {
                     state = ParseState.QUERY;
-                } else if (!(c >= 'a' && c <= 'z' || c >= '0' && c <= '9') && c != '.' && c != '-' && c != '_') {
-                    throw new IllegalArgumentException("Malformed URL: " + url + ": illegal character in host name: "
+                } else if (!(c >= 'a' && c <= 'z' || c >= '0' && c <= '9')
+                           && c != '.' && c != '-' && c != '_') {
+                    throw new IllegalArgumentException("Malformed URL: " + url
+                            + ": illegal character in host name: "
                             + c);
                 } else {
                     host.append(c);
@@ -654,7 +657,8 @@ public class URL {
                 } else if (c == '#') {
                     state = ParseState.REF;
                 } else if (!(c >= '0' && c <= '9')) {
-                    throw new IllegalArgumentException("Malformed URL: " + url + " illegal port number character: " + c);
+                    throw new IllegalArgumentException("Malformed URL: " + url
+                              + " illegal port number character: " + c);
                 } else {
                     port.append(c);
                 }
@@ -717,20 +721,18 @@ public class URL {
             }
         }
         Path resultPath = Path.ROOT;
-        // Special case: '/%20' -> '/'
-        if (p.getElements().size() == 2) {
-            String decoded = decode(p.getElements().get(1));
-            if (!"".equals(decoded.trim())) {
-                resultPath = resultPath.expand(decoded);
+        List<String> elements = p.getElements();
+        for (int i = 1; i < elements.size(); i++) {
+            String decoded = decode(elements.get(i));
+            if (i == elements.size() - 1) {
+                // Special case: remove last element if it is '%20'
+                if ("".equals(decoded.trim())) {
+                    break;
+                }                    
             }
-        } else {
-            for (String elem : p.getElements()) {
-                if (!"/".equals(elem)) {
-                    String decoded = decode(elem);
-                    resultPath = resultPath.expand(decoded);
-                }
-            }
+            resultPath = resultPath.expand(decoded);
         }
+        
         Integer portNumber = null;
         if (port.length() > 0) {
             try {

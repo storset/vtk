@@ -96,6 +96,7 @@ public class ACLEditCommandValidator implements Validator {
                 errors.rejectValue("groupNames", "permissions.group.missing.value",
                         "You must type a group name");
             }
+            
             validateGroupNames(editCommand, errors);
             
             rejectValues(VALIDATION_ERROR_GROUP_PREFIX, VALIDATION_ERROR_NOT_FOUND, this.notFound, errors);
@@ -109,6 +110,7 @@ public class ACLEditCommandValidator implements Validator {
                 errors.rejectValue("userNames", "permissions.user.missing.value",
                         "You must type a username");
             }
+            
             validateUserNames(editCommand, errors);
             
             rejectValues(VALIDATION_ERROR_USER_PREFIX, VALIDATION_ERROR_NOT_FOUND, this.notFound, errors);

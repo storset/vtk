@@ -339,7 +339,7 @@ public class ACLEditController extends SimpleFormController {
      * @param values groups or users to remove
      * @param type type of ACL (GROUP or USER)
      * @param yourself
-     * @param errors
+     * @param errors ACL validation errors
      * @return the modified ACL
      */
     private Acl removeFromAcl(Acl acl, String[] values, Type type, Principal yourself, BindException errors) {
@@ -368,7 +368,7 @@ public class ACLEditController extends SimpleFormController {
      * @param potentialAcl the potential ACL object
      * @param userOrGroup the user or group
      * @param yourself
-     * @param errors
+     * @param errors ACL validation errors
      * @return the modified ACL
      */
     private Acl checkIfUserIsInAdminPrivilegedGroups(Acl acl, Acl potentialAcl, Principal userOrGroup, Principal yourself, BindException errors) { 
@@ -402,7 +402,7 @@ public class ACLEditController extends SimpleFormController {
      * @param acl the ACL object
      * @param potentialAcl the potential ACL object
      * @param userOrGroup the user or group
-     * @param errors
+     * @param errors ACL validation errors
      * @return the modified ACL
      */
     private Acl checkIfNotEmptyAdminAcl(Acl acl, Acl potentialAcl, Principal userOrGroup, BindException errors) {

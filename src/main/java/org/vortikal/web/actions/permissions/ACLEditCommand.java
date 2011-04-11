@@ -151,7 +151,7 @@ public class ACLEditCommand extends UpdateCancelCommand {
         this.shortcuts = shortcuts;
     }
 
-    private String[] stripBlanks(String[] values) {
+    protected String[] stripBlanks(String[] values) {
         List<String> noBlanks = new ArrayList<String>();
         for (String value : values) {
             if (value != null && !value.trim().equals("")) {

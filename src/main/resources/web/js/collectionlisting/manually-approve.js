@@ -209,15 +209,6 @@ function generateTableRow(resource, i) {
   }
   if(resource.approved) {
     html += "<td><input type='checkbox' checked='checked' />";
-    // Add checked to textfield for second save, TODO: refactor with similar code
-    var textfield = $("#resource\\.manually-approved-resources");
-    var val = textfield.val();
-    if(val.length) {
-      val += ", " + resource.uri;
-  	} else {
-  	  val = resource.uri;	
-  	}
-    textfield.val(val);
   } else {
 	html += "<td><input type='checkbox' />";
   }

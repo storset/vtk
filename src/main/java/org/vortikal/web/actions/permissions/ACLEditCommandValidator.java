@@ -281,7 +281,7 @@ public class ACLEditCommandValidator implements Validator {
             return "'" + trimmedName + "'";
         } else {
             if(!csv.contains(trimmedName)) {
-              return ", '" + name.trim() + "'";
+              return ", '" + trimmedName + "'";
             } else {
               return "";
             }

@@ -276,10 +276,15 @@ public class ACLEditCommandValidator implements Validator {
 
 
     private String toCSV(String csv, String name) {
+        String trimmedName = name.trim();
         if (csv.isEmpty()) {
-            return "'" + name.trim() + "'";
+            return "'" + trimmedName + "'";
         } else {
-            return ", '" + name.trim() + "'";
+            if(!csv.contains(trimmedName)) {
+              return ", '" + name.trim() + "'";
+            } else {
+              return "";
+            }
         }
     }
 

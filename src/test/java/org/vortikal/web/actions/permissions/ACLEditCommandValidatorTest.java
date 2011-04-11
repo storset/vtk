@@ -25,9 +25,6 @@ public class ACLEditCommandValidatorTest extends TestCase {
         csv += validator.toCSV(csv, "vrtxphp"); // add
         assertEquals("'alle@uio.no', 'vrtxadm', 'vrtx-core', 'vrtxphp'", csv);
         
-        csv += validator.toCSV(csv, "vrtxadm"); // ignore duplicate
-        assertEquals("'alle@uio.no', 'vrtxadm', 'vrtx-core', 'vrtxphp'", csv);
-        
         csv += validator.toCSV(csv, "vrtx,test"); // add with comma
         assertEquals("'alle@uio.no', 'vrtxadm', 'vrtx-core', 'vrtxphp', 'vrtx,test'", csv);
  

@@ -52,7 +52,11 @@ public class ACLEditCommandValidator implements Validator {
     private static final String VALIDATION_ERROR_ILLEGAL_BLACKLISTED = "illegal.blacklisted";
     private static final String VALIDATION_ERROR_ILLEGAL = "illegal";
     private static final String VALIDATION_ERROR_TOO_MANY_MATCHES = "too.many.matches";
-    private static final String VALIDATION_OK = "ok";
+    
+    private String notFound;
+    private String illegalBlacklisted;
+    private String illegal;
+    private String tooManyMatchedUsers;
 
 
     /**
@@ -66,6 +70,11 @@ public class ACLEditCommandValidator implements Validator {
 
     public void validate(Object command, Errors errors) {
         ACLEditCommand editCommand = (ACLEditCommand) command;
+        
+        this.notFound = new String();
+        this.illegalBlacklisted = new String();
+        this.illegal = new String();
+        this.tooManyMatchedUsers = new String();
 
         // Don't validate on cancel
         if (editCommand.getCancelAction() != null) {
@@ -85,6 +94,10 @@ public class ACLEditCommandValidator implements Validator {
                         "You must type a group name");
             }
             validateGroupNames(editCommand, errors);
+            
+            rejectValues("group", this.notFound, VALIDATION_ERROR_NOT_FOUND, errors);
+            rejectValues("group", this.illegalBlacklisted, VALIDATION_ERROR_ILLEGAL_BLACKLISTED, errors);
+            rejectValues("group", this.illegal, VALIDATION_ERROR_ILLEGAL, errors);
 
         } else if (editCommand.getAddUserAction() != null) {
             String[] userNames = editCommand.getUserNames();
@@ -94,39 +107,23 @@ public class ACLEditCommandValidator implements Validator {
                         "You must type a username");
             }
             validateUserNames(editCommand, errors);
+            
+            rejectValues("user", this.notFound, VALIDATION_ERROR_NOT_FOUND, errors);
+            rejectValues("user", this.illegalBlacklisted, VALIDATION_ERROR_ILLEGAL_BLACKLISTED, errors);
+            rejectValues("user", this.illegal, VALIDATION_ERROR_ILLEGAL, errors);
+            rejectValues("user", this.tooManyMatchedUsers, VALIDATION_ERROR_TOO_MANY_MATCHES, errors);
         }
     }
 
 
     private void validateGroupNames(ACLEditCommand editCommand, Errors errors) {
         String[] groupNames = editCommand.getGroupNames();
-
         if (groupNames.length > 0) {
-
-            String notFound = new String();
-            String illegalBlacklisted = new String();
-            String illegal = new String();
-
             for (String groupName : groupNames) {
-                String validation = validateGroupOrUserName(Type.GROUP, groupName, editCommand);
-
-                if (!VALIDATION_OK.equals(validation)) {
-                    // *** TODO: is it possible to refactor these seven lines in a sensible way? ***
-                    if (VALIDATION_ERROR_NOT_FOUND.equals(validation)) {
-                        notFound += toCSV(notFound, groupName);
-                    } else if (VALIDATION_ERROR_ILLEGAL_BLACKLISTED.equals(validation)) {
-                        illegalBlacklisted += toCSV(illegalBlacklisted, groupName);
-                    } else if (VALIDATION_ERROR_ILLEGAL.equals(validation)) {
-                        illegal += toCSV(illegal, groupName);
-                    }
-                    // *** ^ ***
+                if (!validateGroupOrUserName(Type.GROUP, groupName, editCommand)) {
                     continue;
                 }
             }
-
-            rejectValues("group", notFound, VALIDATION_ERROR_NOT_FOUND, errors);
-            rejectValues("group", illegalBlacklisted, VALIDATION_ERROR_ILLEGAL_BLACKLISTED, errors);
-            rejectValues("group", illegal, VALIDATION_ERROR_ILLEGAL, errors);
         }
 
     }
@@ -136,31 +133,15 @@ public class ACLEditCommandValidator implements Validator {
         String[] userNames = editCommand.getUserNames();
 
         if (userNames.length > 0) {
-
-            String notFound = new String();
-            String illegalBlacklisted = new String();
-            String illegal = new String();
-            String tooManyMatchedUsers = new String();
-
+            
             for (String userName : userNames) {
 
                 userName = userName.trim();
                 String uid = userName;
 
                 // Assume a username and validate it as such
-                if (!userName.contains(" ")) {
-                    
-                    String validation = validateGroupOrUserName(Type.USER, userName, editCommand);
-                    if (!VALIDATION_OK.equals(validation)) {
-                        // *** TODO: is it possible to refactor these seven lines in a sensible way? ***
-                        if (VALIDATION_ERROR_NOT_FOUND.equals(validation)) {
-                            notFound += toCSV(notFound, userName);
-                        } else if (VALIDATION_ERROR_ILLEGAL_BLACKLISTED.equals(validation)) {
-                            illegalBlacklisted += toCSV(illegalBlacklisted, userName);
-                        } else if (VALIDATION_ERROR_ILLEGAL.equals(validation)) {
-                            illegal += toCSV(illegal, userName);
-                        }
-                        // *** ^ ***
+                if (!userName.contains(" ")) { 
+                    if (!validateGroupOrUserName(Type.USER, userName, editCommand)) {
                         continue;
                     }
                 } else {
@@ -176,51 +157,34 @@ public class ACLEditCommandValidator implements Validator {
                         // Entered name is selected from autocomplete
                         // suggestions and we have username
                         if (ac_userName != null && !"".equals(ac_userName)) {
-                             
-                            String validation = validateGroupOrUserName(Type.USER, ac_userName, editCommand);
-                            if (!VALIDATION_OK.equals(validation)) {
-                                // *** TODO: is it possible to refactor these seven lines in a sensible way? ***y?
-                                if (VALIDATION_ERROR_NOT_FOUND.equals(validation)) {
-                                    notFound += toCSV(notFound, userName);
-                                } else if (VALIDATION_ERROR_ILLEGAL_BLACKLISTED.equals(validation)) {
-                                    illegalBlacklisted += toCSV(illegalBlacklisted, userName);
-                                } else if (VALIDATION_ERROR_ILLEGAL.equals(validation)) {
-                                    illegal += toCSV(illegal, userName);
-                                }
-                                // *** ^ ***
+                            if (!validateGroupOrUserName(Type.USER, ac_userName, editCommand)) {
                                 continue;
                             }
-
                             uid = ac_userName;
                         } else {
                             List<Principal> matches = this.principalFactory.search(userName, Type.USER);
                             if (matches == null || matches.isEmpty()) {
-                                notFound += toCSV(notFound, userName);
+                                this.notFound += toCSV(this.notFound, userName);
                                 continue;
                             } else if (matches.size() > 1) {
-                                tooManyMatchedUsers += toCSV(tooManyMatchedUsers, userName);
+                                this.tooManyMatchedUsers += toCSV(this.tooManyMatchedUsers, userName);
                                 continue;
                             }
                             uid = matches.get(0).getName();
                         }
                     } catch (Exception e) {
                         // TODO: is it ok with 'not exist' error-message here?
-                        notFound += toCSV(notFound, userName);
+                        this.notFound += toCSV(this.notFound, userName);
                         continue;
                     }
                 }
                 editCommand.addUserNameEntry(uid);
             }
-
-            rejectValues("user", notFound, VALIDATION_ERROR_NOT_FOUND, errors);
-            rejectValues("user", illegalBlacklisted, VALIDATION_ERROR_ILLEGAL_BLACKLISTED, errors);
-            rejectValues("user", illegal, VALIDATION_ERROR_ILLEGAL, errors);
-            rejectValues("user", tooManyMatchedUsers, VALIDATION_ERROR_TOO_MANY_MATCHES, errors);
         }
     }
 
 
-    private String validateGroupOrUserName(Type type, String name, ACLEditCommand editCommand) {
+    private boolean validateGroupOrUserName(Type type, String name, ACLEditCommand editCommand) {
         try {
             Principal groupOrUser = null;
             boolean exists = false;
@@ -234,16 +198,19 @@ public class ACLEditCommandValidator implements Validator {
             }
 
             if (groupOrUser != null && !exists) {
-                return VALIDATION_ERROR_NOT_FOUND;
+                this.notFound += toCSV(this.notFound, name);
+                return false;
             }
 
             if (!repository.isValidAclEntry(editCommand.getPrivilege(), groupOrUser)) {
-                return VALIDATION_ERROR_ILLEGAL_BLACKLISTED;
+                this.illegalBlacklisted += toCSV(this.illegalBlacklisted, name);
+                return false;
             }
         } catch (InvalidPrincipalException e) {
-            return VALIDATION_ERROR_ILLEGAL;
+            this.illegal += toCSV(this.illegal, name);
+            return false;
         }
-        return VALIDATION_OK;
+        return true;
     }
 
 
@@ -280,11 +247,7 @@ public class ACLEditCommandValidator implements Validator {
         if (csv.isEmpty()) {
             return "'" + trimmedName + "'";
         } else {
-            if(!csv.contains(trimmedName)) {
-              return ", '" + trimmedName + "'";
-            } else {
-              return "";
-            }
+            return ", '" + trimmedName + "'";
         }
     }
 

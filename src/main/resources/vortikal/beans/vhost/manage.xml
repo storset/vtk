@@ -936,6 +936,7 @@
         <property name="repository" ref="repository" />
       </bean>
     </property>
+    <property name="principalManager" ref="principalManager" />
     <property name="principalFactory" ref="principalFactory" />
     <property name="permissionShortcuts" ref="permissionShortcuts" />
   </bean>

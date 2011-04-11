@@ -35,14 +35,12 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import org.vortikal.repository.Acl;
-import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
-import org.vortikal.security.Principal.Type;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.PrincipalManager;
+import org.vortikal.security.Principal.Type;
 
 public class ACLEditCommandValidator implements Validator {
 
@@ -96,24 +94,6 @@ public class ACLEditCommandValidator implements Validator {
                         "You must type a username");
             }
             validateUserNames(editCommand, errors);
-
-        } else if (editCommand.getRemoveGroupAction() != null || editCommand.getRemoveUserAction() != null) { 
-            Acl acl = editCommand.getAcl();
-            Privilege privilege = editCommand.getPrivilege();
-
-            boolean isOnlyOneRemainingACE = (acl.size() == 1);
-            boolean isOnlyOneRemainingACEAdmin = (acl.getPrincipalSet(Privilege.ALL).size() == 1) && privilege.equals(Privilege.ALL);
-
-            String prefixType = editCommand.getRemoveGroupAction() != null ? "group" : "user";
-            // TODO: remove? - will never occur because of check below - if not already removed before new permission regime
-            if (isOnlyOneRemainingACE) {
-                errors.rejectValue(prefixType + "Names", "permissions.no.acl",
-                        "Resource can not be without permissions");
-            }
-            if (isOnlyOneRemainingACEAdmin) {
-                errors.rejectValue(prefixType + "Names", "permissions.all.not.empty",
-                        "Not possible to remove all admin permissions");
-            }
         }
     }
 

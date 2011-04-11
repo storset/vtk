@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -51,6 +52,7 @@ import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.Principal.Type;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.web.RequestContext;
@@ -59,7 +61,9 @@ import org.vortikal.web.service.Service;
 public class ACLEditController extends SimpleFormController {
 
     private Privilege privilege;
+    private PrincipalManager principalManager; 
     private PrincipalFactory principalFactory;
+
     private Map<Privilege, List<String>> permissionShortcuts;
     
     private List<String> shortcuts;
@@ -176,24 +180,33 @@ public class ACLEditController extends SimpleFormController {
         }
         
         // Remove or add shortcuts
-        acl = aclShortcuts(acl, editCommand);
+        acl = aclShortcuts(acl, editCommand, requestContext.getPrincipal(), errors);
         
         // Has the user asked to save?
         if (editCommand.getSaveAction() != null) {     
             acl = addToAcl(acl, editCommand.getGroupNames(), Type.GROUP);
             acl = addToAcl(acl, editCommand.getUserNameEntries(), Type.USER);
+            if(errors.hasErrors()) {
+                BindException bex =  new BindException(getACLEditCommand(resource, acl, requestContext.getPrincipal()), this.getCommandName());
+                bex.addAllErrors(errors);
+                return showForm(request, response, errors);  
+            }
             resource = repository.storeACL(token, resource.getURI(), acl);
             return new ModelAndView(getSuccessView()); 
         }
 
         // Doing remove or add actions
         if (editCommand.getRemoveGroupAction() != null) {
-            acl = removeFromAcl(acl, editCommand.getGroupNames(), Type.GROUP);
-            return showForm(request, response, new BindException(getACLEditCommand(resource, acl, requestContext.getPrincipal()), this.getCommandName()));
+            acl = removeFromAcl(acl, editCommand.getGroupNames(), Type.GROUP, requestContext.getPrincipal(), errors);
+            BindException bex =  new BindException(getACLEditCommand(resource, acl, requestContext.getPrincipal()), this.getCommandName());
+            bex.addAllErrors(errors);
+            return showForm(request, response, bex);
 
         } else if (editCommand.getRemoveUserAction() != null) {
-            acl = removeFromAcl(acl, editCommand.getUserNames(), Type.USER);
-            return showForm(request, response, new BindException(getACLEditCommand(resource, acl, requestContext.getPrincipal()), this.getCommandName()));
+            acl = removeFromAcl(acl, editCommand.getUserNames(), Type.USER, requestContext.getPrincipal(), errors);
+            BindException bex =  new BindException(getACLEditCommand(resource, acl, requestContext.getPrincipal()), this.getCommandName());
+            bex.addAllErrors(errors);
+            return showForm(request, response, bex);
 
         } else if (editCommand.getAddGroupAction() != null) {
             acl = addToAcl(acl, editCommand.getGroupNames(), Type.GROUP);
@@ -284,7 +297,7 @@ public class ACLEditController extends SimpleFormController {
      * @param editCommand the command object
      * @return the modified ACL
      */
-    private Acl aclShortcuts(Acl acl, ACLEditCommand editCommand) {
+    private Acl aclShortcuts(Acl acl, ACLEditCommand editCommand, Principal yourself, BindException errors) {
         String[] updatedShortcuts = editCommand.getUpdatedShortcuts();
         String[][] shortcuts = editCommand.getShortcuts();
 
@@ -304,7 +317,7 @@ public class ACLEditController extends SimpleFormController {
             if (checkedNotFound) {
                 String[] groupOrUserShortcut = new String[1];
                 Type type = unformatShortcutAndSetType(shortcut, groupOrUserShortcut);
-                acl = removeFromAcl(acl, groupOrUserShortcut, type);
+                acl = removeFromAcl(acl, groupOrUserShortcut, type, yourself, errors);
             }
 
             // Add
@@ -323,14 +336,78 @@ public class ACLEditController extends SimpleFormController {
      * @param acl the ACL object
      * @param values groups or users to remove
      * @param type type of ACL (GROUP or USER)
+     * @param yourself
      * @return the modified ACL
      */
-    private Acl removeFromAcl(Acl acl, String[] values, Type type) {
+    private Acl removeFromAcl(Acl acl, String[] values, Type type, Principal yourself, BindException errors) {
         for (String value : values) {
-            Principal principal = principalFactory.getPrincipal(value, typePseudoUser(type, value));
-            acl = acl.removeEntry(this.privilege, principal);
+            Principal userOrGroup = principalFactory.getPrincipal(value, typePseudoUser(type, value));
+            Acl potentialAcl = acl.removeEntry(this.privilege, userOrGroup);
+            if (this.privilege.equals(Privilege.ALL)) {
+                if (userOrGroup.equals(yourself) || (!acl.containsEntry(this.privilege, yourself) && type.equals(Type.GROUP))) {
+                    // Trying to remove yourself or group (with yourself not as admin)
+                    acl = checkIfUserIsInAdminPrivilegedGroups(acl, potentialAcl, userOrGroup, yourself, errors);
+                } else {
+                    // Trying to remove user (not yourself) or group (with yourself still as admin)
+                    acl = checkIfNotEmptyAdminAcl(acl, potentialAcl, userOrGroup, errors); 
+                }
+            } else {
+                acl = potentialAcl;
+            }
         }
         return acl;
+    }
+
+    /**
+     * Check if User is still in privileged groups after removal
+     * 
+     * @param acl the ACL object
+     * @param userOrGroup the user or group
+     * @param yourself
+     * @return the modified ACL
+     */
+    private Acl checkIfUserIsInAdminPrivilegedGroups(Acl acl, Acl potentialAcl, Principal userOrGroup, Principal yourself, BindException errors) { 
+        Set<Principal> groups = principalManager.getMemberGroups(yourself);
+        Principal[] privilegedGroups = potentialAcl.listPrivilegedGroups(Privilege.ALL);
+        boolean stillAdmin = false;
+        if (privilegedGroups.length > 0) {
+            int i = 0;
+            for (Principal group : groups) {
+                if (privilegedGroups[i] == group) {
+                    stillAdmin = true;
+                    break;
+                }
+                i++;
+            }
+        }
+        if (!stillAdmin) {
+            // TODO: show OK/Cancel dialog - for now: dont remove and give error
+            String prefixType = (userOrGroup.getType().equals(Type.GROUP)) ? "group" : "user";
+            errors.rejectValue(prefixType + "Names", "permissions.all.yourself.not.empty",
+                    "Not possible to remove all admin for yourself");
+            return acl;
+        } else {
+            return checkIfNotEmptyAdminAcl(acl, potentialAcl, userOrGroup, errors);
+        }
+    }
+    
+    /**
+     * Check if not empty admin Acl
+     * 
+     * @param acl the ACL object
+     * @param userOrGroup the user or group
+     * @param yourself
+     * @return the modified ACL
+     */
+    private Acl checkIfNotEmptyAdminAcl(Acl acl, Acl potentialAcl, Principal userOrGroup, BindException errors) {
+        if (potentialAcl.getPrincipalSet(Privilege.ALL).size() == 0) {
+            String prefixType = (userOrGroup.getType().equals(Type.GROUP)) ? "group" : "user";
+            errors.rejectValue(prefixType + "Names", "permissions.all.not.empty",
+                    "Not possible to remove all admin permissions");
+            return acl;
+        } else {
+            return potentialAcl;
+        }  
     }
     
     /**
@@ -403,20 +480,25 @@ public class ACLEditController extends SimpleFormController {
         }
         return type;
     }
+    
+    @Required
+    public void setPrivilege(Privilege privilege) {
+        this.privilege = privilege;
+    }
 
     @Required
     public void setPrincipalFactory(PrincipalFactory principalFactory) {
         this.principalFactory = principalFactory;
     }
+    
+    @Required
+    public void setPrincipalManager(PrincipalManager principalManager) {
+        this.principalManager = principalManager;
+    }
 
     @Required
     public void setPermissionShortcuts(Map<Privilege, List<String>> permissionShortcuts) {
         this.permissionShortcuts = permissionShortcuts;
-    }
-
-    @Required
-    public void setPrivilege(Privilege privilege) {
-        this.privilege = privilege;
-    }
+    }  
 
 }

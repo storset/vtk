@@ -384,7 +384,7 @@ public class ACLEditController extends SimpleFormController {
             // TODO: show OK/Cancel dialog - for now: dont remove and give error
             String prefixType = (userOrGroup.getType().equals(Type.GROUP)) ? "group" : "user";
             errors.rejectValue(prefixType + "Names", "permissions.all.yourself.not.empty",
-                    "Not possible to remove all admin for yourself");
+                    "Not possible to remove all admin permissions for yourself");
             return acl;
         } else {
             return checkIfNotEmptyAdminAcl(acl, potentialAcl, userOrGroup, errors);

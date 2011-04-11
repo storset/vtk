@@ -47,6 +47,9 @@ public class ACLEditCommandValidator implements Validator {
     private PrincipalManager principalManager;
     private PrincipalFactory principalFactory;
     private Repository repository;
+    
+    private static final String VALIDATION_ERROR_GROUP_PREFIX = "group";
+    private static final String VALIDATION_ERROR_USER_PREFIX = "user";
 
     private static final String VALIDATION_ERROR_NOT_FOUND = "not.found";
     private static final String VALIDATION_ERROR_ILLEGAL_BLACKLISTED = "illegal.blacklisted";
@@ -95,9 +98,9 @@ public class ACLEditCommandValidator implements Validator {
             }
             validateGroupNames(editCommand, errors);
             
-            rejectValues("group", this.notFound, VALIDATION_ERROR_NOT_FOUND, errors);
-            rejectValues("group", this.illegalBlacklisted, VALIDATION_ERROR_ILLEGAL_BLACKLISTED, errors);
-            rejectValues("group", this.illegal, VALIDATION_ERROR_ILLEGAL, errors);
+            rejectValues(VALIDATION_ERROR_GROUP_PREFIX, this.notFound, VALIDATION_ERROR_NOT_FOUND, errors);
+            rejectValues(VALIDATION_ERROR_GROUP_PREFIX, this.illegalBlacklisted, VALIDATION_ERROR_ILLEGAL_BLACKLISTED, errors);
+            rejectValues(VALIDATION_ERROR_GROUP_PREFIX, this.illegal, VALIDATION_ERROR_ILLEGAL, errors);
 
         } else if (editCommand.getAddUserAction() != null) {
             String[] userNames = editCommand.getUserNames();
@@ -108,10 +111,10 @@ public class ACLEditCommandValidator implements Validator {
             }
             validateUserNames(editCommand, errors);
             
-            rejectValues("user", this.notFound, VALIDATION_ERROR_NOT_FOUND, errors);
-            rejectValues("user", this.illegalBlacklisted, VALIDATION_ERROR_ILLEGAL_BLACKLISTED, errors);
-            rejectValues("user", this.illegal, VALIDATION_ERROR_ILLEGAL, errors);
-            rejectValues("user", this.tooManyMatchedUsers, VALIDATION_ERROR_TOO_MANY_MATCHES, errors);
+            rejectValues(VALIDATION_ERROR_USER_PREFIX, this.notFound, VALIDATION_ERROR_NOT_FOUND, errors);
+            rejectValues(VALIDATION_ERROR_USER_PREFIX, this.illegalBlacklisted, VALIDATION_ERROR_ILLEGAL_BLACKLISTED, errors);
+            rejectValues(VALIDATION_ERROR_USER_PREFIX, this.illegal, VALIDATION_ERROR_ILLEGAL, errors);
+            rejectValues(VALIDATION_ERROR_USER_PREFIX, this.tooManyMatchedUsers, VALIDATION_ERROR_TOO_MANY_MATCHES, errors);
         }
     }
 

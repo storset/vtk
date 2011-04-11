@@ -262,7 +262,7 @@ public class ACLEditCommandValidator implements Validator {
     }
 
 
-    private String getAc_userName(String userName, String[] ac_userNames, List<String> userNameEntries) {
+    protected String getAc_userName(String userName, String[] ac_userNames, List<String> userNameEntries) {
         for (String ac_userName : ac_userNames) {
             String[] s = ac_userName.split(";");
             String ac_fullName = s[0].trim();

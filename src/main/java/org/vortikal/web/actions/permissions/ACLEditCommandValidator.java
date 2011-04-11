@@ -73,11 +73,6 @@ public class ACLEditCommandValidator implements Validator {
 
     public void validate(Object command, Errors errors) {
         ACLEditCommand editCommand = (ACLEditCommand) command;
-        
-        this.notFound = new String();
-        this.illegalBlacklisted = new String();
-        this.illegal = new String();
-        this.tooManyMatchedUsers = new String();
 
         // Don't validate on cancel
         if (editCommand.getCancelAction() != null) {
@@ -86,21 +81,7 @@ public class ACLEditCommandValidator implements Validator {
 
         if (editCommand.getSaveAction() != null) {
             validateUserNames(editCommand, errors);
-            rejectValues(VALIDATION_ERROR_USER_PREFIX, VALIDATION_ERROR_NOT_FOUND, this.notFound, errors);
-            rejectValues(VALIDATION_ERROR_USER_PREFIX, VALIDATION_ERROR_ILLEGAL_BLACKLISTED, this.illegalBlacklisted, errors);
-            rejectValues(VALIDATION_ERROR_USER_PREFIX, VALIDATION_ERROR_ILLEGAL, this.illegal, errors);
-            rejectValues(VALIDATION_ERROR_USER_PREFIX, VALIDATION_ERROR_TOO_MANY_MATCHES, this.tooManyMatchedUsers, errors);
-            
-            this.notFound = new String();
-            this.illegalBlacklisted = new String();
-            this.illegal = new String();
-            this.tooManyMatchedUsers = new String();
-            
             validateGroupNames(editCommand, errors);
-            
-            rejectValues(VALIDATION_ERROR_GROUP_PREFIX, VALIDATION_ERROR_NOT_FOUND, this.notFound, errors);
-            rejectValues(VALIDATION_ERROR_GROUP_PREFIX, VALIDATION_ERROR_ILLEGAL_BLACKLISTED, this.illegalBlacklisted, errors);
-            rejectValues(VALIDATION_ERROR_GROUP_PREFIX, VALIDATION_ERROR_ILLEGAL, this.illegal, errors);
         }
 
         if (editCommand.getAddGroupAction() != null) {
@@ -113,10 +94,6 @@ public class ACLEditCommandValidator implements Validator {
             
             validateGroupNames(editCommand, errors);
             
-            rejectValues(VALIDATION_ERROR_GROUP_PREFIX, VALIDATION_ERROR_NOT_FOUND, this.notFound, errors);
-            rejectValues(VALIDATION_ERROR_GROUP_PREFIX, VALIDATION_ERROR_ILLEGAL_BLACKLISTED, this.illegalBlacklisted, errors);
-            rejectValues(VALIDATION_ERROR_GROUP_PREFIX, VALIDATION_ERROR_ILLEGAL, this.illegal, errors);
-
         } else if (editCommand.getAddUserAction() != null) {
             String[] userNames = editCommand.getUserNames();
 
@@ -126,11 +103,6 @@ public class ACLEditCommandValidator implements Validator {
             }
             
             validateUserNames(editCommand, errors);
-            
-            rejectValues(VALIDATION_ERROR_USER_PREFIX, VALIDATION_ERROR_NOT_FOUND, this.notFound, errors);
-            rejectValues(VALIDATION_ERROR_USER_PREFIX, VALIDATION_ERROR_ILLEGAL_BLACKLISTED, this.illegalBlacklisted, errors);
-            rejectValues(VALIDATION_ERROR_USER_PREFIX, VALIDATION_ERROR_ILLEGAL, this.illegal, errors);
-            rejectValues(VALIDATION_ERROR_USER_PREFIX, VALIDATION_ERROR_TOO_MANY_MATCHES, this.tooManyMatchedUsers, errors);
         }
     }
 
@@ -138,13 +110,21 @@ public class ACLEditCommandValidator implements Validator {
     private void validateGroupNames(ACLEditCommand editCommand, Errors errors) {
         String[] groupNames = editCommand.getGroupNames();
         if (groupNames.length > 0) {
+            this.notFound = new String();
+            this.illegalBlacklisted = new String();
+            this.illegal = new String();
+            this.tooManyMatchedUsers = new String();
+            
             for (String groupName : groupNames) {
                 if (!validateGroupOrUserName(Type.GROUP, groupName, editCommand)) {
                     continue;
                 }
             }
+            
+            rejectValues(VALIDATION_ERROR_GROUP_PREFIX, VALIDATION_ERROR_NOT_FOUND, this.notFound, errors);
+            rejectValues(VALIDATION_ERROR_GROUP_PREFIX, VALIDATION_ERROR_ILLEGAL_BLACKLISTED, this.illegalBlacklisted, errors);
+            rejectValues(VALIDATION_ERROR_GROUP_PREFIX, VALIDATION_ERROR_ILLEGAL, this.illegal, errors);
         }
-
     }
 
 
@@ -152,6 +132,10 @@ public class ACLEditCommandValidator implements Validator {
         String[] userNames = editCommand.getUserNames();
 
         if (userNames.length > 0) {
+            this.notFound = new String();
+            this.illegalBlacklisted = new String();
+            this.illegal = new String();
+            this.tooManyMatchedUsers = new String();
             
             for (String userName : userNames) {
 
@@ -199,6 +183,11 @@ public class ACLEditCommandValidator implements Validator {
                 }
                 editCommand.addUserNameEntry(uid);
             }
+            
+            rejectValues(VALIDATION_ERROR_USER_PREFIX, VALIDATION_ERROR_NOT_FOUND, this.notFound, errors);
+            rejectValues(VALIDATION_ERROR_USER_PREFIX, VALIDATION_ERROR_ILLEGAL_BLACKLISTED, this.illegalBlacklisted, errors);
+            rejectValues(VALIDATION_ERROR_USER_PREFIX, VALIDATION_ERROR_ILLEGAL, this.illegal, errors);
+            rejectValues(VALIDATION_ERROR_USER_PREFIX, VALIDATION_ERROR_TOO_MANY_MATCHES, this.tooManyMatchedUsers, errors);
         }
     }
 

@@ -43,6 +43,8 @@ public class ACLEditControllerTest extends TestCase {
         shortcuts.add("foobar:vrtxadm"); // invalid - should be ignored
         
         int validShortcuts = controller.countValidshortcuts(shortcuts);
+        assertEquals(4, validShortcuts);
+        
         String[][] extractedShortcuts = controller.extractAndCheckShortcuts(authorizedUsers, authorizedGroups, shortcuts, validShortcuts);
         
         assertEquals(4, extractedShortcuts.length);

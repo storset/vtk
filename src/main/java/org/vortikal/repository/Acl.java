@@ -83,7 +83,7 @@ public final class Acl {
         return this.actionSets.isEmpty();
     }
     
-    public int getTotalACEs() {
+    public int size() {
         int total = 0;
         for (Privilege action: this.actionSets.keySet()) {
             Set<Principal> principalSet = this.actionSets.get(action);
@@ -92,13 +92,6 @@ public final class Acl {
         return total;
     }
     
-    public int getACEsPrPrivilege(Privilege privilege) {
-        if(this.actionSets.containsKey(privilege)) {
-          return this.actionSets.get(privilege).size();
-        } else {
-          return 0;
-        }
-    }
     
     public boolean isValidEntry(Privilege privilege, Principal principal) {
         if (privilege == null) {

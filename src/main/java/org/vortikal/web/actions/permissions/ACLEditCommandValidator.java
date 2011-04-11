@@ -40,9 +40,9 @@ import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
+import org.vortikal.security.Principal.Type;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.PrincipalManager;
-import org.vortikal.security.Principal.Type;
 
 public class ACLEditCommandValidator implements Validator {
 
@@ -101,8 +101,8 @@ public class ACLEditCommandValidator implements Validator {
             Acl acl = editCommand.getAcl();
             Privilege privilege = editCommand.getPrivilege();
 
-            boolean isOnlyOneRemainingACE = (acl.getTotalACEs() == 1);
-            boolean isOnlyOneRemainingACEAdmin = (acl.getACEsPrPrivilege(Privilege.ALL) == 1) && privilege.equals(Privilege.ALL);
+            boolean isOnlyOneRemainingACE = (acl.size() == 1);
+            boolean isOnlyOneRemainingACEAdmin = (acl.getPrincipalSet(Privilege.ALL).size() == 1) && privilege.equals(Privilege.ALL);
 
             String prefixType = editCommand.getRemoveGroupAction() != null ? "group" : "user";
             // TODO: remove? - will never occur because of check below - if not already removed before new permission regime

@@ -205,7 +205,7 @@ public class ACLEditCommandValidator implements Validator {
                         }
                     } catch (Exception e) {
                         // TODO: is it ok with 'not exist' error-message here?
-                        notFound += notFound.isEmpty() ? userName : ", " + userName;
+                        notFound += toCSV(notFound, userName);
                         continue;
                     }
                 }

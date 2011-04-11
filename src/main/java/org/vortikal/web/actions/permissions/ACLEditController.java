@@ -292,9 +292,9 @@ public class ACLEditController extends SimpleFormController {
      * Add and remove ACL entries for updated shortcuts.
      * 
      * @param acl the ACL object
-     * @param repository the repository object
-     * @param errors ACL validation errors
      * @param editCommand the command object
+     * @param yourself
+     * @param errors ACL validation errors
      * @return the modified ACL
      */
     private Acl aclShortcuts(Acl acl, ACLEditCommand editCommand, Principal yourself, BindException errors) {
@@ -337,6 +337,7 @@ public class ACLEditController extends SimpleFormController {
      * @param values groups or users to remove
      * @param type type of ACL (GROUP or USER)
      * @param yourself
+     * @param errors
      * @return the modified ACL
      */
     private Acl removeFromAcl(Acl acl, String[] values, Type type, Principal yourself, BindException errors) {
@@ -359,11 +360,13 @@ public class ACLEditController extends SimpleFormController {
     }
 
     /**
-     * Check if User is still in privileged groups after removal
+     * Check if yourself is still in privileged groups for admin after removal
      * 
      * @param acl the ACL object
+     * @param potentialAcl the potential ACL object
      * @param userOrGroup the user or group
      * @param yourself
+     * @param errors
      * @return the modified ACL
      */
     private Acl checkIfUserIsInAdminPrivilegedGroups(Acl acl, Acl potentialAcl, Principal userOrGroup, Principal yourself, BindException errors) { 
@@ -395,8 +398,9 @@ public class ACLEditController extends SimpleFormController {
      * Check if not empty admin Acl
      * 
      * @param acl the ACL object
+     * @param potentialAcl the potential ACL object
      * @param userOrGroup the user or group
-     * @param yourself
+     * @param errors
      * @return the modified ACL
      */
     private Acl checkIfNotEmptyAdminAcl(Acl acl, Acl potentialAcl, Principal userOrGroup, BindException errors) {

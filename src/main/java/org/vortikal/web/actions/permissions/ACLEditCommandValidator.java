@@ -98,9 +98,9 @@ public class ACLEditCommandValidator implements Validator {
             }
             validateGroupNames(editCommand, errors);
             
-            rejectValues(VALIDATION_ERROR_GROUP_PREFIX, this.notFound, VALIDATION_ERROR_NOT_FOUND, errors);
-            rejectValues(VALIDATION_ERROR_GROUP_PREFIX, this.illegalBlacklisted, VALIDATION_ERROR_ILLEGAL_BLACKLISTED, errors);
-            rejectValues(VALIDATION_ERROR_GROUP_PREFIX, this.illegal, VALIDATION_ERROR_ILLEGAL, errors);
+            rejectValues(VALIDATION_ERROR_GROUP_PREFIX, VALIDATION_ERROR_NOT_FOUND, this.notFound, errors);
+            rejectValues(VALIDATION_ERROR_GROUP_PREFIX, VALIDATION_ERROR_ILLEGAL_BLACKLISTED, this.illegalBlacklisted, errors);
+            rejectValues(VALIDATION_ERROR_GROUP_PREFIX, VALIDATION_ERROR_ILLEGAL, this.illegal, errors);
 
         } else if (editCommand.getAddUserAction() != null) {
             String[] userNames = editCommand.getUserNames();
@@ -111,10 +111,10 @@ public class ACLEditCommandValidator implements Validator {
             }
             validateUserNames(editCommand, errors);
             
-            rejectValues(VALIDATION_ERROR_USER_PREFIX, this.notFound, VALIDATION_ERROR_NOT_FOUND, errors);
-            rejectValues(VALIDATION_ERROR_USER_PREFIX, this.illegalBlacklisted, VALIDATION_ERROR_ILLEGAL_BLACKLISTED, errors);
-            rejectValues(VALIDATION_ERROR_USER_PREFIX, this.illegal, VALIDATION_ERROR_ILLEGAL, errors);
-            rejectValues(VALIDATION_ERROR_USER_PREFIX, this.tooManyMatchedUsers, VALIDATION_ERROR_TOO_MANY_MATCHES, errors);
+            rejectValues(VALIDATION_ERROR_USER_PREFIX, VALIDATION_ERROR_NOT_FOUND, this.notFound, errors);
+            rejectValues(VALIDATION_ERROR_USER_PREFIX, VALIDATION_ERROR_ILLEGAL_BLACKLISTED, this.illegalBlacklisted, errors);
+            rejectValues(VALIDATION_ERROR_USER_PREFIX, VALIDATION_ERROR_ILLEGAL, this.illegal, errors);
+            rejectValues(VALIDATION_ERROR_USER_PREFIX, VALIDATION_ERROR_TOO_MANY_MATCHES, this.tooManyMatchedUsers, errors);
         }
     }
 
@@ -217,7 +217,7 @@ public class ACLEditCommandValidator implements Validator {
     }
 
 
-    private void rejectValues(String type, String groupsOrUsers, String errorType, Errors errors) {
+    private void rejectValues(String type, String errorType, String groupsOrUsers, Errors errors) {
         if (!groupsOrUsers.isEmpty()) {
             if (!groupsOrUsers.contains(",")) {
                 errors.rejectValue(type + "Names", "permissions." + type + "." + errorType + ".value",

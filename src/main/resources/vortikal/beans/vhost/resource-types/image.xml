@@ -18,7 +18,7 @@
     <property name="propertyTypeDefinitions">
       <list>
         <ref bean="thumbnailPropDef" />
-        <ref bean="photographerNamePropDef"/>
+        <ref bean="photographerPropDef"/>
       </list>
     </property>
   </bean>

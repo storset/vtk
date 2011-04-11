@@ -22,24 +22,11 @@
         <ref bean="authorNamePropDef" />
         <ref bean="authorEmailPropDef" />
         <ref bean="authorURLPropDef" />
-<!--        <ref bean="validToDatePropDef" />-->
+        <ref bean="photographerPropDef" />
       </list>
     </property>
   </bean>
 
-<!--  <bean id="validToDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="name" value="validToDate" /> 
-    <property name="type" value="TIMESTAMP" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
-    <property name="mandatory" value="false" />
-    <property name="propertyEvaluator" ref="validToEvaluator"/>
-  </bean>
-
-  <bean id="validToEvaluator"
-    class="org.vortikal.repository.resourcetype.property.UhtmlValidToEvaluator">
-    <property name="valueFactory" ref="valueFactory"/>
-  </bean>
--->
   <bean id="verifiedDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="verifiedDate" /> 
     <property name="type" value="TIMESTAMP" />
@@ -83,8 +70,8 @@
     <property name="mandatory" value="false" />
   </bean>
 
-  <bean id="photographerNamePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="name" value="photographerName" />
+  <bean id="photographerPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="photographer" />
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />

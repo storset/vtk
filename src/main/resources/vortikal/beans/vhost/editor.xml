@@ -418,7 +418,7 @@
         <property name="preContentProperties">
           <list>
             <ref bean="userTitlePropDef" />
-            <ref bean="photographerNamePropDef"/>
+            <ref bean="photographerPropDef"/>
             <ref bean="descriptionPropDef" />
           </list>
         </property>

@@ -86,7 +86,21 @@ public class ACLEditCommandValidator implements Validator {
 
         if (editCommand.getSaveAction() != null) {
             validateUserNames(editCommand, errors);
+            rejectValues(VALIDATION_ERROR_USER_PREFIX, VALIDATION_ERROR_NOT_FOUND, this.notFound, errors);
+            rejectValues(VALIDATION_ERROR_USER_PREFIX, VALIDATION_ERROR_ILLEGAL_BLACKLISTED, this.illegalBlacklisted, errors);
+            rejectValues(VALIDATION_ERROR_USER_PREFIX, VALIDATION_ERROR_ILLEGAL, this.illegal, errors);
+            rejectValues(VALIDATION_ERROR_USER_PREFIX, VALIDATION_ERROR_TOO_MANY_MATCHES, this.tooManyMatchedUsers, errors);
+            
+            this.notFound = new String();
+            this.illegalBlacklisted = new String();
+            this.illegal = new String();
+            this.tooManyMatchedUsers = new String();
+            
             validateGroupNames(editCommand, errors);
+            
+            rejectValues(VALIDATION_ERROR_GROUP_PREFIX, VALIDATION_ERROR_NOT_FOUND, this.notFound, errors);
+            rejectValues(VALIDATION_ERROR_GROUP_PREFIX, VALIDATION_ERROR_ILLEGAL_BLACKLISTED, this.illegalBlacklisted, errors);
+            rejectValues(VALIDATION_ERROR_GROUP_PREFIX, VALIDATION_ERROR_ILLEGAL, this.illegal, errors);
         }
 
         if (editCommand.getAddGroupAction() != null) {

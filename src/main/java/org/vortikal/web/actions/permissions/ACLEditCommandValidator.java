@@ -111,7 +111,7 @@ public class ACLEditCommandValidator implements Validator {
                 String validation = validateGroupOrUserName(Type.GROUP, groupName, editCommand);
 
                 if (!VALIDATION_OK.equals(validation)) {
-                    // *** TODO: is it possible to refactor this seven lines in a sensible way? ***
+                    // *** TODO: is it possible to refactor these seven lines in a sensible way? ***
                     if (VALIDATION_ERROR_NOT_FOUND.equals(validation)) {
                         notFound += toCSV(notFound, groupName);
                     } else if (VALIDATION_ERROR_ILLEGAL_BLACKLISTED.equals(validation)) {
@@ -152,7 +152,7 @@ public class ACLEditCommandValidator implements Validator {
                     
                     String validation = validateGroupOrUserName(Type.USER, userName, editCommand);
                     if (!VALIDATION_OK.equals(validation)) {
-                        // *** TODO: is it possible to refactor this seven lines in a sensible way? ***
+                        // *** TODO: is it possible to refactor these seven lines in a sensible way? ***
                         if (VALIDATION_ERROR_NOT_FOUND.equals(validation)) {
                             notFound += toCSV(notFound, userName);
                         } else if (VALIDATION_ERROR_ILLEGAL_BLACKLISTED.equals(validation)) {
@@ -179,7 +179,7 @@ public class ACLEditCommandValidator implements Validator {
                              
                             String validation = validateGroupOrUserName(Type.USER, ac_userName, editCommand);
                             if (!VALIDATION_OK.equals(validation)) {
-                                // *** TODO: is it possible to refactor this seven lines in a sensible way? ***y?
+                                // *** TODO: is it possible to refactor these seven lines in a sensible way? ***y?
                                 if (VALIDATION_ERROR_NOT_FOUND.equals(validation)) {
                                     notFound += toCSV(notFound, userName);
                                 } else if (VALIDATION_ERROR_ILLEGAL_BLACKLISTED.equals(validation)) {

@@ -179,15 +179,17 @@ public class ACLEditController extends SimpleFormController {
             return new ModelAndView(getSuccessView());
         }
         
+        Principal yourself = requestContext.getPrincipal();
+        
         // Remove or add shortcuts
-        acl = aclShortcuts(acl, editCommand, requestContext.getPrincipal(), errors);
+        acl = aclShortcuts(acl, editCommand, yourself, errors);
         
         // Has the user asked to save?
         if (editCommand.getSaveAction() != null) {     
             acl = addToAcl(acl, editCommand.getGroupNames(), Type.GROUP);
             acl = addToAcl(acl, editCommand.getUserNameEntries(), Type.USER);
             if(errors.hasErrors()) {
-                BindException bex =  new BindException(getACLEditCommand(resource, acl, requestContext.getPrincipal()), this.getCommandName());
+                BindException bex =  new BindException(getACLEditCommand(resource, acl, yourself), this.getCommandName());
                 bex.addAllErrors(errors);
                 return showForm(request, response, errors);  
             }
@@ -197,24 +199,24 @@ public class ACLEditController extends SimpleFormController {
 
         // Doing remove or add actions
         if (editCommand.getRemoveGroupAction() != null) {
-            acl = removeFromAcl(acl, editCommand.getGroupNames(), Type.GROUP, requestContext.getPrincipal(), errors);
-            BindException bex =  new BindException(getACLEditCommand(resource, acl, requestContext.getPrincipal()), this.getCommandName());
+            acl = removeFromAcl(acl, editCommand.getGroupNames(), Type.GROUP, yourself, errors);
+            BindException bex =  new BindException(getACLEditCommand(resource, acl, yourself), this.getCommandName());
             bex.addAllErrors(errors);
             return showForm(request, response, bex);
 
         } else if (editCommand.getRemoveUserAction() != null) {
-            acl = removeFromAcl(acl, editCommand.getUserNames(), Type.USER, requestContext.getPrincipal(), errors);
-            BindException bex =  new BindException(getACLEditCommand(resource, acl, requestContext.getPrincipal()), this.getCommandName());
+            acl = removeFromAcl(acl, editCommand.getUserNames(), Type.USER, yourself, errors);
+            BindException bex =  new BindException(getACLEditCommand(resource, acl, yourself), this.getCommandName());
             bex.addAllErrors(errors);
             return showForm(request, response, bex);
 
         } else if (editCommand.getAddGroupAction() != null) {
             acl = addToAcl(acl, editCommand.getGroupNames(), Type.GROUP);
-            return showForm(request, response, new BindException(getACLEditCommand(resource, acl, requestContext.getPrincipal()), this.getCommandName()));
+            return showForm(request, response, new BindException(getACLEditCommand(resource, acl, yourself), this.getCommandName()));
      
         } else if (editCommand.getAddUserAction() != null) {
             acl = addToAcl(acl, editCommand.getUserNameEntries(), Type.USER);
-            return showForm(request, response, new BindException(getACLEditCommand(resource, acl, requestContext.getPrincipal()), this.getCommandName()));
+            return showForm(request, response, new BindException(getACLEditCommand(resource, acl, yourself), this.getCommandName()));
         }
         
         return new ModelAndView(getSuccessView());
@@ -418,8 +420,6 @@ public class ACLEditController extends SimpleFormController {
      * Add groups or users to ACL.
      * 
      * @param acl the ACL object         
-     * @param repository the repository object
-     * @param errors ACL validation errors
      * @param values groups or users to remove
      * @param type type of ACL (GROUP or USER)
      * @return the modified ACL
@@ -436,8 +436,6 @@ public class ACLEditController extends SimpleFormController {
      * Add groups or users to ACL (for getUserNameEntries()).
      * 
      * @param acl the ACL object         
-     * @param repository the repository object
-     * @param errors ACL validation errors
      * @param values groups or users to remove
      * @param type type of ACL (GROUP or USER)
      * @return the modified ACL

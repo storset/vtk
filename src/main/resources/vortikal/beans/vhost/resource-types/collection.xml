@@ -55,14 +55,22 @@
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
   </bean>
 
+  <!-- ### See manually-approve.js ### -->
   <bean id="manuallyApprovedResourcesPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
     parent="abstractPropDef">
     <property name="name" value="manually-approved-resources" />
-    <property name="type" value="BINARY" />
-    <property name="valueFormatter">
-      <bean class="org.vortikal.repository.resourcetype.ManuallyApprovedResourcesValueFormatter" />
-    </property>
+    <property name="type" value="STRING" />
+    <property name="multiple" value="true" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="metadata">
+      <map>
+        <entry key="editingHints">
+          <map>
+            <entry key="checkbox" value="true" />
+          </map>
+        </entry>
+      </map>
+    </property>
   </bean>
   
   <bean id="aggregationResolver" class="org.vortikal.web.display.collection.aggregation.CollectionListingAggregationResolver">

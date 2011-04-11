@@ -141,10 +141,11 @@
 
 <#macro propChangeTests propDefs>
   <#list propDefs as propDef>
-    <#local type = propDef.type />
-    <#if type != 'BINARY'>
     <#local name = propDef.name />
     <#local value = resource.getValue(propDef) />
+
+    <#local type = propDef.type />
+
     <#if type = 'HTML' && name='userTitle' && isCollection>
       <#local value = resource.title />
     </#if>
@@ -190,7 +191,6 @@
       </#if>
 
     </#if>
-    </#if>
   </#list>
 </#macro>
 
@@ -233,11 +233,7 @@
       <#local name = propDef.name />
       <#local localizedName = propDef.getLocalizedName(locale) />
 
-      <#local value = '' />
-      <#local type = propDef.type />
-      <#if type != 'BINARY'>
-        <#local value = resource.getValue(propDef) />
-      </#if>
+      <#local value = resource.getValue(propDef) />
 
       <#local description = propDef.getDescription(locale)?default("") />
 

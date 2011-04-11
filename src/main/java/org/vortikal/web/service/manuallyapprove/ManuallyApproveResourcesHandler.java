@@ -89,12 +89,17 @@ public class ManuallyApproveResourcesHandler implements Controller {
         // content and update service before storing resource
         if (foldersParam != null) {
             for (String folder : foldersParam) {
-                folders.add(folder);
+                if (this.isValid(folder, currentCollectionPath, recursiveProp)) {
+                    folders.add(folder);
+                }
             }
         } else if (manuallyApproveFromProp != null) {
             Value[] manuallyApproveFromValues = manuallyApproveFromProp.getValues();
             for (Value manuallyApproveFromValue : manuallyApproveFromValues) {
-                folders.add(manuallyApproveFromValue.getStringValue());
+                String folder = manuallyApproveFromValue.getStringValue();
+                if (this.isValid(folder, currentCollectionPath, recursiveProp)) {
+                    folders.add(folder);
+                }
             }
         }
 
@@ -103,8 +108,8 @@ public class ManuallyApproveResourcesHandler implements Controller {
         folders.remove(currentCollectionPath.toString());
 
         // Aggregation must also be considered. Any folder to aggregate from
-        // will be discarded from folderset to manually approve from, because
-        // aggregation overrides manuall approval. Parameter "aggregate"
+        // will be discarded from folder set to manually approve from, because
+        // aggregation overrides manual approval. Parameter "aggregate"
         // overrides property, again because user might change content and
         // update service before storing resource
         if (aggregateParam != null) {
@@ -118,14 +123,12 @@ public class ManuallyApproveResourcesHandler implements Controller {
             }
         }
 
-        if (recursiveProp != null && recursiveProp.getBooleanValue()) {
-            // XXX Remove from folders set any values which are children of
-            // current collection
-        }
-
         Set<String> alreadyApproved = new HashSet<String>();
         if (manuallyApprovedResourcesProp != null) {
-            // XXX Get already manually approved resources
+            Value[] manuallyApprovedResourcesValues = manuallyApprovedResourcesProp.getValues();
+            for (Value manuallyApprovedResourcesValue : manuallyApprovedResourcesValues) {
+                alreadyApproved.add(manuallyApprovedResourcesValue.toString());
+            }
         }
 
         // That's is... we now have a set of resources to manually approve from,
@@ -155,6 +158,25 @@ public class ManuallyApproveResourcesHandler implements Controller {
         writer.close();
 
         return null;
+    }
+
+    private boolean isValid(String folder, Path currentCollectionPath, Property recursiveProp) {
+        try {
+
+            // Make sure path is valid
+            Path folderPath = Path.fromString(folder);
+
+            // Also remove from folders set any values which are children of
+            // current collection
+            if (recursiveProp != null && recursiveProp.getBooleanValue()) {
+                if (currentCollectionPath.isAncestorOf(folderPath)) {
+                    return false;
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Required

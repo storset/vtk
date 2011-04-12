@@ -225,7 +225,7 @@ public class ACLEditController extends SimpleFormController {
      * @param theShortcuts the shortcuts
      * @return number of valid shortcuts
      */
-    private int countValidshortcuts(List<String> theShortcuts) {
+    protected int countValidshortcuts(List<String> theShortcuts) {
         int valid = 0;
           for (String shortcut: theShortcuts) {
             if (shortcut.startsWith(GROUP_PREFIX) || shortcut.startsWith(USER_PREFIX)) {
@@ -244,7 +244,7 @@ public class ACLEditController extends SimpleFormController {
      * @param pre-counted valid shortcuts
      * @return a <code>String[][]</code> object containing checked / not-checked shortcuts
      */
-    private String[][] extractAndCheckShortcuts (List<Principal> authorizedUsers, 
+    protected String[][] extractAndCheckShortcuts (List<Principal> authorizedUsers, 
             List<Principal> authorizedGroups, List<String> shortcuts, int validShortcuts) {
 
         String checkedShortcuts[][] = new String[validShortcuts][2];

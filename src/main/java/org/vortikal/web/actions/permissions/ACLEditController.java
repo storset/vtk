@@ -52,9 +52,9 @@ import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.Principal.Type;
 import org.vortikal.security.PrincipalFactory;
+import org.vortikal.security.PrincipalManager;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
@@ -77,15 +77,13 @@ public class ACLEditController extends SimpleFormController {
         setSessionForm(true);
     }
 
+    @Override
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder)
             throws Exception {
         binder.registerCustomEditor(java.lang.String[].class,
                 new StringArrayPropertyEditor());
     }
     
-    /**
-     * Override to handle removal of permissions.
-     */
     @Override
     protected ServletRequestDataBinder createBinder(HttpServletRequest request, Object command) throws Exception {
         ACLEditBinder binder = new ACLEditBinder(command, getCommandName());
@@ -94,6 +92,7 @@ public class ACLEditController extends SimpleFormController {
         return binder; 
     }
 
+    @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         Path uri = requestContext.getResourceURI();
@@ -140,9 +139,6 @@ public class ACLEditController extends SimpleFormController {
         return "POST".equals(request.getMethod());
     }
 
-    /**
-     * Override to reset actions in case of errors.
-     */
     @Override
     protected ModelAndView processFormSubmission(HttpServletRequest req,
             HttpServletResponse resp, Object command, BindException errors)
@@ -159,6 +155,7 @@ public class ACLEditController extends SimpleFormController {
         return super.processFormSubmission(req, resp, command, errors);
     }
 
+    @Override
     protected ModelAndView onSubmit(HttpServletRequest request,
             HttpServletResponse response, Object command, BindException errors)
             throws Exception {
@@ -228,7 +225,7 @@ public class ACLEditController extends SimpleFormController {
      * @param theShortcuts the shortcuts
      * @return number of valid shortcuts
      */
-    protected int countValidshortcuts(List<String> theShortcuts) {
+    private int countValidshortcuts(List<String> theShortcuts) {
         int valid = 0;
           for (String shortcut: theShortcuts) {
             if (shortcut.startsWith(GROUP_PREFIX) || shortcut.startsWith(USER_PREFIX)) {
@@ -247,7 +244,7 @@ public class ACLEditController extends SimpleFormController {
      * @param pre-counted valid shortcuts
      * @return a <code>String[][]</code> object containing checked / not-checked shortcuts
      */
-    protected String[][] extractAndCheckShortcuts (List<Principal> authorizedUsers, 
+    private String[][] extractAndCheckShortcuts (List<Principal> authorizedUsers, 
             List<Principal> authorizedGroups, List<String> shortcuts, int validShortcuts) {
 
         String checkedShortcuts[][] = new String[validShortcuts][2];
@@ -386,7 +383,6 @@ public class ACLEditController extends SimpleFormController {
             }
         }
         if (!stillAdmin) {
-            // TODO: show OK/Cancel dialog - for now: dont remove and give error
             String prefixType = (userOrGroup.getType().equals(Type.GROUP)) ? "group" : "user";
             errors.rejectValue(prefixType + "Names", "permissions.all.yourself.not.empty",
                     "Not possible to remove all admin permissions for yourself");

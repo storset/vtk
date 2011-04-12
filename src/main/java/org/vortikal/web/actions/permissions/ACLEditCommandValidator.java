@@ -38,9 +38,9 @@ import org.springframework.validation.Validator;
 import org.vortikal.repository.Repository;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
+import org.vortikal.security.Principal.Type;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.PrincipalManager;
-import org.vortikal.security.Principal.Type;
 
 public class ACLEditCommandValidator implements Validator {
 
@@ -62,15 +62,14 @@ public class ACLEditCommandValidator implements Validator {
     private String tooManyMatchedUsers;
 
 
-    /**
-     * @see org.springframework.validation.Validator#supports(java.lang.Class)
-     */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
+    @Override
     public boolean supports(Class clazz) {
         return (clazz == ACLEditCommand.class);
     }
 
 
+    @Override
     public void validate(Object command, Errors errors) {
         ACLEditCommand editCommand = (ACLEditCommand) command;
 
@@ -176,7 +175,6 @@ public class ACLEditCommandValidator implements Validator {
                             uid = matches.get(0).getName();
                         }
                     } catch (Exception e) {
-                        // TODO: is it ok with 'not exist' error-message here?
                         this.notFound += toCSV(this.notFound, userName);
                         continue;
                     }

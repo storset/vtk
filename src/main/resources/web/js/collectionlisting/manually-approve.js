@@ -97,10 +97,10 @@ function retrieveResources(serviceUri, folders, aggregatedFolders) {
 	for(var i = 0, len = folders.length; i < len; i++) {
 	  getUri += "&folders=" + $.trim(folders[i]);  
 	}
-	if(aggregatedFolders != null) {
-	  for(i = 0, len = aggregatedFolders.length; i < len; i++) {
-	    getUri += "&aggregate=" + $.trim(aggregatedFolders[i]);  
-	  }
+  }
+  if(aggregatedFolders != null) {
+	for(i = 0, len = aggregatedFolders.length; i < len; i++) {
+	  getUri += "&aggregate=" + $.trim(aggregatedFolders[i]);  
 	}
   }
 

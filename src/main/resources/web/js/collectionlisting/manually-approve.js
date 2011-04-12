@@ -11,13 +11,19 @@ $(window).ready(function() {
 $(document).ready(function() {
 
 	// Retrieve initial resources
-    retrieveResources(".", null);
+	var val = $("#resource\\.manually-approve-from").val(); lastVal = val;
+    var folders = val.split(",");
+    var val2 = $("#resource\\.aggregation").val();
+    var aggregatedFolders = val2.split(",");
+    retrieveResources(".", folders, aggregatedFolders);
 
     // Refresh when folders to approve from are changed
     $("#manually-approve-refresh").click(function(e) {
       var val = $("#resource\\.manually-approve-from").val(); lastVal = val;
       var folders = val.split(",");
-      retrieveResources(".", folders);
+      var val2 = $("#resource\\.aggregation").val();
+      var aggregatedFolders = val2.split(",");
+      retrieveResources(".", folders, aggregatedFolders);
       $(this).hide();
       return false; 
     });
@@ -84,12 +90,17 @@ $(document).ready(function() {
  * 
  */
 
-function retrieveResources(serviceUri, folders) {
+function retrieveResources(serviceUri, folders, aggregatedFolders) {
 
   var getUri = serviceUri + "/?vrtx=admin&service=manually-approve-resources";
   if(folders != null) {
 	for(var i = 0, len = folders.length; i < len; i++) {
 	  getUri += "&folders=" + $.trim(folders[i]);  
+	}
+	if(aggregatedFolders != null) {
+	  for(i = 0, len = aggregatedFolders.length; i < len; i++) {
+	    getUri += "&aggregate=" + $.trim(aggregatedFolders[i]);  
+	  }
 	}
   }
 

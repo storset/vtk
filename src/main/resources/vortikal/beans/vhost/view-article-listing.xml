@@ -62,8 +62,9 @@
     <property name="defaultRecursive" value="true" />
     <property name="recursivePropDef" ref="articleListing.recursiveListingPropDef" />
     <property name="query">
-      <value>((uri = {$currentFolder}/* AND uri NOT IN {$featuredArticles})AND (type IN article AND published-date &lt;= {$currentTime}))
-        OR (uri IN {$manuallyApprovedResources})
+      <value>
+        ((uri = {$currentFolder}/* OR uri IN {$manuallyApprovedResources}) AND uri NOT IN {$featuredArticles})
+          AND (type IN article AND published-date &lt;= {$currentTime}))
       </value>
     </property>
     <property name="queryParser" ref="searchParser" />

@@ -61,7 +61,7 @@
     <property name="defaultRecursive" value="false" />
     <property name="recursivePropDef" ref="collection.recursiveListingPropDef" />
     <property name="query">
-      <value>((uri = {$currentFolder}/*) AND (type IN file)) OR (uri IN {$manuallyApprovedResources})</value>
+      <value>(uri = {$currentFolder}/* OR uri IN {$manuallyApprovedResources}) AND (type IN file)</value>
     </property>
     <property name="queryParser" ref="searchParser" />
     <property name="listableProperties">

@@ -315,14 +315,14 @@ public class DisplayResourceView extends AbstractView
         if (fromStr.length() > 0) {
             from = Long.parseLong(fromStr.toString());
         }
-        long to = resource.getContentLength();
+        long to = resource.getContentLength() - 1;
         if (toStr.length() > 0) {
             to = Long.parseLong(toStr.toString());
         }
         if (to <= from) {
             return null;
         }
-        if (to > resource.getContentLength()) {
+        if (to > resource.getContentLength() - 1) {
             return null;
         }
         return new Range(from, to);

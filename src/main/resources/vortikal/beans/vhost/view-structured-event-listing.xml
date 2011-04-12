@@ -5,8 +5,11 @@
   <bean id="structured.eventListing.upcomingEventsSearchComponent" parent="eventListing.upcomingEventsSearchComponent">
     <property name="name" value="structured.eventListing.upcomingEventsSearchComponent" />
     <property name="query">
-       <value>(uri = {$currentFolder}/* AND type IN structured-event) AND ((resource:end-date not exists AND resource:start-date &gt;= {$currentDate}) OR (resource:end-date &gt;= {$currentTime}))</value>
-     </property>
+      <value>
+        ((uri = {$currentFolder}/* AND type IN structured-event) AND ((resource:end-date not exists AND resource:start-date &gt;= {$currentDate})
+          OR (resource:end-date &gt;= {$currentTime}))) OR (uri IN {$manuallyApprovedResources})
+      </value>
+    </property>
     <property name="searchSorting" ref="structured.eventListing.upcoming.searchSorting" />
   </bean>
 

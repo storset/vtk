@@ -92,7 +92,10 @@
     <property name="defaultRecursive" value="true" />
     <property name="recursivePropDef" ref="eventListing.recursiveListingPropDef" />
     <property name="query">
-         <value>(uri = {$currentFolder}/* AND type IN event) AND ((end-date not exists AND start-date &gt;= {$currentDate}) OR (end-date &gt;= {$currentTime}))</value>
+      <value>
+        ((uri = {$currentFolder}/* AND type IN event) AND ((end-date not exists AND start-date &gt;= {$currentDate})
+          OR (end-date &gt;= {$currentTime}))) OR (uri IN {$manuallyApprovedResources})
+      </value>
     </property>
     <property name="queryParser" ref="searchParser" />
     <property name="listableProperties" ref="eventListing.listableProperties" />

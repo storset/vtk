@@ -80,6 +80,7 @@ public class DisplayResourceView extends AbstractView
     private static Log logger = LogFactory.getLog(DisplayResourceView.class);
     
     private int streamBufferSize = 5000;
+    private boolean supportRangeRequests = false;
 
     private ReferenceDataProvider[] referenceDataProviders;
     
@@ -100,12 +101,20 @@ public class DisplayResourceView extends AbstractView
         this.streamBufferSize = streamBufferSize;
     }
     
-    @SuppressWarnings("unchecked")
+    public void setSupportRangeRequests(boolean supportRangeRequests) {
+        this.supportRangeRequests = supportRangeRequests;
+    }
+
+    @SuppressWarnings("rawtypes")
     public void renderMergedOutputModel(Map model, HttpServletRequest request,
                                         HttpServletResponse response) throws Exception {
 
         Resource resource = getResource(model, request, response);
-
+        
+        Range range = this.supportRangeRequests ? 
+                getRangeHeader(request, resource) : null;
+        request.setAttribute(Range.class.getName(), range);
+        
         setHeaders(resource, model, request, response);
 
         if ("HEAD".equals(request.getMethod())) {
@@ -134,7 +143,7 @@ public class DisplayResourceView extends AbstractView
      * @param request the servlet request
      * @param response
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     protected Resource getResource(Map model,
                                    HttpServletRequest request,
                                    HttpServletResponse response) throws Exception {
@@ -157,7 +166,7 @@ public class DisplayResourceView extends AbstractView
      * @param request the servlet request
      * @param response
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     protected InputStream getResourceStream(Resource resource, Map model,
                                    HttpServletRequest request,
                                    HttpServletResponse response) throws Exception {
@@ -166,13 +175,20 @@ public class DisplayResourceView extends AbstractView
     }
     
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     protected void setHeaders(Resource resource, Map model, HttpServletRequest request,
                               HttpServletResponse response) throws Exception {
 
+        Range range = (Range) request.getAttribute(Range.class.getName());
         setContentTypeHeader(resource, model, request, response);
-        setContentLengthHeader(resource, model, request, response);
-        response.setStatus(HttpServletResponse.SC_OK);
+        if (range != null) {
+            response.setHeader("Content-Range", "bytes " + range.from + "-" 
+                    + range.to + "/" + resource.getContentLength());
+            response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
+        } else {
+            setContentLengthHeader(resource, model, request, response);
+            response.setStatus(HttpServletResponse.SC_OK);
+        }
     }
 
     /**
@@ -185,16 +201,29 @@ public class DisplayResourceView extends AbstractView
      * @param response the servlet response
      * @throws Exception
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     protected void writeResponse(Resource resource, InputStream resourceStream,
                                  Map model, HttpServletRequest request,
                                  HttpServletResponse response) throws Exception {
-
-        long bytesWritten = StreamUtil.pipe(resourceStream, response.getOutputStream(), this.streamBufferSize, true);
+        Range range = (Range) request.getAttribute(Range.class.getName());
+        long bytesWritten = 0L;
+        if (range != null) {
+            long nbytes = range.to - range.from + 1;
+            if (logger.isDebugEnabled()) {
+                logger.debug("Writing range: " + range.from + "-" + range.to);
+            }
+            bytesWritten = StreamUtil.pipe(
+                    resourceStream, response.getOutputStream(), 
+                    range.from, nbytes,
+                    this.streamBufferSize, true);
+        } else {
+            bytesWritten = StreamUtil.pipe(
+                    resourceStream, response.getOutputStream(), 
+                    this.streamBufferSize, true);
+        }
         if (logger.isDebugEnabled()) {
             logger.debug("Wrote a total of " + bytesWritten + " bytes to response");
         }
-
     }
 
     /**
@@ -206,7 +235,7 @@ public class DisplayResourceView extends AbstractView
      * @param response the servlet response
      * @throws Exception
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     protected void setContentTypeHeader(Resource resource, Map model,
                                         HttpServletRequest request,
                                         HttpServletResponse response) throws Exception {
@@ -244,7 +273,7 @@ public class DisplayResourceView extends AbstractView
      * @param response the servlet response
      * @throws Exception
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     protected void setContentLengthHeader(Resource resource, Map model,
                                           HttpServletRequest request,
                                           HttpServletResponse response) throws Exception {
@@ -252,5 +281,50 @@ public class DisplayResourceView extends AbstractView
             logger.debug("Setting header Content-Length: " + resource.getContentLength());
         }
         response.setHeader("Content-Length", String.valueOf(resource.getContentLength()));
+    }
+    
+    private static class Range {
+        long from; long to;
+        public Range(long from, long to) {
+            this.from = from; this.to = to;
+        }
+    }
+    
+    private Range getRangeHeader(HttpServletRequest request, Resource resource) {
+        String hdr = request.getHeader("Range");
+        if (hdr == null) {
+            return null;
+        }
+        if (!hdr.startsWith("bytes=")) {
+            return null;
+        }
+        StringBuilder fromStr = new StringBuilder();
+        StringBuilder toStr = new StringBuilder();
+        StringBuilder cur = fromStr;
+        for (int i = "bytes=".length(); i < hdr.length(); i++) {
+            char c = hdr.charAt(i);
+            if (c == '-') {
+                cur = toStr;
+            } else if (c < '0' || c > '9') {
+                return null;
+            } else {
+                cur.append(c);
+            }
+        }
+        long from = 0;
+        if (fromStr.length() > 0) {
+            from = Long.parseLong(fromStr.toString());
+        }
+        long to = resource.getContentLength();
+        if (toStr.length() > 0) {
+            to = Long.parseLong(toStr.toString());
+        }
+        if (to <= from) {
+            return null;
+        }
+        if (to > resource.getContentLength()) {
+            return null;
+        }
+        return new Range(from, to);
     }
 }

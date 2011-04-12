@@ -35,6 +35,7 @@
 
   <bean id="displayResourceView"
         class="org.vortikal.web.view.DisplayResourceView">
+    <property name="supportRangeRequests" value="${displayResource.supportRangeRequests}" />
   </bean> 
 
   <bean id="httpOptionsView"

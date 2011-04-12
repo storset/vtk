@@ -31,7 +31,6 @@
 package org.vortikal.util.io;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -184,7 +183,68 @@ public class StreamUtil {
         return pipe(in, out, 4096, false);
     }
 
+    /**
+     * Like {@link #pipe(InputStream, OutputStream, int, boolean)}, but start copying 
+     * at an offset and limit to a provided number of bytes.
+     * @param in the stream to copy
+     * @param out the destination
+     * @param offset the position to start copying from
+     * @param limit the maximum number of bytes to copy
+     * @param bufferSize the buffer size
+     * @param closeOutput whether to close output stream after copying
+     * @return
+     * @throws IOException
+     */
+    public static long pipe(InputStream in, OutputStream out, long offset, long limit,
+            final int bufferSize, final boolean closeOutput) throws IOException {
+        if (bufferSize <= 0) {
+            throw new IllegalArgumentException("Buffer size must be > 0");
+        }
+        if (offset < 0 ) {
+            throw new IllegalArgumentException("Offset must be >= 0");
+        }
+        if (limit <= 0 ) {
+            throw new IllegalArgumentException("Limit must be > 0");
+        }
 
+        try {
+            byte[] buffer = new byte[bufferSize];
+            if (offset > 0) {
+                long skipped = in.skip(offset);
+                if (skipped != offset) {
+                    throw new IOException("Unable to skip to offset: " + offset);
+                }
+            }
+            long count = 0;
+            int n;
+            while ((n = in.read(buffer, 0, buffer.length)) > 0) {
+                if (count + n >= limit) {
+                    n = (int) (limit - count);
+                    out.write(buffer, 0, n);
+                    count += n;
+                    break;
+                }
+                out.write(buffer, 0, n);
+                count += n;
+            }
+            return count;
+        } finally {
+            try {
+                in.close();
+            } catch (IOException e) {
+                LOGGER.warn("Error closing input stream", e);
+            }
+            if (closeOutput) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    LOGGER.warn("Error closing output stream", e);
+                }
+            }
+        }
+        
+    }
+    
     /**
      * Buffered copy of <em>all</em> available data from an input stream to an output stream.
      * The operation stops when either of the following conditions occur:

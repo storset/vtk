@@ -30,18 +30,21 @@
  */
 package org.vortikal.util.io;
 
-import java.io.IOException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Arrays;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  * Thorough test-case for StreamUtil class.
@@ -148,6 +151,17 @@ public class StreamUtilTest {
         assertTrue(((SmallChunkInputStream)in).isClosed());
         assertFalse(((TestForCloseByteArrayOutputStream)out).isClosed());
         assertEquals(data.length, piped);
+    }
+
+    @Test
+    public void testPipe_5args() throws Exception {
+        String s = "data to copy";
+        InputStream in = new ByteArrayInputStream(s.getBytes());
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        long piped = StreamUtil.pipe(in, out, 2L, 5L, 1, true);
+        String result = new String(out.toByteArray());
+        assertEquals("ta to", result);
+        assertEquals(5L, piped);
     }
 
     /**

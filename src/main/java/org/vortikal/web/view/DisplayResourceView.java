@@ -67,10 +67,12 @@ import org.vortikal.web.referencedata.ReferenceDataProviding;
  * </ul>
  * 
  * <p>Sets the following HTTP headers, based on metadata in the
- * resource:
+ * resource and request headers:
  * <ul>
  *   <li><code>Content-Type</code>
  *   <li><code>Content-Length</code>
+ *   <li><code>Accept-Ranges</code>
+ *   <li><code>Content-Range</code>
  * </ul>
  *
  */

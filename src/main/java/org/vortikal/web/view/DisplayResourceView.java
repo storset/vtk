@@ -108,7 +108,6 @@ public class DisplayResourceView extends AbstractView
     @SuppressWarnings("rawtypes")
     public void renderMergedOutputModel(Map model, HttpServletRequest request,
                                         HttpServletResponse response) throws Exception {
-
         Resource resource = getResource(model, request, response);
         
         Range range = this.supportRangeRequests ? 
@@ -178,16 +177,20 @@ public class DisplayResourceView extends AbstractView
     @SuppressWarnings("rawtypes")
     protected void setHeaders(Resource resource, Map model, HttpServletRequest request,
                               HttpServletResponse response) throws Exception {
-
+        if (this.supportRangeRequests) {
+            setHeader(response, "Accept-Ranges", "0-" + (resource.getContentLength() - 1));
+        }
+        
         Range range = (Range) request.getAttribute(Range.class.getName());
         setContentTypeHeader(resource, model, request, response);
         if (range != null) {
-            response.setHeader("Content-Range", "bytes " + range.from + "-" 
+            setStatus(response, HttpServletResponse.SC_PARTIAL_CONTENT);
+            setHeader(response, "Content-Range", "bytes " + range.from + "-" 
                     + range.to + "/" + resource.getContentLength());
-            response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
+            setHeader(response, "Content-Length", String.valueOf(range.to - range.from + 1));
         } else {
+            setStatus(response, HttpServletResponse.SC_OK);
             setContentLengthHeader(resource, model, request, response);
-            response.setStatus(HttpServletResponse.SC_OK);
         }
     }
 
@@ -221,11 +224,26 @@ public class DisplayResourceView extends AbstractView
                     resourceStream, response.getOutputStream(), 
                     this.streamBufferSize, true);
         }
+        response.flushBuffer();
         if (logger.isDebugEnabled()) {
             logger.debug("Wrote a total of " + bytesWritten + " bytes to response");
         }
     }
+    
+    protected void setStatus(HttpServletResponse response, int status) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("Setting status: " + status);
+        }
+        response.setStatus(status);
+    }
 
+    protected void setHeader(HttpServletResponse response, String name, Object value) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("Setting header " + name + ": " + value);
+        }
+        response.setHeader(name, value.toString());
+    }
+    
     /**
      * Sets the content type header based on the resource.
      * 
@@ -256,11 +274,7 @@ public class DisplayResourceView extends AbstractView
             contentType = resource.getContentType() + ";charset="
                 + resource.getCharacterEncoding();
         }
-        
-        if (logger.isDebugEnabled()) {
-            logger.debug("Setting header Content-Type: " + contentType);
-        }
-        response.setHeader("Content-Type", contentType);
+        setHeader(response, "Content-Type", contentType);
     }
     
 
@@ -277,10 +291,7 @@ public class DisplayResourceView extends AbstractView
     protected void setContentLengthHeader(Resource resource, Map model,
                                           HttpServletRequest request,
                                           HttpServletResponse response) throws Exception {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Setting header Content-Length: " + resource.getContentLength());
-        }
-        response.setHeader("Content-Length", String.valueOf(resource.getContentLength()));
+        setHeader(response, "Content-Length", String.valueOf(resource.getContentLength()));
     }
     
     private static class Range {

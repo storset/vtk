@@ -15,7 +15,7 @@
 
   <div class="vrtx-media-ref">
   
-    <#if contentType == "audio" || contentType == "audio/mpeg" || contentType == "audio/mp3">
+    <#if contentType == "audio" || contentType == "audio/mpeg" || contentType == "audio/mp3" || contentType == "audio/x-mpeg">
       <script type="text/javascript" src="${audioFlashPlayerJsURL?html}/"></script>  
     
       <object type="application/x-shockwave-flash" data="${audioFlashPlayerFlashURL?html}" height="24" width="290">

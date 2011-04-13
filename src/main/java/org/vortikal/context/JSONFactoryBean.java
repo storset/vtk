@@ -31,7 +31,6 @@
 package org.vortikal.context;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,23 +49,7 @@ public class JSONFactoryBean extends AbstractFactoryBean {
 
     public JSONFactoryBean(String input) {
         JSON json = JSONSerializer.toJSON(input);
-        if (json instanceof JSONObject) {
-            JSONObject jsonObject = (JSONObject) json;
-            Map<Object, Object> m = new HashMap<Object, Object>();
-            for (Object o: jsonObject.keySet()) {
-                m.put(o, jsonObject.get(o));
-            }
-            this.object = Collections.unmodifiableMap(m);
-        } else if (json instanceof JSONArray) {
-            JSONArray jsonArray = (JSONArray) json;
-            List<Object> list = new ArrayList<Object>();
-            for (Object o: jsonArray) {
-                list.add(o);
-            }
-            this.object = Collections.unmodifiableList(list);
-        } else if (json instanceof JSONNull) {
-            this.object = null;
-        }
+        this.object = unwrap(json);
     }
     
     @Override
@@ -83,4 +66,31 @@ public class JSONFactoryBean extends AbstractFactoryBean {
         return this.object;
     }
 
+    private Object unwrap(Object object) {
+        if (! (object instanceof JSON)) {
+            return object;
+        }
+        JSON json = (JSON) object;
+        if (json instanceof JSONObject) {
+            JSONObject jsonObject = (JSONObject) json;
+            Map<Object, Object> m = new HashMap<Object, Object>();
+            for (Object o: jsonObject.keySet()) {
+                Object value = jsonObject.get(o);
+                o = unwrap(o);
+                value = unwrap(value);
+                m.put(o, value);
+            }
+            return m;
+        } else if (json instanceof JSONArray) {
+            JSONArray jsonArray = (JSONArray) json;
+            List<Object> list = new ArrayList<Object>();
+            for (Object o: jsonArray) {
+                list.add(unwrap(o));
+            }
+            return list;
+        } else if (json instanceof JSONNull) {
+            return null;
+        }
+        return object;
+    }
 }

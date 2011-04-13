@@ -37,18 +37,16 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.search.query.AndQuery;
-import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.Query;
-import org.vortikal.repository.search.query.UriDepthQuery;
 
 public class QueryPartsSearchComponent extends QuerySearchComponent {
 
     private List<QueryBuilder> queryBuilders;
 
     @Override
-    protected Query getQuery(Resource collection, HttpServletRequest request, boolean recursive, 
-            QueryManipulator manipulator) { // XXX: remove manipulator 
-        
+    protected Query getQuery(Resource collection, HttpServletRequest request, boolean recursive,
+            QueryManipulator manipulator) { // XXX: remove manipulator
+
         AndQuery query = new AndQuery();
 
         for (QueryBuilder builder : this.queryBuilders) {
@@ -56,26 +54,6 @@ public class QueryPartsSearchComponent extends QuerySearchComponent {
             if (q != null) {
                 query.add(q);
             }
-        }
-
-        Query aggregatioQuery = null;
-        boolean aggregate = false;
-        if (this.aggregationResolver != null) {
-            aggregatioQuery = this.aggregationResolver.getAggregationQuery(query, collection);
-            if (!query.equals(aggregatioQuery)) {
-                aggregate = true;
-            }
-        }
-
-        if (!recursive) {
-            query.add(new UriDepthQuery(collection.getURI().getDepth() + 1));
-        }
-
-        if (aggregate) {
-            OrQuery orQuery = new OrQuery();
-            orQuery.add(query);
-            orQuery.add(aggregatioQuery);
-            return orQuery;
         }
 
         return query;

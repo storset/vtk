@@ -55,19 +55,11 @@
     <property name="featuredArticlesPropDef" ref="articleListing.featuredArticlesPropDef" />
   </bean>
 
-  <bean id="articleListing.searchComponent" class="org.vortikal.web.search.QueryStringSearchComponent">
+  <bean id="articleListing.searchComponent" class="org.vortikal.web.search.QueryPartsSearchComponent">
     <property name="name" value="articleListing.defaultArticles" />
     <property name="viewService" ref="webService" />
     <property name="resourceManager" ref="resourceManager" />
     <property name="defaultRecursive" value="true" />
-    <property name="recursivePropDef" ref="articleListing.recursiveListingPropDef" />
-    <property name="query">
-      <value>
-        ((uri = {$currentFolder}/* OR uri IN {$manuallyApprovedResources}) AND uri NOT IN {$featuredArticles})
-          AND (type IN article AND published-date &lt;= {$currentTime}))
-      </value>
-    </property>
-    <property name="queryParser" ref="searchParser" />
     <property name="listableProperties">
       <list>
         <bean class="org.vortikal.web.search.PropertyDisplayConfig">
@@ -84,8 +76,20 @@
         </bean>
       </list>
     </property>
-    <property name="aggregationResolver" ref="aggregationResolver" />
+    <property name="queryBuilders">
+      <list>
+        <ref bean="articleListing.listingUriQueryBuilder" />
+        <bean class="org.vortikal.web.search.ParsedQueryBuilder">
+          <property name="queryString" value="(uri NOT IN {$featuredArticles}) AND (type IN article AND published-date &lt;= {$currentTime})" />
+          <property name="queryParser" ref="searchParser" />
+        </bean>
+      </list>
+    </property>
     <property name="searchSorting" ref="articleListing.searchSorting" />
+  </bean>
+  
+  <bean id="articleListing.listingUriQueryBuilder" parent="listingUriQueryBuilder">
+    <property name="recursivePropDef" ref="articleListing.recursiveListingPropDef" />
   </bean>
 
   <bean id="articleListing.searchSorting" class="org.vortikal.web.search.SearchSorting" depends-on="resourceTypeTree">
@@ -121,22 +125,26 @@
         </property>
       </bean>
     </property>
-    <property name="query">
-      <value>(uri IN {$featuredArticles}) AND (type IN article AND published-date &lt;= {$currentTime})</value>
-    </property>
-    <property name="aggregationResolver">
-      <null />
+    <property name="queryBuilders">
+      <list>
+        <bean class="org.vortikal.web.search.ParsedQueryBuilder">
+          <property name="queryString" value="(uri IN {$featuredArticles}) AND (type IN article AND published-date &lt;= {$currentTime})" />
+          <property name="queryParser" ref="searchParser" />
+        </bean>
+      </list>
     </property>
   </bean>
 
   <!-- Fetch articles from explicitly specified subfolders -->
   <bean id="articleListing.subfoldersSearchComponent" parent="articleListing.searchComponent">
     <property name="name" value="articleListing.subfolderArticles" />
-    <property name="query">
-      <value>(uri IN {$subfolders}* AND uri NOT IN {$featuredArticles}) AND (type IN article AND published-date &lt;= {$currentTime})</value>
-    </property>
-    <property name="aggregationResolver">
-      <null />
+    <property name="queryBuilders">
+      <list>
+        <bean class="org.vortikal.web.search.ParsedQueryBuilder">
+          <property name="queryString" value="(uri IN {$subfolders}* AND uri NOT IN {$featuredArticles}) AND (type IN article AND published-date &lt;= {$currentTime})" />
+          <property name="queryParser" ref="searchParser" />
+        </bean>
+      </list>
     </property>
   </bean>
 

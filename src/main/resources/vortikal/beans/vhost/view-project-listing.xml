@@ -41,7 +41,6 @@
     </property>
   </bean>
 
-
   <bean id="projectListing.handler" class="org.vortikal.web.display.collection.AlphabeticalCollectionListingController" parent="collectionListing.handler">
     <property name="searchComponents">
       <list>
@@ -55,17 +54,27 @@
 
   <bean id="projectListing.searchComponent" parent="collectionListing.searchComponent">
     <property name="name" value="projectListing.defaultListing" />
-    <property name="defaultRecursive" value="true" />
-    <property name="query">
-      <value>(uri = {$currentFolder}/*) AND (type IN structured-project) AND (resource:status-ongoing = true)</value>
+    <property name="queryBuilders">
+      <list>
+        <ref bean="collection.listingUriQueryBuilder" />
+        <bean class="org.vortikal.web.search.ParsedQueryBuilder">
+          <property name="queryString" value="(type IN structured-project) AND (resource:status-ongoing = true)" />
+          <property name="queryParser" ref="searchParser" />
+        </bean>
+      </list>
     </property>
   </bean>
 
   <bean id="projectListing.viewCompletedProjectsSearchComponent" parent="collectionListing.searchComponent">
     <property name="name" value="projectListing.defaultListing" />
-    <property name="defaultRecursive" value="true" />
-    <property name="query">
-      <value>(uri = {$currentFolder}/*) AND (type IN structured-project) AND (resource:status-ongoing = false)</value>
+    <property name="queryBuilders">
+      <list>
+        <ref bean="collection.listingUriQueryBuilder" />
+        <bean class="org.vortikal.web.search.ParsedQueryBuilder">
+          <property name="queryString" value="(type IN structured-project) AND (resource:status-ongoing = false" />
+          <property name="queryParser" ref="searchParser" />
+        </bean>
+      </list>
     </property>
   </bean>
 

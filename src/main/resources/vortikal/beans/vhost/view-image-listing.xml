@@ -33,9 +33,14 @@
 
   <bean id="imageListing.searchComponent" parent="collectionListing.searchComponent">
     <property name="name" value="imageListing.defaultListing" />
-    <property name="defaultRecursive" value="true" />
-    <property name="query">
-      <value>(uri = {$currentFolder}/*) AND (type IN image)</value>
+    <property name="queryBuilders">
+      <list>
+        <ref bean="collection.listingUriQueryBuilder" />
+        <bean class="org.vortikal.web.search.ParsedQueryBuilder">
+          <property name="queryString" value="type IN image" />
+          <property name="queryParser" ref="searchParser" />
+        </bean>
+      </list>
     </property>
   </bean>
 

@@ -27,9 +27,14 @@
 
   <bean id="researchGroupListing.searchComponent" parent="collectionListing.searchComponent">
     <property name="name" value="researchGroupListing.defaultListing" />
-    <property name="defaultRecursive" value="true" />
-    <property name="query">
-      <value>(uri = {$currentFolder}/*) AND (type IN research-group)</value>
+    <property name="queryBuilders">
+      <list>
+        <ref bean="collection.listingUriQueryBuilder" />
+        <bean class="org.vortikal.web.search.ParsedQueryBuilder">
+          <property name="queryString" value="type IN research-group" />
+          <property name="queryParser" ref="searchParser" />
+        </bean>
+      </list>
     </property>
   </bean>
 

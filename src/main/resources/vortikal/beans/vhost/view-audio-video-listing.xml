@@ -27,9 +27,14 @@
 
   <bean id="audioVideoListing.searchComponent" parent="collectionListing.searchComponent">
     <property name="name" value="audioVideoListing.defaultListing" />
-    <property name="defaultRecursive" value="true" />
-    <property name="query">
-      <value>(uri = {$currentFolder}/*) AND (type IN audio OR type IN video)</value>
+    <property name="queryBuilders">
+      <list>
+        <ref bean="collection.listingUriQueryBuilder" />
+        <bean class="org.vortikal.web.search.ParsedQueryBuilder">
+          <property name="queryString" value="(type IN audio OR type IN video)" />
+          <property name="queryParser" ref="searchParser" />
+        </bean>
+      </list>
     </property>
   </bean>
 

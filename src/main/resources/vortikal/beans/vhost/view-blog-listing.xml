@@ -28,18 +28,25 @@
 
   <bean id="blogListing.searchComponent" parent="articleListing.searchComponent">
     <property name="name" value="blogListing.defaultListing" />
-    <property name="query">
-      <value>(uri = {$currentFolder}/*) AND (type IN article) </value>
-    </property>
-    <property name="aggregationResolver">
-      <null />
+    <property name="queryBuilders">
+      <list>
+        <bean class="org.vortikal.web.search.ParsedQueryBuilder">
+          <property name="queryString" value="(uri = {$currentFolder}/*) AND (type IN article)" />
+          <property name="queryParser" ref="searchParser" />
+        </bean>
+      </list>
     </property>
     <property name="searchSorting" ref="${override.listing.prefix}articleListing.searchSorting" />
   </bean>
 
   <bean id="structured.blogListing.searchComponent" parent="blogListing.searchComponent">
-    <property name="query">
-      <value>(uri = {$currentFolder}/*) AND (type IN structured-article) </value>
+    <property name="queryBuilders">
+      <list>
+        <bean class="org.vortikal.web.search.ParsedQueryBuilder">
+          <property name="queryString" value="(uri = {$currentFolder}/*) AND (type IN structured-article)" />
+          <property name="queryParser" ref="searchParser" />
+        </bean>
+      </list>
     </property>
   </bean>
 

@@ -53,17 +53,12 @@
     parent="viewAsFeedHandler">
     <property name="searchComponent" ref="collectionListing.searchComponent" />
   </bean>
-  
-  <bean id="collectionListing.searchComponent" class="org.vortikal.web.search.QueryStringSearchComponent">
-    <property name="name" value="collectionListing.searchComponent" />
+
+  <bean id="collectionListing.searchComponent" class="org.vortikal.web.search.QueryPartsSearchComponent">
+    <property name="name" value="collectionListing.searchComponent2" />
     <property name="viewService" ref="webService" />
     <property name="resourceManager" ref="resourceManager" />
-    <property name="defaultRecursive" value="false" />
-    <property name="recursivePropDef" ref="collection.recursiveListingPropDef" />
-    <property name="query">
-      <value>(uri = {$currentFolder}/* OR uri IN {$manuallyApprovedResources}) AND (type IN file)</value>
-    </property>
-    <property name="queryParser" ref="searchParser" />
+    <property name="defaultRecursive" value="true" />
     <property name="listableProperties">
       <list>
         <bean class="org.vortikal.web.search.PropertyDisplayConfig">
@@ -76,8 +71,25 @@
         </bean>
       </list>
     </property>
-    <property name="aggregationResolver" ref="aggregationResolver" />
+    <property name="queryBuilders">
+      <list>
+        <ref bean="collection.listingUriQueryBuilder" />
+        <bean class="org.vortikal.web.search.ParsedQueryBuilder">
+          <property name="queryString" value="type IN file" />
+          <property name="queryParser" ref="searchParser" />
+        </bean>
+      </list>
+    </property>
     <property name="searchSorting" ref="collectionListing.searchSorting" />
+  </bean>
+
+  <bean id="listingUriQueryBuilder" abstract="true" class="org.vortikal.web.search.ListingUriQueryBuilder">
+    <property name="aggregationResolver" ref="aggregationResolver" />
+    <property name="manuallyApprovedResourcesPropDef" ref="manuallyApprovedResourcesPropDef" />
+  </bean>
+
+  <bean id="collection.listingUriQueryBuilder" parent="listingUriQueryBuilder">
+    <property name="recursivePropDef" ref="collection.recursiveListingPropDef" />
   </bean>
 
   <bean id="collectionListing.searchSorting" class="org.vortikal.web.search.SearchSorting" depends-on="resourceTypeTree">

@@ -32,7 +32,6 @@ package org.vortikal.context;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Creates mappings from string values to string values. 
@@ -59,7 +58,7 @@ public class CSVMapFactoryBean extends AbstractCSVFactoryBean {
 
     @SuppressWarnings({"rawtypes" })
     public Class getObjectType() {
-        return Set.class;
+        return Map.class;
     }
 
     private String[] parseMapping(String string) {

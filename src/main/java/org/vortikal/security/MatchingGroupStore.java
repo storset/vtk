@@ -62,7 +62,7 @@ public class MatchingGroupStore implements GroupStore {
 
     @Override
     public boolean isMember(Principal principal, Principal group) {
-        Pattern p = this.groupsMap.get(group.getQualifiedName());
+        Pattern p = this.groupsMap.get(group);
         if (p == null) {
             return false;
         }

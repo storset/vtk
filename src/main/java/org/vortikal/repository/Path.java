@@ -287,10 +287,14 @@ public final class Path implements Comparable<Path> {
      */
     public Path expand(String expansion) {
         if (StringUtils.isBlank(expansion)) {
-            throw new IllegalArgumentException("Argument cannot be NULL or a blank string");
+            throw new IllegalArgumentException(
+                    "Expand: " + this + ": illegal argument ["
+                    + expansion + "]");
         }
         if (expansion.trim().startsWith("/")) {
-            throw new IllegalArgumentException("Argument must be a relative path");
+            throw new IllegalArgumentException(
+                    "Expand: " + this + ": illegal argument [" 
+                    + expansion + "]");
         }
         Path cur = this;
         StringBuilder segment = new StringBuilder();

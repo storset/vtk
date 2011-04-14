@@ -136,7 +136,7 @@ public class ACLEditController extends SimpleFormController {
 
         command.setGroups(authorizedGroups);
         command.setUsers(authorizedUsers);
-
+  
         return command;
     }
 
@@ -273,7 +273,7 @@ public class ACLEditController extends SimpleFormController {
 
         // Find largest matching users and groups in shortcut (all must match)
         for (String shortcut : shortcuts) {
-            List<String> groupsUsersPrShortcut = this.permissionShortcutsConfig.get(shortcut);
+            List<String> groupsUsersPrShortcut = permissionShortcutsConfig.get(shortcut);
             int matches = 0;
             for (String groupOrUser : groupsUsersPrShortcut) {
                 if (groupOrUser.startsWith(GROUP_PREFIX)) { // Check if group is in authorizedGroups
@@ -303,7 +303,7 @@ public class ACLEditController extends SimpleFormController {
             if (shortcutLargestMatch.equals(shortcut)) {
                 checkedShortcuts[i][1] = "checked";
                 // Remove from lists - TODO: possibly not needed to remove these as going to be hidden anyway with JS
-                List<String> groupsUsersPrShortcut = this.permissionShortcutsConfig.get(shortcut);
+                List<String> groupsUsersPrShortcut = permissionShortcutsConfig.get(shortcut);
                 for (String groupOrUser : groupsUsersPrShortcut) {
                     if (groupOrUser.startsWith(GROUP_PREFIX)) { // Check if group is in authorizedGroups
                         Iterator<Principal> it = authorizedGroups.iterator();

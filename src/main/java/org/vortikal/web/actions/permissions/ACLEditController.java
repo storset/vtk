@@ -1,21 +1,21 @@
 /* Copyright (c) 2004, University of Oslo, Norway
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  *  * Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
- * 
+ *
  *  * Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 
+ *
  *  * Neither the name of the University of Oslo nor the names of its
  *    contributors may be used to endorse or promote products derived from
  *    this software without specific prior written permission.
- *      
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
  * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
  * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -136,7 +136,7 @@ public class ACLEditController extends SimpleFormController {
 
         command.setGroups(authorizedGroups);
         command.setUsers(authorizedUsers);
-  
+
         return command;
     }
 
@@ -230,9 +230,9 @@ public class ACLEditController extends SimpleFormController {
 
     /**
      * Count valid shortcuts (all users and groups with GROUP or USER prefix)
-     * 
-     * @param shortcuts the configured shortcuts
-     * @param permissionShortcutsConfig the users and groups in a shortcut
+     *
+     * @param shortcuts the configured shortcuts for the privilege
+     * @param permissionShortcutsConfig the users and groups for the shortcuts
      * @return number of valid shortcuts
      */
     protected int countValidshortcuts(List<String> shortcuts, Map<String, List<String>> permissionShortcutsConfig) {
@@ -254,16 +254,16 @@ public class ACLEditController extends SimpleFormController {
 
 
     /**
-     * Extracts shortcuts for users and groups (if exist set to 'checked' and remove).
-     * 
+     * Extracts shortcuts from authorized users and groups
+     *
      * @param authorizedUsers the authorized users
      * @param authorizedGroups the authorized groups
      * @param precounted valid shortcuts
-     * @param shortcuts the configured shortcuts
-     * @param permissionShortcutsConfig the users and groups in a shortcut
+     * @param shortcuts the configured shortcuts for the privilege
+     * @param permissionShortcutsConfig the users and groups for the shortcuts
      * @return a <code>String[][]</code> object containing checked / not-checked shortcuts
      */
-    protected String[][] extractAndCheckShortcuts(List<Principal> authorizedGroups, List<Principal> authorizedUsers, 
+    protected String[][] extractAndCheckShortcuts(List<Principal> authorizedGroups, List<Principal> authorizedUsers,
             int validShortcuts, List<String> shortcuts, Map<String, List<String>> permissionShortcutsConfig) {
 
         String checkedShortcuts[][] = new String[validShortcuts][2];
@@ -271,7 +271,7 @@ public class ACLEditController extends SimpleFormController {
         String shortcutLargestMatch = "";
         int largestMatch = 0;
 
-        // Find largest matching users and groups in shortcut (all must match)
+        // Find largest matching number of users and groups in a shortcut (all must match to be considered)
         for (String shortcut : shortcuts) {
             List<String> groupsUsersPrShortcut = permissionShortcutsConfig.get(shortcut);
             int matches = 0;
@@ -296,31 +296,12 @@ public class ACLEditController extends SimpleFormController {
             }
         }
 
-        // Check the largest matching shortcut only
+        // Check only the shortcut with largest number of matching groups and users
         int i = 0;
         for (String shortcut : shortcuts) {
             checkedShortcuts[i][0] = shortcut;
             if (shortcutLargestMatch.equals(shortcut)) {
                 checkedShortcuts[i][1] = "checked";
-                // Remove from lists - TODO: possibly not needed to remove these as going to be hidden anyway with JS
-                List<String> groupsUsersPrShortcut = permissionShortcutsConfig.get(shortcut);
-                for (String groupOrUser : groupsUsersPrShortcut) {
-                    if (groupOrUser.startsWith(GROUP_PREFIX)) { // Check if group is in authorizedGroups
-                        Iterator<Principal> it = authorizedGroups.iterator();
-                        while (it.hasNext()) {
-                            if ((GROUP_PREFIX + it.next().getName()).equals(groupOrUser)) {
-                                it.remove();
-                            }
-                        }
-                    } else if (groupOrUser.startsWith(USER_PREFIX)) { // Check if user is in authorizedUsers
-                        Iterator<Principal> it = authorizedUsers.iterator();
-                        while (it.hasNext()) {
-                            if ((USER_PREFIX + it.next().getName()).equals(groupOrUser)) {
-                                it.remove();
-                            }
-                        }
-                    }
-                }
             } else {
                 checkedShortcuts[i][1] = "";
             }
@@ -333,7 +314,7 @@ public class ACLEditController extends SimpleFormController {
 
     /**
      * Add and remove ACL entries for updated shortcuts.
-     * 
+     *
      * @param acl the ACL object
      * @param editCommand the command object
      * @param yourself
@@ -372,7 +353,7 @@ public class ACLEditController extends SimpleFormController {
 
         // Add
         for (String groupOrUser : groupsUsersForAdd) {
-            if (groupsUsersForRemoval.contains(groupOrUser)) { // Filter
+            if (groupsUsersForRemoval.contains(groupOrUser)) { // Filter out 'to be added' from 'to be removed'
                 groupsUsersForRemoval.remove(groupOrUser);
             }
             String groupOrUserUnformatted[] = new String[1];
@@ -393,7 +374,7 @@ public class ACLEditController extends SimpleFormController {
 
     /**
      * Remove groups or users from ACL.
-     * 
+     *
      * @param acl the ACL object
      * @param values groups or users to remove
      * @param type type of ACL (GROUP or USER)
@@ -424,7 +405,7 @@ public class ACLEditController extends SimpleFormController {
 
     /**
      * Check if yourself is still in privileged groups for admin after removal
-     * 
+     *
      * @param acl the ACL object
      * @param potentialAcl the potential ACL object
      * @param userOrGroup the user or group
@@ -461,7 +442,7 @@ public class ACLEditController extends SimpleFormController {
 
     /**
      * Check if not empty admin Acl
-     * 
+     *
      * @param acl the ACL object
      * @param potentialAcl the potential ACL object
      * @param userOrGroup the user or group
@@ -482,7 +463,7 @@ public class ACLEditController extends SimpleFormController {
 
     /**
      * Add groups or users to ACL.
-     * 
+     *
      * @param acl the ACL object
      * @param values groups or users to remove
      * @param type type of ACL (GROUP or USER)
@@ -501,7 +482,7 @@ public class ACLEditController extends SimpleFormController {
 
     /**
      * Add groups or users to ACL (for getUserNameEntries()).
-     * 
+     *
      * @param acl the ACL object
      * @param values groups or users to remove
      * @param type type of ACL (GROUP or USER)
@@ -520,9 +501,9 @@ public class ACLEditController extends SimpleFormController {
 
     /**
      * Unformat group or user in shortcut and set type to GROUP or USER
-     * 
+     *
      * @param groupOrUser formatted shortcut
-     * @param groupOrUserShortcut unformatted group or user shortcut (return by reference)
+     * @param groupOrUserShortcut unformatted shortcut (return by reference)
      * @return type of ACL (GROUP or USER)
      */
     private Type unformatGroupOrUserAndSetType(String groupOrUser, String[] groupOrUserUnformatted) {
@@ -540,7 +521,7 @@ public class ACLEditController extends SimpleFormController {
 
     /**
      * Check if USER is PSEUDO and set correct type
-     * 
+     *
      * @param type type of ACL (GROUP or USER)
      * @param value group or user
      * @return type type of ACL (GROUP or USER or PSEUDO)

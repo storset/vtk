@@ -102,10 +102,10 @@ public class ACLEditController extends SimpleFormController {
         String token = requestContext.getSecurityToken();
         Resource resource = repository.retrieve(token, uri, false);
         
-        shortcuts = this.permissionShortcuts.get(this.privilege);
-        if(shortcuts != null) {
-          this.validShortcuts = countValidshortcuts(shortcuts);
-        }
+//        shortcuts = this.permissionShortcuts.get(this.privilege);
+//        if(shortcuts != null) {
+//          this.validShortcuts = countValidshortcuts(shortcuts);
+//        }
         
         return getACLEditCommand(resource, resource.getAcl(), requestContext.getPrincipal());
     }
@@ -127,9 +127,9 @@ public class ACLEditController extends SimpleFormController {
         authorizedUsers.addAll(Arrays.asList(acl
                 .listPrivilegedPseudoPrincipals(this.privilege)));
 
-        if (shortcuts != null) {   
-          command.setShortcuts(extractAndCheckShortcuts(authorizedUsers, authorizedGroups, shortcuts));
-        }
+//        if (shortcuts != null) {   
+//          command.setShortcuts(extractAndCheckShortcuts(authorizedUsers, authorizedGroups, shortcuts));
+//        }
 
         command.setGroups(authorizedGroups);
         command.setUsers(authorizedUsers);
@@ -181,7 +181,7 @@ public class ACLEditController extends SimpleFormController {
         Principal yourself = requestContext.getPrincipal();
         
         // Remove or add shortcuts
-        acl = aclShortcuts(acl, editCommand, yourself, errors);
+        // acl = aclShortcuts(acl, editCommand, yourself, errors);
         
         // Has the user asked to save?
         if (editCommand.getSaveAction() != null) {     
@@ -230,14 +230,14 @@ public class ACLEditController extends SimpleFormController {
     protected int countValidshortcuts(List<String> theShortcuts) {
         int valid = 0;
         for (String shortcut : theShortcuts) {
-            int subValid = 0;
+            int validGroupsUsers = 0;
             List<String> groupsUsersPrShortcut = this.permissionShortcutsConfig.get(shortcut);
             for (String groupOrUser : groupsUsersPrShortcut) {
                 if (groupOrUser.startsWith(GROUP_PREFIX) || groupOrUser.startsWith(USER_PREFIX)) {
-                    subValid++;
+                    validGroupsUsers++;
                 }
             }
-            if(subValid == groupsUsersPrShortcut.size()) {
+            if(groupsUsersPrShortcut.size() == validGroupsUsers) {
                valid++;
             }
         }

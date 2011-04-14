@@ -20,6 +20,7 @@ import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.NamePrefixQuery;
+import org.vortikal.repository.search.query.NameWildcardQuery;
 import org.vortikal.repository.search.query.NameTermQuery;
 import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.PropertyExistsQuery;
@@ -416,7 +417,7 @@ Query NameQuery() :
     Query q;
 }
 {
-    (LOOKAHEAD(4) q=NamePrefixQuery() /**| q=NameRangeQuery() | q=NameWildcardQuery() **/| q=NameTermQuery())
+    (LOOKAHEAD(4) q=NamePrefixQuery() | LOOKAHEAD(3) q=NameWildcardQuery() | q=NameTermQuery() /**| q=NameRangeQuery() **/)
         { return q; }
 }
 
@@ -428,11 +429,23 @@ Query NamePrefixQuery() :
     <NAME> (<NE> | eq=<EQ>) t=<VALUE> <ASTERISK>
         { 
             boolean inverted = (eq == null); 
-            return new NamePrefixQuery(t.image, inverted); 
+            return new NamePrefixQuery(unescape(t.image), inverted); 
         }
 }
 
-Query NameTermQuery() : 
+Query NameWildcardQuery() :
+{
+    Token t, eq=null;
+}
+{
+    <NAME> (<NE> | eq=<EQ>) t=<WILDVALUE>
+        {
+           boolean inverted = (eq == null);
+           return new NameWildcardQuery(unescape(t.image), inverted);
+        }
+}
+
+Query NameTermQuery() :
 {
     Token t, eq = null, eqi = null, ne = null, nei = null, gt = null, lt = null, ge = null, le = null;
     TermOperator operator;
@@ -457,17 +470,13 @@ Query NameTermQuery() :
             else
                 operator = TermOperator.LE;
 
-            return new NameTermQuery(t.image, operator);
+            return new NameTermQuery(unescape(t.image), operator);
         }
 }
 
 // Query NameRangeQuery() :
 // {}{}
 
-// Query NameWildcardQuery() :
-// {
-// }{
-// }
 
 Query PropertyQuery() : 
 {

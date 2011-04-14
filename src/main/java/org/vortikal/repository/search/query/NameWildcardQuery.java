@@ -34,13 +34,19 @@ package org.vortikal.repository.search.query;
 public class NameWildcardQuery implements NameQuery {
 
     private String term;
+    private boolean inverted;
 
-    public NameWildcardQuery(String term) {
+    public NameWildcardQuery(String term, boolean inverted) {
         this.term = term;
+        this.inverted = inverted;
     }
 
     public String getTerm() {
         return this.term;
+    }
+    
+    public boolean isInverted() {
+        return this.inverted;
     }
 
 //    public String dump(String prefix) {
@@ -51,6 +57,7 @@ public class NameWildcardQuery implements NameQuery {
 //        return buf.toString();
 //    }
 
+    @Override
     public Object accept(QueryTreeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }

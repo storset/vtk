@@ -56,6 +56,16 @@ public interface AuthenticationHandler extends Categorizable {
 
     public String getIdentifier();
     
+    public static final class AuthResult {
+        private String uid;
+        public AuthResult(String uid) {
+            this.uid = uid;
+        }
+        public String getUID() {
+            return this.uid;
+        }
+    }
+    
     /**
      * Determines whether a request is recognized by this authentication handler.
      * 
@@ -85,7 +95,7 @@ public interface AuthenticationHandler extends Categorizable {
      * @throws InvalidAuthenticationRequestException
      *             if the authentication request is not valid
      */
-    public Principal authenticate(HttpServletRequest req) throws AuthenticationProcessingException,
+    public AuthResult authenticate(HttpServletRequest req) throws AuthenticationProcessingException,
             AuthenticationException, InvalidAuthenticationRequestException;
 
 

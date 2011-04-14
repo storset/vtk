@@ -48,6 +48,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.OrderComparator;
@@ -55,8 +56,11 @@ import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.CookieLinkStore;
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalImpl;
+import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.security.token.TokenManager;
+import org.vortikal.security.web.AuthenticationHandler.AuthResult;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Assertion;
 import org.vortikal.web.service.Service;
@@ -90,6 +94,8 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
     private static Log authLogger = LogFactory.getLog("org.vortikal.security.web.AuthLog");
 
     private TokenManager tokenManager;
+    
+    private PrincipalManager principalManager;
 
     private List<AuthenticationHandler> authenticationHandlers;
 
@@ -200,7 +206,18 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                 }
 
                 try {
-                    Principal principal = handler.authenticate(req);
+                    AuthResult result = handler.authenticate(req);
+                    if (result == null) {
+                        throw new IllegalStateException(
+                                "Principal handler returned NULL AuthResult: " + handler 
+                                + " for request " + req);
+                    }
+                    Principal principal = new PrincipalImpl(result.getUID(), Principal.Type.USER);
+                    boolean valid = this.principalManager.validatePrincipal(principal);
+                    if (!valid) {
+                        throw new AuthenticationException("Invalid principal: " + principal);
+                    }
+                    
                     if (logger.isDebugEnabled()) {
                         logger.debug("Successfully authenticated principal: " + principal
                                 + " using authentication handler " + handler + ". " + "Setting security context.");
@@ -402,11 +419,15 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         return sb.toString();
     }
 
-
+    @Required
     public void setTokenManager(TokenManager tokenManager) {
         this.tokenManager = tokenManager;
     }
 
+    @Required
+    public void setPrincipalManager(PrincipalManager principalManager) {
+        this.principalManager = principalManager;
+    }
 
     public void setAuthenticationHandlers(List<AuthenticationHandler> authenticationHandlers) {
         this.authenticationHandlers = authenticationHandlers;

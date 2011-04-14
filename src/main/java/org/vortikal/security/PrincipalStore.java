@@ -32,14 +32,10 @@ package org.vortikal.security;
 
 import org.springframework.core.Ordered;
 
-
-
 /**
  * A principal repository interface.
  */
 public interface PrincipalStore extends Ordered {
-
-
 
     /**
      * Validates the existence of a given principal.

@@ -46,7 +46,7 @@ public abstract class AbstractAuthenticationHandler implements
     private PrincipalFactory principalFactory;
     
     /* Simple cache to allow for clients that don't send cookies */
-    private SimpleCache<String, Principal> cache;
+    private SimpleCache<String, AuthResult> cache;
 
     private List<Assertion> requestAssertions; 
     
@@ -56,7 +56,7 @@ public abstract class AbstractAuthenticationHandler implements
     
     private Set<?> categories = Collections.EMPTY_SET;
 
-    public void setCache(SimpleCache<String, Principal> cache) {
+    public void setCache(SimpleCache<String, AuthResult> cache) {
         this.cache = cache;
     }
 
@@ -114,7 +114,7 @@ public abstract class AbstractAuthenticationHandler implements
         return false;
     }
 
-    public Principal authenticate(HttpServletRequest request)
+    public AuthResult authenticate(HttpServletRequest request)
             throws AuthenticationProcessingException, AuthenticationException {
 
         String username = null;
@@ -128,39 +128,32 @@ public abstract class AbstractAuthenticationHandler implements
             throw new InvalidAuthenticationRequestException(e);
         }
 
-        Principal principal = null;
-
-        try {
-            principal = principalFactory.getPrincipal(username, Principal.Type.USER);
-        } catch (InvalidPrincipalException e) {
-            throw new AuthenticationException("Invalid principal '" + username
-                    + "'", e);
-        }
+        AuthResult authResult = new AuthResult(username);
 
         String md5sum = null;
         if (this.cache != null) {
             // Only calculate if useful
-            md5sum = MD5.md5sum(principal.getQualifiedName() + password);
+            md5sum = MD5.md5sum(authResult.getUID() + password);
             
-            Principal cachedPrincipal = this.cache.get(md5sum);
-            if (cachedPrincipal != null) {
+            AuthResult cachedResult = this.cache.get(md5sum);
+            if (cachedResult != null) {
                 if (this.logger.isDebugEnabled())
                     this.logger.debug("Found authenticated principal '"
                             + username + "' in cache.");
-                return cachedPrincipal;
+                return cachedResult;
             }
         }
 
-        authenticateInternal(principal, password);
+        authenticateInternal(username, password);
 
         if (this.cache != null)
             /* add to cache */
-            this.cache.put(md5sum, principal);
+            this.cache.put(md5sum, authResult);
 
-        return principal;
+        return authResult;
     }
 
-    public abstract void authenticateInternal(Principal principal,
+    public abstract void authenticateInternal(String uid,
             String password) throws AuthenticationProcessingException,
             AuthenticationException;
 

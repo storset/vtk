@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalImpl;
 import org.vortikal.security.store.MD5PasswordStore;
 
 public class HttpBasicAuthenticationHandler extends
@@ -37,12 +38,14 @@ public class HttpBasicAuthenticationHandler extends
 
     private MD5PasswordStore principalStore = null;
 
-    @Required public void setPrincipalStore(MD5PasswordStore principalStore) {
+    @Required 
+    public void setPrincipalStore(MD5PasswordStore principalStore) {
         this.principalStore = principalStore;
     }
 
-    public void authenticateInternal(Principal principal, String password)
+    public void authenticateInternal(String uid, String password)
             throws AuthenticationProcessingException, AuthenticationException {
+        Principal principal = new PrincipalImpl(uid, Principal.Type.USER);
         this.principalStore.authenticate(principal, password);
     }
 

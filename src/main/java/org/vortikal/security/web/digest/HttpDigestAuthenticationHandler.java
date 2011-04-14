@@ -201,7 +201,7 @@ public class HttpDigestAuthenticationHandler
         return false;
     }
 
-    public Principal authenticate(HttpServletRequest request)
+    public AuthResult authenticate(HttpServletRequest request)
         throws AuthenticationException {
 
         String authHeader = request.getHeader("Authorization");
@@ -339,7 +339,7 @@ public class HttpDigestAuthenticationHandler
         }
     }
 
-    private Principal doAuthenticate(HttpServletRequest request, String uri,
+    private AuthResult doAuthenticate(HttpServletRequest request, String uri,
                                      String response, String nc, String nonce, String cnonce,
                                      String qop, String username, String opaque) {
 
@@ -384,7 +384,6 @@ public class HttpDigestAuthenticationHandler
                 "Unknown principal in HTTP/Digest request: " + principal);
         }
 
-        // FIXME: Why is getMD5HashString() deprecated?
         String componentA1 = this.principalStore.getMD5HashString(principal);
 
         if (componentA1 == null) {
@@ -431,7 +430,7 @@ public class HttpDigestAuthenticationHandler
         if (this.logger.isDebugEnabled()) {
             this.logger.debug("Successfully authenticated principal " + principal);
         }
-        return principal;
+        return new AuthResult(principal.getQualifiedName());
     }
 
     private String generateNonce() {

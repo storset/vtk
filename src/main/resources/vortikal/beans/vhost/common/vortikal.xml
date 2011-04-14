@@ -40,6 +40,7 @@
       The security context contains the authenticated principal and the
       repository token. </description>
     <property name="tokenManager" ref="tokenManager" />
+    <property name="principalManager" ref="principalManager" />
     <property name="cookieLinkStore" ref="cookieLinkStore" />
     <property name="cookieLinksEnabled" value="${security.sessionCookieLinksEnabled}" />
     <property name="rememberAuthMethod" value="${security.rememberAuthMethod}" />

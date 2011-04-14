@@ -88,7 +88,7 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
      * Performs the authentication based on the SAMLResponse request parameter
      */
     @Override
-    public Principal authenticate(HttpServletRequest request) throws AuthenticationProcessingException,
+    public AuthResult authenticate(HttpServletRequest request) throws AuthenticationProcessingException,
             AuthenticationException, InvalidAuthenticationRequestException {
 
         if (this.login.isUnsolicitedLoginResponse(request)) {
@@ -112,7 +112,7 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
                 }
             }
         }
-        return principal;
+        return new AuthResult(principal.getQualifiedName());
     }
 
     /**

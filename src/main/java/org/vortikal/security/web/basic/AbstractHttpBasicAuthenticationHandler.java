@@ -56,7 +56,8 @@ public abstract class AbstractHttpBasicAuthenticationHandler extends AbstractAut
     protected HttpBasicAuthenticationChallenge challenge;
     private boolean requireSecureConnection = true;
     
-    @Required public void setChallenge(HttpBasicAuthenticationChallenge challenge) {
+    @Required 
+    public void setChallenge(HttpBasicAuthenticationChallenge challenge) {
         this.challenge = challenge;
     }
     
@@ -81,7 +82,6 @@ public abstract class AbstractHttpBasicAuthenticationHandler extends AbstractAut
         return false;
     }
     
-
     public boolean isLogoutSupported() {
         return false;
     }
@@ -89,13 +89,9 @@ public abstract class AbstractHttpBasicAuthenticationHandler extends AbstractAut
     public boolean logout(Principal principal, HttpServletRequest req,
                           HttpServletResponse resp)
         throws AuthenticationProcessingException {
-        // FIXME: redirect user to page explaining how to exit the browser? 
-        // Can't do nothing
         return false;
     }
     
-
-
     public AuthenticationChallenge getAuthenticationChallenge() {
         return this.challenge;
     }

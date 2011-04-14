@@ -51,7 +51,6 @@ import org.vortikal.repository.Path;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.web.AuthenticationChallenge;
 import org.vortikal.security.web.AuthenticationHandler;
 import org.vortikal.web.InvalidRequestException;
@@ -68,8 +67,6 @@ public class OpenIDAuthenticationHandler
     private static Log logger = LogFactory.getLog(OpenIDAuthenticationHandler.class);
 
     private String identifier;
-    
-    private PrincipalFactory principalFactory;
     
     private int order = Integer.MAX_VALUE;
     
@@ -211,7 +208,7 @@ public class OpenIDAuthenticationHandler
 
 
 
-    public Principal authenticate(HttpServletRequest request)
+    public AuthResult authenticate(HttpServletRequest request)
         throws AuthenticationException {
 
         if (request.getParameter("openid_response") == null) {
@@ -260,13 +257,10 @@ public class OpenIDAuthenticationHandler
         if (verified == null) {
             throw new AuthenticationException();
         }
-        Principal principal = principalFactory.getPrincipal(verified.getIdentifier(), Principal.Type.USER);
         if (logger.isDebugEnabled()) {
-            logger.debug("Authenticated principal: " + principal);
+            logger.debug("Authenticated principal: " + verified.getIdentifier());
         }
-        
-
-        return principal;
+        return new AuthResult(verified.getIdentifier());
     }
 
 
@@ -290,11 +284,6 @@ public class OpenIDAuthenticationHandler
         }
     }
 
-    @Required
-    public void setPrincipalFactory(PrincipalFactory principalFactory) {
-        this.principalFactory = principalFactory;
-    }
-    
     public String getIdentifier() {
         return this.identifier;
     }

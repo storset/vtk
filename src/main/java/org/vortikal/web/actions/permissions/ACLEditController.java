@@ -32,10 +32,8 @@ package org.vortikal.web.actions.permissions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -55,13 +53,11 @@ import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.Principal.Type;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.PrincipalManager;
+import org.vortikal.security.Principal.Type;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
-
-import com.sun.tools.javac.main.RecognizedOptions.GrumpyHelper;
 
 public class ACLEditController extends SimpleFormController {
 
@@ -109,7 +105,6 @@ public class ACLEditController extends SimpleFormController {
         shortcuts = this.permissionShortcuts.get(this.privilege);
         if(shortcuts != null) {
           this.validShortcuts = countValidshortcuts(shortcuts);
-          System.out.println("************************* valid shortcuts: " + this.validShortcuts);
         }
         
         return getACLEditCommand(resource, resource.getAcl(), requestContext.getPrincipal());
@@ -350,12 +345,10 @@ public class ACLEditController extends SimpleFormController {
         // Add
         for(String groupOrUser: groupsUsersForAdd) {
             if(groupsUsersForRemoval.contains(groupOrUser)) { // Filter
-                System.out.println("****** filter out: " + groupOrUser);
                 groupsUsersForRemoval.remove(groupOrUser); 
             }
             String groupOrUserUnformatted[] = new String[1];
             Type type = unformatShortcutAndSetType(groupOrUser, groupOrUserUnformatted);
-            System.out.println("****** add these: " + groupOrUserUnformatted[0]);
             acl = addToAcl(acl, groupOrUserUnformatted, type);
         }
         
@@ -363,7 +356,6 @@ public class ACLEditController extends SimpleFormController {
         for (String groupOrUser : groupsUsersForRemoval) {
             String groupOrUserUnformatted[] = new String[1];
             Type type = unformatShortcutAndSetType(groupOrUser, groupOrUserUnformatted);
-            System.out.println("****** remove these: " + groupOrUserUnformatted[0]);
             acl = removeFromAcl(acl, groupOrUserUnformatted, type, yourself, errors);
         }
         

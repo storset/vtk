@@ -317,7 +317,7 @@ public class ACLEditController extends SimpleFormController {
 
         for (String[] shortcut : shortcuts) {
 
-            boolean checked = false;
+            boolean checkedBefore = false;
             boolean found = false;
 
             for (String update : updatedShortcuts) {
@@ -327,12 +327,12 @@ public class ACLEditController extends SimpleFormController {
                 }
             }
             if (shortcut[1].equals("checked")) {
-                checked = true;
+                checkedBefore = true;
             }
 
-            if (found) { 
+            if (found && !checkedBefore) { 
                 groupsUsersForAdd.addAll(this.permissionShortcutsConfig.get(shortcut[0]));
-            } else {
+            } else if (!found && checkedBefore) {
                 groupsUsersForRemoval.addAll(this.permissionShortcutsConfig.get(shortcut[0]));
             }
             

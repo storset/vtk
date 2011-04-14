@@ -292,7 +292,7 @@ public class ACLEditController extends SimpleFormController {
             checkedShortcuts[i][0] = shortcut;
             if (shortcutLargestMatch.equals(shortcut)) {
                 checkedShortcuts[i][1] = "checked";
-                // Remove from lists
+                // Remove from lists - TODO: possibly not needed to remove these as going to be hidden anyway with JS
                 List<String> groupsUsersPrShortcut = this.permissionShortcutsConfig.get(shortcut);
                 for (String groupOrUser : groupsUsersPrShortcut) {
                     if (groupOrUser.startsWith(GROUP_PREFIX)) { // Check if group is in authorizedGroups

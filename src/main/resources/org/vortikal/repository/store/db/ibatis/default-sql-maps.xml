@@ -334,10 +334,6 @@
     delete from deleted_resource where id = #value#
   </delete>
 
-  <select id="numberOfRecoverableResources" parameterClass="int" resultClass="Integer">
-    select count(*) from deleted_resource where parent_id = #value#
-  </select>
-
   <!-- ## Permanently delete a resource that has already been marked for deletion (moved to trash can) ##-->
   <delete id="deletePermanentlyMarkDeleted" parameterClass="java.util.Map">
     delete from vortex_resource where uri = #trashCanURI# or uri like #trashCanURIWildCard# escape '@'

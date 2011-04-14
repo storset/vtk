@@ -21,7 +21,6 @@
     <property name="assertions">
       <list>
         <ref bean="resourceInCollection" />
-        <ref bean="collectionContainsRecoverableResources" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="mode" />
           <property name="parameterValue" value="trash-can" />
@@ -29,10 +28,6 @@
       </list>
     </property>
     <property name="handler" ref="trashCanHandler" />
-  </bean>
-
-  <bean id="collectionContainsRecoverableResources" class="org.vortikal.web.service.ResourceContainsDeletedResourcesAssertion">
-    <property name="repository" ref="repository" />
   </bean>
 
   <bean id="trashCanHandler" class="org.vortikal.web.actions.trashcan.TrashCanController">

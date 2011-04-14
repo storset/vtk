@@ -377,16 +377,6 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         return recoverableResources;
     }
 
-    @Override
-    public boolean containsRecoverableResources(int resourceId) throws DataAccessException {
-        String sqlMap = getSqlMap("numberOfRecoverableResources");
-        Integer count = (Integer) getSqlMapClientTemplate().queryForObject(sqlMap, resourceId);
-        if (count > 0) {
-            return true;
-        }
-        return false;
-    }
-
     public ResourceImpl[] loadChildren(ResourceImpl parent) {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(parent.getURI(), SQL_ESCAPE_CHAR));

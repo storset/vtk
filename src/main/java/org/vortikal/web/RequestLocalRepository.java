@@ -260,11 +260,6 @@ public class RequestLocalRepository implements Repository {
     }
 
     @Override
-    public boolean resourceContainsDeletedResources(Path uri) throws Exception {
-        return this.repository.resourceContainsDeletedResources(uri);
-    }
-
-    @Override
     public boolean exists(String token, Path uri) throws Exception {
 
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();

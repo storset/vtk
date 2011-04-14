@@ -481,15 +481,6 @@ public interface Repository {
     public void deleteRecoverable(String token, Path parentUri, RecoverableResource recoverableResource)
             throws Exception;
 
-    /**
-     * Test whether or not a resource contains deleted resources
-     * 
-     * @param path
-     *            path of the resource to test (check for deleted resources)
-     * @return whether or not the resource contains deleted resources
-     * @throws Exception
-     */
-    public boolean resourceContainsDeletedResources(Path uri) throws Exception;
 
     /**
      * Tests whether a resource identified by this URI exists.

@@ -518,15 +518,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     }
 
     @Override
-    public boolean resourceContainsDeletedResources(Path uri) throws Exception {
-        ResourceImpl r = this.dao.load(uri);
-        if (!r.isCollection()) {
-            return false;
-        }
-        return this.dao.containsRecoverableResources(r.getID());
-    }
-
-    @Override
     public Resource lock(String token, Path uri, String ownerInfo, Repository.Depth depth, int requestedTimeoutSeconds,
             String lockToken) throws ResourceNotFoundException, AuthorizationException, AuthenticationException,
             FailedDependencyException, ResourceLockedException, IllegalOperationException, ReadOnlyException,

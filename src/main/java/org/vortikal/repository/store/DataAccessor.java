@@ -148,15 +148,6 @@ public interface DataAccessor {
     public List<RecoverableResource> getTrashCanOrphans() throws DataAccessException;
 
     /**
-     * 
-     * @param resourceId
-     *            Unique id of resource to check
-     * @return Whether or not the resource in question contains children that
-     *         are marked for deletion, i.e. moved to trash can
-     */
-    public boolean containsRecoverableResources(int resourceId) throws DataAccessException;
-
-    /**
      * Deletes all expired locks (should be called periodically)
      */
     public void deleteExpiredLocks(Date expireDate) throws DataAccessException;

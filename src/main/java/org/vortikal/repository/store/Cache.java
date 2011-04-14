@@ -578,11 +578,6 @@ public class Cache implements DataAccessor, InitializingBean {
     }
 
     @Override
-    public boolean containsRecoverableResources(int resourceId) throws DataAccessException {
-        return this.wrappedAccessor.containsRecoverableResources(resourceId);
-    }
-
-    @Override
     public void deleteExpiredLocks(Date expireDate) throws DataAccessException {
         this.wrappedAccessor.deleteExpiredLocks(expireDate);
     }

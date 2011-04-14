@@ -102,10 +102,10 @@ public class ACLEditController extends SimpleFormController {
         String token = requestContext.getSecurityToken();
         Resource resource = repository.retrieve(token, uri, false);
         
-//        shortcuts = this.permissionShortcuts.get(this.privilege);
-//        if(shortcuts != null) {
-//          this.validShortcuts = countValidshortcuts(shortcuts);
-//        }
+        shortcuts = this.permissionShortcuts.get(this.privilege);
+        if(shortcuts != null) {
+          this.validShortcuts = countValidshortcuts(shortcuts);
+        }
         
         return getACLEditCommand(resource, resource.getAcl(), requestContext.getPrincipal());
     }
@@ -127,9 +127,9 @@ public class ACLEditController extends SimpleFormController {
         authorizedUsers.addAll(Arrays.asList(acl
                 .listPrivilegedPseudoPrincipals(this.privilege)));
 
-//        if (shortcuts != null) {   
-//          command.setShortcuts(extractAndCheckShortcuts(authorizedUsers, authorizedGroups, shortcuts));
-//        }
+        if (shortcuts != null) {   
+          command.setShortcuts(extractAndCheckShortcuts(authorizedUsers, authorizedGroups, shortcuts));
+        }
 
         command.setGroups(authorizedGroups);
         command.setUsers(authorizedUsers);
@@ -181,7 +181,7 @@ public class ACLEditController extends SimpleFormController {
         Principal yourself = requestContext.getPrincipal();
         
         // Remove or add shortcuts
-        // acl = aclShortcuts(acl, editCommand, yourself, errors);
+        acl = aclShortcuts(acl, editCommand, yourself, errors);
         
         // Has the user asked to save?
         if (editCommand.getSaveAction() != null) {     
@@ -255,47 +255,68 @@ public class ACLEditController extends SimpleFormController {
      */
     protected String[][] extractAndCheckShortcuts (List<Principal> authorizedUsers, 
             List<Principal> authorizedGroups, List<String> shortcuts) {
-
+        
         String checkedShortcuts[][] = new String[this.validShortcuts][2];
-        
-        int i = 0;
-        
-        for (String shortcut: shortcuts) {
-            int existingGroupsUsers = 0;
-            int validGroupsUsers = 0;
-            
+
+        String shortcutLargestMatch = "";
+        int largestMatch = 0;
+
+        // Find largest matching users and groups in shortcut (all must match)
+        for (String shortcut : shortcuts) {
             List<String> groupsUsersPrShortcut = this.permissionShortcutsConfig.get(shortcut);
-            
-            for (String groupOrUser : groupsUsersPrShortcut ) {
-                if (groupOrUser.startsWith(GROUP_PREFIX)) { // Check if shortcut is in authorizedGroups
-                    Iterator<Principal> it = authorizedGroups.iterator();
-                    while (it.hasNext()) {
-                        String userName = it.next().getName();
-                        if ((GROUP_PREFIX + userName).equals(groupOrUser)) {
-                            it.remove();
-                            existingGroupsUsers++;
-                        }
-                    }  
-                    validGroupsUsers++;
-                } else if (groupOrUser.startsWith(USER_PREFIX)) { // Check if shortcut is in authorizedUsers
-                    Iterator<Principal> it = authorizedUsers.iterator();
-                    while (it.hasNext()) {
-                        String groupName = it.next().getName();
-                        if ((USER_PREFIX + groupName).equals(groupOrUser)) {
-                            it.remove();
-                            existingGroupsUsers++;
+            int matches = 0;
+            for (String groupOrUser : groupsUsersPrShortcut) {
+                if (groupOrUser.startsWith(GROUP_PREFIX)) { // Check if group is in authorizedGroups
+                    for (Principal user : authorizedGroups) {
+                        if ((GROUP_PREFIX + user.getName()).equals(groupOrUser)) {
+                            matches++;
                         }
                     }
-                    validGroupsUsers++;
+                } else if (groupOrUser.startsWith(USER_PREFIX)) { // Check if user is in authorizedUsers
+                    for (Principal user : authorizedUsers) {
+                        if ((USER_PREFIX + user.getName()).equals(groupOrUser)) {
+                            matches++;
+                        }
+                    }
                 }
             }
-            
+            if (matches == groupsUsersPrShortcut.size() && matches > largestMatch) {
+                shortcutLargestMatch = shortcut;
+                largestMatch = matches;
+            }
+        }
+
+        // Check the largest matching shortcut only
+        int i = 0;
+        for (String shortcut : shortcuts) {
             checkedShortcuts[i][0] = shortcut;
-            checkedShortcuts[i][1] = (existingGroupsUsers == validGroupsUsers) ? "checked" : "";
-           
+            if (shortcutLargestMatch.equals(shortcut)) {
+                checkedShortcuts[i][1] = "checked";
+                // Remove from lists
+                List<String> groupsUsersPrShortcut = this.permissionShortcutsConfig.get(shortcut);
+                for (String groupOrUser : groupsUsersPrShortcut) {
+                    if (groupOrUser.startsWith(GROUP_PREFIX)) { // Check if group is in authorizedGroups
+                        Iterator<Principal> it = authorizedGroups.iterator();
+                        while (it.hasNext()) {
+                            if ((GROUP_PREFIX + it.next().getName()).equals(groupOrUser)) {
+                                it.remove();
+                            }
+                        }
+                    } else if (groupOrUser.startsWith(USER_PREFIX)) { // Check if user is in authorizedUsers
+                        Iterator<Principal> it = authorizedUsers.iterator();
+                        while (it.hasNext()) {
+                            if ((USER_PREFIX + it.next().getName()).equals(groupOrUser)) {
+                                it.remove();
+                            }
+                        }
+                    }
+                }
+            } else {
+                checkedShortcuts[i][1] = "";
+            }
             i++;
         }
-        
+
         return checkedShortcuts;
     }
 

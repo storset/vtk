@@ -57,9 +57,9 @@ import com.ibm.icu.util.Calendar;
 
 public final class EventListingHelper implements InitializingBean {
 
-    private final Pattern DATE_PATTERN = Pattern.compile("\\d{4}-\\d{2}-\\d{2}");
-    private final Pattern MONTH_PATTERN = Pattern.compile("\\d{4}-\\d{2}");
-    private final Pattern YEAR_PATTERN = Pattern.compile("\\d{4}");
+    private static final Pattern DATE_PATTERN = Pattern.compile("\\d{4}-\\d{2}-\\d{2}");
+    private static final Pattern MONTH_PATTERN = Pattern.compile("\\d{4}-\\d{2}");
+    private static final Pattern YEAR_PATTERN = Pattern.compile("\\d{4}");
     private Map<Pattern, SimpleDateFormat> dateformats;
     private Map<Pattern, SpecificDateSearchType> searchTypes;
 
@@ -134,7 +134,7 @@ public final class EventListingHelper implements InitializingBean {
             params.add(eventTypeTitle);
         }
         if (searchType != null && date != null) {
-            String titleDate = this.getRequestedDateAsLocalizedString(request, collection, searchType, date);
+            String titleDate = this.getRequestedDateAsLocalizedString(collection, searchType, date);
             params.add(titleDate);
         }
         String title = getLocalizedTitle(request, key, params.toArray());
@@ -165,7 +165,7 @@ public final class EventListingHelper implements InitializingBean {
         return null;
     }
 
-    private String getRequestedDateAsLocalizedString(HttpServletRequest request, Resource collection,
+    private String getRequestedDateAsLocalizedString(Resource collection,
             SpecificDateSearchType searchType, Date date) {
         Calendar requestedCal = Calendar.getInstance();
         requestedCal.setTime(date);

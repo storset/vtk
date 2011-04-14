@@ -38,6 +38,7 @@ import org.springframework.beans.factory.annotation.Required;
 public class MatchingPrincipalStore implements PrincipalStore {
     private int order = Integer.MAX_VALUE;
     private Pattern pattern;
+    private Pattern exception;
 
     @Override
     public int getOrder() {
@@ -52,12 +53,26 @@ public class MatchingPrincipalStore implements PrincipalStore {
     public boolean validatePrincipal(Principal principal)
             throws AuthenticationProcessingException {
         Matcher matcher = this.pattern.matcher(principal.getQualifiedName());
-        return matcher.matches();
+        boolean match = matcher.matches();
+        if (match && this.exception != null) {
+            matcher = this.exception.matcher(principal.getQualifiedName());
+            match = ! matcher.matches();
+        }
+        return match;
     }
 
     @Required
     public void setPattern(String pattern) {
+        if (pattern == null || pattern.trim().equals("")) {
+            throw new IllegalArgumentException("Invalid pattern: [" + pattern + "]");
+        }
         this.pattern = Pattern.compile(pattern);
     }
-
+    
+    public void setException(String exception) {
+        if (exception == null || exception.trim().equals("")) {
+            return;
+        }
+        this.exception = Pattern.compile(exception);
+    }
 }

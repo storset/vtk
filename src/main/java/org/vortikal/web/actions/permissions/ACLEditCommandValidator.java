@@ -216,10 +216,6 @@ public class ACLEditCommandValidator implements Validator {
         } catch (InvalidPrincipalException ipe) {
             this.illegal += toCSV(this.illegal, name);
             return false;
-        } catch (AuthenticationProcessingException ape) {
-            // TODO: own error msg?
-            this.illegal += toCSV(this.illegal, name);
-            return false;
         }
         return true;
     }

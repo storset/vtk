@@ -129,6 +129,15 @@
     </property>
   </bean>
 
+  <bean id="staticGroupStore" class="org.vortikal.security.MatchingGroupStore">
+    <property name="order" value="0" />
+    <property name="groupsMap" ref="staticGroupStore.groupsMap" />
+  </bean>
+  <bean id="staticGroupStore.groupsMap" class="org.vortikal.context.JSONFactoryBean">
+    <constructor-arg value="${groups.staticGroups}"/>
+  </bean>
+
+  <!--
   <bean id="domainGroupStore"
     class="org.vortikal.security.store.DomainGroupStore">
     <property name="order" value="0" />
@@ -138,21 +147,13 @@
   <bean id="domainGroupStore.groups" class="org.vortikal.context.CSVSetFactoryBean">
     <property name="csvList" value="${domainGroupStore.groups}" />
   </bean>
+  -->
 
 
   <bean id="localPrincipalStore" class="org.vortikal.security.store.PropertyConfigurableMD5Store">
     <property name="order" value="10" />
     <property name="realm" value="${authenticationRealm}" />
     <property name="principals" ref="localPrincipals" />
-    <property name="groups">
-      <map>
-        <entry key-ref="systemUsersGroup" value-ref="systemUsersGroup.members" />
-      </map>
-    </property>
-  </bean>
-
-  <bean id="systemUsersGroup.members" class="org.vortikal.context.CSVSetFactoryBean">
-    <property name="csvList" value="${systemUsersGroup.members}" />
   </bean>
 
   <bean id="localPrincipals" class="org.vortikal.context.CSVSetFactoryBean">
@@ -160,11 +161,6 @@
   </bean>
 
   <!-- Special principals and tokens -->
-  <bean id="systemUsersGroup" class="org.vortikal.security.PrincipalImpl">
-    <constructor-arg value="system-users@localhost" />
-    <constructor-arg value="GROUP" />
-  </bean>
-  
   <bean id="trustedPrincipal" class="org.vortikal.security.PrincipalImpl">
     <constructor-arg value="trusteduser@localhost" />
     <constructor-arg value="USER" />

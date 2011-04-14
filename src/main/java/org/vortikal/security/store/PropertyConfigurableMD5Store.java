@@ -31,10 +31,7 @@
 package org.vortikal.security.store;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -55,8 +52,6 @@ import org.vortikal.util.codec.MD5;
  *   is assumed to contain entries of type <code>(username,
  *   md5hash)</code>, and <code>md5hash</code> is in turn assumed to be
  *   a hashed value of the string <code>username:realm:password</code>.
- *   <li><code>groups</code> - This {@link Map} is assumed to contain
- *   entries of type <code>(group, memberlist)</code>, where
  *   <code>group</code> is a group prinbcipal and <code>memberlist</code> 
  *   is a <code>java.util.List</code> of strings which represent the names of 
  *   those principals that are members of the group.
@@ -71,15 +66,9 @@ public class PropertyConfigurableMD5Store implements MD5PasswordStore, Ordered {
     private static Log logger = LogFactory.getLog(PropertyConfigurableMD5Store.class);
 
     private Properties principals;
-    private Map<Principal, Collection<String>> groups;
     private String realm;
 
     private int order = Integer.MAX_VALUE;
-
-    // XXX: this overloading of setPrincipals is problematic in conjunction
-    //      with Spring dep-injection. Spring chooses the wrong-setter for
-    //      Properties-backed principals and fails...
-    //      Maybe just remove the repositoryPrincipalStore-extension..
 
     /**
      * Sets the principals as a properties mapping of the format
@@ -116,10 +105,6 @@ public class PropertyConfigurableMD5Store implements MD5PasswordStore, Ordered {
         }
     }
 
-    public void setGroups(Map<Principal, Collection<String>> groups) {
-        this.groups = groups;
-    }
-
     public void setOrder(int order) {
         this.order = order;
     }
@@ -151,42 +136,10 @@ public class PropertyConfigurableMD5Store implements MD5PasswordStore, Ordered {
         return hit;
     }
 
-    public boolean validateGroup(Principal group) {
-        if (this.groups == null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Validate group: " + group + ": false");
-            }
-            return false;
-        }
-        boolean hit = this.groups.containsKey(group);
-        if (logger.isDebugEnabled()) {
-            logger.debug("Validate group: " + group.getQualifiedName() + ": " + hit);
-        }
-        return hit;
-    }
-    
     public String getMD5HashString(Principal principal) {
         return this.principals.getProperty(principal.getQualifiedName());
     }
     
-    public boolean isMember(Principal principal, Principal group) {
-        if (!this.groups.containsKey(group)) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Check membership for principal " + principal
-                        + ", group: " + group.getQualifiedName() + ": unknown group");
-            }
-            return false;
-        }
-
-        Collection<String> members = this.groups.get(group);
-        boolean hit = members.contains(principal.getQualifiedName());
-        if (logger.isDebugEnabled()) {
-            logger.debug("Check membership for principal " + principal
-                         + ", group: " + group.getQualifiedName() + ": " + hit);
-        }
-        return hit;
-    }
-
     public void authenticate(Principal principal, String password)
         throws AuthenticationException {
         
@@ -204,18 +157,6 @@ public class PropertyConfigurableMD5Store implements MD5PasswordStore, Ordered {
             logger.debug("Successfully authenticated principal: " + principal);
         }
 
-    }
-
-    public Set<Principal> getMemberGroups(Principal principal) {
-        Set<Principal> pGroups = new HashSet<Principal>();
-        for (Map.Entry<Principal, Collection<String>> entry: this.groups.entrySet()) {
-            Principal group = entry.getKey();
-            Collection<String> members = entry.getValue();
-            if (members.contains(principal.getQualifiedName())) {
-                pGroups.add(group);      
-            }
-        }
-        return pGroups;
     }
 }
 

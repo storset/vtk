@@ -32,7 +32,6 @@ package org.vortikal.security.store;
 
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
-import org.vortikal.security.GroupStore;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalStore;
 
@@ -42,7 +41,7 @@ import org.vortikal.security.PrincipalStore;
  * A principal store exposing a hashed representation of users and
  * passwords.
  */
-public interface MD5PasswordStore extends PrincipalStore, GroupStore {
+public interface MD5PasswordStore extends PrincipalStore {
 
     
     /**

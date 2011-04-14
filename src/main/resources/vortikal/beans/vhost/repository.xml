@@ -223,12 +223,12 @@
     <property name="legacyActionMappings" ref="repository.archiver.legacyActionMappings" />
   </bean>
 
-  <bean id="repository.archiver.legacyPrincipalMappings" class="org.vortikal.context.CSVMapFactoryBean">
-    <property name="csvList" value="${archiver.legacyPrincipalMappings}" />
+  <bean id="repository.archiver.legacyPrincipalMappings" class="org.vortikal.context.JSONFactoryBean">
+    <constructor-arg value="${archiver.legacyPrincipalMappings}" />
   </bean>
 
-  <bean id="repository.archiver.legacyActionMappings" class="org.vortikal.context.CSVMapFactoryBean">
-    <property name="csvList" value="${archiver.legacyActionMappings}" />
+  <bean id="repository.archiver.legacyActionMappings" class="org.vortikal.context.JSONFactoryBean">
+    <constructor-arg value="${archiver.legacyActionMappings}" />
   </bean>
 
   <bean id="repository.acl.blacklist"

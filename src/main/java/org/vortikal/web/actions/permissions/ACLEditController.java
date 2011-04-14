@@ -102,9 +102,9 @@ public class ACLEditController extends SimpleFormController {
         String token = requestContext.getSecurityToken();
         Resource resource = repository.retrieve(token, uri, false);
         
-        shortcuts = this.permissionShortcuts.get(this.privilege);
-        if(shortcuts != null) {
-          this.validShortcuts = countValidshortcuts(shortcuts);
+        this.shortcuts = this.permissionShortcuts.get(this.privilege);
+        if(this.shortcuts != null) {
+          this.validShortcuts = countValidshortcuts(this.shortcuts, this.permissionShortcutsConfig);
         }
         
         return getACLEditCommand(resource, resource.getAcl(), requestContext.getPrincipal());
@@ -128,7 +128,7 @@ public class ACLEditController extends SimpleFormController {
                 .listPrivilegedPseudoPrincipals(this.privilege)));
 
         if (shortcuts != null) {   
-          command.setShortcuts(extractAndCheckShortcuts(authorizedUsers, authorizedGroups, shortcuts));
+          command.setShortcuts(extractAndCheckShortcuts(authorizedUsers, authorizedGroups, this.validShortcuts, this.shortcuts, this.permissionShortcutsConfig));
         }
 
         command.setGroups(authorizedGroups);
@@ -227,11 +227,11 @@ public class ACLEditController extends SimpleFormController {
      * @param theShortcuts the shortcuts
      * @return number of valid shortcuts
      */
-    protected int countValidshortcuts(List<String> theShortcuts) {
+    protected int countValidshortcuts(List<String> shortcuts, Map<String, List<String>> permissionShortcutsConfig) {
         int valid = 0;
-        for (String shortcut : theShortcuts) {
+        for (String shortcut : shortcuts) {
             int validGroupsUsers = 0;
-            List<String> groupsUsersPrShortcut = this.permissionShortcutsConfig.get(shortcut);
+            List<String> groupsUsersPrShortcut = permissionShortcutsConfig.get(shortcut);
             for (String groupOrUser : groupsUsersPrShortcut) {
                 if (groupOrUser.startsWith(GROUP_PREFIX) || groupOrUser.startsWith(USER_PREFIX)) {
                     validGroupsUsers++;
@@ -253,10 +253,10 @@ public class ACLEditController extends SimpleFormController {
      * @param pre-counted valid shortcuts
      * @return a <code>String[][]</code> object containing checked / not-checked shortcuts
      */
-    protected String[][] extractAndCheckShortcuts (List<Principal> authorizedUsers, 
-            List<Principal> authorizedGroups, List<String> shortcuts) {
-        
-        String checkedShortcuts[][] = new String[this.validShortcuts][2];
+    protected String[][] extractAndCheckShortcuts(List<Principal> authorizedUsers, List<Principal> authorizedGroups,
+            int validShortcuts, List<String> shortcuts, Map<String, List<String>> permissionShortcutsConfig) {
+
+        String checkedShortcuts[][] = new String[validShortcuts][2];
 
         String shortcutLargestMatch = "";
         int largestMatch = 0;

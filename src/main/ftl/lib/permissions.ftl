@@ -268,18 +268,30 @@
 <#macro listShortcuts privilegeName privilegeHeading shortcuts>
   <#if (shortcuts?size > 0)>
     <ul class="shortcuts" id="${privilegeHeading}">
+      <#assign radioCheckedShortcuts = false />
       <#list shortcuts as shortcut>
         <li>
           <label for="${privilegeName}"> 
             <#if shortcut[1] == "checked">
-              <input type="checkbox" name="updatedShortcuts" checked="${shortcut[1]}" value="${shortcut[0]}" />
+              <input type="radio" name="updatedShortcuts" checked="${shortcut[1]}" value="${shortcut[0]}" />
+              <#assign radioCheckedShortcuts = true />
             <#else>
-              <input type="checkbox" name="updatedShortcuts" value="${shortcut[0]}" />             
+              <input type="radio" name="updatedShortcuts" value="${shortcut[0]}" />             
             </#if>
             <@vrtx.msg code="permissions.shortcut.${shortcut[0]}" />
           </label>
         </li>
       </#list>
+      <li>
+        <label for="${privilegeName}"> 
+          <#if !radioCheckedShortcuts>
+            <input type="radio" name="updatedShortcuts" checked="checked" value="" />
+          <#else>
+            <input type="radio" name="updatedShortcuts" value="" />             
+          </#if>
+          <@vrtx.msg code="permissions.shortcut.custom" />
+        </label>
+      </li>
     </ul>
   </#if>
 </#macro>

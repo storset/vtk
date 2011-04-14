@@ -939,6 +939,7 @@
     <property name="principalManager" ref="principalManager" />
     <property name="principalFactory" ref="principalFactory" />
     <property name="permissionShortcuts" ref="permissionShortcuts" />
+    <property name="permissionShortcutsConfig" ref="permissionShortcutsProvider.config" />
   </bean>
 
   <bean id="editReadPermissionsHandler" parent="abstractPermissionsHandler">
@@ -1642,6 +1643,10 @@
   <bean id="permissionShortcutsProvider.addCommentShortcuts" class="org.vortikal.context.CSVListFactoryBean">
     <property name="csvList" value="${permissions.shortcuts.add-comment}" />
     <property name="trim" value="true" />
+  </bean>
+  
+  <bean id="permissionShortcutsProvider.config" class="org.vortikal.context.JSONFactoryBean">
+    <constructor-arg value="${permissions.shortcuts}" />
   </bean>
 
   <bean id="redirectToAboutView" class="org.vortikal.web.view.RedirectView">

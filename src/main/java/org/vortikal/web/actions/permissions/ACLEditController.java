@@ -261,8 +261,8 @@ public class ACLEditController extends SimpleFormController {
         int i = 0;
         
         for (String shortcut: shortcuts) {
-            int checkedShortcut = 0;
-            int validShortcut = 0;
+            int existingGroupsUsers = 0;
+            int validGroupsUsers = 0;
             
             List<String> groupsUsersPrShortcut = this.permissionShortcutsConfig.get(shortcut);
             
@@ -273,29 +273,25 @@ public class ACLEditController extends SimpleFormController {
                         String userName = it.next().getName();
                         if ((GROUP_PREFIX + userName).equals(groupOrUser)) {
                             it.remove();
-                            checkedShortcut++;
+                            existingGroupsUsers++;
                         }
                     }  
-                    validShortcut++;
+                    validGroupsUsers++;
                 } else if (groupOrUser.startsWith(USER_PREFIX)) { // Check if shortcut is in authorizedUsers
                     Iterator<Principal> it = authorizedUsers.iterator();
                     while (it.hasNext()) {
                         String groupName = it.next().getName();
                         if ((USER_PREFIX + groupName).equals(groupOrUser)) {
                             it.remove();
-                            checkedShortcut++;
+                            existingGroupsUsers++;
                         }
                     }
-                    validShortcut++;
+                    validGroupsUsers++;
                 }
             }
             
             checkedShortcuts[i][0] = shortcut;
-            if(validShortcut == checkedShortcut) {
-                checkedShortcuts[i][1] = "checked";
-            } else {
-                checkedShortcuts[i][1] = ""; 
-            }
+            checkedShortcuts[i][1] = (existingGroupsUsers == validGroupsUsers) ? "checked" : "";
            
             i++;
         }
@@ -334,10 +330,10 @@ public class ACLEditController extends SimpleFormController {
                 checked = true;
             }
 
-            if (!found) { 
+            if (found) { 
+                groupsUsersForAdd.addAll(this.permissionShortcutsConfig.get(shortcut[0]));
+            } else {
                 groupsUsersForRemoval.addAll(this.permissionShortcutsConfig.get(shortcut[0]));
-            } else { // Add
-                groupsUsersForAdd.addAll(this.permissionShortcutsConfig.get(shortcut[0])); 
             }
             
         }
@@ -457,7 +453,9 @@ public class ACLEditController extends SimpleFormController {
     private Acl addToAcl(Acl acl, String[] values, Type type) {
         for (String value : values) {
             Principal principal = principalFactory.getPrincipal(value, typePseudoUser(type, value));
-            acl = acl.addEntry(this.privilege, principal);
+            if(!acl.containsEntry(this.privilege, principal)) {
+              acl = acl.addEntry(this.privilege, principal);
+            }
         }
         return acl;
     }
@@ -473,7 +471,9 @@ public class ACLEditController extends SimpleFormController {
     private Acl addToAcl(Acl acl, List<String> values, Type type) {
         for (String value : values) {
             Principal principal = principalFactory.getPrincipal(value, typePseudoUser(type, value));
-            acl = acl.addEntry(this.privilege, principal);
+            if(!acl.containsEntry(this.privilege, principal)) {
+              acl = acl.addEntry(this.privilege, principal);
+            }
         }
         return acl;
     }

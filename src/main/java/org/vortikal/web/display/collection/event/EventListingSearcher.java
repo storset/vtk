@@ -31,7 +31,6 @@
 package org.vortikal.web.display.collection.event;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -39,20 +38,16 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Resource;
-import org.vortikal.web.display.collection.event.EventListingHelper.SpecificDateSearchType;
 import org.vortikal.web.search.Listing;
-import org.vortikal.web.search.QuerySearchComponent;
 import org.vortikal.web.search.SearchComponent;
 
 public class EventListingSearcher {
 
     private SearchComponent upcomingEventsSearch;
     private SearchComponent previousEventsSearch;
-    //private ProcessedQuerySearchComponenet processedQuerySearchComponent;
-    private QuerySearchComponent processedQuerySearchComponent;
-    private String groupedEventSearchString;
-    private String furtherUpcomingSearchString;
-    private String specificDateEventSearchString;
+    private SearchComponent groupedByDayEventSearchComponent;
+    private SearchComponent furtherUpcomingSearchComponent;
+    private SearchComponent specificDateEventSearchComponent;
 
     public Listing searchUpcoming(HttpServletRequest request, Resource collection, int upcomingEventPage,
             int pageLimit, int offset) throws Exception {
@@ -64,133 +59,28 @@ public class EventListingSearcher {
         return this.previousEventsSearch.execute(request, collection, upcomingEventPage, pageLimit, 0);
     }
 
-    public List<GroupedEvents> searchGroupedByDayEvents(HttpServletRequest request, Resource collection, int daysAhead)
-            throws Exception {
-        List<GroupedEvents> groupedByDayEvents = this.getGroupedByDayEvents(request, collection, daysAhead);
-        return groupedByDayEvents;
-    }
-
-    public Listing searchFurtherUpcoming(HttpServletRequest request, Resource collection, int daysAhead,
-            int furtherUpcomingPageLimit) throws Exception {
-        Listing furtherUpcoming = this.getFurtherUpcomingEvents(request, collection, daysAhead,
-                furtherUpcomingPageLimit);
-        return furtherUpcoming;
-    }
-
-    
-    public Listing searchSpecificDate(HttpServletRequest request, Resource collection, final Date date,
-            final SpecificDateSearchType searchType, int pageLimit, int page) throws Exception {
-
-        final String specificDateEventSearchString = this.specificDateEventSearchString;
-        QuerySearchComponent.QueryManipulator manipulator = new QuerySearchComponent.QueryManipulator() {
-            @Override
-            public Object process(Object query) {
-                Calendar cal = Calendar.getInstance();
-                cal.setTime(date);
-                switch (searchType) {
-                case Day:
-                    cal.add(Calendar.DAY_OF_MONTH, 1);
-                    break;
-                case Month:
-                    cal.add(Calendar.MONTH, 1);
-                    break;
-                case Year:
-                    cal.add(Calendar.YEAR, 1);
-                default:
-                    break;
-                }
-                String processedQueryString = specificDateEventSearchString.
-                    replace("[1]", String.valueOf(date.getTime()))
-                    .replace("[2]", String.valueOf(cal.getTime().getTime()));
-                return processedQueryString;
-            }
-        };
-        boolean defaultRecursive = this.processedQuerySearchComponent.isDefaultRecursive();
-        Listing specificDateEventListing = this.processedQuerySearchComponent.execute(request, collection, page,
-                pageLimit, 0, defaultRecursive, manipulator);
-        return specificDateEventListing;
-    }
-
-    private List<GroupedEvents> getGroupedByDayEvents(HttpServletRequest request, Resource collection, int daysAhead)
+    public List<GroupedEvents> searchGroupedByDayEvents(HttpServletRequest request, Resource collection)
             throws Exception {
         List<GroupedEvents> groupedByDayEvents = new ArrayList<GroupedEvents>();
-        final String groupedEventSearchString = this.groupedEventSearchString;
-        for (int i = 0; i < daysAhead; i++) {
-            final int j = i;
-            Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.DAY_OF_MONTH, i);
-
-            QuerySearchComponent.QueryManipulator manipulator = new QuerySearchComponent.QueryManipulator() {
-                @Override
-                public Object process(Object query) {
-                    String processedQueryString = groupedEventSearchString.replace("[1]", String.valueOf(j)).replace("[2]",
-                            String.valueOf(j + 1));
-                    return processedQueryString;
-                }
-            };
-            //this.processedQuerySearchComponent.setProcessedQuery(this.getProcessedGroupedByDayQueryString(i));
-            boolean defaultRecursive = this.processedQuerySearchComponent.isDefaultRecursive();
-            Listing result = this.processedQuerySearchComponent.execute(
-                    request, collection, 1, 100, 0, defaultRecursive, manipulator);
-            if (result.size() > 0) {
-                groupedByDayEvents.add(new GroupedEvents(cal.getTime(), result));
-            }
+        Listing result = this.groupedByDayEventSearchComponent.execute(request, collection, 1, 100, 0);
+        if (result.size() > 0) {
+            // XXX group and add to resultlist
+            // groupedByDayEvents.add(new GroupedEvents(cal.getTime(), result));
         }
         return groupedByDayEvents;
     }
 
-    private Listing getFurtherUpcomingEvents(HttpServletRequest request, Resource collection, final int daysAhead,
-            int furtherUpcomingPageLimit) throws Exception {
-
-        final String furtherUpcomingSearchString = this.furtherUpcomingSearchString;
-        QuerySearchComponent.QueryManipulator manipulator = new QuerySearchComponent.QueryManipulator() {
-            @Override
-            public Object process(Object query) {
-                String processedQueryString = furtherUpcomingSearchString.replace("[1]", String.valueOf(daysAhead));
-                return processedQueryString;
-            }
-        };
-        
-        //this.processedQuerySearchComponent.setProcessedQuery(this.getProcessedFurtherUpcomingQueryString(daysAhead));
-        boolean defaultRecursive = this.processedQuerySearchComponent.isDefaultRecursive();
-        Listing furtherUpcomingEvents = this.processedQuerySearchComponent.execute(request, collection, 1,
-                furtherUpcomingPageLimit, 0, defaultRecursive, manipulator);
+    public Listing searchFurtherUpcoming(HttpServletRequest request, Resource collection, int furtherUpcomingPageLimit)
+            throws Exception {
+        Listing furtherUpcomingEvents = this.furtherUpcomingSearchComponent.execute(request, collection, 1,
+                furtherUpcomingPageLimit, 0);
         return furtherUpcomingEvents;
     }
 
-    /* 
-     
-    private String getProcessedGroupedByDayQueryString(int i) {
-        String processedQueryString = this.groupedEventSearchString.replace("[1]", String.valueOf(i)).replace("[2]",
-                String.valueOf(i + 1));
-        return processedQueryString;
+    public Listing searchSpecificDate(HttpServletRequest request, Resource collection, int pageLimit, int page)
+            throws Exception {
+        return this.specificDateEventSearchComponent.execute(request, collection, page, pageLimit, 0);
     }
-
-    private String getProcessedFurtherUpcomingQueryString(int daysAhead) {
-        String processedQueryString = this.furtherUpcomingSearchString.replace("[1]", String.valueOf(daysAhead));
-        return processedQueryString;
-    }    
-    
-    private String getProcessedSpecificDayQueryString(Date date, SpecificDateSearchType searchType) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        switch (searchType) {
-        case Day:
-            cal.add(Calendar.DAY_OF_MONTH, 1);
-            break;
-        case Month:
-            cal.add(Calendar.MONTH, 1);
-            break;
-        case Year:
-            cal.add(Calendar.YEAR, 1);
-        default:
-            break;
-        }
-        String processedQueryString = this.specificDateEventSearchString.replace("[1]", String.valueOf(date.getTime()))
-                .replace("[2]", String.valueOf(cal.getTime().getTime()));
-        return processedQueryString;
-    }
-    */
 
     @Required
     public void setUpcomingEventsSearch(SearchComponent upcomingEventsSearch) {
@@ -203,23 +93,18 @@ public class EventListingSearcher {
     }
 
     @Required
-    public void setProcessedQuerySearchComponent(QuerySearchComponent processedQuerySearchComponent) {
-        this.processedQuerySearchComponent = processedQuerySearchComponent;
+    public void setGroupedByDayEventSearchComponent(SearchComponent groupedByDayEventSearchComponent) {
+        this.groupedByDayEventSearchComponent = groupedByDayEventSearchComponent;
     }
 
     @Required
-    public void setGroupedEventSearchString(String groupedEventSearchString) {
-        this.groupedEventSearchString = groupedEventSearchString.trim();
+    public void setFurtherUpcomingSearchComponent(SearchComponent furtherUpcomingSearchComponent) {
+        this.furtherUpcomingSearchComponent = furtherUpcomingSearchComponent;
     }
 
     @Required
-    public void setFurtherUpcomingSearchString(String furtherUpcomingSearchString) {
-        this.furtherUpcomingSearchString = furtherUpcomingSearchString.trim();
-    }
-
-    @Required
-    public void setSpecificDateEventSearchString(String specificDateEventSearchString) {
-        this.specificDateEventSearchString = specificDateEventSearchString.trim();
+    public void setSpecificDateEventSearchComponent(SearchComponent specificDateEventSearchComponent) {
+        this.specificDateEventSearchComponent = specificDateEventSearchComponent;
     }
 
     public class GroupedEvents {

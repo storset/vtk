@@ -56,8 +56,7 @@ public class EventCalendarSpecificDateListingController extends EventCalendarLis
         Date date = this.helper.getSpecificSearchDate(request);
         if (date != null) {
             SpecificDateSearchType searchType = this.helper.getSpecificDateSearchType(request);
-            Listing specificDateEvents = this.searcher.searchSpecificDate(request, collection, date, searchType,
-                    pageLimit, page);
+            Listing specificDateEvents = this.searcher.searchSpecificDate(request, collection, pageLimit, page);
 
             model.put("specificDate", Boolean.TRUE);
             String messageKey = searchType == SpecificDateSearchType.Day ? "eventListing.specificDayEvent"

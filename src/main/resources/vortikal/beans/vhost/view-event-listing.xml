@@ -44,22 +44,9 @@
   <bean id="eventListing.eventListingSearcher" class="org.vortikal.web.display.collection.event.EventListingSearcher">
     <property name="upcomingEventsSearch" ref="${override.listing.prefix}eventListing.upcomingEventsSearchComponent" />
     <property name="previousEventsSearch" ref="${override.listing.prefix}eventListing.previousEventsSearchComponent" />
-    <property name="processedQuerySearchComponent" ref="eventListing.processedQuerySearchComponent" />
-    <property name="groupedEventSearchString" ref="${override.listing.prefix}eventListing.groupedByDayEventSearchQueryString" />
-    <property name="furtherUpcomingSearchString" ref="${override.listing.prefix}eventListing.furtherUpcomingSearchString" />
-    <property name="specificDateEventSearchString" ref="${override.listing.prefix}eventListing.specificDateEventSearchQueryString" />
-  </bean>
-
-  <bean id="eventListing.processedQuerySearchComponent" class="org.vortikal.web.search.QueryStringSearchComponent"
-    parent="${override.listing.prefix}eventListing.upcomingEventsSearchComponent">
-    <property name="name" value="eventListing.calendarEventSearch" />
-    <property name="titleLocalizationKey">
-      <null />
-    </property>
-    <property name="query">
-      <!-- Process and set the query in the controller that uses the component -->
-      <null />
-    </property>
+    <property name="groupedByDayEventSearchComponent" ref="${override.listing.prefix}eventListing.groupedByDayEventSearchComponent" />
+    <property name="furtherUpcomingSearchComponent" ref="${override.listing.prefix}eventListing.furtherUpcomingSearchComponent" />
+    <property name="specificDateEventSearchComponent" ref="${override.listing.prefix}eventListing.specificDateEventSearchComponent" />
   </bean>
 
   <bean id="eventListing.atomHandler" class="org.vortikal.web.display.collection.event.EventListingAsFeedController"
@@ -84,23 +71,34 @@
     <property name="eventTypeTitlePropDef" ref="eventListing.eventTypeTitlePropDef" />
   </bean>
 
-  <bean id="eventListing.upcomingEventsSearchComponent" class="org.vortikal.web.search.QueryStringSearchComponent">
+  <bean id="eventListing.upcomingEventsSearchComponent" class="org.vortikal.web.search.QueryPartsSearchComponent">
     <property name="name" value="eventListing.upcomingEventsSearchComponent" />
     <property name="titleLocalizationKey" value="eventListing.upcomingEvents" />
     <property name="viewService" ref="webService" />
     <property name="resourceManager" ref="resourceManager" />
     <property name="defaultRecursive" value="true" />
-    <property name="recursivePropDef" ref="eventListing.recursiveListingPropDef" />
-    <property name="query">
-      <value>
-        ((uri = {$currentFolder}/* OR uri IN {$manuallyApprovedResources}) AND type IN event)
-          AND ((end-date not exists AND start-date &gt;= {$currentDate}) OR (end-date &gt;= {$currentTime}))
-      </value>
-    </property>
-    <property name="queryParser" ref="searchParser" />
+    <property name="recursivePropDef" ref="eventListing.recursiveListingPropDef" />  
     <property name="listableProperties" ref="eventListing.listableProperties" />
-    <property name="aggregationResolver" ref="aggregationResolver" />
+    <property name="queryBuilders">
+      <list>
+        <ref bean="eventListing.listingUriQueryBuilder" />
+        <bean parent="queryStringParser">
+          <property name="queryString" value="(type IN event) AND ((end-date not exists AND start-date &gt;= {$currentDate}) OR (end-date &gt;= {$currentTime}))" />
+        </bean>
+      </list>
+    </property>
     <property name="searchSorting" ref="eventListing.upcoming.searchSorting" />
+  </bean>
+  
+  <bean id="eventListing.processedQuerySearchComponent" parent="${override.listing.prefix}eventListing.upcomingEventsSearchComponent">
+    <property name="name" value="eventListing.calendarEventSearch" />
+    <property name="titleLocalizationKey">
+      <null />
+    </property>
+  </bean>
+
+  <bean id="eventListing.listingUriQueryBuilder" parent="listingUriQueryBuilder">
+    <property name="recursivePropDef" ref="eventListing.recursiveListingPropDef" />
   </bean>
 
   <bean id="eventListing.upcoming.searchSorting" class="org.vortikal.web.search.SearchSorting" depends-on="resourceTypeTree">
@@ -113,19 +111,17 @@
     <property name="defaultSortOrder" ref="SORT_ORDER.ASC" />
   </bean>
 
-  <bean id="eventListing.previousEventsSearchComponent" class="org.vortikal.web.search.QueryStringSearchComponent">
+  <bean id="eventListing.previousEventsSearchComponent" parent="eventListing.upcomingEventsSearchComponent">
     <property name="name" value="eventListing.previousEventsSearchComponent" />
     <property name="titleLocalizationKey" value="eventListing.previousEvents" />
-    <property name="viewService" ref="webService" />
-    <property name="resourceManager" ref="resourceManager" />
-    <property name="defaultRecursive" value="true" />
-    <property name="recursivePropDef" ref="eventListing.recursiveListingPropDef" />
-    <property name="query">
-               <value>(uri = {$currentFolder}/* AND type IN event) AND (end-date &lt; {$currentTime} OR (end-date not exists AND start-date &lt; {$currentDate}))</value>
+    <property name="queryBuilders">
+      <list>
+        <ref bean="eventListing.listingUriQueryBuilder" />
+        <bean parent="queryStringParser">
+          <property name="queryString" value="(type IN event) AND (end-date &lt; {$currentTime} OR (end-date not exists AND start-date &lt; {$currentDate}))" />
+        </bean>
+      </list>
     </property>
-    <property name="queryParser" ref="searchParser" />
-    <property name="listableProperties" ref="eventListing.listableProperties" />
-    <property name="aggregationResolver" ref="aggregationResolver" />
     <property name="searchSorting" ref="eventListing.previous.searchSorting" />
   </bean>
 

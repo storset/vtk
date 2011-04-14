@@ -29,9 +29,8 @@
     <property name="queryBuilders">
       <list>
         <ref bean="collection.listingUriQueryBuilder" />
-        <bean class="org.vortikal.web.search.ParsedQueryBuilder">
+        <bean parent="queryStringParser">
           <property name="queryString" value="(type IN person) AND (resource:surname exists AND resource:firstName exists)" />
-          <property name="queryParser" ref="searchParser" />
         </bean>
       </list>
     </property>

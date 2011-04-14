@@ -30,9 +30,8 @@
     <property name="name" value="blogListing.defaultListing" />
     <property name="queryBuilders">
       <list>
-        <bean class="org.vortikal.web.search.ParsedQueryBuilder">
+        <bean parent="queryStringParser">
           <property name="queryString" value="(uri = {$currentFolder}/*) AND (type IN article)" />
-          <property name="queryParser" ref="searchParser" />
         </bean>
       </list>
     </property>
@@ -42,9 +41,8 @@
   <bean id="structured.blogListing.searchComponent" parent="blogListing.searchComponent">
     <property name="queryBuilders">
       <list>
-        <bean class="org.vortikal.web.search.ParsedQueryBuilder">
+        <bean parent="queryStringParser">
           <property name="queryString" value="(uri = {$currentFolder}/*) AND (type IN structured-article)" />
-          <property name="queryParser" ref="searchParser" />
         </bean>
       </list>
     </property>

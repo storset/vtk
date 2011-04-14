@@ -28,4 +28,8 @@
     </property>
   </bean>
 
+  <bean id="queryStringParser" abstract="true" class="org.vortikal.web.search.ParsedQueryBuilder">
+    <property name="queryParser" ref="searchParser" />
+  </bean>
+
 </beans>

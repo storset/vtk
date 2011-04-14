@@ -30,9 +30,8 @@
     <property name="queryBuilders">
       <list>
         <ref bean="collection.listingUriQueryBuilder" />
-        <bean class="org.vortikal.web.search.ParsedQueryBuilder">
+        <bean parent="queryStringParser">
           <property name="queryString" value="(type IN audio OR type IN video)" />
-          <property name="queryParser" ref="searchParser" />
         </bean>
       </list>
     </property>

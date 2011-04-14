@@ -4,11 +4,13 @@
 
   <bean id="structured.eventListing.upcomingEventsSearchComponent" parent="eventListing.upcomingEventsSearchComponent">
     <property name="name" value="structured.eventListing.upcomingEventsSearchComponent" />
-    <property name="query">
-      <value>
-        ((uri = {$currentFolder}/* OR uri IN {$manuallyApprovedResources}) AND type IN structured-event)
-          AND ((resource:end-date not exists AND resource:start-date &gt;= {$currentDate}) OR (resource:end-date &gt;= {$currentTime}))
-      </value>
+    <property name="queryBuilders">
+      <list>
+        <ref bean="eventListing.listingUriQueryBuilder" />
+        <bean parent="queryStringParser">
+          <property name="queryString" value="(type IN structured-event) AND ((resource:end-date not exists AND resource:start-date &gt;= {$currentDate}) OR (resource:end-date &gt;= {$currentTime}))" />
+        </bean>
+      </list>
     </property>
     <property name="searchSorting" ref="structured.eventListing.upcoming.searchSorting" />
   </bean>
@@ -23,8 +25,13 @@
 
   <bean id="structured.eventListing.previousEventsSearchComponent" parent="eventListing.previousEventsSearchComponent" >
     <property name="name" value="structured.eventListing.previousEventsSearchComponent" />
-    <property name="query">
-       <value>(uri = {$currentFolder}/* AND type IN structured-event) AND (resource:end-date &lt; {$currentTime} OR (resource:end-date not exists AND resource:start-date &lt; {$currentDate}))</value>
+    <property name="queryBuilders">
+      <list>
+        <ref bean="eventListing.listingUriQueryBuilder" />
+        <bean parent="queryStringParser">
+          <property name="queryString" value="(type IN structured-event) AND (resource:end-date &lt; {$currentTime} OR (resource:end-date not exists AND resource:start-date &lt; {$currentDate}))" />
+        </bean>
+      </list>
     </property>
     <property name="searchSorting" ref="structured.eventListing.previous.searchSorting" />
   </bean>
@@ -37,34 +44,67 @@
     </property>
   </bean>
 
-  <bean id="structured.eventListing.groupedByDayEventSearchQueryString" class="java.lang.String">
-    <constructor-arg type="java.lang.String">
-      <value>
-        (uri = {$currentFolder}/* AND type IN structured-event)
-          AND ((resource:start-date &gt;= {$currentDate+[1]d} AND resource:start-date &lt; {$currentDate+[2]d})
-            OR (resource:end-date &gt;= {$currentDate+[1]d} AND resource:end-date &lt; {$currentDate+[2]d})
-            OR (resource:start-date &lt;= {$currentDate+[1]d} AND resource:end-date &gt;= {$currentDate+[2]d}))
-      </value>
-    </constructor-arg>
+  <bean id="structured.eventListing.groupedByDayEventSearchComponent" parent="eventListing.upcomingEventsSearchComponent">
+    <property name="name" value="structured.eventListing.groupedByDayEventSearchComponent" />
+    <property name="queryBuilders">
+      <list>
+        <ref bean="eventListing.listingUriQueryBuilder" />
+        <bean parent="queryStringParser">
+          <property name="queryString" value="type IN structured-event" />
+        </bean>
+        <bean class="org.vortikal.web.search.ParameterizedQueryStringProcessor" parent="queryStringParser">
+          <property name="replacements">
+            <map>
+              <entry key="[1]" value="${event.listing.days.ahead}" />
+            </map>
+          </property>
+          <property name="queryString" value="(resource:start-date &gt;= {$currentDate} AND resource:start-date &lt; {$currentDate+[1]d})
+            OR (resource:end-date &gt;= {$currentDate} AND resource:end-date &lt; {$currentDate+[1]d})
+            OR (resource:start-date &lt;= {$currentDate} AND resource:end-date &gt;= {$currentDate+[1]d})" />
+        </bean>
+      </list>
+    </property>
+    <property name="searchSorting" ref="structured.eventListing.upcoming.searchSorting" />
   </bean>
 
-  <bean id="structured.eventListing.furtherUpcomingSearchString" class="java.lang.String">
-    <constructor-arg type="java.lang.String">
-      <value>
-        (uri = {$currentFolder}/* AND type IN structured-event) AND (resource:start-date &gt;= {$currentDate+[1]d})
-      </value>
-    </constructor-arg>
+  <bean id="structured.eventListing.furtherUpcomingSearchComponent" parent="eventListing.upcomingEventsSearchComponent">
+    <property name="name" value="structured.eventListing.furtherUpcomingSearchComponent" />
+    <property name="queryBuilders">
+      <list>
+        <ref bean="eventListing.listingUriQueryBuilder" />
+        <bean parent="queryStringParser">
+          <property name="queryString" value="type IN structured-event" />
+        </bean>
+        <bean class="org.vortikal.web.search.ParameterizedQueryStringProcessor" parent="queryStringParser">
+          <property name="replacements">
+            <map>
+              <entry key="[1]" value="${event.listing.days.ahead}" />
+            </map>
+          </property>
+          <property name="queryString" value="resource:start-date &gt;= {$currentDate+[1]d}" />
+        </bean>
+      </list>
+    </property>
+    <property name="searchSorting" ref="structured.eventListing.upcoming.searchSorting" />
   </bean>
 
-  <bean id="structured.eventListing.specificDateEventSearchQueryString" class="java.lang.String">
-    <constructor-arg type="java.lang.String">
-      <value>
-        (uri = {$currentFolder}/* AND type IN structured-event)
-          AND ((resource:start-date &gt;= [1] AND resource:start-date &lt; [2])
+  <bean id="structured.eventListing.specificDateEventSearchComponent" parent="eventListing.upcomingEventsSearchComponent">
+    <property name="name" value="structured.eventListing.furtherUpcomingSearchComponent" />
+    <property name="queryBuilders">
+      <list>
+        <ref bean="eventListing.listingUriQueryBuilder" />
+        <bean parent="queryStringParser">
+          <property name="queryString" value="type IN structured-event" />
+        </bean>
+        <bean class="org.vortikal.web.search.eventlisting.DateAndSearchTypeQueryStringProcessor" parent="queryStringParser">
+          <property name="helper" ref="eventListingHelper" />
+          <property name="queryString" value="(resource:start-date &gt;= [1] AND resource:start-date &lt; [2])
             OR (resource:end-date &gt;= [1] AND resource:end-date &lt; [2])
-            OR (resource:start-date &lt;= [1] AND resource:end-date &gt;= [2]))
-      </value>
-    </constructor-arg>
+            OR (resource:start-date &lt;= [1] AND resource:end-date &gt;= [2])" />
+        </bean>
+      </list>
+    </property>
+    <property name="searchSorting" ref="structured.eventListing.upcoming.searchSorting" />
   </bean>
 
   <bean id="structured.eventListing.startDatePropDefPointer" class="java.lang.String">

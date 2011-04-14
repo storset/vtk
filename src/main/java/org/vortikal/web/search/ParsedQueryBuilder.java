@@ -9,8 +9,8 @@ import org.vortikal.repository.search.query.Query;
 
 public class ParsedQueryBuilder implements QueryBuilder {
 
-    private String queryString;
-    private QueryParser queryParser;
+    protected String queryString;
+    protected QueryParser queryParser;
     
     public Query build(Resource base, HttpServletRequest request) {
         return this.queryParser.parse(this.queryString);

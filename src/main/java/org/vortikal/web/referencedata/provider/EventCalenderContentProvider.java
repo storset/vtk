@@ -130,8 +130,7 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
 
             Set<String> eventDatesList = new HashSet<String>();
             SimpleDateFormat eventDateFormat = new SimpleDateFormat("yyyy-M-d");
-            Listing plannedEvents = this.searcher.searchSpecificDate(request, resource, cal.getTime(),
-                    SpecificDateSearchType.Month, 500, 1);
+            Listing plannedEvents = this.searcher.searchSpecificDate(request, resource, 500, 1);
             for (PropertySet propSet : plannedEvents.getFiles()) {
                 Property startDateProp = propSet.getProperty(startDatePropDef);
                 Date eventStart = startDateProp != null ? startDateProp.getDateValue() : cal.getTime();

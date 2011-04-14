@@ -47,8 +47,7 @@ public class EventCalendarListingController extends EventListingController {
 
     protected EventListingHelper helper;
 
-    // 5 days ahead
-    private final int daysAhead = 5;
+    private int daysAhead;
     // max 5 further upcoming events on 1 page
     private final int furtherUpcomingLimit = 5;
 
@@ -59,15 +58,13 @@ public class EventCalendarListingController extends EventListingController {
         int page = ListingPager.getPage(request, ListingPager.UPCOMING_PAGE_PARAM);
         model.put(MODEL_KEY_PAGE, page);
 
-        List<GroupedEvents> groupedByDayEvents = this.searcher.searchGroupedByDayEvents(request, collection,
-                this.daysAhead);
+        List<GroupedEvents> groupedByDayEvents = this.searcher.searchGroupedByDayEvents(request, collection);
         model.put("groupedByDayEvents", groupedByDayEvents);
         String groupedByDayTitle = this.helper.getLocalizedTitle(request, "eventListing.groupedEvents",
                 new Object[] { this.daysAhead });
         model.put("groupedEventsTitle", groupedByDayTitle);
 
-        Listing furtherUpcoming = this.searcher.searchFurtherUpcoming(request, collection, this.daysAhead,
-                this.furtherUpcomingLimit);
+        Listing furtherUpcoming = this.searcher.searchFurtherUpcoming(request, collection, this.furtherUpcomingLimit);
         model.put("furtherUpcoming", furtherUpcoming);
         String titleKey = groupedByDayEvents.size() == 0 ? "eventListing.allupcoming"
                 : "eventListing.furtherUpcomingEvents";
@@ -85,6 +82,11 @@ public class EventCalendarListingController extends EventListingController {
     @Required
     public void setHelper(EventListingHelper helper) {
         this.helper = helper;
+    }
+
+    @Required
+    public void setDaysAhead(int daysAhead) {
+        this.daysAhead = daysAhead;
     }
 
 }

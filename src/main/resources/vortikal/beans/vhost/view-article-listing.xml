@@ -79,9 +79,8 @@
     <property name="queryBuilders">
       <list>
         <ref bean="articleListing.listingUriQueryBuilder" />
-        <bean class="org.vortikal.web.search.ParsedQueryBuilder">
+        <bean parent="queryStringParser">
           <property name="queryString" value="(uri NOT IN {$featuredArticles}) AND (type IN article AND published-date &lt;= {$currentTime})" />
-          <property name="queryParser" ref="searchParser" />
         </bean>
       </list>
     </property>
@@ -127,9 +126,8 @@
     </property>
     <property name="queryBuilders">
       <list>
-        <bean class="org.vortikal.web.search.ParsedQueryBuilder">
+        <bean parent="queryStringParser">
           <property name="queryString" value="(uri IN {$featuredArticles}) AND (type IN article AND published-date &lt;= {$currentTime})" />
-          <property name="queryParser" ref="searchParser" />
         </bean>
       </list>
     </property>
@@ -140,9 +138,8 @@
     <property name="name" value="articleListing.subfolderArticles" />
     <property name="queryBuilders">
       <list>
-        <bean class="org.vortikal.web.search.ParsedQueryBuilder">
+        <bean parent="queryStringParser">
           <property name="queryString" value="(uri IN {$subfolders}* AND uri NOT IN {$featuredArticles}) AND (type IN article AND published-date &lt;= {$currentTime})" />
-          <property name="queryParser" ref="searchParser" />
         </bean>
       </list>
     </property>

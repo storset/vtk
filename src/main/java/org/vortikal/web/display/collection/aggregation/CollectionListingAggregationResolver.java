@@ -82,6 +82,11 @@ public class CollectionListingAggregationResolver implements AggregationResolver
     }
 
     public Query getAggregationQuery(Query originalQuery, Resource collection) throws IllegalArgumentException {
+        return this.getAggregationQuery(originalQuery, collection, true);
+    }
+
+    public Query getAggregationQuery(Query originalQuery, Resource collection, boolean includeOriginalUriPrefix)
+            throws IllegalArgumentException {
 
         // only extend simple UriPrefixQuery or instances of
         // AbstractMultipleQuery (AndQuery or OrQuery) containing UriPrefixQuery

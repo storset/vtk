@@ -271,23 +271,23 @@
       <#assign radioCheckedShortcuts = false />
       <#list shortcuts as shortcut>
         <li>
-          <label for="${privilegeName}"> 
+          <label for="${shortcut[0]}"> 
             <#if shortcut[1] == "checked">
-              <input type="radio" name="updatedShortcuts" checked="${shortcut[1]}" value="${shortcut[0]}" />
+              <input id="${shortcut[0]}" type="radio" name="updatedShortcuts" checked="${shortcut[1]}" value="${shortcut[0]}" />
               <#assign radioCheckedShortcuts = true />
             <#else>
-              <input type="radio" name="updatedShortcuts" value="${shortcut[0]}" />             
+              <input id="${shortcut[0]}" type="radio" name="updatedShortcuts" value="${shortcut[0]}" />             
             </#if>
             <@vrtx.msg code="permissions.shortcut.${shortcut[0]}" />
           </label>
         </li>
       </#list>
       <li>
-        <label for="${privilegeName}"> 
+        <label for="custom"> 
           <#if !radioCheckedShortcuts>
-            <input type="radio" name="updatedShortcuts" checked="checked" value="" />
+            <input id="custom" type="radio" name="updatedShortcuts" checked="checked" value="" />
           <#else>
-            <input type="radio" name="updatedShortcuts" value="" />             
+            <input id="custom" type="radio" name="updatedShortcuts" value="" />             
           </#if>
           <@vrtx.msg code="permissions.shortcut.custom" />
         </label>

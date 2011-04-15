@@ -32,8 +32,6 @@ package org.vortikal.web.actions.permissions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -67,10 +65,10 @@ public class ACLEditController extends SimpleFormController {
 
     private Map<Privilege, List<String>> permissionShortcuts;
     private Map<String, List<String>> permissionShortcutsConfig;
-
+    
     private List<String> shortcuts;
     private int validShortcuts = 0;
-
+    
     private static final String GROUP_PREFIX = "group:";
     private static final String USER_PREFIX = "user:";
     private static final String PSEUDO_PREFIX = "pseudo:";
@@ -106,7 +104,7 @@ public class ACLEditController extends SimpleFormController {
 
         this.shortcuts = this.permissionShortcuts.get(this.privilege);
         if (this.shortcuts != null) {
-            this.validShortcuts = countValidshortcuts(this.shortcuts, this.permissionShortcutsConfig);
+           this.validShortcuts = countValidshortcuts(this.shortcuts, this.permissionShortcutsConfig);
         }
 
         return getACLEditCommand(resource, resource.getAcl(), requestContext.getPrincipal());
@@ -129,7 +127,7 @@ public class ACLEditController extends SimpleFormController {
                 .listPrivilegedUsers(this.privilege)));
         authorizedUsers.addAll(Arrays.asList(acl.listPrivilegedPseudoPrincipals(this.privilege)));
 
-        if (shortcuts != null) {
+        if (this.shortcuts != null) {
             command.setShortcuts(extractAndCheckShortcuts(authorizedGroups, authorizedUsers, this.validShortcuts,
                     this.shortcuts, this.permissionShortcutsConfig));
         }
@@ -183,14 +181,12 @@ public class ACLEditController extends SimpleFormController {
         }
 
         Principal yourself = requestContext.getPrincipal();
-
-        // Remove or add shortcuts
-        acl = aclShortcuts(acl, editCommand, yourself, errors);
-
+        
         // Has the user asked to save?
         if (editCommand.getSaveAction() != null) {
             acl = addToAcl(acl, editCommand.getGroupNames(), Type.GROUP);
             acl = addToAcl(acl, editCommand.getUserNameEntries(), Type.USER);
+            acl = updateAclIfShortcut(acl, editCommand, yourself, errors);
             if (errors.hasErrors()) {
                 BindException bex = new BindException(getACLEditCommand(resource, acl, yourself), this.getCommandName());
                 bex.addAllErrors(errors);
@@ -226,10 +222,9 @@ public class ACLEditController extends SimpleFormController {
 
         return new ModelAndView(getSuccessView());
     }
-
-
+    
     /**
-     * Count valid shortcuts (all users and groups with GROUP or USER prefix)
+     * Count valid shortcuts (all users and groups should have GROUP or USER prefix)
      *
      * @param shortcuts the configured shortcuts for the privilege
      * @param permissionShortcutsConfig the users and groups for the shortcuts
@@ -251,8 +246,8 @@ public class ACLEditController extends SimpleFormController {
         }
         return valid;
     }
-
-
+    
+    
     /**
      * Extracts shortcuts from authorized users and groups
      * 
@@ -267,62 +262,33 @@ public class ACLEditController extends SimpleFormController {
      */
     protected String[][] extractAndCheckShortcuts(List<Principal> authorizedGroups, List<Principal> authorizedUsers,
             int validShortcuts, List<String> shortcuts, Map<String, List<String>> permissionShortcutsConfig) {
-
         String checkedShortcuts[][] = new String[validShortcuts][2];
 
-        String shortcutLargestMatch = "";
-        int largestMatch = 0;
-
-        // Find largest matching number of users and groups in a shortcut (all must match to be considered)
-        for (String shortcut : shortcuts) {
-            List<String> groupsUsersPrShortcut = permissionShortcutsConfig.get(shortcut);
-            int matches = 0;
-            for (String groupOrUser : groupsUsersPrShortcut) {
-                if (groupOrUser.startsWith(GROUP_PREFIX)) { // Check if group is in authorizedGroups
-                    for (Principal user : authorizedGroups) {
-                        if ((GROUP_PREFIX + user.getName()).equals(groupOrUser)) {
-                            matches++;
-                        }
-                    }
-                } else if (groupOrUser.startsWith(USER_PREFIX)) { // Check if user is in authorizedUsers
-                    for (Principal user : authorizedUsers) {
-                        if ((USER_PREFIX + user.getName()).equals(groupOrUser)) {
-                            matches++;
-                        }
-                    }
-                }
-            }
-            if (matches == groupsUsersPrShortcut.size() && matches > largestMatch) {
-                shortcutLargestMatch = shortcut;
-                largestMatch = matches;
-            }
-        }
-
-        // Check only the shortcut with largest number of matching groups and users
+        // Iterate shortcuts on privilege
         int i = 0;
         for (String shortcut : shortcuts) {
-            checkedShortcuts[i][0] = shortcut;
-            if (shortcutLargestMatch.equals(shortcut)) {
-                checkedShortcuts[i][1] = "checked";
-                // Remove from lists
-                List<String> groupsUsersPrShortcut = permissionShortcutsConfig.get(shortcut);
-                for (String groupOrUser : groupsUsersPrShortcut) {
-                    if (groupOrUser.startsWith(GROUP_PREFIX)) { // Check if group is in authorizedGroups
-                        Iterator<Principal> it = authorizedGroups.iterator();
-                        while (it.hasNext()) {
-                            if ((GROUP_PREFIX + it.next().getName()).equals(groupOrUser)) {
-                                it.remove();
-                            }
-                        }
-                    } else if (groupOrUser.startsWith(USER_PREFIX)) { // Check if user is in authorizedUsers
-                        Iterator<Principal> it = authorizedUsers.iterator();
-                        while (it.hasNext()) {
-                            if ((USER_PREFIX + it.next().getName()).equals(groupOrUser)) {
-                                it.remove();
-                            }
-                        }
+            List<String> shortcutACEs = permissionShortcutsConfig.get(shortcut);
+            int numberOfShortcutACEs = shortcutACEs.size();
+            int matchedACEs = 0;
+            int totalACEs = authorizedGroups.size() + authorizedUsers.size();
+
+            // Find matches in shortcut ACEs
+            for (String aceWithPrefix : shortcutACEs) {
+                for (Principal group : authorizedGroups) {
+                    if ((GROUP_PREFIX + group.getName()).equals(aceWithPrefix)) {
+                        matchedACEs++;
                     }
                 }
+                for (Principal user : authorizedUsers) {
+                    if ((USER_PREFIX + user.getName()).equals(aceWithPrefix)) {
+                        matchedACEs++;
+                    }
+                }
+            }
+            checkedShortcuts[i][0] = shortcut;
+            // If matches are exactly the number of groups and users set and the size of shortcut
+            if (matchedACEs == totalACEs && matchedACEs == numberOfShortcutACEs) {
+                checkedShortcuts[i][1] = "checked";
             } else {
                 checkedShortcuts[i][1] = "";
             }
@@ -334,7 +300,7 @@ public class ACLEditController extends SimpleFormController {
 
 
     /**
-     * Add and remove ACL entries for updated shortcuts.
+     * Add and remove ACL entries for updated shortcut
      *
      * @param acl the ACL object
      * @param editCommand the command object
@@ -342,57 +308,41 @@ public class ACLEditController extends SimpleFormController {
      * @param errors ACL validation errors
      * @return the modified ACL
      */
-    private Acl aclShortcuts(Acl acl, ACLEditCommand editCommand, Principal yourself, BindException errors) {
-        String[] updatedShortcuts = editCommand.getUpdatedShortcuts();
-        String[][] shortcuts = editCommand.getShortcuts();
+    private Acl updateAclIfShortcut(Acl acl, ACLEditCommand editCommand, Principal yourself, BindException errors) {
+        String updatedShortcut = editCommand.getUpdatedShortcut();
 
-        Set<String> groupsUsersForRemoval = new HashSet<String>();
-        Set<String> groupsUsersForAdd = new HashSet<String>();
+        if (updatedShortcut != null && !updatedShortcut.equals("") && !updatedShortcut.equals("custom")) {
 
-        for (String[] shortcut : shortcuts) {
-
-            boolean checkedBefore = false;
-            boolean found = false;
-
-            for (String update : updatedShortcuts) {
-                if (shortcut[0].equals(update)) {
-                    found = true;
-                    break;
-                }
+            // First: remove all ACEs on privilege
+            String[] groups = new String[editCommand.getGroups().size()];
+            String[] users = new String[editCommand.getUsers().size()];
+            int i = 0;
+            for (Principal group : editCommand.getGroups()) {
+                groups[i] = group.getName();
+                i++;
             }
-            if (shortcut[1].equals("checked")) {
-                checkedBefore = true;
+            i = 0;
+            for (Principal user : editCommand.getUsers()) {
+                users[i] = user.getName();
+                i++;
             }
 
-            if (found && !checkedBefore) {
-                groupsUsersForAdd.addAll(this.permissionShortcutsConfig.get(shortcut[0]));
-            } else if (!found && checkedBefore) {
-                groupsUsersForRemoval.addAll(this.permissionShortcutsConfig.get(shortcut[0]));
+            acl = removeFromAcl(acl, groups, Type.GROUP, yourself, errors);
+            acl = removeFromAcl(acl, users, Type.USER, yourself, errors);
+
+            // Then: add ACEs from updated shortcut
+            List<String> shortcutACEs = this.permissionShortcutsConfig.get(updatedShortcut);
+            for (String aceWithPrefix : shortcutACEs) {
+                String groupOrUserUnformatted[] = new String[1];
+                Type type = unformatGroupOrUserAndSetType(aceWithPrefix, groupOrUserUnformatted);
+                acl = addToAcl(acl, groupOrUserUnformatted, type);
             }
-
-        }
-
-        // Add
-        for (String groupOrUser : groupsUsersForAdd) {
-            if (groupsUsersForRemoval.contains(groupOrUser)) { // Filter out 'to be added' from 'to be removed'
-                groupsUsersForRemoval.remove(groupOrUser);
-            }
-            String groupOrUserUnformatted[] = new String[1];
-            Type type = unformatGroupOrUserAndSetType(groupOrUser, groupOrUserUnformatted);
-            acl = addToAcl(acl, groupOrUserUnformatted, type);
-        }
-
-        // Remove
-        for (String groupOrUser : groupsUsersForRemoval) {
-            String groupOrUserUnformatted[] = new String[1];
-            Type type = unformatGroupOrUserAndSetType(groupOrUser, groupOrUserUnformatted);
-            acl = removeFromAcl(acl, groupOrUserUnformatted, type, yourself, errors);
         }
 
         return acl;
     }
-
-
+    
+    
     /**
      * Remove groups or users from ACL.
      *
@@ -459,7 +409,6 @@ public class ACLEditController extends SimpleFormController {
             return checkIfNotEmptyAdminAcl(acl, potentialAcl, userOrGroup, errors);
         }
     }
-
 
     /**
      * Check if not empty admin Acl

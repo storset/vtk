@@ -52,7 +52,7 @@ public class ACLEditCommand extends UpdateCancelCommand {
     private String userNames[] = new String[0];
     private String groupNames[] = new String[0];
     private String shortcuts[][] = new String[0][0];
-    private String updatedShortcuts[] = new String[0];
+    private String updatedShortcut = new String();
 
     private String saveAction = null;
 
@@ -177,7 +177,7 @@ public class ACLEditCommand extends UpdateCancelCommand {
             sbS.append(shortcut[0] + " " + shortcut[1]);   
         }
         sb.append(", shortcuts=").append(sbS.toString());
-        sb.append(", updatedShortcuts=").append(java.util.Arrays.asList(this.updatedShortcuts));
+        sb.append(", updatedShortcut=").append(this.updatedShortcut);
         sb.append("]");
         return sb.toString();
     }
@@ -206,12 +206,12 @@ public class ACLEditCommand extends UpdateCancelCommand {
         this.userNameEntries.add(userNameEntry.toLowerCase());
     }
     
-    public String[] getUpdatedShortcuts() {
-        return this.updatedShortcuts;
+    public String getUpdatedShortcut() {
+        return this.updatedShortcut;
     }
 
-    public void setUpdatedShortcuts(String[] updatedShortcuts) {
-        this.updatedShortcuts = updatedShortcuts;
+    public void setUpdatedShortcut(String updatedShortcut) {
+        this.updatedShortcut = updatedShortcut;
     }
 
 }

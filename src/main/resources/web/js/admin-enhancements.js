@@ -333,7 +333,7 @@ function toggleConfigCustomPermissions() {
 	  var custom = shortcuts.find("input:radio:last");
 	  var config = shortcuts.find("input:radio:not(:last)");	
 	  if (!$(custom).is(":checked")) {
-		$(".principalList").hide("fast");
+		$(".principalList").hide(0);
 	  }
 	  $(custom).click(function() {
         $(".principalList:hidden").slideDown("fast");

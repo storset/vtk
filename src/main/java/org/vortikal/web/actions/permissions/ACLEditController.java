@@ -33,6 +33,7 @@ package org.vortikal.web.actions.permissions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -254,6 +255,8 @@ public class ACLEditController extends SimpleFormController {
 
     /**
      * Extracts shortcuts from authorized users and groups
+     * 
+     * TODO: ponder out some smarter shorter code
      *
      * @param authorizedUsers the authorized users
      * @param authorizedGroups the authorized groups
@@ -301,6 +304,25 @@ public class ACLEditController extends SimpleFormController {
             checkedShortcuts[i][0] = shortcut;
             if (shortcutLargestMatch.equals(shortcut)) {
                 checkedShortcuts[i][1] = "checked";
+                // Remove from lists
+                List<String> groupsUsersPrShortcut = permissionShortcutsConfig.get(shortcut);
+                for (String groupOrUser : groupsUsersPrShortcut) {
+                    if (groupOrUser.startsWith(GROUP_PREFIX)) { // Check if group is in authorizedGroups
+                        Iterator<Principal> it = authorizedGroups.iterator();
+                        while (it.hasNext()) {
+                            if ((GROUP_PREFIX + it.next().getName()).equals(groupOrUser)) {
+                                it.remove();
+                            }
+                        }
+                    } else if (groupOrUser.startsWith(USER_PREFIX)) { // Check if user is in authorizedUsers
+                        Iterator<Principal> it = authorizedUsers.iterator();
+                        while (it.hasNext()) {
+                            if ((USER_PREFIX + it.next().getName()).equals(groupOrUser)) {
+                                it.remove();
+                            }
+                        }
+                    }
+                }
             } else {
                 checkedShortcuts[i][1] = "";
             }

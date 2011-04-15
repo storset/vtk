@@ -44,7 +44,7 @@
     </property>
   </bean>
 
-  <bean id="structured.eventListing.groupedByDayEventSearchComponent" parent="eventListing.upcomingEventsSearchComponent">
+  <bean id="structured.eventListing.groupedByDayEventSearchComponent" parent="structured.eventListing.upcomingEventsSearchComponent">
     <property name="name" value="structured.eventListing.groupedByDayEventSearchComponent" />
     <property name="queryBuilders">
       <list>
@@ -64,10 +64,10 @@
         </bean>
       </list>
     </property>
-    <property name="searchSorting" ref="structured.eventListing.upcoming.searchSorting" />
+    <property name="titleLocalizationKey"><null/></property>
   </bean>
 
-  <bean id="structured.eventListing.furtherUpcomingSearchComponent" parent="eventListing.upcomingEventsSearchComponent">
+  <bean id="structured.eventListing.furtherUpcomingSearchComponent" parent="structured.eventListing.upcomingEventsSearchComponent">
     <property name="name" value="structured.eventListing.furtherUpcomingSearchComponent" />
     <property name="queryBuilders">
       <list>
@@ -85,10 +85,10 @@
         </bean>
       </list>
     </property>
-    <property name="searchSorting" ref="structured.eventListing.upcoming.searchSorting" />
+    <property name="titleLocalizationKey"><null/></property>
   </bean>
 
-  <bean id="structured.eventListing.specificDateEventSearchComponent" parent="eventListing.upcomingEventsSearchComponent">
+  <bean id="structured.eventListing.specificDateEventSearchComponent" parent="structured.eventListing.upcomingEventsSearchComponent">
     <property name="name" value="structured.eventListing.furtherUpcomingSearchComponent" />
     <property name="queryBuilders">
       <list>
@@ -104,7 +104,7 @@
         </bean>
       </list>
     </property>
-    <property name="searchSorting" ref="structured.eventListing.upcoming.searchSorting" />
+    <property name="titleLocalizationKey"><null/></property>
   </bean>
 
   <bean id="structured.eventListing.startDatePropDefPointer" class="java.lang.String">

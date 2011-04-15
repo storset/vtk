@@ -47,6 +47,7 @@
     <property name="groupedByDayEventSearchComponent" ref="${override.listing.prefix}eventListing.groupedByDayEventSearchComponent" />
     <property name="furtherUpcomingSearchComponent" ref="${override.listing.prefix}eventListing.furtherUpcomingSearchComponent" />
     <property name="specificDateEventSearchComponent" ref="${override.listing.prefix}eventListing.specificDateEventSearchComponent" />
+    <property name="daysAhead" value="${event.listing.days.ahead}" />
   </bean>
 
   <bean id="eventListing.atomHandler" class="org.vortikal.web.display.collection.event.EventListingAsFeedController"
@@ -76,8 +77,6 @@
     <property name="titleLocalizationKey" value="eventListing.upcomingEvents" />
     <property name="viewService" ref="webService" />
     <property name="resourceManager" ref="resourceManager" />
-    <property name="defaultRecursive" value="true" />
-    <property name="recursivePropDef" ref="eventListing.recursiveListingPropDef" />  
     <property name="listableProperties" ref="eventListing.listableProperties" />
     <property name="queryBuilders">
       <list>
@@ -99,6 +98,7 @@
 
   <bean id="eventListing.listingUriQueryBuilder" parent="listingUriQueryBuilder">
     <property name="recursivePropDef" ref="eventListing.recursiveListingPropDef" />
+    <property name="defaultRecursive" value="true" />
   </bean>
 
   <bean id="eventListing.upcoming.searchSorting" class="org.vortikal.web.search.SearchSorting" depends-on="resourceTypeTree">

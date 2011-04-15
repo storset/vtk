@@ -59,7 +59,6 @@
     <property name="name" value="articleListing.defaultArticles" />
     <property name="viewService" ref="webService" />
     <property name="resourceManager" ref="resourceManager" />
-    <property name="defaultRecursive" value="true" />
     <property name="listableProperties">
       <list>
         <bean class="org.vortikal.web.search.PropertyDisplayConfig">
@@ -89,6 +88,7 @@
   
   <bean id="articleListing.listingUriQueryBuilder" parent="listingUriQueryBuilder">
     <property name="recursivePropDef" ref="articleListing.recursiveListingPropDef" />
+    <property name="defaultRecursive" value="true" />
   </bean>
 
   <bean id="articleListing.searchSorting" class="org.vortikal.web.search.SearchSorting" depends-on="resourceTypeTree">
@@ -111,19 +111,6 @@
   <!-- Fetch specifically specified articles, aka 'featured articles' -->
   <bean id="articleListing.featuredArticlesSearchComponent" parent="articleListing.searchComponent">
     <property name="name" value="articleListing.featuredArticles" />
-    <property name="recursivePropDef">
-      <bean class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="articleListing.recursiveListingPropDef">
-        <property name="vocabulary">
-          <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
-            <property name="values">
-              <list>
-                <ref bean="VALUE_TRUE" />
-              </list>
-            </property>
-          </bean>
-        </property>
-      </bean>
-    </property>
     <property name="queryBuilders">
       <list>
         <bean parent="queryStringParser">

@@ -60,7 +60,6 @@ import org.vortikal.web.tags.TagsHelper;
 
 public class TagsController implements Controller {
 
-    private boolean defaultRecursive = true;
     private int defaultPageLimit = 20;
     private String viewName;
     private SearchComponent searchComponent;
@@ -126,7 +125,7 @@ public class TagsController implements Controller {
         int limit = pageLimit;
         int totalHits = 0;
 
-        Listing listing = this.searchComponent.execute(request, scope, page, limit, 0, defaultRecursive);
+        Listing listing = this.searchComponent.execute(request, scope, page, limit, 0);
         if (listing != null) {
             totalHits = listing.getTotalHits();
         }

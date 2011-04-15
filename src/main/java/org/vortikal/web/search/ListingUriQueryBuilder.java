@@ -55,6 +55,7 @@ public class ListingUriQueryBuilder implements QueryBuilder {
     private PropertyTypeDefinition recursivePropDef;
     private AggregationResolver aggregationResolver;
     private PropertyTypeDefinition manuallyApprovedResourcesPropDef;
+    private boolean defaultRecursive;
 
     @Override
     public Query build(Resource collection, HttpServletRequest request) {
@@ -67,7 +68,8 @@ public class ListingUriQueryBuilder implements QueryBuilder {
 
         // If no recursion is defined, supplement the default query with limited
         // depth when searching
-        if (!this.isRecursive(collection)) {
+        Property recursiveProp = collection.getProperty(this.recursivePropDef);
+        if (!this.defaultRecursive || (recursiveProp != null && !recursiveProp.getBooleanValue())) {
             AndQuery and = new AndQuery();
             UriDepthQuery uriDepthQuery = new UriDepthQuery(collectionUri.getDepth() + 1);
             and.add(uriPrefixQuery);
@@ -108,14 +110,6 @@ public class ListingUriQueryBuilder implements QueryBuilder {
         return baseQuery;
     }
 
-    private boolean isRecursive(Resource collection) {
-        Property recursiveProp = collection.getProperty(this.recursivePropDef);
-        if (recursiveProp != null) {
-            return recursiveProp.getBooleanValue();
-        }
-        return true;
-    }
-
     @Required
     public void setRecursivePropDef(PropertyTypeDefinition recursivePropDef) {
         this.recursivePropDef = recursivePropDef;
@@ -129,6 +123,10 @@ public class ListingUriQueryBuilder implements QueryBuilder {
     @Required
     public void setManuallyApprovedResourcesPropDef(PropertyTypeDefinition manuallyApprovedResourcesPropDef) {
         this.manuallyApprovedResourcesPropDef = manuallyApprovedResourcesPropDef;
+    }
+
+    public void setDefaultRecursive(boolean defaultRecursive) {
+        this.defaultRecursive = defaultRecursive;
     }
 
 }

@@ -31,15 +31,22 @@
 package org.vortikal.web.display.collection.event;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Namespace;
+import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
+import org.vortikal.web.service.URL;
 
 public class EventListingSearcher {
 
@@ -48,6 +55,7 @@ public class EventListingSearcher {
     private SearchComponent groupedByDayEventSearchComponent;
     private SearchComponent furtherUpcomingSearchComponent;
     private SearchComponent specificDateEventSearchComponent;
+    private int daysAhead;
 
     public Listing searchUpcoming(HttpServletRequest request, Resource collection, int upcomingEventPage,
             int pageLimit, int offset) throws Exception {
@@ -64,10 +72,48 @@ public class EventListingSearcher {
         List<GroupedEvents> groupedByDayEvents = new ArrayList<GroupedEvents>();
         Listing result = this.groupedByDayEventSearchComponent.execute(request, collection, 1, 100, 0);
         if (result.size() > 0) {
-            // XXX group and add to resultlist
-            // groupedByDayEvents.add(new GroupedEvents(cal.getTime(), result));
+            List<PropertySet> allEvents = result.getFiles();
+            for (int i = 0; i <= this.daysAhead; i++) {
+                Calendar cal = Calendar.getInstance();
+                cal.add(Calendar.DAY_OF_MONTH, i);
+                Listing subListing = new Listing(result.getResource(), result.getTitle(), result.getName(), result
+                        .getOffset());
+                List<PropertySet> events = new ArrayList<PropertySet>();
+                Map<String, URL> urls = new HashMap<String, URL>();
+                for (PropertySet ps : allEvents) {
+                    if (this.isWithinDaysAhead(cal.getTime(), ps)) {
+                        events.add(ps);
+                        String urlString = ps.getURI().toString();
+                        urls.put(urlString, result.getUrls().get(urlString));
+                    }
+                }
+                if (events.size() > 0) {
+                    subListing.setFiles(events);
+                    subListing.setUrls(urls);
+                    groupedByDayEvents.add(new GroupedEvents(cal.getTime(), subListing));
+                }
+            }
         }
         return groupedByDayEvents;
+    }
+
+    private boolean isWithinDaysAhead(Date time, PropertySet ps) {
+        Property sdProp = this.getProperty(ps, "start-date");
+        Date sd = sdProp.getDateValue();
+        Property edProp = this.getProperty(ps, "end-date");
+        if (edProp == null) {
+            return sd.equals(time);
+        }
+        Date ed = edProp.getDateValue();
+        return sd.equals(time) || (sd.before(time) && (ed.after(time) || ed.equals(time)));
+    }
+
+    private Property getProperty(PropertySet ps, String key) {
+        Property prop = ps.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, key);
+        if (prop == null) {
+            prop = ps.getProperty(Namespace.DEFAULT_NAMESPACE, key);
+        }
+        return prop;
     }
 
     public Listing searchFurtherUpcoming(HttpServletRequest request, Resource collection, int furtherUpcomingPageLimit)
@@ -105,6 +151,11 @@ public class EventListingSearcher {
     @Required
     public void setSpecificDateEventSearchComponent(SearchComponent specificDateEventSearchComponent) {
         this.specificDateEventSearchComponent = specificDateEventSearchComponent;
+    }
+
+    @Required
+    public void setDaysAhead(int daysAhead) {
+        this.daysAhead = daysAhead;
     }
 
     public class GroupedEvents {

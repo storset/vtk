@@ -58,7 +58,6 @@
     <property name="name" value="collectionListing.searchComponent2" />
     <property name="viewService" ref="webService" />
     <property name="resourceManager" ref="resourceManager" />
-    <property name="defaultRecursive" value="true" />
     <property name="listableProperties">
       <list>
         <bean class="org.vortikal.web.search.PropertyDisplayConfig">

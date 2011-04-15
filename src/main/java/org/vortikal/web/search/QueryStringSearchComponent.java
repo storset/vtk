@@ -46,32 +46,32 @@ public class QueryStringSearchComponent extends QuerySearchComponent {
     private QueryParser queryParser;
 
     @Override
-    protected Query getQuery(Resource collection, HttpServletRequest request, boolean recursive) {
+    protected Query getQuery(Resource collection, HttpServletRequest request) {
 
         Query query = this.queryParser.parse(this.query);
 
-        Query aggregationQuery = null;
-        boolean aggregate = false;
-        if (this.aggregationResolver != null) {
-            aggregationQuery = this.aggregationResolver.getAggregationQuery(query, collection);
-            if (!query.equals(aggregationQuery)) {
-                aggregate = true;
-            }
-        }
-
-        if (!recursive) {
-            AndQuery andQuery = new AndQuery();
-            andQuery.add(query);
-            andQuery.add(new UriDepthQuery(collection.getURI().getDepth() + 1));
-            query = andQuery;
-        }
-
-        if (aggregate) {
-            OrQuery orQuery = new OrQuery();
-            orQuery.add(query);
-            orQuery.add(aggregationQuery);
-            return orQuery;
-        }
+//        Query aggregationQuery = null;
+//        boolean aggregate = false;
+//        if (this.aggregationResolver != null) {
+//            aggregationQuery = this.aggregationResolver.getAggregationQuery(query, collection);
+//            if (!query.equals(aggregationQuery)) {
+//                aggregate = true;
+//            }
+//        }
+//
+//        if (!recursive) {
+//            AndQuery andQuery = new AndQuery();
+//            andQuery.add(query);
+//            andQuery.add(new UriDepthQuery(collection.getURI().getDepth() + 1));
+//            query = andQuery;
+//        }
+//
+//        if (aggregate) {
+//            OrQuery orQuery = new OrQuery();
+//            orQuery.add(query);
+//            orQuery.add(aggregationQuery);
+//            return orQuery;
+//        }
 
         return query;
     }

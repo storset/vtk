@@ -50,7 +50,6 @@ import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.SortingImpl;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.display.collection.aggregation.CollectionListingAggregationResolver;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
@@ -58,33 +57,19 @@ public abstract class QuerySearchComponent implements SearchComponent {
 
     private String name;
     private String titleLocalizationKey;
-    private boolean defaultRecursive = false;
     private ResourceWrapperManager resourceManager;
     private Service viewService;
-    private PropertyTypeDefinition recursivePropDef;
     private List<PropertyDisplayConfig> listableProperties;
-
     private SearchSorting searchSorting;
 
-    protected CollectionListingAggregationResolver aggregationResolver;
-
-    protected abstract Query getQuery(Resource collection, HttpServletRequest request, boolean recursive);
+    protected abstract Query getQuery(Resource collection, HttpServletRequest request);
 
     public Listing execute(HttpServletRequest request, Resource collection, int page, int pageLimit, int baseOffset)
             throws Exception {
-        return execute(request, collection, page, pageLimit, baseOffset, this.defaultRecursive);
-    }
-
-    public Listing execute(HttpServletRequest request, Resource collection, int page, int pageLimit, int baseOffset,
-            boolean recursive) throws Exception {
-
-        if (this.recursivePropDef != null && collection.getProperty(this.recursivePropDef) != null) {
-            recursive = collection.getProperty(this.recursivePropDef).getBooleanValue();
-        }
 
         Search search = new Search();
 
-        Query query = getQuery(collection, request, recursive);
+        Query query = getQuery(collection, request);
         int offset = baseOffset + (pageLimit * (page - 1));
 
         search.setQuery(query);
@@ -168,10 +153,6 @@ public abstract class QuerySearchComponent implements SearchComponent {
         this.resourceManager = resourceManager;
     }
 
-    public void setRecursivePropDef(PropertyTypeDefinition recursivePropDef) {
-        this.recursivePropDef = recursivePropDef;
-    }
-
     @Required
     public void setListableProperties(List<PropertyDisplayConfig> listableProperties) {
         this.listableProperties = listableProperties;
@@ -183,18 +164,6 @@ public abstract class QuerySearchComponent implements SearchComponent {
 
     public String getTitleLocalizationKey() {
         return titleLocalizationKey;
-    }
-
-    public void setDefaultRecursive(boolean defaultRecursive) {
-        this.defaultRecursive = defaultRecursive;
-    }
-
-    public boolean isDefaultRecursive() {
-        return this.defaultRecursive;
-    }
-
-    public void setAggregationResolver(CollectionListingAggregationResolver aggregationResolver) {
-        this.aggregationResolver = aggregationResolver;
     }
 
     @Required

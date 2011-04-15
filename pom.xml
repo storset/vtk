@@ -110,10 +110,12 @@
     </repository>
 
   </repositories>
+
   <properties>
     <test.skip>true</test.skip>
     <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
   </properties>
+
   <build>
     <defaultGoal>package</defaultGoal>
     <resources>

@@ -46,17 +46,9 @@ public class QueryStringSearchComponent extends QuerySearchComponent {
     private QueryParser queryParser;
 
     @Override
-    protected Query getQuery(Resource collection, HttpServletRequest request,
-            boolean recursive, QueryManipulator manipulator) {
-        String queryString = this.query;
-        if (manipulator != null) {
-            Object result = manipulator.process(this.query);
-            if (result instanceof String) {
-                queryString = (String) result;
-            }
-        }
-        
-        Query query = this.queryParser.parse(queryString);
+    protected Query getQuery(Resource collection, HttpServletRequest request, boolean recursive) {
+
+        Query query = this.queryParser.parse(this.query);
 
         Query aggregationQuery = null;
         boolean aggregate = false;

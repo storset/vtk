@@ -68,26 +68,15 @@ public abstract class QuerySearchComponent implements SearchComponent {
 
     protected CollectionListingAggregationResolver aggregationResolver;
 
-    protected abstract Query getQuery(Resource collection, HttpServletRequest request, boolean recursive, QueryManipulator manipulator);
-
-    // XXX: temporary hack to allow manipulating queries at execute time:
-    public static interface QueryManipulator {
-        public Object process(Object query);
-    }
+    protected abstract Query getQuery(Resource collection, HttpServletRequest request, boolean recursive);
 
     public Listing execute(HttpServletRequest request, Resource collection, int page, int pageLimit, int baseOffset)
-    throws Exception {
+            throws Exception {
         return execute(request, collection, page, pageLimit, baseOffset, this.defaultRecursive);
     }
 
     public Listing execute(HttpServletRequest request, Resource collection, int page, int pageLimit, int baseOffset,
             boolean recursive) throws Exception {
-
-        return execute(request, collection, page, pageLimit, baseOffset, recursive, null);
-    }
-
-    public Listing execute(HttpServletRequest request, Resource collection, int page, int pageLimit, int baseOffset,
-            boolean recursive, QueryManipulator manipulator) throws Exception {
 
         if (this.recursivePropDef != null && collection.getProperty(this.recursivePropDef) != null) {
             recursive = collection.getProperty(this.recursivePropDef).getBooleanValue();
@@ -95,7 +84,7 @@ public abstract class QuerySearchComponent implements SearchComponent {
 
         Search search = new Search();
 
-        Query query = getQuery(collection, request, recursive, manipulator);
+        Query query = getQuery(collection, request, recursive);
         int offset = baseOffset + (pageLimit * (page - 1));
 
         search.setQuery(query);
@@ -143,8 +132,8 @@ public abstract class QuerySearchComponent implements SearchComponent {
 
         String title = null;
         if (this.titleLocalizationKey != null) {
-            org.springframework.web.servlet.support.RequestContext springRequestContext = 
-                new org.springframework.web.servlet.support.RequestContext(request);
+            org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(
+                    request);
             title = springRequestContext.getMessage(this.titleLocalizationKey, (String) null);
         }
 

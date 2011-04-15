@@ -191,7 +191,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         }
 
         else if (query instanceof NameWildcardQuery) {
-            builder = new NameWildcardQueryBuilder((NameWildcardQuery)query);
+            builder = new NameWildcardQueryBuilder((NameWildcardQuery)query, this.cachedDeletedDocsFilter);
         }
        
         else if (query instanceof TypeTermQuery) {
@@ -209,15 +209,15 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         else if (query instanceof ACLQuery) {
             builder = getACLQueryBuilder(query, reader);
         }
-       
+
         if (builder == null) {
             throw new QueryBuilderException("Unsupported query type: " 
                                             + query.getClass().getName());
         }
-        
+
         return builder.buildQuery();
     }
-    
+
     private QueryBuilder getACLQueryBuilder(Query query, IndexReader reader) {
         if (query instanceof ACLExistsQuery) {
             ACLExistsQuery aclExistsQuery = (ACLExistsQuery)query;

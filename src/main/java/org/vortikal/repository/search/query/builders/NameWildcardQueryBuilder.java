@@ -50,20 +50,14 @@ import org.vortikal.repository.search.query.filter.WildcardTermFilter;
 public class NameWildcardQueryBuilder implements QueryBuilder {
 
     private NameWildcardQuery nwq;
-    private boolean invert = false;
     private Filter deletedDocsFilter;
 
     public NameWildcardQueryBuilder(NameWildcardQuery nwq) {
         this.nwq = nwq;
     }
 
-    public NameWildcardQueryBuilder(NameWildcardQuery nwq, boolean invert) {
-        this(nwq);
-        this.invert = invert;
-    }
-
-    public NameWildcardQueryBuilder(NameWildcardQuery nwq, boolean invert, Filter deletedDocs) {
-        this(nwq, invert);
+    public NameWildcardQueryBuilder(NameWildcardQuery nwq, Filter deletedDocs) {
+        this.nwq = nwq;
         this.deletedDocsFilter = deletedDocs;
     }
 
@@ -82,7 +76,7 @@ public class NameWildcardQueryBuilder implements QueryBuilder {
         
         Filter filter = new WildcardTermFilter(wTerm);
 
-        if (this.invert) {
+        if (this.nwq.isInverted()) {
             filter = new InversionFilter(filter, this.deletedDocsFilter);
         }
         

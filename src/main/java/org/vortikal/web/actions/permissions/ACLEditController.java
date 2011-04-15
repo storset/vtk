@@ -262,7 +262,8 @@ public class ACLEditController extends SimpleFormController {
      */
     protected String[][] extractAndCheckShortcuts(List<Principal> authorizedGroups, List<Principal> authorizedUsers,
             int validShortcuts, List<String> shortcuts, Map<String, List<String>> permissionShortcutsConfig, boolean isCustomPermissions) {
-        String checkedShortcuts[][] = new String[validShortcuts][2];
+        
+         String checkedShortcuts[][] = new String[validShortcuts][2];
 
         // Iterate shortcuts on privilege
         int i = 0;
@@ -285,6 +286,7 @@ public class ACLEditController extends SimpleFormController {
                     }
                 }
             }
+            
             checkedShortcuts[i][0] = shortcut;
             
             if(!isCustomPermissions) {
@@ -314,10 +316,11 @@ public class ACLEditController extends SimpleFormController {
      * @return the modified ACL
      */
     private Acl updateAclIfShortcut(Acl acl, ACLEditCommand editCommand, Principal yourself, BindException errors) {
+        
         String updatedShortcut = editCommand.getUpdatedShortcut();
 
-        if (updatedShortcut != null && !updatedShortcut.equals("") && !updatedShortcut.equals("custom")) {
-            
+        if (this.permissionShortcutsConfig.get(updatedShortcut) != null) {
+
             // First: remove all ACEs on privilege
             acl = removeFromAcl(acl, editCommand.getGroups());
             acl = removeFromAcl(acl, editCommand.getUsers());

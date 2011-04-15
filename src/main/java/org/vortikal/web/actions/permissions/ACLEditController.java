@@ -107,11 +107,11 @@ public class ACLEditController extends SimpleFormController {
            this.validShortcuts = countValidshortcuts(this.shortcuts, this.permissionShortcutsConfig);
         }
 
-        return getACLEditCommand(resource, resource.getAcl(), requestContext.getPrincipal());
+        return getACLEditCommand(resource, resource.getAcl(), requestContext.getPrincipal(), false);
     }
 
 
-    private ACLEditCommand getACLEditCommand(Resource resource, Acl acl, Principal principal) throws Exception {
+    private ACLEditCommand getACLEditCommand(Resource resource, Acl acl, Principal principal, boolean isCustomPermissions) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         Service service = requestContext.getService();
 
@@ -129,7 +129,7 @@ public class ACLEditController extends SimpleFormController {
 
         if (this.shortcuts != null) {
             command.setShortcuts(extractAndCheckShortcuts(authorizedGroups, authorizedUsers, this.validShortcuts,
-                    this.shortcuts, this.permissionShortcutsConfig));
+                    this.shortcuts, this.permissionShortcutsConfig, isCustomPermissions));
         }
 
         command.setGroups(authorizedGroups);
@@ -188,7 +188,7 @@ public class ACLEditController extends SimpleFormController {
             acl = addToAcl(acl, editCommand.getUserNameEntries(), Type.USER);
             acl = updateAclIfShortcut(acl, editCommand, yourself, errors);
             if (errors.hasErrors()) {
-                BindException bex = new BindException(getACLEditCommand(resource, acl, yourself), this.getCommandName());
+                BindException bex = new BindException(getACLEditCommand(resource, acl, yourself, true), this.getCommandName());
                 bex.addAllErrors(errors);
                 return showForm(request, response, errors);
             }
@@ -199,24 +199,24 @@ public class ACLEditController extends SimpleFormController {
         // Doing remove or add actions
         if (editCommand.getRemoveGroupAction() != null) {
             acl = removeFromAcl(acl, editCommand.getGroupNames(), Type.GROUP, yourself, errors);
-            BindException bex = new BindException(getACLEditCommand(resource, acl, yourself), this.getCommandName());
+            BindException bex = new BindException(getACLEditCommand(resource, acl, yourself, true), this.getCommandName());
             bex.addAllErrors(errors);
             return showForm(request, response, bex);
 
         } else if (editCommand.getRemoveUserAction() != null) {
             acl = removeFromAcl(acl, editCommand.getUserNames(), Type.USER, yourself, errors);
-            BindException bex = new BindException(getACLEditCommand(resource, acl, yourself), this.getCommandName());
+            BindException bex = new BindException(getACLEditCommand(resource, acl, yourself, true), this.getCommandName());
             bex.addAllErrors(errors);
             return showForm(request, response, bex);
 
         } else if (editCommand.getAddGroupAction() != null) {
             acl = addToAcl(acl, editCommand.getGroupNames(), Type.GROUP);
-            return showForm(request, response, new BindException(getACLEditCommand(resource, acl, yourself), this
+            return showForm(request, response, new BindException(getACLEditCommand(resource, acl, yourself, true), this
                     .getCommandName()));
 
         } else if (editCommand.getAddUserAction() != null) {
             acl = addToAcl(acl, editCommand.getUserNameEntries(), Type.USER);
-            return showForm(request, response, new BindException(getACLEditCommand(resource, acl, yourself), this
+            return showForm(request, response, new BindException(getACLEditCommand(resource, acl, yourself, true), this
                     .getCommandName()));
         }
 
@@ -261,7 +261,7 @@ public class ACLEditController extends SimpleFormController {
      * @return a <code>String[][]</code> object containing checked / not-checked shortcuts
      */
     protected String[][] extractAndCheckShortcuts(List<Principal> authorizedGroups, List<Principal> authorizedUsers,
-            int validShortcuts, List<String> shortcuts, Map<String, List<String>> permissionShortcutsConfig) {
+            int validShortcuts, List<String> shortcuts, Map<String, List<String>> permissionShortcutsConfig, boolean isCustomPermissions) {
         String checkedShortcuts[][] = new String[validShortcuts][2];
 
         // Iterate shortcuts on privilege
@@ -286,9 +286,14 @@ public class ACLEditController extends SimpleFormController {
                 }
             }
             checkedShortcuts[i][0] = shortcut;
-            // If matches are exactly the number of groups and users set and the size of shortcut
-            if (matchedACEs == totalACEs && matchedACEs == numberOfShortcutACEs) {
-                checkedShortcuts[i][1] = "checked";
+            
+            if(!isCustomPermissions) {
+                // If matches are exactly the number of groups and users set and the size of shortcut
+                if (matchedACEs == totalACEs && matchedACEs == numberOfShortcutACEs) {
+                    checkedShortcuts[i][1] = "checked";
+                } else {
+                    checkedShortcuts[i][1] = "";
+                }
             } else {
                 checkedShortcuts[i][1] = "";
             }

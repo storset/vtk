@@ -62,7 +62,7 @@ public class ACLEditControllerTest extends TestCase {
         int validShortcuts = controller.countValidshortcuts(shortcuts, shortcutsConfig);
         assertEquals(4, validShortcuts);
 
-        String[][] extractedShortcuts = controller.extractAndCheckShortcuts(authorizedGroups, authorizedUsers, validShortcuts, shortcuts, shortcutsConfig);
+        String[][] extractedShortcuts = controller.extractAndCheckShortcuts(authorizedGroups, authorizedUsers, validShortcuts, shortcuts, shortcutsConfig, false);
         assertEquals(4, extractedShortcuts.length);
 
         assertEquals("checked", extractedShortcuts[0][1]);

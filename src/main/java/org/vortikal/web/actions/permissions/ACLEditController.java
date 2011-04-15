@@ -312,23 +312,10 @@ public class ACLEditController extends SimpleFormController {
         String updatedShortcut = editCommand.getUpdatedShortcut();
 
         if (updatedShortcut != null && !updatedShortcut.equals("") && !updatedShortcut.equals("custom")) {
-
+            
             // First: remove all ACEs on privilege
-            String[] groups = new String[editCommand.getGroups().size()];
-            String[] users = new String[editCommand.getUsers().size()];
-            int i = 0;
-            for (Principal group : editCommand.getGroups()) {
-                groups[i] = group.getName();
-                i++;
-            }
-            i = 0;
-            for (Principal user : editCommand.getUsers()) {
-                users[i] = user.getName();
-                i++;
-            }
-
-            acl = removeFromAcl(acl, groups, Type.GROUP, yourself, errors);
-            acl = removeFromAcl(acl, users, Type.USER, yourself, errors);
+            acl = removeFromAcl(acl, editCommand.getGroups());
+            acl = removeFromAcl(acl, editCommand.getUsers());
 
             // Then: add ACEs from updated shortcut
             List<String> shortcutACEs = this.permissionShortcutsConfig.get(updatedShortcut);
@@ -369,6 +356,20 @@ public class ACLEditController extends SimpleFormController {
             } else {
                 acl = potentialAcl;
             }
+        }
+        return acl;
+    }
+    
+    /**
+     * Remove groups or users from ACL.
+     *
+     * @param acl the ACL object
+     * @param values groups or users to remove
+     * @return the modified ACL
+     */
+    private Acl removeFromAcl(Acl acl, List<Principal> values) {
+        for (Principal principal : values) {
+            acl = acl.removeEntry(this.privilege, principal);
         }
         return acl;
     }

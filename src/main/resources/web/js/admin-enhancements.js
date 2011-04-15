@@ -328,18 +328,20 @@ function switchCheckedClasslass(obj){
 }
 
 function toggleConfigCustomPermissions() {
-
 	var shortcuts = $("ul.shortcuts");
-	var custom = shortcuts.find("input:last");
-	
-	if(custom.not(":checked") || shortcuts.length) {
-		$('.principalList').hide('fast');
+	if (shortcuts.length) {
+	  var custom = shortcuts.find("input:radio:last");
+	  var config = shortcuts.find("input:radio:not(:last)");	
+	  if (!$(custom).is(":checked")) {
+		$(".principalList").hide("fast");
+	  }
+	  $(custom).click(function() {
+        $(".principalList:hidden").slideDown("fast");
+	  });
+	  $(config).click(function() {
+	    $(".principalList:visible").slideUp("fast");
+	  });
 	}
-
-	$(custom).click(function() {
-       $('.principalList').toggle('fast');
-	});
-	
 }
 
 // Add callbacks for the above methods:

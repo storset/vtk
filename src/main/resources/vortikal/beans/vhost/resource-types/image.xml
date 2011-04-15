@@ -64,6 +64,7 @@
     <property name="url" value="pages/image-as-html.ftl" />
     <property name="attributesMap">
       <map>
+          <entry key="uioWebCopyrightURL" value="${uioWebCopyrightURL}" />
         <entry key="jsURLs">
           <list>
             <value>${jquery.baseURL}/include-jquery.js</value>

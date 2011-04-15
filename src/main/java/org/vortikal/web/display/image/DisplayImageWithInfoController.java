@@ -33,11 +33,13 @@ public class DisplayImageWithInfoController implements Controller {
 
         HashMap<String, Object> model = new HashMap<String, Object>();
         model.put("src", uri);
+        
+        model.put("resource", resource);   
         if (titleProp != null)
             model.put("title", titleProp.getStringValue());
         if (descriptionProp != null)
             model.put("description", descriptionProp.getStringValue());
-
+        
         return new ModelAndView(getViewName(), model);
     }
 

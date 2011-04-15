@@ -327,6 +327,21 @@ function switchCheckedClasslass(obj){
     }
 }
 
+function toggleConfigCustomPermissions() {
+
+	var shortcuts = $("ul.shortcuts");
+	var custom = shortcuts.find("input:last");
+	
+	if(custom.not(":checked") || shortcuts.length) {
+		$('.principalList').hide('fast');
+	}
+
+	$(custom).click(function() {
+       $('.principalList').toggle('fast');
+	});
+	
+}
+
 // Add callbacks for the above methods:
 
 $(document).ready(logoutButtonAsLink);

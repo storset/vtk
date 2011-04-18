@@ -46,6 +46,26 @@
   </bean>
 
   <bean id="audioVideoListing.view" parent="collectionListing.view">
+  <property name="attributesMap">
+      <map>
+        <!-- CSS's -->
+        <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/image-listing-component.css</value>
+            <value>${themeBaseURL}/view-image-listing.css</value>
+          </list>
+        </entry>
+        
+        <!-- JS's -->
+        <entry key="jsURLs">
+          <list>
+            <value>${webResources.baseURL}/jquery/include-jquery.js</value>
+            <value>${webResources.baseURL}/jquery/plugins/jquery.masonry.min.js</value>
+            <value>${jsBaseURL}/ie6-image-listing.js</value>
+          </list>
+        </entry>
+      </map>
+    </property>
   </bean>
 
   <bean id="audioVideoListing.feedService" parent="collectionListing.atomService">

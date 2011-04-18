@@ -121,8 +121,8 @@ public class ACLEditCommandValidator implements Validator {
                 }
             }
             
-            // Make sure we get back to custom permissions when exact match,
-            // and encounter validation error on new group
+            // Make sure we get back to custom permissions when exact match for a shortcut,
+            // but encounter validation error on new group
             blankShortcuts(editCommand);
  
             rejectValues(VALIDATION_ERROR_GROUP_PREFIX, VALIDATION_ERROR_NOT_FOUND, this.notFound, errors);
@@ -187,8 +187,8 @@ public class ACLEditCommandValidator implements Validator {
                 editCommand.addUserNameEntry(uid);
             }
             
-            // Make sure we get back to custom permissions when exact match,
-            // and encounter validation error on new user
+            // Make sure we get back to custom permissions when exact match for a shortcut,
+            // but encounter validation error on new user
             blankShortcuts(editCommand);
   
             rejectValues(VALIDATION_ERROR_USER_PREFIX, VALIDATION_ERROR_NOT_FOUND, this.notFound, errors);

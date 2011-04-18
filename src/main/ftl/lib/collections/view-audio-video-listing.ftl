@@ -2,8 +2,7 @@
 <#import "/lib/view-utils.ftl" as viewutils />
 
 <#macro addScripts collection>
-
-    <#if cssURLs?exists>
+  <#if cssURLs?exists>
     <@addScriptURLs "css" "common" cssURLs />
     <@addScriptURLs "css" listingType cssURLs />
   </#if>

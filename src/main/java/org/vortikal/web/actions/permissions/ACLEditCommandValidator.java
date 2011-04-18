@@ -102,6 +102,7 @@ public class ACLEditCommandValidator implements Validator {
             }
             
             validateUserNames(editCommand, errors);
+            
         }
     }
 
@@ -120,6 +121,13 @@ public class ACLEditCommandValidator implements Validator {
                 }
             }
             
+            // Make sure we get back to custom permissions
+            String[][] shortcuts = editCommand.getShortcuts();
+            for (int i = 0; i < shortcuts.length; i++) {
+                shortcuts[i][1] = "";
+            }
+            editCommand.setShortcuts(shortcuts);
+ 
             rejectValues(VALIDATION_ERROR_GROUP_PREFIX, VALIDATION_ERROR_NOT_FOUND, this.notFound, errors);
             rejectValues(VALIDATION_ERROR_GROUP_PREFIX, VALIDATION_ERROR_ILLEGAL_BLACKLISTED, this.illegalBlacklisted, errors);
             rejectValues(VALIDATION_ERROR_GROUP_PREFIX, VALIDATION_ERROR_ILLEGAL, this.illegal, errors);
@@ -182,6 +190,13 @@ public class ACLEditCommandValidator implements Validator {
                 editCommand.addUserNameEntry(uid);
             }
             
+            // Make sure we get back to custom permissions
+            String[][] shortcuts = editCommand.getShortcuts();
+            for (int i = 0; i < shortcuts.length; i++) {
+                shortcuts[i][1] = "";
+            }
+            editCommand.setShortcuts(shortcuts);
+  
             rejectValues(VALIDATION_ERROR_USER_PREFIX, VALIDATION_ERROR_NOT_FOUND, this.notFound, errors);
             rejectValues(VALIDATION_ERROR_USER_PREFIX, VALIDATION_ERROR_ILLEGAL_BLACKLISTED, this.illegalBlacklisted, errors);
             rejectValues(VALIDATION_ERROR_USER_PREFIX, VALIDATION_ERROR_ILLEGAL, this.illegal, errors);

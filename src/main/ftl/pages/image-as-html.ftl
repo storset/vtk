@@ -42,10 +42,10 @@
   </div>
 </#if>
 
-<#if .vars["uioWebCopyrightURL." + lang]?exists>
-	<#assign url = .vars["uioWebCopyrightURL." + lang] />
-	<h2>${vrtx.getMsg("uioWebCopyrightLinkText","Om bruk av bildet")}</h2>
-	<a href="${url?html}">${vrtx.getMsg("","Opphavsrett på UiOs nettsider")}</a>
+<#assign url = .vars["uioWebCopyrightURL." + lang] />
+<#if url?exists>
+  <h2>${vrtx.getMsg("uioWebCopyrightLinkText","Om bruk av bildet")}</h2>
+  <a href="${url?html}">${vrtx.getMsg("","Opphavsrett på UiOs nettsider")}</a>
 </#if>
 
 </body>

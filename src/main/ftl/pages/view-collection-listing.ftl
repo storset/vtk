@@ -98,9 +98,9 @@
   <#assign additionalContent = vrtx.propValue(resource, "additionalContents") />
   <#if collection.resourceType != 'image-listing'
        && collection.resourceType != 'person-listing' && !isEventCalendarListing && !isBlogListing>
-    <div id="vrtx-content">
       <#if additionalContent?has_content>
-        <div id="vrtx-main-content">
+        <div id="vrtx-content">
+          <div id="vrtx-main-content">
       </#if>
   </#if>
   
@@ -209,15 +209,15 @@
      </div>
      <#if collection.resourceType != 'image-listing'
           && collection.resourceType != 'person-listing' && !isEventCalendarListing && !isBlogListing>
-         <#if additionalContent?has_content>
+       <#if additionalContent?has_content>
            </div><#-- end vrtx-main-content -->
            <div id="vrtx-additional-content">
              <div id="vrtx-related-content"> 
                <@vrtx.invokeComponentRefs additionalContent />
              </div>
            </div>
-         </#if>
-       </div><#-- end vrtx-content -->
+         </div><#-- end vrtx-content -->
+       </#if>
      </#if>
      <#if isEventCalendarListing>
        </div>

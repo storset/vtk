@@ -1,4 +1,5 @@
 <#import "/lib/vortikal.ftl" as vrtx />
+<#assign lang><@vrtx.requestLanguage/></#assign>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -36,9 +37,10 @@
   </div>
 </#if>
 
-<#if uioWebCopyrightURL?exists >
+<#if .vars["uioWebCopyrightURL." + lang]?exists>
+	<#assign url = .vars["uioWebCopyrightURL." + lang] />
 	<h2>${vrtx.getMsg("uioWebCopyrightLinkText","Om bruk av bildet")}</h2>
-	<a href="${uioWebCopyrightURL}?html">${vrtx.getMsg("","Opphavsrett på UiOs nettsider")}</a>
+	<a href="${url?html}">${vrtx.getMsg("","Opphavsrett på UiOs nettsider")}</a>
 </#if>
 
 </body>

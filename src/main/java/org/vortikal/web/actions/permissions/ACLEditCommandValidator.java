@@ -123,7 +123,7 @@ public class ACLEditCommandValidator implements Validator {
             
             // Make sure we get back to custom permissions when exact match for a shortcut,
             // but encounter validation error on new group
-            blankShortcuts(editCommand);
+            uncheckAllShortcuts(editCommand);
  
             rejectValues(VALIDATION_ERROR_GROUP_PREFIX, VALIDATION_ERROR_NOT_FOUND, this.notFound, errors);
             rejectValues(VALIDATION_ERROR_GROUP_PREFIX, VALIDATION_ERROR_ILLEGAL_BLACKLISTED, this.illegalBlacklisted, errors);
@@ -189,7 +189,7 @@ public class ACLEditCommandValidator implements Validator {
             
             // Make sure we get back to custom permissions when exact match for a shortcut,
             // but encounter validation error on new user
-            blankShortcuts(editCommand);
+            uncheckAllShortcuts(editCommand);
   
             rejectValues(VALIDATION_ERROR_USER_PREFIX, VALIDATION_ERROR_NOT_FOUND, this.notFound, errors);
             rejectValues(VALIDATION_ERROR_USER_PREFIX, VALIDATION_ERROR_ILLEGAL_BLACKLISTED, this.illegalBlacklisted, errors);
@@ -229,7 +229,7 @@ public class ACLEditCommandValidator implements Validator {
     }
     
     
-    private void blankShortcuts(ACLEditCommand editCommand) {
+    private void uncheckAllShortcuts(ACLEditCommand editCommand) {
         String[][] shortcuts = editCommand.getShortcuts();
         for (int i = 0; i < shortcuts.length; i++) {
             shortcuts[i][1] = "";

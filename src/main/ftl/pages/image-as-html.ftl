@@ -10,17 +10,22 @@
     </#list>
   </#if>
 </head>
-<body>
+<body id="vrtx-image-preview">
 
 <h1>${title}</h1>
 
-<#if src?exists> 
-  <img src="${src}" />
-</#if>
-
-<#assign photographer = vrtx.propValue(resource, "photographer") />
-<#if photographer?exists && photographer != "">
-	<div>Foto: ${photographer}</div>
+<#if src?exists>
+  <div class="vrtx-introduction-image">
+    <img src="${src}" alt="image" />
+    <#assign photographer = vrtx.propValue(resource, "photographer") />
+    <#if photographer?exists && photographer != "">
+	  <div class="vrtx-imagetext">
+        <span class="vrtx-photo">
+          <span class="vrtx-photo-prefix">${vrtx.getMsg("","Foto")}: </span>${photographer}
+        </span>
+      </div> 
+    </#if>
+  </div>
 </#if>
 
 <h2>${vrtx.getMsg("","Kilde")}</h2>

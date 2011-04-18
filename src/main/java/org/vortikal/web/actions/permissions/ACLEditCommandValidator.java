@@ -121,12 +121,9 @@ public class ACLEditCommandValidator implements Validator {
                 }
             }
             
-            // Make sure we get back to custom permissions
-            String[][] shortcuts = editCommand.getShortcuts();
-            for (int i = 0; i < shortcuts.length; i++) {
-                shortcuts[i][1] = "";
-            }
-            editCommand.setShortcuts(shortcuts);
+            // Make sure we get back to custom permissions when exact match,
+            // and encounter validation error on new group
+            blankShortcuts(editCommand);
  
             rejectValues(VALIDATION_ERROR_GROUP_PREFIX, VALIDATION_ERROR_NOT_FOUND, this.notFound, errors);
             rejectValues(VALIDATION_ERROR_GROUP_PREFIX, VALIDATION_ERROR_ILLEGAL_BLACKLISTED, this.illegalBlacklisted, errors);
@@ -190,12 +187,9 @@ public class ACLEditCommandValidator implements Validator {
                 editCommand.addUserNameEntry(uid);
             }
             
-            // Make sure we get back to custom permissions
-            String[][] shortcuts = editCommand.getShortcuts();
-            for (int i = 0; i < shortcuts.length; i++) {
-                shortcuts[i][1] = "";
-            }
-            editCommand.setShortcuts(shortcuts);
+            // Make sure we get back to custom permissions when exact match,
+            // and encounter validation error on new user
+            blankShortcuts(editCommand);
   
             rejectValues(VALIDATION_ERROR_USER_PREFIX, VALIDATION_ERROR_NOT_FOUND, this.notFound, errors);
             rejectValues(VALIDATION_ERROR_USER_PREFIX, VALIDATION_ERROR_ILLEGAL_BLACKLISTED, this.illegalBlacklisted, errors);
@@ -232,6 +226,15 @@ public class ACLEditCommandValidator implements Validator {
             return false;
         }
         return true;
+    }
+    
+    
+    private void blankShortcuts(ACLEditCommand editCommand) {
+        String[][] shortcuts = editCommand.getShortcuts();
+        for (int i = 0; i < shortcuts.length; i++) {
+            shortcuts[i][1] = "";
+        }
+        editCommand.setShortcuts(shortcuts);
     }
 
 

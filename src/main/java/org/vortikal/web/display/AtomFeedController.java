@@ -62,9 +62,11 @@ import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatter;
+import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.text.html.HtmlUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
+import org.vortikal.web.service.URL;
 
 public abstract class AtomFeedController implements Controller {
 
@@ -80,6 +82,8 @@ public abstract class AtomFeedController implements Controller {
     private PropertyTypeDefinition titlePropDef;
     private PropertyTypeDefinition lastModifiedPropDef;
     private PropertyTypeDefinition creationTimePropDef;
+
+    private HtmlUtil htmlUtil;
 
     public PropertyTypeDefinition getTitlePropDef() {
         return titlePropDef;
@@ -119,8 +123,7 @@ public abstract class AtomFeedController implements Controller {
     private String structuredPicturePropDefPointer;
     private String structuredMediaPropDefPointer;
 
-    protected abstract Feed createFeed(RequestContext requestContext)
-            throws Exception;
+    protected abstract Feed createFeed(RequestContext requestContext) throws Exception;
 
     protected abstract Property getPublishDate(PropertySet resource);
 
@@ -156,7 +159,7 @@ public abstract class AtomFeedController implements Controller {
             URIException, UnsupportedEncodingException {
 
         Feed feed = abdera.newFeed();
-        
+
         Property publishedDateProp = getPublishDate(collection);
         publishedDateProp = publishedDateProp == null ? collection.getProperty(this.creationTimePropDef)
                 : publishedDateProp;
@@ -213,8 +216,11 @@ public abstract class AtomFeedController implements Controller {
             if (type != null
                     && (type.equals("event") || type.equals("article") || type.equals("structured-article")
                             || type.equals("structured-event") || type.equals("structured-project"))) {
-                String summary = prepareSummary(result);
-                entry.setSummaryAsXhtml(summary);
+
+                HtmlFragment summary = prepareSummary(result);
+                if (summary != null) {
+                    entry.setSummaryAsXhtml(summary.getStringRepresentation());
+                }
                 // ...add description as plain text else
             } else {
                 String description = getDescription(result);
@@ -276,10 +282,8 @@ public abstract class AtomFeedController implements Controller {
         }
     }
 
-    protected String prepareSummary(PropertySet resource) {
-
+    protected HtmlFragment prepareSummary(PropertySet resource) throws Exception {
         StringBuilder sb = new StringBuilder();
-        String summary = getIntroduction(resource);
 
         Property picture = this.getPicture(resource);
         if (picture != null) {
@@ -293,14 +297,25 @@ public abstract class AtomFeedController implements Controller {
             }
             String imgPath = picture.getFormattedValue("thumbnail", Locale.getDefault());
             String imgAlt = getImageAlt(imgPath);
+
             sb.append("<img src=\"" + HtmlUtil.escapeHtmlString(imgPath) + "\" alt=\""
                     + HtmlUtil.escapeHtmlString(imgAlt) + "\"/>");
         }
 
-        if (summary != null) {
-            sb.append(summary);
+        String intro = getIntroduction(resource);
+        if (intro != null) {
+            sb.append(intro);
         }
-        return sb.toString();
+
+        URL baseURL = viewService.constructURL(resource.getURI());
+
+        if (sb.length() > 0) {
+            HtmlFragment summary = htmlUtil.linkResolveFilter(sb.toString(), baseURL, RequestContext
+                    .getRequestContext().getRequestURL());
+            return summary;
+        } else {
+            return null;
+        }
     }
 
     protected Property getMediaRef(PropertySet resource) {
@@ -517,6 +532,14 @@ public abstract class AtomFeedController implements Controller {
 
     public String getStructuredMediaPropDefPointer() {
         return structuredMediaPropDefPointer;
+    }
+
+    public void setHtmlUtil(HtmlUtil htmlUtil) {
+        this.htmlUtil = htmlUtil;
+    }
+
+    public HtmlUtil getHtmlUtil() {
+        return htmlUtil;
     }
 
 }

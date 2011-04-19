@@ -35,13 +35,13 @@ import java.util.List;
 
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.text.html.HtmlAttribute;
 import org.vortikal.text.html.HtmlContent;
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.text.html.HtmlPageParser;
+import org.vortikal.text.html.HtmlUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.service.URL;
@@ -49,6 +49,8 @@ import org.vortikal.web.service.URL;
 import com.sun.syndication.feed.synd.SyndEntry;
 
 public abstract class AbstractFeedComponent extends ViewRenderingDecoratorComponent {
+
+    private HtmlUtil htmlUtil;
 
     protected static final String PARAMETER_ITEM_PICTURE = "item-picture";
     protected static final String PARAMETER_ITEM_PICTURE_DESC = "Must be set to 'true' to show item picture";
@@ -60,12 +62,11 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
     protected static final String PARAMETER_FEED_ELEMENT_ORDER_DESC = "The order that the elementes are listed";
 
     private HtmlPageParser parser = new HtmlPageParser();
-    private HtmlPageFilter imgHtmlFilter;
-    private HtmlPageFilter noImgHtmlFilter;
     private List<String> defaultElementOrder;
-    
+
     /**
-     * Retrieves the resource corresponding to a local feed for authorization purposes
+     * Retrieves the resource corresponding to a local feed for authorization
+     * purposes
      */
     protected Resource retrieveLocalResource(URL feedURL) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -73,7 +74,6 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
         String token = requestContext.getSecurityToken();
         return repository.retrieve(token, feedURL.getPath(), true);
     }
-    
 
     boolean prameterHasValue(String param, String includeParamValue, DecoratorRequest request) {
         String itemDescriptionString = request.getStringParameter(param);
@@ -82,7 +82,7 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
         }
         return false;
     }
- 
+
     protected HtmlFragment filterEntry(SyndEntry entry, HtmlPageFilter filter) throws Exception {
         String htmlFragment = null;
         if (entry.getDescription() == null) {
@@ -96,77 +96,64 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
         return fragment;
     }
 
-    /**
-     * Filter: keeps a reference to the first <img> tag, possibly making 
-     * the 'src' attribute relative to the supplied base URL. 
-     * Invokes another filter to do content selection.
-     */
-    protected class Filter implements HtmlPageFilter {
-        private HtmlPageFilter filter;
-        private HtmlElement img = null;
-        private URL base;
-        private URL requestURL;
+    protected HtmlElement removeImage(HtmlFragment fragment) {
+        RemoveImageFilter filter = new RemoveImageFilter();
+        fragment.filter(filter);
+        return filter.getImageElement();
+    }
 
-        public Filter(HtmlPageFilter filter, URL base, URL requestURL) {
-            this.filter = filter;
-            this.base = base;
-            this.requestURL = requestURL;
-        }
+    private class RemoveImageFilter implements HtmlPageFilter {
 
-        public HtmlElement getImage() {
-            return this.img;
+        private HtmlElement image = null;
+
+        @Override
+        public boolean match(HtmlPage page) {
+            return true;
         }
 
         @Override
         public NodeResult filter(HtmlContent node) {
-            NodeResult result = this.filter.filter(node);
             if (node instanceof HtmlElement) {
+
                 HtmlElement elem = (HtmlElement) node;
-                if ("img".equalsIgnoreCase(elem.getName())) {
-                    if (this.img == null) {
-                        processURL(elem, "src");
-                        this.img = elem;
-                    }
-                    return NodeResult.skip;
-                } else if ("a".equalsIgnoreCase(elem.getName())) {
-                    processURL(elem, "href");
+                if (elem.getName().equals("img")) {
+                    if (image == null)
+                        image = elem;
+
+                    return NodeResult.exclude;
+
                 }
+
             }
-            return result;
+            return NodeResult.keep;
         }
 
-        @Override
-        public boolean match(HtmlPage page) {
-            return this.filter.match(page);
-        }
-
-        private void processURL(HtmlElement elem, String srcAttr) {
-            if (elem.getAttribute(srcAttr) == null) {
-                return;
-            }
-            HtmlAttribute attr = elem.getAttribute(srcAttr);
-            if (attr == null || !attr.hasValue()) {
-                return;
-            }
-            String val = attr.getValue();
-            try {
-                URL url = this.base.relativeURL(val);
-                attr.setValue(url.toString());
-                if (url.getHost().equals(this.requestURL.getHost())) {
-                    attr.setValue(url.getPathRepresentation());
-                }
-            } catch (Exception e) { }
+        public HtmlElement getImageElement() {
+            return image;
         }
     }
-    
-    
+
+    protected HtmlFragment getDescription(SyndEntry entry, URL baseURL, URL requestURL) {
+        if (entry.getDescription() == null) {
+            return null;
+        }
+        
+        String html = entry.getDescription().getValue();
+        if (html == null) {
+            return null;
+        }
+        
+        return getHtmlUtil().linkResolveFilter(html, baseURL, requestURL);
+    }
+
     protected List<String> getElementOrder(String param, DecoratorRequest request) {
         List<String> resultOrder = new ArrayList<String>();
 
         String[] order = null;
         try {
             order = request.getStringParameter(param).split(",");
-        } catch (Exception e) { }
+        } catch (Exception e) {
+        }
 
         if (order == null) {
             return getDefaultElementOrder();
@@ -184,27 +171,19 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
         return resultOrder;
     }
 
-    public void setImgHtmlFilter(HtmlPageFilter imgHtmlFilter) {
-        this.imgHtmlFilter = imgHtmlFilter;
-    }
-
-    public HtmlPageFilter getImgHtmlFilter() {
-        return imgHtmlFilter;
-    }
-
-    public void setNoImgHtmlFilter(HtmlPageFilter noImgHtmlFilter) {
-        this.noImgHtmlFilter = noImgHtmlFilter;
-    }
-
-    public HtmlPageFilter getNoImgHtmlFilter() {
-        return noImgHtmlFilter;
-    }
-
     public void setDefaultElementOrder(List<String> defaultElementOrder) {
         this.defaultElementOrder = defaultElementOrder;
     }
 
     public List<String> getDefaultElementOrder() {
         return defaultElementOrder;
+    }
+
+    public void setHtmlUtil(HtmlUtil htmlUtil) {
+        this.htmlUtil = htmlUtil;
+    }
+
+    public HtmlUtil getHtmlUtil() {
+        return htmlUtil;
     }
 }

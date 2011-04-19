@@ -40,7 +40,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlFragment;
+import org.vortikal.text.html.HtmlUtil;
 import org.vortikal.util.cache.ContentCache;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
@@ -55,6 +57,7 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
 
     private ContentCache<String, SyndFeed> cache;
     private LocalFeedFetcher localFeedFetcher;
+    private HtmlUtil htmlUtil;
 
 
     public void setContentCache(ContentCache<String, SyndFeed> cache) {
@@ -256,18 +259,23 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
             List<SyndEntry> tmpEntries = tmpFeed.getEntries();
 
             for (SyndEntry entry: tmpEntries) {
-                if (entry.getDescription() == null) {
-                    descriptionNoImage.put(entry.toString(), null);
+                
+                
+                HtmlFragment description = getDescription(entry, baseURL, requestURL);
+
+                if (description == null) {
+                    descriptionNoImage.put(entry.toString(),null);
                     continue;
                 }
-                Filter filter = new Filter(getNoImgHtmlFilter(), baseURL, requestURL);
-                HtmlFragment fragment = super.filterEntry(entry, filter);
-                descriptionNoImage.put(entry.toString(), fragment.getStringRepresentation());
-                if (filter.getImage() != null) {
-                    imgMap.put(entry.toString(), filter.getImage().getEnclosedContent());
-                } else {
-                    imgMap.put(entry.toString(), null);
-                }
+
+                HtmlElement image = removeImage(description);
+                if (image != null)
+                    imgMap.put(entry.toString(), image.getEnclosedContent());
+                
+                descriptionNoImage.put(entry.toString(),description.getStringRepresentation());
+                
+                
+
                 feedMapping.put(entry, tmpFeed);
             }
             entries.addAll(tmpEntries);
@@ -352,6 +360,14 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
         map.put(Parameter.INCLUDE_IF_EMPTY.getId(), Parameter.INCLUDE_IF_EMPTY.getDesc());
         map.put(Parameter.DISPLAY_CATEGORIES.getId(), Parameter.DISPLAY_CATEGORIES.getDesc());
         return map;
+    }
+
+    public void setHtmlUtil(HtmlUtil htmlUtil) {
+        this.htmlUtil = htmlUtil;
+    }
+
+    public HtmlUtil getHtmlUtil() {
+        return htmlUtil;
     }
 
     public class FeedMapping {

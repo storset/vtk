@@ -53,7 +53,9 @@
               <a class="vrtx-title summary" href="${researchGroupListing.urls[researchGroup.URI]?html}">${title?html}</a>
 			</div>
         	<#if intro?has_content && researchGroupListing.hasDisplayPropDef(intro.definition.name)>
-        	  <div class="description introduction">${intro.value}</div>
+        	  <div class="description introduction">
+        	  	<@vrtx.linkResolveFilter intro.value researchGroupListing.urls[researchGroup.URI] requestURL />
+        	  </div>
             </#if>
              <div class="vrtx-read-more">
               <a href="${researchGroupListing.urls[researchGroup.URI]?html}" class="more">

@@ -66,7 +66,9 @@
               <a class="vrtx-title summary" href="${masterListing.urls[master.URI]?html}">${title?html}</a>
 			</div>
         	<#if intro?has_content && masterListing.hasDisplayPropDef(intro.definition.name)>
-        	  <div class="description introduction">${intro.value}</div>
+        	  <div class="description introduction">
+        		  <@vrtx.linkResolveFilter intro.value masterListing.urls[master.URI] requestURL />
+        	  </div>
             </#if>
              <div class="vrtx-read-more">
               <a href="${masterListing.urls[master.URI]?html}" class="more">

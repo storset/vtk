@@ -321,8 +321,7 @@
     <property name="description" value="Inserts a feed (RSS, Atom) component on the page" />
     <property name="contentCache" ref="decorating.feedComponent.contentCache" />
     <property name="localFeedFetcher" ref="decorating.feedComponent.localFeedFetcher" />
-    <property name="imgHtmlFilter" ref="imgHtml.filter" />
-    <property name="noImgHtmlFilter" ref="noImgHtml.filter" />
+    <property name="htmlUtil" ref="htmlUtil" />
     <property name="defaultElementOrder">
       <list>
         <value>picture</value>
@@ -340,8 +339,7 @@
     <property name="description" value="Inserts an aggregated feed (RSS, Atom) component on the page" />
     <property name="contentCache" ref="decorating.feedComponent.contentCache" />
     <property name="localFeedFetcher" ref="decorating.feedComponent.localFeedFetcher" />
-    <property name="imgHtmlFilter" ref="imgHtml.filter" />
-    <property name="noImgHtmlFilter" ref="noImgHtml.filter" />
+    <property name="htmlUtil" ref="htmlUtil" />
     <property name="defaultElementOrder">
       <list>
         <value>picture</value>

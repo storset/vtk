@@ -79,7 +79,6 @@ public abstract class AbstractCollectionListingController implements ListingCont
 
     private SearchSorting searchSorting;
 
-
     /**
      * Container class for (resource, URL) for subcollections
      */
@@ -114,10 +113,10 @@ public abstract class AbstractCollectionListingController implements ListingCont
 
         Map<String, Object> model = new HashMap<String, Object>();
 
-        Map<String,Object> subfolders = getSubFolderMenu(collection, request);
-        
+        Map<String, Object> subfolders = getSubFolderMenu(collection, request);
+
         int size = (Integer) subfolders.get("size");
-        if(size > 0) {
+        if (size > 0) {
             model.put("subFolderMenu", subfolders);
         }
         model.put("collection", this.resourceManager.createResourceWrapper(collection));
@@ -147,8 +146,8 @@ public abstract class AbstractCollectionListingController implements ListingCont
 
                     String title = service.getName();
 
-                    org.springframework.web.servlet.support.RequestContext rc = 
-                        new org.springframework.web.servlet.support.RequestContext(request);
+                    org.springframework.web.servlet.support.RequestContext rc = new org.springframework.web.servlet.support.RequestContext(
+                            request);
                     title = rc.getMessage(service.getName(), new Object[] { collection.getTitle() }, service.getName());
 
                     m.put("title", title);
@@ -163,6 +162,7 @@ public abstract class AbstractCollectionListingController implements ListingCont
                 model.put("alternativeRepresentations", alt);
             }
         }
+        model.put("requestURL", requestContext.getRequestURL());
         return new ModelAndView(this.viewName, model);
     }
 
@@ -175,8 +175,8 @@ public abstract class AbstractCollectionListingController implements ListingCont
                 servletRequest);
 
         try {
-            String standardCollectionName = new MessageLocalizer("viewCollectionListing.subareas", "Subareas",
-                    null, springRequestContext).get(null).toString();
+            String standardCollectionName = new MessageLocalizer("viewCollectionListing.subareas", "Subareas", null,
+                    springRequestContext).get(null).toString();
             result.put("title", standardCollectionName);
         } catch (TemplateModelException e) {
             e.printStackTrace();

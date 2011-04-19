@@ -21,6 +21,8 @@
     <property name="introductionPropDefPointer" ref="introductionPropDefPointer" />
     <property name="picturePropDefPointer" ref="picturePropDefPointer" />
     <property name="mediaPropDefPointer" ref="mediaPropDefPointer" />
+    
+    <property name="htmlUtil" ref="htmlUtil" />
   </bean>
 
   <bean id="authorPropDefPointer" class="java.lang.String">

@@ -219,7 +219,9 @@
     </div>
 
     <#if intro?has_content && parent.hasDisplayPropDef(intro.definition.name)>
-      <div class="description introduction">${intro.value}</div>
+      <div class="description introduction">
+      		<@vrtx.linkResolveFilter intro.value parent.urls[event.URI] requestURL />
+      </div>
     </#if>
 
     <#local hasBody = vrtx.propValue(event, 'hasBodyContent') == 'true' />

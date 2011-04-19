@@ -33,8 +33,7 @@ package org.vortikal.text.html;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-
-
+import org.vortikal.web.service.URL;
 
 public class HtmlUtil {
 
@@ -62,8 +61,6 @@ public class HtmlUtil {
         }
     }
 
-
-    
     public String flatten(HtmlContent content) {
         StringBuilder sb = new StringBuilder();
         if (content instanceof HtmlElement) {
@@ -77,8 +74,21 @@ public class HtmlUtil {
         }
         return sb.toString();
     }
-    
-    
+
+    public HtmlFragment linkResolveFilter(String html, URL baseURL, URL requestURL) {
+        HtmlFragment fragment;
+        try {
+            fragment = this.htmlParser.parseFragment(html);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        LinkResolveFilter filter = new LinkResolveFilter(baseURL, requestURL);
+        fragment.filter(filter);
+
+        return fragment;
+    }
+
     public static String escapeHtmlString(String html) {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < html.length(); i++) {
@@ -106,8 +116,7 @@ public class HtmlUtil {
         }
         return result.toString();
     }
-    
-    
+
     public static String unescapeHtmlString(String html) {
         html = html.replaceAll("&amp;", "&");
         html = html.replaceAll("&quot;", "\"");
@@ -116,8 +125,7 @@ public class HtmlUtil {
         html = html.replaceAll("&gt;", ">");
         return html;
     }
-    
-    
+
     private StringBuilder processHtmlEntities(String content) {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < content.length(); i++) {
@@ -143,7 +151,7 @@ public class HtmlUtil {
                     } else {
                         result.append("&").append(entity).append(";");
                     }
-                } 
+                }
             } else {
                 result.append(ch);
             }
@@ -151,12 +159,12 @@ public class HtmlUtil {
         return result;
     }
 
-    
     private boolean validEntityCharAtIndex(String content, int i) {
-        if (i >= content.length()) return false;
+        if (i >= content.length())
+            return false;
         char c = content.charAt(i);
-        return i < content.length() && c != ';' 
-            && (('a' <= c && 'z' >= c) || ('A' <= c && 'Z' >= c) || ('0' <= c && '9' >= c));
+        return i < content.length() && c != ';'
+                && (('a' <= c && 'z' >= c) || ('A' <= c && 'Z' >= c) || ('0' <= c && '9' >= c));
     }
 
     public void setHtmlParser(HtmlPageParser htmlParser) {
@@ -165,6 +173,53 @@ public class HtmlUtil {
 
     public void setHtmlEntityMap(Map<String, String> htmlEntityMap) {
         this.htmlEntityMap = htmlEntityMap;
+    }
+
+    private class LinkResolveFilter implements HtmlPageFilter {
+        private URL base;
+        private URL requestURL;
+
+        public LinkResolveFilter(URL base, URL requestURL) {
+            this.base = base;
+            this.requestURL = requestURL;
+        }
+
+        @Override
+        public NodeResult filter(HtmlContent node) {
+            if (node instanceof HtmlElement) {
+                HtmlElement elem = (HtmlElement) node;
+                if ("img".equalsIgnoreCase(elem.getName())) {
+                    processURL(elem, "src");
+                } else if ("a".equalsIgnoreCase(elem.getName())) {
+                    processURL(elem, "href");
+                }
+            }
+            return NodeResult.keep;
+        }
+
+        private void processURL(HtmlElement elem, String srcAttr) {
+            if (elem.getAttribute(srcAttr) == null) {
+                return;
+            }
+            HtmlAttribute attr = elem.getAttribute(srcAttr);
+            if (attr == null || !attr.hasValue()) {
+                return;
+            }
+            String val = attr.getValue();
+            try {
+                URL url = this.base.relativeURL(val);
+                attr.setValue(url.toString());
+                if (url.getHost().equals(this.requestURL.getHost())) {
+                    attr.setValue(url.getPathRepresentation());
+                }
+            } catch (Exception e) {
+            }
+        }
+
+        @Override
+        public boolean match(HtmlPage page) {
+            return true;
+        }
     }
 
 }

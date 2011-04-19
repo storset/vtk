@@ -44,6 +44,7 @@
     parent="viewAsFeedHandler">
     <property name="searcher" ref="articleListingSearcher" />
     <property name="overridePublishDatePropDef" ref="publishedDatePropDef" />
+
   </bean>
 
   <bean id="articleListingSearcher" class="org.vortikal.web.display.collection.article.ArticleListingSearcher">

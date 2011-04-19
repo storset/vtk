@@ -257,6 +257,26 @@
   </#compress>
 </#macro>
 
+<#--
+ * linkResloveFilter
+ *
+ * Resolves relative links in an HTML string.
+ *
+ * @param value the HTML string
+ * @param baseURL the URL to the resource that is base for the url
+ * @param requestURL URL from the request
+ *
+-->
+<#macro linkResolveFilter value baseURL requestURL >
+  <#compress>
+    <#if VRTX_HTML_UTIL?exists>
+        ${VRTX_HTML_UTIL.linkResolveFilter(value, baseURL, requestURL).getStringRepresentation()}
+    <#else>
+      Undefined
+    </#if>
+  </#compress>
+</#macro>
+
 
 <#--
  * invokeComponentRefs

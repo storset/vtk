@@ -77,8 +77,9 @@
                  </div>
                </#if>
             </#if>
+            
             <#if intro?has_content && articles.hasDisplayPropDef(intro.definition.name)>
-              <div class="description introduction">${intro.value}</div>
+              <div class="description introduction"><@vrtx.linkResolveFilter intro.value articles.urls[r.URI]  requestURL /> </div>
             </#if>
             
             <#local hasBody = vrtx.propValue(r, 'hasBodyContent') == 'true' />

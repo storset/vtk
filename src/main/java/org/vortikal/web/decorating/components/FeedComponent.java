@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.util.cache.ContentCache;
 import org.vortikal.web.RequestContext;
@@ -216,30 +217,31 @@ public class FeedComponent extends AbstractFeedComponent {
         Map<String, String> descriptionNoImage = new HashMap<String, String>();
         Map<String, String> imgMap = new HashMap<String, String>();
 
-        
         @SuppressWarnings("unchecked")
         List<SyndEntry> entries = (List<SyndEntry>) feed.getEntries();
-        for (SyndEntry entry: entries) {
-            if (entry.getDescription() == null) {
+        for (SyndEntry entry : entries) {
+
+            HtmlFragment description = getDescription(entry, baseURL, requestURL);
+
+            if (description == null) {
+                descriptionNoImage.put(entry.toString(), null);
                 continue;
             }
-            Filter filter = new Filter(getNoImgHtmlFilter(), baseURL, requestURL);
-            HtmlFragment fragment = super.filterEntry(entry, filter);
-            descriptionNoImage.put(entry.toString(), fragment.getStringRepresentation());
-            if (filter.getImage() != null) {
-                imgMap.put(entry.toString(), filter.getImage().getEnclosedContent());
-            } else {
-                imgMap.put(entry.toString(), null);
+
+            HtmlElement image = removeImage(description);
+            if (image != null) {
+                imgMap.put(entry.toString(), image.getEnclosedContent());
             }
+
+            descriptionNoImage.put(entry.toString(), description.getStringRepresentation());
         }
         model.put("descriptionNoImage", descriptionNoImage);
         model.put("imageMap", imgMap);
-        
+
         model.put("feed", feed);
         model.put("conf", conf);
     }
-    
-    
+
     protected String getDescriptionInternal() {
         return "Inserts a feed (RSS, Atom) component on the page";
     }
@@ -270,5 +272,5 @@ public class FeedComponent extends AbstractFeedComponent {
     public void setLocalFeedFetcher(LocalFeedFetcher localFeedFetcher) {
         this.localFeedFetcher = localFeedFetcher;
     }
-   
+
 }

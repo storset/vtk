@@ -12,7 +12,7 @@
 <#macro mediaPlayer >
 
 <#assign constructor = "freemarker.template.utility.ObjectConstructor"?new() />
-<#assign dateStr = constructor("java.util.Date")?string("yyyymmddhhmmss") />
+<#assign dateStr = constructor("java.util.Date").getTime()?string?replace(",","") />
 
 <#if media?exists && contentType?exists >
 <script type="text/javascript" src="/vrtx/__vrtx/static-resources/flash/StrobeMediaPlayback_1.0-full/10.1/scripts/swfobject.js"></script>

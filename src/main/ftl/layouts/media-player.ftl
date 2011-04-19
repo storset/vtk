@@ -11,6 +11,9 @@
 
 <#macro mediaPlayer >
 
+<#assign constructor = "freemarker.template.utility.ObjectConstructor"?new() />
+<#assign dateStr = constructor("java.util.Date")?string("yyyymmddhhmmss") />
+
 <#if media?exists && contentType?exists >
 <script type="text/javascript" src="/vrtx/__vrtx/static-resources/flash/StrobeMediaPlayback_1.0-full/10.1/scripts/swfobject.js"></script>
   <div class="vrtx-media-ref">
@@ -56,7 +59,7 @@
 		</OBJECT>
 		
 	<#elseif contentType == "video/x-flv"  || contentType == "video/mp4">
-		<div id="testalternativ">
+		<div id="testalternativ-${dateStr}">
 		<a class="vrtx-media" href="${media?html}"><img src="/vrtx/__vrtx/static-resources/themes/default/icons/video-icon.png" width="151" height="82" alt="<@vrtx.msg code="article.media-file" />"/></a>
 		</div>
 		<script type="text/javascript">

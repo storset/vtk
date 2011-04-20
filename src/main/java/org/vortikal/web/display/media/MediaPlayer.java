@@ -82,6 +82,7 @@ public class MediaPlayer {
             model.put("contentType", getExtentionToMimetype().get(extension));
         }
         model.put("extension", extension);
+        model.put("nanoTime", System.nanoTime());
 
         createLocalUrlToMediaFile(resourceReferance, model);
     }
@@ -111,7 +112,7 @@ public class MediaPlayer {
         } else {
             model.put("contentType", extentionToMimetype.get(getExtension(resourceReferance)));
         }
-
+        model.put("nanoTime", System.nanoTime());
         createLocalUrlToMediaFile(resourceReferance, model);
     }
 

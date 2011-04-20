@@ -11,10 +11,10 @@
 
 <#macro mediaPlayer >
 
-<#assign constructor = "freemarker.template.utility.ObjectConstructor"?new() />
-<#assign dateStr = constructor("java.util.Date").getTime()?string?replace(",","") />
-
 <#if media?exists && contentType?exists >
+
+<#assign dateStr = nanoTime?c />
+
 <script type="text/javascript">
 if (typeof swfobject == 'undefined') {
   document.write("<scr" + "ipt src='/vrtx/__vrtx/static-resources/flash/StrobeMediaPlayback_1.0-full/10.1/scripts/swfobject.js' type='text/javascript'><\/script>");

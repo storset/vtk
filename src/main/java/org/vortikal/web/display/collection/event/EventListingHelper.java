@@ -33,6 +33,7 @@ package org.vortikal.web.display.collection.event;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -52,8 +53,6 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.web.display.listing.ListingPager;
 import org.vortikal.web.servlet.ResourceAwareLocaleResolver;
-
-import com.ibm.icu.util.Calendar;
 
 public final class EventListingHelper implements InitializingBean {
 
@@ -178,6 +177,16 @@ public final class EventListingHelper implements InitializingBean {
             return this.dateValueFormatter.valueToString(new Value(date, false), format, locale);
         }
         return String.valueOf(requestedCal.get(Calendar.YEAR));
+    }
+    
+    public Calendar getCurentMonth() {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal;
     }
 
     @Required

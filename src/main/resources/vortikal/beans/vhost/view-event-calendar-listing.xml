@@ -203,7 +203,7 @@
 
   <bean id="eventCalenderContentProvider" class="org.vortikal.web.referencedata.provider.EventCalenderContentProvider">
     <property name="helper" ref="eventListingHelper" />
-    <property name="searcher" ref="eventListing.eventListingSearcher" />
+    <property name="currentMonthSearchComponent" ref="${override.listing.prefix}eventListing.currentMonthSearchComponent" />
     <property name="displayTypePropDef" ref="eventListing.displayTypePropDef" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="startDatePropDefPointer" ref="${override.listing.prefix}eventListing.startDatePropDefPointer" />

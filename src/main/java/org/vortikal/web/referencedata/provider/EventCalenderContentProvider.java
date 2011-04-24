@@ -52,16 +52,16 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.collection.event.EventListingHelper;
 import org.vortikal.web.display.collection.event.EventListingHelper.SpecificDateSearchType;
-import org.vortikal.web.display.collection.event.EventListingSearcher;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.search.Listing;
+import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 public class EventCalenderContentProvider implements ReferenceDataProvider {
 
     private EventListingHelper helper;
-    private EventListingSearcher searcher;
+    private SearchComponent currentMonthSearchComponent;
     private ResourceTypeTree resourceTypeTree;
     private PropertyTypeDefinition displayTypePropDef;
     private String startDatePropDefPointer;
@@ -70,7 +70,7 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
     private Service viewAllPreviousService;
 
     @Override
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings( { "unchecked", "rawtypes" })
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
 
         SpecificDateSearchType searchType = this.helper.getSpecificDateSearchType(request);
@@ -90,17 +90,17 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
 
         URL viewAllUpcomingURL = this.viewAllUpcomingService.constructURL(resource);
         model.put("viewAllUpcomingURL", viewAllUpcomingURL);
-        model.put("viewAllUpcomingTitle",
-                this.helper.getEventTypeTitle(request, resource, "eventListing.viewAllUpcoming", false));
+        model.put("viewAllUpcomingTitle", this.helper.getEventTypeTitle(request, resource,
+                "eventListing.viewAllUpcoming", false));
 
         URL viewAllPreviousURL = this.viewAllPreviousService.constructURL(resource);
         model.put("viewAllPreviousURL", viewAllPreviousURL);
-        model.put("viewAllPreviousTitle",
-                this.helper.getEventTypeTitle(request, resource, "eventListing.viewAllPrevious", false));
+        model.put("viewAllPreviousTitle", this.helper.getEventTypeTitle(request, resource,
+                "eventListing.viewAllPrevious", false));
 
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings( { "unchecked", "rawtypes" })
     private void setAllowedDates(HttpServletRequest request, Resource resource, Map model) throws Exception {
         Property displayTypeProp = resource.getProperty(this.displayTypePropDef);
         if (displayTypeProp != null && "calendar".equals(displayTypeProp.getStringValue())) {
@@ -110,12 +110,7 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
             PropertyTypeDefinition endDatePropDef = this.resourceTypeTree
                     .getPropertyDefinitionByPointer(this.endDatePropDefPointer);
 
-            Calendar cal = Calendar.getInstance();
-            cal.set(Calendar.DAY_OF_MONTH, 1);
-            cal.set(Calendar.HOUR_OF_DAY, 0);
-            cal.set(Calendar.MINUTE, 0);
-            cal.set(Calendar.SECOND, 0);
-            cal.set(Calendar.MILLISECOND, 0);
+            Calendar cal = this.helper.getCurentMonth();
 
             String dateString = request.getParameter(EventListingHelper.REQUEST_PARAMETER_DATE);
             if (dateString != null) {
@@ -130,7 +125,7 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
 
             Set<String> eventDatesList = new HashSet<String>();
             SimpleDateFormat eventDateFormat = new SimpleDateFormat("yyyy-M-d");
-            Listing plannedEvents = this.searcher.searchSpecificDate(request, resource, 500, 1);
+            Listing plannedEvents = this.currentMonthSearchComponent.execute(request, resource, 1, 500, 0);
             for (PropertySet propSet : plannedEvents.getFiles()) {
                 Property startDateProp = propSet.getProperty(startDatePropDef);
                 Date eventStart = startDateProp != null ? startDateProp.getDateValue() : cal.getTime();
@@ -165,10 +160,10 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
 
     @SuppressWarnings("unchecked")
     private void setCalendarTitles(HttpServletRequest request, Resource resource, Map model) {
-        model.put("dayHasPlannedEventsTitle",
-                this.helper.getEventTypeTitle(request, resource, "eventListing.calendar.dayHasPlannedEvents", false));
-        model.put("dayHasNoPlannedEventsTitle",
-                this.helper.getEventTypeTitle(request, resource, "eventListing.calendar.dayHasNoPlannedEvents", false));
+        model.put("dayHasPlannedEventsTitle", this.helper.getEventTypeTitle(request, resource,
+                "eventListing.calendar.dayHasPlannedEvents", false));
+        model.put("dayHasNoPlannedEventsTitle", this.helper.getEventTypeTitle(request, resource,
+                "eventListing.calendar.dayHasNoPlannedEvents", false));
     }
 
     private String getEventDatesAsArrayString(Set<String> eventDates) {
@@ -192,8 +187,8 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
     }
 
     @Required
-    public void setSearcher(EventListingSearcher searcher) {
-        this.searcher = searcher;
+    public void setCurrentMonthSearchComponent(SearchComponent currentMonthSearchComponent) {
+        this.currentMonthSearchComponent = currentMonthSearchComponent;
     }
 
     @Required

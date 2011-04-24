@@ -76,6 +76,10 @@ public class EventListingSearcher {
             for (int i = 0; i <= this.daysAhead; i++) {
                 Calendar cal = Calendar.getInstance();
                 cal.add(Calendar.DAY_OF_MONTH, i);
+                cal.set(Calendar.HOUR_OF_DAY, 0);
+                cal.set(Calendar.MINUTE, 0);
+                cal.set(Calendar.SECOND, 0);
+                cal.set(Calendar.MILLISECOND, 0);
                 Listing subListing = new Listing(result.getResource(), result.getTitle(), result.getName(), result
                         .getOffset());
                 List<PropertySet> events = new ArrayList<PropertySet>();
@@ -100,12 +104,20 @@ public class EventListingSearcher {
     private boolean isWithinDaysAhead(Date time, PropertySet ps) {
         Property sdProp = this.getProperty(ps, "start-date");
         Date sd = sdProp.getDateValue();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(time);
+        cal.add(Calendar.DAY_OF_MONTH, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        boolean isToday = sd.equals(time) || (sd.after(time) && sd.before(cal.getTime()));
         Property edProp = this.getProperty(ps, "end-date");
         if (edProp == null) {
-            return sd.equals(time);
+            return isToday;
         }
         Date ed = edProp.getDateValue();
-        return sd.equals(time) || (sd.before(time) && (ed.after(time) || ed.equals(time)));
+        return isToday || (sd.before(time) && (ed.after(time) || ed.equals(time)));
     }
 
     private Property getProperty(PropertySet ps, String key) {

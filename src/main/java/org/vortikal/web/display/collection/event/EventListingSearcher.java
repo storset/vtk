@@ -59,12 +59,12 @@ public class EventListingSearcher {
 
     public Listing searchUpcoming(HttpServletRequest request, Resource collection, int upcomingEventPage,
             int pageLimit, int offset) throws Exception {
-        return this.upcomingEventsSearch.execute(request, collection, upcomingEventPage, pageLimit, 0);
+        return this.upcomingEventsSearch.execute(request, collection, upcomingEventPage, pageLimit, offset);
     }
 
     public Listing searchPrevious(HttpServletRequest request, Resource collection, int upcomingEventPage,
             int pageLimit, int offset) throws Exception {
-        return this.previousEventsSearch.execute(request, collection, upcomingEventPage, pageLimit, 0);
+        return this.previousEventsSearch.execute(request, collection, upcomingEventPage, pageLimit, offset);
     }
 
     public List<GroupedEvents> searchGroupedByDayEvents(HttpServletRequest request, Resource collection)

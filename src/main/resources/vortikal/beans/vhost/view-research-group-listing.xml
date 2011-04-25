@@ -29,12 +29,16 @@
     <property name="name" value="researchGroupListing.defaultListing" />
     <property name="queryBuilders">
       <list>
-        <ref bean="collection.listingUriQueryBuilder" />
+        <ref bean="researchGroupListing.listingUriQueryBuilder" />
         <bean parent="queryStringParser">
           <property name="queryString" value="type IN research-group" />
         </bean>
       </list>
     </property>
+  </bean>
+
+  <bean id="researchGroupListing.listingUriQueryBuilder" parent="collection.listingUriQueryBuilder">
+    <property name="defaultRecursive" value="true" />
   </bean>
 
   <bean id="researchGroupListing.viewResolver" parent="decoratorViewResolver">

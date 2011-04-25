@@ -49,7 +49,14 @@ public class CurrentMonthQueryStringProcessor extends ParameterizedQueryStringPr
     public Query build(Resource base, HttpServletRequest request) {
 
         String query = this.queryString;
+        Date date = this.helper.getSpecificSearchDate(request);
         Calendar currentMonth = this.helper.getCurentMonth();
+        if (date != null) {
+            currentMonth.setTime(date);
+            currentMonth.set(Calendar.DAY_OF_MONTH, 1);
+            currentMonth.set(Calendar.HOUR_OF_DAY, 0);
+            currentMonth.set(Calendar.MINUTE, 0);
+        }
         Date start = currentMonth.getTime();
         currentMonth.add(Calendar.MONTH, 1);
         Date end = currentMonth.getTime();

@@ -70,7 +70,7 @@
       <list>
         <ref bean="projectListing.listingUriQueryBuilder" />
         <bean parent="queryStringParser">
-          <property name="queryString" value="(type IN structured-project) AND (resource:status-ongoing = false" />
+          <property name="queryString" value="(type IN structured-project) AND (resource:status-ongoing = false)" />
         </bean>
       </list>
     </property>

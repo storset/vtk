@@ -212,6 +212,7 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
                     }
                     if (matchedACEs == totalACEs && matchedACEs == numberOfShortcutACEs) {
                         shortcutMatch = shortcut;
+                        break;
                     }
                 }
             }

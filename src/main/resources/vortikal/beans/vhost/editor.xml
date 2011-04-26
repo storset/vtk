@@ -134,6 +134,18 @@
     </property>
     <property name="handler" ref="editor.blogListingEditHandler" />
   </bean>
+  
+  <bean id="editor.audioVideoListingEditService" parent="editor.abstractEditService">
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsAudioVideoListing" />
+      </list>
+    </property>
+    <property name="handler" ref="editor.audioVideoListingEditHandler" />
+  </bean>
+  
+  
+ 
 
   <bean id="editor.eventListingEditService" parent="editor.abstractEditService">
     <property name="assertions">
@@ -597,6 +609,8 @@
           <list>
             <ref bean="userTitlePropDef" />
             <ref bean="introductionPropDef" />
+            <ref bean="introductionImagePropDef" />
+            <ref bean="introductionImageCaptionPropDef" />
             <ref bean="navigationTitlePropDef" />
             <ref bean="importancePropDef" />
             <ref bean="hiddenPropDef" />

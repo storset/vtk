@@ -215,7 +215,11 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                     Principal principal = new PrincipalImpl(result.getUID(), Principal.Type.USER);
                     boolean valid = this.principalManager.validatePrincipal(principal);
                     if (!valid) {
-                        throw new AuthenticationException("Invalid principal: " + principal);
+                        logger.warn("Unknown principal: " + principal
+                                + " returned by authentication handler " + handler + ". " 
+                                + "Not setting security context.");
+                        
+                        throw new IllegalStateException("Invalid principal: " + principal);
                     }
                     
                     if (logger.isDebugEnabled()) {

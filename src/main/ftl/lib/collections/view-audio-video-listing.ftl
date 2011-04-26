@@ -67,11 +67,11 @@
          <div class="vrtx-image-container">
            <#if contentType == "audio" || contentType == "audio/mpeg" || contentType == "audio/mp3">
              <a href="${collectionListing.urls[r.URI]?html}">
-               <img src="/vrtx/__vrtx/static-resources/themes/default/icons/audio-icon.png" />
+               <img src="/vrtx/__vrtx/static-resources/themes/default/icons/audio-icon.png" alt="audio icon" />
              </a>
            <#elseif contentType == "video/x-flv"  || contentType == "video/mp4" || contentType == "video/quicktime">
              <a href="${collectionListing.urls[r.URI]?html}">
-               <img src="/vrtx/__vrtx/static-resources/themes/default/icons/video-icon.png" />
+               <img src="/vrtx/__vrtx/static-resources/themes/default/icons/video-icon.png" alt="video icon" />
              </a>
            </#if>
          </div>

@@ -131,24 +131,18 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
                 Date eventStart = startDateProp != null ? startDateProp.getDateValue() : cal.getTime();
                 Property endDateProp = propSet.getProperty(endDatePropDef);
                 Date eventEnd = endDateProp != null ? endDateProp.getDateValue() : eventStart;
-                Calendar eventStartCal = Calendar.getInstance();
-                eventStartCal.setTime(eventStart);
+                Calendar eventStartCal = this.getDayOfMonth(eventStart);
                 if (eventStartCal.get(Calendar.MONTH) < cal.get(Calendar.MONTH)) {
                     eventStartCal.setTime(cal.getTime());
                 }
-                Calendar eventEndCal = Calendar.getInstance();
-                eventEndCal.setTime(eventEnd);
+                Calendar eventEndCal = this.getDayOfMonth(eventEnd);
                 if (eventEndCal.get(Calendar.MONTH) > cal.get(Calendar.MONTH)) {
                     eventEndCal.set(Calendar.DAY_OF_MONTH, eventEndCal.getActualMaximum(Calendar.DAY_OF_MONTH));
                 }
 
-                if (eventStartCal.equals(eventEndCal)) {
+                while (eventStartCal.before(eventEndCal) || eventStartCal.equals(eventEndCal)) {
                     eventDatesList.add(eventDateFormat.format(eventStartCal.getTime()));
-                } else {
-                    while (eventStartCal.before(eventEndCal)) {
-                        eventDatesList.add(eventDateFormat.format(eventStartCal.getTime()));
-                        eventStartCal.add(Calendar.DAY_OF_MONTH, 1);
-                    }
+                    eventStartCal.add(Calendar.DAY_OF_MONTH, 1);
                 }
 
             }
@@ -156,6 +150,16 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
             model.put("allowedDates", eventDates);
 
         }
+    }
+
+    private Calendar getDayOfMonth(Date eventStart) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(eventStart);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal;
     }
 
     @SuppressWarnings("unchecked")

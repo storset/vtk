@@ -326,7 +326,7 @@ public class ACLEditController extends SimpleFormController {
         if (this.permissionShortcutsConfig.get(updatedShortcut) != null) {
 
             // First: remove all ACEs on privilege
-            acl = acl.emptyPrivilige(this.privilege);
+            acl = acl.clear(this.privilege);
             
             // Then: add ACEs from updated shortcut
             List<String> shortcutACEs = this.permissionShortcutsConfig.get(updatedShortcut);
@@ -338,7 +338,7 @@ public class ACLEditController extends SimpleFormController {
         } else {
           // If not a shortcut and no groups / users in admin then remove groups / users (typical when comoing from shortcuts)
           if (editCommand.getGroups().size() == 0 && editCommand.getUsers().size() == 0) {
-            acl = acl.emptyPrivilige(this.privilege); 
+            acl = acl.clear(this.privilege); 
           }
         }
 

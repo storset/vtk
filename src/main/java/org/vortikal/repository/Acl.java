@@ -175,18 +175,13 @@ public final class Acl {
     }
     
     
-    public Acl emptyPrivilige(Privilege privilege) {
+    public Acl clear(Privilege privilege) {
         if (privilege == null) {
             throw new IllegalArgumentException("Privilege is NULL");
         }
-            
+
         Map<Privilege, Set<Principal>> newAcl = copyActionSets(this.actionSets);
-        
-        Set<Principal> actionEntry = newAcl.get(privilege);
-        if (actionEntry != null) {
-            actionEntry.clear();
-            newAcl.remove(privilege);
-        }
+        newAcl.remove(privilege);
         return new Acl(newAcl);
     }
 
@@ -201,7 +196,9 @@ public final class Acl {
             
         Set<Principal> actionEntry = this.actionSets.get(privilege);
         
-        if (actionEntry == null) return false;
+        if (actionEntry == null) {
+            return false;
+        }
         return actionEntry.contains(principal);
     }
 

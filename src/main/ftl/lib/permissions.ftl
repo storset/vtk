@@ -109,8 +109,9 @@
   <#assign pseudoPrincipals = aclInfo.privilegedPseudoPrincipals[privilegeName] />
   <#assign users = aclInfo.privilegedUsers[privilegeName] />
   <#assign groups = aclInfo.privilegedGroups[privilegeName] />
+  <#assign shortcut = aclInfo.shortcuts[privilegeName] />
 
-  <#if (pseudoPrincipals?size > 0 || users?size > 0 || groups?size > 0)>
+  <#if (pseudoPrincipals?size > 0 || users?size > 0 || groups?size > 0) && shortcut == "">
     <#list pseudoPrincipals as pseudoPrincipal>
       <#compress>
         <@vrtx.msg code="pseudoPrincipal.${pseudoPrincipal.name}" default="${pseudoPrincipal.name}" /><#t/>
@@ -122,13 +123,15 @@
       <#if user_index &lt; users?size - 1 || groups?size &gt; 0>,<#t/></#if>
     </#list>
     <#list groups as group>
-      <#-- TODO: how to match exact shortcut here and display it's corresponding i18n -->
-      <#local lkey = "permissions.shortcut.group" + group.name />
-      <#compress><@vrtx.msg code=lkey default="${group.name}" /></#compress><#t/>
+      <#compress>${group.name}</#compress><#t/>
       <#if group_index &lt; groups?size - 1>,<#t/></#if>
     </#list>
   <#else>
-    <@vrtx.msg code="permissions.not.assigned" default="Not assigned" /> <#t/>
+    <#if shortcut != "">
+      <@vrtx.msg code="permissions.shortcut.${shortcut}" default="${shortcut}" /> <#t/>
+    <#else>
+      <@vrtx.msg code="permissions.not.assigned" default="Not assigned" /> <#t/>
+    </#if>
   </#if>
 </#macro>
 

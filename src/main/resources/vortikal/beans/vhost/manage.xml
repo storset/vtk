@@ -1744,6 +1744,8 @@
         <entry key-ref="PRIVILEGE_READ_PROCESSED" value-ref="editReadProcessedPermissionsService" />
       </map>
     </property>
+    <property name="permissionShortcuts" ref="permissionShortcuts" />
+    <property name="permissionShortcutsConfig" ref="permissionShortcutsProvider.config" />
   </bean>
 
   <bean id="manageCollectionlistingProvider" class="org.vortikal.web.referencedata.provider.CollectionListingProvider">

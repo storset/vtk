@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Privilege;
@@ -88,6 +89,12 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
     private Service aclInheritanceService = null;
     
     private Map<Privilege, Service> aclEditServices;
+    
+    private Map<Privilege, List<String>> permissionShortcuts;
+    private Map<String, List<String>> permissionShortcutsConfig;
+    
+    private static final String GROUP_PREFIX = "group:";
+    private static final String USER_PREFIX = "user:";
     
     private String modelName = "aclInfo";
     
@@ -154,34 +161,82 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
                 editURLs.put("inheritance", url);
             }
         } catch (Exception e) { }
-        
 
         Map<String, Privilege> privileges = new HashMap<String, Privilege>();
         Map<String, Principal[]> privilegedUsers = new HashMap<String, Principal[]>();
         Map<String, Principal[]> privilegedGroups = new HashMap<String, Principal[]>();
-        Map<String, List<Principal>> privilegedPseudoPrincipals = new HashMap<String, List<Principal>>();
+        Map<String, List<Principal>> privilegedPseudoPrincipals = new HashMap<String, List<Principal>>(); 
+        Map<String, String> viewShortcuts = new HashMap<String, String>();
 
         for (Privilege action: Privilege.values()) {
             String actionName = action.getName();
+
+            Principal[] groupPrincipals = acl.listPrivilegedGroups(action);
+            Principal[] userPrincipals = acl.listPrivilegedUsers(action);
+            Principal[] pseudoUserPrincipals = acl.listPrivilegedPseudoPrincipals(action);
+            
+            List<String> shortcuts = permissionShortcuts.get(action);
+            String shortcutMatch = ""; 
+            
+            // TODO: refactor with some of code in ACLEditController
+            if (shortcuts != null) {
+                for (String shortcut : shortcuts) {
+                    List<String> shortcutACEs = permissionShortcutsConfig.get(shortcut);
+                    int numberOfShortcutACEs = shortcutACEs.size();
+                    int matchedACEs = 0;
+                    int totalACEs = groupPrincipals.length + userPrincipals.length + pseudoUserPrincipals.length;
+
+                    for (String aceWithPrefix : shortcutACEs) {
+                        for (Principal group : groupPrincipals) {
+                            if ((GROUP_PREFIX + group.getName()).equals(aceWithPrefix)) {
+                                matchedACEs++;
+                            }
+                        }
+                        for (Principal user : userPrincipals) {
+                            if ((USER_PREFIX + user.getName()).equals(aceWithPrefix)) {
+                                matchedACEs++;
+                            }
+                        }
+                        for (Principal pseudoUser : pseudoUserPrincipals) {
+                            if ((USER_PREFIX + pseudoUser.getName()).equals(aceWithPrefix)) {
+                                matchedACEs++;
+                            }
+                        }
+                    }
+                    if (matchedACEs == totalACEs && matchedACEs == numberOfShortcutACEs) {
+                        shortcutMatch = shortcut;
+                    }
+                }
+            }
+            
+            privilegedGroups.put(actionName, groupPrincipals);
+            privilegedUsers.put(actionName, userPrincipals);
+            privilegedPseudoPrincipals.put(actionName, 
+                      new ArrayList<Principal>(Arrays.asList(pseudoUserPrincipals)));
+            viewShortcuts.put(actionName, shortcutMatch);
             privileges.put(actionName, action);
-
-
-            privilegedUsers.put(actionName, acl.listPrivilegedUsers(action));
-            privilegedGroups.put(actionName, acl.listPrivilegedGroups(action));
-
-            List<Principal> ppps = 
-                new ArrayList<Principal>(Arrays.asList(acl.listPrivilegedPseudoPrincipals(action)));
-            privilegedPseudoPrincipals.put(actionName, ppps);
         }
 
         aclModel.put("aclEditURLs", editURLs);
         aclModel.put("privileges", privileges);
         aclModel.put("inherited", new Boolean(resource.isInheritedAcl()));
-        aclModel.put("privilegedPseudoPrincipals", privilegedPseudoPrincipals);
-        aclModel.put("privilegedUsers", privilegedUsers);
         aclModel.put("privilegedGroups", privilegedGroups);
+        aclModel.put("privilegedUsers", privilegedUsers);
+        aclModel.put("privilegedPseudoPrincipals", privilegedPseudoPrincipals);
+        aclModel.put("shortcuts", viewShortcuts);
 
         model.put("aclInfo", aclModel);
+    }
+    
+    @Required
+    public void setPermissionShortcuts(Map<Privilege, List<String>> permissionShortcuts) {
+        this.permissionShortcuts = permissionShortcuts;
+    }
+
+
+    @Required
+    public void setPermissionShortcutsConfig(Map<String, List<String>> permissionShortcutsConfig) {
+        this.permissionShortcutsConfig = permissionShortcutsConfig;
     }
 
 }

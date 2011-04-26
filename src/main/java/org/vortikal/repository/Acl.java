@@ -173,6 +173,22 @@ public final class Acl {
         }
         return new Acl(newAcl);
     }
+    
+    
+    public Acl emptyPrivilige(Privilege privilege) {
+        if (privilege == null) {
+            throw new IllegalArgumentException("Privilege is NULL");
+        }
+            
+        Map<Privilege, Set<Principal>> newAcl = copyActionSets(this.actionSets);
+        
+        Set<Principal> actionEntry = newAcl.get(privilege);
+        if (actionEntry != null) {
+            actionEntry.clear();
+            newAcl.remove(privilege);
+        }
+        return new Acl(newAcl);
+    }
 
 
     public boolean containsEntry(Privilege privilege, Principal principal) throws IllegalArgumentException {
@@ -256,7 +272,6 @@ public final class Acl {
         
         return actions.toArray(new Privilege[actions.size()]);
     }
-
 
     
     public boolean equals(Object o) {

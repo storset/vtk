@@ -292,9 +292,10 @@ public class ACLEditController extends SimpleFormController {
             
             // If not custom is choosen
             if(!isCustomPermissions) {
-                // If matches are exactly the number of groups and users set and the size of shortcut
+                // If matches are exactly the number of authorized groups / users and size of shortcut
                 if (matchedACEs == totalACEs && matchedACEs == numberOfShortcutACEs) {
                     checkedShortcuts[i][1] = "checked";
+                    
                     // Remove ACEs for shortcut on view
                     for (String aceWithPrefix : shortcutACEs) {
                         Iterator<Principal> groups = authorizedGroups.iterator();
@@ -341,9 +342,8 @@ public class ACLEditController extends SimpleFormController {
         if (this.permissionShortcutsConfig.get(updatedShortcut) != null) {
 
             // First: remove all ACEs on privilege
-            acl = removeFromAcl(acl, editCommand.getGroups());
-            acl = removeFromAcl(acl, editCommand.getUsers());
-
+            acl = acl.emptyPrivilige(this.privilege);
+            
             // Then: add ACEs from updated shortcut
             List<String> shortcutACEs = this.permissionShortcutsConfig.get(updatedShortcut);
             for (String aceWithPrefix : shortcutACEs) {
@@ -351,6 +351,11 @@ public class ACLEditController extends SimpleFormController {
                 Type type = unformatGroupOrUserAndSetType(aceWithPrefix, groupOrUserUnformatted);
                 acl = addToAcl(acl, groupOrUserUnformatted, type);
             }
+        } else {
+          // If not a shortcut and no groups / users in admin then remove groups / users (typical from shortcuts)
+          if (editCommand.getGroups().size() == 0 && editCommand.getUsers().size() == 0) {
+            acl = acl.emptyPrivilige(this.privilege); 
+          }
         }
 
         return acl;

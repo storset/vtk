@@ -375,20 +375,6 @@ public class ACLEditController extends SimpleFormController {
         }
         return acl;
     }
-    
-    /**
-     * Remove groups or users from ACL.
-     *
-     * @param acl the ACL object
-     * @param values groups or users to remove
-     * @return the modified ACL
-     */
-    private Acl removeFromAcl(Acl acl, List<Principal> values) {
-        for (Principal principal : values) {
-            acl = acl.removeEntry(this.privilege, principal);
-        }
-        return acl;
-    }
 
 
     /**
@@ -403,21 +389,19 @@ public class ACLEditController extends SimpleFormController {
      */
     private Acl checkIfUserIsInAdminPrivilegedGroups(Acl acl, Acl potentialAcl, Principal userOrGroup,
             Principal yourself, BindException errors) {
-        Set<Principal> groups = principalManager.getMemberGroups(yourself);
+        
+        Set<Principal> memberGroups = principalManager.getMemberGroups(yourself);
         Principal[] privilegedGroups = potentialAcl.listPrivilegedGroups(Privilege.ALL);
+        
         boolean stillAdmin = false;
-        if (privilegedGroups.length > 0) {
-            int i = 0;
-            for (Principal group : groups) {
-                if (privilegedGroups[i] == group) {
-                    stillAdmin = true;
-                    break;
-                }
-                i++;
+        for (Principal privilegedGroup : privilegedGroups) {
+            if (memberGroups.contains(privilegedGroup)) {
+                stillAdmin = true;
+                break;
             }
         }
         if (!stillAdmin) {
-
+            // TODO: confirm dialog
             String prefixType = (userOrGroup.getType().equals(Type.GROUP)) ? "group" : "user";
             errors.rejectValue(prefixType + "Names", "permissions.all.yourself.not.empty",
                     "Not possible to remove all admin permissions for yourself");

@@ -187,21 +187,28 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
                     int totalACEs = groupPrincipals.length + userPrincipals.length + pseudoUserPrincipals.length;
 
                     for (String aceWithPrefix : shortcutACEs) {
-                        for (Principal group : groupPrincipals) {
-                            if ((GROUP_PREFIX + group.getName()).equals(aceWithPrefix)) {
-                                matchedACEs++;
+                        if (aceWithPrefix.startsWith(GROUP_PREFIX)) {
+                            for (Principal group : groupPrincipals) {
+                                if ((GROUP_PREFIX + group.getName()).equals(aceWithPrefix)) {
+                                    matchedACEs++;
+                                    break;
+                                }
+                            }
+                        } else if (aceWithPrefix.startsWith(USER_PREFIX)) {
+                            for (Principal user : userPrincipals) {
+                                if ((USER_PREFIX + user.getName()).equals(aceWithPrefix)) {
+                                    matchedACEs++;
+                                    break;
+                                }
+                            }
+                            for (Principal pseudoUser : pseudoUserPrincipals) {
+                                if ((USER_PREFIX + pseudoUser.getName()).equals(aceWithPrefix)) {
+                                    matchedACEs++;
+                                    break;
+                                }
                             }
                         }
-                        for (Principal user : userPrincipals) {
-                            if ((USER_PREFIX + user.getName()).equals(aceWithPrefix)) {
-                                matchedACEs++;
-                            }
-                        }
-                        for (Principal pseudoUser : pseudoUserPrincipals) {
-                            if ((USER_PREFIX + pseudoUser.getName()).equals(aceWithPrefix)) {
-                                matchedACEs++;
-                            }
-                        }
+                        
                     }
                     if (matchedACEs == totalACEs && matchedACEs == numberOfShortcutACEs) {
                         shortcutMatch = shortcut;
@@ -214,6 +221,7 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
             privilegedPseudoPrincipals.put(actionName, 
                       new ArrayList<Principal>(Arrays.asList(pseudoUserPrincipals)));
             viewShortcuts.put(actionName, shortcutMatch);
+            
             privileges.put(actionName, action);
         }
 

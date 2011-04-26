@@ -32,6 +32,7 @@ package org.vortikal.web.actions.permissions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -289,10 +290,28 @@ public class ACLEditController extends SimpleFormController {
             
             checkedShortcuts[i][0] = shortcut;
             
+            // If not custom is choosen
             if(!isCustomPermissions) {
                 // If matches are exactly the number of groups and users set and the size of shortcut
                 if (matchedACEs == totalACEs && matchedACEs == numberOfShortcutACEs) {
                     checkedShortcuts[i][1] = "checked";
+                    // Remove ACEs for shortcut on view
+                    for (String aceWithPrefix : shortcutACEs) {
+                        Iterator<Principal> groups = authorizedGroups.iterator();
+                        while (groups.hasNext()) {
+                            Principal group = (Principal) groups.next();
+                            if ((GROUP_PREFIX + group.getName()).equals(aceWithPrefix)) {
+                                groups.remove();
+                            }
+                        }
+                        Iterator<Principal> users = authorizedUsers.iterator();
+                        while (users.hasNext()) {
+                            Principal user = (Principal) users.next();
+                            if ((USER_PREFIX + user.getName()).equals(aceWithPrefix)) {
+                                users.remove();
+                            }
+                        }
+                    }
                 } else {
                     checkedShortcuts[i][1] = "";
                 }

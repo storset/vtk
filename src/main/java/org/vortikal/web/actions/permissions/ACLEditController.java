@@ -352,7 +352,7 @@ public class ACLEditController extends SimpleFormController {
                 acl = addToAcl(acl, groupOrUserUnformatted, type);
             }
         } else {
-          // If not a shortcut and no groups / users in admin then remove groups / users (typical from shortcuts)
+          // If not a shortcut and no groups / users in admin then remove groups / users (typical when comoing from shortcuts)
           if (editCommand.getGroups().size() == 0 && editCommand.getUsers().size() == 0) {
             acl = acl.emptyPrivilige(this.privilege); 
           }

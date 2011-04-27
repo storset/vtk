@@ -42,12 +42,6 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.repository.search.query.AbstractMultipleQuery;
-import org.vortikal.repository.search.query.AndQuery;
-import org.vortikal.repository.search.query.OrQuery;
-import org.vortikal.repository.search.query.Query;
-import org.vortikal.repository.search.query.TermOperator;
-import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.web.RequestContext;
 
 public class CollectionListingAggregationResolver implements AggregationResolver {
@@ -79,74 +73,6 @@ public class CollectionListingAggregationResolver implements AggregationResolver
         List<Path> paths = new ArrayList<Path>();
         getAggregationPaths(paths, pathToResource, resource, requestContext, 0);
         return paths;
-    }
-
-    public Query getAggregationQuery(Query originalQuery, Resource collection) throws IllegalArgumentException {
-        return this.getAggregationQuery(originalQuery, collection, true);
-    }
-
-    public Query getAggregationQuery(Query originalQuery, Resource collection, boolean includeOriginalUriPrefix)
-            throws IllegalArgumentException {
-
-        // only extend simple UriPrefixQuery or instances of
-        // AbstractMultipleQuery (AndQuery or OrQuery) containing UriPrefixQuery
-        if (!(originalQuery instanceof AbstractMultipleQuery || originalQuery instanceof UriPrefixQuery)) {
-            IllegalArgumentException up = new IllegalArgumentException("Unsupported query type: " + originalQuery);
-            throw up;
-        }
-
-        Property aggregationProp = collection.getProperty(this.aggregationPropDef);
-        if (aggregationProp != null) {
-
-            // get an OrQuery or UriPrefixQuery containing valid path(s) to
-            // aggregate from
-            Query aggregatedQuery = createAggregationQuery(collection, aggregationProp);
-
-            if (aggregatedQuery == null) {
-                return originalQuery;
-            }
-
-            // originalQuery is a simple UriPrefixQuery and we aggregate from
-            // only ONE other collection
-            if (isExtendableUriPrefixQuery(originalQuery) && aggregatedQuery instanceof UriPrefixQuery) {
-                return aggregatedQuery;
-            } else {
-                // iterate the original query and build a new one,
-                // replacing any UriPrefixQuery you encounter
-                AbstractMultipleQuery extendableQuery = getExtendableQuery(originalQuery);
-                for (Query q : ((AbstractMultipleQuery) originalQuery).getQueries()) {
-                    q = aggregate(q, aggregatedQuery, null);
-                    extendableQuery.add(q);
-                }
-                return extendableQuery;
-            }
-
-        }
-        return originalQuery;
-    }
-
-    private Query createAggregationQuery(Resource collection, Property aggregationProp) {
-
-        // the actual paths to aggregate from
-        // used to create an OrQuery to extend the original query with
-        List<Path> paths = new ArrayList<Path>();
-        RequestContext requestContext = RequestContext.getRequestContext();
-        getAggregationPaths(paths, collection.getURI(), collection, requestContext, 0);
-
-        // no valid paths to aggregate from were supplied
-        if (paths.size() == 0) {
-            return null;
-        }
-
-        if (paths.size() == 1) {
-            return new UriPrefixQuery(paths.get(0).toString(), TermOperator.EQ, false);
-        }
-
-        OrQuery aggregatedFoldersQuery = new OrQuery();
-        for (Path path : paths) {
-            aggregatedFoldersQuery.add(new UriPrefixQuery(path.toString(), TermOperator.EQ, false));
-        }
-        return aggregatedFoldersQuery;
     }
 
     private void getAggregationPaths(List<Path> paths, Path startingPath, Resource collection,
@@ -221,57 +147,6 @@ public class CollectionListingAggregationResolver implements AggregationResolver
             // Don't do anything, the path is invalid, just ignore it
         }
         return null;
-    }
-
-    private Query aggregate(Query query, Query aggregatedQuery, AbstractMultipleQuery extendable) {
-
-        if (query instanceof AbstractMultipleQuery) {
-            if (extendable == null) {
-                extendable = getExtendableQuery(query);
-            }
-            for (Query q : ((AbstractMultipleQuery) query).getQueries()) {
-                if (isExtendableUriPrefixQuery(q)) {
-                    OrQuery uriPrefixOrQuery = null;
-                    if (aggregatedQuery instanceof UriPrefixQuery) {
-                        uriPrefixOrQuery = new OrQuery();
-                        uriPrefixOrQuery.add(aggregatedQuery);
-                    } else {
-                        uriPrefixOrQuery = (OrQuery) aggregatedQuery;
-                    }
-                    uriPrefixOrQuery.add(q);
-                    q = uriPrefixOrQuery;
-                } else if (q instanceof AbstractMultipleQuery) {
-                    q = aggregate(q, aggregatedQuery, getExtendableQuery(q));
-                }
-                extendable.add(q);
-            }
-            return extendable;
-        } else if (isExtendableUriPrefixQuery(query)) {
-            OrQuery uriPrefixOrQuery = new OrQuery();
-            uriPrefixOrQuery.add(query);
-            uriPrefixOrQuery.add(aggregatedQuery);
-            return uriPrefixOrQuery;
-        }
-
-        return query;
-
-    }
-
-    private AbstractMultipleQuery getExtendableQuery(Query query) {
-        if (query instanceof AndQuery) {
-            return new AndQuery();
-        }
-        return new OrQuery();
-    }
-
-    private boolean isExtendableUriPrefixQuery(Query query) {
-        if (query instanceof UriPrefixQuery) {
-            UriPrefixQuery uriPrefixQuery = (UriPrefixQuery) query;
-            if (uriPrefixQuery.getOperator() == null || uriPrefixQuery.getOperator() == TermOperator.EQ) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public void setAggregationPropDef(PropertyTypeDefinition aggregationPropDef) {

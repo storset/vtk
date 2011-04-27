@@ -28,12 +28,14 @@
       (indexers, etc.) that may need full read access.
     </description>
     <property name="rootRole">
-      <set>
-        <value>root@localhost</value>
-      </set>            
+      <bean class="org.vortikal.context.JSONFactoryBean">
+        <constructor-arg value="${roles.rootPrincipals}" />
+      </bean>
     </property>
     <property name="readEverythingRole">
-      <set><value>trusteduser@localhost</value></set>
+      <bean class="org.vortikal.context.JSONFactoryBean">
+        <constructor-arg value="${roles.readEverythingPrincipals}" />
+      </bean>
     </property>
   </bean>
 

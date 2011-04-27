@@ -164,8 +164,7 @@ public class HtmlPageParserTest extends TestCase {
         assertTrue(page.getRootElement().getChildElements()[0].getAttribute("attr2").isSingleQuotes());
     }
 
-
-    String VALID_HTML_401_TRANS = 
+    private static final String VALID_HTML_401_TRANS = 
         "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n"
         + "<html>\n"
         + "  <head>\n"
@@ -222,7 +221,7 @@ public class HtmlPageParserTest extends TestCase {
     }
     
 
-    String SIMPLE_HTML_401_FRAMESET = 
+    private static final String SIMPLE_HTML_401_FRAMESET = 
         "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Frameset//EN\" \"http://www.w3.org/TR/html4/frameset.dtd\">\n"
         + "<html>\n"
         + "  <head>\n"

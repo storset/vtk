@@ -360,13 +360,11 @@ public class ACLEditController extends SimpleFormController {
         for (String value : values) {
             Principal userOrGroup = principalFactory.getPrincipal(value, typePseudoUser(type, value));
             Acl potentialAcl = acl.removeEntry(this.privilege, userOrGroup);
-            if (this.privilege.equals(Privilege.ALL)) {
-                if (userOrGroup.equals(yourself)
-                        || (!acl.containsEntry(this.privilege, yourself) && type.equals(Type.GROUP))) {
-                    // Trying to remove yourself or group (with yourself not as admin)
+            if (this.privilege.equals(Privilege.ALL)) {;
+                if (yourself.equals(userOrGroup)
+                    || (!acl.containsEntry(this.privilege, yourself) && Type.GROUP.equals(type))) {
                     acl = checkIfUserIsInAdminPrivilegedGroups(acl, potentialAcl, userOrGroup, yourself, errors);
                 } else {
-                    // Trying to remove user (not yourself) or group (with yourself still as admin)
                     acl = checkIfNotEmptyAdminAcl(acl, potentialAcl, userOrGroup, errors);
                 }
             } else {

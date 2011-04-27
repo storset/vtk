@@ -363,7 +363,7 @@ public class ACLEditController extends SimpleFormController {
             if (this.privilege.equals(Privilege.ALL)) {;
                 if (yourself.equals(userOrGroup)
                     || (!acl.containsEntry(this.privilege, yourself) && Type.GROUP.equals(type))) {
-                    acl = checkIfUserIsInAdminPrivilegedGroups(acl, potentialAcl, userOrGroup, yourself, errors);
+                    acl = checkIfYourselfIsStillInAdminPrivilegedGroups(acl, potentialAcl, userOrGroup, yourself, errors);
                 } else {
                     acl = checkIfNotEmptyAdminAcl(acl, potentialAcl, userOrGroup, errors);
                 }
@@ -385,7 +385,7 @@ public class ACLEditController extends SimpleFormController {
      * @param errors ACL validation errors
      * @return the modified ACL
      */
-    private Acl checkIfUserIsInAdminPrivilegedGroups(Acl acl, Acl potentialAcl, Principal userOrGroup,
+    private Acl checkIfYourselfIsStillInAdminPrivilegedGroups(Acl acl, Acl potentialAcl, Principal userOrGroup,
             Principal yourself, BindException errors) {
         
         Set<Principal> memberGroups = principalManager.getMemberGroups(yourself);

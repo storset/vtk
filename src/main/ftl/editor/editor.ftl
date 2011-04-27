@@ -84,7 +84,7 @@
     </#assign>
     <h2>${header}</h2>
 	  <div class="submit-extra-buttons">
-	  	<a class="help-link" href="${editorHelpURL?html}" target="new_window"><@vrtx.msg code="editor.help"/></a>
+	  	<#include "/system/help.ftl" />
 		<input type="button" onClick="$('#saveAndViewButton').click()" value="${vrtx.getMsg("editor.saveAndView")}" />
 		<input type="button" onClick="$('#saveButton').click()"  value="${vrtx.getMsg("editor.save")}" />
 		<input type="button" onClick="$('#cancel').click()"  value="${vrtx.getMsg("editor.cancel")}" />

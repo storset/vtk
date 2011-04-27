@@ -36,7 +36,7 @@
   border: none;
 }
 
-a.help-link {
+.submit-extra-buttons a.help-link {
   font-size: 0.8em;
   margin-right: 1em;
 }

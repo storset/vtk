@@ -327,6 +327,14 @@
   
   <bean id="structuredResources.editView" parent="freemarkerView">
     <property name="url" value="structured-resources/editor.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="helpURL" value="${helpURL}" />
+        <entry key="helpURL.no" value="${helpURL.no}" />
+        <entry key="helpURL.nn" value="${helpURL.nn}" />
+        <entry key="helpURL.en" value="${helpURL.en}" />
+      </map>
+    </property>
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
@@ -356,7 +364,6 @@
               <entry key="webResources" value="${webResources.baseURL}" />
               <entry key="fckEditorAreaCSSURL" value-ref="editor.fckEditorAreaCSSURL" />
               <entry key="themeBaseURL" value="${themeBaseURL}" />
-              <entry key="editorHelpURL" value="${editor.helpURL}" />
             </map>
           </property>
         </bean>

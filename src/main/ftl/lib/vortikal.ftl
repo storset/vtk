@@ -258,7 +258,7 @@
 </#macro>
 
 <#--
- * linkResloveFilter
+ * linkResolveFilter
  *
  * Resolves relative links in an HTML string.
  *
@@ -282,7 +282,7 @@
  * invokeComponentRefs
  *
  * Invokes decorating components in an HTML string
- * Example: <@vrtx.invokeComponents value='<div>${include:file uri=[/foo.txt]}</div>' />
+ * Example: <@vrtx.invokeComponentRefs html='<div>${include:file uri=[/foo.txt]}</div>' />
  *
  * @param html the HTML string
  *

@@ -25,7 +25,7 @@ div.tabs ul li.activeTab a,div.tabs ul li.activeTab a:hover {
   margin-bottom: 1.5em;
 }
 
-a.help-link {
+.submit-extra-buttons a.help-link {
   font-size: 0.8em;
   margin-right: 1em;
 }

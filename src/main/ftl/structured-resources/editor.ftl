@@ -68,7 +68,7 @@
 <h2>${header}</h2>
 
 <div class="submit-extra-buttons">
-    <a class="help-link" href="${editorHelpURL?html}" target="new_window"><@vrtx.msg code="editor.help"/></a>
+    <#include "/system/help.ftl" />
     <a class="help-link" href="${form.listComponentServiceURL?html}" target="new_window"><@vrtx.msg code="plaintextEdit.tooltip.listDecoratorComponentsService" /></a>
     <input type="button" onClick="$('#updateViewAction').click()" value="${vrtx.getMsg("editor.saveAndView")}" />
     <input type="button" onClick="$('#updateAction').click()"  value="${vrtx.getMsg("editor.save")}" />

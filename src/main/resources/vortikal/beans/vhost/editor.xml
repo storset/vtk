@@ -226,6 +226,14 @@
 
   <bean id="editor.editView" parent="freemarkerView">
     <property name="url" value="editor/editor.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="helpURL" value="${helpURL}" />
+        <entry key="helpURL.no" value="${helpURL.no}" />
+        <entry key="helpURL.nn" value="${helpURL.nn}" />
+        <entry key="helpURL.en" value="${helpURL.en}" />
+      </map>
+    </property>
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
@@ -261,11 +269,10 @@
           <property name="modelDataMap">
             <map>
               <entry key="cssURLs" value-ref="editor.editCSSURLs" />
-              <entry key="editorHelpURL" value="${editor.helpURL}" />
               <entry key="fckEditorAreaCSSURL" value-ref="editor.fckEditorAreaCSSURL" />
               <entry key="jsBaseURL" value="${jsBaseURL}" />
               <entry key="webResources" value="${webResources.baseURL}" />
-            </map>
+            </map> 
           </property>
         </bean>
       </list>

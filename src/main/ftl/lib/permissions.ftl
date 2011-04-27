@@ -162,7 +162,8 @@
     function checkStillAdmin() {
       var stillAdmin = ${spring.status.value?string};
       if(!stillAdmin) {
-        if(!confirm("Er du sikker på at du vil fjerne deg selv som administrator?")) {
+        if(!confirm("<@vrtx.msg code='permissions.all.confirm.remove.yourself' 
+                      default='Are you sure you want to remove all admin permissions for yourself?' />")) {
           return false;
         }
       }

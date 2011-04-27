@@ -33,7 +33,11 @@
 <#assign pixelHeight = vrtx.propValue(resource, "pixelHeight") />
 <#assign pixelWidth = vrtx.propValue(resource, "pixelWidth") />
 
-<a href="${src}">${src}</a> (${pixelHeight}px x ${pixelWidth}px)
+
+<a href="${src}">${src}</a> 
+<#if pixelHeight != "" && pixelWidth != "">
+(${pixelHeight}px x ${pixelWidth}px)
+</#if>
 
 <#if description?exists >
   <h2>${vrtx.getMsg('imageAsHtml.description')}</h2>

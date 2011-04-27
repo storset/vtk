@@ -113,6 +113,7 @@
     <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" />
   </bean>
 
+
   <bean id="manage.serviceAssertion" class="org.vortikal.web.service.AndAssertion">
     <property name="assertions">
       <list>
@@ -121,6 +122,7 @@
         <ref bean="manage.selectiveProtocolManager" />
         <ref bean="adminVrtxParameterRule" />
         <ref bean="readProcessedPermissionAssertion" />
+        <ref bean="manage.allowedGroupsAssertion" />
       </list>
     </property>
   </bean>
@@ -1818,6 +1820,15 @@
   </bean>
 
   <!-- MANAGE assertions -->
+  <bean id="manage.allowedGroupsAssertion" class="org.vortikal.web.service.GroupMembershipAssertion">
+    <property name="principalManager" ref="principalManager" />
+    <property name="groups" ref="manage.allowedGroups" />
+  </bean>
+
+  <bean id="manage.allowedGroups" class="org.vortikal.context.CSVListFactoryBean">
+    <property name="csvList" value="${manage.allowedGroups}" />
+  </bean>
+
   <bean id="manage.postRequestAssertion" class="org.vortikal.web.service.RequestMethodAssertion">
     <property name="method" value="POST" />
   </bean>

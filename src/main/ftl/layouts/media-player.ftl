@@ -36,7 +36,7 @@ if (typeof swfobject == 'undefined') {
 		menu: "false",
 		wmode: "transparent"
 		}		
-		swfobject.embedSWF("${audioFlashPlayerFlashURL?html}", "mediaspiller-${dateStr}", "290", "24", "9.0.0",false,flashvars,params);
+		swfobject.embedSWF("${audioFlashPlayerFlashURL?html}", "mediaspiller-${dateStr}", "290", "24", "10.1.0",false,flashvars,params);
 		</script>
       
       <a class="vrtx-media" href="${media?html}"><@vrtx.msg code="article.audio-file" /></a>
@@ -53,13 +53,10 @@ if (typeof swfobject == 'undefined') {
         </embed>
       </object> 
 	  <a class="vrtx-media" href="${media?html}"><@vrtx.msg code="article.media-file" /></a>
-	  <script type="text/javascript">
-    swfobject.registerObject("testid", "9.0.115");
-    </script>
 	
 	<#elseif contentType == "application/x-shockwave-flash" && extension == "swf">
 		<div id="mediaspiller-${dateStr}">
-		<a class="vrtx-media" href="${media?html}"><img src="/vrtx/__vrtx/static-resources/themes/default/icons/video-icon.png" width="151" height="82" alt="<@vrtx.msg code="article.media-file" />"/></a>
+		<a class="vrtx-media" href="${media?html}"><img src="/vrtx/__vrtx/static-resources/themes/default/icons/video-noflash.png" width="500" height="279" alt="<@vrtx.msg code="article.media-file" />"/></a>
 		</div>
 		<script type="text/javascript">
 		var flashvars = {
@@ -67,12 +64,12 @@ if (typeof swfobject == 'undefined') {
 		};
 		var flashparams = {}		
 		var flashattr = {}
-		swfobject.embedSWF("${media?html}", "mediaspiller-${dateStr}", "${width}", "${height}", "9.0.0",false,flashvars,flashparams,flashattr);
+		swfobject.embedSWF("${media?html}", "mediaspiller-${dateStr}", "${width}", "${height}", "10.1.0",false,flashvars,flashparams,flashattr);
 		</script>
 		
 	<#elseif contentType == "video/x-flv"  || contentType == "video/mp4">
 		<div id="mediaspiller-${dateStr}">
-		<a class="vrtx-media" href="${media?html}"><img src="/vrtx/__vrtx/static-resources/themes/default/icons/video-icon.png" width="151" height="82" alt="<@vrtx.msg code="article.media-file" />"/></a>
+		<a class="vrtx-media" href="${media?html}"><img src="/vrtx/__vrtx/static-resources/themes/default/icons/video-noflash.png" width="500" height="279" alt="<@vrtx.msg code="article.media-file" />"/></a>
 		</div>
 		<script type="text/javascript">
 		var flashvars = {
@@ -83,7 +80,7 @@ if (typeof swfobject == 'undefined') {
 		allowFullScreen: "true",
 		allowscriptaccess: "always"
 		}		
-		swfobject.embedSWF("${strobe?html}", "mediaspiller-${dateStr}", "${width}", "${height}", "9.0.0",false,flashvars,params);
+		swfobject.embedSWF("${strobe?html}", "mediaspiller-${dateStr}", "${width}", "${height}", "10.1.0",false,flashvars,params);
 		</script>
 		<#if contentType == "video/mp4" && !media?starts_with("rtmp")>
 			<a class="vrtx-media" href="${media?html}"><@vrtx.msg code="article.video-file" /></a>

@@ -372,11 +372,9 @@ public class ACLEditController extends SimpleFormController {
             Acl potentialAcl = acl.removeEntry(this.privilege, userOrGroup);
             if (this.privilege.equals(Privilege.ALL)) {
                 boolean tryingToRemoveYourself = yourself.equals(userOrGroup);
-                boolean yourselfNotInACL = !acl.containsEntry(this.privilege, yourself);
+                boolean yourselfNotInAdmin = !acl.containsEntry(this.privilege, yourself);
                 boolean tryingToRemoveGroup = Type.GROUP.equals(type);
-                System.out.println("**************************** " + tryingToRemoveYourself + " " + yourselfNotInACL + " " + tryingToRemoveGroup);
-                
-                if (tryingToRemoveYourself || (yourselfNotInACL && tryingToRemoveGroup)) {
+                if (tryingToRemoveYourself || (yourselfNotInAdmin && tryingToRemoveGroup)) {
                     acl = checkIfYourselfIsStillInAdminPrivilegedGroups(acl, potentialAcl, userOrGroup, yourself, errors);
                 } else {
                     acl = checkIfNotEmptyAdminAcl(acl, potentialAcl, userOrGroup, errors);
@@ -412,7 +410,7 @@ public class ACLEditController extends SimpleFormController {
                 break;
             }
         }
-        System.out.println("***********************: " + this.yourselfStillAdmin);
+        
         return checkIfNotEmptyAdminAcl(acl, potentialAcl, userOrGroup, errors);
     }
 

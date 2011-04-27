@@ -55,6 +55,8 @@ public class ACLEditCommand extends UpdateCancelCommand {
     private String updatedShortcut = new String();
 
     private String saveAction = null;
+    
+    private boolean isYourselfStillAdmin = true;
 
     private String ac_userNames[] = new String[0];
     private List<String> userNameEntries = new ArrayList<String>();
@@ -188,6 +190,14 @@ public class ACLEditCommand extends UpdateCancelCommand {
 
     public void setSaveAction(String saveAction) {
         this.saveAction = saveAction;
+    }
+    
+    public boolean isYourselfStillAdmin() {
+        return isYourselfStillAdmin;
+    }
+
+    public void setYourselfStillAdmin(boolean isYourselfStillAdmin) {
+        this.isYourselfStillAdmin = isYourselfStillAdmin;
     }
 
     public String[] getAc_userNames() {

@@ -72,6 +72,8 @@ public class ACLEditController extends SimpleFormController {
     private static final String GROUP_PREFIX = "group:";
     private static final String USER_PREFIX = "user:";
     private static final String PSEUDO_PREFIX = "pseudo:";
+    
+    private boolean yourselfStillAdmin;
 
 
     public ACLEditController() {
@@ -106,6 +108,8 @@ public class ACLEditController extends SimpleFormController {
         if (this.shortcuts != null) {
            this.validShortcuts = countValidshortcuts(this.shortcuts, this.permissionShortcutsConfig);
         }
+        
+        this.yourselfStillAdmin = true;
 
         return getACLEditCommand(resource, resource.getAcl(), requestContext.getPrincipal(), false);
     }
@@ -131,6 +135,10 @@ public class ACLEditController extends SimpleFormController {
             command.setShortcuts(extractAndCheckShortcuts(authorizedGroups, authorizedUsers, this.validShortcuts,
                     this.shortcuts, this.permissionShortcutsConfig, isCustomPermissions));
         }
+        
+        if(!this.yourselfStillAdmin) {
+            command.setYourselfStillAdmin(this.yourselfStillAdmin);
+        }
 
         command.setGroups(authorizedGroups);
         command.setUsers(authorizedUsers);
@@ -155,6 +163,7 @@ public class ACLEditController extends SimpleFormController {
             editCommand.setRemoveUserAction(null);
             editCommand.setSaveAction(null);
             editCommand.getUserNameEntries().removeAll(editCommand.getUserNameEntries());
+            editCommand.setYourselfStillAdmin(true);
         }
         return super.processFormSubmission(req, resp, command, errors);
     }
@@ -163,7 +172,7 @@ public class ACLEditController extends SimpleFormController {
     @Override
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
             BindException errors) throws Exception {
-
+        
         ACLEditCommand editCommand = (ACLEditCommand) command;
 
         Acl acl = editCommand.getAcl();
@@ -181,6 +190,7 @@ public class ACLEditController extends SimpleFormController {
         }
 
         Principal yourself = requestContext.getPrincipal();
+        this.yourselfStillAdmin = true;
         
         // Has the user asked to save?
         if (editCommand.getSaveAction() != null) {
@@ -360,9 +370,13 @@ public class ACLEditController extends SimpleFormController {
         for (String value : values) {
             Principal userOrGroup = principalFactory.getPrincipal(value, typePseudoUser(type, value));
             Acl potentialAcl = acl.removeEntry(this.privilege, userOrGroup);
-            if (this.privilege.equals(Privilege.ALL)) {;
-                if (yourself.equals(userOrGroup)
-                    || (!acl.containsEntry(this.privilege, yourself) && Type.GROUP.equals(type))) {
+            if (this.privilege.equals(Privilege.ALL)) {
+                boolean tryingToRemoveYourself = yourself.equals(userOrGroup);
+                boolean yourselfNotInACL = !acl.containsEntry(this.privilege, yourself);
+                boolean tryingToRemoveGroup = Type.GROUP.equals(type);
+                System.out.println("**************************** " + tryingToRemoveYourself + " " + yourselfNotInACL + " " + tryingToRemoveGroup);
+                
+                if (tryingToRemoveYourself || (yourselfNotInACL && tryingToRemoveGroup)) {
                     acl = checkIfYourselfIsStillInAdminPrivilegedGroups(acl, potentialAcl, userOrGroup, yourself, errors);
                 } else {
                     acl = checkIfNotEmptyAdminAcl(acl, potentialAcl, userOrGroup, errors);
@@ -391,22 +405,15 @@ public class ACLEditController extends SimpleFormController {
         Set<Principal> memberGroups = principalManager.getMemberGroups(yourself);
         Principal[] privilegedGroups = potentialAcl.listPrivilegedGroups(Privilege.ALL);
         
-        boolean stillAdmin = false;
+        this.yourselfStillAdmin = false;
         for (Principal privilegedGroup : privilegedGroups) {
             if (memberGroups.contains(privilegedGroup)) {
-                stillAdmin = true;
+                this.yourselfStillAdmin = true;
                 break;
             }
         }
-        if (!stillAdmin) {
-            // TODO: confirm dialog
-            String prefixType = (userOrGroup.getType().equals(Type.GROUP)) ? "group" : "user";
-            errors.rejectValue(prefixType + "Names", "permissions.all.yourself.not.empty",
-                    "Not possible to remove all admin permissions for yourself");
-            return acl;
-        } else {
-            return checkIfNotEmptyAdminAcl(acl, potentialAcl, userOrGroup, errors);
-        }
+        System.out.println("***********************: " + this.yourselfStillAdmin);
+        return checkIfNotEmptyAdminAcl(acl, potentialAcl, userOrGroup, errors);
     }
 
     /**

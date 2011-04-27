@@ -156,6 +156,21 @@
 
   <@spring.bind formName + ".submitURL" /> 
   <#assign submitUrl = spring.status.value />
+
+  <@spring.bind formName + ".yourselfStillAdmin" /> 
+  <script type="text/javascript"><!--
+    function checkStillAdmin() {
+      var stillAdmin = ${spring.status.value?string};
+      if(!stillAdmin) {
+        if(!confirm("Er du sikker på at du vil fjerne deg selv som administrator?")) {
+          return false;
+        }
+      }
+      return true; 
+    }
+  // -->
+  </script>
+  
   <form class="aclEdit" action="${submitUrl?html}" method="post">
     <h3>${privilegeHeading}</h3>
     <@spring.bind formName + ".shortcuts" />
@@ -165,7 +180,8 @@
       <@editACLFormGroupsOrUsers "user" submitUrl />
     </ul>
     <div id="submitButtons" class="submitButtons">
-      <input type="submit" name="saveAction" value="<@vrtx.msg code="permissions.save" default="Save"/>">
+      <input type="submit" name="saveAction" value="<@vrtx.msg code="permissions.save" default="Save"/>"
+       onclick="return checkStillAdmin()">
       <input type="submit" name="cancelAction" value="<@vrtx.msg code="permissions.cancel" default="Cancel"/>">
     </div>
   </form>
@@ -182,6 +198,7 @@
 
 <#macro editACLFormGroupsOrUsers type submitUrl>
   <#assign capitalizedType = "${type?capitalize}" />
+  
   <li class="${type}s">
     <fieldset>
       <legend><@vrtx.msg code="permissions.${type}s" default="${capitalizedType}s"/></legend>

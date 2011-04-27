@@ -540,6 +540,7 @@
         <value>var</value>
         <value>iframe</value>
         <value>noscript</value>
+        <value>blockquote</value>
         <value>v:component</value>
       </set>
     </property>

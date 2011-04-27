@@ -294,7 +294,7 @@ public class ACLEditController extends SimpleFormController {
                 // If matches are exactly the number of authorized groups/users and the number of groups/users in shortcut
                 if (matchedACEs == totalACEs && matchedACEs == numberOfShortcutACEs) {
                     checkedShortcuts[i][1] = "checked";
-                    // Remove ACEs for shortcut on view
+                    // Remove all ACEs (from view)
                     authorizedUsers.clear();
                     authorizedGroups.clear();
                 } else {

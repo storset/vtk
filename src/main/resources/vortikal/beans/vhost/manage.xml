@@ -121,11 +121,11 @@
         <ref bean="manage.hostNameAssertion" />
         <ref bean="manage.selectiveProtocolManager" />
         <ref bean="adminVrtxParameterRule" />
-        <ref bean="readProcessedPermissionAssertion" />
-        <ref bean="manage.allowedGroupsAssertion" />
       </list>
     </property>
   </bean>
+  <!--
+  -->
 
   <bean id="manage.urlPostProcessors" class="org.springframework.beans.factory.config.ListFactoryBean">
     <property name="sourceList">
@@ -152,6 +152,21 @@
       <set>
         <ref bean="previewCollectionListingService" />
       </set>
+    </property>
+  </bean>
+
+  <bean id="manage.notAuthorizedService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-9999" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.InvertAssertion">
+          <property name="assertion" ref="manage.permissionAssertion" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <bean class="org.vortikal.web.actions.auth.UnauthorizedController" />
     </property>
   </bean>
 
@@ -1820,17 +1835,35 @@
   </bean>
 
   <!-- MANAGE assertions -->
-  <bean id="manage.allowedGroupsAssertion" class="org.vortikal.web.service.GroupMembershipAssertion">
-    <property name="principalManager" ref="principalManager" />
-    <property name="groups" ref="manage.allowedGroups" />
-  </bean>
-
-  <bean id="manage.allowedGroups" class="org.vortikal.context.CSVListFactoryBean">
-    <property name="csvList" value="${manage.allowedGroups}" />
-  </bean>
 
   <bean id="manage.postRequestAssertion" class="org.vortikal.web.service.RequestMethodAssertion">
     <property name="method" value="POST" />
+  </bean>
+
+
+  <bean id="manage.permissionAssertion" class="org.vortikal.web.service.OrAssertion">
+    <property name="assertions">
+      <list>
+        <bean parent="abstractResourcePrincipalPermissionAssertion">
+          <property name="requiresAuthentication" value="true" />
+          <property name="considerLocks" value="false" />
+          <property name="permission" ref="ACTION_READ_WRITE" />
+        </bean>
+        <bean parent="abstractResourcePrincipalPermissionAssertion">
+          <property name="requiresAuthentication" value="true" />
+          <property name="considerLocks" value="false" />
+          <property name="permission" ref="ACTION_ALL" />
+        </bean>
+        <bean class="org.vortikal.web.service.GroupMembershipAssertion">
+          <property name="principalManager" ref="principalManager" />
+          <property name="groups" ref="manage.allowedGroups" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="manage.allowedGroups" class="org.vortikal.context.CSVListFactoryBean">
+    <property name="csvList" value="${manage.defaultAllowedGroups}" />
   </bean>
 
   <bean id="requiresReadPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">

@@ -65,6 +65,7 @@ public final class DefaultHtmlTagConfiguration {
         compositeTags.add("var");
         compositeTags.add("iframe");
         compositeTags.add("noscript");
+        compositeTags.add("blockquote");
         
         emptyTags.add("br");
         emptyTags.add("area");

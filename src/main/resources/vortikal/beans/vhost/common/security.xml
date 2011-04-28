@@ -139,19 +139,6 @@
     <constructor-arg value="${groups.staticGroups}"/>
   </bean>
 
-  <!--
-  <bean id="domainGroupStore"
-    class="org.vortikal.security.store.DomainGroupStore">
-    <property name="order" value="0" />
-    <property name="knownGroups" ref="domainGroupStore.groups" />
-  </bean>
-
-  <bean id="domainGroupStore.groups" class="org.vortikal.context.CSVSetFactoryBean">
-    <property name="csvList" value="${domainGroupStore.groups}" />
-  </bean>
-  -->
-
-
   <bean id="localPrincipalStore" class="org.vortikal.security.store.PropertyConfigurableMD5Store">
     <property name="order" value="10" />
     <property name="realm" value="${authenticationRealm}" />

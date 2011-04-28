@@ -45,7 +45,6 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.multihost.CompositeRepository;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.PropertySortField;
 import org.vortikal.repository.search.ResultSet;
@@ -64,9 +63,6 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.collection.aggregation.AggregationResolver;
 
 public class ManuallyApproveResourcesSearcher {
-
-    // Used only if configured and hooked up in config
-    private CompositeRepository compositeRepository;
 
     private Map<String, String> listingResourceTypeMappingPointers;
     private AggregationResolver aggregationResolver;

@@ -68,7 +68,13 @@ public class UserData {
         if (getSimpleAttribute("eduPersonPrincipalName") != null) {
             return getSimpleAttribute("eduPersonPrincipalName");
         } else {
-            return getSimpleAttribute("uid");
+            String uid = getSimpleAttribute("uid");
+            String userDomain = uid.split("@")[1];
+            if (userDomain.contentEquals("webid")) {
+                return uid + ".uio.no";
+            } else {
+                return uid;
+            }
         }
     }
 

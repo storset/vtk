@@ -156,6 +156,8 @@
         <entry key="viewURL" value-ref="viewService" />
         <entry key="webdavURL" value-ref="webdavService" />
         <entry key="getSourceURL" value-ref="getSourceService" />
+        <entry key="viewImageInfoService" value-ref="viewImageInfoService" />
+        <entry key="mediaPlayerService" value-ref="mediaPlayerService" />
       </map>
     </property>
   </bean>

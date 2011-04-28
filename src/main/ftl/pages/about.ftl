@@ -137,6 +137,22 @@
              name = vrtx.getMsg("resource.sourceURL")
              value = url />
       </#if>
+      
+      
+      <#if resourceDetail.viewImageInfoService?exists>
+        <#assign url><a href="${resourceDetail.viewImageInfoService?html}">${resourceDetail.viewImageInfoService?html}</a></#assign>
+        <@propList.defaultPropertyDisplay
+             name = vrtx.getMsg("resource.viewAsWebpage")
+             value = url />
+      </#if>
+      
+      <#if resourceDetail.mediaPlayerService?exists>
+        <#assign url><a href="${resourceDetail.mediaPlayerService?html}">${resourceDetail.mediaPlayerService?html}</a></#assign>
+        <@propList.defaultPropertyDisplay
+             name = vrtx.getMsg("resource.viewAsWebpage")
+             value = url />
+      </#if>
+      
 
       <!-- Content language -->
       <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'contentLocale' displayMacro = 'languagePropertyDisplay' />

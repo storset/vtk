@@ -24,10 +24,12 @@
 <#assign pixelHeight = vrtx.propValue(resource, "pixelHeight") />
 <#assign pixelWidth = vrtx.propValue(resource, "pixelWidth") />
 
-<a href="${src}">${vrtx.getMsg('imageAsHtml.download')}</a> 
+<p id="vrtx-image-view">
+<a href="${src}">${vrtx.getMsg('imageAsHtml.download')}</a>
 <#if pixelHeight != "" && pixelWidth != "">
 (${pixelHeight}px x ${pixelWidth}px)
 </#if>
+</p>
 
 <#assign photographer = vrtx.propValue(resource, "photographer") />
 <#if photographer?exists && photographer != "">
@@ -40,9 +42,9 @@
 
 <#if description?exists >
   <!-- <h2>${vrtx.getMsg('imageAsHtml.description')}</h2> -->
-  <div id="vrtx-meta-description">
+  <p id="vrtx-meta-description">
     ${description}
-  </div>
+  </p>
 </#if>
 
 <p>

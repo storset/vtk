@@ -29,7 +29,7 @@
 
 <#if src?exists>
   <div class="vrtx-introduction-image">
-    <img src="${src}" alt="image" />
+     <a href="${src}"><img src="${src}" alt="image" /></a>
   </div>
 </#if>
 

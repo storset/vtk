@@ -24,7 +24,7 @@
 <#assign pixelHeight = vrtx.propValue(resource, "pixelHeight") />
 <#assign pixelWidth = vrtx.propValue(resource, "pixelWidth") />
 
-<p id="vrtx-image-view">
+<p id="vrtx-image-view-link">
 <a href="${src}">${vrtx.getMsg('imageAsHtml.download')}</a>
 <#if pixelHeight != "" && pixelWidth != "">
 (${pixelHeight}px x ${pixelWidth}px)

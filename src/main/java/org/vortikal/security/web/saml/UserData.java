@@ -68,6 +68,7 @@ public class UserData {
         if (getSimpleAttribute("eduPersonPrincipalName") != null) {
             return getSimpleAttribute("eduPersonPrincipalName");
         } else {
+            // XXX: Mapping hack for non full qualified webid users
             String uid = getSimpleAttribute("uid");
             String userDomain = uid.split("@")[1];
             if (userDomain.contentEquals("webid")) {

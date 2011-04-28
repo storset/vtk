@@ -275,7 +275,4 @@
     <property name="trim" value="true" />
   </bean>
 
-  <bean id="repository.composite.multihost" class="org.vortikal.repository.multihost.CompositeRepository"
-    parent="repositoryAware" />
-
 </beans>

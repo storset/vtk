@@ -1,5 +1,16 @@
+<#ftl strip_whitespace=true>
+<#--
+  - File: image-as-html.ftl
+  - 
+  - Description: TODO
+  -
+  - Optional model data:
+  -   TODO
+  -->
+  
 <#import "/lib/vortikal.ftl" as vrtx />
 <#assign lang><@vrtx.requestLanguage/></#assign>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -13,8 +24,9 @@
 <body id="vrtx-image-preview">
 
 <#if resource.name != title >
-<h1>${title}</h1>
+  <h1>${title}</h1>
 </#if>
+
 <#if src?exists>
   <div class="vrtx-introduction-image">
     <img src="${src}" alt="image" />
@@ -25,10 +37,10 @@
 <#assign pixelWidth = vrtx.propValue(resource, "pixelWidth") />
 
 <p id="vrtx-image-view-link">
-<a href="${src}">${vrtx.getMsg('imageAsHtml.download')}</a>
-<#if pixelHeight != "" && pixelWidth != "">
-(${pixelHeight}px x ${pixelWidth}px)
-</#if>
+  <a href="${src}">${vrtx.getMsg('imageAsHtml.download')}</a>
+  <#if pixelHeight != "" && pixelWidth != "">
+    &nbsp;(${pixelHeight}px x ${pixelWidth}px)
+  </#if>
 </p>
 
 <#assign photographer = vrtx.propValue(resource, "photographer") />
@@ -48,11 +60,11 @@
 </#if>
 
 <p>
-<#assign url = .vars["uioWebCopyrightURL." + lang] />
-<#if url?exists>
-  <!-- <h2>${vrtx.getMsg('imageAsHtml.usage')}</h2> -->
-  <a href="${url?html}">${vrtx.getMsg('imageAsHtml.rights')}</a>
-</#if>
+  <#assign url = .vars["uioWebCopyrightURL." + lang] />
+  <#if url?exists>
+    <!-- <h2>${vrtx.getMsg('imageAsHtml.usage')}</h2> -->
+    <a href="${url?html}">${vrtx.getMsg('imageAsHtml.rights')}</a>
+  </#if>
 </p>
 
 </body>

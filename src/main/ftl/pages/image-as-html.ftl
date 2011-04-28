@@ -33,11 +33,13 @@
   </div>
 </#if>
 
+
+
 <#assign pixelHeight = vrtx.propValue(resource, "pixelHeight") />
 <#assign pixelWidth = vrtx.propValue(resource, "pixelWidth") />
 
 <p id="vrtx-image-view-link">
-  <a href="${src}">${vrtx.getMsg('imageAsHtml.download')}</a>
+  ${vrtx.getMsg('imageAsHtml.source')}: <a href="${src}">${resource.name?html}</a>
   <#if pixelHeight != "" && pixelWidth != "">
     &nbsp;(${pixelHeight}px x ${pixelWidth}px)
   </#if>

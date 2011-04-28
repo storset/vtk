@@ -235,6 +235,8 @@ public class ACLEditController extends SimpleFormController {
     
     /**
      * Count valid shortcuts (all users and groups should have GROUP or USER prefix)
+     * 
+     * TODO: validate shortcuts (with something like validateGroupOrUserName())
      *
      * @param shortcuts the configured shortcuts for the privilege
      * @param permissionShortcutsConfig the users and groups for the shortcuts
@@ -259,9 +261,7 @@ public class ACLEditController extends SimpleFormController {
     
     
     /**
-     * Extracts shortcuts from authorized users and groups
-     * 
-     * TODO: ponder out some smarter shorter code
+     * Extracts shortcuts from authorized users and groupse
      *
      * @param authorizedUsers the authorized users
      * @param authorizedGroups the authorized groups

@@ -66,8 +66,8 @@
 		var flashvars = {
   		  <#if autoplay?exists>autoplay: "${autoplay}"</#if>
 		};
-		var flashparams = {}		
-		var flashattr = {}
+		var flashparams = {};
+		var flashattr = {};
 		swfobject.embedSWF("${media?html}", "mediaspiller-${dateStr}", "${width}", "${height}", "10.1.0",false,flashvars,flashparams,flashattr);
 	  // -->
 	  </script>

@@ -13,7 +13,7 @@
                <@viewutils.displayImage collection />
               <#-- Introduction -->
               <#if introduction?has_content>
-				<@vrtx.linkResolveFilter introduction.value urlMap[collection.URI]  requestURL />
+				${introduction}
               </#if>
             </div>
           </#if>

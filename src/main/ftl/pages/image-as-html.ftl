@@ -42,9 +42,9 @@
 
 <#if description?exists >
   <!-- <h2>${vrtx.getMsg('imageAsHtml.description')}</h2> -->
-  <p id="vrtx-meta-description">
+  <div id="vrtx-meta-description">
     ${description}
-  </p>
+  </div>
 </#if>
 
 <p>

@@ -11,8 +11,10 @@
 
 <#macro mediaPlayer >
   <#if media?exists && contentType?exists >
-
+  
     <#assign dateStr = nanoTime?c />
+    <#assign strobeVersion = "10.1.0" />
+  
     <script type="text/javascript"><!--
       if (typeof swfobject == 'undefined') {
         document.write("<scr" + "ipt src='/vrtx/__vrtx/static-resources/flash/StrobeMediaPlayback_1.0-full/10.1/scripts/swfobject.js' type='text/javascript'><\/script>");
@@ -38,7 +40,7 @@
 		  menu: "false",
 		  wmode: "transparent"
 	    };	
-	    swfobject.embedSWF("${audioFlashPlayerFlashURL?html}", "mediaspiller-${dateStr}", "290", "24", "10.1.0",false,flashvars,params);
+	    swfobject.embedSWF("${audioFlashPlayerFlashURL?html}", "mediaspiller-${dateStr}", "290", "24", "${strobeVersion}",false,flashvars,params);
 	  // -->
 	  </script>
       <a class="vrtx-media" href="${media?html}"><@vrtx.msg code="article.audio-file" /></a>
@@ -51,7 +53,11 @@
         <param name="controller" value="true"/>
         <param name="loop" value="false"/>
         <param name="scale" value="aspect" />         
-        <embed src="${media?html}" width="${width}" height="${height}" autoplay="<#if autoplay?exists && autoplay = "true">true<#else>false</#if>" controller="true" loop="false" scale="aspect" pluginspage="http://www.apple.com/quicktime/download/">
+        <embed src="${media?html}" 
+               width="${width}" 
+               height="${height}"
+               autoplay="<#if autoplay?exists && autoplay = "true">true<#else>false</#if>"
+               controller="true" loop="false" scale="aspect" pluginspage="http://www.apple.com/quicktime/download/">
         </embed>
       </object> 
       <a class="vrtx-media" href="${media?html}"><@vrtx.msg code="article.media-file" /></a>
@@ -68,13 +74,15 @@
 		};
 		var flashparams = {};
 		var flashattr = {};
-		swfobject.embedSWF("${media?html}", "mediaspiller-${dateStr}", "${width}", "${height}", "10.1.0",false,flashvars,flashparams,flashattr);
+		swfobject.embedSWF("${media?html}", "mediaspiller-${dateStr}", "${width}", "${height}", "${strobeVersion}", false, flashvars, flashparams, flashattr);
 	  // -->
 	  </script>
 		
-    <#elseif contentType == "video/x-flv"  || contentType == "video/mp4">
+    <#elseif contentType == "video/x-flv" || contentType == "video/mp4">
 	  <div id="mediaspiller-${dateStr}">
-	    <a class="vrtx-media" href="${media?html}"><img src="/vrtx/__vrtx/static-resources/themes/default/icons/video-noflash.png" width="500" height="279" alt="<@vrtx.msg code="article.media-file" />"/></a>
+	    <a class="vrtx-media" href="${media?html}">
+	      <img src="/vrtx/__vrtx/static-resources/themes/default/icons/video-noflash.png" width="500" height="279" alt="<@vrtx.msg code="article.media-file" />"/>
+	    </a>
 	  </div>
 	  <script type="text/javascript"><!--
 	    var flashvars = {
@@ -85,7 +93,7 @@
 		  allowFullScreen: "true",
 		  allowscriptaccess: "always"
 	    };
-	    swfobject.embedSWF("${strobe?html}", "mediaspiller-${dateStr}", "${width}", "${height}", "10.1.0",false,flashvars,params);
+	    swfobject.embedSWF("${strobe?html}", "mediaspiller-${dateStr}", "${width}", "${height}", "${strobeVersion}", false, flashvars, params);
 	  // -->
 	  </script>
 	  <#if contentType == "video/mp4" && !media?starts_with("rtmp")>

@@ -70,8 +70,8 @@ public class UserData {
         } else {
             // XXX: Mapping hack for non full qualified webid users
             String uid = getSimpleAttribute("uid");
-            String userDomain = uid.split("@")[1];
-            if (userDomain.contentEquals("webid")) {
+            String userAndDomain[] = uid.split("@");
+            if (userAndDomain.length > 1 && userAndDomain[1].contentEquals("webid")) {
                 return uid + ".uio.no";
             } else {
                 return uid;

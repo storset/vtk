@@ -19,7 +19,7 @@ $(document).ready(function()
 				// Set inline style to equal the body height of the iframed content,
 				// when body content is at least 350px height
 				var setHeight = 350;
-				var computedHeight = document.body.offsetHeight + 45
+				var computedHeight = document.body.offsetHeight + 45;
 				if (computedHeight > setHeight) { 
 					setHeight = computedHeight;
 				}
@@ -27,7 +27,11 @@ $(document).ready(function()
 				if (hasPostMessage && parent) {
 					// Pass our height to parent since it is typically cross domain (and can't access it directly)
 					parent.postMessage(setHeight, vrtxAdminOrigin);	
-				}					
+				}	
+				var links = $("a");
+			    for(var i = 0, len = links.length; i < len; i++) {
+		          $(links[i]).attr("target", "_top");
+	            }
 			}
 		);
 	}

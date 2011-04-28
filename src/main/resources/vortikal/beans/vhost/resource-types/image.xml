@@ -17,6 +17,8 @@
     </property>
     <property name="propertyTypeDefinitions">
       <list>
+        <ref bean="imageHeightPropDef" />
+        <ref bean="imageWidthPropDef" />
         <ref bean="thumbnailPropDef" />
         <ref bean="photographerPropDef"/>
       </list>

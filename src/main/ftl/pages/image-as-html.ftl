@@ -24,7 +24,6 @@
 <#assign pixelHeight = vrtx.propValue(resource, "pixelHeight") />
 <#assign pixelWidth = vrtx.propValue(resource, "pixelWidth") />
 
-
 <a href="${src}">${vrtx.getMsg('imageAsHtml.download')}</a> 
 <#if pixelHeight != "" && pixelWidth != "">
 (${pixelHeight}px x ${pixelWidth}px)
@@ -32,9 +31,9 @@
 
 <#assign photographer = vrtx.propValue(resource, "photographer") />
 <#if photographer?exists && photographer != "">
-  <div>
+  <p>
     ${vrtx.getMsg('imageAsHtml.byline')}: ${photographer}
-  </div> 
+  </p> 
 </#if>
 
 <!-- <h2>${vrtx.getMsg('imageAsHtml.source')} </h2> -->
@@ -46,12 +45,13 @@
   </div>
 </#if>
 
-<div>
+<p>
 <#assign url = .vars["uioWebCopyrightURL." + lang] />
 <#if url?exists>
   <!-- <h2>${vrtx.getMsg('imageAsHtml.usage')}</h2> -->
   <a href="${url?html}">${vrtx.getMsg('imageAsHtml.rights')}</a>
 </#if>
-</div>
+</p>
+
 </body>
 </html>

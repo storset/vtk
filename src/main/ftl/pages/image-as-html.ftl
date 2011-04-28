@@ -52,10 +52,8 @@
   </p> 
 </#if>
 
-<!-- <h2>${vrtx.getMsg('imageAsHtml.source')} </h2> -->
 
 <#if description?exists >
-  <!-- <h2>${vrtx.getMsg('imageAsHtml.description')}</h2> -->
   <div id="vrtx-meta-description">
     ${description}
   </div>
@@ -64,7 +62,6 @@
 <p>
   <#assign url = .vars["uioWebCopyrightURL." + lang] />
   <#if url?exists>
-    <!-- <h2>${vrtx.getMsg('imageAsHtml.usage')}</h2> -->
     <a href="${url?html}">${vrtx.getMsg('imageAsHtml.rights')}</a>
   </#if>
 </p>

@@ -28,15 +28,13 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.service.manuallyapprove;
+package org.vortikal.repository.multihost;
 
-import java.util.List;
-
-import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.search.Search;
 
-public interface ExternalSearcher {
+public interface MultiHostSearcher {
 
-    public List<PropertySet> search(String token, Search search);
+    // XXX Return type? ResultSet?
+    public Class<?> search(String token, Search search);
 
 }

@@ -45,6 +45,7 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.multihost.CompositeRepository;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.PropertySortField;
 import org.vortikal.repository.search.ResultSet;
@@ -65,7 +66,7 @@ import org.vortikal.web.display.collection.aggregation.AggregationResolver;
 public class ManuallyApproveResourcesSearcher {
 
     // Used only if configured and hooked up in config
-    private ExternalSearcher externalSearcher;
+    private CompositeRepository compositeRepository;
 
     private Map<String, String> listingResourceTypeMappingPointers;
     private AggregationResolver aggregationResolver;
@@ -130,22 +131,6 @@ public class ManuallyApproveResourcesSearcher {
                 ManuallyApproveResource m = this.mapPropertySetToManuallyApprovedResource(ps, ps.getURI().getParent()
                         .toString(), true);
                 result.add(m);
-            }
-        }
-
-        // Perform external searches (other hosts), map property sets to
-        // manually approved resource object containers and join results
-        if (externalSearcher != null) {
-
-            Set<String> externalFolders = this.getUris(folders, false);
-            Set<String> externalAlreadyApproved = this.getUris(alreadyApproved, false);
-
-            if (externalAlreadyApproved.size() > 0) {
-                // Get external already approved
-            }
-
-            if (externalFolders.size() > 0) {
-                // Get resources to approve from external hosts
             }
         }
 
@@ -223,10 +208,6 @@ public class ManuallyApproveResourcesSearcher {
             }
         }
         return false;
-    }
-
-    public void setExternalSearcher(ExternalSearcher externalSearcher) {
-        this.externalSearcher = externalSearcher;
     }
 
     @Required

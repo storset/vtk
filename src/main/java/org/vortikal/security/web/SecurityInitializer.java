@@ -56,7 +56,7 @@ import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.CookieLinkStore;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalImpl;
+import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.security.token.TokenManager;
@@ -96,6 +96,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
     private TokenManager tokenManager;
     
     private PrincipalManager principalManager;
+    private PrincipalFactory principalFactory;
 
     private List<AuthenticationHandler> authenticationHandlers;
 
@@ -212,7 +213,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                                 "Principal handler returned NULL AuthResult: " + handler 
                                 + " for request " + req);
                     }
-                    Principal principal = new PrincipalImpl(result.getUID(), Principal.Type.USER);
+                    Principal principal = this.principalFactory.getPrincipal(result.getUID(), Principal.Type.USER);
                     boolean valid = this.principalManager.validatePrincipal(principal);
                     if (!valid) {
                         logger.warn("Unknown principal: " + principal
@@ -431,6 +432,11 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
     @Required
     public void setPrincipalManager(PrincipalManager principalManager) {
         this.principalManager = principalManager;
+    }
+
+    @Required
+    public void setPrincipalFactory(PrincipalFactory principalFactory) {
+        this.principalFactory = principalFactory;
     }
 
     public void setAuthenticationHandlers(List<AuthenticationHandler> authenticationHandlers) {

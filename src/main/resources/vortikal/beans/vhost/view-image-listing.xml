@@ -32,6 +32,7 @@
   </bean>
 
   <bean id="imageListing.searchComponent" parent="collectionListing.searchComponent">
+    <property name="viewService" ref="viewImageInfoService" />
     <property name="name" value="imageListing.defaultListing" />
     <property name="queryBuilders">
       <list>

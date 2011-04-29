@@ -36,7 +36,6 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.vortikal.repository.Repository;
-import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.PrincipalManager;
@@ -200,31 +199,20 @@ public class ACLEditCommandValidator implements Validator {
 
 
     private boolean validateGroupOrUserName(Type type, String name, ACLEditCommand editCommand) {
-        try {
-            Principal groupOrUser = null;
-            boolean exists = false;
-
-            if (type == Type.GROUP) {
-                groupOrUser = this.principalFactory.getPrincipal(name, type);
-                exists = this.principalManager.validateGroup(groupOrUser);
+        ACLEditValidationHelper helper = new ACLEditValidationHelper();
+        Validation validationResult = helper.validateGroupOrUserName(type, name, editCommand.getPrivilege(),
+                principalFactory, principalManager, repository);
+        
+        if(!validationResult.isValid()) {
+            if(validationResult.isNotFound()) {
+              this.notFound += toCSV(this.notFound, name);
+            } else if(validationResult.isIllegalBlacklisted()) {
+              this.illegalBlacklisted += toCSV(this.illegalBlacklisted, name);
             } else {
-                groupOrUser = this.principalFactory.getPrincipal(name, type);
-                exists = this.principalManager.validatePrincipal(groupOrUser);
+              this.illegal += toCSV(this.illegal, name);
             }
-
-            if (groupOrUser != null && !exists) {
-                this.notFound += toCSV(this.notFound, name);
-                return false;
-            }
-
-            if (!repository.isValidAclEntry(editCommand.getPrivilege(), groupOrUser)) {
-                this.illegalBlacklisted += toCSV(this.illegalBlacklisted, name);
-                return false;
-            }
-        } catch (InvalidPrincipalException ipe) {
-            this.illegal += toCSV(this.illegal, name);
-            return false;
         }
+          
         return true;
     }
     

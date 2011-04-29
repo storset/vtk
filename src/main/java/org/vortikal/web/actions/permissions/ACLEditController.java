@@ -107,7 +107,7 @@ public class ACLEditController extends SimpleFormController {
 
         this.shortcuts = this.permissionShortcuts.get(this.privilege);
         if (this.shortcuts != null) {
-            this.shortcuts = validateShortcuts(this.shortcuts, this.permissionShortcutsConfig);
+            this.shortcuts = validateShortcuts(this.shortcuts, this.permissionShortcutsConfig, repository);
         } 
         
         this.yourselfStillAdmin = true;
@@ -238,7 +238,7 @@ public class ACLEditController extends SimpleFormController {
      * @param permissionShortcutsConfig the users and groups for the shortcuts
      * @return number of valid shortcuts
      */
-    protected List<String> validateShortcuts(List<String> shortcuts, Map<String, List<String>> permissionShortcutsConfig) throws Exception {
+    protected List<String> validateShortcuts(List<String> shortcuts, Map<String, List<String>> permissionShortcutsConfig, Repository repository) throws Exception {
         int valid = 0;
         int counter = 0;
         Iterator<String> it = shortcuts.iterator();
@@ -251,8 +251,25 @@ public class ACLEditController extends SimpleFormController {
             int validGroupsUsers = 0;
             List<String> groupsUsersPrShortcut = permissionShortcutsConfig.get(shortcut);
             for (String groupOrUser : groupsUsersPrShortcut) {
-                if (groupOrUser.startsWith(GROUP_PREFIX) || groupOrUser.startsWith(USER_PREFIX)) {
-                    validGroupsUsers++;
+                if (groupOrUser.startsWith(GROUP_PREFIX) || groupOrUser.startsWith(USER_PREFIX)) {    
+                    String prefix = GROUP_PREFIX;
+                    Type type = Type.GROUP;
+                    if(groupOrUser.startsWith(USER_PREFIX)) {
+                        prefix = USER_PREFIX;
+                        type = Type.USER;  
+                    }
+                    if (repository != null) {
+                        ACLEditValidationHelper helper = new ACLEditValidationHelper();
+                        Validation validationResult = helper.validateGroupOrUserName(type, groupOrUser
+                                .substring(prefix.length()), this.privilege, this.principalFactory,
+                                this.principalManager, repository);
+
+                        if (validationResult.isValid()) {
+                            validGroupsUsers++;
+                        }
+                    } else { // testcase
+                        validGroupsUsers++;
+                    }
                 }
             }
             if (groupsUsersPrShortcut.size() == validGroupsUsers) {

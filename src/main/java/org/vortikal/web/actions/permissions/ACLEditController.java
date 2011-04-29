@@ -253,12 +253,13 @@ public class ACLEditController extends SimpleFormController {
             int validGroupsUsers = 0;
             List<String> groupsUsersPrShortcut = permissionShortcutsConfig.get(shortcut);
             for (String groupOrUser : groupsUsersPrShortcut) {
-                if (groupOrUser.startsWith(ACLEditValidationHelper.SHORTCUT_GROUP_PREFIX) || groupOrUser.startsWith(ACLEditValidationHelper.SHORTCUT_USER_PREFIX)) {
+                if (groupOrUser.startsWith(ACLEditValidationHelper.SHORTCUT_GROUP_PREFIX)
+                 || groupOrUser.startsWith(ACLEditValidationHelper.SHORTCUT_USER_PREFIX)) {
                     if (repository != null) {
                         String groupOrUserUnformatted[] = new String[1];
                         Type type = unformatGroupOrUserAndSetType(groupOrUser, groupOrUserUnformatted);
-                        String validationResult = ACLEditValidationHelper.validateGroupOrUserName(
-                                type, groupOrUserUnformatted[0], this.privilege, this.principalFactory,
+                        String validationResult = ACLEditValidationHelper.validateGroupOrUserName(type,
+                                groupOrUserUnformatted[0], this.privilege, this.principalFactory,
                                 this.principalManager, repository);
 
                         if (ACLEditValidationHelper.VALIDATION_ERROR_NONE.equals(validationResult)) {

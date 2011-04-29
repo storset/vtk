@@ -64,7 +64,7 @@ public class ACLEditValidationHelper {
                 exists = principalManager.validateGroup(groupOrUser);
             } else {
                 if (PrincipalFactory.NAME_ALL.equals(name)) {
-                    // "pseudo:all" cant be validated for the moment
+                    // "pseudo:all" - should it be validated other than this way?
                     return VALIDATION_ERROR_NONE;
                 }
                 groupOrUser = principalFactory.getPrincipal(name, type);

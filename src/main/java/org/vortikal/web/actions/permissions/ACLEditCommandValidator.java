@@ -190,7 +190,7 @@ public class ACLEditCommandValidator implements Validator {
     }
 
 
-    private boolean validateGroupOrUserName(Type type, String name, ACLEditCommand editCommand) {
+    private boolean validateGroupOrUserName(Type type, String name, ACLEditCommand editCommand)  {
         String validationResult = ACLEditValidationHelper.validateGroupOrUserName(type, name, editCommand.getPrivilege(),
                 principalFactory, principalManager, repository);
         

@@ -185,9 +185,9 @@ public class ACLEditController extends SimpleFormController {
         
         // Has the user asked to save?
         if (editCommand.getSaveAction() != null) {
+            acl = updateAclIfShortcut(acl, editCommand, yourself, errors);
             acl = addToAcl(acl, editCommand.getGroupNames(), Type.GROUP);
             acl = addToAcl(acl, editCommand.getUserNameEntries(), Type.USER);
-            acl = updateAclIfShortcut(acl, editCommand, yourself, errors);
             if (errors.hasErrors()) {
                 BindException bex = new BindException(getACLEditCommand(resource, acl, yourself, true), this.getCommandName());
                 bex.addAllErrors(errors);

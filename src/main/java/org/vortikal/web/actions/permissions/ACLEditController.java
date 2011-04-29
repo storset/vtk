@@ -250,23 +250,19 @@ public class ACLEditController extends SimpleFormController {
             List<String> groupsUsersPrShortcut = permissionShortcutsConfig.get(shortcut);
             for (String groupOrUser : groupsUsersPrShortcut) {
                 if (groupOrUser.startsWith(GROUP_PREFIX) || groupOrUser.startsWith(USER_PREFIX)) {
-                    String prefix = GROUP_PREFIX;
-                    Type type = Type.GROUP;
-                    if (groupOrUser.startsWith(USER_PREFIX)) {
-                        prefix = USER_PREFIX;
-                        type = Type.USER;
-                    }
-                    if (repository != null) {
-                        ACLEditValidationError validationResult = ACLEditValidationHelper.validateGroupOrUserName(type,
-                                groupOrUser.substring(prefix.length()), this.privilege, this.principalFactory,
-                                this.principalManager, repository).getError();
-
-                        if (ACLEditValidationError.NONE.equals(validationResult)) {
-                            validGroupsUsers++;
-                        }
-                    } else { // testcase
+//                    if (repository != null) {
+//                        String groupOrUserUnformatted[] = new String[1];
+//                        Type type = unformatGroupOrUserAndSetType(groupOrUser, groupOrUserUnformatted);
+//                        ACLEditValidationError validationResult = ACLEditValidationHelper.validateGroupOrUserName(
+//                                typePseudoUser(type, groupOrUserUnformatted[0]), groupOrUserUnformatted[0], this.privilege, this.principalFactory,
+//                                this.principalManager, repository).getError();
+//
+//                        if (ACLEditValidationError.NONE.equals(validationResult)) {
+//                            validGroupsUsers++;
+//                        }
+//                    } else { // testcase
                         validGroupsUsers++;
-                    }
+//                    }
                 }
             }
             if (groupsUsersPrShortcut.size() != validGroupsUsers) {

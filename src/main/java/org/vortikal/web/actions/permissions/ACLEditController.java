@@ -69,10 +69,6 @@ public class ACLEditController extends SimpleFormController {
     
     private List<String> shortcuts;
     
-    private static final String GROUP_PREFIX = "group:";
-    private static final String USER_PREFIX = "user:";
-    private static final String PSEUDO_PREFIX = "pseudo:";
-    
     private boolean yourselfStillAdmin;
 
 
@@ -249,20 +245,20 @@ public class ACLEditController extends SimpleFormController {
             int validGroupsUsers = 0;
             List<String> groupsUsersPrShortcut = permissionShortcutsConfig.get(shortcut);
             for (String groupOrUser : groupsUsersPrShortcut) {
-                if (groupOrUser.startsWith(GROUP_PREFIX) || groupOrUser.startsWith(USER_PREFIX)) {
-//                    if (repository != null) {
-//                        String groupOrUserUnformatted[] = new String[1];
-//                        Type type = unformatGroupOrUserAndSetType(groupOrUser, groupOrUserUnformatted);
-//                        ACLEditValidationError validationResult = ACLEditValidationHelper.validateGroupOrUserName(
-//                                typePseudoUser(type, groupOrUserUnformatted[0]), groupOrUserUnformatted[0], this.privilege, this.principalFactory,
-//                                this.principalManager, repository).getError();
-//
-//                        if (ACLEditValidationError.NONE.equals(validationResult)) {
-//                            validGroupsUsers++;
-//                        }
-//                    } else { // testcase
+                if (groupOrUser.startsWith(ACLEditValidationHelper.GROUP_PREFIX) || groupOrUser.startsWith(ACLEditValidationHelper.USER_PREFIX)) {
+                    if (repository != null) {
+                        String groupOrUserUnformatted[] = new String[1];
+                        Type type = unformatGroupOrUserAndSetType(groupOrUser, groupOrUserUnformatted);
+                        String validationResult = ACLEditValidationHelper.validateGroupOrUserName(
+                                type, groupOrUserUnformatted[0], this.privilege, this.principalFactory,
+                                this.principalManager, repository);
+
+                        if (ACLEditValidationHelper.VALIDATION_ERROR_NONE.equals(validationResult)) {
+                            validGroupsUsers++;
+                        }
+                    } else { // testcase
                         validGroupsUsers++;
-//                    }
+                    }
                 }
             }
             if (groupsUsersPrShortcut.size() != validGroupsUsers) {
@@ -300,12 +296,12 @@ public class ACLEditController extends SimpleFormController {
             // Find matches in shortcut ACEs
             for (String aceWithPrefix : shortcutACEs) {
                 for (Principal group : authorizedGroups) {
-                    if ((GROUP_PREFIX + group.getName()).equals(aceWithPrefix)) {
+                    if ((ACLEditValidationHelper.GROUP_PREFIX + group.getName()).equals(aceWithPrefix)) {
                         matchedACEs++;
                     }
                 }
                 for (Principal user : authorizedUsers) {
-                    if ((USER_PREFIX + user.getName()).equals(aceWithPrefix)) {
+                    if ((ACLEditValidationHelper.USER_PREFIX + user.getName()).equals(aceWithPrefix)) {
                         matchedACEs++;
                     }
                 }
@@ -438,7 +434,7 @@ public class ACLEditController extends SimpleFormController {
      */
     private Acl checkIfNotEmptyAdminAcl(Acl acl, Acl potentialAcl, Principal userOrGroup, BindException errors) throws Exception {
         if (potentialAcl.getPrincipalSet(Privilege.ALL).size() == 0) {
-            String prefixType = (userOrGroup.getType().equals(Type.GROUP)) ? "group" : "user";
+            String prefixType = (userOrGroup.getType().equals(Type.GROUP)) ? "group" : "user"; // pseudo is user
             errors.rejectValue(prefixType + "Names", "permissions.all.not.empty",
                     "Not possible to remove all admin permissions");
             return acl;
@@ -449,10 +445,10 @@ public class ACLEditController extends SimpleFormController {
 
 
     /**
-     * Add groups or users to ACL.
+     * Add group or user to ACL.
      *
      * @param acl the ACL object
-     * @param values groups or users to remove
+     * @param value group or user to remove
      * @param type type of ACL (GROUP or USER)
      * @return the modified ACL
      */
@@ -490,16 +486,16 @@ public class ACLEditController extends SimpleFormController {
      * Unformat group or user in shortcut and set type to GROUP or USER
      *
      * @param groupOrUser formatted shortcut
-     * @param groupOrUserShortcut unformatted shortcut (return by reference)
+     * @param groupOrUserUnformatted unformatted shortcut (return by reference)
      * @return type of ACL (GROUP or USER)
      */
     private Type unformatGroupOrUserAndSetType(String groupOrUser, String[] groupOrUserUnformatted) throws Exception {
         Type type = null;
-        if (groupOrUser.startsWith(GROUP_PREFIX)) {
-            groupOrUserUnformatted[0] = groupOrUser.substring(GROUP_PREFIX.length());
+        if (groupOrUser.startsWith(ACLEditValidationHelper.GROUP_PREFIX)) {
+            groupOrUserUnformatted[0] = groupOrUser.substring(ACLEditValidationHelper.GROUP_PREFIX.length());
             type = Type.GROUP;
-        } else if (groupOrUser.startsWith(USER_PREFIX)) {
-            groupOrUserUnformatted[0] = groupOrUser.substring(USER_PREFIX.length());
+        } else if (groupOrUser.startsWith(ACLEditValidationHelper.USER_PREFIX)) {
+            groupOrUserUnformatted[0] = groupOrUser.substring(ACLEditValidationHelper.USER_PREFIX.length());
             type = Type.USER;
         }
         return type;
@@ -510,12 +506,12 @@ public class ACLEditController extends SimpleFormController {
      * Check if USER is PSEUDO and set correct type
      *
      * @param type type of ACL (GROUP or USER)
-     * @param value group or user
+     * @param groupOrUserUnformatted group or user
      * @return type type of ACL (GROUP or USER or PSEUDO)
      */
-    private Type typePseudoUser(Type type, String value) throws Exception {
-        if (type.equals(Type.USER)) {
-            if (value.startsWith(PSEUDO_PREFIX)) {
+    private Type typePseudoUser(Type type, String groupOrUserUnformatted) throws Exception {
+        if (Type.USER.equals(type)) {
+            if (PrincipalFactory.NAME_ALL.equals(groupOrUserUnformatted)) {
                 type = Type.PSEUDO;
             }
         }

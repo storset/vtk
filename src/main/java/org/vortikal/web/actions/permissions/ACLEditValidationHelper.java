@@ -1,4 +1,3 @@
-package org.vortikal.web.actions.permissions;
 /* Copyright (c) 2011, University of Oslo, Norway
  * All rights reserved.
  * 
@@ -29,6 +28,8 @@ package org.vortikal.web.actions.permissions;
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package org.vortikal.web.actions.permissions;
+
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
 import org.vortikal.security.InvalidPrincipalException;
@@ -39,33 +40,49 @@ import org.vortikal.security.Principal.Type;
 
 public class ACLEditValidationHelper {
     
-    public static ACLEditValidation validateGroupOrUserName(Type type, String name, Privilege privilege,
-            PrincipalFactory principalFactory,  PrincipalManager principalManager, Repository repository) {
+    public static final String GROUP_PREFIX = "group:";
+    public static final String USER_PREFIX = "user:";
+    
+    public static final String VALIDATION_ERROR_GROUP_PREFIX = "group";
+    public static final String VALIDATION_ERROR_USER_PREFIX = "user";
+    
+    public static final String VALIDATION_ERROR_NOT_FOUND = "not.found";
+    public static final String VALIDATION_ERROR_ILLEGAL_BLACKLISTED = "illegal.blacklisted";
+    public static final String VALIDATION_ERROR_ILLEGAL = "illegal";
+    public static final String VALIDATION_ERROR_TOO_MANY_MATCHES = "too.many.matches";
+    public static final String VALIDATION_ERROR_NONE = "";
+    
+    public static String validateGroupOrUserName(Type type, String name, Privilege privilege,
+            PrincipalFactory principalFactory, PrincipalManager principalManager, Repository repository) {
         
         try {
             Principal groupOrUser = null;
             boolean exists = false;
 
-            if (type == Type.GROUP) {
+            if (Type.GROUP.equals(type)) {
                 groupOrUser = principalFactory.getPrincipal(name, type);
                 exists = principalManager.validateGroup(groupOrUser);
             } else {
+                if (PrincipalFactory.NAME_ALL.equals(name)) {
+                    // pseudo:all cant be validated for the moment
+                    return VALIDATION_ERROR_NONE;
+                }
                 groupOrUser = principalFactory.getPrincipal(name, type);
                 exists = principalManager.validatePrincipal(groupOrUser);
             }
 
             if (groupOrUser != null && !exists) {
-                return new ACLEditValidation(ACLEditValidationError.NOT_FOUND);
+                return VALIDATION_ERROR_NOT_FOUND;
             }
 
             if (!repository.isValidAclEntry(privilege, groupOrUser)) {
-                return new ACLEditValidation(ACLEditValidationError.ILLEGAL_BLACKLISTED);
+                return VALIDATION_ERROR_ILLEGAL_BLACKLISTED;
             }
         } catch (InvalidPrincipalException ipe) {
-            return new ACLEditValidation(ACLEditValidationError.ILLEGAL);
+            return VALIDATION_ERROR_ILLEGAL;
         }
         
-        return new ACLEditValidation(ACLEditValidationError.NONE);
+        return VALIDATION_ERROR_NONE;
     }
    
     

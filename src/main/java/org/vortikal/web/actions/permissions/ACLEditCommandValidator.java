@@ -47,14 +47,6 @@ public class ACLEditCommandValidator implements Validator {
     private PrincipalFactory principalFactory;
     private Repository repository;
     
-    private static final String VALIDATION_ERROR_GROUP_PREFIX = "group";
-    private static final String VALIDATION_ERROR_USER_PREFIX = "user";
-
-    private static final String VALIDATION_ERROR_NOT_FOUND = "not.found";
-    private static final String VALIDATION_ERROR_ILLEGAL_BLACKLISTED = "illegal.blacklisted";
-    private static final String VALIDATION_ERROR_ILLEGAL = "illegal";
-    private static final String VALIDATION_ERROR_TOO_MANY_MATCHES = "too.many.matches";
-    
     private String notFound;
     private String illegalBlacklisted;
     private String illegal;
@@ -124,9 +116,9 @@ public class ACLEditCommandValidator implements Validator {
             // but encounter validation error on new group
             uncheckAllShortcuts(editCommand);
  
-            rejectValues(VALIDATION_ERROR_GROUP_PREFIX, VALIDATION_ERROR_NOT_FOUND, this.notFound, errors);
-            rejectValues(VALIDATION_ERROR_GROUP_PREFIX, VALIDATION_ERROR_ILLEGAL_BLACKLISTED, this.illegalBlacklisted, errors);
-            rejectValues(VALIDATION_ERROR_GROUP_PREFIX, VALIDATION_ERROR_ILLEGAL, this.illegal, errors);
+            rejectValues(ACLEditValidationHelper.VALIDATION_ERROR_GROUP_PREFIX, ACLEditValidationHelper.VALIDATION_ERROR_NOT_FOUND, this.notFound, errors);
+            rejectValues(ACLEditValidationHelper.VALIDATION_ERROR_GROUP_PREFIX, ACLEditValidationHelper.VALIDATION_ERROR_ILLEGAL_BLACKLISTED, this.illegalBlacklisted, errors);
+            rejectValues(ACLEditValidationHelper.VALIDATION_ERROR_GROUP_PREFIX, ACLEditValidationHelper.VALIDATION_ERROR_ILLEGAL, this.illegal, errors);
         }
     }
 
@@ -190,26 +182,27 @@ public class ACLEditCommandValidator implements Validator {
             // but encounter validation error on new user
             uncheckAllShortcuts(editCommand);
   
-            rejectValues(VALIDATION_ERROR_USER_PREFIX, VALIDATION_ERROR_NOT_FOUND, this.notFound, errors);
-            rejectValues(VALIDATION_ERROR_USER_PREFIX, VALIDATION_ERROR_ILLEGAL_BLACKLISTED, this.illegalBlacklisted, errors);
-            rejectValues(VALIDATION_ERROR_USER_PREFIX, VALIDATION_ERROR_ILLEGAL, this.illegal, errors);
-            rejectValues(VALIDATION_ERROR_USER_PREFIX, VALIDATION_ERROR_TOO_MANY_MATCHES, this.tooManyMatchedUsers, errors);
+            rejectValues(ACLEditValidationHelper.VALIDATION_ERROR_USER_PREFIX, ACLEditValidationHelper.VALIDATION_ERROR_NOT_FOUND, this.notFound, errors);
+            rejectValues(ACLEditValidationHelper.VALIDATION_ERROR_USER_PREFIX, ACLEditValidationHelper.VALIDATION_ERROR_ILLEGAL_BLACKLISTED, this.illegalBlacklisted, errors);
+            rejectValues(ACLEditValidationHelper.VALIDATION_ERROR_USER_PREFIX, ACLEditValidationHelper.VALIDATION_ERROR_ILLEGAL, this.illegal, errors);
+            rejectValues(ACLEditValidationHelper.VALIDATION_ERROR_USER_PREFIX, ACLEditValidationHelper.VALIDATION_ERROR_TOO_MANY_MATCHES, this.tooManyMatchedUsers, errors);
         }
     }
 
 
     private boolean validateGroupOrUserName(Type type, String name, ACLEditCommand editCommand) {
-        ACLEditValidationError validationResult = ACLEditValidationHelper.validateGroupOrUserName(type, name, editCommand.getPrivilege(),
-                principalFactory, principalManager, repository).getError();
+        String validationResult = ACLEditValidationHelper.validateGroupOrUserName(type, name, editCommand.getPrivilege(),
+                principalFactory, principalManager, repository);
         
-        if(!ACLEditValidationError.NONE.equals(validationResult)) {
-            if(ACLEditValidationError.NOT_FOUND.equals(validationResult)) {
+        if (!ACLEditValidationHelper.VALIDATION_ERROR_NONE.equals(validationResult)) {
+            if(ACLEditValidationHelper.VALIDATION_ERROR_NOT_FOUND.equals(validationResult)) {
               this.notFound += toCSV(this.notFound, name);
-            } else if(ACLEditValidationError.ILLEGAL_BLACKLISTED.equals(validationResult)) {
+            } else if(ACLEditValidationHelper.VALIDATION_ERROR_ILLEGAL_BLACKLISTED.equals(validationResult)) {
               this.illegalBlacklisted += toCSV(this.illegalBlacklisted, name);
-            } else {
+            } else if(ACLEditValidationHelper.VALIDATION_ERROR_ILLEGAL.equals(validationResult)) {
               this.illegal += toCSV(this.illegal, name);
             }
+            return false;
         }
           
         return true;

@@ -148,7 +148,7 @@ public class ACLEditCommandValidator implements Validator {
                 // Assume a username and validate it as such
                 if (!userName.contains(" ")) { 
                     if (!validateGroupOrUserName(Type.USER, userName, editCommand)) {
-                        continue;
+                        continue; // next userName
                     }
                 } else {
                     // Assume a full name and look for a match in ac_userNames
@@ -164,7 +164,7 @@ public class ACLEditCommandValidator implements Validator {
                         // suggestions and we have username
                         if (ac_userName != null && !"".equals(ac_userName)) {
                             if (!validateGroupOrUserName(Type.USER, ac_userName, editCommand)) {
-                                continue;
+                                continue;  // next userName
                             }
                             uid = ac_userName;
                         } else {

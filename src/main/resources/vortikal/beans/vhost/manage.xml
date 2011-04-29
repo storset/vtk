@@ -1080,7 +1080,6 @@
       <map>
         <entry key="manageCollectionListing" value-ref="manageCollectionListingView" />
         <entry key="admin" value-ref="aboutView" />
-        <entry key="redirectToAbout" value-ref="redirectToAboutView" />
         <entry key="permissions" value-ref="permissionsView" />
         <entry key="previewImage" value-ref="previewImageView" />
         <entry key="previewMedia" value-ref="previewMediaPlayerView" />
@@ -1098,6 +1097,7 @@
       <map>
         <entry key="manage.refreshLockView" value-ref="manage.refreshLockView" />
         <entry key="manage.unlockForm" value-ref="manage.unlockFormView" />
+        <entry key="redirectToAbout" value-ref="redirectToAboutView" />
       </map>
     </property>
   </bean>

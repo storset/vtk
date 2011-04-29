@@ -49,6 +49,7 @@ import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.repository.search.query.UriSetQuery;
 import org.vortikal.web.display.collection.aggregation.AggregationResolver;
+import org.vortikal.web.service.URL;
 
 public class ListingUriQueryBuilder implements QueryBuilder {
 
@@ -98,7 +99,12 @@ public class ListingUriQueryBuilder implements QueryBuilder {
             Value[] values = manuallyApprovedProp.getValues();
             Set<String> uriSet = new HashSet<String>();
             for (Value val : values) {
-                uriSet.add(val.getStringValue());
+                String uri = val.getStringValue();
+                if (uri.startsWith("http")) {
+                    URL url = URL.parse(uri);
+                    uri = url.getPathRepresentation();
+                }
+                uriSet.add(uri);
             }
             UriSetQuery uriSetQuery = new UriSetQuery(uriSet);
             OrQuery or = new OrQuery();

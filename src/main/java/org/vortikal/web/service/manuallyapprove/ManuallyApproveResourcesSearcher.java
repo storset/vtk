@@ -61,6 +61,8 @@ import org.vortikal.repository.search.query.UriSetQuery;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.collection.aggregation.AggregationResolver;
+import org.vortikal.web.service.Service;
+import org.vortikal.web.service.URL;
 
 public class ManuallyApproveResourcesSearcher {
 
@@ -70,6 +72,7 @@ public class ManuallyApproveResourcesSearcher {
     private PropertyTypeDefinition titlePropDef;
     private PropertyTypeDefinition publishDatePropDef;
     private PropertyTypeDefinition creationTimePropDef;
+    private Service viewService;
 
     public List<ManuallyApproveResource> getManuallyApproveResources(Resource collection, Set<String> folders,
             Set<String> alreadyApproved) {
@@ -141,13 +144,12 @@ public class ManuallyApproveResourcesSearcher {
             if (local) {
                 if (s.startsWith("/")) {
                     uriSet.add(s);
+                } else if (s.startsWith("http")) {
+                    org.vortikal.web.service.URL url = org.vortikal.web.service.URL.parse(s);
+                    uriSet.add(url.getPathRepresentation());
                 }
-            } else if (!s.startsWith("/")) {
-                if (s.startsWith("http")) {
-                    uriSet.add(s.substring(s.indexOf("//") + 2));
-                } else {
-                    uriSet.add(s);
-                }
+            } else {
+                uriSet.add(s);
             }
         }
         return uriSet;
@@ -166,8 +168,7 @@ public class ManuallyApproveResourcesSearcher {
     private ManuallyApproveResource mapPropertySetToManuallyApprovedResource(PropertySet ps, String source,
             boolean approved) {
         String title = ps.getProperty(this.titlePropDef).getStringValue();
-        Path resourcePath = ps.getURI();
-        String uri = resourcePath.toString();
+        String uri = this.viewService.constructLink(ps.getURI());
         Property dateProp = ps.getProperty(this.publishDatePropDef);
         if (dateProp == null) {
             dateProp = ps.getProperty(this.creationTimePropDef);
@@ -199,7 +200,12 @@ public class ManuallyApproveResourcesSearcher {
 
     private boolean resultAlreadyContains(List<ManuallyApproveResource> result, String uri) {
         for (ManuallyApproveResource m : result) {
-            if (m.getUri().equals(uri)) {
+            String mUri = m.getUri();
+            if (mUri.startsWith("http")) {
+                URL url = URL.parse(mUri);
+                mUri = url.getPathRepresentation();
+            }
+            if (mUri.equals(uri)) {
                 return true;
             }
         }
@@ -234,6 +240,11 @@ public class ManuallyApproveResourcesSearcher {
     @Required
     public void setCreationTimePropDef(PropertyTypeDefinition creationTimePropDef) {
         this.creationTimePropDef = creationTimePropDef;
+    }
+
+    @Required
+    public void setViewService(Service viewService) {
+        this.viewService = viewService;
     }
 
 }

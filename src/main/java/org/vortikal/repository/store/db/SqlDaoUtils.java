@@ -43,6 +43,10 @@ final class SqlDaoUtils {
         return SqlDaoUtils.getStringSqlWildcard(uri.toString(), escape);
     }
 
+    /**
+     * XXX Method is named like a generic string escape, but still does a path-like
+     *     modification by appending '/%' at end of string.
+     */
     public static String getStringSqlWildcard(String s, final char escape) {
         StringBuilder result = new StringBuilder(s.length() + 2);
         for (int i = 0; i < s.length(); i++) {
@@ -62,8 +66,10 @@ final class SqlDaoUtils {
      * This internal class is used to aggregate property values from potentially
      * multiple rows for a single property into a single prop holder object.
      * 
-     * Elements that together constitute prop holder identity are: * The
-     * resource id * The property name space URI * The property name
+     * Elements that together constitute prop holder identity are:
+     * - The resource id
+     * - The property namespace URI
+     * - The property name
      * 
      * And nothing more. A single property instance at application level can map
      * to multiple propIDs in database because of de-normalized storage of

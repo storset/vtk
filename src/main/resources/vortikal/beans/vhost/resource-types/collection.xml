@@ -67,6 +67,7 @@
         <entry key="editingHints">
           <map>
             <entry key="checkbox" value="true" />
+            <entry key="hideLabel" value="true" />
           </map>
         </entry>
       </map>

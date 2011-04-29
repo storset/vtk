@@ -38,7 +38,7 @@ public class ACLEditControllerTest extends TestCase {
         shortcuts.add("all-uio");
         shortcuts.add("all-uni-college");
         shortcuts.add("all-logged-in");
-        // invalid - should be ignored
+        // None-existing shortcut - should be ignored
         shortcuts.add("all-foo");
 
         // Shortcut configs
@@ -55,7 +55,7 @@ public class ACLEditControllerTest extends TestCase {
         groupsUsersAllUniCollege.add("group:alle@feide.no");
         shortcutsConfig.put("all-uni-college", groupsUsersAllUniCollege);
 
-        // Should be ignored - invalid user/group prefix
+        // Invalid user/group prefix - should be ignored
         List<String> groupsUsersAllLoggedIn = new ArrayList<String>();
         groupsUsersAllLoggedIn.add("group:alle@uio.no");
         groupsUsersAllLoggedIn.add("group:alle@feide.uio.no");

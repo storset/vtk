@@ -49,7 +49,7 @@ import org.vortikal.util.repository.ContentTypeHelper;
 import org.vortikal.util.text.HtmlUtil;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
-import org.vortikal.web.servlet.BufferedResponseWrapper;
+import org.vortikal.web.servlet.BufferedResponse;
 import org.vortikal.web.servlet.ConfigurableRequestWrapper;
 
 /**
@@ -174,38 +174,38 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
 
         ConfigurableRequestWrapper requestWrapper = new ConfigurableRequestWrapper(request);
         requestWrapper.setMethod("GET");
-        BufferedResponseWrapper responseWrapper = new BufferedResponseWrapper(response, this.maxDocumentSize);
+        BufferedResponse bufferedResponse = new BufferedResponse(this.maxDocumentSize);
  
         if (view instanceof HtmlRenderer) {
             HtmlPageContent page = ((HtmlRenderer) view).render(model, requestWrapper);
-            decorate(model, request, decoratorList, page, responseWrapper);
+            decorate(model, request, decoratorList, page, response);
             
         } else {
             try {
-                view.render(model, requestWrapper, responseWrapper);
+                view.render(model, requestWrapper, bufferedResponse);
             } catch (SizeLimitException e) {
                 logger.info("Document too large to be decorated: " + request.getRequestURI());
-                responseWrapper = new BufferedResponseWrapper(response);
                 if (this.documentTooLargeView != null) {
-                    this.documentTooLargeView.render(model, requestWrapper, responseWrapper);
+                    this.documentTooLargeView.render(model, requestWrapper, response);
                 } else {
                     throw e;
                 }
             }
             if (logger.isDebugEnabled()) {
                 logger.debug("About to post process buffered content, content type: "
-                        + responseWrapper.getContentType()
+                        + bufferedResponse.getContentType()
                         + ", character encoding: "
-                        + responseWrapper.getCharacterEncoding());
+                        + bufferedResponse.getCharacterEncoding());
             }
-            decorate(model, request, decoratorList, responseWrapper);
+            decorate(model, request, decoratorList, bufferedResponse, response);
         }
     }
 
     
     @SuppressWarnings("rawtypes")
     private void decorate(Map model, HttpServletRequest request,
-                           List<Decorator> decoratorList, BufferedResponseWrapper bufferedResponse)
+                           List<Decorator> decoratorList, BufferedResponse bufferedResponse,
+                           HttpServletResponse response)
         throws Exception {
 
         byte[] contentBuffer = bufferedResponse.getContentBuffer();
@@ -239,7 +239,8 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
                         + characterEncoding
                         + "' is not supported on this system");
             }
-            writeResponse(bufferedResponse);
+            bufferedResponse.writeTo(response, true);
+            //writeResponse(bufferedResponse);
             return;
         }
 
@@ -271,15 +272,13 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
 
             contentType = contentType + ";charset=" + characterEncoding;
         }
-
-        writeResponse(content.getContent().getBytes(characterEncoding), bufferedResponse,
-                contentType);
+        writeResponse(content.getContent().getBytes(characterEncoding), contentType, response);
     }
 
     @SuppressWarnings("rawtypes")
     private void decorate(Map model, HttpServletRequest request,
                           List<Decorator> decoratorList, HtmlPageContent page,
-                          BufferedResponseWrapper bufferedResponse)
+                          HttpServletResponse response)
         throws Exception {
 
         PageContent content = page;
@@ -304,43 +303,14 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
 
             contentType = contentType + ";charset=" + characterEncoding;
         }
+        writeResponse(content.getContent().getBytes(characterEncoding), contentType, response);
 
-        writeResponse(content.getContent().getBytes(characterEncoding), bufferedResponse,
-                contentType);
-
-    }
-
-    /**
-     * Writes the buffer from the wrapped response to the actual
-     * response. Sets the HTTP header <code>Content-Length</code> to
-     * the size of the buffer in the wrapped response.
-     * 
-     * @param responseWrapper the wrapped response.
-     * @exception Exception if an error occurs.
-     */
-    protected void writeResponse(BufferedResponseWrapper responseWrapper)
-            throws Exception {
-        HttpServletResponse response = responseWrapper.getHttpServletResponse();
-        writeStaticHeaders(response);
-
-        byte[] content = responseWrapper.getContentBuffer();
-        if (logger.isDebugEnabled()) {
-            logger.debug("Write response: Content-Length: " + content.length
-                    + ", unspecified content type");
-        }
-        response.setContentLength(content.length);
-        ServletOutputStream outStream = response.getOutputStream();
-        outStream.write(content);
-        outStream.flush();
-        outStream.close();
     }
 
 
     protected void writeResponse(byte[] content,
-            BufferedResponseWrapper responseWrapper, String contentType)
+            String contentType, HttpServletResponse response)
             throws Exception {
-        HttpServletResponse response = responseWrapper.getHttpServletResponse();
-
         writeStaticHeaders(response);
         ServletOutputStream outStream = response.getOutputStream();
 
@@ -353,6 +323,7 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
         outStream.write(content);
         outStream.flush();
         outStream.close();
+        response.flushBuffer();
     }
 
 

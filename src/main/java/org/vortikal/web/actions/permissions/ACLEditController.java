@@ -32,6 +32,7 @@ package org.vortikal.web.actions.permissions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -106,7 +107,7 @@ public class ACLEditController extends SimpleFormController {
 
         this.shortcuts = this.permissionShortcuts.get(this.privilege);
         if (this.shortcuts != null) {
-           this.validShortcuts = countValidshortcuts(this.shortcuts, this.permissionShortcutsConfig);
+            this.shortcuts = validateShortcuts(this.shortcuts, this.permissionShortcutsConfig);
         } 
         
         this.yourselfStillAdmin = true;
@@ -132,7 +133,7 @@ public class ACLEditController extends SimpleFormController {
         authorizedUsers.addAll(Arrays.asList(acl.listPrivilegedPseudoPrincipals(this.privilege)));
 
         if (this.shortcuts != null) {
-            command.setShortcuts(extractAndCheckShortcuts(authorizedGroups, authorizedUsers, this.validShortcuts,
+            command.setShortcuts(extractAndCheckShortcuts(authorizedGroups, authorizedUsers,
                     this.shortcuts, this.permissionShortcutsConfig, isCustomPermissions));
         }
         
@@ -237,9 +238,16 @@ public class ACLEditController extends SimpleFormController {
      * @param permissionShortcutsConfig the users and groups for the shortcuts
      * @return number of valid shortcuts
      */
-    protected int countValidshortcuts(List<String> shortcuts, Map<String, List<String>> permissionShortcutsConfig) throws Exception {
+    protected List<String> validateShortcuts(List<String> shortcuts, Map<String, List<String>> permissionShortcutsConfig) throws Exception {
         int valid = 0;
-        for (String shortcut : shortcuts) {
+        int counter = 0;
+        Iterator<String> it = shortcuts.iterator();
+        while (it.hasNext()) {
+            String shortcut = it.next();
+            if(!permissionShortcutsConfig.containsKey(shortcut)) {
+               it.remove();
+               continue;
+            }
             int validGroupsUsers = 0;
             List<String> groupsUsersPrShortcut = permissionShortcutsConfig.get(shortcut);
             for (String groupOrUser : groupsUsersPrShortcut) {
@@ -249,9 +257,13 @@ public class ACLEditController extends SimpleFormController {
             }
             if (groupsUsersPrShortcut.size() == validGroupsUsers) {
                 valid++;
+            } else {
+                it.remove();
             }
+            counter++;
         }
-        return valid;
+        this.validShortcuts = valid;
+        return shortcuts;
     }
     
     
@@ -266,9 +278,9 @@ public class ACLEditController extends SimpleFormController {
      * @return a <code>String[][]</code> object containing checked / not-checked shortcuts
      */
     protected String[][] extractAndCheckShortcuts(List<Principal> authorizedGroups, List<Principal> authorizedUsers,
-            int validShortcuts, List<String> shortcuts, Map<String, List<String>> permissionShortcutsConfig, boolean isCustomPermissions) throws Exception {
+            List<String> shortcuts, Map<String, List<String>> permissionShortcutsConfig, boolean isCustomPermissions) throws Exception {
         
-         String checkedShortcuts[][] = new String[validShortcuts][2];
+         String checkedShortcuts[][] = new String[shortcuts.size()][2];
 
         // Iterate shortcuts on privilege
         int i = 0;

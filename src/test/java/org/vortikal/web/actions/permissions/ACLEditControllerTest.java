@@ -38,6 +38,8 @@ public class ACLEditControllerTest extends TestCase {
         shortcuts.add("all-uio");
         shortcuts.add("all-uni-college");
         shortcuts.add("all-logged-in");
+        // invalid - should be ignored
+        shortcuts.add("all-foo");
 
         // Shortcut configs
         List<String> groupsUsersAll = new ArrayList<String>();
@@ -53,27 +55,26 @@ public class ACLEditControllerTest extends TestCase {
         groupsUsersAllUniCollege.add("group:alle@feide.no");
         shortcutsConfig.put("all-uni-college", groupsUsersAllUniCollege);
 
+        // Should be ignored - invalid user/group prefix
         List<String> groupsUsersAllLoggedIn = new ArrayList<String>();
         groupsUsersAllLoggedIn.add("group:alle@uio.no");
         groupsUsersAllLoggedIn.add("group:alle@feide.uio.no");
-        groupsUsersAllLoggedIn.add("group:alle@webid.uio.no");
-        shortcutsConfig.put("all-logged-in", groupsUsersAllLoggedIn );
+        groupsUsersAllLoggedIn.add("foo:alle@webid.uio.no");
+        shortcutsConfig.put("all-logged-in", groupsUsersAllLoggedIn);
 
-        int validShortcuts;
         try {
-            validShortcuts = controller.countValidshortcuts(shortcuts, shortcutsConfig);
-            assertEquals(4, validShortcuts);
+            shortcuts = controller.validateShortcuts(shortcuts, shortcutsConfig);
+            assertEquals(3, shortcuts.size());
 
             String[][] extractedShortcuts;
             
             extractedShortcuts = controller.extractAndCheckShortcuts(authorizedGroups, authorizedUsers,
-                        validShortcuts, shortcuts, shortcutsConfig, false);
-            assertEquals(4, extractedShortcuts.length);
+                        shortcuts, shortcutsConfig, false);
+            assertEquals(3, extractedShortcuts.length);
 
             assertEquals("checked", extractedShortcuts[0][1]);
             assertEquals("", extractedShortcuts[1][1]);
             assertEquals("", extractedShortcuts[2][1]);
-            assertEquals("", extractedShortcuts[3][1]);
 
         } catch (Exception ex) {
             System.out.println("Extracting of shortcuts fails " + ex.getMessage());

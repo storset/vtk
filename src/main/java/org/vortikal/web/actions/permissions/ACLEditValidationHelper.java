@@ -55,17 +55,17 @@ public class ACLEditValidationHelper {
             }
 
             if (groupOrUser != null && !exists) {
-                return new ACLEditValidation(true, false, false);
+                return new ACLEditValidation(ACLEditValidationError.NOT_FOUND);
             }
 
             if (!repository.isValidAclEntry(privilege, groupOrUser)) {
-                return new ACLEditValidation(false, true, false);
+                return new ACLEditValidation(ACLEditValidationError.ILLEGAL_BLACKLISTED);
             }
         } catch (InvalidPrincipalException ipe) {
-            return new ACLEditValidation(false, false, true);
+            return new ACLEditValidation(ACLEditValidationError.ILLEGAL);
         }
         
-        return new ACLEditValidation(false, false, false);
+        return new ACLEditValidation(ACLEditValidationError.NONE);
     }
    
     

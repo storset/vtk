@@ -31,38 +31,18 @@
 package org.vortikal.web.actions.permissions;
 public class ACLEditValidation {
     
-    // TODO: hmm.. how can this be done nicer? which data-structure?
-    private boolean notFound = false;
-    private boolean illegalBlacklisted = false;
-    private boolean illegal = false;
+    private ACLEditValidationError error;
     
-    public ACLEditValidation(boolean notFound, boolean illegalBlaclisted, boolean illegal) {
-        this.notFound = notFound;
-        this.illegalBlacklisted = illegalBlaclisted;
-        this.illegal = illegal;
+    public ACLEditValidation(ACLEditValidationError error) {
+        this.error = error;
     }
-    
-    public boolean isNotFound() {
-        return notFound;
+
+    public ACLEditValidationError getError() {
+        return error;
     }
-    public void setNotFound(boolean notFound) {
-        this.notFound = notFound;
+
+    public void setError(ACLEditValidationError error) {
+        this.error = error;
     }
-    public boolean isIllegalBlacklisted() {
-        return illegalBlacklisted;
-    }
-    public void setIllegalBlacklisted(boolean illegalBlacklisted) {
-        this.illegalBlacklisted = illegalBlacklisted;
-    }
-    public boolean isIllegal() {
-        return illegal;
-    }
-    public void setIllegal(boolean illegal) {
-        this.illegal = illegal;
-    }
-    
-    public boolean isValid() {
-        return !this.notFound && !this.illegalBlacklisted && !this.illegal;
-    }
-    
+
 }

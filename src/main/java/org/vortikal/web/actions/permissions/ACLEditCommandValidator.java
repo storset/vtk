@@ -199,13 +199,13 @@ public class ACLEditCommandValidator implements Validator {
 
 
     private boolean validateGroupOrUserName(Type type, String name, ACLEditCommand editCommand) {
-        ACLEditValidation validationResult = ACLEditValidationHelper.validateGroupOrUserName(type, name, editCommand.getPrivilege(),
-                principalFactory, principalManager, repository);
+        ACLEditValidationError validationResult = ACLEditValidationHelper.validateGroupOrUserName(type, name, editCommand.getPrivilege(),
+                principalFactory, principalManager, repository).getError();
         
-        if(!validationResult.isValid()) {
-            if(validationResult.isNotFound()) {
+        if(!ACLEditValidationError.NONE.equals(validationResult)) {
+            if(ACLEditValidationError.NOT_FOUND.equals(validationResult)) {
               this.notFound += toCSV(this.notFound, name);
-            } else if(validationResult.isIllegalBlacklisted()) {
+            } else if(ACLEditValidationError.ILLEGAL_BLACKLISTED.equals(validationResult)) {
               this.illegalBlacklisted += toCSV(this.illegalBlacklisted, name);
             } else {
               this.illegal += toCSV(this.illegal, name);

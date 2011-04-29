@@ -257,11 +257,11 @@ public class ACLEditController extends SimpleFormController {
                         type = Type.USER;
                     }
                     if (repository != null) {
-                        ACLEditValidation validationResult = ACLEditValidationHelper.validateGroupOrUserName(type,
+                        ACLEditValidationError validationResult = ACLEditValidationHelper.validateGroupOrUserName(type,
                                 groupOrUser.substring(prefix.length()), this.privilege, this.principalFactory,
-                                this.principalManager, repository);
+                                this.principalManager, repository).getError();
 
-                        if (validationResult.isValid()) {
+                        if (ACLEditValidationError.NONE.equals(validationResult)) {
                             validGroupsUsers++;
                         }
                     } else { // testcase

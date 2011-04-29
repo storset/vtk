@@ -259,8 +259,7 @@ public class ACLEditController extends SimpleFormController {
                         type = Type.USER;  
                     }
                     if (repository != null) {
-                        ACLEditValidationHelper helper = new ACLEditValidationHelper();
-                        Validation validationResult = helper.validateGroupOrUserName(type, groupOrUser
+                        ACLEditValidation validationResult = ACLEditValidationHelper.validateGroupOrUserName(type, groupOrUser
                                 .substring(prefix.length()), this.privilege, this.principalFactory,
                                 this.principalManager, repository);
 

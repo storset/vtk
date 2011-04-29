@@ -39,7 +39,7 @@ import org.vortikal.security.Principal.Type;
 
 public class ACLEditValidationHelper {
     
-    public Validation validateGroupOrUserName(Type type, String name, Privilege privilege,
+    public static ACLEditValidation validateGroupOrUserName(Type type, String name, Privilege privilege,
             PrincipalFactory principalFactory,  PrincipalManager principalManager, Repository repository) {
         
         try {
@@ -55,17 +55,17 @@ public class ACLEditValidationHelper {
             }
 
             if (groupOrUser != null && !exists) {
-                return new Validation(true, false, false);
+                return new ACLEditValidation(true, false, false);
             }
 
             if (!repository.isValidAclEntry(privilege, groupOrUser)) {
-                return new Validation(false, true, false);
+                return new ACLEditValidation(false, true, false);
             }
         } catch (InvalidPrincipalException ipe) {
-            return new Validation(false, false, true);
+            return new ACLEditValidation(false, false, true);
         }
         
-        return new Validation(false, false, false);
+        return new ACLEditValidation(false, false, false);
     }
    
     

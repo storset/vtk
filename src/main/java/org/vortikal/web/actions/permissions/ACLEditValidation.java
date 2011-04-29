@@ -29,14 +29,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package org.vortikal.web.actions.permissions;
-public class Validation {
+public class ACLEditValidation {
     
     // TODO: bitmasks?
     private boolean notFound = false;
     private boolean illegalBlacklisted = false;
     private boolean illegal = false;
     
-    public Validation(boolean notFound, boolean illegalBlaclisted, boolean illegal) {
+    public ACLEditValidation(boolean notFound, boolean illegalBlaclisted, boolean illegal) {
         this.notFound = notFound;
         this.illegalBlacklisted = illegalBlaclisted;
         this.illegal = illegal;

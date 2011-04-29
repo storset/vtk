@@ -246,7 +246,7 @@ public class ACLEditController extends SimpleFormController {
             String shortcut = it.next();
             if(!permissionShortcutsConfig.containsKey(shortcut)) {
                it.remove();
-               continue;
+               continue; // next shortcut
             }
             int validGroupsUsers = 0;
             List<String> groupsUsersPrShortcut = permissionShortcutsConfig.get(shortcut);

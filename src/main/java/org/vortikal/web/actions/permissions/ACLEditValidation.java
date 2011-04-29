@@ -31,7 +31,7 @@
 package org.vortikal.web.actions.permissions;
 public class ACLEditValidation {
     
-    // TODO: bitmasks?
+    // TODO: hmm.. how can this be done nicer? which data-structure?
     private boolean notFound = false;
     private boolean illegalBlacklisted = false;
     private boolean illegal = false;

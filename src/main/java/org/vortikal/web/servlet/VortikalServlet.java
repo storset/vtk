@@ -380,7 +380,6 @@ public class VortikalServlet extends DispatcherServlet {
             if (proceedService) {
                 super.doService(request, responseWrapper);
             }
-
         } catch (AuthenticationException ex) {
 
             try {
@@ -410,7 +409,6 @@ public class VortikalServlet extends DispatcherServlet {
             failureCause = t;
             handleError(request, responseWrapper, t);
         } finally {
-
             long processingTime = System.currentTimeMillis() - startTime;
 
             if (request.getAttribute(INDEX_FILE_REQUEST_ATTRIBUTE) == null) {
@@ -456,7 +454,7 @@ public class VortikalServlet extends DispatcherServlet {
     private HttpServletResponse filterResponse(HttpServletRequest request, HttpServletResponse response) {
         for (ResponseFilter filter: this.responseFilters) {
             if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Running responsefilter: " + filter);
+                this.logger.debug("Running response filter: " + filter);
             }
             response = filter.filter(request, response);
         }

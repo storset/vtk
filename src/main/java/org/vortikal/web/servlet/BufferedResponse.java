@@ -130,7 +130,7 @@ public class BufferedResponse implements StatusAwareHttpServletResponse {
     @Override
     public String getCharacterEncoding() {
         if (this.characterEncoding == null) {
-            return "iso-8859-1";
+            return DEFAULT_CHAR_ENCODING;
         }
         return this.characterEncoding;
     }

@@ -241,6 +241,7 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
             if ("Content-Type".equals(name) && contentTypeMatch(value)) {
                 this.response.setHeader("Vary", "Cookie");
             }
+            this.response.setHeader(name, value);
             super.setHeader(name, value);
         }
 
@@ -275,7 +276,15 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
             }
             super.setContentType(type);
         }
-
+        
+        @Override
+        public void setContentLength(int length) {
+            if (!DROPPED_HEADERS.contains("Content-Length")) {
+                this.response.setContentLength(length);
+                setHeader("Content-Length", String.valueOf(length));
+            }
+        }
+        
         @Override
         public String toString() {
             return "CacheControlResponseWrapper[" + super.toString() + "]";

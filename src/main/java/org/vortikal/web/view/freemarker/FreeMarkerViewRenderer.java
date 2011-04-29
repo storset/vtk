@@ -43,7 +43,7 @@ import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerView;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
-import org.vortikal.web.servlet.BufferedResponseWrapper;
+import org.vortikal.web.servlet.BufferedResponse;
 
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Template;
@@ -81,14 +81,15 @@ public class FreeMarkerViewRenderer extends FreeMarkerView implements ReferenceD
     }
 
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     protected void doRender(Map model, HttpServletRequest request, HttpServletResponse response)
             throws Exception {
-        BufferedResponseWrapper wrapper = new BufferedResponseWrapper(response);
+        BufferedResponse wrapper = new BufferedResponse();
         super.doRender(model, request, wrapper);
 
         ServletOutputStream outStream = response.getOutputStream();
         byte[] content = wrapper.getContentBuffer();
+        response.setContentType(getContentType());
         response.setContentLength(content.length);
 
         outStream.write(content);
@@ -101,7 +102,7 @@ public class FreeMarkerViewRenderer extends FreeMarkerView implements ReferenceD
     }
 
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     protected void processTemplate(Template template, Map model, HttpServletResponse response)
             throws IOException, TemplateException {
 

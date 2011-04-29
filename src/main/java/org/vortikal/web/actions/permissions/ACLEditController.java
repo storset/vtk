@@ -211,11 +211,19 @@ public class ACLEditController extends SimpleFormController {
             return showForm(request, response, bex);
 
         } else if (editCommand.getAddGroupAction() != null) {
+            // If not a shortcut and no groups/users in admin, then remove groups/users (typical when coming from a shortcut)
+            if (editCommand.getGroups().size() == 0 && editCommand.getUsers().size() == 0) {
+              acl = acl.clear(this.privilege); 
+            }
             acl = addToAcl(acl, editCommand.getGroupNames(), Type.GROUP);
             return showForm(request, response, new BindException(getACLEditCommand(resource, acl, yourself, true), this
                     .getCommandName()));
 
         } else if (editCommand.getAddUserAction() != null) {
+            // If not a shortcut and no groups/users in admin, then remove groups/users (typical when coming from a shortcut)
+            if (editCommand.getGroups().size() == 0 && editCommand.getUsers().size() == 0) {
+              acl = acl.clear(this.privilege); 
+            }
             acl = addToAcl(acl, editCommand.getUserNameEntries(), Type.USER);
             return showForm(request, response, new BindException(getACLEditCommand(resource, acl, yourself, true), this
                     .getCommandName()));

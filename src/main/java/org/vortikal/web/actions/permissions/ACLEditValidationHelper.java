@@ -39,18 +39,18 @@ import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.Principal.Type;
 
 public class ACLEditValidationHelper {
-    
-    public static final String GROUP_PREFIX = "group:";
-    public static final String USER_PREFIX = "user:";
-    
+
     public static final String VALIDATION_ERROR_GROUP_PREFIX = "group";
     public static final String VALIDATION_ERROR_USER_PREFIX = "user";
-    
+ 
     public static final String VALIDATION_ERROR_NOT_FOUND = "not.found";
     public static final String VALIDATION_ERROR_ILLEGAL_BLACKLISTED = "illegal.blacklisted";
     public static final String VALIDATION_ERROR_ILLEGAL = "illegal";
     public static final String VALIDATION_ERROR_TOO_MANY_MATCHES = "too.many.matches";
     public static final String VALIDATION_ERROR_NONE = "";
+    
+    public static final String SHORTCUT_GROUP_PREFIX = VALIDATION_ERROR_GROUP_PREFIX + ":";
+    public static final String SHORTCUT_USER_PREFIX = VALIDATION_ERROR_USER_PREFIX + ":";
     
     public static String validateGroupOrUserName(Type type, String name, Privilege privilege,
             PrincipalFactory principalFactory, PrincipalManager principalManager, Repository repository) {
@@ -64,7 +64,7 @@ public class ACLEditValidationHelper {
                 exists = principalManager.validateGroup(groupOrUser);
             } else {
                 if (PrincipalFactory.NAME_ALL.equals(name)) {
-                    // pseudo:all cant be validated for the moment
+                    // "pseudo:all" cant be validated for the moment
                     return VALIDATION_ERROR_NONE;
                 }
                 groupOrUser = principalFactory.getPrincipal(name, type);

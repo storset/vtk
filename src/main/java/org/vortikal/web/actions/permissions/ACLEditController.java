@@ -253,7 +253,7 @@ public class ACLEditController extends SimpleFormController {
             int validGroupsUsers = 0;
             List<String> groupsUsersPrShortcut = permissionShortcutsConfig.get(shortcut);
             for (String groupOrUser : groupsUsersPrShortcut) {
-                if (groupOrUser.startsWith(ACLEditValidationHelper.GROUP_PREFIX) || groupOrUser.startsWith(ACLEditValidationHelper.USER_PREFIX)) {
+                if (groupOrUser.startsWith(ACLEditValidationHelper.SHORTCUT_GROUP_PREFIX) || groupOrUser.startsWith(ACLEditValidationHelper.SHORTCUT_USER_PREFIX)) {
                     if (repository != null) {
                         String groupOrUserUnformatted[] = new String[1];
                         Type type = unformatGroupOrUserAndSetType(groupOrUser, groupOrUserUnformatted);
@@ -304,12 +304,12 @@ public class ACLEditController extends SimpleFormController {
             // Find matches in shortcut ACEs
             for (String aceWithPrefix : shortcutACEs) {
                 for (Principal group : authorizedGroups) {
-                    if ((ACLEditValidationHelper.GROUP_PREFIX + group.getName()).equals(aceWithPrefix)) {
+                    if ((ACLEditValidationHelper.SHORTCUT_GROUP_PREFIX + group.getName()).equals(aceWithPrefix)) {
                         matchedACEs++;
                     }
                 }
                 for (Principal user : authorizedUsers) {
-                    if ((ACLEditValidationHelper.USER_PREFIX + user.getName()).equals(aceWithPrefix)) {
+                    if ((ACLEditValidationHelper.SHORTCUT_USER_PREFIX + user.getName()).equals(aceWithPrefix)) {
                         matchedACEs++;
                     }
                 }
@@ -499,11 +499,11 @@ public class ACLEditController extends SimpleFormController {
      */
     private Type unformatGroupOrUserAndSetType(String groupOrUser, String[] groupOrUserUnformatted) throws Exception {
         Type type = null;
-        if (groupOrUser.startsWith(ACLEditValidationHelper.GROUP_PREFIX)) {
-            groupOrUserUnformatted[0] = groupOrUser.substring(ACLEditValidationHelper.GROUP_PREFIX.length());
+        if (groupOrUser.startsWith(ACLEditValidationHelper.SHORTCUT_GROUP_PREFIX)) {
+            groupOrUserUnformatted[0] = groupOrUser.substring(ACLEditValidationHelper.SHORTCUT_GROUP_PREFIX.length());
             type = Type.GROUP;
-        } else if (groupOrUser.startsWith(ACLEditValidationHelper.USER_PREFIX)) {
-            groupOrUserUnformatted[0] = groupOrUser.substring(ACLEditValidationHelper.USER_PREFIX.length());
+        } else if (groupOrUser.startsWith(ACLEditValidationHelper.SHORTCUT_USER_PREFIX)) {
+            groupOrUserUnformatted[0] = groupOrUser.substring(ACLEditValidationHelper.SHORTCUT_USER_PREFIX.length());
             type = Type.USER;
         }
         return type;

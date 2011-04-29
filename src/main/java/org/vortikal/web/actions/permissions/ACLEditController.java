@@ -107,7 +107,7 @@ public class ACLEditController extends SimpleFormController {
         this.shortcuts = this.permissionShortcuts.get(this.privilege);
         if (this.shortcuts != null) {
            this.validShortcuts = countValidshortcuts(this.shortcuts, this.permissionShortcutsConfig);
-        }
+        } 
         
         this.yourselfStillAdmin = true;
 
@@ -144,11 +144,6 @@ public class ACLEditController extends SimpleFormController {
         command.setUsers(authorizedUsers);
 
         return command;
-    }
-
-
-    protected boolean isFormSubmission(HttpServletRequest request) {
-        return "POST".equals(request.getMethod());
     }
 
 
@@ -242,7 +237,7 @@ public class ACLEditController extends SimpleFormController {
      * @param permissionShortcutsConfig the users and groups for the shortcuts
      * @return number of valid shortcuts
      */
-    protected int countValidshortcuts(List<String> shortcuts, Map<String, List<String>> permissionShortcutsConfig) {
+    protected int countValidshortcuts(List<String> shortcuts, Map<String, List<String>> permissionShortcutsConfig) throws Exception {
         int valid = 0;
         for (String shortcut : shortcuts) {
             int validGroupsUsers = 0;
@@ -271,7 +266,7 @@ public class ACLEditController extends SimpleFormController {
      * @return a <code>String[][]</code> object containing checked / not-checked shortcuts
      */
     protected String[][] extractAndCheckShortcuts(List<Principal> authorizedGroups, List<Principal> authorizedUsers,
-            int validShortcuts, List<String> shortcuts, Map<String, List<String>> permissionShortcutsConfig, boolean isCustomPermissions) {
+            int validShortcuts, List<String> shortcuts, Map<String, List<String>> permissionShortcutsConfig, boolean isCustomPermissions) throws Exception {
         
          String checkedShortcuts[][] = new String[validShortcuts][2];
 
@@ -329,8 +324,7 @@ public class ACLEditController extends SimpleFormController {
      * @param errors ACL validation errors
      * @return the modified ACL
      */
-    private Acl updateAclIfShortcut(Acl acl, ACLEditCommand editCommand, Principal yourself, BindException errors) {
-        
+    private Acl updateAclIfShortcut(Acl acl, ACLEditCommand editCommand, Principal yourself, BindException errors) throws Exception {    
         String updatedShortcut = editCommand.getUpdatedShortcut();
 
         if (this.permissionShortcutsConfig.get(updatedShortcut) != null) {
@@ -366,7 +360,7 @@ public class ACLEditController extends SimpleFormController {
      * @param errors ACL validation errors
      * @return the modified ACL
      */
-    private Acl removeFromAcl(Acl acl, String[] values, Type type, Principal yourself, BindException errors) {
+    private Acl removeFromAcl(Acl acl, String[] values, Type type, Principal yourself, BindException errors) throws Exception {
         for (String value : values) {
             Principal userOrGroup = principalFactory.getPrincipal(value, typePseudoUser(type, value));
             Acl potentialAcl = acl.removeEntry(this.privilege, userOrGroup);
@@ -398,7 +392,7 @@ public class ACLEditController extends SimpleFormController {
      * @return the modified ACL
      */
     private Acl checkIfYourselfIsStillInAdminPrivilegedGroups(Acl acl, Acl potentialAcl, Principal userOrGroup,
-            Principal yourself, BindException errors) {
+            Principal yourself, BindException errors) throws Exception {
         
         Set<Principal> memberGroups = principalManager.getMemberGroups(yourself);
         Principal[] privilegedGroups = potentialAcl.listPrivilegedGroups(Privilege.ALL);
@@ -423,7 +417,7 @@ public class ACLEditController extends SimpleFormController {
      * @param errors ACL validation errors
      * @return the modified ACL
      */
-    private Acl checkIfNotEmptyAdminAcl(Acl acl, Acl potentialAcl, Principal userOrGroup, BindException errors) {
+    private Acl checkIfNotEmptyAdminAcl(Acl acl, Acl potentialAcl, Principal userOrGroup, BindException errors) throws Exception {
         if (potentialAcl.getPrincipalSet(Privilege.ALL).size() == 0) {
             String prefixType = (userOrGroup.getType().equals(Type.GROUP)) ? "group" : "user";
             errors.rejectValue(prefixType + "Names", "permissions.all.not.empty",
@@ -443,7 +437,7 @@ public class ACLEditController extends SimpleFormController {
      * @param type type of ACL (GROUP or USER)
      * @return the modified ACL
      */
-    private Acl addToAcl(Acl acl, String[] values, Type type) {
+    private Acl addToAcl(Acl acl, String[] values, Type type) throws Exception {
         for (String value : values) {
             Principal principal = principalFactory.getPrincipal(value, typePseudoUser(type, value));
             if (!acl.containsEntry(this.privilege, principal)) {
@@ -462,7 +456,7 @@ public class ACLEditController extends SimpleFormController {
      * @param type type of ACL (GROUP or USER)
      * @return the modified ACL
      */
-    private Acl addToAcl(Acl acl, List<String> values, Type type) {
+    private Acl addToAcl(Acl acl, List<String> values, Type type) throws Exception {
         for (String value : values) {
             Principal principal = principalFactory.getPrincipal(value, typePseudoUser(type, value));
             if (!acl.containsEntry(this.privilege, principal)) {
@@ -480,7 +474,7 @@ public class ACLEditController extends SimpleFormController {
      * @param groupOrUserShortcut unformatted shortcut (return by reference)
      * @return type of ACL (GROUP or USER)
      */
-    private Type unformatGroupOrUserAndSetType(String groupOrUser, String[] groupOrUserUnformatted) {
+    private Type unformatGroupOrUserAndSetType(String groupOrUser, String[] groupOrUserUnformatted) throws Exception {
         Type type = null;
         if (groupOrUser.startsWith(GROUP_PREFIX)) {
             groupOrUserUnformatted[0] = groupOrUser.substring(GROUP_PREFIX.length());
@@ -500,7 +494,7 @@ public class ACLEditController extends SimpleFormController {
      * @param value group or user
      * @return type type of ACL (GROUP or USER or PSEUDO)
      */
-    private Type typePseudoUser(Type type, String value) {
+    private Type typePseudoUser(Type type, String value) throws Exception {
         if (type.equals(Type.USER)) {
             if (value.startsWith(PSEUDO_PREFIX)) {
                 type = Type.PSEUDO;

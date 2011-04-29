@@ -76,7 +76,7 @@ public class ACLEditControllerTest extends TestCase {
             assertEquals("", extractedShortcuts[3][1]);
 
         } catch (Exception ex) {
-            System.out.println("Validating and extracting shortcuts fails " + ex.getMessage());
+            System.out.println("Extracting of shortcuts fails " + ex.getMessage());
         }
 
     }

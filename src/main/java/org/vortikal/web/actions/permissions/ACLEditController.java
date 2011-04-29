@@ -68,7 +68,6 @@ public class ACLEditController extends SimpleFormController {
     private Map<String, List<String>> permissionShortcutsConfig;
     
     private List<String> shortcuts;
-    private int validShortcuts = 0;
     
     private static final String GROUP_PREFIX = "group:";
     private static final String USER_PREFIX = "user:";
@@ -239,28 +238,27 @@ public class ACLEditController extends SimpleFormController {
      * @return number of valid shortcuts
      */
     protected List<String> validateShortcuts(List<String> shortcuts, Map<String, List<String>> permissionShortcutsConfig, Repository repository) throws Exception {
-        int valid = 0;
         int counter = 0;
         Iterator<String> it = shortcuts.iterator();
         while (it.hasNext()) {
             String shortcut = it.next();
-            if(!permissionShortcutsConfig.containsKey(shortcut)) {
-               it.remove();
-               continue; // next shortcut
+            if (!permissionShortcutsConfig.containsKey(shortcut)) {
+                it.remove();
+                continue; // next shortcut
             }
             int validGroupsUsers = 0;
             List<String> groupsUsersPrShortcut = permissionShortcutsConfig.get(shortcut);
             for (String groupOrUser : groupsUsersPrShortcut) {
-                if (groupOrUser.startsWith(GROUP_PREFIX) || groupOrUser.startsWith(USER_PREFIX)) {    
+                if (groupOrUser.startsWith(GROUP_PREFIX) || groupOrUser.startsWith(USER_PREFIX)) {
                     String prefix = GROUP_PREFIX;
                     Type type = Type.GROUP;
-                    if(groupOrUser.startsWith(USER_PREFIX)) {
+                    if (groupOrUser.startsWith(USER_PREFIX)) {
                         prefix = USER_PREFIX;
-                        type = Type.USER;  
+                        type = Type.USER;
                     }
                     if (repository != null) {
-                        ACLEditValidation validationResult = ACLEditValidationHelper.validateGroupOrUserName(type, groupOrUser
-                                .substring(prefix.length()), this.privilege, this.principalFactory,
+                        ACLEditValidation validationResult = ACLEditValidationHelper.validateGroupOrUserName(type,
+                                groupOrUser.substring(prefix.length()), this.privilege, this.principalFactory,
                                 this.principalManager, repository);
 
                         if (validationResult.isValid()) {
@@ -271,14 +269,11 @@ public class ACLEditController extends SimpleFormController {
                     }
                 }
             }
-            if (groupsUsersPrShortcut.size() == validGroupsUsers) {
-                valid++;
-            } else {
+            if (groupsUsersPrShortcut.size() != validGroupsUsers) {
                 it.remove();
             }
             counter++;
         }
-        this.validShortcuts = valid;
         return shortcuts;
     }
     

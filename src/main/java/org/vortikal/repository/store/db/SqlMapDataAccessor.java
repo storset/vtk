@@ -998,18 +998,18 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         }
     }
 
-    private void populateCustomProperties(ResourceImpl[] resources, List<Map<String, Object>> propertyRows) {
+    private void populateCustomProperties(ResourceImpl[] resources,
+                                          List<Map<String, Object>> propertyRows) {
 
-        Map<Integer, ResourceImpl> resourceMap = new HashMap<Integer, ResourceImpl>();
-
+        Map<Integer, ResourceImpl> resourceMap =
+                new HashMap<Integer, ResourceImpl>(resources.length+1, 1f);
         for (ResourceImpl resource : resources) {
             resourceMap.put(resource.getID(), resource);
         }
 
-        Map<SqlDaoUtils.PropHolder, List<String>> propMap = new HashMap<SqlDaoUtils.PropHolder, List<String>>();
+        Map<SqlDaoUtils.PropHolder, List<String>> propValuesMap = new HashMap<SqlDaoUtils.PropHolder, List<String>>();
 
         for (Map<String, Object> propEntry : propertyRows) {
-
             SqlDaoUtils.PropHolder prop = new SqlDaoUtils.PropHolder();
             prop.propID = propEntry.get("id");
             prop.namespaceUri = (String) propEntry.get("namespaceUri");
@@ -1021,11 +1021,12 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
             } else {
                 prop.binary = (Integer) binary != 0;
             }
-            List<String> values = propMap.get(prop);
+            
+            List<String> values = propValuesMap.get(prop);
             if (values == null) {
-                values = new ArrayList<String>();
+                values = new ArrayList<String>(2); // Most props have only one value
                 prop.values = values;
-                propMap.put(prop, values);
+                propValuesMap.put(prop, values);
             }
             if (prop.binary) {
                 values.add(prop.propID.toString());
@@ -1034,7 +1035,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
             }
         }
 
-        for (SqlDaoUtils.PropHolder prop : propMap.keySet()) {
+        for (SqlDaoUtils.PropHolder prop : propValuesMap.keySet()) {
 
             ResourceImpl r = resourceMap.get(prop.resourceId);
 
@@ -1047,14 +1048,10 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
                 // here ..
                 continue;
             }
-
-            if (prop.binary) {
-
-                r.addProperty(createProperty(prop.namespaceUri, prop.name, new String[] { prop.propID.toString() }));
-            } else {
-                r.addProperty(createProperty(prop.namespaceUri, prop.name, prop.values.toArray(new String[prop.values
-                        .size()])));
-            }
+            
+            r.addProperty(createProperty(prop.namespaceUri, 
+                                         prop.name,
+                                         prop.values.toArray(new String[prop.values.size()])));
         }
     }
 

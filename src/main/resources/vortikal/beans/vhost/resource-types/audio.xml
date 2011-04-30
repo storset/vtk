@@ -73,9 +73,8 @@
     <property name="propertyEvaluator" ref="audioOverriddenTitlePropertyEvaluator" />
   </bean>
 
-  <bean id="audioOverriddenTitlePropertyEvaluator"
-        parent="titleEvaluator">
-        <property name="fallbackTitlePropDef" ref="audioTitlePropDef"/>
+  <bean id="audioOverriddenTitlePropertyEvaluator" parent="titleEvaluator">
+    <property name="fallbackTitlePropDef" ref="audioTitlePropDef"/>
   </bean>
 
   <bean id="audioTrackPropDef"

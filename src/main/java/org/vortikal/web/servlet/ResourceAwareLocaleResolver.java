@@ -61,6 +61,7 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
     private Locale defaultLocale;
     private String trustedToken = null;
 
+    @Override
     public Locale resolveLocale(HttpServletRequest request) {
         RequestContext requestContext = RequestContext.getRequestContext();
         Path uri = requestContext.getResourceURI();

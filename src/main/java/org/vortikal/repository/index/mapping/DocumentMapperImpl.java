@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.index.mapping;
 
+import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import static org.vortikal.repository.resourcetype.PropertyType.Type.BINARY;
 import static org.vortikal.repository.resourcetype.PropertyType.Type.JSON;
 
@@ -86,57 +87,32 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
 
     // Fast lookup maps for flat list of resource type prop defs and
     // stored field-name to prop-def map
-    Map<String, List<PropertyTypeDefinition>> resourceTypePropDefsMap = new HashMap<String, List<PropertyTypeDefinition>>();
     Map<String, PropertyTypeDefinition> storedFieldNamePropDefMap = new HashMap<String, PropertyTypeDefinition>();
 
     @Override
     public void afterPropertiesSet() {
-        populateTypeInfoCacheMaps(this.resourceTypePropDefsMap, this.storedFieldNamePropDefMap, this.resourceTypeTree
+        populateTypeInfoCacheMaps(this.storedFieldNamePropDefMap, this.resourceTypeTree
                 .getRoot());
     }
 
-    private void populateTypeInfoCacheMaps(Map<String, List<PropertyTypeDefinition>> resourceTypePropDefsMap,
-            Map<String, PropertyTypeDefinition> storedFieldPropDefMap, PrimaryResourceTypeDefinition rtDef) {
+    private void populateTypeInfoCacheMaps(Map<String, PropertyTypeDefinition> storedFieldPropDefMap, 
+            PrimaryResourceTypeDefinition rtDef) {
 
-        String resourceTypeName = rtDef.getName();
-        List<PropertyTypeDefinition> propDefs // Prop-defs from mixins are
-                                              // included here
-        = this.resourceTypeTree.getPropertyTypeDefinitionsIncludingAncestors(rtDef);
+        // Prop-defs from mixins are included here.
+        List<PropertyTypeDefinition> propDefs
+                = this.resourceTypeTree.getPropertyTypeDefinitionsIncludingAncestors(rtDef);
 
-        List<PropertyTypeDefinition> canonicalPropDefs = getCanonicalPropDefInstances(propDefs);
-
-        resourceTypePropDefsMap.put(resourceTypeName, canonicalPropDefs);
-
-        for (PropertyTypeDefinition canonicalDef : canonicalPropDefs) {
-            String fieldName = FieldNameMapping.getStoredFieldName(canonicalDef);
+        for (PropertyTypeDefinition propDef : propDefs) {
+            String fieldName = FieldNameMapping.getStoredFieldName(propDef);
             if (!storedFieldPropDefMap.containsKey(fieldName)) {
-                storedFieldPropDefMap.put(fieldName, canonicalDef);
+                storedFieldPropDefMap.put(fieldName, propDef);
             }
         }
 
         for (PrimaryResourceTypeDefinition child : this.resourceTypeTree.getResourceTypeDefinitionChildren(rtDef)) {
-            populateTypeInfoCacheMaps(resourceTypePropDefsMap, storedFieldPropDefMap, child);
+            populateTypeInfoCacheMaps(storedFieldPropDefMap, child);
         }
 
-    }
-
-    // XXX Make sure we get "canonical" or "final" prop-def object ref.
-    // Multiple prop-def objects for same property can exist because of
-    // overriding
-    // This is relevant in field-loading/property selection code, which compares
-    // propdef-instances by object ref.
-    // XXX Fix ResourceTypeTree.getPropertyTypeDefinitionsIncludingAncestors(..)
-    // XXX Sigh..
-    private List<PropertyTypeDefinition> getCanonicalPropDefInstances(List<PropertyTypeDefinition> defs) {
-        List<PropertyTypeDefinition> canonicalDefs = new ArrayList<PropertyTypeDefinition>(defs.size());
-        for (PropertyTypeDefinition def : defs) {
-            canonicalDefs.add(getCanonicalPropDefInstance(def));
-        }
-        return canonicalDefs;
-    }
-
-    private PropertyTypeDefinition getCanonicalPropDefInstance(PropertyTypeDefinition def) {
-        return this.resourceTypeTree.getPropertyTypeDefinition(def.getNamespace(), def.getName());
     }
 
     /**
@@ -210,20 +186,20 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
             }
         }
 
-        List<PropertyTypeDefinition> propDefs = this.resourceTypePropDefsMap.get(propSet.getResourceType());
-
-        if (propDefs == null) {
+        final ResourceTypeDefinition rtDef = 
+                this.resourceTypeTree.getResourceTypeDefinitionByName(propSet.getResourceType());
+        if (rtDef == null) {
             logger.warn("Missing type information for resource type '" + propSet.getResourceType()
                     + "', cannot create complete index document.");
             return doc;
         }
-
+        
         // Index only properties that satisfy the following conditions:
         // 1) Belongs to the resource type's definition
         // 2) Exists in the property set.
         // 3) Is of type that is sensible to index for searching.
         // Store *all* properties, except those of type BINARY.
-        for (PropertyTypeDefinition propDef : propDefs) {
+        for (PropertyTypeDefinition propDef : this.resourceTypeTree.getPropertyTypeDefinitionsIncludingAncestors(rtDef)) {
             Property property = propSet.getProperty(propDef);
 
             if (property == null)

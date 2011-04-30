@@ -32,12 +32,14 @@ package org.vortikal.repository;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -64,8 +66,10 @@ import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.repository.resourcetype.ValueFormatterRegistry;
 
 
-public class ResourceTypeTreeImpl 
-    implements ResourceTypeTree, InitializingBean, ApplicationContextAware {
+/**
+ * XXX in need of refactoring/cleanup.
+ */
+public class ResourceTypeTreeImpl implements ResourceTypeTree, InitializingBean, ApplicationContextAware {
 
     private static Log logger = LogFactory.getLog(ResourceTypeTreeImpl.class);
     
@@ -164,6 +168,7 @@ public class ResourceTypeTreeImpl
 
     private ValueFactory valueFactory;
 
+    @Override
     public PropertyTypeDefinition getPropertyTypeDefinition(Namespace namespace, String name) {
         Map<String, PropertyTypeDefinition> map = this.propertyTypeDefinitions.get(namespace);
 
@@ -184,28 +189,33 @@ public class ResourceTypeTreeImpl
         propDef.setName(name);
         propDef.setValueFactory(this.valueFactory);
         propDef.setValueFormatterRegistry(this.valueFormatterRegistry);
-        
         propDef.afterPropertiesSet();
+
         return propDef;
     }
 
+    @Override
     public void afterPropertiesSet() throws Exception {
         init();
     }
 
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext)
             throws BeansException {
         this.applicationContext = applicationContext;
     }
 
+    @Override
     public PrimaryResourceTypeDefinition getRoot() {
         return this.rootResourceTypeDefinition;
     }
 
+    @Override
     public List<MixinResourceTypeDefinition> getMixinTypes(PrimaryResourceTypeDefinition rt) {
         return this.mixinTypeDefinitionMap.get(rt);
     }
     
+    @Override
     public List<PrimaryResourceTypeDefinition> getResourceTypeDefinitionChildren(PrimaryResourceTypeDefinition def) {
         List<PrimaryResourceTypeDefinition> children = this.parentChildMap.get(def);
         
@@ -215,15 +225,18 @@ public class ResourceTypeTreeImpl
         return children;
     }
 
+    @Override
     public List<String> getDescendants(String name) {
          return this.resourceTypeDescendantNames.get(name);
     }
 
+    @Override
     public String[] getAllowedValues() {
         return this.primaryResourceTypeNames;
     }
 
     
+    @Override
     public ResourceTypeDefinition getResourceTypeDefinitionByName(String name) {
         ResourceTypeDefinition type = this.resourceTypeNameMap.get(name);
         if (type == null) {
@@ -234,6 +247,7 @@ public class ResourceTypeTreeImpl
         return type;
     }
 
+    @Override
     public PropertyTypeDefinition getPropertyDefinitionByPrefix(String prefix, String name) {
         Namespace namespace = this.namespacePrefixMap.get(prefix);
         if (namespace == null) {
@@ -243,14 +257,14 @@ public class ResourceTypeTreeImpl
         return propertyTypeDefinition;
     }
 
+    @Override
     public PropertyTypeDefinition getPropertyDefinitionByPointer(String pointer) {
         
-        final String pointerDelimiter = ":";
-        if (!pointer.contains(pointerDelimiter)) {
+        if (!pointer.contains(":")) {
             return this.getPropertyDefinitionByPrefix(null, pointer);
         }
 
-        String[] pointers = pointer.split(pointerDelimiter);
+        String[] pointers = pointer.split(":");
         if (pointers.length == 2) {
             return this.getPropertyDefinitionByPrefix(pointers[0], pointers[1]);
         }
@@ -262,11 +276,14 @@ public class ResourceTypeTreeImpl
 
     }
 
-    private PropertyTypeDefinition getPropertyDefinitionForResource(String resource, String prefix, String name) {
+    // XXX What about ancestor+mixin resource type prop defs ? Looks like they are not handled here.
+    private PropertyTypeDefinition getPropertyDefinitionForResource(String resourceType,
+                                                                    String prefix, String name) {
+        if (prefix != null && prefix.trim().length() == 0) {
+            prefix = null;
+        }
 
-        prefix = "".trim().equals(prefix) ? null : prefix;
-
-        ResourceTypeDefinition resourceTypeDefinition = this.getResourceTypeDefinitionByName(resource);
+        ResourceTypeDefinition resourceTypeDefinition = this.getResourceTypeDefinitionByName(resourceType);
         if (resourceTypeDefinition == null) {
             return null;
         }
@@ -286,38 +303,54 @@ public class ResourceTypeTreeImpl
     }
     
     /**
+     * Small cache to make method 
+     * {@link #getPropertyTypeDefinitionsIncludingAncestors(org.vortikal.repository.resourcetype.ResourceTypeDefinition)
+     * less expensive.
+     */
+    private Map<ResourceTypeDefinition, List<PropertyTypeDefinition>>
+            propDefsIncludingAncestorsCache 
+            = new ConcurrentHashMap<ResourceTypeDefinition, List<PropertyTypeDefinition>>();
+    
+    /**
      * Search upwards in resource type tree, collect property type definitions
      * from all encountered resource type definitions including mixin resource types.
-     * FIXME: Assuming that mixin types can never have mixin parent.
+     * Assuming that mixin types can never have mixin parent.
      * 
      * If there are more than one occurence of the same property type definition
      * for the given resource type, only the first occurence in the resource type
      * tree is added to the returned list (upward direction).
      * 
      * @param def The <code>ResourceTypeDefinition</code> 
-     * @return A <code>Set</code> of <code>PropertyTypeDefinition</code> instances.
+     * @return A <code>List</code> of <code>PropertyTypeDefinition</code> instances.
      */
+    @Override
     public List<PropertyTypeDefinition> getPropertyTypeDefinitionsIncludingAncestors(
-                                                    ResourceTypeDefinition def) {
-        Set<String> encounteredIds = new HashSet<String>();
-        List<PropertyTypeDefinition> propertyTypes = new ArrayList<PropertyTypeDefinition>();
+                                              final ResourceTypeDefinition def) {
+        
+        List<PropertyTypeDefinition> collectedPropDefs = this.propDefsIncludingAncestorsCache.get(def);
+        if (collectedPropDefs != null) {
+            return collectedPropDefs;
+        }
+        
+        Set<String> encountered = new HashSet<String>();
+        collectedPropDefs = new ArrayList<PropertyTypeDefinition>();
         
         if (def instanceof MixinResourceTypeDefinition) {
             MixinResourceTypeDefinition mixinDef = (MixinResourceTypeDefinition)def;
             
             PropertyTypeDefinition[] propDefs = mixinDef.getPropertyTypeDefinitions();
-            addPropertyTypeDefinitions(encounteredIds, propertyTypes, propDefs);
+            addPropertyTypeDefinitions(encountered, collectedPropDefs, propDefs);
         } else {
             // Assuming instanceof PrimaryResourceTypeDefinition
             PrimaryResourceTypeDefinition primaryDef = (PrimaryResourceTypeDefinition)def; 
 
             while (primaryDef != null) {
                 PropertyTypeDefinition[] propDefs = primaryDef.getPropertyTypeDefinitions();
-                addPropertyTypeDefinitions(encounteredIds, propertyTypes, propDefs);
+                addPropertyTypeDefinitions(encountered, collectedPropDefs, propDefs);
                 
                 // Add any mixin resource types' property type defs
                 for (MixinResourceTypeDefinition mixinDef: primaryDef.getMixinTypeDefinitions()) {
-                    addPropertyTypeDefinitions(encounteredIds, propertyTypes, 
+                    addPropertyTypeDefinitions(encountered, collectedPropDefs, 
                                                 mixinDef.getPropertyTypeDefinitions());
                 }
 
@@ -325,9 +358,25 @@ public class ResourceTypeTreeImpl
             }
         }
         
-        return propertyTypes;
+        collectedPropDefs = Collections.unmodifiableList(collectedPropDefs);
+        this.propDefsIncludingAncestorsCache.put(def, collectedPropDefs);
+        return collectedPropDefs;
     }
     
+    private void addPropertyTypeDefinitions(Set<String> encountered,
+                                            List<PropertyTypeDefinition> collectedPropDef, 
+                                            PropertyTypeDefinition[] propDefs) {
+        for (PropertyTypeDefinition propDef: propDefs) {
+            String id = propDef.getNamespace().getUri() + ":" + propDef.getName();
+            // Add only _first_ occurence of property type definition keyed on id
+            // Also go through getPropertyTypeDefintion to get canonical instance (
+            if (encountered.add(id)) {
+                collectedPropDef.add(getPropertyTypeDefinition(propDef.getNamespace(), propDef.getName()));
+            }
+        }
+    }
+    
+    @Override
     public boolean isContainedType(ResourceTypeDefinition def, String resourceTypeName) {
 
         ResourceTypeDefinition type = this.resourceTypeNameMap.get(resourceTypeName);
@@ -354,6 +403,7 @@ public class ResourceTypeTreeImpl
     }
 
     
+    @Override
     public List<PropertyTypeDefinition> getPropertyTypeDefinitions() {
         ArrayList<PropertyTypeDefinition> definitions = 
             new ArrayList<PropertyTypeDefinition>();
@@ -365,6 +415,7 @@ public class ResourceTypeTreeImpl
         return definitions;
     }
 
+    @Override
     public Namespace getNamespace(String namespaceUrl) {
         Namespace namespace = this.namespaceUriMap.get(namespaceUrl);
         
@@ -374,6 +425,7 @@ public class ResourceTypeTreeImpl
     }
 
 
+    @Override
     public PrimaryResourceTypeDefinition[] getPrimaryResourceTypesForPropDef(
             PropertyTypeDefinition definition) {
 
@@ -394,6 +446,7 @@ public class ResourceTypeTreeImpl
         return null;
     }
 
+    @Override
     public String getResourceTypeTreeAsString() {
         StringBuilder sb = new StringBuilder();
         printResourceTypes(sb, 0, this.rootResourceTypeDefinition);
@@ -413,6 +466,7 @@ public class ResourceTypeTreeImpl
         return list.toArray(new String[list.size()]);
     }
 
+    @Override
     public void registerDynamicResourceType(PrimaryResourceTypeDefinition def) {
         List<PrimaryResourceTypeDefinition> tmp = 
             new ArrayList<PrimaryResourceTypeDefinition>();
@@ -555,16 +609,6 @@ public class ResourceTypeTreeImpl
         
     }
     
-    private void addPropertyTypeDefinitions(Set<String> encounteredIds, List<PropertyTypeDefinition> propertyTypes, 
-                                            PropertyTypeDefinition[] propDefs) {
-        for (PropertyTypeDefinition propDef: propDefs) {
-            String id = propDef.getNamespace().getUri() + ":" + propDef.getName();
-            // Add only _first_ occurence of property type definition keyed on
-            if (encounteredIds.add(id)) {
-                propertyTypes.add(propDef);
-            }
-        }
-    }
     
     private void injectTypeLocalizationProvider(ResourceTypeDefinition def) {
         AbstractResourceTypeDefinitionImpl defImpl = (AbstractResourceTypeDefinitionImpl)def;
@@ -801,5 +845,6 @@ public class ResourceTypeTreeImpl
     @Required public void setValueFactory(ValueFactory valueFactory) {
         this.valueFactory = valueFactory;
     }
+
 
 }

@@ -959,6 +959,7 @@
     <property name="principalFactory" ref="principalFactory" />
     <property name="permissionShortcuts" ref="permissionShortcuts" />
     <property name="permissionShortcutsConfig" ref="permissionShortcutsProvider.config" />
+    <property name="roleManager" ref="roleManager"/>
   </bean>
 
   <bean id="editReadPermissionsHandler" parent="abstractPermissionsHandler">

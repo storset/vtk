@@ -55,6 +55,7 @@ import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.Principal.Type;
+import org.vortikal.security.roles.RoleManager;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
@@ -63,6 +64,7 @@ public class ACLEditController extends SimpleFormController {
     private Privilege privilege;
     private PrincipalManager principalManager;
     private PrincipalFactory principalFactory;
+    private RoleManager roleManager;
 
     private Map<Privilege, List<String>> permissionShortcuts;
     private Map<String, List<String>> permissionShortcutsConfig;
@@ -388,25 +390,25 @@ public class ACLEditController extends SimpleFormController {
         for (String value : values) {
             Principal userOrGroup = principalFactory.getPrincipal(value, typePseudoUser(type, value));
             Acl potentialAcl = acl.removeEntry(this.privilege, userOrGroup);
-            if (this.privilege.equals(Privilege.ALL)) {
+            if (this.privilege.equals(Privilege.ALL) && !this.roleManager.hasRole(yourself, RoleManager.Role.ROOT)) {
                 boolean tryingToRemoveYourself = yourself.equals(userOrGroup);
                 boolean yourselfNotInAdmin = !acl.containsEntry(this.privilege, yourself);
                 boolean tryingToRemoveGroup = Type.GROUP.equals(type);
-                if (tryingToRemoveYourself || (yourselfNotInAdmin && tryingToRemoveGroup)) {
+                  if (tryingToRemoveYourself || (yourselfNotInAdmin && tryingToRemoveGroup)) {
                     acl = checkIfNotEmptyAdminAcl(acl, potentialAcl, userOrGroup, errors);
                     if(!errors.hasErrors()) {
                       acl = checkIfYourselfIsStillInAdminPrivilegedGroups(acl, potentialAcl, userOrGroup, yourself, errors);
                     }
-                } else {
+                  } else {
                     acl = checkIfNotEmptyAdminAcl(acl, potentialAcl, userOrGroup, errors);
-                }
+                  }
             } else {
                 acl = potentialAcl;
             }
         }
         return acl;
     }
-
+    
 
     /**
      * Check if yourself is still in privileged groups for admin after removal
@@ -426,9 +428,7 @@ public class ACLEditController extends SimpleFormController {
         
         this.yourselfStillAdmin = false;
         for (Principal privilegedGroup : privilegedGroups) {
-            //System.out.println("*****************************: " + privilegedGroup.getQualifiedName());
             for (Principal memberGroup : memberGroups) {
-                //System.out.println("*****************************: " + memberGroup.getQualifiedName());
                 if (memberGroup.equals(privilegedGroup)) {
                     this.yourselfStillAdmin = true;
                     break;
@@ -550,6 +550,11 @@ public class ACLEditController extends SimpleFormController {
     @Required
     public void setPrincipalManager(PrincipalManager principalManager) {
         this.principalManager = principalManager;
+    }
+    
+    @Required
+    public void setRoleManager(RoleManager roleManager) {
+        this.roleManager = roleManager;
     }
 
 

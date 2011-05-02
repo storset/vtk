@@ -426,9 +426,9 @@ public class ACLEditController extends SimpleFormController {
         
         this.yourselfStillAdmin = false;
         for (Principal privilegedGroup : privilegedGroups) {
-            System.out.println("*****************************: " + privilegedGroup.getQualifiedName());
+            //System.out.println("*****************************: " + privilegedGroup.getQualifiedName());
             for (Principal memberGroup : memberGroups) {
-                System.out.println("*****************************: " + memberGroup.getQualifiedName());
+                //System.out.println("*****************************: " + memberGroup.getQualifiedName());
                 if (memberGroup.equals(privilegedGroup)) {
                     this.yourselfStillAdmin = true;
                     break;

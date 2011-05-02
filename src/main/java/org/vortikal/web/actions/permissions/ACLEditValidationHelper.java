@@ -65,30 +65,26 @@ public class ACLEditValidationHelper {
             } else {
                 if (PrincipalFactory.NAME_ALL.equals(name)) {
                     // "pseudo:all" - should it be validated other than this way?
-                    System.out.println("Think it is pseudo:all");
                     return VALIDATION_ERROR_NONE;
                 }
                 groupOrUser = principalFactory.getPrincipal(name, type);
-                exists = principalManager.validatePrincipal(groupOrUser);
+                if(groupOrUser != null) {
+                  exists = principalManager.validatePrincipal(groupOrUser);
+                }
             }
 
-            if (groupOrUser != null && !exists) {
+            if (groupOrUser == null || !exists) {
                 return VALIDATION_ERROR_NOT_FOUND;
             } 
-            
-            System.out.println("User/group " + name + " exists as " + groupOrUser.getDescription() + " " + groupOrUser.getName() + " " + exists);
 
             if (!repository.isValidAclEntry(privilege, groupOrUser)) {
                 return VALIDATION_ERROR_ILLEGAL_BLACKLISTED;
             }
             
-            System.out.println("User/group " + name + " is not blacklisted");
         } catch (InvalidPrincipalException ipe) {
             return VALIDATION_ERROR_ILLEGAL;
         }
-        
-        System.out.println("User/group " + name + " goes to the end of validation without errors");
-        
+
         return VALIDATION_ERROR_NONE;
     }
    

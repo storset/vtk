@@ -393,7 +393,10 @@ public class ACLEditController extends SimpleFormController {
                 boolean yourselfNotInAdmin = !acl.containsEntry(this.privilege, yourself);
                 boolean tryingToRemoveGroup = Type.GROUP.equals(type);
                 if (tryingToRemoveYourself || (yourselfNotInAdmin && tryingToRemoveGroup)) {
-                    acl = checkIfYourselfIsStillInAdminPrivilegedGroups(acl, potentialAcl, userOrGroup, yourself, errors);
+                    acl = checkIfNotEmptyAdminAcl(acl, potentialAcl, userOrGroup, errors);
+                    if(!errors.hasErrors()) {
+                      acl = checkIfYourselfIsStillInAdminPrivilegedGroups(acl, potentialAcl, userOrGroup, yourself, errors);
+                    }
                 } else {
                     acl = checkIfNotEmptyAdminAcl(acl, potentialAcl, userOrGroup, errors);
                 }
@@ -423,13 +426,17 @@ public class ACLEditController extends SimpleFormController {
         
         this.yourselfStillAdmin = false;
         for (Principal privilegedGroup : privilegedGroups) {
-            if (memberGroups.contains(privilegedGroup)) {
-                this.yourselfStillAdmin = true;
-                break;
+            System.out.println("*****************************: " + privilegedGroup.getQualifiedName());
+            for (Principal memberGroup : memberGroups) {
+                System.out.println("*****************************: " + memberGroup.getQualifiedName());
+                if (memberGroup.equals(privilegedGroup)) {
+                    this.yourselfStillAdmin = true;
+                    break;
+                }
             }
         }
         
-        return checkIfNotEmptyAdminAcl(acl, potentialAcl, userOrGroup, errors);
+        return potentialAcl;
     }
 
     /**

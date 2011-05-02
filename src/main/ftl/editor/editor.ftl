@@ -272,7 +272,7 @@
             resource.resourceType = 'blog-listing' || resource.resourceType = 'image-listing' || resource.resourceType = 'master-listing')>
   
         <#if name == 'navigationTitle'>
-               <a class="show-tooltip" href="#" title="<@vrtx.msg code='editor.tooltip.navigation-title'/>">__</a>
+          <a class="show-tooltip" href="#" title="<@vrtx.msg code='editor.tooltip.navigation-title'/>">__</a>
         </#if>
 
         <#if value = '' && name='userTitle'>
@@ -400,7 +400,12 @@
           <#if name = 'recursive-listing-subfolders'>
             <label>${vrtx.getMsg("editor.recursive-listing.featured-articles")}</label>
           </#if>
+
+          <#-- Don't diaply manually-approved-resources input field -->
+          <#if name != 'manually-approved-resources'>
           <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32" /> 
+          </#if>
+
           <#if name = 'recursive-listing-subfolders'>
             <label>${vrtx.getMsg("editor.recursive-listing.featured-articles.hint")}</label>
           </#if>

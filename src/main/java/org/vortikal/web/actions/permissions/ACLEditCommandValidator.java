@@ -140,8 +140,10 @@ public class ACLEditCommandValidator implements Validator {
                 // Assume a username and validate it as such
                 if (!userName.contains(" ")) { 
                     if (!validateGroupOrUserName(Type.USER, userName, editCommand)) {
+                        System.out.println("Invalid userName: " + userName);
                         continue; // next userName
                     }
+                    System.out.println("Valid userName: " + userName);
                 } else {
                     // Assume a full name and look for a match in ac_userNames
                     // If match found: validate corresponding username
@@ -156,23 +158,29 @@ public class ACLEditCommandValidator implements Validator {
                         // suggestions and we have username
                         if (ac_userName != null && !"".equals(ac_userName)) {
                             if (!validateGroupOrUserName(Type.USER, ac_userName, editCommand)) {
-                                continue;  // next userName
+                                System.out.println("Invalid ac_userName: " + ac_userName);
+                                continue; // next userName
                             }
                             uid = ac_userName;
+                            System.out.println("Valid ac_userName: " + uid);
                         } else {
                             List<Principal> matches = this.principalFactory.search(userName, Type.USER);
                             if (matches == null || matches.isEmpty()) {
                                 this.notFound += toCSV(this.notFound, userName);
-                                continue;
+                                System.out.println("No matches: " + userName);
+                                continue; // next userName
                             } else if (matches.size() > 1) {
                                 this.tooManyMatchedUsers += toCSV(this.tooManyMatchedUsers, userName);
-                                continue;
+                                System.out.println("Too many matches: " + matches.size());
+                                continue; // next userName
                             }
                             uid = matches.get(0).getName();
+                            System.out.println("Valid match: " + uid);
                         }
                     } catch (Exception e) {
                         this.notFound += toCSV(this.notFound, userName);
-                        continue;
+                        System.out.println("Exception: " + userName);
+                        continue; // next userName
                     }
                 }
                 editCommand.addUserNameEntry(uid);
@@ -192,7 +200,7 @@ public class ACLEditCommandValidator implements Validator {
 
     private boolean validateGroupOrUserName(Type type, String name, ACLEditCommand editCommand)  {
         String validationResult = ACLEditValidationHelper.validateGroupOrUserName(type, name, editCommand.getPrivilege(),
-                principalFactory, principalManager, repository);
+                this.principalFactory, this.principalManager, this.repository);
         
         if (!ACLEditValidationHelper.VALIDATION_ERROR_NONE.equals(validationResult)) {
             if(ACLEditValidationHelper.VALIDATION_ERROR_NOT_FOUND.equals(validationResult)) {

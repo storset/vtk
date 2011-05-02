@@ -401,10 +401,7 @@
             <label>${vrtx.getMsg("editor.recursive-listing.featured-articles")}</label>
           </#if>
 
-          <#-- Don't diaply manually-approved-resources input field -->
-          <#if name != 'manually-approved-resources'>
           <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32" /> 
-          </#if>
 
           <#if name = 'recursive-listing-subfolders'>
             <label>${vrtx.getMsg("editor.recursive-listing.featured-articles.hint")}</label>

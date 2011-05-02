@@ -238,7 +238,7 @@
         <entry key-ref="PRIVILEGE_ALL" value-ref="repository.acl.blacklist.all" />
         <entry key-ref="PRIVILEGE_READ_WRITE" value-ref="repository.acl.blacklist.readWrite" />
         <entry key-ref="PRIVILEGE_ADD_COMMENT" value-ref="repository.acl.blacklist.addComment" />
-        <entry key-ref="PRIVILEGE_BIND_TEMPLATE" value-ref="repository.acl.blacklist.bindTemplate" />
+        <!-- <entry key-ref="PRIVILEGE_BIND_TEMPLATE" value-ref="repository.acl.blacklist.bindTemplate" /> -->
         <entry key-ref="PRIVILEGE_READ" value-ref="repository.acl.blacklist.read" />
         <entry key-ref="PRIVILEGE_READ_PROCESSED" value-ref="repository.acl.blacklist.readProcessed" />
       </map>
@@ -260,11 +260,13 @@
     <property name="trim" value="true" />
   </bean>
 
+  <!--
   <bean id="repository.acl.blacklist.bindTemplate" class="org.vortikal.context.CSVListFactoryBean">
     <property name="csvList" value="${permissions.blacklist.bind-template}" />
     <property name="trim" value="true" />
   </bean>
-
+  -->
+  
   <bean id="repository.acl.blacklist.read" class="org.vortikal.context.CSVListFactoryBean">
     <property name="csvList" value="${permissions.blacklist.read}" />
     <property name="trim" value="true" />

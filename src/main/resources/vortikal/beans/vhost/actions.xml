@@ -5,7 +5,6 @@
 <beans>
 
   <!-- ACL privileges: -->
-
   <bean id="PRIVILEGE_READ_PROCESSED"
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"
@@ -18,11 +17,13 @@
               value="org.vortikal.repository.Privilege.READ" />
   </bean>
 
+  <!--
   <bean id="PRIVILEGE_BIND_TEMPLATE"
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"
               value="org.vortikal.repository.Privilege.BIND_TEMPLATE" />
   </bean>
+  -->
 
   <bean id="PRIVILEGE_READ_WRITE"
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">

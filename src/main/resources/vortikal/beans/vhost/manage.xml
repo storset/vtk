@@ -503,6 +503,7 @@
     <property name="handler" ref="editAddCommentPermissionsHandler" />
   </bean>
 
+  <!--
   <bean id="editBindPermissionsService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="permissionsService" />
     <property name="assertions">
@@ -516,7 +517,8 @@
     </property>
     <property name="handler" ref="editBindPermissionsHandler" />
   </bean>
-
+  -->
+  
   <bean id="editReadProcessedPermissionsService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="permissionsService" />
     <property name="assertions">
@@ -977,12 +979,14 @@
     <property name="commandName" value="permissionsForm_all" />
   </bean>
 
+  <!--
   <bean id="editBindPermissionsHandler" parent="abstractPermissionsHandler">
     <property name="privilege" ref="PRIVILEGE_BIND_TEMPLATE" />
     <property name="successView" value="redirectToPermissions" />
     <property name="commandName" value="permissionsForm_bind-template" />
   </bean>
-
+  -->
+  
   <bean id="editReadProcessedPermissionsHandler" parent="abstractPermissionsHandler">
     <property name="privilege" ref="PRIVILEGE_READ_PROCESSED" />
     <property name="successView" value="redirectToPermissions" />
@@ -1757,7 +1761,7 @@
         <entry key-ref="PRIVILEGE_READ_WRITE" value-ref="editReadWritePermissionsService" />
         <entry key-ref="PRIVILEGE_ALL" value-ref="editAdminPermissionsService" />
         <entry key-ref="PRIVILEGE_ADD_COMMENT" value-ref="editAddCommentPermissionsService" />
-        <entry key-ref="PRIVILEGE_BIND_TEMPLATE" value-ref="editBindPermissionsService" />
+        <!-- <entry key-ref="PRIVILEGE_BIND_TEMPLATE" value-ref="editBindPermissionsService" /> -->
         <entry key-ref="PRIVILEGE_READ_PROCESSED" value-ref="editReadProcessedPermissionsService" />
       </map>
     </property>

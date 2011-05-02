@@ -202,6 +202,8 @@ public class ACLEditCommandValidator implements Validator {
         String validationResult = ACLEditValidationHelper.validateGroupOrUserName(type, name, editCommand.getPrivilege(),
                 this.principalFactory, this.principalManager, this.repository);
         
+        System.out.println("Validation result for " + name + " " + validationResult);
+        
         if (!ACLEditValidationHelper.VALIDATION_ERROR_NONE.equals(validationResult)) {
             if(ACLEditValidationHelper.VALIDATION_ERROR_NOT_FOUND.equals(validationResult)) {
               this.notFound += toCSV(this.notFound, name);

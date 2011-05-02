@@ -168,6 +168,8 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
         Map<String, List<Principal>> privilegedPseudoPrincipals = new HashMap<String, List<Principal>>(); 
         Map<String, String> viewShortcuts = new HashMap<String, String>();
 
+        // Check if exact match with a shortcut
+        // TODO: refactor with some of code in ACLEditController
         for (Privilege action: Privilege.values()) {
             String actionName = action.getName();
 
@@ -178,7 +180,6 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
             List<String> shortcuts = permissionShortcuts.get(action);
             String shortcutMatch = ""; 
             
-            // TODO: refactor with some of code in ACLEditController
             if (shortcuts != null) {
                 for (String shortcut : shortcuts) {
                     List<String> shortcutACEs = permissionShortcutsConfig.get(shortcut);

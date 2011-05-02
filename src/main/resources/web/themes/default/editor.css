@@ -159,6 +159,11 @@ div#vrtx-resource\.manually-approve-from input#resource\.manually-approve-from {
   display: inline;
 }
 
+div#vrtx-resource\.manually-approved-resources {
+  visibility: hidden;
+  height: 0;
+}
+
 div#vrtx-resource\.importance {
   float: left;
   margin: 0.5em 0 0.5em 0;

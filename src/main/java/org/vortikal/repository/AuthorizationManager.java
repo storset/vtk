@@ -522,6 +522,29 @@ public final class AuthorizationManager {
         checkReadOnly(principal);
 
         authorizeDelete(srcUri, principal);
+
+        boolean srcHasACLs = (this.dao.discoverACLs(srcUri).length > 0);
+        if (srcHasACLs) {
+            /* src has ACLs and move will therefore impact ACLs of sutbree rooted 
+             * at destination.
+             * Therefore require all privilege at destination (which would be required to 
+             * create similar subtree at destination using other operations).
+             * 
+             *  All on destParentUri implies delete on destUri
+             */
+            
+            Path destParentUri = destUri.getParent();
+            authorizeAll(destParentUri, principal);                  
+        } else {
+            /* Source does not contain ACLs. 
+             * Only need create (and possibly delete).
+             */
+            Path destParentUri = destUri.getParent();
+            authorizeCreate(destParentUri, principal);
+    
+            if (deleteDestination) authorizeDelete(destUri, principal);
+        }
+        
     }
     
     

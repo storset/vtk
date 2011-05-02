@@ -412,6 +412,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
 
     public Path[] discoverACLs(Path uri) {
         Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("uri", uri.toString());        
         parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(uri, SQL_ESCAPE_CHAR));
 
         String sqlMap = getSqlMap("discoverAcls");

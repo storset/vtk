@@ -549,7 +549,7 @@
       r.uri as uri
     from acl_entry a inner join vortex_resource r on a.resource_id = r.resource_id
     where r.acl_inherited_from is null and r.resource_id in
-      (select resource_id from vortex_resource where uri like #uriWildcard# escape '@')
+      (select resource_id from vortex_resource where uri like #uriWildcard# escape '@' or uri =  #uri#)
   </select>
 
 

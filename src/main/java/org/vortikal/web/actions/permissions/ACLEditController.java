@@ -293,14 +293,14 @@ public class ACLEditController extends SimpleFormController {
             List<String> shortcuts, Map<String, List<String>> permissionShortcutsConfig, boolean isCustomPermissions) throws Exception {
         
          String checkedShortcuts[][] = new String[shortcuts.size()][2];
+         int totalACEs = authorizedGroups.size() + authorizedUsers.size();
 
         // Iterate shortcuts on privilege
         int i = 0;
         for (String shortcut : shortcuts) {
             List<String> shortcutACEs = permissionShortcutsConfig.get(shortcut);
             int numberOfShortcutACEs = shortcutACEs.size();
-            int matchedACEs = 0;
-            int totalACEs = authorizedGroups.size() + authorizedUsers.size();
+            int matchedACEs = 0; 
 
             // Find matches in shortcut ACEs
             for (String aceWithPrefix : shortcutACEs) {

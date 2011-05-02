@@ -63,25 +63,25 @@ public class ACLEditValidationHelper {
                 groupOrUser = principalFactory.getPrincipal(name, type);
                 exists = principalManager.validateGroup(groupOrUser);
             } else {
-                // "pseudo:all" - should it be validated other than this way?
-                if (PrincipalFactory.NAME_ALL.equals(name)) {
-                    if(Privilege.READ.equals(privilege)) {
-                      return VALIDATION_ERROR_NONE;
-                    } else {
-                      return VALIDATION_ERROR_ILLEGAL_BLACKLISTED;
-                    }
-                }
-                groupOrUser = principalFactory.getPrincipal(name, type);
-                if(groupOrUser != null) {
-                  exists = principalManager.validatePrincipal(groupOrUser);
+                groupOrUser = principalFactory.getPrincipal(name, ACLEditValidationHelper.typePseudoUser(type, name));
+                if (groupOrUser != null) {
+                    exists = principalManager.validatePrincipal(groupOrUser);
                 }
                 System.out.println(groupOrUser.getQualifiedName() + " " + exists);
             }
 
-            if (groupOrUser == null || !exists) {
+            if (groupOrUser == null || (!exists && !PrincipalFactory.NAME_ALL.equals(name))) {
                 return VALIDATION_ERROR_NOT_FOUND;
-            } 
+            }
 
+            // TODO: use acl.isValidEntry()?
+            if (PrincipalFactory.ALL.equals(groupOrUser)) {
+                if (Privilege.ALL.equals(privilege) || Privilege.READ_WRITE.equals(privilege)
+                        || Privilege.ADD_COMMENT.equals(privilege)) {
+                    return VALIDATION_ERROR_ILLEGAL_BLACKLISTED;
+                }
+            }
+            
             if (!repository.isValidAclEntry(privilege, groupOrUser)) {
                 return VALIDATION_ERROR_ILLEGAL_BLACKLISTED;
             }
@@ -91,6 +91,22 @@ public class ACLEditValidationHelper {
         }
 
         return VALIDATION_ERROR_NONE;
+    }
+    
+    /**
+     * Check if USER is PSEUDO and set correct type
+     *
+     * @param type type of ACL (GROUP or USER)
+     * @param groupOrUserUnformatted group or user
+     * @return type type of ACL (GROUP or USER or PSEUDO)
+     */
+    public static Type typePseudoUser(Type type, String groupOrUserUnformatted) {
+        if (Type.USER.equals(type)) {
+            if (PrincipalFactory.NAME_ALL.equals(groupOrUserUnformatted)) {
+                type = Type.PSEUDO;
+            }
+        }
+        return type;
     }
    
     

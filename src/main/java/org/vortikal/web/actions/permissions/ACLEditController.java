@@ -388,20 +388,21 @@ public class ACLEditController extends SimpleFormController {
      */
     private Acl removeFromAcl(Acl acl, String[] values, Type type, Principal yourself, BindException errors) throws Exception {
         for (String value : values) {
-            Principal userOrGroup = principalFactory.getPrincipal(value, typePseudoUser(type, value));
+            Principal userOrGroup = principalFactory.getPrincipal(value, ACLEditValidationHelper.typePseudoUser(type, value));
             Acl potentialAcl = acl.removeEntry(this.privilege, userOrGroup);
             if (this.privilege.equals(Privilege.ALL) && !this.roleManager.hasRole(yourself, RoleManager.Role.ROOT)) {
                 boolean tryingToRemoveYourself = yourself.equals(userOrGroup);
                 boolean yourselfNotInAdmin = !acl.containsEntry(this.privilege, yourself);
                 boolean tryingToRemoveGroup = Type.GROUP.equals(type);
-                  if (tryingToRemoveYourself || (yourselfNotInAdmin && tryingToRemoveGroup)) {
+                if (tryingToRemoveYourself || (yourselfNotInAdmin && tryingToRemoveGroup)) {
                     acl = checkIfNotEmptyAdminAcl(acl, potentialAcl, userOrGroup, errors);
-                    if(!errors.hasErrors()) {
-                      acl = checkIfYourselfIsStillInAdminPrivilegedGroups(acl, potentialAcl, userOrGroup, yourself, errors);
+                    if (!errors.hasErrors()) {
+                        acl = checkIfYourselfIsStillInAdminPrivilegedGroups(acl, potentialAcl, userOrGroup, yourself,
+                                errors);
                     }
-                  } else {
+                } else {
                     acl = checkIfNotEmptyAdminAcl(acl, potentialAcl, userOrGroup, errors);
-                  }
+                }
             } else {
                 acl = potentialAcl;
             }
@@ -470,7 +471,7 @@ public class ACLEditController extends SimpleFormController {
      */
     private Acl addToAcl(Acl acl, String[] values, Type type) throws Exception {
         for (String value : values) {
-            Principal principal = principalFactory.getPrincipal(value, typePseudoUser(type, value));
+            Principal principal = principalFactory.getPrincipal(value, ACLEditValidationHelper.typePseudoUser(type, value));
             if (!acl.containsEntry(this.privilege, principal)) {
                 acl = acl.addEntry(this.privilege, principal);
             }
@@ -489,7 +490,7 @@ public class ACLEditController extends SimpleFormController {
      */
     private Acl addToAcl(Acl acl, List<String> values, Type type) throws Exception {
         for (String value : values) {
-            Principal principal = principalFactory.getPrincipal(value, typePseudoUser(type, value));
+            Principal principal = principalFactory.getPrincipal(value, ACLEditValidationHelper.typePseudoUser(type, value));
             if (!acl.containsEntry(this.privilege, principal)) {
                 acl = acl.addEntry(this.privilege, principal);
             }
@@ -513,23 +514,6 @@ public class ACLEditController extends SimpleFormController {
         } else if (groupOrUser.startsWith(ACLEditValidationHelper.SHORTCUT_USER_PREFIX)) {
             groupOrUserUnformatted[0] = groupOrUser.substring(ACLEditValidationHelper.SHORTCUT_USER_PREFIX.length());
             type = Type.USER;
-        }
-        return type;
-    }
-
-
-    /**
-     * Check if USER is PSEUDO and set correct type
-     *
-     * @param type type of ACL (GROUP or USER)
-     * @param groupOrUserUnformatted group or user
-     * @return type type of ACL (GROUP or USER or PSEUDO)
-     */
-    private Type typePseudoUser(Type type, String groupOrUserUnformatted) throws Exception {
-        if (Type.USER.equals(type)) {
-            if (PrincipalFactory.NAME_ALL.equals(groupOrUserUnformatted)) {
-                type = Type.PSEUDO;
-            }
         }
         return type;
     }

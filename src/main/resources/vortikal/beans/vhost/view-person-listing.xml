@@ -28,7 +28,7 @@
     <property name="name" value="personListing.defaultPerson" />
     <property name="queryBuilders">
       <list>
-        <ref bean="person.listingUriQueryBuilder" />
+        <ref bean="personListing.listingUriQueryBuilder" />
         <bean parent="queryStringParser">
           <property name="queryString" value="(type IN person) AND (resource:surname exists AND resource:firstName exists)" />
         </bean>

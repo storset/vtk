@@ -22,7 +22,9 @@
     // TODO: init-time-brancing
     var isIE6 = jQuery.browser.msie && jQuery.browser.version <= 6;
 
-    var images = []; // cache with src as hash
+    var images = []; // cache image HTML with src as hash
+    var width = []; // cache image width with src as hash
+    var height = []; // cache image height with src as hash
 
     //Performance: function pointers to use inside loops
     var centerThumbnailImageFunc = centerThumbnailImage;
@@ -32,7 +34,7 @@
     // Event-handlers
 
 	$(document).keydown(function(e){
-	  if (e.keyCode == 37) { 
+	  if (e.keyCode == 37) {
 	    $(wrapper + " a.prev").click(); 
 	  } else if (e.keyCode == 39) {
 	    $(wrapper + " a.next").click();
@@ -43,7 +45,7 @@
       var h = $(this);
       if(e.type == "mouseover") {
         if(!h.hasClass("active")) { 
-          h.find("img").stop().fadeTo(settings.fadeThumbsInOutTime, 1); 
+          h.find("img").stop().fadeTo(settings.fadeThumbsInOutTime, 1);
         }
       } else if(e.type == "mouseout"){
         if(!h.hasClass("active")) { 
@@ -91,7 +93,6 @@
 	// Init first active image
 	calculateImageFunc($(wrapperThumbsLinks + ".active img"), true);
     initPagingEvents("prev"); initPagingEvents("next");
-    //scaleAndCalculatePosition($(wrapperContainerLink + " img"));
 
     //TODO: use for- or async loop
     // Center thumbnails and cache images with link
@@ -99,7 +100,11 @@
       var link = $(this);
       var img = link.find("img");
       var src = img.attr("src");
-      images[src] = generateLinkImageFunc(img, link); // cache
+      images[src] = generateLinkImageFunc(img, link); // cache image HTML
+      var newImg = new Image();
+      newImg.src = src.split("?")[0];
+      width[src] = newImg.width; // cache image width
+      height[src] = newImg.height; // cache image height
       centerThumbnailImageFunc(img, link);
 	});
 
@@ -129,7 +134,7 @@
 		 $(wrapperContainer).append("<div class='over'>" + $(wrapperContainerLink).html() + "</div>");
 		 $(wrapperContainerLink).remove();
 		 $(wrapperContainer).append(images[image.attr("src")]);
-		 scaleAndCalculatePosition();
+		 scaleAndCalculatePosition(images[image.attr("src")], width[image.attr("src")], height[image.attr("src")]);
          $(".over").fadeTo(settings.fadeInOutTime, settings.fadedOutOpacity, function() {
            $(this).remove();
            // TODO: cleanup / optimize
@@ -151,12 +156,9 @@
            $(wrapperContainerLink).remove();
 	       $(wrapperContainer).append(images[image.attr("src")]);
          }
-         
-         var img = $(wrapperContainerLink + " img");
-         
-         var timed = setInterval(function() {
-      	   if(img.height > 0 && img.width > 0) {
-      		 scaleAndCalculatePosition(img);
+
+         scaleAndCalculatePosition(images[image.attr("src")], width[image.attr("src")], height[image.attr("src")]);
+
              // TODO: cleanup / optimize
              $(wrapperContainer + "-description").remove();
     	       $("<div class='" + container.substring(1) + "-description'>"
@@ -167,11 +169,9 @@
     	     if(($(image).attr("alt") && $(image).attr("alt") != "")
                 || ($(image).attr("title") && $(image).attr("title") != "")) {
     	         $(wrapperContainer + "-description").css("width", $(wrapper + " " + container).width());
-             }  
-      	   }
-         }, 25);
+
 	   }
-     
+
        var thumbs = $(wrapperThumbsLinks);
        var thumbsLength = thumbs.length, i = 0, thumb;
        for(; i < thumbsLength; i++) {
@@ -193,31 +193,36 @@
                               wrapper + " a." + navClass + " span"), 0, 0);
      }
          
-     function scaleAndCalculatePosition(img) {
-       var minHeight = 100;
-       var minWidth = 150;
-       var imgHeight = img.height();
-       var imgWidth = img.width();
-	     
-       //IE 6 max-height substitute
-       if (isIE6) {
-         if(imgHeight > 380) {
-           img.css("height", "380px");
-           imgHeight = 380;
-         }
+     function scaleAndCalculatePosition(img, imgWidth, imgHeight) {
+       
+       if(typeof console != "undefined") {
+         console.log(img + " " + imgWidth + " " + imgHeight);
        }
-     
-       imgHeight = Math.max(imgHeight, minHeight);
-       setMultipleCSS([wrapperContainer + "-nav a", wrapperContainer + "-nav span", 
+
+       var minHeight = 100;
+       var maxHeight = 380;
+       var minWidth = 150;
+
+       if(imgHeight > maxHeight || imgHeight < minHeight) {
+           if(imgHeight > maxHeight) {
+             imgHeight = maxHeight;
+           } else if(imgHeight < minWidth) {
+              imgHeight = minHeight;
+           }
+           $(wrapperContainerLink + " img").css("height", imgHeight + "px");
+           imgWidth = $(wrapperContainerLink + " img").width(); // update after downscaling
+         
+            setMultipleCSS([wrapperContainer + "-nav a", wrapperContainer + "-nav span", 
                        wrapperContainerLink], "height", imgHeight);
-     
+         }
+
        if(imgWidth > maxWidth) {
          imgWidth = maxWidth;
        } else if (imgWidth < minWidth) {
          setMultipleCSS([wrapperContainerLink], "width", imgWidth);
          imgWidth = minWidth;
        }
-       setMultipleCSS([wrapperContainer, wrapperContainer + "-nav"], "width", imgWidth); 
+       setMultipleCSS([wrapperContainer, wrapperContainer + "-nav"], "width", imgWidth);
      }
          
      function centerThumbnailImage(thumb, link) {

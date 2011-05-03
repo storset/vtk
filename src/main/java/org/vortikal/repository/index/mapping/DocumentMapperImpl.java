@@ -91,8 +91,7 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        populateTypeInfoCacheMaps(this.storedFieldNamePropDefMap, this.resourceTypeTree
-                .getRoot());
+        populateTypeInfoCacheMaps(this.storedFieldNamePropDefMap, this.resourceTypeTree.getRoot());
     }
 
     private void populateTypeInfoCacheMaps(Map<String, PropertyTypeDefinition> storedFieldPropDefMap, 

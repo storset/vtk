@@ -25,12 +25,17 @@
   }
 </style>
 </head>
-<#assign owner = resourceContext.currentResource.lock.principal.qualifiedName />
+
+<#assign owner = "" />
+<#if resourceContext.currentResource.lock?exists>
+  <#assign owner = resourceContext.currentResource.lock.principal.qualifiedName />
+</#if>
 <#assign currentPrincipal = resourceContext.principal.qualifiedName />
+
 <#if owner = currentPrincipal>
-<body onload="document.forms[0].submit()">
+  <body onload="document.forms[0].submit()">
 <#else>
-<body>
+  <body>
 </#if>
   <h1>${vrtx.getMsg("unlockwarning.title")} '${resourceContext.currentResource.name}'</h1>
   <form method="post" action="${form.url?html}">

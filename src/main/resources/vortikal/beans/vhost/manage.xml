@@ -1106,7 +1106,7 @@
     </property>
   </bean>
   
-  <bean id="manage.unlockFormResolver" parent="decoratorViewResolver">
+  <bean id="manage.unlockFormResolver" parent="adminViewResolver">
     <property name="views">
       <map>
         <entry key="manage.unlockForm" value-ref="manage.unlockFormView" />

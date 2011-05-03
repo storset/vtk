@@ -15,12 +15,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <title>${vrtx.getMsg("unlockwarning.title")} '${resourceContext.currentResource.name}'</title>
-<link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/basic.css" type="text/css"/>
 <style type="text/css">
-  body {
-    margin: 2em 0 0 2em;
-    width: 600px;
-  }
   #vrtx-unlock-buttons {
     clear: left;
     padding: 0.5em 0;

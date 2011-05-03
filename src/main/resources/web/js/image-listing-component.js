@@ -91,7 +91,7 @@
 	// Init first active image
 	calculateImageFunc($(wrapperThumbsLinks + ".active img"), true);
     initPagingEvents("prev"); initPagingEvents("next");
-    scaleAndCalculatePosition();
+    scaleAndCalculatePosition($(wrapperContainerLink + " img"));
 
     //TODO: use for- or async loop
     // Center thumbnails and cache images with link
@@ -151,18 +151,25 @@
            $(wrapperContainerLink).remove();
 	       $(wrapperContainer).append(images[image.attr("src")]);
          }
-         scaleAndCalculatePosition();
-         // TODO: cleanup / optimize
-         $(wrapperContainer + "-description").remove();
-	       $("<div class='" + container.substring(1) + "-description'>"
-         + "<p class='" + container.substring(1) + "-title'>" 
-         + $(image).attr("title") + "</p>" 
-         + $(image).attr("alt") + "</div>").insertAfter(wrapperContainer);
+         
+         var img = $(wrapperContainerLink + " img");
+         
+         var timed = setInterval(function() {
+      	   if(img.height > 0 && img.width > 0) {
+      		 scaleAndCalculatePosition(img);
+             // TODO: cleanup / optimize
+             $(wrapperContainer + "-description").remove();
+    	       $("<div class='" + container.substring(1) + "-description'>"
+             + "<p class='" + container.substring(1) + "-title'>" 
+             + $(image).attr("title") + "</p>" 
+             + $(image).attr("alt") + "</div>").insertAfter(wrapperContainer);
 
-	     if(($(image).attr("alt") && $(image).attr("alt") != "")
-            || ($(image).attr("title") && $(image).attr("title") != "")) {
-	         $(wrapperContainer + "-description").css("width", $(wrapper + " " + container).width());
-         }
+    	     if(($(image).attr("alt") && $(image).attr("alt") != "")
+                || ($(image).attr("title") && $(image).attr("title") != "")) {
+    	         $(wrapperContainer + "-description").css("width", $(wrapper + " " + container).width());
+             }  
+      	   }
+         }, 25);
 	   }
      
        var thumbs = $(wrapperThumbsLinks);
@@ -186,10 +193,9 @@
                               wrapper + " a." + navClass + " span"), 0, 0);
      }
          
-     function scaleAndCalculatePosition() {
+     function scaleAndCalculatePosition(img) {
        var minHeight = 100;
        var minWidth = 150;
-       var img = $(wrapperContainerLink + " img");
        var imgHeight = img.height();
        var imgWidth = img.width();
 	     

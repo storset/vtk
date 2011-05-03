@@ -11,7 +11,14 @@
 
 <#macro mediaPlayer >
 <#if media?exists && streamType?exists>
+
 <#assign dateStr = nanoTime?c />
+<script type="text/javascript"><!--
+      if (typeof swfobject == 'undefined') {
+        document.write("<scr" + "ipt src='/vrtx/__vrtx/static-resources/flash/StrobeMediaPlayback_1.0-full/10.1/scripts/swfobject.js' type='text/javascript'><\/script>");
+      }
+    // -->
+    </script> 
     <#assign strobeVersion = "10.1.0" />
 	  <div id="mediaspiller-${dateStr}">
 	    <a class="vrtx-media" href="${media?html}">

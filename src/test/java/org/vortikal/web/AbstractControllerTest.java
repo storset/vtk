@@ -34,10 +34,10 @@ public abstract class AbstractControllerTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         BaseContext.pushContext();
-        RequestContext requestContext = new RequestContext(null, null, getRequestPath());
-        RequestContext.setRequestContext(requestContext);
         SecurityContext securityContext = new SecurityContext(null, null);
         SecurityContext.setSecurityContext(securityContext);
+        RequestContext requestContext = new RequestContext(null, securityContext, null, null, getRequestPath(), null, false, true, mockRepository);
+        RequestContext.setRequestContext(requestContext);
     }
 
     protected abstract Path getRequestPath();

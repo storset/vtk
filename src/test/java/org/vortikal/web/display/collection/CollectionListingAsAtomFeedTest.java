@@ -68,10 +68,6 @@ public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
                 PropertyType.LASTMODIFIED_PROP_NAME, Type.DATE, new DateValueFormatter()));
         controller.setResourceTypeTree(new MockResourceTypeTree());
 
-        SecurityContext sq = new SecurityContext("security-token", new PrincipalImpl("test", Principal.Type.USER));
-        SecurityContext.setSecurityContext(sq);
-        RequestContext rq = new RequestContext(mockRequest, sq, mockViewService, null, requestPath, null, false, true, mockRepository);
-        RequestContext.setRequestContext(rq);
     }
 
     public Path getRequestPath() {
@@ -84,7 +80,7 @@ public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
         // Retrieve the collection to create feed from
         context.checking(new Expectations() {
             {
-                one(mockRepository).retrieve("security-token", requestPath, true);
+                one(mockRepository).retrieve(null, requestPath, true);
                 will(returnValue(getCollection()));
             }
         });

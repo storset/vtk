@@ -85,6 +85,7 @@ public class StandardRequestFilter extends AbstractRequestFilter {
         this.requestForwardFieldHeader = forwardHeader;
     }
 
+    @Override
     public HttpServletRequest filterRequest(HttpServletRequest request) {
         return new RequestWrapper(request);
     }
@@ -99,6 +100,7 @@ public class StandardRequestFilter extends AbstractRequestFilter {
             super(request);
             this.request = request;
             String requestURL = request.getRequestURL().toString();
+            // XXX translate() doesn't expect the whole URL, but rather the requestURI.
             this.requestURL = URL.parse(translate(requestURL));
             if (logger.isDebugEnabled()) {
                 logger.debug("Translated requestURL: from '" + requestURL + "' to '" + this.requestURL + "'");

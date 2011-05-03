@@ -60,9 +60,9 @@
 </#if>
 
 <p>
-  <#assign url = .vars["uioWebCopyrightURL." + lang] />
-  <#if url?exists>
-    <a href="${url?html}">${vrtx.getMsg('imageAsHtml.rights')}</a>
+  <#if .vars["copyrightHelpURL." + lang]?exists>
+  <#assign url = .vars["copyrightHelpURL." + lang] />
+  <#if url?exists>${url}</#if>
   </#if>
 </p>
 

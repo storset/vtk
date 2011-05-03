@@ -44,6 +44,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -96,14 +97,14 @@ public class StreamUtilTest {
 
     @Test
     public void testDump_3args() throws Exception {
-        TestForCloseByteArrayOutputStream out = new TestForCloseByteArrayOutputStream();
+        CheckForCloseByteArrayOutputStream out = new CheckForCloseByteArrayOutputStream();
         byte[] data = generateRandomDataBuffer(10000);
 
         StreamUtil.dump(data, out, true);
         assertTrue(buffersEqual(data, out.toByteArray()));
         assertTrue(out.isClosed());
 
-        out = new TestForCloseByteArrayOutputStream();
+        out = new CheckForCloseByteArrayOutputStream();
         data = "foobar".getBytes();
         StreamUtil.dump(data, out, false);
         assertTrue(buffersEqual(data, out.toByteArray()));
@@ -134,22 +135,22 @@ public class StreamUtilTest {
 
         data = generateRandomDataBuffer(5000);
         in = new SmallChunkInputStream(data);
-        out = new TestForCloseByteArrayOutputStream();
+        out = new CheckForCloseByteArrayOutputStream();
         piped = StreamUtil.pipe(in, out, 64, true);
         resultData = out.toByteArray();
         assertTrue(buffersEqual(data, resultData));
         assertTrue(((SmallChunkInputStream)in).isClosed());
-        assertTrue(((TestForCloseByteArrayOutputStream)out).isClosed());
+        assertTrue(((CheckForCloseByteArrayOutputStream)out).isClosed());
         assertEquals(data.length, piped);
 
         data = generateRandomDataBuffer(5000);
         in = new SmallChunkInputStream(data);
-        out = new TestForCloseByteArrayOutputStream();
+        out = new CheckForCloseByteArrayOutputStream();
         piped = StreamUtil.pipe(in, out, 64, false);
         resultData = out.toByteArray();
         assertTrue(buffersEqual(data, resultData));
         assertTrue(((SmallChunkInputStream)in).isClosed());
-        assertFalse(((TestForCloseByteArrayOutputStream)out).isClosed());
+        assertFalse(((CheckForCloseByteArrayOutputStream)out).isClosed());
         assertEquals(data.length, piped);
     }
 
@@ -498,11 +499,11 @@ class SmallChunkInputStream extends ByteArrayInputStream {
 }
 
 // Just record close() call
-class TestForCloseByteArrayOutputStream extends ByteArrayOutputStream {
+class CheckForCloseByteArrayOutputStream extends ByteArrayOutputStream {
 
     private boolean closed = false;
 
-    public TestForCloseByteArrayOutputStream() {
+    public CheckForCloseByteArrayOutputStream() {
         super();
     }
 

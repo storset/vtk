@@ -30,8 +30,10 @@
  */
 package org.vortikal.web.actions.permissions;
 
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.resource.ResourcetreeParser.edithint_return;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
@@ -53,7 +55,7 @@ public class ACLEditValidationHelper {
     public static final String SHORTCUT_USER_PREFIX = VALIDATION_ERROR_USER_PREFIX + ":";
     
     public static String validateGroupOrUserName(Type type, String name, Privilege privilege,
-            PrincipalFactory principalFactory, PrincipalManager principalManager, Repository repository) {
+            PrincipalFactory principalFactory, PrincipalManager principalManager, Repository repository, Acl acl) {
         
         try {
             Principal groupOrUser = null;
@@ -73,16 +75,9 @@ public class ACLEditValidationHelper {
             if (groupOrUser == null || (!exists && !PrincipalFactory.NAME_ALL.equals(name))) {
                 return VALIDATION_ERROR_NOT_FOUND;
             }
-
-            // TODO: use acl.isValidEntry()?
-            if (PrincipalFactory.ALL.equals(groupOrUser)) {
-                if (Privilege.ALL.equals(privilege) || Privilege.READ_WRITE.equals(privilege)
-                        || Privilege.ADD_COMMENT.equals(privilege)) {
-                    return VALIDATION_ERROR_ILLEGAL_BLACKLISTED;
-                }
-            }
             
-            if (!repository.isValidAclEntry(privilege, groupOrUser)) {
+            if (!repository.isValidAclEntry(privilege, groupOrUser) 
+                    || !acl.isValidEntry(privilege, groupOrUser)) {
                 return VALIDATION_ERROR_ILLEGAL_BLACKLISTED;
             }
             

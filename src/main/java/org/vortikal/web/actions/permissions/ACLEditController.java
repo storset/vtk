@@ -46,6 +46,7 @@ import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.vortikal.edit.xml.EditController;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Privilege;
@@ -104,7 +105,7 @@ public class ACLEditController extends SimpleFormController {
 
         this.shortcuts = this.permissionShortcuts.get(this.privilege);
         if (this.shortcuts != null) {
-            this.shortcuts = validateShortcuts(this.shortcuts, this.permissionShortcutsConfig, repository);
+            this.shortcuts = validateShortcuts(this.shortcuts, this.permissionShortcutsConfig, repository, resource.getAcl());
         } 
         
         this.yourselfStillAdmin = true;
@@ -243,7 +244,7 @@ public class ACLEditController extends SimpleFormController {
      * @param permissionShortcutsConfig the users and groups for the shortcuts
      * @return number of valid shortcuts
      */
-    protected List<String> validateShortcuts(List<String> shortcuts, Map<String, List<String>> permissionShortcutsConfig, Repository repository) throws Exception {
+    protected List<String> validateShortcuts(List<String> shortcuts, Map<String, List<String>> permissionShortcutsConfig, Repository repository, Acl acl) throws Exception {
         int counter = 0;
         Iterator<String> it = shortcuts.iterator();
         while (it.hasNext()) {
@@ -262,7 +263,7 @@ public class ACLEditController extends SimpleFormController {
                         Type type = unformatGroupOrUserAndSetType(groupOrUser, groupOrUserUnformatted);
                         String validationResult = ACLEditValidationHelper.validateGroupOrUserName(type,
                                 groupOrUserUnformatted[0], this.privilege, this.principalFactory,
-                                this.principalManager, repository);
+                                this.principalManager, repository, acl);
 
                         if (ACLEditValidationHelper.VALIDATION_ERROR_NONE.equals(validationResult)) {
                             validGroupsUsers++;

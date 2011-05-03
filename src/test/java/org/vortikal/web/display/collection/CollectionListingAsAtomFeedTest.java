@@ -32,7 +32,12 @@ import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.StringValueFormatter;
+import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalImpl;
+import org.vortikal.security.SecurityContext;
+import org.vortikal.testing.mocktypes.MockResourceTypeTree;
 import org.vortikal.web.AbstractControllerTest;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.service.Service;
@@ -59,6 +64,18 @@ public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
         controller.setAbdera(new Abdera());
         controller.setViewService(mockViewService);
         controller.setSearchComponent(new MockSearchComponent());
+        controller.setCreationTimePropDef(getPropDef(Namespace.DEFAULT_NAMESPACE,
+                PropertyType.CREATIONTIME_PROP_NAME, Type.HTML, new DateValueFormatter()));
+        controller.setTitlePropDef(getPropDef(Namespace.DEFAULT_NAMESPACE,
+                PropertyType.TITLE_PROP_NAME, Type.STRING, new StringValueFormatter()));
+        controller.setLastModifiedPropDef(getPropDef(Namespace.DEFAULT_NAMESPACE,
+                PropertyType.LASTMODIFIED_PROP_NAME, Type.DATE, new DateValueFormatter()));
+        controller.setResourceTypeTree(new MockResourceTypeTree());
+
+        SecurityContext sq = new SecurityContext("security-token", new PrincipalImpl("test", Principal.Type.USER));
+        SecurityContext.setSecurityContext(sq);
+        RequestContext rq = new RequestContext(mockRequest, sq, mockViewService, null, requestPath, null, false, true, mockRepository);
+        RequestContext.setRequestContext(rq);
     }
 
     public Path getRequestPath() {
@@ -71,7 +88,7 @@ public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
         // Retrieve the collection to create feed from
         context.checking(new Expectations() {
             {
-                one(mockRepository).retrieve(null, requestPath, true);
+                one(mockRepository).retrieve("security-token", requestPath, true);
                 will(returnValue(getCollection()));
             }
         });
@@ -110,6 +127,8 @@ public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
             }
         });
 
+        
+        
         ModelAndView result = controller.handleRequest(mockRequest, mockResponse);
 
         assertNull("An unexpected model&view was returned", result);
@@ -161,8 +180,8 @@ public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
 
         propDef = getPropDef(Namespace.DEFAULT_NAMESPACE, PropertyType.CREATIONTIME_PROP_NAME, Type.DATE,
                 new DateValueFormatter());
-        Property publishedProp = propDef.createProperty(Calendar.getInstance().getTime());
-        collection.addProperty(publishedProp);
+        Property creationTimeProp = propDef.createProperty(Calendar.getInstance().getTime());
+        collection.addProperty(creationTimeProp);
 
         return collection;
     }

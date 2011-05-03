@@ -69,7 +69,7 @@ public class DisplayXmlResourceControllerTest extends TestCase {
         BaseContext.pushContext();
         SecurityContext securityContext = new SecurityContext(this.token, null);
         SecurityContext.setSecurityContext(securityContext);
-        RequestContext requestContext = new RequestContext(this.request, null, this.uri);
+        RequestContext requestContext = new RequestContext(request, securityContext, null, null, uri, null, false, true, mockRepository);
         RequestContext.setRequestContext(requestContext);
     }
 

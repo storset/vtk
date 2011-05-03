@@ -38,7 +38,6 @@
 	    swfobject.embedSWF("${strobe?html}", "mediaspiller-${dateStr}", "${width}", "${height}", "${strobeVersion}", false, flashvars, params);
 	  // -->
 	  </script>
-	  <a class="vrtx-media" href="${media?html}"><@vrtx.msg code="article.media-file" /></a>
 <#elseif media?exists && contentType?exists>
   
     <#assign dateStr = nanoTime?c />

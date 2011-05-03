@@ -63,7 +63,7 @@ public class ACLEditControllerTest extends TestCase {
         shortcutsConfig.put("all-logged-in", groupsUsersAllLoggedIn);
 
         try {
-            shortcuts = controller.validateShortcuts(shortcuts, shortcutsConfig, null);
+            shortcuts = controller.validateShortcuts(shortcuts, shortcutsConfig, null, null);
             assertEquals(3, shortcuts.size());
 
             String[][] extractedShortcuts;

@@ -1101,11 +1101,18 @@
     <property name="views">
       <map>
         <entry key="manage.refreshLockView" value-ref="manage.refreshLockView" />
-        <entry key="manage.unlockForm" value-ref="manage.unlockFormView" />
         <entry key="redirectToAbout" value-ref="redirectToAboutView" />
       </map>
     </property>
   </bean>
+  
+  <bean id="manage.unlockFormResolver" parent="decoratorViewResolver">
+    <property name="views">
+      <map>
+        <entry key="manage.unlockForm" value-ref="manage.unlockFormView" />
+      </map>
+    </property>
+  </bean>  
 
   <bean id="manage.unlockFormView" parent="freemarkerView">
     <property name="url" value="pages/unlock-form.ftl" />

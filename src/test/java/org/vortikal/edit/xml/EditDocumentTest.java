@@ -94,7 +94,8 @@ public class EditDocumentTest {
 //        this.optionalElementDocument = new EditDocument(root, d.getDocType(), mockResource, null);
     }
 
-    @Test @Ignore
+    @Ignore
+    @Test
     public void testOptionalTopLevelElement() {
         Element e = this.optionalElementDocument.getRootElement().getChild("optionalString");
         Map<String, String> params = new HashMap<String, String>();

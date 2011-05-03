@@ -47,27 +47,24 @@ public class StandardRequestFilterTest {
 
         StandardRequestFilter filter = new StandardRequestFilter();
         Map<String, String> replacements = new HashMap<String, String>();
-        replacements.put("%20", " ");
+        replacements.put("\\+", "%2B");
         filter.setUrlReplacements(replacements);
         
         HttpServletRequest filtered = filter.filterRequest(new MockHttpServletRequest("GET", "/foo/bar"));
         assertEquals("/foo/bar", filtered.getRequestURI());
 
-        filtered = filter.filterRequest(new MockHttpServletRequest("GET", "%20"));
-        assertEquals(" ", filtered.getRequestURI());
+        filtered = filter.filterRequest(new MockHttpServletRequest("GET", "/%20"));
+        assertEquals("/", filtered.getRequestURI());
 
-        filtered = filter.filterRequest(new MockHttpServletRequest("GET", "/foo/bar/i%20am%20a%20file%20with%20spaces.txt"));
-        assertEquals("/foo/bar/i am a file with spaces.txt", filtered.getRequestURI());
+        filtered = filter.filterRequest(new MockHttpServletRequest("GET", "/foo/bar/file+2.txt"));
+        assertEquals("/foo/bar/file%2B2.txt", filtered.getRequestURI());
         
         filtered = filter.filterRequest(new MockHttpServletRequest("GET", "/foo/bar/i am a file with spaces.txt"));
-        assertEquals("/foo/bar/i am a file with spaces.txt", filtered.getRequestURI());
+        assertEquals("/foo/bar/i%20am%20a%20file%20with%20spaces.txt", filtered.getRequestURI());
 
         filtered = filter.filterRequest(new MockHttpServletRequest("GET", "/"));
         assertEquals("/", filtered.getRequestURI());
-        
-        filtered = filter.filterRequest(new MockHttpServletRequest(null, null));
-        assertEquals("/", filtered.getRequestURI());
-        
+
         filtered = filter.filterRequest(new MockHttpServletRequest("GET", ""));
         assertEquals("/", filtered.getRequestURI());
         

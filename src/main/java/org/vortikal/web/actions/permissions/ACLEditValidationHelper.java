@@ -69,7 +69,6 @@ public class ACLEditValidationHelper {
                 if (groupOrUser != null) {
                     exists = principalManager.validatePrincipal(groupOrUser);
                 }
-                System.out.println(groupOrUser.getQualifiedName() + " " + exists);
             }
 
             if (groupOrUser == null || (!exists && !PrincipalFactory.NAME_ALL.equals(name))) {

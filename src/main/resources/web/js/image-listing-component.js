@@ -211,10 +211,10 @@
            }
            $(wrapperContainerLink + " img").css("height", imgHeight + "px");
            imgWidth = $(wrapperContainerLink + " img").width(); // update after downscaling
-         
-            setMultipleCSS([wrapperContainer + "-nav a", wrapperContainer + "-nav span", 
+       }
+       
+       setMultipleCSS([wrapperContainer + "-nav a", wrapperContainer + "-nav span",
                        wrapperContainerLink], "height", imgHeight);
-         }
 
        if(imgWidth > maxWidth) {
          imgWidth = maxWidth;

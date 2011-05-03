@@ -10,7 +10,29 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 
 <#macro mediaPlayer >
-  <#if media?exists && contentType?exists >
+<#if media?exists && streamType?exists>
+<#assign dateStr = nanoTime?c />
+    <#assign strobeVersion = "10.1.0" />
+	  <div id="mediaspiller-${dateStr}">
+	    <a class="vrtx-media" href="${media?html}">
+	      <img src="/vrtx/__vrtx/static-resources/themes/default/icons/video-noflash.png" width="500" height="279" alt="<@vrtx.msg code="article.media-file" />"/>
+	    </a>
+	  </div>
+	  <script type="text/javascript"><!--
+	    var flashvars = {
+  		  src: "${media?url("UTF-8")}",
+  		  streamType: "live"
+  		  <#if autoplay?exists>,autoPlay: "${autoplay}"</#if>
+	    };
+	    var params = {
+		  allowFullScreen: "true",
+		  allowscriptaccess: "always"
+	    };
+	    swfobject.embedSWF("${strobe?html}", "mediaspiller-${dateStr}", "${width}", "${height}", "${strobeVersion}", false, flashvars, params);
+	  // -->
+	  </script>
+	  
+<#elseif media?exists && contentType?exists>
   
     <#assign dateStr = nanoTime?c />
     <#assign strobeVersion = "10.1.0" />
@@ -77,8 +99,8 @@
 		swfobject.embedSWF("${media?html}", "mediaspiller-${dateStr}", "${width}", "${height}", "${strobeVersion}", false, flashvars, flashparams, flashattr);
 	  // -->
 	  </script>
-		
-    <#elseif contentType == "video/x-flv" || contentType == "video/mp4">
+	  
+    <#elseif (!streamType?exists) && contentType == "video/x-flv" || contentType == "video/mp4">
 	  <div id="mediaspiller-${dateStr}">
 	    <a class="vrtx-media" href="${media?html}">
 	      <img src="/vrtx/__vrtx/static-resources/themes/default/icons/video-noflash.png" width="500" height="279" alt="<@vrtx.msg code="article.media-file" />"/>

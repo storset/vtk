@@ -91,7 +91,7 @@
 	// Init first active image
 	calculateImageFunc($(wrapperThumbsLinks + ".active img"), true);
     initPagingEvents("prev"); initPagingEvents("next");
-    scaleAndCalculatePosition($(wrapperContainerLink + " img"));
+    //scaleAndCalculatePosition($(wrapperContainerLink + " img"));
 
     //TODO: use for- or async loop
     // Center thumbnails and cache images with link

@@ -1675,7 +1675,7 @@
     <property name="trim" value="true" />
   </bean>
   
-    <bean id="permissionShortcutsProvider.readProcessedShortcuts" class="org.vortikal.context.CSVListFactoryBean">
+  <bean id="permissionShortcutsProvider.readProcessedShortcuts" class="org.vortikal.context.CSVListFactoryBean">
     <property name="csvList" value="${permissions.shortcuts.read-processed}" />
     <property name="trim" value="true" />
   </bean>

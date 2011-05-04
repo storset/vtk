@@ -51,7 +51,7 @@
         if(!h.hasClass("active")) { 
           h.find("img").stop().fadeTo(settings.fadeThumbsInOutTime, settings.fadedThumbsOutOpacity); 
         }
-      } else {
+      } else { 
         var img = h.find("img");
         calculateImageFunc(img, false);
         h.addClass("active");
@@ -96,17 +96,15 @@
 
     //TODO: use for- or async loop
     // Center thumbnails and cache images with link
-	return this.each(function() {
+    return this.each(function() {
       var link = $(this);
       var img = link.find("img");
       var src = img.attr("src");
-      images[src] = generateLinkImageFunc(img, link); // cache image HTML
-      var newImg = new Image();
-      newImg.src = src.split("?")[0];
-      width[src] = newImg.width; // cache image width
-      height[src] = newImg.height; // cache image height
+      images[src] = generateLinkImageFunc(img, link);
+      width[src] = 0;
+      height[src] = 0;
       centerThumbnailImageFunc(img, link);
-	});
+   });
 
     function next(e) { // TODO: how to delegate events to two seperate DOM-elements
       if(e.type == "mouseover") {
@@ -134,7 +132,7 @@
 		 $(wrapperContainer).append("<div class='over'>" + $(wrapperContainerLink).html() + "</div>");
 		 $(wrapperContainerLink).remove();
 		 $(wrapperContainer).append(images[image.attr("src")]);
-		 scaleAndCalculatePosition(images[image.attr("src")], width[image.attr("src")], height[image.attr("src")]);
+		 scaleAndCalculatePosition(image);
          $(".over").fadeTo(settings.fadeInOutTime, settings.fadedOutOpacity, function() {
            $(this).remove();
            // TODO: cleanup / optimize
@@ -155,9 +153,10 @@
          } else {
            $(wrapperContainerLink).remove();
 	       $(wrapperContainer).append(images[image.attr("src")]);
+	       
          }
-
-         scaleAndCalculatePosition(images[image.attr("src")], width[image.attr("src")], height[image.attr("src")]);
+         
+         scaleAndCalculatePosition(image);
 
              // TODO: cleanup / optimize
              $(wrapperContainer + "-description").remove();
@@ -170,8 +169,8 @@
                 || ($(image).attr("title") && $(image).attr("title") != "")) {
     	         $(wrapperContainer + "-description").css("width", $(wrapper + " " + container).width());
 
-	   }
-	   }
+	      }
+	}
 
        var thumbs = $(wrapperThumbsLinks);
        var thumbsLength = thumbs.length, i = 0, thumb;
@@ -194,12 +193,31 @@
                               wrapper + " a." + navClass + " span"), 0, 0);
      }
          
-     function scaleAndCalculatePosition(img, imgWidth, imgHeight) {
-       
-       if(typeof console != "undefined") {
-         console.log(img + " " + imgWidth + " " + imgHeight);
-       }
+     function scaleAndCalculatePosition(image) {
 
+       var src = image.attr("src").split("?")[0];
+
+       if(width[src] && height[src]) {
+         var imgWidth = width[src];
+    	 var imgHeight = height[src];
+    	 galleryLog("Using cached dimension for " + src + " [" + imgWidth + ", " + imgHeight + "]")
+    	  scaleAndCalculatePositionSubFunc(imgWidth, imgHeight);
+       } else {
+    	 // $(wrapperContainerLink).load(function() {
+    		 var img = $(wrapperContainerLink + " img");
+    		 var imgWidth = img.width();
+    		 var imgHeight = img.height();
+    		 width[src] = imgWidth;
+    		 height[src] = imgHeight;
+    		 galleryLog("Getting dimension for " + src + " [" + imgWidth + ", " + imgHeight + "]")
+    		 scaleAndCalculatePositionSubFunc(imgWidth, imgHeight);
+    	 // });
+       }
+        
+    }
+       
+    function scaleAndCalculatePositionSubFunc(imgWidth, imgHeight) {
+    	
        var minHeight = 100;
        var maxHeight = 380;
        var minWidth = 150;
@@ -224,6 +242,12 @@
          imgWidth = minWidth;
        }
        setMultipleCSS([wrapperContainer, wrapperContainer + "-nav"], "width", imgWidth);
+     }
+    
+     function galleryLog(msg) { 
+        if(typeof console != "undefined" && console.log) {
+            console.log(msg);
+         } 
      }
          
      function centerThumbnailImage(thumb, link) {

@@ -44,16 +44,18 @@ public class PropertyAspectResolver {
 
     private PropertyTypeDefinition aspectsPropdef;
     PropertyAspectDescription fieldConfig;
+    private String token = null;
     
-    public PropertyAspectResolver(PropertyTypeDefinition aspectsPropdef, PropertyAspectDescription fieldConfig) {
+    public PropertyAspectResolver(PropertyTypeDefinition aspectsPropdef, PropertyAspectDescription fieldConfig, String token) {
         this.aspectsPropdef = aspectsPropdef;
         this.fieldConfig = fieldConfig;
+        this.token = token;
     }
 
     public JSONObject resolve(final Path uri, final String aspect) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         final JSONObject result = new JSONObject();
-        String token = requestContext.getSecurityToken();
+        String token = this.token != null ? this.token : requestContext.getSecurityToken();
         RepositoryTraversal traversal = requestContext.rootTraversal(token, uri);
 
         traversal.traverse(new TraversalCallback() {

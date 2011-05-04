@@ -171,6 +171,7 @@
     	         $(wrapperContainer + "-description").css("width", $(wrapper + " " + container).width());
 
 	   }
+	   }
 
        var thumbs = $(wrapperThumbsLinks);
        var thumbsLength = thumbs.length, i = 0, thumb;

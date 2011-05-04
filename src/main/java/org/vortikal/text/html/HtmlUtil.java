@@ -33,6 +33,7 @@ package org.vortikal.text.html;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.vortikal.web.service.URL;
 
 public class HtmlUtil {
@@ -207,10 +208,12 @@ public class HtmlUtil {
             }
             String val = attr.getValue();
             try {
+                val = unescapeHtmlString(val);
                 URL url = this.base.relativeURL(val);
-                attr.setValue(url.toString());
+                
+                attr.setValue(escapeHtmlString(url.toString()));
                 if (url.getHost().equals(this.requestURL.getHost())) {
-                    attr.setValue(url.getPathRepresentation());
+                    attr.setValue(escapeHtmlString(url.getPathRepresentation()));
                 }
             } catch (Exception e) {
             }

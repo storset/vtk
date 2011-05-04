@@ -40,7 +40,7 @@
   <h1>${vrtx.getMsg("unlockwarning.title")} '${resourceContext.currentResource.name}'</h1>
   <form method="post" action="${form.url?html}">
     <@vrtx.csrfPreventionToken url=form.url />
-    <#if owner != currentPrincipal>
+    <#if owner?exists && owner != currentPrincipal>
       <p>${vrtx.getMsg("unlockwarning.steal")}: <strong>${owner}</strong>.</p> 
       <p>${vrtx.getMsg("unlockwarning.modified")}: <strong>${resourceContext.currentResource.lastModified?datetime?html}</strong>.</p>
       <p>${vrtx.getMsg("unlockwarning.explanation")}</p>

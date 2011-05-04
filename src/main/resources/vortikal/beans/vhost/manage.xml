@@ -1655,6 +1655,7 @@
         <entry key-ref="PRIVILEGE_READ" value-ref="permissionShortcutsProvider.readShortcuts" />
         <entry key-ref="PRIVILEGE_READ_WRITE" value-ref="permissionShortcutsProvider.readWriteShortcuts" />
         <entry key-ref="PRIVILEGE_ADD_COMMENT" value-ref="permissionShortcutsProvider.addCommentShortcuts" />
+        <entry key-ref="PRIVILEGE_READ_PROCESSED" value-ref="permissionShortcutsProvider.readProcessedShortcuts" />
       </map>
     </property>
   </bean>
@@ -1671,6 +1672,11 @@
   
   <bean id="permissionShortcutsProvider.addCommentShortcuts" class="org.vortikal.context.CSVListFactoryBean">
     <property name="csvList" value="${permissions.shortcuts.add-comment}" />
+    <property name="trim" value="true" />
+  </bean>
+  
+    <bean id="permissionShortcutsProvider.readProcessedShortcuts" class="org.vortikal.context.CSVListFactoryBean">
+    <property name="csvList" value="${permissions.shortcuts.read-processed}" />
     <property name="trim" value="true" />
   </bean>
   

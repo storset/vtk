@@ -19,7 +19,7 @@ $(document).ready(function()
 				// Set inline style to equal the body height of the iframed content,
 				// when body content is at least 350px height
 				var setHeight = 350;
-				var computedHeight = document.body.offsetHeight + 45;
+				var computedHeight = document.body.offsetHeight;
 				if (computedHeight > setHeight) { 
 					setHeight = computedHeight;
 				}

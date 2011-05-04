@@ -26,13 +26,13 @@
 </style>
 </head>
 
-<#assign owner = "" />
+
 <#if resourceContext.currentResource.lock?exists>
   <#assign owner = resourceContext.currentResource.lock.principal.qualifiedName />
 </#if>
 <#assign currentPrincipal = resourceContext.principal.qualifiedName />
 
-<#if owner = currentPrincipal>
+<#if !owner?exists || owner = currentPrincipal >
   <body onload="document.forms[0].submit()">
 <#else>
   <body>

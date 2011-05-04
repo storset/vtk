@@ -869,7 +869,7 @@
                                         parameterClass="java.lang.Integer">
     select user_or_group_name, is_user from acl_entry
     where resource_id = #value#
-      and action_type_id in (1, 3, 4)
+      and action_type_id in (1, 2, 3, 4)
   </select>                                        
   
   <delete id="removeChangelogEntriesByTempTable" parameterClass="java.lang.Integer">

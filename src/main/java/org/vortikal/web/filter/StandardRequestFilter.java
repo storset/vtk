@@ -100,7 +100,6 @@ public class StandardRequestFilter extends AbstractRequestFilter {
             super(request);
             this.request = request;
             String requestURL = request.getRequestURL().toString();
-            // XXX translate() doesn't expect the whole URL, but rather the requestURI.
             this.requestURL = URL.parse(translate(requestURL));
             if (logger.isDebugEnabled()) {
                 logger.debug("Translated requestURL: from '" + requestURL + "' to '" + this.requestURL + "'");
@@ -242,20 +241,14 @@ public class StandardRequestFilter extends AbstractRequestFilter {
             return this.getClass().getName() + "[" + this.request + "]";
         }
 
-        private String translate(String requestURI) {
-            if (requestURI == null 
-                    || "".equals(requestURI)
-                    || "*".equals(requestURI)) {
-                return "/";
-            }
-
+        private String translate(String requestURL) {
             if (urlReplacements != null) {
                 for (Pattern pattern : urlReplacements.keySet()) {
                     String replacement = urlReplacements.get(pattern);
-                    requestURI = pattern.matcher(requestURI).replaceAll(replacement);
+                    requestURL = pattern.matcher(requestURL).replaceAll(replacement);
                 }
             }
-            return requestURI;
+            return requestURL;
         }
     }
 

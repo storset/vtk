@@ -135,7 +135,6 @@ set user_or_group_name = 'alle@uio.no',
 where a.user_or_group_name = 'pseudo:authenticated'
 ;
 
-# Sjekk verdier
 
 -- Remove bind-template for now VRTXA-258
 delete from acl_entry 

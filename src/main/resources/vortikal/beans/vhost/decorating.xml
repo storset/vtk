@@ -150,6 +150,7 @@
     <property name="componentResolver" ref="decorating.defaultComponentResolver" />
     <property name="aspectsPropdef" ref="resourceAspectsPropDef" />
     <property name="fieldConfig" ref="visualProfileAspect.fieldConfig" />
+    <property name="token" ref="trustedToken" />
     <property name="functions" ref="decorating.defaultFunctions" />
   </bean>
 

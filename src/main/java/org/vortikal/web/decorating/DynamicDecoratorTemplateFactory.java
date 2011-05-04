@@ -68,6 +68,7 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
     private Repository repository;
     private PropertyTypeDefinition aspectsPropdef;
     PropertyAspectDescription fieldConfig;
+    private String token;
     
     private Map<String, DirectiveNodeFactory> directiveHandlers;
     private Set<Function> functions = new HashSet<Function>();
@@ -88,11 +89,15 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
     public void setFieldConfig(PropertyAspectDescription fieldConfig) {
         this.fieldConfig = fieldConfig;
     }
+    
+    public void setToken(String token) {
+        this.token = token;
+    }
 
     @Required public void setComponentResolver(ComponentResolver componentResolver) {
         this.componentResolver = componentResolver;
     }
-
+    
     @Override
     public void afterPropertiesSet() throws Exception {
         Set<Function> functions = new HashSet<Function>();
@@ -102,7 +107,7 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
         functions.add(new RequestParameterFunction(new Symbol("request-param")));
         functions.add(new ResourceLocaleFunction(new Symbol("resource-locale")));
         functions.add(new TemplateParameterFunction(new Symbol("template-param")));
-        functions.add(new ResourceAspectFunction(new Symbol("resource-aspect"), this.aspectsPropdef, this.fieldConfig));
+        functions.add(new ResourceAspectFunction(new Symbol("resource-aspect"), this.aspectsPropdef, this.fieldConfig, this.token));
         functions.add(new ResourcePropHandler(new Symbol("resource-prop")));
         this.functions = functions;
         
@@ -222,9 +227,9 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
     private class ResourceAspectFunction extends Function {
         private PropertyAspectResolver resolver = null;
 
-        public ResourceAspectFunction(Symbol symbol, PropertyTypeDefinition aspectsPropdef, PropertyAspectDescription fieldConfig) {
+        public ResourceAspectFunction(Symbol symbol, PropertyTypeDefinition aspectsPropdef, PropertyAspectDescription fieldConfig, String token) {
             super(symbol, 1);
-            this.resolver = new PropertyAspectResolver(aspectsPropdef, fieldConfig);
+            this.resolver = new PropertyAspectResolver(aspectsPropdef, fieldConfig, token);
         }
         
         @Override

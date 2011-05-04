@@ -64,6 +64,7 @@ public class ConfigurableJSONPropertyEditor extends SimpleFormController {
     private PropertyTypeDefinition propertyDefinition;
     private String toplevelField;
     private PropertyAspectDescription fieldConfig;
+    private String token;
     
     protected Object formBackingObject(HttpServletRequest request)
     throws Exception {
@@ -88,7 +89,7 @@ public class ConfigurableJSONPropertyEditor extends SimpleFormController {
         Locale requestLocale = RequestContextUtils.getLocale(request);
         
         PropertyAspectResolver resolver = new PropertyAspectResolver(
-                this.propertyDefinition, this.fieldConfig);
+                this.propertyDefinition, this.fieldConfig, this.token);
         JSONObject combined = uri == Path.ROOT ? null 
                 : resolver.resolve(uri.getParent(), this.toplevelField);
         
@@ -125,7 +126,7 @@ public class ConfigurableJSONPropertyEditor extends SimpleFormController {
         List<FormElement> elements = new ArrayList<FormElement>();
         
         PropertyAspectResolver resolver = new PropertyAspectResolver(
-                this.propertyDefinition, this.fieldConfig);
+                this.propertyDefinition, this.fieldConfig, this.token);
         JSONObject combined = uri == Path.ROOT ? null 
                 : resolver.resolve(uri.getParent(), this.toplevelField);
 
@@ -291,5 +292,9 @@ public class ConfigurableJSONPropertyEditor extends SimpleFormController {
     @Required
     public void setFieldConfig(PropertyAspectDescription fieldConfig) {
         this.fieldConfig = fieldConfig;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }

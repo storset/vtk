@@ -95,6 +95,7 @@
     <property name="successView" value="redirectToManage" />
     <!--property name="configFile" ref="visualProfileAspect.configFile" /-->
     <property name="fieldConfig" ref="visualProfileAspect.fieldConfig" />
+    <property name="token" ref="trustedToken" />
   </bean>
 
 

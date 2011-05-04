@@ -135,17 +135,6 @@
 		 scaleAndCalculatePosition(image);
          $(".over").fadeTo(settings.fadeInOutTime, settings.fadedOutOpacity, function() {
            $(this).remove();
-           // TODO: cleanup / optimize
-           $(wrapperContainer + "-description").remove();
-	       $("<div class='" + container.substring(1) + "-description'>"
-           + "<p class='" + container.substring(1) + "-title'>" 
-           + $(image).attr("title") + "</p>" 
-           + $(image).attr("alt") + "</div>").insertAfter(wrapperContainer);
-
-	       if(($(image).attr("alt") && $(image).attr("alt") != "")
-              || ($(image).attr("title") && $(image).attr("title") != "")) {
-	         $(wrapperContainer + "-description").css("width", $(wrapper + " " + container).width());
-           }
 		 });
 	   } else {
          if(init) {
@@ -157,19 +146,6 @@
          }
          
          scaleAndCalculatePosition(image);
-
-             // TODO: cleanup / optimize
-             $(wrapperContainer + "-description").remove();
-    	       $("<div class='" + container.substring(1) + "-description'>"
-             + "<p class='" + container.substring(1) + "-title'>" 
-             + $(image).attr("title") + "</p>" 
-             + $(image).attr("alt") + "</div>").insertAfter(wrapperContainer);
-
-    	     if(($(image).attr("alt") && $(image).attr("alt") != "")
-                || ($(image).attr("title") && $(image).attr("title") != "")) {
-    	         $(wrapperContainer + "-description").css("width", $(wrapper + " " + container).width());
-
-	      }
 	}
 
        var thumbs = $(wrapperThumbsLinks);
@@ -201,7 +177,7 @@
          var imgWidth = width[src];
     	 var imgHeight = height[src];
     	 galleryLog("Using cached dimension for " + src + " [" + imgWidth + ", " + imgHeight + "]")
-    	  scaleAndCalculatePositionSubFunc(imgWidth, imgHeight);
+    	  scaleAndCalculatePositionSubFunc(image, imgWidth, imgHeight);
        } else {
     	 // $(wrapperContainerLink).load(function() {
     	 var checkForImageWidth = setInterval(function() {
@@ -213,7 +189,7 @@
     		   width[src] = imgWidth;
     		   height[src] = imgHeight;
     		   galleryLog("Getting dimension for " + src + " [" + imgWidth + ", " + imgHeight + "]")
-    		   scaleAndCalculatePositionSubFunc(imgWidth, imgHeight);
+    		   scaleAndCalculatePositionSubFunc(image, imgWidth, imgHeight);
     		   clearInterval(checkForImageWidth);
     		 }
     	  }
@@ -222,7 +198,7 @@
         
     }
        
-    function scaleAndCalculatePositionSubFunc(imgWidth, imgHeight) {
+    function scaleAndCalculatePositionSubFunc(image, imgWidth, imgHeight) {
     	
        var minHeight = 100;
        var maxHeight = 380;
@@ -248,6 +224,17 @@
          imgWidth = minWidth;
        }
        setMultipleCSS([wrapperContainer, wrapperContainer + "-nav"], "width", imgWidth);
+       
+       $(wrapperContainer + "-description").remove();
+       $("<div class='" + container.substring(1) + "-description'>"
+       + "<p class='" + container.substring(1) + "-title'>" 
+       + $(image).attr("title") + "</p>" 
+       + $(image).attr("alt") + "</div>").insertAfter(wrapperContainer);
+
+       if(($(image).attr("alt") && $(image).attr("alt") != "")
+          || ($(image).attr("title") && $(image).attr("title") != "")) {
+         $(wrapperContainer + "-description").css("width", $(wrapper + " " + container).width());
+       }
      }
     
      function galleryLog(msg) { 

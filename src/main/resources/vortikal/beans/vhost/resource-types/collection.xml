@@ -28,8 +28,8 @@
         <ref bean="collection.typePropDef" />
         <ref bean="aggregationPropDef" />
         <ref bean="collection.recursiveListingPropDef" />
-        <ref bean="manuallyApproveFromPropDef" />
-        <ref bean="manuallyApprovedResourcesPropDef" />
+        <!--ref bean="manuallyApproveFromPropDef" />
+        <ref bean="manuallyApprovedResourcesPropDef" /-->
         <ref bean="pageLimitPropDef" />
         <ref bean="collection.sortingPropDef" />
         <ref bean="collection.hideLastModifiedPropDef" />

@@ -104,6 +104,7 @@ public class ACLEditController extends SimpleFormController {
         Resource resource = repository.retrieve(token, uri, false);
 
         this.shortcuts = this.permissionShortcuts.get(this.privilege);
+        
         if (this.shortcuts != null) {
             this.shortcuts = validateShortcuts(this.shortcuts, this.permissionShortcutsConfig, repository, resource.getAcl());
         } 

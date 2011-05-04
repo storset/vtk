@@ -204,14 +204,20 @@
     	  scaleAndCalculatePositionSubFunc(imgWidth, imgHeight);
        } else {
     	 // $(wrapperContainerLink).load(function() {
-    		 var img = $(wrapperContainerLink + " img");
-    		 var imgWidth = img.width();
-    		 var imgHeight = img.height();
-    		 width[src] = imgWidth;
-    		 height[src] = imgHeight;
-    		 galleryLog("Getting dimension for " + src + " [" + imgWidth + ", " + imgHeight + "]")
-    		 scaleAndCalculatePositionSubFunc(imgWidth, imgHeight);
-    	 // });
+    	 var checkForImageWidth = setInterval(function() {
+    	   var img = $(wrapperContainerLink + " img");
+    	   if(img.width() != null && img.height() != null)
+    		 if(img.width() && img.height()) {
+    		   var imgWidth = img.width();
+    		   var imgHeight = img.height();
+    		   width[src] = imgWidth;
+    		   height[src] = imgHeight;
+    		   galleryLog("Getting dimension for " + src + " [" + imgWidth + ", " + imgHeight + "]")
+    		   scaleAndCalculatePositionSubFunc(imgWidth, imgHeight);
+    		   clearInterval(checkForImageWidth);
+    		 }
+    	  }
+    	 }, 5);
        }
         
     }

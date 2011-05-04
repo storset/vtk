@@ -206,7 +206,7 @@
     	 // $(wrapperContainerLink).load(function() {
     	 var checkForImageWidth = setInterval(function() {
     	   var img = $(wrapperContainerLink + " img");
-    	   if(img.width() != null && img.height() != null)
+    	   if(img.width() != null && img.height() != null) {
     		 if(img.width() && img.height()) {
     		   var imgWidth = img.width();
     		   var imgHeight = img.height();

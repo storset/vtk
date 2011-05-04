@@ -62,6 +62,9 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
     if (name.indexOf("supervisor-box") != -1) { 
     	height = 130; maxHeight = 300;
     } else if (name == "content" || name == "resource.content" ) { 
+    	
+    	// TODO: Check if XHTML
+    	
     	height = 400; maxHeight = 800;
     	if(name == "resource.content") {
     	  completeTB = completeToolbarOld;

@@ -33,12 +33,12 @@
 <#assign currentPrincipal = resourceContext.principal.qualifiedName />
 
 <#if !owner?exists || owner = currentPrincipal >
-  <body onload="document.forms[0].submit()">
+  <body onload="document.unlockForm.unlock.click()">
 <#else>
   <body>
 </#if>
   <h1>${vrtx.getMsg("unlockwarning.title")} '${resourceContext.currentResource.name}'</h1>
-  <form method="post" action="${form.url?html}">
+  <form method="post" action="${form.url?html}" name="unlockForm">
     <@vrtx.csrfPreventionToken url=form.url />
     <#if owner?exists && owner != currentPrincipal>
       <p>${vrtx.getMsg("unlockwarning.steal")}: <strong>${owner}</strong>.</p> 
@@ -49,7 +49,7 @@
       <button tabindex="1" type="submit" name="unlock" value="Unlock" >
         ${vrtx.getMsg("unlockwarning.unlock")}
       </button>
-      <button tabindex="2" type="submit" name="cancel" value="Cancel" >
+      <button tabindex="2" type="submit" name="cancel" id="cancel" value="Cancel" >
         ${vrtx.getMsg("unlockwarning.cancel")}
       </button>
     </div>

@@ -1,3 +1,10 @@
+-- sqlplus formatting
+set linesize 32000;
+set wrap on;
+set echo on;
+set heading off;
+set pagesize 0;
+
 -- Map old permissions to new:
 update action_type set name = 'read-write' where action_type_id = 2;
 update action_type set name = 'bind-template' where action_type_id = 5;

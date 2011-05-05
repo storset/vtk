@@ -18,6 +18,7 @@
 
 <#if images?exists>
   <#assign maxWidth = 507 />
+  <#assign maxHeight = 380 />
   
   <div class="vrtx-image-listing-include">
     <span class="vrtx-image-listing-include-title"><a href="${folderUrl}?display=gallery">${folderTitle}</a></span>
@@ -27,7 +28,7 @@
     <#else>
       <ul class="vrtx-image-listing-include-thumbs">
     </#if>
-        <@gallery.galleryListImages images />
+        <@gallery.galleryListImages images maxWidth maxHeight />
       </ul>
   </div>
 </#if>

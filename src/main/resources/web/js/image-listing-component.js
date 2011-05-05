@@ -23,9 +23,7 @@
     var isIE6 = jQuery.browser.msie && jQuery.browser.version <= 6;
 
     var images = []; // cache image HTML with src as hash
-    var width = []; // cache image width with src as hash
-    var height = []; // cache image height with src as hash
-
+    
     //Performance: function pointers to use inside loops
     var centerThumbnailImageFunc = centerThumbnailImage;
     var calculateImageFunc = calculateImage;
@@ -52,8 +50,9 @@
           h.find("img").stop().fadeTo(settings.fadeThumbsInOutTime, settings.fadedThumbsOutOpacity); 
         }
       } else { 
-        var img = h.find("img");
-        calculateImageFunc(img, false);
+        var img = h.find("img.vrtx-thumbnail-image");
+        var fullImage = h.find("img.vrtx-full-image");
+        calculateImageFunc(img, fullImage, false);
         h.addClass("active");
 	    img.stop().fadeTo(0, 1);
 	    e.preventDefault()
@@ -91,19 +90,20 @@
     });
 
 	// Init first active image
-	calculateImageFunc($(wrapperThumbsLinks + ".active img"), true);
-    initPagingEvents("prev"); initPagingEvents("next");
+	calculateImageFunc($(wrapperThumbsLinks + ".active img.vrtx-thumbnail-image"),
+			         $(wrapperThumbsLinks + ".active img.vrtx-full-image"), true);
+	
+    initPagingEvents("prev"); 
+    initPagingEvents("next");
 
     //TODO: use for- or async loop
     // Center thumbnails and cache images with link
     return this.each(function() {
       var link = $(this);
-      var img = link.find("img");
+      var img = link.find("img.vrtx-full-image");
       var src = img.attr("src");
       images[src] = generateLinkImageFunc(img, link);
-      width[src] = 0;
-      height[src] = 0;
-      centerThumbnailImageFunc(img, link);
+      centerThumbnailImageFunc(link.find("img.vrtx-thumbnail-image"), link);
    });
 
     function next(e) { // TODO: how to delegate events to two seperate DOM-elements
@@ -127,25 +127,23 @@
        }
      }
 
-	 function calculateImage(image, init) {
+	 function calculateImage(image, fullImage, init) {
 	   if(settings.fadeInOutTime > 0 && !init) {
 		 $(wrapperContainer).append("<div class='over'>" + $(wrapperContainerLink).html() + "</div>");
 		 $(wrapperContainerLink).remove();
-		 $(wrapperContainer).append(images[image.attr("src")]);
-		 scaleAndCalculatePosition(image);
+		 $(wrapperContainer).append(images[fullImage.attr("src")]);
+		 scaleAndCalculatePosition(fullImage);
          $(".over").fadeTo(settings.fadeInOutTime, settings.fadedOutOpacity, function() {
            $(this).remove();
 		 });
 	   } else {
          if(init) {
-           $(wrapperContainer).append(generateLinkImageFunc($(image), $(image).parent()));
+           $(wrapperContainer).append(generateLinkImageFunc($(fullImage), $(image).parent()));
          } else {
            $(wrapperContainerLink).remove();
-	       $(wrapperContainer).append(images[image.attr("src")]);
-	       
+	       $(wrapperContainer).append(images[fullImage.attr("src")]);
          }
-         
-         scaleAndCalculatePosition(image);
+         scaleAndCalculatePosition(fullImage);
 	}
 
        var thumbs = $(wrapperThumbsLinks);
@@ -170,62 +168,20 @@
      }
          
      function scaleAndCalculatePosition(image) {
-
        var src = image.attr("src").split("?")[0];
-
-       if(width[src] && height[src]) {
-         var imgWidth = width[src];
-    	 var imgHeight = height[src];
-    	 galleryLog("Using cached dimension for " + src + " [" + imgWidth + ", " + imgHeight + "]")
-    	  scaleAndCalculatePositionSubFunc(image, imgWidth, imgHeight);
-       } else {
-    	 // $(wrapperContainerLink).load(function() {
-    	 var checkForImageWidth = setInterval(function() {
-    	   var img = $(wrapperContainerLink + " img");
-    	   if(img.width() != null && img.height() != null) {
-    		 if(img.width() && img.height()) {
-    		   var imgWidth = img.width();
-    		   var imgHeight = img.height();
-    		   width[src] = imgWidth;
-    		   height[src] = imgHeight;
-    		   galleryLog("Getting dimension for " + src + " [" + imgWidth + ", " + imgHeight + "]")
-    		   scaleAndCalculatePositionSubFunc(image, imgWidth, imgHeight);
-    		   clearInterval(checkForImageWidth);
-    		 }
-    	  }
-    	 }, 5);
-       }
-        
-    }
        
-    function scaleAndCalculatePositionSubFunc(image, imgWidth, imgHeight) {
-    	
-       var minHeight = 100;
-       var maxHeight = 380;
-       var minWidth = 150;
-
-       if(imgHeight > maxHeight || imgHeight < minHeight) {
-           if(imgHeight > maxHeight) {
-             imgHeight = maxHeight;
-           } else if(imgHeight < minWidth) {
-              imgHeight = minHeight;
-           }
-           $(wrapperContainerLink + " img").css("height", imgHeight + "px");
-           imgWidth = $(wrapperContainerLink + " img").width(); // update after downscaling
-       }
+       var imgHeight = image.css("height");
+       var imgWidth = image.css("width");
+       
+       galleryLog(src + " [" + imgWidth + ", " + imgHeight + "]");
        
        setMultipleCSS([wrapperContainer + "-nav a", wrapperContainer + "-nav span",
                        wrapperContainerLink], "height", imgHeight);
 
-       if(imgWidth > maxWidth) {
-         imgWidth = maxWidth;
-       } else if (imgWidth < minWidth) {
-         setMultipleCSS([wrapperContainerLink], "width", imgWidth);
-         imgWidth = minWidth;
-       }
        setMultipleCSS([wrapperContainer, wrapperContainer + "-nav"], "width", imgWidth);
        
        $(wrapperContainer + "-description").remove();
+       
        $("<div class='" + container.substring(1) + "-description'>"
        + "<p class='" + container.substring(1) + "-title'>" 
        + $(image).attr("title") + "</p>" 
@@ -235,8 +191,8 @@
           || ($(image).attr("title") && $(image).attr("title") != "")) {
          $(wrapperContainer + "-description").css("width", $(wrapper + " " + container).width());
        }
-     }
-    
+    }
+
      function galleryLog(msg) { 
         if(typeof console != "undefined" && console.log) {
             console.log(msg);
@@ -259,13 +215,15 @@
      }
 
      function generateLinkImage(theimage, thelink) {
-       var src = theimage.attr("src").split("?")[0];
+       var src = theimage.attr("src").split("?")[0];	 
+       var width = theimage.css("width");
+       var height = theimage.css("height");
        var alt = theimage.attr("alt");
+    	 
        return "<a href='" + $(thelink).attr("href") + "'"
             + " class='" + container.substring(1) + "-link'>"
-            + "<img src='" + src + "' alt='" + alt + "' />"
+            + "<img src='" + src + "' alt='" + alt + "' style='width: " + width + "px; height: " + height + "px;' />"
             + "</a>";
-       return html;
      }
 
      function setMultipleCSS(elements, cssProperty, value) {

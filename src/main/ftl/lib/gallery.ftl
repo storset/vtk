@@ -27,11 +27,32 @@
   </div>
 </#macro>
 
-<#macro galleryListImages images activeImage="" imageListing="">
-  <#assign count = 1 />
+<#macro galleryListImages images maxWidth maxHeight activeImage="" imageListing="">
+  <#local count = 1 />
   <#list images as image>
-    <#assign description = vrtx.propValue(image, 'description', '', 'content')?html />
-    <#assign title = vrtx.propValue(image, 'title')?html />
+    <#local description = vrtx.propValue(image, 'description', '', 'content')?html />
+    <#local title = vrtx.propValue(image, 'title')?html />
+    <#local width = vrtx.propValue(image, 'pixelWidth')?number />
+    <#local height = vrtx.propValue(image, 'pixelHeight')?number />
+
+    <#local percentage = 1 />
+    <#if (width > height)>
+      <#if (width > maxWidth)>
+        <#local percentage = (maxWidth / width) />
+      </#if>
+    <#else>
+      <#if (height > maxHeight)>
+        <#local percentage = (maxHeight / height) />
+      </#if>
+    </#if>
+    <#local width = (width * percentage)?round />
+    <#local height = (height * percentage)?round />
+    <#if (height > maxHeight)>
+      <#local percentage = (maxHeight / height) />
+      <#local width = (width * percentage)?round />
+      <#local height = (height * percentage)?round />
+    </#if>
+
     <#if count % 4 == 0 && count % 5 == 0>
       <li class="vrtx-thumb-last vrtx-thumb-last-four vrtx-thumb-last-five">
     <#elseif count % 5 == 0 && count % 6 == 0>
@@ -49,37 +70,37 @@
     <#if activeImage != "" && imageListing != "">
 	  <#if (activeImage == image.URI) >
 	     <a href="${imageListing.urls[image.URI]?html}" class="active">
-	       <img src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt="${description}" title="${title}" />
+	       <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt="${description}" title="${title}" />
 	   <#else>
 	     <a href="${imageListing.urls[image.URI]?html}">
-	       <img src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt="${description}" title="${title}" />
+	       <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt="${description}" title="${title}" />
 	   </#if>
 	 <#else>
 	   <#if imageListing != "">
 	     <#if (image_index == 0) >
 	       <a href="${imageListing.urls[image.URI]?html}" class="active">
-	         <img src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt="${description}" title="${title}" />
+	         <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt="${description}" title="${title}" />
 	     <#else>
 	       <a href="${imageListing.urls[image.URI]?html}">
-	         <img src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt="${description}" title="${title}" />
+	         <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt="${description}" title="${title}" />
 	     </#if>
 	   <#else>
 	     <#if (image_index == 0) >
             <a href="${folderUrl}?actimg=${image.URI}&amp;display=gallery" class="active">
-              <img src="${vrtx.linkConstructor(image.URI.toString(), 'displayThumbnailService').getPathRepresentation()}" alt="${description}" title="${title}" />
+              <img class="vrtx-thumbnail-image" src="${vrtx.linkConstructor(image.URI.toString(), 'displayThumbnailService').getPathRepresentation()}" alt="${description}" title="${title}" />
          <#else>
             <a href="${folderUrl}?actimg=${image.URI}&amp;display=gallery">
-              <img src="${vrtx.linkConstructor(image.URI.toString(), 'displayThumbnailService').getPathRepresentation()}" alt="${description}" title="${title}" /> 
+              <img class="vrtx-thumbnail-image" src="${vrtx.linkConstructor(image.URI.toString(), 'displayThumbnailService').getPathRepresentation()}" alt="${description}" title="${title}" /> 
          </#if>
 	   </#if>
 	 </#if>
-	       <#if imageListing != "">
-	         <span><img src="${imageListing.urls[image.URI]?html}" alt="${description}" title="${title}" /></span>
-	       <#else>  
-	         <span><img src="${image.URI}" alt="${description}" title="${title}" /></span>
--          </#if>
-	       </a>
-       </li>
-    <#assign count = count+1 />
+	        <#if imageListing != "">
+	          <span><img class="vrtx-full-image" src="${imageListing.urls[image.URI]?html}" alt="${description}" title="${title}" style="width: ${width}px; height: ${height}px" /></span>
+	        <#else>  
+	          <span><img class="vrtx-full-image" src="${image.URI}" alt="${description}" title="${title}" style="width: ${width}px; height: ${height}px" /></span>
+-           </#if>
+	        </a>
+      </li>
+    <#local count = count+1 />
   </#list>
 </#macro>

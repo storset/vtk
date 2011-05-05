@@ -128,6 +128,7 @@
   <#local images=imageListing.files />
   <#if (images?size > 0)>
     <#assign maxWidth = 635 />
+    <#assign maxHeight = 380 />
   
     <div class="vrtx-image-listing-include" id="vrtx-image-folder-gallery">
       <#local activeImage = "" />
@@ -138,7 +139,7 @@
       <@gallery.galleryJSInit maxWidth 0 />
 
       <ul class="vrtx-image-listing-include-thumbs-pure-css">
-        <@gallery.galleryListImages images activeImage imageListing />
+        <@gallery.galleryListImages images maxWidth maxHeight activeImage imageListing />
       </ul>
    </div>
  </#if>

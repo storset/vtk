@@ -173,14 +173,14 @@
        var imgHeight = image.css("height");
        var imgWidth = image.css("width");
        
-       var minContainerHeight = 150;
-       var minContainerWidth = 100;
+       var minContainerHeight = 100;
+       var minContainerWidth = 150;
        
-       if(imgHeight < minContainerHeight) {
-    	  imgHeight = minContainerHeight;
+       if(parseInt(imgHeight) < minContainerHeight) {
+    	  imgHeight = minContainerHeight + "px";
        }
-       if(imgWidth < minContainerWidth) {
-          imgWidth = minContainerWidth;
+       if(parseInt(imgWidth) < minContainerWidth) {
+          imgWidth = minContainerWidth + "px";
        }
        
        galleryLog(src + " [" + imgWidth + ", " + imgHeight + "]");

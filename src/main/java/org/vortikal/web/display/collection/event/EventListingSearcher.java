@@ -82,6 +82,7 @@ public class EventListingSearcher {
                 cal.set(Calendar.MILLISECOND, 0);
                 Listing subListing = new Listing(result.getResource(), result.getTitle(), result.getName(), result
                         .getOffset());
+                subListing.setDisplayPropDefs(result.getDisplayPropDefs());
                 List<PropertySet> events = new ArrayList<PropertySet>();
                 Map<String, URL> urls = new HashMap<String, URL>();
                 for (PropertySet ps : allEvents) {

@@ -259,24 +259,17 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
             List<SyndEntry> tmpEntries = tmpFeed.getEntries();
 
             for (SyndEntry entry: tmpEntries) {
-                
-                
+                feedMapping.put(entry, tmpFeed);
                 HtmlFragment description = getDescription(entry, baseURL, requestURL);
-
                 if (description == null) {
-                    descriptionNoImage.put(entry.toString(),null);
+                    descriptionNoImage.put(entry.toString(), null);
                     continue;
                 }
-
                 HtmlElement image = removeImage(description);
-                if (image != null)
+                if (image != null) {
                     imgMap.put(entry.toString(), image.getEnclosedContent());
-                
+                }
                 descriptionNoImage.put(entry.toString(),description.getStringRepresentation());
-                
-                
-
-                feedMapping.put(entry, tmpFeed);
             }
             entries.addAll(tmpEntries);
         }

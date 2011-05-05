@@ -103,7 +103,7 @@
 	   </#if>
 	 </#if>
 	        <#if imageListing != "">
-	          <span><img class="vrtx-full-image" src="${imageListing.urls[image.URI]?html}" alt="${description}" title="${title}" style="width: ${width}px; height: ${height}px" /></span>
+	          <span><img class="vrtx-full-image" src="${imageListing.urls[image.URI]?html?split("?")[0]}" alt="${description}" title="${title}" style="width: ${width}px; height: ${height}px" /></span>
 	        <#else>  
 	          <span><img class="vrtx-full-image" src="${image.URI}" alt="${description}" title="${title}" style="width: ${width}px; height: ${height}px" /></span>
 -           </#if>

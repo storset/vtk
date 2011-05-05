@@ -576,11 +576,11 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
 
             String includeChildrenParam = request.getStringParameter(PARAMETER_INCLUDE_CHILDREN);
             if (includeChildrenParam != null) {
-                childNames = includeChildrenParam.split(",");
-                if (childNames.length == 0) {
+                if ("".equals(includeChildrenParam.trim())) {
                     throw new DecoratorComponentException("Invalid value for parameter '" + PARAMETER_INCLUDE_CHILDREN
                             + "': must provide at least one child name");
                 }
+                this.childNames = includeChildrenParam.split(",");
             }
             String excludeChildrenParam = request.getStringParameter(PARAMETER_EXCLUDE_CHILDREN);
             if (excludeChildrenParam != null) {

@@ -173,6 +173,16 @@
        var imgHeight = image.css("height");
        var imgWidth = image.css("width");
        
+       var minContainerHeight = 150;
+       var minContainerWidth = 100;
+       
+       if(imgHeight < minContainerHeight) {
+    	  imgHeight = minContainerHeight;
+       }
+       if(imgWidth < minContainerWidth) {
+          imgWidth = minContainerWidth;
+       }
+       
        galleryLog(src + " [" + imgWidth + ", " + imgHeight + "]");
        
        setMultipleCSS([wrapperContainer + "-nav a", wrapperContainer + "-nav span",
@@ -189,7 +199,7 @@
 
        if(($(image).attr("alt") && $(image).attr("alt") != "")
           || ($(image).attr("title") && $(image).attr("title") != "")) {
-         $(wrapperContainer + "-description").css("width", $(wrapper + " " + container).width());
+         $(wrapperContainer + "-description").css("width", imgWidth);
        }
     }
 

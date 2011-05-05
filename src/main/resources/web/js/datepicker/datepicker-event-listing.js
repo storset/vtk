@@ -21,7 +21,6 @@ function eventListingCalendar(allowedDates, activeDate, clickableDayTitle, notCl
     onSelect : function(dateText, inst) {
       location.href = location.href.split('?')[0] + "?date=" + dateText;
     },
-    firstDay : 1,
     showOtherMonths: true,
     defaultDate : activeDateForInit[0],
     beforeShowDay : function(day) { // iterates days in month

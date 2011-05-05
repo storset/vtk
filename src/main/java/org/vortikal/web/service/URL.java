@@ -62,6 +62,8 @@ public class URL {
     private boolean pathOnly = false;
     private boolean collection = false;
 
+    private boolean immutable = false;
+    
     private static final Integer PORT_80 = Integer.valueOf(80);
     private static final Integer PORT_443 = Integer.valueOf(443);
 
@@ -130,6 +132,9 @@ public class URL {
      * @return this URL
      */
     public URL setProtocol(String protocol) {
+        if (this.immutable) {
+            throw new IllegalStateException("This URL is immutable");
+        }
         if (protocol != null) {
             protocol = protocol.trim();
         }
@@ -159,6 +164,9 @@ public class URL {
      * @return this URL
      */
     public URL setHost(String host) {
+        if (this.immutable) {
+            throw new IllegalStateException("This URL is immutable");
+        }
         if (host == null || "".equals(host.trim())) {
             throw new IllegalArgumentException("Invalid hostname: '" + host + "'");
         }
@@ -178,6 +186,9 @@ public class URL {
      * @return this URL
      */
     public URL setPort(Integer port) {
+        if (this.immutable) {
+            throw new IllegalStateException("This URL is immutable");
+        }
         if (port != null && port.intValue() <= 0) {
             throw new IllegalArgumentException("Invalid port number: " + port.intValue());
         }
@@ -198,6 +209,9 @@ public class URL {
      * @return this URL
      */
     public URL setPathOnly(boolean pathOnly) {
+        if (this.immutable) {
+            throw new IllegalStateException("This URL is immutable");
+        }
         this.pathOnly = pathOnly;
         return this;
     }
@@ -214,6 +228,9 @@ public class URL {
      * @return this URL
      */
     public URL setPath(Path path) {
+        if (this.immutable) {
+            throw new IllegalStateException("This URL is immutable");
+        }
         if (path == null) {
             throw new IllegalArgumentException("Path cannot be NULL");
         }
@@ -229,6 +246,9 @@ public class URL {
      * @return this URL
      */
     public URL setCollection(boolean collection) {
+        if (this.immutable) {
+            throw new IllegalStateException("This URL is immutable");
+        }
         this.collection = collection;
         return this;
     }
@@ -249,6 +269,9 @@ public class URL {
      * @return this URL
      */
     public URL addParameter(String name, String value) {
+        if (this.immutable) {
+            throw new IllegalStateException("This URL is immutable");
+        }
         List<String> values = this.parameters.get(name);
         if (values == null) {
             values = new ArrayList<String>();
@@ -269,6 +292,9 @@ public class URL {
      * @return this URL
      */
     public URL setParameter(String name, String value) {
+        if (this.immutable) {
+            throw new IllegalStateException("This URL is immutable");
+        }
         if (this.parameters.containsKey(name)) {
             this.parameters.remove(name);
         }
@@ -286,6 +312,9 @@ public class URL {
      * @return this URL
      */
     public URL removeParameter(String name) {
+        if (this.immutable) {
+            throw new IllegalStateException("This URL is immutable");
+        }
         this.parameters.remove(name);
         return this;
     }
@@ -296,8 +325,25 @@ public class URL {
      * @return this URL
      */
     public URL clearParameters() {
+        if (this.immutable) {
+            throw new IllegalStateException("This URL is immutable");
+        }
         this.parameters = new LinkedHashMap<String, List<String>>();
         return this;
+    }
+
+    /**
+     * Makes this URL immutable (i.e. no further modifications 
+     * to this URL can be made).
+     * @return this URL
+     */
+    public URL setImmutable() {
+        this.immutable = true;
+        return this;
+    }
+    
+    public boolean isImmutable() {
+        return this.immutable;
     }
 
     public String getParameter(String parameterName) {
@@ -364,6 +410,9 @@ public class URL {
      * @return this URL
      */
     public URL setCharacterEncoding(String characterEncoding) {
+        if (this.immutable) {
+            throw new IllegalStateException("This URL is immutable");
+        }
         if (characterEncoding == null) {
             throw new IllegalArgumentException("Character encoding must be specified");
         }
@@ -383,7 +432,9 @@ public class URL {
         url.append(this.protocol).append("://");
         url.append(this.host);
         if (this.port != null) {
-            if (!(this.port.equals(PORT_80) && (PROTOCOL_HTTP.equals(this.protocol) || PROTOCL_RTMP.equals(protocol)) || (this.port.equals(PORT_443) && PROTOCOL_HTTPS
+            if (!(this.port.equals(PORT_80) &&
+                  (PROTOCOL_HTTP.equals(this.protocol) || PROTOCL_RTMP.equals(protocol))
+                  || (this.port.equals(PORT_443) && PROTOCOL_HTTPS
                     .equals(this.protocol)))) {
                 url.append(":").append(this.port.intValue());
             }
@@ -474,7 +525,8 @@ public class URL {
             url.append(this.protocol).append("://");
             url.append(this.host);
             if (this.port != null) {
-                if (!(this.port.equals(PORT_80) && PROTOCOL_HTTP.equals(this.protocol) || (this.port.equals(PORT_443) && PROTOCOL_HTTPS
+                if (!(this.port.equals(PORT_80) && PROTOCOL_HTTP.equals(this.protocol)
+                      || (this.port.equals(PORT_443) && PROTOCOL_HTTPS
                         .equals(this.protocol)))) {
                     url.append(":").append(this.port.intValue());
                 }
@@ -551,7 +603,8 @@ public class URL {
         } catch (UnsupportedEncodingException e) {
             throw new IllegalStateException("UTF-8 encoding not supported on this system");
         } catch (Exception e) {
-            throw new IllegalArgumentException("Unable to parse request URL: " + request.getRequestURL());
+            throw new IllegalArgumentException("Unable to parse request URL: " 
+                    + request.getRequestURL(), e);
         }
     }
 
@@ -605,8 +658,12 @@ public class URL {
      * @return the parsed URL
      */
     public static URL parse(String url) {
-        if (url == null || "".equals(url.trim())) {
-            throw new IllegalArgumentException("Malformed URL: " + url);
+        if (url == null) {
+            throw new IllegalArgumentException("Argument is NULL");
+        }
+        url = url.trim();
+        if ("".equals(url)) {
+            throw new IllegalArgumentException("Malformed URL: '" + url + "'");
         }
 
         StringBuilder protocol = new StringBuilder();
@@ -625,8 +682,8 @@ public class URL {
                     state = ParseState.HOST;
                     i += 2;
                 } else if (!(c >= 'a' && c <= 'z')) {
-                    throw new IllegalArgumentException("Malformed URL: " + url
-                                    + " illegal character in protocol: " + c);
+                    throw new IllegalArgumentException("Malformed URL: '" + url
+                                    + "': illegal character in protocol: " + c);
                 } else {
                     protocol.append(c);
                 }
@@ -639,13 +696,13 @@ public class URL {
                     i--;
                 } else if (c == '?') {
                     state = ParseState.QUERY;
-                } else if (!(c >= 'a' && c <= 'z' || c >= '0' && c <= '9')
+                } else if (!(c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9')
                            && c != '.' && c != '-' && c != '_') {
-                    throw new IllegalArgumentException("Malformed URL: " + url
-                            + ": illegal character in host name: "
+                    throw new IllegalArgumentException("Malformed URL: '" + url
+                            + "': illegal character in host name: "
                             + c);
                 } else {
-                    host.append(c);
+                    host.append(Character.toLowerCase(c));
                 }
                 break;
             case PORT:
@@ -657,8 +714,8 @@ public class URL {
                 } else if (c == '#') {
                     state = ParseState.REF;
                 } else if (!(c >= '0' && c <= '9')) {
-                    throw new IllegalArgumentException("Malformed URL: " + url
-                              + " illegal port number character: " + c);
+                    throw new IllegalArgumentException("Malformed URL: '" + url
+                              + "': illegal port number character: '" + c + "'");
                 } else {
                     port.append(c);
                 }
@@ -695,10 +752,10 @@ public class URL {
             }
         }
         if (!(protocols.contains(protocol.toString()))) {
-            throw new IllegalArgumentException("Malformed URL: " + url);
+            throw new IllegalArgumentException("Malformed URL: '" + url + "'");
         }
         if (host.length() == 0) {
-            throw new IllegalArgumentException("Malformed URL: " + url + ": contains no hostname");
+            throw new IllegalArgumentException("Malformed URL: '" + url + "': contains no host name");
         }
         boolean collection = false;
         Path p = null;
@@ -717,7 +774,7 @@ public class URL {
             try {
                 p = Path.fromString(path.toString());
             } catch (Exception e) {
-                throw new IllegalArgumentException("Malformed URL: " + url + ": " + e.getMessage());
+                throw new IllegalArgumentException("Malformed URL: '" + url + "': " + e.getMessage());
             }
         }
         Path resultPath = Path.ROOT;
@@ -738,7 +795,7 @@ public class URL {
             try {
                 portNumber = Integer.parseInt(port.toString());
             } catch (Exception e) {
-                throw new IllegalArgumentException("Malformed URL: " + e.getMessage());
+                throw new IllegalArgumentException("Malformed URL: '" + url + "': " + e.getMessage());
             }
         }
         URL resultURL = new URL(protocol.toString(), host.toString(), resultPath);

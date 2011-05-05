@@ -32,25 +32,33 @@
   <#list images as image>
     <#local description = vrtx.propValue(image, 'description', '', 'content')?html />
     <#local title = vrtx.propValue(image, 'title')?html />
-    <#local width = vrtx.propValue(image, 'pixelWidth')?number />
-    <#local height = vrtx.propValue(image, 'pixelHeight')?number />
+    <#local width = vrtx.propValue(image, 'pixelWidth') />
+    <#local height = vrtx.propValue(image, 'pixelHeight') />
+    
+    <#if height != "" && width != "">
+      <#local width = width?number />
+      <#local height = height?number />
 
-    <#local percentage = 1 />
-    <#if (width > height)>
-      <#if (width > maxWidth)>
-        <#local percentage = (maxWidth / width) />
+      <#local percentage = 1 />
+      <#if (width > height)>
+        <#if (width > maxWidth)>
+          <#local percentage = (maxWidth / width) />
+        </#if>
+      <#else>
+        <#if (height > maxHeight)>
+          <#local percentage = (maxHeight / height) />
+        </#if>
       </#if>
-    <#else>
-      <#if (height > maxHeight)>
-        <#local percentage = (maxHeight / height) />
-      </#if>
-    </#if>
-    <#local width = (width * percentage)?round />
-    <#local height = (height * percentage)?round />
-    <#if (height > maxHeight)>
-      <#local percentage = (maxHeight / height) />
       <#local width = (width * percentage)?round />
       <#local height = (height * percentage)?round />
+      <#if (height > maxHeight)>
+        <#local percentage = (maxHeight / height) />
+        <#local width = (width * percentage)?round />
+        <#local height = (height * percentage)?round />
+      </#if>
+    <#else>
+      <#local width = 0 />
+      <#local height = 0 />
     </#if>
 
     <#if count % 4 == 0 && count % 5 == 0>

@@ -15,7 +15,7 @@ jQuery(function($){
 		dayNamesMin: ['Sø','Ma','Ti','On','To','Fr','Lø'],
 		weekHeader: 'Uke',
         dateFormat: 'yy-mm-dd',
-		firstDay: 0,
+		firstDay: 1,
 		isRTL: false,
 		showMonthAfterYear: false,
 		yearSuffix: ''};

@@ -65,6 +65,8 @@
       <li class="vrtx-thumb-last vrtx-thumb-last-four vrtx-thumb-last-five">
     <#elseif count % 5 == 0 && count % 6 == 0>
       <li class="vrtx-thumb-last vrtx-thumb-last-five vrtx-thumb-last-six">
+    <#elseif count % 4 == 0 && count % 6 == 0>
+      <li class="vrtx-thumb-last vrtx-thumb-last-four vrtx-thumb-last-six">
     <#elseif count % 4 == 0>
       <li class="vrtx-thumb-last vrtx-thumb-last-four">
     <#elseif count % 5 == 0>

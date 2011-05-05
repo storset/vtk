@@ -65,6 +65,9 @@ public class URLTest extends TestCase {
         assertEquals(Path.ROOT, url.getPath());
         assertTrue(url.isCollection());
         assertEquals("http://foo/", url.toString());
+        
+        url = URL.parse("http://ExamPLE.COM");
+        assertEquals("example.com", url.getHost());
 
         url = URL.parse("http://foo?param=value");
         assertEquals(Path.ROOT, url.getPath());

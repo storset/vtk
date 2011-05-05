@@ -1,4 +1,6 @@
+<#ftl strip_whitespace=true>
 <#import "../vortikal.ftl" as vrtx />
+<#import "/lib/gallery.ftl" as gallery />
 
 <#macro addScripts collection>
 
@@ -123,73 +125,22 @@
 </#macro>
 
 <#macro displayGallery imageListing collection>
-  
   <#local images=imageListing.files />
   <#if (images?size > 0)>
-   <div class="vrtx-image-listing-include" id="vrtx-image-folder-gallery">
-      
+    <#assign maxWidth = 635 />
+  
+    <div class="vrtx-image-listing-include" id="vrtx-image-folder-gallery">
       <#local activeImage = "" />
       <#if RequestParameters['actimg']?exists>
         <#local activeImage = RequestParameters['actimg'] />
       </#if>
-      
-      <script type="text/javascript">
-       <!--
-		 $(window).load(function () {
-				
-		   var wrapper = ".vrtx-image-listing-include";	
-		   var container = ".vrtx-image-listing-include-container";
-			  
-		   var options = {
-		     fadeInOutTime : 0
-		   }
-			  
-		   $(wrapper + " ul li a").vrtxSGallery(wrapper, container, 635, options);
-				  
-	     });
-       // -->
-       </script>
-       
-        <div class="vrtx-image-listing-include-container-pure-css">
-          <div class="vrtx-image-listing-include-container-nav-pure-css">
-            <a class="prev" href="#" title="${vrtx.getMsg('imageListing.previous.prefix')}&nbsp;${vrtx.getMsg('imageListing.previous')}"><span class="prev-transparent-block"></span></a>
-            <a class="next" href="#" title="${vrtx.getMsg('imageListing.next')}&nbsp;${vrtx.getMsg('imageListing.next.postfix')}"><span class="next-transparent-block"></span></a>
-          </div>
-        </div>
-    <ul class="vrtx-image-listing-include-thumbs-pure-css">
-    <#assign count = 1 />
-    <#list images as image>
-        <#assign description = vrtx.propValue(image, 'description', '', 'content')?html />
-        <#assign title = vrtx.propValue(image, 'title')?html />
-        <#if count % 5 == 0 && count % 6 == 0>
-          <li class="vrtx-thumb-last vrtx-thumb-last-five vrtx-thumb-last-six">
-        <#elseif count % 5 == 0>
-          <li class="vrtx-thumb-last vrtx-thumb-last-five">
-        <#elseif count % 6 == 0>
-          <li class="vrtx-thumb-last-six">
-        <#else>
-          <li>
-        </#if>
-        <#if activeImage != "">
-	      <#if (activeImage == image.URI) >
-	          <a href="${imageListing.urls[image.URI]?html}" class="active"><img src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt="${description}" title="${title}" />
-	        <#else>
-	          <a href="${imageListing.urls[image.URI]?html}"><img src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt="${description}" title="${title}" />
-	        </#if>
-	      <#else>
-	        <#if (image_index == 0) >
-	          <a href="${imageListing.urls[image.URI]?html}" class="active"><img src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt="${description}" title="${title}" />
-	        <#else>
-	          <a href="${imageListing.urls[image.URI]?html}"><img src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt="${description}" title="${title}" />
-	        </#if>
-	      </#if>
-	            <span><img src="${imageListing.urls[image.URI]?html}" alt="${description}" title="${title}" /></span>
-	          </a>
-        </li>
-        <#assign count = count+1 />
-    </#list>
-    </ul>
-  </div>
+
+      <@gallery.galleryJSInit maxWidth 0 />
+
+      <ul class="vrtx-image-listing-include-thumbs-pure-css">
+        <@gallery.galleryListImages images activeImage imageListing />
+      </ul>
+   </div>
  </#if>
 
 </#macro>

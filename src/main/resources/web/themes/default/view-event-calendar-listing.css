@@ -173,7 +173,7 @@
   margin-right: 16px;
 }
 
-#vrtx-daily-events #vrtx-last-daily-event .vevent {
+#vrtx-daily-events .vrtx-last-daily-event .vevent {
   background-image: none !important;
   margin-bottom: 0px !important;	
 }

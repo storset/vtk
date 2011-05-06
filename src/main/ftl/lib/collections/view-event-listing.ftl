@@ -26,11 +26,11 @@
     <#assign count = 1 />
     <#list events as event>
       <#if events?size == count>
-        <span id="vrtx-last-event">
+        <div class="vrtx-last-event">
       </#if>
       <@displayEvent collectionListing event hideNumberOfComments displayMoreURLs />
        <#if events?size == count>
-        </span>
+        </div>
       </#if>
       <#assign count = count +1 />
     </#list>
@@ -117,11 +117,11 @@
             <#assign subcount = 1 />
             <#list eventListing.files as event>
               <#if groupedByDayEvents?size == count && eventListing.files?size == subcount>
-                <span id="vrtx-last-daily-event">
+                <div class="vrtx-last-daily-event">
               </#if>
               <@displayEvent eventListing event hideNumberOfComments displayMoreURLs=false />
               <#if groupedByDayEvents?size == count && eventListing.files?size == subcount>
-                </span>
+                </div>
               </#if>
 	          <#assign subcount = subcount +1 />
 	        </#list>

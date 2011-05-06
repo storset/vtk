@@ -44,7 +44,7 @@
     <property name="name" value="tags.personSearchComponent" />
     <property name="queryBuilders">
       <list>
-        <bean class="org.vortikal.web.search.ScopeQueryBuilder" />
+        <ref bean="tags.scopeQueryBuilder" />
         <bean class="org.vortikal.web.search.PropertyTermQueryBuilder">
           <property name="parameterName" value="tag" />
           <property name="propertyTypeDefinition" ref="tagsPropDef" />

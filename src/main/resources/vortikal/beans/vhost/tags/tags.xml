@@ -90,7 +90,7 @@
     </property>
     <property name="queryBuilders">
       <list>
-        <bean class="org.vortikal.web.search.ScopeQueryBuilder" />
+        <ref bean="tags.scopeQueryBuilder" />
         <bean class="org.vortikal.web.search.ResourceTypeQueryBuilder">
           <property name="resourceTypeTree" ref="resourceTypeTree" />
         </bean>
@@ -104,6 +104,10 @@
       </list>
     </property>
     <property name="searchSorting" ref="tags.searchSorting" />
+  </bean>
+
+  <bean id="tags.scopeQueryBuilder" class="org.vortikal.web.search.ScopeQueryBuilder">
+    <property name="aggregationResolver" ref="aggregationResolver" />
   </bean>
 
   <bean id="tags.searchSorting" class="org.vortikal.web.search.SearchSorting" depends-on="resourceTypeTree">

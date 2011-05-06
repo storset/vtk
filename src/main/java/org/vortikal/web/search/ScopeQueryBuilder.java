@@ -30,22 +30,49 @@
  */
 package org.vortikal.web.search;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.UriPrefixQuery;
+import org.vortikal.web.display.collection.aggregation.AggregationResolver;
 
 public class ScopeQueryBuilder implements QueryBuilder {
 
-    public Query build(Resource base, HttpServletRequest request) {
-        if (base.getURI().isRoot()) {
-            // Not needed
+    private AggregationResolver aggregationResolver;
+
+    public Query build(Resource resource, HttpServletRequest request) {
+
+        Path base = resource.getURI();
+        if (base.isRoot()) {
+            // Root. Just return. Never mind aggregation, just search entire host
             return null;
         }
-        
-        return new UriPrefixQuery(base.getURI() + "/");
+        UriPrefixQuery baseQuery = new UriPrefixQuery(base + "/");
+
+        List<Path> aggregationPaths = this.aggregationResolver.getAggregationPaths(base);
+        OrQuery aggregateUriPrefixQuery = null;
+        if (aggregationPaths != null && aggregationPaths.size() > 0) {
+            aggregateUriPrefixQuery = new OrQuery();
+            for (Path aggregationPath : aggregationPaths) {
+                aggregateUriPrefixQuery.add(new UriPrefixQuery(aggregationPath.toString()));
+            }
+            aggregateUriPrefixQuery.add(baseQuery);
+            return aggregateUriPrefixQuery;
+        }
+
+        return baseQuery;
+
     }
 
+    @Required
+    public void setAggregationResolver(AggregationResolver aggregationResolver) {
+        this.aggregationResolver = aggregationResolver;
+    }
 
 }

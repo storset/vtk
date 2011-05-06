@@ -23,6 +23,8 @@
     var isIE6 = jQuery.browser.msie && jQuery.browser.version <= 6;
 
     var images = []; // cache image HTML with src as hash
+    var imagesWidth = [];
+    var imagesHeight = [];
     
     //Performance: function pointers to use inside loops
     var centerThumbnailImageFunc = centerThumbnailImage;
@@ -102,7 +104,9 @@
       var link = $(this);
       var img = link.find("img.vrtx-full-image");
       var src = img.attr("src");
-      images[src] = generateLinkImageFunc(img, link);
+      imagesWidth[src] = parseInt(link.find("span.hiddenWidth").text());
+      imagesHeight[src] = parseInt(link.find("span.hiddenHeight").text());
+      images[src] = generateLinkImageFunc(img, link, false);
       centerThumbnailImageFunc(link.find("img.vrtx-thumbnail-image"), link);
    });
 
@@ -123,6 +127,7 @@
          } else {
    	       $(wrapper + " ul li:first a").click();
          }
+	     
          e.preventDefault();
        }
      }
@@ -138,7 +143,7 @@
 		 });
 	   } else {
          if(init) {
-           $(wrapperContainer).append(generateLinkImageFunc($(fullImage), $(image).parent()));
+           $(wrapperContainer).append(generateLinkImageFunc($(fullImage), $(image).parent(), true));
          } else {
            $(wrapperContainerLink).remove();
 	       $(wrapperContainer).append(images[fullImage.attr("src")]);
@@ -167,12 +172,12 @@
                               wrapper + " a." + navClass + " span"), 0, 0);
      }
          
-     function scaleAndCalculatePosition(image) {
+     function scaleAndCalculatePosition(image, init) {
        var src = image.attr("src").split("?")[0];
        
-       var imgHeight = image.css("height");
-       var imgWidth = image.css("width");
-       
+       var imgWidth = imagesWidth[src];       
+       var imgHeight = imagesHeight[src];
+
        var minContainerHeight = 100;
        var minContainerWidth = 150;
        
@@ -224,12 +229,19 @@
        }
      }
 
-     function generateLinkImage(theimage, thelink) {
+     function generateLinkImage(theimage, thelink, init) {
        var src = theimage.attr("src").split("?")[0];	 
-       var width = theimage.css("width");
-       var height = theimage.css("height");
        var alt = theimage.attr("alt");
-    	 
+       if(!init) {
+         var width = imagesWidth[src];
+         var height = imagesHeight[src];
+       } else {
+    	 var width = parseInt(thelink.find("span.hiddenWidth").text());
+    	 var height = parseInt(thelink.find("span.hiddenHeight").text());	   
+    	 imagesWidth[src] = width;
+    	 imagesHeight[src] = height;
+       }
+       
        return "<a href='" + $(thelink).attr("href") + "'"
             + " class='" + container.substring(1) + "-link'>"
             + "<img src='" + src + "' alt='" + alt + "' style='width: " + width + "px; height: " + height + "px;' />"
@@ -238,11 +250,15 @@
 
      function setMultipleCSS(elements, cssProperty, value) {
        var elementsLength = elements.length;
-       for(var i = 0; i < elementsLength; i++) { $(elements[i]).css(cssProperty, value);}
+       for(var i = 0; i < elementsLength; i++) { 
+    	   $(elements[i]).css(cssProperty, value);
+        }
      } 
      function fadeMultiple(elements, time, opacity) {
        var elementsLength = elements.length;
-       for(var i = 0; i < elementsLength; i++) {$(elements[i]).stop().fadeTo(time, opacity); }
+       for(var i = 0; i < elementsLength; i++) {
+    	   $(elements[i]).stop().fadeTo(time, opacity); 
+       }
      }
   };
 })(jQuery)

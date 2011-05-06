@@ -15,6 +15,7 @@
 	  var options = {
 	    fadeInOutTime : ${fadeEffect}
 	  }
+  
 	  $(wrapper + " ul li a").vrtxSGallery(wrapper, container, ${maxWidth}, options);			  
     });
   // -->
@@ -60,7 +61,7 @@
       <#local width = 0 />
       <#local height = 0 />
     </#if>
-
+    
     <#if count % 4 == 0 && count % 5 == 0>
       <li class="vrtx-thumb-last vrtx-thumb-last-four vrtx-thumb-last-five">
     <#elseif count % 5 == 0 && count % 6 == 0>
@@ -107,8 +108,10 @@
 	        <#if imageListing != "">
 	          <span><img class="vrtx-full-image" src="${imageListing.urls[image.URI]?html?split("?")[0]}" alt="${description}" title="${title}" style="width: ${width}px; height: ${height}px" /></span>
 	        <#else>  
-	          <span><img class="vrtx-full-image" src="${image.URI}" alt="${description}" title="${title}" style="width: ${width}px; height: ${height}px" /></span>
+	          <span><img class="vrtx-full-image" src="${image.URI}" alt="${description}" title="${title}" style="width: ${width}px; height: ${height}px" /></span> 
 	        </#if>
+	          <span class="hiddenWidth">${width}</span>
+	          <span class="hiddenHeight">${height}</span>
 	        </a>
       </li>
     <#local count = count+1 />

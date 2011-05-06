@@ -176,3 +176,8 @@
    font-size: 1.15em;
    font-style: italic;
 }
+
+.vrtx-image-listing-include .hiddenWidth,
+.vrtx-image-listing-include .hiddenHeight {
+  display: none;
+}

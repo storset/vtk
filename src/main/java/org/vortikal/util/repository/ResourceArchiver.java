@@ -568,9 +568,10 @@ public class ResourceArchiver {
         if (propsModified) {
             this.repository.store(token, resource);
         }
+        
         if (!resource.getAcl().equals(acl)) {
             resource = this.repository.storeACL(
-                    token, resource.getURI(), resource.getAcl(), false);
+                    token, resource.getURI(), acl, false);
         }
     }
 

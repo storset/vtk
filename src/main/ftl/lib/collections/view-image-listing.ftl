@@ -163,7 +163,7 @@
             <td class="vrtx-table-dimensions-height">${height} px</td>
             <#local contentLength = vrtx.propValue(image, 'contentLength') />
             <td class="vrtx-table-size"><@vrtx.calculateResourceSizeToKB contentLength?number /></td>
-            <#local photographer = vrtx.propValue(resource, "photographer") />
+            <#local photographer = vrtx.propValue(image, "photographer") />
             <td class="vrtx-table-photo">${photographer}</td>
             <#local creationTime = vrtx.propValue(image, 'creationTime', 'short', '') />
             <td class="vrtx-table-creation-time">${creationTime}</td>

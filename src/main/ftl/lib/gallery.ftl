@@ -35,6 +35,7 @@
     <#local title = vrtx.propValue(image, 'title')?html />
     <#local width = vrtx.propValue(image, 'pixelWidth') />
     <#local height = vrtx.propValue(image, 'pixelHeight') />
+    <#local photographer = vrtx.propValue(image, "photographer") />
     
     <#if height != "" && width != "">
       <#local width = width?number />
@@ -79,8 +80,13 @@
     </#if>
     
     <#assign showTitle = false />
-    <#if image.name != title && title != "">
-       <#assign showTitle = true /> 
+    <#if (image.name != title && title != "") || photographer != "">
+      <#if photographer != "" && (image.name != title && title != "")>
+        <#local title = title + "<span class='vrtx-photographer'>${vrtx.getMsg('imageAsHtml.byline')}:" + photographer + "</span>" /> 
+      <#elseif photographer != "">  
+         <#local title = "<span class='vrtx-photographer'>${vrtx.getMsg('imageAsHtml.byline')}:" + photographer + "</span>" />        
+      </#if>
+      <#assign showTitle = true />
     </#if>
     
     <#if activeImage != "" && imageListing != "">

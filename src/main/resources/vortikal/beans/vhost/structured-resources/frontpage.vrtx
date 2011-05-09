@@ -270,7 +270,11 @@ resourcetype frontpage {
           
             [if pixel-width != null]
               [def style concat("width:", pixel-width, "px")]
+              [def photographer resource-prop(img-uri, "photographer")]
               [def img-author resource-prop(img-uri, "authorName")]
+              [if photographer != null && photographer != ""]
+                [def img-author photographer]
+              [endif]
         
               [if caption != null]
                 <div class="vrtx-introduction-image" style="[val style]">

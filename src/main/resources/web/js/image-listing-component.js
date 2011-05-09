@@ -197,10 +197,15 @@
        
        $(wrapperContainer + "-description").remove();
        
-       $("<div class='" + container.substring(1) + "-description'>"
-       + "<p class='" + container.substring(1) + "-title'>" 
-       + $(image).attr("title") + "</p>" 
-       + $(image).attr("alt") + "</div>").insertAfter(wrapperContainer);
+       var html = "<div class='" + container.substring(1) + "-description'>";
+       if($(image).attr("title") && $(image).attr("title") != "") {
+         html += "<p class='" + container.substring(1) + "-title'>" + $(image).attr("title") + "</p>";
+       }
+       if($(image).attr("alt") && $(image).attr("alt") != "") {
+         html += $(image).attr("alt");
+       }
+       html += "</div>";
+       $(html).insertAfter(wrapperContainer);
 
        if(($(image).attr("alt") && $(image).attr("alt") != "")
           || ($(image).attr("title") && $(image).attr("title") != "")) {

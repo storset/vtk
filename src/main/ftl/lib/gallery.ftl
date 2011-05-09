@@ -78,37 +78,42 @@
       <li>
     </#if>
     
+    <#assign showTitle = false />
+    <#if image.name != title && title != "">
+       <#assign showTitle = true /> 
+    </#if>
+    
     <#if activeImage != "" && imageListing != "">
 	  <#if (activeImage == image.URI) >
 	     <a href="${imageListing.urls[image.URI]?html}" class="active">
-	       <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt="${description}" title="${title}" />
+	       <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt="${description}" <#if showTitle>title="${title}"</#if> />
 	   <#else>
 	     <a href="${imageListing.urls[image.URI]?html}">
-	       <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt="${description}" title="${title}" />
+	       <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt="${description}" <#if showTitle>title="${title}"</#if> />
 	   </#if>
 	 <#else>
 	   <#if imageListing != "">
 	     <#if (image_index == 0) >
 	       <a href="${imageListing.urls[image.URI]?html}" class="active">
-	         <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt="${description}" title="${title}" />
+	         <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt="${description}" <#if showTitle>title="${title}"</#if> />
 	     <#else>
 	       <a href="${imageListing.urls[image.URI]?html}">
-	         <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt="${description}" title="${title}" />
+	         <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt="${description}" <#if showTitle>title="${title}"</#if> />
 	     </#if>
 	   <#else>
 	     <#if (image_index == 0) >
             <a href="${folderUrl}?actimg=${image.URI}&amp;display=gallery" class="active">
-              <img class="vrtx-thumbnail-image" src="${vrtx.linkConstructor(image.URI.toString(), 'displayThumbnailService').getPathRepresentation()}" alt="${description}" title="${title}" />
+              <img class="vrtx-thumbnail-image" src="${vrtx.linkConstructor(image.URI.toString(), 'displayThumbnailService').getPathRepresentation()}" alt="${description}" <#if showTitle>title="${title}"</#if> />
          <#else>
             <a href="${folderUrl}?actimg=${image.URI}&amp;display=gallery">
-              <img class="vrtx-thumbnail-image" src="${vrtx.linkConstructor(image.URI.toString(), 'displayThumbnailService').getPathRepresentation()}" alt="${description}" title="${title}" /> 
+              <img class="vrtx-thumbnail-image" src="${vrtx.linkConstructor(image.URI.toString(), 'displayThumbnailService').getPathRepresentation()}" alt="${description}" <#if showTitle>title="${title}"</#if> /> 
          </#if>
 	   </#if>
 	 </#if>
 	        <#if imageListing != "">
-	          <span><img class="vrtx-full-image" src="${imageListing.urls[image.URI]?html?split("?")[0]}" alt="${description}" title="${title}" style="width: ${width}px; height: ${height}px" /></span>
+	          <span><img class="vrtx-full-image" src="${imageListing.urls[image.URI]?html?split("?")[0]}" alt="${description}" style="width: ${width}px; height: ${height}px" <#if showTitle>title="${title}"</#if> /></span>
 	        <#else>  
-	          <span><img class="vrtx-full-image" src="${image.URI}" alt="${description}" title="${title}" style="width: ${width}px; height: ${height}px" /></span> 
+	          <span><img class="vrtx-full-image" src="${image.URI}" alt="${description}" style="width: ${width}px; height: ${height}px" <#if showTitle>title="${title}"</#if> /></span> 
 	        </#if>
 	          <span class="hiddenWidth">${width}</span>
 	          <span class="hiddenHeight">${height}</span>

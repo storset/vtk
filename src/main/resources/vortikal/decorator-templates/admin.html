@@ -7,27 +7,20 @@
     
     <title>${manage:title}</title>
   </head>
-  <body${document:element-attributes select=[html.body]} class="app-fluid"> 
-    <div id="app-head-wrapper"> 
-      <div id="line-top">
-        <div id="uiologo">
-          <a href="http://www.uio.no/">Universitetet i Oslo</a>
-        </div> 
+  <body${document:element-attributes select=[html.body]}>
+    <div class="banner">
+      <div class="text">
+        <span class="hostname">${manage:repository-id}</span>
+        <span>${manage:localized-text code=[manage.bannerText]
+              default=[Administration of webdocuments]}</span>
       </div>
-      <div id="app-head">
-        <div id="app-name"> 
-          <a href='.'>${manage:repository-id}</a> 
-          <span id="tagline">${manage:localized-text code=[manage.bannerText] default=[Administration of webdocuments]}</span>
-        </div>
-        <div id="global-menu-1">${manage:help} | ${manage:language-select}</div>
-        <div id="global-menu-2">${manage:leave-admin} | ${manage:principal-info} | Opprett ny</div>
-      </div> 
-      <div id="line-bottom">
-        ${manage:breadcrumb}
+      <div class="menu">
+        ${manage:leave-admin} | ${manage:help} ${manage:principal-info}
       </div>
-    </div> 
-    
-    <div id="app-content" class="body">
+    </div>
+
+    <div class="body">
+      ${manage:breadcrumb}
       ${manage:info-message}
       ${manage:messages}
       <div id="titleContainer" class="clear">
@@ -52,11 +45,9 @@
         </div>
       </div>
     </div>
-    
-    <div id="app-footer-wrapper" class="footer">    
-      <div id="app-footer">
-        ${manage:version-info}
-      </div>
+    <div class="footer">
+      ${manage:version-info}
+      ${manage:language-select}
     </div>
   </body>
 </html>

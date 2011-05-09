@@ -551,8 +551,9 @@ public class ResourceArchiver {
         boolean propsModified = false;
 
         // ACL will only be explicitly stored if resource does not inherit ACL
-        Acl acl = resource.getAcl();
-
+        Acl acl = Acl.EMPTY_ACL;
+        boolean aclModified = false;
+        
         for (Object key : attributes.keySet()) {
 
             String name = key.toString();
@@ -563,16 +564,19 @@ public class ResourceArchiver {
             } else if (name.startsWith("X-vrtx-acl-")) {
                 acl = setAclEntry(resource.getURI(), acl, name, 
                         attributes, decode, legacyAcl, listener);
+                aclModified = true;
             }
         }
         if (propsModified) {
             this.repository.store(token, resource);
         }
         
-        if (!resource.getAcl().equals(acl)) {
-            resource = this.repository.storeACL(
-                    token, resource.getURI(), acl, false);
+        if (!aclModified) {
+            return;
         }
+        
+        resource = this.repository.storeACL(
+                token, resource.getURI(), acl, false);
     }
 
     private boolean setProperty(Resource resource, String name, Attributes attributes, boolean decode,

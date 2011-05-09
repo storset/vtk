@@ -33,8 +33,6 @@
   </div>
 </#if>
 
-
-
 <#assign pixelHeight = vrtx.propValue(resource, "pixelHeight") />
 <#assign pixelWidth = vrtx.propValue(resource, "pixelWidth") />
 

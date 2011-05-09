@@ -63,19 +63,6 @@
 
   <#local images=imageListing.files />
   <#if (images?size > 0)>
-    <script type="text/javascript"><!--
-       $(window).load(function() {
-         if($("#right-main").length) {
-           var cut = ".last-four";
-         } else {
-           var cut = ".last-five";
-         }
-	     $('ul.vrtx-image-listing').find(".vrtx-image-entry:not(" + cut + ")")
-	       .css("marginRight", "18px !important;").end()
-	       .masonry({singleMode: false});
-	   });
-     // -->
-     </script>
     <div class="vrtx-image-listing-container">
       <ul class="vrtx-image-listing">
       <#assign count = 1 />
@@ -107,13 +94,7 @@
               <div class="vrtx-image-creation-time">
                 ${creationTime}
               </div>
-              
-              <#local description = vrtx.propValue(image, 'description', '', 'content')?html />
-              <div class="vrtx-image-description">
-                <#if description?has_content>
-                  <@vrtx.flattenHtml value=description escape=false />
-                </#if>
-              </div>
+
             </div>
         </li>
         <#assign count = count +1 />

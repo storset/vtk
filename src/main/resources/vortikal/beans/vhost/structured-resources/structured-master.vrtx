@@ -1,7 +1,8 @@
 resourcetype structured-master{
 
   properties {
-    title : string overrides title,
+    name : string,
+    title : derived (name) eval (name) overrides title,
     status-available : boolean,
     introduction : simple_html,
     picture : image_ref,
@@ -10,7 +11,8 @@ resourcetype structured-master{
     related-content : html noextract,
     supervisorsUsernames : string multiple,
     supervisors : json (supervisorName:string, supervisorUrl:string) multiple,
-    credits : string,
+    numberOfSupervisorsToDisplay : string defaultvalue("100"),
+    credits: string  defaultvalue("60"),
     tags : string multiple overrides tags
   }
   
@@ -27,14 +29,7 @@ resourcetype structured-master{
   }
     
   view-components {
-  	title {
-      ##
-      [def v resource-prop(".", "title")]
-      [if v != null]
-        [val v]
-      [endif]
-      ##
-    }
+  
       introduction {
       ##
       [def intro resource-prop(".", "introduction")]
@@ -61,9 +56,7 @@ resourcetype structured-master{
       [def document structured-document()]
       [def theRelated-content document.properties.related-content]
       [if theRelated-content != null]
-        <div id="vrtx-related-content">
-          [val theRelated-content # unescaped]
-        </div>
+              [val theRelated-content # unescaped]
       [endif]
       ##
     }
@@ -83,11 +76,7 @@ resourcetype structured-master{
       [endif]
       [if img != null] 
 	  	[def pixel-width resource-prop(img-uri, "pixelWidth")]
-	  	[def photographer resource-prop(img-uri, "photographer")]
-        [def img-author resource-prop(img-uri, "authorName")]
-        [if photographer != null && photographer != ""]
-          [def img-author photographer]
-        [endif]
+	  	[def img-author resource-prop(img-uri, "authorName")]
   	  [endif]
   	  [if pixel-width != null]
 	  	[def style concat("width:", pixel-width, "px")]
@@ -149,12 +138,12 @@ resourcetype structured-master{
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <title>[call "json:field" {"select":"title"}] [call "comp:completed"]</title>
+        <title>[call "json:field" {"select":"name"}] [call "comp:completed"]</title>
       </head>
       <body id="vrtx-structured-project">
         <div id="vrtx-content">
           <div id="vrtx-main-content">
-            <h1>[call "json:field" {"select":"title"}] [call "comp:completed"]</h1>
+            <h1>[call "json:field" {"select":"name"}] [call "comp:completed"]</h1>
             [call "comp:introduction"]
             [call "comp:introduction-image"]
             [call "json:field" {"select":"content"}]
@@ -163,11 +152,9 @@ resourcetype structured-master{
           </div>
           <div id="vrtx-additional-content">
             [call "resource:master-list"]
-            <div id="vrtx-master-credits" class="vrtx-frontpage-box">
-              <h2>[localized "credits"]</h2>
-              [call "json:field" {"select":"credits"}]
-            </div>
-            [call "comp:related-content-in-additional-column"]
+            <h2>[localized "credits"]</h2>
+            [call "json:field" {"select":"credits"}]
+    		[call "comp:related-content-in-additional-column"]
           </div>
         </div>
       </body>
@@ -182,15 +169,15 @@ resourcetype structured-master{
        nn : ("true" = "Ledig", "false" = "Tatt")
      }
 	credits {
-       en : (range = "60,45,30"),
-       no : (range = "60,45,30"),
-       nn : (range = "60,45,30")
+       en : (range = "60,30"),
+       no : (range = "60,30"),
+       nn : (range = "60,30")
      }
 
   }
   
   localization {
-    title : (en : "Title", no : "Tittel", nn : "Tittel"),
+    name : (en : "Name", no : "Navn", nn : "Navn"),
     introduction : (en : "Introduction",no : "Innledning", nn : "Innleiing"),
     status-available : (en : "Status", no : "Status", nn : "Status"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),

@@ -1916,9 +1916,18 @@
     <property name="permission" ref="ACTION_READ_PROCESSED" />
   </bean>
 
-  <bean id="unlockPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
-    <property name="permission" ref="ACTION_ALL" />
-    <property name="considerLocks" value="false" />
+  <bean id="unlockPermissionAssertion" class="org.vortikal.web.service.OrAssertion">
+    <property name="assertions">
+      <list>
+        <bean parent="abstractResourcePrincipalPermissionAssertion">
+          <property name="permission" ref="ACTION_ALL" />
+          <property name="considerLocks" value="false" />
+        </bean>
+        <bean class="org.vortikal.web.service.ResourceLockedAssertion">
+          <property name="byCurrentUser" value="true" />
+        </bean>
+      </list>
+    </property>
   </bean>
 
   <bean id="lockPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">

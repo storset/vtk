@@ -34,39 +34,38 @@ import org.vortikal.repository.Lock;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 
-/**
- * This assertion returns <code>true</code> if the resource has no
- * locks, or if the principal (from the lock) is equal to the
- * principal from the SecurityContext.
- */
-public class ResourceNotLockedAssertion
+public class ResourceLockedAssertion
   extends AbstractRepositoryAssertion {
 
+    private boolean byCurrentUser = true;
+    
     public boolean conflicts(Assertion assertion) {
         return false;
-    }
-
-    public String toString() {
-        StringBuffer sb = new StringBuffer();
-
-        sb.append(super.toString());
-
-        return sb.toString();
     }
 
     public boolean matches(Resource resource, Principal principal) {
         Principal principalLockedBy = null;
         Lock lock = resource.getLock();
-
-        if (lock != null) {
-            principalLockedBy = lock.getPrincipal();
-        } else
-            return true;
-
-        if (principal == null)
+        if (lock == null) {
             return false;
-
-        return (principal.equals(principalLockedBy));
+        }
+        if (!this.byCurrentUser) {
+            return false;
+        }
+        principalLockedBy = lock.getPrincipal();
+        if (principal == null) {
+            return false;
+        }
+        return principal.equals(principalLockedBy);
     }
 
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(super.toString());
+        return sb.toString();
+    }
+
+    public void setByCurrentUser(boolean byCurrentUser) {
+        this.byCurrentUser = byCurrentUser;
+    }
 }

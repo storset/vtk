@@ -36,12 +36,16 @@
     <property name="name" value="imageListing.defaultListing" />
     <property name="queryBuilders">
       <list>
-        <ref bean="collection.listingUriQueryBuilder" />
+        <ref bean="imageListing.listingUriQueryBuilder" />
         <bean parent="queryStringParser">
           <property name="queryString" value="type IN image" />
         </bean>
       </list>
     </property>
+  </bean>
+
+  <bean id="imageListing.listingUriQueryBuilder" parent="collection.listingUriQueryBuilder">
+    <property name="defaultRecursive" value="true" />
   </bean>
 
   <bean id="imageListing.viewResolver" parent="decoratorViewResolver">

@@ -121,8 +121,8 @@
 	        <#else>  
 	          <span><img class="vrtx-full-image" src="${image.URI}" alt="${description}" style="width: ${width}px; height: ${height}px" <#if showTitle>title="${title}"</#if> /></span> 
 	        </#if>
-	          <span class="hiddenWidth">${width}</span>
-	          <span class="hiddenHeight">${height}</span>
+	          <span class="hiddenWidth" style="display: none">${width}</span>
+	          <span class="hiddenHeight" style="display: none">${height}</span>
 	        </a>
       </li>
     <#local count = count+1 />

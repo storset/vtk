@@ -181,11 +181,15 @@
        var minContainerHeight = 100;
        var minContainerWidth = 150;
        
-       if(parseInt(imgHeight) < minContainerHeight) {
+       if (parseInt(imgHeight) < minContainerHeight) {
     	  imgHeight = minContainerHeight + "px";
+       } else {
+    	  imgHeight = imgHeight + "px";   
        }
-       if(parseInt(imgWidth) < minContainerWidth) {
+       if (parseInt(imgWidth) < minContainerWidth) {
           imgWidth = minContainerWidth + "px";
+       } else {
+    	  imgWidth = imgWidth + "px";   
        }
        
        galleryLog(src + " [" + imgWidth + ", " + imgHeight + "]");

@@ -720,7 +720,7 @@ public class ResourceArchiver {
                 break;
             }
             if (p != null) {
-                if (this.repository.isValidAclEntry(action, p)) {
+                if (!this.repository.isBlacklisted(action, p)) {
                     acl = acl.addEntry(action, p);
                 } else {
                     listener.warn(uri, "Invalid acl entry: " + p + ":" + action + ", skipping");
@@ -829,7 +829,7 @@ public class ResourceArchiver {
     }
     
     public void setLegacyPrincipalMappings(Map<String, String> legacyPrincipalMappings) {
-        for (Map.Entry<String, String> entry: legacyPrincipalMappings.entrySet()) {
+        for (Map.Entry<String, String> entry : legacyPrincipalMappings.entrySet()) {
             this.legacyPrincipalMappings.put(entry.getKey(), entry.getValue());
         }
     }

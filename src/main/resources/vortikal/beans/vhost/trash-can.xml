@@ -90,8 +90,8 @@
     <property name="targetObject" ref="repository.trashCanPruger" />
     <property name="triggerThreadName" value="${repositoryID}.trashcanpurger" />
     <property name="startDelay" value="20000" />
-    <!-- Run every 5min (300000ms) -->
-    <property name="repeatInterval" value="300000" />
+    <!-- Run every morning at 4AM -->
+    <property name="fixedDelay" value="${repository.trash.can.purger.fixed.delay}" />
     <property name="startTriggerAfterInitialization" value="true" />
     <property name="abortTriggerOnTargetMethodException" value="false" />
   </bean>

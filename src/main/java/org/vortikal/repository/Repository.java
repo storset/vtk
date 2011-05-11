@@ -620,6 +620,8 @@ public interface Repository {
 
     public boolean isValidAclEntry(Privilege privilege, Principal principal); 
     
+    public boolean isBlacklisted(Privilege privilege, Principal principal);
+    
     /**
      * Checks whether a principal is allowed to perform an operation on a
      * resource.

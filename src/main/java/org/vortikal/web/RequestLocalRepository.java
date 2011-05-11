@@ -329,6 +329,11 @@ public class RequestLocalRepository implements Repository {
     }
 
     @Override
+    public boolean isBlacklisted(Privilege privilege, Principal principal) {
+        return this.repository.isBlacklisted(privilege, principal);
+    }
+    
+    @Override
     public List<Comment> getComments(String token, Resource resource) throws RepositoryException,
             AuthenticationException {
         return this.repository.getComments(token, resource);

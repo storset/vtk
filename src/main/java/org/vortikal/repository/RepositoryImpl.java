@@ -102,17 +102,18 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
     private Map<Privilege, List<Pattern>> usersBlacklist = new HashMap<Privilege, List<Pattern>>();
     private Map<Privilege, List<Pattern>> groupsBlacklist = new HashMap<Privilege, List<Pattern>>();
-    
+
     // Default value of 60 days before recoverable resources are purged from
     // trash can
     private int permanentDeleteOverdueLimitInDays = 60;
-    
-    public final static long LOCK_DEFAULT_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+
+    public final static long LOCK_DEFAULT_TIMEOUT = 30 * 60 * 1000; // 30
+                                                                    // minutes
     public final static long LOCK_MAX_TIMEOUT = LOCK_DEFAULT_TIMEOUT;
 
     private long lockDefaultTimeout = LOCK_DEFAULT_TIMEOUT;
     private long lockMaxTimeout = LOCK_DEFAULT_TIMEOUT;
-    
+
     private static Log searchLogger = LogFactory.getLog(RepositoryImpl.class.getName() + ".Search");
     private static Log trashLogger = LogFactory.getLog(RepositoryImpl.class.getName() + ".Trash");
 
@@ -547,40 +548,36 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         this.authorizationManager.authorizeReadWrite(uri, principal);
 
         boolean refresh = lockToken != null;
-        
+
         if (!refresh) {
             r.setLock(null);
         }
 
         if (r.getLock() == null) {
-            String newLockToken = "opaquelocktoken:"
-                + UUID.randomUUID().toString();
+            String newLockToken = "opaquelocktoken:" + UUID.randomUUID().toString();
 
-            Date timeout = new Date(System.currentTimeMillis()
-                    + this.lockDefaultTimeout);
+            Date timeout = new Date(System.currentTimeMillis() + this.lockDefaultTimeout);
 
             if ((requestedTimeoutSeconds * 1000) > this.lockMaxTimeout) {
-                timeout = new Date(System.currentTimeMillis()
-                        + this.lockDefaultTimeout);
+                timeout = new Date(System.currentTimeMillis() + this.lockDefaultTimeout);
             }
 
-            LockImpl lock = new LockImpl(newLockToken, principal, ownerInfo,
-                    depth, timeout);
+            LockImpl lock = new LockImpl(newLockToken, principal, ownerInfo, depth, timeout);
             r.setLock(lock);
         } else {
-            r.setLock(new LockImpl(r.getLock().getLockToken(),
-                    principal, ownerInfo, depth, new Date(System
-                            .currentTimeMillis()
-                            + (requestedTimeoutSeconds * 1000))));
+            r.setLock(new LockImpl(r.getLock().getLockToken(), principal, ownerInfo, depth, new Date(System
+                    .currentTimeMillis()
+                    + (requestedTimeoutSeconds * 1000))));
         }
         this.dao.store(r);
-        //this.authorizationManager.lockResource(r, principal, ownerInfo, depth, requestedTimeoutSeconds, (lockToken != null));
+        // this.authorizationManager.lockResource(r, principal, ownerInfo,
+        // depth, requestedTimeoutSeconds, (lockToken != null));
 
         return r;
     }
-    
+
     public void checkLock(Resource resource, Principal principal) throws ResourceLockedException, IOException,
-    AuthenticationException {
+            AuthenticationException {
         Lock lock = resource.getLock();
         if (lock == null) {
             return;
@@ -594,41 +591,32 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         throw new ResourceLockedException();
     }
 
-    
-    public String lockResource(ResourceImpl resource, Principal principal,
-            String ownerInfo, Repository.Depth depth, int desiredTimeoutSeconds,
-            boolean refresh) throws AuthenticationException,
-            AuthorizationException, ResourceLockedException, IOException {
+    public String lockResource(ResourceImpl resource, Principal principal, String ownerInfo, Repository.Depth depth,
+            int desiredTimeoutSeconds, boolean refresh) throws AuthenticationException, AuthorizationException,
+            ResourceLockedException, IOException {
 
         if (!refresh) {
             resource.setLock(null);
         }
 
         if (resource.getLock() == null) {
-            String lockToken = "opaquelocktoken:"
-                + UUID.randomUUID().toString();
+            String lockToken = "opaquelocktoken:" + UUID.randomUUID().toString();
 
-            Date timeout = new Date(System.currentTimeMillis()
-                    + this.lockDefaultTimeout);
+            Date timeout = new Date(System.currentTimeMillis() + this.lockDefaultTimeout);
 
             if ((desiredTimeoutSeconds * 1000) > this.lockMaxTimeout) {
-                timeout = new Date(System.currentTimeMillis()
-                        + this.lockDefaultTimeout);
+                timeout = new Date(System.currentTimeMillis() + this.lockDefaultTimeout);
             }
 
-            LockImpl lock = new LockImpl(lockToken, principal, ownerInfo,
-                    depth, timeout);
+            LockImpl lock = new LockImpl(lockToken, principal, ownerInfo, depth, timeout);
             resource.setLock(lock);
         } else {
-            resource.setLock(new LockImpl(resource.getLock().getLockToken(),
-                    principal, ownerInfo, depth, new Date(System
-                            .currentTimeMillis()
-                            + (desiredTimeoutSeconds * 1000))));
+            resource.setLock(new LockImpl(resource.getLock().getLockToken(), principal, ownerInfo, depth, new Date(
+                    System.currentTimeMillis() + (desiredTimeoutSeconds * 1000))));
         }
         this.dao.store(resource);
         return resource.getLock().getLockToken();
     }
-    
 
     @Override
     public void unlock(String token, Path uri, String lockToken) throws ResourceNotFoundException,
@@ -872,31 +860,26 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             r.setAcl(acl);
             r.setInheritedAcl(false);
             r.setAclInheritedFrom(PropertySetImpl.NULL_RESOURCE_ID);
-            
+
             if (validateACL) {
                 validateNewAcl(acl, original.getAcl());
             }
             this.dao.storeACL(r);
-            ACLModificationEvent event = new ACLModificationEvent(
-                    this, (Resource) r.clone(), original, r.getAcl(),
+            ACLModificationEvent event = new ACLModificationEvent(this, (Resource) r.clone(), original, r.getAcl(),
                     original.getAcl());
 
             this.context.publishEvent(event);
-            
+
             return (Resource) r.clone();
 
         } catch (CloneNotSupportedException e) {
             throw new IOException(e.getMessage());
         }
     }
-    
-    
 
     @Override
-    public Resource deleteACL(String token, Path uri)
-            throws ResourceNotFoundException, AuthorizationException,
-            AuthenticationException, IllegalOperationException,
-            ReadOnlyException, Exception {
+    public Resource deleteACL(String token, Path uri) throws ResourceNotFoundException, AuthorizationException,
+            AuthenticationException, IllegalOperationException, ReadOnlyException, Exception {
         if (uri == null) {
             throw new IllegalArgumentException("URI is null");
         }
@@ -911,10 +894,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
         checkLock(r, principal);
         this.authorizationManager.authorizeAll(r.getURI(), principal);
-        
+
         if (r.isInheritedAcl()) {
-            throw new IllegalOperationException("Resource " + r.getURI() 
-                    + " already has an inherited ACL");
+            throw new IllegalOperationException("Resource " + r.getURI() + " already has an inherited ACL");
         }
         try {
             ResourceImpl parent = this.dao.load(uri.getParent());
@@ -925,14 +907,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             r.setInheritedAcl(true);
 
             this.dao.storeACL(r);
-            ACLModificationEvent event = new ACLModificationEvent(
-                    this, (Resource) r.clone(), original, r.getAcl(),
+            ACLModificationEvent event = new ACLModificationEvent(this, (Resource) r.clone(), original, r.getAcl(),
                     original.getAcl());
 
             this.context.publishEvent(event);
-            
+
             return (Resource) r.clone();
-            
+
         } catch (CloneNotSupportedException e) {
             throw new IOException(e.getMessage());
         }
@@ -940,9 +921,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
     @Override
     public boolean isValidAclEntry(Privilege privilege, Principal principal) {
-        return validateAclEntry(privilege, principal);
+        return validateAclEntry(privilege, principal, true);
     }
 
+    @Override
+    public boolean isBlacklisted(Privilege privilege, Principal principal) {
+        return validateAclEntry(privilege, principal, false);
+    }
+    
     @Override
     public List<Comment> getComments(String token, Resource resource) {
         return getComments(token, resource, false, 500);
@@ -1184,7 +1170,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         for (Privilege action : actions) {
             Set<Principal> principals = acl.getPrincipalSet(action);
             for (Principal principal : principals) {
-                boolean valid = validateAclEntry(action, principal);
+                boolean valid = validateAclEntry(action, principal, true);
                 if (!valid) {
                     // Preserve invalid principals already in ACL
                     if (!originalAcl.containsEntry(action, principal)) {
@@ -1194,15 +1180,17 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             }
         }
     }
-    
-    private boolean validateAclEntry(Privilege action, Principal principal) {
+
+    private boolean validateAclEntry(Privilege action, Principal principal, boolean validatePrincipal) {
         boolean valid = false;
-        if (principal.getType() == Principal.Type.USER) {
-            valid = this.principalManager.validatePrincipal(principal);
-        } else if (principal.getType() == Principal.Type.GROUP) {
-            valid = this.principalManager.validateGroup(principal);
-        } else {
-            valid = true;
+        if (validatePrincipal) {
+            if (principal.getType() == Principal.Type.USER) {
+                valid = this.principalManager.validatePrincipal(principal);
+            } else if (principal.getType() == Principal.Type.GROUP) {
+                valid = this.principalManager.validateGroup(principal);
+            } else {
+                valid = true;
+            }
         }
         if (blacklisted(principal, action)) {
             valid = false;
@@ -1211,8 +1199,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     }
 
     private boolean blacklisted(Principal principal, Privilege action) {
-        Map<Privilege, List<Pattern>> map = principal.isUser() ? 
-                this.usersBlacklist : this.groupsBlacklist;
+        Map<Privilege, List<Pattern>> map = principal.isUser() ? this.usersBlacklist : this.groupsBlacklist;
         if (map == null) {
             return false;
         }
@@ -1220,7 +1207,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         if (list == null) {
             return false;
         }
-        for (Pattern pattern: list) {
+        for (Pattern pattern : list) {
             Matcher m = pattern.matcher(principal.getQualifiedName());
             if (m.find()) {
                 return true;
@@ -1228,7 +1215,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
         return false;
     }
-
 
     /**
      * Writes to a temporary file (used to avoid lengthy blocking on file
@@ -1373,12 +1359,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
         this.maxResourceChildren = maxResourceChildren;
     }
-    
 
     public void setPermissionBlacklist(Map<Privilege, List<String>> blacklist) {
-        for (Privilege privilege: blacklist.keySet()) {
+        for (Privilege privilege : blacklist.keySet()) {
             List<String> principals = blacklist.get(privilege);
-            for (String spec: principals) {
+            for (String spec : principals) {
                 String principal;
                 boolean user;
                 if (spec.startsWith("user:")) {
@@ -1401,7 +1386,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             }
         }
     }
-    
+
     public void init() {
         this.periodicThread = new PeriodicThread(600);
         this.periodicThread.start();

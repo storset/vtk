@@ -315,6 +315,11 @@ public class CachePurgeControlRepositoryWrapper implements Repository {
     }
 
     @Override
+    public boolean isBlacklisted(Privilege privilege, Principal principal) {
+        return this.wrappedRepository.isBlacklisted(privilege, principal);
+    }
+    
+    @Override
     public Resource storeContent(String token, Path uri, InputStream byteStream) throws AuthorizationException,
             AuthenticationException, ResourceNotFoundException, ResourceLockedException, IllegalOperationException,
             ReadOnlyException, Exception {

@@ -43,8 +43,10 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.ResourceWrapper;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.search.ConfigurablePropertySelect;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.SortingImpl;
@@ -61,6 +63,8 @@ public abstract class QuerySearchComponent implements SearchComponent {
     private Service viewService;
     private List<PropertyDisplayConfig> listableProperties;
     private SearchSorting searchSorting;
+    private List<String> configurablePropertySelectPointers;
+    private ResourceTypeTree resourceTypeTree;
 
     protected abstract Query getQuery(Resource collection, HttpServletRequest request);
 
@@ -75,6 +79,18 @@ public abstract class QuerySearchComponent implements SearchComponent {
         search.setQuery(query);
         search.setLimit(pageLimit + 1);
         search.setCursor(offset);
+        ConfigurablePropertySelect propertySelect = new ConfigurablePropertySelect();
+        if (this.configurablePropertySelectPointers != null && this.resourceTypeTree != null) {
+            for (String propPointer : this.configurablePropertySelectPointers) {
+                PropertyTypeDefinition ptd = this.resourceTypeTree.getPropertyDefinitionByPointer(propPointer);
+                if (ptd != null) {
+                    propertySelect.addPropertyDefinition(ptd);
+                }
+            }
+        }
+        if (!propertySelect.isEmpty()) {
+            search.setPropertySelect(propertySelect);
+        }
 
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
@@ -169,6 +185,14 @@ public abstract class QuerySearchComponent implements SearchComponent {
     @Required
     public void setSearchSorting(SearchSorting searchSorting) {
         this.searchSorting = searchSorting;
+    }
+
+    public void setConfigurablePropertySelectPointers(List<String> configurablePropertySelectPointers) {
+        this.configurablePropertySelectPointers = configurablePropertySelectPointers;
+    }
+
+    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+        this.resourceTypeTree = resourceTypeTree;
     }
 
 }

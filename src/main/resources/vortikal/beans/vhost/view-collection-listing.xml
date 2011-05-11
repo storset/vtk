@@ -55,7 +55,7 @@
   </bean>
 
   <bean id="collectionListing.searchComponent" class="org.vortikal.web.search.QueryPartsSearchComponent">
-    <property name="name" value="collectionListing.searchComponent2" />
+    <property name="name" value="collectionListing.searchComponent" />
     <property name="viewService" ref="webService" />
     <property name="resourceManager" ref="resourceManager" />
     <property name="listableProperties">
@@ -79,6 +79,7 @@
       </list>
     </property>
     <property name="searchSorting" ref="collectionListing.searchSorting" />
+    <property name="resourceTypeTree" ref="resourceTypeTree"/>
   </bean>
 
   <bean id="listingUriQueryBuilder" abstract="true" class="org.vortikal.web.search.ListingUriQueryBuilder">

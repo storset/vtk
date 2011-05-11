@@ -108,7 +108,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     private int permanentDeleteOverdueLimitInDays = 60;
 
     public final static long LOCK_DEFAULT_TIMEOUT = 30 * 60 * 1000; // 30
-                                                                    // minutes
+    // minutes
     public final static long LOCK_MAX_TIMEOUT = LOCK_DEFAULT_TIMEOUT;
 
     private long lockDefaultTimeout = LOCK_DEFAULT_TIMEOUT;
@@ -921,14 +921,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
     @Override
     public boolean isValidAclEntry(Privilege privilege, Principal principal) {
-        return validateAclEntry(privilege, principal, true);
+        return validateAclEntry(privilege, principal);
     }
 
     @Override
     public boolean isBlacklisted(Privilege privilege, Principal principal) {
-        return validateAclEntry(privilege, principal, false);
+        return blacklisted(principal, privilege);
     }
-    
+
     @Override
     public List<Comment> getComments(String token, Resource resource) {
         return getComments(token, resource, false, 500);
@@ -1170,7 +1170,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         for (Privilege action : actions) {
             Set<Principal> principals = acl.getPrincipalSet(action);
             for (Principal principal : principals) {
-                boolean valid = validateAclEntry(action, principal, true);
+                boolean valid = validateAclEntry(action, principal);
                 if (!valid) {
                     // Preserve invalid principals already in ACL
                     if (!originalAcl.containsEntry(action, principal)) {
@@ -1181,16 +1181,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
     }
 
-    private boolean validateAclEntry(Privilege action, Principal principal, boolean validatePrincipal) {
+    private boolean validateAclEntry(Privilege action, Principal principal) {
         boolean valid = false;
-        if (validatePrincipal) {
-            if (principal.getType() == Principal.Type.USER) {
-                valid = this.principalManager.validatePrincipal(principal);
-            } else if (principal.getType() == Principal.Type.GROUP) {
-                valid = this.principalManager.validateGroup(principal);
-            } else {
-                valid = true;
-            }
+        if (principal.getType() == Principal.Type.USER) {
+            valid = this.principalManager.validatePrincipal(principal);
+        } else if (principal.getType() == Principal.Type.GROUP) {
+            valid = this.principalManager.validateGroup(principal);
+        } else {
+            valid = true;
         }
         if (blacklisted(principal, action)) {
             valid = false;

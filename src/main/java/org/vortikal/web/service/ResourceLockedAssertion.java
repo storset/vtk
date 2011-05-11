@@ -45,17 +45,20 @@ public class ResourceLockedAssertion
 
     public boolean matches(Resource resource, Principal principal) {
         Principal principalLockedBy = null;
+        if (resource == null) {
+            return false;
+        }
         Lock lock = resource.getLock();
         if (lock == null) {
             return false;
         }
         if (!this.byCurrentUser) {
-            return false;
+            return true;
         }
-        principalLockedBy = lock.getPrincipal();
         if (principal == null) {
             return false;
         }
+        principalLockedBy = lock.getPrincipal();
         return principal.equals(principalLockedBy);
     }
 

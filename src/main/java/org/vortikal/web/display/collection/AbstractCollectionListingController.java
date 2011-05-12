@@ -44,7 +44,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.edit.editor.ResourceWrapperManager;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
-import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -78,27 +77,6 @@ public abstract class AbstractCollectionListingController implements ListingCont
     private SubFolderMenuProvider subFolderMenuProvider;
 
     private SearchSorting searchSorting;
-
-    /**
-     * Container class for (resource, URL) for subcollections
-     */
-    public class CollectionItem {
-        private PropertySet resource;
-        private URL url;
-
-        public CollectionItem(PropertySet resource, URL url) {
-            this.resource = resource;
-            this.url = url;
-        }
-
-        public PropertySet getResource() {
-            return this.resource;
-        }
-
-        public URL getURL() {
-            return this.url;
-        }
-    }
 
     @Override
     @SuppressWarnings("unchecked")

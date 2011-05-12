@@ -16,6 +16,10 @@
   </Files>
   </#if>
   <#if error?exists>
+  <#if customMessage?exists>
   <Error number="${error?html}" msg="${customMessage?html?if_exists}" />
+  <#else>
+  <Error number="${error?html}" />
+  </#if>
   </#if>
 </Connector>

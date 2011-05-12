@@ -25,8 +25,17 @@
     <table cellspacing="5" cellpadding="0" width="100%" border="0">
       <tr>
 	<div class="vrtx-image-ref-browse">
-	  <input type="text" id="txtUrl" name="$txtUrl" size="30" />
-	  <button type="button" onclick="browseServer('txtUrl', '/vrtx/__vrtx/static-resources/ckeditor-build', getPath(parent.location.pathname),'/vrtx/__vrtx/app-resources/ckeditor-build/browse?action=browse','Media');">Browse</button>
+	  <label for="txtUrl">Url:
+	    <input type="text" id="txtUrl" name="$txtUrl" size="30" />
+	    <button type="button" onclick="browseServer('txtUrl', '/vrtx/__vrtx/static-resources/ckeditor-build', getPath(parent.location.pathname),'/vrtx/__vrtx/app-resources/ckeditor-build/browse?action=browse','Media');">Browse</button>
+	</div>
+      </tr>
+     <tr>
+	<div class="vrtx-image-ref-browse">
+	  <label for="txtPosterUrl">Poster Url:
+	    <input type="text" id="txtPosterUrl" name="$txtPosterUrl" size="30" />
+	    <button type="button" onclick="browseServer('txtPosterUrl', '/vrtx/__vrtx/static-resources/ckeditor-build', getPath(parent.location.pathname),'/vrtx/__vrtx/app-resources/ckeditor-build/browse?action=browse','Image');">Browse</button>
+	  </label>
 	</div>
       </tr>
       <tr>

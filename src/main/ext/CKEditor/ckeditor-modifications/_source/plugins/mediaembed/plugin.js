@@ -5,6 +5,7 @@
 
 var paramsStandard = {
   "url" : "",
+  "poster" : "",
   "width" : 507,
   "height" : 322,
   "autoplay" : "false",
@@ -14,6 +15,7 @@ var paramsStandard = {
 
 var params = {
   "url" : "",
+  "poster" : "",
   "width" : 507,
   "height" : 322,
   "autoplay" : "false",
@@ -187,7 +189,11 @@ function insertOrModifyComponent(editor, iframeId, init) {
 	  
 	    var url = contents.find("#txtUrl").val();
 		if(url != "" && url.indexOf(".") != -1) {
-			  var content = "${include:media-player url=["+encodeURI(url)+"]";			    
+			  var content = "${include:media-player url=["+encodeURI(url)+"]";	
+			  var posterUrl = contents.find("#txtPosterUrl").val();
+			  if(posterUrl.length > 0) {
+				  content = content + " poster=["+encodeURI(posterUrl)+"]";
+		      }
 			  var contentType = contents.find("#txtContentType").val();
 			  if(contentType.length > 0) {
 			    content = content + " content-type=["+contentType+"]";
@@ -264,6 +270,7 @@ function putDialogValues(iframeId, init) {
 	        if(contents.find("#chkAutoplay").length) {
 	          // Put standardvalues in dialog
 	          contents.find("#txtUrl").val(init ? paramsStandard.url : params.url);
+	          contents.find("#txtPosterUrl").val(init ? paramsStandard.poster : params.poster);
 	          contents.find("#txtWidth").val(init ? paramsStandard.width : params.width);
 	          contents.find("#txtHeight").val(init ? paramsStandard.height : params.height);
 	          contents.find("#txtContentType").val(init ? paramsStandard.contentType : params.contentType);
@@ -289,6 +296,7 @@ function putDialogValues(iframeId, init) {
     	      if(!init) {
     	    	// Restore init values
     	    	params.url = paramsStandard.url;
+    	    	params.poster = paramsStandard.poster;
         	    params.width = paramsStandard.width;
         	    params.height = paramsStandard.height;
         	    params.autoplay = paramsStandard.autoplay;
@@ -335,7 +343,7 @@ function extractMediaPlayerProps(HTML, element) {
   	  var param = regexp.exec(HTML);
   	  if(param != null) {
  		if(param.length = 2) {
- 		  if(name == "url") {
+ 		  if(name == "url" || name == "poster") {
  			params[name] = decodeURI($.trim(param[1]));  
  		  } else {
  		    params[name] = $.trim(param[1]); // get the capturing group

@@ -49,7 +49,7 @@ import org.vortikal.text.tl.Token;
  * returns a "compiled" expression that can be later evaluated 
  * against a given {@link Context context}.
  * 
- * The expression grammar is loosely defined as follows:
+ * The expression grammar is defined as follows:
  * <pre>
  * expression ::= logical-expression ;
  * 
@@ -103,9 +103,9 @@ import org.vortikal.text.tl.Token;
  * 
  * relational-operator ::=  "=" | "!=" | "<" | ">" | "<=" | ">=" "~" ;
  * 
- * additive-operator ::=  "+" | "-" | "||" ;
+ * additive-operator ::=  "+" | "-" ;
  * 
- * multiplicative-operator ::=  "*" | "/" | "&&" ;
+ * multiplicative-operator ::=  "*" | "/" ;
  * </pre>
  */
 public class Expression {

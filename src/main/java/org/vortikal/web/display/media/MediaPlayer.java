@@ -34,8 +34,10 @@ import java.util.Map;
 
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -45,9 +47,10 @@ public class MediaPlayer {
 
     protected Map<String, String> extentionToMimetype;
     protected Service viewService;
+    private PropertyTypeDefinition posterImagePropDef;
 
     public void addMediaPlayer(Map<Object, Object> model, String resourceReferance, String height, String width,
-            String autoplay, String contentType, String streamType) throws AuthorizationException {
+            String autoplay, String contentType, String streamType, String poster) throws AuthorizationException {
 
         if (URL.isEncoded(resourceReferance)) {
             resourceReferance = URL.decode(resourceReferance);
@@ -61,7 +64,7 @@ public class MediaPlayer {
         } catch (AuthenticationException e) {
             return; // not able to read local resource - abort
         } catch (Exception e) {
-            // ignore 
+            // ignore
         }
 
         if (height != null && !"".equals(height))
@@ -72,7 +75,11 @@ public class MediaPlayer {
             model.put("autoplay", autoplay);
         if (streamType != null && !"".equals(streamType))
             model.put("streamType", streamType);
-
+        if (poster != null && !"".equals(poster)) {
+            model.put("poster", poster);
+        } else {
+            addPoster(mediaResource, model);
+        }
         String extension = getExtension(resourceReferance);
         if (contentType != null && !"".equals(contentType)) {
             model.put("contentType", contentType);
@@ -104,8 +111,8 @@ public class MediaPlayer {
             // ignore
         }
 
+        addPoster(mediaResource, model);
         model.put("extension", getExtension(resourceReferance));
-        model.put("autoplay", "false");
 
         if (mediaResource != null) {
             model.put("contentType", mediaResource.getContentType());
@@ -140,6 +147,29 @@ public class MediaPlayer {
     }
 
     public void createLocalUrlToMediaFile(String resourceReferance, Map<Object, Object> model) {
+        URL url = createUrl(resourceReferance);
+        if (url != null) {
+            model.put("media", url);
+        }
+    }
+
+    public void addPoster(Resource mediaFile, Map<Object, Object> model) {
+        if (mediaFile == null)
+            return;
+
+        Property posterImageProp = mediaFile.getProperty(posterImagePropDef);
+        if (posterImageProp != null) {
+            URL poster = createUrl(posterImageProp.getStringValue());
+            model.put("poster", poster);
+        }
+    }
+
+    public URL createUrl(String resourceReferance) {
+
+        if (URL.isEncoded(resourceReferance)) {
+            resourceReferance = URL.decode(resourceReferance);
+        }
+
         if (resourceReferance != null && resourceReferance.startsWith("/")) {
             URL localURL = null;
             try {
@@ -150,7 +180,7 @@ public class MediaPlayer {
                 // ignore
             }
             if (localURL != null) {
-                model.put("media", localURL);
+                return localURL;
             }
 
         } else {
@@ -161,9 +191,10 @@ public class MediaPlayer {
                 // ignore
             }
             if (externalURL != null) {
-                model.put("media", externalURL);
+                return externalURL;
             }
         }
+        return null;
     }
 
     public Map<String, String> getExtentionToMimetype() {
@@ -180,6 +211,14 @@ public class MediaPlayer {
 
     public Service getViewService() {
         return viewService;
+    }
+
+    public void setPosterImagePropDef(PropertyTypeDefinition posterImagePropDef) {
+        this.posterImagePropDef = posterImagePropDef;
+    }
+
+    public PropertyTypeDefinition getPosterImagePropDef() {
+        return posterImagePropDef;
     }
 
 }

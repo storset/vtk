@@ -29,6 +29,7 @@
 	    var flashvars = {
   		  src: "${media?url("UTF-8")}",
   		  streamType: "live"
+  		  <#if poster?exists>,poster: "${poster?html}" </#if>
   		  <#if autoplay?exists>,autoPlay: "${autoplay}"</#if>
 	    };
 	    var params = {
@@ -61,6 +62,7 @@
 	    var flashvars = {
 		  playerID: "1",
   		  soundFile: "${media?url("UTF-8")}"
+  		  <#if poster?exists>,poster: "${poster?html}" </#if>
   		  <#if autoplay?exists>,autoplay: "${autoplay}"</#if>
 	    };
 	    var params = {
@@ -115,6 +117,7 @@
 	  <script type="text/javascript"><!--
 	    var flashvars = {
   		  src: "${media?url("UTF-8")}"
+  		  	  <#if poster?exists>,poster: "${poster?html}" </#if>
   		  <#if autoplay?exists>,autoPlay: "${autoplay}"</#if>
 	    };
 	    var params = {

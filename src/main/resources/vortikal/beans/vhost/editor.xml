@@ -134,7 +134,7 @@
     </property>
     <property name="handler" ref="editor.blogListingEditHandler" />
   </bean>
-  
+
   <bean id="editor.audioVideoListingEditService" parent="editor.abstractEditService">
     <property name="assertions">
       <list>
@@ -143,9 +143,9 @@
     </property>
     <property name="handler" ref="editor.audioVideoListingEditHandler" />
   </bean>
-  
-  
- 
+
+
+
 
   <bean id="editor.eventListingEditService" parent="editor.abstractEditService">
     <property name="assertions">
@@ -250,11 +250,9 @@
           <property name="urlName" value="documentURL" />
           <property name="staticURLProtocol" value="${webProtocolRestricted}" />
         </bean>
-        <!--bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
-          <property name="modelName" value="manuallyApprove" />
-          <property name="urlName" value="url" />
-          <property name="service" ref="editor.collection.manuallyApproveResourcesService" />
-        </bean-->
+        <!--bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"> <property name="modelName" value="manuallyApprove" 
+          /> <property name="urlName" value="url" /> <property name="service" ref="editor.collection.manuallyApproveResourcesService" 
+          /> </bean -->
         <bean class="org.vortikal.web.referencedata.provider.StaticURIServiceURLProvider">
           <property name="service" ref="editor.browseService" />
           <property name="path" value="${editor.fck.browseURL}" />
@@ -272,7 +270,7 @@
               <entry key="fckEditorAreaCSSURL" value-ref="editor.fckEditorAreaCSSURL" />
               <entry key="jsBaseURL" value="${jsBaseURL}" />
               <entry key="webResources" value="${webResources.baseURL}" />
-            </map> 
+            </map>
           </property>
         </bean>
       </list>
@@ -343,8 +341,8 @@
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToManage" />
   </bean>
-  
-   <bean id="editor.audioEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+
+  <bean id="editor.audioEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
     <property name="resourceManager" ref="editor.audioResourceManager" />
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToManage" />
@@ -357,8 +355,8 @@
   </bean>
 
 
-  
-   <bean id="editor.projectEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+
+  <bean id="editor.projectEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
     <property name="resourceManager" ref="editor.projectResourceManager" />
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToPreviewCollection" />
@@ -375,8 +373,8 @@
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToPreviewCollection" />
   </bean>
-  
- <bean id="editor.audioVideoListingEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+
+  <bean id="editor.audioVideoListingEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
     <property name="resourceManager" ref="editor.audioVideoListingResourceManager" />
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToPreviewCollection" />
@@ -437,13 +435,13 @@
         <property name="preContentProperties">
           <list>
             <ref bean="userTitlePropDef" />
-            <ref bean="photographerPropDef"/>
+            <ref bean="photographerPropDef" />
             <ref bean="descriptionPropDef" />
           </list>
         </property>
       </bean>
     </property>
-  
+
   </bean>
 
   <bean id="editor.videoResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
@@ -456,6 +454,7 @@
           <list>
             <ref bean="userTitlePropDef" />
             <ref bean="descriptionPropDef" />
+            <ref bean="posterImagePropDef" />
           </list>
         </property>
       </bean>
@@ -498,8 +497,7 @@
             <ref bean="pageLimitPropDef" />
             <ref bean="collection.sortingPropDef" />
             <ref bean="aggregationPropDef" />
-            <!--ref bean="manuallyApproveFromPropDef" />
-            <ref bean="manuallyApprovedResourcesPropDef" /-->
+            <!--ref bean="manuallyApproveFromPropDef" /> <ref bean="manuallyApprovedResourcesPropDef" / -->
             <ref bean="collection.hideLastModifiedPropDef" />
             <ref bean="collection.hideIntroductionPropDef" />
             <ref bean="additionalContentPropDef" />
@@ -605,8 +603,8 @@
       </bean>
     </property>
   </bean>
-  
-    <bean id="editor.audioVideoListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
+
+  <bean id="editor.audioVideoListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
     <property name="contentResourceType" ref="documentResourceTypeDefinition" />
@@ -650,8 +648,7 @@
             <ref bean="articleListing.recursiveListingPropDef" />
             <ref bean="articleListing.recursiveListingSubfoldersPropDef" />
             <ref bean="aggregationPropDef" />
-            <!--ref bean="manuallyApproveFromPropDef" />
-            <ref bean="manuallyApprovedResourcesPropDef" /-->
+            <!--ref bean="manuallyApproveFromPropDef" /> <ref bean="manuallyApprovedResourcesPropDef" / -->
             <ref bean="articleListing.sortingPropDef" />
             <ref bean="articleListing.hidePublishedDatePropDef" />
             <ref bean="articleListing.hideIntroductionPropDef" />
@@ -706,8 +703,7 @@
             <ref bean="pageLimitPropDef" />
             <ref bean="eventListing.recursiveListingPropDef" />
             <ref bean="aggregationPropDef" />
-            <!--ref bean="manuallyApproveFromPropDef" />
-            <ref bean="manuallyApprovedResourcesPropDef" /-->
+            <!--ref bean="manuallyApproveFromPropDef" /> <ref bean="manuallyApprovedResourcesPropDef" / -->
             <ref bean="eventListing.hideEndDatePropDef" />
             <ref bean="eventListing.hideLocationPropDef" />
             <ref bean="articleListing.hideIntroductionPropDef" />
@@ -815,7 +811,7 @@
           <property name="name" value="hr" />
           <property name="validAsEmpty" value="true" />
         </bean>
-        
+
         <!-- Lists -->
         <bean class="org.vortikal.text.html.HtmlElementDescriptor">
           <property name="name" value="ul" />
@@ -847,7 +843,7 @@
             </set>
           </property>
         </bean>
-        
+
         <!-- Table -->
         <bean class="org.vortikal.text.html.HtmlElementDescriptor">
           <property name="name" value="table" />
@@ -907,7 +903,7 @@
         <bean class="org.vortikal.text.html.HtmlElementDescriptor">
           <property name="name" value="thead" />
         </bean>
-        
+
         <bean class="org.vortikal.text.html.HtmlElementDescriptor">
           <property name="name" value="img" />
           <property name="validAsEmpty" value="true" />

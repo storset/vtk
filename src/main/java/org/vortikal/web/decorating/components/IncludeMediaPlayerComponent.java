@@ -20,6 +20,8 @@ public class IncludeMediaPlayerComponent extends ResourceMediaPlayerComponent {
     private final static String PARAMETER_CONTENT_TYPE_DESCRIPTION = "Content type of media file";
     private final static String PARAMETER_STREAM_TYPE = "stream-type";
     private final static String PARAMETER_STREAM_TYPE_DESC = "Set to live for live stream";
+    private final static String PARAMETER_POSTER = "poster";
+    private final static String PARAMETER_POSTER_DESC = "Poster image for video";
 
     protected void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
@@ -30,8 +32,9 @@ public class IncludeMediaPlayerComponent extends ResourceMediaPlayerComponent {
         String autoplay = request.getStringParameter(PARAMETER_AUTOPLAY);
         String contentType = request.getStringParameter(PARAMETER_CONTENT_TYPE);
         String streamType = request.getStringParameter(PARAMETER_STREAM_TYPE);
+        String poster =  request.getStringParameter(PARAMETER_POSTER);
 
-        mediaPlayer.addMediaPlayer(model, url, height, width, autoplay, contentType, streamType);
+        mediaPlayer.addMediaPlayer(model, url, height, width, autoplay, contentType, streamType, poster);
     }
 
     protected Map<String, String> getParameterDescriptionsInternal() {
@@ -42,6 +45,7 @@ public class IncludeMediaPlayerComponent extends ResourceMediaPlayerComponent {
         map.put(PARAMETER_AUTOPLAY, PARAMETER_AUTOPLAY_DESCRIPTION);
         map.put(PARAMETER_CONTENT_TYPE, PARAMETER_CONTENT_TYPE_DESCRIPTION);
         map.put(PARAMETER_STREAM_TYPE, PARAMETER_STREAM_TYPE_DESC);
+        map.put(PARAMETER_POSTER, PARAMETER_POSTER_DESC);
         return map;
     }
 }

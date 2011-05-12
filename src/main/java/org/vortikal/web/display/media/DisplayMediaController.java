@@ -35,8 +35,8 @@ public class DisplayMediaController implements Controller {
 
         mediaPlayer.addMediaPlayer(model, uri.toString());
 
-        Property descriptionProp = resource.getProperty(this.descriptionPropDef);
-
+        Property descriptionProp = resource.getProperty(descriptionPropDef);
+        
         if (descriptionProp != null)
             model.put("description", descriptionProp.getStringValue());
 

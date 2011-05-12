@@ -14,6 +14,11 @@
         <ref bean="contentTypeMatchesVideo" />
       </list>
     </property>
+      <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="posterImagePropDef" />
+      </list>
+      </property>
   </bean>
 
   <bean id="contentTypeMatchesVideo" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
@@ -43,6 +48,7 @@
       </map>
     </property>
     <property name="viewService" ref="viewService" />
+    <property name="posterImagePropDef" ref="posterImagePropDef" />
   </bean>
 
   <bean id="displayMediaResource" class="org.vortikal.web.display.media.DisplayMediaController">
@@ -92,6 +98,14 @@
     <property name="modelName" value="previewImage" />
     <property name="urlName" value="URL" />
     <property name="service" ref="mediaPlayerService" />
+  </bean>
+  
+  <bean id="posterImagePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="contentRelation" value="PRE_CONTENT" />
+    <property name="name" value="poster-image"/>
+    <property name="type" value="IMAGE_REF"/>
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
+    <property name="mandatory" value="false"/>
   </bean>
 
 </beans>

@@ -832,11 +832,6 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         }
         Map<Integer, AclHolder> map = loadAclMap(new ArrayList<Integer>(resourceIds));
 
-        if (map.isEmpty()) {
-            throw new DataAccessException("Database inconsistency: no ACL entries exist for " + "resources "
-                    + java.util.Arrays.asList(resources));
-        }
-
         for (ResourceImpl resource : resources) {
             AclHolder aclHolder = null;
 
@@ -847,10 +842,10 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
             }
 
             if (aclHolder == null) {
-                throw new DataAccessException("Resource " + resource + " has no ACL entry (ac_inherited_from = "
-                        + resource.getAclInheritedFrom() + ")");
+                resource.setAcl(Acl.EMPTY_ACL);
+            } else {
+                resource.setAcl(new Acl(aclHolder));
             }
-            resource.setAcl(new Acl(aclHolder));
         }
     }
 

@@ -63,7 +63,6 @@ public class MyDocumentsReporter extends DocumentReporter {
         query.add(new PropertyTermQuery(this.createdByPropDef, currentUser.getQualifiedName(), TermOperator.EQ));
 
         Search search = new Search();
-        search.setLimit(DEFAULT_SEARCH_LIMIT);
         SortingImpl sorting = new SortingImpl();
         sorting.addSortField(new PropertySortField(this.sortPropDef, this.sortOrder));
         search.setSorting(sorting);

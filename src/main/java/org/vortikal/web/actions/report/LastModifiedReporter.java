@@ -55,7 +55,6 @@ public class LastModifiedReporter extends DocumentReporter {
         query.add(new UriPrefixQuery(currentResource.getURI().toString()));
 
         Search search = new Search();
-        search.setLimit(DEFAULT_SEARCH_LIMIT);
         SortingImpl sorting = new SortingImpl();
         sorting.addSortField(new PropertySortField(this.sortPropDef, this.sortOrder));
         search.setSorting(sorting);

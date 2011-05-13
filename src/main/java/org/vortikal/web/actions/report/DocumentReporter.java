@@ -44,10 +44,11 @@ import org.vortikal.web.service.URL;
 
 public abstract class DocumentReporter extends AbstractReporter {
 
+    private int pageSize = DEFAULT_SEARCH_LIMIT;
     private Service viewService;
 
     protected abstract Search getSearch(String token, Resource currentResource);
-
+    
     @Override
     public Map<String, Object> getReportContent(String token, Resource currentResource, HttpServletRequest request) {
         Map<String, Object> result = new HashMap<String, Object>();
@@ -57,9 +58,25 @@ public abstract class DocumentReporter extends AbstractReporter {
         if (search == null) {
             return result;
         }
-
+        
+        Position pos = Position.create(request, this.pageSize);
+        if (pos.cursor >= Search.MAX_LIMIT) {
+            return result;
+        }
+        search.setCursor(pos.cursor);
+        search.setLimit(pageSize);
+        
         ResultSet rs = this.searcher.execute(token, search);
+        if (pos.cursor + Math.min(pageSize, rs.getAllResults().size()) >= rs.getTotalHits()) {
+            pos.next = null;
+        }
+        
         result.put("result", rs.getAllResults());
+        result.put("from", pos.cursor + 1);
+        result.put("to", pos.cursor  + Math.min(pageSize, rs.getAllResults().size()));
+        result.put("total", rs.getTotalHits());
+        result.put("next", pos.next);
+        result.put("prev", pos.prev);
 
         boolean[] isReadRestricted = new boolean[rs.getSize()];
         URL[] viewURLs = new URL[rs.getSize()];
@@ -82,4 +99,42 @@ public abstract class DocumentReporter extends AbstractReporter {
         this.viewService = viewService;
     }
 
+    private static class Position {
+        int cursor = 0;
+        int limit = 0;
+        URL next = null;
+        URL prev = null;
+        
+        private Position() {}
+        
+        static Position create(HttpServletRequest req, int limit) {
+            Position position = new Position();
+            position.limit = limit;
+
+            int page = 1;
+            String pageParam = req.getParameter("page");
+            if (pageParam != null) {
+                try {
+                    page = Integer.parseInt(pageParam.trim());
+                } catch (Throwable t) { }
+            }
+            if (page <= 0) {
+                page = 1;
+            }
+            int cursor = (page - 1) * position.limit;
+            if (cursor < 0) {
+                cursor = 0;
+            }
+            position.cursor = cursor;
+            URL url = URL.create(req);
+            position.next = new URL(url).setParameter("page", String.valueOf(page + 1));
+            if (page > 1) {
+                position.prev = new URL(url).setParameter("page", String.valueOf(page - 1));
+            }
+            if (page == 2) {
+                position.prev.removeParameter("page");
+            }
+            return position;
+        }
+    }
 }

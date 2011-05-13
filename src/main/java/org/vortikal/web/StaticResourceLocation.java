@@ -30,19 +30,20 @@
  */
 package org.vortikal.web;
 
+import org.vortikal.repository.Path;
 
 public class StaticResourceLocation {
 
-    private String uriPrefix;
+    private Path uriPrefix;
     private String resourceLocation;
     
     
-    public String getUriPrefix() {
+    public Path getPrefix() {
         return this.uriPrefix;
     }
 
     public void setUriPrefix(String uriPrefix) {
-        this.uriPrefix = uriPrefix;
+        this.uriPrefix = Path.fromString(uriPrefix);
     }
 
     public String getResourceLocation() {

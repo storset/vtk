@@ -74,7 +74,7 @@ public class DisplayClassPathResourceController
   implements Controller, LastModified, InitializingBean, ApplicationContextAware {
 
     private Log logger = LogFactory.getLog(this.getClass());
-    private Map<String, String> locationsMap;
+    private Map<Path, String> locationsMap;
     private Map<String, String> headers;
     private ApplicationContext applicationContext;
     private boolean handleLastModified;
@@ -97,13 +97,12 @@ public class DisplayClassPathResourceController
         Map<String, StaticResourceLocation> matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
             this.applicationContext, StaticResourceLocation.class, true, false);
         Collection<StaticResourceLocation> allLocations = matchingBeans.values();
-        this.locationsMap = new HashMap<String, String>();
+        this.locationsMap = new HashMap<Path, String>();
 
         for (StaticResourceLocation location: allLocations) {
-            String uri = location.getUriPrefix();
+            Path uri = location.getPrefix();
             String resourceLocation = location.getResourceLocation();
             this.locationsMap.put(uri, resourceLocation);
-            this.locationsMap.put(uri + "/", resourceLocation);
         }
         if (logger.isDebugEnabled()) {
             logger.debug("Locations map: " + this.locationsMap);
@@ -133,20 +132,12 @@ public class DisplayClassPathResourceController
         InputStream inStream = null;
         OutputStream outStream = null;
         int contentLength = -1;
+        
         try {
-
-            if (resource instanceof ClassPathResource) {
-            	java.net.URL url = resource.getURL();
-            	URLConnection connection = url.openConnection();
-            	contentLength = connection.getContentLength();
-            	inStream = connection.getInputStream();
-            } else if (resource instanceof FileSystemResource) {
-            	File file = resource.getFile();
-            	inStream = resource.getInputStream();
-            	contentLength = (int) file.length();
-            } else {
-            	inStream = resource.getInputStream();
-            }
+            Stream stream = openStream(resource);
+            inStream = stream.stream;
+            contentLength = stream.contentLength;
+            
             response.setContentType(MimeHelper.map(request.getRequestURI()));
             if (contentLength != -1) {
             	response.setContentLength(contentLength);
@@ -156,7 +147,6 @@ public class DisplayClassPathResourceController
             }
             
             if ("GET".equals(request.getMethod())) {
-
                 outStream  = response.getOutputStream();
                 byte[] buffer = new byte[5000];
 
@@ -208,15 +198,37 @@ public class DisplayClassPathResourceController
         return -1;
     }
 
+    private class Stream {
+        int contentLength = -1;
+        InputStream stream;
+    }
+    
+    
+    private Stream openStream(Resource resource) throws IOException {
+        Stream stream = new Stream();
+        if (resource instanceof ClassPathResource) {
+            java.net.URL url = resource.getURL();
+            URLConnection connection = url.openConnection();
+            stream.contentLength = connection.getContentLength();
+            stream.stream = connection.getInputStream();
+        } else if (resource instanceof FileSystemResource) {
+            File file = resource.getFile();
+            stream.contentLength = (int) file.length();
+            stream.stream = resource.getInputStream();
+        } else {
+            stream.stream = resource.getInputStream();
+        }
+        return stream;
+    }
 
     private Resource resolveResource(HttpServletRequest request) {
         URL url = URL.create(request);
         List<Path> paths = url.getPath().getPaths();
 
-        String uriPrefix = null;
+        Path uriPrefix = null;
         String resourceLocation = null;
         for (int i = paths.size() - 1; i >= 0; i--) {
-            String prefix = paths.get(i).toString();
+            Path prefix = paths.get(i);
             if (this.locationsMap.containsKey(prefix)) {
                 resourceLocation = this.locationsMap.get(prefix);
                 uriPrefix = prefix;
@@ -229,26 +241,32 @@ public class DisplayClassPathResourceController
 
         RequestContext requestContext = RequestContext.getRequestContext();
         Path uri = requestContext.getResourceURI();
-
         if (uriPrefix != null) {
-            uri = Path.fromString(uri.toString().substring(uriPrefix.length()));
+            Path p = Path.ROOT;
+            int offset = uriPrefix.getDepth() + 1;
+            List<String> elements = uri.getElements();
+            for (int i = offset; i < elements.size(); i++) {
+                p = p.extend(elements.get(i));
+            }
+            uri = p;
         }
 
-        String path = resourceLocation;
-        if (path.endsWith("/")) {
-            path = path.substring(0, path.length() - 1);
+        String loc = resourceLocation;
+        if (loc.endsWith("/")) {
+            loc = loc.substring(0, loc.length() - 1);
         }
-        path += uri;
+        loc += uri;
 
-        Resource resource = null;
-        if (path.startsWith("file://")) {
-            String actualPath = path.substring("file://".length());
-            resource = new FileSystemResource(actualPath);
-        } else if (path.startsWith("classpath://")) {
-            String actualPath = path.substring("classpath://".length());
-            resource = new ClassPathResource(actualPath);
+        if (loc.startsWith("file://")) {
+            String actualPath = loc.substring("file://".length());
+            return new FileSystemResource(actualPath);
         } 
-        return resource;
+        
+        if (loc.startsWith("classpath://")) {
+            String actualPath = loc.substring("classpath://".length());
+            return new ClassPathResource(actualPath);
+        }
+        return null;
     }
 
 }

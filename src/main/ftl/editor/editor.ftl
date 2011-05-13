@@ -289,8 +289,10 @@
               '${fckBrowse.url.pathRepresentation}', 'Media');"><@vrtx.msg code="editor.browseMediaFiles"/></button>
         
       <#elseif type = 'IMAGE_REF'>
-        <div id="picture-and-caption">
-          <div id="input-and-button-container">
+      
+      	<#if name == "picture">
+        <div class="picture-and-caption">
+          <div class="input-and-button-container">
             <input type="text" id="resource.${name}" onblur="previewImage(id);" name="resource.${name}" value="${value?html}" />
             <button type="button" onclick="browseServer('resource.${name}', '${fckeditorBase.url?html}', '${baseFolder}',
               '${fckBrowse.url.pathRepresentation}');"><@vrtx.msg code="editor.browseImages"/></button>
@@ -311,6 +313,33 @@
               <img src="" alt="no-image" style="visibility: hidden; width: 10px;" />
             </#if>
           </div>
+          <#else>
+        
+	        <div class="vrtx-image-ref.${name}">
+	          <div class="input-and-button-container.${name}">
+	            <input type="text" id="resource.${name}" onblur="previewImage(id);" name="resource.${name}" value="${value?html}" />
+	            <button type="button" onclick="browseServer('resource.${name}', '${fckeditorBase.url?html}', '${baseFolder}',
+	              '${fckBrowse.url.pathRepresentation}');"><@vrtx.msg code="editor.browseImages"/></button>
+	          </div>
+	          <div id="resource.${name}.preview">
+	          
+	            <#local thumbnail = '' />
+	    		<#if value?exists && value != "">
+	    			<#if  vrtx.linkConstructor(value, 'displayThumbnailService')?exists >
+						<#local thumbnail = vrtx.linkConstructor(value, 'displayThumbnailService').getPathRepresentation() />
+					<#else>
+						<#local thumbnail = value />
+					</#if> 
+	    		</#if>          
+	            <#if thumbnail != ''>
+	              <img src="${thumbnail?html}" alt="preview" />
+	            <#else>
+	              <img src="" alt="no-image" style="visibility: hidden; width: 10px;" />
+	            </#if>
+	          </div>
+                    
+          
+          </#if>
       <#elseif type = 'DATE' || type = 'TIMESTAMP'>
 
         <#local dateVal = value />

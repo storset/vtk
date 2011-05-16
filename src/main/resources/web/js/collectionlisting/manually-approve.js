@@ -231,7 +231,7 @@ function generateTableRow(resource, i) {
   } else {
     html += "<td><input type='checkbox' />";
   }
-  html += "<a class='approve-link' href='" + resource.uri + "' title='" + resource.uri + "'>" + resource.title
+  html += "<a class='approve-link' href='http://" + resource.uri + "' title='" + resource.uri + "'>" + resource.title
       + "</a></td>" + "<td>" + resource.source + "</td><td class='approve-published'>" + resource.published
       + "</td></tr>";
   return html;

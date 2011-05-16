@@ -46,6 +46,7 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.search.PropertySortField;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
@@ -61,8 +62,6 @@ import org.vortikal.repository.search.query.UriSetQuery;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.collection.aggregation.AggregationResolver;
-import org.vortikal.web.service.Service;
-import org.vortikal.web.service.URL;
 
 public class ManuallyApproveResourcesSearcher {
 
@@ -72,18 +71,19 @@ public class ManuallyApproveResourcesSearcher {
     private PropertyTypeDefinition titlePropDef;
     private PropertyTypeDefinition publishDatePropDef;
     private PropertyTypeDefinition creationTimePropDef;
-    private Service viewService;
+    private PropertyTypeDefinition manuallyApprovedResourcesPropDef;
 
     public List<ManuallyApproveResource> getManuallyApproveResources(Resource collection, Set<String> folders,
-            Set<String> alreadyApproved) {
+            Set<String> alreadyApproved) throws Exception {
 
         Repository repository = RequestContext.getRequestContext().getRepository();
+        String repositoryId = repository.getId();
         String token = SecurityContext.getSecurityContext().getToken();
 
         List<ManuallyApproveResource> result = new ArrayList<ManuallyApproveResource>();
 
-        Set<String> localFolders = this.getUris(folders, true);
-        Set<String> localAlreadyApproved = this.getUris(alreadyApproved, true);
+        Set<String> localFolders = this.getUris(folders, repositoryId);
+        Set<String> localAlreadyApproved = this.getUris(alreadyApproved, repositoryId);
 
         // Get already approved resources on local host
         List<PropertySet> alreadyApprovedResources = new ArrayList<PropertySet>();
@@ -116,19 +116,40 @@ public class ManuallyApproveResourcesSearcher {
                     Property collectionProp = ps.getProperty(this.collectionPropDef);
                     if (!collectionProp.getBooleanValue()) {
                         boolean approved = alreadyApprovedResources.contains(ps);
-                        ManuallyApproveResource m = this.mapPropertySetToManuallyApprovedResource(ps, folder, approved);
+                        ManuallyApproveResource m = this.mapPropertySetToManuallyApprovedResource(repositoryId, ps,
+                                folder, approved);
+                        result.add(m);
+                    }
+                }
+                Resource r = repository.retrieve(token, Path.fromString(folder), false);
+                Set<String> rSet = this.getManuallyApprovedUris(r);
+                if (rSet != null && rSet.size() > 0) {
+                    for (String s : rSet) {
+                        Resource r2 = null;
+                        try {
+                            r2 = repository.retrieve(token, Path.fromString(s), false);
+                        } catch (Exception e) {
+                            // XXX log?
+                            continue;
+                        }
+                        ManuallyApproveResource m = this.mapPropertySetToManuallyApprovedResource(repositoryId, r2,
+                                folder, false);
                         result.add(m);
                     }
                 }
             }
         }
 
-        // Include and mark as approved all already approved resources where the
-        // source has been removed
+        // Mark as approved all already approved resources, also those where the
+        // source might have been removed
         for (PropertySet ps : alreadyApprovedResources) {
-            if (!this.resultAlreadyContains(result, ps.getURI().toString())) {
-                ManuallyApproveResource m = this.mapPropertySetToManuallyApprovedResource(ps, ps.getURI().getParent()
-                        .toString(), true);
+            String uri = repositoryId + ps.getURI();
+            ManuallyApproveResource mx = this.getResource(result, uri);
+            if (mx != null) {
+                mx.setApproved(true);
+            } else {
+                ManuallyApproveResource m = this.mapPropertySetToManuallyApprovedResource(repositoryId, ps, ps.getURI()
+                        .getParent().toString(), true);
                 result.add(m);
             }
         }
@@ -138,19 +159,22 @@ public class ManuallyApproveResourcesSearcher {
         return result;
     }
 
-    private Set<String> getUris(Set<String> uris, boolean local) {
-        Set<String> uriSet = new HashSet<String>();
-        for (String s : uris) {
-            if (local) {
-                if (s.startsWith("/")) {
-                    uriSet.add(s);
-                } else if (s.startsWith("http")) {
-                    org.vortikal.web.service.URL url = org.vortikal.web.service.URL.parse(s);
-                    uriSet.add(url.getPathRepresentation());
-                }
-            } else {
-                uriSet.add(s);
+    private ManuallyApproveResource getResource(List<ManuallyApproveResource> result, String uri) {
+        for (ManuallyApproveResource m : result) {
+            if (m.getUri().equals(uri)) {
+                return m;
             }
+        }
+        return null;
+    }
+
+    private Set<String> getUris(Set<String> uris, String repositoryID) {
+        Set<String> uriSet = new HashSet<String>();
+        for (String uri : uris) {
+            if (uri.startsWith(repositoryID)) {
+                uri = uri.replace(repositoryID, "");
+            }
+            uriSet.add(uri);
         }
         return uriSet;
     }
@@ -165,10 +189,10 @@ public class ManuallyApproveResourcesSearcher {
         return search;
     }
 
-    private ManuallyApproveResource mapPropertySetToManuallyApprovedResource(PropertySet ps, String source,
-            boolean approved) {
+    private ManuallyApproveResource mapPropertySetToManuallyApprovedResource(String reposirotyId, PropertySet ps,
+            String source, boolean approved) {
         String title = ps.getProperty(this.titlePropDef).getStringValue();
-        String uri = this.viewService.constructLink(ps.getURI());
+        String uri = reposirotyId + ps.getURI();
         Property dateProp = ps.getProperty(this.publishDatePropDef);
         if (dateProp == null) {
             dateProp = ps.getProperty(this.creationTimePropDef);
@@ -198,18 +222,17 @@ public class ManuallyApproveResourcesSearcher {
         }
     }
 
-    private boolean resultAlreadyContains(List<ManuallyApproveResource> result, String uri) {
-        for (ManuallyApproveResource m : result) {
-            String mUri = m.getUri();
-            if (mUri.startsWith("http")) {
-                URL url = URL.parse(mUri);
-                mUri = url.getPathRepresentation();
-            }
-            if (mUri.equals(uri)) {
-                return true;
+    public Set<String> getManuallyApprovedUris(Resource collection) {
+        Set<String> uriSet = new HashSet<String>();
+        Property manuallyApprovedProp = collection.getProperty(this.manuallyApprovedResourcesPropDef);
+        if (manuallyApprovedProp != null) {
+            Value[] values = manuallyApprovedProp.getValues();
+            for (Value val : values) {
+                uriSet.add(val.getStringValue());
             }
         }
-        return false;
+        Repository repository = RequestContext.getRequestContext().getRepository();
+        return this.getUris(uriSet, repository.getId());
     }
 
     @Required
@@ -243,8 +266,8 @@ public class ManuallyApproveResourcesSearcher {
     }
 
     @Required
-    public void setViewService(Service viewService) {
-        this.viewService = viewService;
+    public void setManuallyApprovedResourcesPropDef(PropertyTypeDefinition manuallyApprovedResourcesPropDef) {
+        this.manuallyApprovedResourcesPropDef = manuallyApprovedResourcesPropDef;
     }
 
 }

@@ -38,7 +38,7 @@
     <property name="titlePropDef" ref="titlePropDef" />
     <property name="publishDatePropDef" ref="publishDatePropDef" />
     <property name="creationTimePropDef" ref="creationTimePropDef" />
-    <property name="viewService" ref="viewService" />
+    <property name="manuallyApprovedResourcesPropDef" ref="manuallyApprovedResourcesPropDef" />
   </bean>
 
 </beans>

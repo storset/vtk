@@ -30,7 +30,6 @@
  */
 package org.vortikal.web.search;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -41,7 +40,6 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.Query;
@@ -49,13 +47,13 @@ import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.repository.search.query.UriSetQuery;
 import org.vortikal.web.display.collection.aggregation.AggregationResolver;
-import org.vortikal.web.service.URL;
+import org.vortikal.web.service.manuallyapprove.ManuallyApproveResourcesSearcher;
 
 public class ListingUriQueryBuilder implements QueryBuilder {
 
     private PropertyTypeDefinition recursivePropDef;
     private AggregationResolver aggregationResolver;
-    private PropertyTypeDefinition manuallyApprovedResourcesPropDef;
+    private ManuallyApproveResourcesSearcher manuallyApproveResourcesSearcher;
     private boolean defaultRecursive;
 
     @Override
@@ -94,18 +92,8 @@ public class ListingUriQueryBuilder implements QueryBuilder {
         }
 
         // Any manually approved resources? Well then add those as well
-        Property manuallyApprovedProp = collection.getProperty(this.manuallyApprovedResourcesPropDef);
-        if (manuallyApprovedProp != null) {
-            Value[] values = manuallyApprovedProp.getValues();
-            Set<String> uriSet = new HashSet<String>();
-            for (Value val : values) {
-                String uri = val.getStringValue();
-                if (uri.startsWith("http")) {
-                    URL url = URL.parse(uri);
-                    uri = url.getPathRepresentation();
-                }
-                uriSet.add(uri);
-            }
+        Set<String> uriSet = this.manuallyApproveResourcesSearcher.getManuallyApprovedUris(collection);
+        if (uriSet != null && uriSet.size() > 0) {
             UriSetQuery uriSetQuery = new UriSetQuery(uriSet);
             OrQuery or = new OrQuery();
             or.add(baseQuery);
@@ -127,8 +115,8 @@ public class ListingUriQueryBuilder implements QueryBuilder {
     }
 
     @Required
-    public void setManuallyApprovedResourcesPropDef(PropertyTypeDefinition manuallyApprovedResourcesPropDef) {
-        this.manuallyApprovedResourcesPropDef = manuallyApprovedResourcesPropDef;
+    public void setManuallyApproveResourcesSearcher(ManuallyApproveResourcesSearcher manuallyApproveResourcesSearcher) {
+        this.manuallyApproveResourcesSearcher = manuallyApproveResourcesSearcher;
     }
 
     public void setDefaultRecursive(boolean defaultRecursive) {

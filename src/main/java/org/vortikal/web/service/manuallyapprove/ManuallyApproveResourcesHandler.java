@@ -131,7 +131,7 @@ public class ManuallyApproveResourcesHandler implements Controller {
             }
         }
 
-        // That's is... we now have a set of resources to manually approve from,
+        // That's it... we now have a set of resources to manually approve from,
         // along with a set of resources that are already manually approved...
         // Let's search!
         List<ManuallyApproveResource> result = this.searcher.getManuallyApproveResources(currentCollection, folders,

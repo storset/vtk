@@ -36,6 +36,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.vortikal.repository.search.Search;
 import org.vortikal.web.service.URL;
 
 public class ListingPager {
@@ -60,10 +61,15 @@ public class ListingPager {
         baseURL.removeParameter(PREV_BASE_OFFSET_PARAM);
         baseURL.removeParameter(UPCOMING_PAGE_PARAM);
         baseURL.removeParameter(USER_DISPLAY_PAGE);
-
+        
+        int maxPages = Search.MAX_LIMIT / pageLimit;
+        
         int pages = hits / pageLimit;
         if ((hits % pageLimit) > 0) {
             pages += 1;
+        }
+        if (pages >= maxPages) {
+            pages = maxPages;
         }
         int pagesUsedToDisplayResultsOfTheFirstSearch = (hitsReturnedByFirstSearch / pageLimit);
         if ((hitsReturnedByFirstSearch % pageLimit) > 0) {

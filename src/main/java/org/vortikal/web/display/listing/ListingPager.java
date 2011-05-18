@@ -56,11 +56,12 @@ public class ListingPager {
             return null;
         }
         List<URL> urls = new ArrayList<URL>();
-
-        baseURL.removeParameter(PREVIOUS_PAGE_PARAM);
-        baseURL.removeParameter(PREV_BASE_OFFSET_PARAM);
-        baseURL.removeParameter(UPCOMING_PAGE_PARAM);
-        baseURL.removeParameter(USER_DISPLAY_PAGE);
+        baseURL = new URL(baseURL)
+            .removeParameter(PREVIOUS_PAGE_PARAM)
+            .removeParameter(PREV_BASE_OFFSET_PARAM)
+            .removeParameter(UPCOMING_PAGE_PARAM)
+            .removeParameter(USER_DISPLAY_PAGE)
+            .setCollection(true);
         
         int maxPages = Search.MAX_LIMIT / pageLimit;
         
@@ -108,7 +109,7 @@ public class ListingPager {
         return urls;
     }
     
-
+    
     public static int getPage(HttpServletRequest request, String parameter) {
         int page = 1;
         String pageParam = request.getParameter(parameter);

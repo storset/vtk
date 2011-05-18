@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.vortikal.repository.Namespace;
@@ -103,10 +104,14 @@ public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecorato
     }
 
     private String getUrl(String value, String serviceUrl) {
-        if (serviceUrl == null)
+        if (value == null) {
+            throw new IllegalArgumentException("Value is NULL");
+        }
+        value = Matcher.quoteReplacement(value);
+        if (serviceUrl == null) {
             return this.defaultURLpattern.replaceAll("%v", value);
-        else
-            return serviceUrl.replaceAll("%v", value);
+        }
+        return serviceUrl.replaceAll("%v", value);
     }
 
     public void afterPropertiesSet() throws Exception {

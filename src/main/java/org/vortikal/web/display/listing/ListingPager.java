@@ -50,7 +50,7 @@ public class ListingPager {
         return generatePageThroughUrls(hits, pageLimit, 0, baseURL, false);
     }
 
-    public static List<URL> generatePageThroughUrls(int hits, int pageLimit, int hitsReturnedByFirstSearch, URL baseURL,
+    public static List<URL> generatePageThroughUrls(int hits, int pageLimit, int hitsInFirstSearch, URL baseURL,
             boolean twoSearches) {
         if (pageLimit == 0) {
             return null;
@@ -71,13 +71,13 @@ public class ListingPager {
         if (pages >= maxPages) {
             pages = maxPages;
         }
-        int pagesUsedToDisplayResultsOfTheFirstSearch = (hitsReturnedByFirstSearch / pageLimit);
-        if ((hitsReturnedByFirstSearch % pageLimit) > 0) {
-            pagesUsedToDisplayResultsOfTheFirstSearch += 1;
+        int pagesInFirstSearch = (hitsInFirstSearch / pageLimit);
+        if ((hitsInFirstSearch % pageLimit) > 0) {
+            pagesInFirstSearch += 1;
         }
         int offset = 0;
-        if (hitsReturnedByFirstSearch > 0 && (hitsReturnedByFirstSearch % pageLimit) > 0) {
-            offset = pageLimit - (hitsReturnedByFirstSearch % pageLimit);
+        if (hitsInFirstSearch > 0 && (hitsInFirstSearch % pageLimit) > 0) {
+            offset = pageLimit - (hitsInFirstSearch % pageLimit);
         }
 
         int j = 1;
@@ -87,13 +87,13 @@ public class ListingPager {
                 urls.add(url);
                 continue;
             }
-            if (hitsReturnedByFirstSearch == 0 && twoSearches) {
+            if (hitsInFirstSearch == 0 && twoSearches) {
                 url.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(i + 1));
-            } else if (pagesUsedToDisplayResultsOfTheFirstSearch > i || hitsReturnedByFirstSearch == 0) {
+            } else if (pagesInFirstSearch > i || hitsInFirstSearch == 0) {
                 url.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(i + 1));
             } else {
-                if (pagesUsedToDisplayResultsOfTheFirstSearch > 1) {
-                    url.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(pagesUsedToDisplayResultsOfTheFirstSearch));
+                if (pagesInFirstSearch > 1) {
+                    url.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(pagesInFirstSearch));
                 }
                 if (offset > 0) {
                     url.setParameter(PREV_BASE_OFFSET_PARAM, String.valueOf(offset));
@@ -107,6 +107,7 @@ public class ListingPager {
 
         return urls;
     }
+    
 
     public static int getPage(HttpServletRequest request, String parameter) {
         int page = 1;

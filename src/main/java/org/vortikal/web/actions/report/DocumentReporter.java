@@ -70,6 +70,9 @@ public abstract class DocumentReporter extends AbstractReporter {
         if (pos.cursor + Math.min(pageSize, rs.getAllResults().size()) >= rs.getTotalHits()) {
             pos.next = null;
         }
+        if (pos.cursor + Math.min(pageSize, rs.getAllResults().size()) >= Search.MAX_LIMIT) {
+            pos.next = null;
+        }
         
         result.put("result", rs.getAllResults());
         result.put("from", pos.cursor + 1);

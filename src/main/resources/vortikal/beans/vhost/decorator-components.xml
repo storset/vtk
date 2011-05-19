@@ -420,7 +420,7 @@
     parent="decorating.abstractListMenuComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="subfolder-menu" />
-    <property name="searchLimit" value="1000" />
+    <property name="searchLimit" value="${decorating.subFolderMenuComponent.searchLimit}" />
     <property name="view" ref="decorating.subFolderMenuComponent.view" />
     <property name="modelName" value="subFolderMenu" />
     <property name="description" value="Lists the subfolders of the current folder" />
@@ -431,6 +431,7 @@
     <property name="menuGenerator" ref="decorating.menuGenerator" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="sortPropDef" ref="collection.sortingPropDef" />
+    <property name="collectionDisplayLimit" value="${decorating.subFolderMenuComponent.searchLimit}" />
   </bean>
 
   <bean name="decorating.subFolderMenuComponent.view" parent="freemarkerView">

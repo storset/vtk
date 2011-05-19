@@ -399,6 +399,7 @@
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="uri-menu" />
     <property name="view" ref="decorating.listMenuComponent.view" />
+    <property name="searchLimit" value="${decorating.listMenuComponent.searchLimit}" />
   </bean>
 
   <bean name="decorating.listMenuComponent.view" parent="freemarkerView">

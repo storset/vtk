@@ -35,6 +35,8 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import org.vortikal.resourcemanagement.parser.ParserConstants;
+
 public abstract class PropertyDescription {
 
     private String name;
@@ -43,6 +45,7 @@ public abstract class PropertyDescription {
     private boolean noExtract;
     private boolean multiple;
     private String externalService;
+    private boolean trim;
 
     private Map<Locale, Map<String, Object>> vocabulary = new HashMap<Locale, Map<String, Object>>();
 
@@ -130,6 +133,14 @@ public abstract class PropertyDescription {
 
     public boolean hasExternalService() {
         return this.externalService != null;
+    }
+
+    public boolean isTrim() {
+        return ParserConstants.PROPTYPE_STRING.equals(this.type) && this.trim;
+    }
+
+    public void setTrim(boolean trim) {
+        this.trim = trim;
     }
 
 }

@@ -1,7 +1,7 @@
 resourcetype person {
 
   properties {
-    username : string,
+    username : string trim,
     getExternalPersonInfo : boolean,
     firstName : string external:userMetadataLdapService,
     surname : string external:userMetadataLdapService,

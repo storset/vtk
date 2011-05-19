@@ -155,10 +155,10 @@ public class StructuredResourceEditor extends SimpleFormController {
 
                     if ("simple_html".equals(desc.getType())) {
                         runSimpleHtmlFilter(request, form, desc);
-                        
+
                     } else if (desc instanceof JSONPropertyDescription) {
                         buildJSONFromInput(request, form, desc);
-                        
+
                     } else {
                         storePostedValue(request, form, desc);
                     }
@@ -169,6 +169,9 @@ public class StructuredResourceEditor extends SimpleFormController {
 
         private void storePostedValue(ServletRequest request, FormSubmitCommand form, PropertyDescription desc) {
             String posted = request.getParameter(desc.getName());
+            if (desc.isTrim()) {
+                posted = posted.trim();
+            }
             bindObjectToForm(form, desc, posted);
         }
 
@@ -185,7 +188,7 @@ public class StructuredResourceEditor extends SimpleFormController {
         @SuppressWarnings("unchecked")
         private void buildJSONFromInput(ServletRequest request, FormSubmitCommand form, PropertyDescription desc) {
             JSONPropertyDescription jsonDesc = (JSONPropertyDescription) desc;
-            
+
             if (!jsonDesc.isMultiple()) {
                 JSONObject obj = new JSONObject();
                 for (JSONPropertyAttributeDescription attr : jsonDesc.getAttributes()) {
@@ -198,7 +201,7 @@ public class StructuredResourceEditor extends SimpleFormController {
                 bindObjectToForm(form, desc, obj);
                 return;
             }
-            
+
             Enumeration<String> names = request.getParameterNames();
             int maxIndex = 0;
             while (names.hasMoreElements()) {
@@ -258,8 +261,7 @@ public class StructuredResourceEditor extends SimpleFormController {
         String token = requestContext.getSecurityToken();
         Path uri = requestContext.getResourceURI();
         Principal principal = requestContext.getPrincipal();
-        requestContext.getRepository().lock(token, uri, principal.getQualifiedName(), 
-                Depth.ZERO, 600, null);
+        requestContext.getRepository().lock(token, uri, principal.getQualifiedName(), Depth.ZERO, 600, null);
     }
 
     public void setSafeHtmlFilter(HtmlPageFilter safeHtmlFilter) {

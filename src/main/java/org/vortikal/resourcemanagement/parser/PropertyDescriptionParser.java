@@ -97,10 +97,12 @@ public class PropertyDescriptionParser {
     }
 
     private void populateSimplePropertyDescription(SimplePropertyDescription p, List<CommonTree> propertyDescription) {
+        String type = null;
         for (CommonTree descEntry : propertyDescription) {
             switch (descEntry.getType()) {
             case ResourcetreeLexer.PROPTYPE:
-                p.setType(descEntry.getText());
+                type = descEntry.getText();
+                p.setType(type);
                 break;
             case ResourcetreeLexer.REQUIRED:
                 p.setRequired(true);
@@ -119,6 +121,12 @@ public class PropertyDescriptionParser {
                 break;
             case ResourcetreeLexer.DEFAULTVALUE:
                 p.setDefaultValue(descEntry.getChild(0).getText());
+                break;
+            case ResourcetreeLexer.TRIM:
+                if (!ParserConstants.PROPTYPE_STRING.equals(type)) {
+                    throw new IllegalArgumentException("Trim is only applicable for properties of type STRING.");
+                }
+                p.setTrim(true);
                 break;
             default:
                 throw new IllegalStateException("Unknown token type for simple property description: "

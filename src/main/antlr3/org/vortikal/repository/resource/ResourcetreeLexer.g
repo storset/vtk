@@ -30,6 +30,7 @@ LOCALIZATION
 	:	'localization';
 SCRIPTS	:	'scripts';
 SERVICES:	'services';
+TRIM	:	'trim';
 
 LCB	:	'{';
 RCB	:	'}';
@@ -46,7 +47,7 @@ DQ	:	'"';
 EQ	:	'=';
 QUESTION:	'?';
 
-PROPTYPE:	(STRING | RESOURCEREF | HTML | SIMPLEHTML | BOOLEAN | INT | DATETIME | IMAGEREF | MEDIAREF);
+PROPTYPE:	(STRING (TRIM)? | RESOURCEREF | HTML | SIMPLEHTML | BOOLEAN | INT | DATETIME | IMAGEREF | MEDIAREF);
 DERIVED	:	'derived';
 JSON	:	'json';
 BINARY	:	'binary';

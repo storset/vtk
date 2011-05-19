@@ -136,9 +136,9 @@ jsonpropspec
 	:	NAME COLON PROPTYPE (SEMICOLON INDEXABLE)? -> ^(NAME ^(PROPTYPE (INDEXABLE)?));
 
 plainpropertytypedef
-	:	NAME COLON PROPTYPE (MULTIPLE)? (REQUIRED)? (NOEXTRACT)? (overrides)?
+	:	NAME COLON PROPTYPE (TRIM)? (MULTIPLE)? (REQUIRED)? (NOEXTRACT)? (overrides)?
 			(external)? (defaultvalue)?
-		-> ^(NAME PROPTYPE (MULTIPLE)? (REQUIRED)? (NOEXTRACT)? (overrides)?
+		-> ^(NAME PROPTYPE (TRIM)? (MULTIPLE)? (REQUIRED)? (NOEXTRACT)? (overrides)?
 			(external)? (defaultvalue)?)
 	;
 

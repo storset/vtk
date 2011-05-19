@@ -149,5 +149,9 @@ public class SubFolderMenuProvider {
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
     }
+    
+    public void setCollectionDisplayLimit(int collectionDisplayLimit) {
+        this.collectionDisplayLimit = collectionDisplayLimit;
+    }
 
 }

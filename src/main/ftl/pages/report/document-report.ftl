@@ -27,15 +27,13 @@
                  default="Listing results " + report.from + " - "
                  +  report.to + " of total " + report.total + " resources" />
       <#if report.prev?exists || report.next?exists>
-      <span style="float: right;">
-      <#if report.prev?exists>
-        <a href="${report.prev?html}"><@vrtx.msg code="report.prev-page" default="previous page" /></a>
-        <#if report.next?exists>
-        &nbsp;|&nbsp;<a href="${report.next?html}"><@vrtx.msg code="report.next-page" default="next page" /></a>
+      <span id="vrtx-report-paging">
+        <#if report.prev?exists>
+          <a href="${report.prev?html}">
+          <@vrtx.msg code="report.prev-page" default="previous page" /></a><#if report.next?exists>&nbsp;|&nbsp;<a href="${report.next?html}"><@vrtx.msg code="report.next-page" default="next page" /></a></#if>
+        <#elseif report.next?exists>
+          <a href="${report.next?html}"><@vrtx.msg code="report.next-page" default="next page" /></a>
         </#if>
-      <#elseif report.next?exists>
-        <a href="${report.next?html}"><@vrtx.msg code="report.next-page" default="next page" /></a>
-      </#if>
       </span>
       </#if>
     <#else>

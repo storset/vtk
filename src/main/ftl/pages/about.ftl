@@ -202,15 +202,17 @@
 
     <!-- content:verifiedDate -->
     <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'content:verifiedDate' />
+    
+    <#if resource.resourceType != 'image'>
+      <!-- content:authorName -->
+      <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'content:authorName' inputSize=40 />
 
-    <!-- content:authorName -->
-    <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'content:authorName' inputSize=40 />
+      <!-- content:authorEmail -->
+      <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'content:authorEmail' inputSize=40 />
 
-    <!-- content:authorEmail -->
-    <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'content:authorEmail' inputSize=40 />
-
-    <!-- content:authorURL -->
-    <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'content:authorURL' inputSize=40 />
+      <!-- content:authorURL -->
+      <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'content:authorURL' inputSize=40 />
+    </#if>
 
  </table>
 

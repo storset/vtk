@@ -270,27 +270,27 @@ resourcetype frontpage {
           
             [if pixel-width != null]
               [def style concat("width:", pixel-width, "px")]
-              [def img-author resource-prop(img-uri, "authorName")]
+              [def photographer resource-prop(img-uri, "photographer")]
         
               [if caption != null]
                 <div class="vrtx-introduction-image" style="[val style]">
                   <img src="[val img-uri]" alt="[val caption # unescaped 'flattened']"/>
                   <div class="vrtx-imagetext">
                     <div class="vrtx-imagedescription">[val caption # unescaped]</div>
-                    [if img-author != null]
+                    [if photographer != null]
                       <span class="vrtx-photo">
-                        <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val img-author]
+                        <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val photographer]
                       </span>
                     [endif]
                   </div>
                 </div>
               [else]
-                [if img-author != null]
+                [if photographer != null]
                   <div class="vrtx-introduction-image" style="[val style]">
                     <img src="[val img-uri]" alt="[localized 'introduction-image-alt']" />
                     <div class="vrtx-imagetext">
                       <span class="vrtx-photo">
-                        <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val img-author]
+                        <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val photographer]
                       </span>
                     </div>
                   </div>

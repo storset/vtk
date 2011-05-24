@@ -27,7 +27,7 @@ resourcetype structured-document {
       [def pixel-width null]
       [def img null]
       [def pixel-width null]
-      [def img-author null]
+      [def photographer null]
       [def style null]
       
       [if img-uri != null]
@@ -35,7 +35,7 @@ resourcetype structured-document {
       [endif]
       [if img != null]
         [def pixel-width resource-prop(img-uri, "pixelWidth")]
-        [def img-author resource-prop(img-uri, "authorName")]
+        [def photographer resource-prop(img-uri, "photographer")]
        [endif]
        [if pixel-width != null]
         [def style concat("width:", pixel-width, "px")]
@@ -57,17 +57,17 @@ resourcetype structured-document {
        [if caption != null]
          <div class="vrtx-imagetext">
            <div class="vrtx-imagedescription">[val caption # unescaped]</div>
-           [if img-author != null]
+           [if photographer != null]
              <span class="vrtx-photo">
-               <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val img-author]
+               <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val photographer]
              </span>
            [endif]
          </div>
-       [elseif img-author != null]
+       [elseif photographer != null]
          <div class="vrtx-imagetext">
-           [if img-author != null]
+           [if photographer != null]
              <span class="vrtx-photo">
-               <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val img-author]
+               <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val photographer]
              </span>
            [endif]
          </div> 

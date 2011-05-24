@@ -27,7 +27,7 @@
     <img class="vrtx-introduction-image" src="${introductionImage}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
   <#else>
     <#assign pixelWidth = imageRes.getValueByName("pixelWidth")?default("") />
-    <#assign authorName = imageRes.getValueByName("authorName")?default("") />
+    <#assign photographer = imageRes.getValueByName("photographer")?default("") />
       
     <#assign style="" />
     <#if pixelWidth != "">
@@ -40,19 +40,19 @@
           <div class="vrtx-imagetext">
                <div class="vrtx-imagedescription">${caption}</div>
                <span class="vrtx-photo">
-                  <#if authorName != ""><#-- Image authors is set -->
-                    <span class="vrtx-photo-prefix"><@vrtx.msg code="article.photoprefix" />: </span>${authorName}
+                  <#if photographer != ""><#-- Image authors is set -->
+                    <span class="vrtx-photo-prefix"><@vrtx.msg code="article.photoprefix" />: </span>${photographer}
                   </#if>
                </span>
          </div> 
      </div>
     <#else>
-       <#if authorName != ""><#-- No caption but image author set -->
+       <#if photographer != ""><#-- No caption but image author set -->
           <div class="vrtx-introduction-image" <#if style?has_content>style="${style}"</#if>>
           <img src="${introductionImage}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />   
             <div class="vrtx-imagetext">
               <span class="vrtx-photo">
-                <span class="vrtx-photo-prefix"><@vrtx.msg code="article.photoprefix" />: </span>${authorName}
+                <span class="vrtx-photo-prefix"><@vrtx.msg code="article.photoprefix" />: </span>${photographer}
               </span>
             </div>     
           </div>

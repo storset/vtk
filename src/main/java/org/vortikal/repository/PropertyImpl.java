@@ -32,8 +32,8 @@ package org.vortikal.repository;
 
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -66,47 +66,48 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
 
     private static final long serialVersionUID = 3762531209208410417L;
 
-    private static final Map<PropertyType.Type, Set<PropertyType.Type>> compatibilityMap;
+    private static final Map<PropertyType.Type, Set<PropertyType.Type>> COMPATIBILITY_MAP;
     static {
-        compatibilityMap = new HashMap<Type, Set<Type>>();
+        COMPATIBILITY_MAP = new EnumMap<Type, Set<Type>>(Type.class);
 
-        Set<Type> STRING = new HashSet<Type>();
+        Set<Type> STRING = EnumSet.noneOf(Type.class);
         STRING.add(Type.HTML);
         STRING.add(Type.IMAGE_REF);
         STRING.add(Type.JSON);
-        compatibilityMap.put(Type.STRING, STRING);
+        COMPATIBILITY_MAP.put(Type.STRING, STRING);
         
-        Set<Type> HTML = new HashSet<Type>();
+        Set<Type> HTML = EnumSet.noneOf(Type.class);
         HTML.add(Type.STRING);
         HTML.add(Type.IMAGE_REF);
         HTML.add(Type.JSON);
-        compatibilityMap.put(Type.HTML, HTML);
+        COMPATIBILITY_MAP.put(Type.HTML, HTML);
 
-        Set<Type> IMAGE_REF = new HashSet<Type>();
+        Set<Type> IMAGE_REF = EnumSet.noneOf(Type.class);
         IMAGE_REF.add(Type.STRING);
         IMAGE_REF.add(Type.HTML);
         IMAGE_REF.add(Type.JSON);
-        compatibilityMap.put(Type.IMAGE_REF, IMAGE_REF);
+        COMPATIBILITY_MAP.put(Type.IMAGE_REF, IMAGE_REF);
 
-        Set<Type> JSON = new HashSet<Type>();
+        Set<Type> JSON = EnumSet.noneOf(Type.class);
         JSON.add(Type.STRING);
         JSON.add(Type.HTML);
         JSON.add(Type.IMAGE_REF);
-        compatibilityMap.put(Type.JSON, JSON);
+        COMPATIBILITY_MAP.put(Type.JSON, JSON);
 
-        Set<Type> DATE = new HashSet<Type>();
+        Set<Type> DATE = EnumSet.noneOf(Type.class);
         DATE.add(Type.TIMESTAMP);
-        compatibilityMap.put(Type.DATE, DATE);
+        COMPATIBILITY_MAP.put(Type.DATE, DATE);
 
-        Set<Type> TIMESTAMP = new HashSet<Type>();
+        Set<Type> TIMESTAMP = EnumSet.noneOf(Type.class);
         TIMESTAMP.add(Type.DATE);
-        compatibilityMap.put(Type.TIMESTAMP, TIMESTAMP);
+        COMPATIBILITY_MAP.put(Type.TIMESTAMP, TIMESTAMP);
     }
     
     private PropertyTypeDefinition propertyTypeDefinition;
     private Value value;
     private Value[] values;
     
+    @Override
     public Value getValue() {
         if (this.propertyTypeDefinition.isMultiple()) {
             throw new IllegalOperationException("Property " + this + " is multi-value"); 
@@ -115,6 +116,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         return this.value;
     }
 
+    @Override
     public void setValue(Value value) throws ValueFormatException {
         if (this.propertyTypeDefinition.isMultiple()) {
             throw new ValueFormatException("Property " + this + " is multi-value");
@@ -124,6 +126,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         this.value = value;
     }
     
+    @Override
     public void setValues(Value[] values) throws ValueFormatException {
         if (! this.propertyTypeDefinition.isMultiple()) {
             throw new ValueFormatException("Property " + this + " is not multi-value");
@@ -133,6 +136,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         this.values = values;
     }
     
+    @Override
     public Value[] getValues() {
         if (! this.propertyTypeDefinition.isMultiple()) {
             throw new IllegalOperationException("Property " + this + " is not multi-value");
@@ -141,6 +145,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         return this.values;
     }
 
+    @Override
     public Date getDateValue() throws IllegalOperationException {
         if (this.value == null || (getType() != PropertyType.Type.TIMESTAMP
                 && getType() != PropertyType.Type.DATE)) {
@@ -150,6 +155,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         return this.value.getDateValue();
     }
 
+    @Override
     public void setDateValue(Date dateValue) throws ValueFormatException {
         boolean date = false;
         if (getType() == PropertyType.Type.DATE) {
@@ -159,6 +165,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         setValue(v);
     }
 
+    @Override
     public String getStringValue() throws IllegalOperationException {
         if (this.value == null) {
             throw new IllegalOperationException("Property " + this + " has a null value");
@@ -178,16 +185,19 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         }
     }
 
+    @Override
     public void setStringValue(String stringValue) throws ValueFormatException {
         Value v = new Value(stringValue, PropertyType.Type.STRING);
         setValue(v);
     }
     
+    @Override
     public void setLongValue(long longValue) throws ValueFormatException {
         Value v = new Value(longValue);
         setValue(v);
     }
 
+    @Override
     public long getLongValue() throws IllegalOperationException {
         if (this.value == null || getType() != PropertyType.Type.LONG) {
             throw new IllegalOperationException("Property " + this + " not of type Long");
@@ -195,11 +205,13 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         return this.value.getLongValue();
     }
 
+    @Override
     public void setIntValue(int intValue) throws ValueFormatException {
         Value v = new Value(intValue);
         setValue(v);
     }
 
+    @Override
     public int getIntValue() throws IllegalOperationException {
         if (this.value == null || getType() != PropertyType.Type.INT) {
             throw new IllegalOperationException("Property " + this + " not of type Integer");
@@ -207,6 +219,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         return this.value.getIntValue();
     }
         
+    @Override
     public boolean getBooleanValue() throws IllegalOperationException {
         if (this.value == null || getType() != PropertyType.Type.BOOLEAN) {
             throw new IllegalOperationException("Property " + this + " not of type Boolean");
@@ -214,11 +227,13 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         return this.value.getBooleanValue();
     }
 
+    @Override
     public void setBooleanValue(boolean booleanValue) throws ValueFormatException {
         Value v = new Value(booleanValue);
         setValue(v);
     }
     
+    @Override
     public JSONObject getJSONValue() throws IllegalOperationException {
         if (this.value == null || getType() != PropertyType.Type.JSON) {
             throw new IllegalOperationException("Property " + this + " not of type JSON");
@@ -226,11 +241,13 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         return this.value.getJSONValue();
     }
     
+    @Override
     public void setJSONValue(JSONObject value) {
         Value v = new Value(value);
         setValue(v);
     }
 
+    @Override
     public Principal getPrincipalValue() throws IllegalOperationException {
         if (this.value == null || getType() != PropertyType.Type.PRINCIPAL) {
             throw new IllegalOperationException("Property " + this + " not of type Principal");
@@ -238,11 +255,13 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         return this.value.getPrincipalValue();
     }
     
+    @Override
     public void setPrincipalValue(Principal principalValue) throws ValueFormatException {
         Value v = new Value(principalValue);
         setValue(v);
     }
     
+    @Override
     public Object clone() {
         PropertyImpl clone = new PropertyImpl();
         
@@ -264,6 +283,8 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         return clone;
     }
 
+    // XXX has equals, but no hashCode
+    //     We're probably getting away with that because we always look up these by namespace and name explicitly.
     @Override
     public boolean equals(Object obj) {
         if ((obj == null) || !(obj instanceof Property)) return false;
@@ -345,7 +366,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         
         
         if (value.getType() != getType()) {
-            Set<Type> compatible = compatibilityMap.get(getType());
+            Set<Type> compatible = COMPATIBILITY_MAP.get(getType());
             if (compatible == null || !compatible.contains(value.getType())) {
                 throw new ValueFormatException("Illegal value type " + 
                         value.getType() + 
@@ -403,10 +424,12 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         
     }
     
+    @Override
     public Type getType() {
         return this.propertyTypeDefinition.getType();
     }
     
+    @Override
     public PropertyTypeDefinition getDefinition() {
         return this.propertyTypeDefinition;
     }
@@ -415,6 +438,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         this.propertyTypeDefinition = propertyTypeDefinition;
     }
     
+    @Override
     public boolean isValueInitialized() {
         if (this.propertyTypeDefinition.isMultiple()) {
             if (this.values == null) return false;
@@ -426,10 +450,12 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         return this.value != null;
     }
 
+    @Override
     public String getFormattedValue() {
         return getFormattedValue(null, null);
     }
     
+    @Override
     public String getFormattedValue(String format, Locale locale) {
 
         if (!this.propertyTypeDefinition.isMultiple()) {
@@ -451,6 +477,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         return sb.toString();
     }
     
+    @Override
     public void setBinaryValue(byte[] binaryValue, String binaryMimeType) {
         if (getType() != PropertyType.Type.BINARY) {
             throw new IllegalOperationException("Property " + this + " not of type BINARY");
@@ -459,6 +486,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         setValue(v);
     }
     
+    @Override
     public ContentStream getBinaryStream() throws IllegalOperationException {
     	if (this.value == null || getType() != PropertyType.Type.BINARY) {
             throw new IllegalOperationException("Property " + this + " not of type BINARY");
@@ -467,6 +495,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         return binaryValue.getContentStream();
     }
     
+    @Override
     public String getBinaryMimeType() throws IllegalOperationException {
     	if (this.value == null || getType() != PropertyType.Type.BINARY) {
             throw new IllegalOperationException("Property " + this + " not of type BINARY");

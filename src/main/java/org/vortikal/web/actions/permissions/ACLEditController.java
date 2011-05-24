@@ -393,9 +393,8 @@ public class ACLEditController extends SimpleFormController {
             Principal userOrGroup = principalFactory.getPrincipal(value, ACLEditValidationHelper.typePseudoUser(type, value));
             Acl potentialAcl = acl.removeEntry(this.privilege, userOrGroup);
             if (this.privilege.equals(Privilege.ALL) && !this.roleManager.hasRole(yourself, RoleManager.Role.ROOT)) {
-                boolean tryingToRemoveYourself = yourself.equals(userOrGroup);
-                boolean yourselfNotInAdmin = !acl.containsEntry(this.privilege, yourself);
-                if (tryingToRemoveYourself || yourselfNotInAdmin) {
+                boolean yourselfNotInAdmin = !potentialAcl.containsEntry(this.privilege, yourself);
+                if (yourselfNotInAdmin) {
                     potentialAcl = checkIfNotEmptyAdminAcl(acl, potentialAcl, userOrGroup, errors);
                     if(errors.hasErrors()) { // if has errors use the original ACL
                       acl = checkIfYourselfIsStillInAdminPrivilegedGroups(acl, userOrGroup, yourself);

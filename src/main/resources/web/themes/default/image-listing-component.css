@@ -1,6 +1,6 @@
 .vrtx-image-listing-include {
   border: 3px solid #aaa;
-  clear: both;
+  /* clear: both; */
   float: left;
   padding: 5px 10px 10px;
   margin-bottom: 10px;

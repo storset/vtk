@@ -128,7 +128,8 @@ implements HandlerFilter {
             chain.filter(request);
             return;
         }
-        if (request.getContentType().startsWith("multipart/form-data")) {
+        String contentType = request.getContentType();
+        if (contentType != null && contentType.startsWith("multipart/form-data")) {
             MultipartWrapper multipartRequest = new MultipartWrapper(request, this.tempDir, this.maxUploadSize);
             try {
                 verifyToken(multipartRequest);
@@ -369,7 +370,7 @@ implements HandlerFilter {
         }
 
         @Override
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({ "rawtypes", "unchecked" })
         public Map getParameterMap() {
             Map<String, List<String>> combined = new HashMap<String, List<String>>();
             Map<String, String[]> m = super.getParameterMap();

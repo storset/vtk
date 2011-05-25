@@ -265,7 +265,7 @@ public abstract class SamlService {
         if (samlResponse.getDestination() == null) {
             return;
         }
-        if (samlResponse.getDestination().equals(this.serviceProviderURI)) {
+        if (samlResponse.getDestination().equals(this.serviceProviderURI.toString())) {
             return;
         }
         URL url = URL.parse(samlResponse.getDestination());

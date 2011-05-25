@@ -57,12 +57,10 @@ import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.security.UnsupportedRequestMethodAPE;
 import org.vortikal.security.web.InvalidAuthenticationRequestException;
 import org.vortikal.security.web.SecurityInitializer;
 import org.vortikal.util.Version;
 import org.vortikal.web.ErrorHandler;
-import org.vortikal.web.LostPOSTErrorHandler;
 import org.vortikal.web.RepositoryContextInitializer;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.RequestContextInitializer;
@@ -381,21 +379,8 @@ public class VortikalServlet extends DispatcherServlet {
                 super.doService(request, responseWrapper);
             }
         } catch (AuthenticationException ex) {
-
-            try {
-                this.securityInitializer.challenge(request, responseWrapper, ex);
-
-            } catch (UnsupportedRequestMethodAPE urmape) {
-                // VTK-1896
-                // I know, ugly, but what ISN'T ugly about VTK-1896 ? And besides, I don't care, since
-                // it needs to fixed in a proper way later, anyway.
-                if ("POST".equals(request.getMethod())) {
-                    new LostPOSTErrorHandler().handleLostPOSTError(request, responseWrapper, urmape);
-                    return; // let finally block wrap things up
-                }
-
-                throw urmape;
-            }
+            this.securityInitializer.challenge(request, responseWrapper, ex);
+                
         } catch (AuthenticationProcessingException e) {
             handleAuthenticationProcessingError(request, responseWrapper, e);
         	

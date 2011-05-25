@@ -62,6 +62,7 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     private Challenge challenge;
     private Login login;
     private Logout logout;
+    private LostPostHandler postHandler;
     
     private Map<String, String> staticHeaders = new HashMap<String, String>();
     
@@ -74,6 +75,9 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     @Override
     public void challenge(HttpServletRequest request, HttpServletResponse response) throws AuthenticationProcessingException,
             ServletException, IOException {
+        if ("POST".equals(request.getMethod())) {
+            this.postHandler.saveState(request, response);
+        }
         this.challenge.challenge(request, response);
         setHeaders(response);
     }
@@ -121,6 +125,12 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     @Override
     public boolean postAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationProcessingException, InvalidAuthenticationRequestException {
+        if (this.postHandler.hasSavedState(request)) {
+            this.postHandler.redirect(request, response);
+            setHeaders(response);
+            return true;
+        }
+        
         this.login.redirectAfterLogin(request, response);
         setHeaders(response);
         return true;
@@ -208,6 +218,11 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     @Required
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
+    }
+    
+    @Required
+    public void setPostHandler(LostPostHandler postHandler) {
+        this.postHandler = postHandler;
     }
     
     public void setLoginListeners(Set<LoginListener> loginListeners) {

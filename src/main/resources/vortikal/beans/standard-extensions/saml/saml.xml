@@ -32,6 +32,7 @@
     <property name="challenge" ref="saml.challenge"/>
     <property name="login" ref="saml.login"/>
     <property name="logout" ref="saml.logout"/>
+    <property name="postHandler" ref="saml.lostPostHandler"/>
     
     <property name="staticHeaders">
       <map>
@@ -127,10 +128,46 @@
     </property>
   </bean>
 
+  <bean id="saml.lostPostService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="-96000"/>
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestPathAssertion">
+          <property name="path" value="${saml.lostPost.URI}"/>
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="saml.lostPostHandler" />
+    <property name="attributes">
+      <map>
+        <entry key="inhibit-caching" value="true" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="saml.lostPostHandler" class="org.vortikal.security.web.saml.LostPostHandler"
+        init-method="init">
+    <property name="workingDirectory" value="${saml.lostPost.directory}" />
+    <property name="viewName" value="saml.lostPost" />
+    <property name="redirectURI" value="${saml.lostPost.URI}" />
+    <property name="savedStateTimeout" value="${saml.lostPost.timeoutSeconds}" />
+    <property name="limitPerAddress" value="100" />
+    <property name="maxPostSize" value="2000000" />
+  </bean>
+
+
   <bean id="saml.viewResolver" class="org.vortikal.web.decorating.MappingViewResolver">
     <property name="views">
       <map>
         <entry key="saml.metadata" value-ref="saml.metadataView"/>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="saml.decoratedViewResolver" parent="system.decoratingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="saml.lostPost" value-ref="saml.lostPost.view"/>
       </map>
     </property>
   </bean>
@@ -153,6 +190,15 @@
         <entry key="contactPersonGivenName" value="${saml.metadataService.contactPersonGivenName}" />
         <entry key="contactPersonSurName" value="${saml.metadataService.contactPersonSurName}" />
         <entry key="contactPersonEmailAddress" value="${saml.metadataService.contactPersonEmailAddress}" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="saml.lostPost.view" parent="freemarkerView">
+    <property name="url" value="saml/lost-post.ftl"/>
+    <property name="attributesMap">
+      <map>
+        <entry key="autosubmit" value="${saml.lostPost.autosubmit}" />
       </map>
     </property>
   </bean>

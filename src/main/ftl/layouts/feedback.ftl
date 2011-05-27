@@ -16,7 +16,9 @@
 <!-- end feedback js -->
 
 <hr />
-<h3 class="uio-feedback">Fann du ikkje det du leita etter?
-  <a class="feedback" href="${emailLink.url?html}" onClick="javascript:popup('${emailLink.url?html}'); return false">Gje oss ei tilbakemelding</a>
+<h3 class="uio-feedback"><@vrtx.msg code="feedback.could-not-find" default="Did you not find what you was looking for?" />
+  <a class="feedback" href="${emailLink.url?html}" onClick="javascript:popup('${emailLink.url?html}'); return false">
+    <@vrtx.msg code="feedback.title" default="Give feedback" />
+  </a>
 </h3>
 <hr />

@@ -153,6 +153,7 @@
     <property name="savedStateTimeout" value="${saml.lostPost.timeoutSeconds}" />
     <property name="limitPerAddress" value="100" />
     <property name="maxPostSize" value="2000000" />
+    <property name="secureCookies" value="${saml.lostPost.secureCookies}" />
   </bean>
 
 

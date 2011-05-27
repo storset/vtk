@@ -114,7 +114,7 @@ public class LostPostHandler implements Controller {
         
         URL postURL = state.getPostURL();
         JSONObject body = state.getBody();
-        //state.delete();
+        state.delete();
 
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("postURL", postURL);

@@ -48,7 +48,7 @@
     <property name="mailExecutor" ref="feedback.mailExecutor" />
     <property name="mailTemplateProvider" ref="feedback.mailTemplateProvider" />
     <property name="localeResolver" ref="viewServiceResourceAwareLocaleResolver" />
-    <property name="emailTo" value="oyvind.hatland@usit.uio.no" />
+    <property name="emailTo" value="oyvind.hatland@usit.uio.no, even.halvorsen@usit.uio.no, t.a.eriksen@usit.uio.no" />
     <property name="emailFrom" value="oyvind.hatland@usit.uio.no" />  
   </bean>
 

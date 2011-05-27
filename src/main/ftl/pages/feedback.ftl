@@ -88,13 +88,8 @@
     <p><@vrtx.msg code="feedback.cant-respond" default="We can unfortunately not respond directly." /></p>
     
     <p>
-      <#compress>
-        <@vrtx.msg code="feedback.contact-pre" default="See" />&nbsp;
-        <a id="vrtx-feedback-contact" href='<@vrtx.msg code="feedback.contact-link" default="http://www.uio.no/english/about/contact/" />'>
-          <@vrtx.msg code="feedback.contact-middle" default="our points of contact" />
-        </a>
-        &nbsp;<@vrtx.msg code="feedback.contact-post" default="if you need answers from anyone." />
-      </#compress>
+      <@vrtx.msg code="feedback.contact-pre" default="See" />&nbsp;<a id="vrtx-feedback-contact" href='<@vrtx.msg code="feedback.contact-link" default="http://www.uio.no/english/about/contact/" />'>
+      <@vrtx.msg code="feedback.contact-middle" default="our points of contact" /></a>&nbsp;<@vrtx.msg code="feedback.contact-post" default="if you need answers from anyone." />
     </p>
 
      <#-- Feedback form -->

@@ -103,11 +103,11 @@ public class FeedbackController implements Controller {
 
             } else {
                 try {
-
-                    if (isValidEmail(emailTo)) {
+                    String[] emailMultipleTo = emailTo.split(",");
+                    if (isValidEmail(emailMultipleTo) && isValidEmail(emailFrom)) {
 
                         MimeMessage mimeMessage = createMimeMessage(
-                                javaMailSenderImpl, resource, emailTo,
+                                javaMailSenderImpl, resource, emailMultipleTo,
                                 emailFrom, yourComment);
 
                         mailExecutor.SendMail(javaMailSenderImpl, mimeMessage);
@@ -135,7 +135,7 @@ public class FeedbackController implements Controller {
         return new ModelAndView(this.viewName, m);
     }
 
-    private MimeMessage createMimeMessage(JavaMailSenderImpl sender, Resource document, String mailTo,
+    private MimeMessage createMimeMessage(JavaMailSenderImpl sender, Resource document, String[] mailTo,
             String emailFrom, String comment)
             throws Exception {
 
@@ -207,6 +207,15 @@ public class FeedbackController implements Controller {
         this.emailFrom = emailFrom;
     }
 
+    private static boolean isValidEmail(String[] addrs) {
+        for (String addr : addrs) {
+            if (!isValidEmail(addr)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
     private static boolean isValidEmail(String addr) {
         if (org.springframework.util.StringUtils.countOccurrencesOf(addr, "@") == 0) {
             return false;

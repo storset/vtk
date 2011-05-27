@@ -77,12 +77,15 @@
  </head>
  <body>
     <a id="tip-close-link" href="javascript:window.close();"><@vrtx.msg code="tip.form.close" default="Close" /></a>
-    <h1><@vrtx.msg code="feedback.title" default="Give feedback" /></h1>   
+    <h1><@vrtx.msg code="feedback.title" default="Give feedback" /></h1>  
+     
     <h2><@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" /></h2>
+    
     <p><@vrtx.msg code="feedback.cant-respond" default="We can unfortunately not respond directly." /></p>
+    
     <p><@vrtx.msg code="feedback.contact" default="See <a href='http://www.uio.no/english/about/contact'>our points of contact</a> if you need answers from anyone." /></p>
 
-    <#-- E-mail a friend form -->
+     <#-- Feedback form -->
      <form id="email-a-friend-form" method="post" action="?vrtx=send-feedback">
        
        <#-- Your comment -->
@@ -99,7 +102,6 @@
        
     <#-- Postback from Controller -->
     <div id="tip-response"> 
-
        <#if tipResponse?exists && tipResponse?has_content>
          <#if tipResponse = "FAILURE-NULL-FORM">
              <span class="failure"><@vrtx.msg code="tip.form.fail.null" default="You have to write something in both fields" />.</span>
@@ -109,7 +111,6 @@
              <span class="failure"><@vrtx.msg code="tip.form.fail.general" default="Tip was not sent" /><#if tipResponseMsg?exists && tipResponseMsg?has_content>${tipResponseMsg}</#if>.</span>
          <#elseif tipResponse = "OK">
            <@vrtx.msg code="tip.form.success" args=[emailSentTo] />
-           <#--@vrtx.msg code="tip.form.success" default="Tip is sent to " />&nbsp;<#if emailSentTo?exists && emailSentTo?has_content>${emailSentTo}</#if-->
          </#if> 
       </#if>  
     </div>

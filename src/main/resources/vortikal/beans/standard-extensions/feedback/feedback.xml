@@ -46,7 +46,7 @@
     <property name="resourceManager" ref="resourceManager" />
     <property name="javaMailSenderImpl" ref="javaMailSenderImpl" />
     <property name="mailExecutor" ref="feedback.mailExecutor" />
-    <property name="mailTemplateProvider" ref="mailTemplateProvider" />
+    <property name="mailTemplateProvider" ref="feedback.mailTemplateProvider" />
     <property name="localeResolver" ref="viewServiceResourceAwareLocaleResolver" />
   </bean>
 
@@ -91,7 +91,7 @@
     <property name="service" ref="feedbackService" />
   </bean>
 
-  <bean id="mailTemplateProvider" class="org.vortikal.web.actions.mail.MailTemplateProvider">
+  <bean id="feedback.mailTemplateProvider" class="org.vortikal.web.actions.mail.MailTemplateProvider">
     <property name="view" ref="feedback.mailTemplateView" />
   </bean>
 

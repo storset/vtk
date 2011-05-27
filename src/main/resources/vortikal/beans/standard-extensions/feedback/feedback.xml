@@ -58,11 +58,6 @@
     <property name="concurrencyLimit" value="${emailAFriend.concurrencyLimit}" />
   </bean>
 
-  <!--
-    <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
-    <property name="corePoolSize" value="10" /> <property name="maxPoolSize" value="25" /> <property
-    name="queueCapacity" value="50" /> </bean>
-  -->
   <bean id="decorating.feedbackURLComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="feedback" />

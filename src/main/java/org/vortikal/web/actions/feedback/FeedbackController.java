@@ -91,7 +91,7 @@ public class FeedbackController implements Controller {
         String method = request.getMethod();
         if (method.equals("POST")) {
 
-            String emailTo = "oyvihatl@usit.uio.no";
+            String emailTo = "oyvind.hatland@usit.uio.no";
             String yourComment = request.getParameter("yourComment");
 
             // Checks for userinput
@@ -102,16 +102,11 @@ public class FeedbackController implements Controller {
             } else {
                 try {
 
-                    String comment = "";
-                    if (StringUtils.isNotBlank(yourComment)) {
-                        comment = (String) yourComment;
-                    }
-
                     if (isValidEmail(emailTo)) {
 
                         MimeMessage mimeMessage = createMimeMessage(
                                 javaMailSenderImpl, resource, emailTo,
-                                "no-reply@admin.uio.no", comment);
+                                "oyvind.hatland@usit.uio.no", yourComment);
 
                         mailExecutor.SendMail(javaMailSenderImpl, mimeMessage);
 

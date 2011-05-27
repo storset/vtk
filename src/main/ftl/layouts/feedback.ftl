@@ -15,4 +15,8 @@
 <script type="text/javascript" src="${url?html}"></script>
 <!-- end feedback js -->
 
-<a class="vrtx-feedback" href="${emailLink.url?html}" onClick="javascript:popup('${emailLink.url?html}'); return false"><@vrtx.msg code="decorating.feedbackComponent.emaillink" default="Feedback" /></a>
+<hr />
+<h3 class="uio-feedback">Fann du ikkje det du leita etter?
+  <a class="feedback" href="${emailLink.url?html}" onClick="javascript:popup('${emailLink.url?html}'); return false">Gje oss ei tilbakemelding</a>
+</h3>
+<hr />

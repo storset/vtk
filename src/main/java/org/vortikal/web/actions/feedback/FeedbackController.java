@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.vortikal.web.actions.share;
+package org.vortikal.web.actions.feedback;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -58,7 +58,8 @@ import org.vortikal.web.actions.mail.MailTemplateProvider;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
-public class EmailAFriendController implements Controller {
+
+public class FeedbackController implements Controller {
 
     private String viewName;
     private String siteName;
@@ -90,23 +91,11 @@ public class EmailAFriendController implements Controller {
         String method = request.getMethod();
         if (method.equals("POST")) {
 
-            String emailTo = request.getParameter("emailTo");
-            String emailFrom = request.getParameter("emailFrom");
+            String emailTo = "oyvihatl@usit.uio.no";
             String yourComment = request.getParameter("yourComment");
 
             // Checks for userinput
-            if (StringUtils.isBlank(emailTo) || StringUtils.isBlank(emailFrom)) {
-
-                // Save data from form and return it
-                if (StringUtils.isNotBlank(emailTo)) {
-                    m.put("emailSavedTo", emailTo);
-                }
-                if (StringUtils.isNotBlank(emailFrom)) {
-                    m.put("emailSavedFrom", emailFrom);
-                }
-                if (StringUtils.isNotBlank(yourComment)) {
-                    m.put("yourSavedComment", yourComment);
-                }
+            if (StringUtils.isBlank(yourComment)) {
 
                 m.put("tipResponse", "FAILURE-NULL-FORM");
 
@@ -118,12 +107,11 @@ public class EmailAFriendController implements Controller {
                         comment = (String) yourComment;
                     }
 
-                    String[] emailMultipleTo = emailTo.split(",");
-                    if (isValidEmail(emailMultipleTo) && isValidEmail(emailFrom)) {
+                    if (isValidEmail(emailTo)) {
 
                         MimeMessage mimeMessage = createMimeMessage(
-                                javaMailSenderImpl, resource, emailMultipleTo,
-                                emailFrom, comment);
+                                javaMailSenderImpl, resource, emailTo,
+                                "no-reply@admin.uio.no", comment);
 
                         mailExecutor.SendMail(javaMailSenderImpl, mimeMessage);
 
@@ -131,10 +119,6 @@ public class EmailAFriendController implements Controller {
                         m.put("tipResponse", "OK");
 
                     } else {
-
-                        // Save data from form and return it
-                        m.put("emailSavedTo", emailTo);
-                        m.put("emailSavedFrom", emailFrom);
 
                         if (yourComment != null && (!yourComment.equals(""))) {
                             m.put("yourSavedComment", yourComment);
@@ -154,7 +138,7 @@ public class EmailAFriendController implements Controller {
         return new ModelAndView(this.viewName, m);
     }
 
-    private MimeMessage createMimeMessage(JavaMailSenderImpl sender, Resource document, String[] mailMultipleTo,
+    private MimeMessage createMimeMessage(JavaMailSenderImpl sender, Resource document, String mailTo,
             String emailFrom, String comment)
             throws Exception {
 
@@ -167,9 +151,9 @@ public class EmailAFriendController implements Controller {
         MimeMessage mimeMessage = sender.createMimeMessage(); 
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
 
-        helper.setSubject(document.getTitle());
+        helper.setSubject("Kommentar til: " + document.getTitle());
         helper.setFrom(emailFrom);
-        helper.setTo(mailMultipleTo);
+        helper.setTo(mailTo);
         // HTML TRUE | FALSE
         helper.setText(mailBody, true);
 
@@ -214,15 +198,6 @@ public class EmailAFriendController implements Controller {
     @Required
     public void setSiteName(String siteName) {
         this.siteName = siteName;
-    }
-
-    private static boolean isValidEmail(String[] addrs) {
-        for (String addr : addrs) {
-            if (!isValidEmail(addr)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     private static boolean isValidEmail(String addr) {

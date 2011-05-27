@@ -9,7 +9,7 @@
 </#if>
 
 
-<p>Les hele artikkelen her: <a href="${articleURI?html}">${articleURI?string}</a></p>
+<p>Les hele artikkelen her: <a href="${uri?html}">${uri?string}</a></p>
 
 <p>Med vennlig hilsen ${mailFrom}</p>
 

@@ -3,28 +3,28 @@
                        "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
-  <bean id="emailafriendService" class="org.vortikal.web.service.ServiceImpl">
+  <bean id="feedbackService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="viewService" />
     <property name="order" value="-999" />
-    <property name="handler" ref="emailafriendHandler" />
+    <property name="handler" ref="feedbackHandler" />
     <property name="assertions">
       <bean class="org.vortikal.web.service.RequestParameterAssertion">
         <property name="parameterName" value="vrtx" />
-        <property name="parameterValue" value="email-a-friend" />
+        <property name="parameterValue" value="send-feedback" />
       </bean>
     </property>
   </bean>
 
-  <bean id="emailafriend.viewResolver" parent="viewResolver">
+  <bean id="feedback.viewResolver" parent="viewResolver">
     <property name="views">
       <map>
-        <entry key="emailafriend.view" value-ref="emailafriend.view" />
+        <entry key="feedback.view" value-ref="feedback.view" />
       </map>
     </property>
   </bean>
 
-  <bean id="emailafriend.view" parent="freemarkerView">
-    <property name="url" value="pages/email-a-friend.ftl" />
+  <bean id="feedback.view" parent="freemarkerView">
+    <property name="url" value="pages/feedback.ftl" />
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
@@ -39,22 +39,22 @@
     <property name="defaultEncoding" value="utf-8" />
   </bean>
 
-  <bean id="emailafriendHandler" class="org.vortikal.web.actions.share.EmailAFriendController">
+  <bean id="feedbackHandler" class="org.vortikal.web.actions.feedback.FeedbackController">
     <property name="viewService" ref="viewService" />
-    <property name="viewName" value="emailafriend.view" />
+    <property name="viewName" value="feedback.view" />
     <property name="siteName" value="${emailAFriend.siteName}" />
     <property name="resourceManager" ref="resourceManager" />
     <property name="javaMailSenderImpl" ref="javaMailSenderImpl" />
-    <property name="mailExecutor" ref="emailafriend.mailExecutor" />
+    <property name="mailExecutor" ref="feedback.mailExecutor" />
     <property name="mailTemplateProvider" ref="mailTemplateProvider" />
     <property name="localeResolver" ref="viewServiceResourceAwareLocaleResolver" />
   </bean>
 
-  <bean id="emailafriend.mailExecutor" class="org.vortikal.web.actions.mail.MailExecutor">
-    <constructor-arg ref="emailafriend.taskExecutor" />
+  <bean id="feedback.mailExecutor" class="org.vortikal.web.actions.mail.MailExecutor">
+    <constructor-arg ref="feedback.taskExecutor" />
   </bean>
 
-  <bean id="emailafriend.taskExecutor" class="org.springframework.core.task.SimpleAsyncTaskExecutor">
+  <bean id="feedback.taskExecutor" class="org.springframework.core.task.SimpleAsyncTaskExecutor">
     <property name="concurrencyLimit" value="${emailAFriend.concurrencyLimit}" />
   </bean>
 
@@ -63,18 +63,18 @@
     <property name="corePoolSize" value="10" /> <property name="maxPoolSize" value="25" /> <property
     name="queueCapacity" value="50" /> </bean>
   -->
-  <bean id="decorating.emailAFriendURLComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
+  <bean id="decorating.feedbackURLComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />
-    <property name="name" value="email-friend" />
-    <property name="description" value="Inserts a URL to email-a-friend service" />
-    <property name="view" ref="decorating.emailAFriendURLComponent.view" />
+    <property name="name" value="feedback" />
+    <property name="description" value="Inserts a URL to send-feedback service" />
+    <property name="view" ref="decorating.feedbackURLComponent.view" />
   </bean>
 
-  <bean name="decorating.emailAFriendURLComponent.view" parent="freemarkerView">
-    <property name="url" value="layouts/email-a-friend.ftl" />
+  <bean name="decorating.feedbackURLComponent.view" parent="freemarkerView">
+    <property name="url" value="layouts/feedback.ftl" />
     <property name="referenceDataProviders">
       <list>
-        <ref bean="decorating.emailAFriendURLComponent.urlProvider" />
+        <ref bean="decorating.feedbackURLComponent.urlProvider" />
         <ref bean="resourceContextProvider" />
       </list>
     </property>
@@ -85,18 +85,18 @@
     </property>
   </bean>
 
-  <bean id="decorating.emailAFriendURLComponent.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+  <bean id="decorating.feedbackURLComponent.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
     <property name="modelName" value="emailLink" />
     <property name="urlName" value="url" />
-    <property name="service" ref="emailafriendService" />
+    <property name="service" ref="feedbackService" />
   </bean>
 
   <bean id="mailTemplateProvider" class="org.vortikal.web.actions.mail.MailTemplateProvider">
-    <property name="view" ref="emailFriend.mailTemplateView" />
+    <property name="view" ref="feedback.mailTemplateView" />
   </bean>
 
-  <bean id="emailFriend.mailTemplateView" parent="freemarkerView">
-    <property name="url" value="pages/mail-template.ftl"></property>
+  <bean id="feedback.mailTemplateView" parent="freemarkerView">
+    <property name="url" value="pages/feedback-mail-template.ftl"></property>
   </bean>
 
 </beans>

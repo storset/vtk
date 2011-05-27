@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.vortikal.web.actions.share;
+package org.vortikal.web.actions.mail;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -47,7 +47,7 @@ public class MailTemplateProvider {
 
     private View view;
     
-    public String generateMailBody(String title, URL articleURI, String mailFrom, 
+    public String generateMailBody(String title, URL url, String mailFrom, 
             String comment, String site) throws Exception {
 
         Map<String, Object> model = new HashMap<String, Object>();
@@ -55,7 +55,7 @@ public class MailTemplateProvider {
         model.put("mailFrom", mailFrom);
         model.put("comment", comment);
         model.put("site", site);
-        model.put("articleURI", articleURI);
+        model.put("uri", url);
 
         BufferedResponse response = new BufferedResponse();
         

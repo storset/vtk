@@ -83,7 +83,13 @@
     
     <p><@vrtx.msg code="feedback.cant-respond" default="We can unfortunately not respond directly." /></p>
     
-    <p><@vrtx.msg code="feedback.contact" default="See <a href='http://www.uio.no/english/about/contact'>our points of contact</a> if you need answers from anyone." /></p>
+    <p> 
+      <@vrtx.msg code="feedback.contact-pre" default="See" />&nbsp;
+      <a href='<@vrtx.msg code="feedback.contact-link" default="http://www.uio.no/english/about/contact/" />'>
+        <@vrtx.msg code="feedback.contact-middle" default="our points of contact" />
+      </a>
+      &nbsp;<@vrtx.msg code="feedback.contact-post" default="if you need answers from anyone." />
+    </p>
 
      <#-- Feedback form -->
      <form id="email-a-friend-form" method="post" action="?vrtx=send-feedback">

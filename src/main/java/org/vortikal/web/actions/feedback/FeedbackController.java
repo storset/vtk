@@ -70,6 +70,9 @@ public class FeedbackController implements Controller {
     private LocaleResolver localeResolver;
     private Service viewService;
     
+    private String emailTo;
+    private String emailFrom;
+    
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
@@ -91,7 +94,6 @@ public class FeedbackController implements Controller {
         String method = request.getMethod();
         if (method.equals("POST")) {
 
-            String emailTo = "oyvind.hatland@usit.uio.no";
             String yourComment = request.getParameter("yourComment");
 
             // Checks for userinput
@@ -106,7 +108,7 @@ public class FeedbackController implements Controller {
 
                         MimeMessage mimeMessage = createMimeMessage(
                                 javaMailSenderImpl, resource, emailTo,
-                                "oyvind.hatland@usit.uio.no", yourComment);
+                                emailFrom, yourComment);
 
                         mailExecutor.SendMail(javaMailSenderImpl, mimeMessage);
 
@@ -193,6 +195,16 @@ public class FeedbackController implements Controller {
     @Required
     public void setSiteName(String siteName) {
         this.siteName = siteName;
+    }
+    
+    @Required
+    public void setEmailTo(String emailTo) {
+        this.emailTo = emailTo;
+    }
+    
+    @Required
+    public void setEmailFrom(String emailFrom) {
+        this.emailFrom = emailFrom;
     }
 
     private static boolean isValidEmail(String addr) {

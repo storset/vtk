@@ -71,6 +71,7 @@ public abstract class AbstractRepositoryEventDumper
         this.repository = repository;
     }
     
+    @Override
     public void onApplicationEvent(ApplicationEvent event) {
 
         if (! (event instanceof RepositoryEvent)) {

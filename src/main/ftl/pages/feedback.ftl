@@ -70,6 +70,10 @@
       float:right;
     }
     
+    a#vrtx-feedback-contact {
+      display: inline !important;
+    }
+    
     </style>
     
     <meta name="robots" content="noindex"/> 
@@ -85,7 +89,7 @@
     
     <p> 
       <@vrtx.msg code="feedback.contact-pre" default="See" />&nbsp;
-      <a href='<@vrtx.msg code="feedback.contact-link" default="http://www.uio.no/english/about/contact/" />'>
+      <a id="vrtx-feedback-contact" href='<@vrtx.msg code="feedback.contact-link" default="http://www.uio.no/english/about/contact/" />'>
         <@vrtx.msg code="feedback.contact-middle" default="our points of contact" />
       </a>
       &nbsp;<@vrtx.msg code="feedback.contact-post" default="if you need answers from anyone." />

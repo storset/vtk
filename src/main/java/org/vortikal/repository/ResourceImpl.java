@@ -31,6 +31,7 @@
 package org.vortikal.repository;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -55,13 +56,16 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
 
     private Acl acl;
     private Lock lock = null;
-    private List<Path> childURIs = null;
+    
+    // The value of childURIs should be either an immutable list or null.
+    private volatile List<Path> childURIs = null; 
 
     public ResourceImpl(Path uri) {
         super();
         this.uri = uri;
     }
 
+    @Override
     public void removeProperty(Namespace namespace, String name) {
         Map<String, Property> props = this.propertyMap.get(namespace);
         if (props == null) {
@@ -74,31 +78,23 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         props.remove(name);
     }
 
+    @Override
     public void removeProperty(PropertyTypeDefinition propDef) {
         removeProperty(propDef.getNamespace(), propDef.getName());
     }
 
+    @Override
     public void removeAllProperties() {
         this.propertyMap = new HashMap<Namespace, Map<String, Property>>();
     }
 
+    @Override
     public String getContentLanguage() {
         return getPropValue(PropertyType.CONTENTLOCALE_PROP_NAME);
     }
 
-    public void setChildURIs(List<Path> childURIs) {
-        this.childURIs = childURIs;
-    }
 
-    public List<Path> getChildURIs() {
-        if (this.childURIs != null) {
-            return Collections.unmodifiableList(this.childURIs);
-        }
-
-        return null; // Not a collection (external client code expects this, and
-        // it is stated in Resource interface).
-    }
-
+    @Override
     public Acl getAcl() {
         return this.acl;
     }
@@ -107,6 +103,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         this.acl = acl;
     }
 
+    @Override
     public Lock getLock() {
         return this.lock;
     }
@@ -115,6 +112,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         this.lock = lock;
     }
 
+    @Override
     public String getSerial() {
         String serial = getURI().toString() + getContentLastModified() + getPropertiesLastModified()
                 + getContentLength();
@@ -123,58 +121,72 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         return serial;
     }
 
+    @Override
     public String getEtag() {
         return "\"" + getSerial() + "\"";
     }
 
+    @Override
     public Principal getOwner() {
         return getPrincipalPropValue(PropertyType.OWNER_PROP_NAME);
     }
 
+    @Override
     public Principal getCreatedBy() {
         return getPrincipalPropValue(PropertyType.CREATEDBY_PROP_NAME);
     }
 
+    @Override
     public Principal getContentModifiedBy() {
         return getPrincipalPropValue(PropertyType.CONTENTMODIFIEDBY_PROP_NAME);
     }
 
+    @Override
     public Principal getPropertiesModifiedBy() {
         return getPrincipalPropValue(PropertyType.PROPERTIESMODIFIEDBY_PROP_NAME);
     }
 
+    @Override
     public Date getCreationTime() {
         return getDatePropValue(PropertyType.CREATIONTIME_PROP_NAME);
     }
 
+    @Override
     public Date getContentLastModified() {
         return getDatePropValue(PropertyType.CONTENTLASTMODIFIED_PROP_NAME);
     }
 
+    @Override
     public Date getPropertiesLastModified() {
         return getDatePropValue(PropertyType.PROPERTIESLASTMODIFIED_PROP_NAME);
     }
 
+    @Override
     public String getContentType() {
         return getPropValue(PropertyType.CONTENTTYPE_PROP_NAME);
     }
 
+    @Override
     public String getCharacterEncoding() {
         return getPropValue(PropertyType.CHARACTERENCODING_PROP_NAME);
     }
 
+    @Override
     public String getUserSpecifiedCharacterEncoding() {
         return getPropValue(PropertyType.CHARACTERENCODING_USER_SPECIFIED_PROP_NAME);
     }
 
+    @Override
     public String getGuessedCharacterEncoding() {
         return getPropValue(PropertyType.CHARACTERENCODING_GUESSED_PROP_NAME);
     }
 
+    @Override
     public String getTitle() {
         return getPropValue(PropertyType.TITLE_PROP_NAME);
     }
 
+    @Override
     public boolean isCollection() {
         return getBooleanPropValue(PropertyType.COLLECTION_PROP_NAME);
     }
@@ -187,6 +199,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
      * 
      * @return the time of last modification
      */
+    @Override
     public Date getLastModified() {
         return getDatePropValue(PropertyType.LASTMODIFIED_PROP_NAME);
     }
@@ -195,27 +208,33 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
      * Gets the name of the principal that last modified either the content or
      * the properties of this resource.
      */
+    @Override
     public Principal getModifiedBy() {
         return getPrincipalPropValue(PropertyType.MODIFIEDBY_PROP_NAME);
     }
 
+    @Override
     public long getContentLength() {
         return getLongPropValue(PropertyType.CONTENTLENGTH_PROP_NAME);
     }
 
+    @Override
     public Locale getContentLocale() {
         return LocaleHelper.getLocale(this.getContentLanguage());
     }
 
+    @Override
     public boolean isReadRestricted() {
         return !this.getAcl().hasPrivilege(Privilege.READ, PrincipalFactory.ALL)
                 && !this.getAcl().hasPrivilege(Privilege.READ_PROCESSED, PrincipalFactory.ALL);
     }
 
+    @Override
     public boolean isPublished() {
         return getBooleanPropValue(PropertyType.PUBLISHED_PROP_NAME);
     }
 
+    @Override
     public Object clone() throws CloneNotSupportedException {
         LockImpl lock = null;
         if (this.lock != null)
@@ -230,11 +249,14 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         clone.setInheritedAcl(this.aclInherited);
         clone.setAclInheritedFrom(this.getAclInheritedFrom());
         clone.setLock(lock);
-        clone.setChildURIs(this.childURIs);
         clone.setResourceType(super.resourceType);
         for (Property prop : getProperties()) {
             clone.addProperty((Property) prop.clone());
         }
+        
+        // Special case child URI list, shallow copy only.
+        clone.childURIs = this.childURIs;
+        
         return clone;
     }
 
@@ -248,21 +270,35 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         return resource;
     }
 
+    @Override
+    // Leave unsynchronized (field is volatile, that should be enough)
+    public List<Path> getChildURIs() {
+        return this.childURIs;
+    }
+    
+    public synchronized void setChildURIs(List<Path> childURIs) {
+        if (childURIs != null) {
+            this.childURIs = Collections.unmodifiableList(childURIs);
+        }
+    }
+
     // Mumble mumble. this.childURIs should never be null if this method is
     // called.
     // However, this method is only called from RepositoryImpl.create*().
     // Keeping old behaviour for now.
     public synchronized void addChildURI(Path childURI) {
         if (this.childURIs == null) {
-            this.childURIs = new ArrayList<Path>();
+            // XXX Tempted to throw IllegalStateException here ...
+            this.childURIs = Collections.unmodifiableList(Arrays.asList(new Path[]{childURI}));
+            
+        } else {
+            // Don't modify current child URI list, create copy and replace instead.
+            // This is because the current list might be read simultaneously out
+            // there in the wild..
+            ArrayList<Path> newList = new ArrayList<Path>(this.childURIs);
+            newList.add(childURI);
+            this.childURIs = Collections.unmodifiableList(newList);
         }
-
-        // Don't modify current child URI list, create copy and replace instead.
-        // This is because the current list might be read simultaneously out
-        // there in the wild
-        ArrayList<Path> copy = new ArrayList<Path>(this.childURIs);
-        copy.add(childURI);
-        this.childURIs = copy;
     }
 
     // Mumble mumble. this.childURIs should never be null if this method is
@@ -270,19 +306,21 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
     // However, this method is only called from RepositoryImpl.delete(). Keeping
     // old behaviour for now.
     public synchronized void removeChildURI(Path childURI) {
-        if (this.childURIs == null) { // 
-            this.childURIs = new ArrayList<Path>();
-            return;
+        if (this.childURIs == null) {
+            // XXX Very tempted to throw IllegalStateException here ...
+            this.childURIs = Collections.EMPTY_LIST;
+            
+        } else {
+            // Don't modify current child URI list, create copy and replace instead.
+            // This is because the current list might be read simultaneously out
+            // there in the wild
+            ArrayList<Path> newList = new ArrayList<Path>(this.childURIs);
+            newList.remove(childURI);
+            this.childURIs = Collections.unmodifiableList(newList);
         }
-
-        // Don't modify current child URI list, create copy and replace instead.
-        // This is because the current list might be read simultaneously out
-        // there in the wild
-        ArrayList<Path> copy = new ArrayList<Path>(this.childURIs);
-        copy.remove(childURI);
-        this.childURIs = copy;
     }
 
+    // XXX Where is hashCode impl ??
     public boolean equals(Object obj) {
         if (!(obj instanceof ResourceImpl))
             return false;
@@ -319,6 +357,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         return true;
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(this.getClass().getName());

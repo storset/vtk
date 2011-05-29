@@ -55,12 +55,13 @@ public class PathTest extends TestCase {
         Path mostCommonAncestor = path.getNearestCommonAncestor(otherPath);
         assertEquals(expected, mostCommonAncestor);
     }
-
+    
     public void testPaths() {
 
         assertInvalid(null);
         assertInvalid("");
         assertInvalid(" ");
+        assertInvalid("//");
         assertInvalid("invalid.path");
         assertInvalid(" /invalid/path");
         assertInvalid("/invalid.path/..");
@@ -130,6 +131,21 @@ public class PathTest extends TestCase {
         assertTrue(p.isAncestorOf(Path.fromString("/a/b/c/d/e")));
         assertFalse(p.isAncestorOf(Path.fromString("/a/b/c/e")));
 
+        assertTrue(Path.fromString("/zz").isAncestorOf(Path.fromString("/zz/z")));
+        assertTrue(Path.fromString("/").isAncestorOf(Path.fromString("/x")));
+        assertTrue(Path.fromString("/foo").isAncestorOf(Path.fromString("/foo/bar")));
+        assertTrue(Path.fromString("/foo").isAncestorOf(Path.fromString("/foo/bar/baz")));
+        assertTrue(Path.fromString("/foo/bar/baz").isAncestorOf(Path.fromString("/foo/bar/baz/bong")));
+
+        assertFalse(Path.fromString("/x").isAncestorOf(Path.fromString("/")));
+        assertFalse(Path.fromString("/zz").isAncestorOf(Path.fromString("/zzz")));
+        assertFalse(Path.fromString("/x").isAncestorOf(Path.fromString("/y")));
+        assertFalse(Path.fromString("/xx").isAncestorOf(Path.fromString("/y")));
+        assertFalse(Path.fromString("/xx").isAncestorOf(Path.fromString("/xy")));
+        assertFalse(Path.fromString("/xx").isAncestorOf(Path.fromString("/xy/xx/xx/xx/xx")));
+        assertFalse(Path.fromString("/foo").isAncestorOf(Path.fromString("/foobar/baz")));
+        assertFalse(Path.fromString("/foo/bar/baz").isAncestorOf(Path.fromString("/foo/BAR/baz/bong")));
+        
         // Self should not be ancestor of self
         assertFalse(Path.fromString("/a/b").isAncestorOf(Path.fromString("/a/b")));
         assertFalse(Path.fromString("/a/b/c").isAncestorOf(Path.fromString("/a/b/d")));
@@ -176,5 +192,7 @@ public class PathTest extends TestCase {
         }
         return sb.toString();
     }
+    
+    
 
 }

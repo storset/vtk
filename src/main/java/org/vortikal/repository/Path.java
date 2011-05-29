@@ -33,7 +33,6 @@ package org.vortikal.repository;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -151,7 +150,7 @@ public final class Path implements Comparable<Path> {
 
         return depth;
     }
-
+    
     /**
      * Returns whether this path contains another path, i.e. that this path is
      * one of the ancestors of the other.
@@ -161,22 +160,24 @@ public final class Path implements Comparable<Path> {
      * @return true if this path contains the other, false otherwise.
      */
     public boolean isAncestorOf(Path other) {
-        List<String> thisPathElements = this.elements();
-        List<String> otherPathElements = other.elements();
-
-        if (otherPathElements.size() <= thisPathElements.size()) {
-            // If other path's depth is less than or equal to this, we cannot
-            // be ancestor.
+        if (other.path.length() <= this.path.length()) {
             return false;
         }
-
-        // Compare elements from the root down to last element of this path
-        for (int i = 0; i < thisPathElements.size(); i++) {
-            if (!thisPathElements.get(i).equals(otherPathElements.get(i))) {
+        
+        if (this == ROOT && other != ROOT) return true;
+        
+        int i;
+        for (i=0; i < this.path.length(); i++) {
+            if (this.path.charAt(i) != other.path.charAt(i)) {
                 return false;
             }
         }
-        return true;
+        
+        if (other.path.charAt(i) == '/') {
+            return true;
+        }
+        
+        return false;
     }
 
     /**
@@ -344,43 +345,37 @@ public final class Path implements Comparable<Path> {
             return elements;
         }
 
-        StringTokenizer st = new StringTokenizer(this.path, "/");
-        while (st.hasMoreTokens()) {
-            String name = st.nextToken();
-            elements.add(name);
+        int start = 1, i;
+        for (i=2; i < this.path.length(); i++) {
+            if (this.path.charAt(i) == '/') {
+                elements.add(this.path.substring(start, i));
+                start = i + 1;
+            }
         }
-
+        elements.add(this.path.substring(start));
+        
         return elements;
     }
-
+    
     private List<Path> paths() {
-        List<String> elements = new ArrayList<String>();
         List<Path> paths = new ArrayList<Path>();
         paths.add(ROOT);
-
+        
         if (this == ROOT) {
             return paths;
         }
-
-        StringTokenizer st = new StringTokenizer(this.path, "/");
-        while (st.hasMoreTokens()) {
-            String name = st.nextToken();
-            elements.add(name);
-            StringBuilder ancestorString = new StringBuilder();
-
-            for (int i = 0; i < elements.size() - 1; i++) {
-                String s = elements.get(i);
-                ancestorString.append("/").append(s);
-            }
-
-            if (ancestorString.length() > 0) {
-                paths.add(instance(ancestorString.toString()));
+        
+        for (int i=1; i < this.path.length(); i++) {
+            if (this.path.charAt(i) == '/') {
+                paths.add(instance(this.path.substring(0, i)));
             }
         }
+
         paths.add(this);
+        
         return paths;
     }
-
+    
     public Path getNearestCommonAncestor(Path otherPath) {
         if (otherPath == null || otherPath.isRoot() || this.isRoot()) {
             return Path.ROOT;

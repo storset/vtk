@@ -77,9 +77,10 @@ import org.vortikal.security.token.TokenManager;
  * <code>org.vortikal.repository.Repository</code> interface.
  * 
  * XXX: implement locking of depth 'infinity' XXX: namespace locking/concurrency
- * XXX: Evaluate exception practice, handling and propagation XXX: transaction
- * demarcation XXX: externalize caching XXX: duplication of owner and inherited
- * between resource and acl.
+ * XXX: Evaluate exception practice, handling and propagation
+ * XXX: transaction demarcation
+ * XXX: externalize caching
+ * XXX: duplication of owner and inherited between resource and acl.
  * 
  */
 public class RepositoryImpl implements Repository, ApplicationContextAware {
@@ -255,7 +256,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             // Store parent first to avoid transactional dead-lock-problems
             // between Cache
             // locking and database inter-transactional synchronization (which
-            // leads to "11-iteration" problems).
+            // leads to problems with cache lock manager).
             parent.addChildURI(uri);
             parent = this.resourceHelper.contentModification(parent, principal);
             this.dao.store(parent);
@@ -498,7 +499,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         this.context.publishEvent(new ResourceCreationEvent(this, recovered));
 
         parent.addChildURI(recovered.getURI());
-
         parent = this.resourceHelper.contentModification(parent, principal);
         this.dao.store(parent);
 
@@ -1116,6 +1116,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             Comment old = null;
             List<Comment> comments = this.commentDAO.listCommentsByResource(resource, false, this.maxComments);
             for (Comment c : comments) {
+                // XXX Why is not equals() used for comment ID comparison ??
                 if (c.getID() == comment.getID() && c.getURI().equals(comment.getURI())) {
                     old = c;
                     break;

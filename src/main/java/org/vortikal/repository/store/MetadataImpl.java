@@ -64,7 +64,7 @@ public class MetadataImpl implements Metadata {
     @Override
     public Object getValue(String attributeName) {
         List<Object> values = this.attributes.get(attributeName);
-        if (values == null || values.size() == 0) {
+        if (values == null || values.isEmpty()) {
             return null;
         }
         return values.get(0);

@@ -221,7 +221,6 @@ public class LockManager {
          */
         public synchronized boolean claim(long timeout) {
 
-            // Support re-entrant locking (same thread already owner == OK, or take ownership)
             if (this.owner == null) {
 
                 // We successfully claimed the lock. This lock is only

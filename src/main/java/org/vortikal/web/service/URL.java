@@ -439,11 +439,11 @@ public class URL {
                 url.append(":").append(this.port.intValue());
             }
         }
-        if(PROTOCL_RTMP.equals(protocol)){
+        if (PROTOCL_RTMP.equals(protocol)) {
             url.append(getPath());
-        }else{
-        url.append(getPathRepresentation()); // Includes encoded /path, ?query
-        }                               // parameters and #ref.
+        } else {
+            url.append(getPathRepresentation()); // Includes encoded /path, ?query parameters and #ref.
+        }
 
         return url.toString();
     }

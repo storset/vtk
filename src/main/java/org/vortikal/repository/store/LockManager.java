@@ -46,8 +46,8 @@ import org.vortikal.repository.Path;
  * Manager for locks on cache items (URIs).
  */
 public class LockManager {
-    private int maxIterations = 20;
-    private long iterationWaitTimeout = 4000;
+    private int maxIterations = 40;
+    private long iterationWaitTimeout = 2000;
 
     /* All access to this map must be synchronized on the map object itself */
     private final Map<Path, Lock> locks = new HashMap<Path, Lock>();
@@ -82,6 +82,18 @@ public class LockManager {
         return lockInternal(uris.toArray(new Path[uris.size()]));
     }
     
+    /**
+     * Releases locks on a list of URIs. Wakes up threads waiting on
+     * the locks.
+     *
+     * @param uris the URIs to unlock.
+     */
+    public void unlock(List<Path> uris) {
+        for (Path uri: uris) {
+            getLock(uri).release();
+        }
+    }
+    
     private List<Path> lockInternal(Path[] uris) {
         
         Arrays.sort(uris); // Always try to lock a set of URIs in the same order to reduce chance of deadlocking.
@@ -95,12 +107,6 @@ public class LockManager {
             while (!haveLock) {
                 lock = getLock(uri);
 
-                if (this.logger.isDebugEnabled()) {
-                    this.logger.debug("claiming " + uri);
-                }
-
-                lock.claim(this.iterationWaitTimeout);
-
                 /* The lock will only be valid if this thread enters
                  * the synchronized method claim() as the first
                  * thread. Otherwise the (now invalid) lock object
@@ -111,7 +117,11 @@ public class LockManager {
                  * this.lmaxIterations times.
                  */
 
-                if (lock.isValid()) {                    
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("claiming " + uri);
+                }
+
+                if (lock.claim(this.iterationWaitTimeout)) {
                     if (this.logger.isDebugEnabled()) {
                         this.logger.debug("suceeded: locking " + uri
                                      + ", iterations = " + iterations);
@@ -144,20 +154,8 @@ public class LockManager {
 
         return Collections.unmodifiableList(claimedLocks);
     }
+    
 
-
-    /**
-     * Releases locks on a list of URIs. Wakes up threads waiting on
-     * the locks.
-     *
-     * @param uris the URIs to unlock.
-     */
-    public void unlock(List<Path> uris) {
-        for (Path uri: uris) {
-            Lock lock = getLock(uri);
-            lock.release();
-        }
-    }
 
 
     /**
@@ -193,31 +191,61 @@ public class LockManager {
     }
 
     /**
-     * Simple lock implementation.
-     *
+     * A lock on a single URI in the namespace.
      */
     private class Lock {
 
-        private Path uri;        
-
+        private Path uri;
         private Thread owner = null;
 
         public Lock(Path uri) {
             this.uri = uri;
         }
 
-
         /**
-         * Decides if this lock is valid (i.e. if the current thread
-         * is the owner of the lock).
+         * Claims a lock. If a thread is the first to enter this
+         * method, it will return immediately, and this lock object
+         * will be valid for that thread. Otherwise, threads will wait
+         * in the wait set for this object, either until a timeout
+         * occurs, or another thread calls
+         * <code>LockManager.disposeLock()</code> on this lock, which
+         * will wake up all threads waiting for it. These threads will
+         * then have to try to claim a new lock again, which involves
+         * getting a new lock object using
+         * <code>LockManager.getLock()</code>.
+         * 
+         * @return <code>true</code> iff the lock was successfully claimed, 
+         *         <code>false</code> otherwise.
          *
-         * @return a <code>boolean</code>
+         * @param timeout an <code>int</code> value
          */
-        public boolean isValid() {
-            return Thread.currentThread() == this.owner;
+        public synchronized boolean claim(long timeout) {
+
+            // Support re-entrant locking (same thread already owner == OK, or take ownership)
+            if (this.owner == null) {
+
+                // We successfully claimed the lock. This lock is only
+                // valid for this thread.
+                this.owner = Thread.currentThread();
+                
+                return true;
+            } else {
+
+                // Some other thread already owns this lock, and we
+                // have to wait until notify() or timeout. (This lock
+                // object is now invalid and cannot be reused).
+                try {
+
+                    wait(timeout);
+
+                } catch (InterruptedException e) {
+                    LockManager.this.logger.warn(e);
+                }
+                
+                return false;
+            }
         }
-
-
+        
         /**
          * Releases a lock. Only threads that are the owner of a lock
          * may release it. Any threads waiting for this lock will be
@@ -232,8 +260,7 @@ public class LockManager {
             }
 
             if (this.owner == null) {
-
-                throw new RuntimeException(
+                throw new IllegalStateException(
                     "Thread " + Thread.currentThread().getName() +
                     " tried to release a lock on " + this.uri +
                     " without an owner");
@@ -241,8 +268,7 @@ public class LockManager {
             }
 
             if (Thread.currentThread() != this.owner) {
-
-                throw new RuntimeException(
+                throw new IllegalStateException(
                     "Thread " + Thread.currentThread().getName() +
                     " trying to release a lock on " + this.uri +
                     " owned by thread " + this.owner.getName());
@@ -252,42 +278,5 @@ public class LockManager {
             notifyAll();
         }
 
-
-        /**
-         * Claims a lock. If a thread is the first to enter this
-         * method, it will return immediately, and this lock object
-         * will be valid for that thread. Otherwise, threads will wait
-         * in the wait set for this object, either until a timeout
-         * occurs, or another thread calls
-         * <code>LockManager.disposeLock()</code> on this lock, which
-         * will wake up all threads waiting for it. These threads will
-         * then have to try to claim a new lock again, which involves
-         * getting a new lock object using
-         * <code>LockManager.getLock()</code>.
-         *
-         * @param timeout an <code>int</code> value
-         */
-        public synchronized void claim(long timeout) {
-
-            if (this.owner == null) {
-
-                // We successfully claimed the lock. This lock is only
-                // valid for this thread.
-                this.owner = Thread.currentThread();
-
-            } else {
-
-                // Some other thread already owns this lock, and we
-                // have to wait until notify() or timeout. (This lock
-                // object is now invalid and cannot be reused).
-                try {
-
-                    wait(timeout);
-
-                } catch (InterruptedException e) {
-                    LockManager.this.logger.warn(e);
-                }
-            }
-        }
     }
 }

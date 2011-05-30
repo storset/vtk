@@ -1116,8 +1116,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             Comment old = null;
             List<Comment> comments = this.commentDAO.listCommentsByResource(resource, false, this.maxComments);
             for (Comment c : comments) {
-                // XXX Why is not equals() used for comment ID comparison ??
-                if (c.getID() == comment.getID() && c.getURI().equals(comment.getURI())) {
+                if (c.getID().equals(comment.getID()) && c.getURI().equals(comment.getURI())) {
                     old = c;
                     break;
                 }

@@ -30,7 +30,15 @@
  */
 package org.vortikal.repository;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +48,6 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.search.QueryException;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
-import org.vortikal.repository.store.Cache;
 import org.vortikal.repository.store.CacheNoLockManager;
 import org.vortikal.repository.store.LockManager;
 import org.vortikal.security.AuthenticationException;
@@ -71,6 +78,7 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
     private Repository wrappedRepository;
     private final Log logger = LogFactory.getLog(CachePurgeControlRepositoryWrapper.class);
     private final LockManager lockManager = new LockManager();
+    private File tempDir = new File(System.getProperty("java.io.tmpdir"));
 
     @Override
     public Comment addComment(String token, Resource resource, String title, String text) throws RepositoryException,
@@ -190,33 +198,52 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
         }
     }
     
+
+    
     @Override
-    public Resource createDocument(String token, Path uri, InputStream inputStream) throws IllegalOperationException,
+    public Resource createDocument(String token, Path uri, InputStream byteStream) throws IllegalOperationException,
             AuthorizationException, AuthenticationException, ResourceLockedException, ReadOnlyException, Exception {
 
-        // Synchronize on:
-        // - Parent URI
-        // - URI
-        List<Path> lockUris = new ArrayList<Path>(2);
-        if (uri.getParent() != null) {
-            lockUris.add(uri.getParent());
-        }
-        lockUris.add(uri);
-        
-        final List<Path> locked = this.lockManager.lock(lockUris);
-        
+        File tempFile = null;
         try {
-            Resource resource = this.wrappedRepository.createDocument(token, uri, inputStream); // Tx
+            // Convert input stream to file FileInputStream if necessary, to ensure
+            // most efficient transfer to repository content store while holding locks.
+            if (! ((byteStream instanceof FileInputStream)
+                    || (byteStream instanceof ByteArrayInputStream))) {
+                
+                tempFile = writeTempFile(uri.getName(), byteStream);
+                byteStream = new FileInputStream(tempFile);
+            }
 
-            Path parent = resource.getURI().getParent();
-            if (parent != null) {
-                // Purge parent from cache after transaction has been comitted.
-                flushFromCache(parent, false, "createDocument");
+            // Synchronize on:
+            // - Parent URI
+            // - URI
+            List<Path> lockUris = new ArrayList<Path>(2);
+            if (uri.getParent() != null) {
+                lockUris.add(uri.getParent());
+            }
+            lockUris.add(uri);
+
+            final List<Path> locked = this.lockManager.lock(lockUris);
+
+            try {
+                Resource resource = this.wrappedRepository.createDocument(token, uri, byteStream); // Tx
+
+                Path parent = resource.getURI().getParent();
+                if (parent != null) {
+                    // Purge parent from cache after transaction has been comitted.
+                    flushFromCache(parent, false, "createDocument");
+                }
+
+                return resource;
+            } finally {
+                this.lockManager.unlock(locked);
             }
             
-            return resource;
         } finally {
-            this.lockManager.unlock(locked);
+            if (tempFile != null) {
+                tempFile.delete();
+            }
         }
     }
     
@@ -529,6 +556,40 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
     @Required
     public void setWrappedRepository(Repository wrappedRepository) {
         this.wrappedRepository = wrappedRepository;
+    }
+    
+    @Required
+    public void setTempDir(String tempDirPath) {
+        File tmp = new File(tempDirPath);
+        if (!tmp.exists()) {
+            throw new IllegalArgumentException("Unable to set tempDir: file " + tmp + " does not exist");
+        }
+        if (!tmp.isDirectory()) {
+            throw new IllegalArgumentException("Unable to set tempDir: file " + tmp + " is not a directory");
+        }
+        this.tempDir = tmp;
+    }
+    
+    /**
+     * Writes to a temporary file (used to avoid lengthy blocking on file
+     * uploads).
+     */
+    private File writeTempFile(String name, InputStream byteStream) throws IOException {
+        ReadableByteChannel src = Channels.newChannel(byteStream);
+        File tempFile = File.createTempFile("tmpfile-" + name, null, this.tempDir);
+        FileChannel dest = new FileOutputStream(tempFile).getChannel();
+        int chunk = 100000;
+        long pos = 0;
+        while (true) {
+            long n = dest.transferFrom(src, pos, chunk);
+            if (n == 0) {
+                break;
+            }
+            pos += n;
+        }
+        src.close();
+        dest.close();
+        return tempFile;
     }
     
     private void flushFromCache(Path uri, boolean includeDescendants, String serviceMethodName) {

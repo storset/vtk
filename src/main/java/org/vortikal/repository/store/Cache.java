@@ -109,6 +109,7 @@ import org.vortikal.security.Principal;
  * percent or 0.05.
  * </ul>
  */
+@Deprecated
 public class Cache implements DataAccessor, InitializingBean {
 
     private Log logger = LogFactory.getLog(this.getClass());
@@ -354,7 +355,7 @@ public class Cache implements DataAccessor, InitializingBean {
     }
 
     @Override
-    public void storeACL(ResourceImpl r) throws DataAccessException {
+    public ResourceImpl storeACL(ResourceImpl r) throws DataAccessException {
         List<Path> uris = new ArrayList<Path>();
         uris.add(r.getURI());
 
@@ -369,8 +370,10 @@ public class Cache implements DataAccessor, InitializingBean {
         }
 
         List<Path> lockedUris = this.lockManager.lock(uris);
+
+        ResourceImpl writtenResource;
         try {
-            this.wrappedAccessor.storeACL(r); // Persist
+            writtenResource = this.wrappedAccessor.storeACL(r); // Persist
             this.items.remove(uris); // Purge all affected items from cache
         } finally {
             this.lockManager.unlock(lockedUris); // Release URI sync lock
@@ -379,13 +382,17 @@ public class Cache implements DataAccessor, InitializingBean {
                 this.logger.debug("cache size : " + this.items.size());
             }
         }
+        
+        return writtenResource;
     }
 
     @Override
-    public void store(final ResourceImpl resource) throws DataAccessException {
+    public ResourceImpl store(final ResourceImpl resource) throws DataAccessException {
         List<Path> locked = this.lockManager.lock(resource.getURI());
+        
+        ResourceImpl writtenResource;
         try {
-            this.wrappedAccessor.store(resource); // Persist
+            writtenResource = this.wrappedAccessor.store(resource); // Persist
             this.items.remove(resource.getURI()); // Purge item from cache
         } finally {
             this.lockManager.unlock(locked); // Release URI sync lock
@@ -394,6 +401,8 @@ public class Cache implements DataAccessor, InitializingBean {
                 this.logger.debug("cache size : " + this.items.size());
             }
         }
+        
+        return writtenResource;
     }
 
     /**
@@ -427,7 +436,7 @@ public class Cache implements DataAccessor, InitializingBean {
     }
 
     @Override
-    public void copy(ResourceImpl r, ResourceImpl destParent, PropertySet newResource, boolean copyACLs,
+    public ResourceImpl copy(ResourceImpl r, ResourceImpl destParent, PropertySet newResource, boolean copyACLs,
             PropertySet fixedProperties) throws DataAccessException {
 
         Path destURI = newResource.getURI();
@@ -447,9 +456,10 @@ public class Cache implements DataAccessor, InitializingBean {
         }
 
         List<Path> lockedUris = this.lockManager.lock(uris);
+        ResourceImpl writtenDestResource;
         try {
             // Persist copy operation
-            this.wrappedAccessor.copy(r, destParent, newResource, copyACLs, fixedProperties);
+            writtenDestResource = this.wrappedAccessor.copy(r, destParent, newResource, copyACLs, fixedProperties);
             // Purge affected destination parent from cache
             this.items.remove(destParentURI);
         } finally {
@@ -459,10 +469,12 @@ public class Cache implements DataAccessor, InitializingBean {
                 this.logger.debug("cache size : " + this.items.size());
             }
         }
+        
+        return writtenDestResource;
     }
 
     @Override
-    public void move(ResourceImpl r, ResourceImpl newResource) throws DataAccessException {
+    public ResourceImpl move(ResourceImpl r, ResourceImpl newResource) throws DataAccessException {
         Path destURI = newResource.getURI();
         List<Path> uris = new ArrayList<Path>();
         uris.add(r.getURI());
@@ -486,8 +498,9 @@ public class Cache implements DataAccessor, InitializingBean {
         }
 
         List<Path> locks = this.lockManager.lock(uris);
+        ResourceImpl writtenDestResource;
         try {
-            this.wrappedAccessor.move(r, newResource); // Persist move operation
+            writtenDestResource = this.wrappedAccessor.move(r, newResource); // Persist move operation
             this.items.remove(uris); // Purge all affected items from cache
 
         } finally {
@@ -498,6 +511,8 @@ public class Cache implements DataAccessor, InitializingBean {
                 this.logger.debug("cache size : " + this.items.size());
             }
         }
+        
+        return writtenDestResource;
     }
 
     @Override
@@ -557,9 +572,15 @@ public class Cache implements DataAccessor, InitializingBean {
     }
 
     @Override
-    public void recover(Path parent, RecoverableResource recoverableResource) {
-        // XXX handle cache??
-        this.wrappedAccessor.recover(parent, recoverableResource);
+    public ResourceImpl recover(Path parent, RecoverableResource recoverableResource) {
+        List<Path> locked = this.lockManager.lock(parent);
+        try {
+            ResourceImpl recoveredResource = this.wrappedAccessor.recover(parent, recoverableResource);
+            this.items.remove(parent);
+            return recoveredResource;
+        } finally {
+            this.lockManager.unlock(locked);
+        }
     }
 
     @Override

@@ -35,7 +35,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -95,8 +95,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     private PeriodicThread periodicThread;
     private int maxResourceChildren = 3000;
 
-    private Map<Privilege, List<Pattern>> usersBlacklist = new HashMap<Privilege, List<Pattern>>();
-    private Map<Privilege, List<Pattern>> groupsBlacklist = new HashMap<Privilege, List<Pattern>>();
+    private Map<Privilege, List<Pattern>> usersBlacklist = 
+            new EnumMap<Privilege, List<Pattern>>(Privilege.class);
+    private Map<Privilege, List<Pattern>> groupsBlacklist =
+            new EnumMap<Privilege, List<Pattern>>(Privilege.class);
 
     // Default value of 60 days before recoverable resources are purged from
     // trash can
@@ -132,20 +134,21 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     @Override
     public Resource retrieve(String token, Path uri, boolean forProcessing) throws ResourceNotFoundException,
             AuthorizationException, AuthenticationException, IOException {
-        // XXX: check uri not null
+
         Principal principal = this.tokenManager.getPrincipal(token);
 
-        ResourceImpl resource = null;
-        resource = this.dao.load(uri);
+        ResourceImpl resource = this.dao.load(uri);
 
         if (resource == null) {
             throw new ResourceNotFoundException(uri);
         }
+        
         if (forProcessing) {
             this.authorizationManager.authorizeReadProcessed(uri, principal);
         } else {
             this.authorizationManager.authorizeRead(uri, principal);
         }
+        
         try {
             return (Resource) resource.clone();
         } catch (CloneNotSupportedException e) {
@@ -189,6 +192,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         } else {
             this.authorizationManager.authorizeRead(uri, principal);
         }
+        
         InputStream is = this.contentStore.getInputStream(uri);
         return is;
     }
@@ -260,10 +264,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             newResource.setInheritedAcl(true);
             int aclIneritedFrom = parent.isInheritedAcl() ? parent.getAclInheritedFrom() : parent.getID();
             newResource.setAclInheritedFrom(aclIneritedFrom);
-            this.dao.store(newResource);
+            newResource = this.dao.store(newResource);
             this.contentStore.createResource(newResource.getURI(), true);
 
-            newResource = this.dao.load(uri);
+//            newResource = this.dao.load(uri);
 
             newResource = (ResourceImpl) newResource.clone();
         } catch (CloneNotSupportedException e) {
@@ -323,16 +327,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             newResource = this.resourceHelper.nameChange(src, newResource, principal);
             destParent = this.resourceHelper.contentModification(destParent, principal);
 
-            this.dao.copy(src, destParent, newResource, preserveACL, fixedProps);
+            newResource = this.dao.copy(src, destParent, newResource, preserveACL, fixedProps);
             this.contentStore.copy(src.getURI(), newResource.getURI());
 
-            dest = (ResourceImpl) this.dao.load(destUri).clone();
-
+            this.context.publishEvent(new ResourceCreationEvent(this, (Resource)newResource.clone()));
+            
         } catch (CloneNotSupportedException e) {
-            throw new IOException("An internal error occurred: unable to clone()");
+            throw new IOException("An internal error occurred: unable to clone()", e);
         }
-
-        this.context.publishEvent(new ResourceCreationEvent(this, dest));
     }
 
     @Override
@@ -385,7 +387,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
 
         try {
+            // XXX strictly speaking, this is also a contentModification on srcParent,
+            // if srcParent != destParent, no ?
+            
+            destParent.addChildURI(destUri);
             destParent = this.resourceHelper.contentModification(destParent, principal);
+            this.dao.store(destParent);
 
             ResourceImpl newResource = src.createCopy(destUri);
             newResource.setAcl(src.getAcl());
@@ -393,14 +400,15 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             newResource.setAclInheritedFrom(src.getAclInheritedFrom());
             newResource = this.resourceHelper.nameChange(src, newResource, principal);
 
-            this.dao.move(src, newResource);
+            newResource = this.dao.move(src, newResource);
 
-            newResource = this.dao.load(newResource.getURI());
+//            newResource = this.dao.load(newResource.getURI());
             this.contentStore.move(src.getURI(), newResource.getURI());
-            this.context.publishEvent(new ResourceCreationEvent(this, newResource));
-            this.context.publishEvent(new ResourceDeletionEvent(this, srcUri, src.getID(), src.isCollection()));
+            
+//            dest = (ResourceImpl) newResource.clone();
 
-            dest = (ResourceImpl) this.dao.load(destUri).clone();
+            this.context.publishEvent(new ResourceCreationEvent(this, (Resource) newResource.clone()));
+            this.context.publishEvent(new ResourceDeletionEvent(this, srcUri, src.getID(), src.isCollection()));
 
         } catch (CloneNotSupportedException e) {
             throw new IOException("clone() operation failed");
@@ -436,7 +444,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         this.dao.store(parentCollection);
 
         if (restorable) {
-
             // Check ACL before moving to trash can,
             // if inherited, take snapshot of current ACL
             if (r.isInheritedAcl()) {
@@ -486,16 +493,19 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         checkLock(parent, principal);
         this.authorizationManager.authorizeReadWrite(parentUri, principal);
 
-        this.dao.recover(parentUri, recoverableResource);
-        this.contentStore.recover(parentUri, recoverableResource);
+        try {
+            ResourceImpl recovered = this.dao.recover(parentUri, recoverableResource);
+            this.contentStore.recover(parentUri, recoverableResource);
 
-        ResourceImpl recovered = this.dao.load(parentUri.extend(recoverableResource.getName()));
-        this.context.publishEvent(new ResourceCreationEvent(this, recovered));
+//        ResourceImpl recovered = this.dao.load(parentUri.extend(recoverableResource.getName()));
+            this.context.publishEvent(new ResourceCreationEvent(this, (Resource) recovered.clone()));
 
-        parent.addChildURI(recovered.getURI());
-        parent = this.resourceHelper.contentModification(parent, principal);
-        this.dao.store(parent);
-
+            parent.addChildURI(recovered.getURI());
+            parent = this.resourceHelper.contentModification(parent, principal);
+            this.dao.store(parent);
+        } catch (CloneNotSupportedException c) {
+            throw new IOException("Internal error, clone failed", c);
+        }
     }
 
     @Override
@@ -663,15 +673,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                 newResource = this.resourceHelper.systemChange(original, principal, suppliedResource);
             }
 
-            this.dao.store(newResource);
+            newResource = this.dao.store(newResource);
 
-            newResource = (ResourceImpl) this.dao.load(uri).clone();
-
-            ResourceModificationEvent event = new ResourceModificationEvent(this, newResource, originalClone);
+            ResourceModificationEvent event = new ResourceModificationEvent(this, (Resource)newResource.clone(), originalClone);
 
             this.context.publishEvent(event);
 
-            return newResource;
+            return (Resource) newResource.clone();
         } catch (CloneNotSupportedException e) {
             throw new IOException("An internal error occurred: unable to " + "clone() resource: " + original);
         }
@@ -712,14 +720,15 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             newResource.setInheritedAcl(true);
             int aclIneritedFrom = parent.isInheritedAcl() ? parent.getAclInheritedFrom() : parent.getID();
             newResource.setAclInheritedFrom(aclIneritedFrom);
-            this.dao.store(newResource);
+            newResource = this.dao.store(newResource);
 
-            newResource = this.dao.load(uri);
+//            newResource = this.dao.load(uri);
 
-            newResource = (ResourceImpl) newResource.clone();
+//            newResource = (ResourceImpl) newResource.clone();
 
-            this.context.publishEvent(new ResourceCreationEvent(this, newResource));
-            return newResource;
+            this.context.publishEvent(new ResourceCreationEvent(this, (Resource) newResource.clone()));
+            
+            return (Resource) newResource.clone();
         } catch (CloneNotSupportedException e) {
             throw new IOException("An internal error occurred: unable to " + "clone() resource: " + uri);
         }
@@ -751,14 +760,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             this.contentStore.storeContent(uri, byteStream);
             r = this.resourceHelper.contentModification(r, principal);
 
-            this.dao.store(r);
-
-            ContentModificationEvent event = new ContentModificationEvent(this, (Resource) r.clone(), original);
-
+            Resource newResource = this.dao.store(r);
+            
+            ContentModificationEvent event = new ContentModificationEvent(this, (Resource)newResource.clone(), original);
             this.context.publishEvent(event);
 
-            return r;
-
+            return (Resource)newResource.clone();
         } catch (CloneNotSupportedException e) {
             throw new IOException("An internal error occurred: unable to " + "clone() resource: " + r);
         }
@@ -839,13 +846,17 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             if (validateACL) {
                 validateNewAcl(acl, original.getAcl());
             }
-            this.dao.storeACL(r);
-            ACLModificationEvent event = new ACLModificationEvent(this, (Resource) r.clone(), original, r.getAcl(),
+            
+            ResourceImpl newResource = this.dao.storeACL(r);
+            
+            newResource = (ResourceImpl) newResource.clone(); // Clone for event publishing
+            
+            ACLModificationEvent event = new ACLModificationEvent(this, newResource, original, newResource.getAcl(),
                     original.getAcl());
 
             this.context.publishEvent(event);
 
-            return (Resource) r.clone();
+            return (Resource) newResource.clone(); // Clone for return value
 
         } catch (CloneNotSupportedException e) {
             throw new IOException(e.getMessage());
@@ -881,13 +892,16 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             r.setAclInheritedFrom(parent.getID());
             r.setInheritedAcl(true);
 
-            this.dao.storeACL(r);
-            ACLModificationEvent event = new ACLModificationEvent(this, (Resource) r.clone(), original, r.getAcl(),
+            ResourceImpl newResource = this.dao.storeACL(r);
+            
+            newResource = (ResourceImpl) newResource.clone(); // clone for event publish
+            
+            ACLModificationEvent event = new ACLModificationEvent(this, newResource, original, newResource.getAcl(),
                     original.getAcl());
 
             this.context.publishEvent(event);
 
-            return (Resource) r.clone();
+            return (Resource) newResource.clone(); // clone for return value
 
         } catch (CloneNotSupportedException e) {
             throw new IOException(e.getMessage());
@@ -980,16 +994,18 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             comment = this.commentDAO.createComment(comment);
 
             ResourceImpl newResource = this.resourceHelper.commentsChange(original, principal, (ResourceImpl) resource);
-            this.dao.store(newResource);
+            newResource = this.dao.store(newResource);
 
             // Publish resource modification event (necessary to trigger
             // re-indexing, since a prop is now modified)
-            ResourceModificationEvent event = new ResourceModificationEvent(this, newResource, original);
+            ResourceModificationEvent event = new ResourceModificationEvent(this, (Resource)newResource.clone(), original);
             this.context.publishEvent(event);
 
             return comment;
         } catch (IOException e) {
             throw new RuntimeException("Unhandled IO exception", e);
+        } catch (CloneNotSupportedException c) {
+            throw new RuntimeException("Internal error", c);
         }
     }
 
@@ -1027,11 +1043,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             this.commentDAO.deleteComment(comment);
 
             ResourceImpl newResource = this.resourceHelper.commentsChange(original, principal, (ResourceImpl) resource);
-            this.dao.store(newResource);
+            newResource = this.dao.store(newResource);
 
             // Publish resource modification event (necessary to trigger
             // re-indexing, since a prop is now modified)
-            ResourceModificationEvent event = new ResourceModificationEvent(this, newResource, original);
+            ResourceModificationEvent event = new ResourceModificationEvent(this, (Resource)newResource.clone(), original);
             this.context.publishEvent(event);
 
         } catch (Exception e) {
@@ -1062,15 +1078,15 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             this.commentDAO.deleteAllComments(resource);
 
             ResourceImpl newResource = this.resourceHelper.commentsChange(original, principal, (ResourceImpl) resource);
-            this.dao.store(newResource);
+            newResource = this.dao.store(newResource);
 
             // Publish resource modification event (necessary to trigger
             // re-indexing, since a prop is now modified)
-            ResourceModificationEvent event = new ResourceModificationEvent(this, newResource, original);
+            ResourceModificationEvent event = new ResourceModificationEvent(this, (Resource)newResource.clone(), original);
             this.context.publishEvent(event);
 
-        } catch (IOException e) {
-            throw new RuntimeException("Unhandled IO exception", e);
+        } catch (Exception e) {
+            throw new RuntimeException("Unhandled exception", e);
         }
     }
 
@@ -1204,6 +1220,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
     }
 
+    @Override
     public void purgeTrash() {
         List<RecoverableResource> overdue = this.dao.getTrashCanOverdue(this.permanentDeleteOverdueLimitInDays);
         if (overdue != null && overdue.size() > 0) {

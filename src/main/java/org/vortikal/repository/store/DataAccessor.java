@@ -63,14 +63,18 @@ public interface DataAccessor {
     public ResourceImpl[] loadChildren(ResourceImpl parent) throws DataAccessException;
 
     /**
-     * Stores a single resource
+     * Stores a single resource.
+     * 
+     * @return The new ResourceImpl
      */
-    public void store(ResourceImpl r) throws DataAccessException;
+    public ResourceImpl store(ResourceImpl r) throws DataAccessException;
 
     /**
-     * Stores the ACL of a resource
+     * Stores the ACL of a resource.
+     * 
+     * @return The new ResourceImpl
      */
-    public void storeACL(ResourceImpl r) throws DataAccessException;
+    public ResourceImpl storeACL(ResourceImpl r) throws DataAccessException;
 
     /**
      * Deletes a single resource (and any children)
@@ -113,9 +117,12 @@ public interface DataAccessor {
      *            Parent of item to recover. Needed for path reconstruction.
      * @param recoverableResource
      *            The resource to recover
+     * 
+     * @return The newly recovered ResourceImpl
+     * 
      * @throws DataAccessException
      */
-    public void recover(Path parentUri, RecoverableResource recoverableResource) throws DataAccessException;
+    public ResourceImpl recover(Path parentUri, RecoverableResource recoverableResource) throws DataAccessException;
 
     /**
      * Permanently deletes a recoverable resource
@@ -157,7 +164,7 @@ public interface DataAccessor {
      * 
      * @param resource
      *            the resource to copy from
-     * @param dest
+     * @param destParent
      *            the resource to copy into (becomes the parent of the copied
      *            resource after the copy operation)
      * @param newResource
@@ -170,8 +177,10 @@ public interface DataAccessor {
      * @param fixedProperties
      *            a set of properties to set on the new resource(s) instead of
      *            copying from the existing
+     * 
+     * @return the new destination ResourceImpl
      */
-    public void copy(ResourceImpl resource, ResourceImpl dest, PropertySet newResource, boolean copyACLs,
+    public ResourceImpl copy(ResourceImpl resource, ResourceImpl destParent, PropertySet newResource, boolean copyACLs,
             PropertySet fixedProperties) throws DataAccessException;
 
     /**
@@ -183,8 +192,10 @@ public interface DataAccessor {
      *            the newly created resource: this resource is passed as an
      *            argument, as its properties may have changed as a result of
      *            the name change operation.
+     * 
+     * @return The destination ResourceImpl
      */
-    public void move(ResourceImpl resource, ResourceImpl newResource) throws DataAccessException;
+    public ResourceImpl move(ResourceImpl resource, ResourceImpl newResource) throws DataAccessException;
 
     /**
      * Finds any locks on a resource, or on resources in the URI hierarchy

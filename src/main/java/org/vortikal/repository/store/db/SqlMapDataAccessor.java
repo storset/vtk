@@ -89,6 +89,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         this.optimizedAclCopySupported = optimizedAclCopySupported;
     }
 
+    @Override
     public boolean validate() {
         throw new DataAccessException("Not implemented");
     }
@@ -136,11 +137,13 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         return resource;
     }
 
+    @Override
     public void deleteExpiredLocks(Date d) {
         String sqlMap = getSqlMap("deleteExpiredLocks");
         getSqlMapClientTemplate().update(sqlMap, d);
     }
 
+    @Override
     public Path[] discoverLocks(Path uri) {
 
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -158,8 +161,12 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         return locks;
     }
 
-    public void storeACL(ResourceImpl r) {
+    @Override
+    public ResourceImpl storeACL(ResourceImpl r) {
         updateACL(r);
+        
+        // Re-load and return newly written ResourceImpl
+        return load(r.getURI());
     }
 
     private void updateACL(ResourceImpl r) {
@@ -218,7 +225,8 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         }
     }
 
-    public void store(ResourceImpl r) {
+    @Override
+    public ResourceImpl store(ResourceImpl r) {
         String sqlMap = getSqlMap("loadResourceByUri");
         boolean existed = getSqlMapClientTemplate().queryForObject(sqlMap, r.getURI().toString()) != null;
 
@@ -247,8 +255,11 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         storeLock(r);
         storeProperties(r);
 
+        // Re-load and return newly written ResourceImpl
+        return load(r.getURI());
     }
 
+    @Override
     public void delete(ResourceImpl resource) {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("uri", resource.getURI().toString());
@@ -299,7 +310,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
     }
 
     @Override
-    public void recover(Path parent, RecoverableResource recoverableResource) throws DataAccessException {
+    public ResourceImpl recover(Path parent, RecoverableResource recoverableResource) throws DataAccessException {
 
         int id = recoverableResource.getId();
         String sqlMap = getSqlMap("getRecoverableResourceById");
@@ -328,18 +339,22 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         sqlMap = getSqlMap("recoverResource");
         this.getSqlMapClientTemplate().update(sqlMap, parameters);
 
+        Path recoverdResourcePath = parent.extend(deletedResource.getName());
+        
         if (deletedResource.wasInheritedAcl()) {
-            Path recoverdResourcePath = parent.extend(deletedResource.getName());
-            ResourceImpl recoveredResource = this.load(recoverdResourcePath);
-            ResourceImpl parentResource = this.load(parent);
+            ResourceImpl recoveredResource = load(recoverdResourcePath);
+            ResourceImpl parentResource = load(parent);
             Acl recoveredResourceAcl = recoveredResource.getAcl();
             Acl parentAcl = parentResource.getAcl();
             if (recoveredResourceAcl.equals(parentAcl)) {
                 recoveredResource.setAclInheritedFrom(parentResource.getID());
                 recoveredResource.setInheritedAcl(true);
-                this.storeACL(recoveredResource);
+                storeACL(recoveredResource);
             }
         }
+        
+        // Re-load and return newly written recovered resource
+        return load(recoverdResourcePath);
     }
 
     @Override
@@ -377,6 +392,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         return recoverableResources;
     }
 
+    @Override
     public ResourceImpl[] loadChildren(ResourceImpl parent) {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(parent.getURI(), SQL_ESCAPE_CHAR));
@@ -410,6 +426,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         return result;
     }
 
+    @Override
     public Path[] discoverACLs(Path uri) {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("uri", uri.toString());        
@@ -438,7 +455,8 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         }
     }
 
-    public void copy(ResourceImpl resource, ResourceImpl dest, PropertySet newResource, boolean copyACLs,
+    @Override
+    public ResourceImpl copy(ResourceImpl resource, ResourceImpl destParent, PropertySet newResource, boolean copyACLs,
             PropertySet fixedProperties) {
 
         Path destURI = newResource.getURI();
@@ -490,6 +508,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
                 final String batchSqlMap = getSqlMap("updateAclInheritedFromByResourceId");
 
                 getSqlMapClientTemplate().execute(new SqlMapClientCallback() {
+                    @Override
                     public Object doInSqlMapClient(SqlMapExecutor executor) throws SQLException {
                         executor.startBatch();
                         for (Map<String, Object> map : list) {
@@ -518,7 +537,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         sqlMap = getSqlMap("clearPrevResourceIdByUri");
         getSqlMapClientTemplate().update(sqlMap, parameters);
 
-        parameters = getResourceAsMap(dest);
+        parameters = getResourceAsMap(destParent);
         sqlMap = getSqlMap("updateResource");
         getSqlMapClientTemplate().update(sqlMap, parameters);
 
@@ -538,6 +557,8 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         // @see PropertyType.UNCOPYABLE_PROPERTIES
         removeUncopyableProperties(created);
 
+        // Re-load and return newly written destination ResourceImpl
+        return load(newResource.getURI());
     }
 
     private void removeUncopyableProperties(ResourceImpl r) {
@@ -545,6 +566,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         final String uriWildcard = SqlDaoUtils.getUriSqlWildcard(r.getURI(), SQL_ESCAPE_CHAR);
         final String batchSqlMap = getSqlMap("deleteUncopyableProperties");
         getSqlMapClientTemplate().execute(new SqlMapClientCallback() {
+            @Override
             public Object doInSqlMapClient(SqlMapExecutor executor) throws SQLException {
                 executor.startBatch();
                 for (String propertyName : PropertyType.UNCOPYABLE_PROPERTIES) {
@@ -560,7 +582,8 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         });
     }
 
-    public void move(ResourceImpl resource, ResourceImpl newResource) {
+    @Override
+    public ResourceImpl move(ResourceImpl resource, ResourceImpl newResource) {
         Path destURI = newResource.getURI();
         int depthDiff = destURI.getDepth() - resource.getURI().getDepth();
 
@@ -599,6 +622,8 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
             getSqlMapClientTemplate().update(sqlMap, parameters);
         }
 
+        // Re-load and return newly written destination ResourceImpl
+        return load(newResource.getURI());
     }
 
     private void loadChildUris(ResourceImpl parent) {

@@ -78,8 +78,9 @@
 
   <!--  Repository cache purge control wrapper -->
   <bean id="repository.cachePurgeRepository" class="org.vortikal.repository.LockingCacheControlRepositoryWrapper">
-    <property name="wrappedRepository" ref="repository.internal"/>
-    <property name="cache" ref="repository.cache"/>
+    <property name="wrappedRepository" ref="repository.internal" />
+    <property name="cache" ref="repository.cache" />
+    <property name="tempDir" value="${repository.tempDir}" />
   </bean>
 
   <!-- Wrapper around the repository that caches retrievals when executing in a servlet request: -->

@@ -74,6 +74,7 @@ import org.vortikal.security.Principal;
  * Since we are currently developing a new backend, this should be an acceptable
  * solution to keep the old one humping along a little longer.
  */
+@Deprecated
 public class CachePurgeControlRepositoryWrapper implements Repository {
 
     private Cache cache;

@@ -62,6 +62,13 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
 
     private boolean urlEncodeFileNames = false;
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        this.createRootDirectory(this.repositoryDataDirectory);
+        this.createRootDirectory(this.repositoryTrashCanDirectory);
+    }
+
+    @Override
     public void createResource(Path uri, boolean isCollection) throws DataAccessException {
 
         String fileName = getLocalFilename(uri);
@@ -85,6 +92,7 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
         }
     }
 
+    @Override
     public long getContentLength(Path uri) throws DataAccessException {
         String fileName = getLocalFilename(uri);
 
@@ -102,6 +110,7 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
         }
     }
 
+    @Override
     public void deleteResource(Path uri) {
         String fileName = getLocalFilename(uri);
         // Don't delete root
@@ -126,6 +135,7 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
         f.delete();
     }
 
+    @Override
     public InputStream getInputStream(Path uri) throws DataAccessException {
         String fileName = getLocalFilename(uri);
         try {
@@ -135,6 +145,7 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
         }
     }
 
+    @Override
     public void storeContent(Path uri, InputStream inputStream) throws DataAccessException {
         String fileName = getLocalFilename(uri);
         File dest = new File(fileName);
@@ -156,6 +167,7 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
         }
     }
 
+    @Override
     public void copy(Path srcURI, Path destURI) throws DataAccessException {
         String fileNameFrom = getLocalFilename(srcURI);
         String fileNameTo = getLocalFilename(destURI);
@@ -194,6 +206,7 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
         dstChannel.close();
     }
 
+    @Override
     public void move(Path srcURI, Path destURI) throws DataAccessException {
         String fileNameFrom = getLocalFilename(srcURI);
         String fileNameTo = getLocalFilename(destURI);
@@ -262,11 +275,6 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
 
     public void setUrlEncodeFileNames(boolean urlEncodeFileNames) {
         this.urlEncodeFileNames = urlEncodeFileNames;
-    }
-
-    public void afterPropertiesSet() throws Exception {
-        this.createRootDirectory(this.repositoryDataDirectory);
-        this.createRootDirectory(this.repositoryTrashCanDirectory);
     }
 
     private void createRootDirectory(String directoryPath) {

@@ -330,8 +330,8 @@ public class CacheNoLockManager implements DataAccessor, InitializingBean {
 
 
     @Override
-    public void storeACL(ResourceImpl r) throws DataAccessException {
-        this.wrappedAccessor.storeACL(r); // Persist
+    public ResourceImpl storeACL(ResourceImpl r) throws DataAccessException {
+        ResourceImpl writtenResource = this.wrappedAccessor.storeACL(r); // Persist
         if (r.isCollection()) {
             this.items.remove(r.getURI(), true); // Purge resource and all descendants from cache (due to ACL inheritance)
         }
@@ -339,18 +339,24 @@ public class CacheNoLockManager implements DataAccessor, InitializingBean {
         if (this.logger.isDebugEnabled()) {
             this.logger.debug("cache size : " + this.items.size());
         }
+        
+        enterResource(writtenResource);
+        
+        return writtenResource;
     }
 
     @Override
-    public void store(final ResourceImpl resource) throws DataAccessException {
+    public ResourceImpl store(final ResourceImpl resource) throws DataAccessException {
 
-        this.wrappedAccessor.store(resource); // Persist
-        this.items.remove(resource.getURI(), false); // Purge item from cache
+        ResourceImpl writtenResource = this.wrappedAccessor.store(resource); // Persist
+        
+        enterResource(writtenResource);
 
         if (this.logger.isDebugEnabled()) {
             this.logger.debug("cache size : " + this.items.size());
         }
 
+        return writtenResource;
     }
 
     /**
@@ -384,11 +390,11 @@ public class CacheNoLockManager implements DataAccessor, InitializingBean {
     }
 
     @Override
-    public void copy(ResourceImpl r, ResourceImpl destParent, PropertySet newResource, boolean copyACLs,
+    public ResourceImpl copy(ResourceImpl r, ResourceImpl destParent, PropertySet newResource, boolean copyACLs,
             PropertySet fixedProperties) throws DataAccessException {
 
         // Persist copy operation
-        this.wrappedAccessor.copy(r, destParent, newResource, copyACLs, fixedProperties);
+        ResourceImpl writtenDestResource = this.wrappedAccessor.copy(r, destParent, newResource, copyACLs, fixedProperties);
 
         // Purge affected destination parent from cache
         this.items.remove(destParent.getURI(), false);
@@ -397,13 +403,16 @@ public class CacheNoLockManager implements DataAccessor, InitializingBean {
         if (this.logger.isDebugEnabled()) {
             this.logger.debug("cache size : " + this.items.size());
         }
+        
+        enterResource(writtenDestResource);
 
+        return writtenDestResource;
     }
 
     @Override
-    public void move(ResourceImpl r, ResourceImpl newResource) throws DataAccessException {
+    public ResourceImpl move(ResourceImpl r, ResourceImpl newResource) throws DataAccessException {
 
-        this.wrappedAccessor.move(r, newResource); // Persist move operation
+        ResourceImpl writtenDestResource = this.wrappedAccessor.move(r, newResource); // Persist move operation
 
         // Purge all affected items from cache
         if (newResource.getURI().getParent() != null) {
@@ -412,7 +421,8 @@ public class CacheNoLockManager implements DataAccessor, InitializingBean {
         if (r.getURI().getParent() != null) {
             this.items.remove(r.getURI().getParent(), false);
         }
-        this.items.remove(r.getURI(), true); // remove source+dest (all descendants)
+        // remove source+dest (all descendants, and we remove dest in case it was overwrite).
+        this.items.remove(r.getURI(), true);
         this.items.remove(newResource.getURI(), true);
 
 
@@ -420,6 +430,9 @@ public class CacheNoLockManager implements DataAccessor, InitializingBean {
             this.logger.debug("cache size : " + this.items.size());
         }
 
+        enterResource(writtenDestResource);
+        
+        return writtenDestResource;
     }
 
     @Override
@@ -460,9 +473,12 @@ public class CacheNoLockManager implements DataAccessor, InitializingBean {
     }
 
     @Override
-    public void recover(Path parent, RecoverableResource recoverableResource) {
-        this.wrappedAccessor.recover(parent, recoverableResource);
-        this.items.remove(parent, false);
+    public ResourceImpl recover(Path parent, RecoverableResource recoverableResource) {
+        ResourceImpl writtenResource = this.wrappedAccessor.recover(parent, recoverableResource);
+        
+        enterResource(writtenResource);
+        
+        return writtenResource;
     }
 
     @Override

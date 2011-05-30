@@ -50,7 +50,7 @@
     <property name="localeResolver" ref="viewServiceResourceAwareLocaleResolver" />
   </bean>
 
-  <bean id="emailafriend.mailExecutor" class="org.vortikal.web.actions.mail.MailExecutor">
+  <bean id="emailafriend.mailExecutor" class="org.vortikal.util.mail.MailExecutor">
     <constructor-arg ref="emailafriend.taskExecutor" />
   </bean>
 
@@ -91,7 +91,7 @@
     <property name="service" ref="emailafriendService" />
   </bean>
 
-  <bean id="emailafriend.mailTemplateProvider" class="org.vortikal.web.actions.mail.MailTemplateProvider">
+  <bean id="emailafriend.mailTemplateProvider" class="org.vortikal.util.mail.MailTemplateProvider">
     <property name="view" ref="emailFriend.mailTemplateView" />
   </bean>
 

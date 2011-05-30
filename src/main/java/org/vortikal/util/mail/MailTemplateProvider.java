@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.vortikal.web.actions.mail;
+package org.vortikal.util.mail;
 
 import java.util.HashMap;
 import java.util.Map;

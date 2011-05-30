@@ -50,9 +50,9 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.actions.mail.MailExecutor;
-import org.vortikal.web.actions.mail.MailHelper;
-import org.vortikal.web.actions.mail.MailTemplateProvider;
+import org.vortikal.util.mail.MailExecutor;
+import org.vortikal.util.mail.MailHelper;
+import org.vortikal.util.mail.MailTemplateProvider;
 import org.vortikal.web.service.Service;
 
 public class EmailAFriendController implements Controller {

@@ -1,4 +1,4 @@
-package org.vortikal.web.actions.mail;
+package org.vortikal.util.mail;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;

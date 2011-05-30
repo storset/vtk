@@ -52,7 +52,7 @@
     <property name="emailFrom" value="oyvind.hatland@usit.uio.no" />  
   </bean>
 
-  <bean id="feedback.mailExecutor" class="org.vortikal.web.actions.mail.MailExecutor">
+  <bean id="feedback.mailExecutor" class="org.vortikal.util.mail.MailExecutor">
     <constructor-arg ref="feedback.taskExecutor" />
   </bean>
 
@@ -88,7 +88,7 @@
     <property name="service" ref="feedbackService" />
   </bean>
 
-  <bean id="feedback.mailTemplateProvider" class="org.vortikal.web.actions.mail.MailTemplateProvider">
+  <bean id="feedback.mailTemplateProvider" class="org.vortikal.util.mail.MailTemplateProvider">
     <property name="view" ref="feedback.mailTemplateView" />
   </bean>
 

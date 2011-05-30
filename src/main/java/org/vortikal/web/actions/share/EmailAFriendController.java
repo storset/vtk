@@ -142,7 +142,7 @@ public class EmailAFriendController implements Controller {
 
                         m.put("tipResponse", "FAILURE-INVALID-EMAIL");
                     }
-                    // Unreachable because of thread
+                // Unreachable because of thread
                 } catch (Exception mtex) {
                     m.put("tipResponse", "FAILURE");
                     m.put("tipResponseMsg", mtex.getMessage());
@@ -170,7 +170,7 @@ public class EmailAFriendController implements Controller {
         helper.setSubject(document.getTitle());
         helper.setFrom(emailFrom);
         helper.setTo(mailMultipleTo);
-        // HTML TRUE | FALSE
+        // HTML (TRUE | FALSE)
         helper.setText(mailBody, true);
 
         return mimeMessage;

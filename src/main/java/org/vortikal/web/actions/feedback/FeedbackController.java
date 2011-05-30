@@ -108,7 +108,7 @@ public class FeedbackController implements Controller {
 
                         MimeMessage mimeMessage = createMimeMessage(
                                 javaMailSenderImpl, resource, emailMultipleTo,
-                                emailFrom, yourComment);
+                                emailFrom, yourComment, request);
 
                         mailExecutor.SendMail(javaMailSenderImpl, mimeMessage);
 
@@ -123,7 +123,7 @@ public class FeedbackController implements Controller {
 
                         m.put("tipResponse", "FAILURE-INVALID-EMAIL");
                     }
-                    // Unreachable because of thread
+                // Unreachable because of thread
                 } catch (Exception mtex) {
                     m.put("tipResponse", "FAILURE");
                     m.put("tipResponseMsg", mtex.getMessage());
@@ -136,7 +136,7 @@ public class FeedbackController implements Controller {
     }
 
     private MimeMessage createMimeMessage(JavaMailSenderImpl sender, Resource document, String[] mailTo,
-            String emailFrom, String comment)
+            String emailFrom, String comment, HttpServletRequest request)
             throws Exception {
 
         URL url = this.viewService.constructURL(document.getURI());
@@ -147,11 +147,13 @@ public class FeedbackController implements Controller {
 
         MimeMessage mimeMessage = sender.createMimeMessage(); 
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
-
-        helper.setSubject("Kommentar til: " + document.getTitle());
+        
+        org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(request);
+        
+        helper.setSubject(springRequestContext.getMessage("feedback.mail.subject-header-prefix") + ": " + document.getTitle());
         helper.setFrom(emailFrom);
         helper.setTo(mailTo);
-        // HTML TRUE | FALSE
+        // HTML (TRUE | FALSE)
         helper.setText(mailBody, true);
 
         return mimeMessage;

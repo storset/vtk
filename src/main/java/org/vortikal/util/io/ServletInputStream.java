@@ -42,8 +42,53 @@ public class ServletInputStream extends javax.servlet.ServletInputStream {
         this.inputStream = inputStream;
     }
 
+    // Override all methods of abstract class java.io.InputStream, and delegate
+    // them all to the wrapped instance. We want to make sure the most efficient
+    // implementation of these methods are actually used.
+    
+    @Override
     public int read() throws IOException {
         return this.inputStream.read();
+    }
+
+    @Override
+    public int available() throws IOException {
+        return this.inputStream.available();
+    }
+
+    @Override
+    public void close() throws IOException {
+        this.inputStream.close();
+    }
+
+    @Override
+    public void mark(int readlimit) {
+        this.inputStream.mark(readlimit);
+    }
+
+    @Override
+    public boolean markSupported() {
+        return this.inputStream.markSupported();
+    }
+
+    @Override
+    public int read(byte[] b) throws IOException {
+        return this.inputStream.read(b);
+    }
+
+    @Override
+    public int read(byte[] b, int off, int len) throws IOException {
+        return this.inputStream.read(b, off, len);
+    }
+
+    @Override
+    public void reset() throws IOException {
+        this.inputStream.reset();
+    }
+
+    @Override
+    public long skip(long n) throws IOException {
+        return this.inputStream.skip(n);
     }
     
 }

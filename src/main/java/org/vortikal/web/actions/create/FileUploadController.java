@@ -76,6 +76,7 @@ public class FileUploadController extends SimpleFormController {
         this.tempDir = tmp;
     }
 
+    @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         Service service = requestContext.getService();
@@ -90,6 +91,7 @@ public class FileUploadController extends SimpleFormController {
         return command;
     }
 
+    @Override
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
             BindException errors) throws Exception {
 
@@ -104,7 +106,7 @@ public class FileUploadController extends SimpleFormController {
         ServletFileUpload upload = new ServletFileUpload(factory);
 
         List<FileItem> items = new ArrayList<FileItem>();
-
+        
         @SuppressWarnings("unchecked")
         List<FileItem> fileItems = upload.parseRequest(request);
         for (FileItem item : fileItems) {

@@ -30,13 +30,8 @@
  */
 package org.vortikal.repository;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.channels.Channels;
-import java.nio.channels.FileChannel;
-import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -95,7 +90,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     private AuthorizationManager authorizationManager;
     private PrincipalManager principalManager;
     private Searcher searcher;
-    private File tempDir = new File(System.getProperty("java.io.tmpdir"));
     private String id;
     private int maxComments = 1000;
     private PeriodicThread periodicThread;
@@ -701,12 +695,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         this.authorizationManager.authorizeCreate(parent.getURI(), principal);
         checkMaxChildren(parent);
 
-        File tempFile = null;
         try {
-            // Write to a temporary file to avoid locking:
-            tempFile = writeTempFile(uri.getName(), inStream);
-
-            this.contentStore.storeContent(uri, new java.io.BufferedInputStream(new java.io.FileInputStream(tempFile)));
+            this.contentStore.storeContent(uri, inStream);
             ResourceImpl newResource = this.resourceHelper.create(principal, uri, false);
 
             // Store parent first to avoid transactional dead-lock-problems
@@ -732,10 +722,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             return newResource;
         } catch (CloneNotSupportedException e) {
             throw new IOException("An internal error occurred: unable to " + "clone() resource: " + uri);
-        } finally {
-            if (tempFile != null) {
-                tempFile.delete();
-            }
         }
     }
 
@@ -759,13 +745,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
         checkLock(r, principal);
         this.authorizationManager.authorizeReadWrite(uri, principal);
-        File tempFile = null;
         try {
-            // Write to a temporary file to avoid locking:
-            tempFile = writeTempFile(r.getName(), byteStream);
             Resource original = (ResourceImpl) r.clone();
 
-            this.contentStore.storeContent(uri, new java.io.BufferedInputStream(new java.io.FileInputStream(tempFile)));
+            this.contentStore.storeContent(uri, byteStream);
             r = this.resourceHelper.contentModification(r, principal);
 
             this.dao.store(r);
@@ -778,10 +761,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
         } catch (CloneNotSupportedException e) {
             throw new IOException("An internal error occurred: unable to " + "clone() resource: " + r);
-        } finally {
-            if (tempFile != null) {
-                tempFile.delete();
-            }
         }
     }
 
@@ -1210,29 +1189,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         return false;
     }
 
-    /**
-     * Writes to a temporary file (used to avoid lengthy blocking on file
-     * uploads).
-     * 
-     * XXX: should be handled on the client side?
-     */
-    private File writeTempFile(String name, InputStream byteStream) throws IOException {
-        ReadableByteChannel src = Channels.newChannel(byteStream);
-        File tempFile = File.createTempFile("tmpfile-" + name, null, this.tempDir);
-        FileChannel dest = new FileOutputStream(tempFile).getChannel();
-        int chunk = 100000;
-        long pos = 0;
-        while (true) {
-            long n = dest.transferFrom(src, pos, chunk);
-            if (n == 0) {
-                break;
-            }
-            pos += n;
-        }
-        src.close();
-        dest.close();
-        return tempFile;
-    }
 
     @Override
     public void setReadOnly(String token, boolean readOnly) throws AuthorizationException {
@@ -1326,17 +1282,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     @Required
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
-    }
-
-    public void setTempDir(String tempDirPath) {
-        File tmp = new File(tempDirPath);
-        if (!tmp.exists()) {
-            throw new IllegalArgumentException("Unable to set tempDir: file " + tmp + " does not exist");
-        }
-        if (!tmp.isDirectory()) {
-            throw new IllegalArgumentException("Unable to set tempDir: file " + tmp + " is not a directory");
-        }
-        this.tempDir = tmp;
     }
 
     public void setMaxComments(int maxComments) {

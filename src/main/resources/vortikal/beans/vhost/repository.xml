@@ -69,7 +69,6 @@
     <property name="commentDAO" ref="${repository.commentDao}" />
     <property name="contentStore" ref="${repository.contentStore}" />
     <property name="repositoryResourceHelper" ref="repositoryResourceHelper" />
-    <property name="tempDir" value="${repository.tempDir}" />
     <property name="maxResourceChildren" value="${repository.maxResourceChildren}" />
     <property name="permanentDeleteOverdueLimitInDays" value="${repository.permanentDeleteOverdueLimitInDays}" />
     <property name="searcher" ref="systemIndexSearcher" />
@@ -78,7 +77,7 @@
   </bean>
 
   <!--  Repository cache purge control wrapper -->
-  <bean id="repository.cachePurgeRepository" class="org.vortikal.repository.CachePurgeControlRepositoryWrapper">
+  <bean id="repository.cachePurgeRepository" class="org.vortikal.repository.LockingCacheControlRepositoryWrapper">
     <property name="wrappedRepository" ref="repository.internal"/>
     <property name="cache" ref="repository.cache"/>
   </bean>
@@ -152,7 +151,7 @@
     <property name="sqlMaps" ref="repository.statementMappings" />
   </bean>
 
-  <bean id="repository.cache" class="org.vortikal.repository.store.Cache">
+  <bean id="repository.cache" class="org.vortikal.repository.store.CacheNoLockManager">
     <property name="maxItems" value="${resourceCacheSize}" />
     <property name="wrappedAccessor" ref="${repository.dao}" />
   </bean>

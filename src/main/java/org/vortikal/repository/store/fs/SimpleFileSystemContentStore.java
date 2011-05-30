@@ -35,7 +35,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.channels.FileChannel;
 
 import org.apache.commons.logging.Log;
@@ -47,6 +46,7 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.RecoverableResource;
 import org.vortikal.repository.store.ContentStore;
 import org.vortikal.repository.store.DataAccessException;
+import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.service.URL;
 
 /**
@@ -137,20 +137,18 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
 
     public void storeContent(Path uri, InputStream inputStream) throws DataAccessException {
         String fileName = getLocalFilename(uri);
-
+        File dest = new File(fileName);
         try {
-            OutputStream stream = new java.io.FileOutputStream(new File(fileName));
-
-            // XXX: Review impl.
-            /* Write the input data to the resource: */
-            byte[] buffer = new byte[1000];
-            int n = 0;
-
-            while ((n = inputStream.read(buffer, 0, buffer.length)) != -1) {
-                stream.write(buffer, 0, n);
+            if (inputStream instanceof FileInputStream) {
+                FileChannel srcChannel = ((FileInputStream) inputStream).getChannel();
+                FileChannel dstChannel = new FileOutputStream(dest).getChannel();
+                dstChannel.transferFrom(srcChannel, 0, srcChannel.size());
+                srcChannel.close();
+                dstChannel.close();
+                return;
             }
-
-            stream.flush();
+            FileOutputStream stream = new FileOutputStream(dest);
+            StreamUtil.pipe(inputStream, stream);
             stream.close();
             inputStream.close();
         } catch (IOException e) {

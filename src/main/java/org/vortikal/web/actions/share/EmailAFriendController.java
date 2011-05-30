@@ -42,7 +42,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -52,10 +51,9 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.actions.mail.MailExecutor;
+import org.vortikal.web.actions.mail.MailHelper;
 import org.vortikal.web.actions.mail.MailTemplateProvider;
-import org.vortikal.web.actions.mail.MailValidator;
 import org.vortikal.web.service.Service;
-import org.vortikal.web.service.URL;
 
 public class EmailAFriendController implements Controller {
 
@@ -68,6 +66,7 @@ public class EmailAFriendController implements Controller {
     private LocaleResolver localeResolver;
     private Service viewService;
     
+
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
@@ -95,7 +94,6 @@ public class EmailAFriendController implements Controller {
 
             // Checks for userinput
             if (StringUtils.isBlank(emailTo) || StringUtils.isBlank(emailFrom)) {
-
                 // Save data from form and return it
                 if (StringUtils.isNotBlank(emailTo)) {
                     m.put("emailSavedTo", emailTo);
@@ -106,7 +104,6 @@ public class EmailAFriendController implements Controller {
                 if (StringUtils.isNotBlank(yourComment)) {
                     m.put("yourSavedComment", yourComment);
                 }
-
                 m.put("tipResponse", "FAILURE-NULL-FORM");
 
             } else {
@@ -118,11 +115,11 @@ public class EmailAFriendController implements Controller {
                     }
 
                     String[] emailMultipleTo = emailTo.split(",");
-                    if (MailValidator.isValidEmail(emailMultipleTo) && MailValidator.isValidEmail(emailFrom)) {
+                    if (MailHelper.isValidEmail(emailMultipleTo) && MailHelper.isValidEmail(emailFrom)) {
 
-                        MimeMessage mimeMessage = createMimeMessage(
-                                javaMailSenderImpl, resource, emailMultipleTo,
-                                emailFrom, comment);
+                        MimeMessage mimeMessage = MailHelper.createMimeMessage(javaMailSenderImpl,
+                                mailTemplateProvider, this.viewService, this.siteName, resource, emailMultipleTo,
+                                emailFrom, comment, resource.getTitle());
 
                         mailExecutor.SendMail(javaMailSenderImpl, mimeMessage);
 
@@ -141,7 +138,7 @@ public class EmailAFriendController implements Controller {
 
                         m.put("tipResponse", "FAILURE-INVALID-EMAIL");
                     }
-                // Unreachable because of thread
+                    // Unreachable because of thread
                 } catch (Exception mtex) {
                     m.put("tipResponse", "FAILURE");
                     m.put("tipResponseMsg", mtex.getMessage());
@@ -153,27 +150,6 @@ public class EmailAFriendController implements Controller {
         return new ModelAndView(this.viewName, m);
     }
 
-    private MimeMessage createMimeMessage(JavaMailSenderImpl sender, Resource document, String[] mailMultipleTo,
-            String emailFrom, String comment)
-            throws Exception {
-
-        URL url = this.viewService.constructURL(document.getURI());
-        
-        String mailBody = mailTemplateProvider.generateMailBody(
-                document.getTitle(), url,
-                emailFrom, comment, this.siteName);
-
-        MimeMessage mimeMessage = sender.createMimeMessage(); 
-        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
-
-        helper.setSubject(document.getTitle());
-        helper.setFrom(emailFrom);
-        helper.setTo(mailMultipleTo);
-        // HTML (TRUE | FALSE)
-        helper.setText(mailBody, true);
-
-        return mimeMessage;
-    }
 
     @Required
     public void setViewName(String viewName) {

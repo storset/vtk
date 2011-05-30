@@ -35,8 +35,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -44,7 +42,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -54,10 +51,9 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.actions.mail.MailExecutor;
+import org.vortikal.web.actions.mail.MailHelper;
 import org.vortikal.web.actions.mail.MailTemplateProvider;
-import org.vortikal.web.actions.mail.MailValidator;
 import org.vortikal.web.service.Service;
-import org.vortikal.web.service.URL;
 
 
 public class FeedbackController implements Controller {
@@ -74,6 +70,7 @@ public class FeedbackController implements Controller {
     private String emailTo;
     private String emailFrom;
     
+
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
@@ -99,17 +96,20 @@ public class FeedbackController implements Controller {
 
             // Checks for userinput
             if (StringUtils.isBlank(yourComment)) {
-
                 m.put("tipResponse", "FAILURE-NULL-FORM");
-
             } else {
                 try {
                     String[] emailMultipleTo = emailTo.split(",");
-                    if (MailValidator.isValidEmail(emailMultipleTo) && MailValidator.isValidEmail(emailFrom)) {
+                    if (MailHelper.isValidEmail(emailMultipleTo) && MailHelper.isValidEmail(emailFrom)) {
 
-                        MimeMessage mimeMessage = createMimeMessage(
-                                javaMailSenderImpl, resource, emailMultipleTo,
-                                emailFrom, yourComment, request);
+                        org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(
+                                request);
+
+                        MimeMessage mimeMessage = MailHelper.createMimeMessage(javaMailSenderImpl,
+                                mailTemplateProvider, this.viewService, this.siteName, resource, emailMultipleTo,
+                                emailFrom, yourComment, springRequestContext
+                                        .getMessage("feedback.mail.subject-header-prefix")
+                                        + ": " + resource.getTitle());
 
                         mailExecutor.SendMail(javaMailSenderImpl, mimeMessage);
 
@@ -124,7 +124,7 @@ public class FeedbackController implements Controller {
 
                         m.put("tipResponse", "FAILURE-INVALID-EMAIL");
                     }
-                // Unreachable because of thread
+                    // Unreachable because of thread
                 } catch (Exception mtex) {
                     m.put("tipResponse", "FAILURE");
                     m.put("tipResponseMsg", mtex.getMessage());
@@ -134,30 +134,6 @@ public class FeedbackController implements Controller {
 
         m.put("resource", this.resourceManager.createResourceWrapper());
         return new ModelAndView(this.viewName, m);
-    }
-
-    private MimeMessage createMimeMessage(JavaMailSenderImpl sender, Resource document, String[] mailTo,
-            String emailFrom, String comment, HttpServletRequest request)
-            throws Exception {
-
-        URL url = this.viewService.constructURL(document.getURI());
-        
-        String mailBody = mailTemplateProvider.generateMailBody(
-                document.getTitle(), url,
-                emailFrom, comment, this.siteName);
-
-        MimeMessage mimeMessage = sender.createMimeMessage(); 
-        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
-        
-        org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(request);
-        
-        helper.setSubject(springRequestContext.getMessage("feedback.mail.subject-header-prefix") + ": " + document.getTitle());
-        helper.setFrom(emailFrom);
-        helper.setTo(mailTo);
-        // HTML (TRUE | FALSE)
-        helper.setText(mailBody, true);
-
-        return mimeMessage;
     }
 
     @Required

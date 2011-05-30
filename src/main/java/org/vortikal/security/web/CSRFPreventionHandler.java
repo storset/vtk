@@ -454,7 +454,7 @@ implements HandlerFilter {
             try {
                 int n = 0;
                 long total = 0L;
-                while ((n = in.read(buffer, 0, 1024)) > 0) {
+                while ((n = in.read(buffer, 0, buffer.length)) > 0) {
                     total += n;
                     if (this.fileSizeMax > 0 && total > this.fileSizeMax) {
                         throw new FileUploadException("Upload limit exceeded");

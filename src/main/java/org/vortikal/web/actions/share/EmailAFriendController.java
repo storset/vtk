@@ -35,8 +35,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -55,6 +53,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.actions.mail.MailExecutor;
 import org.vortikal.web.actions.mail.MailTemplateProvider;
+import org.vortikal.web.actions.mail.MailValidator;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
@@ -119,7 +118,7 @@ public class EmailAFriendController implements Controller {
                     }
 
                     String[] emailMultipleTo = emailTo.split(",");
-                    if (isValidEmail(emailMultipleTo) && isValidEmail(emailFrom)) {
+                    if (MailValidator.isValidEmail(emailMultipleTo) && MailValidator.isValidEmail(emailFrom)) {
 
                         MimeMessage mimeMessage = createMimeMessage(
                                 javaMailSenderImpl, resource, emailMultipleTo,
@@ -214,27 +213,6 @@ public class EmailAFriendController implements Controller {
     @Required
     public void setSiteName(String siteName) {
         this.siteName = siteName;
-    }
-
-    private static boolean isValidEmail(String[] addrs) {
-        for (String addr : addrs) {
-            if (!isValidEmail(addr)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private static boolean isValidEmail(String addr) {
-        if (org.springframework.util.StringUtils.countOccurrencesOf(addr, "@") == 0) {
-            return false;
-        }
-        try {
-            new InternetAddress(addr);
-            return true;
-        } catch (AddressException e) {
-            return false;
-        }
     }
 
 }

@@ -73,4 +73,5 @@ public class MailExecutor {
     public void SendMail(JavaMailSenderImpl javaMailSenderImpl, MimeMessage msg) throws Exception {
         taskExecutor.execute(new SendMailTask(javaMailSenderImpl, msg));
     }
+    
 }

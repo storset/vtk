@@ -34,7 +34,7 @@ $(document).ready( function() {
     $("#manually-approve-container").delegate("input", "click", function(e) {
       var textfield = $("#resource\\.manually-approved-resources");
       var val = textfield.val();
-      var uri = $(this).parent().parent().find("a.approve-link").attr("href");
+      var uri = $(this).val();
       if ($(this).attr("checked")) {
         if (val.length) {
           val += ", " + uri;

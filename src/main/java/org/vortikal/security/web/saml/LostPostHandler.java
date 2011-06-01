@@ -87,7 +87,8 @@ public class LostPostHandler implements Controller {
             Config config = new Config(this.workingDirectory, this.limitPerAddress);
             
             PostState state = PostState.create(config, request);
-            Cookie cookie = createCookie(state.identifier, this.savedStateTimeout);
+            int cookieTimeout = -1;
+            Cookie cookie = createCookie(state.identifier, cookieTimeout);
             response.addCookie(cookie);
         } catch (IOException e) {
             throw new AuthenticationProcessingException(e);

@@ -227,11 +227,11 @@ function generateTableRow(resource, i) {
     var html = "<tr>";
   }
   if (resource.approved) {
-    html += "<td><input type='checkbox' checked='checked' />";
+    html += "<td><input type='checkbox' checked='checked' value='" + resource.uri + "'/>";
   } else {
-    html += "<td><input type='checkbox' />";
+    html += "<td><input type='checkbox' value='" + resource.uri + "'/>";
   }
-  html += "<a class='approve-link' href='" + resource.uri + "' title='" + resource.uri + "'>" + resource.title
+  html += "<a class='approve-link' href='http://" + resource.uri + "' title='" + resource.title + "'>" + resource.title
       + "</a></td>" + "<td>" + resource.source + "</td><td class='approve-published'>" + resource.published
       + "</td></tr>";
   return html;

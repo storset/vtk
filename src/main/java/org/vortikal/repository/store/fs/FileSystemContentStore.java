@@ -53,9 +53,9 @@ import org.vortikal.web.service.URL;
  * File system content store implementation operating directly on the repository
  * data.
  */
-public class SimpleFileSystemContentStore implements InitializingBean, ContentStore {
+public class FileSystemContentStore implements InitializingBean, ContentStore {
 
-    private static Log logger = LogFactory.getLog(SimpleFileSystemContentStore.class);
+    private static Log logger = LogFactory.getLog(FileSystemContentStore.class);
 
     private String repositoryDataDirectory;
     private String repositoryTrashCanDirectory;

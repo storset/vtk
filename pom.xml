@@ -345,7 +345,7 @@
             <exclude>**/Abstract*.java</exclude>
             <!-- Threaded tests -->
             <exclude>**/SimpleMethodInvokingTriggerBeanTest.java</exclude>
-            <exclude>**/SimpleFileSystemContentStoreTest.java</exclude>
+            <exclude>**/FileSystemContentStoreTest.java</exclude>
             <exclude>**/MemoryContentStoreTest.java</exclude>
           </excludes>
         </configuration>

@@ -43,16 +43,17 @@ import org.vortikal.repository.store.AbstractContentStoreTest;
 import org.vortikal.repository.store.ContentStore;
 
 
-public class SimpleFileSystemContentStoreTest extends AbstractContentStoreTest {
+public class FileSystemContentStoreTest extends AbstractContentStoreTest {
 
     private ContentStore store;
 
     private String tmpDir;
 
+    @Override
     protected void setUp() throws Exception {
         BasicConfigurator.configure();
         super.setUp();
-        SimpleFileSystemContentStore store = new SimpleFileSystemContentStore();
+        FileSystemContentStore store = new FileSystemContentStore();
         this.tmpDir = System.getProperty("java.io.tmpdir") + "/contentStore" + getRandomIntAsString();
         
         File tmpDirFile = new File(this.tmpDir);
@@ -61,6 +62,7 @@ public class SimpleFileSystemContentStoreTest extends AbstractContentStoreTest {
         setStore(store);
     }
 
+    @Override
     protected void tearDown() throws Exception {
         super.tearDown();
         
@@ -71,6 +73,7 @@ public class SimpleFileSystemContentStoreTest extends AbstractContentStoreTest {
         return String.valueOf(generator.nextInt());
     }
 
+    @Override
     public ContentStore getStore() {
         return this.store;
     }
@@ -80,6 +83,7 @@ public class SimpleFileSystemContentStoreTest extends AbstractContentStoreTest {
     }
     
     
+    @Override
     public void testCreateResource() throws IOException {
         Path uri = Path.fromString("/test.html");
         getStore().createResource(uri, false);

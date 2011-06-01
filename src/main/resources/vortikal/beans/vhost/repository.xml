@@ -134,7 +134,7 @@
   </bean>
 
   <bean id="repository.fsContentStore"
-        class="org.vortikal.repository.store.fs.SimpleFileSystemContentStore">
+        class="org.vortikal.repository.store.fs.FileSystemContentStore">
     <property name="urlEncodeFileNames" value="${urlEncodeFileNames}" />
     <property name="repositoryDataDirectory" value="${repositoryDataDirectory}" />
     <property name="repositoryTrashCanDirectory" value="${repositoryTrashCanDirectory}" />

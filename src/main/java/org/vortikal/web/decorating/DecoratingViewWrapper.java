@@ -179,7 +179,7 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
         if (view instanceof HtmlRenderer) {
             HtmlPageContent page = ((HtmlRenderer) view).render(model, requestWrapper);
             decorate(model, request, decoratorList, page, response);
-            
+
         } else {
             try {
                 view.render(model, requestWrapper, bufferedResponse);
@@ -253,7 +253,7 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
         PageContent content = new ContentImpl(new String(contentBuffer, characterEncoding),
                                           characterEncoding);
 
-        if (this.decorators != null) {
+        if (this.decorators != null && "plain".equals(request.getParameter("vrtx"))) {
             for (Decorator decorator: decoratorList) {
 
                 content = decorator.decorate(model, request, content);
@@ -284,7 +284,7 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
         PageContent content = page;
         String characterEncoding = page.getHtmlContent().getCharacterEncoding();
         String contentType = "text/html";
-        if (this.decorators != null) {
+        if (this.decorators != null && "plain".equals(request.getParameter("vrtx"))) {
             for (Decorator decorator: decoratorList) {
 
                 content = decorator.decorate(model, request, content);

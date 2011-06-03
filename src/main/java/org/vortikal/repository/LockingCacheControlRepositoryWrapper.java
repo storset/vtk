@@ -132,14 +132,17 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
         // - Destination parent URI (may be same as source parent URI)
         // - Destination URI
         List<Path> lockUris = new ArrayList<Path>();
-        if (srcUri.getParent() != null) {
-            lockUris.add(srcUri.getParent());
+        Path srcParent = srcUri.getParent();
+        Path destParent = destUri.getParent();
+        
+        if (srcParent != null) {
+            lockUris.add(srcParent);
         }
         lockUris.add(srcUri);
         lockUris.addAll(getCachedDescendants(srcUri));
-        
-        if (destUri.getParent() != null && ! destUri.getParent().equals(srcUri.getParent())) {
-            lockUris.add(destUri.getParent());
+
+        if (destParent != null && ! destParent.equals(srcParent)) {
+            lockUris.add(destParent);
         }
         if (!srcUri.equals(destUri)) {
             lockUris.add(destUri);            
@@ -155,8 +158,6 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
             flushFromCache(srcUri, true, "move");
             flushFromCache(destUri, true, "move");
 
-            Path srcParent = srcUri.getParent();
-            Path destParent = destUri.getParent();
             if (srcParent != null) {
                 flushFromCache(srcParent, false, "move");
             }

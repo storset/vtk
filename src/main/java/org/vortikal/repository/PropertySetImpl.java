@@ -80,14 +80,17 @@ public class PropertySetImpl implements PropertySet, Cloneable {
         this.id = id;
     }
      
+    @Override
     public Path getURI() {
         return this.uri;
     }
 
+    @Override
     public String getName() {
         return this.uri.getName();
     }
 
+    @Override
     public String getResourceType() {
         return this.resourceType;
     }
@@ -112,7 +115,6 @@ public class PropertySetImpl implements PropertySet, Cloneable {
         }
     }
     
-
     public int getAclInheritedFrom() {
         return this.aclInheritedFrom;
     }
@@ -133,10 +135,12 @@ public class PropertySetImpl implements PropertySet, Cloneable {
         map.put(propDef.getName(), property);
     }
  
+    @Override
     public Property getProperty(PropertyTypeDefinition type) {
         return getProperty(type.getNamespace(), type.getName());
     }
     
+    @Override
     public Property getPropertyByPrefix(String prefix, String name) {
         Namespace namespace = Namespace.getNamespaceFromPrefix(prefix);
 
@@ -156,6 +160,7 @@ public class PropertySetImpl implements PropertySet, Cloneable {
         return map.get(name);
     }
 
+    @Override
     public Property getProperty(Namespace namespace, String name) {
         Map<String, Property> map = this.propertyMap.get(namespace);
         if (map == null) return null;
@@ -170,14 +175,16 @@ public class PropertySetImpl implements PropertySet, Cloneable {
         return null;
     }
 
+    @Override
     public List<Property> getProperties(Namespace namespace) {
         Map<String, Property> map = this.propertyMap.get(namespace);
         if (map == null) return new ArrayList<Property>();
         return new ArrayList<Property>(map.values());
     }
 
+    @Override
     public List<Property> getProperties() {
-        List<Property> props = new ArrayList<Property>();
+        List<Property> props = new ArrayList<Property>(20);
         for (Map<String, Property> map: this.propertyMap.values()) {
             props.addAll(map.values());
         }
@@ -192,9 +199,16 @@ public class PropertySetImpl implements PropertySet, Cloneable {
         clone.setUri(this.uri);
         clone.setAclInheritedFrom(this.aclInheritedFrom);
         clone.setInheritedAcl(this.aclInherited);
-        
-        for (Property prop: getProperties()) {
-            clone.addProperty((Property) prop.clone());
+
+        // Clone all props:
+        for (Map.Entry<Namespace, Map<String,Property>> entry: this.propertyMap.entrySet()) {
+            Namespace ns = entry.getKey();
+            Map<String,Property> propMap = entry.getValue();
+            Map<String,Property> clonePropMap = new HashMap<String,Property>(propMap.size() + propMap.size()/2);
+            for (Map.Entry<String,Property> propEntry: propMap.entrySet()) {
+                clonePropMap.put(propEntry.getKey(), (Property)propEntry.getValue().clone());
+            }
+            clone.propertyMap.put(ns, clonePropMap);
         }
         
         return clone;

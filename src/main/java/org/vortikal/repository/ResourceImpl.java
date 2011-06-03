@@ -250,12 +250,20 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         clone.setAclInheritedFrom(this.getAclInheritedFrom());
         clone.setLock(lock);
         clone.setResourceType(super.resourceType);
-        for (Property prop : getProperties()) {
-            clone.addProperty((Property) prop.clone());
-        }
         
         // Special case child URI list, shallow copy only.
         clone.childURIs = this.childURIs;
+        
+        // Clone all props:
+        for (Map.Entry<Namespace, Map<String,Property>> entry: super.propertyMap.entrySet()) {
+            Namespace ns = entry.getKey();
+            Map<String,Property> propMap = entry.getValue();
+            Map<String,Property> clonePropMap = new HashMap<String,Property>(propMap.size() + propMap.size()/2);
+            for (Map.Entry<String,Property> propEntry: propMap.entrySet()) {
+                clonePropMap.put(propEntry.getKey(), (Property)propEntry.getValue().clone());
+            }
+            clone.propertyMap.put(ns, clonePropMap);
+        }
         
         return clone;
     }

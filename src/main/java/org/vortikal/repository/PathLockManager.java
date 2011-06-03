@@ -53,14 +53,14 @@ import org.vortikal.repository.Path;
  *    managing the lock map (getLock(Path), returnLock(Lock) and unlockInternal(Path)).
  *
  */
-public class NamespaceLockManager {
+public class PathLockManager {
     private int maxIterations = 80;
     private long iterationWaitTimeout = 1000;  // 80 * 1000 = 80 seconds of maximum wait time for a single URI lock
 
     /* All access to this map must be synchronized on the map object itself */
     private final Map<Path, Lock> locks = new HashMap<Path, Lock>();
 
-    private Log logger = LogFactory.getLog(NamespaceLockManager.class);
+    private Log logger = LogFactory.getLog(PathLockManager.class);
 
     /**
      * Aquires lock on a single URI. Blocks until lock is

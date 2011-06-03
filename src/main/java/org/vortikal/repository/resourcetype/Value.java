@@ -187,6 +187,7 @@ public class Value implements Cloneable, Comparable<Value> {
         throw new IllegalStateException("Unable to create object value: Illegal type: " + this.type);
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj == null || !(obj instanceof Value)) {
             return false;
@@ -220,6 +221,7 @@ public class Value implements Cloneable, Comparable<Value> {
         }
     }
 
+    @Override
     public int hashCode() {
         int hash = 7 * 31;
 
@@ -261,6 +263,7 @@ public class Value implements Cloneable, Comparable<Value> {
         }
     }
 
+    @Override
     public int compareTo(Value other) {
         if (this.type != other.type) {
             throw new IllegalArgumentException("Values not of same type");
@@ -282,6 +285,7 @@ public class Value implements Cloneable, Comparable<Value> {
         }
     }
 
+    @Override
     public String toString() {
         switch (this.type) {
         case STRING:

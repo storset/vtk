@@ -49,7 +49,6 @@ import org.vortikal.repository.search.QueryException;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.store.CacheNoLockManager;
-import org.vortikal.repository.store.LockManager;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 

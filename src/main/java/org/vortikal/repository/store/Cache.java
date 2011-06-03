@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.store;
 
+import org.vortikal.repository.LockManager;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

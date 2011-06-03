@@ -76,7 +76,7 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
     private CacheNoLockManager cache;
     private Repository wrappedRepository;
     private final Log logger = LogFactory.getLog(LockingCacheControlRepositoryWrapper.class);
-    private final LockManager lockManager = new LockManager();
+    private final NamespaceLockManager lockManager = new NamespaceLockManager();
     private File tempDir = new File(System.getProperty("java.io.tmpdir"));
 
     @Override

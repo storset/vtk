@@ -30,7 +30,7 @@
  */
 package org.vortikal.repository.store;
 
-import org.vortikal.repository.LockManager;
+import org.vortikal.repository.NamespaceLockManager;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -115,7 +115,7 @@ public class Cache implements DataAccessor, InitializingBean {
 
     private Log logger = LogFactory.getLog(this.getClass());
     private DataAccessor wrappedAccessor;
-    private LockManager lockManager = new LockManager();
+    private NamespaceLockManager lockManager = new NamespaceLockManager();
     private int maxItems = 1000;
     private double evictionRatio = 0.1;
     private int removeItems;
@@ -616,7 +616,7 @@ public class Cache implements DataAccessor, InitializingBean {
     public void clear() {
         synchronized (this.items) {
             this.items.clear();
-            this.lockManager = new LockManager();
+            this.lockManager = new NamespaceLockManager();
         }
     }
 

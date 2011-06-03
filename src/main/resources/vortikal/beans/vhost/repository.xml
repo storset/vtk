@@ -76,16 +76,17 @@
     <property name="permissionBlacklist" ref="repository.acl.blacklist" />
   </bean>
 
-  <!--  Repository cache purge control wrapper -->
-  <bean id="repository.cachePurgeRepository" class="org.vortikal.repository.LockingCacheControlRepositoryWrapper">
+  <!--  Repository lock and cache control wrapper -->
+  <bean id="repository.lockingCacheControlWrapper" class="org.vortikal.repository.LockingCacheControlRepositoryWrapper">
     <property name="wrappedRepository" ref="repository.internal" />
     <property name="cache" ref="repository.cache" />
     <property name="tempDir" value="${repository.tempDir}" />
   </bean>
 
-  <!-- Wrapper around the repository that caches retrievals when executing in a servlet request: -->
+  <!-- Wrapper around the repository that caches retrievals in thread-local
+       context when executing in a servlet request: -->
   <bean id="repository" class="org.vortikal.web.RequestLocalRepository">
-    <property name="repository" ref="repository.cachePurgeRepository"/>
+    <property name="repository" ref="repository.lockingCacheControlWrapper"/>
   </bean>
 
   <!-- Default data source setup -->

@@ -44,6 +44,14 @@ import org.vortikal.repository.Path;
 
 /**
  * Manager for locks on cache items (URIs).
+ * 
+ * There are two main "synchronization domains" in this code.
+ * 1. Synchronization on individual lock objects, over which multiple threads contend for exclusive access to paths.
+
+ * 2. Synchronization on the map holding any locks currently in use and management
+ *    of lock disposal. This synchronization is exclusively handled by the code
+ *    managing the lock map (getLock(Path), returnLock(Lock) and unlockInternal(List<Path>)).
+ *
  */
 public class LockManager {
     private int maxIterations = 80;
@@ -85,14 +93,14 @@ public class LockManager {
     }
     
     /**
-     * Releases locks on a list of URIs. Wakes up threads waiting on
+     * Releases locks on a list of URIs. Wakes up any threads waiting on
      * the locks.
      *
      * @param uris the URIs to unlock.
      */
     public void unlock(List<Path> uris) {
         for (Path uri: uris) {
-            getLock(uri).release();
+            unlockInternal(uri);
         }
     }
     
@@ -113,11 +121,10 @@ public class LockManager {
             
             boolean haveLock = false;
             int iteration = 1;
-            Lock lock = getLock(uri);   // Request lock
-            lock.incrementUseCount();   // Register as contender for this particular lock
+            Lock lock = getLock(uri);   // Request lock object
             
             while (!haveLock) {
-                /* Try at most this.maxIterations times to claim the lock */
+                // Try at most this.maxIterations times to claim the lock
                 if (this.logger.isDebugEnabled()) {
                     this.logger.debug("Claiming " + uri);
                 }
@@ -147,9 +154,11 @@ public class LockManager {
                                 " after " + iteration + " iterations");
                         } finally {
                             // Clean up, we failed.
-                            lock.decrementUseCount(); // Decrement use count to allow the lock object to be disposed
-                                                      // when no more threads are competing for it.
-                            unlock(claimedLocks);     // Release any locks we managed to claim as well.
+                            // Return current lock, so it may be disposed of.
+                            returnLock(lock);
+
+                            // Release any locks we managed to claim as well.
+                            unlock(claimedLocks);     
                         }
                     }
                 }
@@ -161,7 +170,26 @@ public class LockManager {
         return Collections.unmodifiableList(claimedLocks);
     }
     
+    private void unlockInternal(Path uri) {
+        Lock lock = null;
+        synchronized (this.locks) {
+            lock = this.locks.get(uri);
+            if (lock == null) {
+                throw new IllegalStateException("Thread "
+                        + Thread.currentThread().getName()
+                        + " tried to release lock on path '"
+                        + uri + "', but there is currently no registered lock for that path.");
+            }
+            if (logger.isDebugEnabled()) {
+                logger.debug("releasing " + uri);
+            }
 
+            returnLock(lock);
+        }
+
+        lock.release(); // Allow other threads waiting for this lock to proceed
+    }
+    
     /**
      * Gets a lock instance. The instance maps one to one to resource
      * URIs. This method itself never blocks for a long time.
@@ -177,23 +205,31 @@ public class LockManager {
                 lock = new Lock(uri);
                 this.locks.put(uri, lock);
             }
+            ++lock.useCount;
         }
 
         return lock;
     }
-    
+
     /**
-     * Removes a lock from the lock table.
-     * This method itself never blocks for a long time.
-     * 
-     * @param uri a <code>String</code> value
+     * Returns a lock object (not the same as releasing the lock) so it may be
+     * disposed of if no longer in use.
+     * @param lock The lock object to return.
      */
-    private void disposeLock(Path uri) {
+    private void returnLock(Lock lock) {
         synchronized (this.locks) {
-            this.locks.remove(uri);
+            if (--lock.useCount <= 0) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Use count for lock on path '" 
+                            + lock.uri 
+                            + "' reached "
+                            + lock.useCount + ", disposing it.");
+                }
+                this.locks.remove(lock.uri);
+            }
         }
     }
-
+    
     /**
      * A lock on a single URI in the namespace.
      */
@@ -201,30 +237,10 @@ public class LockManager {
 
         private final Path uri;
         private Thread owner = null;
-        private int useCount = 0;
+        int useCount = 0;
 
         Lock(Path uri) {
             this.uri = uri;
-        }
-        
-        /**
-         * Increment use count for this particular lock object
-         */
-        synchronized void incrementUseCount() {
-            ++this.useCount;
-        }
-        
-        /**
-         * Decrement use count for this particular lock object.
-         * When use count reaches 0, the lock object will be disposed of.
-         */
-        synchronized void decrementUseCount() {
-            if (--this.useCount <= 0) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Lock use count is " + this.useCount + ", disposing it.");
-                }
-                disposeLock(this.uri);
-            }
         }
         
         /**
@@ -269,10 +285,6 @@ public class LockManager {
          */
         synchronized void release() {
  
-            if (logger.isDebugEnabled()) {
-                logger.debug("releasing " + this.uri);
-            }
-
             if (this.owner == null) {
                 throw new IllegalStateException(
                     "Thread " + Thread.currentThread().getName() +
@@ -288,12 +300,17 @@ public class LockManager {
                     " owned by thread " + this.owner.getName());
             }
 
-            decrementUseCount();
-            
             // Free for grabs
             this.owner = null;
             // Wake up one waiting thread and let it acquire the lock object.
             notify(); 
+        }
+        
+        @Override
+        public String toString() {
+            return "Lock [path = " + this.uri 
+                    + ", current owner = " + this.owner
+                    + ", usecount = " + this.useCount + "]";
         }
 
     }

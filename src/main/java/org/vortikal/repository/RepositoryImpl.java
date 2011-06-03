@@ -68,7 +68,7 @@ import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.token.TokenManager;
 
 /**
- * A (still non-transactional) implementation of the
+ * A semi-transactional implementation of the
  * <code>org.vortikal.repository.Repository</code> interface.
  * 
  * XXX: implement locking of depth 'infinity' XXX: namespace locking/concurrency
@@ -148,7 +148,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         } else {
             this.authorizationManager.authorizeRead(uri, principal);
         }
-        
+
         try {
             return (Resource) resource.clone();
         } catch (CloneNotSupportedException e) {
@@ -193,8 +193,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             this.authorizationManager.authorizeRead(uri, principal);
         }
         
-        InputStream is = this.contentStore.getInputStream(uri);
-        return is;
+        return this.contentStore.getInputStream(uri);
     }
 
     @Override

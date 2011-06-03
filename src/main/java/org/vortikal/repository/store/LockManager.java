@@ -50,7 +50,7 @@ import org.vortikal.repository.Path;
 
  * 2. Synchronization on the map holding any locks currently in use and management
  *    of lock disposal. This synchronization is exclusively handled by the code
- *    managing the lock map (getLock(Path), returnLock(Lock) and unlockInternal(List<Path>)).
+ *    managing the lock map (getLock(Path), returnLock(Lock) and unlockInternal(Path)).
  *
  */
 public class LockManager {

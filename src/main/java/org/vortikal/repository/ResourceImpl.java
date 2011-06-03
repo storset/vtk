@@ -264,7 +264,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
             }
             clone.propertyMap.put(ns, clonePropMap);
         }
-        
+
         return clone;
     }
 

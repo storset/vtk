@@ -46,7 +46,8 @@ import org.vortikal.repository.Path;
  * Manager for locks on cache items (URIs).
  * 
  * There are two main "synchronization domains" in this code.
- * 1. Synchronization on individual lock objects, over which multiple threads contend for exclusive access to paths.
+ * 1. Synchronization on individual lock objects, over which multiple threads
+ *    contend for exclusive access to paths.
 
  * 2. Synchronization on the map holding any locks currently in use and management
  *    of lock disposal. This synchronization is exclusively handled by the code

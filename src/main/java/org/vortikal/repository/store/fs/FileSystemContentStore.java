@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, 2007, University of Oslo, Norway
+/* Copyright (c) 2006, 2007, 2011 University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -112,9 +112,9 @@ public class FileSystemContentStore implements InitializingBean, ContentStore {
 
     @Override
     public void deleteResource(Path uri) {
-        String fileName = getLocalFilename(uri);
         // Don't delete root
-        if (!uri.equals(Path.ROOT)) {
+        if (! uri.isRoot()) {
+            String fileName = getLocalFilename(uri);
             deleteFiles(new File(fileName));
         }
     }
@@ -122,14 +122,11 @@ public class FileSystemContentStore implements InitializingBean, ContentStore {
     private void deleteFiles(File f) {
         if (!f.isDirectory()) {
             f.delete();
-
             return;
         }
-
-        File[] children = f.listFiles();
-
-        for (int i = 0; i < children.length; i++) {
-            deleteFiles(children[i]);
+        
+        for (File child: f.listFiles()) {
+            deleteFiles(child);
         }
 
         f.delete();
@@ -149,8 +146,10 @@ public class FileSystemContentStore implements InitializingBean, ContentStore {
     public void storeContent(Path uri, InputStream inputStream) throws DataAccessException {
         String fileName = getLocalFilename(uri);
         File dest = new File(fileName);
+
         try {
             if (inputStream instanceof FileInputStream) {
+                // Optimized path for local file streams
                 FileChannel srcChannel = ((FileInputStream) inputStream).getChannel();
                 FileChannel dstChannel = new FileOutputStream(dest).getChannel();
                 dstChannel.transferFrom(srcChannel, 0, srcChannel.size());
@@ -158,15 +157,15 @@ public class FileSystemContentStore implements InitializingBean, ContentStore {
                 dstChannel.close();
                 return;
             }
-            FileOutputStream stream = new FileOutputStream(dest);
-            StreamUtil.pipe(inputStream, stream);
-            stream.close();
-            inputStream.close();
+            
+            FileOutputStream outputStream = new FileOutputStream(dest);
+            StreamUtil.pipe(inputStream, outputStream, 16384, true);
+            
         } catch (IOException e) {
             throw new DataAccessException("Store content [" + uri + "] failed", e);
         }
     }
-
+    
     @Override
     public void copy(Path srcURI, Path destURI) throws DataAccessException {
         String fileNameFrom = getLocalFilename(srcURI);
@@ -188,12 +187,12 @@ public class FileSystemContentStore implements InitializingBean, ContentStore {
         toDir.mkdir();
 
         File[] children = fromDir.listFiles();
-        for (int i = 0; i < children.length; i++) {
-            File newFile = new File(toDir.getCanonicalPath() + File.separator + children[i].getName());
-            if (children[i].isFile()) {
-                copyFile(children[i], newFile);
+        for (File child: children) {
+            File newFile = new File(toDir.getCanonicalPath() + File.separator + child.getName());
+            if (child.isFile()) {
+                copyFile(child, newFile);
             } else {
-                copyDir(children[i], newFile);
+                copyDir(child, newFile);
             }
         }
     }

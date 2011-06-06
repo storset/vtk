@@ -66,6 +66,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
     private ContentStore contentStore;
     private ContentRepresentationRegistry contentRepresentationRegistry;
 
+    @Override
     public ResourceImpl create(Principal principal, Path uri, boolean collection) throws IOException {
         if (logger.isDebugEnabled()) {
             logger.debug("Evaluate create: " + uri);
@@ -81,6 +82,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         return ctx.getNewResource();
     }
 
+    @Override
     public ResourceImpl propertiesChange(ResourceImpl originalResource, Principal principal,
             ResourceImpl suppliedResource) throws AuthenticationException, AuthorizationException,
             InternalRepositoryException, IOException {
@@ -96,6 +98,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         return ctx.getNewResource();
     }
 
+    @Override
     public ResourceImpl commentsChange(ResourceImpl originalResource, Principal principal, ResourceImpl suppliedResource)
             throws AuthenticationException, AuthorizationException, InternalRepositoryException, IOException {
 
@@ -110,6 +113,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         return ctx.getNewResource();
     }
 
+    @Override
     public ResourceImpl contentModification(ResourceImpl resource, Principal principal) throws IOException {
         if (logger.isDebugEnabled()) {
             logger.debug("Evaluate content modification: " + resource.getURI());
@@ -121,6 +125,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         return ctx.getNewResource();
     }
 
+    @Override
     public ResourceImpl nameChange(ResourceImpl original, ResourceImpl resource, Principal principal)
             throws IOException {
         if (logger.isDebugEnabled()) {
@@ -134,6 +139,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         return ctx.getNewResource();
     }
 
+    @Override
     public ResourceImpl systemChange(ResourceImpl originalResource, Principal principal, ResourceImpl suppliedResource)
             throws AuthenticationException, AuthorizationException, InternalRepositoryException, IOException {
 
@@ -153,12 +159,13 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
      * XXX: This hard coded list must be replaced by standard prop handling
      * methods..
      */
+    @Override
     public PropertySet getFixedCopyProperties(ResourceImpl resource, Principal principal, Path destUri)
             throws CloneNotSupportedException {
         PropertySetImpl fixedProps = new PropertySetImpl();
         fixedProps.setUri(destUri);
 
-        java.util.Date now = new java.util.Date();
+        final java.util.Date now = new java.util.Date();
 
         Property owner = (Property) resource.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.OWNER_PROP_NAME)
                 .clone();

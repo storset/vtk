@@ -105,6 +105,7 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
     private boolean appendCharacterEncodingToContentType = true;
     private Map<String, Object> staticHeaders = null;
     private View documentTooLargeView;
+    private String preventDecoratingParameter;
 
     public void setMaxDocumentSize(long maxDocumentSize) {
         this.maxDocumentSize = maxDocumentSize;
@@ -150,6 +151,11 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
 
     public void setDocumentTooLargeView(View documentTooLargeView) {
         this.documentTooLargeView = documentTooLargeView;
+    }
+
+
+    public void setPreventDecoratingParameter(String preventDecoratingParameter) {
+        this.preventDecoratingParameter = preventDecoratingParameter;
     }
 
 
@@ -253,9 +259,8 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
         PageContent content = new ContentImpl(new String(contentBuffer, characterEncoding),
                                           characterEncoding);
 
-        if (this.decorators != null && !"plain".equals(request.getParameter("vrtx"))) {
+        if (shouldDecorate(request)) {
             for (Decorator decorator: decoratorList) {
-
                 content = decorator.decorate(model, request, content);
                 if (logger.isDebugEnabled()) {
                     logger.debug("Invoked decorator: " + decorator);
@@ -284,9 +289,9 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
         PageContent content = page;
         String characterEncoding = page.getHtmlContent().getCharacterEncoding();
         String contentType = "text/html";
-        if (this.decorators != null && !"plain".equals(request.getParameter("vrtx"))) {
+        
+        if (shouldDecorate(request)) {
             for (Decorator decorator: decoratorList) {
-
                 content = decorator.decorate(model, request, content);
                 if (logger.isDebugEnabled()) {
                     logger.debug("Invoked decorator: " + decorator);
@@ -342,7 +347,14 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
         }
     }
     
-
+    private boolean shouldDecorate(HttpServletRequest request) {
+        boolean decorate = this.decorators != null;
+        if (decorate && this.preventDecoratingParameter != null) {
+            decorate = request.getParameter(this.preventDecoratingParameter) == null;
+        }
+        return decorate;
+    }
+    
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append(this.getClass().getName()).append(":");

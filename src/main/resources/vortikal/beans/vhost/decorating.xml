@@ -2,7 +2,6 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
-
   <bean id="decoratingViewWrapper"
         class="org.vortikal.web.decorating.DecoratingViewWrapper">
     <property name="decorators">
@@ -10,6 +9,7 @@
         <ref bean="decorating.templateDecorator" />
       </list>
     </property>
+    <property name="preventDecoratingParameter" value="x-prevent-decorating" />
   </bean>
 
   <bean id="decorating.templateDecorator"
@@ -206,6 +206,28 @@
         <ref bean="decorating.includeNamespace" />
         <ref bean="decorating.cssNamespace" />
       </set>
+    </property>
+  </bean>
+
+  <bean id="decorating.plainViewService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="x-decorating-mode" />
+          <property name="parameterValue" value="plain" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <bean class="org.vortikal.web.display.ForwardingController">
+        <property name="service" ref="viewService" />
+        <property name="requestParameters">
+          <map>
+            <entry key="x-prevent-decorating" value="true" />
+          </map>
+        </property>
+      </bean>
     </property>
   </bean>
 

@@ -446,6 +446,7 @@ public class RequestLocalRepository implements Repository {
     public void init() throws Exception {
     }
 
+    @Override
     public void purgeTrash() {
         this.repository.purgeTrash();
     }

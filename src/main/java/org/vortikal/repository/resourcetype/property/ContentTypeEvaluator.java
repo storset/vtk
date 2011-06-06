@@ -54,6 +54,7 @@ public class ContentTypeEvaluator implements PropertyEvaluator {
     private int regexpChunkSize = 1024;
     private Charset peekCharacterEncoding = Charset.forName("utf-8");
     
+    @Override
     public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
         Type evalType = ctx.getEvaluationType();
 
@@ -122,5 +123,4 @@ public class ContentTypeEvaluator implements PropertyEvaluator {
             }
         }
     }
-
 }

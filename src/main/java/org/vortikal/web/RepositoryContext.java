@@ -30,6 +30,7 @@
  */
 package org.vortikal.web;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,25 +39,93 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.TypeInfo;
 
-
+/**
+ * For corner cases, some form of cache limiting should probably be done..
+ */
 public class RepositoryContext {
 
-    private Map<String, Map<String, Map<Path, Object>>> tokenMap = 
-        new HashMap<String, Map<String, Map<Path, Object>>>();
+    private final Map<String,ObjectStore> tokenMap = new HashMap<String,ObjectStore>();
+    
+    private static enum Category {
+        FOR_PROCESSING_HIT,
+        FOR_PROCESSING_MISS,
+        NOT_FOR_PROCESSING_HIT,
+        NOT_FOR_PROCESSING_MISS,
+        TYPE_INFO_HIT,
+        TYPE_INFO_MISS
+    }
+    
+    // Categorized path object store/cache
+    private static final class ObjectStore {
 
-    private static final String KEY_RETRIEVE_FOR_PROCESSING_HITS = "retrieveForProcessingHits";
-    private static final String KEY_RETRIEVE_FOR_PROCESSING_MISSES = "retrieveForProcessingMisses";
-    private static final String KEY_RETRIEVE_NOT_FOR_PROCESSING_HITS = "retrieveNotForProcessingHits";
-    private static final String KEY_RETRIEVE_NOT_FOR_PROCESSING_MISSES = "retrieveNotForProcessingMisses";
+        private Map<Category, Map<Path, Object>> store;
 
-    private static final String KEY_TYPEINFO_HITS = "typeInfoHits";
-    private static final String KEY_TYPEINFO_MISSES = "typeInfoMisses";
+        public void put(Category category, Path path, Object value) {
+            if (this.store == null) {
+                this.store = new EnumMap<Category, Map<Path, Object>>(Category.class);
+            }
+            
+            Map<Path, Object> categoryMap = this.store.get(category);
+            if (categoryMap == null) {
+                categoryMap = new HashMap<Path, Object>();
+                this.store.put(category, categoryMap);
+            }
+            categoryMap.put(path, value);
+        }
 
+        public Object get(Category category, Path path) {
+            if (this.store == null) return null;
+            
+            Map<Path, Object> categoryMap = this.store.get(category);
+            if (categoryMap != null) {
+                return categoryMap.get(path);
+            }
+            
+            return null;            
+        }
+
+        public void remove(Category category, Path path) {
+            if (this.store == null) return;
+            
+            Map<Path, Object> categoryMap = this.store.get(category);
+            if (categoryMap != null) {
+                categoryMap.remove(path);
+            }
+        }
+    }
+
+    private void putObject(String token, Category category, Path path, Object value) {
+        ObjectStore store = this.tokenMap.get(token);
+        if (store == null) {
+            store = new ObjectStore();
+            this.tokenMap.put(token, store);
+        }
+        store.put(category, path, value);
+    }
+    
+    private Object getObject(String token, Category category, Path path) {
+        ObjectStore store = this.tokenMap.get(token);
+        if (store != null) {
+            return store.get(category, path);
+        }
+        return null;
+    }
+    
+    private void removeObject(String token, Category category, Path path) {
+        ObjectStore store = this.tokenMap.get(token);
+        if (store != null) {
+            store.remove(category, path);
+        }
+    }
+
+    public void clear() {
+        this.tokenMap.clear();
+    }
+    
     public static void setRepositoryContext(RepositoryContext repositoryContext) {
         BaseContext ctx = BaseContext.getContext();
         ctx.setAttribute(RepositoryContext.class.getName(), repositoryContext);
     }
-    
 
     public static RepositoryContext getRepositoryContext() {
         if (!BaseContext.exists()) {
@@ -67,111 +136,69 @@ public class RepositoryContext {
             ctx.getAttribute(RepositoryContext.class.getName());
         return repositoryContext;
     }
-    
-    
-    public void clear() {
-        this.tokenMap = new HashMap<String, Map<String, Map<Path, Object>>>();
-    }
-
-
-    private Map<String, Map<Path, Object>> getTokenMap(String token) {
-        Map<String, Map<Path, Object>> tokenMap = this.tokenMap.get(token);
-        if (tokenMap == null) {
-            tokenMap = new HashMap<String, Map<Path, Object>>();
-            tokenMap.put(KEY_RETRIEVE_FOR_PROCESSING_HITS, new HashMap<Path, Object>());
-            tokenMap.put(KEY_RETRIEVE_FOR_PROCESSING_MISSES, new HashMap<Path, Object>());
-            tokenMap.put(KEY_RETRIEVE_NOT_FOR_PROCESSING_HITS, new HashMap<Path, Object>());
-            tokenMap.put(KEY_RETRIEVE_NOT_FOR_PROCESSING_MISSES, new HashMap<Path, Object>());
-            tokenMap.put(KEY_TYPEINFO_HITS, new HashMap<Path, Object>());
-            tokenMap.put(KEY_TYPEINFO_MISSES, new HashMap<Path, Object>());
-            this.tokenMap.put(token, tokenMap);
-        }
-        return tokenMap;
-    }
-    
 
     public void addResourceHit(String token, Resource resource,
                                boolean forProcessing) {
-        Map<String, Map<Path, Object>> tokenMap = getTokenMap(token);
+        
         if (forProcessing) {
-            Map<Path, Object> forProcessingHits = tokenMap.get(KEY_RETRIEVE_FOR_PROCESSING_HITS);
-            Map<Path, Object> forProcessingMisses = tokenMap.get(KEY_RETRIEVE_FOR_PROCESSING_MISSES);
-            forProcessingHits.put(resource.getURI(), resource);
-            forProcessingMisses.remove(resource.getURI());
+            putObject(token, Category.FOR_PROCESSING_HIT, resource.getURI(), resource);
+            removeObject(token, Category.FOR_PROCESSING_MISS, resource.getURI());
         } else {
-            Map<Path, Object> notForProcessingHits = tokenMap.get(KEY_RETRIEVE_NOT_FOR_PROCESSING_HITS);
-            Map<Path, Object> notForProcessingMisses = tokenMap.get(KEY_RETRIEVE_NOT_FOR_PROCESSING_MISSES);
-            notForProcessingHits.put(resource.getURI(), resource);
-            notForProcessingMisses.remove(resource.getURI());
+            putObject(token, Category.NOT_FOR_PROCESSING_HIT, resource.getURI(), resource);
+            removeObject(token, Category.NOT_FOR_PROCESSING_MISS, resource.getURI());
         }
     }
     
     public Resource getResourceHit(String token, Path uri,
                                    boolean forProcessing) {
-        Map<String, Map<Path, Object>> tokenMap = getTokenMap(token);
         if (forProcessing) {
-            Map<Path, Object> forProcessingHits = tokenMap.get(KEY_RETRIEVE_FOR_PROCESSING_HITS);
-            return (Resource) forProcessingHits.get(uri);
+            return (Resource)getObject(token, Category.FOR_PROCESSING_HIT, uri);
+        } else {
+            return (Resource)getObject(token, Category.NOT_FOR_PROCESSING_HIT, uri);
         }
-        Map<Path, Object> notForProcessingHits = tokenMap.get(KEY_RETRIEVE_NOT_FOR_PROCESSING_HITS);
-        return (Resource) notForProcessingHits.get(uri);
     }
     
 
     public void addResourceMiss(String token, Path uri, Throwable throwable,
                                 boolean forProcessing) {
-        Map<String, Map<Path, Object>> tokenMap = getTokenMap(token);
+
         if (forProcessing) {
-            Map<Path, Object> forProcessingHits = tokenMap.get(KEY_RETRIEVE_FOR_PROCESSING_HITS);
-            Map<Path, Object> forProcessingMisses = tokenMap.get(KEY_RETRIEVE_FOR_PROCESSING_MISSES);
-            forProcessingMisses.put(uri, throwable);
-            forProcessingHits.remove(uri);
+            putObject(token, Category.FOR_PROCESSING_MISS, uri, throwable);
+            removeObject(token, Category.FOR_PROCESSING_HIT, uri);
         } else {
-            Map<Path, Object> notForProcessingHits = tokenMap.get(KEY_RETRIEVE_NOT_FOR_PROCESSING_HITS);
-            Map<Path, Object> notForProcessingMisses = tokenMap.get(KEY_RETRIEVE_NOT_FOR_PROCESSING_MISSES);
-            notForProcessingMisses.put(uri, throwable);
-            notForProcessingHits.remove(uri);
+            putObject(token, Category.NOT_FOR_PROCESSING_MISS, uri, throwable);
+            removeObject(token, Category.NOT_FOR_PROCESSING_HIT, uri);
         }
     }
     
     public Throwable getResourceMiss(String token, Path uri,
                                      boolean forProcessing) {
-        Map<String, Map<Path, Object>> tokenMap = getTokenMap(token);
         if (forProcessing) {
-            Map<Path, Object> forProcessingMisses = tokenMap.get(KEY_RETRIEVE_FOR_PROCESSING_MISSES);
-            return (Throwable) forProcessingMisses.get(uri);
+            return (Throwable)getObject(token, Category.FOR_PROCESSING_MISS, uri);
+        } else {
+            return (Throwable)getObject(token, Category.NOT_FOR_PROCESSING_MISS, uri);
         }
-        Map<Path, Object> notForProcessingMisses = tokenMap.get(KEY_RETRIEVE_NOT_FOR_PROCESSING_MISSES);
-        return (Throwable) notForProcessingMisses.get(uri);
-    }
 
+    }
     
     public void addTypeInfoHit(String token, Path uri, TypeInfo typeInfo) {
-        Map<String, Map<Path, Object>> tokenMap = getTokenMap(token);
-        Map<Path, Object> hits = tokenMap.get(KEY_TYPEINFO_HITS);
-        Map<Path, Object> misses = tokenMap.get(KEY_TYPEINFO_MISSES);
-        hits.put(uri, typeInfo);
-        misses.remove(uri);
+        putObject(token, Category.TYPE_INFO_HIT, uri, typeInfo);
+        removeObject(token, Category.TYPE_INFO_MISS, uri);
     }
 
     public TypeInfo getTypeInfoHit(String token, Path uri) {
-        Map<String, Map<Path, Object>> tokenMap = getTokenMap(token);
-        Map<Path, Object> notForProcessingHits = tokenMap.get(KEY_TYPEINFO_HITS);
-        return (TypeInfo) notForProcessingHits.get(uri);
+        return (TypeInfo)getObject(token, Category.TYPE_INFO_HIT, uri);
     }
 
 
     public void addTypeInfoMiss(String token, Path uri, Throwable throwable) {
-        Map<String, Map<Path, Object>> tokenMap = getTokenMap(token);
-        Map<Path, Object> hits = tokenMap.get(KEY_TYPEINFO_HITS);
-        Map<Path, Object> misses = tokenMap.get(KEY_TYPEINFO_MISSES);
-        misses.put(uri, throwable);
-        hits.remove(uri);
+        putObject(token, Category.TYPE_INFO_MISS, uri, throwable);
+        removeObject(token, Category.TYPE_INFO_HIT, uri);
     }
 
     public Throwable getTypeInfoMiss(String token, Path uri) {
-        Map<String, Map<Path, Object>> tokenMap = getTokenMap(token);
-        Map<Path, Object> misses = tokenMap.get(KEY_TYPEINFO_MISSES);
-        return (Throwable) misses.get(uri);
+        return (Throwable)getObject(token, Category.TYPE_INFO_MISS, uri);
     }
 }
+
+

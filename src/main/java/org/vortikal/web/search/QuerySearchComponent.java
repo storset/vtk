@@ -66,6 +66,11 @@ public abstract class QuerySearchComponent implements SearchComponent {
     private List<String> configurablePropertySelectPointers;
     private ResourceTypeTree resourceTypeTree;
 
+    // Include other hosts in search, if multiHostSearchComponent is available
+    // and component is configured to search other hosts
+    private MultiHostSearchComponent multiHostSearchComponent;
+    private boolean searchMultiHosts;
+
     protected abstract Query getQuery(Resource collection, HttpServletRequest request);
 
     public Listing execute(HttpServletRequest request, Resource collection, int page, int pageLimit, int baseOffset)
@@ -103,7 +108,12 @@ public abstract class QuerySearchComponent implements SearchComponent {
             search.setSorting(new SortingImpl(this.searchSorting.getSortFields(collection)));
         }
 
-        ResultSet result = repository.search(token, search);
+        ResultSet result = null;
+        if (searchMultiHosts && this.multiHostSearchComponent != null) {
+            result = this.multiHostSearchComponent.search(token, search);
+        } else {
+            result = repository.search(token, search);
+        }
 
         boolean more = result.getSize() == pageLimit + 1;
         int num = result.getSize();
@@ -193,6 +203,14 @@ public abstract class QuerySearchComponent implements SearchComponent {
 
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
+    }
+
+    public void setMultiHostSearchComponent(MultiHostSearchComponent multiHostSearchComponent) {
+        this.multiHostSearchComponent = multiHostSearchComponent;
+    }
+
+    public void setSearchMultiHosts(boolean searchMultiHosts) {
+        this.searchMultiHosts = searchMultiHosts;
     }
 
 }

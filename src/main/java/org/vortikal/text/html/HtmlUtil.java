@@ -209,14 +209,19 @@ public class HtmlUtil {
             String val = attr.getValue();
             try {
                 val = unescapeHtmlString(val);
-                URL url = this.base.relativeURL(val);
-                
-                attr.setValue(escapeHtmlString(url.toString()));
-                if (url.getHost().equals(this.requestURL.getHost())) {
-                    attr.setValue(escapeHtmlString(url.getPathRepresentation()));
+                if (!URL.isRelativeURL(val)) {
+                    try {
+                        URL url = URL.parse(val);
+                        if (url.getHost().equals(this.requestURL.getHost())) {
+                            attr.setValue(escapeHtmlString(url.getPathRepresentation()));
+                        }
+                    } catch (Throwable t) { }
+                    return;
                 }
-            } catch (Exception e) {
-            }
+                // URL is relative:
+                URL url = this.base.relativeURL(val);
+                attr.setValue(escapeHtmlString(url.getPathRepresentation()));
+            } catch (Throwable t) { }
         }
 
         @Override

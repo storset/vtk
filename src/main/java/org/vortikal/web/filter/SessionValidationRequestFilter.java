@@ -96,11 +96,19 @@ public class SessionValidationRequestFilter extends AbstractRequestFilter
 
         @Override
         public HttpSession getSession(boolean create) {
+            boolean existed = this.request.getSession(false) != null;
             HttpSession s = this.request.getSession(create);
+
             if (s == null) {
                 return null;
             }
+            
             String clientAddress = this.request.getRemoteAddr();
+            if (!existed) {
+                s.setAttribute(CLIENT_ADDR_SESSION_ATTRIBUTE, clientAddress);
+                return s;
+            }
+
             Object o = s.getAttribute(CLIENT_ADDR_SESSION_ATTRIBUTE);
             if (o == null || ! (o instanceof String)) {
                 logger.warn("Expected attribute of type string in session under key: " 
@@ -113,6 +121,7 @@ public class SessionValidationRequestFilter extends AbstractRequestFilter
                 }
                 return s;
             }
+
             String originatingAddress = (String) o;
             if (!clientAddress.equals(originatingAddress)) {
                 logger.info("Client address mismatch in session of request " 

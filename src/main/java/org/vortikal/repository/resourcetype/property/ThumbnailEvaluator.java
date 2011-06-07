@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.resourcetype.property;
 
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.util.Set;
 
@@ -49,25 +50,43 @@ public class ThumbnailEvaluator implements PropertyEvaluator {
     private static final Logger log = Logger.getLogger(ThumbnailEvaluator.class);
 
     private ImageService imageService;
-    private String width;
+    private int width;
     private Set<String> supportedFormats;
-    private boolean scaleUp;
+    private boolean scaleUp = false;
+    
+    private long maxSourceImageFileSize = 35000000;
+    private long maxSourceImageRawMemoryUsage = 300000000;
 
-    // If image exceeds limit, don't create thumbnail
-    private static final int MAX_IMAGE_SIZE_IN_BYTES = 35000000;
-
+    @Override
     public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
-        if (property.isValueInitialized() && ctx.getEvaluationType() != Type.ContentChange
+        if (property.isValueInitialized() 
+                && ctx.getEvaluationType() != Type.ContentChange
                 && ctx.getEvaluationType() != Type.Create) {
             return true;
         }
 
         try {
-
+            // Check max source content length constraint
             long contentLength = ctx.getContent().getContentLength();
-            if (contentLength >= MAX_IMAGE_SIZE_IN_BYTES) {
+            if (contentLength >= this.maxSourceImageFileSize) {
                 log.warn("Unable to get create thumbnail, image size exceeds maximum limit: " + contentLength);
                 return false;
+            }
+            
+            // Check max source image memory usage constraint
+            Dimension dim = (Dimension) ctx.getContent().getContentRepresentation(Dimension.class);
+            if (dim != null) {
+                long estimatedMemoryUsage = estimateMemoryUsage(dim);
+                if (log.isDebugEnabled()) {
+                    log.debug("Estimated memory usage for image of " 
+                            + dim.width + "x" + dim.height + " = " + estimatedMemoryUsage + " bytes");
+                }
+                if (estimatedMemoryUsage > this.maxSourceImageRawMemoryUsage) {
+                    log.warn("Memory usage estimate for source image of dimension " 
+                            + dim.width + "x" + dim.height + " exceeds limit of "
+                            + this.maxSourceImageRawMemoryUsage + " bytes.");
+                    return false;
+                }
             }
 
             BufferedImage image = (BufferedImage) ctx.getContent().getContentRepresentation(BufferedImage.class);
@@ -85,14 +104,14 @@ public class ThumbnailEvaluator implements PropertyEvaluator {
                 return false;
             }
 
-            if (!scaleUp && image.getWidth() <= Integer.parseInt(width)) {
+            if (!scaleUp && image.getWidth() <= this.width) {
                 if (log.isDebugEnabled()) {
                     log.debug("Will not create a thumbnail: configured NOT to scale up");
                 }
                 return false;
             }
 
-            ScaledImage thumbnail = imageService.scaleImage(image, imageFormat, width, "");
+            ScaledImage thumbnail = imageService.scaleImage(image, imageFormat, width, ImageService.HEIGHT_ANY);
 
             // TODO lossy-compression -> jpeg
             String thumbnailFormat = !imageFormat.equalsIgnoreCase("png") ? "png" : imageFormat;
@@ -106,13 +125,27 @@ public class ThumbnailEvaluator implements PropertyEvaluator {
         }
     }
 
-    // @Required
+    /**
+     * Estimates the raw memory usage for an image where each pixel
+     * uses 24 bits or 3 bytes of memory.
+     * 
+     * @param dim The <code>Dimension</code> of the image.
+     * @return The estimated raw memory usage in bytes.
+     */
+    private long estimateMemoryUsage(Dimension dim) {
+        return (long)dim.height * (long)dim.width * 24 / 8;
+    }
+
+    @Required
     public void setImageService(ImageService imageService) {
         this.imageService = imageService;
     }
 
     @Required
-    public void setWidth(String width) {
+    public void setWidth(int width) {
+        if (width < 1) {
+            throw new IllegalArgumentException("scale width must be >= 1");
+        }
         this.width = width;
     }
 
@@ -121,8 +154,32 @@ public class ThumbnailEvaluator implements PropertyEvaluator {
         this.supportedFormats = supportedFormats;
     }
 
-    @Required
     public void setScaleUp(boolean scaleUp) {
         this.scaleUp = scaleUp;
+    }
+    
+    public void setMaxSourceImageFileSize(long maxSourceImageFileSize) {
+        if (maxSourceImageFileSize < 1) {
+            throw new IllegalArgumentException("maxSourceImageFileSize must be >= 1");
+        }
+        this.maxSourceImageFileSize = maxSourceImageFileSize;
+    }
+
+    /**
+     * Set cap on estimated raw memory usage on image during scale operation.
+     * The estimate is based upon a memory usage of 24 bits per pixel, which
+     * should be the most common type. 32bpp images will consume more than
+     * actual estimate. To fix that, one needs to provide the bpp value
+     * from the {@link org.vortikal.repository.content.ImageContentFactory}.
+     * 
+     * Default value of 350MB is roughly equivlant to an image of about 10000x10000.
+     * 
+     * @param maxSourceImageRawMemoryUsage 
+     */
+    public void setMaxSourceImageRawMemoryUsage(long maxSourceImageRawMemoryUsage) {
+        if (maxSourceImageRawMemoryUsage < 1) {
+            throw new IllegalArgumentException("maxSourceImageRawMemoryUsage must be >= 1");
+        }
+        this.maxSourceImageRawMemoryUsage = maxSourceImageRawMemoryUsage;
     }
 }

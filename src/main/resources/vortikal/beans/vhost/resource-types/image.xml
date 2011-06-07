@@ -112,9 +112,13 @@
   </bean>
 
   <bean id="thumbnailEvaluator" class="org.vortikal.repository.resourcetype.property.ThumbnailEvaluator">
-    <property name="imageService" ref="imageService" />
+    <property name="imageService">
+        <bean class="org.vortikal.graphics.ImageServiceImpl" />
+    </property>
     <property name="width" value="${resourcetype.image.thumbnail.width}" />
-    <property name="scaleUp" ref="scaleUp" />
+    <property name="maxSourceImageFileSize" value="${resourcetype.image.thumbnail.maxSourceImageFileSize}" />
+    <property name="maxSourceImageRawMemoryUsage" value="${resourcetype.image.thumbnail.maxSourceImageRawMemoryUsage}" />
+    <property name="scaleUp" value="false" />
     <property name="supportedFormats">
       <set>
         <value>jpeg</value>
@@ -127,14 +131,8 @@
     </property>
   </bean>
 
-  <bean id="scaleUp" class="java.lang.Boolean">
-    <constructor-arg type="boolean" value="false" />
-  </bean>
-
   <bean id="resourceTypeIsImage" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
     <property name="resourceTypeDefinition" ref="imageResourceTypeDefinition" />
   </bean>
 
 </beans>
-
-

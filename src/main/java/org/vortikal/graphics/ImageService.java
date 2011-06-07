@@ -33,7 +33,22 @@ package org.vortikal.graphics;
 import java.awt.image.BufferedImage;
 
 public interface ImageService {
+
+    public static final int WIDTH_ANY = -1;
+    public static final int HEIGHT_ANY = -1;
     
-    public ScaledImage scaleImage(BufferedImage image, String format, String width, String height) throws Exception;
+    /**
+     * Get a ScaledImage with the given format-tag. The image is always
+     * scaled with the original proportions kept intact, and it can either
+     * be scaled to a desired width or height.
+     * 
+     * @param image The image buffer to scale
+     * @param originalFormat A format tag/name
+     * @param width The desired width of the scaled image, or -1 for any/undefined.
+     * @param height The desired height of the scaled image, or -1 for any/undefined.
+     * @throws Exception 
+     */
+    public ScaledImage scaleImage(BufferedImage image, String originalFormat,
+                                  int width, int height) throws Exception;
 
 }

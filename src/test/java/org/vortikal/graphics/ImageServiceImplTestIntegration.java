@@ -29,59 +29,54 @@ public class ImageServiceImplTestIntegration extends TestCase {
     }
     
     public void testScaleImagePNG() throws Exception {
-        assertProperResize(pngImage, "300", "");
+        assertProperResize(pngImage, 300, ImageService.HEIGHT_ANY);
     }
     
     public void testScaleImageJPG() throws Exception {
-        assertProperResize(jpgImage, "300", null);
+        assertProperResize(jpgImage, 300, ImageService.HEIGHT_ANY);
     }
     
     public void testScaleImageGIF() throws Exception {
-        assertProperResize(gifImage, "  ", "300");
+        assertProperResize(gifImage, ImageService.WIDTH_ANY, 300);
     }
     
     public void testScaleImageTIF() throws Exception {
-        assertProperResize(bmpImage, "250", null);
+        assertProperResize(bmpImage, 250, ImageService.HEIGHT_ANY);
     }
     
     public void testDontScaleImage() throws Exception {
-        assertProperResize(notScaledImage, "", "");
-        assertProperResize(notScaledImage, null, "");
-        assertProperResize(notScaledImage, "", null);
-        assertProperResize(notScaledImage, null, null);
+        assertProperResize(notScaledImage, ImageService.WIDTH_ANY, ImageService.HEIGHT_ANY);
     }
     
     public void testGetImageBytes() throws Exception {
-    	String scaledWidth = "100";
+    	int scaledWidth = 100;
     	BufferedImage originalImage = ImageIO.read(this.getClass().getResourceAsStream(pngImage));
-    	ScaledImage scaledImage = imageService.scaleImage(originalImage, "png", scaledWidth, null);
+    	ScaledImage scaledImage = imageService.scaleImage(originalImage, "png", scaledWidth, ImageService.HEIGHT_ANY);
     	assertNotNull("No image returned", scaledImage);
     	byte[] imageBytes = scaledImage.getImageBytes("png");
     	assertTrue("No imagebytes returned", imageBytes != null && imageBytes.length > 0);
     	ByteArrayInputStream in = new ByteArrayInputStream(imageBytes);
     	BufferedImage imageFromBytes = ImageIO.read(in);
     	assertNotNull("Could not recreate image from bytes", imageFromBytes);
-    	assertEquals("Wrong width", scaledWidth, String.valueOf(imageFromBytes.getWidth()));
+    	assertEquals("Wrong width", scaledWidth, imageFromBytes.getWidth());
     }
     
-    private void assertProperResize(String imageName, String width, String height) throws Exception {
+    private void assertProperResize(String imageName, int width, int height) throws Exception {
         BufferedImage originalImage = ImageIO.read(this.getClass().getResourceAsStream(imageName));
         String format = imageName.substring(imageName.lastIndexOf(".") + 1);
         ScaledImage scaledImage = imageService.scaleImage(originalImage, format, width, height);
         assertNotNull("No image returned", scaledImage);
         assertEquals("Wrong format", format, scaledImage.getOriginalFormat());
         
-        if (StringUtils.isNotBlank(width)) {
-        	String scaledWidth = String.valueOf(scaledImage.getImage().getWidth());
-            assertEquals("Scaling did not return widht as expected", width, scaledWidth);
-        } else if (StringUtils.isNotBlank(height)) {
-        	String scaledHeight= String.valueOf(scaledImage.getImage().getHeight());
-            assertEquals("Scaling did not return height as expected", height, scaledHeight);
+        if (width != ImageService.WIDTH_ANY) {
+            assertEquals("Scaling did not return widht as expected", width, scaledImage.getImage().getWidth());
+        } else if (height != ImageService.HEIGHT_ANY) {
+            assertEquals("Scaling did not return height as expected", height, scaledImage.getImage().getHeight());
         } else {
-        	String originalWidth = String.valueOf(originalImage.getWidth());
-        	String scaledWidth = String.valueOf(scaledImage.getImage().getWidth());
-        	String originalHeight= String.valueOf(originalImage.getHeight());
-        	String scaledHeight= String.valueOf(scaledImage.getImage().getHeight());
+        	int originalWidth = originalImage.getWidth();
+        	int scaledWidth = scaledImage.getImage().getWidth();
+        	int originalHeight= originalImage.getHeight();
+        	int scaledHeight= scaledImage.getImage().getHeight();
         	assertEquals("Scaling did not return widht as expected", scaledWidth, originalWidth);
         	assertEquals("Scaling did not return height as expected", scaledHeight, originalHeight);
         }

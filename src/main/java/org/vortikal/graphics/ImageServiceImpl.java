@@ -36,35 +36,33 @@ import java.awt.RenderingHints;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 
-import org.apache.commons.lang.StringUtils;
 
 public class ImageServiceImpl implements ImageService {
 
-    public ScaledImage scaleImage(BufferedImage image, String format, String width, String height) throws Exception {
-        Dimension scaleDimension = getDimension(width, height, image);
+    @Override
+    public ScaledImage scaleImage(BufferedImage image, String originalFormat, int width, int height) throws Exception {
+        Dimension scaleDimension = getScaleDimension(width, height, image);
         BufferedImage scaledImage = getScaledInstance(image, scaleDimension.width, scaleDimension.height);
-        return new ScaledImage(scaledImage, format);
+        return new ScaledImage(scaledImage, originalFormat);
     }
 
-    private Dimension getDimension(String width, String height, BufferedImage originalImage) {
+    private Dimension getScaleDimension(int width, int height, BufferedImage originalImage) {
 
         // Width has precedence over height
 
-        if (StringUtils.isNotBlank(width)) {
+        if (width != WIDTH_ANY) {
             // If width is defined, use it as base for calculating
             // new dimensions (ignore height)
-            int x = Integer.parseInt(width);
-            int y = x * originalImage.getHeight() / originalImage.getWidth();
-            return new Dimension(x, y);
-        } else if (StringUtils.isNotBlank(height)) {
+            height = width * originalImage.getHeight() / originalImage.getWidth();
+            return new Dimension(width, height);
+        } else if (height != HEIGHT_ANY) {
             // No width specified, use height as base instead
-            int y = Integer.parseInt(height);
-            int x = y * originalImage.getWidth() / originalImage.getHeight();
-            return new Dimension(x, y);
+            width = height * originalImage.getWidth() / originalImage.getHeight();
+            return new Dimension(width, height);
         }
+        
         // Both parameters were blank, return original dimensions
         return new Dimension(originalImage.getWidth(), originalImage.getHeight());
-
     }
 
     // Algorithm courtesy of Chris Campbell from the Java2D team at sun
@@ -72,7 +70,7 @@ public class ImageServiceImpl implements ImageService {
 
         int type = (img.getTransparency() == Transparency.OPAQUE) ? BufferedImage.TYPE_INT_RGB
                 : BufferedImage.TYPE_INT_ARGB;
-        BufferedImage ret = (BufferedImage) img;
+        BufferedImage ret = img;
         int w = img.getWidth();
         int h = img.getHeight();
 

@@ -198,7 +198,7 @@
   <bean id="jdomContentFactory" class="org.vortikal.repository.content.JDOMContentFactory" />
 
   <bean id="jtidyContentFactory" class="org.vortikal.repository.content.JTidyContentFactory" />
-  <bean id="bufferedImageContentFactory" class="org.vortikal.repository.content.BufferedImageContentFactory" />
+  <bean id="imageContentFactory" class="org.vortikal.repository.content.ImageContentFactory" />
   <bean id="audioFileContentFactory"
         class="org.vortikal.repository.content.AudioFileContentFactory" />
 

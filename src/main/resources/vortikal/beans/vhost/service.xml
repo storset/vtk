@@ -527,7 +527,5 @@
     <property name="targetObject" ref="ssl.configurationPropertiesFile" />
     <property name="method" value="load" />
   </bean>
-  
-  <bean id="imageService" class="org.vortikal.graphics.ImageServiceImpl" />
 
 </beans>

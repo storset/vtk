@@ -30,34 +30,69 @@
  */
 package org.vortikal.repository.content;
 
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
-
+import java.util.Iterator;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.FileCacheImageInputStream;
+import javax.imageio.stream.ImageInputStream;
 
+public class ImageContentFactory implements ContentFactory {
 
-public class BufferedImageContentFactory implements ContentFactory {
-
-    public BufferedImageContentFactory() {
+    public ImageContentFactory() {
     }
-    
 
+    @Override
     public Class<?>[] getRepresentationClasses() {
         String prop = System.getProperty("java.awt.headless");
         try {
             System.setProperty("java.awt.headless", "true");
-            return new Class[] {BufferedImage.class};
+            return new Class[] {BufferedImage.class, Dimension.class};
         } finally {
             if (prop != null) {
                 System.setProperty("java.awt.headless", prop);
             }
         }
     }
-    
 
+    @Override
     public Object getContentRepresentation(Class<?> clazz,  InputStream content)
         throws Exception {
-        return ImageIO.read(content);
+        
+        try {
+            if (clazz == Dimension.class) {
+                return getImageDimension(content);
+            } else if (clazz == BufferedImage.class) {
+                return ImageIO.read(content);                
+            } else {
+                throw new IllegalArgumentException("Unsupported content representation class: " + clazz.getName());
+            }
+
+        } finally {
+            // ImageIO.read documentation states that it does not close the input stream.
+            content.close();
+        }
     }
     
+    private Dimension getImageDimension(InputStream content) throws Exception {
+
+        ImageInputStream iis = new FileCacheImageInputStream(content, null);
+        try {
+            Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
+            if (readers.hasNext()) {
+                ImageReader reader = readers.next();
+                reader.setInput(iis);
+                int width = reader.getWidth(reader.getMinIndex());
+                int height = reader.getHeight(reader.getMinIndex());
+                reader.dispose();
+                return new Dimension(width, height);
+            }
+        } finally {
+            iis.close();
+        }
+
+        return null;
+    }
 }

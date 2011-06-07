@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.resourcetype.property;
 
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 
 import org.apache.commons.logging.Log;
@@ -49,26 +50,24 @@ public class ImageDimensionEvaluator implements PropertyEvaluator {
         this.evaluateHeight = evaluateHeight;
     }
     
+    @Override
     public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
         if (property.isValueInitialized()
                 && ctx.getEvaluationType() != Type.ContentChange
                 && ctx.getEvaluationType() != Type.Create) {
             return true;
         }
+        
+        if (ctx.getContent() == null) return false;
+        
         try {
 
-            BufferedImage image = (BufferedImage)
-                ctx.getContent().getContentRepresentation(BufferedImage.class);
-            if (image == null) {
-                return false;
-            }
-
-            property.setIntValue(this.evaluateHeight ? image.getHeight() : image.getWidth());
+            Dimension dim = (Dimension)ctx.getContent().getContentRepresentation(Dimension.class);
+            property.setIntValue(this.evaluateHeight ? dim.height : dim.width);
             return true;
 
-
         } catch (Exception e) {
-            this.logger.warn("Unable to get BufferedImage representation of content", e);
+            this.logger.warn("Unable to get Dimension representation of content", e);
             return false;
         }
     }

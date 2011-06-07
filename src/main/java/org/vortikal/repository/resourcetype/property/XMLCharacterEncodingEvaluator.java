@@ -52,26 +52,27 @@ import org.vortikal.util.io.StreamUtil;
  * return XML declarations as processing instructions, and there is no
  * other way to obtain the character encoding using JDOM, so we are
  * forced to inspect the raw content.
+ * 
+ * <p>
+ * Can also use javax.xml.stream.XMLEventReader to obtain the character encoding,
+ * but regexp should work just as well..
  *
- * <p>One possibility might be to use
- * <code>org.dom4j.Document#getXMLEncoding</code>?
  */
 public class XMLCharacterEncodingEvaluator implements PropertyEvaluator {
 
-    private int maxBytes = 10000000;
+    private int maxBytes = 1000000;
 
     private static Pattern CHARSET_PATTERN = Pattern.compile(
         "\\s*<\\?xml\\s+[^>]*\\s+encoding=[\"']([A-Za-z0-9._\\-]+)[\"'][^>]*\\?>.*",
         Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-
 
     private Log logger = LogFactory.getLog(this.getClass());
 
     public void setMaxBytes(int maxBytes) {
         this.maxBytes = maxBytes;
     }
-    
 
+    @Override
     public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
         if (ctx.getContent() == null) {
             return false;

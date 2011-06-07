@@ -40,6 +40,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -824,6 +826,20 @@ public class URL {
         }
         resultURL.setCollection(collection);
         return resultURL;
+    }
+    
+    private static final Pattern ABSOLUTE_URL_START = Pattern.compile("^[a-zA-Z]+:");
+    
+    public static boolean isRelativeURL(String rel) {
+        if (rel == null) {
+            throw new IllegalArgumentException("Malformed URL: " + rel);
+        }
+        rel = rel.trim();
+        if ("".equals(rel)) {
+            throw new IllegalArgumentException("Empty URL");
+        }
+        Matcher m = ABSOLUTE_URL_START.matcher(rel);
+        return !m.find();
     }
 
     /**

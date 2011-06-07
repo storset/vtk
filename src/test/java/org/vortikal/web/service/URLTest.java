@@ -133,8 +133,6 @@ public class URLTest extends TestCase {
         String rtmpUrl = "rtmp://stream-prod01.uio.no/vod/mp4:uio/intermedia/rektor/rektor_jub.mp4";
         url = URL.parse(rtmpUrl);
         assertEquals(rtmpUrl, url.toString());
-        
-        
     }
 
     public void testSplitQueryString() {
@@ -220,6 +218,14 @@ public class URLTest extends TestCase {
         url = URL.parse("http://a/b/");
         assertEquals("http://a/c/", url.relativeURL("        ../c/     ").toString());
         assertEquals("http://a/b/%c3%a6", url.relativeURL("%c3%a6").toString().toLowerCase());
+    }
+    
+    public void testIsRelative() {
+        assertFalse(URL.isRelativeURL("http://foo.bar"));
+        assertFalse(URL.isRelativeURL("mailto:xyz@example.com?subject=foo&body=bar"));
+        assertFalse(URL.isRelativeURL("ftp://ftp.example.com/"));
+        assertTrue(URL.isRelativeURL("a/b/c"));
+        assertTrue(URL.isRelativeURL("test.html?foo=bar:baaz"));
     }
     
     public void testIsEncoded() {

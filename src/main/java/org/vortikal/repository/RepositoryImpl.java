@@ -163,12 +163,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     @Override
     public TypeInfo getTypeInfo(String token, Path uri) throws Exception {
         Principal principal = this.tokenManager.getPrincipal(token);
-        ResourceImpl resource = null;
-        resource = this.dao.load(uri);
 
+        ResourceImpl resource = this.dao.load(uri);
         if (resource == null) {
             throw new ResourceNotFoundException(uri);
         }
+        
         this.authorizationManager.authorizeReadProcessed(uri, principal);
         return new TypeInfo(this.resourceTypeTree, resource.getResourceType());
     }
@@ -228,7 +228,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             } catch (CloneNotSupportedException e) {
                 throw new IOException("An internal error occurred: unable to " + "clone() resource: " + list[i]);
             }
-
         }
 
         return children;
@@ -255,9 +254,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
         try {
             // Content modification on parent for bind
+            final ResourceImpl originalParent = (ResourceImpl)parent.clone();
             parent.addChildURI(uri);
             parent = this.resourceHelper.contentModification(parent, principal);
-            this.dao.store(parent);
+            parent = this.dao.store(parent);
+            this.context.publishEvent(new ContentModificationEvent(this, (Resource)parent.clone(), originalParent));
 
             // Store new resource
             newResource.setAcl(parent.getAcl());
@@ -322,6 +323,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
             ResourceImpl newResource = src.createCopy(destUri);
             newResource = this.resourceHelper.nameChange(src, newResource, principal);
+
+            final ResourceImpl destParentOriginal = (ResourceImpl)destParent.clone();
             destParent.addChildURI(destUri);
             destParent = this.resourceHelper.contentModification(destParent, principal);
 
@@ -330,6 +333,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             this.contentStore.copy(src.getURI(), newResource.getURI());
 
             this.context.publishEvent(new ResourceCreationEvent(this, (Resource)newResource.clone()));
+            this.context.publishEvent(new ContentModificationEvent(this, destParent, destParentOriginal));
             
         } catch (CloneNotSupportedException e) {
             throw new IOException("An internal error occurred: unable to clone()", e);
@@ -345,7 +349,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         validateCopyURIs(srcUri, destUri);
 
         // Loading and checking source resource
-        ResourceImpl src = this.dao.load(srcUri);
+        final ResourceImpl src = this.dao.load(srcUri);
         ResourceImpl srcParent = this.dao.load(srcUri.getParent());
 
         if (src == null) {
@@ -353,7 +357,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
 
         // Checking dest
-        ResourceImpl dest = this.dao.load(destUri);
+        final ResourceImpl dest = this.dao.load(destUri);
         if (dest == null) {
             overwrite = false;
         } else if (!overwrite) {
@@ -376,7 +380,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         this.authorizationManager.authorizeMove(srcUri, destUri, principal, overwrite);
         checkMaxChildren(destParent);
 
-        // Performing delete operation
+        // Performing delete operation if destination exists (overwrite).
         if (dest != null) {
             this.dao.delete(dest);
             this.contentStore.deleteResource(dest.getURI());
@@ -388,14 +392,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             if (destParent.getURI().equals(srcParent.getURI())) {
                 destParent.removeChildURI(src.getURI());
             } else {
-                ResourceImpl srcParentOriginal = (ResourceImpl) srcParent.clone();
+                final ResourceImpl srcParentOriginal = (ResourceImpl) srcParent.clone();
                 srcParent.removeChildURI(src.getURI());
                 srcParent = this.resourceHelper.contentModification(srcParent, principal);
                 this.dao.store(srcParent);
                 this.context.publishEvent(new ContentModificationEvent(this, (Resource)srcParent.clone(), srcParentOriginal));
             }
 
-            ResourceImpl destParentOriginal = (ResourceImpl)destParent.clone();
+            final ResourceImpl destParentOriginal = (ResourceImpl)destParent.clone();
             destParent.addChildURI(destUri);
             destParent = this.resourceHelper.contentModification(destParent, principal);
             this.dao.store(destParent);
@@ -428,9 +432,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new IllegalOperationException("Cannot delete the root resource ('/')");
         }
 
-        ResourceImpl r = this.dao.load(uri);
+        final ResourceImpl resourceToDelete = this.dao.load(uri);
 
-        if (r == null) {
+        if (resourceToDelete == null) {
             throw new ResourceNotFoundException(uri);
         }
 
@@ -440,30 +444,33 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         ResourceImpl parentCollection = this.dao.load(uri.getParent());
         this.authorizationManager.authorizeDelete(uri, principal);
         checkLock(parentCollection, principal);
-        checkLock(r, principal);
+        checkLock(resourceToDelete, principal);
+        
+        final ResourceImpl originalParent = (ResourceImpl)parentCollection.clone();
         parentCollection.removeChildURI(uri);
         parentCollection = this.resourceHelper.contentModification(parentCollection, principal);
-        this.dao.store(parentCollection);
+        parentCollection = this.dao.store(parentCollection);
+        this.context.publishEvent(new ContentModificationEvent(this, (Resource)parentCollection.clone(), originalParent));
 
         if (restorable) {
             // Check ACL before moving to trash can,
             // if inherited, take snapshot of current ACL
-            if (r.isInheritedAcl()) {
-                ResourceImpl clone = (ResourceImpl) r.clone();
+            if (resourceToDelete.isInheritedAcl()) {
+                ResourceImpl clone = (ResourceImpl) resourceToDelete.clone();
                 clone.setInheritedAcl(false);
                 this.dao.storeACL(clone);
             }
 
-            final String trashID = "trash-" + r.getID();
-            this.dao.markDeleted(r, parentCollection, principal, trashID);
-            this.contentStore.moveToTrash(r.getURI(), trashID);
+            final String trashID = "trash-" + resourceToDelete.getID();
+            this.dao.markDeleted(resourceToDelete, parentCollection, principal, trashID);
+            this.contentStore.moveToTrash(resourceToDelete.getURI(), trashID);
 
         } else {
-            this.dao.delete(r);
-            this.contentStore.deleteResource(r.getURI());
+            this.dao.delete(resourceToDelete);
+            this.contentStore.deleteResource(resourceToDelete.getURI());
         }
 
-        ResourceDeletionEvent event = new ResourceDeletionEvent(this, uri, r.getID(), r.isCollection());
+        ResourceDeletionEvent event = new ResourceDeletionEvent(this, uri, resourceToDelete.getID(), resourceToDelete.isCollection());
         this.context.publishEvent(event);
     }
 
@@ -498,13 +505,15 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         try {
             ResourceImpl recovered = this.dao.recover(parentUri, recoverableResource);
             this.contentStore.recover(parentUri, recoverableResource);
-
-//        ResourceImpl recovered = this.dao.load(parentUri.extend(recoverableResource.getName()));
             this.context.publishEvent(new ResourceCreationEvent(this, (Resource) recovered.clone()));
 
+            // Content modification on parent
+            final ResourceImpl originalParent = (ResourceImpl)parent.clone();
             parent.addChildURI(recovered.getURI());
             parent = this.resourceHelper.contentModification(parent, principal);
-            this.dao.store(parent);
+            parent = this.dao.store(parent);
+            this.context.publishEvent(new ContentModificationEvent(this, (Resource)parent.clone(), originalParent));
+            
         } catch (CloneNotSupportedException c) {
             throw new IOException("Internal error, clone failed", c);
         }
@@ -708,13 +717,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             this.contentStore.storeContent(uri, inStream);
             ResourceImpl newResource = this.resourceHelper.create(principal, uri, false);
 
-            // Store parent first to avoid transactional dead-lock-problems
-            // between Cache
-            // locking and database inter-transactional synchronization (which
-            // leads to "11-iteration" problems).
+            // Content modification on parent
+            final ResourceImpl originalParent = (ResourceImpl)parent.clone();
             parent.addChildURI(uri);
             parent = this.resourceHelper.contentModification(parent, principal);
-            this.dao.store(parent);
+            parent = this.dao.store(parent);
+            this.context.publishEvent(new ContentModificationEvent(this, (Resource)parent.clone(), originalParent));
 
             // Store new resource
             newResource.setAcl(parent.getAcl());
@@ -722,10 +730,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             int aclIneritedFrom = parent.isInheritedAcl() ? parent.getAclInheritedFrom() : parent.getID();
             newResource.setAclInheritedFrom(aclIneritedFrom);
             newResource = this.dao.store(newResource);
-
-//            newResource = this.dao.load(uri);
-
-//            newResource = (ResourceImpl) newResource.clone();
 
             this.context.publishEvent(new ResourceCreationEvent(this, (Resource) newResource.clone()));
             
@@ -756,15 +760,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         checkLock(r, principal);
         this.authorizationManager.authorizeReadWrite(uri, principal);
         try {
-            Resource original = (ResourceImpl) r.clone();
+            final Resource original = (ResourceImpl) r.clone();
 
             this.contentStore.storeContent(uri, byteStream);
             r = this.resourceHelper.contentModification(r, principal);
 
             Resource newResource = this.dao.store(r);
             
-            ContentModificationEvent event = new ContentModificationEvent(this, (Resource)newResource.clone(), original);
-            this.context.publishEvent(event);
+            this.context.publishEvent(new ContentModificationEvent(this, (Resource)newResource.clone(), original));
 
             return (Resource)newResource.clone();
         } catch (CloneNotSupportedException e) {

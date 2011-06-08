@@ -59,16 +59,17 @@ public class ContentImpl implements Content {
     private ContentStore contentStore;
     private Path uri;
     private ContentRepresentationRegistry contentRegistry;
-    private Map<Class<?>, Object> representations;
+    private Map<Class<?>, Object> cachedRepresentations;
     
     public ContentImpl(Path uri, ContentStore contentStore,
                        ContentRepresentationRegistry contentRegistry) {
-        this.representations = new HashMap<Class<?>, Object>();
+        this.cachedRepresentations = new HashMap<Class<?>, Object>();
         this.contentStore = contentStore;
         this.contentRegistry = contentRegistry;
         this.uri = uri;
     }
     
+    @Override
     public Object getContentRepresentation(Class<?> clazz) throws Exception {
         // Make sure we have original content from inputstream 
         // before we do anything else. 
@@ -76,10 +77,9 @@ public class ContentImpl implements Content {
         // We don't cache InputStream representations
         if (clazz == java.io.InputStream.class) {
             return this.contentStore.getInputStream(this.uri); 
-            
         }
         
-        Object representation = this.representations.get(clazz);
+        Object representation = this.cachedRepresentations.get(clazz);
         if (representation == null) {
             // Lazy load representation
             
@@ -89,6 +89,7 @@ public class ContentImpl implements Content {
                 representation = this.contentRegistry.createRepresentation(clazz, inputStream);
                 
             } finally {
+                // XXX hmm, might leak if a ContentFactory doesn't close it...
 //                 if (inputStream != null) {
 //                     inputStream.close();
 //                 }
@@ -97,15 +98,17 @@ public class ContentImpl implements Content {
             if (clazz == byte[].class) {
                 int length = ((byte[]) representation).length;
                 if (length <= 1000000) {
-                    this.representations.put(clazz, representation);
+                    this.cachedRepresentations.put(clazz, representation);
                 }
             } else {
-                this.representations.put(clazz, representation);
+                this.cachedRepresentations.put(clazz, representation);
             }
-        } 
+        }
+        
         return representation;
     }
     
+    @Override
     public InputStream getContentInputStream() throws IOException {
         try {
             return (InputStream) getContentRepresentation(java.io.InputStream.class);
@@ -114,6 +117,7 @@ public class ContentImpl implements Content {
         }
     }
     
+    @Override
     public long getContentLength() throws IOException {
         return this.contentStore.getContentLength(this.uri);
     }

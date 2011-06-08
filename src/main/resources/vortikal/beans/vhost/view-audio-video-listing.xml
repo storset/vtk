@@ -36,6 +36,7 @@
         </bean>
       </list>
     </property>
+    <property name="searchMultiHosts" value="false" />
   </bean>
 
   <bean id="audioVideoListing.viewResolver" parent="decoratorViewResolver">

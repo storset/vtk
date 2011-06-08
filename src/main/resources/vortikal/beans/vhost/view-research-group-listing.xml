@@ -35,6 +35,7 @@
         </bean>
       </list>
     </property>
+    <property name="searchMultiHosts" value="false" />
   </bean>
 
   <bean id="researchGroupListing.listingUriQueryBuilder" parent="collection.listingUriQueryBuilder">

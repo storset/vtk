@@ -77,7 +77,7 @@ public class ProcessedContentEventDumperAll extends AbstractRepositoryEventDumpe
 
 
     @Override
-    public void contentModified(Resource resource) {
+    public void contentModified(Resource resource, Resource original) {
         ChangeLogEntry entry = changeLogEntry(this.loggerId, this.loggerType, resource.getURI(),
                 Operation.MODIFIED_CONTENT, -1, resource.isCollection(),
                 new Date());
@@ -112,7 +112,6 @@ public class ProcessedContentEventDumperAll extends AbstractRepositoryEventDumpe
         }
         
     }
-
 
     @Required
     public void setChangeLogDAO(ChangeLogDAO changeLogDAO)  {

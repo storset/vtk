@@ -94,7 +94,8 @@ public abstract class AbstractRepositoryEventDumper
             modified(((ResourceModificationEvent) event).getResource(),
                      ((ResourceModificationEvent) event).getOriginal());
         } else if (event instanceof ContentModificationEvent) {
-            contentModified(((ContentModificationEvent) event).getResource());
+            contentModified(((ContentModificationEvent) event).getResource(),
+                            ((ContentModificationEvent) event).getOriginal());
         } else if (event instanceof ACLModificationEvent) {
             aclModified(((ACLModificationEvent)event).getResource(),
                         ((ACLModificationEvent)event).getOriginalResource(),
@@ -110,7 +111,7 @@ public abstract class AbstractRepositoryEventDumper
 
     public abstract void modified(Resource resource, Resource originalResource);
 
-    public abstract void contentModified(Resource resource);
+    public abstract void contentModified(Resource resource, Resource original);
 
     public abstract void aclModified(Resource resource, Resource originalResource,
                                      Acl acl, Acl originalAcl);

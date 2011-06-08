@@ -52,6 +52,7 @@ public class ChangeHistoryEventDumper extends AbstractRepositoryEventDumper {
         this.reportAll = reportAll;
     }
 
+    @Override
     public void created(Resource resource) {
         if (reportAll) {
             Principal changer = SecurityContext.getSecurityContext().getPrincipal();
@@ -60,6 +61,7 @@ public class ChangeHistoryEventDumper extends AbstractRepositoryEventDumper {
         }
     }
 
+    @Override
     public void deleted(Path uri, int resourceId, boolean collection) {
         if (reportAll) {
             Principal changer = SecurityContext.getSecurityContext().getPrincipal();
@@ -68,6 +70,7 @@ public class ChangeHistoryEventDumper extends AbstractRepositoryEventDumper {
         }
     }
 
+    @Override
     public void modified(Resource resource, Resource originalResource) {
         Principal changer = SecurityContext.getSecurityContext().getPrincipal();
         boolean security = false;
@@ -119,7 +122,8 @@ public class ChangeHistoryEventDumper extends AbstractRepositoryEventDumper {
         }
     }
 
-    public void contentModified(Resource resource) {
+    @Override
+    public void contentModified(Resource resource, Resource original) {
         if (reportAll) {
             Principal changer = SecurityContext.getSecurityContext().getPrincipal();
             logVersioningEvent("MODIFIED_CONTENT", false, resource.getURI(),
@@ -127,6 +131,7 @@ public class ChangeHistoryEventDumper extends AbstractRepositoryEventDumper {
         }
     }
 
+    @Override
     public void aclModified(Resource resource, Resource originalResource,
             Acl newACL, Acl originalACL) {
         Principal changer = SecurityContext.getSecurityContext().getPrincipal();

@@ -67,6 +67,7 @@ public class RepositoryIndexingEventDumperImpl extends AbstractRepositoryEventDu
 
     private ChangeLogDAO changeLogDAO;
     
+    @Override
     public void created(Resource resource) {
 
         ChangeLogEntry entry = changeLogEntry(super.loggerId, super.loggerType, 
@@ -77,6 +78,7 @@ public class RepositoryIndexingEventDumperImpl extends AbstractRepositoryEventDu
         this.changeLogDAO.addChangeLogEntry(entry, true);
     }
 
+    @Override
     public void deleted(Path uri, int resourceId, boolean collection) {
         
         ChangeLogEntry entry = changeLogEntry(super.loggerId, super.loggerType, uri, 
@@ -87,6 +89,7 @@ public class RepositoryIndexingEventDumperImpl extends AbstractRepositoryEventDu
 
     }
 
+    @Override
     public void modified(Resource resource, Resource originalResource) {
         
         ChangeLogEntry entry = changeLogEntry(super.loggerId, super.loggerType, 
@@ -98,7 +101,8 @@ public class RepositoryIndexingEventDumperImpl extends AbstractRepositoryEventDu
 
     }
 
-    public void contentModified(Resource resource) {
+    @Override
+    public void contentModified(Resource resource, Resource original) {
 
         ChangeLogEntry entry = changeLogEntry(super.loggerId, super.loggerType, 
                 resource.getURI(),
@@ -109,6 +113,7 @@ public class RepositoryIndexingEventDumperImpl extends AbstractRepositoryEventDu
         this.changeLogDAO.addChangeLogEntry(entry, false);
     }
 
+    @Override
     public void aclModified(Resource resource, Resource originalResource, 
                             Acl newACL, Acl originalACL) {
         

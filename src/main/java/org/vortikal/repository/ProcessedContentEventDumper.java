@@ -66,6 +66,7 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
         this.changeLogDAO = changeLogDAO;
     }
 
+    @Override
     public void created(Resource resource) {
         ChangeLogEntry entry = changeLogEntry(this.loggerId, this.loggerType, resource.getURI(), 
                 Operation.CREATED,
@@ -75,6 +76,7 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
 
     }
 
+    @Override
     public void deleted(Path uri, int resourceId, boolean collection) {
         ChangeLogEntry entry = changeLogEntry(this.loggerId, this.loggerType, uri, 
                 Operation.DELETED,
@@ -83,6 +85,7 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
         this.changeLogDAO.addChangeLogEntry(entry, false);
     }
 
+    @Override
     public void modified(Resource resource, Resource originalResource) {
         ChangeLogEntry entry = changeLogEntry(this.loggerId, this.loggerType, resource.getURI(), 
                 Operation.MODIFIED_PROPS,
@@ -92,7 +95,8 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
     }
 
 
-    public void contentModified(Resource resource) {
+    @Override
+    public void contentModified(Resource resource, Resource original) {
         ChangeLogEntry entry = changeLogEntry(this.loggerId, this.loggerType, resource.getURI(),
                 Operation.MODIFIED_CONTENT, -1, resource.isCollection(),
                 new Date());
@@ -101,6 +105,7 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
     }
 
 
+    @Override
     public void aclModified(Resource resource, Resource originalResource,
                             Acl newACL, Acl originalACL) {
         
@@ -167,5 +172,4 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
         }
 
     }
-
 }

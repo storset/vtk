@@ -307,8 +307,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         }
         if (evaluatedProp != null) {
             newResource.addProperty(evaluatedProp);
-        }
-        if (evaluatedProp == null) {
+        } else {
             newResource.removeProperty(propDef);
         }
     }

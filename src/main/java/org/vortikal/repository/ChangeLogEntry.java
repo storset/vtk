@@ -48,7 +48,7 @@ public class ChangeLogEntry {
         DELETED("deleted"),
         ACL_READ_ALL_YES("acl_read_all_yes"),
         ACL_READ_ALL_NO ("acl_read_all_no");
-        
+
         private String operationId;
         
         Operation(String operationId) {
@@ -59,6 +59,7 @@ public class ChangeLogEntry {
             return this.operationId;
         }
         
+        @Override
         public String toString() {
             return this.operationId;
         }
@@ -137,6 +138,7 @@ public class ChangeLogEntry {
         this.collection = collection;
     }
     
+    @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
         

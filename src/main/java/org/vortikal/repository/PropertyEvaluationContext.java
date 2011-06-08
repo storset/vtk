@@ -58,7 +58,7 @@ public class PropertyEvaluationContext {
     private ResourceImpl suppliedResource;
     private Content content;
     private boolean collection;
-    private Date time = new Date();
+    private final Date time = new Date();
     private Principal principal;
     private Map<String, Object> propertyValueMap;
 

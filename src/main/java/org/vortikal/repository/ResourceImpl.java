@@ -67,15 +67,10 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
 
     @Override
     public void removeProperty(Namespace namespace, String name) {
-        Map<String, Property> props = this.propertyMap.get(namespace);
-        if (props == null) {
-            return;
+        Map<String, Property> props = super.propertyMap.get(namespace);
+        if (props != null) {
+            props.remove(name);
         }
-        Property prop = props.get(name);
-        if (prop == null) {
-            return;
-        }
-        props.remove(name);
     }
 
     @Override
@@ -85,7 +80,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
 
     @Override
     public void removeAllProperties() {
-        this.propertyMap = new HashMap<Namespace, Map<String, Property>>();
+        super.propertyMap.clear();
     }
 
     @Override

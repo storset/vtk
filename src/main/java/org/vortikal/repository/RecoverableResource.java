@@ -42,6 +42,7 @@ public class RecoverableResource {
     private Date deletedTime;
     private boolean wasInheritedAcl;
     private String resourceType;
+    private String contentType;
 
     private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
@@ -88,7 +89,7 @@ public class RecoverableResource {
     public Date getDeletedTime() {
         return deletedTime;
     }
-    
+
     public String getFormattedDeletedTime() {
         return SDF.format(this.deletedTime);
     }
@@ -111,6 +112,14 @@ public class RecoverableResource {
 
     public void setResourceType(String resourceType) {
         this.resourceType = resourceType;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 
     @Override

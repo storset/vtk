@@ -55,8 +55,8 @@ import org.vortikal.repository.Path;
  *
  */
 public class PathLockManager {
-    private int maxIterations = 80;
-    private long iterationWaitTimeout = 1000;  // 80 * 1000 = 80 seconds of maximum wait time for a single URI lock
+    private int maxIterations = 100;
+    private long iterationWaitTimeout = 1000;  // 100 * 1000ms = 100 seconds of maximum wait time for a single URI lock
 
     /* All access to this map must be synchronized on the map object itself */
     private final Map<Path, Lock> locks = new HashMap<Path, Lock>();

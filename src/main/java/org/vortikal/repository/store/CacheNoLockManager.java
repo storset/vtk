@@ -248,11 +248,10 @@ public class CacheNoLockManager implements DataAccessor, InitializingBean {
     
     @Override
     public ResourceImpl[] loadChildren(ResourceImpl parent) throws DataAccessException {
+        List<Path> childUris = parent.getChildURIs();
 
         List<ResourceImpl> found = new ArrayList<ResourceImpl>();
         List<Path> notFound = new ArrayList<Path>();
-
-        List<Path> childUris = parent.getChildURIs();
 
         for (Path uri : childUris) {
 
@@ -295,11 +294,15 @@ public class CacheNoLockManager implements DataAccessor, InitializingBean {
             // Below threshold for number of missing children in cache, we
             // load the missing ones selectively from database for better
             // efficiency.
-            for (Path missingChild : notFound) {
-                ResourceImpl resourceImpl = this.wrappedAccessor.load(missingChild);
-                if (resourceImpl != null) {
-                    found.add(resourceImpl);
-                    enterResource(resourceImpl);
+            // Treat entire child loading operation as atomic modification of cache,
+            // synchronize on items immediately.
+            synchronized (this.items) {
+                for (Path missingChild : notFound) {
+                    ResourceImpl resourceImpl = this.wrappedAccessor.load(missingChild);
+                    if (resourceImpl != null) {
+                        found.add(resourceImpl);
+                        enterResource(resourceImpl);
+                    }
                 }
             }
 
@@ -313,10 +316,14 @@ public class CacheNoLockManager implements DataAccessor, InitializingBean {
                         + "' from database, " + parent.getChildURIs().size() + " resources.");
             }
 
-            resources = this.wrappedAccessor.loadChildren(parent);
 
-            for (ResourceImpl resourceImpl : resources) {
-                enterResource(resourceImpl); // Put in cache, replace any existing (full refresh).
+            // Treat entire child loading operation as atomic modification of cache,
+            // synchronize on items immediately.
+            synchronized (this.items) {
+                resources = this.wrappedAccessor.loadChildren(parent);
+                for (ResourceImpl resourceImpl : resources) {
+                    enterResource(resourceImpl); // Put in cache, replace any existing (full refresh).
+                }
             }
         }
 

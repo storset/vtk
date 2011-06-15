@@ -222,21 +222,23 @@ public class CacheNoLockManager implements DataAccessor, InitializingBean {
             this.logger.debug("Load from wrappedAccessor: " + uri);
         }
 
-        r = this.wrappedAccessor.load(uri);
+        synchronized (this.items) {
+            r = this.wrappedAccessor.load(uri);
 
-        if (r == null) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Not found in wrappedAccessor: " + uri);
+            if (r == null) {
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Not found in wrappedAccessor: " + uri);
+                }
+
+                return null;
             }
 
-            return null;
-        }
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Miss: " + uri);
+            }
 
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("Miss: " + uri);
+            enterResource(r);
         }
-
-        enterResource(r);
 
         if (this.logger.isDebugEnabled()) {
             this.logger.debug("Load took " + (System.currentTimeMillis() - start) + " ms");

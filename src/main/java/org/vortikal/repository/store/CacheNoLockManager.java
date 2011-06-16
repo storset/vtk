@@ -222,23 +222,22 @@ public class CacheNoLockManager implements DataAccessor, InitializingBean {
             this.logger.debug("Load from wrappedAccessor: " + uri);
         }
 
-        synchronized (this.items) {
-            r = this.wrappedAccessor.load(uri);
+        r = this.wrappedAccessor.load(uri);
 
-            if (r == null) {
-                if (this.logger.isDebugEnabled()) {
-                    this.logger.debug("Not found in wrappedAccessor: " + uri);
-                }
-
-                return null;
-            }
-
+        if (r == null) {
             if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Miss: " + uri);
+                this.logger.debug("Not found in wrappedAccessor: " + uri);
             }
 
-            enterResource(r);
+            return null;
         }
+
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Miss: " + uri);
+        }
+
+        enterResource(r);
+
 
         if (this.logger.isDebugEnabled()) {
             this.logger.debug("Load took " + (System.currentTimeMillis() - start) + " ms");
@@ -296,17 +295,20 @@ public class CacheNoLockManager implements DataAccessor, InitializingBean {
             // Below threshold for number of missing children in cache, we
             // load the missing ones selectively from database for better
             // efficiency.
-            // Treat entire child loading operation as atomic modification of cache,
-            // synchronize on items immediately.
-            synchronized (this.items) {
-                for (Path missingChild : notFound) {
-                    ResourceImpl resourceImpl = this.wrappedAccessor.load(missingChild);
-                    if (resourceImpl != null) {
-                        found.add(resourceImpl);
-                        enterResource(resourceImpl);
-                    }
+            for (Path missingChild : notFound) {
+                ResourceImpl resourceImpl = this.wrappedAccessor.load(missingChild);
+                if (resourceImpl != null) {
+                    found.add(resourceImpl);
+                    enterResource(resourceImpl);
                 }
             }
+            
+            synchronized (this.items) {
+                for (ResourceImpl resourceImpl: found) {
+                    enterResource(resourceImpl);
+                }
+            }
+
 
             return found.toArray(new ResourceImpl[found.size()]);
 
@@ -321,14 +323,13 @@ public class CacheNoLockManager implements DataAccessor, InitializingBean {
 
             // Treat entire child loading operation as atomic modification of cache,
             // synchronize on items immediately.
+            resources = this.wrappedAccessor.loadChildren(parent);
             synchronized (this.items) {
-                resources = this.wrappedAccessor.loadChildren(parent);
                 for (ResourceImpl resourceImpl : resources) {
                     enterResource(resourceImpl); // Put in cache, replace any existing (full refresh).
                 }
             }
         }
-
 
         if (this.logger.isDebugEnabled()) {
             this.logger.debug("Cache size : " + this.items.size());

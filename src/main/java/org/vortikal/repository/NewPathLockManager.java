@@ -232,7 +232,7 @@ public class NewPathLockManager {
                     return this.lockImpl.readLock().tryLock(timeout, timeUnit);
                 }
             } catch (InterruptedException ie) {
-                logger.warn("InterruptedException while waiting for lock on path " + this.uri);
+                logger.warn("InterruptedException while waiting for lock on path " + this.uri, ie);
                 return false;
             }
         }

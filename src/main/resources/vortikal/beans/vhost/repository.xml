@@ -153,7 +153,7 @@
     <property name="sqlMaps" ref="repository.statementMappings" />
   </bean>
 
-  <bean id="repository.cache" class="org.vortikal.repository.store.CacheNoLockManager">
+  <bean id="repository.cache" class="org.vortikal.repository.store.Cache">
     <property name="maxItems" value="${resourceCacheSize}" />
     <property name="wrappedAccessor" ref="${repository.dao}" />
   </bean>

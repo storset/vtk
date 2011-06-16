@@ -37,6 +37,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.edit.editor.ResourceWrapperManager;
 import org.vortikal.repository.Property;
@@ -57,6 +59,8 @@ import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 public abstract class QuerySearchComponent implements SearchComponent {
+
+    private static Log logger = LogFactory.getLog(QuerySearchComponent.class.getName());
 
     private String name;
     private String titleLocalizationKey;
@@ -115,7 +119,10 @@ public abstract class QuerySearchComponent implements SearchComponent {
             try {
                 result = this.multiHostSearchComponent.search(token, search);
             } catch (Throwable t) {
-                // If something goes wrong with multi host search, run default instead
+                // If something goes wrong with multi host search, run default
+                // instead
+                logger.warn("Could not perfom multi host search, falling back to default local repo search: "
+                        + t.getMessage());
                 result = repository.search(token, search);
             }
         } else {

@@ -58,12 +58,16 @@ import org.apache.commons.logging.LogFactory;
  *
  */
 public class NewPathLockManager {
-    private int lockTimeoutSeconds = 100; // How many seconds max to wait for each path lock requested.
+
+    // How many seconds max to wait for each path lock requested if there is contention.
+    private int lockTimeoutSeconds = 100;
 
     // Fair locking costs some through-put so false by default (should not be needed under normal circumstances)
     private boolean fairLocking = false;
 
-    /* All access to this map must be synchronized on the map object itself */
+    // All access to this map must be synchronized on the map object itself
+    // There is room for improvement on how we handle lock disposal and synchronized access to this map, because
+    // ReentrantReadWriteLock can be queried about queue size and hold count natively.
     private final Map<Path, PathLock> locks = new HashMap<Path, PathLock>();
 
     private Log logger = LogFactory.getLog(PathLockManager.class);
@@ -124,13 +128,8 @@ public class NewPathLockManager {
         Arrays.sort(uris);
         
         final List<Path> claimedLocks = new ArrayList<Path>(uris.length);
-        Path previous = null;
+
         for (Path uri: uris) {
-            if (uri.equals(previous)) {
-                // Don't try to claim same path lock twice with same access level, that's stupid.
-                continue;
-            }
-            
             final PathLock lock = getLock(uri);   // Request lock object for path
             if (lock.tryLock(this.lockTimeoutSeconds, TimeUnit.SECONDS, exclusive)) {
                 claimedLocks.add(uri);
